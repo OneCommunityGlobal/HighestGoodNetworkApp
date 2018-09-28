@@ -6,13 +6,13 @@ class DashBoardPage extends Component {
         return (
         <div>
             <Row>
-            <Col sm={{offset:1,size:8}}>
+            <Col sm={{offset:1,size:7}}>
               <Card body inverse style={{ backgroundColor: '#333', borderColor: '#333' }}>
                 <CardTitle>LeaderBoard</CardTitle>
                 <CardText>With supporting text below as a natural lead-in to additional content.</CardText>
               </Card>
             </Col>
-            <Col sm="3">
+            <Col sm={{size:3}}>
               <Card body inverse color="info">
                 <CardTitle>Monthly Effort</CardTitle>
                 <CardText>Monthly Chart PlaceHolder</CardText>        
@@ -20,10 +20,10 @@ class DashBoardPage extends Component {
             </Col>
           </Row>
           <Row style={{marginTop:'20px'}}>
-            <Col sm={{offset:1,size:10}}>
+            <Col sm={{offset:1,size:7}}>
                 <Card body inverse color="warning">
                     <CardTitle>Badges</CardTitle>
-                    <CardText>With supporting text below as a natural lead-in to additional content.</CardText>
+                    <CardText>PlaceHolder for Badges</CardText>
                 </Card>
             </Col>
           </Row>   

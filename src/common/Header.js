@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+//import { Link } from 'react-router-dom';
 import {
   Collapse,
   Navbar,
@@ -50,7 +50,7 @@ class Header extends React.Component {
                   other Links
                 </DropdownToggle>
                 <DropdownMenu>
-                  <DropdownItem>User Management</DropdownItem>
+                  <DropdownItem href="/usermanagement">User Management</DropdownItem>
                   <DropdownItem>Projects</DropdownItem>
                   <DropdownItem>Teams</DropdownItem>
                 </DropdownMenu>
@@ -65,7 +65,7 @@ class Header extends React.Component {
                   <DropdownItem>View Profile</DropdownItem>
                   <DropdownItem>Update Password</DropdownItem>
                   <DropdownItem divider />
-                  <DropdownItem>Logout</DropdownItem>
+                  <DropdownItem href="/logout">Logout</DropdownItem>
                 </DropdownMenu>
               </UncontrolledDropdown>
             </Nav>
