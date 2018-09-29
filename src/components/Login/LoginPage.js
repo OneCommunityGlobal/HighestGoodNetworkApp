@@ -50,9 +50,7 @@ class Login extends Component {
     this.setState({ validate });
   }
 
-  validatePassword(){
-
-  }
+ 
 
   handleChange = async event => {
     const { target } = event;
@@ -83,6 +81,7 @@ class Login extends Component {
            this.setState({
             redirect:{
               forcepassword:true
+              //userid
             }
           })
             }
@@ -98,18 +97,18 @@ class Login extends Component {
             alert("Invalid credentials");
           }
       )
-      // if(authenticated){
-      //   this.setState({
-      //     redirectToReferrer:true
-      //   })
-      // }
+      if(authenticated){
+        this.setState({
+          redirectToReferrer:true
+        })
+      }
   }
   renderRedirect = () => {
     if (this.state.redirect.dashboard) {
       return <Redirect to='/' />
     }
     else if (this.state.redirect.forcepassword){
-      return <Redirect to='/forcepassword' />
+      return <Redirect to='/forcepassword' user={this.state.userId}/>
     }
   }
 

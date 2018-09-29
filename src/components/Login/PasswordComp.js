@@ -5,11 +5,17 @@ class PasswordComp extends Component {
   constructor(){
     super();
     this.state={
-      password:""
+      password:"",
+      validate: {
+        passwordState:""
+      }
     }
-    this.handleChange=this.handleChange.bind(this);
+    this.onChange=this.onChange.bind(this);
   }
-
+  onChange(event){
+    this.handleChange(event);
+    this.validatePassword(event);
+  }
   handleChange = async event => {
     const { target } = event;
     const value = target.value;
@@ -18,6 +24,18 @@ class PasswordComp extends Component {
       [name]: value
     });
   };
+
+  validatePassword(event){
+    const passwordRegex =/(?=^.{8,}$)((?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$/;
+    
+    const { validate } = this.state;
+    if (passwordRegex.test(event.target.value)) {
+      validate.passwordState = "has-success";
+    } else {
+      validate.passwordState = "has-danger";
+    }
+    this.setState({ validate });
+  }
   render() {
     const { password } = this.state;
     const {id} = this.props;
@@ -31,10 +49,15 @@ class PasswordComp extends Component {
             id={id}
             placeholder={id}
             value={password}
-            onChange={this.handleChange}
+            valid={this.state.validate.passwordState === "has-success"}
+            invalid={this.state.validate.passwordState === "has-danger"}
+            onChange={
+              this.onChange
+            }
           />
+          <FormFeedback>password should be at least 8 charcaters long with uppercase, lowercase and number/special char </FormFeedback>
         </FormGroup>
-        <FormFeedback>Password should be minimum of 8 characters with atleast one capital,one small letter, one special charac,one number </FormFeedback>
+        
       </div>
     );
   }

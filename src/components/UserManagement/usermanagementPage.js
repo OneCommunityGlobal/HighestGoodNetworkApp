@@ -2,14 +2,7 @@ import React, { Component } from 'react';
 import ReactTable from 'react-table';
 import "react-table/react-table.css";
 import axios from 'axios';
-
-    
-
-
-// const Data=[{isActive: false, weeklyComittedHours: 9, _id: "5a6232cce1787e3f80a78bd5", email: "azure@hgn.net", firstName: "America12345"},
-//  {isActive: false, weeklyComittedHours: 0, _id: "5b13bc7564f3732b5c337c64", role: "Volunteer", firstName: "time"},
-//  {isActive: false, weeklyComittedHours: 10, _id: "5b3013287275b6002e3b2de4", role: "Volunteer", firstName: "Dipti"}
-//         ]
+import { Row } from 'reactstrap';
 
 
 class UserManagement extends Component {
@@ -75,11 +68,16 @@ class UserManagement extends Component {
         console.log(userlist);
         return (
             <div>
+                <Row>
+                    
+                </Row>
+                <Row>
                 <ReactTable 
                     data={userlist}
                     minRows={0}
                     columns={this.state.columns}
                 />
+                </Row>
             </div>
         );
     }

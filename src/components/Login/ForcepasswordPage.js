@@ -5,14 +5,14 @@ import  {Button,FormFeedback} from "reactstrap";
 import { Redirect } from "react-router-dom";
 import axios from 'axios';
 
-// const container = {
-//     display: 'flex',
-//     alignItems: 'center',
-//     justifyContent: 'center',
-//     flexFlow: 'column'
-//   }
+const container = {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexFlow: 'column'
+  }
 
-class ForgotPasswordPage extends Component {
+class ForcePasswordPage extends Component {
     constructor(){
         super();
         this.state={
@@ -54,13 +54,13 @@ class ForgotPasswordPage extends Component {
         return (
             <div>
                 {this.renderRedirect()}
-            <Container className="forcePassword" >
+            <Container className="forcePassword" style={container}>
             <h3 className="py-4 text-center">
             Change Password
             </h3>
             <PasswordComp id='password' />
             <PasswordComp id='confirmPassword'/>
-            <FormFeedback>Both the paswords must match</FormFeedback>
+            <FormFeedback>Both the paswords must</FormFeedback>
             <Button color="success" block className="py-2" onClick={this.submit}>
                  Submit
             </Button>
@@ -71,4 +71,4 @@ class ForgotPasswordPage extends Component {
     }
 }
 
-export default ForgotPasswordPage;
+export default ForcePasswordPage;
