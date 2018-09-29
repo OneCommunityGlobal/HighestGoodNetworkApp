@@ -5,12 +5,6 @@ import  {Button,FormFeedback} from "reactstrap";
 import { Redirect } from "react-router-dom";
 import axios from 'axios';
 
-const container = {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    flexFlow: 'column'
-  }
 
 class ForcePasswordPage extends Component {
     constructor(){
@@ -54,7 +48,7 @@ class ForcePasswordPage extends Component {
         return (
             <div>
                 {this.renderRedirect()}
-            <Container className="forcePassword" style={container}>
+            <Container className="forcePassword">
             <h3 className="py-4 text-center">
             Change Password
             </h3>
