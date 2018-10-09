@@ -1,4 +1,4 @@
 {
-    "apiEndpoint" : "REACT_APP_APIENDPOINT",
+    "apiEndpoint" : "https://hgn-rest.azurewebsites.net/api",
     "tokenKey" : "token"
 }
