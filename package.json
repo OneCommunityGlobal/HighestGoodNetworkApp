@@ -5,14 +5,15 @@
   "dependencies": {
     "axios": "^0.18.0",
     "bootstrap": "^4.1.1",
+    "browserslist": "^4.2.0",
     "font-awesome": "^4.7.0",
     "joi": "^13.7.0",
     "jwt-decode": "^2.2.0",
     "raven-js": "^3.27.0",
-    "react": "^16.4.2",
-    "react-dom": "^16.4.2",
+    "react": "^16.5.0",
+    "react-dom": "^16.5.0",
     "react-router-dom": "^4.3.1",
-    "react-scripts": "1.1.5",
+    "react-scripts": "^2.0.4",
     "react-table": "^6.8.6",
     "react-toastify": "^4.4.0",
     "reactstrap": "^6.4.0"
@@ -21,6 +22,14 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test --env=jsdom",
-    "eject": "react-scripts eject"
-  }
+    "eject": "react-scripts eject",
+    "deploy": "surge build --domain https://hgnapplicationv2.surge.sh"
+  },
+  "browserslist": [
+    ">0.2%",
+    "not dead",
+    "not ie <= 11",
+    "not op_mini all"
+  ],
+  "devDependencies": {}
 }

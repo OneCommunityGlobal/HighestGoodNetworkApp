@@ -1,4 +1,4 @@
 {
-    "apiEndpoint" : "http://localhost:4500/api",
+    "apiEndpoint" : "https://hgn-rest.azurewebsites.net/api",
     "tokenKey" : "token"
 }
