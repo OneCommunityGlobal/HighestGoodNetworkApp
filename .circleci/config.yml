@@ -9,12 +9,9 @@ jobs:
      name: Update npm
      command: 'sudo npm install'
   - run:
-     name: Install ember globally
-     command: 'sudo npm install -g react-scripts'
-  - run:
-     name: Run ember build
+     name: Run npm build
      command: 'sudo npm run build'
   - run:
      name: Deploy app
-     command: './node_modules/.bin/surge dist --domain https://hgnapplicationv2.surge.sh'
+     command: './node_modules/.bin/surge build --domain https://hgnapplicationv2.surge.sh'
   
