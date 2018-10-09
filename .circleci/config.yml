@@ -1,0 +1,17 @@
+version: 2
+jobs:
+ build:
+  docker:
+   - image: circleci/node:latest
+  steps:
+  - checkout
+  - run:
+     name: Update npm
+     command: 'sudo npm install'
+  - run:
+     name: Run build
+     command: 'sudo npm run build'
+  - run:
+     name: Deploy app
+     command: './node_modules/.bin/surge dist --domain https://hgnapplication_react.surge.sh'
+  
