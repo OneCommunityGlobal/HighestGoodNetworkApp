@@ -1,0 +1,4 @@
+{
+    "apiEndpoint" : "http://localhost:4500/api",
+    "tokenKey" : "token"
+}

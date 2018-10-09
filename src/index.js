@@ -3,7 +3,11 @@ import ReactDOM from 'react-dom';
 import {BrowserRouter} from 'react-router-dom';
 import App from './components/App';
 import registerServiceWorker from './registerServiceWorker';
-import '../node_modules/bootstrap/dist/css/bootstrap.css'
+import 'bootstrap/dist/css/bootstrap.css'
+import 'font-awesome/css/font-awesome.css'
+import logService from "./services/logService"
+
+logService.init()
 
 ReactDOM.render(
     <BrowserRouter>
