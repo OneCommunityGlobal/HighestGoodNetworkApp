@@ -14,7 +14,7 @@ export async function login(credentials)
   let {data} = await httpService.post(loginApiEndpoint, credentials)
   console.log(process.env.REACT_APP_APIENDPOINT)
   console.log(process.env);
-  console.log(REACT_APP_APIENDPOINT)
+  //console.log("REACT_APP_APIENDPOINT)
   localStorage.setItem(tokenKey, data.token)
   
   return;
