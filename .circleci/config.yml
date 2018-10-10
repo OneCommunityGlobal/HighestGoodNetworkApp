@@ -10,7 +10,7 @@ jobs:
      command: 'sudo npm install'
   - run:
      name: Run npm build
-     command: 'sudo npm run build'
+     command: 'sudo REACT_APP_APIENDPOINT=$REACT_APP_APIENDPOINT npm startnpm run build'
   - run:
      name: Deploy app
      command: './node_modules/.bin/surge build --domain https://hgnapplicationv2.surge.sh'
