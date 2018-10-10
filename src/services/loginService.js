@@ -12,8 +12,9 @@ httpService.setjwt(getjwt())
 export async function login(credentials)
 {
   let {data} = await httpService.post(loginApiEndpoint, credentials)
-  console.log(data)
+  console.log(process.env.REACT_APP_APIENDPOINT)
   localStorage.setItem(tokenKey, data.token)
+  
   return;
 }
 
