@@ -10,6 +10,7 @@ import Forcepassword from './Login/ForcepasswordPage';
 import Forgotpassword from './Login/ForgotpasswordPage';
 import UserManagement from './UserManagement/usermanagementPage';
 import {Logout} from './Logout';
+import UpdatePassword from './Profile/UpdatePasswordPage';
 
 //To Do: Remove the nomatch code from here
 
@@ -43,6 +44,7 @@ const Routes = () => {
       <PrivateRoute authed={authenticated()} path="/DashBoard" component={DashBoardPage} />
       <PrivateRoute authed={authenticated()} path="/Timelog" component={TimelogPage} />
       <PrivateRoute authed={authenticated()} path="/Usermanagement" component={UserManagement}/>
+      <PrivateRoute authed={authenticated()} path="/UpdatePassword" component={UpdatePassword}/>
       <Route path="/Logout" component={Logout} />
       <Route component={NoMatch} />
       </Switch>

@@ -10,11 +10,13 @@ class PasswordComp extends Component {
         passwordState:""
       }
     }
-    this.onChange=this.onChange.bind(this);
+    this.handleChangeandValidate=this.handleChangeandValidate.bind(this);
+    this.pwdValueOnblur=this.pwdValueOnblur.bind(this);
   }
-  onChange(event){
+  handleChangeandValidate(event){
     this.handleChange(event);
     this.validatePassword(event);
+    //this.props.passwordMatch(event.target.value);
   }
   handleChange = async event => {
     const { target } = event;
@@ -23,12 +25,20 @@ class PasswordComp extends Component {
     await this.setState({
       [name]: value
     });
+    this.props.pwdValueOnchange && this.props.pwdValueOnchange(value);
+    try{
+    this.props.hasOwnProperty('passwordMismatch') && (this.props.passwordMismatch=false);
+    }
+    catch(e){
+
+    }
+
   };
 
   validatePassword(event){
     const passwordRegex =/(?=^.{8,}$)((?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$/;
-    
-    const { validate } = this.state;
+    let { validate } = this.state;
+   
     if (passwordRegex.test(event.target.value)) {
       validate.passwordState = "has-success";
     } else {
@@ -36,9 +46,28 @@ class PasswordComp extends Component {
     }
     this.setState({ validate });
   }
+
+  pwdValueOnblur(event){
+    this.props.pwdValueOnblur && this.props.pwdValueOnblur(event.target.value);
+  }
+  handleError(){
+    let errorMsg=false;
+    let { validate } = this.state;
+
+    if(this.props.passwordMismatch){
+      //validate.passwordState='has-danger';
+      errorMsg='Both password and confirm password must match';
+      //this.setState({validate});
+    }
+    else{
+      errorMsg='password should be at least 8 charcaters long with uppercase, lowercase and number/special char'
+    }
+    return errorMsg;
+  }
   render() {
-    const { password } = this.state;
-    const {id} = this.props;
+    let { password } = this.state;
+    let {id} = this.props;
+    let errorMsg = this.handleError();
     return (
       <div>
         <FormGroup>
@@ -50,12 +79,13 @@ class PasswordComp extends Component {
             placeholder={id}
             value={password}
             valid={this.state.validate.passwordState === "has-success"}
-            invalid={this.state.validate.passwordState === "has-danger"}
+            invalid={this.state.validate.passwordState === "has-danger" ||  this.props.passwordMismatch}
             onChange={
-              this.onChange
+              this.handleChangeandValidate
             }
+            onBlur={ this.pwdValueOnblur}
           />
-          <FormFeedback>password should be at least 8 charcaters long with uppercase, lowercase and number/special char </FormFeedback>
+          <FormFeedback>{errorMsg}</FormFeedback>
         </FormGroup>
         
       </div>

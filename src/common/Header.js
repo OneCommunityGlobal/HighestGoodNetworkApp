@@ -63,7 +63,7 @@ class Header extends React.Component {
                   <DropdownItem header>Hello User</DropdownItem>
                   <DropdownItem divider />
                   <DropdownItem>View Profile</DropdownItem>
-                  <DropdownItem>Update Password</DropdownItem>
+                  <DropdownItem  href="/updatepassword" >Update Password</DropdownItem>
                   <DropdownItem divider />
                   <DropdownItem href="/logout">Logout</DropdownItem>
                 </DropdownMenu>
