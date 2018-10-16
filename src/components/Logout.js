@@ -4,7 +4,7 @@ import {Redirect} from 'react-router-dom';
 //to do : remove hard coded string
 export const Logout = ()=>{
         localStorage.removeItem('token');
-        return (<Redirect to='/login'/>);
+        return (<Redirect to='/login' auth={false}/>);
     
 }
 
