@@ -7,7 +7,7 @@ jobs:
   - checkout
   - run:
      name: Set APIENDPOINT 
-     command : echo 'export APIENDPOINT="$APIENDPOINT_DEV"' >> $BASH_ENV
+     command : echo 'export REACT_APP_APIENDPOINT="$APIENDPOINT_DEV"' >> $BASH_ENV
   - run:
      name: Check environment
      command: echo value is $APIENDPOINT     
@@ -19,7 +19,7 @@ jobs:
      command: 'sudo npm install -g ember-cli'
   - run:
      name: Run ember build
-     command: 'sudo APIENDPOINT=$APIENDPOINT_DEV npm run build'
+     command: 'sudo REACT_APP_APIENDPOINT=$APIENDPOINT_DEV npm run build'
   - run:
      name: Deploy app
      command: ./node_modules/.bin/surge dist --domain $SURGE_DOMAIN_DEV
