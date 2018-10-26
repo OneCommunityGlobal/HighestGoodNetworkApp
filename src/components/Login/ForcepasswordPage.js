@@ -1,7 +1,7 @@
 import React,{Component} from 'react';
 import PasswordComp from './PasswordComp';
-import {Container} from 'reactstrap';
-import  {Button,FormFeedback,FormGroup} from "reactstrap";
+//import {Container} from 'reactstrap';
+//import  {Button,FormFeedback,FormGroup} from "reactstrap";
 import { Redirect } from "react-router-dom";
 import axios from 'axios';
 
@@ -61,23 +61,24 @@ class ForcePasswordPage extends Component {
     }
     render() {
         return (
-            <div>
-                {this.renderRedirect()}
-            <Container className="forcePassword">
-            <h3 className="py-4 text-center">
-            Change Password
-            </h3>
-            <FormGroup>
-            <PasswordComp id='password' pwdValueOnchange={this.passwordValue}/>
-            <PasswordComp id='confirmPassword' pwdValueOnblur={this.confirmPwdMatch} passwordMismatch={this.state.passwordMismatch}/>
-        {/* {this.state.passwordMismatch && <FormFeedback>Both the paswords must match</FormFeedback> } */}
-            <Button color="success" block className="py-2" onClick={this.submit}>
-                 Submit
-            </Button>
-            </FormGroup>
+            null
+        //     <div>
+        //         {this.renderRedirect()}
+        //     <Container className="forcePassword">
+        //     <h3 className="py-4 text-center">
+        //     Change Password
+        //     </h3>
+        //     <FormGroup>
+        //     <PasswordComp id='password' pwdValueOnchange={this.passwordValue}/>
+        //     <PasswordComp id='confirmPassword' pwdValueOnblur={this.confirmPwdMatch} passwordMismatch={this.state.passwordMismatch}/>
+        // {/* {this.state.passwordMismatch && <FormFeedback>Both the paswords must match</FormFeedback> } */}
+        //     <Button color="success" block className="py-2" onClick={this.submit}>
+        //          Submit
+        //     </Button>
+        //     </FormGroup>
           
-            </Container>
-            </div>
+        //     </Container>
+        //     </div>
         );
     }
 }

@@ -1,14 +1,4 @@
 import React, { Component } from 'react';
-import {
-    Container,
-    Row,
-    Col,
-    Form,
-    FormGroup,
-    Input,
-    Button,
-    FormFeedback
-} from "reactstrap";
 import axios from 'axios';
 import { Link, Redirect } from "react-router-dom";
 
@@ -86,66 +76,66 @@ class ForgotPassword extends Component {
     }
     render() {
         const { email, firstName, lastName } = this.state;
-        return (
-            <div>
-                {this.renderRedirect()}
-            <Container className="forgotpassword" >
-                <Form className="form formforgotPwd" onSubmit={e => this.submitForm(e)}>
-                    <h3 className=" portal py-4 text-center">
-                        One Community Global Forgot Password Form
-                </h3>
-                    <FormGroup>
-                        <Input
-                            required
-                            type="text"
-                            name="firstName"
-                            id='firstName'
-                            placeholder='firstName'
-                            value={firstName}
-                            onChange={this.handleChange}
-                        />
-                        <FormFeedback>firstName must atleast be two char length</FormFeedback>
-                    </FormGroup>
-                    <FormGroup>
-                        <Input
-                            required
-                            type="text"
-                            name="lastName"
-                            id='lastName'
-                            placeholder='lastName'
-                            value={lastName}
-                            onChange={this.handleChange}
-                        />
-                        <FormFeedback>Name must atleast be two char length</FormFeedback>
-                    </FormGroup>
-                    <FormGroup>
-                        <Input
-                            type="email"
-                            name="email"
-                            id="email"
-                            placeholder="Email"
-                            value={email}
-                            valid={this.state.validate.emailState === "has-success"}
-                            invalid={this.state.validate.emailState === "has-danger"}
-                            onChange={this.handleChangeandValidate}
-                        />
-                        <FormFeedback>Invalid email address</FormFeedback>
-                    </FormGroup>
-                    <Row>
-                        <Col>
-                            <Link to="/login" className="text-muted">
-                                Cancel
-                            </Link>
-                        </Col>
-                        <Col>
-                            <Button color="success" block >
-                                Submit
-                            </Button>
-                        </Col>
-                    </Row>
-                </Form>
-            </Container>
-            </div>
+        return ( null
+            // <div>
+            //     {this.renderRedirect()}
+            // <Container className="forgotpassword" >
+            //     <Form className="form formforgotPwd" onSubmit={e => this.submitForm(e)}>
+            //         <h3 className=" portal py-4 text-center">
+            //             One Community Global Forgot Password Form
+            //     </h3>
+            //         <FormGroup>
+            //             <Input
+            //                 required
+            //                 type="text"
+            //                 name="firstName"
+            //                 id='firstName'
+            //                 placeholder='firstName'
+            //                 value={firstName}
+            //                 onChange={this.handleChange}
+            //             />
+            //             <FormFeedback>firstName must atleast be two char length</FormFeedback>
+            //         </FormGroup>
+            //         <FormGroup>
+            //             <Input
+            //                 required
+            //                 type="text"
+            //                 name="lastName"
+            //                 id='lastName'
+            //                 placeholder='lastName'
+            //                 value={lastName}
+            //                 onChange={this.handleChange}
+            //             />
+            //             <FormFeedback>Name must atleast be two char length</FormFeedback>
+            //         </FormGroup>
+            //         <FormGroup>
+            //             <Input
+            //                 type="email"
+            //                 name="email"
+            //                 id="email"
+            //                 placeholder="Email"
+            //                 value={email}
+            //                 valid={this.state.validate.emailState === "has-success"}
+            //                 invalid={this.state.validate.emailState === "has-danger"}
+            //                 onChange={this.handleChangeandValidate}
+            //             />
+            //             <FormFeedback>Invalid email address</FormFeedback>
+            //         </FormGroup>
+            //         <Row>
+            //             <Col>
+            //                 <Link to="/login" className="text-muted">
+            //                     Cancel
+            //                 </Link>
+            //             </Col>
+            //             <Col>
+            //                 <Button color="success" block >
+            //                     Submit
+            //                 </Button>
+            //             </Col>
+            //         </Row>
+            //     </Form>
+            // </Container>
+            // </div>
         );
     }
 }

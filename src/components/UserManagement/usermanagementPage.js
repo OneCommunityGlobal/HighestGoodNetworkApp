@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import ReactTable from 'react-table';
 import "react-table/react-table.css";
 import axios from 'axios';
-import { Container } from 'reactstrap';
+//import { Container } from 'reactstrap';
 import NewUserComp from './NewUserComp';
 
 
@@ -95,7 +95,7 @@ class UserManagement extends Component {
         const {userlist} = this.state;
         console.log(userlist);
         return (
-            <Container>
+            <React.Fragment>
                 <NewUserComp />
                 <hr />
                 <ReactTable 
@@ -111,7 +111,7 @@ class UserManagement extends Component {
                       ]}
                 />
                 
-            </Container>
+            </React.Fragment>
         );
     }
 }
