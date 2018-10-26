@@ -28,19 +28,11 @@ class LoginForm extends Form {
     const {state}   = this.props.location;
      window.location = state? state.from.pathname : "/"
     } catch (ex) {
-      console.log(ex.response)
-      console.log(ex.response.status)
-      console.log(ex.response.data)
-      console.log(ex.response.statusText)
-
-
       if(ex.response && ex.response.status === 403)
       {       
         const errors = this.state.errors;
         errors["email"] = ex.response.data.message
         this.setState({errors})
-
-
       }
     }
   };
@@ -51,7 +43,7 @@ return <Redirect to ="/"/>
 
     return (
 
-      <div className = "container mt-5 offset-md-3">
+      <div className = "container mt-5">
       <h2>Please Sign in</h2>
      
       <form className="col-md-6 xs-12" onSubmit={e => this.handleSubmit(e)}>
