@@ -17,7 +17,6 @@ class LoginForm extends Form {
       .label("Email"),
     password: Joi.string()
       .required()
-      .min(3)
       .label("Password")
   };
 
@@ -29,12 +28,16 @@ class LoginForm extends Form {
     const {state}   = this.props.location;
      window.location = state? state.from.pathname : "/"
     } catch (ex) {
+      console.log(ex.response)
+      console.log(ex.response.status)
+      console.log(ex.response.data)
+      console.log(ex.response.statusText)
+
 
       if(ex.response && ex.response.status === 403)
-      {
-        console.log(ex.response)
+      {       
         const errors = this.state.errors;
-        errors["email"] = ex.response.data
+        errors["email"] = ex.response.data.message
         this.setState({errors})
 
 
@@ -47,11 +50,17 @@ if (getCurrentUser())
 return <Redirect to ="/"/>
 
     return (
-      <form onSubmit={e => this.handleSubmit(e)}>
-        {this.renderInput("email", "Email")}
-        {this.renderInput("password", "Password", "Password")}
+
+      <div className = "container mt-5 offset-md-3">
+      <h2>Please Sign in</h2>
+     
+      <form className="col-md-6 xs-12" onSubmit={e => this.handleSubmit(e)}>
+        {this.renderInput("email", "Email:")}
+        {this.renderInput("password", "Password:")}
         {this.renderButton("Submit")}
       </form>
+     
+      </div>
     );
   }
 }

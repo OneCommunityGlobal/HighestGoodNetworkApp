@@ -42,4 +42,15 @@ export function getCurrentUser()
   {
     console.log( localStorage.getItem(tokenKey))
   }
+
+  export function isUserAuthenticated()
+  {
+    if (!localStorage.getItem('token')) {
+        return false;
+      }
+      let token = localStorage.getItem('token');
+      token = jwtDecode(token);
+      return (token.expiryTimestamp > new Date().toISOString());
+  
+  }
   

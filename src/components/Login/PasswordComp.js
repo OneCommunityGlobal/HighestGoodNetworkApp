@@ -1,5 +1,5 @@
 import React,{Component} from 'react';
-import { FormGroup, Input, FormFeedback} from 'reactstrap';
+//import { FormGroup, Input, FormFeedback} from 'reactstrap';
 
 class PasswordComp extends Component {
   constructor(){
@@ -69,26 +69,27 @@ class PasswordComp extends Component {
     let {id} = this.props;
     let errorMsg = this.handleError();
     return (
-      <div>
-        <FormGroup>
-          <Input
-            required
-            type="password"
-            name="password"
-            id={id}
-            placeholder={id}
-            value={password}
-            valid={this.state.validate.passwordState === "has-success"}
-            invalid={this.state.validate.passwordState === "has-danger" ||  this.props.passwordMismatch}
-            onChange={
-              this.handleChangeandValidate
-            }
-            onBlur={ this.pwdValueOnblur}
-          />
-          <FormFeedback>{errorMsg}</FormFeedback>
-        </FormGroup>
+      null
+      // <div>
+      //   <FormGroup>
+      //     <Input
+      //       required
+      //       type="password"
+      //       name="password"
+      //       id={id}
+      //       placeholder={id}
+      //       value={password}
+      //       valid={this.state.validate.passwordState === "has-success"}
+      //       invalid={this.state.validate.passwordState === "has-danger" ||  this.props.passwordMismatch}
+      //       onChange={
+      //         this.handleChangeandValidate
+      //       }
+      //       onBlur={ this.pwdValueOnblur}
+      //     />
+      //     <FormFeedback>{errorMsg}</FormFeedback>
+      //   </FormGroup>
         
-      </div>
+      // </div>
     );
   }
 }

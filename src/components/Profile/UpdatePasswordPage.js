@@ -1,20 +1,20 @@
 import React, { Component } from 'react';
 import PasswordComp from '../Login/PasswordComp';
-import {
-    Container,
-    Row,
-    Col,
-    Form,
-    FormGroup,
-    Button,
-    FormFeedback
-} from "reactstrap";
+// import {
+//     Container,
+//     Row,
+//     Col,
+//     Form,
+//     FormGroup,
+//     Button,
+//     FormFeedback
+// } from "reactstrap";
 
 class UpdatePassword extends Component {
     render() {
         return (
             <div>
-                <Container>
+                {/* <Container>
                 <h3 className=" portal py-4 text-center">
                          Update Password Form
                 </h3>
@@ -33,7 +33,7 @@ class UpdatePassword extends Component {
                             </Button>
                         </Col>
                     </Row>
-                </Container>
+                </Container> */}
             </div>
         );
     }
