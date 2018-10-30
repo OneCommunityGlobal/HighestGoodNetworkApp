@@ -1,6 +1,7 @@
 import React from 'react';
-import { shallow } from 'enzyme';
+import { shallow, mount } from 'enzyme';
 import LoginPage from '../Login/LoginPage';
+import Input from '../../common/input'
 
 
 
@@ -46,18 +47,24 @@ describe("When user tries to login", () => {
         })
 
 
-    it("should show an error when password is empty", () => {
+    it("should correctly update the email value in the state", () => {
 
-        let data = {
-            email : "12",
-            password : ""
-        }
-        mountedLoginPage.setState({data})
+        // let mountedLoginPage = shallow(<LoginPage>
+        //     <Input id = "email" name = "email" label = "Email" />
+        //     <Input name = "password" label = "Password"/>
+        // </LoginPage>)
+      
+    //     let mockEvent = {target: {name: "email", value: "sh@gmail.com"}}
+    //   mountedLoginPage.instance().chooseMap = mockEvent;
+       let button = mountedLoginPage.find("Input")
+      console.log(`mountedPage: ${JSON.stringify(mountedLoginPage.instance().state)}`)
+      console.log(`event: ${JSON.stringify(button)}`)
+      console.log(`Input : ${button}`)
+
         mountedLoginPage.find("#email").simulate('click');
         //mountedLoginPage.find("#password").simulate('change', {target: {value: '12333'}});
-        const errors = mountedLoginPage.find(".alert") || [];
-        expect(errors.length).toBe(2)
-
+        expect(mountedLoginPage.instance().state.data.email).toEqual("sh@gmail.com")
+        
     })
 
 })

@@ -1,10 +1,10 @@
 import React from "react";
 import Joi from "joi";
-import Form from "../../common/form";
-import { login, getCurrentUser } from "../../services/loginService";
+import Form from "./common/form";
+import { login, getCurrentUser } from "../services/loginService";
 import {Redirect} from 'react-router-dom'
 
-class LoginForm extends Form {
+class Login extends Form {
   state = {
     data: { email: "", password: "" },
     errors: {}
@@ -57,4 +57,4 @@ return <Redirect to ="/"/>
   }
 }
 
-export default LoginForm;
+export default Login;
