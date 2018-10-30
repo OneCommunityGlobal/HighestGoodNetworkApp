@@ -8,6 +8,7 @@
     "font-awesome": "^4.7.0",
     "joi": "^13.7.0",
     "jwt-decode": "^2.2.0",
+    "lodash": "^4.17.11",
     "raven-js": "^3.27.0",
     "react": "^16.5.0",
     "react-dom": "^16.5.0",

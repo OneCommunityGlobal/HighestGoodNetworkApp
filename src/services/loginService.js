@@ -40,7 +40,7 @@ export function getCurrentUser()
 
   export function getjwt()
   {
-    console.log( localStorage.getItem(tokenKey))
+    return localStorage.getItem(tokenKey)
   }
 
   export function isUserAuthenticated()
