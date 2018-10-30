@@ -4,13 +4,7 @@ jobs:
   docker:
    - image: circleci/node:latest
   steps:
-  - checkout
-  - run:
-     name: Set APIENDPOINT 
-     command : echo 'export REACT_APP_APIENDPOINT="$APIENDPOINT_DEV"' >> $BASH_ENV
-  - run:
-     name: Check environment
-     command: echo value is $APIENDPOINT     
+  - checkout    
   - run:
      name: Update npm
      command: 'sudo npm install'
@@ -18,7 +12,7 @@ jobs:
      name: Install ember globally
      command: 'sudo npm install -g ember-cli'
   - run:
-     name: Run ember build
+     name: Run react build
      command: 'sudo REACT_APP_APIENDPOINT=$APIENDPOINT_DEV npm run build'
   - run:
      name: Deploy app
@@ -32,9 +26,6 @@ jobs:
     - run:
        name: Update npm
        command: 'sudo npm install'
-    - run:
-       name: Install ember globally
-       command: 'sudo npm install -g ember-cli'
     - run:
        name: Run ember build
        command: 'sudo REACT_APP_APIENDPOINT=$APIENDPOINT_PROD npm run build'
