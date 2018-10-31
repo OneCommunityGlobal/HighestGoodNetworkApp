@@ -7,6 +7,7 @@ import Login from './Login'
 import Header from './Header'
 import ProtectedRoute from './common/ProtectedRoute'
 import {getCurrentUser} from "../services/loginService";
+import logger from "../services/logService"
 
 class App extends Component {
 
@@ -16,13 +17,17 @@ class App extends Component {
     const user = getCurrentUser();
     this.setState({user})
   }
+
+  componentDidCatch(error, errorInfo) {
+   logger.logError(error)
+  }
   
   render() {
     
     return (
       <React.Fragment>
       <Header user = {this.state.user} />
-       <Switch>
+      
       <ProtectedRoute path ="/dashboard" component={Dashboard} />
       <Route path="/login" component={Login} />
      {/* <Route path="/forcepassword" component={Forcepassword} />
@@ -31,9 +36,10 @@ class App extends Component {
       <ProtectedRoute authed={isUserAuthenticated()} path="/Usermanagement" component={UserManagement}/>
       <ProtectedRoute authed={isUserAuthenticated()} path="/UpdatePassword" component={UpdatePassword}/> */}
       <Route path="/Logout" component={Logout} />
-      <Redirect from="/" exact to="/dashboard" />
+      {/* <Redirect from="/" exact to="/dashboard" /> */}
+      <ProtectedRoute path = "/" exact component = {Dashboard}/>
       {/* <Route component={NoMatch} /> */}
-      </Switch>
+     
 
     </React.Fragment>
     );
