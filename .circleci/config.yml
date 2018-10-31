@@ -8,7 +8,7 @@ jobs:
   - run:
      name: Update npm
      command: 'sudo npm install'
-   - run:
+  - run:
       name: Run react build
       command: 'sudo REACT_APP_APIENDPOINT=$APIENDPOINT_DEV npm run build'
   - run:
