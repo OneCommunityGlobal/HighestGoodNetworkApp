@@ -32,8 +32,6 @@ class Leaderboard extends Component {
     let results = await getLeaderboardData(loggedinUser);
     let data = results.data;
 
-    console.log(data);
-
     let leaderboardData = [];
 
     maxtotal = _.maxBy(data, "totaltime_hrs").totaltime_hrs;
