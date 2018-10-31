@@ -47,21 +47,21 @@ describe("When user tries to login", () => {
 
     it("should correctly update the email value in the state", () => {
 
-        // let mountedLoginPage = shallow(<LoginPage>
-        //     <Input id = "email" name = "email" label = "Email" />
-        //     <Input name = "password" label = "Password"/>
-        // </LoginPage>)
+        // let onChange = jest.fn();
+
+        let mountedLoginPage = shallow(<Login>
+            <Input  name = "email" label = "Email" value = "shamamm@gmail.com"  /> />
+            <Input name = "password" label = "Password" value = "samksjklsmskka"/>
+        </Login>)
       
-    //     let mockEvent = {target: {name: "email", value: "sh@gmail.com"}}
-    //   mountedLoginPage.instance().chooseMap = mockEvent;
+         let mockEvent = {currentTarget:' <input  name = "email" label = "Email" value = "sh@gmail.com"  />'};
+         mountedLoginPage.instance().handleChange(mockEvent);
        let button = mountedLoginPage.find("Input")
       console.log(`mountedPage: ${JSON.stringify(mountedLogin.instance().state)}`)
       console.log(`event: ${JSON.stringify(button)}`)
       console.log(`Input : ${button}`)
 
-        mountedLogin.find("#email").simulate('click');
-        //mountedLoginPage.find("#password").simulate('change', {target: {value: '12333'}});
-        expect(mountedLoginPage.instance().state.data.email).toEqual("sh@gmail.com")
+       expect(mountedLoginPage.instance().state.data.email).toEqual("sh@gmail.com")
         
     })
 
