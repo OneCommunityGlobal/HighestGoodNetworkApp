@@ -9,8 +9,8 @@ jobs:
      name: Update npm
      command: 'sudo npm install'
    - run:
-     name: Run react build
-     command: 'sudo REACT_APP_APIENDPOINT=$APIENDPOINT_DEV npm run build'
+      name: Run react build
+      command: 'sudo REACT_APP_APIENDPOINT=$APIENDPOINT_DEV npm run build'
   - run:
      name: Deploy app
      command: ./node_modules/.bin/surge build --domain $SURGE_DOMAIN_DEV
