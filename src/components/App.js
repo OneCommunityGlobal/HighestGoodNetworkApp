@@ -1,14 +1,18 @@
 import React, { Component } from 'react';
 import {Route} from 'react-router-dom';
-import '../App.css';
+
 import Dashboard from './Dashboard'
 import {Logout} from './Logout';
 import Login from './Login'
 import Header from './Header'
 import Profile from './Profile'
+
 import ProtectedRoute from './common/ProtectedRoute'
 import {getCurrentUser} from "../services/loginService";
+
 import logger from "../services/logService"
+
+import '../App.css';
 
 class App extends Component {
 
