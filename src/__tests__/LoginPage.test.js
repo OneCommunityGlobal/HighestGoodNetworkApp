@@ -2,6 +2,7 @@ import React from 'react';
 import { shallow } from 'enzyme';
 import Login from '../components/Login';
 import sinon from 'sinon';
+import Form from '../components/common/form'
 
 describe("Basic Structure for Login", () => {
     
@@ -78,15 +79,21 @@ it("should correctly update the errors object if the password is empty", () => {
     let expected =   "";            
     let Input =  {name: "password", "value": expected};
     let mockEvent = {currentTarget: Input}
-    mountedLoginPage.instance().handleChange(mockEvent);     
-  expect(mountedLoginPage.instance().state.errors["password"]).toEqual('"Password" is not allowed to be empty');
+    mountedLoginPage.instance().handleChange(mockEvent); 
+    expect(mountedLoginPage.instance().state.errors["password"]).toEqual('"Password" is not allowed to be empty');     
+ 
 })
 
-it("should call doSubmit if all fields were succesfully handled", () => {
-       const mockhandleSubmit = sinon.spy()
-       let mountedLoginPage = shallow(<Login handleSubmit = {mockhandleSubmit}/> )
-        mountedLoginPage.find("form").simulate("submit");
-    expect(mockhandleSubmit).toHaveProperty('callCount', 1)
+it("should have disabled submit button if form in invalid", () => { 
+    const button = mountedLoginPage.find("button")       
+    expect(button.props()).toHaveProperty("disabled");  
+})
+
+it("form can be submitted", () => {
+    const callback = jest.fn();
+    let mountedLoginPagewithCallBack = shallow(<form onSubmit = {callback}/>)     
+     mountedLoginPagewithCallBack.find("form").simulate("submit");
+    expect(callback).toHaveBeenCalled()
 
 })
 
