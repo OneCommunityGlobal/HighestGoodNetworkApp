@@ -5,7 +5,7 @@ import Dashboard from './Dashboard'
 import {Logout} from './Logout';
 import Login from './Login'
 import Header from './Header'
-import PrivateRoute from '../components/common/PrivateRoute'
+import ProtectedRoute from './common/ProtectedRoute'
 import {getCurrentUser} from "../services/loginService";
 
 class App extends Component {
@@ -23,13 +23,13 @@ class App extends Component {
       <React.Fragment>
       <Header user = {this.state.user} />
        <Switch>
-      <PrivateRoute path ="/dashboard" component={Dashboard} />
+      <ProtectedRoute path ="/dashboard" component={Dashboard} />
       <Route path="/login" component={Login} />
      {/* <Route path="/forcepassword" component={Forcepassword} />
       <Route path="/forgotpassword" component={Forgotpassword} />
-      <PrivateRoute authed={isUserAuthenticated()} path="/Timelog" component={TimelogPage} />
-      <PrivateRoute authed={isUserAuthenticated()} path="/Usermanagement" component={UserManagement}/>
-      <PrivateRoute authed={isUserAuthenticated()} path="/UpdatePassword" component={UpdatePassword}/> */}
+      <ProtectedRoute authed={isUserAuthenticated()} path="/Timelog" component={TimelogPage} />
+      <ProtectedRoute authed={isUserAuthenticated()} path="/Usermanagement" component={UserManagement}/>
+      <ProtectedRoute authed={isUserAuthenticated()} path="/UpdatePassword" component={UpdatePassword}/> */}
       <Route path="/Logout" component={Logout} />
       <Redirect from="/" exact to="/dashboard" />
       {/* <Route component={NoMatch} /> */}
