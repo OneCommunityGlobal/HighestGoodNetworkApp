@@ -143,7 +143,7 @@ class Leaderboard extends Component {
                         </div>
                       </Link>
                     </td>
-                    <td class="text-right text-justify text-nowrap col-2">
+                    <td className="text-right text-justify text-nowrap col-2">
                                 {entry.totaltime} tot
                             </td>
                   </tr>
