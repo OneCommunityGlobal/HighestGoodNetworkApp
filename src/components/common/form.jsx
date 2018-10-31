@@ -9,9 +9,8 @@ class Form extends Component {
     data: {},
     errors: {}
   };
-  handleChange = ({ currentTarget :input}) => {
-    console.log(input)
-     
+  handleChange = ({currentTarget:input}) => {
+    
     let { data, errors } = { ...this.state };
     data[input.name] = input.value;
 

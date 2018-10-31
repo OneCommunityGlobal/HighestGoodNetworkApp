@@ -1,7 +1,7 @@
 import React from 'react';
-import { shallow, mount } from 'enzyme';
+import { shallow } from 'enzyme';
 import Login from '../components/Login';
-import Input from '../components/common/input'
+import sinon from 'sinon';
 
 describe("Basic Structure for Login", () => {
     
@@ -46,24 +46,50 @@ describe("When user tries to login", () => {
 
 
     it("should correctly update the email value in the state", () => {
-
-        // let onChange = jest.fn();
-
-        let mountedLoginPage = shallow(<Login>
-            <Input  name = "email" label = "Email" value = "shamamm@gmail.com"  /> />
-            <Input name = "password" label = "Password" value = "samksjklsmskka"/>
-        </Login>)
-      
-         let mockEvent = {currentTarget:' <input  name = "email" label = "Email" value = "sh@gmail.com"  />'};
+        let expected =   "sh@gmail.com"
+         let Input =  {name: "email", "value": expected };
+         let mockEvent = {currentTarget: Input}
          mountedLoginPage.instance().handleChange(mockEvent);
-       let button = mountedLoginPage.find("Input")
-      console.log(`mountedPage: ${JSON.stringify(mountedLogin.instance().state)}`)
-      console.log(`event: ${JSON.stringify(button)}`)
-      console.log(`Input : ${button}`)
-
-       expect(mountedLoginPage.instance().state.data.email).toEqual("sh@gmail.com")
+      
+       expect(mountedLoginPage.instance().state.data.email).toEqual(expected)
         
     })
 
+    it("should correctly update the error if the email is not in correct format", () => { 
+        let expected =   "sh";            
+        let Input =  {name: "email", "value": expected};
+        let mockEvent = {currentTarget: Input}
+        mountedLoginPage.instance().handleChange(mockEvent);     
+      expect(mountedLoginPage.instance().state.errors["email"]).toEqual('"Email" must be a valid email');
+   })
+
+
+   it("should correctly update the password value in the state", () => {
+    let expected =   "trapp"
+     let Input =  {name: "password", "value": expected };
+     let mockEvent = {currentTarget: Input}
+     mountedLoginPage.instance().handleChange(mockEvent);
+  
+   expect(mountedLoginPage.instance().state.data.password).toEqual(expected)
+    
 })
+
+it("should correctly update the errors object if the password is empty", () => { 
+    let expected =   "";            
+    let Input =  {name: "password", "value": expected};
+    let mockEvent = {currentTarget: Input}
+    mountedLoginPage.instance().handleChange(mockEvent);     
+  expect(mountedLoginPage.instance().state.errors["password"]).toEqual('"Password" is not allowed to be empty');
+})
+
+it("should call doSubmit if all fields were succesfully handled", () => {
+       const mockhandleSubmit = sinon.spy()
+       let mountedLoginPage = shallow(<Login handleSubmit = {mockhandleSubmit}/> )
+        mountedLoginPage.find("form").simulate("submit");
+    expect(mockhandleSubmit).toHaveProperty('callCount', 1)
+
+})
+
+})
+
 

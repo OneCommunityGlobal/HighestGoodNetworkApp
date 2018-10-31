@@ -33,6 +33,7 @@
     "@sentry/browser": "^4.2.3",
     "enzyme": "^3.7.0",
     "enzyme-adapter-react-16": "^1.6.0",
+    "sinon": "^7.1.1",
     "surge": "^0.20.1"
   }
 }
