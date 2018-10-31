@@ -23,7 +23,7 @@ class App extends Component {
       <React.Fragment>
       <Header user = {this.state.user} />
        <Switch>
-      <PrivateRoute path ="/dashboard" component={Dashboard} />
+      <PrivateRoute path ="dashboard" component={Dashboard} />
       <Route path="/Login" component={Login} />
      {/* <Route path="/forcepassword" component={Forcepassword} />
       <Route path="/forgotpassword" component={Forgotpassword} />
