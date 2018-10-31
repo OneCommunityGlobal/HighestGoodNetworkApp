@@ -2,7 +2,7 @@ import React from "react";
 import { getCurrentUser } from "../../services/loginService";
 import { Redirect, Route } from "react-router-dom";
 
-const PrivateRoute = ({ component: Component, render, ...rest }) => {
+const ProtectedRoute = ({ component: Component, render, ...rest }) => {
   return (
     <Route
       {...rest}
@@ -15,4 +15,4 @@ const PrivateRoute = ({ component: Component, render, ...rest }) => {
   );
 };
 
-export default PrivateRoute;
+export default ProtectedRoute;
