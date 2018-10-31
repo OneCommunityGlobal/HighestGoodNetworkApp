@@ -1,9 +1,23 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import App from '../components/App.js';
+import {shallow} from 'enzyme'
+import Dashboard from '../components/Dashboard'
 
-it('renders without crashing', () => {
-  const div = document.createElement('div');
-  ReactDOM.render(<App />, div);
-  ReactDOM.unmountComponentAtNode(div);
-});
+describe("App tests", () => {
+
+  let mountedapp;
+
+  
+  beforeEach(() => {
+    mountedapp = shallow(<App/>);
+  })
+ 
+  it('renders a header component', () => {
+
+    expect(mountedapp.find('Header').length).toBe(1)
+    
+  });
+  
+
+})
