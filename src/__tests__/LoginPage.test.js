@@ -1,8 +1,6 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 import Login from '../components/Login';
-import sinon from 'sinon';
-import Form from '../components/common/form'
 
 describe("Basic Structure for Login", () => {
     
@@ -45,6 +43,12 @@ describe("When user tries to login", () => {
         mountedLoginPage = shallow(<Login />);
         })
 
+    
+    it("should call handleChnage when input is changed", () => {
+        const spy = jest.spyOn(mountedLoginPage.instance(), 'handleChange');
+        mountedLoginPage.find("#email").simulate('change', {currentTarget : {name: "email", value : "anc"}})
+        expect(spy).toHaveBeenCalled();            
+        })
 
     it("should correctly update the email value in the state", () => {
         let expected =   "sh@gmail.com"
@@ -97,6 +101,12 @@ it("form can be submitted", () => {
 
 })
 
+it("onSubmit login method is called", async()=> {
+
+    const loginService = require("../services/loginService")
+    let syplogin = jest.spyOn(loginService, 'login');    
+    await mountedLoginPage.instance().doSubmit();
+    expect(syplogin).toHaveBeenCalled();
 })
 
-
+})
