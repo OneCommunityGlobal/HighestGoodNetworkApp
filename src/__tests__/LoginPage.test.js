@@ -3,20 +3,20 @@ import { shallow } from 'enzyme';
 import Login from '../components/Login';
 
 
-describe("Basic Structure for Login", () => {
+describe("Login", () => {
     
     let mountedLogin;
     beforeEach(() => {
         mountedLogin = shallow(<Login />);
     })
 
-    it('Login is rendered with two input fields', () => {
+    it('should be rendered with two input fields', () => {
         
         const inputs = mountedLogin.find('Input')
         expect(inputs.length).toBe(2)
       });
 
-    it("Login is rendered with one button", () => 
+    it("should be rendered with one button", () => 
     {
         
         const button = mountedLogin.find("button.btn[disabled]")
@@ -24,13 +24,16 @@ describe("Basic Structure for Login", () => {
         
         
     })
-    it("Login is rendered with one h2", () => 
+    it("should be rendered with one h2", () => 
     {
         
         const h2 = mountedLogin.find("h2")
         expect(h2.length).toEqual(1)
         expect(h2.first().text()).toContain("Please Sign in")
         
+    })
+    it("should match the snapshot", () => {
+        expect(mountedLogin).toMatchSnapshot();
     })
       
 })
@@ -110,5 +113,16 @@ it("onSubmit login method is called", async()=> {
     expect(syplogin).toHaveBeenCalled();
 
 })
+
+it.only("should redirect to homepage if user is present", ()=>
+{
+    jest.mock("../services/loginService", ()=>{
+        getCurrentUser = jest.fn(() => true);
+    })
+    mountedLoginPage = shallow(<Login/>);
+    expect(mountedLoginPage.find("Login")).toHaveLength(1);
+
+}
+)
 
 })

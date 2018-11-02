@@ -32,7 +32,7 @@ class App extends Component {
     return (
       <React.Fragment>
       <Header user = {this.state.user} />
-      
+      <Switch>
       <ProtectedRoute path ="/dashboard" exact component={Dashboard} />
       <Route path="/login" component={Login} />
       <Route path="/profile/:userId" component={Profile} />
@@ -45,7 +45,7 @@ class App extends Component {
       {/* <Redirect from="/" exact to="/dashboard" /> */}
       <ProtectedRoute path = "/" exact component = {Dashboard}/>
       {/* <Route component={NoMatch} /> */}
-     
+      </Switch>
 
     </React.Fragment>
     );
