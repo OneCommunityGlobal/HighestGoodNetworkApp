@@ -114,7 +114,7 @@ it("onSubmit login method is called", async()=> {
 
 })
 
-it.only("should redirect to homepage if user is present", ()=>
+xit("should redirect to homepage if user is present", ()=>
 {
     jest.mock("../services/loginService", ()=>{
         getCurrentUser = jest.fn(() => true);
