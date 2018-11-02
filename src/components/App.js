@@ -35,7 +35,7 @@ class App extends Component {
       <Switch>
       <ProtectedRoute path ="/dashboard" exact component={Dashboard} />
       <Route path="/login" component={Login} />
-      <Route path="/profile/:userId" component={Profile} />
+      <ProtectedRoute path="/profile/:userId" component={Profile} />
      {/* <Route path="/forcepassword" component={Forcepassword} />
       <Route path="/forgotpassword" component={Forgotpassword} />
       <ProtectedRoute authed={isUserAuthenticated()} path="/Timelog" component={TimelogPage} />
