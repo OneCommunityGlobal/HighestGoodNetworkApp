@@ -20,14 +20,7 @@ export function getCurrentUser()
 export function login(credentials)
 {
     console.log("Invoking fake login method of loginService")
-    // if (credentials.email === "fake@user.com")
-    // {
-    //     throw "ei212121uriufed"
-    // }
-    // else
-    // {
-    //    throw "eiuriufed"
-    // }
     return "Suvccess"
+    
 
 }

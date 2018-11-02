@@ -2,14 +2,13 @@ import React from 'react';
 import { shallow, mount } from 'enzyme';
 import Login from '../components/Login';
 import {MemoryRouter} from 'react-router-dom'
-import {Dashboard} from '../components/Dashboard'
 
 jest.mock("../services/loginService");
 
 import {getCurrentUser} from "../services/loginService"
 
 
-describe("Login", () => {
+describe("Login page structure", () => {
     
     let mountedLogin;
     beforeEach(() => {
@@ -26,7 +25,7 @@ describe("Login", () => {
     it("should be rendered with one button", () => 
     {
         
-        const button = mountedLogin.find("button.btn[disabled]")
+        const button = mountedLogin.find("button")
         expect(button.length).toBe(1)
         
         
@@ -100,7 +99,7 @@ it("should correctly update the errors object if the password is empty", () => {
  
 })
 
-it("should have disabled submit button if form in invalid", () => { 
+it("should have disabled submit button if form is invalid", () => { 
     const button = mountedLoginPage.find("button")       
     expect(button.props()).toHaveProperty("disabled");  
 })
@@ -122,6 +121,25 @@ it("onSubmit login method is called", async()=> {
 
 })
 
+})
+
+
+describe("When user tries to login", ()=> {
+
+    it("should have redirection set to homepage ", ()=>
+{
+    
+    getCurrentUser.__setValue("userPresent");
+    const wrapper = mount(<MemoryRouter>
+        <Login />
+    </MemoryRouter>);
+    
+    const redirect =  wrapper.find("Redirect");
+    expect(redirect.props()).toHaveProperty("to", "/")
+
+})
+
+
 xit("should perform correct redirection if user was redirected to login page from some other location", async() => 
 {
     global.window = new jsdom.JSDOM('', {
@@ -139,24 +157,21 @@ xit("should perform correct redirection if user was redirected to login page fro
 }
 )
 
+it("should remain on homepage if login fails", async ()=> {
+
+   const errorMessage = "Invalid email and/ or password.";
+
+    let loginService = require("../services/loginService");
+   loginService.login = jest.fn(()=> {
+    throw ({response: {status: 403, data: {message:errorMessage }}})
+   })
+
+    const mountedLoginPage = shallow(<Login/>)
+    await mountedLoginPage.instance().doSubmit();
+    expect(mountedLoginPage.instance().state.errors["email"]).toEqual(errorMessage);
+
 })
 
 
-describe("When user logs in from homepage", ()=> {
 
-    it("should have redirection set to homepage ", ()=>
-{
-    
-    getCurrentUser.__setValue("userPresent");
-    const wrapper = mount(<MemoryRouter>
-        <Login />
-    </MemoryRouter>);
-    
-    const redirect =  wrapper.find("Redirect");
-    expect(redirect.props()).toHaveProperty("to", "/")
-
-}
-
-
-)
 })
