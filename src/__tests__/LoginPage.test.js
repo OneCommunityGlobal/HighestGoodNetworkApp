@@ -1,12 +1,19 @@
 import React from 'react';
-import { shallow } from 'enzyme';
+import { shallow, mount } from 'enzyme';
 import Login from '../components/Login';
+import {MemoryRouter} from 'react-router-dom'
+import {Dashboard} from '../components/Dashboard'
+
+jest.mock("../services/loginService");
+
+import {getCurrentUser} from "../services/loginService"
 
 
 describe("Login", () => {
     
     let mountedLogin;
     beforeEach(() => {
+        getCurrentUser.__setValue("userNotPresent");
         mountedLogin = shallow(<Login />);
     })
 
@@ -41,10 +48,11 @@ describe("Login", () => {
 describe("When user tries to login", () => {
 
     let mountedLoginPage;
-    let state;
-
+    
     beforeEach(() => {
+        getCurrentUser.__setValue("userNotPresent");
         mountedLoginPage = shallow(<Login />);
+        
         })
 
     
@@ -114,15 +122,41 @@ it("onSubmit login method is called", async()=> {
 
 })
 
-xit("should redirect to homepage if user is present", ()=>
+xit("should perform correct redirection if user was redirected to login page from some other location", async() => 
 {
-    jest.mock("../services/loginService", ()=>{
-        getCurrentUser = jest.fn(() => true);
-    })
-    mountedLoginPage = shallow(<Login/>);
-    expect(mountedLoginPage.find("Login")).toHaveLength(1);
+    global.window = new jsdom.JSDOM('', {
+        url: 'http://www.test.com/test?foo=1&bar=2&fizz=3'
+      }).window;
+    
+    let somepath = "/somepath"
+    let location =  {state: {from :{pathname: somepath}}};
+    const wrapper = mount( <Login location = {location}/> );
+     expect (wrapper.props().location.state.from.pathname).toEqual(somepath)
+     await wrapper.instance().doSubmit();
+     console.log(`Location is : ${global.location.pathname}`)
+     expect(window.location).toEqual(somepath);
 
 }
 )
 
+})
+
+
+describe("When user logs in from homepage", ()=> {
+
+    it("should have redirection set to homepage ", ()=>
+{
+    
+    getCurrentUser.__setValue("userPresent");
+    const wrapper = mount(<MemoryRouter>
+        <Login />
+    </MemoryRouter>);
+    
+    const redirect =  wrapper.find("Redirect");
+    expect(redirect.props()).toHaveProperty("to", "/")
+
+}
+
+
+)
 })
