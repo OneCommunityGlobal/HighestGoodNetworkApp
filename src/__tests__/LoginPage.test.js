@@ -2,6 +2,7 @@ import React from 'react';
 import { shallow } from 'enzyme';
 import Login from '../components/Login';
 
+
 describe("Basic Structure for Login", () => {
     
     let mountedLogin;
@@ -107,6 +108,7 @@ it("onSubmit login method is called", async()=> {
     let syplogin = jest.spyOn(loginService, 'login');    
     await mountedLoginPage.instance().doSubmit();
     expect(syplogin).toHaveBeenCalled();
+
 })
 
 })
