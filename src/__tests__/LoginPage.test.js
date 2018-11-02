@@ -1,5 +1,5 @@
 import React from 'react';
-import { shallow, mount } from 'enzyme';
+import { shallow, mount, render } from 'enzyme';
 import Login from '../components/Login';
 import {MemoryRouter} from 'react-router-dom'
 
@@ -44,7 +44,7 @@ describe("Login page structure", () => {
       
 })
 
-describe("When user tries to login", () => {
+describe("When user tries to input data", () => {
 
     let mountedLoginPage;
     
@@ -124,7 +124,7 @@ it("onSubmit login method is called", async()=> {
 })
 
 
-describe("When user tries to login", ()=> {
+describe("Login behavior", ()=> {
 
     it("should have redirection set to homepage ", ()=>
 {
@@ -140,28 +140,26 @@ describe("When user tries to login", ()=> {
 })
 
 
-xit("should perform correct redirection if user was redirected to login page from some other location", async() => 
+it("should perform correct redirection if user was redirected to login page from some other location", async() => 
 {
-    global.window = new jsdom.JSDOM('', {
-        url: 'http://www.test.com/test?foo=1&bar=2&fizz=3'
-      }).window;
-    
-    let somepath = "/somepath"
+    getCurrentUser.__setValue("userPresent");
+        
+    let somepath = "/profile/1234"
     let location =  {state: {from :{pathname: somepath}}};
-    const wrapper = mount( <Login location = {location}/> );
-     expect (wrapper.props().location.state.from.pathname).toEqual(somepath)
-     await wrapper.instance().doSubmit();
+    const wrapper = shallow(<MemoryRouter><Login location = {location}/></MemoryRouter> );
+    expect (wrapper.instance().props.location.state.from.pathname).toEqual(somepath)
+     wrapper.instance().doSubmit();
      console.log(`Location is : ${global.location.pathname}`)
-     expect(window.location).toEqual(somepath);
+     expect(window.location.pathname).toEqual(somepath);
 
 }
 )
 
-it("should remain on homepage if login fails", async ()=> {
+it("should populate errors if login fails", async ()=> {
 
    const errorMessage = "Invalid email and/ or password.";
 
-    let loginService = require("../services/loginService");
+let loginService = require("../services/loginService");
    loginService.login = jest.fn(()=> {
     throw ({response: {status: 403, data: {message:errorMessage }}})
    })
@@ -169,6 +167,7 @@ it("should remain on homepage if login fails", async ()=> {
     const mountedLoginPage = shallow(<Login/>)
     await mountedLoginPage.instance().doSubmit();
     expect(mountedLoginPage.instance().state.errors["email"]).toEqual(errorMessage);
+    
 
 })
 
