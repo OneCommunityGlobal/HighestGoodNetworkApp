@@ -35,7 +35,7 @@ let rootURL = "https://hgnapplication_react_dev.surge.sh";
         expect(error).toEqual('"Password" is not allowed to be empty');  
      })
 
-     it.only("should show alert if wrong credentials are passed",  async()=> {
+     xit("should show alert if wrong credentials are passed",  async()=> {
         let emailWebElement =   await driver.findElement(By.id("email"));
         await emailWebElement.click() 
         await emailWebElement.sendKeys("randomuser@gmail.com");
