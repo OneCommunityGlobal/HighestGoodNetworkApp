@@ -32,7 +32,7 @@ class Login extends Form {
       {       
         console.log(ex.response)
         const errors = this.state.errors;
-        errors["email"] = JSON.stringify(ex.response);
+        errors["email"] = "Invalid email and/ or password.";
         this.setState({errors})
       }
     }
