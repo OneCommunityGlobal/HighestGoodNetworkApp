@@ -32,7 +32,7 @@ class Login extends Form {
       {       
         console.log(ex.response)
         const errors = this.state.errors;
-        errors["email"] = ex.response.data.message
+        errors["email"] = ex.response
         this.setState({errors})
       }
     }
