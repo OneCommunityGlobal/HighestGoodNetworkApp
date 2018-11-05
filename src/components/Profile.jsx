@@ -8,7 +8,8 @@ class Profile extends Component {
         userId : {},
         requestorId : {},
         userProfile : {}
-     }
+    }
+
     async componentDidMount() {
         
        try{

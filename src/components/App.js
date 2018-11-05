@@ -1,10 +1,12 @@
 import React, { Component } from 'react';
 import {Route} from 'react-router-dom';
 import '../App.css';
-import Dashboard from './Dashboard'
 import {Logout} from './Logout';
 import Login from './Login'
-import Header from './Header'
+import Header from './Header/Header'
+import Dashboard from './Dashboard/Dashboard'
+import Timelog from './Timelog/Timelog';
+import Reports from './Reports/Reports';
 import Profile from './Profile'
 import ProtectedRoute from './common/ProtectedRoute'
 import {getCurrentUser} from "../services/loginService";
@@ -28,7 +30,13 @@ class App extends Component {
     return (
       <React.Fragment>
       <Header user = {this.state.user} />
-      
+     
+      <Route path ="/dashboard" exact component={Dashboard} />
+      <Route path="/profile/:userId" component={Profile} />
+      <Route path="/Timelog" exact component={Timelog} />
+      <Route path="/Reports" component={Reports}/>
+    
+    {/*  
       <ProtectedRoute path ="/dashboard" exact component={Dashboard} />
       <Route path="/login" component={Login} />
       <Route path="/profile/:userId" component={Profile} />
