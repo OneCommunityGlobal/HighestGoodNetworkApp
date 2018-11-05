@@ -31,12 +31,12 @@ class Login extends Form {
     } catch (ex) {
       logService.logError(ex);
       logService.logInfo(ex.response)
-      logService.logInfo(ex.response.status)
+      //logService.logInfo(ex.response.status)
       if(ex.response && ex.response.status === 403)
       {       
         
         const errors = this.state.errors;
-        errors["email"] = "Invalid email and/ or password.";
+        errors["email"] = ex.response.data.message;//"Invalid email and/ or password.";
         this.setState({errors})
       }
     }
