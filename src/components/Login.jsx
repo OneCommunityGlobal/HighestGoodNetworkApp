@@ -49,7 +49,7 @@ return <Redirect to ="/"/>
      
       <form className="col-md-6 xs-12" onSubmit={e => this.handleSubmit(e)}>
         {this.renderInput("email", "Email:")}
-        {this.renderInput("password", "Password:")}
+        {this.renderInput("password", "Password:", "password")}
         {this.renderButton("Submit")}
       </form>
      
