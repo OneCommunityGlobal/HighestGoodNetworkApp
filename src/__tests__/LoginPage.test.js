@@ -140,7 +140,7 @@ describe("Login behavior", ()=> {
 })
 
 
-it("should perform correct redirection if user was redirected to login page from some other location", async() => 
+xit("should perform correct redirection if user was redirected to login page from some other location", async() => 
 {
     getCurrentUser.__setValue("userPresent");
         
