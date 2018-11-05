@@ -36,7 +36,7 @@ class Login extends Form {
       {       
         
         const errors = this.state.errors;
-        errors["email"] = ex.response.data.message;//"Invalid email and/ or password.";
+        errors["email"] = ex.response.data;//"Invalid email and/ or password.";
         this.setState({errors})
       }
     }
