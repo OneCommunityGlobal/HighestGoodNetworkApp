@@ -12,6 +12,11 @@ describe("App tests", () => {
   beforeEach(() => {
     mountedapp = shallow(<App/>);
   })
+
+  it ("renders without crashing", () => {
+    shallow(<App />)
+
+  })
  
   it('renders a header component', () => {
 

@@ -14,6 +14,9 @@ jobs:
   - run:
      name: Deploy app
      command: ./node_modules/.bin/surge build --domain $SURGE_DOMAIN_DEV
+  - run:
+      name: Test the build
+      command: 'sudo npm test'
 
  build_PROD:
    docker:

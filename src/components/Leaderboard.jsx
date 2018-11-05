@@ -3,7 +3,6 @@ import { getCurrentUser } from "../services/loginService";
 import { getLeaderboardData } from "../services/dashBoardService";
 import _ from "lodash";
 import { Link } from "react-router-dom";
-import "../App.css";
 
 class Leaderboard extends Component {
   state = {
@@ -96,7 +95,7 @@ class Leaderboard extends Component {
     this.componentDidMount();
 
     return (
-      <div className="card hgn_leaderboard bg-dark text-center">
+      <div className="card hgn_leaderboard bg-dark">
         <div className="card-body text-white">
           <h5 className="card-title">LeaderBoard</h5>
           <div>
