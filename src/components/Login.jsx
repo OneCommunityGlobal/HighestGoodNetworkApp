@@ -2,6 +2,7 @@ import React from "react";
 import Joi from "joi";
 import Form from "./common/form";
 import { login, getCurrentUser } from "../services/loginService";
+import logService from '../services/logService';
 import {Redirect} from 'react-router-dom'
 
 class Login extends Form {
@@ -28,9 +29,12 @@ class Login extends Form {
     const {state}   = this.props.location;
      window.location = state? state.from.pathname : "/"
     } catch (ex) {
+      logService.logError(ex);
+      logService.logInfo(ex.response)
+      logService.logInfo(ex.response.status)
       if(ex.response && ex.response.status === 403)
       {       
-        console.log(ex.response)
+        
         const errors = this.state.errors;
         errors["email"] = "Invalid email and/ or password.";
         this.setState({errors})
