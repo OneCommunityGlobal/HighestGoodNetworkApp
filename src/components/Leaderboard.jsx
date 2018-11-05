@@ -7,7 +7,30 @@ import "../App.css";
 
 class Leaderboard extends Component {
   state = {
-    leaderboardData: [],
+    leaderboardData: [
+     /* {
+        personId:'5bad3c06e168140090176794',
+        name: 'Aishwarya Singh',
+        didMeetWeeklyCommitment: true,
+        weeklycommited:5,
+        totaltangibletime_hrs:5,
+        totalintangibletime_hrs:3,
+        totaltime:8,
+        tangibletimewidth:90
+
+      },
+      {
+        personId:'5ae0afcab3f1241c28c9b4e2',
+        name: 'Shubhra Mittal',
+        didMeetWeeklyCommitment: true,
+        weeklycommited:5,
+        totaltangibletime_hrs:5,
+        totalintangibletime_hrs:3,
+        totaltime:8,
+        tangibletimewidth:56
+      }
+      */
+     ],
     maxtotal: 0,
     loggedinUser: {}
   };
@@ -38,7 +61,8 @@ class Leaderboard extends Component {
 
     maxtotal = maxtotal === 0 ? 10 : maxtotal;
 
-    data.forEach(element => {
+    //Sets the leaderboard array with Objects
+     data.forEach(element => {
       leaderboardData.push({
         didMeetWeeklyCommitment:
           element.totaltangibletime_hrs >= element.weeklyComittedHours
@@ -65,8 +89,11 @@ class Leaderboard extends Component {
     this.setState({ leaderboardData, maxtotal, loggedinUser });
   }
 
-  render() {
+
+  render() {    
     let { leaderboardData, loggedinUser, maxtotal } = this.state;
+    
+    this.componentDidMount();
 
     return (
       <div className="card hgn_leaderboard bg-dark text-center">
@@ -75,7 +102,8 @@ class Leaderboard extends Component {
           <div>
             <table className="table table-sm dashboardtable">
               <tbody>
-                {leaderboardData.map(entry => (
+                {leaderboardData.map(entry => {
+                 return (
                   <tr
                     key={entry.personId}
                     className={
@@ -111,7 +139,7 @@ class Leaderboard extends Component {
                         <div className="progress progress-leaderboard">
                           <div
                             className="progress-bar progress-bar-striped"
-                            role="progressbar "
+                            role="progressbar"
                             style={Object.assign({
                               width: entry.tangibletimewidth + "%",
                               backgroundColor: entry.tangiblebarcolor
@@ -127,7 +155,7 @@ class Leaderboard extends Component {
                           />
                           <div
                             className="progress-bar progress-bar-striped bg-info"
-                            role="progressbar "
+                            role="progressbar"
                             style={{ width: entry.intangibletimewidth }}
                             aria-valuenow={entry.intangibletime}
                             aria-valuemin="0"
@@ -142,10 +170,11 @@ class Leaderboard extends Component {
                       </Link>
                     </td>
                     <td className="text-right text-justify text-nowrap col-2">
-                                {entry.totaltime} tot
-                            </td>
+                      {entry.totaltime} tot
+                    </td>
                   </tr>
-                ))}
+                  ) }
+                )}
               </tbody>
             </table>
           </div>
