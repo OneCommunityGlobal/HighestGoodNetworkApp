@@ -161,7 +161,7 @@ it("should populate errors if login fails", async ()=> {
 
 let loginService = require("../services/loginService");
    loginService.login = jest.fn(()=> {
-    throw ({response: {status: 403, data: {message:errorMessage }}})
+    throw ({response: {status: 403, data: errorMessage }})
    })
 
     const mountedLoginPage = shallow(<Login/>)
