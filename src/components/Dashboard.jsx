@@ -4,7 +4,7 @@ import Leaderboard from './Leaderboard'
 const Dashboard = () => {
     return (
         <React.Fragment>
-                <div className="m-5">
+                <div className="m-5 Dashboard">
                 <div className="col-4">
                 <Leaderboard />
                 </div>
