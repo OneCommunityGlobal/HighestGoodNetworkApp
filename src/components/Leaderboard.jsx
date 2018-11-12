@@ -3,33 +3,11 @@ import { getCurrentUser } from "../services/loginService";
 import { getLeaderboardData } from "../services/dashBoardService";
 import _ from "lodash";
 import { Link } from "react-router-dom";
+import { userInfo } from "os";
 
 class Leaderboard extends Component {
   state = {
-    leaderboardData: [
-     /* {
-        personId:'5bad3c06e168140090176794',
-        name: 'Aishwarya Singh',
-        didMeetWeeklyCommitment: true,
-        weeklycommited:5,
-        totaltangibletime_hrs:5,
-        totalintangibletime_hrs:3,
-        totaltime:8,
-        tangibletimewidth:90
-
-      },
-      {
-        personId:'5ae0afcab3f1241c28c9b4e2',
-        name: 'Shubhra Mittal',
-        didMeetWeeklyCommitment: true,
-        weeklycommited:5,
-        totaltangibletime_hrs:5,
-        totalintangibletime_hrs:3,
-        totaltime:8,
-        tangibletimewidth:56
-      }
-      */
-     ],
+    leaderboardData: [],
     maxtotal: 0,
     loggedinUser: {}
   };

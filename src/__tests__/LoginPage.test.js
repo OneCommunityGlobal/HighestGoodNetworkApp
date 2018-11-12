@@ -63,9 +63,9 @@ describe("When user tries to input data", () => {
 
     it("should correctly update the email value in the state", () => {
         let expected =   "sh@gmail.com"
-         let Input =  {name: "email", "value": expected };
-         let mockEvent = {currentTarget: Input}
-         mountedLoginPage.instance().handleChange(mockEvent);
+        let Input =  {name: "email", "value": expected };
+        let mockEvent = {currentTarget: Input}
+        mountedLoginPage.instance().handleChange(mockEvent);
       
        expect(mountedLoginPage.instance().state.data.email).toEqual(expected)
         
