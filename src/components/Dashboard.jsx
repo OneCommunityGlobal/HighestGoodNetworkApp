@@ -1,14 +1,14 @@
 import React from 'react';
-import Leaderboard from '../Leaderboard'
+import Leaderboard from '../components/Leaderboard'
 //import MonthyEffort from '../MonthyEffort'
 //import Badges from '../Badges'
 import { Card, Row, CardTitle, CardText, Col } from 'reactstrap';
+import MonthlyEffort from './MonthlyEffort';
 
 
 const Dashboard = () => {
     return (
         <React.Fragment>
-
         <div>
             <Row>
             <Col sm={{offset:1,size:7}}>
@@ -16,7 +16,14 @@ const Dashboard = () => {
             </Col>
             <Col sm={{size:3}}>
               <Card body inverse color="info">
-                <CardTitle>Monthly Effort</CardTitle> 
+                <CardTitle>
+                  <MonthlyEffort />
+                </CardTitle> 
+                <CardText>
+                  <div>
+                    
+                  </div>
+                </CardText>
               </Card>
             </Col>
           </Row>
@@ -29,15 +36,6 @@ const Dashboard = () => {
           </Row>   
         </div>
               
-          {/* <div className="m-5">
-          <div className="col-4">
-          <Leaderboard />
-          </div>
-          {/* <Badges/>
-          <MonthlyEffort/>                 */} 
-          
-        
-
         </React.Fragment>
     );
 }

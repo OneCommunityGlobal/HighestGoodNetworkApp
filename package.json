@@ -11,6 +11,7 @@
     "lodash": "^4.17.11",
     "react": "^16.3.2",
     "react-dom": "^16.3.2",
+    "react-image": "^1.5.1",
     "react-router-dom": "^4.3.1",
     "react-scripts": "^2.0.4",
     "react-table": "^6.8.6",
