@@ -27,7 +27,7 @@ class Login extends Form {
     try {
     await login({ email, password });  
     const {state}   = this.props.location;
-     window.location = state? state.from.pathname : "/"
+     window.location = state? state.from.pathname : "/dashboard"
     } catch (ex) {
       logService.logError(ex);
       logService.logInfo(ex.response)
@@ -36,7 +36,7 @@ class Login extends Form {
       {       
         
         const errors = this.state.errors;
-        errors["email"] = ex.response.data.message;//"Invalid email and/ or password.";
+        errors["email"] = ex.response.data;//"Invalid email and/ or password.";
         this.setState({errors})
       }
     }
