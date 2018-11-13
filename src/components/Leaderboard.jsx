@@ -3,7 +3,6 @@ import { getCurrentUser } from "../services/loginService";
 import { getLeaderboardData } from "../services/dashBoardService";
 import _ from "lodash";
 import { Link } from "react-router-dom";
-import { userInfo } from "os";
 
 class Leaderboard extends Component {
   state = {

@@ -10,10 +10,6 @@ const APIEndPoint = `${process.env.REACT_APP_APIENDPOINT}/userprofile`;
     return httpService.get(`${APIEndPoint}/${userId}`)
   }
   
-  export function getUserData(userId)
-  {   
-  }
-
   export function editUserProfileData(user, userId)
   {
   }
