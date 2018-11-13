@@ -20,7 +20,7 @@
     "reactstrap": "^6.5.0"
   },
   "scripts": {
-    "prestart": "CI=true react-scripts test --env=jsdom",
+    "prestart": "npm run test",
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test --env=jsdom",
