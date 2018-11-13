@@ -1,9 +1,7 @@
 import React from 'react';
-import {getCurrentUser} from "../services/loginService";
-import { getUserData,
-         getUserProfile 
-} from "../services/profileService";
 import Img from 'react-image';
+import {getCurrentUser} from "../services/loginService";
+import {getUserProfile} from "../services/profileService";
 import {
   Collapse,
   Navbar,
@@ -18,9 +16,6 @@ import {
   DropdownItem
 } from 'reactstrap';
 
-import { userInfo } from 'os';
-
-
 class Header extends React.Component {
   state = {
     userID:0,
@@ -30,22 +25,19 @@ class Header extends React.Component {
   
   async componentDidMount() {
     let userID = getCurrentUser().userid;
-  //  let userId = this.props.match.params.userId;
-    let userData = getUserData(userID); //get data?
     let {data:userProfileData} = {...await getUserProfile(userID)}
-    //let userProfileData = getUserData(userID); //user profile?
    
-    this.setState({userID,userData,userProfileData});
+    this.setState({userID,userProfileData});
   }
   render() {
-    let {userID,userData,userProfileData} = this.state;
+    let {userID,userProfileData} = this.state;
     return (
       <div>
         <Navbar color="dark" dark expand="md" style={{marginBottom:'20px'}}>
           <NavbarBrand href="/">Time Tracking Tool</NavbarBrand>
           <NavbarToggler onClick={this.toggle} />
           <Collapse isOpen={this.state.isOpen} navbar>
-            <Nav className="mr5" navbar>
+            <Nav className="ml-auto" navbar>
               <NavItem>
                 <NavLink href="/dashboard" activeStyle={{color:"blue"}}>Dashboard</NavLink>
               </NavItem>
@@ -54,6 +46,16 @@ class Header extends React.Component {
               </NavItem>
               <NavItem>
                 <NavLink href="/reports" activeStyle={{color:"blue"}}>Reports</NavLink>
+              </NavItem>
+              <NavItem>
+              <NavLink href={`/timelog/${userID}`}>
+                <icon class="fa fa-bell icon-large">
+                  <icon class="badge badge-pill badge-danger badge-notify">
+                  {/* Pull number of unread messages */}
+                  </icon>
+                  <span class="sr-only">unread messages</span>
+                </icon>
+            </NavLink>
               </NavItem>
               <UncontrolledDropdown nav inNavbar>
                 <DropdownToggle nav caret>
@@ -66,24 +68,22 @@ class Header extends React.Component {
                 </DropdownMenu>
               </UncontrolledDropdown>
               <NavItem>
-                <NavLink href={`/profile/${userID}`} activeStyle={{color:"blue"}}>
-                {/* {"https://raw.githubusercontent.com/OneCommunityGlobal/HGNApp/master/public/assets/images/defaultprofilepic.jpg"} */}
-                 <Img src= {`/components/Images/default.jpg`}
-                      alt={`${userProfileData.profilePic}`} height="35" width="40"
-                      class="" shape="circle" /> 
-                    {/* {`${userData.profilePic}`} */}
+                <NavLink href={`/profile/${userID}`}>
+                  <Img src= {`${userProfileData.profilePic}`}
+                       alt= "" height="35" width="40" class="dashboardimg"/> 
                 </NavLink>
               </NavItem>
               <UncontrolledDropdown nav >
                   <DropdownToggle nav caret>
                     Welcome {userProfileData.firstName} 
-                    {/* {userData.name}  */}
                   </DropdownToggle>
                 <DropdownMenu>
                   <DropdownItem header>Hello {userProfileData.firstName}</DropdownItem>
                   <DropdownItem divider />
-                  <DropdownItem>View Profile</DropdownItem>
-                  <DropdownItem  href="/updatepassword" >Update Password</DropdownItem>
+                  <DropdownItem href={`/profile/${userID}`} >
+                    View Profile
+                  </DropdownItem>
+                  <DropdownItem href="/updatepassword">Update Password</DropdownItem>
                   <DropdownItem divider />
                   <DropdownItem href="/logout">Logout</DropdownItem>
                 </DropdownMenu>

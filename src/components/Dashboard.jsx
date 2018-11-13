@@ -1,11 +1,7 @@
 import React from 'react';
-import Leaderboard from '../components/Leaderboard'
-//import MonthyEffort from '../MonthyEffort'
-//import Badges from '../Badges'
 import { Card, Row, CardTitle, CardText, Col } from 'reactstrap';
 import MonthlyEffort from './MonthlyEffort';
-
-//import Leaderboard from '/Leaderboard'
+import Leaderboard from './Leaderboard'
 import '../App.css';
 
 const Dashboard = () => {
