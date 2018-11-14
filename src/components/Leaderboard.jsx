@@ -69,9 +69,7 @@ class Leaderboard extends Component {
   render() {    
     let { leaderboardData, loggedinUser, maxtotal } = this.state;
     
-    this.componentDidMount();
-
-    return (
+      return (
       <div className="card hgn_leaderboard bg-dark">
         <div className="card-body text-white">
           <h5 className="card-title">LeaderBoard</h5>
