@@ -1,11 +1,12 @@
 import React, {Component} from 'react';
 
+
 class TimelogPage extends Component {
     render() {
         return (
             <div>
             <div className="jumbotron">
-                TimelogPage
+              TimelogPage
             </div>
               <div>
               <nav class="navbar navbar-expand-md navbar-light bg-light mb-3 nav-fill">
@@ -29,7 +30,7 @@ class TimelogPage extends Component {
                       </i>
                     </li>
                     <li class="nav-item navbar-text">
-                      <a class="nav-link" >View Profile</a>
+                      <a class="nav-link" href= "/" >View Profile</a>
                     </li>
                   </ul>
                 </div>
