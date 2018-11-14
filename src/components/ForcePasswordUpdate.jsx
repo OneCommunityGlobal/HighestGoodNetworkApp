@@ -2,7 +2,7 @@ import React from "react";
 import { forcePasswordUpdate } from "../services/forcePasswordUpdate";
 import Form from "./common/form";
 import Joi from "joi";
-import { toast, ToastContainer } from "react-toastify";
+import { toast } from "react-toastify";
 
 class ForcePasswordUpdate extends Form {
   state = {
