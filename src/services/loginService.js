@@ -13,8 +13,17 @@ httpService.setjwt(getjwt())
 export async function login(credentials)
 {
   let {data} = await httpService.post(loginApiEndpoint, credentials)
+ if(data.new)
+ {
+   return {"userType": "newUser", "userId": data.userId};
+
+ }
+ else
+ {
   localStorage.setItem(tokenKey, data.token)  
-  return;
+  return 
+ } 
+ 
 }
 
 export function logout ()

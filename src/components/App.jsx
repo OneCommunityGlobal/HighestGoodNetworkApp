@@ -7,6 +7,9 @@ import Header from './Header'
 import Timelog from './Timelog';
 import Reports from './Reports';
 import Profile from './Profile'
+import ForcePasswordUpdate from './ForcePasswordUpdate';
+import {ToastContainer} from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css';
 
 import ProtectedRoute from './common/ProtectedRoute'
 import {getCurrentUser} from "../services/loginService";
@@ -20,7 +23,7 @@ class App extends Component {
   state = {}
 
   componentDidMount() {
-    const user = getCurrentUser();
+    const user = getCurrentUser();    
     this.setState({user})
   }
 
@@ -32,23 +35,18 @@ class App extends Component {
     
     return (
       <React.Fragment>
-      <Header user = {this.state.user} />
+      <Header/>
+      <ToastContainer/>
+      <Switch>
       <ProtectedRoute path="/dashboard" exact component={Dashboard} />
       <ProtectedRoute path="/timelog/:userId" exact component={Timelog} />
-      <ProtectedRoute path="/Reports" exact component={Reports} />
-      
-      <Switch>
+      <ProtectedRoute path="/Reports" exact component={Reports} />      
       <Route path="/login" component={Login} />
       <ProtectedRoute path="/profile/:userId" component={Profile} />
-     {/* <Route path="/forcepassword" component={Forcepassword} />
-      <Route path="/forgotpassword" component={Forgotpassword} />
-      <ProtectedRoute authed={isUserAuthenticated()} path="/Timelog" component={TimelogPage} />
-      <ProtectedRoute authed={isUserAuthenticated()} path="/Usermanagement" component={UserManagement}/>
-      <ProtectedRoute authed={isUserAuthenticated()} path="/UpdatePassword" component={UpdatePassword}/> */}
       <Route path="/Logout" component={Logout} />
+      <Route path = "/forcePasswordUpdate/:userId" component = {ForcePasswordUpdate}/>
       <ProtectedRoute path = "/" exact component = {Dashboard}/>
-      {/* <Redirect from="/" exact to="/dashboard" /> */}
-      {/* <Route component={NoMatch} /> */}
+
       </Switch>
 
     </React.Fragment>
