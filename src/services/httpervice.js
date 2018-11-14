@@ -8,7 +8,7 @@ axios.defaults.headers.post['Content-Type'] = 'application/json';
 
 axios.interceptors.response.use(null, error => {
   if (!(error.response && error.response.status >= 400 && error.response.status <= 500)) {
-    logService.log(error)
+    logService.logError(error)
     toast.error("Unexpected error")
   }
   return Promise.reject(error)
