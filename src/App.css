@@ -2,7 +2,18 @@
   text-align: center;
 }
 
-.App-logo {
+.hgn_leaderboard
+{
+  
+ background-color: black
+}
+
+.dashboard
+{
+  
+}
+
+/* .App-logo {
   animation: App-logo-spin infinite 20s linear;
   height: 80px;
 }
@@ -24,8 +35,249 @@
 @keyframes App-logo-spin {
   from { transform: rotate(0deg); }
   to { transform: rotate(360deg); }
+} */
+
+/* .hgnNav{
+  background-color: rgb(34, 34, 34);
+} */
+
+
+.accordion-toggle:after {
+
+  font-family: 'FontAwesome';
+  content: "\f054";
+  float: right;
 }
 
-.hgnNav{
-  background-color: rgb(34, 34, 34);
+.accordion-toggle.collapsed:after {
+/* symbol for down chevron*/
+content: "\f078";
+}
+
+.dashboardbutton
+{
+background-color: black;
+  border: black;
+}
+
+.hgn-timer
+{
+/*background-color: #C57CD2;*/
+background-color: grey
+
+}
+
+
+.hgn-leaderboard
+{
+/*background-color:#FFCCBC */
+background-color: black
+}
+
+.hgn-badges
+{
+background-color:#DA9962
+}
+
+
+.hgn-monthlyeffortchart
+{
+background-color:#A9D96C;
+}
+
+
+
+
+form.submitted input:invalid {
+  border: 2px solid red;
+}
+
+form.submitted select:invalid {
+  border: 2px solid red;
+}
+
+div.submitModal  input:invalid {
+  border: 2px solid red;
+}
+
+tr.submitted  input:invalid {
+  border: 2px solid red;
+}
+
+.dashboardtable>thead>tr>th, .dashboardtable>tbody>tr>th, .dashboardtable>tfoot>tr>th, .dashboardtable>thead>tr>td, .dashboardtable>tbody>tr>td, .dashboardtable>tfoot>tr>td {
+  padding: 2px;
+  font-size: x-small;
+  }
+
+  .progress-leaderboard
+  {
+    border-radius: 10px
+  }
+
+  .progress-label {
+    float: left;
+    margin-right: 1em;
+}
+
+thead tr td
+{
+  white-space: nowrap;
+
+}
+
+.tbltimelog
+{
+  font-size: small;
+
+  text-align: left;
+
+  width: 100%;
+}
+
+.dashboardimg
+{
+  border-radius: 20px;
+}
+
+.errorlist
+{
+border : solid red 1px;
+color: red
+}
+
+.actions
+{
+display :none
+}
+
+td:hover .actions
+{
+display: block
+}
+
+div:hover .actions
+{
+display: block;
+padding: 5px;
+color: white;
+
+
+}
+
+.tr-tangible-true
+{
+background-color: #28a745!important
+}
+
+.tr-tangible-false
+{
+background-color: #17a2b8!important;
+}
+
+.timelog-title
+{
+border: solid black 1px;
+background: darkgray;
+text-align: center;
+
+font-size: 2.5rem;
+
+}
+.legend { list-style: none;
+
+
+}
+.legend li { margin-left: 40%;}
+.legend span { border: 1px solid #ccc; float: left; width: 12px; height: 12px; margin: 2px; }
+/* your colors */
+.legend .superawesome { background-color: red; }
+.legend .awesome { background-color: #6495ED	; }
+
+
+.profilepic
+{
+height: 180px;
+width: 180px;
+}
+
+.addtimeicon
+{
+color: green
+}
+
+.badge-notify
+{
+position: relative;
+top:-15px;
+left:-10px;
+font-size: large
+
+}
+
+.icon-large
+{
+font-size: xx-large
+}
+
+.hgnnavbar
+{
+color: #c7d1d8
+}
+
+.newProfilePic
+{
+visibility:hidden;
+width: 0;
+height:0;
+padding-top: 7px;	
+padding-right: 2px;
+position: absolute;
+right: 0;
+top: 0;
+
+}
+
+/*Reports related styles */
+#LineChart {
+width: 100%;
+}
+#WeeklyTrend {
+height: 500px;
+}
+
+.scrollBox{
+width: 300px;
+height: 200px;
+resize: both;
+overflow: auto;
+}
+.topForm select {
+width: 100%;
+}
+.topForm h4
+{
+text-align: center;
+}
+.topForm .button {
+text-align: center;
+}
+.reports-center {
+
+  max-width: 500px;
+  margin: auto;
+
+  padding: 10px;
+
+}
+/*User Management page styles */
+.globalSearch{
+margin-bottom:15px;
+}
+
+.filterString{
+margin-left: 5px;
+}
+/*end user management page*/
+.infringement{
+color: blue
 }

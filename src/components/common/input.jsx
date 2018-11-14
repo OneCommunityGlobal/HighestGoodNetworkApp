@@ -3,7 +3,7 @@ import React from "react";
 const Input = ({ label,name, error, ...rest  }) => {
   
   return (
-    <div className="form-group ghhhh">
+    <div className="form-group">
       <label htmlFor={name}>{label}</label> 
       <input
        {...rest}
@@ -12,7 +12,7 @@ const Input = ({ label,name, error, ...rest  }) => {
         className="form-control"  
       />
 
-{error && <div className="alert alert-danger">{error}</div>}
+{error && <div className="alert alert-danger mt-1">{error}</div>}
 
     </div>
   );

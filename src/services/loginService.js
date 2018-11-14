@@ -3,8 +3,9 @@ import config from "../config.json"
 import jwtDecode from 'jwt-decode'
 
 
+//const loginApiEndpoint = `https://hgn-rest-dev.herokuapp.com/api/login`; 
+const loginApiEndpoint = `${process.env.REACT_APP_APIENDPOINT}/login`; 
 
-const loginApiEndpoint = `${process.env.REACT_APP_APIENDPOINT}/login`;
 const tokenKey = config.tokenKey;
 
 httpService.setjwt(getjwt())
@@ -12,8 +13,17 @@ httpService.setjwt(getjwt())
 export async function login(credentials)
 {
   let {data} = await httpService.post(loginApiEndpoint, credentials)
+ if(data.new)
+ {
+   return {"userType": "newUser", "userId": data.userId};
+
+ }
+ else
+ {
   localStorage.setItem(tokenKey, data.token)  
-  return;
+  return 
+ } 
+ 
 }
 
 export function logout ()
@@ -32,7 +42,6 @@ export function getCurrentUser()
     return null
   }
 }
-
   export function loginWithJWT (jwt)
   {
     localStorage.setItem(tokenKey,jwt)
@@ -40,6 +49,17 @@ export function getCurrentUser()
 
   export function getjwt()
   {
-    console.log( localStorage.getItem(tokenKey))
+    return localStorage.getItem(tokenKey)
+  }
+
+  export function isUserAuthenticated()
+  {
+    if (!localStorage.getItem('token')) {
+        return false;
+      }
+      let token = localStorage.getItem('token');
+      token = jwtDecode(token);
+      return (token.expiryTimestamp > new Date().toISOString());
+  
   }
   
