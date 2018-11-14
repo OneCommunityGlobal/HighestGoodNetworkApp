@@ -10,7 +10,7 @@ const Dashboard = () => {
         <div>
             <Row>
             <Col sm={{offset:1,size:7}}>
-               {/* <Leaderboard /> */}
+               <Leaderboard />
             </Col>
             <Col sm={{size:3}}>
               <Card body inverse color="info">
