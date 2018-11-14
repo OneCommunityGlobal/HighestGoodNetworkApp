@@ -2,7 +2,6 @@ import React from "react";
 import Joi from "joi";
 import Form from "./common/form";
 import { login, getCurrentUser } from "../services/loginService";
-import logService from '../services/logService';
 import {Redirect} from 'react-router-dom'
 
 class Login extends Form {
@@ -25,18 +24,21 @@ class Login extends Form {
     const email = this.state.data.email;
     const password = this.state.data.password;
     try {
-    await login({ email, password });  
+    let result = await login({ email, password });  
+   if(result.userType === "newUser")
+   {
+    window.location =  `/forcePasswordUpdate/${result.userId}`;
+    return;
+   }
     const {state}   = this.props.location;
      window.location = state? state.from.pathname : "/dashboard"
     } catch (ex) {
-      logService.logError(ex);
-      logService.logInfo(ex.response)
-      //logService.logInfo(ex.response.status)
-      if(ex.response && ex.response.status === 403)
+       if(ex.response && ex.response.status === 403)
       {       
         
         const errors = this.state.errors;
-        errors["email"] = ex.response.data;//"Invalid email and/ or password.";
+        
+        errors["email"] = ex.response.data.message;
         this.setState({errors})
       }
     }

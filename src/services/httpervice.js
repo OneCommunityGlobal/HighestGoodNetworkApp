@@ -7,7 +7,7 @@ axios.defaults.headers.post['Content-Type'] = 'application/json';
 
 
 axios.interceptors.response.use(null, error => {
-  if (!(error.response && error.response.status >= 400 && error.response.status < 500)) {
+  if (!(error.response && error.response.status >= 400 && error.response.status <= 500)) {
     logService.log(error)
     toast.error("Unexpected error")
   }
@@ -23,6 +23,7 @@ export default {
   get: axios.get,
   post: axios.post,
   delete: axios.delete,
+  patch: axios.patch,
   put: axios.put,
   setjwt: setjwt
 }

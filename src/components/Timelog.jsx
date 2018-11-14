@@ -1,7 +1,5 @@
 import React, {Component} from 'react';
-import {getUserProfile} from '../services/profileService'
-import logger from '../services/logService'
-import {getCurrentUser} from '../services/loginService'
+
 
 class TimelogPage extends Component {
     render() {
@@ -32,7 +30,7 @@ class TimelogPage extends Component {
                       </i>
                     </li>
                     <li class="nav-item navbar-text">
-                      <a class="nav-link" >View Profile</a>
+                      <a class="nav-link" href= "/" >View Profile</a>
                     </li>
                   </ul>
                 </div>

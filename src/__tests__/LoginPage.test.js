@@ -157,7 +157,7 @@ xit("should perform correct redirection if user was redirected to login page fro
 
 it("should populate errors if login fails", async ()=> {
 
-   const errorMessage = "Invalid email and/ or password.";
+   const errorMessage = {"message":"Invalid email and/ or password."};
 
 let loginService = require("../services/loginService");
    loginService.login = jest.fn(()=> {
@@ -166,7 +166,7 @@ let loginService = require("../services/loginService");
 
     const mountedLoginPage = shallow(<Login/>)
     await mountedLoginPage.instance().doSubmit();
-    expect(mountedLoginPage.instance().state.errors["email"]).toEqual(errorMessage);
+    expect(mountedLoginPage.instance().state.errors["email"]).toEqual(errorMessage.message);
     
 
 })

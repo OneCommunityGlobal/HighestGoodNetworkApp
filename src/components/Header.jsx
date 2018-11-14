@@ -18,19 +18,20 @@ import {
 
 class Header extends React.Component {
   state = {
-    userID:0,
+    userID:"",
     userData:{},
     userProfileData:{}
   };
   
   async componentDidMount() {
-    let userID = getCurrentUser().userid;
-    let {data:userProfileData} = {...await getUserProfile(userID)}
-   
+    let userID = getCurrentUser()? getCurrentUser().userid : null;
+    if (!userID) return;
+    let {data:userProfileData} = {...await getUserProfile(userID)};
     this.setState({userID,userProfileData});
   }
   render() {
     let {userID,userProfileData} = this.state;
+    if (!userID) return (null);
     return (
       <div>
         <Navbar color="dark" dark expand="md" style={{marginBottom:'20px'}}>
