@@ -7,7 +7,6 @@ import 'bootstrap/dist/css/bootstrap.css'
 import 'font-awesome/css/font-awesome.css'
 import logService from "./services/logService"
 
-alert(`DSN is ${process.env.REACT_APP_SENTRY_URL.toString()}`);
 logService.init()
 
 ReactDOM.render(

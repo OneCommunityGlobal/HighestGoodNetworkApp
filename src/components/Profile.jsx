@@ -17,7 +17,7 @@ class Profile extends Component {
         let {data:userProfile} = {...await getUserProfile(userId)}
                
         this.setState({userId, userProfile, requestorId})
-        console.log(this.state);
+        
         }
         catch(error)
         {

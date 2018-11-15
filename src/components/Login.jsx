@@ -25,7 +25,6 @@ class Login extends Form {
     const password = this.state.data.password;
     try {
       let result = await login({ email, password });
-      console.log(`result is ${result}`);
       if (result && result.userType === "newUser") {
         window.location = `/forcePasswordUpdate/${result.userId}`;
         return;
