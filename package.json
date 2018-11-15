@@ -17,7 +17,8 @@
     "react-scripts": "^2.0.4",
     "react-table": "^6.8.6",
     "react-toastify": "^4.4.3",
-    "reactstrap": "^6.5.0"
+    "reactstrap": "^6.5.0",
+    "@sentry/browser": "^4.3.0"
   },
   "scripts": {
     "prestart": "npm run test",
@@ -33,7 +34,7 @@
     "not op_mini all"
   ],
   "devDependencies": {
-    "@sentry/browser": "^4.2.3",
+    
     "enzyme": "^3.7.0",
     "enzyme-adapter-react-16": "^1.6.0",
     "sinon": "^7.1.1",
