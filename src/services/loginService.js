@@ -3,7 +3,6 @@ import config from "../config.json"
 import jwtDecode from 'jwt-decode'
 
 
-//const loginApiEndpoint = `https://hgn-rest-dev.herokuapp.com/api/login`; 
 const loginApiEndpoint = `${process.env.REACT_APP_APIENDPOINT}/login`; 
 
 const tokenKey = config.tokenKey;
@@ -13,15 +12,15 @@ httpService.setjwt(getjwt())
 export async function login(credentials)
 {
   let {data} = await httpService.post(loginApiEndpoint, credentials)
- if(data.new)
+ if(!!data.new)
  {
    return {"userType": "newUser", "userId": data.userId};
 
  }
  else
  {
-  localStorage.setItem(tokenKey, data.token)  
-  return 
+  localStorage.setItem(tokenKey, data.token) ;
+  return ;
  } 
  
 }
