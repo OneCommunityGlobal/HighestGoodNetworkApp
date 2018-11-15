@@ -10,7 +10,7 @@ jobs:
      command: 'sudo npm install'
   - run:
       name: Run react build
-      command: 'sudo REACT_APP_APIENDPOINT=$APIENDPOINT_DEV REACT_APP_SENTRY_URL=SENTRY_URL_DEV npm run build'
+      command: 'sudo REACT_APP_APIENDPOINT=$APIENDPOINT_DEV REACT_APP_SENTRY_URL=$SENTRY_URL_DEV npm run build'
   - run:
       name: Test the build
       command: 'sudo npm test'
@@ -30,7 +30,7 @@ jobs:
        command: 'sudo npm install'
     - run:
        name: Run ember build
-       command: 'sudo REACT_APP_APIENDPOINT=$APIENDPOINT_PROD REACT_APP_SENTRY_URL=SENTRY_URL_PROD npm run build'
+       command: 'sudo REACT_APP_APIENDPOINT=$APIENDPOINT_PROD REACT_APP_SENTRY_URL=$SENTRY_URL_PROD npm run build'
     - run:
        name: Deploy app
        command: ./node_modules/.bin/surge build --domain $SURGE_DOMAIN_PROD
