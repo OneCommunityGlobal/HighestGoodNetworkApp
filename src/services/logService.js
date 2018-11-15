@@ -1,7 +1,8 @@
 import * as Sentry from '@sentry/browser';
 
 function init()
-{    
+{   
+    alert(`DSN is ${process.env.REACT_APP_SENTRY_URL.toString()}`) 
     Sentry.init({
          dsn: process.env.REACT_APP_SENTRY_URL.toString()
         });
