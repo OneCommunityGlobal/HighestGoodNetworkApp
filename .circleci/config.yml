@@ -13,7 +13,7 @@ jobs:
       command: 'sudo REACT_APP_APIENDPOINT=$APIENDPOINT_DEV REACT_APP_SENTRY_URL=$SENTRY_URL_DEV npm run build'
   - run:
       name: Test the build
-      command: 'sudo npm test'
+      command: 'echo $SENTRY_URL_DEV'
 
   - run:
      name: Deploy app
