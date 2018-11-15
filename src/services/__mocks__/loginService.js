@@ -20,7 +20,7 @@ export function getCurrentUser()
 export function login(credentials)
 {
     console.log("Invoking fake login method of loginService")
-    return "Suvccess"
+    return "Success"
     
 
 }
