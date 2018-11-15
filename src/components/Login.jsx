@@ -3,7 +3,7 @@ import Joi from "joi";
 import Form from "./common/form";
 import { login, getCurrentUser } from "../services/loginService";
 import {Redirect} from 'react-router-dom'
-import logger from '../services/logService'
+
 
 class Login extends Form {
   state = {
@@ -46,7 +46,7 @@ class Login extends Form {
   };
 
   render() {
-    logger.logInfo(process.env)
+    
 if (getCurrentUser()) 
 return <Redirect to ="/"/>
 
