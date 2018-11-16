@@ -43,7 +43,7 @@ class Login extends Form {
   };
 
   render() {
-    localStorage.setItem("token", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyaWQiOiI1YWUwYWZjYWIzZjEyNDFjMjhjOWI0ZTIiLCJyb2xlIjoiVm9sdW50ZWVyIiwiZXhwaXJ5VGltZXN0YW1wIjoiMjAxOC0xMS0yNlQxNjo0NDoyNC4wMjVaIiwiaWF0IjoxNTQyMzg2NjY0fQ.ZbQfN-EN5DZy28-t1ZBbtCWq_jumW4MvAWy4iwhzrxc")
+    
     if (getCurrentUser()) return <Redirect to="/" />;
 
     return (
