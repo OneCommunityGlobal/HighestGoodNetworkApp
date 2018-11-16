@@ -4,6 +4,7 @@ import logService from './logService'
 
 
 axios.defaults.headers.post['Content-Type'] = 'application/json';
+axios.defaults.headers.post['crossDomain'] = true;
 
 
 axios.interceptors.response.use(null, error => {
