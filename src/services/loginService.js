@@ -3,8 +3,8 @@ import config from "../config.json"
 import jwtDecode from 'jwt-decode'
 
 
-const loginApiEndpoint = `https://hgn-rest-dev.herokuapp.com/api/login`; 
-//const loginApiEndpoint = `${process.env.REACT_APP_APIENDPOINT}/login`; 
+//const loginApiEndpoint = `https://hgn-rest-dev.herokuapp.com/api/login`; 
+const loginApiEndpoint = `${process.env.REACT_APP_APIENDPOINT}/login`; 
 
 const tokenKey = config.tokenKey;
 
