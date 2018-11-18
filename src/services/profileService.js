@@ -1,8 +1,8 @@
 
 import httpService from "./httpervice"
 
-const APIEndPoint = `https://hgn-rest-dev.herokuapp.com/api/userprofile`; 
-//const APIEndPoint = `${process.env.REACT_APP_APIENDPOINT}/userprofile`;
+//const APIEndPoint = `https://hgn-rest-dev.herokuapp.com/api/userprofile`; 
+const APIEndPoint = `${process.env.REACT_APP_APIENDPOINT}/userprofile`;
 
 
   export function getUserProfile(userId) 
