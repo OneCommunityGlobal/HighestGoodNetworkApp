@@ -4,13 +4,8 @@ import Header from '../components/Header'
 
 
 describe("Header tests", () => {
-
     let headerMountedPage;
     beforeEach(()=> {
         headerMountedPage = shallow(<Header />)
     })
-
-    it("should render a profile pciture", ()=> {
-    })
-
 })
