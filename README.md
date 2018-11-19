@@ -24,8 +24,8 @@ The application, by default, starts on port 3000. If 3000 is busy, then the star
 
 Note:
 Once you check in the code in github, the application will be publsihed to following:
- All branches except master : https://hgnapplication_react_dev.surge.sh
- Master: TBD
+  - All branches except master : https://hgnapplication_react_dev.surge.sh
+  - Master: https://hgnapplicationv2.surge.sh
 
 Other key touchpoints:
 1. Build: CircleCI
