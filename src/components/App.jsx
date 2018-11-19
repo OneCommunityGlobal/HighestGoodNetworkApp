@@ -1,5 +1,8 @@
 import React, { Component } from 'react';
 import {Route, Switch} from 'react-router-dom';
+import { connect } from "react-redux";
+import { getCurrentUser } from "../actions";
+import { getjwt } from "../services/loginService"; 
 import Dashboard from './Dashboard'
 import {Logout} from './Logout';
 import Login from './Login'
@@ -12,7 +15,6 @@ import {ToastContainer} from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css';
 
 import ProtectedRoute from './common/ProtectedRoute'
-import {getCurrentUser} from "../services/loginService";
 
 import logger from "../services/logService"
 
@@ -20,11 +22,8 @@ import '../App.css';
 
 class App extends Component {
 
-  state = {}
-
   componentDidMount() {
-    const user = getCurrentUser();    
-    this.setState({user})
+    this.props.getCurrentUser(getjwt())
   }
 
   componentDidCatch(error, errorInfo) {
@@ -32,7 +31,7 @@ class App extends Component {
   }
   
   render() {
-    
+    {console.log(this.props)}
     return (
       <React.Fragment>
       <Header/>
@@ -54,5 +53,12 @@ class App extends Component {
   }
 }
 
+const mapStateToProps = state => {
+  return { state }
+}
 
-export default App;
+
+export default connect(
+  mapStateToProps, 
+  { getCurrentUser }
+)(App);
