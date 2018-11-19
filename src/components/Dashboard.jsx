@@ -1,10 +1,11 @@
 import React from 'react';
+import { connect } from "react-redux";
 import { Card, Row, CardTitle, CardText, Col } from 'reactstrap';
 import MonthlyEffort from './MonthlyEffort';
 import Leaderboard from './Leaderboard'
 import '../App.css';
 
-const Dashboard = () => {
+const Dashboard = props => {
     return (
         <React.Fragment>
         <div>
@@ -37,5 +38,9 @@ const Dashboard = () => {
         </React.Fragment>
     );
 }
+
+const mapStateToProps = state => {
+  return { state }
+}
  
-export default Dashboard;
+export default connect(mapStateToProps)(Dashboard);
