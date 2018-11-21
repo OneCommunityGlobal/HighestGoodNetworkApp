@@ -11,6 +11,7 @@ describe("Header tests", () => {
     })
 
     it("should render a profile pciture", ()=> {
+        console.log("something");
     })
 
 })
