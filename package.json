@@ -24,7 +24,8 @@
     "prestart": "npm run test",
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "test": "",
+    "test": "CI=true react-scripts test --env=jsdom",
+    "testlocal": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject"
   },
   "browserslist": [
