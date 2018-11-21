@@ -1,6 +1,5 @@
 import React from "react";
 
-
 const Dropdown = ({ name, label, options, error, ...rest }) => {
   return (
     <div className="form-group">
@@ -9,12 +8,12 @@ const Dropdown = ({ name, label, options, error, ...rest }) => {
       <select name={name} id={name} {...rest} className="form-control">
         <option value="" />
         {options.map(item => (
-          <option value={item._id} key={item._id}>
-            {item.name}
+          <option value={item.projectName} key={item.projectId}>
+            {item.projectName}
           </option>
         ))}
       </select>
-      {error && <div className="alert alert-danger">{error}</div>}
+      {/* {error && <div className="alert alert-danger">{error}</div>} */}
     </div>
   );
 };

@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import Joi from "joi";
 import _ from "lodash";
 import Input from "../common/input";
+import Textarea from "../common/Textarea";
 import Dropdown from "./dropdown";
 
 class Form extends Component {
@@ -9,22 +10,27 @@ class Form extends Component {
     data: {},
     errors: {}
   };
-  handleChange = ({currentTarget:input}) => {
-    
+  handleChange = ({ currentTarget: input }, bypassError) => {
     let { data, errors } = { ...this.state };
     data[input.name] = input.value;
+
+    if (bypassError) {
+      this.setState({ data, errors });
+      console.log(this.state);
+      return;
+    }
 
     const errorMessage = this.validateProperty(input.name, input.value);
 
     if (errorMessage) {
       errors[input.name] = errorMessage;
-    } else {      
+    } else {
       delete errors[input.name];
     }
     this.setState({ data, errors });
   };
-  validateProperty = (name, value) => {
 
+  validateProperty = (name, value) => {
     const obj = { [name]: value };
     const schema = { [name]: this.schema[name] };
     const { error } = Joi.validate(obj, schema);
@@ -63,24 +69,22 @@ class Form extends Component {
     );
   }
 
-  renderDropDown(name, label,options)
-  {
+  renderDropDown(name, label, options, bypassError) {
+    const { data, errors } = { ...this.state };
 
-    const {data, errors} = {...this.state}
-  
     return (
       <Dropdown
-      name = {name}
-      label = {label}
-      options = {options}
-      value = {data[name]}
-      onChange = {e=> this.handleChange(e)}
-      error = {errors[name]}
+        name={name}
+        label={label}
+        options={options}
+        value={data[name]}
+        onChange={e => this.handleChange(e, bypassError)}
+        error={errors[name]}
       />
-    )
+    );
   }
 
-  renderInput(name, label, type = "text") {
+  renderInput(name, label, type, min, max) {
     let { data, errors } = { ...this.state };
 
     return (
@@ -92,6 +96,40 @@ class Form extends Component {
         value={data[name]}
         label={label}
         error={errors[name]}
+        min={min}
+        max={max}
+      />
+    );
+  }
+
+  renderTextarea(name, label, bypassError, rows, cols) {
+    let { data, errors } = { ...this.state };
+
+    return (
+      <Textarea
+        id={name}
+        rows={rows}
+        cols={cols}
+        name={name}
+        onChange={e => this.handleChange(e, bypassError)}
+        value={data[name]}
+        label={label}
+        error={errors[name]}
+      />
+    );
+  }
+
+  renderCheckbox(name, label, bypassError) {
+    let { data, errors } = { ...this.state };
+
+    return (
+      <Input
+        type="checkbox"
+        name={name}
+        label={label}
+        value={data[name]}
+        error={errors[name]}
+        onChange={e => this.handleChange(e, bypassError)}
       />
     );
   }
