@@ -3,7 +3,7 @@ import React from 'react'
 import Header from '../components/Header'
 
 
-describe("Header tests", () => {
+describe.skip("Header tests", () => {
     let headerMountedPage;
     beforeEach(()=> {
         headerMountedPage = shallow(<Header />)
