@@ -17,21 +17,36 @@ import {
 } from 'reactstrap';
 
 class Header extends React.Component {
+
+  // constructor(props) {
+  //   super(props);
+  //   this.toggle = this.toggle.bind(this);
+  //   this.state = {
+  //     isOpen: true
+  //   };
+  // }
+  // toggle() {
+  //   this.setState({
+  //     isOpen: !this.state.isOpen
+  //   });
+  // }
+
   state = {
-    userID:"",
-    userData:{},
-    userProfileData:{}
+    userID:0,
+    userProfileData:{},
+    name:"",
+    profilepic:""
   };
   
   async componentDidMount() {
-    let userID = getCurrentUser()? getCurrentUser().userid : null;
-    if (!userID) return;
-    let {data:userProfileData} = {...await getUserProfile(userID)};
-    this.setState({userID,userProfileData});
+    let userID = getCurrentUser().userid;
+    let {data:userProfileData} = {...await getUserProfile(userID)}
+    let name = userProfileData.firstName;
+    let profilepic = userProfileData.profilepic;
+    this.setState({userID,userProfileData,name,profilepic});
   }
   render() {
-    let {userID,userProfileData} = this.state;
-    if (!userID) return (null);
+    let {userID,name,profilepic} = this.state;
     return (
       <div>
         <Navbar color="dark" dark expand="md" style={{marginBottom:'20px'}}>
@@ -70,16 +85,15 @@ class Header extends React.Component {
               </UncontrolledDropdown>
               <NavItem>
                 <NavLink href={`/profile/${userID}`}>
-                  <Img src= {`${userProfileData.profilePic}`}
-                       alt= "" height="35" width="40" class="dashboardimg"/> 
+                  <img src= {`${profilepic}`} alt= "" height="35" width="40" class="dashboardimg"/> 
                 </NavLink>
               </NavItem>
               <UncontrolledDropdown nav >
                   <DropdownToggle nav caret>
-                    Welcome {userProfileData.firstName} 
+                    Welcome {name}
                   </DropdownToggle>
                 <DropdownMenu>
-                  <DropdownItem header>Hello {userProfileData.firstName}</DropdownItem>
+                  <DropdownItem header>Hello {name}</DropdownItem>
                   <DropdownItem divider />
                   <DropdownItem href={`/profile/${userID}`} >
                     View Profile

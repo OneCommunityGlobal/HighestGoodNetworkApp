@@ -2,8 +2,8 @@ import React, { Component } from 'react';
 import {Route, Switch} from 'react-router-dom';
 import Dashboard from './Dashboard'
 import {Logout} from './Logout';
-import Login from './Login'
-import Header from './Header'
+import Login from './Login';
+import Header from './Header';
 import Timelog from './Timelog';
 import Reports from './Reports';
 import Profile from './Profile'
@@ -32,7 +32,8 @@ class App extends Component {
   }
   
   render() {
-    
+    let navHeader = this.state.user ? <Header /> : '';
+
     return (
       <React.Fragment>
       <Header/>
@@ -42,6 +43,9 @@ class App extends Component {
       <ProtectedRoute path="/timelog/:userId" exact component={Timelog} />
       <ProtectedRoute path="/Reports" exact component={Reports} />      
       <Route path="/login" component={Login} />
+      <ProtectedRoute path="/dashboard" exact component={Dashboard} />
+      <ProtectedRoute path="/timelog/:userId" exact component={Timelog} />
+      <ProtectedRoute path="/reports" exact component={Reports} />
       <ProtectedRoute path="/profile/:userId" component={Profile} />
       <Route path="/Logout" component={Logout} />
       <Route path = "/forcePasswordUpdate/:userId" component = {ForcePasswordUpdate}/>
