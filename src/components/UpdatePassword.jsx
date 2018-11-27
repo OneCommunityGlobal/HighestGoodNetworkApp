@@ -2,6 +2,8 @@ import React from "react";
 import Form from "./common/form";
 import Joi from "joi";
 import { toast } from "react-toastify";
+import {updatePassword} from '../services/userProfileService';
+import {logout} from '../services/loginService';
 
 class UpdatePassword extends Form {
   state = {
@@ -33,7 +35,7 @@ class UpdatePassword extends Form {
         /(?=^.{8,}$)((?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$/
       )
       .required()
-      .label("New Password")
+      .label("Confirm Password")
       .options({
         language: {
           string: {
@@ -52,22 +54,35 @@ class UpdatePassword extends Form {
     };
 
     if (newpassword !== confirmnewpassword) {
-      alert("Confirm Password must match New Password");
-      return;
+      return alert("Confirm Password must match New Password");
+    }
+
+    if(currentpassword === newpassword)
+    {
+      return alert("Old and new password should not be same");
+     
     }
 
     let userId = this.props.match.params.userId;
-    let data = {currentpassword, userId, newpassword };
-    //let result = await forcePasswordUpdate(data);
-    // if (result.status === 200) {
-    //   toast.success("You will now be directed to the password page where you can login with your new password.", {
-    //     onClose: () => (window.location = "/login")
-    //   });
+    let data = {currentpassword, newpassword, confirmnewpassword };
+    try{
+   let result = await updatePassword(userId, data);
+   console.log(result)
+   console.log(result.response);
+   
+      logout();
+      toast.success("Your password has been updated.You will be logged out and directed to login page where you can login with your new password.", {
+        onClose: () => (window.location = "/login")
+      });
      
-    // } else {
-    //   toast.error("Something went wrong. Please contact your administrator.");
-    // }
+    
+   }
+    catch (exception) {
+      console.log( exception.response.data.error);
+      exception.response.status === 400? toast.error(exception.response.data.error) : toast.error("Something went wrong. Please contact your administrator.");
+      
   };
+}
 
   render() {
     return (
@@ -75,7 +90,7 @@ class UpdatePassword extends Form {
         <h2>Change Password</h2>
 
         <form className="col-md-6 xs-12" onSubmit={e => this.handleSubmit(e)}>
-        {this.renderInput("currentPassword", "Current Password:", "password")}
+        {this.renderInput("currentpassword", "Current Password:", "password")}
           {this.renderInput("newpassword", "New Password:", "password")}
           {this.renderInput("confirmnewpassword","Confirm Password:","password")}
           {this.renderButton("Submit")}

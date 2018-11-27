@@ -18,10 +18,7 @@ const Dashboard = () => {
                   <MonthlyEffort />
                 </CardTitle> 
                 <CardText>
-                  <div>
-                    
-                  </div>
-                </CardText>
+                          </CardText>
               </Card>
             </Col>
           </Row>

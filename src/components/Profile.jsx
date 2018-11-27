@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import {getUserProfile} from '../services/profileService'
+import {getUserProfile} from '../services/userProfileService'
 import {getCurrentUser} from '../services/loginService'
 
 class Profile extends Component {

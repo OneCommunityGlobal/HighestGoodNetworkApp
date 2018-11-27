@@ -1,5 +1,5 @@
 import React from 'react';
-import { shallow, mount, render } from 'enzyme';
+import { shallow, mount } from 'enzyme';
 import Login from '../components/Login';
 import {MemoryRouter} from 'react-router-dom'
 
