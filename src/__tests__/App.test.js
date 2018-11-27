@@ -17,12 +17,7 @@ describe("App tests", () => {
     shallow(<App />)
 
   })
- 
-  it('renders a header component', () => {
 
-    expect(mountedapp.find('Header').length).toBe(1)
-    
-  });
   
 
 })

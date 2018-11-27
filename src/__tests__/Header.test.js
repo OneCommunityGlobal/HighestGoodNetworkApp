@@ -8,4 +8,5 @@ describe.skip("Header tests", () => {
     beforeEach(()=> {
         headerMountedPage = shallow(<Header />)
     })
+    it ("should", ()=> {})
 })
