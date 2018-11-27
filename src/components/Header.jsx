@@ -1,7 +1,6 @@
 import React from 'react';
-import Img from 'react-image';
 import {getCurrentUser} from "../services/loginService";
-import {getUserProfile} from "../services/profileService";
+import {getUserProfile} from "../services/userProfileService";
 import {
   Collapse,
   Navbar,
@@ -27,7 +26,7 @@ class Header extends React.Component {
   };
   
   async componentDidMount() {
-    let user = getCurrentUser().userid;
+    let user = getCurrentUser();
     if(user)
     {
       let {userid:userId} = user;
@@ -60,11 +59,11 @@ class Header extends React.Component {
               </NavItem>
               <NavItem>
               <NavLink href={`/timelog/${userId}`}>
-                <icon class="fa fa-bell icon-large">
-                  <icon class="badge badge-pill badge-danger badge-notify">
+                <icon className="fa fa-bell icon-large">
+                  <icon className="badge badge-pill badge-danger badge-notify">
                   {/* Pull number of unread messages */}
                   </icon>
-                  <span class="sr-only">unread messages</span>
+                  <span className="sr-only">unread messages</span>
                 </icon>
             </NavLink>
               </NavItem>
@@ -80,7 +79,7 @@ class Header extends React.Component {
               </UncontrolledDropdown>
               <NavItem>
                 <NavLink href={`/profile/${userId}`}>
-                  <img src= {`${profilePic}`} alt= "" height="35" width="40" class="dashboardimg"/> 
+                  <img src= {`${profilePic}`} alt= "" height="35" width="40" className="dashboardimg"/> 
                 </NavLink>
               </NavItem>
               <UncontrolledDropdown nav >
