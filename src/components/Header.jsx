@@ -18,36 +18,31 @@ import {
 
 class Header extends React.Component {
 
-  // constructor(props) {
-  //   super(props);
-  //   this.toggle = this.toggle.bind(this);
-  //   this.state = {
-  //     isOpen: true
-  //   };
-  // }
-  // toggle() {
-  //   this.setState({
-  //     isOpen: !this.state.isOpen
-  //   });
-  // }
 
   state = {
-    userID:0,
+    userId:0,
     userProfileData:{},
     name:"",
-    profilepic:""
+    profilePic:""
   };
   
   async componentDidMount() {
-    let userID = getCurrentUser().userid;
-    let {data:userProfileData} = {...await getUserProfile(userID)}
+    let user = getCurrentUser().userid;
+    if(user)
+    {
+      let {userid:userId} = user;
+    let {data:userProfileData} = {...await getUserProfile(userId)}
     let name = userProfileData.firstName;
-    let profilepic = userProfileData.profilepic;
-    this.setState({userID,userProfileData,name,profilepic});
+    let profilePic = userProfileData.profilePic;
+    this.setState({userId,userProfileData,name,profilePic});
+    }
   }
   render() {
-    let {userID,name,profilepic} = this.state;
+    let {userId,name,profilePic} = this.state;
+    if(userId === 0) return null;
+
     return (
+     
       <div>
         <Navbar color="dark" dark expand="md" style={{marginBottom:'20px'}}>
           <NavbarBrand href="/">Time Tracking Tool</NavbarBrand>
@@ -58,13 +53,13 @@ class Header extends React.Component {
                 <NavLink href="/dashboard" activeStyle={{color:"blue"}}>Dashboard</NavLink>
               </NavItem>
               <NavItem>
-              <NavLink href={`/timelog/${userID}`}>Timelog</NavLink>
+              <NavLink href={`/timelog/${userId}`}>Timelog</NavLink>
               </NavItem>
               <NavItem>
                 <NavLink href="/reports" activeStyle={{color:"blue"}}>Reports</NavLink>
               </NavItem>
               <NavItem>
-              <NavLink href={`/timelog/${userID}`}>
+              <NavLink href={`/timelog/${userId}`}>
                 <icon class="fa fa-bell icon-large">
                   <icon class="badge badge-pill badge-danger badge-notify">
                   {/* Pull number of unread messages */}
@@ -84,8 +79,8 @@ class Header extends React.Component {
                 </DropdownMenu>
               </UncontrolledDropdown>
               <NavItem>
-                <NavLink href={`/profile/${userID}`}>
-                  <img src= {`${profilepic}`} alt= "" height="35" width="40" class="dashboardimg"/> 
+                <NavLink href={`/profile/${userId}`}>
+                  <img src= {`${profilePic}`} alt= "" height="35" width="40" class="dashboardimg"/> 
                 </NavLink>
               </NavItem>
               <UncontrolledDropdown nav >
@@ -95,10 +90,10 @@ class Header extends React.Component {
                 <DropdownMenu>
                   <DropdownItem header>Hello {name}</DropdownItem>
                   <DropdownItem divider />
-                  <DropdownItem href={`/profile/${userID}`} >
+                  <DropdownItem href={`/profile/${userId}`} >
                     View Profile
                   </DropdownItem>
-                  <DropdownItem href="/updatepassword">Update Password</DropdownItem>
+                  <DropdownItem href={`/updatepassword/${userId}`}>Update Password</DropdownItem>
                   <DropdownItem divider />
                   <DropdownItem href="/logout">Logout</DropdownItem>
                 </DropdownMenu>

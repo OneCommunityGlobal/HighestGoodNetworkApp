@@ -1,62 +1,49 @@
-import React, { Component } from 'react';
-import {Route, Switch} from 'react-router-dom';
-import Dashboard from './Dashboard'
-import {Logout} from './Logout';
-import Login from './Login';
-import Header from './Header';
-import Timelog from './Timelog';
-import Reports from './Reports';
-import Profile from './Profile'
-import ForcePasswordUpdate from './ForcePasswordUpdate';
-import {ToastContainer} from 'react-toastify'
-import 'react-toastify/dist/ReactToastify.css';
+import React, { Component } from "react";
+import {Switch} from 'react-router-dom';
 
-import ProtectedRoute from './common/ProtectedRoute'
-import {getCurrentUser} from "../services/loginService";
+import Header from "./Header";
 
-import logger from "../services/logService"
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
-import '../App.css';
+// import Timelog from '../components/Timelog';
+// import Reports from '../components/Reports';
+// import Profile from '../components/Profile'
+// import {Route, Switch} from 'react-router-dom';
+// import Dashboard from '../components/Dashboard'
+// import {Logout} from '../components/Logout';
+// import Login from '../components/Login';
+// import ForcePasswordUpdate from '../components/Logout';
+// import ProtectedRoute from '../components/common/ProtectedRoute'
+// import UpdatePassword from '../components/UpdatePassword'
+import Routes from '../routes'
+import logger from "../services/logService";
+
+import "../App.css";
 
 class App extends Component {
+  state = {};
 
-  state = {}
-
-  componentDidMount() {
-    const user = getCurrentUser();    
-    this.setState({user})
-  }
+  // componentDidMount() {
+  //   const user = getCurrentUser();
+  //   this.setState({ user });
+  // }
 
   componentDidCatch(error, errorInfo) {
-   logger.logError(error)
+    logger.logError(error);
   }
-  
-  render() {
-    let navHeader = this.state.user ? <Header /> : '';
 
+  render() {
     return (
       <React.Fragment>
-      <Header/>
-      <ToastContainer/>
-      <Switch>
-      <ProtectedRoute path="/dashboard" exact component={Dashboard} />
-      <ProtectedRoute path="/timelog/:userId" exact component={Timelog} />
-      <ProtectedRoute path="/Reports" exact component={Reports} />      
-      <Route path="/login" component={Login} />
-      <ProtectedRoute path="/dashboard" exact component={Dashboard} />
-      <ProtectedRoute path="/timelog/:userId" exact component={Timelog} />
-      <ProtectedRoute path="/reports" exact component={Reports} />
-      <ProtectedRoute path="/profile/:userId" component={Profile} />
-      <Route path="/Logout" component={Logout} />
-      <Route path = "/forcePasswordUpdate/:userId" component = {ForcePasswordUpdate}/>
-      <ProtectedRoute path = "/" exact component = {Dashboard}/>
-
-      </Switch>
-
-    </React.Fragment>
+        <Header />
+        <ToastContainer />
+        <Switch>
+  <Routes/>
+ </Switch>
+      </React.Fragment>
     );
   }
 }
-
 
 export default App;
