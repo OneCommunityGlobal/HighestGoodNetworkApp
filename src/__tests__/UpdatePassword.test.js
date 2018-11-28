@@ -4,7 +4,22 @@ import {
     mount
 } from 'enzyme'
 import UpdatePassword from '../components/UpdatePassword'
+import sinon from 'sinon'
+import {
+    toast
+} from 'react-toastify';
 let userProfileService = require('../services/userProfileService')
+
+const setField = function (page, name, value) {
+    let mockEvent = {
+        currentTarget: {
+            name,
+            value
+        }
+    }
+    page.find(`#${name}`).simulate('change', mockEvent)
+
+}
 
 
 describe("Update Password Page", () => {
@@ -47,28 +62,14 @@ describe("Update Password Page", () => {
 
                 describe("For incorrect user inputs", () => {
                     it("should show error if current password is left blank", () => {
-                        let value = "";
-                        let Input = {
-                            name: "currentpassword",
-                            "value": value
-                        };
-                        let mockEventcurrentpassword = {
-                            currentTarget: Input
-                        }
-                        mountedPage.find("#currentpassword").simulate('change', mockEventcurrentpassword)
+                        setField(mountedPage, "currentpassword", "");
                         expect(mountedPage.instance().state.errors["currentpassword"]).toEqual('"Current Password" is not allowed to be empty');
 
                     })
                     it("should show error if new password is left blank", () => {
-                        let value = "";
-                        let Input = {
-                            name: "newpassword",
-                            "value": value
-                        };
-                        let mockEventconfirmpassword = {
-                            currentTarget: Input
-                        }
-                        mountedPage.find("#newpassword").simulate('change', mockEventconfirmpassword)
+
+                        setField(mountedPage, "newpassword", "")
+
                         expect(mountedPage.instance().state.errors["newpassword"]).toEqual('"New Password" is not allowed to be empty');
 
                     })
@@ -82,14 +83,7 @@ describe("Update Password Page", () => {
 
                         ]
                         errorValues.forEach(value => {
-                            let Input = {
-                                name: "newpassword",
-                                value
-                            };
-                            let mockEventconfirmpassword = {
-                                currentTarget: Input
-                            }
-                            mountedPage.find("#newpassword").simulate('change', mockEventconfirmpassword)
+                            setField(mountedPage, "newpassword", value)
                             expect(mountedPage.instance().state.errors["newpassword"]).toEqual('"New Password" should be at least 8 characters long and must include at least one uppercase letter, one lowercase letter, and one number or special character');
 
                         });
@@ -97,15 +91,8 @@ describe("Update Password Page", () => {
 
                     })
                     it("should show error if confirm new password is left blank", () => {
-                        let value = "";
-                        let Input = {
-                            name: "confirmnewpassword",
-                            "value": value
-                        };
-                        let mockEventconfirmnewpassword = {
-                            currentTarget: Input
-                        }
-                        mountedPage.find("#confirmnewpassword").simulate('change', mockEventconfirmnewpassword)
+
+                        setField(mountedPage, "confirmnewpassword", "")
                         expect(mountedPage.instance().state.errors["confirmnewpassword"]).toEqual('"Confirm Password" is not allowed to be empty');
 
                     })
@@ -119,14 +106,7 @@ describe("Update Password Page", () => {
 
                         ]
                         errorValues.forEach(value => {
-                            let Input = {
-                                name: "confirmnewpassword",
-                                value
-                            };
-                            let mockEventconfirmnewpassword = {
-                                currentTarget: Input
-                            }
-                            mountedPage.find("#confirmnewpassword").simulate('change', mockEventconfirmnewpassword)
+                            setField(mountedPage, "confirmnewpassword", value)
                             expect(mountedPage.instance().state.errors["confirmnewpassword"]).toEqual('"Confirm Password" should be at least 8 characters long and must include at least one uppercase letter, one lowercase letter, and one number or special character');
 
                         });
@@ -134,28 +114,10 @@ describe("Update Password Page", () => {
                     })
 
                     it("should show error if new and confirm passwords are not same", () => {
-                        window.alert = jest.fn();
-                        let mockEventcurrentpassword = {
-                            currentTarget: {
-                                name: "currentpassword",
-                                value: "abcde"
-                            }
-                        }
-                        let mockEventnewpassword = {
-                            currentTarget: {
-                                name: "newpassword",
-                                value: "ABCDabc123"
-                            }
-                        }
-                        let mockEventconfirmnewpassword = {
-                            currentTarget: {
-                                name: "confirmnewpassword",
-                                value: "ABCDabc1234"
-                            }
-                        }
-                        mountedPage.find("#currentpassword").simulate('change', mockEventcurrentpassword)
-                        mountedPage.find("#newpassword").simulate('change', mockEventnewpassword)
-                        mountedPage.find("#confirmnewpassword").simulate('change', mockEventconfirmnewpassword)
+                        setField(mountedPage, "currentpassword", "abcde")
+                        setField(mountedPage, "newpassword", "ABCDabc123")
+                        setField(mountedPage, "confirmnewpassword", "ABCDabc1234")
+
                         mountedPage.find("form").simulate("submit", {
                             preventDefault: (() => {})
                         });
@@ -163,29 +125,9 @@ describe("Update Password Page", () => {
                     })
 
                     it("should show error if old,new, and confirm passwords are same", () => {
-                        window.alert = jest.fn();
-                        let value = "ABCdef@123"
-                        let mockEventcurrentpassword = {
-                            currentTarget: {
-                                name: "currentpassword",
-                                value
-                            }
-                        }
-                        let mockEventnewpassword = {
-                            currentTarget: {
-                                name: "newpassword",
-                                value
-                            }
-                        }
-                        let mockEventconfirmnewpassword = {
-                            currentTarget: {
-                                name: "confirmnewpassword",
-                                value
-                            }
-                        }
-                        mountedPage.find("#currentpassword").simulate('change', mockEventcurrentpassword)
-                        mountedPage.find("#newpassword").simulate('change', mockEventnewpassword)
-                        mountedPage.find("#confirmnewpassword").simulate('change', mockEventconfirmnewpassword)
+                        setField(mountedPage, "currentpassword", "ABCDabc123")
+                        setField(mountedPage, "newpassword", "ABCDabc123")
+                        setField(mountedPage, "confirmnewpassword", "ABCDabc123")
                         mountedPage.find("form").simulate("submit", {
                             preventDefault: (() => {})
                         });
@@ -201,27 +143,10 @@ describe("Update Password Page", () => {
                         const userProfileService = require('../services/userProfileService')
                         const spy = jest.spyOn(userProfileService, 'updatePassword');
                         let value = "ABCdef@123"
-                        let mockEventcurrentpassword = {
-                            currentTarget: {
-                                name: "currentpassword",
-                                value: "popppp"
-                            }
-                        }
-                        let mockEventnewpassword = {
-                            currentTarget: {
-                                name: "newpassword",
-                                value: value
-                            }
-                        }
-                        let mockEventconfirmnewpassword = {
-                            currentTarget: {
-                                name: "confirmnewpassword",
-                                value: value
-                            }
-                        }
-                        mountedPage.find("#currentpassword").simulate('change', mockEventcurrentpassword)
-                        mountedPage.find("#newpassword").simulate('change', mockEventnewpassword)
-                        mountedPage.find("#confirmnewpassword").simulate('change', mockEventconfirmnewpassword)
+                        setField(mountedPage, "currentpassword", "pop")
+                        setField(mountedPage, "newpassword", value)
+                        setField(mountedPage, "confirmnewpassword", value)
+
                         mountedPage.find("form").simulate("submit", {
                             preventDefault: (() => {})
                         });
@@ -235,86 +160,59 @@ describe("Update Password Page", () => {
                         userProfileService.updatePassword = jest.fn(() => {
                             let response = {
                                 status: 400,
-                                data: {error: "Some Error"}
+                                data: {
+                                    error: "Some Error"
+                                }
                             }
-                            throw ({response});
+                            throw ({
+                                response
+                            });
                         })
 
-
-                        const spy = jest.spyOn(userProfileService, 'updatePassword');
                         let value = "ABCdef@123"
-                        let mockEventcurrentpassword = {
-                            currentTarget: {
-                                name: "currentpassword",
-                                value: "popppp"
-                            }
-                        }
-                        let mockEventnewpassword = {
-                            currentTarget: {
-                                name: "newpassword",
-                                value: value
-                            }
-                        }
-                        let mockEventconfirmnewpassword = {
-                            currentTarget: {
-                                name: "confirmnewpassword",
-                                value: value
-                            }
-                        }
-                        mountedPage.find("#currentpassword").simulate('change', mockEventcurrentpassword)
-                        mountedPage.find("#newpassword").simulate('change', mockEventnewpassword)
-                        mountedPage.find("#confirmnewpassword").simulate('change', mockEventconfirmnewpassword)
+                        setField(mountedPage, "currentpassword", "pop")
+                        setField(mountedPage, "newpassword", value)
+                        setField(mountedPage, "confirmnewpassword", value)
                         mountedPage.find("form").simulate("submit", {
                             preventDefault: (() => {})
                         });
-                       expect(mountedPage.instance().state.errors["currentpassword"]).toEqual("Some Error")
-                       
+                        expect(mountedPage.instance().state.errors["currentpassword"]).toEqual("Some Error")
+
 
                     })
 
-                    xit("should navigate to login if api call is successfull", () => {
+                    it("should show a toastor error if API response was other than 200 and 400", async () => {
 
-
+                        toast.error = jest.fn()
                         userProfileService.updatePassword = jest.fn(() => {
+
                             let response = {
-                                status: 200,
-                                data: {message: "updated"}
+                                status: 433,
+                                data: {
+                                    message: "updated"
+                                }
                             }
-                            return ({response});
+                            throw ({
+                                response
+                            });
                         })
 
 
-                        window.location.assign = jest.fn();
                         let value = "ABCdef@123"
-                        let mockEventcurrentpassword = {
-                            currentTarget: {
-                                name: "currentpassword",
-                                value: "popppp"
-                            }
-                        }
-                        let mockEventnewpassword = {
-                            currentTarget: {
-                                name: "newpassword",
-                                value: value
-                            }
-                        }
-                        let mockEventconfirmnewpassword = {
-                            currentTarget: {
-                                name: "confirmnewpassword",
-                                value: value
-                            }
-                        }
-                        mountedPage.find("#currentpassword").simulate('change', mockEventcurrentpassword)
-                        mountedPage.find("#newpassword").simulate('change', mockEventnewpassword)
-                        mountedPage.find("#confirmnewpassword").simulate('change', mockEventconfirmnewpassword)
-                        mountedPage.find("form").simulate("submit", {
+                        setField(mountedPage, "currentpassword", "pop")
+                        setField(mountedPage, "newpassword", value)
+                        setField(mountedPage, "confirmnewpassword", value)
+                        await mountedPage.find("form").simulate("submit", {
                             preventDefault: (() => {})
                         });
-                        var util = require('util')
-                       console.log(util.inspect(window.location.assign))
-                        expect(window.location.assign).toHaveBeenCalled();
-                       
+
+                        let message = "Something went wrong. Please contact your administrator.";
+
+                        expect(toast.error).toHaveBeenCalledWith(message);
+
 
                     })
+
+
                 })
             })

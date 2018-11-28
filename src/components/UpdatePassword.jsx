@@ -69,12 +69,12 @@ class UpdatePassword extends Form {
     let data = { currentpassword, newpassword, confirmnewpassword };
     try {
      
-      await updatePassword(userId, data);
-      logout();
+     await updatePassword(userId, data);
+     logout();
       toast.success(
         "Your password has been updated. You will be logged out and directed to login page where you can login with your new password.",
         {
-          onClose: () => (window.location = "/login")
+          onClose: () => (window.location.assign("/login"))
         }
       );
     } catch (exception) {
