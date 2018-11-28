@@ -159,7 +159,7 @@ describe("Update Password Page", () => {
                         mountedPage.find("form").simulate("submit", {
                             preventDefault: (() => {})
                         });
-                        expect(window.alert).toHaveBeenCalledWith('Confirm Password must match New Password')
+                        expect(mountedPage.instance().state.errors["confirmnewpassword"]).toEqual('Confirm Password must match New Password')
                     })
 
                     it("should show error if old,new, and confirm passwords are same", () => {
@@ -189,11 +189,8 @@ describe("Update Password Page", () => {
                         mountedPage.find("form").simulate("submit", {
                             preventDefault: (() => {})
                         });
-                        expect(window.alert).toHaveBeenCalledWith('Old and new password should not be same')
+                        expect(mountedPage.instance().state.errors["newpassword"]).toEqual('Old and new password should not be same')
                     })
-
-
-
 
 
                 })
@@ -232,16 +229,15 @@ describe("Update Password Page", () => {
 
                     })
 
-                    xit("should show error if api returned error", () => {
+                    it("should show error if api returned error", () => {
 
 
                         userProfileService.updatePassword = jest.fn(() => {
-                            throw ({
+                            let response = {
                                 status: 400,
-                                data: {
-                                    error: "SomeError"
-                                }
-                            })
+                                data: {error: "Some Error"}
+                            }
+                            throw ({response});
                         })
 
 
@@ -271,7 +267,53 @@ describe("Update Password Page", () => {
                         mountedPage.find("form").simulate("submit", {
                             preventDefault: (() => {})
                         });
-                        expect(mountedPage.instance().state.errors["currentpassword"]).toEqual("SomeError")
+                       expect(mountedPage.instance().state.errors["currentpassword"]).toEqual("Some Error")
+                       
+
+                    })
+
+                    xit("should navigate to login if api call is successfull", () => {
+
+
+                        userProfileService.updatePassword = jest.fn(() => {
+                            let response = {
+                                status: 200,
+                                data: {message: "updated"}
+                            }
+                            return ({response});
+                        })
+
+
+                        window.location.assign = jest.fn();
+                        let value = "ABCdef@123"
+                        let mockEventcurrentpassword = {
+                            currentTarget: {
+                                name: "currentpassword",
+                                value: "popppp"
+                            }
+                        }
+                        let mockEventnewpassword = {
+                            currentTarget: {
+                                name: "newpassword",
+                                value: value
+                            }
+                        }
+                        let mockEventconfirmnewpassword = {
+                            currentTarget: {
+                                name: "confirmnewpassword",
+                                value: value
+                            }
+                        }
+                        mountedPage.find("#currentpassword").simulate('change', mockEventcurrentpassword)
+                        mountedPage.find("#newpassword").simulate('change', mockEventnewpassword)
+                        mountedPage.find("#confirmnewpassword").simulate('change', mockEventconfirmnewpassword)
+                        mountedPage.find("form").simulate("submit", {
+                            preventDefault: (() => {})
+                        });
+                        var util = require('util')
+                       console.log(util.inspect(window.location.assign))
+                        expect(window.location.assign).toHaveBeenCalled();
+                       
 
                     })
                 })
