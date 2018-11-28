@@ -61,7 +61,7 @@ class UpdatePassword extends Form {
 
     if (currentpassword === newpassword) {
       let {errors} = this.state;
-      errors["newpassword"] =  "Old and new password should not be same"
+      errors["newpassword"] =  "Old and new passwords should not be same"
       return this.setState({errors});
     }
 
