@@ -12,7 +12,7 @@ class UpdatePassword extends Form {
   };
 
   schema = {
-    currentpassword: Joi.string().required(),
+    currentpassword: Joi.string().required().label("Current Password"),
     newpassword: Joi.string()
       .regex(
         /(?=^.{8,}$)((?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$/
