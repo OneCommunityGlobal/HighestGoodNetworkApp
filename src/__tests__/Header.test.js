@@ -8,5 +8,9 @@ describe.skip("Header tests", () => {
     beforeEach(()=> {
         headerMountedPage = shallow(<Header />)
     })
-    it ("should", ()=> {})
+
+    it("should render a profile pciture", ()=> {
+        console.log("something");
+    })
+
 })
