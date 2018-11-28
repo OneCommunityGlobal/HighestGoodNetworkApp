@@ -92,7 +92,6 @@ class Header extends React.Component {
                   <DropdownItem href={`/profile/${userId}`} >
                     View Profile
                   </DropdownItem>
-                  <DropdownItem href={`/${userId}`}>TestUSer</DropdownItem>
                   <DropdownItem href={`/updatepassword/${userId}`}>Update Password</DropdownItem>
                   <DropdownItem divider />
                   <DropdownItem href="/logout">Logout</DropdownItem>
