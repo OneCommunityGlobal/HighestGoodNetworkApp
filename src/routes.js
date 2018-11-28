@@ -27,7 +27,7 @@ export default (
     <ProtectedRoute path="/timelog/:userId" exact component={Timelog} />
     <ProtectedRoute path="/reports" exact component={Reports} />
     <ProtectedRoute path="/profile/:userId" component={Profile} />
-    <ProtectedRoute path="/updatePassword/:userId" component={UpdatePassword} />
+    <ProtectedRoute path="/updatepassword/:userId" component={UpdatePassword} />
     <Route path="/Logout" component={Logout} />
     <Route path = "/forcePasswordUpdate/:userId" component = {ForcePasswordUpdate}/>
     <ProtectedRoute path = "/" exact component = {Dashboard}/>
