@@ -189,7 +189,7 @@ describe("Update Password Page", () => {
                         mountedPage.find("form").simulate("submit", {
                             preventDefault: (() => {})
                         });
-                        expect(mountedPage.instance().state.errors["newpassword"]).toEqual('Old and new password should not be same')
+                        expect(mountedPage.instance().state.errors["newpassword"]).toEqual('Old and new passwords should not be same')
                     })
 
 
