@@ -54,11 +54,15 @@ class UpdatePassword extends Form {
     };
 
     if (newpassword !== confirmnewpassword) {
-      return alert("Confirm Password must match New Password");
+      let {errors} = this.state;
+      errors["confirmnewpassword"] =  "Confirm Password must match New Password"
+      return this.setState({errors});
     }
 
     if (currentpassword === newpassword) {
-      return alert("Old and new password should not be same");
+      let {errors} = this.state;
+      errors["newpassword"] =  "Old and new password should not be same"
+      return this.setState({errors});
     }
 
     let userId = this.props.match.params.userId;
@@ -74,14 +78,13 @@ class UpdatePassword extends Form {
         }
       );
     } catch (exception) {
-      console.log(exception.response.data.error)
-     
+          
       if(exception.response.status === 400)
          {
           let {errors} = this.state;
           errors["currentpassword"] =  exception.response.data.error
           this.setState({errors});
-        }
+                 }
         else {
         toast.error(
             "Something went wrong. Please contact your administrator."
