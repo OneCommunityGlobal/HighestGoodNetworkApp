@@ -56,7 +56,7 @@ describe("Update Password Page", () => {
                             currentTarget: Input
                         }
                         mountedPage.find("#currentpassword").simulate('change', mockEventcurrentpassword)
-                        expect(mountedPage.instance().state.errors["currentpassword"]).toEqual('"currentpassword" is not allowed to be empty');
+                        expect(mountedPage.instance().state.errors["currentpassword"]).toEqual('"Current Password" is not allowed to be empty');
 
                     })
                     it("should show error if new password is left blank", () => {
