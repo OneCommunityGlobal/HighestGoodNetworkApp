@@ -6,8 +6,9 @@ import {
 import UpdatePassword from '../components/UpdatePassword'
 import sinon from 'sinon'
 import {
-    toast
+    toast, ToastContainer
 } from 'react-toastify';
+import { EventEmitter } from 'events';
 let userProfileService = require('../services/userProfileService')
 
 const setField = function (page, name, value) {
@@ -212,7 +213,32 @@ describe("Update Password Page", () => {
 
 
                     })
+                   
+                    it("should show call toastr success with correct message and onClose param on success", async () => {
 
+                        toast.success = jest.fn();
+                        let response = {
+                            status: 200,data: {message: "updated"}}
+
+                        userProfileService.updatePassword = jest.fn(() => response)
+
+                        let value = "ABCdef@123"
+                        setField(mountedPage, "currentpassword", "pop")
+                        setField(mountedPage, "newpassword", value)
+                        setField(mountedPage, "confirmnewpassword", value)
+                        await mountedPage.find("form").simulate("submit", {
+                            preventDefault: (() => {})
+                        });
+
+                        let message = "Your password has been updated. You will be logged out and directed to login page where you can login with your new password.";
+                        let options = {onClose: expect.any(Function)};
+                        let successParams = [message, options]
+
+                        expect(toast.success).toHaveBeenCalledWith(...successParams);
+
+
+                    })
+                         
 
                 })
             })
