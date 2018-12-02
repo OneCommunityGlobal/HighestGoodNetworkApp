@@ -13,9 +13,7 @@ class Form extends Component {
     
     let { data, errors } = { ...this.state };
     data[input.name] = input.value;
-
     const errorMessage = this.validateProperty(input.name, input.value);
-
     if (errorMessage) {
       errors[input.name] = errorMessage;
     } else {      
@@ -24,9 +22,18 @@ class Form extends Component {
     this.setState({ data, errors });
   };
   validateProperty = (name, value) => {
-
-    const obj = { [name]: value };
+    
+    const obj = { [name]: value};
     const schema = { [name]: this.schema[name] };
+    let refs = schema[name]._refs;
+    if(refs)
+    {
+    refs.forEach(ref => {
+      schema[ref] = this.schema[ref];
+      obj[ref] = this.state.data[ref];
+      
+    });
+    }
     const { error } = Joi.validate(obj, schema);
     if (!error) return null;
     return error.details[0].message;
@@ -80,11 +87,10 @@ class Form extends Component {
     )
   }
 
-  renderInput(name, label, type = "text") {
+  renderInput({name, label, type = "text", ...rest}) {
     let { data, errors } = { ...this.state };
-
     return (
-      <Input
+      <Input      
         id={name}
         name={name}
         type={type}
@@ -92,6 +98,8 @@ class Form extends Component {
         value={data[name]}
         label={label}
         error={errors[name]}
+        {...rest}
+      
       />
     );
   }

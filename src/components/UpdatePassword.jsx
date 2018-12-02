@@ -18,34 +18,26 @@ class UpdatePassword extends Form {
         /(?=^.{8,}$)((?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$/
       )
       .required()
+      .disallow(Joi.ref('currentpassword'))
       .label("New Password")
       .options({
         language: {
+          any:
+          {
+            invalid: "should not be same as old password"
+          },
           string: {
-            regex: {
+              regex: {
               base:
                 "should be at least 8 characters long and must include at least one uppercase letter, one lowercase letter, and one number or special character"
-            }
-          }
+            },
+            
+          },
+          
         }
       }),
 
-    confirmnewpassword: Joi.string()
-      .regex(
-        /(?=^.{8,}$)((?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$/
-      )
-      .required()
-      .label("Confirm Password")
-      .options({
-        language: {
-          string: {
-            regex: {
-              base:
-                "should be at least 8 characters long and must include at least one uppercase letter, one lowercase letter, and one number or special character"
-            }
-          }
-        }
-      })
+    confirmnewpassword: Joi.any().valid(Joi.ref('newpassword')).options({ language: { any: { allowOnly: 'must match new password' } } }).label('Confirm Password')
   };
 
   doSubmit = async () => {
@@ -99,13 +91,9 @@ class UpdatePassword extends Form {
         <h2>Change Password</h2>
 
         <form className="col-md-6 xs-12" onSubmit={e => this.handleSubmit(e)}>
-          {this.renderInput("currentpassword", "Current Password:", "password")}
-          {this.renderInput("newpassword", "New Password:", "password")}
-          {this.renderInput(
-            "confirmnewpassword",
-            "Confirm Password:",
-            "password"
-          )}
+          {this.renderInput({name: "currentpassword", label: "Current Password:",type: "password"})}
+          {this.renderInput({name: "newpassword", label: "New Password:", type: "password"})}
+          {this.renderInput({name: "confirmnewpassword", label:"Confirm Password:" , type: "password", "data-refers" : "newpassword" })}
           {this.renderButton("Submit")}
         </form>
       </div>
