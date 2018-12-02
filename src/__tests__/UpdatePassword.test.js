@@ -1,14 +1,7 @@
 import React from 'react'
-import {
-    shallow,
-    mount
-} from 'enzyme'
+import {shallow} from 'enzyme'
 import UpdatePassword from '../components/UpdatePassword'
-import sinon from 'sinon'
-import {
-    toast, ToastContainer
-} from 'react-toastify';
-import { EventEmitter } from 'events';
+import {toast} from 'react-toastify';
 let userProfileService = require('../services/userProfileService')
 
 const setField = function (page, name, value) {
@@ -22,6 +15,19 @@ const setField = function (page, name, value) {
 
 }
 
+const errorMessages = {
+    "curentpasswordEmpty" : '"Current Password" is not allowed to be empty',
+    "newpasswordEmpty": '"New Password" is not allowed to be empty',
+    "newpasswordInvalid" : '"New Password" should be at least 8 characters long and must include at least one uppercase letter, one lowercase letter, and one number or special character',
+    "oldnewPasswordsSame" : '"New Password" should not be same as old password',
+    "confirmpasswordMismatch" : '"Confirm Password" must match new password',
+    "errorNon400Response" : 'Something went wrong. Please contact your administrator.'
+    
+}
+
+const successMessages = {
+    "updatePasswordSuccessful" : 'Your password has been updated. You will be logged out and directed to login page where you can login with your new password.'
+}
 
 describe("Update Password Page", () => {
             let mountedPage;
@@ -64,14 +70,22 @@ describe("Update Password Page", () => {
                 describe("For incorrect user inputs", () => {
                     it("should show error if current password is left blank", () => {
                         setField(mountedPage, "currentpassword", "");
-                        expect(mountedPage.instance().state.errors["currentpassword"]).toEqual('"Current Password" is not allowed to be empty');
+                        expect(mountedPage.instance().state.errors["currentpassword"]).toEqual(errorMessages["curentpasswordEmpty"]);
 
                     })
-                    it("should show error if new password is left blank", () => {
+                    it("should show error if new password is left blank and current password has value", () => {
+
+                        setField(mountedPage, "currentpassword", "abc")
+                        setField(mountedPage, "newpassword", "")
+
+                        expect(mountedPage.instance().state.errors["newpassword"]).toEqual(errorMessages["newpasswordEmpty"]);
+
+                    })
+                    it("should show error if new password is left blank and current password has no value", () => {
 
                         setField(mountedPage, "newpassword", "")
 
-                        expect(mountedPage.instance().state.errors["newpassword"]).toEqual('"New Password" is not allowed to be empty');
+                        expect(mountedPage.instance().state.errors["newpassword"]).toEqual(errorMessages["curentpasswordEmpty"]);
 
                     })
 
@@ -83,36 +97,38 @@ describe("Update Password Page", () => {
                             "ABCDEFabc", // no numbers or special characters              
 
                         ]
+                        setField(mountedPage, "currentpassword", "abc")
                         errorValues.forEach(value => {
                             setField(mountedPage, "newpassword", value)
-                            expect(mountedPage.instance().state.errors["newpassword"]).toEqual('"New Password" should be at least 8 characters long and must include at least one uppercase letter, one lowercase letter, and one number or special character');
+                            expect(mountedPage.instance().state.errors["newpassword"]).toEqual(errorMessages["newpasswordInvalid"]);
 
                         });
 
 
                     })
-                    it("should show error if confirm new password is left blank", () => {
+                    it("should show error if confirm new password is left blank and new password is blank", () => {
 
+                        setField(mountedPage, "newpassword", "")
                         setField(mountedPage, "confirmnewpassword", "")
-                        expect(mountedPage.instance().state.errors["confirmnewpassword"]).toEqual('"Confirm Password" is not allowed to be empty');
+                        expect(mountedPage.instance().state.errors["confirmnewpassword"]).toEqual(errorMessages["newpasswordEmpty"]);
 
                     })
 
-                    it("should show error if confirm new password is not as per specifications", () => {
-                        let errorValues = [
-                            "aAAA12", //less than 8
-                            "abcdefgh123", //no upper case
-                            "ABCDERF12344", //no lower case
-                            "ABCDEFabc", // no numbers or special characters              
+                    it("should show error if confirm new password is left blank and new password is invalid", () => {
 
-                        ]
-                        errorValues.forEach(value => {
-                            setField(mountedPage, "confirmnewpassword", value)
-                            expect(mountedPage.instance().state.errors["confirmnewpassword"]).toEqual('"Confirm Password" should be at least 8 characters long and must include at least one uppercase letter, one lowercase letter, and one number or special character');
-
-                        });
+                        setField(mountedPage, "newpassword", "asv")
+                        setField(mountedPage, "confirmnewpassword", "")
+                        expect(mountedPage.instance().state.errors["confirmnewpassword"]).toEqual(errorMessages["newpasswordInvalid"]);
 
                     })
+                    it("should show error if confirm new password is left blank and new password is valid", () => {
+
+                        setField(mountedPage, "newpassword", "Abcde@1234")
+                        setField(mountedPage, "confirmnewpassword", "")
+                        expect(mountedPage.instance().state.errors["confirmnewpassword"]).toEqual(errorMessages["confirmpasswordMismatch"]);
+
+                    })
+
 
                     it("should show error if new and confirm passwords are not same", () => {
                         setField(mountedPage, "currentpassword", "abcde")
@@ -122,7 +138,7 @@ describe("Update Password Page", () => {
                         mountedPage.find("form").simulate("submit", {
                             preventDefault: (() => {})
                         });
-                        expect(mountedPage.instance().state.errors["confirmnewpassword"]).toEqual('Confirm Password must match New Password')
+                        expect(mountedPage.instance().state.errors["confirmnewpassword"]).toEqual(errorMessages["confirmpasswordMismatch"])
                     })
 
                     it("should show error if old,new, and confirm passwords are same", () => {
@@ -132,7 +148,7 @@ describe("Update Password Page", () => {
                         mountedPage.find("form").simulate("submit", {
                             preventDefault: (() => {})
                         });
-                        expect(mountedPage.instance().state.errors["newpassword"]).toEqual('Old and new passwords should not be same')
+                        expect(mountedPage.instance().state.errors["newpassword"]).toEqual(errorMessages["oldnewPasswordsSame"])
                     })
 
 
@@ -207,7 +223,7 @@ describe("Update Password Page", () => {
                             preventDefault: (() => {})
                         });
 
-                        let message = "Something went wrong. Please contact your administrator.";
+                        let message = errorMessages["errorNon400Response"];
 
                         expect(toast.error).toHaveBeenCalledWith(message);
 
@@ -230,7 +246,7 @@ describe("Update Password Page", () => {
                             preventDefault: (() => {})
                         });
 
-                        let message = "Your password has been updated. You will be logged out and directed to login page where you can login with your new password.";
+                        let message = successMessages["updatePasswordSuccessful"]
                         let options = {onClose: expect.any(Function)};
                         let successParams = [message, options]
 

@@ -29,7 +29,8 @@
     "build": "react-scripts build",
     "test": "cross-env CI=true react-scripts test --env=jsdom",
     "test:watch": " react-scripts test --env=jsdom",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "start:local" : "react-scripts start"
   },
   "browserslist": [
     ">0.2%",

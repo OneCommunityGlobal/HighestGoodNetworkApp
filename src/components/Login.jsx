@@ -51,8 +51,8 @@ class Login extends Form {
         <h2>Please Sign in</h2>
 
         <form className="col-md-6 xs-12" onSubmit={e => this.handleSubmit(e)}>
-          {this.renderInput("email", "Email:")}
-          {this.renderInput("password", "Password:", "password")}
+          {this.renderInput({name: "email", label:"Email:"})}
+          {this.renderInput({name: "password", label: "Password:", type: "password"})}
           {this.renderButton("Submit")}
         </form>
       </div>
