@@ -30,10 +30,7 @@ class UpdatePassword extends Form {
               regex: {
               base:
                 "should be at least 8 characters long and must include at least one uppercase letter, one lowercase letter, and one number or special character"
-            },
-            
-          },
-          
+            }},          
         }
       }),
 
@@ -44,19 +41,6 @@ class UpdatePassword extends Form {
     const { currentpassword, newpassword, confirmnewpassword } = {
       ...this.state.data
     };
-
-    if (newpassword !== confirmnewpassword) {
-      let {errors} = this.state;
-      errors["confirmnewpassword"] =  "Confirm Password must match New Password"
-      return this.setState({errors});
-    }
-
-    if (currentpassword === newpassword) {
-      let {errors} = this.state;
-      errors["newpassword"] =  "Old and new passwords should not be same"
-      return this.setState({errors});
-    }
-
     let userId = this.props.match.params.userId;
     let data = { currentpassword, newpassword, confirmnewpassword };
     try {
