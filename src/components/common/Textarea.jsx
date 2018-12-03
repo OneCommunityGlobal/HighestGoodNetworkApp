@@ -1,13 +1,14 @@
 import React from "react";
 
-const Textarea = props => {
+const Textarea = ({ label, name, error, rows, cols, ...rest }) => {
   return (
-    <div className="form-group ghhhh">
-      <label htmlFor={props.name}>{props.label}</label>
+    <div className="form-group">
+      <label htmlFor={name}>{label}</label>
       <textarea
-        rows={props.rows}
-        cols={props.cols}
-        name={props.name}
+        {...rest}
+        rows={rows}
+        cols={cols}
+        name={name}
         className="form-control"
       />
     </div>

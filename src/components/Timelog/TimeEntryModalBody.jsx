@@ -1,10 +1,9 @@
 import React, { Component } from "react";
 import TimeEntry from "./TimeEntry";
-import { Input, FormGroup, Label, Container, Row, Col } from "reactstrap";
+import { FormGroup, Container, Row, Col, Button } from "reactstrap";
 import Form from "../common/form";
 import Joi from "joi";
-import moment from 'moment';
-
+import moment from "moment";
 import Httpervice from "../../services/httpervice";
 
 class TimeEntryBody extends Form {
@@ -25,40 +24,85 @@ class TimeEntryBody extends Form {
         language: {
           string: {
             regex: {
-              base:
-                "Please select a date"
+              base: "Please select a date"
             }
           }
         }
       }),
 
-    minutes: Joi.string()
-      .regex(
-        /(?=^.{8,}$)((?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$/
-      )
-      .required()
-      .label("New Password")
+    minutes: Joi.number()
+      .min(0)
+      .max(59)
+      .label("minutes")
       .options({
         language: {
           string: {
             regex: {
-              base:
-                "Minutes!!! should be at least 8 characters long and must include at least one uppercase letter, one lowercase letter, and one number or special character"
+              base: "0 through 59"
             }
           }
         }
-      })
+      }),
+
+    hours: Joi.number()
+      .min(0)
+      .max(23)
+      .label("hours")
+      .options({
+        language: {
+          string: {
+            regex: {
+              base: "0 through 23"
+            }
+          }
+        }
+      }),
+
+    tangible: Joi.label("Tangible"),
+
+    projectId: Joi.string().required(),
+
+    notes: Joi.string().label("notes")
+  };
+
+  postTimeEntry = timeData => {
+    Httpervice.setjwt(localStorage.getItem("token"));
+    Httpervice.post(
+      `${process.env.REACT_APP_APIENDPOINT}/TimeEntry`,
+      timeData,
+      {
+        headers: {
+          "Content-Type": "application/json"
+        }
+      }
+    ).then(response => {
+      console.log(response);
+    });
+  };
+
+  handleSubmit = () => {
+    let timeEntry = {};
+    // timeEntry.timeSpent = `${this.state.data.hours}:${this.state.data.minutes}`;
+    timeEntry.timeSpent = `01:00:10`;
+    timeEntry.personId = this.props.userData.userid;
+    timeEntry.projectId = this.state.data.projectId;
+    timeEntry.dateofWork = this.state.data.date;
+    timeEntry.taskId = "5a38050795e6f9038cbc86a5";
+    timeEntry.isTangible = false;
+    timeEntry.notes = this.state.data.notes;
+    console.log(timeEntry);
+    this.postTimeEntry(timeEntry);
   };
 
   componentWillMount() {
-    console.log("TimeEntryModalBody: ", this.props);
+    console.log("userData: ", this.props.userData);
   }
 
-
-
   render() {
-    const max = moment().format('YYYY-MM-DD')
-    const min = moment().subtract(1, 'day').format('YYYY-MM-DD')
+    const max = moment().format("YYYY-MM-DD");
+    const min = moment()
+      .day(1)
+      .format("YYYY-MM-DD");
 
     return (
       <div>
@@ -86,23 +130,32 @@ class TimeEntryBody extends Form {
             <Col lg={12}>
               <FormGroup>
                 {this.renderDropDown(
+                  "projectId",
                   "Projects",
-                  "Projects",
-                  this.props.projects,
-                  true
+                  this.props.projects
                 )}
               </FormGroup>
             </Col>
           </Row>
           <Row>
             <Col lg={12}>
-              <form onSubmit={e => this.handleSubmit(e)}>
-                {this.renderTextarea("notes", "Notes:", true, 3, 4)}
-              </form>
+              <FormGroup>
+                {this.renderTextarea("notes", "Notes", 3, 4)}
+              </FormGroup>
             </Col>
           </Row>
           <Row>
-            <FormGroup>{this.renderCheckbox("tangible", "Tangible")}</FormGroup>
+            <FormGroup>
+              {this.renderInput("tangible", "Tangible", "checkbox")}
+            </FormGroup>
+          </Row>
+          <Row>
+            <Col>
+              <Button color="danger" onClick={this.clearForm}>
+                Clear Form
+              </Button>
+            </Col>
+            <Col>{this.renderButton("Submit", this.handleSubmit)}</Col>
           </Row>
         </Container>
       </div>

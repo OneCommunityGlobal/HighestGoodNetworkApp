@@ -11,11 +11,15 @@ class ModalA extends React.Component {
     this.toggle = this.toggle.bind(this);
   }
 
-  toggle() {
+  toggle = () => {
     this.setState({
       modal: !this.state.modal
     });
-  }
+  };
+
+  clearForm = () => {
+    console.log("hi");
+  };
 
   render() {
     return (
@@ -30,14 +34,7 @@ class ModalA extends React.Component {
         >
           <ModalHeader toggle={this.toggle}>{this.props.header}</ModalHeader>
           <ModalBody>{this.props.body}</ModalBody>
-          <ModalFooter>
-            <Button color="primary" onClick={this.toggle}>
-              Do Something
-            </Button>
-            <Button color="secondary" onClick={this.toggle}>
-              Cancel
-            </Button>
-          </ModalFooter>
+          <ModalFooter />
         </Modal>
       </div>
     );

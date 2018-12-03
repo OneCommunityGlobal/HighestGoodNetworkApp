@@ -10,15 +10,10 @@ class Form extends Component {
     data: {},
     errors: {}
   };
-  handleChange = ({ currentTarget: input }, bypassError) => {
+
+  handleChange = ({ currentTarget: input }) => {
     let { data, errors } = { ...this.state };
     data[input.name] = input.value;
-
-    if (bypassError) {
-      this.setState({ data, errors });
-      console.log(this.state);
-      return;
-    }
 
     const errorMessage = this.validateProperty(input.name, input.value);
 
@@ -28,6 +23,15 @@ class Form extends Component {
       delete errors[input.name];
     }
     this.setState({ data, errors });
+    console.log(this.state);
+  };
+
+  handleClick = () => {
+    this.setState({
+      data: {
+        tangible: !this.state.data.tangible
+      }
+    });
   };
 
   validateProperty = (name, value) => {
@@ -53,6 +57,7 @@ class Form extends Component {
     });
     return errors;
   };
+
   handleSubmit = e => {
     e.preventDefault();
     const errors = this.validateForm();
@@ -61,15 +66,19 @@ class Form extends Component {
     this.doSubmit();
   };
 
-  renderButton(label) {
+  renderButton(label, click) {
     return (
-      <button disabled={this.validateForm()} className="btn btn-primary">
+      <button
+        disabled={this.validateForm()}
+        onClick={click}
+        className="btn btn-primary"
+      >
         {label}
       </button>
     );
   }
 
-  renderDropDown(name, label, options, bypassError) {
+  renderDropDown(name, label, options) {
     const { data, errors } = { ...this.state };
 
     return (
@@ -78,7 +87,7 @@ class Form extends Component {
         label={label}
         options={options}
         value={data[name]}
-        onChange={e => this.handleChange(e, bypassError)}
+        onChange={e => this.handleChange(e)}
         error={errors[name]}
       />
     );
@@ -102,7 +111,7 @@ class Form extends Component {
     );
   }
 
-  renderTextarea(name, label, bypassError, rows, cols) {
+  renderTextarea(name, label, rows, cols) {
     let { data, errors } = { ...this.state };
 
     return (
@@ -111,7 +120,7 @@ class Form extends Component {
         rows={rows}
         cols={cols}
         name={name}
-        onChange={e => this.handleChange(e, bypassError)}
+        onChange={e => this.handleChange(e)}
         value={data[name]}
         label={label}
         error={errors[name]}
@@ -119,17 +128,18 @@ class Form extends Component {
     );
   }
 
-  renderCheckbox(name, label, bypassError) {
+  renderCheckbox(name, label) {
     let { data, errors } = { ...this.state };
 
     return (
       <Input
+        checked
         type="checkbox"
         name={name}
         label={label}
         value={data[name]}
         error={errors[name]}
-        onChange={e => this.handleChange(e, bypassError)}
+        onClick={this.handleClick}
       />
     );
   }

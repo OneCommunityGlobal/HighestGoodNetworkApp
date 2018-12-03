@@ -25,6 +25,7 @@ class TimelogPage extends Form {
     Httpervice.setjwt(localStorage.getItem("token"));
     Httpervice.get(`${api}/projects/user/${this.state.data.userid}`).then(
       response => {
+        console.log(response.data);
         this.setState({ projects: response.data });
       }
     );
@@ -47,7 +48,10 @@ class TimelogPage extends Form {
         </Row>
         <Row>
           <Col lg={8}>
-            <TimeEntry projects={this.state.projects} />
+            <TimeEntry
+              userData={this.state.data}
+              projects={this.state.projects}
+            />
           </Col>
         </Row>
       </Container>

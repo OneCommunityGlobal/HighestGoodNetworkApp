@@ -11,7 +11,7 @@ class ForcePasswordUpdate extends Form {
   };
 
   schema = {
-    hours: Joi.string()
+    newPassword: Joi.string()
       .regex(
         /(?=^.{8,}$)((?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$/
       )
@@ -28,24 +28,7 @@ class ForcePasswordUpdate extends Form {
         }
       }),
 
-    minutes: Joi.string()
-      .regex(
-        /(?=^.{8,}$)((?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$/
-      )
-      .required()
-      .label("New Password")
-      .options({
-        language: {
-          string: {
-            regex: {
-              base:
-                "should be at least 8 characters long and must include at least one uppercase letter, one lowercase letter, and one number or special character"
-            }
-          }
-        }
-      }),
-
-    minutes: Joi.string()
+    confirmNewPassword: Joi.string()
       .regex(
         /(?=^.{8,}$)((?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$/
       )

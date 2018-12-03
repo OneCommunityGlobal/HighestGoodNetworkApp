@@ -10,15 +10,11 @@ import Httpervice from "../../services/httpervice";
 class TimeEntry extends Form {
   constructor(props, context) {
     super(props, context);
-    setTimeout(() => {
-      console.log("testing", this.props.projects);
-    }, 2000);
-
     this.state = {};
   }
 
   componentWillMount() {
-    // this.getData();
+    console.log("aaaa");
   }
 
   // getData = () => {
@@ -74,7 +70,12 @@ class TimeEntry extends Form {
               header="Add Time Entry"
               buttonLabel="Add Time Entry"
               color="primary"
-              body={<ModalBody projects={this.props.projects} />}
+              body={
+                <ModalBody
+                  userData={this.props.userData}
+                  projects={this.props.projects}
+                />
+              }
             />
           </Col>
         </Row>
