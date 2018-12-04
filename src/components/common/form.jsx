@@ -3,6 +3,10 @@ import Joi from "joi";
 import _ from "lodash";
 import Input from "../common/input";
 import Dropdown from "./dropdown";
+import Radio from "./radio"
+import Image from "./image"
+import FileUploadBase64 from "./fileUploadBase64"
+import { Link } from 'react-router-dom'
 
 class Form extends Component {
   state = {
@@ -70,12 +74,11 @@ class Form extends Component {
     );
   }
 
-  renderDropDown(name, label,options)
+  renderDropDown({name, label,options, ...rest})
   {
 
     const {data, errors} = {...this.state}
-  
-    return (
+     return (
       <Dropdown
       name = {name}
       label = {label}
@@ -83,6 +86,7 @@ class Form extends Component {
       value = {data[name]}
       onChange = {e=> this.handleChange(e)}
       error = {errors[name]}
+      {...rest}
       />
     )
   }
@@ -102,6 +106,51 @@ class Form extends Component {
       
       />
     );
+  }
+  renderRadio({name, label, type = "text", ...rest}){
+    let { data, errors } = { ...this.state };
+    return (
+      <Radio      
+        id={name}
+        name={name}
+        value = {data[name]}
+        onChange={e => this.handleChange(e)}
+        error={errors[name]}
+        {...rest}
+      
+      />
+    );
+  }
+
+  renderFileUploadBase64({name, ...rest})
+  {
+    let {  errors } = { ...this.state };
+
+    return(
+      <FileUploadBase64 id={name} name = {name} onUpload={e => this.handleChange(e) } {...rest} error={errors[name]}/>
+    );
+
+  }
+
+  renderImage({name, label, ...rest}) {
+    let { data, errors } = { ...this.state };
+    return (
+      <Image      
+        id={name}
+        name={name}
+        onChange={e => this.handleChange(e)}
+        value={data[name]}
+        label={label}
+        error={errors[name]}
+        {...rest}
+      
+      />
+    );
+  }
+
+  renderLink({label, to, className})
+  {
+    return <Link to={to} className = {className}>{label}</Link>
   }
 }
 
