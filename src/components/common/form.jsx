@@ -23,7 +23,8 @@ class Form extends Component {
   };
   handleRichTextEditor= (e)=>
   {
-    console.log(e)
+    console.log(e.target.getContent())
+    console.log(e.target)
 
   }
   handleFileUpload = (e, readAsType= "data") => {
@@ -141,8 +142,7 @@ class Form extends Component {
   renderInput({name, label, type = "text", ...rest}) {
     let { data, errors } = { ...this.state };
     return (
-      <Input      
-        id={name}
+      <Input 
         name={name}
         type={type}
         onChange={this.handleInput}
@@ -157,9 +157,8 @@ class Form extends Component {
   renderRadio({name, label, type = "text", ...rest}){
     let { data, errors } = { ...this.state };
     return (
-      <Radio      
-        id={name}
-        name={name}
+      <Radio 
+      name={name}
         value = {data[name]}
         onChange={this.handleInput}
         error={errors[name]}
@@ -174,7 +173,7 @@ class Form extends Component {
     let {  errors } = { ...this.state };
 
     return(
-      <FileUpload id={name} name = {name} onUpload={this.handleFileUpload} {...rest} error={errors[name]}/>
+      <FileUpload name ={name} onUpload={this.handleFileUpload} {...rest} error={errors[name]}/>
     );
 
   }
@@ -182,8 +181,7 @@ class Form extends Component {
   renderImage({name, label, ...rest}) {
     let { data, errors } = { ...this.state };
     return (
-      <Image      
-        id={name}
+      <Image 
         name={name}
         onChange={this.handleInput}
         value={data[name]}

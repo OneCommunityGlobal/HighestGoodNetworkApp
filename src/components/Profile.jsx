@@ -5,7 +5,6 @@ import Joi from "joi";
 import RenderInfringment from "./RenderInfringment"
 
 
-
 class Profile extends Form {
     constructor(props) {
         super(props);
