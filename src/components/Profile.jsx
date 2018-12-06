@@ -41,7 +41,7 @@ class Profile extends Form {
    
 
     schema = {
-        profilePic : Joi.any().label("Profile Picture"),
+        profilePic : Joi.string().label("Profile Picture"),
         firstName: Joi.string().trim().required().min(2).label("First Name"),
         lastName: Joi.string().trim().required().min(2).label("Last Name"),
         isActive: Joi.boolean().default(true).label("Active Status"),
@@ -92,7 +92,7 @@ class Profile extends Form {
           <div className="col-md-4">
           <div className="form-row text-center">
           {this.renderImage({name: "currentprofilePic", label: "", className: "profilepic", type : "image" ,src : profilePic || "/defaultprofilepic.jpg"})}
-          {canEditFields && this.renderFileUploadBase64({name: "profilePic", accept : "image/png,image/jpeg, image/jpg", maxSizeinKB : 50, className : "newProfilePic"})}
+          {canEditFields && this.renderFileUpload({name: "profilePic", accept : "image/png,image/jpeg, image/jpg", maxSizeinKB : 50, className : "newProfilePic", readAsType: "data"})}
           </div>
           <div className="form-row text-center ml-1">
           {!!targetUserId && this.renderLink({label: "View Timelog", to : `/timelog/${targetUserId}`, className: "btn btn-info btn-sm text-center m-1"})}

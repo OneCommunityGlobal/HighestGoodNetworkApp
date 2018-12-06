@@ -56,7 +56,7 @@ describe("When user tries to input data", () => {
 
     
     it("should call handleChnage when input is changed", () => {
-        const spy = jest.spyOn(mountedLoginPage.instance(), 'handleChange');
+        const spy = jest.spyOn(mountedLoginPage.instance(), 'handleInput');
         mountedLoginPage.find("#email").simulate('change', {currentTarget : {name: "email", value : "anc"}})
         expect(spy).toHaveBeenCalled();            
         })
@@ -65,7 +65,7 @@ describe("When user tries to input data", () => {
         let expected =   "sh@gmail.com"
         let Input =  {name: "email", "value": expected };
         let mockEvent = {currentTarget: Input}
-        mountedLoginPage.instance().handleChange(mockEvent);
+        mountedLoginPage.instance().handleInput(mockEvent);
       
        expect(mountedLoginPage.instance().state.data.email).toEqual(expected)
         
@@ -75,7 +75,7 @@ describe("When user tries to input data", () => {
         let expected =   "sh";            
         let Input =  {name: "email", "value": expected};
         let mockEvent = {currentTarget: Input}
-        mountedLoginPage.instance().handleChange(mockEvent);     
+        mountedLoginPage.instance().handleInput(mockEvent);     
       expect(mountedLoginPage.instance().state.errors["email"]).toEqual('"Email" must be a valid email');
    })
 
@@ -84,7 +84,7 @@ describe("When user tries to input data", () => {
     let expected =   "trapp"
      let Input =  {name: "password", "value": expected };
      let mockEvent = {currentTarget: Input}
-     mountedLoginPage.instance().handleChange(mockEvent);
+     mountedLoginPage.instance().handleInput(mockEvent);
   
    expect(mountedLoginPage.instance().state.data.password).toEqual(expected)
     
@@ -94,7 +94,7 @@ it("should correctly update the errors object if the password is empty", () => {
     let expected =   "";            
     let Input =  {name: "password", "value": expected};
     let mockEvent = {currentTarget: Input}
-    mountedLoginPage.instance().handleChange(mockEvent); 
+    mountedLoginPage.instance().handleInput(mockEvent); 
     expect(mountedLoginPage.instance().state.errors["password"]).toEqual('"Password" is not allowed to be empty');     
  
 })

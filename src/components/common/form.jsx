@@ -5,7 +5,7 @@ import Input from "../common/input";
 import Dropdown from "./dropdown";
 import Radio from "./radio"
 import Image from "./image"
-import FileUploadBase64 from "./fileUploadBase64"
+import FileUpload from "./fileUpload"
 import { Link } from 'react-router-dom'
 import TinyMCEEditor from './tinymceEditor'
 
@@ -18,19 +18,45 @@ class Form extends Component {
 
   handleCancel = ()=> this.setState(this.prevState)
   
-  handleChange = (e) => {
+  handleInput = ({currentTarget:input}) => {   
+    this.handleState(input.name, input.value)
+  };
+  handleRichTextEditor= (e)=>
+  {
     console.log(e)
-    let input = e.currentTarget
-    let { data, errors } = { ...this.state };
-    data[input.name] = input.value;
-    const errorMessage = this.validateProperty(input.name, input.value);
+
+  }
+  handleFileUpload = (e, readAsType= "data") => {
+    const file = e.target.files[0];
+    const reader = new FileReader();
+    let name = e.target.name;
+    if(file)
+    { 
+      switch (readAsType) {
+        case "data":
+        reader.readAsDataURL(file)         
+          break;      
+        default:
+          break;
+      }
+          }
+    reader.onload = ()=> this.handleState(name, reader.result);
+  }
+
+  handleState = (name, value)=>
+  {   
+    let {errors, data} = this.state;
+    data[name] = value;
+    const errorMessage = this.validateProperty(name, value);
     if (errorMessage) {
-      errors[input.name] = errorMessage;
+      errors[name] = errorMessage;
     } else {      
-      delete errors[input.name];
+      delete errors[name];
     }
     this.setState({ data, errors });
-  };
+  }
+
+ 
   validateProperty = (name, value) => {
     
     const obj = { [name]: value};
@@ -87,7 +113,7 @@ class Form extends Component {
       <TinyMCEEditor
       name = {name}         
       value = {data[name]}
-      onChange= {e=> this.handleChange(e)}
+      onChange= {this.handleRichTextEditor}
       error = {errors[name]}
       {...rest}
       />
@@ -105,7 +131,7 @@ class Form extends Component {
       label = {label}
       options = {options}
       value = {data[name]}
-      onChange = {e=> this.handleChange(e)}
+      onChange = {e=> this.handleInput(e)}
       error = {errors[name]}
       {...rest}
       />
@@ -119,7 +145,7 @@ class Form extends Component {
         id={name}
         name={name}
         type={type}
-        onChange={e => this.handleChange(e)}
+        onChange={this.handleInput}
         value={data[name]}
         label={label}
         error={errors[name]}
@@ -135,7 +161,7 @@ class Form extends Component {
         id={name}
         name={name}
         value = {data[name]}
-        onChange={e => this.handleChange(e)}
+        onChange={this.handleInput}
         error={errors[name]}
         {...rest}
       
@@ -143,12 +169,12 @@ class Form extends Component {
     );
   }
 
-  renderFileUploadBase64({name, ...rest})
+  renderFileUpload({name, ...rest})
   {
     let {  errors } = { ...this.state };
 
     return(
-      <FileUploadBase64 id={name} name = {name} onUpload={e => this.handleChange(e) } {...rest} error={errors[name]}/>
+      <FileUpload id={name} name = {name} onUpload={this.handleFileUpload} {...rest} error={errors[name]}/>
     );
 
   }
@@ -159,7 +185,7 @@ class Form extends Component {
       <Image      
         id={name}
         name={name}
-        onChange={e => this.handleChange(e)}
+        onChange={this.handleInput}
         value={data[name]}
         label={label}
         error={errors[name]}
