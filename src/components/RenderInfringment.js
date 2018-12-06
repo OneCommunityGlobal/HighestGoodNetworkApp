@@ -50,7 +50,7 @@ class RenderInfringment extends Form {
             {isEmpty ?  <span className = "fa fa-square" /> :
             <span className = "fa fa-square infringement" 
             data-toggle="tooltip" data-placement="bottom" 
-        title = {`Date: ${date} \nDescription: ${description} \n _id: ${this.state.data._id}`}/> }           
+        title = {`Date: ${date} \nDescription: ${description}`}/> }           
             </div>
             {isUserAdmin && <React.Fragment>
         <div className="row ml-1">
