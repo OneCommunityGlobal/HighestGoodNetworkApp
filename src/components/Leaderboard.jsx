@@ -3,12 +3,14 @@ import { getCurrentUser } from "../services/loginService";
 import { getLeaderboardData } from "../services/dashBoardService";
 import _ from "lodash";
 import { Link } from "react-router-dom";
+import Loading from './common/Loading'
 
 class Leaderboard extends Component {
   state = {
     leaderboardData: [],
     maxtotal: 0,
-    loggedinUser: {}
+    loggedinUser: {},
+    isLoading : true
   };
 
   getcolor = effort => {
@@ -29,6 +31,7 @@ class Leaderboard extends Component {
     let maxtotal = 0;
 
     let results = await getLeaderboardData(loggedinUser);
+    let isLoading = false;
     let data = results.data;
 
     let leaderboardData = [];
@@ -62,18 +65,22 @@ class Leaderboard extends Component {
       });
     });
 
-    this.setState({ leaderboardData, maxtotal, loggedinUser });
+    this.setState({ leaderboardData, maxtotal, loggedinUser, isLoading });
   }
 
 
-  render() {    
+  render() {
+    let {isLoading}= this.state;
+   
     let { leaderboardData, loggedinUser, maxtotal } = this.state;
     
       return (
       <div className="card hgn_leaderboard bg-dark">
         <div className="card-body text-white">
           <h5 className="card-title">LeaderBoard</h5>
-          <div>
+          {isLoading && <Loading/>}
+       
+         { !isLoading && <div>
             <table className="table table-sm dashboardtable">
               <tbody>
                 {leaderboardData.map(entry => {
@@ -101,7 +108,7 @@ class Leaderboard extends Component {
                       />
                     </td>
                     <td className="text-left col-3">
-                      <Link to={`/profile/${entry.personId}`}>
+                      <Link to={`/userprofile/${entry.personId}`}>
                         {entry.name}
                       </Link>
                     </td>
@@ -151,7 +158,7 @@ class Leaderboard extends Component {
                 )}
               </tbody>
             </table>
-          </div>
+          </div>}
         </div>
       </div>
     );

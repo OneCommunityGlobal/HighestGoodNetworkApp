@@ -48,7 +48,8 @@ class Profile extends Form {
         role : Joi.any().allow(["Administrator", "Core Team", "Manager", "Volunteer"]).default("Volunteer").label("Role"),
         email: Joi.string().trim().email().required().label("Email"),
         weeklyComittedHours: Joi.number().required().default(5).label("Weekly Committed Hours"),
-        infringments : Joi.array().items(this.infringmentsSchema).min(0)
+        infringments : Joi.array().items(this.infringmentsSchema).min(0),
+        bio: Joi.string().optional()
         // adminLinks : Joi.array().items(this.profileLinksSchema).min(0).label("Administrative Links"),
         // personalLinks: Joi.array().items(this.profileLinksSchema).min(0).label("Personal Links"),      
 
@@ -87,11 +88,11 @@ class Profile extends Form {
             <div className="container">
             <form onSubmit={e => this.handleSubmit(e)}>
           
-          <div className="row">
+          <div className="row my-auto">
           <div className="col-md-4">
           <div className="form-row text-center">
-          {this.renderImage({name: "currentprofilePic", label: "", className: "profilepic", type : "image" ,src : profilePic || "/public/defaultprofilepic.jpg"})}
-          {canEditFields && this.renderFileUploadBase64({name: "profilePic", accept : "image/png,image/jpeg", maxSizeinKB : 50, className : "newProfilePic"})}
+          {this.renderImage({name: "currentprofilePic", label: "", className: "profilepic", type : "image" ,src : profilePic || "/defaultprofilepic.jpg"})}
+          {canEditFields && this.renderFileUploadBase64({name: "profilePic", accept : "image/png,image/jpeg, image/jpg", maxSizeinKB : 50, className : "newProfilePic"})}
           </div>
           <div className="form-row text-center ml-1">
           {!!targetUserId && this.renderLink({label: "View Timelog", to : `/timelog/${targetUserId}`, className: "btn btn-info btn-sm text-center m-1"})}
@@ -120,7 +121,9 @@ class Profile extends Form {
           </div>
           </div>
          
-
+<div className="row">
+{this.renderRichTextEditor({label:"Bio", name: "bio"})}
+</div>
           {this.renderButton("Submit")}
         </form>
         </div>
