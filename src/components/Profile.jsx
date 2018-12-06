@@ -1,7 +1,9 @@
 import React from 'react';
+import _ from 'lodash'
 import Form from './common/form';
 import Joi from "joi";
-import RenderInfringments from "./RenderInfringments"
+import RenderInfringment from "./RenderInfringment"
+
 
 
 class Profile extends Form {
@@ -12,8 +14,10 @@ class Profile extends Form {
             requestorRole : props.requestorRole,
             targetUserId: props.targetUserId,
             data : {...props.userProfile},
-        errors:{},
+            errors:{},
          }
+         this.prevState = this.state
+         
     }
     profileLinksSchema ={
         name: Joi.string().trim().required(),
@@ -46,13 +50,28 @@ class Profile extends Form {
         weeklyComittedHours: Joi.number().required().default(5).label("Weekly Committed Hours"),
         infringments : Joi.array().items(this.infringmentsSchema).min(0)
         // adminLinks : Joi.array().items(this.profileLinksSchema).min(0).label("Administrative Links"),
-        // personalLinks: Joi.array().items(this.profileLinksSchema).min(0).label("Personal Links"),
-        
+        // personalLinks: Joi.array().items(this.profileLinksSchema).min(0).label("Personal Links"),      
 
     }
 
-
-
+    handleInfringment = (item, action, index = null) =>
+    {
+        let {data} = this.state;
+            switch (action) {
+            case "create":
+            data.infringments.push(item);                
+                break;
+        case "edit":
+        data.infringments[index] = item;
+        break;
+        case "delete":
+        data.infringments.splice(index,1)
+        break;
+            default:
+                break;
+        }
+        this.setState({data})
+    }
 
     render() {
         let {firstName, lastName, profilePic, email, weeklyComittedHours,infringments} = {...this.state.data}
@@ -60,7 +79,9 @@ class Profile extends Form {
         let isUserAdmin = (requestorRole=== "Administrator")
         let isUserSelf = (targetUserId === requestorId)
         let canEditFields = (isUserAdmin || isUserSelf)
-
+        let length = infringments.length
+        
+       
         return ( 
             <React.Fragment>
             <div className="container">
@@ -75,9 +96,12 @@ class Profile extends Form {
           <div className="form-row text-center ml-1">
           {!!targetUserId && this.renderLink({label: "View Timelog", to : `/timelog/${targetUserId}`, className: "btn btn-info btn-sm text-center m-1"})}
           </div>
-          <div className="form-row text-center ml-1">
-          {canEditFields && !!targetUserId && <RenderInfringments infringments = {infringments}/>
-          }
+          <div className="form-row text-center">
+          {canEditFields && !!targetUserId && infringments.map((item,index) => <RenderInfringment key = {`${item.date}_${item.description}`} infringment = {item} isUserAdmin = {isUserAdmin} handleInfringment= {this.handleInfringment} index = {index}  />)} 
+          
+          {canEditFields && !!targetUserId && _.times(5-infringments.length,() => 
+           <RenderInfringment key = {length++}  infringment = {{date: "", description : ""}} isUserAdmin = {isUserAdmin} handleInfringment= {this.handleInfringment}  /> ) } 
+                       
           </div>
           
           </div>
@@ -91,7 +115,7 @@ class Profile extends Form {
           <div className="form-row">
           {this.renderInput({name: "email", label: "Email:", className : "col-md-4", value :email, readOnly: canEditFields? null: true  })}
           {this.renderDropDown({name: "role", label: "Role:", className : "col-md-4", options :this.allowedRoles, readOnly: canEditFields? null: true  })}
-          {this.renderInput({name: "weeklyComittedHours", label: "Weekly Comitted Hours:", className : "col-md-4", value :weeklyComittedHours, readOnly: isUserAdmin? null: true, type: "number", min:0, readOnly: canEditFields? null: true })}
+          {this.renderInput({name: "weeklyComittedHours", label: "Weekly Comitted Hours:", className : "col-md-4", value :weeklyComittedHours, readOnly: isUserAdmin? null: true, type: "number", min:0 })}
           </div>
           </div>
           </div>

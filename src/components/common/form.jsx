@@ -11,8 +11,12 @@ import { Link } from 'react-router-dom'
 class Form extends Component {
   state = {
     data: {},
-    errors: {}
+    errors: {}    
   };
+  prevState = {}
+
+  handleCancel = ()=> this.setState(this.prevState)
+  
   handleChange = ({currentTarget:input}) => {
     
     let { data, errors } = { ...this.state };
