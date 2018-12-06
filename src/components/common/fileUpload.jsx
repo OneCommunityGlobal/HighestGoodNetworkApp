@@ -1,6 +1,6 @@
 import React from 'react';
 
-const FileUploadBase64 = ({name, accept, label, className, maxSizeinKB,error, onUpload}) => {
+const FileUpload = ({name, accept, label, className, maxSizeinKB,error, onUpload, readAsType}) => {
     const onChange = async(e) => 
     {
        let errorMessage = "";
@@ -32,31 +32,10 @@ const FileUploadBase64 = ({name, accept, label, className, maxSizeinKB,error, on
                     errorMessage = `\nThe file you are trying to upload exceed the maximum size of ${maxSizeinKB}KB. You can choose a different file or use an online file compressor.`
                     isValid = false;
                 }
-                
-
-
             } 
-            
-            if(!isValid)
-            {
-                return alert(errorMessage)
-            }
 
-            if (isValid) {
-            const reader = new FileReader();
-            if(file)
-            {               
-                await reader.readAsDataURL(file);
-                reader.onload = () => {
-                    let value = reader.result          
-                return onUpload({currentTarget: {name, value}});
-                }
-            }
-           
-              
-        
+            return isValid? onUpload(e, readAsType): alert(errorMessage)
 
-    }
 }
     return ( 
        <React.Fragment>
@@ -70,5 +49,5 @@ const FileUploadBase64 = ({name, accept, label, className, maxSizeinKB,error, on
 }
  
 
-export default FileUploadBase64;
+export default FileUpload;
 
