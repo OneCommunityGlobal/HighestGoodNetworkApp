@@ -14,6 +14,7 @@ class RenderInfringment extends Form {
             errors: {}
          }
          this.toggle = this.toggle.bind(this);
+         this.prevState = this.state;
     }
     schema = {
         _id: Joi.any().optional(),
@@ -39,6 +40,7 @@ class RenderInfringment extends Form {
           this.toggle()
       }
     render() {
+        
         let {date, description}  = this.state.data;
         let {isUserAdmin, index} = this.state;
         let {handleInfringment} = this.props
