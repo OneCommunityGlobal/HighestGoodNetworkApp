@@ -7,6 +7,7 @@ import Radio from "./radio"
 import Image from "./image"
 import FileUploadBase64 from "./fileUploadBase64"
 import { Link } from 'react-router-dom'
+import TinyMCEEditor from './tinymceEditor'
 
 class Form extends Component {
   state = {
@@ -17,8 +18,9 @@ class Form extends Component {
 
   handleCancel = ()=> this.setState(this.prevState)
   
-  handleChange = ({currentTarget:input}) => {
-    
+  handleChange = (e) => {
+    console.log(e)
+    let input = e.currentTarget
     let { data, errors } = { ...this.state };
     data[input.name] = input.value;
     const errorMessage = this.validateProperty(input.name, input.value);
@@ -76,6 +78,21 @@ class Form extends Component {
         {label}
       </button>
     );
+  }
+
+  renderRichTextEditor({name, ...rest})
+  {
+    const {data, errors} = {...this.state}
+    return (
+      <TinyMCEEditor
+      name = {name}         
+      value = {data[name]}
+      onChange= {e=> this.handleChange(e)}
+      error = {errors[name]}
+      {...rest}
+      />
+    )
+
   }
 
   renderDropDown({name, label,options, ...rest})
