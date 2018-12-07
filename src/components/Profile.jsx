@@ -121,7 +121,7 @@ class Profile extends Form {
           </div>
          
 <div className="row">
-{this.renderRichTextEditor({label:"Bio", name: "bio"})}
+{this.renderRichTextEditor({label:"Bio:", name: "bio", className : "w-100"})}
 </div>
           {this.renderButton("Submit")}
         </form>

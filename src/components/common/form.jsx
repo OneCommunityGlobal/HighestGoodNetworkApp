@@ -21,10 +21,10 @@ class Form extends Component {
   handleInput = ({currentTarget:input}) => {   
     this.handleState(input.name, input.value)
   };
-  handleRichTextEditor= (e)=>
+  handleRichTextEditor= ({target})=>
   {
-    console.log(e.target.getContent())
-    console.log(e.target)
+  let {id} = target
+    this.handleState(id, target.getContent())
 
   }
   handleFileUpload = (e, readAsType= "data") => {
