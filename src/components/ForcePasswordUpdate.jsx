@@ -60,10 +60,12 @@ class ForcePasswordUpdate extends Form {
     let data = { userId, newpassword };
     let result = await forcePasswordUpdate(data);
     if (result.status === 200) {
-      toast.success("You will now be directed to the password page where you can login with your new password.", {
-        onClose: () => (window.location = "/login")
-      });
-     
+      toast.success(
+        "You will now be directed to the password page where you can login with your new password.",
+        {
+          onClose: () => (window.location = "/login")
+        }
+      );
     } else {
       toast.error("Something went wrong. Please contact your administrator.");
     }

@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import Joi from "joi";
 import _ from "lodash";
 import Input from "../common/input";
+import Textarea from "../common/Textarea";
 import Dropdown from "./dropdown";
 
 class Form extends Component {
@@ -9,8 +10,8 @@ class Form extends Component {
     data: {},
     errors: {}
   };
-  handleChange = ({currentTarget:input}) => {
-    
+
+  handleChange = ({ currentTarget: input }) => {
     let { data, errors } = { ...this.state };
     data[input.name] = input.value;
 
@@ -18,13 +19,22 @@ class Form extends Component {
 
     if (errorMessage) {
       errors[input.name] = errorMessage;
-    } else {      
+    } else {
       delete errors[input.name];
     }
     this.setState({ data, errors });
+    console.log(this.state);
   };
-  validateProperty = (name, value) => {
 
+  handleClick = () => {
+    this.setState({
+      data: {
+        tangible: !this.state.data.tangible
+      }
+    });
+  };
+
+  validateProperty = (name, value) => {
     const obj = { [name]: value };
     const schema = { [name]: this.schema[name] };
     const { error } = Joi.validate(obj, schema);
@@ -47,6 +57,7 @@ class Form extends Component {
     });
     return errors;
   };
+
   handleSubmit = e => {
     e.preventDefault();
     const errors = this.validateForm();
@@ -55,32 +66,34 @@ class Form extends Component {
     this.doSubmit();
   };
 
-  renderButton(label) {
+  renderButton(label, click) {
     return (
-      <button disabled={this.validateForm()} className="btn btn-primary">
+      <button
+        disabled={this.validateForm()}
+        onClick={click}
+        className="btn btn-primary"
+      >
         {label}
       </button>
     );
   }
 
-  renderDropDown(name, label,options)
-  {
+  renderDropDown(name, label, options) {
+    const { data, errors } = { ...this.state };
 
-    const {data, errors} = {...this.state}
-  
     return (
       <Dropdown
-      name = {name}
-      label = {label}
-      options = {options}
-      value = {data[name]}
-      onChange = {e=> this.handleChange(e)}
-      error = {errors[name]}
+        name={name}
+        label={label}
+        options={options}
+        value={data[name]}
+        onChange={e => this.handleChange(e)}
+        error={errors[name]}
       />
-    )
+    );
   }
 
-  renderInput(name, label, type = "text") {
+  renderInput(name, label, type, min, max) {
     let { data, errors } = { ...this.state };
 
     return (
@@ -92,9 +105,29 @@ class Form extends Component {
         value={data[name]}
         label={label}
         error={errors[name]}
+        min={min}
+        max={max}
       />
     );
   }
+
+  renderTextarea(name, label, rows, cols) {
+    let { data, errors } = { ...this.state };
+
+    return (
+      <Textarea
+        id={name}
+        rows={rows}
+        cols={cols}
+        name={name}
+        onChange={e => this.handleChange(e)}
+        value={data[name]}
+        label={label}
+        error={errors[name]}
+      />
+    );
+  }
+
 }
 
 export default Form;

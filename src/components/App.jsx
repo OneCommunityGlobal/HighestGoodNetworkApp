@@ -4,7 +4,7 @@ import Dashboard from './Dashboard'
 import {Logout} from './Logout';
 import Login from './Login'
 import Header from './Header'
-import Timelog from './Timelog';
+import Timelog from './Timelog/TimelogPage';
 import Reports from './Reports';
 import Profile from './Profile'
 import ForcePasswordUpdate from './ForcePasswordUpdate';
@@ -19,9 +19,9 @@ import '../App.css';
 
 class App extends Component {
   componentDidCatch(error, errorInfo) {
-   logger.logError(error)
+    logger.logError(error);
   }
-  
+
   render() {
     return (
       <React.Fragment>
