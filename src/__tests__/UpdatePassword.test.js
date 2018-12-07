@@ -11,7 +11,7 @@ const setField = function (page, name, value) {
             value
         }
     }
-    page.find(`#${name}`).simulate('change', mockEvent)
+    page.find(`[name="${name}"]`).simulate('change', mockEvent)
 
 }
 

@@ -114,7 +114,7 @@ class Form extends Component {
       <TinyMCEEditor
       name = {name}         
       value = {data[name]}
-      onChange= {this.handleRichTextEditor}
+      onChange= {e=> this.handleRichTextEditor(e)}
       error = {errors[name]}
       {...rest}
       />
@@ -145,7 +145,7 @@ class Form extends Component {
       <Input 
         name={name}
         type={type}
-        onChange={this.handleInput}
+        onChange={e=> this.handleInput(e)}
         value={data[name]}
         label={label}
         error={errors[name]}
@@ -160,7 +160,7 @@ class Form extends Component {
       <Radio 
       name={name}
         value = {data[name]}
-        onChange={this.handleInput}
+        onChange={e => this.handleInput(e)}
         error={errors[name]}
         {...rest}
       
@@ -183,7 +183,7 @@ class Form extends Component {
     return (
       <Image 
         name={name}
-        onChange={this.handleInput}
+        onChange={e=> this.handleInput(e)}
         value={data[name]}
         label={label}
         error={errors[name]}
