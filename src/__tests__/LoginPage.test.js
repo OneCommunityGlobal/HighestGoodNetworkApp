@@ -55,9 +55,9 @@ describe("When user tries to input data", () => {
         })
 
     
-    it("should call handleChnage when input is changed", () => {
+    it("should call handleInput when input is changed", () => {
         const spy = jest.spyOn(mountedLoginPage.instance(), 'handleInput');
-        mountedLoginPage.find("#email").simulate('change', {currentTarget : {name: "email", value : "anc"}})
+        mountedLoginPage.find("[name='email']").simulate('change', {currentTarget : {name: "email", value : "abc"}})
         expect(spy).toHaveBeenCalled();            
         })
 
