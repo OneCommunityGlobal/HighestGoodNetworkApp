@@ -48,7 +48,7 @@ class Profile extends Form {
         email: Joi.string().trim().email().required().label("Email"),
         weeklyComittedHours: Joi.number().required().default(5).label("Weekly Committed Hours"),
         infringments : Joi.array().items(this.infringmentsSchema).min(0),
-        bio: Joi.string().optional()
+        bio: Joi.string().allow('').optional()
         // adminLinks : Joi.array().items(this.profileLinksSchema).min(0).label("Administrative Links"),
         // personalLinks: Joi.array().items(this.profileLinksSchema).min(0).label("Personal Links"),      
 
