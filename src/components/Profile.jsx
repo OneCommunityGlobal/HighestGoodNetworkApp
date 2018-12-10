@@ -3,6 +3,7 @@ import _ from 'lodash'
 import Form from './common/form';
 import Joi from "joi";
 import RenderInfringment from "./RenderInfringment"
+import ProfileLinks from "./ProfileLinks"
 
 
 class Profile extends Form {
@@ -48,35 +49,24 @@ class Profile extends Form {
         email: Joi.string().trim().email().required().label("Email"),
         weeklyComittedHours: Joi.number().required().min(0).default(5).label("Weekly Committed Hours"),
         infringments : Joi.array().items(this.infringmentsSchema).min(0).max(5),
-        bio: Joi.string().allow('').optional()
-        // adminLinks : Joi.array().items(this.profileLinksSchema).min(0).label("Administrative Links"),
-        // personalLinks: Joi.array().items(this.profileLinksSchema).min(0).label("Personal Links"),      
+        bio: Joi.string().allow('').optional(),
+        adminLinks : Joi.array().items(this.profileLinksSchema).min(0).label("Administrative Links"),
+        personalLinks: Joi.array().items(this.profileLinksSchema).min(0).label("Personal Links"),      
 
     }
 
     handleInfringment = (item, action, index = null) =>
     {
-        // alert(item, action, index)
-        // let {data} = this.state;
-        //     switch (action) {
-        //     case "create":
-        //     data.infringments.push(item);                
-        //         break;
-        // case "edit":
-        // data.infringments[index] = item;
-        // break;
-        // case "delete":
-        // data.infringments.splice(index,1)
-        // break;
-        //     default:
-        //         break;
-        // }
-        // this.setState({data})
         this.handleCollection("infringments", item, action, index)
+    }
+    _handleProfileLinks = (collection,item, action, index =null) =>
+    {
+        this.handleCollection(collection, item, action, index);  
+    
     }
 
     render() {
-        let {firstName, lastName, profilePic, email, weeklyComittedHours,infringments} = {...this.state.data}
+        let {firstName, lastName, profilePic, email, weeklyComittedHours,infringments, adminLinks, personalLinks} = {...this.state.data}
         let {targetUserId,requestorId, requestorRole} = this.state;
         let isUserAdmin = (requestorRole=== "Administrator")
         let isUserSelf = (targetUserId === requestorId)
@@ -124,6 +114,13 @@ class Profile extends Form {
          
 <div className="row">
 {this.renderRichTextEditor({label:"Bio:", name: "bio", className : "w-100"})}
+</div>
+
+<div className="row mt-3">
+<ProfileLinks canEdit = {isUserAdmin} data = {adminLinks} label = "Admin" handleProfileLinks = {this.handleCollection} collection = "adminLinks"/>
+</div>
+<div className="row mt-3">
+<ProfileLinks canEdit = {canEditFields} data = {personalLinks} label = "Social/Professional" handleProfileLinks = {this.handleCollection} collection = "personalLinks"/>
 </div>
           {this.renderButton("Submit")}
         </form>

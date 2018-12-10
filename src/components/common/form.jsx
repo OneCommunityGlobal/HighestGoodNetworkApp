@@ -28,7 +28,7 @@ class Form extends Component {
 
   }
 
-  handleCollection(collection, item, action, index = null)
+  handleCollection= (collection, item, action, index = null) =>
   {
     
     let data = this.state.data[collection] || [];
