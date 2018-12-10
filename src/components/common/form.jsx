@@ -14,9 +14,9 @@ class Form extends Component {
     data: {},
     errors: {}    
   };
-  prevState = {}
+  
 
-  handleCancel = ()=> this.setState(this.prevState)
+  resetForm = ()=>  this.setState(_.cloneDeep(this.initialState));
   
   handleInput = ({currentTarget:input}) => {   
     this.handleState(input.name, input.value)

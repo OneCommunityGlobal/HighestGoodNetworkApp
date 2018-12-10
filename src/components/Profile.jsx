@@ -4,6 +4,8 @@ import Form from './common/form';
 import Joi from "joi";
 import RenderInfringment from "./RenderInfringment"
 import ProfileLinks from "./ProfileLinks"
+import ShowSaveWarning from "./common/ShowSaveWarning"
+
 
 
 class Profile extends Form {
@@ -15,8 +17,9 @@ class Profile extends Form {
             targetUserId: props.targetUserId,
             data : {...props.userProfile},
             errors:{},
+        
          }
-         this.prevState = this.state
+         this.initialState = _.cloneDeep(this.state)
          
     }
     profileLinksSchema ={
@@ -71,14 +74,19 @@ class Profile extends Form {
         let isUserAdmin = (requestorRole=== "Administrator")
         let isUserSelf = (targetUserId === requestorId)
         let canEditFields = (isUserAdmin || isUserSelf)
-        let infringmentslength = infringments?infringments.length: 0
+        let infringmentslength = infringments?infringments.length: 0;
+        let currentState = this.state;
+        let prevState = this.initialState;
+
+      
         
        
         return ( 
             <React.Fragment>
             <div className="container">
             <form onSubmit={e => this.handleSubmit(e)}>
-          
+
+                
           <div className="row my-auto">
           <div className="col-md-4">
           <div className="form-row text-center">
@@ -111,7 +119,9 @@ class Profile extends Form {
           </div>
           </div>
           </div>
-         
+
+
+ {!_.isEqual(currentState,prevState) && <ShowSaveWarning/>}
 <div className="row">
 {this.renderRichTextEditor({label:"Bio:", name: "bio", className : "w-100"})}
 </div>
