@@ -79,7 +79,7 @@ class Profile extends Form {
         let isUserAdmin = (requestorRole=== "Administrator")
         let isUserSelf = (targetUserId === requestorId)
         let canEditFields = (isUserAdmin || isUserSelf)
-        let length = infringments.length
+        let infringmentslength = infringments?infringments.length: 0
         
        
         return ( 
@@ -100,7 +100,7 @@ class Profile extends Form {
           {canEditFields && !!targetUserId && infringments.map((item,index) => <RenderInfringment key = {`${item.date}_${item.description}`} infringment = {item} isUserAdmin = {isUserAdmin} handleInfringment= {this.handleInfringment} index = {index}  />)} 
           
           {canEditFields && !!targetUserId && _.times(5-infringments.length,() => 
-           <RenderInfringment key = {length++}  infringment = {{date: "", description : ""}} isUserAdmin = {isUserAdmin} handleInfringment= {this.handleInfringment}  /> ) } 
+           <RenderInfringment key = {infringmentslength++}  infringment = {{date: "", description : ""}} isUserAdmin = {isUserAdmin} handleInfringment= {this.handleInfringment}  /> ) } 
                        
           </div>
           
