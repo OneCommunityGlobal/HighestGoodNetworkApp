@@ -46,8 +46,8 @@ class Profile extends Form {
         isActive: Joi.boolean().default(true).label("Active Status"),
         role : Joi.any().allow(["Administrator", "Core Team", "Manager", "Volunteer"]).default("Volunteer").label("Role"),
         email: Joi.string().trim().email().required().label("Email"),
-        weeklyComittedHours: Joi.number().required().default(5).label("Weekly Committed Hours"),
-        infringments : Joi.array().items(this.infringmentsSchema).min(0),
+        weeklyComittedHours: Joi.number().required().min(0).default(5).label("Weekly Committed Hours"),
+        infringments : Joi.array().items(this.infringmentsSchema).min(0).max(5),
         bio: Joi.string().allow('').optional()
         // adminLinks : Joi.array().items(this.profileLinksSchema).min(0).label("Administrative Links"),
         // personalLinks: Joi.array().items(this.profileLinksSchema).min(0).label("Personal Links"),      
@@ -56,21 +56,23 @@ class Profile extends Form {
 
     handleInfringment = (item, action, index = null) =>
     {
-        let {data} = this.state;
-            switch (action) {
-            case "create":
-            data.infringments.push(item);                
-                break;
-        case "edit":
-        data.infringments[index] = item;
-        break;
-        case "delete":
-        data.infringments.splice(index,1)
-        break;
-            default:
-                break;
-        }
-        this.setState({data})
+        // alert(item, action, index)
+        // let {data} = this.state;
+        //     switch (action) {
+        //     case "create":
+        //     data.infringments.push(item);                
+        //         break;
+        // case "edit":
+        // data.infringments[index] = item;
+        // break;
+        // case "delete":
+        // data.infringments.splice(index,1)
+        // break;
+        //     default:
+        //         break;
+        // }
+        // this.setState({data})
+        this.handleCollection("infringments", item, action, index)
     }
 
     render() {

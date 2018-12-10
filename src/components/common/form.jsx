@@ -27,6 +27,28 @@ class Form extends Component {
     this.handleState(id, target.getContent())
 
   }
+
+  handleCollection(collection, item, action, index = null)
+  {
+    
+    let data = this.state.data[collection] || [];
+    switch (action) {
+            case "create":
+            data.push(item);                
+                break;
+        case "edit":
+        data[index] = item;
+        break;
+        case "delete":
+        data.splice(index,1)
+        break;
+            default:
+                break;
+        }
+       this.handleState(collection, data);
+
+  }
+
   handleFileUpload = (e, readAsType= "data") => {
     const file = e.target.files[0];
     const reader = new FileReader();

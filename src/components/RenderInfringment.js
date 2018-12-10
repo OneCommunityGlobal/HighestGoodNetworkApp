@@ -34,7 +34,7 @@ class RenderInfringment extends Form {
       }
     
       doSubmit = ()=> {
-          this.state.index?
+          (this.state.index >= 0)?
           this.props.handleInfringment(this.state.data,"edit", this.state.index):
           this.props.handleInfringment(this.state.data,"create")
           this.toggle()
