@@ -30,6 +30,7 @@
     "build": "react-scripts build",
     "test": "cross-env CI=true react-scripts test --env=jsdom",
     "test:watch": " react-scripts test --env=jsdom",
+    "test:coverage": "cross-env CI=true react-scripts test --env=jsdom --coverage",
     "eject": "react-scripts eject",
     "start:local": "react-scripts start"
   },
