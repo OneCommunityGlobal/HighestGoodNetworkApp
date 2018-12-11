@@ -48,8 +48,6 @@ class RenderInfringment extends Form {
         let {isUserAdmin, index} = this.state;
         let {handleInfringment} = this.props
         let isEmpty = !(!!date && !! description);
-        let currentState = this.state.data;
-        let prevState = this.initialState.data;
         return (
 
             <div className = "m-1">
@@ -67,7 +65,7 @@ class RenderInfringment extends Form {
           <ModalHeader toggle={this.toggle}>Infringment</ModalHeader>
           <form onSubmit={e => this.handleSubmit(e)}>
           <ModalBody>
-          {!_.isEqual(currentState,prevState) && <ShowSaveWarning/>}        
+          {this.isStateChanged() && <ShowSaveWarning/>}        
           {this.renderInput({name: "date", label: "Date:", className : "col-md-12", value :date, type: "date"  })}
           {this.renderInput({name: "description", label: "Description:",spellCheck: true, className : "col-md-12", value : description})}       
           </ModalBody>
