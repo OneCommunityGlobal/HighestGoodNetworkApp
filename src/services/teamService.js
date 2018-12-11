@@ -1,6 +1,6 @@
 import httpService from './httpervice'
 
-const ApiEndpoint = `${process.env.REACT_APP_APIENDPOINT}/teams`; 
+const ApiEndpoint = `${process.env.REACT_APP_APIENDPOINT}/team`; 
 
 
 export function getAllTeams()
