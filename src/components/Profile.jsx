@@ -5,6 +5,7 @@ import Joi from "joi";
 import RenderInfringment from "./RenderInfringment"
 import ProfileLinks from "./ProfileLinks"
 import ShowSaveWarning from "./common/ShowSaveWarning"
+import Memberships from "./Memberships"
 
 
 
@@ -30,6 +31,17 @@ class Profile extends Form {
         date: Joi.date().required().label("Infringement Date"),
         description : Joi.string().trim().required().label("Infringement Description")
     }
+    teamsSchema = 
+    {
+        _id: Joi.string().required(),
+        teamName : Joi.string().required()
+    }
+
+    projectsSchema = 
+    {
+        _id: Joi.string().required(),
+        projectName : Joi.string().required()
+    }
 
     activeOptions = [
         {value: true, label: "Active"},
@@ -54,7 +66,9 @@ class Profile extends Form {
         infringments : Joi.array().items(this.infringmentsSchema).min(0).max(5),
         bio: Joi.string().allow('').optional(),
         adminLinks : Joi.array().items(this.profileLinksSchema).min(0).label("Administrative Links"),
-        personalLinks: Joi.array().items(this.profileLinksSchema).min(0).label("Personal Links"),      
+        personalLinks: Joi.array().items(this.profileLinksSchema).min(0).label("Personal Links"),
+        teams : Joi.array().items(this.teamsSchema).min(0),
+        projects : Joi.array().items(this.projectsSchema).min(0)    
 
     }
 
@@ -69,18 +83,14 @@ class Profile extends Form {
     }
 
     render() {
-        let {firstName, lastName, profilePic, email, weeklyComittedHours,infringments, adminLinks, personalLinks} = {...this.state.data}
+        let {firstName, lastName, profilePic, email, weeklyComittedHours,infringments, adminLinks, personalLinks
+        ,teams, projects} = {...this.state.data}
         let {targetUserId,requestorId, requestorRole} = this.state;
         let isUserAdmin = (requestorRole=== "Administrator")
         let isUserSelf = (targetUserId === requestorId)
         let canEditFields = (isUserAdmin || isUserSelf)
         let infringmentslength = infringments?infringments.length: 0;
-        let currentState = this.state;
-        let prevState = this.initialState;
 
-      
-        
-       
         return ( 
             <React.Fragment>
             <div className="container">
@@ -121,7 +131,7 @@ class Profile extends Form {
           </div>
 
 
- {!_.isEqual(currentState,prevState) && <ShowSaveWarning/>}
+ {this.isStateChanged() && <ShowSaveWarning/>}
 <div className="row">
 {this.renderRichTextEditor({label:"Bio:", name: "bio", className : "w-100"})}
 </div>
@@ -131,6 +141,10 @@ class Profile extends Form {
 </div>
 <div className="row mt-3">
 <ProfileLinks canEdit = {canEditFields} data = {personalLinks} label = "Social/Professional" handleProfileLinks = {this.handleCollection} collection = "personalLinks"/>
+</div>
+
+<div className="row col-6 mt-3">
+<Memberships schema = {this.teamsSchema} canEdit = {isUserAdmin} data = {teams} label = "team" collection = "teams" handleCollection = {this.handleCollection} />
 </div>
           {this.renderButton("Submit")}
         </form>

@@ -79,6 +79,9 @@ class Form extends Component {
     this.setState({ data, errors });
   }
 
+  isStateChanged = () =>!_.isEqual(this.state.data,this.initialState.data)
+  
+
  
   validateProperty = (name, value) => {
     
