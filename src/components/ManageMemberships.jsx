@@ -16,14 +16,14 @@ class ManageMemberships extends Form {
         this.state.data = props.data
         this.initialState = _.cloneDeep(this.state)
         this.schema = props.schema
-        this.allEntities = [];
+        this.state.allEntities = [];
         this.isLoading = true
     }
 
     loadData = async() => {
 
         this.toggle();
-        let {data:allEntities} = this.props.collection === "team" ?  await getAllTeams() : await getAllProjects()
+        let {data:allEntities} = this.props.collection === "teams" ?  await getAllTeams() : await getAllProjects()
        let isLoading = false;       
        this.setState({allEntities, isLoading})
        
@@ -48,14 +48,15 @@ class ManageMemberships extends Form {
         this.resetForm()
     }
 
+    getName = element => this.props.collection === "teams" ?  element.teamName : element.projectName
+    getCheckedStatus= id => this.state.data.some(membership => membership._id === id)? true: null
+    handleClick = e => console.log(e)
+
 
     render() { 
 
-        let {isLoading} = true;
+        let {isLoading,allEntities, data: memberships} = this.state;
         let {label} = this.props
-
-        
-
         return(
 
             <Fragment>
@@ -65,13 +66,22 @@ class ManageMemberships extends Form {
   <ModalHeader toggle={this.toggle}>Manage{label}</ModalHeader>
   <form onSubmit={e => this.handleSubmit(e)}>
   <ModalBody>
-      {isLoading? <Loading/> :
-  <Fragment>
-  {this.isStateChanged() && <ShowSaveWarning/>}
-  {this.renderInput({name: "Name", label: "Name:", className : "col-md-12",  type: "text" ,value : this.state.data.Name  })}
-  {this.renderInput({name: "Link", label: "Link:", className : "col-md-12", type: "url", value : this.state.data.Link })}
-  </Fragment>
-  }
+    {this.isStateChanged() && <ShowSaveWarning/>}
+    {allEntities.map(element => 
+    <div className="form-check">   
+    {this.renderInput({label: this.getName(element), 
+        checked : this.getCheckedStatus(element._id), 
+        type: "checkbox", inputClassName: "form-check-input" , 
+        labelClassName: "form-check-label",
+        onClick : e => this.handleClick(e)
+        })}
+   
+    </div>
+    
+       )}
+
+  
+ 
   </ModalBody>
   <ModalFooter>            
  {this.renderButton("Done")}
