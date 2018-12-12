@@ -3,7 +3,7 @@ import _ from 'lodash'
 import {Link} from 'react-router-dom'
 import ManageMemberships from "./ManageMemberships"
 
-const Memberships = ({collection,label, data, canEdit, handleCollection, schema}) => {
+const Memberships = ({collection,label, data, canEdit,handleDelete, handleBulkUpdates, schema}) => {
 
     const getLink = id =>`/${_.lowerCase(label)}/${id}`
     const getText = element =>  _.has(element, "teamName")? element.teamName : element.projectName
@@ -18,13 +18,13 @@ const Memberships = ({collection,label, data, canEdit, handleCollection, schema}
         <li className="list-group-item" key = {element._id}>
                <Link to = {getLink(element._id)}>{getText(element)}</Link>
                {canEdit && <span className="fa fa-trash pull-right" 
-               onClick = {() => handleCollection(collection, element, "delete", index )}></span> }
+               onClick = {() => handleDelete(collection, element, "delete", index )}></span> }
         </li>)}
         
         </ul>
         </div>
         <div className="card-footer">
-        {canEdit && <ManageMemberships loadData = {true} schema = {schema} label = {label} onSubmit = {handleCollection} data = {data} collection  = {collection}/>}
+        {canEdit && <ManageMemberships loadData = {true} schema = {schema} label = {label} onSubmit = {handleBulkUpdates} data = {data} collection  = {collection}/>}
         </div>
         </div>
      );

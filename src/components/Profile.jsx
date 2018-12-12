@@ -7,8 +7,6 @@ import ProfileLinks from "./ProfileLinks"
 import ShowSaveWarning from "./common/ShowSaveWarning"
 import Memberships from "./Memberships"
 
-
-
 class Profile extends Form {
     constructor(props) {
         super(props);
@@ -23,12 +21,14 @@ class Profile extends Form {
          this.initialState = _.cloneDeep(this.state)
          
     }
+
     profileLinksSchema ={
         name: Joi.string().trim().required(),
         url : Joi.string().trim().uri().required()
     }
     infringmentsSchema = {
-        date: Joi.date().required().label("Infringement Date"),
+        _id: Joi.string().allow('').optional(),
+        date: Joi.string().required().label("Infringement Date"),
         description : Joi.string().trim().required().label("Infringement Description")
     }
     teamsSchema = 
@@ -56,6 +56,7 @@ class Profile extends Form {
    
 
     schema = {
+        _id: Joi.string().allow("").optional(),
         profilePic : Joi.string().label("Profile Picture"),
         firstName: Joi.string().trim().required().min(2).label("First Name"),
         lastName: Joi.string().trim().required().min(2).label("Last Name"),
@@ -68,7 +69,10 @@ class Profile extends Form {
         adminLinks : Joi.array().items(this.profileLinksSchema).min(0).label("Administrative Links"),
         personalLinks: Joi.array().items(this.profileLinksSchema).min(0).label("Personal Links"),
         teams : Joi.array().items(this.teamsSchema).min(0),
-        projects : Joi.array().items(this.projectsSchema).min(0)    
+        projects : Joi.array().items(this.projectsSchema).min(0),
+        phoneNumber : Joi.any().optional(),
+        badges:Joi.array().min(0),
+        badgeCollection : Joi.any().optional()
 
     }
 
@@ -76,10 +80,15 @@ class Profile extends Form {
     {
         this.handleCollection("infringments", item, action, index)
     }
-    _handleProfileLinks = (collection,item, action, index =null) =>
+    handleMemberships = (collection,value) =>
     {
-        this.handleCollection(collection, item, action, index);  
+        this.updateCollection(collection, value);  
     
+    }
+
+    doSubmit()
+    {
+        alert("kdklks")
     }
 
     render() {
@@ -107,10 +116,10 @@ class Profile extends Form {
           {!!targetUserId && this.renderLink({label: "View Timelog", to : `/timelog/${targetUserId}`, className: "btn btn-info btn-sm text-center m-1"})}
           </div>
           <div className="form-row text-center">
-          {canEditFields && !!targetUserId && infringments.map((item,index) => <RenderInfringment key = {`${item.date}_${item.description}`} infringment = {item} isUserAdmin = {isUserAdmin} handleInfringment= {this.handleInfringment} index = {index}  />)} 
+          {canEditFields && !!targetUserId && infringments.map((item,index) => <RenderInfringment key = {`${item.date}_${item.description}`} infringment = {item} isUserAdmin = {isUserAdmin} handleInfringment= {this.handleInfringment} index = {index} schema = {this.infringmentsSchema}  />)} 
           
           {canEditFields && !!targetUserId && _.times(5-infringments.length,() => 
-           <RenderInfringment key = {infringmentslength++}  infringment = {{date: "", description : ""}} isUserAdmin = {isUserAdmin} handleInfringment= {this.handleInfringment}  /> ) } 
+           <RenderInfringment key = {infringmentslength++}  infringment = {{date: "", description : ""}} isUserAdmin = {isUserAdmin} handleInfringment= {this.handleInfringment} schema = {this.infringmentsSchema} /> ) } 
                        
           </div>
           
@@ -143,8 +152,13 @@ class Profile extends Form {
 <ProfileLinks canEdit = {canEditFields} data = {personalLinks} label = "Social/Professional" handleProfileLinks = {this.handleCollection} collection = "personalLinks"/>
 </div>
 
-<div className="row col-6 mt-3">
-<Memberships schema = {this.teamsSchema} canEdit = {isUserAdmin} data = {teams} label = "team" collection = "teams" handleCollection = {this.handleCollection} />
+<div className="row mt-3">
+<div className="col-6">
+<Memberships schema = {this.teamsSchema} canEdit = {isUserAdmin} data = {teams} label = "Team" collection = "teams" handleDelete = {this.handleCollection} handleBulkUpdates = {this.handleMemberships}/>
+</div>
+<div className="col-6">
+<Memberships schema = {this.projectsSchema} canEdit = {isUserAdmin} data = {projects} label = "Project" collection = "projects" handleDelete = {this.handleCollection} handleBulkUpdates = {this.handleMemberships}/>
+</div>
 </div>
           {this.renderButton("Submit")}
         </form>

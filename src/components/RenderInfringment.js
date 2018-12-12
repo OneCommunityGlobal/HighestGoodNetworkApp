@@ -1,5 +1,4 @@
 import React from 'react';
-import Joi from 'joi'
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import Form from './common/form';
 import _ from 'lodash'
@@ -18,12 +17,13 @@ class RenderInfringment extends Form {
          this.toggle = this.toggle.bind(this);
          this.prevState = this.state;
          this.initialState = _.cloneDeep(this.state)
+         this.schema = props.schema
     }
-    schema = {
-        _id: Joi.any().optional(),
-        date: Joi.date().required().label("Infringement Date"),
-        description : Joi.string().trim().required().label("Infringement Description")
-    }
+    // schema = {
+    //     _id: Joi.any().optional(),
+    //     date: Joi.date().required().label("Infringement Date"),
+    //     description : Joi.string().trim().required().label("Infringement Description")
+    // }
     toggle() {
         this.setState({
           modal: !this.state.modal
@@ -63,7 +63,7 @@ class RenderInfringment extends Form {
         <span className="fa fa-pencil" onClick={this.toggle}/>}
          <Modal isOpen={this.state.modal} toggle={this.toggle} >
           <ModalHeader toggle={this.toggle}>Infringment</ModalHeader>
-          <form onSubmit={e => this.handleSubmit(e)}>
+          <form onSubmit={e => this.doSubmit(e)}>
           <ModalBody>
           {this.isStateChanged() && <ShowSaveWarning/>}        
           {this.renderInput({name: "date", label: "Date:", className : "col-md-12", value :date, type: "date"  })}
