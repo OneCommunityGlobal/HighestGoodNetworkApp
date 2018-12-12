@@ -32,14 +32,9 @@ export function logout ()
 
 export function getCurrentUser()
 {
-  try{
-    let token = localStorage.getItem(tokenKey)
-    return jwtDecode(token)
-  }
-  catch(ex)
-  {
-    return null
-  }
+
+  return isUserAuthenticated() ? jwtDecode(localStorage.getItem(tokenKey)): null
+
 }
   export function loginWithJWT (jwt)
   {
@@ -53,10 +48,10 @@ export function getCurrentUser()
 
   export function isUserAuthenticated()
   {
-    if (!localStorage.getItem('token')) {
+    if (!localStorage.getItem(tokenKey)) {
         return false;
       }
-      let token = localStorage.getItem('token');
+      let token = localStorage.getItem(tokenKey);
       token = jwtDecode(token);
       return (token.expiryTimestamp > new Date().toISOString());
   

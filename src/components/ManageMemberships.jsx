@@ -1,23 +1,27 @@
 import React, {Fragment} from 'react';
-import Joi from 'joi'
 import Form from './common/form';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import _ from 'lodash'
 import ShowSaveWarning from "./common/ShowSaveWarning"
-import Loading from './common/Loading'
 import {getAllProjects} from "../services/projectService"
 import {getAllTeams} from "../services/teamService"
 
 class ManageMemberships extends Form {
     constructor(props) {
         super(props);
-        this.state.modal = false;
-        this.toggle = this.toggle.bind(this);
-        this.state.data = props.data
-        this.initialState = _.cloneDeep(this.state)
-        this.schema = props.schema
         this.state.allEntities = [];
-        this.isLoading = true
+        this.state.isLoading = true;        
+        this.toggle = this.toggle.bind(this);
+        this.state.modal = false; 
+        this.schema = props.schema
+        this.state.data = this.props.data;
+        this.initialState = _.cloneDeep(this.state)
+    }
+
+    getDerivedStateFromProps(props)
+    {      
+        this.state.data = props.data
+        this.initialState = _.cloneDeep(this.state)       
     }
 
     loadData = async() => {
@@ -25,8 +29,7 @@ class ManageMemberships extends Form {
         this.toggle();
         let {data:allEntities} = this.props.collection === "teams" ?  await getAllTeams() : await getAllProjects()
        let isLoading = false;       
-       this.setState({allEntities, isLoading})
-       
+       this.setState({allEntities, isLoading})       
     }
 
     toggle() {
@@ -41,50 +44,49 @@ class ManageMemberships extends Form {
         this.toggle();
     }
 
-    doSubmit()
+
+    doSubmit = () =>
     {
-        this.props.onSubmit(this.props.collection, this.state.data, "create");
         this.toggle();
-        this.resetForm()
+        this.props.onSubmit(this.props.collection, this.state.data);
+        return this.initialState = _.cloneDeep(this.state)        
     }
-
-    getName = element => this.props.collection === "teams" ?  element.teamName : element.projectName
+    getName = element => element[this.pathName()]
     getCheckedStatus= id => this.state.data.some(membership => membership._id === id)? true: null
-    handleClick = e => console.log(e)
-
+    pathName = () => this.props.collection === "teams" ?  "teamName" : "projectName"
+    handleChange = (e) => {
+        let {allEntities, data} = this.state;
+        if(e.target.checked) //item was selected so add it to the memberships
+        {
+            let newMembership = allEntities[ _.findIndex(allEntities, o => o._id === e.target.id)];    
+            data.push(_.pick(newMembership, _.keys(this.schema)))
+        }
+        else 
+        {
+            let index = _.findIndex(data, o => o._id === e.target.id);
+            _.pullAt(data, [index])
+        }
+        this.setState({data})
+    }
 
     render() { 
 
-        let {isLoading,allEntities, data: memberships} = this.state;
-        let {label} = this.props
+        let {allEntities} = this.state;
+        let {label} = this.props;
         return(
 
             <Fragment>
-         <button className="btn btn-primary" onClick = {this.loadData}>Manage {label} </button>
+         <button className="btn btn-success" onClick = {this.loadData}>{`Manage ${_.startCase(label)}s`}</button>
 
 <Modal isOpen={this.state.modal} toggle={this.toggle} >
-  <ModalHeader toggle={this.toggle}>Manage{label}</ModalHeader>
-  <form onSubmit={e => this.handleSubmit(e)}>
+  <ModalHeader toggle={this.toggle}>{`${_.startCase(label)}s`}</ModalHeader>
+  <form>
   <ModalBody>
     {this.isStateChanged() && <ShowSaveWarning/>}
-    {allEntities.map(element => 
-    <div className="form-check">   
-    {this.renderInput({label: this.getName(element), 
-        checked : this.getCheckedStatus(element._id), 
-        type: "checkbox", inputClassName: "form-check-input" , 
-        labelClassName: "form-check-label",
-        onClick : e => this.handleClick(e)
-        })}
-   
-    </div>
-    
-       )}
-
-  
- 
+    {this.renderCheckboxCollection({items: allEntities, pathName:this.pathName(), isChecked : this.getCheckedStatus,onChange : this.handleChange   })} 
   </ModalBody>
   <ModalFooter>            
- {this.renderButton("Done")}
+ <Button color="primary"onClick = {e=> this.doSubmit(e)}>Done</Button>
 <Button color="secondary" onClick={this.onCancel}>Cancel</Button>
   </ModalFooter>
   </form>
