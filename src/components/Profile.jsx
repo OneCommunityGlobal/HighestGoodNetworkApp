@@ -23,8 +23,8 @@ class Profile extends Form {
     }
 
     profileLinksSchema ={
-        name: Joi.string().trim().required(),
-        url : Joi.string().trim().uri().required()
+    Name: Joi.string().trim().required(),
+        Link : Joi.string().trim().uri().required()
     }
     infringmentsSchema = {
         _id: Joi.string().allow('').optional(),
