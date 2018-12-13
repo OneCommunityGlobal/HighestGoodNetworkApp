@@ -4,6 +4,7 @@ import Form from './common/form';
 import _ from 'lodash'
 import ShowSaveWarning from "./common/ShowSaveWarning"
 
+
 class RenderInfringment extends Form {
     constructor(props) {
         super(props);
@@ -19,11 +20,7 @@ class RenderInfringment extends Form {
          this.initialState = _.cloneDeep(this.state)
          this.schema = props.schema
     }
-    // schema = {
-    //     _id: Joi.any().optional(),
-    //     date: Joi.date().required().label("Infringement Date"),
-    //     description : Joi.string().trim().required().label("Infringement Description")
-    // }
+  
     toggle() {
         this.setState({
           modal: !this.state.modal
@@ -48,19 +45,21 @@ class RenderInfringment extends Form {
         let {isUserAdmin, index} = this.state;
         let {handleInfringment} = this.props
         let isEmpty = !(!!date && !! description);
+        let className = isEmpty? "fa fa-square": "fa fa-square infringement";
+        let tooltip = isEmpty ? `Date: ${date} \nDescription: ${description}`: ""
         return (
 
             <div className = "m-1">
             <div className="row ml-1 mr-1">
-            {isEmpty ?  <span className = "fa fa-square" /> :
-            <span className = "fa fa-square infringement" 
+    
+            <span className = {className} 
             data-toggle="tooltip" data-placement="bottom" 
-        title = {`Date: ${date} \nDescription: ${description}`}/> }           
+        title = {tooltip}/>            
             </div>
             {isUserAdmin && <React.Fragment>
         <div className="row ml-1">
-        {isEmpty ? <span className="fa fa-plus" onClick={this.toggle}/> :
-        <span className="fa fa-pencil" onClick={this.toggle}/>}
+      
+        <span className="fa fa-pencil" onClick={this.toggle}/>
          <Modal isOpen={this.state.modal} toggle={this.toggle} >
           <ModalHeader toggle={this.toggle}>Infringment</ModalHeader>
           <form onSubmit={e => this.doSubmit(e)}>
