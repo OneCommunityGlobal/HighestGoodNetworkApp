@@ -15,7 +15,7 @@ class Profile extends Form {
             requestorRole : props.requestorRole,
             targetUserId: props.targetUserId,
             data : {...props.userProfile},
-            errors:{},
+            errors:{}
         
          }
          this.initialState = _.cloneDeep(this.state)
@@ -86,9 +86,10 @@ class Profile extends Form {
     
     }
 
-    doSubmit()
+    doSubmit= ()=>
     {
-        alert("kdklks")
+        alert("PARENT")
+        this.props.onSubmit(this.state.data)
     }
 
     render() {

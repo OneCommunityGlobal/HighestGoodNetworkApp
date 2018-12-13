@@ -21,7 +21,7 @@ const Input = ({ label,name, error,className, ...rest  }) => {
 Input.propTypes = {
   label: PropTypes.string.isRequired,
   name: PropTypes.string.isRequired,
-  error : PropTypes.func
+  error : PropTypes.string
 
 }
 
