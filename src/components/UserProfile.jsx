@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import Loading from "./common/Loading";
-import { getUserProfile } from "../services/userProfileService";
+import { getUserProfile, editUserProfileData } from "../services/userProfileService";
 import { getCurrentUser } from "../services/loginService";
 import Profile from "./Profile";
 
@@ -28,6 +28,11 @@ class UserProfile extends Component {
       }
     }
   }
+  handleSubmit = async (data) =>
+  {
+    let result = await editUserProfileData(this.state.targetUserId, data)
+    console.log(result)
+  }
 
   render() {
     if (this.state.isLoading === true) {
@@ -42,6 +47,7 @@ class UserProfile extends Component {
         requestorRole={requestorRole}
         userProfile={userProfile}
         targetUserId={targetUserId}
+        onSubmit = {this.handleSubmit}
       />
     );
   }

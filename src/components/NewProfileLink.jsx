@@ -39,6 +39,7 @@ class NewProfileLink extends Form {
 
     doSubmit()
     {
+        alert("child profile link")
         this.props.onSubmit(this.props.collection, this.state.data, "create");
         this.toggle();
         this.resetForm()
@@ -48,7 +49,7 @@ class NewProfileLink extends Form {
         let {label} = this.props;
         return (
            <React.Fragment>
-            <button className="btn btn-link" onClick={this.toggle}>Add New {label} Link</button>
+            <div className="btn btn-link" onClick={this.toggle}>Add New {label} Link</div>
 
 <Modal isOpen={this.state.modal} toggle={this.toggle} >
       <ModalHeader toggle={this.toggle}>New {label} Link</ModalHeader>

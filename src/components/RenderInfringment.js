@@ -46,7 +46,7 @@ class RenderInfringment extends Form {
         let {handleInfringment} = this.props
         let isEmpty = !(!!date && !! description);
         let className = isEmpty? "fa fa-square": "fa fa-square infringement";
-        let tooltip = isEmpty ? `Date: ${date} \nDescription: ${description}`: ""
+        let tooltip = !isEmpty ? `Date: ${date} \nDescription: ${description}`: ""
         return (
 
             <div className = "m-1">
@@ -62,7 +62,7 @@ class RenderInfringment extends Form {
         <span className="fa fa-pencil" onClick={this.toggle}/>
          <Modal isOpen={this.state.modal} toggle={this.toggle} >
           <ModalHeader toggle={this.toggle}>Infringment</ModalHeader>
-          <form onSubmit={e => this.doSubmit(e)}>
+          <form onSubmit={e => this.handleSubmit(e)}>
           <ModalBody>
           {this.isStateChanged() && <ShowSaveWarning/>}        
           {this.renderInput({name: "date", label: "Date:", className : "col-md-12", value :date, type: "date"  })}

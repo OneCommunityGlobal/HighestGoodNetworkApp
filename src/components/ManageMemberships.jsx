@@ -76,7 +76,7 @@ class ManageMemberships extends Form {
         return(
 
             <Fragment>
-         <button className="btn btn-success" onClick = {this.loadData}>{`Manage ${_.startCase(label)}s`}</button>
+         <div className="btn btn-success" onClick = {this.loadData}>{`Manage ${_.startCase(label)}s`}</div>
 
 <Modal isOpen={this.state.modal} toggle={this.toggle} >
   <ModalHeader toggle={this.toggle}>{`${_.startCase(label)}s`}</ModalHeader>
