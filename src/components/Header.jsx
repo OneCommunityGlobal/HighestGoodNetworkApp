@@ -30,16 +30,16 @@ class Header extends React.Component {
     if(user)
     {
       let {userid:userId} = user;
-    let {data:userProfileData} = {...await getUserProfile(userId)}
-    let name = userProfileData.firstName;
-    let profilePic = userProfileData.profilePic;
-    this.setState({userId,userProfileData,name,profilePic});
+      let {data:userProfileData} = {...await getUserProfile(userId)}
+      let name = userProfileData.firstName;
+      let profilePic = userProfileData.profilePic;
+      this.setState({userId,userProfileData,name,profilePic});
     }
   }
   render() {
     let {userId,name,profilePic} = this.state;
     if(userId === 0) return null;
-
+    console.log(this.state)
     return (
      
       <div>

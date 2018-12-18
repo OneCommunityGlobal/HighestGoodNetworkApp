@@ -1,10 +1,22 @@
-import React from 'react';
-import { Card, Row, CardTitle, CardText, Col } from 'reactstrap';
-import MonthlyEffort from './MonthlyEffort';
-import Leaderboard from './Leaderboard'
-import '../App.css';
+import React, { Component } from "react";
+import { connect } from "react-redux";
+import { getCurrentUser, getAllProjects, postTimeEntry } from "../actions";
+import { getjwt } from "../services/loginService"; 
+import { Card, Row, CardTitle, CardText, Col } from "reactstrap";
+import MonthlyEffort from "./MonthlyEffort";
+import Leaderboard from "./Leaderboard";
+import "../App.css";
 
-const Dashboard = () => {
+class Dashboard extends Component {
+  componentDidMount() {
+    this.props.getCurrentUser(getjwt());
+  }
+
+  componentDidUpdate() {
+    // this.props.getAllProjects()
+  }
+
+  render() {
     return (
         <React.Fragment>
         <div>
@@ -34,5 +46,9 @@ const Dashboard = () => {
         </React.Fragment>
     );
 }
- 
-export default Dashboard;
+
+const mapStateToProps = state => {
+  return { state };
+};
+
+export default connect(mapStateToProps, { getCurrentUser, getAllProjects, postTimeEntry })(Dashboard);
