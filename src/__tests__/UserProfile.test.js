@@ -39,6 +39,20 @@ describe("UserPage", () => {
     expect(toast.error).toHaveBeenCalledWith(...params);
   });
 
+  it("should call setState if user details were fetched successfully", async () => {
+    let userId = 1234;
+    let props = { match: { params: { userId } } };
+    let userProfileService = require("../services/userProfileService");
+    let response = { status: 400 };
+    userProfileService.getUserProfile = jest.fn(() => {
+      return { response };
+    });
+    const spy = jest.spyOn(UserProfile.prototype, "setState");
+    let userProfile = shallow(<UserProfile {...props} />);
+    await userProfile.instance().componentDidMount();
+    expect(spy).toHaveBeenCalled();
+  });
+
   it("should call error toast if an error was encountered while saving user edits", () => {
     let userId = 1234;
     let props = { match: { params: { userId } } };
