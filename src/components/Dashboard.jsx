@@ -1,10 +1,6 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
-<<<<<<< HEAD
 import { getCurrentUser } from "../actions";
-=======
-import { getCurrentUser, getAllProjects, postTimeEntry } from "../actions";
->>>>>>> master
 import { getjwt } from "../services/loginService"; 
 import { Card, Row, CardTitle, CardText, Col } from "reactstrap";
 import MonthlyEffort from "./MonthlyEffort";
@@ -16,13 +12,6 @@ class Dashboard extends Component {
     this.props.getCurrentUser(getjwt());
   }
 
-<<<<<<< HEAD
-=======
-  componentDidUpdate() {
-    // this.props.getAllProjects()
-  }
-
->>>>>>> master
   render() {
     return (
       <React.Fragment>
@@ -37,12 +26,8 @@ class Dashboard extends Component {
                   <MonthlyEffort />
                 </CardTitle>
                 <CardText>
-<<<<<<< HEAD
                   <div />
                 </CardText>
-=======
-                          </CardText>
->>>>>>> master
               </Card>
             </Col>
           </Row>
@@ -63,8 +48,4 @@ const mapStateToProps = state => {
   return { state };
 };
 
-<<<<<<< HEAD
 export default connect(mapStateToProps, { getCurrentUser })(Dashboard);
-=======
-export default connect(mapStateToProps, { getCurrentUser, getAllProjects, postTimeEntry })(Dashboard);
->>>>>>> master
