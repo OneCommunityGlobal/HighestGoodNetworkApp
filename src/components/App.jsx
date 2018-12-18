@@ -1,16 +1,8 @@
-import React, { Component } from 'react';
-import {Route, Switch} from 'react-router-dom';
-import Dashboard from './Dashboard'
-import {Logout} from './Logout';
-import Login from './Login'
-import Header from './Header'
-import Timelog from './Timelog';
-import Reports from './Reports';
-import Profile from './Profile'
-import ForcePasswordUpdate from './ForcePasswordUpdate';
-import {ToastContainer} from 'react-toastify'
-import 'react-toastify/dist/ReactToastify.css';
+import { Component } from "react";
+import routes from '../routes'
+import logger from "../services/logService";
 
+<<<<<<< HEAD
 import ProtectedRoute from './common/ProtectedRoute'
 
 import logger from "../services/logService"
@@ -18,12 +10,25 @@ import logger from "../services/logService"
 import '../App.css';
 
 class App extends Component {
+=======
+import "../App.css";
+
+class App extends Component {
+  state = {};
+
+  // componentDidMount() {
+  //   const user = getCurrentUser();
+  //   this.setState({ user });
+  // }
+
+>>>>>>> master
   componentDidCatch(error, errorInfo) {
-   logger.logError(error)
+    logger.logError(error);
   }
-  
+
   render() {
     return (
+<<<<<<< HEAD
       <React.Fragment>
         <Header />
         <ToastContainer />
@@ -41,6 +46,10 @@ class App extends Component {
           <ProtectedRoute path="/" exact component={Dashboard} />
         </Switch>
       </React.Fragment>
+=======
+     routes
+ 
+>>>>>>> master
     );
   }
 }

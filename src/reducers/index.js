@@ -182,6 +182,21 @@ const timeEntriesForSpecifiedProjectReducer = (timeEntries = null, action) => {
 	return timeEntries;
 }
 
+<<<<<<< HEAD
+=======
+const handleSuccessReducer = (status = null, action) => {
+	if (action.type === "REQUEST_SUCCEEDED") {
+		return action.payload
+	}
+
+	if (action.type === "REQUEST_FAILED") {
+		return action.error.response
+	}
+
+	return status;
+}
+
+>>>>>>> master
 
 export default combineReducers({
 	user: currentUserReducer,
@@ -205,7 +220,12 @@ export default combineReducers({
 	teamMembers: teamMembershipReducer,
 	allTimeEntries: allTimeEntriesReducer,
 	userTimeEntries: timeEntriesForSpecifiedPeriodReducer,
+<<<<<<< HEAD
 	projectTimeEntries: timeEntriesForSpecifiedProjectReducer
+=======
+	projectTimeEntries: timeEntriesForSpecifiedProjectReducer,
+	requestStatus: handleSuccessReducer
+>>>>>>> master
 
 })
 

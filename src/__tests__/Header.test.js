@@ -1,17 +1,29 @@
-import {shallow} from 'enzyme'
-import React from 'react'
-import Header from '../components/Header'
+import React from "react";
+import Header from "../components/Header";
+import { shallow, mount } from "enzyme";
 
+jest.mock("../services/loginService");
+jest.mock("../services/userProfileService");
 
-describe.skip("Header tests", () => {
+import {getCurrentUser} from "../services/loginService";
+import {getUserProfile} from "../services/userProfileService";
 
-    let headerMountedPage;
-    beforeEach(()=> {
-        headerMountedPage = shallow(<Header />)
+describe("Header component structure", () => {
+	let mountedHeader;
+	beforeEach(() => {
+		getCurrentUser.__setValue("headerTest");
+		getUserProfile.__setValue("userProfile");
+        mountedHeader = mount(<Header />);
     })
 
-    it("should render a profile pciture", ()=> {
-        console.log("something");
-    })
+	it("should run test", () => {
+		console.log(getCurrentUser())
+	})
+
+	it('should be rendered with two input fields', () => {
+        
+    	const inputs = mountedHeader.find('div')
+    	expect(inputs.length).toBe(0)
+    });
 
 })

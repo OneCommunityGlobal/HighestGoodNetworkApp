@@ -18,11 +18,14 @@ describe("App tests", () => {
 
   })
 
+<<<<<<< HEAD
   it('renders a header component', () => {
     mountedapp = shallow(<App/>)
     expect(mountedapp.find('Header').length).toBe(1)
     
   });
+=======
+>>>>>>> master
   
 
 })
