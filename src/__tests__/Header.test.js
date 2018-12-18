@@ -20,10 +20,4 @@ describe("Header component structure", () => {
 		console.log(getCurrentUser())
 	})
 
-	it('should be rendered with two input fields', () => {
-        
-    	const inputs = mountedHeader.find('div')
-    	expect(inputs.length).toBe(0)
-    });
-
 })
