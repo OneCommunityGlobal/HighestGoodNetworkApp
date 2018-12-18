@@ -279,8 +279,6 @@ export function getTimeEntryForSpecifiedProject(projectId, fromDate, toDate) {
 			})
 		});
 	};
-<<<<<<< HEAD
-=======
 }
 
 export function postTimeEntry(timeEntryObj) {
@@ -292,5 +290,4 @@ export function postTimeEntry(timeEntryObj) {
 			error => dispatch({ type: "REQUEST_FAILED", error: error })
 		);
 	};
->>>>>>> master
 }
