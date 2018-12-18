@@ -2,7 +2,13 @@ let getCurrentUser_result;
 let getCurrentUseroptions = 
     {
         "userPresent" : {foo: "bar" , baz : "masklsd"},
-        "userNotPresent" : null
+        "userNotPresent" : null,
+        "headerTest" : {
+        	name: "Foobar",
+			profilePic: undefined,
+			userId: "5be0952c633dae0016081b4b"
+        }
+
     };
 
 getCurrentUser.__setValue = (option) => {

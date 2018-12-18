@@ -279,4 +279,18 @@ export function getTimeEntryForSpecifiedProject(projectId, fromDate, toDate) {
 			})
 		});
 	};
+<<<<<<< HEAD
+=======
+}
+
+export function postTimeEntry(timeEntryObj) {
+	const request = httpService.post(`${APIEndpoint}/TimeEntry`, timeEntryObj);
+	return dispatch => {
+		request.then(
+			response =>
+				dispatch({ type: "REQUEST_SUCCEEDED", payload: response }),
+			error => dispatch({ type: "REQUEST_FAILED", error: error })
+		);
+	};
+>>>>>>> master
 }
