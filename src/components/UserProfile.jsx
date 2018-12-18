@@ -6,6 +6,7 @@ import {
 } from "../services/userProfileService";
 import { getCurrentUser } from "../services/loginService";
 import Profile from "./Profile";
+import { toast } from "react-toastify";
 
 class UserProfile extends Component {
   state = {
@@ -32,15 +33,20 @@ class UserProfile extends Component {
         targetUserId
       });
     } catch (error) {
-      if (error.response && error.response.status === 400) {
-        alert("This is an invalid profile");
-        window.history.back();
+      if (error.response) {
+        toast.error("This is an invalid profile", {
+          onClose: () => this.props.history.goBack()
+        });
       }
     }
   }
   handleSubmit = async data => {
-    let result = await editUserProfileData(this.state.targetUserId, data);
-    console.log(result);
+    try {
+      await editUserProfileData(this.state.targetUserId, data);
+      toast.success("Edits were successfully saved");
+    } catch (error) {
+      toast.error(error);
+    }
   };
 
   render() {
