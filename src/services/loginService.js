@@ -1,59 +1,45 @@
-import httpService from './httpervice'
-import config from "../config.json"
-import jwtDecode from 'jwt-decode'
+import httpService from "./httpervice";
+import config from "../config.json";
+import jwtDecode from "jwt-decode";
 
-
-const loginApiEndpoint = `${process.env.REACT_APP_APIENDPOINT}/login`; 
+const loginApiEndpoint = `${process.env.REACT_APP_APIENDPOINT}/login`;
 
 const tokenKey = config.tokenKey;
 
-httpService.setjwt(getjwt())
+httpService.setjwt(getjwt());
 
-export async function login(credentials)
-{
-  let {data} = await httpService.post(loginApiEndpoint, credentials)
- if(!!data.new)
- {
-   return {"userType": "newUser", "userId": data.userId};
-
- }
- else
- {
-  localStorage.setItem(tokenKey, data.token) ;
-  return ;
- } 
- 
+export async function login(credentials) {
+  let { data } = await httpService.post(loginApiEndpoint, credentials);
+  if (!!data.new) {
+    return { userType: "newUser", userId: data.userId };
+  } else {
+    localStorage.setItem(tokenKey, data.token);
+    return;
+  }
 }
 
-export function logout ()
-{
+export function logout() {
   localStorage.removeItem(tokenKey);
 }
 
-export function getCurrentUser()
-{
-
-  return isUserAuthenticated() ? jwtDecode(localStorage.getItem(tokenKey)): null
-
+export function getCurrentUser() {
+  return isUserAuthenticated()
+    ? jwtDecode(localStorage.getItem(tokenKey))
+    : null;
 }
-  export function loginWithJWT (jwt)
-  {
-    localStorage.setItem(tokenKey,jwt)
-  }
+export function loginWithJWT(jwt) {
+  localStorage.setItem(tokenKey, jwt);
+}
 
-  export function getjwt()
-  {
-    return localStorage.getItem(tokenKey)? localStorage.getItem(tokenKey) : null;
-  }
+export function getjwt() {
+  return localStorage.getItem(tokenKey) ? localStorage.getItem(tokenKey) : null;
+}
 
-  export function isUserAuthenticated()
-  {
-    if (!localStorage.getItem(tokenKey)) {
-        return false;
-      }
-      let token = localStorage.getItem(tokenKey);
-      token = jwtDecode(token);
-      return (token.expiryTimestamp > new Date().toISOString());
-  
+export function isUserAuthenticated() {
+  if (!localStorage.getItem(tokenKey)) {
+    return false;
   }
-  
+  let token = localStorage.getItem(tokenKey);
+  let tokenValue = jwtDecode(token);
+  return tokenValue.expiryTimestamp > new Date().toISOString();
+}
