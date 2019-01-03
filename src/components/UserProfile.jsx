@@ -1,8 +1,12 @@
 import React, { Component } from "react";
 import Loading from "./common/Loading";
-import { getUserProfile } from "../services/userProfileService";
+import {
+  getUserProfile,
+  editUserProfileData
+} from "../services/userProfileService";
 import { getCurrentUser } from "../services/loginService";
 import Profile from "./Profile";
+import { toast } from "react-toastify";
 
 class UserProfile extends Component {
   state = {
@@ -21,13 +25,29 @@ class UserProfile extends Component {
       let { userId: targetUserId } = this.props.match.params;
       let { data: userProfile } = { ...(await getUserProfile(targetUserId)) };
       let isLoading = false;
-      this.setState({ requestorId, requestorRole, isLoading, userProfile, targetUserId });
+      this.setState({
+        requestorId,
+        requestorRole,
+        isLoading,
+        userProfile,
+        targetUserId
+      });
     } catch (error) {
-      if (error.response && error.response.status === 400) {
-        alert("This is an invalid profile");
+      if (error.response) {
+        toast.error("This is an invalid profile", {
+          onClose: () => this.props.history.goBack()
+        });
       }
     }
   }
+  handleSubmit = async data => {
+    try {
+      await editUserProfileData(this.state.targetUserId, data);
+      toast.success("Edits were successfully saved");
+    } catch (error) {
+      toast.error(error);
+    }
+  };
 
   render() {
     if (this.state.isLoading === true) {
@@ -42,6 +62,7 @@ class UserProfile extends Component {
         requestorRole={requestorRole}
         userProfile={userProfile}
         targetUserId={targetUserId}
+        onSubmit={this.handleSubmit}
       />
     );
   }

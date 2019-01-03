@@ -43,7 +43,6 @@ class Login extends Form {
   };
 
   render() {
-    
     if (getCurrentUser()) return <Redirect to="/" />;
 
     return (
@@ -51,8 +50,12 @@ class Login extends Form {
         <h2>Please Sign in</h2>
 
         <form className="col-md-6 xs-12" onSubmit={e => this.handleSubmit(e)}>
-          {this.renderInput({name: "email", label:"Email:"})}
-          {this.renderInput({name: "password", label: "Password:", type: "password"})}
+          {this.renderInput({ name: "email", label: "Email:" })}
+          {this.renderInput({
+            name: "password",
+            label: "Password:",
+            type: "password"
+          })}
           {this.renderButton("Submit")}
         </form>
       </div>

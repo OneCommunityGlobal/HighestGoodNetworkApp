@@ -8,6 +8,7 @@ import Image from "./image"
 import FileUpload from "./fileUpload"
 import { Link } from 'react-router-dom'
 import TinyMCEEditor from './tinymceEditor'
+import CheckboxCollection from './checkboxCollection'
 
 class Form extends Component {
   state = {
@@ -25,6 +26,13 @@ class Form extends Component {
   {
   let {id} = target
     this.handleState(id, target.getContent())
+
+  }
+  updateCollection = (collection, value)=>
+  {
+    let data = this.state.data[collection] || [];
+    data = value;
+    this.handleState(collection, data);
 
   }
 
@@ -79,6 +87,9 @@ class Form extends Component {
     this.setState({ data, errors });
   }
 
+  isStateChanged = () =>!_.isEqual(this.state.data, this.initialState.data)
+  
+
  
   validateProperty = (name, value) => {
     
@@ -115,6 +126,7 @@ class Form extends Component {
   };
   handleSubmit = e => {
     e.preventDefault();
+    e.stopPropagation();
     const errors = this.validateForm();
     this.setState({ errors: errors || {} });
     if (errors) return;
@@ -198,6 +210,12 @@ class Form extends Component {
       <FileUpload name ={name} onUpload={this.handleFileUpload} {...rest} error={errors[name]}/>
     );
 
+  }
+
+  renderCheckboxCollection({collectionName, ...rest})
+  {
+    let {  errors } = { ...this.state };
+    return(<CheckboxCollection error = {errors[collectionName]} {...rest} />)
   }
 
   renderImage({name, label, ...rest}) {
