@@ -1,51 +1,48 @@
 version: 2
 jobs:
- build_dev:
-  docker:
-   - image: circleci/node:latest
-  steps:
-  - checkout    
-  - run:
-     name: Update npm
-     command: 'sudo npm install'
-  - run:
-      name: Run react build
-      command: 'sudo REACT_APP_APIENDPOINT=$APIENDPOINT_DEV REACT_APP_SENTRY_URL=$SENTRY_URL_DEV npm run build'
-  - run:
-      name: Test the build
-      command: 'sudo npm test'
+  build_dev:
+    docker:
+      - image: circleci/node:latest
+    steps:
+      - checkout
+      - run:
+          name: Update npm
+          command: "sudo npm install"
+      - run:
+          name: Run react build
+          command: "sudo REACT_APP_APIENDPOINT=$APIENDPOINT_DEV REACT_APP_SENTRY_URL=$SENTRY_URL_DEV npm run build"
+      - run:
+          name: Test the build
+          command: "sudo npm test"
 
-  - run:
-     name: Deploy app
-     command: ./node_modules/.bin/surge build --domain $SURGE_DOMAIN_DEV
-  
+      - run:
+          name: Deploy app
+          command: ./node_modules/.bin/surge build --domain $SURGE_DOMAIN_DEV
 
- build_PROD:
-   docker:
-   - image: circleci/node:latest
-   steps:
-    - checkout
-    - run:
-       name: Update npm
-       command: 'sudo npm install'
-    - run:
-       name: Run ember build
-       command: 'sudo REACT_APP_APIENDPOINT=$APIENDPOINT_PROD REACT_APP_SENTRY_URL=$SENTRY_URL_PROD npm run build'
-    - run:
-       name: Deploy app
-       command: ./node_modules/.bin/surge build --domain $SURGE_DOMAIN_PROD
-  
+  build_PROD:
+    docker:
+      - image: circleci/node:latest
+    steps:
+      - checkout
+      - run:
+          name: Update npm
+          command: "sudo npm install"
+      - run:
+          name: Run react build
+          command: "sudo REACT_APP_APIENDPOINT=$APIENDPOINT_PROD REACT_APP_SENTRY_URL=$SENTRY_URL_PROD npm run build"
+      - run:
+          name: Deploy app
+          command: ./node_modules/.bin/surge build --domain $SURGE_DOMAIN_PROD
+
 workflows:
   version: 2
   deploy:
     jobs:
       - build_dev:
-         filters:
+          filters:
             branches:
               only: developement
       - build_PROD:
-         filters:
+          filters:
             branches:
               only: master
-      
-
