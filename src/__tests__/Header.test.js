@@ -13,11 +13,11 @@ describe("Header component structure", () => {
 	beforeEach(() => {
 		getCurrentUser.__setValue("headerTest");
 		getUserProfile.__setValue("userProfile");
-        mountedHeader = mount(<Header />);
+        mountedHeader = shallow(<Header />);
     })
 
 	it("should run test", () => {
-		console.log(getCurrentUser())
+		console.log(mountedHeader)
 	})
 
 })
