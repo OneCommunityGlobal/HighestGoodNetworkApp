@@ -39,7 +39,6 @@ class Header extends React.Component {
   render() {
     let {userId,name,profilePic} = this.state;
     if(userId === 0) return null;
-    console.log(this.state)
     return (
      
       <div>
