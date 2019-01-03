@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React from 'react';
 import Joi from 'joi'
 import Form from './common/form';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
@@ -39,6 +39,7 @@ class NewProfileLink extends Form {
 
     doSubmit()
     {
+        alert("child profile link")
         this.props.onSubmit(this.props.collection, this.state.data, "create");
         this.toggle();
         this.resetForm()
@@ -46,17 +47,15 @@ class NewProfileLink extends Form {
 
     render() { 
         let {label} = this.props;
-        let currentState = this.state.data;
-        let prevState = this.initialState.data;
         return (
            <React.Fragment>
-            <a href="#" class="card-link" onClick={this.toggle}>Add New {label} Link</a>
+            <div className="btn btn-link" onClick={this.toggle}>Add New {label} Link</div>
 
 <Modal isOpen={this.state.modal} toggle={this.toggle} >
       <ModalHeader toggle={this.toggle}>New {label} Link</ModalHeader>
       <form onSubmit={e => this.handleSubmit(e)}>
       <ModalBody>
-      {!_.isEqual(currentState,prevState) && <ShowSaveWarning/>}      
+      {this.isStateChanged() && <ShowSaveWarning/>}      
       {this.renderInput({name: "Name", label: "Name:", className : "col-md-12",  type: "text" ,value : this.state.data.Name  })}
       {this.renderInput({name: "Link", label: "Link:", className : "col-md-12", type: "url", value : this.state.data.Link })}       
       </ModalBody>
