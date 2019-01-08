@@ -1,6 +1,8 @@
 import React, { Component } from "react";
 import { getCurrentUser } from "../services/loginService";
-import { getLeaderboardData } from "../services/dashBoardService";
+// import { getLeaderboardData } from "../services/dashBoardService";
+import { connect } from "react-redux";
+import { getLeaderboardData } from "../actions";
 import _ from "lodash";
 import { Link } from "react-router-dom";
 import Loading from './common/Loading'
@@ -27,46 +29,56 @@ class Leaderboard extends Component {
   };
 
   async componentDidMount() {
-    let loggedinUser = getCurrentUser().userid;
-    let maxtotal = 0;
-
-    let results = await getLeaderboardData(loggedinUser);
-    let isLoading = false;
-    let data = results.data;
-
-    let leaderboardData = [];
-
-    maxtotal = _.maxBy(data, "totaltime_hrs").totaltime_hrs;
-
-    maxtotal = maxtotal === 0 ? 10 : maxtotal;
-
-    //Sets the leaderboard array with Objects
-     data.forEach(element => {
-      leaderboardData.push({
-        didMeetWeeklyCommitment:
-          element.totaltangibletime_hrs >= element.weeklyComittedHours
-            ? true
-            : false,
-        name: element.name,
-        weeklycommited: _.round(element.weeklyComittedHours, 2),
-        personId: element.personId,
-        tangibletime: _.round(element.totaltangibletime_hrs, 2),
-        intangibletime: _.round(element.totalintangibletime_hrs, 2),
-        tangibletimewidth: _.round(
-          (element.totaltangibletime_hrs * 100) / maxtotal,
-          0
-        ),
-        intangibletimewidth: _.round(
-          (element.totalintangibletime_hrs * 100) / maxtotal,
-          0
-        ),
-        tangiblebarcolor: this.getcolor(element.totaltangibletime_hrs),
-        totaltime: _.round(element.totaltime_hrs, 2)
-      });
-    });
-
-    this.setState({ leaderboardData, maxtotal, loggedinUser, isLoading });
+    await this.props.state.user
+    let user = this.props.state.user
+    this.props.getLeaderboardData(user.userid)
   }
+
+  componentDidUpdate() {
+    let result = this.props.state.leaderboardData
+    console.log(result)
+  }
+  // async componentDidMount() {
+  //   let loggedinUser = getCurrentUser().userid;
+  //   let maxtotal = 0;
+
+  //   let results = await getLeaderboardData(loggedinUser);
+  //   let isLoading = false;
+  //   let data = results.data;
+
+  //   let leaderboardData = [];
+
+  //   maxtotal = _.maxBy(data, "totaltime_hrs").totaltime_hrs;
+
+  //   maxtotal = maxtotal === 0 ? 10 : maxtotal;
+
+  //   //Sets the leaderboard array with Objects
+  //    data.forEach(element => {
+  //     leaderboardData.push({
+  //       didMeetWeeklyCommitment:
+  //         element.totaltangibletime_hrs >= element.weeklyComittedHours
+  //           ? true
+  //           : false,
+  //       name: element.name,
+  //       weeklycommited: _.round(element.weeklyComittedHours, 2),
+  //       personId: element.personId,
+  //       tangibletime: _.round(element.totaltangibletime_hrs, 2),
+  //       intangibletime: _.round(element.totalintangibletime_hrs, 2),
+  //       tangibletimewidth: _.round(
+  //         (element.totaltangibletime_hrs * 100) / maxtotal,
+  //         0
+  //       ),
+  //       intangibletimewidth: _.round(
+  //         (element.totalintangibletime_hrs * 100) / maxtotal,
+  //         0
+  //       ),
+  //       tangiblebarcolor: this.getcolor(element.totaltangibletime_hrs),
+  //       totaltime: _.round(element.totaltime_hrs, 2)
+  //     });
+  //   });
+
+  //   this.setState({ leaderboardData, maxtotal, loggedinUser, isLoading });
+  //}
 
 
   render() {
@@ -165,4 +177,8 @@ class Leaderboard extends Component {
   }
 }
 
-export default Leaderboard;
+const mapStateToProps = state => {
+  return { state };
+};
+
+export default connect(mapStateToProps, { getLeaderboardData })(Leaderboard);
