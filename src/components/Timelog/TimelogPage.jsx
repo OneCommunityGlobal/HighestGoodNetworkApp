@@ -1,9 +1,12 @@
 import React from "react";
 import TimeEntry from "./TimeEntry";
+import { connect } from "react-redux";
+import store from "../../store";
 import { getCurrentUser } from "../../services/loginService";
 import { Container, Row, Col } from "reactstrap";
 import Form from "../common/form";
 import Httpervice from "../../services/httpervice";
+import Leaderboard from "../Leaderboard";
 
 class TimelogPage extends Form {
   constructor(props, context) {
@@ -17,6 +20,7 @@ class TimelogPage extends Form {
     this.setState({ data: data }, () => {
       this.getData();
     });
+    console.log(store.getState());
   }
 
   getData = () => {
@@ -41,8 +45,9 @@ class TimelogPage extends Form {
         </Row>
         <Row>
           <Col sm={6} md={3}>
-            <h2 className="float-left" onClick={this.handleClick}>
-              Jordan Miller
+            <h2 className="float-left">
+              {store.getState().userProfile.firstName} {store.getState().userProfile.lastName}
+              
             </h2>
           </Col>
         </Row>
@@ -53,9 +58,18 @@ class TimelogPage extends Form {
               projects={this.state.projects}
             />
           </Col>
+          <Col lg={4}>
+            <Leaderboard />
+          </Col>
         </Row>
       </Container>
     );
   }
 }
-export default TimelogPage;
+const mapStateToProps = state => {
+  {
+    return { state };
+  }
+};
+
+export default connect(mapStateToProps)(TimelogPage);

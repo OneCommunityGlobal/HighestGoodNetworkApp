@@ -1,7 +1,7 @@
-import React from 'react';
-import Img from 'react-image';
-import {getCurrentUser} from "../services/loginService";
-import {getUserProfile} from "../services/profileService";
+import React from "react";
+import Img from "react-image";
+import { getCurrentUser } from "../services/loginService";
+import { getUserProfile } from "../services/profileService";
 import {
   Collapse,
   Navbar,
@@ -14,77 +14,94 @@ import {
   DropdownToggle,
   DropdownMenu,
   DropdownItem
-} from 'reactstrap';
+} from "reactstrap";
+
+import { BrowserRouter, Route, Link } from "react-router-dom";
 
 class Header extends React.Component {
   state = {
-    userID:"",
-    userData:{},
-    userProfileData:{}
+    userID: "",
+    userData: {},
+    userProfileData: {}
   };
-  
+
   async componentDidMount() {
-    let userID = getCurrentUser()? getCurrentUser().userid : null;
+    let userID = getCurrentUser() ? getCurrentUser().userid : null;
     if (!userID) return;
-    let {data:userProfileData} = {...await getUserProfile(userID)};
-    this.setState({userID,userProfileData});
+    let { data: userProfileData } = { ...(await getUserProfile(userID)) };
+    this.setState({ userID, userProfileData });
   }
   render() {
-    let {userID,userProfileData} = this.state;
-    if (!userID) return (null);
+    let { userID, userProfileData } = this.state;
+    if (!userID) return null;
     return (
       <div>
-        <Navbar color="dark" dark expand="md" style={{marginBottom:'20px'}}>
+        <Navbar color="dark" dark expand="md" style={{ marginBottom: "20px" }}>
           <NavbarBrand href="/">Time Tracking Tool</NavbarBrand>
           <NavbarToggler onClick={this.toggle} />
           <Collapse isOpen={this.state.isOpen} navbar>
             <Nav className="ml-auto" navbar>
               <NavItem>
-                <NavLink href="/dashboard" activeStyle={{color:"blue"}}>Dashboard</NavLink>
+                <Link to="/dashboard" activeStyle={{ color: "blue" }}>
+                  Dashboard
+                </Link>
               </NavItem>
               <NavItem>
-              <NavLink href={`/timelog/${userID}`}>Timelog</NavLink>
+                <Link to={`/timelog/${userID}`}>Timelog</Link>
               </NavItem>
               <NavItem>
-                <NavLink href="/reports" activeStyle={{color:"blue"}}>Reports</NavLink>
+                <NavLink href="/reports" activeStyle={{ color: "blue" }}>
+                  Reports
+                </NavLink>
               </NavItem>
               <NavItem>
-              <NavLink href={`/timelog/${userID}`}>
-                <icon class="fa fa-bell icon-large">
-                  <icon class="badge badge-pill badge-danger badge-notify">
-                  {/* Pull number of unread messages */}
+                <NavLink href={`/timelog/${userID}`}>
+                  <icon class="fa fa-bell icon-large">
+                    <icon class="badge badge-pill badge-danger badge-notify">
+                      {/* Pull number of unread messages */}
+                    </icon>
+                    <span class="sr-only">unread messages</span>
                   </icon>
-                  <span class="sr-only">unread messages</span>
-                </icon>
-            </NavLink>
+                </NavLink>
               </NavItem>
               <UncontrolledDropdown nav inNavbar>
                 <DropdownToggle nav caret>
                   Other Links
                 </DropdownToggle>
                 <DropdownMenu>
-                  <DropdownItem href="/usermanagement">User Management</DropdownItem>
+                  <DropdownItem href="/usermanagement">
+                    User Management
+                  </DropdownItem>
                   <DropdownItem href="">Projects</DropdownItem>
                   <DropdownItem href="">Teams</DropdownItem>
                 </DropdownMenu>
               </UncontrolledDropdown>
               <NavItem>
                 <NavLink href={`/profile/${userID}`}>
-                  <Img src= {`${userProfileData.profilePic}`}
-                       alt= "" height="35" width="40" class="dashboardimg"/> 
+                  <Img
+                    src={`${userProfileData.profilePic}`}
+                    alt=""
+                    height="35"
+                    width="40"
+                    class="dashboardimg"
+                  />
                 </NavLink>
               </NavItem>
-              <UncontrolledDropdown nav >
-                  <DropdownToggle nav caret>
-                    Welcome {userProfileData.firstName} 
-                  </DropdownToggle>
+              <UncontrolledDropdown nav>
+                <DropdownToggle nav caret>
+                  Welcome {userProfileData.firstName}
+                </DropdownToggle>
                 <DropdownMenu>
-                  <DropdownItem header>Hello {userProfileData.firstName}</DropdownItem>
+                  <DropdownItem header>
+                    Hello {userProfileData.firstName}
+                  </DropdownItem>
                   <DropdownItem divider />
-                  <DropdownItem href={`/profile/${userID}`} >
+                  <DropdownItem href={`/profile/${userID}`}>
                     View Profile
                   </DropdownItem>
-                  <DropdownItem href="/updatepassword">Update Password</DropdownItem>
+                  <DropdownItem href="/updatepassword">
+                    Update Password
+                  </DropdownItem>
                   <DropdownItem divider />
                   <DropdownItem href="/logout">Logout</DropdownItem>
                 </DropdownMenu>

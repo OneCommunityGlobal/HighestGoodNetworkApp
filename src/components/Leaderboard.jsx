@@ -1,6 +1,8 @@
 import React, { Component } from "react";
 import { getCurrentUser } from "../services/loginService";
 import { getLeaderboardData } from "../services/dashBoardService";
+import { getUserProfile } from "../actions";
+import { connect } from "react-redux";
 import _ from "lodash";
 import { Link } from "react-router-dom";
 
@@ -38,7 +40,7 @@ class Leaderboard extends Component {
     maxtotal = maxtotal === 0 ? 10 : maxtotal;
 
     //Sets the leaderboard array with Objects
-     data.forEach(element => {
+    data.forEach(element => {
       leaderboardData.push({
         didMeetWeeklyCommitment:
           element.totaltangibletime_hrs >= element.weeklyComittedHours
@@ -65,11 +67,10 @@ class Leaderboard extends Component {
     this.setState({ leaderboardData, maxtotal, loggedinUser });
   }
 
-
-  render() {    
+  render() {
     let { leaderboardData, loggedinUser, maxtotal } = this.state;
-    
-      return (
+
+    return (
       <div className="card hgn_leaderboard bg-dark">
         <div className="card-body text-white">
           <h5 className="card-title">LeaderBoard</h5>
@@ -77,78 +78,85 @@ class Leaderboard extends Component {
             <table className="table table-sm dashboardtable">
               <tbody>
                 {leaderboardData.map(entry => {
-                 return (
-                  <tr
-                    key={entry.personId}
-                    className={
-                      entry.personId === loggedinUser
-                        ? "table-active row"
-                        : "row"
-                    }
-                  >
-                    <td className="col-1">
-                      <i
-                        className="fa fa-circle"
-                        style={Object.assign({
-                          color: (() =>
-                            entry.didMeetWeeklyCommitment ? "green" : "red")()
-                        })}
-                        data-toggle="tooltip"
-                        data-placement="left"
-                        title={`Weekly Committed: ${
-                          entry.weeklycommited
-                        } hours\nTangibleEffort: ${entry.tangibletime} hours `}
-                      />
-                    </td>
-                    <td className="text-left col-3">
-                      <Link to={`/profile/${entry.personId}`}>
-                        {entry.name}
-                      </Link>
-                    </td>
-                    <td className="text-right text-justify text-nowrap col-2">
-                      {entry.tangibletime} tan
-                    </td>
-                    <td className="col-4 text-center">
-                      <Link to={`/timelog/${entry.personId}`}>
-                        <div className="progress progress-leaderboard">
-                          <div
-                            className="progress-bar progress-bar-striped"
-                            role="progressbar"
-                            style={Object.assign({
-                              width: entry.tangibletimewidth + "%",
-                              backgroundColor: entry.tangiblebarcolor
-                            })}
-                            aria-valuenow={entry.tangibletime}
-                            aria-valuemin="0 "
-                            aria-valuemax={maxtotal}
-                            data-toggle="tooltip"
-                            data-placement="bottom"
-                            title={`Tangible Effort: ${
-                              entry.tangibletime
-                            } hours`}
-                          />
-                          <div
-                            className="progress-bar progress-bar-striped bg-info"
-                            role="progressbar"
-                            style={{ width: entry.intangibletimewidth }}
-                            aria-valuenow={entry.intangibletime}
-                            aria-valuemin="0"
-                            aria-valuemax={maxtotal}
-                            data-toggle="tooltip"
-                            data-placement="bottom"
-                            title={`Intangible Effort: ${
-                              entry.intangibletime
-                            } hours`}
-                          />
-                        </div>
-                      </Link>
-                    </td>
-                    <td className="text-right text-justify text-nowrap col-2">
-                      {entry.totaltime} tot
-                    </td>
-                  </tr>
-                  ) }
-                )}
+                  return (
+                    <tr
+                      key={entry.personId}
+                      className={
+                        entry.personId === loggedinUser
+                          ? "table-active row"
+                          : "row"
+                      }
+                    >
+                      <td className="col-1">
+                        <i
+                          className="fa fa-circle"
+                          style={Object.assign({
+                            color: (() =>
+                              entry.didMeetWeeklyCommitment ? "green" : "red")()
+                          })}
+                          data-toggle="tooltip"
+                          data-placement="left"
+                          title={`Weekly Committed: ${
+                            entry.weeklycommited
+                          } hours\nTangibleEffort: ${
+                            entry.tangibletime
+                          } hours `}
+                        />
+                      </td>
+                      <td className="text-left col-3">
+                        <Link to={`/profile/${entry.personId}`}>
+                          {entry.name}
+                        </Link>
+                      </td>
+                      <td className="text-right text-justify text-nowrap col-2">
+                        {entry.tangibletime} tan
+                      </td>
+                      <td className="col-4 text-center">
+                        <Link
+                          to={`/timelog/${entry.personId}`}
+                          onClick={() => {
+                            this.props.getUserProfile(entry.personId);
+                          }}
+                        >
+                          <div className="progress progress-leaderboard">
+                            <div
+                              className="progress-bar progress-bar-striped"
+                              role="progressbar"
+                              style={Object.assign({
+                                width: entry.tangibletimewidth + "%",
+                                backgroundColor: entry.tangiblebarcolor
+                              })}
+                              aria-valuenow={entry.tangibletime}
+                              aria-valuemin="0 "
+                              aria-valuemax={maxtotal}
+                              data-toggle="tooltip"
+                              data-placement="bottom"
+                              title={`Tangible Effort: ${
+                                entry.tangibletime
+                              } hours`}
+                            />
+                            <div
+                              className="progress-bar progress-bar-striped bg-info"
+                              role="progressbar"
+                              style={{ width: entry.intangibletimewidth }}
+                              aria-valuenow={entry.intangibletime}
+                              aria-valuemin="0"
+                              aria-valuemax={maxtotal}
+                              data-toggle="tooltip"
+                              data-placement="bottom"
+                              title={`Intangible Effort: ${
+                                entry.intangibletime
+                              } hours`}
+                            />
+                          </div>
+                        </Link>
+                      </td>
+                      <td className="text-right text-justify text-nowrap col-2">
+                        {entry.totaltime} tot
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>
@@ -158,4 +166,11 @@ class Leaderboard extends Component {
   }
 }
 
-export default Leaderboard;
+const mapStateToProps = state => {
+  return { state };
+};
+
+export default connect(
+  mapStateToProps,
+  { getUserProfile }
+)(Leaderboard);

@@ -6,17 +6,29 @@ import Textarea from "../common/Textarea";
 import Dropdown from "./dropdown";
 
 class Form extends Component {
-  state = {
-    data: {},
-    errors: {}
+  constructor(props) {
+    super(props);
+    this.state = {
+      data: {
+        tangible: false
+      },
+      errors: {}
+    };
+  }
+
+  handleCheckbox = event => {
+    let { data, errors } = { ...this.state };
+    console.log(event.target.checked);
+    data[event.target.name] = event.target.checked.toString();
+    this.setState({ data });
+    console.log(this.state);
   };
 
   handleChange = ({ currentTarget: input }) => {
     let { data, errors } = { ...this.state };
     data[input.name] = input.value;
-
     const errorMessage = this.validateProperty(input.name, input.value);
-
+    console.log(input.name);
     if (errorMessage) {
       errors[input.name] = errorMessage;
     } else {
@@ -24,14 +36,6 @@ class Form extends Component {
     }
     this.setState({ data, errors });
     console.log(this.state);
-  };
-
-  handleClick = () => {
-    this.setState({
-      data: {
-        tangible: !this.state.data.tangible
-      }
-    });
   };
 
   validateProperty = (name, value) => {
@@ -98,6 +102,7 @@ class Form extends Component {
 
     return (
       <Input
+        checked={this.state.data.tangible}
         id={name}
         name={name}
         type={type}
@@ -107,6 +112,23 @@ class Form extends Component {
         error={errors[name]}
         min={min}
         max={max}
+      />
+    );
+  }
+
+  renderCheckbox(name, label, type) {
+    let { data, errors } = { ...this.state };
+
+    // doesn't initialize the time entry object properly yet
+
+    return (
+      <Input
+        id={name}
+        name={name}
+        type={type}
+        onChange={e => this.handleCheckbox(e)}
+        value={data[name]}
+        label={label}
       />
     );
   }
@@ -127,7 +149,6 @@ class Form extends Component {
       />
     );
   }
-
 }
 
 export default Form;

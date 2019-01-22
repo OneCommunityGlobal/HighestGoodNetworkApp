@@ -1,10 +1,10 @@
 import React, { Component } from "react";
-import TimeEntry from "./TimeEntry";
 import { FormGroup, Container, Row, Col, Button } from "reactstrap";
 import Form from "../common/form";
+import { postTimeEntry } from "../../actions";
+import store from "../../store";
 import Joi from "joi";
 import moment from "moment";
-import Httpervice from "../../services/httpervice";
 
 class TimeEntryBody extends Form {
   constructor(props, context) {
@@ -65,37 +65,23 @@ class TimeEntryBody extends Form {
     notes: Joi.string().label("notes")
   };
 
-  postTimeEntry = timeData => {
-    Httpervice.setjwt(localStorage.getItem("token"));
-    Httpervice.post(
-      `${process.env.REACT_APP_APIENDPOINT}/TimeEntry`,
-      timeData,
-      {
-        headers: {
-          "Content-Type": "application/json"
-        }
-      }
-    ).then(response => {
-      console.log(response);
-    });
-  };
-
   handleSubmit = () => {
     let timeEntry = {};
-    // timeEntry.timeSpent = `${this.state.data.hours}:${this.state.data.minutes}`;
-    timeEntry.timeSpent = `01:00:10`;
-    timeEntry.personId = this.props.userData.userid;
+    if (store.getState().user.role === "Adminstrator") {
+      
+    }
+
+    const timeSpent = `${this.state.data.hours}:${this.state.data.minutes}:00`;
+
+    timeEntry.timeSpent = timeSpent;
+    timeEntry.personId = store.getState().
     timeEntry.projectId = this.state.data.projectId;
-    timeEntry.dateofWork = this.state.data.date;
-    timeEntry.isTangible = "false";
+    timeEntry.dateOfWork = this.state.data.date;
+    timeEntry.isTangible = this.state.data.tangible;
     timeEntry.notes = this.state.data.notes;
     console.log(timeEntry);
-    this.postTimeEntry(timeEntry);
+    postTimeEntry(timeEntry);
   };
-
-  componentWillMount() {
-    console.log("userData: ", this.props.userData);
-  }
 
   render() {
     const max = moment().format("YYYY-MM-DD");
@@ -145,7 +131,7 @@ class TimeEntryBody extends Form {
           </Row>
           <Row>
             <FormGroup>
-              {this.renderInput("tangible", "Tangible", "checkbox")}
+              {this.renderCheckbox("tangible", "Tangible", "checkbox")}
             </FormGroup>
           </Row>
           <Row>
