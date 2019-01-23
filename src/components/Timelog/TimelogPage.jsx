@@ -1,9 +1,10 @@
-import React from "react";
-import TimeEntry from "./TimeEntry";
-import { getCurrentUser } from "../../services/loginService";
-import { Container, Row, Col } from "reactstrap";
-import Form from "../common/form";
-import Httpervice from "../../services/httpervice";
+import React from 'react';
+import { connect } from 'react-redux';
+import { Container, Row, Col } from 'reactstrap';
+import TimeEntry from './TimeEntry';
+import store from '../../store';
+import Form from '../common/form';
+import Leaderboard from '../Leaderboard';
 
 class TimelogPage extends Form {
   constructor(props, context) {
@@ -11,25 +12,6 @@ class TimelogPage extends Form {
 
     this.state = {};
   }
-
-  componentWillMount() {
-    const data = getCurrentUser();
-    this.setState({ data: data }, () => {
-      this.getData();
-    });
-  }
-
-  getData = () => {
-    console.log(this.state.data.userid);
-    const api = process.env.REACT_APP_APIENDPOINT;
-    Httpervice.setjwt(localStorage.getItem("token"));
-    Httpervice.get(`${api}/projects/user/${this.state.data.userid}`).then(
-      response => {
-        console.log(response.data);
-        this.setState({ projects: response.data });
-      }
-    );
-  };
 
   render() {
     return (
@@ -41,8 +23,11 @@ class TimelogPage extends Form {
         </Row>
         <Row>
           <Col sm={6} md={3}>
-            <h2 className="float-left" onClick={this.handleClick}>
-              Jordan Miller
+            <h2 className="float-left">
+              {/* {store.getState().userProfile.firstName}
+{' '}
+{store.getState().userProfile.lastName} */}
+
             </h2>
           </Col>
         </Row>
@@ -53,9 +38,18 @@ class TimelogPage extends Form {
               projects={this.state.projects}
             />
           </Col>
+          <Col lg={4}>
+            <Leaderboard />
+          </Col>
         </Row>
       </Container>
     );
   }
 }
-export default TimelogPage;
+const mapStateToProps = (state) => {
+  {
+    return { state };
+  }
+};
+
+export default connect(mapStateToProps)(TimelogPage);

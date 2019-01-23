@@ -1,20 +1,17 @@
 import React, { Component } from 'react';
 import { Route, Switch } from 'react-router-dom';
-import { ToastContainer } from 'react-toastify'
-import Dashboard from './Dashboard'
+import { ToastContainer } from 'react-toastify';
+import Dashboard from './Dashboard';
 import { Logout } from './Logout';
-import Login from './Login'
-import Header from './Header'
+import Login from './Login';
+import Header from './Header';
 import Timelog from './Timelog/TimelogPage';
 import Reports from './Reports';
-import Profile from './Profile'
+import Profile from './Profile';
 import ForcePasswordUpdate from './ForcePasswordUpdate';
 import 'react-toastify/dist/ReactToastify.css';
-
 import ProtectedRoute from './common/ProtectedRoute';
-
 import logger from '../services/logService';
-
 import '../App.css';
 
 class App extends Component {

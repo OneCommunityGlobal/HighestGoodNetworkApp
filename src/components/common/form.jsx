@@ -11,9 +11,22 @@ import TinyMCEEditor from './tinymceEditor'
 import CheckboxCollection from './checkboxCollection'
 
 class Form extends Component {
-  state = {
-    data: {},
-    errors: {}
+  constructor(props) {
+    super(props);
+    this.state = {
+      data: {
+        tangible: false
+      },
+      errors: {}
+    };
+  }
+
+  handleCheckbox = event => {
+    let { data, errors } = { ...this.state };
+    console.log(event.target.checked);
+    data[event.target.name] = event.target.checked.toString();
+    this.setState({ data });
+    console.log(this.state);
   };
 
 
@@ -83,7 +96,6 @@ class Form extends Component {
   }
 
   isStateChanged = () => !_.isEqual(this.state.data, this.initialState.data)
-
 
 
   validateProperty = (name, value) => {
@@ -169,6 +181,8 @@ class Form extends Component {
     let { data, errors } = { ...this.state };
     return (
       <Input
+        checked={this.state.data.tangible}
+        id={name}
         name={name}
         type={type}
         onChange={e => this.handleInput(e)}
@@ -180,7 +194,25 @@ class Form extends Component {
       />
     );
   }
-  renderRadio({ name, label, type = "text", ...rest }) {
+
+  renderCheckbox(name, label, type) {
+    let { data, errors } = { ...this.state };
+
+    // doesn't initialize the time entry object properly yet
+
+    return (
+      <Input
+        id={name}
+        name={name}
+        type={type}
+        onChange={e => this.handleCheckbox(e)}
+        value={data[name]}
+        label={label}
+      />
+    );
+  }
+
+  renderTextarea(name, label, rows, cols, ...rest) {
     let { data, errors } = { ...this.state };
     return (
       <Radio
