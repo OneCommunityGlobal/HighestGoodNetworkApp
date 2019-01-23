@@ -1,11 +1,11 @@
-import React, { Component } from "react";
-import { Container, Row, Col } from "reactstrap";
-import ModalA from "../common/modal";
-import ModalBody from "./TimeEntryModalBody";
-import Form from "../common/form";
-import Tabs from "../common/Tabs";
+import React, { Component } from 'react';
+import { Container, Row, Col } from 'reactstrap';
+import ModalA from '../common/modal';
+import ModalBody from './TimeEntryModalBody';
+import Form from '../common/form';
+import Tabs from '../common/Tabs';
 
-import Httpervice from "../../services/httpervice";
+import Httpervice from '../../services/httpervice';
 
 class TimeEntry extends Form {
   constructor(props, context) {
@@ -14,7 +14,7 @@ class TimeEntry extends Form {
   }
 
   componentWillMount() {
-    console.log("aaaa");
+    console.log('aaaa');
   }
 
   // getData = () => {
@@ -70,12 +70,12 @@ class TimeEntry extends Form {
               header="Add Time Entry"
               buttonLabel="Add Time Entry"
               color="primary"
-              body={
+              body={(
                 <ModalBody
                   userData={this.props.userData}
                   projects={this.props.projects}
                 />
-              }
+              )}
             />
           </Col>
         </Row>

@@ -2,7 +2,6 @@ import React, { Component } from "react";
 import Joi from "joi";
 import _ from "lodash";
 import Input from "../common/input";
-import Textarea from "../common/Textarea";
 import Dropdown from "./dropdown";
 import Radio from "./radio"
 import Image from "./image"
@@ -17,9 +16,41 @@ class Form extends Component {
     errors: {}
   };
 
-  handleChange = ({ currentTarget: input }) => {
-    let { data, errors } = { ...this.state };
-    data[input.name] = input.value;
+
+  resetForm = () => this.setState(_.cloneDeep(this.initialState));
+
+  handleInput = ({ currentTarget: input }) => {
+    this.handleState(input.name, input.value)
+  };
+  handleRichTextEditor = ({ target }) => {
+    let { id } = target
+    this.handleState(id, target.getContent())
+
+  }
+  updateCollection = (collection, value) => {
+    let data = this.state.data[collection] || [];
+    data = value;
+    this.handleState(collection, data);
+
+  }
+
+  handleCollection = (collection, item, action, index = null) => {
+
+    let data = this.state.data[collection] || [];
+    switch (action) {
+      case "create":
+        data.push(item);
+        break;
+      case "edit":
+        data[index] = item;
+        break;
+      case "delete":
+        data.splice(index, 1)
+        break;
+      default:
+        break;
+    }
+    this.handleState(collection, data);
 
   }
 
@@ -44,23 +75,19 @@ class Form extends Component {
     data[name] = value;
     const errorMessage = this.validateProperty(name, value);
     if (errorMessage) {
-      errors[input.name] = errorMessage;
+      errors[name] = errorMessage;
     } else {
-      delete errors[input.name];
+      delete errors[name];
     }
     this.setState({ data, errors });
-    console.log(this.state);
-  };
+  }
 
-  handleClick = () => {
-    this.setState({
-      data: {
-        tangible: !this.state.data.tangible
-      }
-    });
-  };
+  isStateChanged = () => !_.isEqual(this.state.data, this.initialState.data)
+
+
 
   validateProperty = (name, value) => {
+
     const obj = { [name]: value };
     const schema = { [name]: this.schema[name] };
     let refs = schema[name]._refs;
@@ -91,7 +118,6 @@ class Form extends Component {
     });
     return errors;
   };
-
   handleSubmit = e => {
     e.preventDefault();
     e.stopPropagation();
@@ -101,13 +127,9 @@ class Form extends Component {
     this.doSubmit();
   };
 
-  renderButton(label, click) {
+  renderButton(label) {
     return (
-      <button
-        disabled={this.validateForm()}
-        onClick={click}
-        className="btn btn-primary"
-      >
+      <button disabled={this.validateForm()} className="btn btn-primary">
         {label}
       </button>
     );
@@ -136,13 +158,14 @@ class Form extends Component {
         label={label}
         options={options}
         value={data[name]}
-        onChange={e => this.handleChange(e)}
+        onChange={e => this.handleInput(e)}
         error={errors[name]}
+        {...rest}
       />
-    );
+    )
   }
 
-  renderInput(name, label, type, min, max) {
+  renderInput({ name, label, type = "text", ...rest }) {
     let { data, errors } = { ...this.state };
     return (
       <Input
@@ -152,29 +175,66 @@ class Form extends Component {
         value={data[name]}
         label={label}
         error={errors[name]}
-        min={min}
-        max={max}
+        {...rest}
+
+      />
+    );
+  }
+  renderRadio({ name, label, type = "text", ...rest }) {
+    let { data, errors } = { ...this.state };
+    return (
+      <Radio
+        name={name}
+        value={data[name]}
+        onChange={e => this.handleInput(e)}
+        error={errors[name]}
+        {...rest}
+
       />
     );
   }
 
-  renderTextarea(name, label, rows, cols) {
-    let { data, errors } = { ...this.state };
+  renderFileUpload({ name, ...rest }) {
+    let { errors } = { ...this.state };
 
     return (
-      <Textarea
-        id={name}
-        rows={rows}
-        cols={cols}
+      <FileUpload name={name} onUpload={this.handleFileUpload} {...rest} error={errors[name]} />
+    );
+
+  }
+
+  renderCheckboxCollection({ collectionName, ...rest }) {
+    let { errors } = { ...this.state };
+    return (<CheckboxCollection error={errors[collectionName]} {...rest} />)
+  }
+
+  renderImage({ name, label, ...rest }) {
+    let { data, errors } = { ...this.state };
+    return (
+      <Image
         name={name}
-        onChange={e => this.handleChange(e)}
+        onChange={e => this.handleInput(e)}
         value={data[name]}
         label={label}
         error={errors[name]}
+        {...rest}
+
       />
     );
   }
+  renderRadio({ name, label, type = "text", ...rest }) {
+    let { data, errors } = { ...this.state };
+    return (
+      <Radio
+        name={name}
+        value={data[name]}
+        onChange={e => this.handleInput(e)}
+        error={errors[name]}
+        {...rest}
 
+      />
+    );
+  }
   renderLink({ label, to, className }) {
     return <Link to={to} className={className}>{label}</Link>
   }
