@@ -1,11 +1,13 @@
-import React, { Component } from "react";
-import { connect } from "react-redux";
-import { getCurrentUser } from "../actions";
-import { getjwt } from "../services/loginService"; 
-import { Card, Row, CardTitle, CardText, Col } from "reactstrap";
-import MonthlyEffort from "./MonthlyEffort";
-import Leaderboard from "./Leaderboard";
-import "../App.css";
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
+import {
+  Card, Row, CardTitle, CardText, Col,
+} from 'reactstrap';
+import { getCurrentUser } from '../actions';
+import { getjwt } from '../services/loginService';
+import MonthlyEffort from './MonthlyEffort';
+import Leaderboard from './Leaderboard';
+import '../App.css';
 
 class Dashboard extends Component {
   componentDidMount() {
@@ -26,12 +28,12 @@ class Dashboard extends Component {
                   <MonthlyEffort />
                 </CardTitle>
                 <CardText>
-                  <div />
+                  AA
                 </CardText>
               </Card>
             </Col>
           </Row>
-          <Row style={{ marginTop: "20px" }}>
+          <Row style={{ marginTop: '20px' }}>
             <Col sm={{ offset: 1, size: 7 }}>
               <Card body inverse color="warning">
                 <CardTitle>Badges</CardTitle>
@@ -44,8 +46,6 @@ class Dashboard extends Component {
   }
 }
 
-const mapStateToProps = state => {
-  return { state };
-};
+const mapStateToProps = state => ({ state });
 
 export default connect(mapStateToProps, { getCurrentUser })(Dashboard);

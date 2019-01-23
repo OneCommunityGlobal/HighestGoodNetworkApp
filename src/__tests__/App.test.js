@@ -1,28 +1,18 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import { shallow } from 'enzyme'
 import App from '../components/App';
-import {shallow} from 'enzyme'
-import Dashboard from '../components/Dashboard'
+import Dashboard from '../components/Dashboard';
 
-describe("App tests", () => {
-
+describe('App tests', () => {
   let mountedapp;
 
-  
+
   beforeEach(() => {
-    mountedapp = shallow(<App/>);
-  })
-
-  it ("renders without crashing", () => {
-    shallow(<App />)
-
-  })
-
-  it('renders a header component', () => {
-    mountedapp = shallow(<App/>)
-    expect(mountedapp.find('Header').length).toBe(1)
-    
+    mountedapp = shallow(<App />);
   });
-  
 
-})
+  it('renders without crashing', () => {
+    shallow(<App />);
+  });
+});

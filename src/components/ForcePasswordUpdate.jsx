@@ -10,6 +10,10 @@ class ForcePasswordUpdate extends Form {
     errors: {}
   };
 
+  componentDidMount() {
+    document.title = "Force Update Password";
+  }
+
   schema = {
     newPassword: Joi.string()
       .regex(

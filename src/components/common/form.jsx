@@ -4,6 +4,12 @@ import _ from "lodash";
 import Input from "../common/input";
 import Textarea from "../common/Textarea";
 import Dropdown from "./dropdown";
+import Radio from "./radio"
+import Image from "./image"
+import FileUpload from "./fileUpload"
+import { Link } from 'react-router-dom'
+import TinyMCEEditor from './tinymceEditor'
+import CheckboxCollection from './checkboxCollection'
 
 class Form extends Component {
   state = {
@@ -15,8 +21,28 @@ class Form extends Component {
     let { data, errors } = { ...this.state };
     data[input.name] = input.value;
 
-    const errorMessage = this.validateProperty(input.name, input.value);
+  }
 
+  handleFileUpload = (e, readAsType = "data") => {
+    const file = e.target.files[0];
+    const reader = new FileReader();
+    let name = e.target.name;
+    if (file) {
+      switch (readAsType) {
+        case "data":
+          reader.readAsDataURL(file)
+          break;
+        default:
+          break;
+      }
+    }
+    reader.onload = () => this.handleState(name, reader.result);
+  }
+
+  handleState = (name, value) => {
+    let { errors, data } = this.state;
+    data[name] = value;
+    const errorMessage = this.validateProperty(name, value);
     if (errorMessage) {
       errors[input.name] = errorMessage;
     } else {
@@ -37,6 +63,14 @@ class Form extends Component {
   validateProperty = (name, value) => {
     const obj = { [name]: value };
     const schema = { [name]: this.schema[name] };
+    let refs = schema[name]._refs;
+    if (refs) {
+      refs.forEach(ref => {
+        schema[ref] = this.schema[ref];
+        obj[ref] = this.state.data[ref];
+
+      });
+    }
     const { error } = Joi.validate(obj, schema);
     if (!error) return null;
     return error.details[0].message;
@@ -60,6 +94,7 @@ class Form extends Component {
 
   handleSubmit = e => {
     e.preventDefault();
+    e.stopPropagation();
     const errors = this.validateForm();
     this.setState({ errors: errors || {} });
     if (errors) return;
@@ -78,9 +113,23 @@ class Form extends Component {
     );
   }
 
-  renderDropDown(name, label, options) {
-    const { data, errors } = { ...this.state };
+  renderRichTextEditor({ name, ...rest }) {
+    const { data, errors } = { ...this.state }
+    return (
+      <TinyMCEEditor
+        name={name}
+        value={data[name]}
+        onChange={e => this.handleRichTextEditor(e)}
+        error={errors[name]}
+        {...rest}
+      />
+    )
 
+  }
+
+  renderDropDown({ name, label, options, ...rest }) {
+
+    const { data, errors } = { ...this.state }
     return (
       <Dropdown
         name={name}
@@ -95,13 +144,11 @@ class Form extends Component {
 
   renderInput(name, label, type, min, max) {
     let { data, errors } = { ...this.state };
-
     return (
       <Input
-        id={name}
         name={name}
         type={type}
-        onChange={e => this.handleChange(e)}
+        onChange={e => this.handleInput(e)}
         value={data[name]}
         label={label}
         error={errors[name]}
@@ -128,6 +175,9 @@ class Form extends Component {
     );
   }
 
+  renderLink({ label, to, className }) {
+    return <Link to={to} className={className}>{label}</Link>
+  }
 }
 
 export default Form;
