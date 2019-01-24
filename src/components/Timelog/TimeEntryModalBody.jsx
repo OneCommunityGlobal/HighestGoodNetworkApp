@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React from "react";
 import { FormGroup, Container, Row, Col, Button } from "reactstrap";
 import Form from "../common/form";
 import { connect } from "react-redux";
@@ -68,21 +68,23 @@ class TimeEntryBody extends Form {
 
   handleSubmit = () => {
     let timeEntry = {};
-    if (store.getState().user.role === "Adminstrator") {
+    // if (store.getState().user.role === "Adminstrator") {
 
-    }
-
+    // }
     const timeSpent = `${this.state.data.hours}:${this.state.data.minutes}:00`;
-
     timeEntry.timeSpent = timeSpent;
-    timeEntry.personId = store.getState().
-      timeEntry.projectId = this.state.data.projectId;
+    timeEntry.personId = store.getState()._id
+    timeEntry.projectId = this.state.data.projectId;
     timeEntry.dateOfWork = this.state.data.date;
     timeEntry.isTangible = this.state.data.tangible;
     timeEntry.notes = this.state.data.notes;
     console.log(timeEntry);
     this.props.postTimeEntry(timeEntry);
   };
+
+  componentDidMount() {
+    console.log(store.getState().userProfile.projects)
+  }
 
   render() {
     const max = moment().format("YYYY-MM-DD");
@@ -118,7 +120,9 @@ class TimeEntryBody extends Form {
                 {this.renderDropDown(
                   "projectId",
                   "Projects",
-                  this.props.projects
+                  "Projects",
+                  ['hello', 'its', 'me']
+                  // store.getState().userProfile.projects
                 )}
               </FormGroup>
             </Col>
@@ -149,9 +153,7 @@ class TimeEntryBody extends Form {
   }
 }
 const mapStateToProps = state => {
-  {
-    return { state };
-  }
+  return { state };
 };
 
 export default connect(mapStateToProps, { postTimeEntry })(TimeEntryBody);

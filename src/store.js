@@ -11,6 +11,7 @@ const store = createStore(
   intialState,
   compose(
     applyMiddleware(...middleware),
+    window.devToolsExtension ? window.devToolsExtension() : f => f,
   ),
 );
 

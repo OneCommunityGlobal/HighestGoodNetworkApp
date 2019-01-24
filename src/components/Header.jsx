@@ -30,6 +30,7 @@ class Header extends React.Component {
   };
 
   async componentDidMount() {
+    console.log('this is STATEE!!', store.getState())
     let user = this.props.getCurrentUser();
     if (user) {
       let { userid: userId } = user;
@@ -52,13 +53,13 @@ class Header extends React.Component {
           <Collapse isOpen={this.state.isOpen} navbar>
             <Nav className="ml-auto" navbar>
               <NavItem>
-                <Link to="/dashboard" activeStyle={{ color: "blue" }}>
-                  Dashboard
-                </Link>
+                <NavLink>
+                  <Link to={`/dashboard`}>Dashboard</Link>
+                </NavLink>
               </NavItem>
               <NavItem>
-                <NavLink href={`/timelog/${userId}`}>
-                  <Link to={`/timelog/${store.getState().userProfile}`}>Timelog</Link>
+                <NavLink>
+                  <Link to={`/timelog/${store.getState().userProfile._id}`}>Timelog</Link>
                 </NavLink>
               </NavItem>
               <NavItem>
@@ -90,9 +91,9 @@ class Header extends React.Component {
                 </DropdownMenu>
               </UncontrolledDropdown>
               <NavItem>
-                <NavLink href={`/profile/${store.getState().userProfile}`}>
+                <NavLink href={`/profile/${store.getState().userProfile._id}`}>
                   <Img
-                    src={`${store.getState().userProfile}`}
+                    src={`${store.getState().userProfile.profilePic}`}
                     alt=""
                     height="35"
                     width="40"
@@ -102,14 +103,14 @@ class Header extends React.Component {
               </NavItem>
               <UncontrolledDropdown nav>
                 <DropdownToggle nav caret>
-                  Welcome {store.getState().userProfile}
+                  Welcome {store.getState().userProfile.firstName}
                 </DropdownToggle>
                 <DropdownMenu>
                   <DropdownItem header>
-                    Hello {store.getState().userProfile}
+                    Hello {store.getState().userProfile.firstName}
                   </DropdownItem>
                   <DropdownItem divider />
-                  <DropdownItem href={`/profile/${store.getState().userProfile}`}>
+                  <DropdownItem href={`/profile/${store.getState().userProfile._id}`}>
                     View Profile
                   </DropdownItem>
                   <DropdownItem href="/updatepassword">
