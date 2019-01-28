@@ -29,29 +29,29 @@ class Form extends Component {
   handleState = (name, value) => {
     let { errors, data } = this.state;
     data[name] = value;
-    // const errorMessage = this.validateProperty(name, value);
-    // if (errorMessage) {
-    //   errors[name] = errorMessage;
-    // } else {
-    //   delete errors[name];
-    // }
+    const errorMessage = this.validateProperty(name, value);
+    if (errorMessage) {
+      errors[name] = errorMessage;
+    } else {
+      delete errors[name];
+    }
     this.setState({ data, errors });
   }
 
-  // validateProperty = (name, value) => {
-  //   const obj = { [name]: value };
-  //   const schema = { [name]: this.schema[name] };
-  //   let refs = schema[name]._refs;
-  //   if (refs) {
-  //     refs.forEach(ref => {
-  //       schema[ref] = this.schema[ref];
-  //       obj[ref] = this.state.data[ref];
-  //     });
-  //   }
-  //   const { error } = Joi.validate(obj, schema);
-  //   if (!error) return null;
-  //   return error.details[0].message;
-  // };
+  validateProperty = (name, value) => {
+    const obj = { [name]: value };
+    const schema = { [name]: this.schema[name] };
+    let refs = schema[name]._refs;
+    if (refs) {
+      refs.forEach(ref => {
+        schema[ref] = this.schema[ref];
+        obj[ref] = this.state.data[ref];
+      });
+    }
+    const { error } = Joi.validate(obj, schema);
+    if (!error) return null;
+    return error.details[0].message;
+  };
 
   validateForm = () => {
     let errors = {};
