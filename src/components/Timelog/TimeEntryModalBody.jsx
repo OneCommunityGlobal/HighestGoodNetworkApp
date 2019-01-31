@@ -78,6 +78,8 @@ class TimeEntryBody extends Form {
       timeEntry.notes = this.state.data.notes;
       console.log(timeEntry);
       this.props.postTimeEntry(timeEntry);
+    } else if (store.getState().user.role != "Administrator") {
+      
     }
 
   };
