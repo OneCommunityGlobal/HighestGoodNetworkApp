@@ -1,7 +1,7 @@
 import React from "react";
 import PropTypes from 'prop-types';
 
-const Input = ({ label,name, error,className, ...rest  }) => {
+const Input = ({ label, name, error, className , ...rest  }) => {
 
   return (
     <div className={`form-group ${className? className :""}`}>
@@ -21,8 +21,7 @@ const Input = ({ label,name, error,className, ...rest  }) => {
 Input.propTypes = {
   label: PropTypes.string.isRequired,
   name: PropTypes.string.isRequired,
-  error : PropTypes.string
-
+  error: PropTypes.string
 }
 
 export default Input;

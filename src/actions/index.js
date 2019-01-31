@@ -301,6 +301,7 @@ export function postTimeEntry(timeEntryData) {
     request.then(() => {
       dispatch({
         type: 'POST_TIME_ENTRY',
+        payload: timeEntryData
       });
     });
   };

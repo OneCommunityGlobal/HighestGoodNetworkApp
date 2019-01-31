@@ -61,30 +61,27 @@ class TimeEntryBody extends Form {
 
     tangible: Joi.label("Tangible"),
 
-    projectId: Joi.string().required(),
+    projectId: Joi.string().required().label("Projects"),
 
     notes: Joi.string().label("notes")
   };
 
   handleSubmit = () => {
     let timeEntry = {};
-    // if (store.getState().user.role === "Adminstrator") {
+    if (store.getState().user.role === "Adminstrator") {
+      const timeSpent = `${this.state.data.hours}:${this.state.data.minutes}:00`;
+      timeEntry.timeSpent = timeSpent;
+      timeEntry.personId = store.getState().userProfile._id
+      timeEntry.projectId = this.state.data.projectId;
+      timeEntry.dateOfWork = this.state.data.date;
+      timeEntry.isTangible = this.state.data.tangible;
+      timeEntry.notes = this.state.data.notes;
+      console.log(timeEntry);
+      this.props.postTimeEntry(timeEntry);
+    }
 
-    // }
-    const timeSpent = `${this.state.data.hours}:${this.state.data.minutes}:00`;
-    timeEntry.timeSpent = timeSpent;
-    timeEntry.personId = store.getState()._id
-    timeEntry.projectId = this.state.data.projectId;
-    timeEntry.dateOfWork = this.state.data.date;
-    timeEntry.isTangible = this.state.data.tangible;
-    timeEntry.notes = this.state.data.notes;
-    console.log(timeEntry);
-    this.props.postTimeEntry(timeEntry);
   };
 
-  componentDidMount() {
-    console.log(store.getState().userProfile.projects)
-  }
 
   render() {
     const max = moment().format("YYYY-MM-DD");
@@ -97,33 +94,25 @@ class TimeEntryBody extends Form {
         <Container>
           <Row>
             <Col lg={12}>
-              <FormGroup>
-                {this.renderInput("date", "Date", "date", min, max)}
-              </FormGroup>
+                {this.renderInput({name: "date", Label: "Date", type: "date", min: min, max: max})}
             </Col>
           </Row>
           <Row>
             <Col lg={6}>
-              <FormGroup>
-                {this.renderInput("hours", "Hours", "number", 0, 23)}
-              </FormGroup>
+                {this.renderInput({name: "hours", Label: "Hours", type: "number", min: 0, max: 23})}
             </Col>
             <Col lg={6}>
-              <FormGroup>
-                {this.renderInput("minutes", "Minutes", "number", 0, 59)}
-              </FormGroup>
+                {this.renderInput({name: "minutes", label: "Minutes", type: "number", min: 0, max: 59})}
             </Col>
           </Row>
           <Row>
             <Col lg={12}>
               <FormGroup>
-                {this.renderDropDown(
-                  "projectId",
-                  "Projects",
-                  "Projects",
-                  ['hello', 'its', 'me']
-                  // store.getState().userProfile.projects
-                )}
+              {this.renderDropDown({
+                  name: "projectId",
+                  label: "Project",
+                 options: store.getState().userProfile.projects
+                })}
               </FormGroup>
             </Col>
           </Row>
@@ -152,6 +141,7 @@ class TimeEntryBody extends Form {
     );
   }
 }
+
 const mapStateToProps = state => {
   return { state };
 };

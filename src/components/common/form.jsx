@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import Joi from "joi";
 import _ from "lodash";
 import Input from "../common/input";
-import DropdownMenuComp from "./dropdown";
+import DropdownMenu from "./dropdown";
 import Radio from "./radio"
 import Image from "./image"
 import FileUpload from "./fileUpload"
@@ -23,35 +23,34 @@ class Form extends Component {
 
   handleInput = ({ currentTarget: input }) => {
     this.handleState(input.name, input.value)
-    console.log(input.name, input.value)
   };
 
   handleState = (name, value) => {
     let { errors, data } = this.state;
     data[name] = value;
-    // const errorMessage = this.validateProperty(name, value);
-    // if (errorMessage) {
-    //   errors[name] = errorMessage;
-    // } else {
-    //   delete errors[name];
-    // }
+    const errorMessage = this.validateProperty(name, value);
+    if (errorMessage) {
+      errors[name] = errorMessage;
+    } else {
+      delete errors[name];
+    }
     this.setState({ data, errors });
   }
 
-  // validateProperty = (name, value) => {
-  //   const obj = { [name]: value };
-  //   const schema = { [name]: this.schema[name] };
-  //   let refs = schema[name]._refs;
-  //   if (refs) {
-  //     refs.forEach(ref => {
-  //       schema[ref] = this.schema[ref];
-  //       obj[ref] = this.state.data[ref];
-  //     });
-  //   }
-  //   const { error } = Joi.validate(obj, schema);
-  //   if (!error) return null;
-  //   return error.details[0].message;
-  // };
+  validateProperty = (name, value) => {
+    const obj = { [name]: value };
+    const schema = { [name]: this.schema[name] };
+    let refs = schema[name]._refs;
+    if (refs) {
+      refs.forEach(ref => {
+        schema[ref] = this.schema[ref];
+        obj[ref] = this.state.data[ref];
+      });
+    }
+    const { error } = Joi.validate(obj, schema);
+    if (!error) return null;
+    return error.details[0].message;
+  };
 
   validateForm = () => {
     let errors = {};
@@ -71,15 +70,11 @@ class Form extends Component {
 
   handleCheckbox = event => {
     let { data, errors } = { ...this.state };
-    console.log(event.target.checked);
     data[event.target.name] = event.target.checked.toString();
     this.setState({ data });
-    console.log(this.state);
   };
 
   resetForm = () => this.setState(_.cloneDeep(this.initialState));
-
-
 
   handleRichTextEditor = ({ target }) => {
     let { id } = target
@@ -126,8 +121,6 @@ class Form extends Component {
     reader.onload = () => this.handleState(name, reader.result);
   }
 
-
-
   isStateChanged = () => !_.isEqual(this.state.data, this.initialState.data)
 
   handleSubmit = e => {
@@ -139,9 +132,9 @@ class Form extends Component {
     this.doSubmit();
   };
 
-  renderButton(label) {
+  renderButton(label, onClick) {
     return (
-      <button disabled={this.validateForm()} className="btn btn-primary">
+      <button disabled={this.validateForm()} onClick={onClick} className="btn btn-primary">
         {label}
       </button>
     );
@@ -160,10 +153,10 @@ class Form extends Component {
     )
   }
 
-  renderDropDown({ value, name, label, options, ...rest }) {
+  renderDropDown({name, label, options, ...rest}) {
     const { data, errors } = { ...this.state }
     return (
-      <DropdownMenuComp
+      <DropdownMenu
         name={name}
         label={label}
         options={options}
@@ -172,15 +165,15 @@ class Form extends Component {
         error={errors[name]}
         {...rest}
       />
-    )
+    );
   }
 
-  renderInput({ name, label, type, ...rest }) {
+  renderInput({name, label, type, min, max, ...rest}) {
     let { data, errors } = { ...this.state };
     return (
       <Input
-        checked={this.state.data.tangible}
-        id={name}
+        min={min}
+        max={max}
         name={name}
         type={type}
         onChange={e => this.handleInput(e)}
@@ -212,7 +205,7 @@ class Form extends Component {
     return (
       <Input
         name={name}
-        type='textarea'
+        label={label}
         value={data[name]}
         onChange={e => this.handleInput(e)}
         error={errors[name]}

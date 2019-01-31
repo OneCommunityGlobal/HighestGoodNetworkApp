@@ -9,8 +9,11 @@ import Leaderboard from '../Leaderboard';
 class TimelogPage extends Form {
   constructor(props, context) {
     super(props, context);
-
     this.state = {};
+  }
+
+  handleClick = () => {
+    console.log(store.getState().userProfile.projects)
   }
 
   render() {
@@ -18,7 +21,7 @@ class TimelogPage extends Form {
       <Container>
         <Row>
           <Col>
-            <h1 className="text-center">Time Log</h1>
+            <h1 className="text-center" onClick={this.handleClick}>Time Log</h1>
           </Col>
         </Row>
         <Row>
@@ -32,13 +35,13 @@ class TimelogPage extends Form {
           </Col>
         </Row>
         <Row>
-          <Col lg={8}>
+          <Col lg={7}>
             <TimeEntry
               userData={this.state.data}
               projects={this.state.projects}
             />
           </Col>
-          <Col lg={4}>
+          <Col lg={5}>
             <Leaderboard />
           </Col>
         </Row>

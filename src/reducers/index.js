@@ -182,11 +182,10 @@ const timeEntriesForSpecifiedProjectReducer = (timeEntries = null, action) => {
   return timeEntries;
 };
 
-const postTimeEntry = (timeEntries = null, action) => {
+const postTimeEntry = (timeEntries = [], action) => {
   if (action.type === "POST_TIME_ENTRY") {
     return action.payload;
   }
-
   return timeEntries;
 };
 
