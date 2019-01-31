@@ -1,11 +1,11 @@
 import React from 'react';
 import { shallow, mount } from 'enzyme';
+import { MemoryRouter } from 'react-router-dom';
 import Login from '../components/Login';
-import { MemoryRouter } from 'react-router-dom'
 
-import { getCurrentUser } from "../services/loginService";
+import { getCurrentUser } from '../services/loginService';
 
-jest.mock("../services/loginService");
+jest.mock('../services/loginService');
 
 describe('Login page structure', () => {
   let mountedLogin;
@@ -50,7 +50,7 @@ describe('When user tries to input data', () => {
 
   it('should correctly update the email value in the state', () => {
     const expected = 'sh@gmail.com';
-    const Input = { name: 'email', 'value': expected };
+    const Input = { name: 'email', value: expected };
     const mockEvent = { currentTarget: Input };
     mountedLoginPage.instance().handleInput(mockEvent);
 
