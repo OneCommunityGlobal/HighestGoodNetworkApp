@@ -7,15 +7,18 @@ import registerServiceWorker from './registerServiceWorker';
 import 'bootstrap/dist/css/bootstrap.css';
 import 'font-awesome/css/font-awesome.css';
 import logService from './services/logService';
-import store from './store';
+import { persistor, store } from './store';
+import { PersistGate } from 'redux-persist/lib/integration/react';
 
 logService.init();
 
 ReactDOM.render(
   <Provider store={store}>
-    <Router>
-      <App />
-    </Router>
+    <PersistGate loading={null} persistor={persistor}>
+      <Router>
+        <App />
+      </Router>
+    </PersistGate>
   </Provider>,
   document.getElementById('root'),
 );

@@ -2,7 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { Container, Row, Col } from 'reactstrap';
 import TimeEntry from './TimeEntry';
-import store from '../../store';
+import {store} from '../../store';
 import Form from '../common/form';
 import Leaderboard from '../Leaderboard';
 

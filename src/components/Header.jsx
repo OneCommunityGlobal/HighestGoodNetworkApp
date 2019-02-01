@@ -1,7 +1,7 @@
 import React from "react";
 import Img from "react-image";
 import { connect } from "react-redux";
-import store from '../store';
+import {store} from '../store';
 import { getCurrentUser, getUserProfile } from '../actions';
 import {
   Collapse,

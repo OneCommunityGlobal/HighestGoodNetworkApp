@@ -3,7 +3,7 @@ import { FormGroup, Container, Row, Col, Button } from "reactstrap";
 import Form from "../common/form";
 import { connect } from "react-redux";
 import { postTimeEntry } from "../../actions";
-import store from "../../store";
+import { store } from "../../store";
 import Joi from "joi";
 import moment from "moment";
 
@@ -68,22 +68,16 @@ class TimeEntryBody extends Form {
 
   handleSubmit = () => {
     let timeEntry = {};
-    if (store.getState().user.role === "Adminstrator") {
-      const timeSpent = `${this.state.data.hours}:${this.state.data.minutes}:00`;
-      timeEntry.timeSpent = timeSpent;
-      timeEntry.personId = store.getState().userProfile._id
-      timeEntry.projectId = this.state.data.projectId;
-      timeEntry.dateOfWork = this.state.data.date;
-      timeEntry.isTangible = this.state.data.tangible;
-      timeEntry.notes = this.state.data.notes;
-      console.log(timeEntry);
-      this.props.postTimeEntry(timeEntry);
-    } else if (store.getState().user.role != "Administrator") {
-      
-    }
-
+    const timeSpent = `${this.state.data.hours}:${this.state.data.minutes}:00`;
+    timeEntry.timeSpent = timeSpent;
+    timeEntry.personId = store.getState().userProfile._id
+    timeEntry.projectId = this.state.data.projectId;
+    timeEntry.dateOfWork = this.state.data.date;
+    timeEntry.isTangible = this.state.data.tangible;
+    timeEntry.notes = this.state.data.notes;
+    console.log(timeEntry);
+    this.props.postTimeEntry(timeEntry);
   };
-
 
   render() {
     const max = moment().format("YYYY-MM-DD");
@@ -96,24 +90,24 @@ class TimeEntryBody extends Form {
         <Container>
           <Row>
             <Col lg={12}>
-                {this.renderInput({name: "date", Label: "Date", type: "date", min: min, max: max})}
+              {this.renderInput({ name: "date", Label: "Date", type: "date", min: min, max: max })}
             </Col>
           </Row>
           <Row>
             <Col lg={6}>
-                {this.renderInput({name: "hours", Label: "Hours", type: "number", min: 0, max: 23})}
+              {this.renderInput({ name: "hours", label: "Hours", type: "number", min: 0, max: 23 })}
             </Col>
             <Col lg={6}>
-                {this.renderInput({name: "minutes", label: "Minutes", type: "number", min: 0, max: 59})}
+              {this.renderInput({ name: "minutes", label: "Minutes", type: "number", min: 0, max: 59 })}
             </Col>
           </Row>
           <Row>
             <Col lg={12}>
               <FormGroup>
-              {this.renderDropDown({
+                {this.renderDropDown({
                   name: "projectId",
                   label: "Project",
-                 options: store.getState().userProfile.projects
+                  options: store.getState().userProfile.projects
                 })}
               </FormGroup>
             </Col>

@@ -1,6 +1,7 @@
 import React from 'react';
 import { Container, Row, Col } from 'reactstrap';
 import { connect } from 'react-redux';
+import {store} from '../../store';
 import ModalA from '../common/modal';
 import ModalBody from './TimeEntryModalBody';
 import Form from '../common/form';
@@ -13,6 +14,22 @@ class TimeEntry extends Form {
   }
 
   render() {
+    let Modal
+    let tModal = <ModalA
+    header="Add Time Entry"
+    buttonLabel="Add Time Entry"
+    color="primary"
+    body={(
+      <ModalBody/>
+    )}
+  />
+    if (store.getState().user.role === 'Administrator') {
+      Modal = tModal
+    } else if (store.getState().user.role !== 'Administrator' && store.getState().userProfile._id === store.getState().user.userid) {
+      Modal = tModal
+    } else if (store.getState().user.role !== 'Administrator' && store.getState().userProfile._id !== store.getState().user.userid) {
+      Modal = null
+    }
     return (
       <Container>
         <Row>
@@ -20,17 +37,7 @@ class TimeEntry extends Form {
             <h1>Time Entry</h1>
           </Col>
           <Col>
-            <ModalA
-              header="Add Time Entry"
-              buttonLabel="Add Time Entry"
-              color="primary"
-              body={(
-                <ModalBody
-                  userData={this.props.userData}
-                  projects={this.props.projects}
-                />
-              )}
-            />
+            {Modal}
           </Col>
         </Row>
         <Row>
