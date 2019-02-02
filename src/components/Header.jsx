@@ -17,7 +17,7 @@ import {
   DropdownItem
 } from "reactstrap";
 
-import { BrowserRouter, Route, Link } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 class Header extends React.Component {
 
@@ -30,13 +30,11 @@ class Header extends React.Component {
   };
 
   async componentDidMount() {
-    console.log('this is STATEE!!', store.getState())
     let user = this.props.getCurrentUser();
     if (user) {
       let { userid: userId } = user;
       let { data: userProfileData } = { ...await this.props.getUserProfile(userId) }
       let name = 'hello';
-      // let profilePic = userProfileData.profilePic;
       this.setState({ userId, userProfileData, name /* profilePic */ });
     }
   }
@@ -70,11 +68,11 @@ class Header extends React.Component {
               <NavItem>
                 <NavLink href={`/timelog/${store.getState().userProfile}`}>
                   {/* Get userid on line above */}
-                  <icon class="fa fa-bell icon-large">
-                    <icon class="badge badge-pill badge-danger badge-notify">
+                  <icon className="fa fa-bell icon-large">
+                    <icon className="badge badge-pill badge-danger badge-notify">
                       {/* Pull number of unread messages */}
                     </icon>
-                    <span class="sr-only">unread messages</span>
+                    <span className="sr-only">unread messages</span>
                   </icon>
                 </NavLink>
               </NavItem>
@@ -97,7 +95,7 @@ class Header extends React.Component {
                     alt=""
                     height="35"
                     width="40"
-                    class="dashboardimg"
+                    className="dashboardimg"
                   />
                 </NavLink>
               </NavItem>

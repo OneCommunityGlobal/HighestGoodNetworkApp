@@ -268,7 +268,7 @@ export function getTimeEntryForSpecifiedPeriod(userId, fromDate, toDate) {
   const request = httpService.get(
     `${APIEndpoint}/TimeEntry/user/${userId}/${fromDate}/${toDate}`,
   );
-
+  
   return (dispatch) => {
     request.then(({ data }) => {
       dispatch({

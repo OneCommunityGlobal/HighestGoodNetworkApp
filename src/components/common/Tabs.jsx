@@ -5,14 +5,15 @@ import {
   Nav,
   NavItem,
   NavLink,
-  Card,
-  Button,
-  CardTitle,
-  CardText,
   Row,
   Col
 } from "reactstrap";
+import { store } from '../../store';
+import Table from './Tables/Tables';
 import classnames from "classnames";
+import moment from "moment";
+import {connect} from 'react-redux';
+import { getTimeEntryForSpecifiedPeriod } from '../../actions';
 
 class Tabs extends Component {
   constructor(props) {
@@ -31,6 +32,11 @@ class Tabs extends Component {
       });
     }
   }
+
+  handleClick = () => {
+     this.props.getTimeEntryForSpecifiedPeriod(store.getState().userProfile._id, '2019-01-20', '2019-02-01')
+  }
+
   render() {
     return (
       <div>
@@ -40,6 +46,7 @@ class Tabs extends Component {
               className={classnames({ active: this.state.activeTab === "1" })}
               onClick={() => {
                 this.toggle("1");
+                this.handleClick()
               }}
             >
               Current Week
@@ -70,55 +77,28 @@ class Tabs extends Component {
           <TabPane tabId="1">
             <Row>
               <Col sm="12">
-                what
+                <Table
+
+                
+                />
               </Col>
             </Row>
           </TabPane>
           <TabPane tabId="2">
             <Row>
-              <Col sm="6">
-                <Card body>
-                  <CardTitle>Special Title Treatment</CardTitle>
-                  <CardText>
-                    With supporting text below as a natural lead-in to
-                    additional content.
-                  </CardText>
-                  <Button>Go somewhere</Button>
-                </Card>
-              </Col>
-              <Col sm="6">
-                <Card body>
-                  <CardTitle>Special Title Treatment</CardTitle>
-                  <CardText>
-                    With supporting text below as a natural lead-in to
-                    additional content.
-                  </CardText>
-                  <Button>Go somewhere</Button>
-                </Card>
+              <Col sm="12">
+              <Table
+
+              />
               </Col>
             </Row>
           </TabPane>
           <TabPane tabId="3">
             <Row>
-              <Col sm="6">
-                <Card body>
-                  <CardTitle>Special Title Treatment</CardTitle>
-                  <CardText>
-                    With supporting text below as a natural lead-in to
-                    additional content.
-                  </CardText>
-                  <Button>Go somewhere</Button>
-                </Card>
-              </Col>
-              <Col sm="6">
-                <Card body>
-                  <CardTitle>Special Title Treatment</CardTitle>
-                  <CardText>
-                    With supporting text below as a natural lead-in to
-                    additional content.
-                  </CardText>
-                  <Button>Go somewhere</Button>
-                </Card>
+              <Col sm="12">
+              <Table
+
+              />
               </Col>
             </Row>
           </TabPane>
@@ -128,4 +108,8 @@ class Tabs extends Component {
   }
 }
 
-export default Tabs;
+const mapStateToProps = state => ({ state });
+
+
+
+export default connect(mapStateToProps, {getTimeEntryForSpecifiedPeriod})(Tabs);

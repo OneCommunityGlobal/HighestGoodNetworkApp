@@ -76,7 +76,7 @@ class Leaderboard extends Component {
     return (
       <div className="card hgn_leaderboard bg-dark">
         <div className="card-body text-white">
-          <h5 className="card-title">LeaderBoard</h5>
+          <h5 className="card-title">Leaderboard</h5>
           {this.state.isLoading && <Loading />}
 
           {!this.state.isLoading && <div>

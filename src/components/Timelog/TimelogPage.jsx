@@ -30,16 +30,13 @@ class TimelogPage extends Form {
               {/* {store.getState().userProfile.firstName}
 {' '}
 {store.getState().userProfile.lastName} */}
-
+              hi
             </h2>
           </Col>
         </Row>
         <Row>
           <Col lg={7}>
-            <TimeEntry
-              userData={this.state.data}
-              projects={this.state.projects}
-            />
+            <TimeEntry/>
           </Col>
           <Col lg={5}>
             <Leaderboard />
@@ -49,10 +46,7 @@ class TimelogPage extends Form {
     );
   }
 }
-const mapStateToProps = (state) => {
-  {
-    return { state };
-  }
+const mapStateToProps = (state) => {return { state };
 };
 
 export default connect(mapStateToProps)(TimelogPage);
