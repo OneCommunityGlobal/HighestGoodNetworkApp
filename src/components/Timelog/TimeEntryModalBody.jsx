@@ -3,7 +3,6 @@ import { FormGroup, Container, Row, Col, Button } from "reactstrap";
 import Form from "../common/form";
 import { connect } from "react-redux";
 import { postTimeEntry } from "../../actions";
-import { store } from "../../store";
 import Joi from "joi";
 import moment from "moment";
 
@@ -70,7 +69,7 @@ class TimeEntryBody extends Form {
     let timeEntry = {};
     const timeSpent = `${this.state.data.hours}:${this.state.data.minutes}:00`;
     timeEntry.timeSpent = timeSpent;
-    timeEntry.personId = store.getState().userProfile._id
+    timeEntry.personId = this.props.state.userProfile._id
     timeEntry.projectId = this.state.data.projectId;
     timeEntry.dateOfWork = this.state.data.date;
     timeEntry.isTangible = this.state.data.tangible;
@@ -90,7 +89,7 @@ class TimeEntryBody extends Form {
         <Container>
           <Row>
             <Col lg={12}>
-              {this.renderInput({ name: "date", Label: "Date", type: "date", min: min, max: max })}
+              {this.renderInput({ name: "date", label: "Date", type: "date", min: min, max: max })}
             </Col>
           </Row>
           <Row>
@@ -107,7 +106,7 @@ class TimeEntryBody extends Form {
                 {this.renderDropDown({
                   name: "projectId",
                   label: "Project",
-                  options: store.getState().userProfile.projects
+                  options: this.props.state.userProfile.projects
                 })}
               </FormGroup>
             </Col>

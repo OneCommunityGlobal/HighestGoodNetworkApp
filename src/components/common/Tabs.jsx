@@ -8,12 +8,12 @@ import {
   Row,
   Col
 } from "reactstrap";
-import { store } from '../../store';
 import Table from './Tables/Tables';
 import classnames from "classnames";
 import moment from "moment";
-import {connect} from 'react-redux';
+import { connect } from 'react-redux';
 import { getTimeEntryForSpecifiedPeriod } from '../../actions';
+
 
 class Tabs extends Component {
   constructor(props) {
@@ -33,8 +33,8 @@ class Tabs extends Component {
     }
   }
 
-  handleClick = () => {
-     this.props.getTimeEntryForSpecifiedPeriod(store.getState().userProfile._id, '2019-01-20', '2019-02-01')
+  componentDidMount() {
+    this.props.getTimeEntryForSpecifiedPeriod(this.props.state.userProfile._id, moment().startOf('week').format('YYYY-MM-DD'), moment().endOf('week').format('YYYY-MM-DD'))
   }
 
   render() {
@@ -46,7 +46,6 @@ class Tabs extends Component {
               className={classnames({ active: this.state.activeTab === "1" })}
               onClick={() => {
                 this.toggle("1");
-                this.handleClick()
               }}
             >
               Current Week
@@ -77,28 +76,25 @@ class Tabs extends Component {
           <TabPane tabId="1">
             <Row>
               <Col sm="12">
-                <Table
-
-                
-                />
+                <Table timelogData={this.props.state.user} />
               </Col>
             </Row>
           </TabPane>
           <TabPane tabId="2">
             <Row>
               <Col sm="12">
-              <Table
+                <Table
 
-              />
+                />
               </Col>
             </Row>
           </TabPane>
           <TabPane tabId="3">
             <Row>
               <Col sm="12">
-              <Table
+                <Table
 
-              />
+                />
               </Col>
             </Row>
           </TabPane>
@@ -112,4 +108,4 @@ const mapStateToProps = state => ({ state });
 
 
 
-export default connect(mapStateToProps, {getTimeEntryForSpecifiedPeriod})(Tabs);
+export default connect(mapStateToProps, { getTimeEntryForSpecifiedPeriod })(Tabs);

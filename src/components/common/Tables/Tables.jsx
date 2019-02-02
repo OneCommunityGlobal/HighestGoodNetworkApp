@@ -2,6 +2,9 @@ import React from 'react';
 import { Table } from 'reactstrap';
 
 export default class Example extends React.Component {
+  componentDidMount() {
+    console.log(this.props.timelogData.userid)
+  }
   render() {
     return (
       <Table>
@@ -16,7 +19,16 @@ export default class Example extends React.Component {
         </thead>
         <tbody>
           <tr>
-            <th scope="row">Tangible</th>
+
+            {/* {this.props.timelogData.map((item) => (
+              <td>
+                {item.dateOfWork}
+              </td>
+            ))} */}
+          </tr>
+
+          <tr>
+            <th></th>
             <td>Mark</td>
             <td>Otto</td>
             <td>@mdo</td>

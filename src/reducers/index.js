@@ -166,7 +166,7 @@ const allTimeEntriesReducer = (allTimeEntries = null, action) => {
   return allTimeEntries;
 };
 
-const timeEntriesForSpecifiedPeriodReducer = (timeEntries = null, action) => {
+const timeEntriesForSpecifiedPeriodReducer = (timeEntries = [], action) => {
   if (action.type === "GET_TIME_ENTRY_FOR_SPECIFIED_PERIOD") {
     return action.payload;
   }
@@ -174,7 +174,7 @@ const timeEntriesForSpecifiedPeriodReducer = (timeEntries = null, action) => {
   return timeEntries;
 };
 
-const timeEntriesForSpecifiedProjectReducer = (timeEntries = null, action) => {
+const timeEntriesForSpecifiedProjectReducer = (timeEntries = [], action) => {
   if (action.type === "GET_TIME_ENTRY_FOR_SPECIFIED_PROJECT") {
     return action.payload;
   }

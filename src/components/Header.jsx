@@ -1,7 +1,6 @@
 import React from "react";
 import Img from "react-image";
 import { connect } from "react-redux";
-import {store} from '../store';
 import { getCurrentUser, getUserProfile } from '../actions';
 import {
   Collapse,
@@ -16,7 +15,7 @@ import {
   DropdownMenu,
   DropdownItem
 } from "reactstrap";
-
+import { LinkContainer } from 'react-router-bootstrap'
 import { Link } from "react-router-dom";
 
 class Header extends React.Component {
@@ -37,6 +36,7 @@ class Header extends React.Component {
       let name = 'hello';
       this.setState({ userId, userProfileData, name /* profilePic */ });
     }
+    console.log(this.props.state)
   }
   render() {
     let { userId, name, profilePic } = this.state;
@@ -51,22 +51,22 @@ class Header extends React.Component {
           <Collapse isOpen={this.state.isOpen} navbar>
             <Nav className="ml-auto" navbar>
               <NavItem>
-                <NavLink>
-                  <Link to={`/dashboard`}>Dashboard</Link>
-                </NavLink>
+                <LinkContainer to="/dashboard">
+                  <NavLink>Dashboard</NavLink>
+                </LinkContainer>
               </NavItem>
               <NavItem>
-                <NavLink>
-                  <Link to={`/timelog/${store.getState().userProfile._id}`}>Timelog</Link>
-                </NavLink>
+                <LinkContainer to={`/timelog/${this.props.state.userProfile._id}`}>
+                  <NavLink>Timelog</NavLink>
+                </LinkContainer>
               </NavItem>
               <NavItem>
-                <NavLink href="/reports" activeStyle={{ color: "blue" }}>
+                <NavLink href="/reports">
                   Reports
                 </NavLink>
               </NavItem>
               <NavItem>
-                <NavLink href={`/timelog/${store.getState().userProfile}`}>
+                <NavLink href={`/timelog/${this.props.state.userProfile}`}>
                   {/* Get userid on line above */}
                   <icon className="fa fa-bell icon-large">
                     <icon className="badge badge-pill badge-danger badge-notify">
@@ -89,9 +89,9 @@ class Header extends React.Component {
                 </DropdownMenu>
               </UncontrolledDropdown>
               <NavItem>
-                <NavLink href={`/profile/${store.getState().userProfile._id}`}>
+                <NavLink href={`/profile/${this.props.state.userProfile._id}`}>
                   <Img
-                    src={`${store.getState().userProfile.profilePic}`}
+                    src={`${this.props.state.userProfile.profilePic}`}
                     alt=""
                     height="35"
                     width="40"
@@ -101,14 +101,14 @@ class Header extends React.Component {
               </NavItem>
               <UncontrolledDropdown nav>
                 <DropdownToggle nav caret>
-                  Welcome {store.getState().userProfile.firstName}
+                  Welcome {this.props.state.userProfile.firstName}
                 </DropdownToggle>
                 <DropdownMenu>
                   <DropdownItem header>
-                    Hello {store.getState().userProfile.firstName}
+                    Hello {this.props.state.userProfile.firstName}
                   </DropdownItem>
                   <DropdownItem divider />
-                  <DropdownItem href={`/profile/${store.getState().userProfile._id}`}>
+                  <DropdownItem href={`/profile/${this.props.state.userProfile._id}`}>
                     View Profile
                   </DropdownItem>
                   <DropdownItem href="/updatepassword">
@@ -121,7 +121,7 @@ class Header extends React.Component {
             </Nav>
           </Collapse>
         </Navbar>
-      </div>
+      </div >
     );
   }
 }
