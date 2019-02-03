@@ -1,9 +1,11 @@
 import React from 'react';
+import { connect } from 'react-redux';
 import { Table } from 'reactstrap';
+import ModalA from '../../common/modal';
 
-export default class Example extends React.Component {
+class Tables extends React.Component {
   componentDidMount() {
-    console.log(this.props.timelogData.userid)
+    console.log(this.props.state.userTimeEntries)
   }
   render() {
     return (
@@ -11,21 +13,38 @@ export default class Example extends React.Component {
         <thead>
           <tr>
             <th>Date</th>
-            <th>Time</th>
+            <th>Time (HH:MM)</th>
             <th>Project</th>
             <th>Notes</th>
             <th>Edit</th>
           </tr>
         </thead>
         <tbody>
-          <tr>
 
-            {/* {this.props.timelogData.map((item) => (
+
+          {this.props.state.userTimeEntries.map((item) => (
+            <tr>
               <td>
                 {item.dateOfWork}
               </td>
-            ))} */}
-          </tr>
+              <td>
+                {`${item.hours} ${item.minutes}`}
+              </td>
+              <td>
+                {item.projectName}
+              </td>
+              <td>
+                {item.notes}
+              </td>
+              <td>
+                <ModalA
+                  header="Edit"
+                  buttonLabel="Edit"
+                  color="primary"
+                  body={null} />
+              </td>
+            </tr>
+          ))}
 
           <tr>
             <th></th>
@@ -56,3 +75,7 @@ export default class Example extends React.Component {
     );
   }
 }
+
+const mapStateToProps = state => ({ state });
+
+export default connect(mapStateToProps)(Tables);

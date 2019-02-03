@@ -76,7 +76,7 @@ class Tabs extends Component {
           <TabPane tabId="1">
             <Row>
               <Col sm="12">
-                <Table timelogData={this.props.state.user} />
+                <Table/>
               </Col>
             </Row>
           </TabPane>
@@ -105,7 +105,5 @@ class Tabs extends Component {
 }
 
 const mapStateToProps = state => ({ state });
-
-
 
 export default connect(mapStateToProps, { getTimeEntryForSpecifiedPeriod })(Tabs);
