@@ -16,7 +16,6 @@ import {
   DropdownItem
 } from "reactstrap";
 import { LinkContainer } from 'react-router-bootstrap'
-import { Link } from "react-router-dom";
 
 class Header extends React.Component {
 

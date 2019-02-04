@@ -1,14 +1,14 @@
 import React, { Component } from "react";
 import Joi from "joi";
 import _ from "lodash";
-import Input from "../common/input";
+import { Link } from "react-router-dom";
+import Input from "./input";
 import DropdownMenu from "./dropdown";
-import Radio from "./radio"
-import Image from "./image"
-import FileUpload from "./fileUpload"
-import { Link } from 'react-router-dom'
-import TinyMCEEditor from './tinymceEditor'
-import CheckboxCollection from './checkboxCollection'
+import Radio from "./radio";
+import Image from "./image";
+import FileUpload from "./fileUpload";
+import TinyMCEEditor from "./tinymceEditor";
+import CheckboxCollection from "./checkboxCollection";
 
 class Form extends Component {
   constructor(props) {
@@ -22,11 +22,11 @@ class Form extends Component {
   }
 
   handleInput = ({ currentTarget: input }) => {
-    this.handleState(input.name, input.value)
+    this.handleState(input.name, input.value);
   };
 
   handleState = (name, value) => {
-    let { errors, data } = this.state;
+    const { errors, data } = this.state;
     data[name] = value;
     const errorMessage = this.validateProperty(name, value);
     if (errorMessage) {
@@ -35,12 +35,12 @@ class Form extends Component {
       delete errors[name];
     }
     this.setState({ data, errors });
-  }
+  };
 
   validateProperty = (name, value) => {
     const obj = { [name]: value };
     const schema = { [name]: this.schema[name] };
-    let refs = schema[name]._refs;
+    const refs = schema[name]._refs;
     if (refs) {
       refs.forEach(ref => {
         schema[ref] = this.schema[ref];
@@ -53,7 +53,7 @@ class Form extends Component {
   };
 
   validateForm = () => {
-    let errors = {};
+    const errors = {};
     const options = { abortEarly: false };
     const { error } = Joi.validate(this.state.data, this.schema, options);
     if (!error) return null;
@@ -69,26 +69,26 @@ class Form extends Component {
   };
 
   handleCheckbox = event => {
-    let { data, errors } = { ...this.state };
+    const { data, errors } = { ...this.state };
     data[event.target.name] = event.target.checked.toString();
-    this.setState({ data });
+    this.setState({ data, errors });
   };
 
   resetForm = () => this.setState(_.cloneDeep(this.initialState));
 
   handleRichTextEditor = ({ target }) => {
-    let { id } = target
-    this.handleState(id, target.getContent())
-  }
+    const { id } = target;
+    this.handleState(id, target.getContent());
+  };
 
   updateCollection = (collection, value) => {
     let data = this.state.data[collection] || [];
     data = value;
     this.handleState(collection, data);
-  }
+  };
 
   handleCollection = (collection, item, action, index = null) => {
-    let data = this.state.data[collection] || [];
+    const data = this.state.data[collection] || [];
     switch (action) {
       case "create":
         data.push(item);
@@ -97,31 +97,31 @@ class Form extends Component {
         data[index] = item;
         break;
       case "delete":
-        data.splice(index, 1)
+        data.splice(index, 1);
         break;
       default:
         break;
     }
     this.handleState(collection, data);
-  }
+  };
 
   handleFileUpload = (e, readAsType = "data") => {
     const file = e.target.files[0];
     const reader = new FileReader();
-    let name = e.target.name;
+    const name = e.target.name;
     if (file) {
       switch (readAsType) {
         case "data":
-          reader.readAsDataURL(file)
+          reader.readAsDataURL(file);
           break;
         default:
           break;
       }
     }
     reader.onload = () => this.handleState(name, reader.result);
-  }
+  };
 
-  isStateChanged = () => !_.isEqual(this.state.data, this.initialState.data)
+  isStateChanged = () => !_.isEqual(this.state.data, this.initialState.data);
 
   handleSubmit = e => {
     e.preventDefault();
@@ -134,14 +134,18 @@ class Form extends Component {
 
   renderButton(label, onClick) {
     return (
-      <button disabled={this.validateForm()} onClick={onClick} className="btn btn-primary">
+      <button
+        disabled={this.validateForm()}
+        onClick={onClick}
+        className="btn btn-primary"
+      >
         {label}
       </button>
     );
   }
 
   renderRichTextEditor({ name, ...rest }) {
-    const { data, errors } = { ...this.state }
+    const { data, errors } = { ...this.state };
     return (
       <TinyMCEEditor
         name={name}
@@ -150,11 +154,11 @@ class Form extends Component {
         error={errors[name]}
         {...rest}
       />
-    )
+    );
   }
 
-  renderDropDown({name, label, options, ...rest}) {
-    const { data, errors } = { ...this.state }
+  renderDropDown({ name, label, options, ...rest }) {
+    const { data, errors } = { ...this.state };
     return (
       <DropdownMenu
         name={name}
@@ -168,8 +172,8 @@ class Form extends Component {
     );
   }
 
-  renderInput({name, label, type, min, max, ...rest}) {
-    let { data, errors } = { ...this.state };
+  renderInput({ name, label, type, min, max, ...rest }) {
+    const { data, errors } = { ...this.state };
     return (
       <Input
         min={min}
@@ -186,7 +190,7 @@ class Form extends Component {
   }
 
   renderCheckbox(name, label, type) {
-    let { data, errors } = { ...this.state };
+    const { data, errors } = { ...this.state };
     // doesn't initialize the time entry object properly yet
     return (
       <Input
@@ -196,12 +200,13 @@ class Form extends Component {
         onChange={e => this.handleCheckbox(e)}
         value={data[name]}
         label={label}
+        errors={errors}
       />
     );
   }
 
   renderTextarea(name, label, rows, cols, ...rest) {
-    let { data, errors } = { ...this.state };
+    const { data, errors } = { ...this.state };
     return (
       <Input
         name={name}
@@ -215,19 +220,24 @@ class Form extends Component {
   }
 
   renderFileUpload({ name, ...rest }) {
-    let { errors } = { ...this.state };
+    const { errors } = { ...this.state };
     return (
-      <FileUpload name={name} onUpload={this.handleFileUpload} {...rest} error={errors[name]} />
+      <FileUpload
+        name={name}
+        onUpload={this.handleFileUpload}
+        {...rest}
+        error={errors[name]}
+      />
     );
   }
 
   renderCheckboxCollection({ collectionName, ...rest }) {
-    let { errors } = { ...this.state };
-    return (<CheckboxCollection error={errors[collectionName]} {...rest} />)
+    const { errors } = { ...this.state };
+    return <CheckboxCollection error={errors[collectionName]} {...rest} />;
   }
 
   renderImage({ name, label, ...rest }) {
-    let { data, errors } = { ...this.state };
+    const { data, errors } = { ...this.state };
     return (
       <Image
         name={name}
@@ -236,13 +246,12 @@ class Form extends Component {
         label={label}
         error={errors[name]}
         {...rest}
-
       />
     );
   }
 
   renderRadio({ name, label, type = "text", ...rest }) {
-    let { data, errors } = { ...this.state };
+    const { data, errors } = { ...this.state };
     return (
       <Radio
         name={name}
@@ -250,13 +259,16 @@ class Form extends Component {
         onChange={e => this.handleInput(e)}
         error={errors[name]}
         {...rest}
-
       />
     );
   }
 
   renderLink({ label, to, className }) {
-    return <Link to={to} className={className}>{label}</Link>
+    return (
+      <Link to={to} className={className}>
+        {label}
+      </Link>
+    );
   }
 }
 

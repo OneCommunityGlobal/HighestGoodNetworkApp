@@ -17,10 +17,10 @@ class ModalA extends React.Component {
     });
   };
 
-  clearForm = () => {
-  };
+  clearForm = () => {};
 
   render() {
+    const { state } = this.state;
     return (
       <div>
         <Button color={this.props.color} onClick={this.toggle}>

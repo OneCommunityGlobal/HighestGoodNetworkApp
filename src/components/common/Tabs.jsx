@@ -8,44 +8,69 @@ import {
   Row,
   Col
 } from "reactstrap";
-import Table from './Tables/Tables';
 import classnames from "classnames";
 import moment from "moment";
-import { connect } from 'react-redux';
-import { getTimeEntryForSpecifiedPeriod } from '../../actions';
-
+import { connect } from "react-redux";
+import Table from "./Tables/Tables";
+import { getTimeEntryForSpecifiedPeriod } from "../../actions";
 
 class Tabs extends Component {
   constructor(props) {
     super(props);
-
-    this.toggle = this.toggle.bind(this);
     this.state = {
-      activeTab: "1"
+      activeTab: "Current Week"
     };
   }
 
-  toggle(tab) {
-    if (this.state.activeTab !== tab) {
+  componentDidMount() {
+    this.getTimeEntries("Current Week");
+  }
+
+  toggle = tab => {
+    const { activeTab } = this.state;
+    if (activeTab !== tab) {
       this.setState({
         activeTab: tab
       });
     }
-  }
+  };
 
-  componentDidMount() {
-    this.props.getTimeEntryForSpecifiedPeriod(this.props.state.userProfile._id, moment().startOf('week').format('YYYY-MM-DD'), moment().endOf('week').format('YYYY-MM-DD'))
-  }
+  getTimeEntries = week => {
+    const { getTimeEntryForSpecifiedPeriod, state } = this.props;
+    let howManyDays;
+    if (week === "Current Week") {
+      howManyDays = 0;
+    } else if (week === "Last Week") {
+      howManyDays = 7;
+    } else if (week === "Last Week") {
+      howManyDays = 14;
+    }
+
+    const startWeek = moment()
+      .subtract(howManyDays, "days")
+      .startOf("week")
+      .format("YYYY-MM-DD");
+    const endWeek = moment()
+      .subtract(howManyDays, "days")
+      .endOf("week")
+      .format("YYYY-MM-DD");
+
+    getTimeEntryForSpecifiedPeriod(state.userProfile._id, startWeek, endWeek);
+  };
 
   render() {
+    const { activeTab } = this.state;
     return (
       <div>
         <Nav tabs>
           <NavItem>
             <NavLink
-              className={classnames({ active: this.state.activeTab === "1" })}
+              className={classnames({
+                active: activeTab === "Current Week"
+              })}
               onClick={() => {
-                this.toggle("1");
+                this.toggle("Current Week");
+                this.getTimeEntries("Current Week");
               }}
             >
               Current Week
@@ -53,9 +78,12 @@ class Tabs extends Component {
           </NavItem>
           <NavItem>
             <NavLink
-              className={classnames({ active: this.state.activeTab === "2" })}
+              className={classnames({
+                active: activeTab === "Last Week"
+              })}
               onClick={() => {
-                this.toggle("2");
+                this.toggle("Last Week");
+                this.getTimeEntries("Last Week");
               }}
             >
               Last Week
@@ -63,38 +91,37 @@ class Tabs extends Component {
           </NavItem>
           <NavItem>
             <NavLink
-              className={classnames({ active: this.state.activeTab === "3" })}
+              className={classnames({
+                active: activeTab === "Week Before Last"
+              })}
               onClick={() => {
-                this.toggle("3");
+                this.toggle("Week Before Last");
+                this.getTimeEntries("Week Before Last");
               }}
             >
               Week Before Last
             </NavLink>
           </NavItem>
         </Nav>
-        <TabContent activeTab={this.state.activeTab}>
-          <TabPane tabId="1">
+        <TabContent activeTab={activeTab}>
+          <TabPane tabId="Current Week">
             <Row>
               <Col sm="12">
-                <Table/>
+                <Table />
               </Col>
             </Row>
           </TabPane>
-          <TabPane tabId="2">
+          <TabPane tabId="Last Week">
             <Row>
               <Col sm="12">
-                <Table
-
-                />
+                <Table />
               </Col>
             </Row>
           </TabPane>
-          <TabPane tabId="3">
+          <TabPane tabId="Week Before Last">
             <Row>
               <Col sm="12">
-                <Table
-
-                />
+                <Table />
               </Col>
             </Row>
           </TabPane>
@@ -106,4 +133,7 @@ class Tabs extends Component {
 
 const mapStateToProps = state => ({ state });
 
-export default connect(mapStateToProps, { getTimeEntryForSpecifiedPeriod })(Tabs);
+export default connect(
+  mapStateToProps,
+  { getTimeEntryForSpecifiedPeriod }
+)(Tabs);
