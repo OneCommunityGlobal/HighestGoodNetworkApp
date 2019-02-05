@@ -77,6 +77,7 @@ class TimeEntryBody extends Form {
     timeEntry.isTangible = this.state.data.tangible;
     timeEntry.notes = this.state.data.notes;
     this.props.postTimeEntry(timeEntry);
+    this.props.toggle();
   };
 
   render() {

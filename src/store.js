@@ -11,8 +11,10 @@ const persistConfig = {
   stateReconciler: autoMergeLevel2 // see "Merge Process" section for details.
 };
 
+const devTools = window.__REDUX_DEVTOOLS_EXTENSION__
+  ? window.__REDUX_DEVTOOLS_EXTENSION__()
+  : f => f;
 const pReducer = persistReducer(persistConfig, reducers);
-
 const middleware = [thunk];
 const intialState = {};
 
@@ -21,7 +23,7 @@ export const store = createStore(
   intialState,
   compose(
     applyMiddleware(...middleware),
-    window.devToolsExtension ? window.devToolsExtension() : f => f
+    devTools
   )
 );
 export const persistor = persistStore(store);

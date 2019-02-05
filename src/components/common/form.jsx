@@ -11,15 +11,39 @@ import TinyMCEEditor from "./tinymceEditor";
 import CheckboxCollection from "./checkboxCollection";
 
 class Form extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      data: {
-        tangible: false
-      },
-      errors: {}
-    };
-  }
+  state = {
+    data: {},
+    errors: {}
+  };
+
+  resetForm = () => this.setState(_.cloneDeep(this.initialState));
+
+  handleInput = ({ currentTarget: input }) => {
+    this.handleState(input.name, input.value);
+  };
+
+  handleRichTextEditor = ({ target }) => {
+    const { id } = target;
+    this.handleState(id, target.getContent());
+  };
+
+  handleCollection = (collection, item, action, index = null) => {
+    const data = this.state.data[collection] || [];
+    switch (action) {
+      case "create":
+        data.push(item);
+        break;
+      case "edit":
+        data[index] = item;
+        break;
+      case "delete":
+        data.splice(index, 1);
+        break;
+      default:
+        break;
+    }
+    this.handleState(collection, data);
+  };
 
   handleInput = ({ currentTarget: input }) => {
     this.handleState(input.name, input.value);
@@ -36,6 +60,8 @@ class Form extends Component {
     }
     this.setState({ data, errors });
   };
+
+  isStateChanged = () => !_.isEqual(this.state.data, this.initialState.data);
 
   validateProperty = (name, value) => {
     const obj = { [name]: value };

@@ -1,9 +1,9 @@
-import React from 'react';
-import { connect } from 'react-redux';
-import { Container, Row, Col } from 'reactstrap';
-import TimeEntry from './TimeEntry';
-import Form from '../common/form';
-import Leaderboard from '../Leaderboard';
+import React from "react";
+import { connect } from "react-redux";
+import { Container, Row, Col } from "reactstrap";
+import TimeEntry from "./TimeEntry";
+import Form from "../common/form";
+import Leaderboard from "../Leaderboard";
 
 class TimelogPage extends Form {
   constructor(props, context) {
@@ -16,15 +16,12 @@ class TimelogPage extends Form {
       <Container>
         <Row>
           <Col>
-            <h1 className="text-center" >Time Log</h1>
+            <h1 className="text-center">Time Log</h1>
           </Col>
         </Row>
         <Row>
           <Col sm={6} md={3}>
-            <h2 className="float-left">
-
-              hi
-            </h2>
+            <h2 className="float-left" />
           </Col>
         </Row>
         <Row>
@@ -39,7 +36,7 @@ class TimelogPage extends Form {
     );
   }
 }
-const mapStateToProps = (state) => {
+const mapStateToProps = state => {
   return { state };
 };
 

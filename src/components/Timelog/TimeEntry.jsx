@@ -19,8 +19,9 @@ class TimeEntry extends Form {
         header="Add Time Entry"
         buttonLabel="Add Time Entry"
         color="primary"
-        body={<ModalBody />}
-      />
+      >
+        <ModalBody />
+      </ModalA>
     );
     if (this.props.state.user.role === "Administrator") {
       Modal = tModal;

@@ -20,7 +20,6 @@ class ModalA extends React.Component {
   clearForm = () => {};
 
   render() {
-    const { state } = this.state;
     return (
       <div>
         <Button color={this.props.color} onClick={this.toggle}>
@@ -32,7 +31,13 @@ class ModalA extends React.Component {
           className={this.props.className}
         >
           <ModalHeader toggle={this.toggle}>{this.props.header}</ModalHeader>
-          <ModalBody>{this.props.body}</ModalBody>
+          <ModalBody>
+            {React.Children.map(this.props.children, child => {
+              return React.cloneElement(child, {
+                toggle: this.toggle
+              });
+            })}
+          </ModalBody>
           <ModalFooter />
         </Modal>
       </div>

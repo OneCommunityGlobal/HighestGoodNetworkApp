@@ -1,10 +1,10 @@
 import { combineReducers } from "redux";
 import jwtDecode from "jwt-decode";
 
-const currentUserReducer = (user = null, action) => {
+const currentUserReducer = (user = {}, action) => {
   if (action.type === "GET_CURRENT_USER") {
     try {
-      let token = action.payload;
+      const token = action.payload;
       return jwtDecode(token);
     } catch (err) {
       return user;
@@ -14,9 +14,13 @@ const currentUserReducer = (user = null, action) => {
   return user;
 };
 
-const userProfileByIdReducer = (userProfile = [], action) => {
+const userProfileByIdReducer = (userProfile = null, action) => {
   if (action.type === "GET_USER_PROFILE") {
     return action.payload;
+  }
+
+  if (action.type === "CLEAR_USER_PROFILE") {
+    return null;
   }
 
   return userProfile;
@@ -181,6 +185,18 @@ const timeEntriesForSpecifiedProjectReducer = (timeEntries = [], action) => {
   return timeEntries;
 };
 
+const handleSuccessReducer = (status = null, action) => {
+  if (action.type === "REQUEST_SUCCEEDED") {
+    return action.payload;
+  }
+
+  if (action.type === "REQUEST_FAILED") {
+    return action.error.response;
+  }
+
+  return status;
+};
+
 const postTimeEntry = (timeEntries = [], action) => {
   if (action.type === "POST_TIME_ENTRY") {
     return action.payload;
@@ -211,5 +227,5 @@ export default combineReducers({
   allTimeEntries: allTimeEntriesReducer,
   userTimeEntries: timeEntriesForSpecifiedPeriodReducer,
   projectTimeEntries: timeEntriesForSpecifiedProjectReducer,
-  postTimeEntry: postTimeEntry
+  requestStatus: handleSuccessReducer
 });
