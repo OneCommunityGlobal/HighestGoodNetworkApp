@@ -18,6 +18,7 @@ class UserProfile extends Component {
   };
 
   async componentDidMount() {
+    document.title = " User Profile";
     try {
       let { userid: requestorId, role: requestorRole } = {
         ...getCurrentUser()

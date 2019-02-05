@@ -20,6 +20,10 @@ class Login extends Form {
       .label("Password")
   };
 
+  componentDidMount() {
+    document.title = "Login";
+  }
+
   doSubmit = async () => {
     const email = this.state.data.email;
     const password = this.state.data.password;

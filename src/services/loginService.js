@@ -40,6 +40,6 @@ export function isUserAuthenticated() {
     return false;
   }
   let token = localStorage.getItem(tokenKey);
-  let tokenValue = jwtDecode(token);
-  return tokenValue.expiryTimestamp > new Date().toISOString();
+  let { expiryTimestamp } = jwtDecode(token);
+  return expiryTimestamp > new Date().toISOString();
 }
