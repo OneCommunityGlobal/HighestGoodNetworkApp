@@ -1,4 +1,4 @@
-import httpService from './httpervice'
+import httpService from './httpService'
 
 //const ApiEndpoint = `https://hgn-rest-dev.herokuapp.com/api/dashboard`;
 const ApiEndpoint = `${process.env.REACT_APP_APIENDPOINT}/dashboard`; 

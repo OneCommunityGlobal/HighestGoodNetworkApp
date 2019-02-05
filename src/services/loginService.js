@@ -1,4 +1,4 @@
-import httpService from './httpervice'
+import httpService from './httpService'
 import config from "../config.json"
 import jwtDecode from 'jwt-decode'
 

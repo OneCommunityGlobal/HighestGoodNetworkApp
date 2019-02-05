@@ -1,4 +1,4 @@
-import httpService from "../services/httpervice"
+import httpService from "../services/httpService"
 const APIEndpoint = process.env.REACT_APP_APIENDPOINT;
 
 export const getCurrentUser = token => {
@@ -19,6 +19,10 @@ export function getUserProfile(userId) {
 			})
 		});
 	};
+}
+
+export function clearUserProfile() {
+	return { type: 'CLEAR_USER_PROFILE' }
 }
 
 export function getAllUserProfiles() {

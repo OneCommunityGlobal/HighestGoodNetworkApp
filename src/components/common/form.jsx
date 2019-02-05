@@ -16,7 +16,7 @@ class Form extends Component {
   };
   
 
-  resetForm = ()=>  this.setState(_.cloneDeep(this.initialState));
+  resetForm = () => this.setState(_.cloneDeep(this.initialState));
   
   handleInput = ({currentTarget:input}) => {   
     this.handleState(input.name, input.value)
@@ -33,9 +33,9 @@ class Form extends Component {
     
     let data = this.state.data[collection] || [];
     switch (action) {
-            case "create":
-            data.push(item);                
-                break;
+        case "create":
+        data.push(item);                
+        break;
         case "edit":
         data[index] = item;
         break;
