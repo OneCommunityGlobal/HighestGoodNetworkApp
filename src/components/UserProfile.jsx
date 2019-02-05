@@ -1,41 +1,41 @@
 import React, { Component } from "react";
 import Loading from "./common/Loading";
-import { getUserProfile } from "../services/userProfileService";
-import { getCurrentUser } from "../services/loginService";
+import { connect } from "react-redux";
+import { getjwt } from "../services/loginService";
+import { getCurrentUser, getUserProfile, clearUserProfile } from "../actions";
 import Profile from "./Profile";
 
 class UserProfile extends Component {
-  state = {
-    requestorRole: "",
-    requestorId: "",
-    isLoading: true,
-    userProfile: {},
-    targetUserId: ""
-  };
 
-  async componentDidMount() {
-    try {
-      let { userid: requestorId, role: requestorRole } = {
-        ...getCurrentUser()
-      };
-      let { userId: targetUserId } = this.props.match.params;
-      let { data: userProfile } = { ...(await getUserProfile(targetUserId)) };
-      let isLoading = false;
-      this.setState({ requestorId, requestorRole, isLoading, userProfile, targetUserId });
-    } catch (error) {
-      if (error.response && error.response.status === 400) {
-        alert("This is an invalid profile");
-      }
+  state = {
+    isLoading: true
+  }
+
+  componentDidMount() {
+    this.props.getCurrentUser(getjwt());
+    let { userId: targetUserId } = this.props.match.params;
+    this.props.getUserProfile(targetUserId)
+  }
+
+  componentDidUpdate() {
+    let userProfile = this.props.state.userProfile
+    if (userProfile && this.state.isLoading === true) {
+      this.setState({ isLoading: false });
     }
+  }
+
+  componentWillUnmount() {
+    this.props.clearUserProfile();
   }
 
   render() {
     if (this.state.isLoading === true) {
       return <Loading />;
     }
-
-    let { requestorId, requestorRole, userProfile, targetUserId } = this.state;
-
+    let { userId: targetUserId } = this.props.match.params;
+    let { userid: requestorId ,  role: requestorRole } = this.props.state.user;
+    let { userProfile } = this.props.state;
+    
     return (
       <Profile
         requestorId={requestorId}
@@ -47,4 +47,12 @@ class UserProfile extends Component {
   }
 }
 
-export default UserProfile;
+const mapStateToProps = state => {
+  return { state };
+};
+
+export default connect(mapStateToProps, { 
+  getCurrentUser, 
+  getUserProfile, 
+  clearUserProfile 
+})(UserProfile);

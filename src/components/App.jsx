@@ -7,11 +7,6 @@ import "../App.css";
 class App extends Component {
   state = {};
 
-  // componentDidMount() {
-  //   const user = getCurrentUser();
-  //   this.setState({ user });
-  // }
-
   componentDidCatch(error, errorInfo) {
     logger.logError(error);
   }

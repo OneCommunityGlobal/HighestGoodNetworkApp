@@ -1,5 +1,5 @@
 
-import httpService from "./httpervice"
+import httpService from "./httpService"
 
 const APIEndPoint = `${process.env.REACT_APP_APIENDPOINT}/userprofile`;
 

@@ -1,7 +1,7 @@
 import { combineReducers } from "redux";
 import jwtDecode from 'jwt-decode';
 
-const currentUserReducer = (user = null, action) => {
+const currentUserReducer = (user = {}, action) => {
 	if (action.type === "GET_CURRENT_USER") {
 		try {
 			let token = action.payload;
@@ -17,6 +17,10 @@ const currentUserReducer = (user = null, action) => {
 const userProfileByIdReducer = (userProfile = null, action) => {
 	if (action.type === "GET_USER_PROFILE") {
 		return action.payload
+	}
+
+	if (action.type === "CLEAR_USER_PROFILE") {
+		return null
 	}
 
 	return userProfile;

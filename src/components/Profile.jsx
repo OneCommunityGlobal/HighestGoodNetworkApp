@@ -62,7 +62,7 @@ class Profile extends Form {
     {
         this.handleCollection("infringments", item, action, index)
     }
-    _handleProfileLinks = (collection,item, action, index =null) =>
+    _handleProfileLinks = (collection,item, action, index = null) =>
     {
         this.handleCollection(collection, item, action, index);  
     
