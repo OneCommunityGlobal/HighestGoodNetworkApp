@@ -26,7 +26,6 @@ ShallowWrapper {
           onSubmit={[Function]}
         >
           <Input
-            id="email"
             label="Email:"
             name="email"
             onChange={[Function]}
@@ -34,7 +33,6 @@ ShallowWrapper {
             value=""
           />
           <Input
-            id="password"
             label="Password:"
             name="password"
             onChange={[Function]}
@@ -76,7 +74,6 @@ ShallowWrapper {
         "props": Object {
           "children": Array [
             <Input
-              id="email"
               label="Email:"
               name="email"
               onChange={[Function]}
@@ -84,7 +81,6 @@ ShallowWrapper {
               value=""
             />,
             <Input
-              id="password"
               label="Password:"
               name="password"
               onChange={[Function]}
@@ -114,7 +110,6 @@ ShallowWrapper {
             "nodeType": "function",
             "props": Object {
               "error": undefined,
-              "id": "email",
               "label": "Email:",
               "name": "email",
               "onChange": [Function],
@@ -131,7 +126,6 @@ ShallowWrapper {
             "nodeType": "function",
             "props": Object {
               "error": undefined,
-              "id": "password",
               "label": "Password:",
               "name": "password",
               "onChange": [Function],
@@ -179,7 +173,6 @@ ShallowWrapper {
             onSubmit={[Function]}
           >
             <Input
-              id="email"
               label="Email:"
               name="email"
               onChange={[Function]}
@@ -187,7 +180,6 @@ ShallowWrapper {
               value=""
             />
             <Input
-              id="password"
               label="Password:"
               name="password"
               onChange={[Function]}
@@ -229,7 +221,6 @@ ShallowWrapper {
           "props": Object {
             "children": Array [
               <Input
-                id="email"
                 label="Email:"
                 name="email"
                 onChange={[Function]}
@@ -237,7 +228,6 @@ ShallowWrapper {
                 value=""
               />,
               <Input
-                id="password"
                 label="Password:"
                 name="password"
                 onChange={[Function]}
@@ -267,7 +257,6 @@ ShallowWrapper {
               "nodeType": "function",
               "props": Object {
                 "error": undefined,
-                "id": "email",
                 "label": "Email:",
                 "name": "email",
                 "onChange": [Function],
@@ -284,7 +273,6 @@ ShallowWrapper {
               "nodeType": "function",
               "props": Object {
                 "error": undefined,
-                "id": "password",
                 "label": "Password:",
                 "name": "password",
                 "onChange": [Function],
