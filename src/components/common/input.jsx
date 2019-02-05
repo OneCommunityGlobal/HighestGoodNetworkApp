@@ -2,7 +2,6 @@ import React from "react";
 import PropTypes from 'prop-types';
 
 const Input = ({ label,name, error,className, ...rest  }) => {
-
   return (
     <div className={`form-group ${className? className :""}`}>
       <label htmlFor={name} >{label}</label> 

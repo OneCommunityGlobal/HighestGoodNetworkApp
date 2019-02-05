@@ -1,5 +1,5 @@
 
-import httpService from "./httpervice"
+import httpService from "./httpService"
 
 const APIEndPoint = `${process.env.REACT_APP_APIENDPOINT}/userprofile`;
 
@@ -9,17 +9,13 @@ const APIEndPoint = `${process.env.REACT_APP_APIENDPOINT}/userprofile`;
     return httpService.get(`${APIEndPoint}/${userId}`)
   }
   
-  export function editUserProfileData(userId, data)
+  export function editUserProfileData(user, userId)
   {
-    return httpService.put(`${APIEndPoint}/${userId}`,data);
-  }
-  
-
-  export function postUserProfileData(data)
-  {
-    return httpService.post(APIEndPoint, data)
   }
 
+  export function postUserProfileData(user)
+  {
+  }
 
 
   export function updatePassword(userId, newpassworddata) {

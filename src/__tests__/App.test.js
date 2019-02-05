@@ -17,7 +17,5 @@ describe("App tests", () => {
     shallow(<App />)
 
   })
-
   
-
 })

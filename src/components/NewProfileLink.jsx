@@ -39,7 +39,6 @@ class NewProfileLink extends Form {
 
     doSubmit()
     {
-        alert("child profile link")
         this.props.onSubmit(this.props.collection, this.state.data, "create");
         this.toggle();
         this.resetForm()

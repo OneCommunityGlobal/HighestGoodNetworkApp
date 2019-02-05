@@ -4,7 +4,6 @@ import Form from './common/form';
 import _ from 'lodash'
 import ShowSaveWarning from "./common/ShowSaveWarning"
 
-
 class RenderInfringment extends Form {
     constructor(props) {
         super(props);
@@ -47,18 +46,17 @@ class RenderInfringment extends Form {
         let isEmpty = !(!!date && !! description);
         let className = isEmpty? "fa fa-square": "fa fa-square infringement";
         let tooltip = !isEmpty ? `Date: ${date} \nDescription: ${description}`: ""
+
         return (
 
             <div className = "m-1">
             <div className="row ml-1 mr-1">
-    
             <span className = {className} 
             data-toggle="tooltip" data-placement="bottom" 
         title = {tooltip}/>            
             </div>
             {isUserAdmin && <React.Fragment>
-        <div className="row ml-1">
-      
+        <div className="row ml-1">   
         <span className="fa fa-pencil" onClick={this.toggle}/>
          <Modal isOpen={this.state.modal} toggle={this.toggle} >
           <ModalHeader toggle={this.toggle}>Infringment</ModalHeader>
