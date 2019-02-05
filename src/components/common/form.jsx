@@ -3,30 +3,97 @@ import Joi from "joi";
 import _ from "lodash";
 import Input from "../common/input";
 import Dropdown from "./dropdown";
+import Radio from "./radio"
+import Image from "./image"
+import FileUpload from "./fileUpload"
+import { Link } from 'react-router-dom'
+import TinyMCEEditor from './tinymceEditor'
+import CheckboxCollection from './checkboxCollection'
 
 class Form extends Component {
   state = {
     data: {},
-    errors: {}
+    errors: {}    
   };
-  handleChange = ({currentTarget:input}) => {
+  
+  resetForm = ()=>  this.setState(_.cloneDeep(this.initialState));
+  
+  handleInput = ({currentTarget:input}) => {   
+    this.handleState(input.name, input.value)
+  };
+  handleRichTextEditor= ({target})=>
+  {
+  let {id} = target
+    this.handleState(id, target.getContent())
+
+  }
+
+  handleCollection= (collection, item, action, index = null) =>
+  {
     
-    let { data, errors } = { ...this.state };
-    data[input.name] = input.value;
+    let data = this.state.data[collection] || [];
+    switch (action) {
+            case "create":
+            data.push(item);                
+                break;
+        case "edit":
+        data[index] = item;
+        break;
+        case "delete":
+        data.splice(index,1)
+        break;
+            default:
+                break;
+        }
+       this.handleState(collection, data);
 
-    const errorMessage = this.validateProperty(input.name, input.value);
+  }
 
+  handleFileUpload = (e, readAsType= "data") => {
+    const file = e.target.files[0];
+    const reader = new FileReader();
+    let name = e.target.name;
+    if(file)
+    { 
+      switch (readAsType) {
+        case "data":
+        reader.readAsDataURL(file)         
+          break;      
+        default:
+          break;
+      }
+          }
+    reader.onload = ()=> this.handleState(name, reader.result);
+  }
+
+  handleState = (name, value)=>
+  {   
+    let {errors, data} = this.state;
+    data[name] = value;
+    const errorMessage = this.validateProperty(name, value);
     if (errorMessage) {
-      errors[input.name] = errorMessage;
+      errors[name] = errorMessage;
     } else {      
-      delete errors[input.name];
+      delete errors[name];
     }
     this.setState({ data, errors });
-  };
-  validateProperty = (name, value) => {
+  }
 
-    const obj = { [name]: value };
+  isStateChanged = () =>!_.isEqual(this.state.data, this.initialState.data)
+ 
+  validateProperty = (name, value) => {
+    
+    const obj = { [name]: value};
     const schema = { [name]: this.schema[name] };
+    let refs = schema[name]._refs;
+    if(refs)
+    {
+    refs.forEach(ref => {
+      schema[ref] = this.schema[ref];
+      obj[ref] = this.state.data[ref];
+      
+    });
+    }
     const { error } = Joi.validate(obj, schema);
     if (!error) return null;
     return error.details[0].message;
@@ -49,6 +116,7 @@ class Form extends Component {
   };
   handleSubmit = e => {
     e.preventDefault();
+    e.stopPropagation();
     const errors = this.validateForm();
     this.setState({ errors: errors || {} });
     if (errors) return;
@@ -63,37 +131,101 @@ class Form extends Component {
     );
   }
 
-  renderDropDown(name, label,options)
+  renderRichTextEditor({name, ...rest})
+  {
+    const {data, errors} = {...this.state}
+    return (
+      <TinyMCEEditor
+      name = {name}         
+      value = {data[name]}
+      onChange= {e=> this.handleRichTextEditor(e)}
+      error = {errors[name]}
+      {...rest}
+      />
+    )
+
+  }
+
+  renderDropDown({name, label,options, ...rest})
   {
 
     const {data, errors} = {...this.state}
-  
-    return (
+     return (
       <Dropdown
       name = {name}
       label = {label}
       options = {options}
       value = {data[name]}
-      onChange = {e=> this.handleChange(e)}
+      onChange = {e=> this.handleInput(e)}
       error = {errors[name]}
+      {...rest}
       />
     )
   }
 
-  renderInput(name, label, type = "text") {
+  renderInput({name, label, type = "text", ...rest}) {
     let { data, errors } = { ...this.state };
-
     return (
-      <Input
-        id={name}
+      <Input 
         name={name}
         type={type}
-        onChange={e => this.handleChange(e)}
+        onChange={e=> this.handleInput(e)}
         value={data[name]}
         label={label}
         error={errors[name]}
+        {...rest}
+      
       />
     );
+  }
+  renderRadio({name, label, type = "text", ...rest}){
+    let { data, errors } = { ...this.state };
+    return (
+      <Radio 
+      name={name}
+        value = {data[name]}
+        onChange={e => this.handleInput(e)}
+        error={errors[name]}
+        {...rest}
+      
+      />
+    );
+  }
+
+  renderFileUpload({name, ...rest})
+  {
+    let {  errors } = { ...this.state };
+
+    return(
+      <FileUpload name ={name} onUpload={this.handleFileUpload} {...rest} error={errors[name]}/>
+    );
+
+  }
+
+  renderCheckboxCollection({collectionName, ...rest})
+  {
+    let {  errors } = { ...this.state };
+    return(<CheckboxCollection error = {errors[collectionName]} {...rest} />)
+  }
+
+  renderImage({name, label, ...rest}) {
+    let { data, errors } = { ...this.state };
+    return (
+      <Image 
+        name={name}
+        onChange={e=> this.handleInput(e)}
+        value={data[name]}
+        label={label}
+        error={errors[name]}
+        {...rest}
+      
+      />
+    );
+  }
+
+  renderLink({label, to, className})
+  {
+    return <Link to={to} className = {className}>{label}</Link>
   }
 }
 

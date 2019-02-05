@@ -1,79 +1,81 @@
 import React, { Component } from "react";
 import { getCurrentUser } from "../services/loginService";
-import { getLeaderboardData } from "../services/dashBoardService";
+import { connect } from "react-redux";
+import { getLeaderboardData } from "../actions";
 import _ from "lodash";
 import { Link } from "react-router-dom";
+import Loading from './common/Loading'
 
 class Leaderboard extends Component {
   state = {
     leaderboardData: [],
     maxtotal: 0,
-    loggedinUser: {}
+    isLoading : true
   };
 
   getcolor = effort => {
     let color = "purple";
-
     if (_.inRange(effort, 0, 5)) color = "red";
     if (_.inRange(effort, 5, 10)) color = "orange";
     if (_.inRange(effort, 10, 20)) color = "green";
     if (_.inRange(effort, 20, 30)) color = "blue";
     if (_.inRange(effort, 30, 40)) color = "indigo";
     if (_.inRange(effort, 40, 50)) color = "violet";
-
     return color;
   };
 
   async componentDidMount() {
-    let loggedinUser = getCurrentUser().userid;
-    let maxtotal = 0;
-
-    let results = await getLeaderboardData(loggedinUser);
-    let data = results.data;
-
-    let leaderboardData = [];
-
-    maxtotal = _.maxBy(data, "totaltime_hrs").totaltime_hrs;
-
-    maxtotal = maxtotal === 0 ? 10 : maxtotal;
-
-    //Sets the leaderboard array with Objects
-     data.forEach(element => {
-      leaderboardData.push({
-        didMeetWeeklyCommitment:
-          element.totaltangibletime_hrs >= element.weeklyComittedHours
-            ? true
-            : false,
-        name: element.name,
-        weeklycommited: _.round(element.weeklyComittedHours, 2),
-        personId: element.personId,
-        tangibletime: _.round(element.totaltangibletime_hrs, 2),
-        intangibletime: _.round(element.totalintangibletime_hrs, 2),
-        tangibletimewidth: _.round(
-          (element.totaltangibletime_hrs * 100) / maxtotal,
-          0
-        ),
-        intangibletimewidth: _.round(
-          (element.totalintangibletime_hrs * 100) / maxtotal,
-          0
-        ),
-        tangiblebarcolor: this.getcolor(element.totaltangibletime_hrs),
-        totaltime: _.round(element.totaltime_hrs, 2)
-      });
-    });
-
-    this.setState({ leaderboardData, maxtotal, loggedinUser });
+    await this.props.state.user
+    let user = this.props.state.user
+    this.props.getLeaderboardData(user.userid)
   }
 
+  componentDidUpdate() {
+    let data = this.props.state.leaderboardData
+    if(data && this.state.isLoading === true) {
+      let isLoading = false;
+      let maxtotal = 0;
+      let leaderboardData = [];
+      maxtotal = _.maxBy(data, "totaltime_hrs").totaltime_hrs;
+      maxtotal = maxtotal === 0 ? 10 : maxtotal;
+      data.forEach(element => {
+      leaderboardData.push({
+          didMeetWeeklyCommitment:
+            element.totaltangibletime_hrs >= element.weeklyComittedHours
+              ? true
+              : false,
+          name: element.name,
+          weeklycommited: _.round(element.weeklyComittedHours, 2),
+          personId: element.personId,
+          tangibletime: _.round(element.totaltangibletime_hrs, 2),
+          intangibletime: _.round(element.totalintangibletime_hrs, 2),
+          tangibletimewidth: _.round(
+            (element.totaltangibletime_hrs * 100) / maxtotal,
+            0
+          ),
+          intangibletimewidth: _.round(
+            (element.totalintangibletime_hrs * 100) / maxtotal,
+            0
+          ),
+          tangiblebarcolor: this.getcolor(element.totaltangibletime_hrs),
+          totaltime: _.round(element.totaltime_hrs, 2)
+        });
+      });
 
-  render() {    
-    let { leaderboardData, loggedinUser, maxtotal } = this.state;
+      this.setState({ leaderboardData, maxtotal, isLoading });
+    }
+  }
+
+  render() {
+    let { leaderboardData, maxtotal, isLoading } = this.state;
+    let loggedinUser = this.props.state.user.userid;
     
       return (
       <div className="card hgn_leaderboard bg-dark">
         <div className="card-body text-white">
           <h5 className="card-title">LeaderBoard</h5>
-          <div>
+          {isLoading && <Loading/>}
+          {!isLoading && <div>
             <table className="table table-sm dashboardtable">
               <tbody>
                 {leaderboardData.map(entry => {
@@ -101,7 +103,7 @@ class Leaderboard extends Component {
                       />
                     </td>
                     <td className="text-left col-3">
-                      <Link to={`/profile/${entry.personId}`}>
+                      <Link to={`/userprofile/${entry.personId}`}>
                         {entry.name}
                       </Link>
                     </td>
@@ -151,11 +153,15 @@ class Leaderboard extends Component {
                 )}
               </tbody>
             </table>
-          </div>
+          </div>}
         </div>
       </div>
     );
   }
 }
 
-export default Leaderboard;
+const mapStateToProps = state => {
+  return { state };
+};
+
+export default connect(mapStateToProps, { getLeaderboardData })(Leaderboard);
