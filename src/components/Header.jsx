@@ -1,6 +1,7 @@
 import React from 'react';
 import {getCurrentUser} from "../services/loginService";
 import {getUserProfile} from "../services/userProfileService";
+import {Link} from "react-router-dom";
 import {
   Collapse,
   Navbar,
@@ -30,41 +31,39 @@ class Header extends React.Component {
     if(user)
     {
       let {userid:userId} = user;
-    let {data:userProfileData} = {...await getUserProfile(userId)}
-    let name = userProfileData.firstName;
-    let profilePic = userProfileData.profilePic;
-    this.setState({userId,userProfileData,name,profilePic});
+      let {data:userProfileData} = {...await getUserProfile(userId)}
+      let name = userProfileData.firstName;
+      let profilePic = userProfileData.profilePic;
+      this.setState({userId,userProfileData,name,profilePic});
     }
   }
   render() {
     let {userId,name,profilePic} = this.state;
-    if(userId === 0) return null;
-
     return (
      
       <div>
         <Navbar color="dark" dark expand="md" style={{marginBottom:'20px'}}>
-          <NavbarBrand href="/">Time Tracking Tool</NavbarBrand>
+          <NavbarBrand tag={Link} to="/">Time Tracking Tool</NavbarBrand>
           <NavbarToggler onClick={this.toggle} />
           <Collapse isOpen={this.state.isOpen} navbar>
             <Nav className="ml-auto" navbar>
               <NavItem>
-                <NavLink href="/dashboard" activeStyle={{color:"blue"}}>Dashboard</NavLink>
+                <NavLink tag={Link} to="/dashboard">Dashboard</NavLink>
               </NavItem>
               <NavItem>
-              <NavLink href={`/timelog/${userId}`}>Timelog</NavLink>
+              <NavLink tag={Link} to={`/timelog/${userId}`}>Timelog</NavLink>
               </NavItem>
               <NavItem>
-                <NavLink href="/reports" activeStyle={{color:"blue"}}>Reports</NavLink>
+                <NavLink tag={Link} to="/reports">Reports</NavLink>
               </NavItem>
               <NavItem>
-              <NavLink href={`/timelog/${userId}`}>
-                <icon className="fa fa-bell icon-large">
-                  <icon className="badge badge-pill badge-danger badge-notify">
+              <NavLink tag={Link} to={`/timelog/${userId}`}>
+                <i className="fa fa-bell i-large">
+                  <i className="badge badge-pill badge-danger badge-notify">
                   {/* Pull number of unread messages */}
-                  </icon>
+                  </i>
                   <span className="sr-only">unread messages</span>
-                </icon>
+                </i>
             </NavLink>
               </NavItem>
               <UncontrolledDropdown nav inNavbar>
@@ -72,13 +71,13 @@ class Header extends React.Component {
                   Other Links
                 </DropdownToggle>
                 <DropdownMenu>
-                  <DropdownItem href="/usermanagement">User Management</DropdownItem>
-                  <DropdownItem href="">Projects</DropdownItem>
-                  <DropdownItem href="">Teams</DropdownItem>
+                  <DropdownItem tag={Link} to="/usermanagement">User Management</DropdownItem>
+                  <DropdownItem tag={Link} to="">Projects</DropdownItem>
+                  <DropdownItem tag={Link} to="">Teams</DropdownItem>
                 </DropdownMenu>
               </UncontrolledDropdown>
               <NavItem>
-                <NavLink href={`/profile/${userId}`}>
+                <NavLink tag={Link} to={`/profile/${userId}`}>
                   <img src= {`${profilePic}`} alt= "" height="35" width="40" className="dashboardimg"/> 
                 </NavLink>
               </NavItem>
@@ -89,12 +88,12 @@ class Header extends React.Component {
                 <DropdownMenu>
                   <DropdownItem header>Hello {name}</DropdownItem>
                   <DropdownItem divider />
-                  <DropdownItem href={`/userprofile/${userId}`} >
+                  <DropdownItem tag={Link} to={`/userprofile/${userId}`} >
                     View Profile
                   </DropdownItem>
-                  <DropdownItem href={`/updatepassword/${userId}`}>Update Password</DropdownItem>
+                  <DropdownItem tag={Link} to={`/updatepassword/${userId}`}>Update Password</DropdownItem>
                   <DropdownItem divider />
-                  <DropdownItem href="/logout">Logout</DropdownItem>
+                  <DropdownItem tag={Link} to="/logout">Logout</DropdownItem>
                 </DropdownMenu>
               </UncontrolledDropdown>
             </Nav>

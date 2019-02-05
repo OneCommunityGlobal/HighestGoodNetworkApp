@@ -16,7 +16,6 @@ class Form extends Component {
     errors: {}    
   };
   
-
   resetForm = ()=>  this.setState(_.cloneDeep(this.initialState));
   
   handleInput = ({currentTarget:input}) => {   
@@ -26,13 +25,6 @@ class Form extends Component {
   {
   let {id} = target
     this.handleState(id, target.getContent())
-
-  }
-  updateCollection = (collection, value)=>
-  {
-    let data = this.state.data[collection] || [];
-    data = value;
-    this.handleState(collection, data);
 
   }
 
@@ -88,8 +80,6 @@ class Form extends Component {
   }
 
   isStateChanged = () =>!_.isEqual(this.state.data, this.initialState.data)
-  
-
  
   validateProperty = (name, value) => {
     
