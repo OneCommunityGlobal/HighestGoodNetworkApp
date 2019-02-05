@@ -28,6 +28,15 @@ class UserProfile extends Component {
     this.props.clearUserProfile();
   }
 
+  // handleSubmit = async data => {
+  //   try {
+  //     await editUserProfileData(this.state.targetUserId, data);
+  //     toast.success("Edits were successfully saved");
+  //   } catch (error) {
+  //     toast.error(error);
+  //   }
+  // };
+
   render() {
     if (this.state.isLoading === true) {
       return <Loading />;
@@ -35,13 +44,13 @@ class UserProfile extends Component {
     let { userId: targetUserId } = this.props.match.params;
     let { userid: requestorId ,  role: requestorRole } = this.props.state.user;
     let { userProfile } = this.props.state;
-    
     return (
       <Profile
         requestorId={requestorId}
         requestorRole={requestorRole}
         userProfile={userProfile}
         targetUserId={targetUserId}
+        onSubmit={this.handleSubmit}
       />
     );
   }

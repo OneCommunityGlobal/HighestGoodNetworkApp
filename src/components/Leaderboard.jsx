@@ -5,7 +5,6 @@ import { getLeaderboardData } from "../actions";
 import _ from "lodash";
 import { Link } from "react-router-dom";
 import Loading from './common/Loading'
-import { Progress } from 'reactstrap';
 
 class Leaderboard extends Component {
   state = {

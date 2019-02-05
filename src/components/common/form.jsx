@@ -8,6 +8,7 @@ import Image from "./image"
 import FileUpload from "./fileUpload"
 import { Link } from 'react-router-dom'
 import TinyMCEEditor from './tinymceEditor'
+import CheckboxCollection from './checkboxCollection'
 
 class Form extends Component {
   state = {
@@ -15,8 +16,7 @@ class Form extends Component {
     errors: {}    
   };
   
-
-  resetForm = () => this.setState(_.cloneDeep(this.initialState));
+  resetForm = ()=>  this.setState(_.cloneDeep(this.initialState));
   
   handleInput = ({currentTarget:input}) => {   
     this.handleState(input.name, input.value)
@@ -33,9 +33,9 @@ class Form extends Component {
     
     let data = this.state.data[collection] || [];
     switch (action) {
-        case "create":
-        data.push(item);                
-        break;
+            case "create":
+            data.push(item);                
+                break;
         case "edit":
         data[index] = item;
         break;
@@ -79,6 +79,7 @@ class Form extends Component {
     this.setState({ data, errors });
   }
 
+  isStateChanged = () =>!_.isEqual(this.state.data, this.initialState.data)
  
   validateProperty = (name, value) => {
     
@@ -115,6 +116,7 @@ class Form extends Component {
   };
   handleSubmit = e => {
     e.preventDefault();
+    e.stopPropagation();
     const errors = this.validateForm();
     this.setState({ errors: errors || {} });
     if (errors) return;
@@ -198,6 +200,12 @@ class Form extends Component {
       <FileUpload name ={name} onUpload={this.handleFileUpload} {...rest} error={errors[name]}/>
     );
 
+  }
+
+  renderCheckboxCollection({collectionName, ...rest})
+  {
+    let {  errors } = { ...this.state };
+    return(<CheckboxCollection error = {errors[collectionName]} {...rest} />)
   }
 
   renderImage({name, label, ...rest}) {
