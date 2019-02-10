@@ -12,7 +12,7 @@ import classnames from "classnames";
 import moment from "moment";
 import { connect } from "react-redux";
 import Table from "./Tables/Tables";
-import { getTimeEntryForSpecifiedPeriod } from "../../actions";
+import { getTimeEntryForSpecifiedPeriod, whichWeek } from "../../actions";
 
 class Tabs extends Component {
   constructor(props) {
@@ -33,16 +33,17 @@ class Tabs extends Component {
         activeTab: tab
       });
     }
+    this.props.whichWeek(tab);
   };
 
   getTimeEntries = week => {
-    const { getTimeEntryForSpecifiedPeriod, state } = this.props;
+    const { state } = this.props;
     let howManyDays;
     if (week === "Current Week") {
       howManyDays = 0;
     } else if (week === "Last Week") {
       howManyDays = 7;
-    } else if (week === "Last Week") {
+    } else if (week === "Week Before Last") {
       howManyDays = 14;
     }
 
@@ -135,5 +136,5 @@ const mapStateToProps = state => ({ state });
 
 export default connect(
   mapStateToProps,
-  { getTimeEntryForSpecifiedPeriod }
+  { getTimeEntryForSpecifiedPeriod, whichWeek }
 )(Tabs);

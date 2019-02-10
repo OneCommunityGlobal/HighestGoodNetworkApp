@@ -164,13 +164,14 @@ class Form extends Component {
         disabled={this.validateForm()}
         onClick={onClick}
         className="btn btn-primary"
+        type="button"
       >
         {label}
       </button>
     );
   }
 
-  renderRichTextEditor({ name, ...rest }) {
+  renderRichTextEditor({ name, label, ...rest }) {
     const { data, errors } = { ...this.state };
     return (
       <TinyMCEEditor
@@ -227,20 +228,6 @@ class Form extends Component {
         value={data[name]}
         label={label}
         errors={errors}
-      />
-    );
-  }
-
-  renderTextarea(name, label, rows, cols, ...rest) {
-    const { data, errors } = { ...this.state };
-    return (
-      <Input
-        name={name}
-        label={label}
-        value={data[name]}
-        onChange={e => this.handleInput(e)}
-        error={errors[name]}
-        {...rest}
       />
     );
   }

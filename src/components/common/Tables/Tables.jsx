@@ -2,6 +2,7 @@ import React from "react";
 import { connect } from "react-redux";
 import { Table } from "reactstrap";
 import ModalA from "../modal";
+import ModalBody from "../../Timelog/TimeEntryModalBody";
 
 const Tables = props => {
   return (
@@ -23,12 +24,16 @@ const Tables = props => {
             <td>{item.projectName}</td>
             <td>{item.notes}</td>
             <td>
-              <ModalA
-                header="Edit"
-                buttonLabel="Edit"
-                color="primary"
-                body={null}
-              />
+              <ModalA header="Edit" buttonLabel="Edit" color="primary">
+                <ModalBody
+                  date={item.dateOfWork}
+                  hours={item.hours}
+                  minutes={item.minutes}
+                  projectId={item.projectId}
+                  notes={item.notes}
+                  tangible={item.tangible}
+                />
+              </ModalA>
             </td>
           </tr>
         ))}

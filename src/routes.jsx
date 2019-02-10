@@ -3,7 +3,7 @@ import { Route, Switch } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import Timelog from "./components/Timelog/TimelogPage";
 import Reports from "./components/Reports";
-import UserProfile from "./components/UserProfile";
+// import UserProfile from "./components/UserProfile";
 import Dashboard from "./components/Dashboard";
 import { Logout } from "./components/Logout";
 import Login from "./components/Login";

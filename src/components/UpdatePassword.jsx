@@ -1,7 +1,7 @@
 import React from "react";
-import Form from "./common/form";
-import Joi from "joi";
 import { toast } from "react-toastify";
+import Form from "./common/form";
+import { updatePasswordSchema as schema } from "../schema";
 import { updatePassword } from "../services/userProfileService";
 import { logout } from "../services/loginService";
 
@@ -15,43 +15,14 @@ class UpdatePassword extends Form {
     document.title = "Update Password";
   }
 
-  schema = {
-    currentpassword: Joi.string()
-      .required()
-      .label("Current Password"),
-    newpassword: Joi.string()
-      .regex(
-        /(?=^.{8,}$)((?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$/
-      )
-      .required()
-      .disallow(Joi.ref("currentpassword"))
-      .label("New Password")
-      .options({
-        language: {
-          any: {
-            invalid: "should not be same as old password"
-          },
-          string: {
-            regex: {
-              base:
-                "should be at least 8 characters long and must include at least one uppercase letter, one lowercase letter, and one number or special character"
-            }
-          }
-        }
-      }),
-
-    confirmnewpassword: Joi.any()
-      .valid(Joi.ref("newpassword"))
-      .options({ language: { any: { allowOnly: "must match new password" } } })
-      .label("Confirm Password")
-  };
+  schema = schema;
 
   doSubmit = async () => {
     const { currentpassword, newpassword, confirmnewpassword } = {
       ...this.state.data
     };
-    let userId = this.props.match.params.userId;
-    let data = { currentpassword, newpassword, confirmnewpassword };
+    const userId = this.props.match.params.userId;
+    const data = { currentpassword, newpassword, confirmnewpassword };
     try {
       await updatePassword(userId, data);
       logout();
@@ -63,8 +34,8 @@ class UpdatePassword extends Form {
       );
     } catch (exception) {
       if (exception.response.status === 400) {
-        let { errors } = this.state;
-        errors["currentpassword"] = exception.response.data.error;
+        const { errors } = this.state;
+        errors.currentpassword = exception.response.data.error;
         this.setState({ errors });
       } else {
         toast.error("Something went wrong. Please contact your administrator.");

@@ -1,8 +1,8 @@
 import React from "react";
 import Joi from "joi";
+import { Redirect } from "react-router-dom";
 import Form from "./common/form";
 import { login, getCurrentUser } from "../services/loginService";
-import { Redirect } from "react-router-dom";
 
 class Login extends Form {
   state = {
@@ -28,7 +28,7 @@ class Login extends Form {
     const email = this.state.data.email;
     const password = this.state.data.password;
     try {
-      let result = await login({ email, password });
+      const result = await login({ email, password });
       if (result && result.userType === "newUser") {
         window.location = `/forcePasswordUpdate/${result.userId}`;
         return;
@@ -40,7 +40,7 @@ class Login extends Form {
       if (ex.response && ex.response.status === 403) {
         const errors = this.state.errors;
 
-        errors["email"] = ex.response.data.message;
+        errors.email = ex.response.data.message;
         this.setState({ errors });
       }
     }
@@ -60,7 +60,7 @@ class Login extends Form {
             label: "Password:",
             type: "password"
           })}
-          {this.renderButton("Submit")}
+          {this.renderButton("Submit", this.doSubmit)}
         </form>
       </div>
     );

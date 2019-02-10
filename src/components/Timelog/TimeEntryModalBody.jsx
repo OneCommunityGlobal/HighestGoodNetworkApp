@@ -1,71 +1,29 @@
 import React from "react";
-import { FormGroup, Container, Row, Col, Button } from "reactstrap";
-import { connect } from "react-redux";
-import Joi from "joi";
 import moment from "moment";
+import { connect } from "react-redux";
+import { FormGroup, Container, Row, Col } from "reactstrap";
+import { TimeEntryschema as schema } from "../../schema";
 import { postTimeEntry } from "../../actions";
 import Form from "../common/form";
 
 class TimeEntryBody extends Form {
   constructor(props, context) {
     super(props, context);
-
+    const { date, minutes, hours, projectId, tangible, notes } = props;
     this.state = {
-      data: {},
+      data: {
+        minutes,
+        hours,
+        projectId,
+        tangible,
+        notes,
+        date
+      },
       errors: {}
     };
   }
 
-  schema = {
-    date: Joi.string()
-      .required()
-      .label("Date")
-      .options({
-        language: {
-          string: {
-            regex: {
-              base: "Please select a date"
-            }
-          }
-        }
-      }),
-
-    minutes: Joi.number()
-      .min(0)
-      .max(59)
-      .label("minutes")
-      .options({
-        language: {
-          string: {
-            regex: {
-              base: "0 through 59"
-            }
-          }
-        }
-      }),
-
-    hours: Joi.number()
-      .min(0)
-      .max(23)
-      .label("hours")
-      .options({
-        language: {
-          string: {
-            regex: {
-              base: "0 through 23"
-            }
-          }
-        }
-      }),
-
-    tangible: Joi.label("Tangible"),
-
-    projectId: Joi.string()
-      .required()
-      .label("Projects"),
-
-    notes: Joi.string().label("notes")
-  };
+  schema = schema;
 
   handleSubmit = () => {
     const timeEntry = {};
@@ -78,6 +36,10 @@ class TimeEntryBody extends Form {
     timeEntry.notes = this.state.data.notes;
     this.props.postTimeEntry(timeEntry);
     this.props.toggle();
+  };
+
+  clearForm = () => {
+    this.setState({});
   };
 
   render() {
@@ -134,7 +96,7 @@ class TimeEntryBody extends Form {
           <Row>
             <Col lg={12}>
               <FormGroup>
-                {this.renderTextarea("notes", "Notes", 3, 4)}
+                {this.renderRichTextEditor({ name: "notes", label: "Notes" })}
               </FormGroup>
             </Col>
           </Row>
@@ -144,11 +106,7 @@ class TimeEntryBody extends Form {
             </FormGroup>
           </Row>
           <Row>
-            <Col>
-              <Button color="danger" onClick={this.clearForm}>
-                Clear Form
-              </Button>
-            </Col>
+            <Col>{this.renderButton("Clear Form", this.clearForm)}</Col>
             <Col>{this.renderButton("Submit", this.handleSubmit)}</Col>
           </Row>
         </Container>

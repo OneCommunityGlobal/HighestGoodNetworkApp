@@ -17,8 +17,6 @@ class ModalA extends React.Component {
     });
   };
 
-  clearForm = () => {};
-
   render() {
     return (
       <div>

@@ -178,6 +178,14 @@ const timeEntriesForSpecifiedPeriodReducer = (timeEntries = [], action) => {
   return timeEntries;
 };
 
+const whichWeekReducer = (timeEntries = [], action) => {
+  if (action.type === "CHANGE_WEEK") {
+    return action.payload;
+  }
+
+  return timeEntries;
+};
+
 const timeEntriesForSpecifiedProjectReducer = (timeEntries = [], action) => {
   if (action.type === "GET_TIME_ENTRY_FOR_SPECIFIED_PROJECT") {
     return action.payload;
@@ -197,7 +205,7 @@ const handleSuccessReducer = (status = null, action) => {
   return status;
 };
 
-const postTimeEntry = (timeEntries = [], action) => {
+const postTimeEntryReducer = (timeEntries = [], action) => {
   if (action.type === "POST_TIME_ENTRY") {
     return action.payload;
   }
@@ -227,5 +235,7 @@ export default combineReducers({
   allTimeEntries: allTimeEntriesReducer,
   userTimeEntries: timeEntriesForSpecifiedPeriodReducer,
   projectTimeEntries: timeEntriesForSpecifiedProjectReducer,
-  requestStatus: handleSuccessReducer
+  requestStatus: handleSuccessReducer,
+  postTimeEntry: postTimeEntryReducer,
+  whichWeek: whichWeekReducer
 });

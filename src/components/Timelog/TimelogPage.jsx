@@ -21,7 +21,11 @@ class TimelogPage extends Form {
         </Row>
         <Row>
           <Col sm={6} md={3}>
-            <h2 className="float-left" />
+            <h2 className="float-left">
+              {this.props.state.userProfile.firstName}
+{" "}
+              {this.props.state.userProfile.lastName}
+            </h2>
           </Col>
         </Row>
         <Row>

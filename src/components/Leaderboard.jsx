@@ -1,8 +1,13 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import _ from "lodash";
+import moment from "moment";
 import { Link } from "react-router-dom";
-import { getLeaderboardData } from "../actions";
+import {
+  getLeaderboardData,
+  getUserProfile,
+  getTimeEntryForSpecifiedPeriod
+} from "../actions";
 import Loading from "./common/Loading";
 
 class Leaderboard extends Component {
@@ -52,6 +57,11 @@ class Leaderboard extends Component {
     }
   }
 
+  handleClick = () => {
+    this.props.getUserProfile();
+    this.props.getTimeEntryForSpecifiedPeriod();
+  };
+
   getcolor = effort => {
     let color = "purple";
     if (_.inRange(effort, 0, 5)) color = "red";
@@ -79,6 +89,7 @@ class Leaderboard extends Component {
                   {leaderboardData.map(entry => {
                     return (
                       <tr
+                        onClick={this.handleClick}
                         key={entry.personId}
                         className={
                           entry.personId === loggedinUser
@@ -178,5 +189,5 @@ const mapStateToProps = state => {
 
 export default connect(
   mapStateToProps,
-  { getLeaderboardData }
+  { getLeaderboardData, getUserProfile }
 )(Leaderboard);

@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import { Card, Row, CardTitle, CardText, Col } from "reactstrap";
-import { getCurrentUser, getAllProjects, postTimeEntry } from "../actions";
+import { getCurrentUser } from "../actions";
 import { getjwt } from "../services/loginService";
 import MonthlyEffort from "./MonthlyEffort";
 import Leaderboard from "./Leaderboard";

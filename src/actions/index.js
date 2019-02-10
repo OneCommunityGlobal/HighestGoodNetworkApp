@@ -1,5 +1,5 @@
-import httpService from "../services/httpService"
-;
+import httpService from "../services/httpService";
+
 const APIEndpoint = process.env.REACT_APP_APIENDPOINT;
 
 export const getCurrentUser = token => ({
@@ -17,6 +17,13 @@ export function getUserProfile(userId) {
         payload: data
       });
     });
+  };
+}
+
+export function whichWeek(week) {
+  return {
+    type: "CHANGE_WEEK",
+    payload: week
   };
 }
 

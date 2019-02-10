@@ -38,7 +38,7 @@ class Header extends React.Component {
   }
 
   render() {
-    const { userId, name, profilePic } = this.state;
+    const { userId, profilePic } = this.state;
     return (
       <div>
         <Navbar color="dark" dark expand="md" style={{ marginBottom: "20px" }}>
