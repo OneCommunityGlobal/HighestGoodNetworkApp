@@ -1,8 +1,8 @@
 import React from "react";
 import Joi from "joi";
 import { Redirect } from "react-router-dom";
-import Form from "./common/form";
-import { login, getCurrentUser } from "../services/loginService";
+import Form from "../common/form";
+import { login, getCurrentUser } from "../../services/loginService";
 
 class Login extends Form {
   state = {

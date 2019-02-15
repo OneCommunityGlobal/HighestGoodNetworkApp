@@ -1,9 +1,9 @@
 import React from "react";
 import { toast } from "react-toastify";
-import Form from "./common/form";
-import { updatePasswordSchema as schema } from "../schema";
-import { updatePassword } from "../services/userProfileService";
-import { logout } from "../services/loginService";
+import Form from "../common/form";
+import { updatePasswordSchema as schema } from "../../schema";
+import { updatePassword } from "../../services/userProfileService";
+import { logout } from "../../services/loginService";
 
 class UpdatePassword extends Form {
   state = {

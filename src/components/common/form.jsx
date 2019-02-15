@@ -3,7 +3,7 @@ import Joi from "joi";
 import _ from "lodash";
 import { Link } from "react-router-dom";
 import Input from "./input";
-import DropdownMenu from "./dropdown";
+import DropdownMenu from "./Dropdown";
 import Radio from "./radio";
 import Image from "./image";
 import FileUpload from "./fileUpload";

@@ -1,20 +1,21 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import _ from "lodash";
-import moment from "moment";
 import { Link } from "react-router-dom";
 import {
   getLeaderboardData,
   getUserProfile,
   getTimeEntryForSpecifiedPeriod
-} from "../actions";
-import Loading from "./common/Loading";
+} from "../../actions";
+import { getTimeEntries } from "../../utils";
+import Loading from "../common/Loading";
 
 class Leaderboard extends Component {
   state = {
     leaderboardData: [],
     maxtotal: 0,
-    isLoading: true
+    isLoading: true,
+    _id: this.props.state.userProfile._id
   };
 
   async componentDidMount() {
@@ -57,9 +58,8 @@ class Leaderboard extends Component {
     }
   }
 
-  handleClick = () => {
-    this.props.getUserProfile();
-    this.props.getTimeEntryForSpecifiedPeriod();
+  handleClick = person => {
+    this.props.getUserProfile(person, getTimeEntries);
   };
 
   getcolor = effort => {
@@ -89,7 +89,9 @@ class Leaderboard extends Component {
                   {leaderboardData.map(entry => {
                     return (
                       <tr
-                        onClick={this.handleClick}
+                        onClick={() => {
+                          this.handleClick(entry.personId);
+                        }}
                         key={entry.personId}
                         className={
                           entry.personId === loggedinUser
@@ -126,12 +128,7 @@ class Leaderboard extends Component {
 tan
 </td>
                         <td className="col-4 text-center">
-                          <Link
-                            to={`/timelog/${entry.personId}`}
-                            onClick={() => {
-                              this.props.getUserProfile(entry.personId);
-                            }}
-                          >
+                          <Link to={`/timelog/${entry.personId}`}>
                             <div className="progress progress-leaderboard">
                               <div
                                 className="progress-bar progress-bar-striped"
@@ -189,5 +186,5 @@ const mapStateToProps = state => {
 
 export default connect(
   mapStateToProps,
-  { getLeaderboardData, getUserProfile }
+  { getLeaderboardData, getUserProfile, getTimeEntryForSpecifiedPeriod }
 )(Leaderboard);

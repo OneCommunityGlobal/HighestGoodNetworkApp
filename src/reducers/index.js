@@ -178,12 +178,12 @@ const timeEntriesForSpecifiedPeriodReducer = (timeEntries = [], action) => {
   return timeEntries;
 };
 
-const whichWeekReducer = (timeEntries = [], action) => {
+const whichWeekReducer = (week = "Current Week", action) => {
   if (action.type === "CHANGE_WEEK") {
     return action.payload;
   }
 
-  return timeEntries;
+  return week;
 };
 
 const timeEntriesForSpecifiedProjectReducer = (timeEntries = [], action) => {

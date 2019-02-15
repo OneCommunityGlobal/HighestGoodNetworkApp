@@ -3,7 +3,7 @@ import { connect } from "react-redux";
 import { Container, Row, Col } from "reactstrap";
 import TimeEntry from "./TimeEntry";
 import Form from "../common/form";
-import Leaderboard from "../Leaderboard";
+import Leaderboard from "../LeaderBoard";
 
 class TimelogPage extends Form {
   constructor(props, context) {

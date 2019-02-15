@@ -1,11 +1,11 @@
 import React from "react";
 import _ from "lodash";
-import Form from "./common/form";
 import Joi from "joi";
-import RenderInfringment from "./RenderInfringment";
-import ProfileLinks from "./ProfileLinks";
-import ShowSaveWarning from "./common/ShowSaveWarning";
-import Memberships from "./Memberships";
+import Form from "../common/form";
+import RenderInfringment from "../RenderInfringment";
+import ProfileLinks from "../ProfileLinks";
+import ShowSaveWarning from "../common/ShowSaveWarning";
+import Memberships from "../Memberships";
 
 class Profile extends Form {
   constructor(props) {
@@ -29,6 +29,7 @@ class Profile extends Form {
       .uri()
       .required()
   };
+
   infringmentsSchema = {
     _id: Joi.string()
       .allow("")
@@ -41,6 +42,7 @@ class Profile extends Form {
       .required()
       .label("Infringement Description")
   };
+
   teamsSchema = {
     _id: Joi.string().required(),
     teamName: Joi.string().required()
@@ -124,6 +126,7 @@ class Profile extends Form {
   handleInfringment = (item, action, index = null) => {
     this.handleCollection("infringments", item, action, index);
   };
+
   handleMemberships = (collection, value) => {
     this.updateCollection(collection, value);
   };
@@ -131,7 +134,7 @@ class Profile extends Form {
   doSubmit = () => this.props.onSubmit(this.state.data);
 
   render() {
-    let {
+    const {
       firstName,
       lastName,
       profilePic,
@@ -143,10 +146,10 @@ class Profile extends Form {
       teams,
       projects
     } = { ...this.state.data };
-    let { targetUserId, requestorId, requestorRole } = this.state;
-    let isUserAdmin = requestorRole === "Administrator";
-    let isUserSelf = targetUserId === requestorId;
-    let canEditFields = isUserAdmin || isUserSelf;
+    const { targetUserId, requestorId, requestorRole } = this.state;
+    const isUserAdmin = requestorRole === "Administrator";
+    const isUserSelf = targetUserId === requestorId;
+    const canEditFields = isUserAdmin || isUserSelf;
     let infringmentslength = infringments ? infringments.length : 0;
 
     return (

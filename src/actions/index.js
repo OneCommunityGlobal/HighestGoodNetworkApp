@@ -7,7 +7,22 @@ export const getCurrentUser = token => ({
   payload: token
 });
 
-export function getUserProfile(userId) {
+export function getTimeEntryForSpecifiedPeriod(userId, fromDate, toDate) {
+  const request = httpService.get(
+    `${APIEndpoint}/TimeEntry/user/${userId}/${fromDate}/${toDate}`
+  );
+
+  return dispatch => {
+    request.then(({ data }) => {
+      dispatch({
+        type: "GET_TIME_ENTRY_FOR_SPECIFIED_PERIOD",
+        payload: data
+      });
+    });
+  };
+}
+
+export function getUserProfile(userId, getTimeEntries) {
   const request = httpService.get(`${APIEndpoint}/userprofile/${userId}`);
 
   return dispatch => {
@@ -16,6 +31,9 @@ export function getUserProfile(userId) {
         type: "GET_USER_PROFILE",
         payload: data
       });
+      if (getTimeEntries) {
+        dispatch(getTimeEntries(getTimeEntryForSpecifiedPeriod, data._id));
+      }
     });
   };
 }
@@ -269,21 +287,6 @@ export function getAllTimeEntries() {
     request.then(({ data }) => {
       dispatch({
         type: "GET_ALL_TIME_ENTRIES",
-        payload: data
-      });
-    });
-  };
-}
-
-export function getTimeEntryForSpecifiedPeriod(userId, fromDate, toDate) {
-  const request = httpService.get(
-    `${APIEndpoint}/TimeEntry/user/${userId}/${fromDate}/${toDate}`
-  );
-
-  return dispatch => {
-    request.then(({ data }) => {
-      dispatch({
-        type: "GET_TIME_ENTRY_FOR_SPECIFIED_PERIOD",
         payload: data
       });
     });

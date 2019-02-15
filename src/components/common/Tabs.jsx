@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import moment from "moment";
 import {
   TabContent,
   TabPane,
@@ -8,10 +9,10 @@ import {
   Row,
   Col
 } from "reactstrap";
-import classnames from "classnames";
-import moment from "moment";
 import { connect } from "react-redux";
+import classnames from "classnames";
 import Table from "./Tables/Tables";
+import { getTimeEntries } from "../../utils";
 import { getTimeEntryForSpecifiedPeriod, whichWeek } from "../../actions";
 
 class Tabs extends Component {
@@ -23,40 +24,21 @@ class Tabs extends Component {
   }
 
   componentDidMount() {
-    this.getTimeEntries("Current Week");
+    getTimeEntries(getTimeEntryForSpecifiedPeriod);
   }
 
   toggle = tab => {
+    this.props.whichWeek(tab);
     const { activeTab } = this.state;
     if (activeTab !== tab) {
       this.setState({
         activeTab: tab
       });
     }
-    this.props.whichWeek(tab);
-  };
-
-  getTimeEntries = week => {
-    const { state } = this.props;
-    let howManyDays;
-    if (week === "Current Week") {
-      howManyDays = 0;
-    } else if (week === "Last Week") {
-      howManyDays = 7;
-    } else if (week === "Week Before Last") {
-      howManyDays = 14;
-    }
-
-    const startWeek = moment()
-      .subtract(howManyDays, "days")
-      .startOf("week")
-      .format("YYYY-MM-DD");
-    const endWeek = moment()
-      .subtract(howManyDays, "days")
-      .endOf("week")
-      .format("YYYY-MM-DD");
-
-    getTimeEntryForSpecifiedPeriod(state.userProfile._id, startWeek, endWeek);
+    getTimeEntries(
+      this.props.getTimeEntryForSpecifiedPeriod,
+      this.props.state.userProfile._id
+    );
   };
 
   render() {
@@ -71,7 +53,6 @@ class Tabs extends Component {
               })}
               onClick={() => {
                 this.toggle("Current Week");
-                this.getTimeEntries("Current Week");
               }}
             >
               Current Week
@@ -84,7 +65,6 @@ class Tabs extends Component {
               })}
               onClick={() => {
                 this.toggle("Last Week");
-                this.getTimeEntries("Last Week");
               }}
             >
               Last Week
@@ -97,7 +77,6 @@ class Tabs extends Component {
               })}
               onClick={() => {
                 this.toggle("Week Before Last");
-                this.getTimeEntries("Week Before Last");
               }}
             >
               Week Before Last

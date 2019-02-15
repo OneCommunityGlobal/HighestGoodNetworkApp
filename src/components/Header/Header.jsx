@@ -14,8 +14,8 @@ import {
   DropdownItem
 } from "reactstrap";
 import { connect } from "react-redux";
-import { getUserProfile } from "../services/userProfileService";
-import { getCurrentUser } from "../services/loginService";
+import { getUserProfile } from "../../services/userProfileService";
+import { getCurrentUser } from "../../services/loginService";
 
 class Header extends React.Component {
   state = {
