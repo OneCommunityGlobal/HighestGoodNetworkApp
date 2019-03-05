@@ -2,13 +2,14 @@ import React, { Component } from "react";
 import Joi from "joi";
 import _ from "lodash";
 import { Link } from "react-router-dom";
-import Input from "./input";
-import DropdownMenu from "./Dropdown";
-import Radio from "./radio";
-import Image from "./image";
-import FileUpload from "./fileUpload";
-import TinyMCEEditor from "./tinymceEditor";
-import CheckboxCollection from "./checkboxCollection";
+import { Button } from "reactstrap";
+import Input from "../Input";
+import DropdownMenu from "../Dropdown";
+import Radio from "../Radio";
+import Image from "../Image";
+import FileUpload from "../FileUpload";
+import TinyMCEEditor from "../TinymceEditor";
+import CheckboxCollection from "../CheckboxCollection";
 
 class Form extends Component {
   state = {
@@ -17,10 +18,6 @@ class Form extends Component {
   };
 
   resetForm = () => this.setState(_.cloneDeep(this.initialState));
-
-  handleInput = ({ currentTarget: input }) => {
-    this.handleState(input.name, input.value);
-  };
 
   handleRichTextEditor = ({ target }) => {
     const { id } = target;
@@ -59,6 +56,7 @@ class Form extends Component {
       delete errors[name];
     }
     this.setState({ data, errors });
+    console.log(this.state);
   };
 
   isStateChanged = () => !_.isEqual(this.state.data, this.initialState.data);
@@ -98,14 +96,10 @@ class Form extends Component {
     const { data, errors } = { ...this.state };
     data[event.target.name] = event.target.checked.toString();
     this.setState({ data, errors });
+    console.log(this.state);
   };
 
   resetForm = () => this.setState(_.cloneDeep(this.initialState));
-
-  handleRichTextEditor = ({ target }) => {
-    const { id } = target;
-    this.handleState(id, target.getContent());
-  };
 
   updateCollection = (collection, value) => {
     let data = this.state.data[collection] || [];
@@ -158,16 +152,16 @@ class Form extends Component {
     this.doSubmit();
   };
 
-  renderButton(label, onClick) {
+  renderButton(label, onClick, color) {
     return (
-      <button
+      <Button
         disabled={this.validateForm()}
         onClick={onClick}
+        color={color}
         className="btn btn-primary"
-        type="button"
       >
         {label}
-      </button>
+      </Button>
     );
   }
 
@@ -216,14 +210,15 @@ class Form extends Component {
     );
   }
 
-  renderCheckbox(name, label, type) {
+  renderCheckbox(name, label, checked) {
     const { data, errors } = { ...this.state };
     // doesn't initialize the time entry object properly yet
     return (
       <Input
         id={name}
+        checked={checked}
         name={name}
-        type={type}
+        type="checkbox"
         onChange={e => this.handleCheckbox(e)}
         value={data[name]}
         label={label}

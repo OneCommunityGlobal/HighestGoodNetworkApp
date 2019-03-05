@@ -1,9 +1,9 @@
 import React from "react";
 import { Container, Row, Col } from "reactstrap";
 import { connect } from "react-redux";
-import ModalA from "../common/modal";
-import ModalBody from "./TimeEntryModalBody";
-import Form from "../common/form";
+import ModalA from "../common/Modal";
+import ModalBody from "../TimeEntryModalBody";
+import Form from "../common/Form";
 import Tabs from "../common/Tabs";
 
 class TimeEntry extends Form {
@@ -13,7 +13,8 @@ class TimeEntry extends Form {
   }
 
   render() {
-    let Modal;
+    // Code below is the logic for if a user is an admin, they can add timelogs to any user. If user is not an admin they can only add timelogs for themselves
+    let Modal = null;
     const tModal = (
       <ModalA
         header="Add Time Entry"
@@ -23,18 +24,11 @@ class TimeEntry extends Form {
         <ModalBody />
       </ModalA>
     );
-    if (this.props.state.user.role === "Administrator") {
-      Modal = tModal;
-    } else if (
-      this.props.state.user.role !== "Administrator" &&
+    if (
+      this.props.state.user.role === "Administrator" ||
       this.props.state.userProfile._id === this.props.state.user.userid
     ) {
       Modal = tModal;
-    } else if (
-      this.props.state.user.role !== "Administrator" &&
-      this.props.state.userProfile._id !== this.props.state.user.userid
-    ) {
-      Modal = null;
     }
     return (
       <Container>

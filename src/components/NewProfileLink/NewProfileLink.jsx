@@ -2,7 +2,7 @@ import React from "react";
 import Joi from "joi";
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from "reactstrap";
 import _ from "lodash";
-import Form from "../common/form";
+import Form from "../common/Form";
 import ShowSaveWarning from "../common/ShowSaveWarning";
 
 class NewProfileLink extends Form {

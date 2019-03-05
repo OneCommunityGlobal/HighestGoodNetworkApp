@@ -1,7 +1,7 @@
 import React, { Fragment } from "react";
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from "reactstrap";
 import _ from "lodash";
-import Form from "../common/form";
+import Form from "../common/Form";
 import ShowSaveWarning from "../common/ShowSaveWarning";
 import { getAllProjects } from "../../services/projectService";
 import { getAllTeams } from "../../services/teamService";

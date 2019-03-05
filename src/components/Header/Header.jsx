@@ -34,7 +34,6 @@ class Header extends React.Component {
       const profilePic = userProfileData.profilePic;
       this.setState({ userId, userProfileData, name, profilePic });
     }
-    console.log(this.props.state);
   }
 
   render() {

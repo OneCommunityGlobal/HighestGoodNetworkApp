@@ -1,8 +1,8 @@
 import React from "react";
 import { connect } from "react-redux";
 import { Container, Row, Col } from "reactstrap";
-import TimeEntry from "./TimeEntry";
-import Form from "../common/form";
+import TimeEntry from "../TimeEntry";
+import Form from "../common/Form";
 import Leaderboard from "../LeaderBoard";
 
 class TimelogPage extends Form {
@@ -29,10 +29,10 @@ class TimelogPage extends Form {
           </Col>
         </Row>
         <Row>
-          <Col lg={7}>
+          <Col lg={8}>
             <TimeEntry />
           </Col>
-          <Col lg={5}>
+          <Col lg={4}>
             <Leaderboard />
           </Col>
         </Row>

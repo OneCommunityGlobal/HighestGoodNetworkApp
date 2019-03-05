@@ -13,8 +13,14 @@ const TinyMCEEditor = ({ label, name, error, className, ...rest }) => {
       <Editor
         init={{
           branding: false,
-          plugins: "autoresize",
-          autoresize_bottom_margin: 1
+          plugins: "link autoresize",
+          autoresize_bottom_margin: 1,
+          forced_root_block: false,
+          force_br_newlines: true,
+          force_p_newlines: false,
+          apply_source_formatting: false,
+          remove_linebreaks: false,
+          convert_newlines_to_brs: true
         }}
         {...rest}
         id={name}

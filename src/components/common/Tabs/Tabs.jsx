@@ -1,5 +1,4 @@
 import React, { Component } from "react";
-import moment from "moment";
 import {
   TabContent,
   TabPane,
@@ -11,9 +10,9 @@ import {
 } from "reactstrap";
 import { connect } from "react-redux";
 import classnames from "classnames";
-import Table from "./Tables/Tables";
-import { getTimeEntries } from "../../utils";
-import { getTimeEntryForSpecifiedPeriod, whichWeek } from "../../actions";
+import Table from "../Tables/Tables";
+import { getTimeEntries } from "../../../utils";
+import { getTimeEntryForSpecifiedPeriod, whichWeek } from "../../../actions";
 
 class Tabs extends Component {
   constructor(props) {
@@ -35,6 +34,7 @@ class Tabs extends Component {
         activeTab: tab
       });
     }
+    // imported function from utils that takes in the specified time function from actions and the user id
     getTimeEntries(
       this.props.getTimeEntryForSpecifiedPeriod,
       this.props.state.userProfile._id

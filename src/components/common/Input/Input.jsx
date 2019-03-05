@@ -1,11 +1,18 @@
 import React from "react";
 import PropTypes from "prop-types";
 
-const Input = ({ label, name, error, className, ...rest }) => {
+const Input = ({ label, name, error, min, max, className, ...rest }) => {
   return (
     <div className={`form-group ${className || ""}`}>
       <label htmlFor={name}>{label}</label>
-      <input {...rest} id={name} name={name} className="form-control" />
+      <input
+        {...rest}
+        id={name}
+        name={name}
+        className="form-control"
+        min={min}
+        max={max}
+      />
 
       {error && <div className="alert alert-danger mt-1">{error}</div>}
     </div>

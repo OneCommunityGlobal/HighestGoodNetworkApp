@@ -20,8 +20,8 @@ class Leaderboard extends Component {
 
   async componentDidMount() {
     await this.props.state.user;
-    const user = this.props.state.user;
-    this.props.getLeaderboardData(user.userid);
+    const { user } = this.props.state;
+    this.props.getLeaderboardData(user);
   }
 
   componentDidUpdate() {

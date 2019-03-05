@@ -1,7 +1,7 @@
 import React from "react";
 import { Route, Switch } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
-import Timelog from "./components/Timelog/TimelogPage";
+import Timelog from "./components/TimeEntryPage";
 import Reports from "./components/Reports";
 // import UserProfile from "./components/UserProfile";
 import Dashboard from "./components/Dashboard";

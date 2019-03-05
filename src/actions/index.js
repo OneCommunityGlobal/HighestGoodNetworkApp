@@ -317,3 +317,28 @@ export function postTimeEntry(timeEntryObj) {
     );
   };
 }
+
+export function deleteTimeEntry(timeEntryId) {
+  const request = httpService.delete(`${APIEndpoint}/TimeEntry/${timeEntryId}`);
+
+  return dispatch => {
+    request.then(
+      response => dispatch({ type: "REQUEST_SUCCEEDED", payload: response }),
+      error => dispatch({ type: "REQUEST_FAILED", error })
+    );
+  };
+}
+
+export function updateTimeEntry(timeEntryId, timeEntryData) {
+  const request = httpService.put(
+    `${APIEndpoint}/TimeEntry/${timeEntryId}`,
+    timeEntryData
+  );
+
+  return dispatch => {
+    request.then(
+      response => dispatch({ type: "REQUEST_SUCCEEDED", payload: response }),
+      error => dispatch({ type: "REQUEST_FAILED", error })
+    );
+  };
+}

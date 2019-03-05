@@ -1,6 +1,6 @@
 import React from "react";
 import { toast } from "react-toastify";
-import Form from "../common/form";
+import Form from "../common/Form";
 import { updatePasswordSchema as schema } from "../../schema";
 import { updatePassword } from "../../services/userProfileService";
 import { logout } from "../../services/loginService";
