@@ -5,37 +5,19 @@ import ModalA from "../Modal";
 import { deleteTimeEntry, updateTimeEntry } from "../../../actions";
 import ModalBody from "../../TimeEntryModalBody";
 
+const styles = {
+  height: "50px",
+  width: "10px",
+  border: "1px solid #ccc",
+  font: "16px/26px Georgia, Garamond, Serif",
+  overflow: "scroll"
+};
+
 function createMarkup(notes) {
   return { __html: notes };
 }
 
-// Edit admin vs volunteer logic
-
 const Tables = props => {
-  // Edit admin vs volunteer logic
-  // let modal = null;
-  // const editModal = (
-  //   <ModalA header="Edit" buttonLabel="Edit" color="primary">
-  //     <ModalBody
-  //       date={item.dateOfWork}
-  //       hours={item.hours}
-  //       minutes={item.minutes}
-  //       projectId={item.projectId}
-  //       notes={item.notes}
-  //       tangible={item.tangible}
-  //       delete={props.deleteTimeEntry}
-  //       id={item._id}
-  //       update={props.updateTimeEntry}
-  //     />
-  //   </ModalA>
-  // );
-
-  // if (props.state.user.role === "Administrator") {
-  //   modal = editModal;
-  // } else if (props.state.userProfile._id === props.state.user.userid) {
-  //   modal = editModal;
-  // }
-
   return (
     <Table>
       <thead>
@@ -60,7 +42,10 @@ const Tables = props => {
             </td>
             <td>{item.minutes}</td>
             <td>{item.projectName}</td>
-            <td dangerouslySetInnerHTML={createMarkup(item.notes)} />
+            <td
+              style={styles}
+              dangerouslySetInnerHTML={createMarkup(item.notes)}
+            />
             <td>
               {props.state.user.role === "Administrator" ||
               props.state.userProfile._id === props.state.user.userid ? (
