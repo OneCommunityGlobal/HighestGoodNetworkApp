@@ -1,5 +1,5 @@
 import { Component } from "react";
-import routes from '../routes'
+import routes from "../routes";
 import logger from "../services/logService";
 
 import "../App.css";
@@ -12,10 +12,7 @@ class App extends Component {
   }
 
   render() {
-    return (
-     routes
- 
-    );
+    return routes;
   }
 }
 

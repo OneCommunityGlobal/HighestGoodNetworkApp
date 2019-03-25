@@ -1,11 +1,12 @@
 import React from "react";
 import { shallow } from "enzyme";
-import UpdatePassword from "../components/UpdatePassword";
 import { toast } from "react-toastify";
-let userProfileService = require("../services/userProfileService");
+import UpdatePassword from "../components/UpdatePassword";
+
+const userProfileService = require("../services/userProfileService");
 
 const setField = function(page, name, value) {
-  let mockEvent = {
+  const mockEvent = {
     currentTarget: {
       name,
       value
@@ -50,11 +51,11 @@ describe("Update Password Page", () => {
       expect(inputs.length).toBe(3);
     });
     it("should have 1 button fields", () => {
-      const button = mountedPage.find("button");
+      const button = mountedPage.find("Button");
       expect(button.length).toBe(1);
     });
     it("should have submit button in disabled state by default", () => {
-      const button = mountedPage.find("button");
+      const button = mountedPage.find("Button");
       expect(button.props()).toHaveProperty("disabled");
     });
 
@@ -68,61 +69,61 @@ describe("Update Password Page", () => {
   describe("For incorrect user inputs", () => {
     it("should show error if current password is left blank", () => {
       setField(mountedPage, "currentpassword", "");
-      expect(mountedPage.instance().state.errors["currentpassword"]).toEqual(
-        errorMessages["curentpasswordEmpty"]
+      expect(mountedPage.instance().state.errors.currentpassword).toEqual(
+        errorMessages.curentpasswordEmpty
       );
     });
     it("should show error if new password is left blank and current password has value", () => {
       setField(mountedPage, "currentpassword", "abc");
       setField(mountedPage, "newpassword", "");
 
-      expect(mountedPage.instance().state.errors["newpassword"]).toEqual(
-        errorMessages["newpasswordEmpty"]
+      expect(mountedPage.instance().state.errors.newpassword).toEqual(
+        errorMessages.newpasswordEmpty
       );
     });
     it("should show error if new password is left blank and current password has no value", () => {
       setField(mountedPage, "newpassword", "");
 
-      expect(mountedPage.instance().state.errors["newpassword"]).toEqual(
-        errorMessages["curentpasswordEmpty"]
+      expect(mountedPage.instance().state.errors.newpassword).toEqual(
+        errorMessages.curentpasswordEmpty
       );
     });
 
     it("should show error if new password is not as per specifications", () => {
-      let errorValues = [
-        "a", //less than 8
-        "abcdefgh123", //no upper case
-        "ABCDERF12344", //no lower case
+      const errorValues = [
+        "a", // less than 8
+        "abcdefgh123", // no upper case
+        "ABCDERF12344", // no lower case
         "ABCDEFabc" // no numbers or special characters
       ];
       setField(mountedPage, "currentpassword", "abc");
       errorValues.forEach(value => {
         setField(mountedPage, "newpassword", value);
-        expect(mountedPage.instance().state.errors["newpassword"]).toEqual(
-          errorMessages["newpasswordInvalid"]
+        expect(mountedPage.instance().state.errors.newpassword).toEqual(
+          errorMessages.newpasswordInvalid
         );
       });
     });
     it("should show error if confirm new password is left blank and new password is blank", () => {
       setField(mountedPage, "newpassword", "");
       setField(mountedPage, "confirmnewpassword", "");
-      expect(mountedPage.instance().state.errors["confirmnewpassword"]).toEqual(
-        errorMessages["newpasswordEmpty"]
+      expect(mountedPage.instance().state.errors.confirmnewpassword).toEqual(
+        errorMessages.newpasswordEmpty
       );
     });
 
     it("should show error if confirm new password is left blank and new password is invalid", () => {
       setField(mountedPage, "newpassword", "asv");
       setField(mountedPage, "confirmnewpassword", "");
-      expect(mountedPage.instance().state.errors["confirmnewpassword"]).toEqual(
-        errorMessages["newpasswordInvalid"]
+      expect(mountedPage.instance().state.errors.confirmnewpassword).toEqual(
+        errorMessages.newpasswordInvalid
       );
     });
     it("should show error if confirm new password is left blank and new password is valid", () => {
       setField(mountedPage, "newpassword", "Abcde@1234");
       setField(mountedPage, "confirmnewpassword", "");
-      expect(mountedPage.instance().state.errors["confirmnewpassword"]).toEqual(
-        errorMessages["confirmpasswordMismatch"]
+      expect(mountedPage.instance().state.errors.confirmnewpassword).toEqual(
+        errorMessages.confirmpasswordMismatch
       );
     });
 
@@ -135,8 +136,8 @@ describe("Update Password Page", () => {
         preventDefault: () => {},
         stopPropagation: () => {}
       });
-      expect(mountedPage.instance().state.errors["confirmnewpassword"]).toEqual(
-        errorMessages["confirmpasswordMismatch"]
+      expect(mountedPage.instance().state.errors.confirmnewpassword).toEqual(
+        errorMessages.confirmpasswordMismatch
       );
     });
 
@@ -148,8 +149,8 @@ describe("Update Password Page", () => {
         preventDefault: () => {},
         stopPropagation: () => {}
       });
-      expect(mountedPage.instance().state.errors["newpassword"]).toEqual(
-        errorMessages["oldnewPasswordsSame"]
+      expect(mountedPage.instance().state.errors.newpassword).toEqual(
+        errorMessages.oldnewPasswordsSame
       );
     });
   });
@@ -158,7 +159,7 @@ describe("Update Password Page", () => {
     it("should call updatePassword on submit", () => {
       const userProfileService = require("../services/userProfileService");
       const spy = jest.spyOn(userProfileService, "updatePassword");
-      let value = "ABCdef@123";
+      const value = "ABCdef@123";
       setField(mountedPage, "currentpassword", "pop");
       setField(mountedPage, "newpassword", value);
       setField(mountedPage, "confirmnewpassword", value);
@@ -172,7 +173,7 @@ describe("Update Password Page", () => {
 
     it("should show error if api returned error", () => {
       userProfileService.updatePassword = jest.fn(() => {
-        let response = {
+        const response = {
           status: 400,
           data: {
             error: "Some Error"
@@ -183,7 +184,7 @@ describe("Update Password Page", () => {
         };
       });
 
-      let value = "ABCdef@123";
+      const value = "ABCdef@123";
       setField(mountedPage, "currentpassword", "pop");
       setField(mountedPage, "newpassword", value);
       setField(mountedPage, "confirmnewpassword", value);
@@ -191,7 +192,7 @@ describe("Update Password Page", () => {
         preventDefault: () => {},
         stopPropagation: () => {}
       });
-      expect(mountedPage.instance().state.errors["currentpassword"]).toEqual(
+      expect(mountedPage.instance().state.errors.currentpassword).toEqual(
         "Some Error"
       );
     });
@@ -199,7 +200,7 @@ describe("Update Password Page", () => {
     it("should show a toastor error if API response was other than 200 and 400", async () => {
       toast.error = jest.fn();
       userProfileService.updatePassword = jest.fn(() => {
-        let response = {
+        const response = {
           status: 433,
           data: {
             message: "updated"
@@ -210,7 +211,7 @@ describe("Update Password Page", () => {
         };
       });
 
-      let value = "ABCdef@123";
+      const value = "ABCdef@123";
       setField(mountedPage, "currentpassword", "pop");
       setField(mountedPage, "newpassword", value);
       setField(mountedPage, "confirmnewpassword", value);
@@ -219,21 +220,21 @@ describe("Update Password Page", () => {
         stopPropagation: () => {}
       });
 
-      let message = errorMessages["errorNon400Response"];
+      const message = errorMessages.errorNon400Response;
 
       expect(toast.error).toHaveBeenCalledWith(message);
     });
 
     it("should show call toastr success with correct message and onClose param on success", async () => {
       toast.success = jest.fn();
-      let response = {
+      const response = {
         status: 200,
         data: { message: "updated" }
       };
 
       userProfileService.updatePassword = jest.fn(() => response);
 
-      let value = "ABCdef@123";
+      const value = "ABCdef@123";
       setField(mountedPage, "currentpassword", "pop");
       setField(mountedPage, "newpassword", value);
       setField(mountedPage, "confirmnewpassword", value);
@@ -242,9 +243,9 @@ describe("Update Password Page", () => {
         stopPropagation: () => {}
       });
 
-      let message = successMessages["updatePasswordSuccessful"];
-      let options = { onClose: expect.any(Function) };
-      let successParams = [message, options];
+      const message = successMessages.updatePasswordSuccessful;
+      const options = { onClose: expect.any(Function) };
+      const successParams = [message, options];
 
       expect(toast.success).toHaveBeenCalledWith(...successParams);
     });
