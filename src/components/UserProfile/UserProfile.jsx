@@ -1,25 +1,29 @@
 import React, { Component } from 'react'
 import Loading from '../common/Loading'
-import { getjwt } from '../../services/loginService'
-
+import FileUpload from '../common/fileUpload'
 import cx from 'classnames'
 import Memberships from '../Memberships'
 import ProfileLinks from '../ProfileLinks'
 import Joi from 'joi'
+import ShowSaveWarning from '../common/ShowSaveWarning'
 class UserProfile extends Component {
   state = {
     isLoading: true,
     error: '',
     userProfile: {},
     firstNameError: '',
-    lastNameError: ''
+    lastNameError: '',
+    imageUploadError: '',
+    isValid: false
   }
 
   async componentDidMount() {
     //await this.props.getCurrentUser(getjwt())
-    let userId = this.props.match.params.userId
-    //await this.props.getUserProfile(userId)
+    // let userId = this.props.match.params.userId
+    // await this.props.getUserProfile(userId)
+    console.log(this.props.userProfile)
     if (this.props.userProfile.firstName.length) {
+      console.log(this.props.userProfile)
       this.setState({ isLoading: false, userProfile: this.props.userProfile })
     }
     //console.log(this.props.userProfile)
@@ -76,6 +80,44 @@ class UserProfile extends Component {
     })
   }
 
+  handleImageUpload = async e => {
+    e.preventDefault()
+
+    const file = e.target.files[0]
+
+    const allowedTypesString = 'image/png,image/jpeg, image/jpg'
+    const allowedTypes = allowedTypesString.split(',')
+    let isValid = true
+    let imageUploadError = ''
+    if (!allowedTypes.includes(file.type)) {
+      imageUploadError = `File type must be ${allowedTypesString}.`
+      isValid = false
+
+      return this.setState({ imageUploadError, isValid })
+    }
+    let filesizeKB = file.size / 1024
+    console.log(filesizeKB)
+
+    if (filesizeKB > 50) {
+      imageUploadError = `\nThe file you are trying to upload exceed the maximum size of 50KB. You can choose a different file or use an online file compressor.`
+      isValid = false
+      return this.setState({ imageUploadError, isValid })
+    }
+
+    let reader = new FileReader()
+    reader.readAsDataURL(file)
+    reader.onloadend = () => {
+      console.log(reader, file)
+
+      this.setState({
+        imageUploadError: '',
+        userProfile: {
+          ...this.state.userProfile,
+          profilePic: reader.result
+        }
+      })
+    }
+  }
   handleSubmit = async event => {
     event.preventDefault()
 
@@ -93,9 +135,15 @@ class UserProfile extends Component {
     let { userId: targetUserId } = this.props.match.params
     let { userid: requestorId, role: requestorRole } = this.props.user
 
-    const { firstName, lastName } = this.state.userProfile
-    const { firstNameError, lastNameError } = this.state
+    const { firstName, lastName, profilePic = '' } = this.state.userProfile
+    const {
+      firstNameError,
+      lastNameError,
+      imageUploadError,
+      error
+    } = this.state
 
+    console.log('state is ', this.state)
     const {
       teams,
       projects,
@@ -110,13 +158,55 @@ class UserProfile extends Component {
     let isUserSelf = targetUserId === requestorId
     let canEditFields = isUserAdmin || isUserSelf
     const isUserAdmin = requestorRole === 'Administrator'
-    const { error } = this.state
 
     return (
       <React.Fragment>
         <div className='container'>
           <div className='row my-auto'>
-            <div className='col-md-4'></div>
+            <div className='col-md-4'>
+              <div className='form-row text-center'>
+                <div className={`form-group profilepic`}>
+                  <label htmlFor={'currentprofilePic'}>{}</label>
+                  <img
+                    type='image'
+                    id='currentprofilePic'
+                    name='currentprofilePic'
+                    alt={'currentprofilePic'}
+                    className={`img-responsive profilepic`}
+                    src={profilePic || '/defaultprofilepic.jpg'}
+                  />
+
+                  {error && (
+                    <div className='alert alert-danger mt-1'>{error}</div>
+                  )}
+                </div>
+                {canEditFields && (
+                  <React.Fragment>
+                    <label
+                      htmlFor={'profilePic'}
+                      className='fa fa-edit'
+                      data-toggle='tooltip'
+                      data-placement='bottom'
+                      title={''}
+                    ></label>
+                    <input
+                      id={'profilePic'}
+                      name={'profilePic'}
+                      className={'newProfilePic'}
+                      onChange={this.handleImageUpload}
+                      accept={'image/png,image/jpeg, image/jpg'}
+                      type='file'
+                    />
+
+                    {imageUploadError && (
+                      <div className='alert alert-danger mt-1'>
+                        {imageUploadError}
+                      </div>
+                    )}
+                  </React.Fragment>
+                )}
+              </div>
+            </div>
             <div className='col-md-8'>
               <div className='form-row'>
                 <div className={cx('form-group', 'col-md-4')}>
@@ -234,6 +324,9 @@ class UserProfile extends Component {
               </div>
             </div>
           </div>
+
+          {<ShowSaveWarning />}
+          <div className='row mt-3'>Phone</div>
 
           <div className='row mt-3'>
             <ProfileLinks

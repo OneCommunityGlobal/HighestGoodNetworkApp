@@ -1,14 +1,16 @@
+import { connect } from 'react-redux'
+import _ from 'lodash'
 import { getCurrentUser } from '../../actions'
 import {
   getUserProfile,
   updateUserProfile,
   clearUserProfile
 } from '../../actions/userProfile'
-import { connect } from 'react-redux'
-import _ from 'lodash'
 
 import UserProfile from './UserProfile'
+
 const mapStateToProps = state => {
+  console.log(state.userProfile)
   return {
     userProfile: _.get(state, 'userProfile'),
     user: _.get(state, 'user', {}),
