@@ -1,15 +1,15 @@
-import React, { Component } from "react";
-import { connect } from "react-redux";
-import { getCurrentUser, getAllProjects, postTimeEntry } from "../actions";
-import { getjwt } from "../services/loginService"; 
-import { Card, Row, CardTitle, CardText, Col } from "reactstrap";
-import MonthlyEffort from "./MonthlyEffort";
-import Leaderboard from "./Leaderboard";
-import "../App.css";
+import React, { Component } from 'react'
+import { connect } from 'react-redux'
+import { getCurrentUser, getAllProjects, postTimeEntry } from '../actions'
+import { getjwt } from '../services/loginService'
+import { Card, Row, CardTitle, CardText, Col } from 'reactstrap'
+import MonthlyEffort from './MonthlyEffort'
+import Leaderboard from './Leaderboard'
+import '../App.css'
 
 class Dashboard extends Component {
   componentDidMount() {
-    this.props.getCurrentUser(getjwt());
+    this.props.getCurrentUser(getjwt())
   }
 
   render() {
@@ -17,11 +17,9 @@ class Dashboard extends Component {
       <React.Fragment>
         <div>
           <Row>
-            <Col sm={{ offset: 1, size: 7 }}>
-              <Leaderboard />
-            </Col>
+            <Col sm={{ offset: 1, size: 7 }}>{/* <Leaderboard /> */}</Col>
             <Col sm={{ size: 3 }}>
-              <Card body inverse color="info">
+              <Card body inverse color='info'>
                 <CardTitle>
                   <MonthlyEffort />
                 </CardTitle>
@@ -31,21 +29,24 @@ class Dashboard extends Component {
               </Card>
             </Col>
           </Row>
-          <Row style={{ marginTop: "20px" }}>
+          <Row style={{ marginTop: '20px' }}>
             <Col sm={{ offset: 1, size: 7 }}>
-              <Card body inverse color="warning">
+              <Card body inverse color='warning'>
                 <CardTitle>Badges</CardTitle>
               </Card>
             </Col>
           </Row>
         </div>
       </React.Fragment>
-    );
+    )
   }
 }
 
 const mapStateToProps = state => {
-  return { state };
-};
+  return { state }
+}
 
-export default connect(mapStateToProps, { getCurrentUser })(Dashboard);
+export default connect(
+  mapStateToProps,
+  { getCurrentUser }
+)(Dashboard)
