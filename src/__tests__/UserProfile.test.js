@@ -1,8 +1,8 @@
-import React from "react";
-import { shallow, mount } from "enzyme";
-import UserProfile from "../components/UserProfile";
-import { getUserProfile } from "../services/userProfileService";
-import { toast } from "react-toastify";
+import React from 'react';
+import { shallow, mount } from 'enzyme';
+import { toast } from 'react-toastify';
+import UserProfile from '../components/UserProfile';
+import { getUserProfile } from '../services/userProfileService';
 
 test.skip('it skips tests because redux', () => {
   expect(reduxTests()).toBe(0);

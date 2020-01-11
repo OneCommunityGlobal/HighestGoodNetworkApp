@@ -1,21 +1,18 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import { shallow } from 'enzyme';
 import App from '../components/App';
-import {shallow} from 'enzyme'
-import Dashboard from '../components/Dashboard'
+import Dashboard from '../components/Dashboard';
 
-describe("App tests", () => {
-
+describe('App tests', () => {
   let mountedapp;
 
-  
+
   beforeEach(() => {
-    mountedapp = shallow(<App/>);
-  })
+    mountedapp = shallow(<App />);
+  });
 
-  it ("renders without crashing", () => {
-    shallow(<App />)
-
-  })
-  
-})
+  it('renders without crashing', () => {
+    shallow(<App />);
+  });
+});

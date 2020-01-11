@@ -1,21 +1,19 @@
-import httpService from './httpService'
-import config from "../config.json"
-import jwtDecode from 'jwt-decode'
+import jwtDecode from 'jwt-decode';
+import httpService from './httpService';
+import config from '../config.json';
 
 const loginApiEndpoint = `${process.env.REACT_APP_APIENDPOINT}/login`;
 
-const tokenKey = config.tokenKey;
+const { tokenKey } = config;
 
 // httpService.setjwt(getjwt());
 
 export async function login(credentials) {
-  let { data } = await httpService.post(loginApiEndpoint, credentials);
-  if (!!data.new) {
-    return { userType: "newUser", userId: data.userId };
-  } else {
-    localStorage.setItem(tokenKey, data.token);
-    return;
+  const { data } = await httpService.post(loginApiEndpoint, credentials);
+  if (data.new) {
+    return { userType: 'newUser', userId: data.userId };
   }
+  localStorage.setItem(tokenKey, data.token);
 }
 
 export function logout() {
@@ -39,7 +37,7 @@ export function isUserAuthenticated() {
   if (!localStorage.getItem(tokenKey)) {
     return false;
   }
-  let token = localStorage.getItem(tokenKey);
-  let { expiryTimestamp } = jwtDecode(token);
+  const token = localStorage.getItem(tokenKey);
+  const { expiryTimestamp } = jwtDecode(token);
   return expiryTimestamp > new Date().toISOString();
 }
