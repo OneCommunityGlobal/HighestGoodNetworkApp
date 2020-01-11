@@ -16,7 +16,7 @@ const mapStateToProps = state => {
     projects: _.get(state, 'userProfile.projects', []),
     personalLinks: _.get(state, 'userProfile.personalLinks', []),
     adminLinks: _.get(state, 'userProfile.adminLinks', []),
-    firstName: _.get(state, 'userProfile.firstName', ''),
+
     lastName: _.get(state, 'userProfile.lastName', ''),
     email: _.get(state, 'userProfile.email', ''),
     isActive: _.get(state, 'userProfile.isActive', false),
