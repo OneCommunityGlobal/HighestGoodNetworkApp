@@ -1,21 +1,21 @@
-import { GET_USER_PROFILE } from '../actionCreators/userProfile'
+import { GET_USER_PROFILE } from '../actionCreators/userProfile';
 
 const initialUserProfileState = {
   firstName: '',
   lastName: '',
-  isActive: ''
-}
+  isActive: '',
+};
 export const userProfileByIdReducer = (
   userProfile = initialUserProfileState,
-  action
+  action,
 ) => {
   if (action.type === GET_USER_PROFILE) {
-    return action.payload
+    return action.payload;
   }
 
   if (action.type === 'CLEAR_USER_PROFILE') {
-    return null
+    return null;
   }
 
-  return userProfile
-}
+  return userProfile;
+};

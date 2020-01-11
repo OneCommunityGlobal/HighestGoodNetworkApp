@@ -1,10 +1,10 @@
 export const timeEntriesForSpecifiedPeriodReducer = (
   timeEntries = null,
-  action
+  action,
 ) => {
   if (action.type === 'GET_TIME_ENTRY_FOR_SPECIFIED_PERIOD') {
-    return action.payload
+    return action.payload;
   }
 
-  return timeEntries
-}
+  return timeEntries;
+};

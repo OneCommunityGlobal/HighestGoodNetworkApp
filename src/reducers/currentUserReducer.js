@@ -1,17 +1,18 @@
-import jwtDecode from 'jwt-decode'
+import jwtDecode from 'jwt-decode';
+
 export const currentUserReducer = (user = {}, action) => {
   if (action.type === 'GET_CURRENT_USER') {
     try {
-      let token = action.payload
-      return jwtDecode(token)
+      const token = action.payload;
+      return jwtDecode(token);
     } catch (err) {
-      return user
+      return user;
     }
   }
 
   if (action.type === 'SET_CURRENT_USER') {
-    return action.payload
+    return action.payload;
   }
 
-  return user
-}
+  return user;
+};
