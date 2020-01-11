@@ -7,15 +7,22 @@ import 'bootstrap/dist/css/bootstrap.css';
 import 'font-awesome/css/font-awesome.css';
 import logService from './services/logService';
 import { Provider } from 'react-redux';
-import store from './store';
+import configureStore from './store';
 
+import Loading from '../src/components/common/Loading'
+import { PersistGate } from 'redux-persist/integration/react';
+const { persistor, store } = configureStore();
 logService.init();
 
 ReactDOM.render(
   <Provider store={store}>
+  <PersistGate loading={<Loading/>} persistor={persistor}>
+  
+ 
     <Router>
       <App />
     </Router>
+    </PersistGate>
   </Provider>,
   document.getElementById('root'),
 );

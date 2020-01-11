@@ -1,14 +1,14 @@
 import { Component } from "react";
 import routes from '../routes'
 import logger from "../services/logService";
-import store from "../store";
+import configureStore from '../store';
 import httpService from "../services/httpService";
 import jwtDecode from 'jwt-decode';
 import {setCurrentUser} from "../actions/index"
 import config from "../config.json";
 
 import "../App.css";
-
+const { persistor, store } = configureStore();
 const tokenKey = config.tokenKey;
 
 // Check for token
