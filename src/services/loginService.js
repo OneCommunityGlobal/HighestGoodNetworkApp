@@ -6,7 +6,7 @@ const loginApiEndpoint = `${process.env.REACT_APP_APIENDPOINT}/login`;
 
 const tokenKey = config.tokenKey;
 
-httpService.setjwt(getjwt());
+// httpService.setjwt(getjwt());
 
 export async function login(credentials) {
   let { data } = await httpService.post(loginApiEndpoint, credentials);
