@@ -16,17 +16,17 @@ class UserProfile extends Component {
   }
 
   async componentDidMount() {
-    await this.props.getCurrentUser(getjwt())
+    //await this.props.getCurrentUser(getjwt())
     let userId = this.props.match.params.userId
-    await this.props.getUserProfile(userId)
+    //await this.props.getUserProfile(userId)
     if (this.props.userProfile.firstName.length) {
       this.setState({ isLoading: false, userProfile: this.props.userProfile })
     }
     //console.log(this.props.userProfile)
   }
-  componentWillUnmount() {
-    this.props.clearUserProfile()
-  }
+  // componentWillUnmount() {
+  //   this.props.clearUserProfile()
+  // }
 
   // componentDidUpdate() {
   //   let userProfile = this.props.userProfile

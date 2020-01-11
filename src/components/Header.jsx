@@ -1,9 +1,11 @@
 import React from 'react'
-import { getCurrentUser } from '../services/loginService'
+import { getCurrentUser } from '../actions'
+//import { getCurrentUser } from '../services/loginService'
 // import {getUserProfile} from "../services/userProfileService";
 import { getUserProfile } from '../actions/userProfile'
 import { Link } from 'react-router-dom'
 import { connect } from 'react-redux'
+import { getjwt } from '../services/loginService'
 import {
   Collapse,
   Navbar,
@@ -33,6 +35,7 @@ class Header extends React.Component {
       // let {data:userProfileData} = {...await getUserProfile(userId)}
       this.setState({ userId })
       this.props.getUserProfile(userId)
+      this.props.getCurrentUser(getjwt())
     }
   }
 
@@ -156,6 +159,7 @@ const mapStateToProps = state => {
 export default connect(
   mapStateToProps,
   {
-    getUserProfile
+    getUserProfile,
+    getCurrentUser
   }
 )(Header)
