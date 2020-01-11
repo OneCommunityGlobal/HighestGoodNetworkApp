@@ -10,6 +10,10 @@ const currentUserReducer = (user = {}, action) => {
 			return user;
 		}
 	}
+
+	if (action.type === "SET_CURRENT_USER") {
+		return action.payload;
+	}
 	
 	return user;
 };

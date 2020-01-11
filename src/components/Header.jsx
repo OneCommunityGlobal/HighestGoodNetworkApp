@@ -1,7 +1,9 @@
 import React from 'react';
 import {getCurrentUser} from "../services/loginService";
-import {getUserProfile} from "../services/userProfileService";
+// import {getUserProfile} from "../services/userProfileService";
+import {getUserProfile} from "../actions/index";
 import {Link} from "react-router-dom";
+import { connect } from "react-redux";
 import {
   Collapse,
   Navbar,
@@ -20,25 +22,47 @@ class Header extends React.Component {
 
 
   state = {
-    userId:0,
-    userProfileData:{},
-    name:"",
-    profilePic:""
+    // userId:0,
+    // userProfileData:{},
+    // name:"",
+    // profilePic:""
   };
   
   async componentDidMount() {
-    let user = getCurrentUser();
-    if(user)
+    let user = this.props.state.user;
+    if(user && user.role)
     {
       let {userid:userId} = user;
-      let {data:userProfileData} = {...await getUserProfile(userId)}
-      let name = userProfileData.firstName;
-      let profilePic = userProfileData.profilePic;
-      this.setState({userId,userProfileData,name,profilePic});
+      // let {data:userProfileData} = {...await getUserProfile(userId)}
+      this.setState({userId});
+      this.props.getUserProfile(userId);
     }
   }
+
+  // componentDidUpdate(prevProps) {
+  //   if (this.props.state.userProfile && prevProps.state.userProfile !== this.props.state.userProfile){
+  //     let userProfileData = this.props.state.userProfile;
+  //     let name = this.props.state.userProfile.firstName;
+  //     let profilePic = this.props.state.userProfile.profilePic;
+  //     this.setState({userProfileData,name,profilePic});
+  //   }
+  // }
+
   render() {
-    let {userId,name,profilePic} = this.state;
+    // let {userId,name,profilePic} = this.state;
+
+    let userId = 0;
+    if (this.props.state.user && this.props.state.user.role){
+      userId = this.props.state.user.userId;
+    }
+
+    let name = "";
+    let profilePic = "";
+    if (this.props.state.userProfile){
+      name = this.props.state.userProfile.firstName;
+      profilePic = this.props.state.userProfile.profilePic;
+    }
+
     return (
      
       <div>
@@ -104,4 +128,10 @@ class Header extends React.Component {
   }
 }
 
-export default Header;
+const mapStateToProps = state => {
+  return { state };
+};
+
+export default connect(mapStateToProps, { 
+  getUserProfile
+})(Header);
