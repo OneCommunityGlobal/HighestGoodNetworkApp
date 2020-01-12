@@ -1,6 +1,21 @@
 import React, { Component } from 'react'
 import Loading from '../common/Loading'
-import FileUpload from '../common/fileUpload'
+import {
+  Card,
+  Row,
+  CardTitle,
+  CardText,
+  Col,
+  Container,
+  CardSubtitle,
+  CardBody,
+  Input,
+  InputGroup,
+  InputGroupAddon,
+  InputGroupText,
+  CardHeader,
+  CardFooter
+} from 'reactstrap'
 import cx from 'classnames'
 import Memberships from '../Memberships'
 import ProfileLinks from '../ProfileLinks'
@@ -80,6 +95,32 @@ class UserProfile extends Component {
     })
   }
 
+  handleJobTitleChange = event => {
+    this.setState({
+      userProfile: {
+        ...this.state.userProfile,
+        jobTitle: event.target.value
+      }
+    })
+  }
+
+  handlePhoneNumberChange = event => {
+    this.setState({
+      userProfile: {
+        ...this.state.userProfile,
+        phoneNumber: event.target.value
+      }
+    })
+  }
+  handleEmailChange = event => {
+    this.setState({
+      userProfile: {
+        ...this.state.userProfile,
+        email: event.target.value
+      }
+    })
+  }
+
   handleImageUpload = async e => {
     e.preventDefault()
 
@@ -135,7 +176,13 @@ class UserProfile extends Component {
     let { userId: targetUserId } = this.props.match.params
     let { userid: requestorId, role: requestorRole } = this.props.user
 
-    const { firstName, lastName, profilePic = '' } = this.state.userProfile
+    const {
+      firstName,
+      lastName,
+      profilePic = '',
+      phoneNumber,
+      jobTitle
+    } = this.state.userProfile
     const {
       firstNameError,
       lastNameError,
@@ -161,7 +208,7 @@ class UserProfile extends Component {
 
     return (
       <React.Fragment>
-        <div className='container'>
+        <Container>
           <div className='row my-auto'>
             <div className='col-md-4'>
               <div className='form-row text-center'>
@@ -271,14 +318,15 @@ class UserProfile extends Component {
               </div>
               <div className='form-row'>
                 <div className={cx('form-group', 'col-md-4')}>
-                  <label htmlFor='email'>Email:</label>
+                  <label htmlFor='email'>Job Title:</label>
                   <input
-                    id={'email'}
-                    type='email'
-                    name={'email'}
+                    id={'jobTitle'}
+                    type='text'
+                    name={'jobTitle'}
                     className={`form-control`}
-                    value={email}
+                    value={jobTitle}
                     readOnly={canEditFields ? null : true}
+                    onChange={this.handleJobTitleChange}
                   />
                   {error && (
                     <div className='alert alert-danger mt-1'>{error}</div>
@@ -326,7 +374,60 @@ class UserProfile extends Component {
           </div>
 
           {<ShowSaveWarning />}
-          <div className='row mt-3'>Phone</div>
+
+          <Row>
+            <Col xs='6'>
+              <Card body>
+                <CardHeader>Phone Number:</CardHeader>
+                <CardBody>
+                  <CardText>
+                    <Input
+                      value={phoneNumber}
+                      onChange={this.handlePhoneNumberChange}
+                    />
+                  </CardText>
+                </CardBody>
+                <CardFooter>
+                  <InputGroup size='sm'>
+                    <InputGroupAddon addonType='prepend'>
+                      <InputGroupText>
+                        <Input
+                          addon
+                          type='checkbox'
+                          aria-label='Checkbox for following text input'
+                        />
+                        Publicly Accessible?
+                      </InputGroupText>
+                    </InputGroupAddon>
+                  </InputGroup>
+                </CardFooter>
+              </Card>
+            </Col>
+            <Col xs='6'>
+              <Card body>
+                <CardHeader>Email</CardHeader>
+                <CardBody>
+                  <CardText>
+                    <Input value={email} type='email' />
+                  </CardText>
+                </CardBody>
+                <CardFooter>
+                  <InputGroup size='sm'>
+                    <InputGroupAddon addonType='prepend'>
+                      <InputGroupText>
+                        <Input
+                          addon
+                          type='checkbox'
+                          aria-label='Checkbox for following text input'
+                        />
+                        Publicly Accessible?
+                      </InputGroupText>
+                    </InputGroupAddon>
+                  </InputGroup>
+                </CardFooter>
+              </Card>
+            </Col>
+          </Row>
 
           <div className='row mt-3'>
             <ProfileLinks
@@ -373,7 +474,7 @@ class UserProfile extends Component {
           <button className='btn btn-primary' onClick={this.handleSubmit}>
             {'Submit'}
           </button>
-        </div>
+        </Container>
       </React.Fragment>
     )
   }
