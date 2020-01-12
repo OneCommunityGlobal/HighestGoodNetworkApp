@@ -226,302 +226,298 @@ class UserProfile extends Component {
     const isUserAdmin = requestorRole === 'Administrator'
 
     return (
-      <React.Fragment>
-        <Container>
-          <Modal
-            isOpen={this.state.showModal}
-            closeModal={() => {
-              this.setState({ showModal: false })
-            }}
-            modalMessage={this.state.modalMessage}
-            modalTitle={this.state.modalTitle}
-          />
-          <div className='row my-auto'>
-            <div className='col-md-4'>
-              <div className='form-row text-center'>
-                <div className={`form-group profilepic`}>
-                  <label htmlFor={'currentprofilePic'}>{}</label>
-                  <img
-                    type='image'
-                    id='currentprofilePic'
-                    name='currentprofilePic'
-                    alt={'currentprofilePic'}
-                    className={`img-responsive profilepic`}
-                    src={profilePic || '/defaultprofilepic.jpg'}
+      <Container>
+        <Modal
+          isOpen={this.state.showModal}
+          closeModal={() => {
+            this.setState({ showModal: false })
+          }}
+          modalMessage={this.state.modalMessage}
+          modalTitle={this.state.modalTitle}
+        />
+        <div className='row my-auto'>
+          <div className='col-md-4'>
+            <div className='form-row text-center'>
+              <div className={`form-group profilepic`}>
+                <label htmlFor={'currentprofilePic'}>{}</label>
+                <img
+                  type='image'
+                  id='currentprofilePic'
+                  name='currentprofilePic'
+                  alt={'currentprofilePic'}
+                  className={`img-responsive profilepic`}
+                  src={profilePic || '/defaultprofilepic.jpg'}
+                />
+
+                {error && (
+                  <div className='alert alert-danger mt-1'>{error}</div>
+                )}
+              </div>
+              {canEditFields && (
+                <React.Fragment>
+                  <label
+                    htmlFor={'profilePic'}
+                    className='fa fa-edit'
+                    data-toggle='tooltip'
+                    data-placement='bottom'
+                    title={''}
+                  ></label>
+                  <input
+                    id={'profilePic'}
+                    name={'profilePic'}
+                    className={'newProfilePic'}
+                    onChange={this.handleImageUpload}
+                    accept={'image/png,image/jpeg, image/jpg'}
+                    type='file'
                   />
 
-                  {error && (
-                    <div className='alert alert-danger mt-1'>{error}</div>
+                  {imageUploadError && (
+                    <div className='alert alert-danger mt-1'>
+                      {imageUploadError}
+                    </div>
                   )}
-                </div>
-                {canEditFields && (
-                  <React.Fragment>
-                    <label
-                      htmlFor={'profilePic'}
-                      className='fa fa-edit'
-                      data-toggle='tooltip'
-                      data-placement='bottom'
-                      title={''}
-                    ></label>
+                </React.Fragment>
+              )}
+            </div>
+          </div>
+          <div className='col-md-8'>
+            <div className='form-row'>
+              <div className={cx('form-group', 'col-md-4')}>
+                <label htmlFor='firstName'>First Name:</label>
+                <input
+                  id={'firstName'}
+                  type='text'
+                  name={'firstName'}
+                  className={`form-control`}
+                  value={firstName}
+                  readOnly={canEditFields ? null : true}
+                  onChange={this.handleFirstNameChange}
+                />
+                {firstNameError && (
+                  <div className='alert alert-danger mt-1'>
+                    {firstNameError}
+                  </div>
+                )}
+              </div>
+              <div className={cx('form-group', 'col-md-4')}>
+                <label htmlFor='lastName'>Last Name:</label>
+                <input
+                  id={'lastName'}
+                  type='text'
+                  name={'lastName'}
+                  className={`form-control`}
+                  value={lastName}
+                  readOnly={canEditFields ? null : true}
+                  onChange={this.handleLastNameChange}
+                />
+                {lastNameError && (
+                  <div className='alert alert-danger mt-1'>{lastNameError}</div>
+                )}
+              </div>
+              <div className='form-group'>
+                {this.activeOptions.map(item => (
+                  <div
+                    className='form-check form-check-inline'
+                    key={item.value}
+                  >
                     <input
-                      id={'profilePic'}
-                      name={'profilePic'}
-                      className={'newProfilePic'}
-                      onChange={this.handleImageUpload}
-                      accept={'image/png,image/jpeg, image/jpg'}
-                      type='file'
+                      type='radio'
+                      value={item.value}
+                      name={'isActive'}
+                      className='form-check-input'
+                      checked={item.value === isActive ? true : null}
+                      disabled={canEditFields ? null : true}
                     />
+                    <label
+                      htmlFor={item.value.toString()}
+                      className='form-check-label'
+                    >
+                      {item.label}
+                    </label>
+                  </div>
+                ))}
 
-                    {imageUploadError && (
-                      <div className='alert alert-danger mt-1'>
-                        {imageUploadError}
-                      </div>
-                    )}
-                  </React.Fragment>
+                {error && <div className='alert alert-danger'>{error}</div>}
+              </div>
+            </div>
+            <div className='form-row'>
+              <div className={cx('form-group', 'col-md-4')}>
+                <label htmlFor='email'>Job Title:</label>
+                <input
+                  id={'jobTitle'}
+                  type='text'
+                  name={'jobTitle'}
+                  className={`form-control`}
+                  value={jobTitle}
+                  readOnly={canEditFields ? null : true}
+                  onChange={this.handleJobTitleChange}
+                />
+                {error && (
+                  <div className='alert alert-danger mt-1'>{error}</div>
+                )}
+              </div>
+
+              <div className={cx('form-group', 'col-md-4')}>
+                <label htmlFor={'role'}>Role:</label>
+
+                <select
+                  value={role}
+                  name={'role'}
+                  id={'role'}
+                  readOnly={canEditFields ? null : true}
+                  className='form-control'
+                >
+                  <option value=''>Please select a Role:</option>
+                  {this.allowedRoles.map(item => (
+                    <option value={item._id} key={item._id}>
+                      {item.name}
+                    </option>
+                  ))}
+                </select>
+                {error && <div className='alert alert-danger'>{error}</div>}
+              </div>
+
+              <div className={cx('form-group', 'col-md-4')}>
+                <label htmlFor='weeklyComittedHours'>
+                  Weekly Comitted Hours:
+                </label>
+                <input
+                  id={'weeklyComittedHours'}
+                  type='number'
+                  name={'weeklyComittedHours'}
+                  className={`form-control`}
+                  value={weeklyComittedHours}
+                  readOnly={isUserAdmin ? null : true}
+                />
+                {error && (
+                  <div className='alert alert-danger mt-1'>{error}</div>
                 )}
               </div>
             </div>
-            <div className='col-md-8'>
-              <div className='form-row'>
-                <div className={cx('form-group', 'col-md-4')}>
-                  <label htmlFor='firstName'>First Name:</label>
-                  <input
-                    id={'firstName'}
-                    type='text'
-                    name={'firstName'}
-                    className={`form-control`}
-                    value={firstName}
-                    readOnly={canEditFields ? null : true}
-                    onChange={this.handleFirstNameChange}
-                  />
-                  {firstNameError && (
-                    <div className='alert alert-danger mt-1'>
-                      {firstNameError}
-                    </div>
-                  )}
-                </div>
-                <div className={cx('form-group', 'col-md-4')}>
-                  <label htmlFor='lastName'>Last Name:</label>
-                  <input
-                    id={'lastName'}
-                    type='text'
-                    name={'lastName'}
-                    className={`form-control`}
-                    value={lastName}
-                    readOnly={canEditFields ? null : true}
-                    onChange={this.handleLastNameChange}
-                  />
-                  {lastNameError && (
-                    <div className='alert alert-danger mt-1'>
-                      {lastNameError}
-                    </div>
-                  )}
-                </div>
-                <div className='form-group'>
-                  {this.activeOptions.map(item => (
-                    <div
-                      className='form-check form-check-inline'
-                      key={item.value}
-                    >
-                      <input
-                        type='radio'
-                        value={item.value}
-                        name={'isActive'}
-                        className='form-check-input'
-                        checked={item.value === isActive ? true : null}
-                        disabled={canEditFields ? null : true}
-                      />
-                      <label
-                        htmlFor={item.value.toString()}
-                        className='form-check-label'
-                      >
-                        {item.label}
-                      </label>
-                    </div>
-                  ))}
-
-                  {error && <div className='alert alert-danger'>{error}</div>}
-                </div>
-              </div>
-              <div className='form-row'>
-                <div className={cx('form-group', 'col-md-4')}>
-                  <label htmlFor='email'>Job Title:</label>
-                  <input
-                    id={'jobTitle'}
-                    type='text'
-                    name={'jobTitle'}
-                    className={`form-control`}
-                    value={jobTitle}
-                    readOnly={canEditFields ? null : true}
-                    onChange={this.handleJobTitleChange}
-                  />
-                  {error && (
-                    <div className='alert alert-danger mt-1'>{error}</div>
-                  )}
-                </div>
-
-                <div className={cx('form-group', 'col-md-4')}>
-                  <label htmlFor={'role'}>Role:</label>
-
-                  <select
-                    value={role}
-                    name={'role'}
-                    id={'role'}
-                    readOnly={canEditFields ? null : true}
-                    className='form-control'
-                  >
-                    <option value=''>Please select a Role:</option>
-                    {this.allowedRoles.map(item => (
-                      <option value={item._id} key={item._id}>
-                        {item.name}
-                      </option>
-                    ))}
-                  </select>
-                  {error && <div className='alert alert-danger'>{error}</div>}
-                </div>
-
-                <div className={cx('form-group', 'col-md-4')}>
-                  <label htmlFor='weeklyComittedHours'>
-                    Weekly Comitted Hours:
-                  </label>
-                  <input
-                    id={'weeklyComittedHours'}
-                    type='number'
-                    name={'weeklyComittedHours'}
-                    className={`form-control`}
-                    value={weeklyComittedHours}
-                    readOnly={isUserAdmin ? null : true}
-                  />
-                  {error && (
-                    <div className='alert alert-danger mt-1'>{error}</div>
-                  )}
-                </div>
-              </div>
-            </div>
           </div>
+        </div>
 
-          {<ShowSaveWarning />}
+        {<ShowSaveWarning />}
 
-          <Row>
-            <Col xs='6'>
-              <Card body>
-                <CardHeader>Phone Number:</CardHeader>
-                <CardBody>
-                  <CardText>
-                    <Input
-                      value={phoneNumber}
-                      onChange={this.handlePhoneNumberChange}
-                    />
-                  </CardText>
-                </CardBody>
-                <CardFooter>
-                  <InputGroup size='sm'>
-                    <InputGroupAddon addonType='prepend'>
-                      <InputGroupText>
-                        <Input
-                          addon
-                          type='checkbox'
-                          aria-label='Checkbox for following text input'
-                        />
-                        Publicly Accessible?
-                      </InputGroupText>
-                    </InputGroupAddon>
-                  </InputGroup>
-                </CardFooter>
-              </Card>
-            </Col>
-            <Col xs='6'>
-              <Card body>
-                <CardHeader>Email</CardHeader>
-                <CardBody>
-                  <CardText>
-                    <Input value={email} type='email' />
-                  </CardText>
-                </CardBody>
-                <CardFooter>
-                  <InputGroup size='sm'>
-                    <InputGroupAddon addonType='prepend'>
-                      <InputGroupText>
-                        <Input
-                          addon
-                          type='checkbox'
-                          aria-label='Checkbox for following text input'
-                        />
-                        Publicly Accessible?
-                      </InputGroupText>
-                    </InputGroupAddon>
-                  </InputGroup>
-                </CardFooter>
-              </Card>
-            </Col>
-          </Row>
-
-          <div className='row mt-3'>
-            <ProfileLinks
-              canEdit={isUserAdmin}
-              data={adminLinks}
-              label='Admin'
-              handleProfileLinks={this.handleCollection}
-              collection='adminLinks'
-            />
-          </div>
-          <div className='row mt-3'>
-            <ProfileLinks
-              canEdit={canEditFields}
-              data={personalLinks}
-              label='Social/Professional'
-              // handleProfileLinks={this.handleCollection}
-              collection='personalLinks'
-            />
-          </div>
-
-          <div className='row mt-3'>
-            <Card body inverse color='warning'>
-              <CardTitle
-                style={{
-                  fontWeight: 'bold',
-                  fontSize: 20,
-                  textDecoration: 'underLine'
-                }}
-              >
-                Badges
-              </CardTitle>
+        <Row>
+          <Col xs='6'>
+            <Card body>
+              <CardHeader>Phone Number:</CardHeader>
               <CardBody>
-                <CardText>Here are your badges.</CardText>
-                <Button disabled>Add a Badge</Button>
+                <CardText>
+                  <Input
+                    value={phoneNumber}
+                    onChange={this.handlePhoneNumberChange}
+                  />
+                </CardText>
               </CardBody>
+              <CardFooter>
+                <InputGroup size='sm'>
+                  <InputGroupAddon addonType='prepend'>
+                    <InputGroupText>
+                      <Input
+                        addon
+                        type='checkbox'
+                        aria-label='Checkbox for following text input'
+                      />
+                      Publicly Accessible?
+                    </InputGroupText>
+                  </InputGroupAddon>
+                </InputGroup>
+              </CardFooter>
             </Card>
-          </div>
+          </Col>
+          <Col xs='6'>
+            <Card body>
+              <CardHeader>Email</CardHeader>
+              <CardBody>
+                <CardText>
+                  <Input value={email} type='email' />
+                </CardText>
+              </CardBody>
+              <CardFooter>
+                <InputGroup size='sm'>
+                  <InputGroupAddon addonType='prepend'>
+                    <InputGroupText>
+                      <Input
+                        addon
+                        type='checkbox'
+                        aria-label='Checkbox for following text input'
+                      />
+                      Publicly Accessible?
+                    </InputGroupText>
+                  </InputGroupAddon>
+                </InputGroup>
+              </CardFooter>
+            </Card>
+          </Col>
+        </Row>
 
-          <div className='row mt-3'>
-            <div className='col-6'>
-              <Memberships
-                schema={this.teamsSchema}
-                canEdit={isUserAdmin}
-                data={teams}
-                label='Team'
-                collection='teams'
-                //handleDelete={this.handleCollection}
-                // handleBulkUpdates={this.handleMemberships}
-              />
-            </div>
-            <div className='col-6'>
-              <Memberships
-                schema={this.projectsSchema}
-                canEdit={isUserAdmin}
-                data={projects}
-                label='Project'
-                collection='projects'
-                //handleDelete={this.handleCollection}
-                //handleBulkUpdates={this.handleMemberships}
-              />
-            </div>
+        <div className='row mt-3'>
+          <ProfileLinks
+            canEdit={isUserAdmin}
+            data={adminLinks}
+            label='Admin'
+            handleProfileLinks={this.handleCollection}
+            collection='adminLinks'
+          />
+        </div>
+        <div className='row mt-3'>
+          <ProfileLinks
+            canEdit={canEditFields}
+            data={personalLinks}
+            label='Social/Professional'
+            // handleProfileLinks={this.handleCollection}
+            collection='personalLinks'
+          />
+        </div>
+
+        <div className='row mt-3'>
+          <Card body inverse color='warning'>
+            <CardTitle
+              style={{
+                fontWeight: 'bold',
+                fontSize: 20,
+                textDecoration: 'underLine'
+              }}
+            >
+              Badges
+            </CardTitle>
+            <CardBody>
+              <CardText>Here are your badges.</CardText>
+              <Button disabled>Add a Badge</Button>
+            </CardBody>
+          </Card>
+        </div>
+
+        <div className='row mt-3'>
+          <div className='col-6'>
+            <Memberships
+              schema={this.teamsSchema}
+              canEdit={isUserAdmin}
+              data={teams}
+              label='Team'
+              collection='teams'
+              //handleDelete={this.handleCollection}
+              // handleBulkUpdates={this.handleMemberships}
+            />
           </div>
-          <button className='btn btn-primary' onClick={this.handleSubmit}>
-            {'Submit'}
-          </button>
-        </Container>
-      </React.Fragment>
+          <div className='col-6'>
+            <Memberships
+              schema={this.projectsSchema}
+              canEdit={isUserAdmin}
+              data={projects}
+              label='Project'
+              collection='projects'
+              //handleDelete={this.handleCollection}
+              //handleBulkUpdates={this.handleMemberships}
+            />
+          </div>
+        </div>
+        <button className='btn btn-primary' onClick={this.handleSubmit}>
+          {'Submit'}
+        </button>
+      </Container>
     )
   }
 }
