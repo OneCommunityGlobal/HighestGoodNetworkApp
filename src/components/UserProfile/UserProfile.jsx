@@ -21,6 +21,7 @@ import Memberships from '../Memberships'
 import ProfileLinks from '../ProfileLinks'
 import Joi from 'joi'
 import ShowSaveWarning from '../common/ShowSaveWarning'
+import Modal from '../common/Modal'
 class UserProfile extends Component {
   state = {
     isLoading: true,
@@ -162,10 +163,25 @@ class UserProfile extends Component {
   handleSubmit = async event => {
     event.preventDefault()
 
-    await this.props.updateUserProfile(
+    const submitResult = await this.props.updateUserProfile(
       this.props.match.params.userId,
       this.state.userProfile
     )
+    console.log(submitResult)
+
+    if (submitResult === 200) {
+      this.setState({
+        showModal: true,
+        modalMessage: 'Your Changes were saved successfully',
+        modalTitle: 'Success'
+      })
+    } else {
+      this.setState({
+        showModal: true,
+        modalMessage: 'Please try again.',
+        modalTitle: 'Error'
+      })
+    }
   }
 
   render() {
@@ -209,6 +225,14 @@ class UserProfile extends Component {
     return (
       <React.Fragment>
         <Container>
+          <Modal
+            isOpen={this.state.showModal}
+            closeModal={() => {
+              this.setState({ showModal: false })
+            }}
+            modalMessage={this.state.modalMessage}
+            modalTitle={this.state.modalTitle}
+          />
           <div className='row my-auto'>
             <div className='col-md-4'>
               <div className='form-row text-center'>
