@@ -14,7 +14,8 @@ import {
   InputGroupAddon,
   InputGroupText,
   CardHeader,
-  CardFooter
+  CardFooter,
+  Button
 } from 'reactstrap'
 import cx from 'classnames'
 import Memberships from '../Memberships'
@@ -22,6 +23,8 @@ import ProfileLinks from '../ProfileLinks'
 import Joi from 'joi'
 import ShowSaveWarning from '../common/ShowSaveWarning'
 import Modal from '../common/Modal'
+
+import Badges from './Badges'
 class UserProfile extends Component {
   state = {
     isLoading: true,
@@ -471,6 +474,25 @@ class UserProfile extends Component {
               collection='personalLinks'
             />
           </div>
+
+          <div className='row mt-3'>
+            <Card body inverse color='warning'>
+              <CardTitle
+                style={{
+                  fontWeight: 'bold',
+                  fontSize: 20,
+                  textDecoration: 'underLine'
+                }}
+              >
+                Badges
+              </CardTitle>
+              <CardBody>
+                <CardText>Here are your badges.</CardText>
+                <Button disabled>Add a Badge</Button>
+              </CardBody>
+            </Card>
+          </div>
+
           <div className='row mt-3'>
             <div className='col-6'>
               <Memberships
