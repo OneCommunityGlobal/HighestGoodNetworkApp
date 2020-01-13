@@ -75,7 +75,7 @@ class Header extends React.Component {
             <Nav className='ml-auto' navbar>
               <NavItem>
                 <NavLink tag={Link} to='/dashboard'>
-                  Dashboard
+                  Playground
                 </NavLink>
               </NavItem>
               <NavItem>
