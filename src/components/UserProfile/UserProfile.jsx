@@ -17,8 +17,8 @@ import {
   CardFooter
 } from 'reactstrap'
 import cx from 'classnames'
-import Memberships from '../Memberships'
-import ProfileLinks from '../ProfileLinks'
+import Memberships from '../Memberships/Memberships'
+import ProfileLinks from '../ProfileLinks/ProfileLinks'
 import Joi from 'joi'
 import ShowSaveWarning from '../common/ShowSaveWarning'
 import Modal from '../common/Modal'

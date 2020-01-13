@@ -1,15 +1,15 @@
 import React from 'react';
 import { Route, Switch } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
-import Timelog from './components/Timelog';
-import Reports from './components/Reports';
+import Timelog from './components/Timelog/Timelog';
+import Reports from './components/Reports/Reports';
 import UserProfile from './components/UserProfile';
 import Dashboard from './components/Dashboard';
-import { Logout } from './components/Logout';
+import { Logout } from './components/Logout/Logout';
 import Login from './components/Login';
 import ForcePasswordUpdate from './components/ForcePasswordUpdate';
 import ProtectedRoute from './components/common/ProtectedRoute';
-import UpdatePassword from './components/UpdatePassword';
+import UpdatePassword from './components/UpdatePassword/UpdatePassword';
 import Header from './components/Header';
 import 'react-toastify/dist/ReactToastify.css';
 
