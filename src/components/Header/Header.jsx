@@ -7,6 +7,10 @@ import { Link } from 'react-router-dom'
 import { connect } from 'react-redux'
 import { getjwt } from '../../services/loginService'
 import {
+  LOGO, DASHBOARD, TIMELOG, REPORTS, OTHER_LINKS, 
+  USER_MANAGEMENT, PROJECTS, TEAMS, WELCOME, VIEW_PROFILE, UPDATE_PASSWORD, LOGOUT
+} from '../../languages/en/ui'
+import {
   Collapse,
   Navbar,
   NavbarToggler,
@@ -68,24 +72,24 @@ class Header extends React.Component {
       <div>
         <Navbar color='dark' dark expand='md' style={{ marginBottom: '20px' }}>
           <NavbarBrand tag={Link} to='/'>
-            Time Tracking Tool
+             {LOGO}
           </NavbarBrand>
           <NavbarToggler onClick={this.toggle} />
           <Collapse isOpen={this.state.isOpen} navbar>
             <Nav className='ml-auto' navbar>
               <NavItem>
                 <NavLink tag={Link} to='/dashboard'>
-                  Playground
+                  {DASHBOARD}
                 </NavLink>
               </NavItem>
               <NavItem>
                 <NavLink tag={Link} to={`/timelog/${userId}`}>
-                  Timelog
+                  {TIMELOG}
                 </NavLink>
               </NavItem>
               <NavItem>
                 <NavLink tag={Link} to='/reports'>
-                  Reports
+                  {REPORTS}
                 </NavLink>
               </NavItem>
               <NavItem>
@@ -100,17 +104,17 @@ class Header extends React.Component {
               </NavItem>
               <UncontrolledDropdown nav inNavbar>
                 <DropdownToggle nav caret>
-                  Other Links
+                  {OTHER_LINKS}
                 </DropdownToggle>
                 <DropdownMenu>
                   <DropdownItem tag={Link} to='/usermanagement'>
-                    User Management
+                    {USER_MANAGEMENT}
                   </DropdownItem>
                   <DropdownItem tag={Link} to=''>
-                    Projects
+                    {PROJECTS}
                   </DropdownItem>
                   <DropdownItem tag={Link} to=''>
-                    Teams
+                    {TEAMS}
                   </DropdownItem>
                 </DropdownMenu>
               </UncontrolledDropdown>
@@ -127,20 +131,20 @@ class Header extends React.Component {
               </NavItem>
               <UncontrolledDropdown nav>
                 <DropdownToggle nav caret>
-                  Welcome {name}
+                  {WELCOME} {name}
                 </DropdownToggle>
                 <DropdownMenu>
                   <DropdownItem header>Hello {name}</DropdownItem>
                   <DropdownItem divider />
                   <DropdownItem tag={Link} to={`/userprofile/${userId}`}>
-                    View Profile
+                    {VIEW_PROFILE}
                   </DropdownItem>
                   <DropdownItem tag={Link} to={`/updatepassword/${userId}`}>
-                    Update Password
+                    {UPDATE_PASSWORD}
                   </DropdownItem>
                   <DropdownItem divider />
                   <DropdownItem tag={Link} to='/logout'>
-                    Logout
+                    {LOGOUT}
                   </DropdownItem>
                 </DropdownMenu>
               </UncontrolledDropdown>
