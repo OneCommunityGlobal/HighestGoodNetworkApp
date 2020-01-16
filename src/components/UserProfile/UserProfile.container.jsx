@@ -1,6 +1,6 @@
 import { connect } from 'react-redux'
 import _ from 'lodash'
-import { getCurrentUser } from '../../actions'
+import { getCurrentUser } from '../../actions/authActions'
 import {
   getUserProfile,
   updateUserProfile,
@@ -13,7 +13,7 @@ const mapStateToProps = state => {
   console.log(state.userProfile)
   return {
     userProfile: _.get(state, 'userProfile'),
-    user: _.get(state, 'user', {}),
+    auth: _.get(state, 'auth', {}),
     teams: _.get(state, 'userProfile.teams', []),
     projects: _.get(state, 'userProfile.projects', []),
     personalLinks: _.get(state, 'userProfile.personalLinks', []),

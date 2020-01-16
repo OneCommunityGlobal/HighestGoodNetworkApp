@@ -4,7 +4,7 @@ import logger from "../services/logService";
 import configureStore from '../store';
 import httpService from "../services/httpService";
 import jwtDecode from 'jwt-decode';
-import {setCurrentUser} from "../actions/index"
+import {setCurrentUser} from "../actions/authActions"
 import config from "../config.json";
 
 import "../App.css";
@@ -25,11 +25,15 @@ if (localStorage.getItem(tokenKey)) {
   if (decoded.expiryTimestamp < currentTime) {
     // // Logout user
     // store.dispatch(logoutUser());
+    store.dispatch(setCurrentUser(null));
     // // Clear profile state
     // store.dispatch(clearProfile());
     // Redirect to login
     window.location.href = "/login";
   }
+}
+else{
+  store.dispatch(setCurrentUser(null));
 }
 
 class App extends Component {

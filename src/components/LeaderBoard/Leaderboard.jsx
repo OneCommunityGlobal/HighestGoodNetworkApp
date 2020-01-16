@@ -25,8 +25,8 @@ class Leaderboard extends Component {
   };
 
   async componentDidMount() {
-    await this.props.state.user
-    let user = this.props.state.user
+    await this.props.state.auth.user
+    let user = this.props.state.auth.user
     this.props.getLeaderboardData(user.userid)
   }
 
@@ -68,7 +68,7 @@ class Leaderboard extends Component {
 
   render() {
     let { leaderboardData, maxtotal, isLoading } = this.state;
-    let loggedinUser = this.props.state.user.userid;
+    let loggedinUser = this.props.state.auth.user.userid;
     
       return (
       <div className="card hgn_leaderboard bg-dark">

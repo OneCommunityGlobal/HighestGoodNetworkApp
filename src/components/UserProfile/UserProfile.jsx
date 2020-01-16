@@ -193,7 +193,7 @@ class UserProfile extends Component {
 		}
 
 		let { userId: targetUserId } = this.props.match.params
-		let { userid: requestorId, role: requestorRole } = this.props.user
+		let { userid: requestorId, role: requestorRole } = this.props.auth.user
 
 		const {
 			firstName,

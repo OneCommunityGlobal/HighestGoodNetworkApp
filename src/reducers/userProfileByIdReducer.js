@@ -4,6 +4,7 @@ const initialUserProfileState = {
   firstName: '',
   lastName: '',
   isActive: '',
+  profilePic: ''
 };
 export const userProfileByIdReducer = (
   userProfile = initialUserProfileState,
