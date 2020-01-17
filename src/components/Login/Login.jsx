@@ -2,6 +2,7 @@ import React from "react";
 import Joi from "joi";
 import Form from "../common/Form";
 import { connect } from "react-redux";
+import { withRouter } from "react-router-dom";
 import { loginUser } from "../../actions/authActions"
 
 class Login extends Form {
@@ -23,7 +24,7 @@ class Login extends Form {
   componentDidMount() {
     document.title = "Login";
     if (this.props.auth.isAuthenticated){
-      window.location = '/';
+      this.props.history.push("/");
     }
   }
 
@@ -33,11 +34,12 @@ class Login extends Form {
         this.setState({ errors: this.props.auth.errors });
       } 
       else if (this.props.auth.user.new) {
-        window.location = `/forcePasswordUpdate/${this.props.auth.user.userId}`;
+        const url = `/forcePasswordUpdate/${this.props.auth.user.userId}`;
+        this.props.history.push(url);
       } 
       else if (this.props.auth.isAuthenticated){
         const { state } = this.props.location;
-        window.location = state ? state.from.pathname : "/dashboard";
+        this.props.history.push(state ? state.from.pathname : "/dashboard");
       }
     }
   }
@@ -72,6 +74,8 @@ const mapStateToProps = state => ({
   auth: state.auth
 });
 
-export default connect(mapStateToProps, { 
-  loginUser
-})(Login);
+export default withRouter(
+  connect(mapStateToProps, { 
+    loginUser
+  })(Login)
+);

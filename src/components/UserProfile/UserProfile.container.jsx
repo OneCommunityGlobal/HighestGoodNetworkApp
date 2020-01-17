@@ -1,6 +1,5 @@
 import { connect } from 'react-redux'
 import _ from 'lodash'
-import { getCurrentUser } from '../../actions/authActions'
 import {
   getUserProfile,
   updateUserProfile,
@@ -28,7 +27,6 @@ const mapStateToProps = state => {
 }
 
 export default connect(mapStateToProps, {
-  getCurrentUser,
   getUserProfile,
   clearUserProfile,
   updateUserProfile

@@ -23,9 +23,15 @@ import {
 class Header extends React.Component {
   state = {}
 
+  componentDidMount(){
+    if (this.props.auth.isAuthenticated){
+      this.props.getUserProfile(this.props.auth.user.userid)
+    }
+  }
+
   componentDidUpdate(prevProps) {
-    if (prevProps.auth !== this.props.auth && this.props.auth.isAuthenticated ){
-      this.props.getUserProfile(this.props.auth.userId)
+    if (!prevProps.auth.isAuthenticated && this.props.auth.isAuthenticated ){
+      this.props.getUserProfile(this.props.auth.user.userid)
     }
   }
 
@@ -49,7 +55,7 @@ class Header extends React.Component {
                 </NavLink>
               </NavItem>
               <NavItem>
-                <NavLink tag={Link} to={`/timelog/${user.userId}`}>
+                <NavLink tag={Link} to={`/timelog/${user.userid}`}>
                   {TIMELOG}
                 </NavLink>
               </NavItem>
@@ -59,7 +65,7 @@ class Header extends React.Component {
                 </NavLink>
               </NavItem>
               <NavItem>
-                <NavLink tag={Link} to={`/timelog/${user.userId}`}>
+                <NavLink tag={Link} to={`/timelog/${user.userid}`}>
                   <i className='fa fa-bell i-large'>
                     <i className='badge badge-pill badge-danger badge-notify'>
                       {/* Pull number of unread messages */}
@@ -85,7 +91,7 @@ class Header extends React.Component {
                 </DropdownMenu>
               </UncontrolledDropdown>
               <NavItem>
-                <NavLink tag={Link} to={`/profile/${user.userId}`}>
+                <NavLink tag={Link} to={`/profile/${user.userid}`}>
                   <img
                     src={`${profilePic}`}
                     alt=''
@@ -102,10 +108,10 @@ class Header extends React.Component {
                 <DropdownMenu>
                   <DropdownItem header>Hello {firstName}</DropdownItem>
                   <DropdownItem divider />
-                  <DropdownItem tag={Link} to={`/userprofile/${user.userId}`}>
+                  <DropdownItem tag={Link} to={`/userprofile/${user.userid}`}>
                     {VIEW_PROFILE}
                   </DropdownItem>
-                  <DropdownItem tag={Link} to={`/updatepassword/${user.userId}`}>
+                  <DropdownItem tag={Link} to={`/updatepassword/${user.userid}`}>
                     {UPDATE_PASSWORD}
                   </DropdownItem>
                   <DropdownItem divider />

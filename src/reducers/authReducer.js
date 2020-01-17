@@ -1,4 +1,3 @@
-import jwtDecode from 'jwt-decode';
 import _ from "lodash";
 
 const initialState = {
@@ -8,15 +7,6 @@ const initialState = {
 }
 
 export const authReducer = (auth = initialState, action) => {
-  if (action.type === 'GET_CURRENT_USER') {
-    try {
-      const token = action.payload;
-      return jwtDecode(token);
-    } catch (err) {
-      return auth;
-    }
-  }
-
   if (action.type === 'SET_CURRENT_USER') {
     if (!action.payload){
       return initialState

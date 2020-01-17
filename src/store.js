@@ -13,6 +13,7 @@ const devTools = window.__REDUX_DEVTOOLS_EXTENSION__ ? window.__REDUX_DEVTOOLS_E
 const persistConfig = {
   key: 'root',
   storage,
+  blacklist: ['auth']
 }
  
 const persistedReducer = persistReducer(persistConfig, reducers)

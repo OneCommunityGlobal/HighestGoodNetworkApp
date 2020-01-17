@@ -1,16 +1,15 @@
 import jwtDecode from 'jwt-decode'
 import httpService from '../services/httpService'
 import config from '../config.json'
+import { ENDPOINTS } from '../utils/URL'
 
-const APIEndpoint = process.env.REACT_APP_APIENDPOINT
 const { tokenKey } = config
 
 export const loginUser = credentials => dispatch => {
   httpService
-    .post(`${APIEndpoint}/login`, credentials)
+    .post(ENDPOINTS.LOGIN, credentials)
     .then(res => {
       if (res.data.new) {
-        console.log(res.data)
         dispatch(setCurrentUser({ new: true, userId: res.data.userId }))
       } else {
         localStorage.setItem(tokenKey, res.data.token)
@@ -32,7 +31,9 @@ export const setCurrentUser = decoded => ({
   payload: decoded
 })
 
-export const getCurrentUser = token => ({
-  type: 'GET_CURRENT_USER',
-  payload: token
-})
+export const logoutUser = () => dispatch => {
+  localStorage.removeItem(tokenKey)
+  httpService.setjwt(false)
+  dispatch(setCurrentUser(null))
+};
+  
