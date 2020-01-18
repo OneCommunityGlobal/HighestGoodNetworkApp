@@ -11,7 +11,7 @@ const UserLinks = ({ type, adminLinks, personalLinks }) => {
 				<CardBody>
 					{!links.length && (
 						<CardText>
-							<Badge color='red'>No Links present</Badge>
+							<Badge color='danger'>No Links present</Badge>
 						</CardText>
 					)}
 					{links.map(item => (
@@ -23,8 +23,12 @@ const UserLinks = ({ type, adminLinks, personalLinks }) => {
 								paddingLeft: 20,
 								paddingRight: 20
 							}}>
-							<Badge color='secondary'>{item.Name}</Badge>
-							<span>{item.Link}</span>
+							<Badge style={{ width: '10vw' }} color='secondary'>
+								{item.Name}
+							</Badge>
+							<Badge style={{ width: '40vw' }} href={item.Link} color='warning'>
+								{item.Link}
+							</Badge>
 						</CardText>
 					))}
 				</CardBody>

@@ -3,7 +3,7 @@ import { Card, CardTitle, CardText, CardBody, Button } from 'reactstrap'
 const Badges = () => {
 	return (
 		<div className='row mt-3'>
-			<Card body inverse color='warning'>
+			<Card body>
 				<CardTitle
 					style={{
 						fontWeight: 'bold',
@@ -14,7 +14,9 @@ const Badges = () => {
 				</CardTitle>
 				<CardBody>
 					<CardText>Here are your badges.</CardText>
-					<Button disabled>Add a Badge</Button>
+					<Button color='primary' disabled>
+						Add a Badge
+					</Button>
 				</CardBody>
 			</Card>
 		</div>
