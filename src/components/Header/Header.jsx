@@ -39,7 +39,9 @@ class Header extends React.Component {
       // let {data:userProfileData} = {...await getUserProfile(userId)}
       this.setState({ userId })
       this.props.getUserProfile(userId)
-      this.props.getCurrentUser(getjwt())
+      var usrInfo = this.props.getCurrentUser(getjwt())
+      console.log(usrInfo);
+      
     }
   }
 
@@ -110,7 +112,7 @@ class Header extends React.Component {
                   <DropdownItem tag={Link} to='/usermanagement'>
                     {USER_MANAGEMENT}
                   </DropdownItem>
-                  <DropdownItem tag={Link} to=''>
+                  <DropdownItem tag={Link} to='/projects'>
                     {PROJECTS}
                   </DropdownItem>
                   <DropdownItem tag={Link} to=''>

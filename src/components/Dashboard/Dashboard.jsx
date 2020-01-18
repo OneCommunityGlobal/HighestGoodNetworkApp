@@ -9,7 +9,7 @@ import '../../App.css'
 
 class Dashboard extends Component {
   componentDidMount() {
-    // this.props.getCurrentUser(getjwt())
+     //this.props.getCurrentUser(getjwt());
   }
 
   render() {

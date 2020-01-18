@@ -1,1 +1,1 @@
-export { default } from "./RenderInfringment";
+export { default } from "./RenderInfringement";

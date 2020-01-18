@@ -11,6 +11,7 @@ import ForcePasswordUpdate from './components/ForcePasswordUpdate'
 import ProtectedRoute from './components/common/ProtectedRoute'
 import UpdatePassword from './components/UpdatePassword'
 import Header from './components/Header'
+import Projects from './components/Projects'
 import 'react-toastify/dist/ReactToastify.css'
 
 export default (
@@ -21,6 +22,8 @@ export default (
       <ProtectedRoute path='/dashboard' exact component={Dashboard} />
       <ProtectedRoute path='/timelog/:userId' exact component={Timelog} />
       <ProtectedRoute path='/reports' exact component={Reports} />
+      <ProtectedRoute path='/projects' exact component={Projects} />
+
       <Route path='/login' component={Login} />
 
       <ProtectedRoute path='/userprofile/:userId' component={UserProfile} />
