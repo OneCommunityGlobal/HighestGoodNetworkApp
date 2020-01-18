@@ -37,7 +37,7 @@ class UserProfile extends Component {
 	}
 
 	async componentDidMount() {
-		//await this.props.getCurrentUser(getjwt())
+		//await this.props.getCurrentUser(getjwt())  // this.props.auth.user  (value from Redux)
 		// let userId = this.props.match.params.userId
 		// await this.props.getUserProfile(userId)
 		console.log(this.props.userProfile)

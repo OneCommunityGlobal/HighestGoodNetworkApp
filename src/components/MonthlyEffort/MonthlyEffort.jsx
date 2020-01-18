@@ -1,12 +1,12 @@
 import React from 'react';
-import {getCurrentUser} from "../../services/loginService";
+import { connect } from "react-redux";
 
 
 class MonthlyEffort extends React.Component {
     state = { };
     
   async componentDidMount() {
-    let userID = getCurrentUser().userid;
+    let userID = this.props.auth.user.userid;
     this.setState({userID});
   }
   render() {
@@ -23,4 +23,10 @@ class MonthlyEffort extends React.Component {
   }
 }
 
-export default MonthlyEffort;
+// export default MonthlyEffort;
+
+const mapStateToProps = state => ({
+  auth: state.auth
+});
+
+export default connect(mapStateToProps, {})(MonthlyEffort);

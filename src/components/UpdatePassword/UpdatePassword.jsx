@@ -1,9 +1,11 @@
 import React from "react";
+import { connect } from "react-redux";
+import { withRouter } from "react-router-dom";
 import Form from "../common/Form";
 import Joi from "joi";
 import { toast } from "react-toastify";
 import { updatePassword } from "../../services/userProfileService";
-import { logout } from "../../services/loginService";
+import { logoutUser } from "../../actions/authActions";
 
 class UpdatePassword extends Form {
   state = {
@@ -54,11 +56,15 @@ class UpdatePassword extends Form {
     let data = { currentpassword, newpassword, confirmnewpassword };
     try {
       await updatePassword(userId, data);
-      logout();
+
       toast.success(
         "Your password has been updated. You will be logged out and directed to login page where you can login with your new password.",
         {
-          onClose: () => window.location.assign("/login")
+          onClose: () => {
+            // window.location.assign("/login")
+            this.props.logoutUser();
+            this.props.history.replace("/login");
+          }
         }
       );
     } catch (exception) {
@@ -101,4 +107,12 @@ class UpdatePassword extends Form {
   }
 }
 
-export default UpdatePassword;
+const mapStateToProps = state => ({
+  auth: state.auth
+});
+
+export default withRouter(
+  connect(mapStateToProps, { 
+    logoutUser
+  })(UpdatePassword)
+);

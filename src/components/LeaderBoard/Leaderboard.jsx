@@ -1,5 +1,4 @@
 import React, { Component } from "react";
-import { getCurrentUser } from "../../services/loginService";
 import { connect } from "react-redux";
 import { getLeaderboardData } from "../../actions";
 import _ from "lodash";
