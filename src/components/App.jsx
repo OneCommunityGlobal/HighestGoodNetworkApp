@@ -1,13 +1,20 @@
-import { Component } from "react";
+import React, { Component } from "react";
 import routes from '../routes'
 import logger from "../services/logService";
-import configureStore from '../store';
+
 import httpService from "../services/httpService";
 import jwtDecode from 'jwt-decode';
-import {setCurrentUser} from "../actions/index"
-import config from "../config.json";
+import { setCurrentUser, logoutUser } from "../actions/authActions"
 
+import { Provider } from 'react-redux';
+import { BrowserRouter as Router } from 'react-router-dom';
+import configureStore from '../store';
+import { PersistGate } from 'redux-persist/integration/react';
+import Loading from './common/Loading'
+
+import config from "../config.json";
 import "../App.css";
+
 const { persistor, store } = configureStore();
 const tokenKey = config.tokenKey;
 
@@ -23,12 +30,8 @@ if (localStorage.getItem(tokenKey)) {
   // Check for expired token
   const currentTime = Date.now() / 1000;
   if (decoded.expiryTimestamp < currentTime) {
-    // // Logout user
-    // store.dispatch(logoutUser());
-    // // Clear profile state
-    // store.dispatch(clearProfile());
-    // Redirect to login
-    window.location.href = "/login";
+    // Logout user
+    store.dispatch(logoutUser());
   }
 }
 
@@ -41,8 +44,13 @@ class App extends Component {
 
   render() {
     return (
-     routes
- 
+      <Provider store={store}>
+        <PersistGate loading={<Loading/>} persistor={persistor}>
+          <Router>
+            { routes }
+          </Router>
+        </PersistGate>
+      </Provider>
     );
   }
 }

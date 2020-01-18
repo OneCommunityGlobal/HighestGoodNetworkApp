@@ -1,11 +1,7 @@
 import React from 'react'
-import { getCurrentUser } from '../../actions'
-//import { getCurrentUser } from '../services/loginService'
-// import {getUserProfile} from "../services/userProfileService";
 import { getUserProfile } from '../../actions/userProfile'
 import { Link } from 'react-router-dom'
 import { connect } from 'react-redux'
-import { getjwt } from '../../services/loginService'
 import {
   LOGO, DASHBOARD, TIMELOG, REPORTS, OTHER_LINKS, 
   USER_MANAGEMENT, PROJECTS, TEAMS, WELCOME, VIEW_PROFILE, UPDATE_PASSWORD, LOGOUT
@@ -25,50 +21,23 @@ import {
 } from 'reactstrap'
 
 class Header extends React.Component {
-  state = {
-    userId: 0,
-    userProfileData: {},
-    name: '',
-    profilePic: ''
-  }
+  state = {}
 
-  async componentDidMount() {
-    let user = this.props.state.user
-    if (user && user.role) {
-      let { userid: userId } = user
-      // let {data:userProfileData} = {...await getUserProfile(userId)}
-      this.setState({ userId })
-      this.props.getUserProfile(userId)
-      var usrInfo = this.props.getCurrentUser(getjwt())
-      console.log(usrInfo);
-      
+  componentDidMount(){
+    if (this.props.auth.isAuthenticated){
+      this.props.getUserProfile(this.props.auth.user.userid)
     }
   }
 
-  // componentDidUpdate(prevProps) {
-  //   if (this.props.state.userProfile && prevProps.state.userProfile !== this.props.state.userProfile){
-  //     let userProfileData = this.props.state.userProfile;
-  //     let name = this.props.state.userProfile.firstName;
-  //     let profilePic = this.props.state.userProfile.profilePic;
-  //     this.setState({userProfileData,name,profilePic});
-  //   }
-  // }
+  componentDidUpdate(prevProps) {
+    if (!prevProps.auth.isAuthenticated && this.props.auth.isAuthenticated ){
+      this.props.getUserProfile(this.props.auth.user.userid)
+    }
+  }
 
   render() {
-    // let {userId,name,profilePic} = this.state;
-
-    const { userId } = this.state
-    // let userId = 0
-    // if (this.props.state.user && this.props.state.user.role) {
-    //   userId = this.props.state.user.userId
-    // }
-
-    let name = ''
-    let profilePic = ''
-    if (this.props.state.userProfile) {
-      name = this.props.state.userProfile.firstName
-      profilePic = this.props.state.userProfile.profilePic
-    }
+    const { isAuthenticated, user } = this.props.auth
+    const { firstName, profilePic } = this.props.userProfile
 
     return (
       <div>
@@ -77,7 +46,8 @@ class Header extends React.Component {
              {LOGO}
           </NavbarBrand>
           <NavbarToggler onClick={this.toggle} />
-          <Collapse isOpen={this.state.isOpen} navbar>
+          {isAuthenticated &&
+            <Collapse isOpen={this.state.isOpen} navbar>
             <Nav className='ml-auto' navbar>
               <NavItem>
                 <NavLink tag={Link} to='/dashboard'>
@@ -85,7 +55,7 @@ class Header extends React.Component {
                 </NavLink>
               </NavItem>
               <NavItem>
-                <NavLink tag={Link} to={`/timelog/${userId}`}>
+                <NavLink tag={Link} to={`/timelog/${user.userid}`}>
                   {TIMELOG}
                 </NavLink>
               </NavItem>
@@ -95,7 +65,7 @@ class Header extends React.Component {
                 </NavLink>
               </NavItem>
               <NavItem>
-                <NavLink tag={Link} to={`/timelog/${userId}`}>
+                <NavLink tag={Link} to={`/timelog/${user.userid}`}>
                   <i className='fa fa-bell i-large'>
                     <i className='badge badge-pill badge-danger badge-notify'>
                       {/* Pull number of unread messages */}
@@ -121,7 +91,7 @@ class Header extends React.Component {
                 </DropdownMenu>
               </UncontrolledDropdown>
               <NavItem>
-                <NavLink tag={Link} to={`/profile/${userId}`}>
+                <NavLink tag={Link} to={`/profile/${user.userid}`}>
                   <img
                     src={`${profilePic}`}
                     alt=''
@@ -133,15 +103,15 @@ class Header extends React.Component {
               </NavItem>
               <UncontrolledDropdown nav>
                 <DropdownToggle nav caret>
-                  {WELCOME} {name}
+                  {WELCOME} {firstName}
                 </DropdownToggle>
                 <DropdownMenu>
-                  <DropdownItem header>Hello {name}</DropdownItem>
+                  <DropdownItem header>Hello {firstName}</DropdownItem>
                   <DropdownItem divider />
-                  <DropdownItem tag={Link} to={`/userprofile/${userId}`}>
+                  <DropdownItem tag={Link} to={`/userprofile/${user.userid}`}>
                     {VIEW_PROFILE}
                   </DropdownItem>
-                  <DropdownItem tag={Link} to={`/updatepassword/${userId}`}>
+                  <DropdownItem tag={Link} to={`/updatepassword/${user.userid}`}>
                     {UPDATE_PASSWORD}
                   </DropdownItem>
                   <DropdownItem divider />
@@ -152,20 +122,21 @@ class Header extends React.Component {
               </UncontrolledDropdown>
             </Nav>
           </Collapse>
+          }
         </Navbar>
       </div>
     )
   }
 }
 
-const mapStateToProps = state => {
-  return { state }
-}
+const mapStateToProps = state => ({
+  auth: state.auth,
+  userProfile: state.userProfile
+});
 
 export default connect(
   mapStateToProps,
   {
     getUserProfile,
-    getCurrentUser
   }
 )(Header)

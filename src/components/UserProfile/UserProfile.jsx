@@ -37,9 +37,10 @@ class UserProfile extends Component {
 	}
 
 	async componentDidMount() {
-		//await this.props.getCurrentUser(getjwt())
-		// let userId = this.props.match.params.userId
-		// await this.props.getUserProfile(userId)
+		// this.props.getCurrentUser(getjwt())
+		let userId = this.props.match.params.userId
+		await this.props.getUserProfile(userId)
+		await this.props.getUserTeamMembers(userId)
 		console.log(this.props.userProfile)
 		if (this.props.userProfile.firstName.length) {
 			console.log(this.props.userProfile)
@@ -193,7 +194,7 @@ class UserProfile extends Component {
 		}
 
 		let { userId: targetUserId } = this.props.match.params
-		let { userid: requestorId, role: requestorRole } = this.props.user
+		let { userid: requestorId, role: requestorRole } = this.props.auth.user
 
 		const {
 			firstName,
