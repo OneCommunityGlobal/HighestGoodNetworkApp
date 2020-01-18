@@ -9,6 +9,7 @@ export const getUserProfile = userId => {
 	const url = ENDPOINTS.USER_PROFILE(userId)
 	return async dispatch => {
 		const res = await axios.get(url)
+		console.log('userrprofie', res)
 
 		await dispatch(getUserProfileActionCreator(res.data))
 	}
