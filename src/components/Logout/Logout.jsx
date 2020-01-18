@@ -1,11 +1,10 @@
 import React from 'react';
-import {Redirect} from 'react-router-dom';
+import { Redirect } from 'react-router-dom';
+import { logoutUser } from '../../actions/authActions'
+import { useDispatch } from 'react-redux'
 
-//to do : remove hard coded string
 export const Logout = ()=>{
-        localStorage.removeItem('token');
-        return (<Redirect to='/login' auth={false}/>);
-    
+  const dispatch = useDispatch()
+  dispatch(logoutUser());
+  return (<Redirect to='/login' auth={false}/>);
 }
-
-

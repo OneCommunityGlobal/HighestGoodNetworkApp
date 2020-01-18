@@ -1,7 +1,6 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
-import { getCurrentUser, getAllProjects, postTimeEntry } from '../../actions'
-import { getjwt } from '../../services/loginService'
+import { getAllProjects, postTimeEntry } from '../../actions'
 import { Card, Row, CardTitle, CardText, Col } from 'reactstrap'
 import MonthlyEffort from '../MonthlyEffort'
 import Leaderboard from '../LeaderBoard'
@@ -9,7 +8,7 @@ import '../../App.css'
 
 class Dashboard extends Component {
   componentDidMount() {
-    // this.props.getCurrentUser(getjwt())
+    // this.props.auth.user
   }
 
   render() {
@@ -48,5 +47,5 @@ const mapStateToProps = state => {
 
 export default connect(
   mapStateToProps,
-  { getCurrentUser }
+  { }
 )(Dashboard)

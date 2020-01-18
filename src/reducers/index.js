@@ -1,6 +1,6 @@
 import { combineReducers } from 'redux';
 import { userProfileByIdReducer } from './userProfileByIdReducer';
-import { currentUserReducer } from './currentUserReducer';
+import { authReducer } from './authReducer';
 import { handleSuccessReducer } from './handleSuccessReducer';
 import { allUserProfilesReducer } from './allUserProfilesReducer';
 import { userTeamMembersReducer } from './userTeamMembersReducer';
@@ -24,7 +24,7 @@ import { allTimeEntriesReducer } from './allTimeEntriesReducer';
 import { timeEntriesForSpecifiedPeriodReducer } from './timeEntriesForSpecifiedPeriodReducer';
 
 export default combineReducers({
-  user: currentUserReducer,
+  auth: authReducer,
   userProfile: userProfileByIdReducer,
   allUserProfiles: allUserProfilesReducer,
   userTeamMembers: userTeamMembersReducer,
