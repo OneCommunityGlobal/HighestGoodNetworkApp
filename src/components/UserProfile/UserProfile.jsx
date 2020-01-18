@@ -273,6 +273,7 @@ class UserProfile extends Component {
 								</React.Fragment>
 							)}
 						</div>
+						<div className='form-row text-center'>hELLO</div>
 					</div>
 					<div className='col-md-8'>
 						<div className='form-row'>
