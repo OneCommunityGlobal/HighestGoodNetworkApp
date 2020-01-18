@@ -1,6 +1,6 @@
 import React from 'react';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
-import Form from '../common/form';
+import Form from '../common/Form';
 import _ from 'lodash'
 import ShowSaveWarning from "../common/ShowSaveWarning"
 

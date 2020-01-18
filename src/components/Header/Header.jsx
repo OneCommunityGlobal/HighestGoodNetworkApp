@@ -82,7 +82,7 @@ class Header extends React.Component {
                   <DropdownItem tag={Link} to='/usermanagement'>
                     {USER_MANAGEMENT}
                   </DropdownItem>
-                  <DropdownItem tag={Link} to=''>
+                  <DropdownItem tag={Link} to='/projects'>
                     {PROJECTS}
                   </DropdownItem>
                   <DropdownItem tag={Link} to=''>
