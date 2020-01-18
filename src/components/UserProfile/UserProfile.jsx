@@ -15,6 +15,7 @@ import {
 	InputGroupText,
 	CardHeader,
 	CardFooter,
+	Badge,
 	Button
 } from 'reactstrap'
 import cx from 'classnames'
@@ -25,6 +26,8 @@ import ShowSaveWarning from '../common/ShowSaveWarning'
 import Modal from '../common/Modal'
 
 import Badges from './Badges'
+import WorkHistory from './WorkHistory'
+
 class UserProfile extends Component {
 	state = {
 		isLoading: true,
@@ -425,6 +428,9 @@ class UserProfile extends Component {
 						</Card>
 					</Col>
 				</Row>
+				<hr />
+
+				<WorkHistory />
 
 				<div className='row mt-3'>
 					<ProfileLinks
