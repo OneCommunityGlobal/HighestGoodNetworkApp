@@ -27,6 +27,7 @@ import Modal from '../common/Modal'
 
 import Badges from './Badges'
 import WorkHistory from './WorkHistory'
+import UserLinks from './UserLinks'
 
 class UserProfile extends Component {
 	state = {
@@ -432,25 +433,11 @@ class UserProfile extends Component {
 				<hr />
 
 				<WorkHistory />
-
-				<div className='row mt-3'>
-					<ProfileLinks
-						canEdit={isUserAdmin}
-						data={adminLinks}
-						label='Admin'
-						handleProfileLinks={this.handleCollection}
-						collection='adminLinks'
-					/>
-				</div>
-				<div className='row mt-3'>
-					<ProfileLinks
-						canEdit={canEditFields}
-						data={personalLinks}
-						label='Social/Professional'
-						// handleProfileLinks={this.handleCollection}
-						collection='personalLinks'
-					/>
-				</div>
+				<hr />
+				<UserLinks type='Admin' />
+				<hr />
+				<UserLinks type='Social/Professional' />
+				<hr />
 
 				<Badges />
 
