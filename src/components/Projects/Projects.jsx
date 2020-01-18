@@ -1,3 +1,12 @@
+/*********************************************************************************
+ * Component: PROJECTS  
+ * Author: Henry Ng - 01/17/20
+ * This component is used to build the layout of the list of projects
+ * Childrens: Overview, ProjectTableHeader, Project ( List )
+ * Layout: <Overview>
+ *         <ProjectTableHeader>
+ *         {  <Project>...  } 
+ ********************************************************************************/
 import React, { Component } from 'react'
 import { fetchAllProjects } from '../../actions/projects'
 import Overview from './Overview'
@@ -18,10 +27,8 @@ class Projects extends Component {
   }
 
   componentDidMount() {
-     //console.log(this.props.getUserProfile());
-     this.props.fetchAllProjects();
-
-     var projects = this.props.state.allProjects;
+     this.props.fetchAllProjects(); // Fetch to get all projects 
+     var projects = this.props.state.allProjects; // Get data from props redux 
      var numberOfProjects = projects.length;
      var numberOfActive = projects.filter(project => project.isActive).length;
      this.setState({
@@ -32,23 +39,30 @@ class Projects extends Component {
   }
 
 
+  /**
+   * Changes the number of active projects 
+   */
   onClickActive = (status) => {
     var {numberOfActive} = this.state;
-
     if(status){
         numberOfActive--
     }else{
         numberOfActive++
     }
-
     this.setState({
       numberOfActive
     })
   }
 
+  /**
+   * Changes the number of projects
+   * Also update the number of active project
+   */
   onClickDelete= (active) => {
     var {numberOfProjects,numberOfActive} = this.state;
     numberOfProjects--;
+
+    // if the deleted project is active, update it 
     if(active){
       numberOfActive--;
     }
@@ -63,6 +77,7 @@ class Projects extends Component {
     
     var {projects,numberOfProjects,numberOfActive} = this.state;
 
+    // Display project lists 
     var ProjectsList = projects.map((project,index) => <Project 
         key={project._id} 
         index={index} 
@@ -92,8 +107,5 @@ class Projects extends Component {
   }
 }
 
-const mapStateToProps = state => {
-  return { state }
-}
-
+const mapStateToProps = state => { return { state } }
 export default connect(mapStateToProps,{fetchAllProjects})(Projects)
