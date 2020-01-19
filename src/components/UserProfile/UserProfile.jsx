@@ -58,6 +58,54 @@ class UserProfile extends Component {
 		}
 		//console.log(this.props.userProfile)
 	}
+
+	handleUserProfile = event => {
+		if (event.target.id === 'firstName') {
+			this.setState({
+				userProfile: {
+					...this.state.userProfile,
+					firstName: event.target.value.trim()
+				},
+				firstNameError: event.target.value ? '' : 'First Name cannot be empty '
+			})
+		}
+
+		if (event.target.id === 'lastName') {
+			this.setState({
+				userProfile: {
+					...this.state.userProfile,
+					lastName: event.target.value.trim()
+				},
+				lastNameError: event.target.value ? '' : 'Last Name cannot be empty '
+			})
+		}
+		if (event.target.id === 'email') {
+			this.setState({
+				userProfile: {
+					...this.state.userProfile,
+					email: event.target.value.trim()
+				},
+				emailError: event.target.value ? '' : 'Email cannot be empty '
+			})
+		}
+		if (event.target.id === 'phoneNumber') {
+			this.setState({
+				userProfile: {
+					...this.state.userProfile,
+					phoneNumber: event.target.value.trim()
+				}
+			})
+		}
+		if (event.target.id === 'jobTitle') {
+			this.setState({
+				userProfile: {
+					...this.state.userProfile,
+					jobTitle: event.target.value.trim()
+				}
+			})
+		}
+	}
+
 	render() {
 		let { userId: targetUserId } = this.props.match.params
 		let { userid: requestorId, role: requestorRole } = this.props.auth.user
@@ -93,18 +141,38 @@ class UserProfile extends Component {
 		return (
 			<Container className='themed-container' fluid={true}>
 				<Row>
-					<Col xs={12} md={3} sm={12} style={{ backgroundColor: silverGray }}>
-						<SideBar />
+					<Col
+						xs={12}
+						md={3}
+						sm={12}
+						style={{ backgroundColor: silverGray, border: '1px solid #A8A8A8' }}>
+						<SideBar
+							profilePic={profilePic}
+							firstName={firstName}
+							lastName={lastName}
+							email={email}
+							phoneNumber={phoneNumber}
+							jobTitle={jobTitle}
+							handleUserProfile={this.handleUserProfile}
+						/>
+						<Button outline color='primary' onClick={this.handleSubmit}>
+							{'Save Changes'}
+						</Button>
+						<Button outline color='danger'>
+							Cancel
+						</Button>
+						<br />
 					</Col>
 					<Col xs={12} md={9} sm={12} style={{ backgroundColor: 'white', padding: 5 }}>
 						<WorkHistory />
-						<hr />
+						<br />
 						<UserLinks type='Admin' />
-						<hr />
+						<br />
 						<UserLinks type='Social/Professional' />
-						<hr />
+						<br />
 
 						<Badges />
+						<br />
 					</Col>
 				</Row>
 			</Container>

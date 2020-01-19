@@ -1,16 +1,15 @@
 import { connect } from 'react-redux'
 import _ from 'lodash'
 
-import { editFirstName } from '../../../actions/userProfile'
+import { editFirstName, editUserProfile } from '../../../actions/userProfile'
 import SideBar from './SideBar'
 
 const mapStateToProps = state => {
 	return {
-		firstName: _.get(state, 'userProfile.firstName', ''),
-		profilePic: _.get(state, 'userProfile.profilePic', '')
+		userProfile: _.get(state, 'userProfile')
 	}
 }
 
-const mapDispatchToProps = { editFirstName }
+const mapDispatchToProps = { editUserProfile }
 
 export default connect(mapStateToProps, mapDispatchToProps)(SideBar)

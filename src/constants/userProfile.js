@@ -12,3 +12,8 @@ export const editFirstName = data => ({
 	type: EDIT_FIRST_NAME,
 	payload: data
 })
+
+export const editUserProfile = data => ({
+	type: EDIT_USER_PROFILE,
+	payload: data
+})

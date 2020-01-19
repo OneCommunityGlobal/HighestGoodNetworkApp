@@ -31,7 +31,7 @@ const UserLinks = ({ type, adminLinks, personalLinks }) => {
 					</CardText>
 				))}
 			</CardBody>
-			<Button outline color='primary' width='100px'>
+			<Button outline color='primary'>
 				Add a new Link
 			</Button>
 		</Card>

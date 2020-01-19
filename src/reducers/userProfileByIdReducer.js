@@ -1,4 +1,4 @@
-import { GET_USER_PROFILE, EDIT_FIRST_NAME } from '../constants/userProfile'
+import { GET_USER_PROFILE, EDIT_USER_PROFILE } from '../constants/userProfile'
 
 const initialUserProfileState = {
 	firstName: '',
@@ -10,8 +10,11 @@ export const userProfileByIdReducer = (userProfile = initialUserProfileState, ac
 		return action.payload
 	}
 
-	if (action.type === EDIT_FIRST_NAME) {
-		return { ...userProfile, firstName: action.payload }
+	if (action.type === EDIT_USER_PROFILE) {
+		console.log('Payload is ', action.payload)
+
+		return { ...userProfile, ...action.payload }
+		//return userProfile
 	}
 
 	if (action.type === 'CLEAR_USER_PROFILE') {

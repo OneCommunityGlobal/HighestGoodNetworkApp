@@ -2,6 +2,7 @@ import axios from 'axios'
 import {
 	getUserProfile as getUserProfileActionCreator,
 	editFirstName as editFirstNameActionCreator,
+	editUserProfile as editUserProfileActionCreator,
 	CLEAR_USER_PROFILE
 } from '../constants/userProfile'
 import { ENDPOINTS } from '../utils/URL'
@@ -19,6 +20,13 @@ export const getUserProfile = userId => {
 export const editFirstName = data => {
 	return dispatch => {
 		dispatch(editFirstNameActionCreator(data))
+	}
+}
+
+export const editUserProfile = data => {
+	console.log('data us ', data)
+	return dispatch => {
+		dispatch(editUserProfileActionCreator(data))
 	}
 }
 
