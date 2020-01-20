@@ -32,11 +32,10 @@ class Project extends Component {
     })
   }
 
-  onClickDelete(projectId,active){
-    this.props.onClickDelete(active);
-    var v = document.getElementById(`tr_${projectId}`); 
-    v.className += " isDisabled"; 
+  onClickDelete(projectId,active,name){
+    this.props.onClickDelete(projectId,active,name);
   }
+
 
   render() {
   var {name, active} = this.state;
@@ -52,7 +51,7 @@ class Project extends Component {
                 </td>
               <td><button type="button" className="btn btn-outline-info"><i className="fa fa-users" aria-hidden="true"></i></button></td>
               <td><button type="button" className="btn btn-outline-info"><i className="fa fa-tasks" aria-hidden="true"></i></button></td>
-              <td><button type="button" className="btn btn-outline-danger" onClick={(e) => this.onClickDelete(projectId,active)}>Delete</button></td>
+              <td><button type="button" className="btn btn-outline-danger" onClick={(e) => this.onClickDelete(projectId,active,name)}>Delete</button></td>
             </tr>
     )
   }
