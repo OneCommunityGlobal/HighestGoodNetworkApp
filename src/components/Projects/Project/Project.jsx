@@ -19,20 +19,20 @@ class Project extends Component {
     });
   }
 
-  onChangeName(value){
+  onChangeName = (value) => {
     this.setState({
          name: value
     });
   }
 
-  onClickActive(active){
+  onClickActive = (active) => {
     this.props.onClickActive(active);
     this.setState({
       active: !(active)
     })
   }
 
-  onClickDelete(projectId,active,name){
+  onClickDelete = (projectId,active,name) => {
     this.props.onClickDelete(projectId,active,name);
   }
 
