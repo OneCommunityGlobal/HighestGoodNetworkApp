@@ -5,6 +5,7 @@ const ModalExample = (props) => {
     const {
       isOpen,
       closeModal,
+      confirmModal,
       modalTitle,
       modalMessage
     } = props;
@@ -21,7 +22,7 @@ const ModalExample = (props) => {
            {modalMessage}     </ModalBody>
           <ModalFooter>
             <Button color="primary" onClick={closeModal}>Close</Button>{' '}
-          
+            <Button color="danger" onClick={confirmModal}>Confirm</Button>
           </ModalFooter>
         </Modal>
  

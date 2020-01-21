@@ -12,6 +12,8 @@ import { fetchAllProjects } from '../../actions/projects'
 import Overview from './Overview'
 import ProjectTableHeader from './ProjectTableHeader'
 import Project from './Project'
+import Modal from './../common/Modal'
+import * as Message from './../../languages/en/messages'
 import './projects.css'
 import { connect } from 'react-redux'
 
@@ -22,7 +24,13 @@ class Projects extends Component {
     this.state = {
       projects: [],
       numberOfProjects: 0,
-      numberOfActive: 0
+      numberOfActive: 0,
+      showModal: false,
+      projectTarget: {
+        projectName: '',
+        projectId: -1,
+        active: false
+      }
     };
   }
 
@@ -58,7 +66,24 @@ class Projects extends Component {
    * Changes the number of projects
    * Also update the number of active project
    */
-  onClickDelete= (active) => {
+  onClickDelete= (projectId,active,projectName) => {
+    this.setState({
+      showModal: true,
+      projectTarget:{
+        projectId,
+        projectName,
+        active
+      }
+    })
+  }
+
+  confirmDelete = () => {
+
+    var {projectId,active,projectName} = this.state.projectTarget;
+
+    var v = document.getElementById(`tr_${projectId}`); 
+    v.className += " isDisabled"; 
+    
     var {numberOfProjects,numberOfActive} = this.state;
     numberOfProjects--;
 
@@ -66,16 +91,13 @@ class Projects extends Component {
     if(active){
       numberOfActive--;
     }
-    this.setState({
-      numberOfProjects,
-      numberOfActive    
-    })
+    this.setState({showModal: false})
   }
 
 
   render() {
     
-    var {projects,numberOfProjects,numberOfActive} = this.state;
+    var {projects,numberOfProjects,numberOfActive,showModal,projectTarget} = this.state;
 
     // Display project lists 
     var ProjectsList = projects.map((project,index) => <Project 
@@ -86,6 +108,7 @@ class Projects extends Component {
         active={project.isActive} 
         onClickActive={this.onClickActive}
         onClickDelete={this.onClickDelete}
+        confirmDelete={this.confirmDelete}
 
     />);
 
@@ -102,6 +125,16 @@ class Projects extends Component {
           </tbody>
         </table>
         </div>
+
+           
+        <Modal
+					isOpen={showModal}
+          closeModal={() => {this.setState({ showModal: false })}}
+          confirmModal={() => this.confirmDelete()}
+					modalMessage={ Message.ARE_YOU_SURE_YOU_WANT_TO + "\""+projectTarget.projectName+"\"?"}
+					modalTitle={Message.CONFIRM_DELETION}
+				/>
+
       </React.Fragment>
     )
   }
