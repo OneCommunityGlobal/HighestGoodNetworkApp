@@ -13,8 +13,9 @@ const UserLinks = ({ type, adminLinks, personalLinks }) => {
 						<Badge color='danger'>No Links present</Badge>
 					</CardText>
 				)}
-				{links.map(item => (
+				{links.map((item, key) => (
 					<CardText
+						key={key}
 						style={{
 							fontSize: 20,
 							justifyContent: 'space-between',

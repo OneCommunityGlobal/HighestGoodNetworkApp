@@ -10,7 +10,6 @@ import { getUserTeamMembers } from '../../actions/team'
 import UserProfile from './UserProfile'
 
 const mapStateToProps = state => {
-	console.log(state.userProfile)
 	return {
 		auth: state.auth,
 		userProfile: _.get(state, 'userProfile'),

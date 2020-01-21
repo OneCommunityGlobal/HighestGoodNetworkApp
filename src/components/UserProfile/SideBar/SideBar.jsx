@@ -1,6 +1,15 @@
 import React, { Component } from 'react'
 
-import { Input, FormGroup, Label, CardImg } from 'reactstrap'
+import {
+	Input,
+	FormGroup,
+	Label,
+	CardImg,
+	Button,
+	Badge,
+	InputGroupAddon,
+	InputGroupText
+} from 'reactstrap'
 import { orange, silverGray } from '../../../constants/colors'
 
 const SideBar = ({
@@ -10,7 +19,9 @@ const SideBar = ({
 	email,
 	phoneNumber,
 	jobTitle,
-	handleUserProfile
+	canEditFields,
+	handleUserProfile,
+	handleImageUpload
 }) => {
 	const edit = event => {
 		console.log(event.target.value, event.target.id)
@@ -31,12 +42,30 @@ const SideBar = ({
 
 	return (
 		<>
+			<>
+				<Label
+					for='newProfilePic'
+					htmlFor={'newProfilePic'}
+					style={{ color: 'red', cursor: 'pointer' }}>
+					Change Profile Picture
+				</Label>
+
+				<Input
+					type='file'
+					name='newProfilePic'
+					id={'newProfilePic'}
+					style={{ visibility: 'hidden', width: 0, height: 0 }}
+					onChange={handleImageUpload}
+					accept={'image/png,image/jpeg, image/jpg'}
+				/>
+			</>
+
 			<CardImg
-				top
-				width='90%'
 				src={profilePic || '/defaultprofilepic.png'}
-				alt='Card image cap'
+				alt='Profile pic'
+				style={{ width: '250px', height: '250px' }}
 			/>
+
 			<FormGroup>
 				<Label for='firstName'>First Name:</Label>
 				<Input
@@ -47,6 +76,7 @@ const SideBar = ({
 					style={{ color: orange }}
 					onChange={handleUserProfile}
 					placeholder='First Name Cannot be blank'
+					readOnly={canEditFields ? null : true}
 				/>
 			</FormGroup>
 			<FormGroup>
@@ -59,10 +89,17 @@ const SideBar = ({
 					style={{ color: orange }}
 					onChange={handleUserProfile}
 					placeholder='Last Name Cannot be blank'
+					readOnly={canEditFields ? null : true}
 				/>
 			</FormGroup>
 			<FormGroup>
 				<Label for='email'>Email:</Label>
+				<InputGroupAddon addonType='prepend'>
+					<InputGroupText>
+						<Input addon type='checkbox' aria-label='Checkbox for following text input' />
+					</InputGroupText>
+					<Label style={{ textAlign: 'center' }}>Publicly Accessible?</Label>
+				</InputGroupAddon>
 				<Input
 					type='email'
 					name='email'
@@ -71,10 +108,17 @@ const SideBar = ({
 					value={email}
 					onChange={handleUserProfile}
 					placeholder='Email Cannot be blank'
+					readOnly={canEditFields ? null : true}
 				/>
 			</FormGroup>
 			<FormGroup>
 				<Label for='phoneNumber'>Phone Number:</Label>
+				<InputGroupAddon addonType='prepend'>
+					<InputGroupText>
+						<Input addon type='checkbox' aria-label='Checkbox for following text input' />
+					</InputGroupText>
+					<Label style={{ textAlign: 'center' }}>Publicly Accessible?</Label>
+				</InputGroupAddon>
 				<Input
 					type='number'
 					name='phoneNumber'
@@ -82,6 +126,7 @@ const SideBar = ({
 					style={{ color: orange }}
 					value={phoneNumber}
 					onChange={handleUserProfile}
+					readOnly={canEditFields ? null : true}
 				/>
 			</FormGroup>
 			<FormGroup>
@@ -93,6 +138,7 @@ const SideBar = ({
 					style={{ color: orange }}
 					value={jobTitle}
 					onChange={handleUserProfile}
+					readOnly={canEditFields ? null : true}
 				/>
 			</FormGroup>
 		</>

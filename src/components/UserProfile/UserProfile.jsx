@@ -51,7 +51,7 @@ class UserProfile extends Component {
 		let userId = this.props.match.params.userId
 		await this.props.getUserProfile(userId)
 		await this.props.getUserTeamMembers(userId)
-		console.log(this.props.userProfile)
+		//console.log(this.props.userProfile)
 		if (this.props.userProfile.firstName.length) {
 			console.log(this.props.userProfile)
 			this.setState({ isLoading: false, userProfile: this.props.userProfile })
@@ -66,7 +66,9 @@ class UserProfile extends Component {
 					...this.state.userProfile,
 					firstName: event.target.value.trim()
 				},
-				firstNameError: event.target.value ? '' : 'First Name cannot be empty '
+				showModal: event.target.value ? false : true,
+				modalTitle: 'First Name Error',
+				modalMessage: 'First Name cannot be empty'
 			})
 		}
 
@@ -76,7 +78,9 @@ class UserProfile extends Component {
 					...this.state.userProfile,
 					lastName: event.target.value.trim()
 				},
-				lastNameError: event.target.value ? '' : 'Last Name cannot be empty '
+				showModal: event.target.value ? false : true,
+				modalTitle: 'First Name Error',
+				modalMessage: 'Last Name cannot be empty'
 			})
 		}
 		if (event.target.id === 'email') {
@@ -101,6 +105,58 @@ class UserProfile extends Component {
 				userProfile: {
 					...this.state.userProfile,
 					jobTitle: event.target.value.trim()
+				}
+			})
+		}
+	}
+
+	handleImageUpload = async e => {
+		e.preventDefault()
+
+		const file = e.target.files[0]
+
+		const allowedTypesString = 'image/png,image/jpeg, image/jpg'
+		const allowedTypes = allowedTypesString.split(',')
+		let isValid = true
+		let imageUploadError = ''
+		if (!allowedTypes.includes(file.type)) {
+			imageUploadError = `File type must be ${allowedTypesString}.`
+			isValid = false
+
+			return this.setState({
+				imageUploadError,
+				isValid,
+				showModal: true,
+				modalTitle: 'Profile Pic Error',
+				modalMessage: imageUploadError
+			})
+		}
+		let filesizeKB = file.size / 1024
+		console.log(filesizeKB)
+
+		if (filesizeKB > 50) {
+			imageUploadError = `\nThe file you are trying to upload exceed the maximum size of 50KB. You can choose a different file or use an online file compressor.`
+			isValid = false
+
+			return this.setState({
+				imageUploadError,
+				isValid,
+				showModal: true,
+				modalTitle: 'Profile Pic Error',
+				modalMessage: imageUploadError
+			})
+		}
+
+		let reader = new FileReader()
+		reader.readAsDataURL(file)
+		reader.onloadend = () => {
+			console.log(reader, file)
+
+			this.setState({
+				imageUploadError: '',
+				userProfile: {
+					...this.state.userProfile,
+					profilePic: reader.result
 				}
 			})
 		}
@@ -140,6 +196,14 @@ class UserProfile extends Component {
 		}
 		return (
 			<Container className='themed-container' fluid={true}>
+				<Modal
+					isOpen={this.state.showModal}
+					closeModal={() => {
+						this.setState({ showModal: false })
+					}}
+					modalMessage={this.state.modalMessage}
+					modalTitle={this.state.modalTitle}
+				/>
 				<Row>
 					<Col
 						xs={12}
@@ -153,7 +217,9 @@ class UserProfile extends Component {
 							email={email}
 							phoneNumber={phoneNumber}
 							jobTitle={jobTitle}
+							canEditFields={canEditFields}
 							handleUserProfile={this.handleUserProfile}
+							handleImageUpload={this.handleImageUpload}
 						/>
 						<Button outline color='primary' onClick={this.handleSubmit}>
 							{'Save Changes'}
