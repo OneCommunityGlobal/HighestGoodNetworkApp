@@ -136,7 +136,7 @@ class Projects extends Component {
 					isOpen={showModal}
           closeModal={() => {this.setState({ showModal: false })}}
           confirmModal={() => this.confirmDelete()}
-					modalMessage={ Message.ARE_YOU_SURE_YOU_WANT_TO + "\""+projectTarget.projectName+"\"?"}
+					modalMessage={ Message.ARE_YOU_SURE_YOU_WANT_TO + Message.DELETE + " \""+projectTarget.projectName+"\"?"}
 					modalTitle={Message.CONFIRM_DELETION}
 				/>
 

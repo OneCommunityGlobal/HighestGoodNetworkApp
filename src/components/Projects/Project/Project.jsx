@@ -4,7 +4,7 @@ import './../projects.css'
 
 const Project = (props) => {
 
-   const [name, setName] = useState('');
+   const [name, setName] = useState(props.name);
    const [active,setActive] = useState(props.active);
 
    const updateActive = () =>{
