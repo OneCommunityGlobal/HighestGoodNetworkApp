@@ -4,8 +4,9 @@ import { withRouter } from "react-router-dom";
 import Form from "../common/Form";
 import Joi from "joi";
 import { toast } from "react-toastify";
-import { updatePassword } from "../../services/userProfileService";
+import { updatePassword } from "../../actions/userProfile";
 import { logoutUser } from "../../actions/authActions";
+import { clearErrors } from "../../actions/errorsActions"
 
 class UpdatePassword extends Form {
   state = {
@@ -14,7 +15,17 @@ class UpdatePassword extends Form {
   };
 
   componentDidMount() {
-    document.title = "Update Password";
+    // document.title = "Update Password";
+  }
+
+  componentDidUpdate(prevProps) {
+    if (prevProps.errors.error !== this.props.errors.error){
+      this.setState({ errors: this.props.errors });
+    }
+  }
+
+  componentWillUnmount(){
+    this.props.clearErrors();
   }
 
   schema = {
@@ -54,9 +65,9 @@ class UpdatePassword extends Form {
     };
     let userId = this.props.match.params.userId;
     let data = { currentpassword, newpassword, confirmnewpassword };
-    try {
-      await updatePassword(userId, data);
 
+    const status = await this.props.updatePassword(userId, data)
+    if (status === 200){
       toast.success(
         "Your password has been updated. You will be logged out and directed to login page where you can login with your new password.",
         {
@@ -67,14 +78,13 @@ class UpdatePassword extends Form {
           }
         }
       );
-    } catch (exception) {
-      if (exception.response.status === 400) {
-        let { errors } = this.state;
-        errors["currentpassword"] = exception.response.data.error;
-        this.setState({ errors });
-      } else {
-        toast.error("Something went wrong. Please contact your administrator.");
-      }
+    }
+    else if (status === 400){
+      let { errors } = this.state;
+      errors["currentpassword"] = this.props.errors.error;
+      this.setState({ errors });
+    } else {
+      toast.error("Something went wrong. Please contact your administrator.");
     }
   };
 
@@ -108,11 +118,12 @@ class UpdatePassword extends Form {
 }
 
 const mapStateToProps = state => ({
-  auth: state.auth
+  auth: state.auth,
+  errors: state.errors
 });
 
 export default withRouter(
   connect(mapStateToProps, { 
-    logoutUser
+    logoutUser, updatePassword, clearErrors
   })(UpdatePassword)
 );

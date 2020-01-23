@@ -4,7 +4,6 @@ import { authReducer } from './authReducer';
 import { handleSuccessReducer } from './handleSuccessReducer';
 import { allUserProfilesReducer } from './allUserProfilesReducer';
 import { userTeamMembersReducer } from './userTeamMembersReducer';
-import { usernameReducer } from './usernameReducer';
 import { userProjectMembersReducer } from './userProjectMembersReducer';
 import { dashboardDataReducer } from './dashboardDataReducer';
 import { weeklyDashboardDataReducer } from './weeklyDashboardDataReducer';
@@ -22,13 +21,13 @@ import { teamMembershipReducer } from './teamMembershipReducer';
 import { timeEntriesForSpecifiedProjectReducer } from './timeEntriesForSpecifiedProjectReducer';
 import { allTimeEntriesReducer } from './allTimeEntriesReducer';
 import { timeEntriesForSpecifiedPeriodReducer } from './timeEntriesForSpecifiedPeriodReducer';
+import { errorsReducer } from './errorsReducer';
 
 export default combineReducers({
   auth: authReducer,
   userProfile: userProfileByIdReducer,
   allUserProfiles: allUserProfilesReducer,
   userTeamMembers: userTeamMembersReducer,
-  username: usernameReducer,
   userProjectMembers: userProjectMembersReducer,
   dashboardData: dashboardDataReducer,
   leaderboardData: leaderboardDataReducer,
@@ -47,4 +46,5 @@ export default combineReducers({
   userTimeEntries: timeEntriesForSpecifiedPeriodReducer,
   projectTimeEntries: timeEntriesForSpecifiedProjectReducer,
   requestStatus: handleSuccessReducer,
+  errors: errorsReducer
 });

@@ -34,19 +34,6 @@ export function getUserTeamMembers(userId) {
   }
 }
 
-export function getUsername(userId) {
-  const request = httpService.get(`${APIEndpoint}/userprofile/name/${userId}`)
-
-  return dispatch => {
-    request.then(({ data }) => {
-      dispatch({
-        type: 'GET_USERNAME',
-        payload: data
-      })
-    })
-  }
-}
-
 export function getUserProjectMembers(projectId) {
   const request = httpService.get(
     `${APIEndpoint}/userprofile/project/${projectId}`
