@@ -1,12 +1,15 @@
 import React from "react";
-import { forcePasswordUpdate } from "../../services/forcePasswordUpdate";
+import { connect } from "react-redux";
+import { withRouter } from "react-router-dom";
+import { forcePasswordUpdate } from "../../actions/updatePassword";
+import { clearErrors } from "../../actions/errorsActions"
 import Form from "../common/Form";
 import Joi from "joi";
 import { toast } from "react-toastify";
 
 class ForcePasswordUpdate extends Form {
   state = {
-    data: { newPassword: "", confirmNewPassword: "" },
+    data: { newpassword: "", confirmnewpassword: "" },
     errors: {}
   };
 
@@ -14,8 +17,18 @@ class ForcePasswordUpdate extends Form {
     // document.title = "Force Update Password";
   }
 
+  componentDidUpdate(prevProps) {
+    if (prevProps.errors.error !== this.props.errors.error){
+      this.setState({ errors: this.props.errors });
+    }
+  }
+
+  componentWillUnmount(){
+    this.props.clearErrors();
+  }
+
   schema = {
-    newPassword: Joi.string()
+    newpassword: Joi.string()
       .regex(
         /(?=^.{8,}$)((?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$/
       )
@@ -32,42 +45,30 @@ class ForcePasswordUpdate extends Form {
         }
       }),
 
-    confirmNewPassword: Joi.string()
-      .regex(
-        /(?=^.{8,}$)((?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$/
-      )
-      .required()
-      .label("New Password")
-      .options({
-        language: {
-          string: {
-            regex: {
-              base:
-                "should be at least 8 characters long and must include at least one uppercase letter, one lowercase letter, and one number or special character"
-            }
-          }
-        }
-      })
+    confirmnewpassword: Joi.any()
+      .valid(Joi.ref("newpassword"))
+      .options({ language: { any: { allowOnly: "must match new password" } } })
+      .label("Confirm Password")
   };
 
   doSubmit = async () => {
-    const { newPassword: newpassword, confirmNewPassword } = {
+    const { newpassword, confirmnewpassword } = {
       ...this.state.data
     };
 
-    if (newpassword !== confirmNewPassword) {
+    if (newpassword !== confirmnewpassword) {
       alert("Confirm Password must match New Password");
       return;
     }
 
     let userId = this.props.match.params.userId;
     let data = { userId, newpassword };
-    let result = await forcePasswordUpdate(data);
-    if (result.status === 200) {
+    const status = await this.props.forcePasswordUpdate(data)
+    if (status === 200) {
       toast.success(
-        "You will now be directed to the password page where you can login with your new password.",
+        "You will now be directed to the login page where you can login with your new password.",
         {
-          onClose: () => (window.location = "/login")
+          onClose: () => this.props.history.replace("/login")
         }
       );
     } else {
@@ -81,12 +82,17 @@ class ForcePasswordUpdate extends Form {
         <h2>Change Password</h2>
 
         <form className="col-md-6 xs-12" onSubmit={e => this.handleSubmit(e)}>
-          {this.renderInput("newPassword", "New Password:", "password")}
-          {this.renderInput(
-            "confirmNewPassword",
-            "Confirm Password:",
-            "password"
-          )}
+          {this.renderInput({
+            name: "newpassword",
+            label: "New Password:",
+            type: "password"
+          })}
+          {this.renderInput({
+            name: "confirmnewpassword",
+            label: "Confirm Password:",
+            type: "password",
+            "data-refers": "newpassword"
+          })}
           {this.renderButton("Submit")}
         </form>
       </div>
@@ -94,4 +100,12 @@ class ForcePasswordUpdate extends Form {
   }
 }
 
-export default ForcePasswordUpdate;
+const mapStateToProps = state => ({
+  errors: state.errors
+});
+
+export default withRouter(
+  connect(mapStateToProps, { 
+    forcePasswordUpdate, clearErrors
+  })(ForcePasswordUpdate)
+);

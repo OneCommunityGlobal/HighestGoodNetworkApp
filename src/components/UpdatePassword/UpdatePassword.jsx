@@ -4,7 +4,7 @@ import { withRouter } from "react-router-dom";
 import Form from "../common/Form";
 import Joi from "joi";
 import { toast } from "react-toastify";
-import { updatePassword } from "../../actions/userProfile";
+import { updatePassword } from "../../actions/updatePassword";
 import { logoutUser } from "../../actions/authActions";
 import { clearErrors } from "../../actions/errorsActions"
 
@@ -72,7 +72,6 @@ class UpdatePassword extends Form {
         "Your password has been updated. You will be logged out and directed to login page where you can login with your new password.",
         {
           onClose: () => {
-            // window.location.assign("/login")
             this.props.logoutUser();
             this.props.history.replace("/login");
           }
@@ -118,7 +117,6 @@ class UpdatePassword extends Form {
 }
 
 const mapStateToProps = state => ({
-  auth: state.auth,
   errors: state.errors
 });
 
