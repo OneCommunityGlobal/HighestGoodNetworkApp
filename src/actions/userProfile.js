@@ -39,7 +39,7 @@ export const updateUserProfile = (userId, userProfile) => {
 	return async dispatch => {
 		const res = await axios.put(url, userProfile)
 
-		console.log('Result is ', res, userProfile)
+		//console.log('Result is ', res, userProfile)
 
 		if (res.status === 200) {
 			await dispatch(getUserProfileActionCreator(userProfile))

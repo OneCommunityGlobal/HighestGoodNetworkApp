@@ -53,13 +53,14 @@ class UserProfile extends Component {
 		await this.props.getUserTeamMembers(userId)
 		//console.log(this.props.userProfile)
 		if (this.props.userProfile.firstName.length) {
-			console.log(this.props.userProfile)
+			//	console.log(this.props.userProfile)
 			this.setState({ isLoading: false, userProfile: this.props.userProfile })
 		}
 		//console.log(this.props.userProfile)
 	}
 
 	handleUserProfile = event => {
+		console.log('handleUserProfile')
 		event.preventDefault()
 		if (event.target.id === 'firstName') {
 			this.setState({
@@ -105,7 +106,25 @@ class UserProfile extends Component {
 			this.setState({
 				userProfile: {
 					...this.state.userProfile,
-					jobTitle: event.target.value.trim()
+					jobTitle: event.target.value
+				}
+			})
+		}
+
+		if (event.target.id === 'emailPubliclyAccessible') {
+			this.setState({
+				userProfile: {
+					...this.state.userProfile,
+					emailPubliclyAccessible: event.target.checked
+				}
+			})
+		}
+		if (event.target.id === 'phoneNumberPubliclyAccessible') {
+			this.setState({
+				userProfile: {
+					...this.state.userProfile,
+					phoneNumberPubliclyAccessible: !this.state.userProfile
+						.phoneNumberPubliclyAccessible
 				}
 			})
 		}
@@ -200,19 +219,37 @@ class UserProfile extends Component {
 		})
 	}
 
+	handleSubmit = async event => {
+		event.preventDefault()
+
+		const submitResult = await this.props.updateUserProfile(
+			this.props.match.params.userId,
+			this.state.userProfile
+		)
+		console.log(submitResult)
+
+		if (submitResult === 200) {
+			this.setState({
+				showModal: true,
+				modalMessage: 'Your Changes were saved successfully',
+				modalTitle: 'Success',
+				type: 'message'
+			})
+		} else {
+			this.setState({
+				showModal: true,
+				modalMessage: 'Please try again.',
+				modalTitle: 'Error',
+				type: 'message'
+			})
+		}
+	}
+
 	render() {
 		let { userId: targetUserId } = this.props.match.params
 		let { userid: requestorId, role: requestorRole } = this.props.auth.user
 
-		const {
-			userProfile,
-			isLoading,
-
-			firstNameError,
-			lastNameError,
-			imageUploadError,
-			error
-		} = this.state
+		const { userProfile, isLoading, showModal } = this.state
 		const {
 			firstName,
 			lastName,
@@ -221,9 +258,12 @@ class UserProfile extends Component {
 			phoneNumber,
 			jobTitle,
 			personalLinks,
-			adminLinks
+			adminLinks,
+			phoneNumberPubliclyAccessible,
+			emailPubliclyAccessible
 		} = userProfile
 
+		console.log('phoneNumberPubliclyAccessible', phoneNumberPubliclyAccessible)
 		let isUserSelf = targetUserId === requestorId
 		let canEditFields = isUserAdmin || isUserSelf
 		const isUserAdmin = requestorRole === 'Administrator'
@@ -233,17 +273,19 @@ class UserProfile extends Component {
 		}
 		return (
 			<Container className='themed-container' fluid={true}>
-				<Modal
-					isOpen={this.state.showModal}
-					closeModal={() => {
-						this.setState({ showModal: false })
-					}}
-					modalMessage={this.state.modalMessage}
-					modalTitle={this.state.modalTitle}
-					type={this.state.type}
-					confirmModal={this.addLink}
-					linkType={this.state.linkType}
-				/>
+				{showModal && (
+					<Modal
+						isOpen={this.state.showModal}
+						closeModal={() => {
+							this.setState({ showModal: false })
+						}}
+						modalMessage={this.state.modalMessage}
+						modalTitle={this.state.modalTitle}
+						type={this.state.type}
+						confirmModal={this.addLink}
+						linkType={this.state.linkType}
+					/>
+				)}
 				<Row>
 					<Col
 						xs={12}
@@ -257,37 +299,45 @@ class UserProfile extends Component {
 							email={email}
 							phoneNumber={phoneNumber}
 							jobTitle={jobTitle}
+							phoneNumberPubliclyAccessible={phoneNumberPubliclyAccessible}
+							emailPubliclyAccessible={emailPubliclyAccessible}
 							canEditFields={canEditFields}
+							isUserAdmin={isUserAdmin}
 							handleUserProfile={this.handleUserProfile}
 							handleImageUpload={this.handleImageUpload}
 						/>
+
+						<br />
+					</Col>
+					<Col xs={12} md={9} sm={12} style={{ backgroundColor: 'white', padding: 5 }}>
+						<WorkHistory />
+
+						<br />
+						<UserLinks
+							linkType='Admin'
+							links={adminLinks}
+							handleModelState={this.handleModelState}
+							isUserAdmin={isUserAdmin}
+							canEditFields={canEditFields}
+						/>
+						<br />
+						<UserLinks
+							linkType='Social/Professional'
+							links={personalLinks}
+							handleModelState={this.handleModelState}
+							isUserAdmin={isUserAdmin}
+							canEditFields={canEditFields}
+						/>
+						<br />
+
+						<Badges />
+						<br />
 						<Button outline color='primary' onClick={this.handleSubmit}>
 							{'Save Changes'}
 						</Button>
 						<Button outline color='danger'>
 							Cancel
 						</Button>
-						<br />
-					</Col>
-					<Col xs={12} md={9} sm={12} style={{ backgroundColor: 'white', padding: 5 }}>
-						<WorkHistory />
-						<br />
-						<UserLinks
-							linkType='Admin'
-							links={adminLinks}
-							handleModelState={this.handleModelState}
-						/>
-						<br />
-						<UserLinks
-							linkType='Social/Professional'
-							addLink={this.addLink}
-							links={personalLinks}
-							handleModelState={this.handleModelState}
-						/>
-						<br />
-
-						<Badges />
-						<br />
 					</Col>
 				</Row>
 			</Container>

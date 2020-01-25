@@ -2,7 +2,13 @@ import React, { Component } from 'react'
 
 import { Card, Row, CardTitle, CardText, Col, Badge, Button, CardBody } from 'reactstrap'
 
-const UserLinks = ({ linkType, links = [], handleModelState }) => {
+const UserLinks = ({
+	linkType,
+	links = [],
+	handleModelState,
+	isUserAdmin,
+	canEditFields
+}) => {
 	return (
 		<Card body>
 			<CardTitle style={{ fontWeight: 'bold', fontSize: 20 }}>
@@ -33,12 +39,23 @@ const UserLinks = ({ linkType, links = [], handleModelState }) => {
 					</CardText>
 				))}
 			</CardBody>
-			<Button
-				outline
-				color='primary'
-				onClick={() => handleModelState(true, 'input', linkType)}>
-				Add a new Link
-			</Button>
+
+			{linkType === 'Admin' && isUserAdmin && (
+				<Button
+					outline
+					color='primary'
+					onClick={() => handleModelState(true, 'input', linkType)}>
+					Add a new Link
+				</Button>
+			)}
+			{linkType !== 'Admin' && (
+				<Button
+					outline
+					color='primary'
+					onClick={() => handleModelState(true, 'input', linkType)}>
+					Add a new Link
+				</Button>
+			)}
 		</Card>
 	)
 }

@@ -20,9 +20,13 @@ const SideBar = ({
 	phoneNumber,
 	jobTitle,
 	canEditFields,
+	isUserAdmin,
+	phoneNumberPubliclyAccessible,
+	emailPubliclyAccessible,
 	handleUserProfile,
 	handleImageUpload
 }) => {
+	console.log('phoneNumberPubliclyAccessible props', phoneNumberPubliclyAccessible)
 	const edit = event => {
 		console.log(event.target.value, event.target.id)
 		let payload = null
@@ -36,8 +40,6 @@ const SideBar = ({
 		if (event.target.id === 'email') {
 			payload = { email: event.target.value }
 		}
-
-		//editUserProfile(payload)
 	}
 
 	return (
@@ -96,7 +98,14 @@ const SideBar = ({
 				<Label for='email'>Email:</Label>
 				<InputGroupAddon addonType='prepend'>
 					<InputGroupText>
-						<Input addon type='checkbox' aria-label='Checkbox for following text input' />
+						<Input
+							addon
+							type='checkbox'
+							aria-label='Checkbox for following text input'
+							checked={emailPubliclyAccessible}
+							onChange={handleUserProfile}
+							id='emailPubliclyAccessible'
+						/>
 					</InputGroupText>
 					<Label style={{ textAlign: 'center' }}>Publicly Accessible?</Label>
 				</InputGroupAddon>
@@ -115,7 +124,14 @@ const SideBar = ({
 				<Label for='phoneNumber'>Phone Number:</Label>
 				<InputGroupAddon addonType='prepend'>
 					<InputGroupText>
-						<Input addon type='checkbox' aria-label='Checkbox for following text input' />
+						<Input
+							addon
+							type='checkbox'
+							aria-label='Checkbox for following text input'
+							checked={phoneNumberPubliclyAccessible}
+							onChange={handleUserProfile}
+							id='phoneNumberPubliclyAccessible'
+						/>
 					</InputGroupText>
 					<Label style={{ textAlign: 'center' }}>Publicly Accessible?</Label>
 				</InputGroupAddon>
