@@ -4,6 +4,7 @@ import Form from "../common/Form";
 import { connect } from "react-redux";
 import { withRouter } from "react-router-dom";
 import { loginUser } from "../../actions/authActions"
+import { clearErrors } from "../../actions/errorsActions"
 
 class Login extends Form {
   state = {
@@ -22,7 +23,7 @@ class Login extends Form {
   };
 
   componentDidMount() {
-    document.title = "Login";
+    // document.title = "Login";
     if (this.props.auth.isAuthenticated){
       this.props.history.push("/");
     }
@@ -30,10 +31,7 @@ class Login extends Form {
 
   componentDidUpdate(prevProps) {
     if (prevProps.auth !== this.props.auth){
-      if (this.props.auth.errors){
-        this.setState({ errors: this.props.auth.errors });
-      } 
-      else if (this.props.auth.user.new) {
+      if (this.props.auth.user.new) {
         const url = `/forcePasswordUpdate/${this.props.auth.user.userId}`;
         this.props.history.push(url);
       } 
@@ -42,6 +40,14 @@ class Login extends Form {
         this.props.history.push(state ? state.from.pathname : "/dashboard");
       }
     }
+
+    if (prevProps.errors.email !== this.props.errors.email){
+      this.setState({ errors: this.props.errors });
+    }
+  }
+
+  componentWillUnmount(){
+    this.props.clearErrors();
   }
 
   doSubmit = async () => {
@@ -71,11 +77,12 @@ class Login extends Form {
 
 
 const mapStateToProps = state => ({
-  auth: state.auth
+  auth: state.auth,
+  errors: state.errors
 });
 
 export default withRouter(
   connect(mapStateToProps, { 
-    loginUser
+    loginUser, clearErrors
   })(Login)
 );

@@ -3,12 +3,11 @@
  * Author: Henry Ng - 01/17/20
  * This component is the top of the table. It displays titles.
  ********************************************************************************/
-import React, { Component } from 'react'
+import React from 'react'
 import './../projects.css'
 import {PROJECT_NAME, ACTIVE, MEMBERS, WBS} from './../../../languages/en/ui'
 
-class ProjectTableHeader extends Component {
-  render() {
+const  ProjectTableHeader = () => {
 
    return (
     <tr>
@@ -21,7 +20,7 @@ class ProjectTableHeader extends Component {
 
      </tr>
     )
-  }
+  
 }
 
 export default ProjectTableHeader;

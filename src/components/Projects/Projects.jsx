@@ -34,11 +34,11 @@ class Projects extends Component {
     };
   }
 
-  componentDidMount() {
+  componentDidMount = () => {
      this.props.fetchAllProjects(); // Fetch to get all projects 
-     var projects = this.props.state.allProjects; // Get data from props redux 
-     var numberOfProjects = projects.length;
-     var numberOfActive = projects.filter(project => project.isActive).length;
+     let projects = this.props.state.allProjects; // Get data from props redux 
+     let numberOfProjects = projects.length;
+     let numberOfActive = projects.filter(project => project.isActive).length;
      this.setState({
        projects,
        numberOfProjects,
@@ -51,7 +51,7 @@ class Projects extends Component {
    * Changes the number of active projects 
    */
   onClickActive = (status) => {
-    var {numberOfActive} = this.state;
+    let {numberOfActive} = this.state;
     if(status){
         numberOfActive--
     }else{
@@ -79,28 +79,33 @@ class Projects extends Component {
 
   confirmDelete = () => {
 
-    var {projectId,active,projectName} = this.state.projectTarget;
+    let {projectId,active} = this.state.projectTarget;
 
-    var v = document.getElementById(`tr_${projectId}`); 
+    let v = document.getElementById(`tr_${projectId}`); 
     v.className += " isDisabled"; 
     
-    var {numberOfProjects,numberOfActive} = this.state;
+    let {numberOfProjects,numberOfActive} = this.state;
+    
     numberOfProjects--;
 
     // if the deleted project is active, update it 
     if(active){
       numberOfActive--;
     }
-    this.setState({showModal: false})
+    this.setState({
+      showModal: false,
+      numberOfProjects,
+      numberOfActive
+    })
   }
 
 
   render() {
     
-    var {projects,numberOfProjects,numberOfActive,showModal,projectTarget} = this.state;
+    let {projects,numberOfProjects,numberOfActive,showModal,projectTarget} = this.state;
 
     // Display project lists 
-    var ProjectsList = projects.map((project,index) => <Project 
+    let ProjectsList = projects.map((project,index) => <Project 
         key={project._id} 
         index={index} 
         projectId={project._id} 
@@ -131,7 +136,7 @@ class Projects extends Component {
 					isOpen={showModal}
           closeModal={() => {this.setState({ showModal: false })}}
           confirmModal={() => this.confirmDelete()}
-					modalMessage={ Message.ARE_YOU_SURE_YOU_WANT_TO + "\""+projectTarget.projectName+"\"?"}
+					modalMessage={ Message.ARE_YOU_SURE_YOU_WANT_TO + Message.DELETE + " \""+projectTarget.projectName+"\"?"}
 					modalTitle={Message.CONFIRM_DELETION}
 				/>
 

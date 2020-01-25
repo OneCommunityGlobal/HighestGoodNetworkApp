@@ -2,6 +2,8 @@ import jwtDecode from 'jwt-decode'
 import httpService from '../services/httpService'
 import config from '../config.json'
 import { ENDPOINTS } from '../utils/URL'
+import { GET_ERRORS } from '../constants/errors'
+import { SET_CURRENT_USER } from '../constants/auth'
 
 const { tokenKey } = config
 
@@ -21,13 +23,16 @@ export const loginUser = credentials => dispatch => {
     .catch(err => {
       if (err.response && err.response.status === 403) {
         const errors = { email: err.response.data.message }
-        dispatch(setCurrentUser({ errors }))
+        dispatch({
+          type: GET_ERRORS,
+          payload: errors
+        })
       }
     })
 }
 
 export const setCurrentUser = decoded => ({
-  type: 'SET_CURRENT_USER',
+  type: SET_CURRENT_USER,
   payload: decoded
 })
 
