@@ -178,23 +178,17 @@ class UserProfile extends Component {
 
 		const link = { Name: linkName, Link: linkURL }
 		if (linkType !== 'Admin') {
-			return this.setState({
-				showModal: false,
-				userProfile: {
-					...this.state.userProfile,
-					personalLinks: this.state.userProfile.personalLinks.concat(link)
+			return this.setState(prevState => {
+				return {
+					showModal: false,
+					userProfile: {
+						...this.state.userProfile,
+						personalLinks: prevState.userProfile.personalLinks.concat(link)
+					}
 				}
 			})
 		}
 
-		// this.setState(prevState => {
-		// 	console.log('PrevState', prevState)
-		// 	return {
-		// 		userProfile: {
-		// 			...this.state.userProfile
-		// 		}
-		// 	}
-		// })
 		this.setState(prevState => {
 			return {
 				showModal: false,
@@ -204,8 +198,6 @@ class UserProfile extends Component {
 				}
 			}
 		})
-
-		//this.handleModelState
 	}
 
 	render() {
@@ -224,23 +216,13 @@ class UserProfile extends Component {
 		const {
 			firstName,
 			lastName,
+			email,
 			profilePic = '',
 			phoneNumber,
 			jobTitle,
 			personalLinks,
 			adminLinks
 		} = userProfile
-		const {
-			teams,
-			projects,
-
-			email,
-			isActive,
-			weeklyComittedHours,
-			role
-		} = this.props
-
-		console.log('state', personalLinks)
 
 		let isUserSelf = targetUserId === requestorId
 		let canEditFields = isUserAdmin || isUserSelf
