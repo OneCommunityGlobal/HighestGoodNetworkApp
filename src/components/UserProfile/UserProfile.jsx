@@ -60,6 +60,7 @@ class UserProfile extends Component {
 	}
 
 	handleUserProfile = event => {
+		event.preventDefault()
 		if (event.target.id === 'firstName') {
 			this.setState({
 				userProfile: {
@@ -162,6 +163,51 @@ class UserProfile extends Component {
 		}
 	}
 
+	handleModelState = (status = true, type = 'message', linkType) => {
+		console.log(linkType)
+		this.setState({
+			showModal: status,
+			modalTitle: 'Add a New Link',
+			linkType: linkType,
+			type: type
+		})
+	}
+
+	addLink = (linkName, linkURL, linkType) => {
+		console.log('addLink', linkName, linkURL, linkType)
+
+		const link = { Name: linkName, Link: linkURL }
+		if (linkType !== 'Admin') {
+			return this.setState({
+				showModal: false,
+				userProfile: {
+					...this.state.userProfile,
+					personalLinks: this.state.userProfile.personalLinks.concat(link)
+				}
+			})
+		}
+
+		// this.setState(prevState => {
+		// 	console.log('PrevState', prevState)
+		// 	return {
+		// 		userProfile: {
+		// 			...this.state.userProfile
+		// 		}
+		// 	}
+		// })
+		this.setState(prevState => {
+			return {
+				showModal: false,
+				userProfile: {
+					...this.state.userProfile,
+					adminLinks: prevState.userProfile.adminLinks.concat(link)
+				}
+			}
+		})
+
+		//this.handleModelState
+	}
+
 	render() {
 		let { userId: targetUserId } = this.props.match.params
 		let { userid: requestorId, role: requestorRole } = this.props.auth.user
@@ -169,23 +215,32 @@ class UserProfile extends Component {
 		const {
 			userProfile,
 			isLoading,
+
 			firstNameError,
 			lastNameError,
 			imageUploadError,
 			error
 		} = this.state
 		const {
+			firstName,
+			lastName,
+			profilePic = '',
+			phoneNumber,
+			jobTitle,
+			personalLinks,
+			adminLinks
+		} = userProfile
+		const {
 			teams,
 			projects,
-			personalLinks,
-			adminLinks,
+
 			email,
 			isActive,
 			weeklyComittedHours,
 			role
 		} = this.props
 
-		const { firstName, lastName, profilePic = '', phoneNumber, jobTitle } = userProfile
+		console.log('state', personalLinks)
 
 		let isUserSelf = targetUserId === requestorId
 		let canEditFields = isUserAdmin || isUserSelf
@@ -203,6 +258,9 @@ class UserProfile extends Component {
 					}}
 					modalMessage={this.state.modalMessage}
 					modalTitle={this.state.modalTitle}
+					type={this.state.type}
+					confirmModal={this.addLink}
+					linkType={this.state.linkType}
 				/>
 				<Row>
 					<Col
@@ -232,9 +290,18 @@ class UserProfile extends Component {
 					<Col xs={12} md={9} sm={12} style={{ backgroundColor: 'white', padding: 5 }}>
 						<WorkHistory />
 						<br />
-						<UserLinks type='Admin' />
+						<UserLinks
+							linkType='Admin'
+							links={adminLinks}
+							handleModelState={this.handleModelState}
+						/>
 						<br />
-						<UserLinks type='Social/Professional' />
+						<UserLinks
+							linkType='Social/Professional'
+							addLink={this.addLink}
+							links={personalLinks}
+							handleModelState={this.handleModelState}
+						/>
 						<br />
 
 						<Badges />
