@@ -11,7 +11,7 @@ export const getUserProfile = userId => {
 	const url = ENDPOINTS.USER_PROFILE(userId)
 	return async dispatch => {
 		const res = await axios.get(url)
-		console.log('userrprofie', res)
+		//console.log('userrprofie', res)
 
 		await dispatch(getUserProfileActionCreator(res.data))
 	}
@@ -33,6 +33,7 @@ export const editUserProfile = data => {
 export const clearUserProfile = () => ({ type: CLEAR_USER_PROFILE })
 
 export const updateUserProfile = (userId, userProfile) => {
+	console.log('updateUserProfile')
 	const url = ENDPOINTS.USER_PROFILE(userId)
 	console.log('userProfile', userProfile)
 	return async dispatch => {
