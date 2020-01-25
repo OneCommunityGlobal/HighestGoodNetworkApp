@@ -1,2 +1,2 @@
-import UserLinks from './UserLinks.container'
+import UserLinks from './UserLinks'
 export default UserLinks

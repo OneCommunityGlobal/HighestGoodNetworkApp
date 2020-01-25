@@ -2,11 +2,12 @@ import React, { Component } from 'react'
 
 import { Card, Row, CardTitle, CardText, Col, Badge, Button, CardBody } from 'reactstrap'
 
-const UserLinks = ({ type, adminLinks, personalLinks }) => {
-	const links = type === 'Admin' ? adminLinks : personalLinks
+const UserLinks = ({ linkType, links = [], handleModelState }) => {
 	return (
 		<Card body>
-			<CardTitle style={{ fontWeight: 'bold', fontSize: 20 }}>{type} Links :</CardTitle>
+			<CardTitle style={{ fontWeight: 'bold', fontSize: 20 }}>
+				{linkType} Links :
+			</CardTitle>
 			<CardBody>
 				{!links.length && (
 					<CardText>
@@ -32,7 +33,10 @@ const UserLinks = ({ type, adminLinks, personalLinks }) => {
 					</CardText>
 				))}
 			</CardBody>
-			<Button outline color='primary'>
+			<Button
+				outline
+				color='primary'
+				onClick={() => handleModelState(true, 'input', linkType)}>
 				Add a new Link
 			</Button>
 		</Card>
