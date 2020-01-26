@@ -4,8 +4,6 @@
  * This component is used to add more project into the database
  ********************************************************************************/
 import React, { useState } from 'react'
-import {PROJECTS, ACTIVE_PROJECTS} from './../../../languages/en/ui'
-
 
 const AddProject = (props) => {
    const [showAddButton, setShowAddButton] = useState(false);
