@@ -5,5 +5,5 @@ export const ENDPOINTS = {
   USER_TEAM: userId => `${APIEndpoint}/userprofile/teammembers/${userId}`,
   LOGIN: `${APIEndpoint}/login`,
   PROJECTS: () => `${APIEndpoint}/projects/`,
-
+  PROJECT: () => `${APIEndpoint}/project/`
 };

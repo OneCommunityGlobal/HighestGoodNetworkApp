@@ -22,7 +22,7 @@ const ModalExample = (props) => {
            {modalMessage}     </ModalBody>
           <ModalFooter>
             <Button color="primary" onClick={closeModal}>Close</Button>{' '}
-            <Button color="danger" onClick={confirmModal}>Confirm</Button>
+            { confirmModal != null ? <Button color="danger" onClick={confirmModal}>Confirm</Button> : null }
           </ModalFooter>
         </Modal>
  

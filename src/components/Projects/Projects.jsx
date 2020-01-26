@@ -8,12 +8,15 @@
  *         {  <Project>...  } 
  ********************************************************************************/
 import React, { Component } from 'react'
-import { fetchAllProjects } from '../../actions/projects'
+import { fetchAllProjects, postNewProject, deleteProject } from '../../actions/projects'
 import Overview from './Overview'
+import AddProject from './AddProject'
 import ProjectTableHeader from './ProjectTableHeader'
 import Project from './Project'
-import Modal from './../common/Modal'
+import ModalDelete from './../common/Modal'
+import ModalMsg from './../common/Modal'
 import * as Message from './../../languages/en/messages'
+import {NOTICE} from './../../languages/en/ui'
 import './projects.css'
 import { connect } from 'react-redux'
 
@@ -22,10 +25,12 @@ class Projects extends Component {
   constructor(props){
     super(props);
     this.state = {
-      projects: [],
-      numberOfProjects: 0,
-      numberOfActive: 0,
-      showModal: false,
+      //projects: [],
+      //numberOfProjects: 0,
+      //numberOfActive: 0,
+      showModalDelete: false,
+      showModalMsg: false,
+      trackModelMsg: false,
       projectTarget: {
         projectName: '',
         projectId: -1,
@@ -34,13 +39,13 @@ class Projects extends Component {
     };
   }
 
-  componentDidMount = () => {
-     this.props.fetchAllProjects(); // Fetch to get all projects 
-     let projects = this.props.state.allProjects; // Get data from props redux 
+   componentDidMount =() =>{
+    this.props.fetchAllProjects(); // Fetch to get all projects 
+     let {projects} = this.props.state.allProjects; // Get data from props redux 
      let numberOfProjects = projects.length;
      let numberOfActive = projects.filter(project => project.isActive).length;
      this.setState({
-       projects,
+       //projects,
        numberOfProjects,
        numberOfActive
       });
@@ -68,7 +73,7 @@ class Projects extends Component {
    */
   onClickDelete= (projectId,active,projectName) => {
     this.setState({
-      showModal: true,
+      showModalDelete: true,
       projectTarget:{
         projectId,
         projectName,
@@ -79,13 +84,20 @@ class Projects extends Component {
 
   confirmDelete = () => {
 
+    // get project info
     let {projectId,active} = this.state.projectTarget;
 
+
+    // request delete on db
+    this.props.deleteProject(projectId);
+
+    /* disable animation 
     let v = document.getElementById(`tr_${projectId}`); 
     v.className += " isDisabled"; 
-    
+    */
+   
+    // update the states
     let {numberOfProjects,numberOfActive} = this.state;
-    
     numberOfProjects--;
 
     // if the deleted project is active, update it 
@@ -93,52 +105,81 @@ class Projects extends Component {
       numberOfActive--;
     }
     this.setState({
-      showModal: false,
+      showModalDelete: false,
       numberOfProjects,
       numberOfActive
     })
   }
 
+   addNewProjectLocal = (name) =>{
+    this.props.postNewProject(name,true);
+    this.setState({trackModelMsg:true});
+  }
+
+ 
+ 
 
   render() {
     
-    let {projects,numberOfProjects,numberOfActive,showModal,projectTarget} = this.state;
+    let {showModalDelete,projectTarget,trackModelMsg} = this.state;
 
+    let {projects, status} = this.props.state.allProjects;
+    const numberOfProjects = projects.length;
+    const numberOfActive = projects.filter(project => project.isActive).length;
+    let showModalMsg = false;
+    console.log("STSTUS",status);
+    if(status != 200 && trackModelMsg){
+      showModalMsg= true;
+    }
     // Display project lists 
-    let ProjectsList = projects.map((project,index) => <Project 
-        key={project._id} 
-        index={index} 
-        projectId={project._id} 
-        name={project.projectName} 
-        active={project.isActive} 
-        onClickActive={this.onClickActive}
-        onClickDelete={this.onClickDelete}
-        confirmDelete={this.confirmDelete}
+    let ProjectsList = [];
+    if(projects.length>0){
+       ProjectsList = projects.map((project,index) => <Project 
+          key={project._id} 
+          index={index} 
+          projectId={project._id} 
+          name={project.projectName} 
+          active={project.isActive} 
+          onClickActive={this.onClickActive}
+          onClickDelete={this.onClickDelete}
+          confirmDelete={this.confirmDelete}
 
-    />);
+      />);
+      }
+
+
 
     return (
       <React.Fragment>
         <div className='container'>
-        <Overview numberOfProjects={numberOfProjects} numberOfActive={numberOfActive} />
-        <table className="table table-bordered table-responsive-sm">
-          <thead>
-           <ProjectTableHeader/>
-          </thead>
-          <tbody>
-           {ProjectsList}
-          </tbody>
-        </table>
+          <Overview numberOfProjects={numberOfProjects} numberOfActive={numberOfActive} />
+          <AddProject addNewProject={this.addNewProjectLocal}/>
+          <table className="table table-bordered table-responsive-sm">
+            <thead>
+            <ProjectTableHeader/>
+            </thead>
+            <tbody>
+            {ProjectsList}
+            </tbody>
+          </table>
+
         </div>
 
-           
-        <Modal
-					isOpen={showModal}
-          closeModal={() => {this.setState({ showModal: false })}}
+        <ModalDelete
+					isOpen={showModalDelete}
+          closeModal={() => {this.setState({ showModalDelete: false })}}
           confirmModal={() => this.confirmDelete()}
 					modalMessage={ Message.ARE_YOU_SURE_YOU_WANT_TO + Message.DELETE + " \""+projectTarget.projectName+"\"?"}
 					modalTitle={Message.CONFIRM_DELETION}
 				/>
+
+        <ModalMsg
+          	isOpen={showModalMsg}
+            closeModal={() => {this.setState({ showModalMsg: false, trackModelMsg: false })}}
+            modalMessage={Message.THIS_PROJECT_NAME_IS_ALREADY_TAKEN}
+            modalTitle={NOTICE}
+        />
+       
 
       </React.Fragment>
     )
@@ -146,4 +187,4 @@ class Projects extends Component {
 }
 
 const mapStateToProps = state => { return { state } }
-export default connect(mapStateToProps,{fetchAllProjects})(Projects)
+export default connect(mapStateToProps,{fetchAllProjects, postNewProject, deleteProject})(Projects)

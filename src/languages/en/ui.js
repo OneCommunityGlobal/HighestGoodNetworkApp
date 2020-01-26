@@ -20,3 +20,4 @@ export const USER_MANAGEMENT = 'User Managment';
 export const VIEW_PROFILE = 'View Profile';
 export const WBS = "WBS";
 export const WELCOME = 'Welcome';
+export const NOTICE = 'Notice';
