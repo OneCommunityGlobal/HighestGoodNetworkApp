@@ -39,16 +39,8 @@ class Projects extends Component {
     };
   }
 
-   componentDidMount =() =>{
-    this.props.fetchAllProjects(); // Fetch to get all projects 
-     let {projects} = this.props.state.allProjects; // Get data from props redux 
-     let numberOfProjects = projects.length;
-     let numberOfActive = projects.filter(project => project.isActive).length;
-     this.setState({
-       //projects,
-       numberOfProjects,
-       numberOfActive
-      });
+   async componentDidMount(){
+     await this.props.fetchAllProjects(); // Fetch to get all projects 
   }
 
 
@@ -188,9 +180,3 @@ class Projects extends Component {
 
 const mapStateToProps = state => { return { state } }
 export default connect(mapStateToProps,{fetchAllProjects, postNewProject, deleteProject})(Projects)
-
-/**
- * 
- * 
- *  
- */
