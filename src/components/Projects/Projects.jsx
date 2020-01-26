@@ -127,8 +127,8 @@ class Projects extends Component {
     const numberOfProjects = projects.length;
     const numberOfActive = projects.filter(project => project.isActive).length;
     let showModalMsg = false;
-    console.log("STSTUS",status);
-    if(status != 200 && trackModelMsg){
+    //console.log("STSTUS",status);
+    if(status !== 201 && trackModelMsg){
       showModalMsg= true;
     }
     // Display project lists 
@@ -165,6 +165,7 @@ class Projects extends Component {
 
         </div>
 
+       
         <ModalDelete
 					isOpen={showModalDelete}
           closeModal={() => {this.setState({ showModalDelete: false })}}
@@ -179,7 +180,6 @@ class Projects extends Component {
             modalMessage={Message.THIS_PROJECT_NAME_IS_ALREADY_TAKEN}
             modalTitle={NOTICE}
         />
-       
 
       </React.Fragment>
     )
@@ -188,3 +188,9 @@ class Projects extends Component {
 
 const mapStateToProps = state => { return { state } }
 export default connect(mapStateToProps,{fetchAllProjects, postNewProject, deleteProject})(Projects)
+
+/**
+ * 
+ * 
+ *  
+ */

@@ -2,8 +2,7 @@ import _ from "lodash";
 
 const initialState = {
   isAuthenticated: false,
-  user: {},
-  errors: null,
+  user: {}
 }
 
 export const authReducer = (auth = initialState, action) => {
@@ -11,16 +10,9 @@ export const authReducer = (auth = initialState, action) => {
     if (!action.payload){
       return initialState
     }
-    else if (action.payload.errors){
-      return {
-        ...auth,
-        ...action.payload
-      }
-    }
     else if (action.payload.new){
       return {
-        ...auth,
-        errors: null,
+        isAuthenticated: false,
         user: action.payload,
       }
     }
@@ -28,7 +20,6 @@ export const authReducer = (auth = initialState, action) => {
       return {
         isAuthenticated: !_.isEmpty(action.payload),
         user: action.payload,
-        errors: null
       }
     }
   }

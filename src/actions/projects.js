@@ -38,7 +38,7 @@ export const postNewProject = (projectName,isActive) =>{
 
     try{
       const res = await axios.post(url,{projectName,isActive})
-      _id = res.data.newProject;
+      _id = res.data._id;
       status = res.status;
     
     }catch(err){

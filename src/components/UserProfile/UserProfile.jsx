@@ -16,8 +16,12 @@ import {
 	CardHeader,
 	CardFooter,
 	Badge,
-	Button
+	Button,
+	FormGroup,
+	Label,
+	CardImg
 } from 'reactstrap'
+import { orange, silverGray } from '../../constants/colors'
 import cx from 'classnames'
 import Memberships from '../Memberships/Memberships'
 import ProfileLinks from '../ProfileLinks/ProfileLinks'
@@ -28,6 +32,8 @@ import Modal from '../common/Modal'
 import Badges from './Badges'
 import WorkHistory from './WorkHistory'
 import UserLinks from './UserLinks'
+
+import SideBar from './SideBar'
 
 class UserProfile extends Component {
 	state = {
@@ -45,89 +51,83 @@ class UserProfile extends Component {
 		let userId = this.props.match.params.userId
 		await this.props.getUserProfile(userId)
 		await this.props.getUserTeamMembers(userId)
-		console.log(this.props.userProfile)
+		//console.log(this.props.userProfile)
 		if (this.props.userProfile.firstName.length) {
-			console.log(this.props.userProfile)
+			//	console.log(this.props.userProfile)
 			this.setState({ isLoading: false, userProfile: this.props.userProfile })
 		}
 		//console.log(this.props.userProfile)
 	}
-	// componentWillUnmount() {
-	//   this.props.clearUserProfile()
-	// }
 
-	// componentDidUpdate() {
-	//   let userProfile = this.props.userProfile
-	//   if (userProfile && this.state.isLoading === true) {
-	//     this.setState({ isLoading: false })
-	//   }
-	// }
+	handleUserProfile = event => {
+		console.log('handleUserProfile')
+		event.preventDefault()
+		if (event.target.id === 'firstName') {
+			this.setState({
+				userProfile: {
+					...this.state.userProfile,
+					firstName: event.target.value.trim()
+				},
+				showModal: event.target.value ? false : true,
+				modalTitle: 'First Name Error',
+				modalMessage: 'First Name cannot be empty'
+			})
+		}
 
-	teamsSchema = {
-		_id: Joi.string().required(),
-		teamName: Joi.string().required()
-	}
-	projectsSchema = {
-		_id: Joi.string().required(),
-		projectName: Joi.string().required()
-	}
+		if (event.target.id === 'lastName') {
+			this.setState({
+				userProfile: {
+					...this.state.userProfile,
+					lastName: event.target.value.trim()
+				},
+				showModal: event.target.value ? false : true,
+				modalTitle: 'First Name Error',
+				modalMessage: 'Last Name cannot be empty'
+			})
+		}
+		if (event.target.id === 'email') {
+			this.setState({
+				userProfile: {
+					...this.state.userProfile,
+					email: event.target.value.trim()
+				},
+				emailError: event.target.value ? '' : 'Email cannot be empty '
+			})
+		}
+		if (event.target.id === 'phoneNumber') {
+			this.setState({
+				userProfile: {
+					...this.state.userProfile,
+					phoneNumber: event.target.value.trim()
+				}
+			})
+		}
+		if (event.target.id === 'jobTitle') {
+			this.setState({
+				userProfile: {
+					...this.state.userProfile,
+					jobTitle: event.target.value
+				}
+			})
+		}
 
-	activeOptions = [
-		{ value: true, label: 'Active' },
-		{ value: false, label: 'Inactive' }
-	]
-
-	allowedRoles = [
-		{ _id: 'Administrator', name: 'Administrator' },
-		{ _id: 'Core Team', name: 'Core Team' },
-		{ _id: 'Manager', name: 'Manager' },
-		{ _id: 'Volunteer', name: 'Volunteer' }
-	]
-
-	handleFirstNameChange = event => {
-		this.setState({
-			userProfile: {
-				...this.state.userProfile,
-				firstName: event.target.value.trim()
-			},
-			firstNameError: event.target.value ? '' : 'First Name cannot be empty '
-		})
-	}
-
-	handleLastNameChange = event => {
-		this.setState({
-			userProfile: {
-				...this.state.userProfile,
-				lastName: event.target.value.trim()
-			},
-			lastNameError: event.target.value ? '' : 'Last Name cannot be empty '
-		})
-	}
-
-	handleJobTitleChange = event => {
-		this.setState({
-			userProfile: {
-				...this.state.userProfile,
-				jobTitle: event.target.value
-			}
-		})
-	}
-
-	handlePhoneNumberChange = event => {
-		this.setState({
-			userProfile: {
-				...this.state.userProfile,
-				phoneNumber: event.target.value
-			}
-		})
-	}
-	handleEmailChange = event => {
-		this.setState({
-			userProfile: {
-				...this.state.userProfile,
-				email: event.target.value
-			}
-		})
+		if (event.target.id === 'emailPubliclyAccessible') {
+			this.setState({
+				userProfile: {
+					...this.state.userProfile,
+					emailPubliclyAccessible: event.target.checked
+				}
+			})
+		}
+		if (event.target.id === 'phoneNumberPubliclyAccessible') {
+			this.setState({
+				userProfile: {
+					...this.state.userProfile,
+					phoneNumberPubliclyAccessible: !this.state.userProfile
+						.phoneNumberPubliclyAccessible
+				}
+			})
+		}
 	}
 
 	handleImageUpload = async e => {
@@ -143,7 +143,13 @@ class UserProfile extends Component {
 			imageUploadError = `File type must be ${allowedTypesString}.`
 			isValid = false
 
-			return this.setState({ imageUploadError, isValid })
+			return this.setState({
+				imageUploadError,
+				isValid,
+				showModal: true,
+				modalTitle: 'Profile Pic Error',
+				modalMessage: imageUploadError
+			})
 		}
 		let filesizeKB = file.size / 1024
 		console.log(filesizeKB)
@@ -151,7 +157,14 @@ class UserProfile extends Component {
 		if (filesizeKB > 50) {
 			imageUploadError = `\nThe file you are trying to upload exceed the maximum size of 50KB. You can choose a different file or use an online file compressor.`
 			isValid = false
-			return this.setState({ imageUploadError, isValid })
+
+			return this.setState({
+				imageUploadError,
+				isValid,
+				showModal: true,
+				modalTitle: 'Profile Pic Error',
+				modalMessage: imageUploadError
+			})
 		}
 
 		let reader = new FileReader()
@@ -168,6 +181,44 @@ class UserProfile extends Component {
 			})
 		}
 	}
+
+	handleModelState = (status = true, type = 'message', linkType) => {
+		console.log(linkType)
+		this.setState({
+			showModal: status,
+			modalTitle: 'Add a New Link',
+			linkType: linkType,
+			type: type
+		})
+	}
+
+	addLink = (linkName, linkURL, linkType) => {
+		console.log('addLink', linkName, linkURL, linkType)
+
+		const link = { Name: linkName, Link: linkURL }
+		if (linkType !== 'Admin') {
+			return this.setState(prevState => {
+				return {
+					showModal: false,
+					userProfile: {
+						...this.state.userProfile,
+						personalLinks: prevState.userProfile.personalLinks.concat(link)
+					}
+				}
+			})
+		}
+
+		this.setState(prevState => {
+			return {
+				showModal: false,
+				userProfile: {
+					...this.state.userProfile,
+					adminLinks: prevState.userProfile.adminLinks.concat(link)
+				}
+			}
+		})
+	}
+
 	handleSubmit = async event => {
 		event.preventDefault()
 
@@ -181,293 +232,114 @@ class UserProfile extends Component {
 			this.setState({
 				showModal: true,
 				modalMessage: 'Your Changes were saved successfully',
-				modalTitle: 'Success'
+				modalTitle: 'Success',
+				type: 'message'
 			})
 		} else {
 			this.setState({
 				showModal: true,
 				modalMessage: 'Please try again.',
-				modalTitle: 'Error'
+				modalTitle: 'Error',
+				type: 'message'
 			})
 		}
 	}
 
 	render() {
-		if (this.state.isLoading === true) {
-			return <Loading />
-		}
-
 		let { userId: targetUserId } = this.props.match.params
 		let { userid: requestorId, role: requestorRole } = this.props.auth.user
 
+		const { userProfile, isLoading, showModal } = this.state
 		const {
 			firstName,
 			lastName,
+			email,
 			profilePic = '',
 			phoneNumber,
-			jobTitle
-		} = this.state.userProfile
-		const { firstNameError, lastNameError, imageUploadError, error } = this.state
-
-		console.log('state is ', this.state)
-		const {
-			teams,
-			projects,
+			jobTitle,
 			personalLinks,
 			adminLinks,
-			email,
-			isActive,
-			weeklyComittedHours,
-			role
-		} = this.props
+			phoneNumberPubliclyAccessible,
+			emailPubliclyAccessible
+		} = userProfile
 
+		console.log('phoneNumberPubliclyAccessible', phoneNumberPubliclyAccessible)
 		let isUserSelf = targetUserId === requestorId
 		let canEditFields = isUserAdmin || isUserSelf
 		const isUserAdmin = requestorRole === 'Administrator'
 
+		if (isLoading === true) {
+			return <Loading />
+		}
 		return (
-			<Container>
-				<Modal
-					isOpen={this.state.showModal}
-					closeModal={() => {
-						this.setState({ showModal: false })
-					}}
-					modalMessage={this.state.modalMessage}
-					modalTitle={this.state.modalTitle}
-				/>
-				<div className='row my-auto'>
-					<div className='col-md-4'>
-						<div className='form-row text-center'>
-							<div className={`form-group profilepic`}>
-								<label htmlFor={'currentprofilePic'}>{}</label>
-								<img
-									type='image'
-									id='currentprofilePic'
-									name='currentprofilePic'
-									alt={'currentprofilePic'}
-									className={`img-responsive profilepic`}
-									src={profilePic || '/defaultprofilepic.jpg'}
-								/>
-
-								{error && <div className='alert alert-danger mt-1'>{error}</div>}
-							</div>
-							{canEditFields && (
-								<React.Fragment>
-									<label
-										htmlFor={'profilePic'}
-										className='fa fa-edit'
-										data-toggle='tooltip'
-										data-placement='bottom'
-										title={''}></label>
-									<input
-										id={'profilePic'}
-										name={'profilePic'}
-										className={'newProfilePic'}
-										onChange={this.handleImageUpload}
-										accept={'image/png,image/jpeg, image/jpg'}
-										type='file'
-									/>
-
-									{imageUploadError && (
-										<div className='alert alert-danger mt-1'>{imageUploadError}</div>
-									)}
-								</React.Fragment>
-							)}
-						</div>
-						<div className='form-row text-center'>Blue Squares</div>
-					</div>
-					<div className='col-md-8'>
-						<div className='form-row'>
-							<div className={cx('form-group', 'col-md-4')}>
-								<label htmlFor='firstName'>First Name:</label>
-								<input
-									id={'firstName'}
-									type='text'
-									name={'firstName'}
-									className={`form-control`}
-									value={firstName}
-									readOnly={canEditFields ? null : true}
-									onChange={this.handleFirstNameChange}
-								/>
-								{firstNameError && (
-									<div className='alert alert-danger mt-1'>{firstNameError}</div>
-								)}
-							</div>
-							<div className={cx('form-group', 'col-md-4')}>
-								<label htmlFor='lastName'>Last Name:</label>
-								<input
-									id={'lastName'}
-									type='text'
-									name={'lastName'}
-									className={`form-control`}
-									value={lastName}
-									readOnly={canEditFields ? null : true}
-									onChange={this.handleLastNameChange}
-								/>
-								{lastNameError && (
-									<div className='alert alert-danger mt-1'>{lastNameError}</div>
-								)}
-							</div>
-							<div className='form-group'>
-								{this.activeOptions.map(item => (
-									<div className='form-check form-check-inline' key={item.value}>
-										<input
-											type='radio'
-											value={item.value}
-											name={'isActive'}
-											className='form-check-input'
-											checked={item.value === isActive ? true : null}
-											disabled={canEditFields ? null : true}
-										/>
-										<label htmlFor={item.value.toString()} className='form-check-label'>
-											{item.label}
-										</label>
-									</div>
-								))}
-
-								{error && <div className='alert alert-danger'>{error}</div>}
-							</div>
-						</div>
-						<div className='form-row'>
-							<div className={cx('form-group', 'col-md-4')}>
-								<label htmlFor='email'>Job Title:</label>
-								<input
-									id={'jobTitle'}
-									type='text'
-									name={'jobTitle'}
-									className={`form-control`}
-									value={jobTitle}
-									readOnly={canEditFields ? null : true}
-									onChange={this.handleJobTitleChange}
-								/>
-								{error && <div className='alert alert-danger mt-1'>{error}</div>}
-							</div>
-
-							<div className={cx('form-group', 'col-md-4')}>
-								<label htmlFor={'role'}>Role:</label>
-
-								<select
-									value={role}
-									name={'role'}
-									id={'role'}
-									readOnly={canEditFields ? null : true}
-									className='form-control'>
-									<option value=''>Please select a Role:</option>
-									{this.allowedRoles.map(item => (
-										<option value={item._id} key={item._id}>
-											{item.name}
-										</option>
-									))}
-								</select>
-								{error && <div className='alert alert-danger'>{error}</div>}
-							</div>
-
-							<div className={cx('form-group', 'col-md-4')}>
-								<label htmlFor='weeklyComittedHours'>Weekly Comitted Hours:</label>
-								<input
-									id={'weeklyComittedHours'}
-									type='number'
-									name={'weeklyComittedHours'}
-									className={`form-control`}
-									value={weeklyComittedHours}
-									readOnly={isUserAdmin ? null : true}
-								/>
-								{error && <div className='alert alert-danger mt-1'>{error}</div>}
-							</div>
-						</div>
-					</div>
-				</div>
-
-				{<ShowSaveWarning />}
-
+			<Container className='themed-container' fluid={true}>
+				{showModal && (
+					<Modal
+						isOpen={this.state.showModal}
+						closeModal={() => {
+							this.setState({ showModal: false })
+						}}
+						modalMessage={this.state.modalMessage}
+						modalTitle={this.state.modalTitle}
+						type={this.state.type}
+						confirmModal={this.addLink}
+						linkType={this.state.linkType}
+					/>
+				)}
 				<Row>
-					<Col xs='6'>
-						<Card body>
-							<CardHeader>Phone Number:</CardHeader>
-							<CardBody>
-								<CardText>
-									<Input value={phoneNumber} onChange={this.handlePhoneNumberChange} />
-								</CardText>
-							</CardBody>
-							<CardFooter>
-								<InputGroup size='sm'>
-									<InputGroupAddon addonType='prepend'>
-										<InputGroupText>
-											<Input
-												addon
-												type='checkbox'
-												aria-label='Checkbox for following text input'
-											/>
-											Publicly Accessible?
-										</InputGroupText>
-									</InputGroupAddon>
-								</InputGroup>
-							</CardFooter>
-						</Card>
+					<Col
+						xs={12}
+						md={3}
+						sm={12}
+						style={{ backgroundColor: silverGray, border: '1px solid #A8A8A8' }}>
+						<SideBar
+							profilePic={profilePic}
+							firstName={firstName}
+							lastName={lastName}
+							email={email}
+							phoneNumber={phoneNumber}
+							jobTitle={jobTitle}
+							phoneNumberPubliclyAccessible={phoneNumberPubliclyAccessible}
+							emailPubliclyAccessible={emailPubliclyAccessible}
+							canEditFields={canEditFields}
+							isUserAdmin={isUserAdmin}
+							handleUserProfile={this.handleUserProfile}
+							handleImageUpload={this.handleImageUpload}
+						/>
+
+						<br />
 					</Col>
-					<Col xs='6'>
-						<Card body>
-							<CardHeader>Email</CardHeader>
-							<CardBody>
-								<CardText>
-									<Input value={email} type='email' />
-								</CardText>
-							</CardBody>
-							<CardFooter>
-								<InputGroup size='sm'>
-									<InputGroupAddon addonType='prepend'>
-										<InputGroupText>
-											<Input
-												addon
-												type='checkbox'
-												aria-label='Checkbox for following text input'
-											/>
-											Publicly Accessible?
-										</InputGroupText>
-									</InputGroupAddon>
-								</InputGroup>
-							</CardFooter>
-						</Card>
+					<Col xs={12} md={9} sm={12} style={{ backgroundColor: 'white', padding: 5 }}>
+						<WorkHistory />
+
+						<br />
+						<UserLinks
+							linkType='Admin'
+							links={adminLinks}
+							handleModelState={this.handleModelState}
+							isUserAdmin={isUserAdmin}
+							canEditFields={canEditFields}
+						/>
+						<br />
+						<UserLinks
+							linkType='Social/Professional'
+							links={personalLinks}
+							handleModelState={this.handleModelState}
+							isUserAdmin={isUserAdmin}
+							canEditFields={canEditFields}
+						/>
+						<br />
+
+						<Badges />
+						<br />
+						<Button outline color='primary' onClick={this.handleSubmit}>
+							{'Save Changes'}
+						</Button>
+						<Button outline color='danger'>
+							Cancel
+						</Button>
 					</Col>
 				</Row>
-				<hr />
-
-				<WorkHistory />
-				<hr />
-				<UserLinks type='Admin' />
-				<hr />
-				<UserLinks type='Social/Professional' />
-				<hr />
-
-				<Badges />
-
-				<div className='row mt-3'>
-					<div className='col-6'>
-						<Memberships
-							schema={this.teamsSchema}
-							canEdit={isUserAdmin}
-							data={teams}
-							label='Team'
-							collection='teams'
-							//handleDelete={this.handleCollection}
-							// handleBulkUpdates={this.handleMemberships}
-						/>
-					</div>
-					<div className='col-6'>
-						<Memberships
-							schema={this.projectsSchema}
-							canEdit={isUserAdmin}
-							data={projects}
-							label='Project'
-							collection='projects'
-							//handleDelete={this.handleCollection}
-							//handleBulkUpdates={this.handleMemberships}
-						/>
-					</div>
-				</div>
-				<button className='btn btn-primary' onClick={this.handleSubmit}>
-					{'Submit'}
-				</button>
 			</Container>
 		)
 	}
