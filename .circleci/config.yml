@@ -40,8 +40,8 @@ workflows:
       - build_dev:
           filters:
             branches:
-              only: master
+              only: developement
       - build_PROD:
           filters:
             branches:
-              only: developement
+              only: master
