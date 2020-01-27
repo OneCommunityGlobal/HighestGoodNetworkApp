@@ -79,11 +79,6 @@ class Projects extends Component {
 
     // request delete on db
     this.props.deleteProject(projectId);
-
-    /* disable animation 
-    let v = document.getElementById(`tr_${projectId}`); 
-    v.className += " isDisabled"; 
-    */
    
     // update the states
     let {numberOfProjects,numberOfActive} = this.state;
