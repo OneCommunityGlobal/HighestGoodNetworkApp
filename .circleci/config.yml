@@ -32,7 +32,7 @@ jobs:
 
 workflows:
   version: 2
-  deploy:
+  build-deploy:
     jobs:
       - build_dev:
           filters:
