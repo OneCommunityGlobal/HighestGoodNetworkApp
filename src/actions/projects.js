@@ -16,6 +16,7 @@ import { ENDPOINTS } from '../utils/URL'
  */
 export const fetchAllProjects = () => {
   const url = ENDPOINTS.PROJECTS();
+  console.log(url);
   return async dispatch => {
     const res = await axios.get(url)
     // Dispatch the action object 
