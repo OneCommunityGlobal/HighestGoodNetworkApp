@@ -19,7 +19,7 @@ export const fetchAllProjects = () => {
   return async dispatch => {
     const res = await axios.get(url)
     // Dispatch the action object 
-    await dispatch(getAllProjects(res.data, res.status))
+    dispatch(getAllProjects(res.data, res.status))
   }
 }
 
@@ -46,7 +46,7 @@ export const postNewProject = (projectName,isActive) =>{
       status = 400;
     }
     
-    await dispatch(
+    dispatch(
         addNewProject(
           { 
               "_id": _id,
@@ -82,7 +82,7 @@ export const deleteProject = (projectId) =>{
       status = 400;
     }
 
-    await dispatch(removeProject(projectId,status));  
+    dispatch(removeProject(projectId,status));  
     
   }
 }
