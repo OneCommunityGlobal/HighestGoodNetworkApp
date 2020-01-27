@@ -25,9 +25,6 @@ class Projects extends Component {
   constructor(props){
     super(props);
     this.state = {
-      //projects: [],
-      //numberOfProjects: 0,
-      //numberOfActive: 0,
       showModalDelete: false,
       showModalMsg: false,
       trackModelMsg: false,
