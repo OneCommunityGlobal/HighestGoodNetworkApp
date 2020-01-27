@@ -21,6 +21,7 @@ export const fetchAllProjects = () => {
     // Dispatch the action object 
     dispatch(getAllProjects(res.data, res.status))
   }
+  
 }
 
 

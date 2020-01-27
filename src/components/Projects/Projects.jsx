@@ -107,12 +107,11 @@ class Projects extends Component {
     
     let {showModalDelete,projectTarget,trackModelMsg} = this.state;
 
-    let {projects, status} = this.props.state.allProjects;
-    const numberOfProjects = projects.length;
-    const numberOfActive = projects.filter(project => project.isActive).length;
+    let {projects, status,size,numActive} = this.props.state.allProjects;
+   
     let showModalMsg = false;
     //console.log("STSTUS",status);
-    if(status !== 201 && trackModelMsg){
+    if(status == 400 && trackModelMsg){
       showModalMsg= true;
     }
     // Display project lists 
@@ -136,7 +135,7 @@ class Projects extends Component {
     return (
       <React.Fragment>
         <div className='container'>
-          <Overview numberOfProjects={numberOfProjects} numberOfActive={numberOfActive} />
+          <Overview numberOfProjects={size} numberOfActive={numActive} />
           <AddProject addNewProject={this.addNewProjectLocal}/>
           <table className="table table-bordered table-responsive-sm">
             <thead>
