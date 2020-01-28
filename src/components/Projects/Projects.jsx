@@ -27,6 +27,7 @@ class Projects extends Component {
   constructor(props){
     super(props);
     this.state = {
+      dataReady: false,
       allProjects: {
         projects: [],
         status: ''
@@ -44,7 +45,8 @@ class Projects extends Component {
 
    async componentDidMount(){
      await this.props.fetchAllProjects(); // Fetch to get all projects 
-     this.setState({allProjects:this.props.state.allProjects});
+     await this.setState({dataReady: true,allProjects:this.props.state.allProjects});
+     
   }
 
 
@@ -113,7 +115,10 @@ class Projects extends Component {
 
   render() {
     
-    let {showModalDelete,projectTarget,trackModelMsg, allProjects} = this.state;
+    let {showModalDelete,projectTarget,trackModelMsg, allProjects, dataReady} = this.state;
+    if(!dataReady){
+      return null
+    }
     let {projects, status} = allProjects;
 
     //console.log('all',allProjects);
