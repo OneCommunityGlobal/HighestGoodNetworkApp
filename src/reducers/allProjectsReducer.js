@@ -2,34 +2,39 @@ import * as types  from './../constants/projects'
 export const allProjectsReducer = (allProjects = null, action) => {
 
 
-  let projectModel = (projects,status) => {
+  var projectModel = () => {
+    console.log('REDUCER STATUS',allProjects.status);
+
     return {
-      "projects":projects, 
-      "status":status,
-      "size":projects.length,
-      "numActive":projects.filter(project => project.isActive).length
+      "projects":allProjects.projects, 
+      "status":action.status
     }
   }
 
 
   if (action.type === types.GET_ALL_PROJECTS) {
-    
-    return projectModel(action.payload, action.status);
+    //console.log('RUN ALL PROJECT',action.status);
+    allProjects.projects = action.payload;
+    return projectModel();
 
   }else if (action.type === types.ADD_NEW_PROJECT) {
-    
-    if(action.status===201){
-      allProjects.projects = [action.payload,...allProjects.projects];
+    allProjects.status = action.status;
+    if(action.status === 201){
+      console.log("====>", "new pro")
+      allProjects.projects.unshift(action.payload);
     }
-    return projectModel(allProjects.projects,action.status);
+    allProjects.projects = allProjects.projects;
+
+    return allProjects;
 
   }else if(action.type === types.DELETE_PROJECT){
     
     if(action.status===200){
       let index = allProjects.projects.findIndex(project => project._id == action.projectId);
-      allProjects.projects = [...allProjects.projects.slice(0,index),...allProjects.projects.slice(index+1)];
+      allProjects.projects = Object.assign([...allProjects.projects.slice(0,index),...allProjects.projects.slice(index+1)]);
     }    
     return projectModel(allProjects.projects,action.status);
+
   }
   return allProjects;
 };

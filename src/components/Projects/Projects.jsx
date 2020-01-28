@@ -1,11 +1,13 @@
 /*********************************************************************************
  * Component: PROJECTS  
- * Author: Henry Ng - 01/17/20
+ * Author: Henry Ng - 01/27/20
  * This component is used to build the layout of the list of projects
  * Childrens: Overview, ProjectTableHeader, Project ( List )
  * Layout: <Overview>
  *         <ProjectTableHeader>
  *         {  <Project>...  } 
+ * 
+ * DO NOT WORK ON THE ACTIVE YET ******
  ********************************************************************************/
 import React, { Component } from 'react'
 import { fetchAllProjects, postNewProject, deleteProject } from '../../actions/projects'
@@ -25,6 +27,10 @@ class Projects extends Component {
   constructor(props){
     super(props);
     this.state = {
+      allProjects: {
+        projects: [],
+        status: ''
+      },
       showModalDelete: false,
       showModalMsg: false,
       trackModelMsg: false,
@@ -38,6 +44,7 @@ class Projects extends Component {
 
    async componentDidMount(){
      await this.props.fetchAllProjects(); // Fetch to get all projects 
+     this.setState({allProjects:this.props.state.allProjects});
   }
 
 
@@ -45,14 +52,14 @@ class Projects extends Component {
    * Changes the number of active projects 
    */
   onClickActive = (status) => {
-    let {numberOfActive} = this.state;
+    let {allProjects} = this.state;
     if(status){
-        numberOfActive--
+      allProjects.numberOfActive--
     }else{
-        numberOfActive++
+      allProjects.numberOfActive++
     }
     this.setState({
-      numberOfActive
+      allProjects
     })
   }
 
@@ -79,19 +86,20 @@ class Projects extends Component {
 
     // request delete on db
     this.props.deleteProject(projectId);
-   
+    this.setState({allProjects:this.props.state.allProjects});
+
     // update the states
-    let {numberOfProjects,numberOfActive} = this.state;
-    numberOfProjects--;
+    //let {allProjects} = this.state;
+    //allProjects.numberOfProjects--;
 
     // if the deleted project is active, update it 
+    console.log(active);
     if(active){
-      numberOfActive--;
+      //allProjects.numberOfActive--;
     }
     this.setState({
       showModalDelete: false,
-      numberOfProjects,
-      numberOfActive
+      //allProjects
     })
   }
 
@@ -105,13 +113,18 @@ class Projects extends Component {
 
   render() {
     
-    let {showModalDelete,projectTarget,trackModelMsg} = this.state;
+    let {showModalDelete,projectTarget,trackModelMsg, allProjects} = this.state;
+    let {projects, status} = allProjects;
 
-    let {projects, status,size,numActive} = this.props.state.allProjects;
-   
+    //console.log('all',allProjects);
+
+    let numberOfProjects = projects.length;
+    let numberOfActive = projects.filter(project => project.isActive).length;
+
     let showModalMsg = false;
     //console.log("STSTUS",status);
-    if(status == 400 && trackModelMsg){
+
+    if(status !== 201 && trackModelMsg){
       showModalMsg= true;
     }
     // Display project lists 
@@ -134,8 +147,9 @@ class Projects extends Component {
 
     return (
       <React.Fragment>
+        <img src='http://www.lottoamica.com/img/underconstruction.png' />
         <div className='container'>
-          <Overview numberOfProjects={size} numberOfActive={numActive} />
+          <Overview numberOfProjects={numberOfProjects} numberOfActive={numberOfActive} />
           <AddProject addNewProject={this.addNewProjectLocal}/>
           <table className="table table-bordered table-responsive-sm">
             <thead>
