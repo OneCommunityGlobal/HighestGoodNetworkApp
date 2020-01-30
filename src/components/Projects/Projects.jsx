@@ -117,9 +117,6 @@ class Projects extends Component {
   render() {
     
     let {showModalDelete,projectTarget,trackModelMsg, allProjects, dataReady} = this.state;
-    if(!dataReady){
-      return <Loading /> ;
-    }
     let {projects, status} = allProjects;
 
     console.log('all',allProjects);
