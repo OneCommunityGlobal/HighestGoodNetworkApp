@@ -122,7 +122,7 @@ class Projects extends Component {
     }
     let {projects, status} = allProjects;
 
-    //console.log('all',allProjects);
+    console.log('all',allProjects);
 
     let numberOfProjects = projects.length;
     let numberOfActive = projects.filter(project => project.isActive).length;

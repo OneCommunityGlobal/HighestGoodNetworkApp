@@ -1,7 +1,32 @@
 import * as types  from './../constants/projects'
-export const allProjectsReducer = (allProjects = null, action) => {
+
+const allProjectsInital = {
+  fetching: false,
+  fetched: false,
+  projects: [],
+  status: "404"
+}
+
+export const allProjectsReducer = (allProjects = allProjectsInital, action) => {
+
+  switch (action.type){
+    case types.FETCH_PROJECTS_START: 
+      return {...allProjects, fetching:true}
+      break;
+    case types.RECEIVE_PROJECTS: 
+      return {...allProjects, 
+        fetching:false, 
+        fetched: true, 
+        projects: action.payload}
+        break;
+    case types.FETCH_PROJECTS_ERROR: 
+      return {...allProjects, fetching: false, status: action.status}
+      break
+  }
+  return allProjects
 
 
+ /*
   var projectModel = () => {
     console.log('REDUCER STATUS',allProjects.status);
 
@@ -36,5 +61,5 @@ export const allProjectsReducer = (allProjects = null, action) => {
     return projectModel(allProjects.projects,action.status);
 
   }
-  return allProjects;
+  return allProjects;*/
 };

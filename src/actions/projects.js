@@ -18,9 +18,14 @@ export const fetchAllProjects = () => {
   const url = ENDPOINTS.PROJECTS();
   console.log(url);
   return async dispatch => {
-    const res = await axios.get(url)
-    // Dispatch the action object 
-    dispatch(getAllProjects(res.data, res.status))
+    await dispatch({type: types.FETCH_PROJECTS_START});
+     axios.get(url)
+     .then((res) => {
+      dispatch({type: types.RECEIVE_PROJECTS, payload: res.data});
+    }).catch((err) => {
+      dispatch({type: types.FETCH_PROJECTS_ERROR, payload: err})
+    })
+   
   }
   
 }
