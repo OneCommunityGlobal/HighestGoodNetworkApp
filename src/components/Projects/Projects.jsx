@@ -21,6 +21,7 @@ import * as Message from './../../languages/en/messages'
 import {NOTICE} from './../../languages/en/ui'
 import './projects.css'
 import { connect } from 'react-redux'
+import Loading from '../common/Loading'
 
 class Projects extends Component {
 
@@ -117,7 +118,7 @@ class Projects extends Component {
     
     let {showModalDelete,projectTarget,trackModelMsg, allProjects, dataReady} = this.state;
     if(!dataReady){
-      return null
+      return <Loading /> ;
     }
     let {projects, status} = allProjects;
 
