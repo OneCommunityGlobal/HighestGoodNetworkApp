@@ -2,6 +2,10 @@ thead{
     background: aliceblue;
 }
 
+#new_project{
+    margin-bottom: 10px;
+}
+
 #projects__order{
     width: 5px;
 }

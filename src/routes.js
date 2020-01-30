@@ -12,6 +12,7 @@ import ProtectedRoute from './components/common/ProtectedRoute'
 import UpdatePassword from './components/UpdatePassword'
 import Header from './components/Header'
 import Projects from './components/Projects'
+import Members from './components/Projects/Members'
 import 'react-toastify/dist/ReactToastify.css'
 
 export default (
@@ -23,6 +24,7 @@ export default (
       <ProtectedRoute path='/timelog/:userId' exact component={Timelog} />
       <ProtectedRoute path='/reports' exact component={Reports} />
       <ProtectedRoute path='/projects' exact component={Projects} />
+      <ProtectedRoute path='/project/members' exact component={Members} />
 
       <Route path='/login' component={Login} />
 

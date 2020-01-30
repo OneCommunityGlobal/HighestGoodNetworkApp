@@ -16,6 +16,7 @@ export const loginUser = credentials => dispatch => {
       } else {
         localStorage.setItem(tokenKey, res.data.token)
         httpService.setjwt(res.data.token)
+        console.log(res.data.token)
         const decoded = jwtDecode(res.data.token)
         dispatch(setCurrentUser(decoded))
       }

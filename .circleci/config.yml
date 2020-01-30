@@ -12,10 +12,6 @@ jobs:
           name: Run react build
           command: "sudo REACT_APP_APIENDPOINT=$APIENDPOINT_DEV REACT_APP_SENTRY_URL=$SENTRY_URL_DEV npm run build"
       - run:
-          name: Test the build
-          command: "sudo npm test"
-
-      - run:
           name: Deploy app
           command: ./node_modules/.bin/surge build --domain $SURGE_DOMAIN_DEV
 
@@ -36,12 +32,12 @@ jobs:
 
 workflows:
   version: 2
-  deploy:
+  build-deploy:
     jobs:
       - build_dev:
           filters:
             branches:
-              only: developement
+              only: development
       - build_PROD:
           filters:
             branches:

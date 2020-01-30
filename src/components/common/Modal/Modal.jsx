@@ -39,7 +39,9 @@ const ModalExample = props => {
 
 	const buttonDisabled = !(linkName && linkURL)
 
-	console.log('Type of Modal is ', type, linkName, linkURL, buttonDisabled)
+	if(type){
+		console.log('Type of Modal is ', type, linkName, linkURL, buttonDisabled)
+	}
 
 	return (
 		<Modal isOpen={isOpen} toggle={closeModal}>
@@ -75,6 +77,8 @@ const ModalExample = props => {
 				<Button color='primary' onClick={closeModal}>
 					Close
 				</Button>
+
+				{ confirmModal != null ? <Button color="danger" onClick={confirmModal}>Confirm</Button> : null }
 
 				{type === 'input' && (
 					<Button

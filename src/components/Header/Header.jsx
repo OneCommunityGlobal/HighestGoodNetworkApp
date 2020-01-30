@@ -36,8 +36,11 @@ class Header extends React.Component {
   }
 
   render() {
-    const { isAuthenticated, user } = this.props.auth
-    const { firstName, profilePic } = this.props.userProfile
+    const { isAuthenticated, user } = this.props.auth;
+    let firstName = "", profilePic = "";
+    if (this.props.userProfile){
+      ({ firstName, profilePic } = this.props.userProfile);
+    }
 
     return (
       <div>
