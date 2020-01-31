@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
-import { getAllProjects, postTimeEntry } from '../../actions'
 import { Card, Row, CardTitle, CardText, Col, Container } from 'reactstrap'
+import { getAllProjects, postTimeEntry } from '../../actions'
 import MonthlyEffort from '../MonthlyEffort'
 import Leaderboard from '../LeaderBoard'
 import '../../App.css'
@@ -29,8 +29,6 @@ class Dashboard extends Component {
 	}
 }
 
-const mapStateToProps = state => {
-	return { state }
-}
+const mapStateToProps = state => ({ state })
 
 export default connect(mapStateToProps, {})(Dashboard)
