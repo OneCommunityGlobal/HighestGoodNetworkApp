@@ -46,7 +46,7 @@ class Projects extends Component {
 
   async componentDidMount() {
     await this.props.fetchAllProjects(); // Fetch to get all projects 
-    await this.setState({ dataReady: true, allProjects: this.props.state.allProjects });
+    //await this.setState({ dataReady: true, allProjects: this.props.state.allProjects });
 
   }
 
@@ -124,7 +124,7 @@ class Projects extends Component {
     let numberOfActive = projects.filter(project => project.isActive).length;
 
     let showModalMsg = false;
-    //console.log("STSTUS",status);
+    console.log("STSTUS", status);
 
     if (status !== 201 && trackModelMsg) {
       showModalMsg = true;

@@ -34,7 +34,19 @@ export const allProjectsReducer = (allProjects = allProjectsInital, action) => {
         fetched: true
       });
       break;
-
+    case types.ADD_NEW_PROJECT:
+      console.log("PAYLOAD ADD", action.payload)
+      if (action.status == 201) {
+        return updateObject(allProjects, {
+          projects: [action.payload].concat(...allProjects.projects),
+          status: action.status
+        });
+      } else {
+        return updateObject(allProjects, {
+          status: action.status
+        });
+      }
+      break;
   }
   return allProjects
 
