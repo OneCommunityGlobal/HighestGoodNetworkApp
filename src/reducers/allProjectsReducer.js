@@ -7,21 +7,34 @@ const allProjectsInital = {
   status: "404"
 }
 
+export const updateObject = (oldObject, updatedProperties) => {
+  return {
+      ...oldObject,
+      ...updatedProperties
+  };
+};
+
 export const allProjectsReducer = (allProjects = allProjectsInital, action) => {
+
+  
 
   switch (action.type){
     case types.FETCH_PROJECTS_START: 
       return {...allProjects, fetching:true}
       break;
-    case types.RECEIVE_PROJECTS: 
-      return {...allProjects, 
-        fetching:false, 
-        fetched: true, 
-        projects: action.payload}
-        break;
     case types.FETCH_PROJECTS_ERROR: 
-      return {...allProjects, fetching: false, status: action.status}
+      console.log("Reducers error", action.payload);
+      return {...allProjects, fetching: false, status: action.payload}
       break
+    case types.RECEIVE_PROJECTS: 
+      console.log("Reducers projects", action.payload);
+      return updateObject(allProjects, {
+        projects: action.payload,
+        fetching:false, 
+        fetched: true
+        });
+        break;
+   
   }
   return allProjects
 

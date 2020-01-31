@@ -2,7 +2,7 @@
  * Action: PROJECTS  
  * Author: Henry Ng - 01/17/20
  ********************************************************************************/
-
+import httpService from '../services/httpService'
 import axios from 'axios' 
 import * as types  from './../constants/projects'
 import { ENDPOINTS } from '../utils/URL'
@@ -15,15 +15,20 @@ import { ENDPOINTS } from '../utils/URL'
  * Call API to get all projects 
  */
 export const fetchAllProjects = () => {
-  const url = ENDPOINTS.PROJECTS();
-  console.log(url);
-  return async dispatch => {
+
+  const request = axios.get(ENDPOINTS.PROJECTS());
+
+  console.log(ENDPOINTS.PROJECTS());
+  console.log(request);
+
+	return async dispatch => {
     await dispatch({type: types.FETCH_PROJECTS_START});
-     axios.get(url)
-     .then((res) => {
-      dispatch({type: types.RECEIVE_PROJECTS, payload: res.data});
-    }).catch((err) => {
-      dispatch({type: types.FETCH_PROJECTS_ERROR, payload: err})
+		request.then(res  => {
+       console.log("RES", res);
+       dispatch({type: types.RECEIVE_PROJECTS, payload: res.data});
+		}).catch((err) => {
+       console.log("Error", err);
+       dispatch({type: types.FETCH_PROJECTS_ERROR, payload: err})
     })
    
   }

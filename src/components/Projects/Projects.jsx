@@ -119,8 +119,6 @@ class Projects extends Component {
     let {showModalDelete,projectTarget,trackModelMsg, allProjects, dataReady} = this.state;
     let {projects, status} = allProjects;
 
-    console.log('all',allProjects);
-
     let numberOfProjects = projects.length;
     let numberOfActive = projects.filter(project => project.isActive).length;
 
