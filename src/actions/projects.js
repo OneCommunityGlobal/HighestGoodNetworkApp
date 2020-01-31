@@ -22,17 +22,15 @@ export const fetchAllProjects = () => {
   console.log(request);
 
   return async dispatch => {
-    await dispatch({ type: types.FETCH_PROJECTS_START });
+    await dispatch(setProjectsStart());
     request.then(res => {
       console.log("RES", res);
       dispatch(setProjects(res.data));
     }).catch((err) => {
       console.log("Error", err);
-      dispatch({ type: types.FETCH_PROJECTS_ERROR, payload: err })
+      dispatch(setProjectsError());
     })
-
   }
-
 }
 
 

@@ -116,8 +116,9 @@ class Projects extends Component {
 
   render() {
 
-    let { showModalDelete, projectTarget, trackModelMsg, allProjects, dataReady } = this.state;
-    let { projects, status } = allProjects;
+    let { showModalDelete, projectTarget, trackModelMsg } = this.state;
+    let { projects, status, fetching } = this.props.state.allProjects;
+
 
     let numberOfProjects = projects.length;
     let numberOfActive = projects.filter(project => project.isActive).length;
@@ -149,6 +150,7 @@ class Projects extends Component {
     return (
       <React.Fragment>
         <div className='container'>
+          {fetching ? <Loading /> : null}
           <Overview numberOfProjects={numberOfProjects} numberOfActive={numberOfActive} />
           <AddProject addNewProject={this.addNewProjectLocal} />
           <table className="table table-bordered table-responsive-sm">
