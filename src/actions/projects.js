@@ -99,18 +99,20 @@ export const deleteProject = (projectId) => {
 }
 
 
-export const setActiveProject = (projectId, projectName, isActive) => {
+export const modifyProject = (type, projectId, projectName, isActive) => {
   const url = ENDPOINTS.PROJECT() + projectId;
-
   console.log("set Active", projectId, projectName, isActive);
 
+  if (type == "setActive") {
+    isActive = !isActive;
+  }
   return async dispatch => {
     let status = 200;
 
     try {
       const res = await axios.put(url, {
         "projectName": projectName,
-        "isActive": !(isActive)
+        "isActive": isActive
       })
       status = res.status;
 
@@ -119,7 +121,7 @@ export const setActiveProject = (projectId, projectName, isActive) => {
       status = 400;
     }
 
-    dispatch(updateProject(types.SET_ACTIVE_PROJECT, projectId, projectName, isActive, status));
+    dispatch(updateProject(projectId, projectName, isActive, status));
 
   }
 }
@@ -179,10 +181,11 @@ export const removeProject = (projectId, status) => {
 }
 
 
-export const updateProject = (type, projectId, projectName, isActive, status) => {
-  console.log("PLAIN OBJU", type, projectId, projectName, isActive, status);
+export const updateProject = (projectId, projectName, isActive, status) => {
+  console.log("PLAIN OBJU", projectId, projectName, isActive, status);
+
   return {
-    type,
+    type: types.UPDATE_PROJECT,
     projectId,
     projectName,
     isActive,

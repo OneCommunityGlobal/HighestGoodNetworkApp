@@ -18,6 +18,7 @@ export const allProjectsReducer = (allProjects = allProjectsInital, action) => {
 
 
 
+
   switch (action.type) {
     case types.FETCH_PROJECTS_START:
       return { ...allProjects, fetching: true }
@@ -56,6 +57,17 @@ export const allProjectsReducer = (allProjects = allProjectsInital, action) => {
         );
       }
       break;
+    case types.UPDATE_PROJECT:
+      let index = allProjects.projects.findIndex(project => project._id == action.projectId);
+      return updateObject(allProjects, {
+        projects: Object.assign([...allProjects.projects.slice(0, index), {
+          _id: action.projectId,
+          isActive: action.isActive,
+          projectName: action.projectName
+        }, ...allProjects.projects.slice(index + 1)])
+      });
+
+
   }
   return allProjects
 

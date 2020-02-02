@@ -6,18 +6,32 @@ import { NavItem } from 'reactstrap'
 import Members from './../Members'
 const Project = (props) => {
 
+  const [originName] = useState(props.name)
   const [name, setName] = useState(props.name);
-  const [active, setActive] = useState(props.active);
+  const [active] = useState(props.active);
 
   const updateActive = () => {
-    //setActive(!active);
-    props.onClickActive(props.projectId, props.name, active)
+    props.onClickActive(props.projectId, name, active)
   }
+
+
+  const updateProjectName = () => {
+    if (name.length < 3) {
+      setName(originName);
+    } else if (originName != name) {
+      props.onUpdateProjectName(props.projectId, name, active);
+    }
+  }
+
 
   return (
     <tr className="projects__tr" id={"tr_" + props.projectId}>
       <th className='projects__order--input' scope="row"><div>{props.index + 1}</div></th>
-      <td className='projects__name--input'><input type="text" className="form-control" value={name} onChange={e => setName(e.target.value)} /></td>
+      <td className='projects__name--input'>
+        <input type="text" className="form-control" value={name}
+          onChange={e => setName(e.target.value)}
+          onBlur={updateProjectName} />
+      </td>
       <td className='projects__active--input' onClick={updateActive}>
         {props.active ?
           <div className="isActive"><i className="fa fa-circle" aria-hidden="true"></i></div> :

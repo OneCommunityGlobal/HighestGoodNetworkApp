@@ -10,7 +10,7 @@
  * DO NOT WORK ON THE ACTIVE YET ******
  ********************************************************************************/
 import React, { Component } from 'react'
-import { fetchAllProjects, postNewProject, deleteProject, setActiveProject } from '../../actions/projects'
+import { fetchAllProjects, postNewProject, deleteProject, modifyProject } from '../../actions/projects'
 import Overview from './Overview'
 import AddProject from './AddProject'
 import ProjectTableHeader from './ProjectTableHeader'
@@ -48,7 +48,12 @@ class Projects extends Component {
    * Changes the number of active projects 
    */
   onClickActive = (projectId, projectName, isActive) => {
-    this.props.setActiveProject(projectId, projectName, isActive);
+    this.props.modifyProject("setActive", projectId, projectName, isActive);
+  }
+
+  onUpdateProjectName = (projectId, projectName, isActive) => {
+    console.log("out forcus")
+    this.props.modifyProject("updateName", projectId, projectName, isActive);
   }
 
   /**
@@ -112,6 +117,7 @@ class Projects extends Component {
         name={project.projectName}
         active={project.isActive}
         onClickActive={this.onClickActive}
+        onUpdateProjectName={this.onUpdateProjectName}
         onClickDelete={this.onClickDelete}
         confirmDelete={this.confirmDelete}
 
@@ -161,4 +167,4 @@ class Projects extends Component {
 }
 
 const mapStateToProps = state => { return { state } }
-export default connect(mapStateToProps, { fetchAllProjects, postNewProject, deleteProject, setActiveProject })(Projects)
+export default connect(mapStateToProps, { fetchAllProjects, postNewProject, deleteProject, modifyProject })(Projects)
