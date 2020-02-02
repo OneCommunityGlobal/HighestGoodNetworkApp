@@ -182,7 +182,6 @@ export const removeProject = (projectId, status) => {
 
 
 export const updateProject = (projectId, projectName, isActive, status) => {
-  console.log("PLAIN OBJU", projectId, projectName, isActive, status);
 
   return {
     type: types.UPDATE_PROJECT,
