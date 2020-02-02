@@ -7,7 +7,6 @@
  *         <ProjectTableHeader>
  *         {  <Project>...  } 
  * 
- * DO NOT WORK ON THE ACTIVE YET ******
  ********************************************************************************/
 import React, { Component } from 'react'
 import { fetchAllProjects, postNewProject, deleteProject, modifyProject } from '../../actions/projects'
