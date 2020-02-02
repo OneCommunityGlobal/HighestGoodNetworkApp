@@ -80,7 +80,7 @@ const ModalExample = props => {
 				</Button>
 
 				{confirmModal != null ? <Button color="danger" onClick={confirmModal}>Confirm</Button> : null}
-				{setInactiveModal != null ? <Button color="warning" onClick={setInactiveModal}>Inactive</Button> : null}
+				{setInactiveModal != null ? <Button color="warning" onClick={setInactiveModal}>Set inactive</Button> : null}
 
 				{type === 'input' && (
 					<Button

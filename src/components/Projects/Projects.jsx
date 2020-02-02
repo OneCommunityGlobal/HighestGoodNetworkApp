@@ -52,7 +52,6 @@ class Projects extends Component {
   }
 
   onUpdateProjectName = (projectId, projectName, isActive) => {
-    console.log("out forcus")
     this.props.modifyProject("updateName", projectId, projectName, isActive);
   }
 
@@ -81,6 +80,10 @@ class Projects extends Component {
   }
 
   setInactiveProject = () => {
+    let { projectId, projectName } = this.state.projectTarget;
+    this.props.modifyProject("setActive", projectId, projectName, true);
+    // disable modal 
+    this.setState({ showModalDelete: false });
 
   }
 
@@ -102,7 +105,7 @@ class Projects extends Component {
     let numberOfActive = projects.filter(project => project.isActive).length;
 
     let showModalMsg = false;
-    console.log("STSTUS", status);
+    //console.log("STSTUS", status);
 
     if (status !== 201 && trackModelMsg) {
       showModalMsg = true;
@@ -150,7 +153,8 @@ class Projects extends Component {
           confirmModal={() => this.confirmDelete()}
           setInactiveModal={() => this.setInactiveProject()}
           modalMessage={Message.ARE_YOU_SURE_YOU_WANT_TO + Message.DELETE + " \"" + projectTarget.projectName + "\"? "
-            + Message.THIS_ACTION_CAN_NOT_BE_UNDONE + ". " + Message.SWITCH_THEM_TO_INACTIVE_IF_YOU_LIKE_TO_KEEP_THEM_IN_THE_SYSTEM}
+            + Message.THIS_ACTION_CAN_NOT_BE_UNDONE + ". "
+            + Message.SWITCH_THEM_TO_INACTIVE_IF_YOU_LIKE_TO_KEEP_THEM_IN_THE_SYSTEM}
           modalTitle={Message.CONFIRM_DELETION}
         />
 
