@@ -2,6 +2,7 @@ import React from 'react'
 import { getUserProfile } from '../../actions/userProfile'
 import { Link } from 'react-router-dom'
 import { connect } from 'react-redux'
+import Timer from './Timer'
 import {
   LOGO, DASHBOARD, TIMELOG, REPORTS, OTHER_LINKS, 
   USER_MANAGEMENT, PROJECTS, TEAMS, WELCOME, VIEW_PROFILE, UPDATE_PASSWORD, LOGOUT
@@ -52,6 +53,7 @@ class Header extends React.Component {
           {isAuthenticated &&
             <Collapse isOpen={this.state.isOpen} navbar>
             <Nav className='ml-auto' navbar>
+              <Timer/>
               <NavItem>
                 <NavLink tag={Link} to='/dashboard'>
                   {DASHBOARD}

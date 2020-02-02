@@ -1,0 +1,13 @@
+.timer {
+    /* padding-right: 20px; */
+}
+
+.timer button {
+    /* padding-left: 10px; */
+    /* vertical-align: middle; */
+}
+
+.timer .badge {
+    font-size: 1.5rem;
+    /* vertical-align: middle; */
+}
