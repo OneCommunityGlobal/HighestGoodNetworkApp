@@ -47,6 +47,15 @@ export const allProjectsReducer = (allProjects = allProjectsInital, action) => {
         });
       }
       break;
+    case types.DELETE_PROJECT:
+      if (action.status == 200) {
+        let index = allProjects.projects.findIndex(project => project._id == action.projectId);
+        return updateObject(allProjects, {
+          projects: Object.assign([...allProjects.projects.slice(0, index), ...allProjects.projects.slice(index + 1)])
+        }
+        );
+      }
+      break;
   }
   return allProjects
 

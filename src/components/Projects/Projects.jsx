@@ -28,11 +28,6 @@ class Projects extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      dataReady: false,
-      allProjects: {
-        projects: [],
-        status: ''
-      },
       showModalDelete: false,
       showModalMsg: false,
       trackModelMsg: false,
@@ -44,10 +39,8 @@ class Projects extends Component {
     };
   }
 
-  async componentDidMount() {
-    await this.props.fetchAllProjects(); // Fetch to get all projects 
-    //await this.setState({ dataReady: true, allProjects: this.props.state.allProjects });
-
+  componentDidMount() {
+    this.props.fetchAllProjects(); // Fetch to get all projects 
   }
 
 
@@ -55,15 +48,7 @@ class Projects extends Component {
    * Changes the number of active projects 
    */
   onClickActive = (status) => {
-    let { allProjects } = this.state;
-    if (status) {
-      allProjects.numberOfActive--
-    } else {
-      allProjects.numberOfActive++
-    }
-    this.setState({
-      allProjects
-    })
+
   }
 
   /**
@@ -82,31 +67,19 @@ class Projects extends Component {
   }
 
   confirmDelete = () => {
-
     // get project info
-    let { projectId, active } = this.state.projectTarget;
-
-
+    let { projectId } = this.state.projectTarget;
     // request delete on db
     this.props.deleteProject(projectId);
-    this.setState({ allProjects: this.props.state.allProjects });
-
-    // update the states
-    //let {allProjects} = this.state;
-    //allProjects.numberOfProjects--;
-
-    // if the deleted project is active, update it 
-    console.log(active);
-    if (active) {
-      //allProjects.numberOfActive--;
-    }
-    this.setState({
-      showModalDelete: false,
-      //allProjects
-    })
+    // disable modal 
+    this.setState({ showModalDelete: false });
   }
 
-  addNewProjectLocal = (name) => {
+  setInactiveProject = () => {
+
+  }
+
+  addProject = (name) => {
     this.props.postNewProject(name, true);
     this.setState({ trackModelMsg: true });
   }
@@ -152,7 +125,7 @@ class Projects extends Component {
         <div className='container'>
           {fetching ? <Loading /> : null}
           <Overview numberOfProjects={numberOfProjects} numberOfActive={numberOfActive} />
-          <AddProject addNewProject={this.addNewProjectLocal} />
+          <AddProject addNewProject={this.addProject} />
           <table className="table table-bordered table-responsive-sm">
             <thead>
               <ProjectTableHeader />
@@ -169,7 +142,9 @@ class Projects extends Component {
           isOpen={showModalDelete}
           closeModal={() => { this.setState({ showModalDelete: false }) }}
           confirmModal={() => this.confirmDelete()}
-          modalMessage={Message.ARE_YOU_SURE_YOU_WANT_TO + Message.DELETE + " \"" + projectTarget.projectName + "\"?"}
+          setInactiveModal={() => this.setInactiveProject()}
+          modalMessage={Message.ARE_YOU_SURE_YOU_WANT_TO + Message.DELETE + " \"" + projectTarget.projectName + "\"? "
+            + Message.THIS_ACTION_CAN_NOT_BE_UNDONE + ". " + Message.SWITCH_THEM_TO_INACTIVE_IF_YOU_LIKE_TO_KEEP_THEM_IN_THE_SYSTEM}
           modalTitle={Message.CONFIRM_DELETION}
         />
 
