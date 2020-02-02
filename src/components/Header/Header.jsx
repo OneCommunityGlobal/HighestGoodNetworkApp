@@ -53,7 +53,9 @@ class Header extends React.Component {
           {isAuthenticated &&
             <Collapse isOpen={this.state.isOpen} navbar>
             <Nav className='ml-auto' navbar>
-              <Timer/>
+              <NavItem>
+                <Timer/>
+              </NavItem>
               <NavItem>
                 <NavLink tag={Link} to='/dashboard'>
                   {DASHBOARD}

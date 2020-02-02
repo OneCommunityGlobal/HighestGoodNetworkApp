@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import {
   Badge,
   Button,
-  Row
+  Row,
+  ButtonGroup
 } from 'reactstrap'
 import './Timer.css'
 
@@ -36,17 +37,16 @@ const Timer = () => {
   const secondsRemainder = seconds % 60
 
   return (
-      <div className="timer mr-3 my-auto">
+      <div className="timer mr-4 my-auto">
         <Badge className="mr-1 align-middle">
             {hours}:
             {padZero(minutes)}:
             {padZero(secondsRemainder)}
         </Badge>
-        {/* <button className={`button button-primary button-primary-${isActive ? 'active' : 'inactive'}`} onClick={toggle}> */}
-        <Button onClick={toggle} color="primary" className="ml-1 py-1 align-middle">
+        <Button onClick={toggle} color={isActive ? 'primary' : 'success'} className="ml-1 p-1 align-middle">
           {isActive ? 'Pause' : 'Start'}
         </Button>
-        <Button onClick={reset} color="danger" className="ml-1 py-1 align-middle">
+        <Button onClick={reset} color="danger" className="ml-1 p-1 align-middle">
           Stop
         </Button>
       </div>

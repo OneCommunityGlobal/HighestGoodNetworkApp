@@ -1,13 +1,9 @@
-.timer {
-    /* padding-right: 20px; */
-}
-
 .timer button {
-    /* padding-left: 10px; */
-    /* vertical-align: middle; */
+    width: 3.75rem;
+    box-shadow: none !important;
 }
 
 .timer .badge {
     font-size: 1.5rem;
-    /* vertical-align: middle; */
+    font-variant-numeric: tabular-nums;
 }
