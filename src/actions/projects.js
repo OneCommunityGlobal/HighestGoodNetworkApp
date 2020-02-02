@@ -6,6 +6,8 @@ import httpService from '../services/httpService'
 import axios from 'axios'
 import * as types from './../constants/projects'
 import { ENDPOINTS } from '../utils/URL'
+import Project from '../components/Projects/Project'
+import { updateObject } from '../reducers/allProjectsReducer'
 
 /*******************************************
  * ACTION CREATORS 
@@ -81,7 +83,6 @@ export const deleteProject = (projectId) => {
 
   return async dispatch => {
     let status = 200;
-    let _id = projectId;
 
     try {
       const res = await axios.delete(url)
@@ -93,6 +94,32 @@ export const deleteProject = (projectId) => {
     }
 
     dispatch(removeProject(projectId, status));
+
+  }
+}
+
+
+export const setActiveProject = (projectId, projectName, isActive) => {
+  const url = ENDPOINTS.PROJECT() + projectId;
+
+  console.log("set Active", projectId, projectName, isActive);
+
+  return async dispatch => {
+    let status = 200;
+
+    try {
+      const res = await axios.put(url, {
+        "projectName": projectName,
+        "isActive": !(isActive)
+      })
+      status = res.status;
+
+    } catch (err) {
+      console.log("CAN'T Set active", err);
+      status = 400;
+    }
+
+    dispatch(updateProject(types.SET_ACTIVE_PROJECT, projectId, projectName, isActive, status));
 
   }
 }
@@ -147,6 +174,18 @@ export const removeProject = (projectId, status) => {
   return {
     type: types.DELETE_PROJECT,
     projectId,
+    status
+  }
+}
+
+
+export const updateProject = (type, projectId, projectName, isActive, status) => {
+  console.log("PLAIN OBJU", type, projectId, projectName, isActive, status);
+  return {
+    type,
+    projectId,
+    projectName,
+    isActive,
     status
   }
 }

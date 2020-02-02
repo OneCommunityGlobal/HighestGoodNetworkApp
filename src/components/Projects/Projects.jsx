@@ -10,7 +10,7 @@
  * DO NOT WORK ON THE ACTIVE YET ******
  ********************************************************************************/
 import React, { Component } from 'react'
-import { fetchAllProjects, postNewProject, deleteProject } from '../../actions/projects'
+import { fetchAllProjects, postNewProject, deleteProject, setActiveProject } from '../../actions/projects'
 import Overview from './Overview'
 import AddProject from './AddProject'
 import ProjectTableHeader from './ProjectTableHeader'
@@ -47,8 +47,8 @@ class Projects extends Component {
   /**
    * Changes the number of active projects 
    */
-  onClickActive = (status) => {
-
+  onClickActive = (projectId, projectName, isActive) => {
+    this.props.setActiveProject(projectId, projectName, isActive);
   }
 
   /**
@@ -90,7 +90,7 @@ class Projects extends Component {
   render() {
 
     let { showModalDelete, projectTarget, trackModelMsg } = this.state;
-    let { projects, status, fetching } = this.props.state.allProjects;
+    let { projects, status, fetching, fetched } = this.props.state.allProjects;
 
 
     let numberOfProjects = projects.length;
@@ -123,7 +123,7 @@ class Projects extends Component {
     return (
       <React.Fragment>
         <div className='container'>
-          {fetching ? <Loading /> : null}
+          {fetching || !fetched ? <Loading /> : null}
           <Overview numberOfProjects={numberOfProjects} numberOfActive={numberOfActive} />
           <AddProject addNewProject={this.addProject} />
           <table className="table table-bordered table-responsive-sm">
@@ -161,4 +161,4 @@ class Projects extends Component {
 }
 
 const mapStateToProps = state => { return { state } }
-export default connect(mapStateToProps, { fetchAllProjects, postNewProject, deleteProject })(Projects)
+export default connect(mapStateToProps, { fetchAllProjects, postNewProject, deleteProject, setActiveProject })(Projects)
