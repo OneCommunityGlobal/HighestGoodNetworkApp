@@ -5,7 +5,7 @@ import Timelog from './components/Timelog'
 import Reports from './components/Reports'
 import UserProfile from './components/UserProfile'
 import Dashboard from './components/Dashboard'
-import {Logout}  from './components/Logout/Logout'
+import { Logout } from './components/Logout/Logout'
 import Login from './components/Login'
 import ForcePasswordUpdate from './components/ForcePasswordUpdate'
 import ProtectedRoute from './components/common/ProtectedRoute'
@@ -24,7 +24,7 @@ export default (
       <ProtectedRoute path='/timelog/:userId' exact component={Timelog} />
       <ProtectedRoute path='/reports' exact component={Reports} />
       <ProtectedRoute path='/projects' exact component={Projects} />
-      <ProtectedRoute path='/project/members' exact component={Members} />
+      <ProtectedRoute path='/project/members/:projectId' component={Members} />
 
       <Route path='/login' component={Login} />
 

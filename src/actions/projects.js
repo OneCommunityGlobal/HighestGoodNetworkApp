@@ -2,12 +2,9 @@
  * Action: PROJECTS  
  * Author: Henry Ng - 01/17/20
  ********************************************************************************/
-import httpService from '../services/httpService'
 import axios from 'axios'
 import * as types from './../constants/projects'
 import { ENDPOINTS } from '../utils/URL'
-import Project from '../components/Projects/Project'
-import { updateObject } from '../reducers/allProjectsReducer'
 
 /*******************************************
  * ACTION CREATORS 

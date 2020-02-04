@@ -40,7 +40,7 @@ const Project = (props) => {
       <td>
 
 
-        <NavItem tag={Link} to={`/project/members/`}>
+        <NavItem tag={Link} to={`/project/members/${props.projectId}`}>
           <button type="button" className="btn btn-outline-info"> <i className="fa fa-users" aria-hidden="true"></i></button>
         </NavItem>
       </td>
