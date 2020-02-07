@@ -7,7 +7,7 @@
 	"[javascript]": {
 		"editor.formatOnSave": true
 	},
-	"eslint.enable": true,
+	//"eslint.enable": true,
 	// available through eslint plugin in vscode
 	"eslint.autoFixOnSave": true,
 	"eslint.alwaysShowStatus": true,
