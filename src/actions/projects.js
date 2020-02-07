@@ -2,7 +2,6 @@
  * Action: PROJECTS  
  * Author: Henry Ng - 01/17/20
  ********************************************************************************/
-import httpService from '../services/httpService'
 import axios from 'axios'
 import * as types from './../constants/projects'
 import { ENDPOINTS } from '../utils/URL'
@@ -81,7 +80,6 @@ export const deleteProject = (projectId) => {
 
   return async dispatch => {
     let status = 200;
-    let _id = projectId;
 
     try {
       const res = await axios.delete(url)
@@ -93,6 +91,34 @@ export const deleteProject = (projectId) => {
     }
 
     dispatch(removeProject(projectId, status));
+
+  }
+}
+
+
+export const modifyProject = (type, projectId, projectName, isActive) => {
+  const url = ENDPOINTS.PROJECT() + projectId;
+  console.log("set Active", projectId, projectName, isActive);
+
+  if (type == "setActive") {
+    isActive = !isActive;
+  }
+  return async dispatch => {
+    let status = 200;
+
+    try {
+      const res = await axios.put(url, {
+        "projectName": projectName,
+        "isActive": isActive
+      })
+      status = res.status;
+
+    } catch (err) {
+      console.log("CAN'T Set active", err);
+      status = 400;
+    }
+
+    dispatch(updateProject(projectId, projectName, isActive, status));
 
   }
 }
@@ -147,6 +173,18 @@ export const removeProject = (projectId, status) => {
   return {
     type: types.DELETE_PROJECT,
     projectId,
+    status
+  }
+}
+
+
+export const updateProject = (projectId, projectName, isActive, status) => {
+
+  return {
+    type: types.UPDATE_PROJECT,
+    projectId,
+    projectName,
+    isActive,
     status
   }
 }

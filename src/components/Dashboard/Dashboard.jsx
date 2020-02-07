@@ -18,11 +18,6 @@ class Dashboard extends Component {
 					<Col sm={{ offset: 1, size: 7 }}>
 						<Leaderboard />
 					</Col>
-					<Col sm={{ size: 3 }}>
-						<Card body inverse color='info'>
-							<MonthlyEffort />
-						</Card>
-					</Col>
 				</Row>
 			</Container>
 		)

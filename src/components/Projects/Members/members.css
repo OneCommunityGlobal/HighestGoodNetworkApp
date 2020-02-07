@@ -1,3 +1,11 @@
 #member_project__name{
     padding:5px
 }
+
+#members__order{
+    width: 10px;
+}
+
+.members__name{
+    text-align: left;
+}
