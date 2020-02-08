@@ -4,9 +4,11 @@ import Leaderboard from './Leaderboard'
 import getcolor from '../../utils/effortColors'
 import _ from 'lodash'
 const mapStateToProps = state => {
-	//console.log('State=Leaderboard container', state)
+	console.log('State=Leaderboard container', state)
 
 	let leaderBoardData = _.get(state, 'leaderBoardData', [])
+
+	console.log('Leaderboard Unsorted Data', leaderBoardData)
 
 	let maxtotal = _.maxBy(leaderBoardData, 'totaltime_hrs').totaltime_hrs
 	maxtotal = maxtotal === 0 ? 10 : maxtotal
@@ -36,7 +38,8 @@ const mapStateToProps = state => {
 
 	return {
 		isAuthenticated: _.get(state, 'auth.isAuthenticated', false),
-		leaderBoardData: updatedLeaderBoardData
+		leaderBoardData: updatedLeaderBoardData,
+		loggedInUser: _.get(state, 'auth.user', {})
 	}
 }
 export default connect(mapStateToProps, { getLeaderboardData })(Leaderboard)
