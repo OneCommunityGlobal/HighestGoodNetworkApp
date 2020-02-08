@@ -7,10 +7,6 @@ import Leaderboard from '../LeaderBoard'
 import '../../App.css'
 
 class Dashboard extends Component {
-	componentDidMount() {
-		// this.props.auth.user
-	}
-
 	render() {
 		return (
 			<Container>
