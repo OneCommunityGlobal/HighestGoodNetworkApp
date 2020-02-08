@@ -1,14 +1,11 @@
 import httpService from '../services/httpService'
 import { ENDPOINTS } from '../utils/URL'
 import { getLeaderBoardData as getLeaderBoardDataActionCreator } from '../constants/leaderBoardData'
-export const getLeaderboardData = () => {
+export const getLeaderboardData = userId => {
 	//console.log('getLeaderboardData function')
 
-	return async (dispatch, getState) => {
-		const { auth } = getState()
-		console.log('State is ---------------', getState())
-
-		const url = ENDPOINTS.LEADER_BOARD(auth.user.userid)
+	return async dispatch => {
+		const url = ENDPOINTS.LEADER_BOARD(userId)
 		console.log(url)
 		const res = await httpService.get(url)
 

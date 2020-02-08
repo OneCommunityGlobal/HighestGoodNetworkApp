@@ -7,11 +7,11 @@ import Loading from '../common/Loading'
 import getcolor from '../../utils/effortColors'
 import { Table, Badge, Progress, Jumbotron, Button } from 'reactstrap'
 
-const LeaderBoard = ({ getLeaderboardData, leaderBoardData }) => {
-	//console.log('Leaderborad data', leaderBoardData)
+const LeaderBoard = ({ getLeaderboardData, leaderBoardData, loggedInUser }) => {
+	console.log('Logged in User userid ', loggedInUser.userid)
 
 	useEffect(() => {
-		getLeaderboardData()
+		getLeaderboardData(loggedInUser.userid)
 	}, [leaderBoardData.length])
 	return (
 		<Table>
