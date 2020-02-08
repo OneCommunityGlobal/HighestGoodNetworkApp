@@ -7,12 +7,14 @@ import React, { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { NavItem } from 'reactstrap'
 import { connect } from 'react-redux'
-import { fetchAllMembers } from './../../../actions/projectMembers'
+import { fetchAllMembers, findUserProfiles } from './../../../actions/projectMembers'
 import Member from './Member'
+import FoundUser from './FoundUser'
 import './members.css'
 
 const Members = (props) => {
     const [init, setInit] = useState(false);
+    let [keyword, setKeyword] = useState('');
     const projectId = props.match.params.projectId;
 
     if (!init) {
@@ -39,6 +41,43 @@ const Members = (props) => {
 
                     </ol>
                 </nav>
+
+                <div className="input-group" id="new_project">
+                    <div className="input-group-prepend">
+                        <span className="input-group-text" >Find user</span>
+                    </div>
+
+                    <input type="text" className="form-control" aria-label="New Project" placeholder="Project Name" onChange={(e) => setKeyword(e.target.value)} />
+                    <div className="input-group-append">
+                        <button className="btn btn-outline-primary" type="button" onClick={(e) => props.findUserProfiles(keyword)}>
+                            <i className="fa fa-search" aria-hidden="true"></i>
+                        </button>
+
+                    </div>
+                </div>
+
+                {props.state.projectMembers.foundUsers.length === 0 ? null :
+
+                    < table className="table table-bordered table-responsive-sm">
+                        <thead>
+                            <tr>
+                                <th scope="col" id="foundUsers__order">#</th>
+                                <th scope="col" >Name</th>
+                                <th scope="col" >Email</th>
+                                <th scope="col" >Assign</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {
+                                props.state.projectMembers.foundUsers.map((user, i) =>
+                                    <FoundUser index={i} key={user._id} uid={user._id} email={user.email} fullName={user.firstName + " " + user.lastName} />)}
+
+
+                        </tbody>
+                    </table>
+                }
+
+
                 <table className="table table-bordered table-responsive-sm">
                     <thead>
                         <tr>
@@ -50,16 +89,16 @@ const Members = (props) => {
                     </thead>
                     <tbody>
                         {props.state.projectMembers.members.map((member, i) =>
-                            <Member index={i} key={member._id} fullName={member.firstName + " " + member.lastName} />)}
+                            <Member index={i} key={member._id} uid={member._id} fullName={member.firstName + " " + member.lastName} />)}
                     </tbody>
                 </table>
             </div>
 
-        </React.Fragment>
+        </React.Fragment >
     )
 }
 
 
 const mapStateToProps = state => { return { state } }
-export default connect(mapStateToProps, { fetchAllMembers })(Members)
+export default connect(mapStateToProps, { fetchAllMembers, findUserProfiles })(Members)
 
