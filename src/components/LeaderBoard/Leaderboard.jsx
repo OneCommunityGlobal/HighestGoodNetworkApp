@@ -5,10 +5,10 @@ import { Link } from 'react-router-dom'
 import Loading from '../common/Loading'
 
 import getcolor from '../../utils/effortColors'
-import { Table, Badge, Progress, Jumbotron, Button } from 'reactstrap'
+import { Table, Badge, Progress } from 'reactstrap'
 
 const LeaderBoard = ({ getLeaderboardData, leaderBoardData, loggedInUser }) => {
-	console.log('Logged in User userid ', loggedInUser.userid)
+	//console.log('Logged in User userid ', loggedInUser.userid)
 
 	useEffect(() => {
 		getLeaderboardData(loggedInUser.userid)
@@ -26,7 +26,7 @@ const LeaderBoard = ({ getLeaderboardData, leaderBoardData, loggedInUser }) => {
 			</thead>
 			<tbody>
 				{leaderBoardData.map((item, key) => (
-					<tr>
+					<tr key={key}>
 						<td>
 							<div
 								style={{
@@ -37,7 +37,6 @@ const LeaderBoard = ({ getLeaderboardData, leaderBoardData, loggedInUser }) => {
 								}}></div>
 						</td>
 						<th scope='row'>
-							{' '}
 							<Link to={`/userprofile/${item.personId}`}>{item.name}</Link>
 						</th>
 						<td>{item.intangibletime}</td>
