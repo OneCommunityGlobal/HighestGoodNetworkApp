@@ -106,7 +106,10 @@ const Members = (props) => {
                     </thead>
                     <tbody>
                         {props.state.projectMembers.members.map((member, i) =>
-                            <Member index={i} key={member._id} uid={member._id} fullName={member.firstName + " " + member.lastName} />)}
+                            <Member index={i} key={member._id}
+                                projectId={projectId}
+                                uid={member._id}
+                                fullName={member.firstName + " " + member.lastName} />)}
                     </tbody>
                 </table>
             </div>

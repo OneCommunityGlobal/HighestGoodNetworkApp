@@ -74,21 +74,26 @@ export const fetchAllMembers = (projectId) => {
  */
 export const assignProject = (projectId, userId, operation, firstName, lastName) => {
 
-  const users = [[userId, operation]];
-  //const request = axios.post(ENDPOINTS.PROJECT_MEMBER(projectId), users);
-  /***** NOT WORKING , CREATED A FAKE REQUEST  */
-  const request = axios.get(ENDPOINTS.PROJECT_MEMBER(projectId));
-
-  //console.log(request);
+  const request = axios.post(ENDPOINTS.PROJECT_MEMBER(projectId), {
+    projectId: projectId,
+    users: [{
+      userId,
+      operation
+    }]
+  });
 
   return async dispatch => {
     request.then(res => {
       //console.log("RES", res);
-      dispatch(assignNewMember({
-        _id: userId,
-        firstName,
-        lastName
-      }));
+      if (operation === "Assign") {
+        dispatch(assignNewMember({
+          _id: userId,
+          firstName,
+          lastName
+        }));
+      } else {
+        dispatch(deleteMember(userId));
+      }
     }).catch((err) => {
       //console.log("Error", err);
       dispatch(addNewMemberError(err));
@@ -183,6 +188,18 @@ export const assignNewMember = (member) => {
   return {
     type: types.ADD_NEW_MEMBER,
     member
+  }
+}
+
+
+/**
+ * remove a member from project
+ * @param member : {}
+ */
+export const deleteMember = (userId) => {
+  return {
+    type: types.DELETE_MEMBER,
+    userId
   }
 }
 

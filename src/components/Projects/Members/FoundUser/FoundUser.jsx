@@ -9,9 +9,10 @@ import { assignProject } from './../../../../actions/projectMembers'
 
 const FoundUser = (props) => {
 
+
+
   return (
     <React.Fragment>
-
       <tr className="members__tr">
         <th scope="row"><div>{props.index + 1}</div></th>
         <td className='foundUsers__order'>
@@ -26,12 +27,17 @@ const FoundUser = (props) => {
           {props.assigned ?
             null
             :
-            <button className="btn btn-outline-primary btn-sm" type="button" onClick={(e) => props.assignProject(props.projectId, props.uid, "assign", props.firstName, props.lastName)}>
+            <button className="btn btn-outline-primary btn-sm" type="button" onClick={(e) => props.assignProject(props.projectId, props.uid, "Assign", props.firstName, props.lastName)}>
               <i className="fa fa-plus" aria-hidden="true"></i>
             </button>
           }
         </td>
+
+
+
       </tr>
+
+
     </React.Fragment>
   )
 }

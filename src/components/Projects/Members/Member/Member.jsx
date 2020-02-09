@@ -4,11 +4,11 @@
  * Display member of the members list 
  ********************************************************************************/
 import React from 'react'
+import { connect } from 'react-redux'
+import { assignProject } from './../../../../actions/projectMembers'
+
 const Member = (props) => {
 
-  const unAssignMember = () => {
-
-  }
   return (
     <React.Fragment>
 
@@ -21,7 +21,7 @@ const Member = (props) => {
         </td>
 
         <td className='members__assign'>
-          <button className="btn btn-outline-danger btn-sm" type="button" onClick={(e) => props.unAssignMember(props.uid)}>
+          <button className="btn btn-outline-danger btn-sm" type="button" onClick={(e) => props.assignProject(props.projectId, props.uid, "unAssign", props.firstName, props.lastName)}>
             <i className="fa fa-minus" aria-hidden="true"></i>
           </button>
         </td>
@@ -31,5 +31,5 @@ const Member = (props) => {
   )
 }
 
-export default Member
+export default connect(null, { assignProject })(Member)
 
