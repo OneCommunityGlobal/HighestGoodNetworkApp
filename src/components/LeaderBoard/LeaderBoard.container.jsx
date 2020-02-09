@@ -10,35 +10,37 @@ const mapStateToProps = state => {
 
 	console.log('Leaderboard Unsorted Data', leaderBoardData)
 
-	let maxtotal = _.maxBy(leaderBoardData, 'totaltime_hrs').totaltime_hrs
-	maxtotal = maxtotal === 0 ? 10 : maxtotal
+	if (leaderBoardData.length) {
+		let maxtotal = _.maxBy(leaderBoardData, 'totaltime_hrs').totaltime_hrs
+		maxtotal = maxtotal === 0 ? 10 : maxtotal
 
-	const updatedLeaderBoardData = leaderBoardData.map(element => {
-		element.didMeetWeeklyCommitment =
-			element.totaltangibletime_hrs >= element.weeklyComittedHours ? true : false
+		leaderBoardData = leaderBoardData.map(element => {
+			element.didMeetWeeklyCommitment =
+				element.totaltangibletime_hrs >= element.weeklyComittedHours ? true : false
 
-		element.weeklycommited = _.round(element.weeklyComittedHours, 2)
+			element.weeklycommited = _.round(element.weeklyComittedHours, 2)
 
-		element.tangibletime = _.round(element.totaltangibletime_hrs, 2)
-		element.intangibletime = _.round(element.totalintangibletime_hrs, 2)
-		element.tangibletimewidth = _.round(
-			(element.totaltangibletime_hrs * 100) / maxtotal,
-			0
-		)
-		element.intangibletimewidth = _.round(
-			(element.totalintangibletime_hrs * 100) / maxtotal,
-			0
-		)
-		element.tangiblebarcolor = getcolor(element.totaltangibletime_hrs)
-		element.totaltime = _.round(element.totaltime_hrs, 2)
-		return element
-	})
+			element.tangibletime = _.round(element.totaltangibletime_hrs, 2)
+			element.intangibletime = _.round(element.totalintangibletime_hrs, 2)
+			element.tangibletimewidth = _.round(
+				(element.totaltangibletime_hrs * 100) / maxtotal,
+				0
+			)
+			element.intangibletimewidth = _.round(
+				(element.totalintangibletime_hrs * 100) / maxtotal,
+				0
+			)
+			element.tangiblebarcolor = getcolor(element.totaltangibletime_hrs)
+			element.totaltime = _.round(element.totaltime_hrs, 2)
+			return element
+		})
+	}
 
-	console.log(updatedLeaderBoardData)
+	console.log(leaderBoardData)
 
 	return {
 		isAuthenticated: _.get(state, 'auth.isAuthenticated', false),
-		leaderBoardData: updatedLeaderBoardData,
+		leaderBoardData: leaderBoardData,
 		loggedInUser: _.get(state, 'auth.user', {})
 	}
 }
