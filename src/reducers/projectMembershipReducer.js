@@ -29,8 +29,11 @@ export const projectMembershipReducer = (allMembership = allMembershipInital, ac
     case types.ADD_NEW_MEMBER_ERROR:
       return { ...allMembership, fetched: true, fetching: false, error: action.err }
     case types.DELETE_MEMBER:
-      let index = allMembership.members.findIndex(member => member._id === action.userId);
-      return { ...allMembership, members: [...allMembership.members.slice(0, index), ...allMembership.members.slice(index + 1)] }
+      let indexMember = allMembership.members.findIndex(member => member._id === action.userId);
+      return { ...allMembership, members: [...allMembership.members.slice(0, indexMember), ...allMembership.members.slice(indexMember + 1)] }
+    case types.REMOVE_FOUND_USER:
+      let indexUser = allMembership.foundUsers.findIndex(user => user._id === action.userId);
+      return { ...allMembership, foundUsers: [...allMembership.foundUsers.slice(0, indexUser), ...allMembership.foundUsers.slice(indexUser + 1)] }
 
   }
   return allMembership;

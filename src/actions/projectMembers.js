@@ -91,6 +91,7 @@ export const assignProject = (projectId, userId, operation, firstName, lastName)
           firstName,
           lastName
         }));
+        dispatch(removeFoundUser(userId))
       } else {
         dispatch(deleteMember(userId));
       }
@@ -194,11 +195,22 @@ export const assignNewMember = (member) => {
 
 /**
  * remove a member from project
- * @param member : {}
+ * @param userId : _id 
  */
 export const deleteMember = (userId) => {
   return {
     type: types.DELETE_MEMBER,
+    userId
+  }
+}
+
+/**
+ * remove found user after assign
+ * @param userId : _id
+ */
+export const removeFoundUser = (userId) => {
+  return {
+    type: types.REMOVE_FOUND_USER,
     userId
   }
 }
