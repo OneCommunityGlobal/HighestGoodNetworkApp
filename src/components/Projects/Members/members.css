@@ -10,6 +10,11 @@
     text-align: left;
 }
 
+.members__assign{
+    width: 20px;
+    text-align: center;
+}
+
 
 #foundUsers__order{
     width: 10px;

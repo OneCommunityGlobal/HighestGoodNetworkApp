@@ -5,7 +5,8 @@
 import axios from 'axios'
 import * as types from './../constants/projectMembership'
 import { ENDPOINTS } from '../utils/URL'
-
+import { useRowSelect } from 'react-table';
+import store from './../store'
 /*******************************************
  * ACTION CREATORS 
  *******************************************/
@@ -19,12 +20,21 @@ export const findUserProfiles = (keyword) => {
   const request = axios.get(ENDPOINTS.USER_PROFILES());
   console.log(request);
 
-  return async dispatch => {
+  return async (dispatch, getState) => {
     await dispatch(findUsersStart());
     request.then(res => {
       console.log("FOUND USER ", res);
       if (keyword.trim() !== "") {
-        let users = res.data.filter(user => (user.firstName + " " + user.lastName).toLowerCase().includes(keyword.toLowerCase()))
+        let users = res.data.filter(user => (user.firstName + " " + user.lastName).toLowerCase().includes(keyword.toLowerCase()));
+        let members = getState().projectMembers.members;
+        users = users.map((user) => {
+          if (!members.find(member => member._id === user._id)) {
+            return user = { ...user, assigned: false }
+          } else {
+            return user = { ...user, assigned: true }
+          }
+        })
+        console.log(users);
         dispatch(foundUsers(users));
       } else {
         dispatch(foundUsers([]));
@@ -43,21 +53,49 @@ export const fetchAllMembers = (projectId) => {
 
   const request = axios.get(ENDPOINTS.PROJECT_MEMBER(projectId));
 
-  console.log(ENDPOINTS.PROJECT_MEMBER());
-  console.log(request);
+  //console.log(ENDPOINTS.PROJECT_MEMBER());
+  //console.log(request);
 
   return async dispatch => {
     await dispatch(setMemberStart());
     await dispatch(foundUsers([]));
     request.then(res => {
-      console.log("RES", res);
+      //console.log("RES", res);
       dispatch(setMembers(res.data));
     }).catch((err) => {
-      console.log("Error", err);
+      //console.log("Error", err);
       dispatch(setMembersError(err));
     })
   }
 }
+
+/**
+ * Call API to assign/ unassign project 
+ */
+export const assignProject = (projectId, userId, operation, firstName, lastName) => {
+
+  const users = [[userId, operation]];
+  //const request = axios.post(ENDPOINTS.PROJECT_MEMBER(projectId), users);
+  /***** NOT WORKING , CREATED A FAKE REQUEST  */
+  const request = axios.get(ENDPOINTS.PROJECT_MEMBER(projectId));
+
+  //console.log(request);
+
+  return async dispatch => {
+    request.then(res => {
+      //console.log("RES", res);
+      dispatch(assignNewMember({
+        _id: userId,
+        firstName,
+        lastName
+      }));
+    }).catch((err) => {
+      //console.log("Error", err);
+      dispatch(addNewMemberError(err));
+    })
+  }
+}
+
 
 
 /*******************************************
@@ -132,3 +170,30 @@ export const findUsersError = (err) => {
     err
   }
 }
+
+
+
+
+/**
+ * add new member to project
+ * @param member : {}
+ */
+export const assignNewMember = (member) => {
+  console.log("new member", member);
+  return {
+    type: types.ADD_NEW_MEMBER,
+    member
+  }
+}
+
+/**
+ * Error when add new member
+ * @param payload : error status code 
+ */
+export const addNewMemberError = (err) => {
+  return {
+    type: types.ADD_NEW_MEMBER_ERROR,
+    err
+  }
+}
+

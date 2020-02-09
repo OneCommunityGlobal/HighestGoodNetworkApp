@@ -5,6 +5,10 @@
  ********************************************************************************/
 import React from 'react'
 const Member = (props) => {
+
+  const unAssignMember = () => {
+
+  }
   return (
     <React.Fragment>
 
@@ -15,10 +19,13 @@ const Member = (props) => {
             {props.fullName}
           </a>
         </td>
-        <td >
 
-
+        <td className='members__assign'>
+          <button className="btn btn-outline-danger btn-sm" type="button" onClick={(e) => props.unAssignMember(props.uid)}>
+            <i className="fa fa-minus" aria-hidden="true"></i>
+          </button>
         </td>
+
       </tr>
     </React.Fragment>
   )

@@ -24,6 +24,10 @@ export const projectMembershipReducer = (allMembership = allMembershipInital, ac
       return { ...allMembership, fetched: true, fetching: false, error: action.err }
     case types.FOUND_USERS:
       return { ...allMembership, foundUsers: action.users, fetched: true, fetching: false, error: "none" }
+    case types.ADD_NEW_MEMBER:
+      return { ...allMembership, members: [action.member, ...allMembership.members] }
+    case types.ADD_NEW_MEMBER_ERROR:
+      return { ...allMembership, fetched: true, fetching: false, error: action.err }
 
   }
   return allMembership;

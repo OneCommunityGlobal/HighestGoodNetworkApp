@@ -1,9 +1,8 @@
 import React, { useState } from 'react'
 import { DELETE } from './../../../languages/en/ui'
 import './../projects.css'
-import { Route, Link } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import { NavItem } from 'reactstrap'
-import Members from './../Members'
 const Project = (props) => {
 
   const [originName] = useState(props.name)
@@ -18,7 +17,7 @@ const Project = (props) => {
   const updateProjectName = () => {
     if (name.length < 3) {
       setName(originName);
-    } else if (originName != name) {
+    } else if (originName !== name) {
       props.onUpdateProjectName(props.projectId, name, active);
     }
   }

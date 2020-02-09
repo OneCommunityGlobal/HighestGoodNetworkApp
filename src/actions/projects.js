@@ -100,7 +100,7 @@ export const modifyProject = (type, projectId, projectName, isActive) => {
   const url = ENDPOINTS.PROJECT() + projectId;
   console.log("set Active", projectId, projectName, isActive);
 
-  if (type == "setActive") {
+  if (type === "setActive") {
     isActive = !isActive;
   }
   return async dispatch => {

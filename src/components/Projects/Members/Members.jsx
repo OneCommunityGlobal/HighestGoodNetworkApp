@@ -22,6 +22,12 @@ const Members = (props) => {
         setInit(true);
     }
 
+    const pressEnter = (event, keyword) => {
+        if (event.key === "Enter") {
+            props.findUserProfiles(keyword);
+        }
+    }
+
 
     return (
         <React.Fragment>
@@ -47,9 +53,13 @@ const Members = (props) => {
                         <span className="input-group-text" >Find user</span>
                     </div>
 
-                    <input type="text" className="form-control" aria-label="New Project" placeholder="Project Name" onChange={(e) => setKeyword(e.target.value)} />
+                    <input type="text" className="form-control" aria-label="Search user" placeholder="Name"
+                        onChange={(e) => setKeyword(e.target.value)}
+                        onKeyPress={(e) => pressEnter(e, keyword)}
+                    />
                     <div className="input-group-append">
-                        <button className="btn btn-outline-primary" type="button" onClick={(e) => props.findUserProfiles(keyword)}>
+                        <button className="btn btn-outline-primary" type="button"
+                            onClick={(e) => props.findUserProfiles(keyword)}>
                             <i className="fa fa-search" aria-hidden="true"></i>
                         </button>
 
@@ -70,7 +80,14 @@ const Members = (props) => {
                         <tbody>
                             {
                                 props.state.projectMembers.foundUsers.map((user, i) =>
-                                    <FoundUser index={i} key={user._id} uid={user._id} email={user.email} fullName={user.firstName + " " + user.lastName} />)}
+                                    <FoundUser index={i} key={user._id}
+                                        projectId={projectId}
+                                        uid={user._id}
+                                        email={user.email}
+                                        firstName={user.firstName}
+                                        lastName={user.lastName}
+                                        assigned={user.assigned}
+                                    />)}
 
 
                         </tbody>
