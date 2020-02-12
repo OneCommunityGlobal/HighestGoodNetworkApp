@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import React from 'react'
 
 import { Card, Row, CardTitle, CardText, Col, Badge } from 'reactstrap'
 const WorkHistory = () => (

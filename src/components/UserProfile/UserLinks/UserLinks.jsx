@@ -1,6 +1,6 @@
-import React, { Component } from 'react'
+import React from 'react'
 
-import { Card, Row, CardTitle, CardText, Col, Badge, Button, CardBody } from 'reactstrap'
+import { Card, CardTitle, CardText, Badge, Button, CardBody } from 'reactstrap'
 
 const UserLinks = ({
 	linkType,
