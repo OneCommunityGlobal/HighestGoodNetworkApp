@@ -13,7 +13,7 @@ import { actionItemsReducer } from './actionItemsReducer'
 import { notificationsReducer } from './notificationsReducer'
 import { allProjectsReducer } from './allProjectsReducer'
 import { projectByIdReducer } from './projectByIdReducer'
-import { projectsByUserReducer } from './projectsByUserReducer'
+import { userProjectsReducer } from './userProjectsReducer'
 import { projectMembershipReducer } from './projectMembershipReducer'
 import { allTeamsReducer } from './allTeamsReducer'
 import { teamByIdReducer } from './teamByIdReducer'
@@ -22,6 +22,7 @@ import { timeEntriesForSpecifiedProjectReducer } from './timeEntriesForSpecified
 import { allTimeEntriesReducer } from './allTimeEntriesReducer'
 import { timeEntriesForSpecifiedPeriodReducer } from './timeEntriesForSpecifiedPeriodReducer'
 import { errorsReducer } from './errorsReducer'
+import { timeEntriesReducer } from './timeEntriesReducer'
 
 export default combineReducers({
 	auth: authReducer,
@@ -37,7 +38,7 @@ export default combineReducers({
 	//	notifications: notificationsReducer,
 	allProjects: allProjectsReducer,
 	//project: projectByIdReducer,
-	//userProjects: projectsByUserReducer,
+  userProjects: userProjectsReducer,
 	projectMembers: projectMembershipReducer,
 	//allTeams: allTeamsReducer,
 	//team: teamByIdReducer,
@@ -46,5 +47,6 @@ export default combineReducers({
 	//userTimeEntries: timeEntriesForSpecifiedPeriodReducer,
 	//projectTimeEntries: timeEntriesForSpecifiedProjectReducer,
 	//requestStatus: handleSuccessReducer,
-	errors: errorsReducer
+	errors: errorsReducer,
+  timeEntries: timeEntriesReducer
 })
