@@ -14,22 +14,21 @@ import { ENDPOINTS } from '../utils/URL'
  * Call API to get all projects
  */
 export const fetchAllProjects = () => {
-	const request = axios.get(ENDPOINTS.PROJECTS())
 
-	console.log(ENDPOINTS.PROJECTS())
-	console.log(request)
+	const request = axios.get(ENDPOINTS.PROJECTS);
+
+	console.log(ENDPOINTS.PROJECTS);
+	console.log(request);
 
 	return async dispatch => {
-		await dispatch(setProjectsStart())
-		request
-			.then(res => {
-				console.log('RES', res)
-				dispatch(setProjects(res.data))
-			})
-			.catch(err => {
-				console.log('Error', err)
-				dispatch(setProjectsError())
-			})
+		await dispatch(setProjectsStart());
+		request.then(res => {
+			console.log("RES", res);
+			dispatch(setProjects(res.data));
+		}).catch((err) => {
+			console.log("Error", err);
+			dispatch(setProjectsError());
+		})
 	}
 }
 
@@ -39,31 +38,33 @@ export const fetchAllProjects = () => {
  * @param {isActive}: the active status of new project
  */
 export const postNewProject = (projectName, isActive) => {
-	const url = ENDPOINTS.PROJECTS()
-	console.log('Call API: ', url)
+	const url = ENDPOINTS.PROJECTS;
+	console.log("Call API: ", url);
 	return async dispatch => {
-		let status = 200
-		let _id = null
+		let status = 200;
+		let _id = null;
 
 		try {
 			const res = await axios.post(url, { projectName, isActive })
-			_id = res.data._id
-			status = res.status
+			_id = res.data._id;
+			status = res.status;
+
 		} catch (err) {
-			console.log('TRY CATCH ERR', err)
-			status = 400
+			console.log("TRY CATCH ERR", err);
+			status = 400;
 		}
 
 		dispatch(
 			addNewProject(
 				{
-					_id: _id,
-					projectName: projectName,
-					isActive: isActive
+					"_id": _id,
+					"projectName": projectName,
+					"isActive": isActive
+
 				},
 				status
-			)
-		)
+			));
+
 	}
 }
 
@@ -71,8 +72,10 @@ export const postNewProject = (projectName, isActive) => {
  * Post new project to DB
  * @param {projectId}: Id of deleted project
  */
-export const deleteProject = projectId => {
-	const url = ENDPOINTS.PROJECT() + projectId
+export const deleteProject = (projectId) => {
+	const url = ENDPOINTS.PROJECT + projectId;
+
+	console.log("Delete", projectId);
 
 	console.log('Delete', projectId)
 
@@ -92,27 +95,29 @@ export const deleteProject = projectId => {
 }
 
 export const modifyProject = (type, projectId, projectName, isActive) => {
-	const url = ENDPOINTS.PROJECT() + projectId
-	console.log('set Active', projectId, projectName, isActive)
+	const url = ENDPOINTS.PROJECT + projectId;
+	console.log("set Active", projectId, projectName, isActive);
 
-	if (type === 'setActive') {
-		isActive = !isActive
+	if (type === "setActive") {
+		isActive = !isActive;
 	}
 	return async dispatch => {
-		let status = 200
+		let status = 200;
 
 		try {
 			const res = await axios.put(url, {
-				projectName: projectName,
-				isActive: isActive
+				"projectName": projectName,
+				"isActive": isActive
 			})
-			status = res.status
+			status = res.status;
+
 		} catch (err) {
-			console.log("CAN'T Set active", err)
-			status = 400
+			console.log("CAN'T Set active", err);
+			status = 400;
 		}
 
-		dispatch(updateProject(projectId, projectName, isActive, status))
+		dispatch(updateProject(projectId, projectName, isActive, status));
+
 	}
 }
 
