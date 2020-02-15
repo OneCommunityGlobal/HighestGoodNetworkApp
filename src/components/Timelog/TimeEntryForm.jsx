@@ -8,6 +8,10 @@ import {
     Row,
     Col,
     Button,
+    Modal,
+    ModalHeader,
+    ModalBody,
+    ModalFooter
 } from 'reactstrap'
 import { postTimeEntry } from '../../actions/timeEntries' 
 
@@ -22,13 +26,19 @@ const TimeEntryForm = () => {
     }
 
     const [inputs, setInputs] = useState(initialState);
+    const [isOpen, setOpen] = useState(false);
     const dispatch = useDispatch();
+
     const { projects } = useSelector(state => state.userProjects);
     const projectOptions = projects.map(project => {
         return <option value={project.projectId}> {project.projectName} </option>
     })
     projectOptions.unshift(<option value=""></option>);
+
     const { userid } = useSelector(state => state.auth.user);
+
+    const toggle = () => setOpen(isOpen => !isOpen);
+    
 
     const handleSubmit = async event => {
         if (event) {
@@ -47,6 +57,7 @@ const TimeEntryForm = () => {
         await dispatch(postTimeEntry(timeEntry));
 
         setInputs(inputs => initialState);
+        toggle();
     }
 
     const handleInputChange = event => {
@@ -59,48 +70,66 @@ const TimeEntryForm = () => {
         setInputs(inputs => ({...inputs, [event.target.name]: event.target.checked}));
     }
 
+    const clearForm = event => {
+        setInputs(inputs => initialState);
+    }
 
     return (
-        <Form>
-            <h3> Add a Time Entry </h3>
-            <FormGroup>
-                <Label for="dateOfWork">Date</Label>
-                <Input type="date" name="dateOfWork" id="dateOfWork" placeholder="Date Placeholder" 
-                    value={inputs.dateOfWork} onChange={handleInputChange}/>
-            </FormGroup>
-            <FormGroup>
-                <Label for="timeSpent">Time (HH:MM)</Label>
-                <Row form>
-                    <Col>
-                        <Input type="number" name="hours" id="hours" placeholder="Hours" 
-                            value={inputs.hours} onChange={handleInputChange}/>
-                    </Col>
-                    <Col>
-                        <Input type="number" name="minutes" id="minutes" placeholder="Minutes" 
-                            value={inputs.minutes} onChange={handleInputChange}/>
-                    </Col>
-                </Row>
-            </FormGroup>
-            <FormGroup>
-                <Label for="project">Project</Label>
-                <Input type="select" name="projectId" id="projectId" 
-                    value={inputs.projectId} onChange={handleInputChange}>
-                    {projectOptions}
-                </Input>
-            </FormGroup>
-            <FormGroup>
-                <Label for="notes">Notes</Label>
-                <Input type="textarea" name="notes" id="notes" placeholder="Notes" 
-                    value={inputs.notes} onChange={handleInputChange}/>
-            </FormGroup>
-            <FormGroup check>
-                <Label check>
-                    <Input type="checkbox" name="isTangible" checked={inputs.isTangible} onChange={handleCheckboxChange}/>{' '}
-                    Tangible
-                </Label>
-            </FormGroup>
-            <Button onClick={handleSubmit}> Submit </Button>
-        </Form>
+        <div>
+            <Button color="success" className="float-right" onClick={ toggle }>
+                Add Time Entry
+            </Button>
+            <Modal isOpen={isOpen} toggle={ toggle }>
+                <ModalHeader toggle={toggle}>
+                    Add a Time Entry
+                </ModalHeader>
+                <ModalBody>
+                    <Form>
+                        <FormGroup>
+                            <Label for="dateOfWork">Date</Label>
+                            <Input type="date" name="dateOfWork" id="dateOfWork" placeholder="Date Placeholder" 
+                                value={inputs.dateOfWork} onChange={handleInputChange}/>
+                        </FormGroup>
+                        <FormGroup>
+                            <Label for="timeSpent">Time (HH:MM)</Label>
+                            <Row form>
+                                <Col>
+                                    <Input type="number" name="hours" id="hours" placeholder="Hours" 
+                                        value={inputs.hours} onChange={handleInputChange}/>
+                                </Col>
+                                <Col>
+                                    <Input type="number" name="minutes" id="minutes" placeholder="Minutes" 
+                                        value={inputs.minutes} onChange={handleInputChange}/>
+                                </Col>
+                            </Row>
+                        </FormGroup>
+                        <FormGroup>
+                            <Label for="project">Project</Label>
+                            <Input type="select" name="projectId" id="projectId" 
+                                value={inputs.projectId} onChange={handleInputChange}>
+                                {projectOptions}
+                            </Input>
+                        </FormGroup>
+                        <FormGroup>
+                            <Label for="notes">Notes</Label>
+                            <Input type="textarea" name="notes" id="notes" placeholder="Notes" 
+                                value={inputs.notes} onChange={handleInputChange}/>
+                        </FormGroup>
+                        <FormGroup check>
+                            <Label check>
+                                <Input type="checkbox" name="isTangible" checked={inputs.isTangible} 
+                                    onChange={handleCheckboxChange}/>
+                                {' '}Tangible
+                            </Label>
+                        </FormGroup>
+                    </Form>
+                </ModalBody>
+                <ModalFooter>
+                    <Button onClick={clearForm} color="danger" className="float-left"> Clear Form </Button>
+                    <Button onClick={handleSubmit} color="primary" > Submit </Button>
+                </ModalFooter>
+            </Modal>
+        </div>
     )
 }
 
