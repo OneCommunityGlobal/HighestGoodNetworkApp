@@ -8,7 +8,7 @@ const TimelogNavbar = () => {
     return (
         <div>
         <nav className="navbar navbar-expand-md navbar-light bg-light mb-3 nav-fill">
-          <li className="navbar-brand">Viewing Timelog For: {firstName} {lastName}</li>
+          <li className="navbar-brand">{firstName} {lastName}'s Timelog</li>
           <button className="navbar-toggler" type="button" data-toggle="collapse" data-target="#timelogsnapshot" aria-controls="navbarSupportedContent"
             aria-expanded="false" aria-label="Toggle navigation">
           </button>

@@ -30,10 +30,10 @@ const TimeEntryForm = () => {
     const dispatch = useDispatch();
 
     const { projects } = useSelector(state => state.userProjects);
-    const projectOptions = projects.map(project => {
-        return <option value={project.projectId}> {project.projectName} </option>
-    })
-    projectOptions.unshift(<option value=""></option>);
+    const projectOptions = projects.map(project => 
+        <option value={project.projectId} key={project.projectId}> {project.projectName} </option>
+    )
+    projectOptions.unshift(<option value="" key="" disabled>Select Project</option>);
 
     const { userid } = useSelector(state => state.auth.user);
 

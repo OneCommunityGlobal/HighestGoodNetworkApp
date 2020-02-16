@@ -2,7 +2,8 @@ import axios from 'axios'
 import moment from "moment";
 import {
     GET_TIME_ENTRIES_WEEK,
-    GET_TIME_ENTRIES_PERIOD
+    GET_TIME_ENTRIES_PERIOD,
+    ADD_TIME_ENTRY
 } from '../constants/timeEntries'
 import { ENDPOINTS } from '../utils/URL'
 import { timeEntriesReducer } from '../reducers/timeEntriesReducer';
@@ -37,7 +38,26 @@ export const getTimeEntriesForPeriod = (userId, fromDate, toDate) => {
 export const postTimeEntry = timeEntry => {
     const url = ENDPOINTS.TIME_ENTRY();
     return async dispatch => {
-        await axios.post(url, timeEntry)
+        try {
+            const res = await axios.post(url, timeEntry);
+            dispatch(addTimeEntry(timeEntry));
+            return res.status;
+        } catch(e) {
+            return e.response.status;
+        }
+    }
+}
+
+export const addTimeEntry = timeEntry => {
+    const startOfWeek = moment().startOf("week");
+    const offset = Math.ceil(startOfWeek.diff(timeEntry.dateOfWork, 'week', true));
+
+    if (offset <= 2 && offset >=0) {
+        return {
+            type: ADD_TIME_ENTRY,
+            payload: timeEntry,
+            offset: offset
+        }
     }
 }
 
