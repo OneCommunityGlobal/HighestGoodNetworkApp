@@ -60,10 +60,18 @@ exports[`UserLinks UserLinks with linkType Admin and links 1`] = `
       </Badge>
     </CardText>
   </CardBody>
+  <Button
+    color="primary"
+    onClick={[Function]}
+    outline={true}
+    tag="button"
+  >
+    Add a new Link
+  </Button>
 </Card>
 `;
 
-exports[`UserLinks UserLinks with linkType Volunteer and links 1`] = `
+exports[`UserLinks UserLinks with linkType Volunteer and links with click simulation 1`] = `
 <Card
   body={true}
   tag="div"
@@ -134,7 +142,7 @@ exports[`UserLinks UserLinks with linkType Volunteer and links 1`] = `
 </Card>
 `;
 
-exports[`UserLinks UserLinks with linkType and emty links 1`] = `
+exports[`UserLinks UserLinks with linkType and empty links 1`] = `
 <Card
   body={true}
   tag="div"

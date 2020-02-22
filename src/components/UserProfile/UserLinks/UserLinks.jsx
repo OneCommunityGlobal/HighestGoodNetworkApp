@@ -9,7 +9,6 @@ const UserLinks = ({
 	isUserAdmin,
 	canEditFields
 }) => {
-	console.log(linkType, links)
 	return (
 		<Card body>
 			<CardTitle style={{ fontWeight: 'bold', fontSize: 20 }}>
