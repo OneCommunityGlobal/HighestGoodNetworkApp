@@ -1,4 +1,4 @@
-##HGN TIME Tracking Application in React##
+# HGN TIME Tracking Application in React
 
 ### Installation
 
