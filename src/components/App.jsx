@@ -20,18 +20,21 @@ const tokenKey = config.tokenKey;
 
 // Check for token
 if (localStorage.getItem(tokenKey)) {
-  // Set auth token header auth
-  httpService.setjwt(localStorage.getItem(tokenKey));
   // Decode token and get user info and exp
   const decoded = jwtDecode(localStorage.getItem(tokenKey));
-  // Set user and isAuthenticated
-  store.dispatch(setCurrentUser(decoded));
-
   // Check for expired token
   const currentTime = Date.now() / 1000;
-  if (decoded.expiryTimestamp < currentTime) {
+  const expiryTime = new Date(decoded.expiryTimestamp).getTime() / 1000;
+  console.log(currentTime, expiryTime);
+  if (expiryTime < currentTime) {
     // Logout user
     store.dispatch(logoutUser());
+  }
+  else {
+    // Set auth token header auth
+    httpService.setjwt(localStorage.getItem(tokenKey));
+    // Set user and isAuthenticated
+    store.dispatch(setCurrentUser(decoded));
   }
 }
 
