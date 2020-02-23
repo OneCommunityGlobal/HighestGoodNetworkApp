@@ -14,10 +14,11 @@ import {
     ModalFooter
 } from 'reactstrap'
 import { postTimeEntry } from '../../actions/timeEntries' 
+import moment from "moment";
 
 const TimeEntryForm = () => {
     const initialState = {
-        dateOfWork: "",
+        dateOfWork: moment().format("YYYY-MM-DD"),
         hours: 0,
         minutes: 0,
         projectId: "",
@@ -87,8 +88,10 @@ const TimeEntryForm = () => {
                     <Form>
                         <FormGroup>
                             <Label for="dateOfWork">Date</Label>
+                            {/* <Input type="date" name="dateOfWork" id="dateOfWork" placeholder="Date Placeholder" 
+                                value={inputs.dateOfWork} onChange={handleInputChange}/> */}
                             <Input type="date" name="dateOfWork" id="dateOfWork" placeholder="Date Placeholder" 
-                                value={inputs.dateOfWork} onChange={handleInputChange}/>
+                                value={inputs.dateOfWork} disabled/>
                         </FormGroup>
                         <FormGroup>
                             <Label for="timeSpent">Time (HH:MM)</Label>
