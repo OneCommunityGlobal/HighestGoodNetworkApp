@@ -78,13 +78,13 @@ class TimelogPage extends Component {
 
     render() {
         const currentWeekEntries = this.props.timeEntries.weeks[0].map(
-            entry => <TimeEntry data={entry} key={entry._id}/>
+            entry => <TimeEntry data={entry} displayYear={false} key={entry._id}/>
         )
         const lastWeekEntries = this.props.timeEntries.weeks[1].map(
-            entry => <TimeEntry data={entry} key={entry._id}/>
+            entry => <TimeEntry data={entry} displayYear={false} key={entry._id}/>
         )
         const beforeLastEntries = this.props.timeEntries.weeks[2].map(
-            entry => <TimeEntry data={entry} key={entry._id}/>
+            entry => <TimeEntry data={entry} displayYear={false} key={entry._id}/>
         )
 
         return (

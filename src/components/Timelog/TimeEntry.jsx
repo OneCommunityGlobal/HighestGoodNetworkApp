@@ -6,16 +6,30 @@ import {
 } from 'reactstrap'
 import moment from "moment";
 
-const TimeEntry = ({data}) => {
+const TimeEntry = ({data}, {displayYear}) => {
     const padZero = number => {
         return ("0" + number).slice(-2);
     };
+
+    const date = moment(data.dateOfWork);
 
     return (
         <Card>
             <Row>
                 <Col md={3}>
-                    Date: {data.dateOfWork}
+                    <div>
+                        <h4>
+                            {date.format('MMM D')}
+                        </h4>
+                        {displayYear &&                  
+                            <h5>
+                                {date.format('YYYY')}
+                            </h5>
+                        }
+                        <h5>
+                            {date.format('dddd')}
+                        </h5>
+                    </div>
                 </Col>
                 <Col md={5}>
                     Time: {padZero(data.hours)}:{padZero(data.minutes)}

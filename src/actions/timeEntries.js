@@ -40,7 +40,14 @@ export const postTimeEntry = timeEntry => {
     return async dispatch => {
         try {
             const res = await axios.post(url, timeEntry);
-            dispatch(addTimeEntry(timeEntry));
+
+            const startOfWeek = moment().startOf("week");
+            const offset = Math.ceil(startOfWeek.diff(timeEntry.dateOfWork, 'week', true));
+
+            if (offset <= 2 && offset >= 0) {
+                dispatch(getTimeEntriesForWeek(timeEntry.personId, offset));
+            }
+            // dispatch(addTimeEntry(timeEntry));
             return res.status;
         } catch(e) {
             return e.response.status;
@@ -48,18 +55,18 @@ export const postTimeEntry = timeEntry => {
     }
 }
 
-export const addTimeEntry = timeEntry => {
-    const startOfWeek = moment().startOf("week");
-    const offset = Math.ceil(startOfWeek.diff(timeEntry.dateOfWork, 'week', true));
+// export const addTimeEntry = timeEntry => {
+//     const startOfWeek = moment().startOf("week");
+//     const offset = Math.ceil(startOfWeek.diff(timeEntry.dateOfWork, 'week', true));
 
-    if (offset <= 2 && offset >=0) {
-        return {
-            type: ADD_TIME_ENTRY,
-            payload: timeEntry,
-            offset: offset
-        }
-    }
-}
+//     if (offset <= 2 && offset >= 0) {
+//         return {
+//             type: ADD_TIME_ENTRY,
+//             payload: timeEntry,
+//             offset: offset
+//         }
+//     }
+// }
 
 export const setTimeEntriesForWeek = (data, offset) => ({
     type: GET_TIME_ENTRIES_WEEK,
