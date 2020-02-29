@@ -28,7 +28,6 @@ import {
 import TimeEntryForm from './TimeEntryForm'
 import TimelogNavbar from './TimelogNavbar'
 import TimeEntry from './TimeEntry'
-import Loading from '../common/Loading'
 
 class TimelogPage extends Component {
     constructor(props) {
@@ -89,6 +88,9 @@ class TimelogPage extends Component {
             entry => <TimeEntry data={entry} displayYear={false} key={entry._id}/>
         )
 
+        const isAdmin = this.props.auth.user.role === "Administrator";
+        const isOwner = this.props.auth.user.userid === this.props.match.params.userId;
+
         return (
             <Container>
                 <TimelogNavbar/>
@@ -106,7 +108,9 @@ class TimelogPage extends Component {
                                         </CardSubtitle>
                                     </Col>
                                     <Col>
-                                        <TimeEntryForm isOpen={this.state.modal} toggle={this.toggle}/>
+                                        {(isAdmin || isOwner) && 
+                                            <TimeEntryForm userId={this.props.match.params.userId}/>
+                                        }
                                     </Col>
                                 </Row>
                             </CardHeader>
@@ -164,6 +168,7 @@ class TimelogPage extends Component {
 }
 
 const mapStateToProps = state => ({
+  auth: state.auth,
   userProfile: state.userProfile,
   timeEntries: state.timeEntries
 });

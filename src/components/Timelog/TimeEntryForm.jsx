@@ -16,7 +16,7 @@ import {
 import { postTimeEntry } from '../../actions/timeEntries' 
 import moment from "moment";
 
-const TimeEntryForm = () => {
+const TimeEntryForm = ({userId}) => {
     const initialState = {
         dateOfWork: moment().format("YYYY-MM-DD"),
         hours: 0,
@@ -36,8 +36,6 @@ const TimeEntryForm = () => {
     )
     projectOptions.unshift(<option value="" key="" disabled>Select Project</option>);
 
-    const { userid } = useSelector(state => state.auth.user);
-
     const toggle = () => setOpen(isOpen => !isOpen);
     
 
@@ -48,7 +46,7 @@ const TimeEntryForm = () => {
 
         const timeEntry = {};
 
-        timeEntry.personId = userid;
+        timeEntry.personId = userId;
         timeEntry.dateOfWork = inputs.dateOfWork;
         timeEntry.timeSpent = `${inputs.hours}:${inputs.minutes}:00`;
         timeEntry.projectId = inputs.projectId;
@@ -75,11 +73,18 @@ const TimeEntryForm = () => {
         setInputs(inputs => initialState);
     }
 
+    const isOwner = useSelector(state => state.auth.user.userid) === userId;
+    const name = useSelector(state => state.userProfile.firstName) + " " + 
+                    useSelector(state => state.userProfile.lastName);
+
     return (
         <div>
-            <Button color="success" className="float-right" onClick={ toggle }>
+            {isOwner ? (<Button color="success" className="float-right" onClick={ toggle }>
                 Add Time Entry
-            </Button>
+            </Button>) : 
+            (<Button color="warning" className="float-right" onClick={ toggle }>
+                Add Time Entry {!isOwner && `for ${name}`}
+            </Button>)}
             <Modal isOpen={isOpen} toggle={ toggle }>
                 <ModalHeader toggle={toggle}>
                     Add a Time Entry
