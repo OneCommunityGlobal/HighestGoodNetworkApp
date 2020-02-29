@@ -93,7 +93,7 @@ class TimelogPage extends Component {
 
         return (
             <Container>
-                <TimelogNavbar/>
+                <TimelogNavbar userId={this.props.match.params.userId}/>
                 <Row>
                     <Col md={8}>
                         <Card>

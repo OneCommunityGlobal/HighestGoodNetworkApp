@@ -1,9 +1,8 @@
 import React from 'react'
 import { useSelector } from 'react-redux'
 
-const TimelogNavbar = () => {
+const TimelogNavbar = ({userId}) => {
     const { firstName, lastName } = useSelector(state => state.userProfile);
-    const { userid } = useSelector(state => state.auth.user);
 
     return (
         <div>
@@ -28,7 +27,7 @@ const TimelogNavbar = () => {
                 </i>
               </li>
               <li className="nav-item navbar-text">
-                <a className="nav-link" href= {`/userprofile/${userid}`} >View Profile</a>
+                <a className="nav-link" href= {`/userprofile/${userId}`} >View Profile</a>
               </li>
             </ul>
           </div>
