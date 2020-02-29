@@ -53,7 +53,7 @@ const TimeEntryForm = () => {
         timeEntry.timeSpent = `${inputs.hours}:${inputs.minutes}:00`;
         timeEntry.projectId = inputs.projectId;
         timeEntry.notes = `<p>${inputs.notes}</p>`;
-        timeEntry.isTangible = inputs.isTangible;
+        timeEntry.isTangible = inputs.isTangible.toString();
     
         await dispatch(postTimeEntry(timeEntry));
 

@@ -4,6 +4,7 @@ import {
     Row,
     Col,
 } from 'reactstrap'
+import { useSelector } from 'react-redux'
 import ReactHtmlParser from 'react-html-parser';
 import moment from "moment";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
@@ -16,7 +17,11 @@ const TimeEntry = ({data}, {displayYear}) => {
         return ("0" + number).slice(-2);
     };
 
-    const date = moment(data.dateOfWork);
+    const dateOfWork = moment(data.dateOfWork);
+    const { user } = useSelector(state => state.auth);
+    const isOwner = data.personId === user.userid;
+    const isSameDay = moment().isSame(data.dateOfWork, 'day');
+    const isAdmin = user.role === "Administrator";
 
     return (
         <Card className="mb-1 p-2">
@@ -25,15 +30,15 @@ const TimeEntry = ({data}, {displayYear}) => {
                     <div className="date-div">
                     <div>
                         <h4>
-                            {date.format('MMM D')}
+                            {dateOfWork.format('MMM D')}
                         </h4>
                         {displayYear &&                  
                             <h5>
-                                {date.format('YYYY')}
+                                {dateOfWork.format('YYYY')}
                             </h5>
                         }
                         <h5 className="text-info">
-                            {date.format('dddd')}
+                            {dateOfWork.format('dddd')}
                         </h5>
                     </div>
                     </div>
@@ -44,7 +49,7 @@ const TimeEntry = ({data}, {displayYear}) => {
                     </h4>
                     <span className="text-muted">
                         Project:
-                    </span> 
+                    </span> <br/>
                     <h6> {data.projectName} </h6>
                     <span className="text-muted">Tangible: </span> {' '}                                
                     <input type="checkbox" name="isTangible" checked={data.isTangible} readOnly/>
@@ -52,11 +57,15 @@ const TimeEntry = ({data}, {displayYear}) => {
                 <Col md={5} className="pl-2 pr-0">
                     <span className="text-muted">
                         Notes:
-                    </span>
+                    </span> <br/>
                     {ReactHtmlParser(data.notes)}
                     <div className="buttons">
-                        <FontAwesomeIcon icon={faEdit} size="lg" className="mr-3 text-primary"/>
-                        <FontAwesomeIcon icon={faTrashAlt} size="lg" className="mr-3 text-primary"/>
+                        {( isAdmin || (!data.isTangible && isOwner && isSameDay) ) && 
+                            <FontAwesomeIcon icon={faEdit} size="lg" className="mr-3 text-primary"/>
+                        }
+                        {( isAdmin || (!data.isTangible && isOwner && isSameDay) ) && 
+                            <FontAwesomeIcon icon={faTrashAlt} size="lg" className="mr-3 text-primary"/>
+                        }
                     </div>
                 </Col>
             </Row>

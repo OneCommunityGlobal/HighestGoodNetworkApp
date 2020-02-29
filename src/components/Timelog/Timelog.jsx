@@ -21,6 +21,7 @@ import {
     getTimeEntriesForWeek, 
     getTimeEntriesForPeriod,
 } from '../../actions/timeEntries' 
+import { getUserProfile } from '../../actions/userProfile'
 import {
     getUserProjects
 } from '../../actions/userProjects'
@@ -42,7 +43,8 @@ class TimelogPage extends Component {
     };
 
     async componentDidMount() {
-        const userId = this.props.auth.user.userid;
+        const userId = this.props.match.params.userId;
+        await this.props.getUserProfile(userId);
         await this.props.getTimeEntriesForWeek(userId, 0);
         await this.props.getTimeEntriesForWeek(userId, 1);
         await this.props.getTimeEntriesForWeek(userId, 2);
@@ -162,7 +164,6 @@ class TimelogPage extends Component {
 }
 
 const mapStateToProps = state => ({
-  auth: state.auth,
   userProfile: state.userProfile,
   timeEntries: state.timeEntries
 });
@@ -173,5 +174,6 @@ export default connect(
     getTimeEntriesForWeek,
     getTimeEntriesForPeriod,
     getUserProjects,
+    getUserProfile
   }
 )(TimelogPage);
