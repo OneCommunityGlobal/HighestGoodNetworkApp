@@ -40,14 +40,7 @@ export const postTimeEntry = timeEntry => {
     return async dispatch => {
         try {
             const res = await axios.post(url, timeEntry);
-
-            const startOfWeek = moment().startOf("week");
-            const offset = Math.ceil(startOfWeek.diff(timeEntry.dateOfWork, 'week', true));
-
-            if (offset <= 2 && offset >= 0) {
-                dispatch(getTimeEntriesForWeek(timeEntry.personId, offset));
-            }
-            // dispatch(addTimeEntry(timeEntry));
+            dispatch(updateTimeEntries(timeEntry));
             return res.status;
         } catch(e) {
             return e.response.status;
@@ -55,18 +48,42 @@ export const postTimeEntry = timeEntry => {
     }
 }
 
-// export const addTimeEntry = timeEntry => {
-//     const startOfWeek = moment().startOf("week");
-//     const offset = Math.ceil(startOfWeek.diff(timeEntry.dateOfWork, 'week', true));
+export const editTimeEntry = (timeEntryId, timeEntry) => {
+    const url = ENDPOINTS.TIME_ENTRY_CHANGE(timeEntryId);
+    return async dispatch => {
+        try {
+            const res = await axios.put(url, timeEntry);
+            dispatch(updateTimeEntries(timeEntry));
+            return res.status;
+        } catch(e) {
+            return e.response.status;
+        }
+    }
+}
 
-//     if (offset <= 2 && offset >= 0) {
-//         return {
-//             type: ADD_TIME_ENTRY,
-//             payload: timeEntry,
-//             offset: offset
-//         }
-//     }
-// }
+export const deleteTimeEntry = (timeEntry) => {
+    const url = ENDPOINTS.TIME_ENTRY_CHANGE(timeEntry._id);
+    return async dispatch => {
+        try {
+            const res = await axios.delete(url);
+            dispatch(updateTimeEntries(timeEntry));
+            return res.status;
+        } catch(e) {
+            return e.response.status;
+        }
+    }
+}
+
+const updateTimeEntries = timeEntry => {
+    const startOfWeek = moment().startOf("week");
+    const offset = Math.ceil(startOfWeek.diff(timeEntry.dateOfWork, 'week', true));
+    
+    return async dispatch => {
+        if (offset <= 2 && offset >= 0) {
+            dispatch(getTimeEntriesForWeek(timeEntry.personId, offset));
+        }
+    }
+}
 
 export const setTimeEntriesForWeek = (data, offset) => ({
     type: GET_TIME_ENTRIES_WEEK,

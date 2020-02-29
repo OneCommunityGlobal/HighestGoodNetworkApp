@@ -13,20 +13,22 @@ import {
     ModalBody,
     ModalFooter
 } from 'reactstrap'
-import { postTimeEntry } from '../../actions/timeEntries' 
+import { postTimeEntry, editTimeEntry } from '../../actions/timeEntries' 
 import moment from "moment";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faEdit } from '@fortawesome/free-regular-svg-icons'
 
-const TimeEntryForm = ({userId}) => {
+const TimeEntryForm = ({userId, edit, data}) => {
     const initialState = {
         dateOfWork: moment().format("YYYY-MM-DD"),
         hours: 0,
         minutes: 0,
         projectId: "",
         notes: "",
-        isTangible: true
+        isTangible: data ? data.isTangible : true
     }
 
-    const [inputs, setInputs] = useState(initialState);
+    const [inputs, setInputs] = useState(edit ? data : initialState);
     const [isOpen, setOpen] = useState(false);
     const dispatch = useDispatch();
 
@@ -48,12 +50,20 @@ const TimeEntryForm = ({userId}) => {
 
         timeEntry.personId = userId;
         timeEntry.dateOfWork = inputs.dateOfWork;
-        timeEntry.timeSpent = `${inputs.hours}:${inputs.minutes}:00`;
+
         timeEntry.projectId = inputs.projectId;
         timeEntry.notes = `<p>${inputs.notes}</p>`;
         timeEntry.isTangible = inputs.isTangible.toString();
     
-        await dispatch(postTimeEntry(timeEntry));
+        if (edit) {
+            timeEntry.hours = inputs.hours;
+            timeEntry.minutes = inputs.minutes;
+            await dispatch(editTimeEntry(data._id, timeEntry));
+        }
+        else {
+            timeEntry.timeSpent = `${inputs.hours}:${inputs.minutes}:00`;
+            await dispatch(postTimeEntry(timeEntry));
+        }
 
         setInputs(inputs => initialState);
         toggle();
@@ -76,10 +86,12 @@ const TimeEntryForm = ({userId}) => {
     const isOwner = useSelector(state => state.auth.user.userid) === userId;
     const name = useSelector(state => state.userProfile.firstName) + " " + 
                     useSelector(state => state.userProfile.lastName);
+    const isAdmin = useSelector(state => state.auth.user.role) === "Administrator";
 
     return (
-        <div>
-            {isOwner ? (<Button color="success" className="float-right" onClick={ toggle }>
+        <span>
+            {edit ? <FontAwesomeIcon icon={faEdit} size="lg" className="mr-3 text-primary" onClick={ toggle }/>
+            : isOwner ? (<Button color="success" className="float-right" onClick={ toggle }>
                 Add Time Entry
             </Button>) : 
             (<Button color="warning" className="float-right" onClick={ toggle }>
@@ -87,16 +99,18 @@ const TimeEntryForm = ({userId}) => {
             </Button>)}
             <Modal isOpen={isOpen} toggle={ toggle }>
                 <ModalHeader toggle={toggle}>
-                    Add a Time Entry
+                    { edit ? "Edit " : "Add " }Time Entry
                 </ModalHeader>
                 <ModalBody>
                     <Form>
                         <FormGroup>
                             <Label for="dateOfWork">Date</Label>
-                            {/* <Input type="date" name="dateOfWork" id="dateOfWork" placeholder="Date Placeholder" 
-                                value={inputs.dateOfWork} onChange={handleInputChange}/> */}
-                            <Input type="date" name="dateOfWork" id="dateOfWork" placeholder="Date Placeholder" 
-                                value={inputs.dateOfWork} disabled/>
+                            {isAdmin ? 
+                                <Input type="date" name="dateOfWork" id="dateOfWork"
+                                    value={inputs.dateOfWork} onChange={handleInputChange}/> :
+                                <Input type="date" name="dateOfWork" id="dateOfWork" 
+                                    value={inputs.dateOfWork} disabled/>
+                            }
                         </FormGroup>
                         <FormGroup>
                             <Label for="timeSpent">Time (HH:MM)</Label>
@@ -125,8 +139,11 @@ const TimeEntryForm = ({userId}) => {
                         </FormGroup>
                         <FormGroup check>
                             <Label check>
-                                <Input type="checkbox" name="isTangible" checked={inputs.isTangible} 
-                                    onChange={handleCheckboxChange}/>
+                                {(isAdmin || !edit) ? 
+                                    <Input type="checkbox" name="isTangible" checked={inputs.isTangible} 
+                                        onChange={handleCheckboxChange}/> : 
+                                    <Input type="checkbox" name="isTangible" checked={inputs.isTangible} disabled />   
+                                }
                                 {' '}Tangible
                             </Label>
                         </FormGroup>
@@ -134,10 +151,10 @@ const TimeEntryForm = ({userId}) => {
                 </ModalBody>
                 <ModalFooter>
                     <Button onClick={clearForm} color="danger" className="float-left"> Clear Form </Button>
-                    <Button onClick={handleSubmit} color="primary" > Submit </Button>
+                    <Button onClick={handleSubmit} color="primary" > { edit ? "Save" : "Submit" } </Button>
                 </ModalFooter>
             </Modal>
-        </div>
+        </span>
     )
 }
 

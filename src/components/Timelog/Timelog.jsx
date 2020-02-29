@@ -109,7 +109,7 @@ class TimelogPage extends Component {
                                     </Col>
                                     <Col>
                                         {(isAdmin || isOwner) && 
-                                            <TimeEntryForm userId={this.props.match.params.userId}/>
+                                            <TimeEntryForm userId={this.props.match.params.userId} edit={false}/>
                                         }
                                     </Col>
                                 </Row>

@@ -11,8 +11,10 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faEdit, faTrashAlt } from '@fortawesome/free-regular-svg-icons'
 
 import "./TimeEntry.css";
+import TimeEntryForm from './TimeEntryForm';
+import DeleteModal from './DeleteModal';
 
-const TimeEntry = ({data}, {displayYear}) => {
+const TimeEntry = ({data, displayYear}) => {
     const padZero = number => {
         return ("0" + number).slice(-2);
     };
@@ -47,24 +49,26 @@ const TimeEntry = ({data}, {displayYear}) => {
                     <h4 className="text-primary">
                         {data.hours}h {data.minutes}m
                     </h4>
-                    <span className="text-muted">
+                    <div className="text-muted">
                         Project:
-                    </span> <br/>
+                    </div> 
                     <h6> {data.projectName} </h6>
                     <span className="text-muted">Tangible: </span> {' '}                                
                     <input type="checkbox" name="isTangible" checked={data.isTangible} readOnly/>
                 </Col>
                 <Col md={5} className="pl-2 pr-0">
-                    <span className="text-muted">
+                    <div className="text-muted">
                         Notes:
-                    </span> <br/>
+                    </div>
                     {ReactHtmlParser(data.notes)}
                     <div className="buttons">
                         {( isAdmin || (!data.isTangible && isOwner && isSameDay) ) && 
-                            <FontAwesomeIcon icon={faEdit} size="lg" className="mr-3 text-primary"/>
+                            // <FontAwesomeIcon icon={faEdit} size="lg" className="mr-3 text-primary"/>
+                            <TimeEntryForm edit={true} userId={data.personId} data={data}/>
                         }
                         {( isAdmin || (!data.isTangible && isOwner && isSameDay) ) && 
-                            <FontAwesomeIcon icon={faTrashAlt} size="lg" className="mr-3 text-primary"/>
+                            // <FontAwesomeIcon icon={faTrashAlt} size="lg" className="mr-3 text-primary"/>
+                            <DeleteModal timeEntry={data}/>
                         }
                     </div>
                 </Col>
