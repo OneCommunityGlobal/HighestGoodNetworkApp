@@ -13,5 +13,6 @@ export const ENDPOINTS = {
   FORCE_PASSWORD: `${APIEndpoint}/forcepassword`,
   LEADER_BOARD: userId => `${APIEndpoint}/dashboard/leaderboard/${userId}`,
   TIME_ENTRIES_PERIOD: (userId, fromDate, toDate) => `${APIEndpoint}/TimeEntry/user/${userId}/${fromDate}/${toDate}`,
-  TIME_ENTRY: () => `${APIEndpoint}/TimeEntry`
+  TIME_ENTRY: () => `${APIEndpoint}/TimeEntry`,
+  TIME_ENTRY_CHANGE: timeEntryId => `${APIEndpoint}/TimeEntry/${timeEntryId}`
 }
