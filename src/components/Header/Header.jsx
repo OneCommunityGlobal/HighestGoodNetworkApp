@@ -1,5 +1,6 @@
 import React from 'react'
-import { getUserProfile } from '../../actions/userProfile'
+// import { getUserProfile } from '../../actions/userProfile'
+import { getHeaderData } from '../../actions/authActions'
 import { Link } from 'react-router-dom'
 import { connect } from 'react-redux'
 import {
@@ -25,22 +26,24 @@ class Header extends React.Component {
 
   componentDidMount(){
     if (this.props.auth.isAuthenticated){
-      this.props.getUserProfile(this.props.auth.user.userid)
+      // this.props.getUserProfile(this.props.auth.user.userid)
+      this.props.getHeaderData(this.props.auth.user.userid)
     }
   }
 
   componentDidUpdate(prevProps) {
     if (!prevProps.auth.isAuthenticated && this.props.auth.isAuthenticated ){
-      this.props.getUserProfile(this.props.auth.user.userid)
+      // this.props.getUserProfile(this.props.auth.user.userid)
+      this.props.getHeaderData(this.props.auth.user.userid)
     }
   }
 
   render() {
-    const { isAuthenticated, user } = this.props.auth;
-    let firstName = "", profilePic = "";
-    if (this.props.userProfile){
-      ({ firstName, profilePic } = this.props.userProfile);
-    }
+    const { isAuthenticated, user, firstName, profilePic } = this.props.auth;
+    // let firstName = "", profilePic = "";
+    // if (this.props.userProfile){
+    //   ({ firstName, profilePic } = this.props.userProfile);
+    // }
 
     return (
       <div>
@@ -140,6 +143,7 @@ const mapStateToProps = state => ({
 export default connect(
   mapStateToProps,
   {
-    getUserProfile,
+    // getUserProfile,
+    getHeaderData
   }
 )(Header)

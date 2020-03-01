@@ -51,6 +51,16 @@ class TimelogPage extends Component {
         await this.props.getUserProjects(userId);
     }
 
+    async componentDidUpdate(prevProps) {
+        if (prevProps.match.params.userId !== this.props.match.params.userId) {
+            await this.props.getUserProfile(this.props.match.params.userId);
+            await this.props.getTimeEntriesForWeek(this.props.match.params.userId, 0);
+            await this.props.getTimeEntriesForWeek(this.props.match.params.userId, 1);
+            await this.props.getTimeEntriesForWeek(this.props.match.params.userId, 2);
+            await this.props.getUserProjects(this.props.match.params.userId);
+        }
+    }
+
     toggle() {
         this.setState({
             modal: !this.state.modal
