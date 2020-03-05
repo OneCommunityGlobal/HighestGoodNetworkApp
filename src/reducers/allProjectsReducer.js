@@ -4,7 +4,7 @@ const allProjectsInital = {
   fetching: false,
   fetched: false,
   projects: [],
-  status: "404"
+  status: 404
 }
 
 export const updateObject = (oldObject, updatedProperties) => {
@@ -34,20 +34,15 @@ export const allProjectsReducer = (allProjects = allProjectsInital, action) => {
       });
       break;
     case types.ADD_NEW_PROJECT:
-      console.log("PAYLOAD ADD", action.payload)
-      if (action.status === "201") {
-        return updateObject(allProjects, {
-          projects: [action.payload].concat(...allProjects.projects),
-          status: action.status
-        });
+      console.log("PAYLOAD ADD", action.payload, action.status)
+      if (action.status === 201) {
+        return { ...allProjects, projects: [action.payload, ...allProjects.projects] };
       } else {
-        return updateObject(allProjects, {
-          status: action.status
-        });
+        return { ...allProjects, status: action.status };
       }
       break;
     case types.DELETE_PROJECT:
-      if (action.status === "200") {
+      if (action.status === 200) {
         let index = allProjects.projects.findIndex(project => project._id == action.projectId);
         return updateObject(allProjects, {
           projects: Object.assign([...allProjects.projects.slice(0, index), ...allProjects.projects.slice(index + 1)])
