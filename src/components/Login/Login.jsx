@@ -22,12 +22,12 @@ export class Login extends Form {
       .label("Password")
   };
 
-  // componentDidMount() {
-  //   // document.title = "Login";
-  //   if (this.props.auth.isAuthenticated) {
-  //     this.props.history.push("/");
-  //   }
-  // }
+  componentDidMount() {
+    // document.title = "Login";
+    if (this.props.auth.isAuthenticated) {
+      this.props.history.push("/");
+    }
+  }
 
   componentDidUpdate(prevProps) {
     if (prevProps.auth !== this.props.auth) {
