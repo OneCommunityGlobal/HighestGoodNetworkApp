@@ -17,10 +17,14 @@ const Members = (props) => {
     let [keyword, setKeyword] = useState('');
     const projectId = props.match.params.projectId;
 
-    if (!init) {
+    /*if (!init) {
         props.fetchAllMembers(projectId);
         setInit(true);
-    }
+    }*/
+
+    useEffect(() => {
+        props.fetchAllMembers(projectId);
+    }, [projectId]);
 
     const pressEnter = (event, keyword) => {
         if (event.key === "Enter") {
