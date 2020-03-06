@@ -8,7 +8,9 @@ describe("Login", () => {
   const props = {
     auth: [{ isAuthenticated: false }]
   }
+
   const wrapper = shallow(<Login {...props} />)
+
 
   it('should show Please Sign in', () => {
     expect(wrapper.find('h2')).toHaveLength(1);
@@ -21,5 +23,12 @@ describe("Login", () => {
     const button = wrapper.find('button');
     expect(button.length).toBe(1);
   });
-  //it should 
+  //it should be called with email and password in the state as arguments
+
+  it('form can be submitted', () => {
+    const mockLoginFn = jest.fn();
+    const mountedLoginPage = shallow(<form onSubmit={mockLoginFn} />)
+    mountedLoginPage.find('form').simulate('submit');
+    expect(mockLoginFn).toHaveBeenCalled();
+  });
 });
