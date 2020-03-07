@@ -1,6 +1,7 @@
 import {
   GET_TIME_ENTRIES_WEEK,
-  GET_TIME_ENTRIES_PERIOD
+  GET_TIME_ENTRIES_PERIOD,
+  ADD_TIME_ENTRY
 } from '../constants/timeEntries'
 
 const initialState = {
@@ -26,6 +27,14 @@ export const timeEntriesReducer = (state = initialState, action) => {
       return {
         ...state,
         period: action.payload
+      }
+    case ADD_TIME_ENTRY:
+      return {
+        ...state,
+        weeks: {
+          ...state.weeks,
+          [action.offset]: [...state.weeks[action.offset], action.payload]
+        }
       }
     default:
       return state;
