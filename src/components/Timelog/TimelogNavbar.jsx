@@ -1,8 +1,15 @@
 import React from 'react'
+import { Progress } from 'reactstrap';
 import { useSelector } from 'react-redux'
 
 const TimelogNavbar = ({userId}) => {
     const { firstName, lastName } = useSelector(state => state.userProfile);
+
+    const timeEntries = useSelector(state => state.timeEntries.weeks[0]);
+    const reducer = (total, entry) => total + parseInt(entry.hours) + parseInt(entry.minutes) / 60
+    const totalEffort = timeEntries.reduce(reducer, 0);
+    const weeklyComittedHours = useSelector(state => state.userProfile.weeklyComittedHours)
+    const progressPercentage = totalEffort / weeklyComittedHours * 100
 
     return (
         <div>
@@ -14,7 +21,13 @@ const TimelogNavbar = ({userId}) => {
           <div className="collapse navbar-collapse" id="timelogsnapshot">
             <ul className="navbar-nav w-100">
               <li className="nav-item navbar-text mr-3 w-25" id="timelogweeklychart">
-               progress bar
+                <div>Current Week : {totalEffort.toFixed(2)}/{weeklyComittedHours}</div>
+                <Progress striped value={progressPercentage} color={
+                  progressPercentage < 30 ? 
+                  "danger" : 
+                  progressPercentage < 90 ? 
+                  "warning" : "success"} 
+                />
               </li>
               <li className="nav-item  navbar-text">
                 <span className="fa fa-tasks icon-large" data-toggle="modal" data-target="#actionItems">
