@@ -1,190 +1,214 @@
 import React, {Component} from 'react';
 import {
-  Container,
-  Form,
-  FormGroup,
-  Label,
-  Input,
-  Row,
-  Col,
-  Button
+    Container,
+    Row,
+    Col,
+    Card,
+    CardTitle,
+    CardSubtitle,
+    CardHeader,
+    CardBody,
+    Nav,
+    NavItem,
+    NavLink,
+    TabContent,
+    TabPane,
+    Form,
+    FormGroup,
+    Label,
+    Input
 } from 'reactstrap'
+import classnames from 'classnames';
 import { connect } from 'react-redux'
+import moment from "moment";
 import { 
-  getTimeEntriesForWeek, 
-  getTimeEntriesForPeriod,
-  postTimeEntry
+    getTimeEntriesForWeek, 
+    getTimeEntriesForPeriod,
 } from '../../actions/timeEntries' 
+import { getUserProfile } from '../../actions/userProfile'
 import {
-  getUserProjects
+    getUserProjects
 } from '../../actions/userProjects'
-import _ from 'lodash'
-
-const initialState = {
-  dateOfWork: "",
-  hours: 0,
-  minutes: 0,
-  projectId: "",
-  notes: "",
-  isTangible: true
-}
+import TimeEntryForm from './TimeEntryForm'
+import TimelogNavbar from './TimelogNavbar'
+import TimeEntry from './TimeEntry'
 
 class TimelogPage extends Component {
-  state = initialState
+    constructor(props) {
+        super(props);
+        this.toggle = this.toggle.bind(this);
+        this.changeTab = this.changeTab.bind(this);
+    }
 
-  async componentDidMount() {
-		const userId = this.props.auth.user.userid;
-    await this.props.getTimeEntriesForWeek(userId, 0);
-    await this.props.getTimeEntriesForWeek(userId, 1);
-    await this.props.getTimeEntriesForWeek(userId, 2);
-    await this.props.getTimeEntriesForPeriod(userId, "2020-02-02", "2020-02-08");
-    await this.props.getUserProjects(userId);
-  }
-  
-  handleDateChange = event => {
-    this.setState({
-      dateOfWork: event.target.value
-    })
-  }
+    state = {
+        modal: false,
+        activeTab: 0,
+        projectSelected: "all"
+    };
 
-  handleHoursChange = event => {
-    this.setState({
-      hours: event.target.value
-    })
-  }
+    async componentDidMount() {
+        const userId = this.props.match.params.userId;
+        await this.props.getUserProfile(userId);
+        await this.props.getTimeEntriesForWeek(userId, 0);
+        await this.props.getTimeEntriesForWeek(userId, 1);
+        await this.props.getTimeEntriesForWeek(userId, 2);
+        await this.props.getTimeEntriesForPeriod(userId, "2020-02-02", "2020-02-18");
+        await this.props.getUserProjects(userId);
+    }
 
-  handleMinutesChange = event => {
-    this.setState({
-      minutes: event.target.value
-    })
-  }
+    async componentDidUpdate(prevProps) {
+        if (prevProps.match.params.userId !== this.props.match.params.userId) {
+            await this.props.getUserProfile(this.props.match.params.userId);
+            await this.props.getTimeEntriesForWeek(this.props.match.params.userId, 0);
+            await this.props.getTimeEntriesForWeek(this.props.match.params.userId, 1);
+            await this.props.getTimeEntriesForWeek(this.props.match.params.userId, 2);
+            await this.props.getUserProjects(this.props.match.params.userId);
+        }
+    }
 
-  handleProjectChange = event => {
-    this.setState({
-      projectId: event.target.value
-    })
-  }
+    toggle() {
+        this.setState({
+            modal: !this.state.modal
+        });
+    }
 
-  handleNotesChange = event => {
-    this.setState({
-      notes: event.target.value
-    })
-  }
+    changeTab(tab) {
+        this.setState({
+            activeTab: tab
+        });
+    }
 
-  handleTangibleChange = event => {
-    this.setState({
-      isTangible: event.target.checked
-    })
-  }
+    startOfWeek(offset) {
+        return moment()
+            .startOf("week")
+            .subtract(offset, "weeks")
+            .format("YYYY-MM-DD");
+    }
 
-  handleSubmit = async event => {
-		event.preventDefault()
-    
-    const timeEntry = {};
+    endOfWeek(offset) {
+        return moment()
+            .endOf("week")
+            .subtract(offset, "weeks")
+            .format("YYYY-MM-DD");
+    }
 
-    timeEntry.personId = this.props.auth.user.userid;
-    timeEntry.dateOfWork = this.state.dateOfWork;
-    timeEntry.timeSpent = `${this.state.hours}:${this.state.minutes}:00`;
-    timeEntry.projectId = this.state.projectId;
-    timeEntry.notes = `<p>${this.state.notes}</p>`;
-    timeEntry.isTangible = this.state.isTangible;
-
-    await this.props.postTimeEntry(timeEntry);
-    
-    this.setState(initialState);
-	}
+    generateTimeEntries(data) {
+        let filteredData = data;
+        if (this.state.projectSelected !== "all") {
+            filteredData = data.filter(entry => entry.projectId === this.state.projectSelected)
+        }
+        return filteredData.map(
+            entry => <TimeEntry data={entry} displayYear={false} key={entry._id}/>
+        )
+    }
 
     render() {
-      const { projects } = this.props.userProjects;
-      const projectOptions = projects.map(project => {
-        return <option value={project.projectId}> {project.projectName} </option>
-      })
-      projectOptions.unshift(
-        <option value={""}></option>
-      );
+        const currentWeekEntries = this.generateTimeEntries(this.props.timeEntries.weeks[0]);
+        const lastWeekEntries = this.generateTimeEntries(this.props.timeEntries.weeks[1]);
+        const beforeLastEntries = this.generateTimeEntries(this.props.timeEntries.weeks[2]);
+
+        const isAdmin = this.props.auth.user.role === "Administrator";
+        const isOwner = this.props.auth.user.userid === this.props.match.params.userId;
+
+        const { projects } = this.props.userProjects;
+        const projectOptions = projects.map(project => 
+            <option value={project.projectId} key={project.projectId}> {project.projectName} </option>
+        )
+        projectOptions.unshift(<option value="all" key="all">All Projects (Default)</option>);
 
         return (
             <Container>
-              <div>
-              <nav class="navbar navbar-expand-md navbar-light bg-light mb-3 nav-fill">
-                <li class="navbar-brand">Viewing Timelog For: {this.props.userProfile.firstName} {this.props.userProfile.lastName}</li>
-                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#timelogsnapshot" aria-controls="navbarSupportedContent"
-                  aria-expanded="false" aria-label="Toggle navigation">
-                </button>
-                <div class="collapse navbar-collapse" id="timelogsnapshot">
-                  <ul class="navbar-nav w-100">
-                    <li class="nav-item navbar-text mr-3 w-25" id="timelogweeklychart">
-                     progress bar
-                    </li>
-                    <li class="nav-item  navbar-text">
-                      <span class="fa fa-tasks icon-large" data-toggle="modal" data-target="#actionItems">
-                        <icon class="badge badge-pill badge-warning badge-notify"></icon>
-                      </span>
-                    </li>
-                    <li class="nav-item navbar-text">
-                      <i class="fa fa-envelope icon-large" data-toggle="modal" data-target="#notifications">
-                        <icon class="badge badge-pill badge-warning badge-notify">noti</icon>
-                      </i>
-                    </li>
-                    <li class="nav-item navbar-text">
-                      <a class="nav-link" href= {`/userprofile/${this.props.auth.user.userid}`} >View Profile</a>
-                    </li>
-                  </ul>
-                </div>
-              </nav>
-            </div>
-
-            <Row>
-              <Col md={6}>
-                <h3> Add a Time Entry </h3>
-                <Form>
-                  <FormGroup>
-                    <Label for="dateOfWork">Date</Label>
-                    <Input type="date" name="date" id="dateOfWork" placeholder="Date Placeholder" 
-                      value={this.state.dateOfWork} onChange={this.handleDateChange}/>
-                  </FormGroup>
-                  <FormGroup>
-                    <Label for="timeSpent">Time (HH:MM)</Label>
-                    <Row form>
-                      <Col>
-                        <Input type="number" name="hours" id="hours" placeholder="Hours" 
-                          value={this.state.hours} onChange={this.handleHoursChange}/>
-                      </Col>
-                      <Col>
-                        <Input type="number" name="minutes" id="minutes" placeholder="Minutes" 
-                          value={this.state.minutes} onChange={this.handleMinutesChange}/>
-                      </Col>
-                    </Row>
-                  </FormGroup>
-                  <FormGroup>
-                    <Label for="project">Project</Label>
-                    <Input type="select" name="project" id="project" 
-                      value={this.state.projectId} onChange={this.handleProjectChange}>
-                      {projectOptions}
-                    </Input>
-                  </FormGroup>
-                  <FormGroup>
-                    <Label for="notes">Notes</Label>
-                    <Input type="textarea" name="notes" id="notes" placeholder="Notes" 
-                      value={this.state.notes} onChange={this.handleNotesChange}/>
-                  </FormGroup>
-                  <FormGroup check>
-                    <Label check>
-                      <Input type="checkbox" checked={this.state.isTangible} onChange={this.handleTangibleChange}/>{' '}
-                      Tangible
-                    </Label>
-                  </FormGroup>
-                  <Button onClick={this.handleSubmit}> Submit </Button>
-                </Form>
-              </Col>
-            </Row>
+                <TimelogNavbar userId={this.props.match.params.userId}/>
+                <Row>
+                    <Col md={8}>
+                        <Card>
+                            <CardHeader>
+                                <Row>
+                                    <Col md={8}>
+                                        <CardTitle tag="h4">
+                                        Time Entries
+                                        </CardTitle>
+                                        <CardSubtitle tag="h6" className="text-muted">
+                                        Viewing time entries logged in last 3 weeks
+                                        </CardSubtitle>
+                                    </Col>
+                                    <Col md={4}>
+                                        {(isAdmin || isOwner) && 
+                                            <TimeEntryForm userId={this.props.match.params.userId} edit={false}/>
+                                        }
+                                    </Col>
+                                </Row>
+                            </CardHeader>
+                            <CardBody>
+                                <Nav tabs className="mb-1">
+                                    <NavItem>
+                                        <NavLink
+                                            className={classnames({ active: this.state.activeTab === 0 })}
+                                            onClick={() => { this.changeTab(0); }}
+                                        >
+                                            Current Week
+                                        </NavLink>
+                                    </NavItem>
+                                    <NavItem>
+                                        <NavLink
+                                            className={classnames({ active: this.state.activeTab === 1 })}
+                                            onClick={() => { this.changeTab(1); }}
+                                        >
+                                            Last Week
+                                        </NavLink>
+                                    </NavItem>
+                                    <NavItem>
+                                        <NavLink
+                                            className={classnames({ active: this.state.activeTab === 2 })}
+                                            onClick={() => { this.changeTab(2); }}
+                                        >
+                                            Week Before Last
+                                        </NavLink>
+                                    </NavItem>
+                                </Nav>
+                                <TabContent activeTab={this.state.activeTab}>
+                                    <p>Viewing time Entries from {' '}
+                                        <b>{this.startOfWeek(this.state.activeTab)}</b>
+                                        {" to "} 
+                                        <b>{this.endOfWeek(this.state.activeTab)}</b>
+                                    </p>
+                                    <Form inline className="mb-2">
+                                        <FormGroup>
+                                            <Label for="projectSelected" className="mr-2">Filter Entries by Project:</Label>
+                                            <Input type="select" name="projectSelected" id="projectSelected" 
+                                                value={this.state.projectSelected} 
+                                                onChange={e => this.setState({
+                                                projectSelected: e.target.value
+                                            })}>
+                                                {projectOptions}
+                                            </Input>
+                                        </FormGroup>
+                                    </Form>
+                                    <TabPane tabId={0}>
+                                        { currentWeekEntries }
+                                    </TabPane>
+                                    <TabPane tabId={1}>
+                                        { lastWeekEntries }
+                                    </TabPane>
+                                    <TabPane tabId={2}>
+                                        { beforeLastEntries }
+                                    </TabPane>
+                                </TabContent>
+                            </CardBody>
+                        </Card>
+                    </Col>
+                    <Col md={4}>
+                    </Col>              
+                </Row>
             </Container>
         );
     }
 }
+
 const mapStateToProps = state => ({
   auth: state.auth,
   userProfile: state.userProfile,
+  timeEntries: state.timeEntries,
   userProjects: state.userProjects
 });
 
@@ -194,6 +218,6 @@ export default connect(
     getTimeEntriesForWeek,
     getTimeEntriesForPeriod,
     getUserProjects,
-    postTimeEntry
+    getUserProfile
   }
 )(TimelogPage);

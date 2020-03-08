@@ -7,10 +7,11 @@ import { NavItem } from 'reactstrap'
 const Project = props => {
 	const [originName] = useState(props.name)
 	const [name, setName] = useState(props.name)
-	const [active] = useState(props.active)
+	const [active, setActive] = useState(props.active)
 
 	const updateActive = () => {
 		props.onClickActive(props.projectId, name, active)
+		setActive(!active);
 	}
 
 
