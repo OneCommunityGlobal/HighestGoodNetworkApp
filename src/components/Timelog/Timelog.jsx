@@ -33,6 +33,7 @@ import {
 import TimeEntryForm from './TimeEntryForm'
 import TimelogNavbar from './TimelogNavbar'
 import TimeEntry from './TimeEntry'
+import EffortBar from './EffortBar';
 
 class TimelogPage extends Component {
     constructor(props) {
@@ -243,6 +244,8 @@ class TimelogPage extends Component {
                                             </Input>
                                         </FormGroup>
                                     </Form>
+                                    <EffortBar activeTab={this.state.activeTab} 
+                                        projectSelected={this.state.projectSelected}/>
                                     <TabPane tabId={0}>
                                         { currentWeekEntries }
                                     </TabPane>

@@ -21,7 +21,7 @@ const TimelogNavbar = ({userId}) => {
           <div className="collapse navbar-collapse" id="timelogsnapshot">
             <ul className="navbar-nav w-100">
               <li className="nav-item navbar-text mr-3 w-25" id="timelogweeklychart">
-                <div>Current Week : {totalEffort.toFixed(2)}/{weeklyComittedHours}</div>
+                <div>Current Week : {totalEffort.toFixed(2)} / {weeklyComittedHours}</div>
                 <Progress striped value={progressPercentage} color={
                   progressPercentage < 30 ? 
                   "danger" : 
