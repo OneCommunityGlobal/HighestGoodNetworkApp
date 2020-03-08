@@ -7,18 +7,12 @@ import {
 import { useSelector } from 'react-redux'
 import ReactHtmlParser from 'react-html-parser';
 import moment from "moment";
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faEdit, faTrashAlt } from '@fortawesome/free-regular-svg-icons'
 
 import "./TimeEntry.css";
 import TimeEntryForm from './TimeEntryForm';
 import DeleteModal from './DeleteModal';
 
 const TimeEntry = ({data, displayYear}) => {
-    const padZero = number => {
-        return ("0" + number).slice(-2);
-    };
-
     const dateOfWork = moment(data.dateOfWork);
     const { user } = useSelector(state => state.auth);
     const isOwner = data.personId === user.userid;
@@ -46,7 +40,7 @@ const TimeEntry = ({data, displayYear}) => {
                     </div>
                 </Col>
                 <Col md={4} className="px-0">
-                    <h4 className="text-primary">
+                    <h4 className="text-success">
                         {data.hours}h {data.minutes}m
                     </h4>
                     <div className="text-muted">
@@ -63,11 +57,9 @@ const TimeEntry = ({data, displayYear}) => {
                     {ReactHtmlParser(data.notes)}
                     <div className="buttons">
                         {( isAdmin || (!data.isTangible && isOwner && isSameDay) ) && 
-                            // <FontAwesomeIcon icon={faEdit} size="lg" className="mr-3 text-primary"/>
                             <TimeEntryForm edit={true} userId={data.personId} data={data}/>
                         }
                         {( isAdmin || (!data.isTangible && isOwner && isSameDay) ) && 
-                            // <FontAwesomeIcon icon={faTrashAlt} size="lg" className="mr-3 text-primary"/>
                             <DeleteModal timeEntry={data}/>
                         }
                     </div>

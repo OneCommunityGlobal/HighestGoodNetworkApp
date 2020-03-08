@@ -145,6 +145,7 @@ class TimelogPage extends Component {
                                         <NavLink
                                             className={classnames({ active: this.state.activeTab === 0 })}
                                             onClick={() => { this.changeTab(0); }}
+                                            href="#"
                                         >
                                             Current Week
                                         </NavLink>
@@ -153,6 +154,7 @@ class TimelogPage extends Component {
                                         <NavLink
                                             className={classnames({ active: this.state.activeTab === 1 })}
                                             onClick={() => { this.changeTab(1); }}
+                                            href="#"
                                         >
                                             Last Week
                                         </NavLink>
@@ -161,8 +163,18 @@ class TimelogPage extends Component {
                                         <NavLink
                                             className={classnames({ active: this.state.activeTab === 2 })}
                                             onClick={() => { this.changeTab(2); }}
+                                            href="#"
                                         >
                                             Week Before Last
+                                        </NavLink>
+                                    </NavItem>
+                                    <NavItem>
+                                        <NavLink
+                                            className={classnames({ active: this.state.activeTab === 3 })}
+                                            onClick={() => { this.changeTab(3); }}
+                                            href="#"
+                                        >
+                                            Search by Date
                                         </NavLink>
                                     </NavItem>
                                 </Nav>
@@ -193,6 +205,9 @@ class TimelogPage extends Component {
                                     <TabPane tabId={2}>
                                         { beforeLastEntries }
                                     </TabPane>
+                                    <NavLink className="h6" href="#">
+                                        View Entries of Other Period
+                                    </NavLink>
                                 </TabContent>
                             </CardBody>
                         </Card>
