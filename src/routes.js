@@ -13,6 +13,8 @@ import UpdatePassword from './components/UpdatePassword'
 import Header from './components/Header'
 import Projects from './components/Projects'
 import Members from './components/Projects/Members'
+import WBS from './components/Projects/WBS'
+import WBSDetail from './components/Projects/WBS/WBSDetail'
 import 'react-toastify/dist/ReactToastify.css'
 
 export default (
@@ -25,6 +27,8 @@ export default (
 			<ProtectedRoute path='/reports' exact component={Reports} />
 			<ProtectedRoute path='/projects' exact component={Projects} />
 			<ProtectedRoute path='/project/members/:projectId' component={Members} />
+			<ProtectedRoute path='/project/wbs/:projectId' component={WBS} />
+			<ProtectedRoute path='/wbs/detail/' component={WBSDetail} />
 
 			<Route path='/login' component={Login} />
 
