@@ -12,7 +12,11 @@ import {
     NavItem,
     NavLink,
     TabContent,
-    TabPane
+    TabPane,
+    Form,
+    FormGroup,
+    Label,
+    Input
 } from 'reactstrap'
 import classnames from 'classnames';
 import { connect } from 'react-redux'
@@ -38,7 +42,8 @@ class TimelogPage extends Component {
 
     state = {
         modal: false,
-        activeTab: 0
+        activeTab: 0,
+        projectSelected: "all"
     };
 
     async componentDidMount() {
@@ -87,19 +92,29 @@ class TimelogPage extends Component {
             .format("YYYY-MM-DD");
     }
 
+    generateTimeEntries(data) {
+        let filteredData = data;
+        if (this.state.projectSelected !== "all") {
+            filteredData = data.filter(entry => entry.projectId === this.state.projectSelected)
+        }
+        return filteredData.map(
+            entry => <TimeEntry data={entry} displayYear={false} key={entry._id}/>
+        )
+    }
+
     render() {
-        const currentWeekEntries = this.props.timeEntries.weeks[0].map(
-            entry => <TimeEntry data={entry} displayYear={false} key={entry._id}/>
-        )
-        const lastWeekEntries = this.props.timeEntries.weeks[1].map(
-            entry => <TimeEntry data={entry} displayYear={false} key={entry._id}/>
-        )
-        const beforeLastEntries = this.props.timeEntries.weeks[2].map(
-            entry => <TimeEntry data={entry} displayYear={false} key={entry._id}/>
-        )
+        const currentWeekEntries = this.generateTimeEntries(this.props.timeEntries.weeks[0]);
+        const lastWeekEntries = this.generateTimeEntries(this.props.timeEntries.weeks[1]);
+        const beforeLastEntries = this.generateTimeEntries(this.props.timeEntries.weeks[2]);
 
         const isAdmin = this.props.auth.user.role === "Administrator";
         const isOwner = this.props.auth.user.userid === this.props.match.params.userId;
+
+        const { projects } = this.props.userProjects;
+        const projectOptions = projects.map(project => 
+            <option value={project.projectId} key={project.projectId}> {project.projectName} </option>
+        )
+        projectOptions.unshift(<option value="all" key="all">All Projects (Default)</option>);
 
         return (
             <Container>
@@ -109,7 +124,7 @@ class TimelogPage extends Component {
                         <Card>
                             <CardHeader>
                                 <Row>
-                                    <Col>
+                                    <Col md={8}>
                                         <CardTitle tag="h4">
                                         Time Entries
                                         </CardTitle>
@@ -117,7 +132,7 @@ class TimelogPage extends Component {
                                         Viewing time entries logged in last 3 weeks
                                         </CardSubtitle>
                                     </Col>
-                                    <Col>
+                                    <Col md={4}>
                                         {(isAdmin || isOwner) && 
                                             <TimeEntryForm userId={this.props.match.params.userId} edit={false}/>
                                         }
@@ -125,7 +140,7 @@ class TimelogPage extends Component {
                                 </Row>
                             </CardHeader>
                             <CardBody>
-                                <Nav tabs>
+                                <Nav tabs className="mb-1">
                                     <NavItem>
                                         <NavLink
                                             className={classnames({ active: this.state.activeTab === 0 })}
@@ -153,17 +168,30 @@ class TimelogPage extends Component {
                                 </Nav>
                                 <TabContent activeTab={this.state.activeTab}>
                                     <p>Viewing time Entries from {' '}
-                                        {this.startOfWeek(this.state.activeTab)} {" to "} 
-                                        {this.endOfWeek(this.state.activeTab)}
+                                        <b>{this.startOfWeek(this.state.activeTab)}</b>
+                                        {" to "} 
+                                        <b>{this.endOfWeek(this.state.activeTab)}</b>
                                     </p>
+                                    <Form inline className="mb-2">
+                                        <FormGroup>
+                                            <Label for="projectSelected" className="mr-2">Filter Entries by Project:</Label>
+                                            <Input type="select" name="projectSelected" id="projectSelected" 
+                                                value={this.state.projectSelected} 
+                                                onChange={e => this.setState({
+                                                projectSelected: e.target.value
+                                            })}>
+                                                {projectOptions}
+                                            </Input>
+                                        </FormGroup>
+                                    </Form>
                                     <TabPane tabId={0}>
-                                        {currentWeekEntries}
+                                        { currentWeekEntries }
                                     </TabPane>
                                     <TabPane tabId={1}>
-                                        {lastWeekEntries}
+                                        { lastWeekEntries }
                                     </TabPane>
                                     <TabPane tabId={2}>
-                                        {beforeLastEntries}
+                                        { beforeLastEntries }
                                     </TabPane>
                                 </TabContent>
                             </CardBody>
@@ -180,7 +208,8 @@ class TimelogPage extends Component {
 const mapStateToProps = state => ({
   auth: state.auth,
   userProfile: state.userProfile,
-  timeEntries: state.timeEntries
+  timeEntries: state.timeEntries,
+  userProjects: state.userProjects
 });
 
 export default connect(

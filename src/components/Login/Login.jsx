@@ -6,7 +6,7 @@ import { withRouter } from "react-router-dom";
 import { loginUser } from "../../actions/authActions"
 import { clearErrors } from "../../actions/errorsActions"
 
-class Login extends Form {
+export class Login extends Form {
   state = {
     data: { email: "", password: "" },
     errors: {}
@@ -24,29 +24,29 @@ class Login extends Form {
 
   componentDidMount() {
     // document.title = "Login";
-    if (this.props.auth.isAuthenticated){
+    if (this.props.auth.isAuthenticated) {
       this.props.history.push("/");
     }
   }
 
   componentDidUpdate(prevProps) {
-    if (prevProps.auth !== this.props.auth){
+    if (prevProps.auth !== this.props.auth) {
       if (this.props.auth.user.new) {
         const url = `/forcePasswordUpdate/${this.props.auth.user.userId}`;
         this.props.history.push(url);
-      } 
-      else if (this.props.auth.isAuthenticated){
+      }
+      else if (this.props.auth.isAuthenticated) {
         const { state } = this.props.location;
         this.props.history.push(state ? state.from.pathname : "/dashboard");
       }
     }
 
-    if (prevProps.errors.email !== this.props.errors.email){
+    if (prevProps.errors.email !== this.props.errors.email) {
       this.setState({ errors: this.props.errors });
     }
   }
 
-  componentWillUnmount(){
+  componentWillUnmount() {
     this.props.clearErrors();
   }
 
@@ -82,7 +82,7 @@ const mapStateToProps = state => ({
 });
 
 export default withRouter(
-  connect(mapStateToProps, { 
+  connect(mapStateToProps, {
     loginUser, clearErrors
   })(Login)
 );
