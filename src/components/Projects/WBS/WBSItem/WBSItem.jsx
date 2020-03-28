@@ -14,7 +14,7 @@ const WBSItem = (props) => {
       <tr className="members__tr">
         <th scope="row"><div>{props.index}</div></th>
         <td className='members__name'>
-          <a href={`/wbs/detail/`}>
+          <a href={`/wbs/tasks/${props.wbsId}`}>
             {props.name}
           </a>
         </td>

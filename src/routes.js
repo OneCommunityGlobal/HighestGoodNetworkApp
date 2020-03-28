@@ -28,7 +28,7 @@ export default (
 			<ProtectedRoute path='/projects' exact component={Projects} />
 			<ProtectedRoute path='/project/members/:projectId' component={Members} />
 			<ProtectedRoute path='/project/wbs/:projectId' component={WBS} />
-			<ProtectedRoute path='/wbs/detail/' component={WBSDetail} />
+			<ProtectedRoute path='/wbs/tasks/:wbsId' component={WBSDetail} />
 
 			<Route path='/login' component={Login} />
 

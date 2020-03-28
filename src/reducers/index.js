@@ -24,6 +24,7 @@ import { timeEntriesForSpecifiedPeriodReducer } from './timeEntriesForSpecifiedP
 import { errorsReducer } from './errorsReducer'
 import { timeEntriesReducer } from './timeEntriesReducer'
 import { wbsReducer } from './wbsReducer'
+import { taskReducer } from './allTasksReducer'
 
 export default combineReducers({
 	auth: authReducer,
@@ -49,6 +50,7 @@ export default combineReducers({
 	//projectTimeEntries: timeEntriesForSpecifiedProjectReducer,
 	//requestStatus: handleSuccessReducer,
 	wbs: wbsReducer,
+	tasks: taskReducer,
 	errors: errorsReducer,
 	timeEntries: timeEntriesReducer
 })

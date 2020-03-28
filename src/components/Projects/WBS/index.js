@@ -1,1 +1,1 @@
-export { default } from "./WBS";
+export { default } from "./wbs";
