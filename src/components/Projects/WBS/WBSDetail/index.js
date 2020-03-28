@@ -1,1 +1,1 @@
-export { default } from "./WBSDetail";
+export { default } from "./WBSTasks";

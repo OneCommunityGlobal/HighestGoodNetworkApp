@@ -5,8 +5,6 @@
 import axios from 'axios'
 import * as types from './../constants/projectMembership'
 import { ENDPOINTS } from '../utils/URL'
-import { useRowSelect } from 'react-table';
-import store from './../store'
 /*******************************************
  * ACTION CREATORS 
  *******************************************/

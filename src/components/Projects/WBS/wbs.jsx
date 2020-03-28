@@ -5,16 +5,23 @@
  ********************************************************************************/
 import React, { useState, useEffect } from 'react'
 import { connect } from 'react-redux'
+import { addNewWBS, fetchAllWBS } from '../../../actions/wbs'
 import { Link } from 'react-router-dom'
 import { NavItem } from 'reactstrap'
+import AddWBS from './AddWBS'
 import WBSItem from './WBSItem/WBSItem'
 
-const wbs = (props) => {
+const WBS = (props) => {
+  const projectId = props.match.params.projectId;
 
+  useEffect(() => {
+    props.fetchAllWBS(projectId);
+  }, [projectId]);
 
   return (
     <React.Fragment>
       <div className='container'>
+
 
         <nav aria-label="breadcrumb">
           <ol className="breadcrumb">
@@ -31,6 +38,8 @@ const wbs = (props) => {
           </ol>
         </nav>
 
+        <AddWBS projectId={projectId} />
+
 
         <table className="table table-bordered table-responsive-sm">
           <thead>
@@ -41,15 +50,13 @@ const wbs = (props) => {
             </tr>
           </thead>
           <tbody>
+            {
+              props.state.wbs.WBSItems.map((item, i) =>
 
-            <WBSItem index='1' key='1' projectId={props.projectId} name='This is the WBS for A Team' />
-            <WBSItem index='2' key='1' projectId={props.projectId} name='This is the WBS for B Team' />
-            <WBSItem index='3' key='1' projectId={props.projectId} name='This is the WBS for C Team' />
-            <WBSItem index='4' key='1' projectId={props.projectId} name='This is the WBS for D Team' />
-            <WBSItem index='5' key='1' projectId={props.projectId} name='This is the WBS for E Team' />
-            <WBSItem index='6' key='1' projectId={props.projectId} name='This is the WBS for F Team' />
-            <WBSItem index='7' key='1' projectId={props.projectId} name='This is the WBS for G Team' />
-            <WBSItem index='88' key='1' projectId={props.projectId} name='This is the WBS for H Team' />
+                item ? <WBSItem index={i + 1} key={item._id} wbsId={item._id} name={item.wbsName} /> : null
+
+              )}
+
           </tbody>
         </table>
       </div>
@@ -57,5 +64,6 @@ const wbs = (props) => {
   )
 }
 
-export default wbs
+const mapStateToProps = state => { return { state } }
+export default connect(mapStateToProps, { addNewWBS, fetchAllWBS })(WBS)
 

@@ -23,6 +23,7 @@ import { allTimeEntriesReducer } from './allTimeEntriesReducer'
 import { timeEntriesForSpecifiedPeriodReducer } from './timeEntriesForSpecifiedPeriodReducer'
 import { errorsReducer } from './errorsReducer'
 import { timeEntriesReducer } from './timeEntriesReducer'
+import { wbsReducer } from './wbsReducer'
 
 export default combineReducers({
 	auth: authReducer,
@@ -38,7 +39,7 @@ export default combineReducers({
 	//	notifications: notificationsReducer,
 	allProjects: allProjectsReducer,
 	//project: projectByIdReducer,
-  userProjects: userProjectsReducer,
+	userProjects: userProjectsReducer,
 	projectMembers: projectMembershipReducer,
 	//allTeams: allTeamsReducer,
 	//team: teamByIdReducer,
@@ -47,6 +48,7 @@ export default combineReducers({
 	//userTimeEntries: timeEntriesForSpecifiedPeriodReducer,
 	//projectTimeEntries: timeEntriesForSpecifiedProjectReducer,
 	//requestStatus: handleSuccessReducer,
+	wbs: wbsReducer,
 	errors: errorsReducer,
-  timeEntries: timeEntriesReducer
+	timeEntries: timeEntriesReducer
 })
