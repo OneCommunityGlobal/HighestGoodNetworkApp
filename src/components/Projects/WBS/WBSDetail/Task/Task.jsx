@@ -6,7 +6,8 @@ import React from 'react'
 import { connect } from 'react-redux'
 
 const Task = (props) => {
-
+  const startedDate = new Date(props.startedDatetime);
+  const dueDate = new Date(props.dueDatetime);
 
   return (
     <React.Fragment>
@@ -28,8 +29,13 @@ const Task = (props) => {
         <td>{props.hoursWorst}</td>
         <td>{props.hoursMost}</td>
         <td>{props.estimatedHours}</td>
-        <td>{typeof props.startedDateTime}</td>
-        <td>{props.dueDateTime}</td>
+        <td>
+          {(startedDate.getMonth() + 1)}/{startedDate.getDate()}/{startedDate.getFullYear()}
+          <br />
+        </td>
+        <td>
+          {(dueDate.getMonth() + 1)}/{dueDate.getDate()}/{dueDate.getFullYear()}
+        </td>
         <td>{props.links}</td>
       </tr>
     </React.Fragment>

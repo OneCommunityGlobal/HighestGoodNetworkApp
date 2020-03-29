@@ -58,8 +58,8 @@ const WBSTasks = (props) => {
                 hoursMost={task.hoursMost}
                 hoursWorst={task.hoursWorst}
                 estimatedHours={task.estimatedHours}
-                startedDateTime={task.startedDatetime}
-                dueDateTime={task.dueDateTime}
+                startedDatetime={task.startedDatetime}
+                dueDatetime={task.dueDatetime}
                 links={task.links[0]}
 
               />)}
