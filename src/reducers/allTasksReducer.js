@@ -15,7 +15,17 @@ export const taskReducer = (allTasks = allTasksInital, action) => {
     case types.FETCH_TASKS_ERROR:
       return { ...allTasks, fetched: true, fetching: false, error: action.err }
     case types.RECEIVE_TASKS:
-      console.log(action.taskItems);
+
+      action.taskItems.sort(function (a, b) {
+        if (a.num < b.num) {
+          return -1;
+        }
+        if (a.num > b.num) {
+          return 1;
+        }
+        return 0;
+      });
+
       return { ...allTasks, taskItems: action.taskItems, fetched: true, fetching: false, error: "none" }
 
   }

@@ -28,8 +28,8 @@ const WBSTasks = (props) => {
             <tr>
               <th scope="col" data-tip="WBS ID">#</th>
               <th scope="col" data-tip="Task Name">Task</th>
-              <th scope="col" data-tip="Priority">Priority</th>
-              <th scope="col" data-tip="Resources">Resources</th>
+              <th scope="col" data-tip="Priority"><i class="fa fa-star" aria-hidden="true"></i></th>
+              <th scope="col" data-tip="Resources"><i class="fa fa-users" aria-hidden="true"></i></th>
               <th scope="col" data-tip="Assigned" ><i className="fa fa-user-circle-o" aria-hidden="true"></i></th>
               <th scope="col" data-tip="Status" ><i className="fa fa-tasks" aria-hidden="true"></i></th>
               <th scope="col" data-tip="Hours-Best"><i className="fa fa-hourglass-start" aria-hidden="true"></i></th>
@@ -49,11 +49,13 @@ const WBSTasks = (props) => {
 
             {props.state.tasks.taskItems.map((task, i) =>
               <Task
-                key={i + 1}
-                index={i + 1}
+                key={task._id}
+                id={task._id}
+                level={task.level}
+                num={task.num}
                 name={task.taskName}
                 priority={task.priority}
-                resources={task.resources[0].name}
+                resources={task.resources}
                 isAssigned={task.isAssigned}
                 status={task.status}
                 hoursBest={task.hoursBest}
