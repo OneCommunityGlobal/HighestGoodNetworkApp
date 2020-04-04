@@ -59,10 +59,10 @@ const AddTask = (props) => {
         <td></td>
         <td></td>
         <td></td>
-        <td data-tip="Hours-Best" > <input type="number" className='task-hour' min='0' /></td>
-        <td data-tip="Hours-Worst" > <input type="number" className='task-hour' min='0' /></td>
-        <td data-tip="Hours-Most" > <input type="number" className='task-hour' min='0' /></td>
-        <td data-tip="Estimated Hours" > <input type="number" className='task-hour' min='0' /></td>
+        <td data-tip="Hours-Best" > <input type="text" className='task-hour' min='0' /></td>
+        <td data-tip="Hours-Worst" > <input type="text" className='task-hour' min='0' /></td>
+        <td data-tip="Hours-Most" > <input type="text" className='task-hour' min='0' /></td>
+        <td data-tip="Estimated Hours" > <input type="text" className='task-hour' min='0' /></td>
         <td>
 
         </td>
