@@ -29,3 +29,11 @@
   text-align: center;
   text-transform: uppercase;;
 }
+
+.task-name{
+  width: 100%;
+}
+
+.task-hour{
+  width: 35px;
+}
