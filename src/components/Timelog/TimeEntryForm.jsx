@@ -14,7 +14,8 @@ import {
     ModalFooter
 } from 'reactstrap'
 import { postTimeEntry, editTimeEntry } from '../../actions/timeEntries' 
-import moment from "moment";
+import moment from "moment"
+import _ from "lodash"
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faEdit } from '@fortawesome/free-regular-svg-icons'
 
@@ -30,6 +31,7 @@ const TimeEntryForm = ({userId, edit, data}) => {
 
     const [inputs, setInputs] = useState(edit ? data : initialState);
     const [isOpen, setOpen] = useState(false);
+    const [errors, setErrors] = useState({});
     const dispatch = useDispatch();
 
     const { projects } = useSelector(state => state.userProjects);
@@ -39,11 +41,46 @@ const TimeEntryForm = ({userId, edit, data}) => {
     projectOptions.unshift(<option value="" key="" disabled>Select Project</option>);
 
     const toggle = () => setOpen(isOpen => !isOpen);
+
+    const checkEmpty = () => {
+        if (inputs.dateOfWork === "" || inputs.hours === "" 
+            || inputs.minutes === "" || inputs.projectId === ""
+            || inputs.notes === ""){
+            return true;
+        }
+        return false;
+    }
     
+    const validateForm = () => {
+        let valid = true;
+
+        const date = moment(inputs.dateOfWork);
+        if (!date.isValid()){
+            setErrors({...errors, dateOfWork: "Invalid date"});
+            valid = false;
+        }
+
+        const hours = inputs.hours * 1;
+        const minutes = inputs.minutes * 1;
+        if (!Number.isInteger(hours) || !Number.isInteger(minutes)) {
+            setErrors({...errors, time: "Both hours and minutes should be integers"});
+            valid = false;
+        }
+        if (hours < 0 || minutes < 0 || (hours === 0 && minutes === 0)) {
+            setErrors({...errors, time: "Time should be greater than 0"});
+            valid = false;
+        }
+
+        return valid;
+    }
 
     const handleSubmit = async event => {
         if (event) {
             event.preventDefault();
+        }
+
+        if (!validateForm()) {
+            return;
         }
 
         const timeEntry = {};
@@ -81,6 +118,7 @@ const TimeEntryForm = ({userId, edit, data}) => {
 
     const clearForm = event => {
         setInputs(inputs => initialState);
+        setErrors(errors => ({}));
     }
 
     const isOwner = useSelector(state => state.auth.user.userid) === userId;
@@ -111,6 +149,7 @@ const TimeEntryForm = ({userId, edit, data}) => {
                                 <Input type="date" name="dateOfWork" id="dateOfWork" 
                                     value={inputs.dateOfWork} disabled/>
                             }
+                            {'dateOfWork' in errors && <div className="text-danger"><small>{errors.dateOfWork}</small></div>}
                         </FormGroup>
                         <FormGroup>
                             <Label for="timeSpent">Time (HH:MM)</Label>
@@ -124,6 +163,7 @@ const TimeEntryForm = ({userId, edit, data}) => {
                                         value={inputs.minutes} onChange={handleInputChange}/>
                                 </Col>
                             </Row>
+                            {'time' in errors && <div className="text-danger"><small>{errors.time}</small></div>}
                         </FormGroup>
                         <FormGroup>
                             <Label for="project">Project</Label>
@@ -150,8 +190,11 @@ const TimeEntryForm = ({userId, edit, data}) => {
                     </Form>
                 </ModalBody>
                 <ModalFooter>
-                    <Button onClick={clearForm} color="danger" className="float-left"> Clear Form </Button>
-                    <Button onClick={handleSubmit} color="primary" > { edit ? "Save" : "Submit" } </Button>
+                    <small className="mr-auto text-secondary">* All the fields are required</small>
+                    <Button onClick={clearForm} color="danger"> Clear Form </Button>
+                    <Button onClick={handleSubmit} color="primary" disabled={checkEmpty()}> 
+                        { edit ? "Save" : "Submit" } 
+                    </Button>
                 </ModalFooter>
             </Modal>
         </span>
