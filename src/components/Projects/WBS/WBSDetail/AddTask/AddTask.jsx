@@ -2,12 +2,14 @@
  * Component: TAK
  * Author: Henry Ng - 21/03/20
  ********************************************************************************/
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import { connect } from 'react-redux'
+import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap'
+import AddMembersModal from './AddTaskModal';
 import './../wbs.css';
 
 const AddTask = (props) => {
-
+  const [startDate, setStartDate] = useState(new Date());
   const tasks = props.taskItems;
 
   // list of num
@@ -44,6 +46,9 @@ const AddTask = (props) => {
 
   return (
     <React.Fragment>
+
+
+
       <tr>
         <th scope="row">
           <select id="nums">
@@ -56,7 +61,7 @@ const AddTask = (props) => {
         <td>
 
         </td>
-        <td></td>
+        <td><AddMembersModal /></td>
         <td></td>
         <td></td>
         <td data-tip="Hours-Best" > <input type="text" className='task-hour' min='0' /></td>
@@ -64,13 +69,19 @@ const AddTask = (props) => {
         <td data-tip="Hours-Most" > <input type="text" className='task-hour' min='0' /></td>
         <td data-tip="Estimated Hours" > <input type="text" className='task-hour' min='0' /></td>
         <td>
+          <input type="text" className='task-name' />
+
+        </td>
+        <td>
+          <input type="text" className='task-name' />
 
         </td>
         <td>
         </td>
-        <td>
-        </td>
       </tr>
+
+
+
     </React.Fragment>
   )
 }
