@@ -1,0 +1,40 @@
+.date-block {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+.buttons {
+    right: 0;
+    bottom: 0;
+    position: absolute;
+}
+
+.red .progress-bar {
+    background-color: red;
+}
+
+.orange .progress-bar {
+    background-color: orange;
+}
+
+.green .progress-bar {
+    background-color: green;
+}
+
+.blue .progress-bar {
+    background-color: blue;
+}
+
+.indigo .progress-bar {
+    background-color: indigo;
+}
+
+.violet .progress-bar {
+    background-color: violet;
+}
+
+.purple .progress-bar {
+    background-color: purple;
+}

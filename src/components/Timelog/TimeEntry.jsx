@@ -8,7 +8,7 @@ import { useSelector } from 'react-redux'
 import ReactHtmlParser from 'react-html-parser';
 import moment from "moment";
 
-import "./TimeEntry.css";
+import "./Timelog.css";
 import TimeEntryForm from './TimeEntryForm';
 import DeleteModal from './DeleteModal';
 
