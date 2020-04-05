@@ -25,9 +25,11 @@
   background-color: #bbb;
   border-radius: 50%;
   display: inline-block;
-  font-size: 14px;
+  padding: 3px;
+  font-size: 12px;
   text-align: center;
-  text-transform: uppercase;;
+  text-transform: uppercase;
+  margin: 3px;
 }
 
 .task-name{
@@ -36,4 +38,18 @@
 
 .task-hour{
   width: 35px;
+}
+
+.task-resouces-input{
+  width: 80%;
+  float:left;
+}
+.task-resouces-btn{
+  width: 20%;
+  float:right;
+}
+.task-reousces-list{
+  margin-top: 3px;
+  float: left;
+  width: 100%;
 }

@@ -6,13 +6,14 @@ import React, { useState, useEffect } from 'react'
 import { connect } from 'react-redux'
 import { fetchAllTasks } from './../../../../actions/task'
 import Task from './Task/'
-import AddTask from './AddTask'
+import AddTask from './AddTask/AddTaskModal'
 import './wbs.css';
 import ReactTooltip from 'react-tooltip'
 
 const WBSTasks = (props) => {
 
   const wbsId = props.match.params.wbsId;
+  const projectId = props.match.params.projectId;
 
   useEffect(() => {
     props.fetchAllTasks(wbsId);
@@ -23,7 +24,7 @@ const WBSTasks = (props) => {
       <ReactTooltip />
 
       <div className='container' >
-
+        <AddTask projectId={projectId} />
         <table className="table table-bordered">
           <thead>
             <tr>
@@ -69,7 +70,7 @@ const WBSTasks = (props) => {
               />)}
 
 
-            <AddTask />
+
           </tbody>
         </table>
 

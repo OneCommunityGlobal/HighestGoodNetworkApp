@@ -53,7 +53,7 @@ const WBS = (props) => {
             {
               props.state.wbs.WBSItems.map((item, i) =>
 
-                item ? <WBSItem index={i + 1} key={item._id} wbsId={item._id} name={item.wbsName} /> : null
+                item ? <WBSItem index={i + 1} key={item._id} wbsId={item._id} projectId={projectId} name={item.wbsName} /> : null
 
               )}
 

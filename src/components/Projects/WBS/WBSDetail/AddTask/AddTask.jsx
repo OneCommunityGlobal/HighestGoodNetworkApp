@@ -46,9 +46,6 @@ const AddTask = (props) => {
 
   return (
     <React.Fragment>
-
-
-
       <tr>
         <th scope="row">
           <select id="nums">

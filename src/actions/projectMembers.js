@@ -14,9 +14,9 @@ import { ENDPOINTS } from '../utils/URL'
 */
 export const findUserProfiles = (keyword) => {
 
-  console.log(ENDPOINTS.USER_PROFILES, keyword);
+  //console.log(ENDPOINTS.USER_PROFILES, keyword);
   const request = axios.get(ENDPOINTS.USER_PROFILES);
-  console.log(request);
+  //console.log(request);
 
   return async (dispatch, getState) => {
     await dispatch(findUsersStart());
@@ -32,7 +32,7 @@ export const findUserProfiles = (keyword) => {
             return user = { ...user, assigned: true }
           }
         })
-        console.log(users);
+        //console.log(users);
         dispatch(foundUsers(users));
       } else {
         dispatch(foundUsers([]));
