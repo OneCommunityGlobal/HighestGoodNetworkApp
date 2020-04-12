@@ -28,13 +28,13 @@
 }
 
 .indigo .progress-bar {
-    background-color: indigo;
+    background-color: #000066;
 }
 
 .violet .progress-bar {
-    background-color: violet;
+    background-color: #990099;
 }
 
 .purple .progress-bar {
-    background-color: purple;
+    background-color: #660099;
 }
