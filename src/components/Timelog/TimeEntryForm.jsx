@@ -41,37 +41,44 @@ const TimeEntryForm = ({userId, edit, data}) => {
     projectOptions.unshift(<option value="" key="" disabled>Select Project</option>);
 
     const toggle = () => setOpen(isOpen => !isOpen);
-
-    const checkEmpty = () => {
-        if (inputs.dateOfWork === "" || inputs.hours === "" 
-            || inputs.minutes === "" || inputs.projectId === ""
-            || inputs.notes === ""){
-            return true;
-        }
-        return false;
-    }
     
     const validateForm = () => {
-        let valid = true;
+        const result = {};
 
-        const date = moment(inputs.dateOfWork);
-        if (!date.isValid()){
-            setErrors({...errors, dateOfWork: "Invalid date"});
-            valid = false;
+        if (inputs.dateOfWork === "") {
+            result['dateOfWork'] = "Date is required";
+        }
+        else {
+            const date = moment(inputs.dateOfWork);
+            if (!date.isValid()){
+                result['dateOfWork'] = "Invalid date";
+            }
         }
 
-        const hours = inputs.hours * 1;
-        const minutes = inputs.minutes * 1;
-        if (!Number.isInteger(hours) || !Number.isInteger(minutes)) {
-            setErrors({...errors, time: "Both hours and minutes should be integers"});
-            valid = false;
+        if (inputs.hours === "" && inputs.minutes === "") {
+            result['time'] = "Time is required";
         }
-        if (hours < 0 || minutes < 0 || (hours === 0 && minutes === 0)) {
-            setErrors({...errors, time: "Time should be greater than 0"});
-            valid = false;
+        else {
+            const hours = inputs.hours === "" ? 0 : inputs.hours * 1;
+            const minutes = inputs.minutes === "" ? 0 : inputs.minutes * 1;
+            if (!Number.isInteger(hours) || !Number.isInteger(minutes)) {
+                result['time'] = "Hours and minutes should be integers";
+            }
+            if (hours < 0 || minutes < 0 || (hours === 0 && minutes === 0)) {
+                result['time'] = "Time should be greater than 0";
+            }
         }
 
-        return valid;
+        if (inputs.projectId === "") {
+            result['projectId'] = "Project is required";
+        }
+
+        if (inputs.notes === "") {
+            result["notes"] = "Notes is required"
+        }
+
+        setErrors(result);
+        return _.isEmpty(result);
     }
 
     const handleSubmit = async event => {
@@ -92,13 +99,15 @@ const TimeEntryForm = ({userId, edit, data}) => {
         timeEntry.notes = `<p>${inputs.notes}</p>`;
         timeEntry.isTangible = inputs.isTangible.toString();
     
+        const hours = inputs.hours === "" ? "0" : inputs.hours;
+        const minutes = inputs.minutes === "" ? "0" : inputs.minutes;
         if (edit) {
-            timeEntry.hours = inputs.hours;
-            timeEntry.minutes = inputs.minutes;
+            timeEntry.hours = hours;
+            timeEntry.minutes = minutes;
             await dispatch(editTimeEntry(data._id, timeEntry));
         }
         else {
-            timeEntry.timeSpent = `${inputs.hours}:${inputs.minutes}:00`;
+            timeEntry.timeSpent = `${hours}:${minutes}:00`;
             await dispatch(postTimeEntry(timeEntry));
         }
 
@@ -171,11 +180,13 @@ const TimeEntryForm = ({userId, edit, data}) => {
                                 value={inputs.projectId} onChange={handleInputChange}>
                                 {projectOptions}
                             </Input>
+                            {'projectId' in errors && <div className="text-danger"><small>{errors.projectId}</small></div>}
                         </FormGroup>
                         <FormGroup>
                             <Label for="notes">Notes</Label>
                             <Input type="textarea" name="notes" id="notes" placeholder="Notes" 
                                 value={inputs.notes} onChange={handleInputChange}/>
+                            {'notes' in errors && <div className="text-danger"><small>{errors.notes}</small></div>}
                         </FormGroup>
                         <FormGroup check>
                             <Label check>
@@ -192,7 +203,7 @@ const TimeEntryForm = ({userId, edit, data}) => {
                 <ModalFooter>
                     <small className="mr-auto text-secondary">* All the fields are required</small>
                     <Button onClick={clearForm} color="danger"> Clear Form </Button>
-                    <Button onClick={handleSubmit} color="primary" disabled={checkEmpty()}> 
+                    <Button onClick={handleSubmit} color="primary"> 
                         { edit ? "Save" : "Submit" } 
                     </Button>
                 </ModalFooter>
