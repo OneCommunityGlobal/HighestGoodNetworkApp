@@ -8,18 +8,15 @@ import { ENDPOINTS } from '../utils/URL'
 
 
 
-export const addNewTask = (TaskName, projectId) => {
-  const url = ENDPOINTS.Task(projectId);
+export const addNewTask = (newTask, wbsId) => {
+  const url = ENDPOINTS.TASK(wbsId);
   console.log("Call API: ", url);
   return async dispatch => {
     let status = 200;
     let _id = null;
 
-    const isActive = true;
-
     try {
-      const res = await axios.post(url, { TaskName, isActive })
-      _id = res.data._id;
+      const res = await axios.post(url, newTask)
       status = res.status;
 
     } catch (err) {
@@ -28,13 +25,7 @@ export const addNewTask = (TaskName, projectId) => {
     }
 
     await dispatch(
-      postNewTask(
-        {
-          "_id": _id,
-          "TaskName": TaskName,
-          "isActive": isActive
-
-        },
+      postNewTask(newTask,
         status
       ));
 
@@ -44,9 +35,7 @@ export const addNewTask = (TaskName, projectId) => {
 
 
 export const fetchAllTasks = (wbsId) => {
-  console.log("fetch tasks");
-
-  const request = axios.get(ENDPOINTS.TASK(wbsId));
+  const request = axios.get(ENDPOINTS.TASKS(wbsId));
   return async dispatch => {
     await dispatch(setTasksStart());
     request.then(res => {
@@ -92,10 +81,11 @@ export const setTasksError = (err) => {
 
 
 
-export const postNewTask = (Task, status) => {
+export const postNewTask = (newTask, status) => {
+  console.log(newTask);
   return {
     type: types.ADD_NEW_TASK,
-    Task,
+    newTask,
     status
   }
 }

@@ -9,9 +9,14 @@ const Task = (props) => {
   const startedDate = new Date(props.startedDatetime);
   const dueDate = new Date(props.dueDatetime);
 
+  const selectTask = (id) => {
+    document.getElementById(id).style.background = '#c2d5e6';
+    props.selectTask(id);
+  }
+
   return (
     <React.Fragment>
-      <tr>
+      <tr className='wbsTask' id={props.id} onClick={() => selectTask(props.id)}>
         <th scope="row">{props.num}</th>
         <td>
           {props.level === 1 ? <div className='level-space-1' data-tip="Level 1">{props.name}</div> : null}
@@ -26,7 +31,23 @@ const Task = (props) => {
           {props.priority === "Tertiary" ? <i data-tip="Tertiary" className="fa fa-star-o" aria-hidden="true"></i> : null}
 
         </td>
-        <td><a data-tip={props.resources[0].name} href={`/userprofile/${props.resources[0].userID}`}><span className="dot">{props.resources[0].name.substring(0, 2)}</span></a></td>
+        <td>
+          {props.resources.map((elm) => {
+            if (!elm.profilePic) {
+              return (
+                <a data-tip={elm.name}
+                  href={`/userprofile/${elm.userID}`} target='_blank'><span className="dot">{elm.name.substring(0, 2)}</span>
+                </a>)
+            }
+            return (
+              <a data-tip={elm.name}
+                href={`/userprofile/${elm.userID}`} target='_blank'><img className='img-circle' src={elm.profilePic} />
+              </a>
+            )
+          })}
+
+
+        </td>
         <td>{props.isAssigned ? <i data-tip="Assigned" className="fa fa-check-square" aria-hidden="true"></i> : <i data-tip="Not Assigned" className="fa fa-square-o" aria-hidden="true"></i>}</td>
         <td>{props.status === "Started" ? <button><i data-tip="Started" className="fa fa-pause" aria-hidden="true"></i></button> : <button><i data-tip="Not Started" className="fa fa-play" aria-hidden="true"></i></button>}</td>
         <td data-tip="Hours-Best" >{props.hoursBest}</td>
@@ -42,7 +63,7 @@ const Task = (props) => {
         </td>
         <td>{props.links}</td>
       </tr>
-    </React.Fragment>
+    </React.Fragment >
   )
 }
 

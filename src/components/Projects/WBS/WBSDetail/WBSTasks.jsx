@@ -14,17 +14,27 @@ const WBSTasks = (props) => {
 
   const wbsId = props.match.params.wbsId;
   const projectId = props.match.params.projectId;
+  const [selectedId, setSelectedId] = useState(null);
 
   useEffect(() => {
     props.fetchAllTasks(wbsId);
   }, [wbsId]);
+
+  const selectTaskFunc = (id) => {
+    if (selectedId !== null) {
+      document.getElementById(selectedId).style.background = 'white';
+    }
+    setSelectedId(id);
+
+  }
+
 
   return (
     <React.Fragment>
       <ReactTooltip />
 
       <div className='container' >
-        <AddTask projectId={projectId} />
+        <AddTask projectId={projectId} wbsId={wbsId} />
         <table className="table table-bordered">
           <thead>
             <tr>
@@ -66,6 +76,7 @@ const WBSTasks = (props) => {
                 startedDatetime={task.startedDatetime}
                 dueDatetime={task.dueDatetime}
                 links={task.links[0]}
+                selectTask={selectTaskFunc}
 
               />)}
 

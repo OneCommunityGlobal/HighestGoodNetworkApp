@@ -32,6 +32,14 @@
   margin: 3px;
 }
 
+.img-circle{
+  border-radius: 50%;
+  border-radius: 50%;
+  height: 25px;
+  width: 25px;
+  margin:3px;
+}
+
 .task-name{
   width: 100%;
 }
