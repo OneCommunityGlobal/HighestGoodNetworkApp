@@ -17,14 +17,9 @@ const AddTaskModal = (props) => {
   const [modal, setModal] = useState(false);
   const toggle = () => setModal(!modal);
 
-  // all posible cases 
-  let newNums = [{ 'p': '', 'n': '0' }];
-
-  // above new tasks
-  const [above, setAbove] = useState([]);
 
   // task Num
-  const [num, setNum] = useState('');
+  let newNum = '0';
 
   // task name
   const [taskName, setTaskName] = useState('')
@@ -69,47 +64,50 @@ const AddTaskModal = (props) => {
 
   // list of num
   const nums = [];
-  const taskNames = [];
   tasks.forEach(task => {
     nums.push(task.num);
-    taskNames.push(task.taskName);
   });
 
 
-  // all posible cases 
-  if (tasks.length > 0) {
-    newNums = [];
+  const getNewNum = () => {
+    // get new num
+    if (tasks.length >= 1) {
 
-    nums.forEach((num, i) => {
-      let numArr = num.split('.');
-      let end = numArr[numArr.length - 1];
-      let before = '';
-      for (let i = 0; i < numArr.length - 1; i++) {
-        before += numArr[i] + '.';
-      }
-      // sibling
-      let newNum = before + (parseInt(end) + 1);
-      if (!nums.includes(newNum)) {
-        newNums.push({ 'p': taskNames[i], 'n': newNum });
-      }
-      // child
-      if (numArr.length < 4) {
-        newNum = num + '.1';
-        if (!nums.includes(newNum)) {
-          newNums.push({ 'p': taskNames[i], 'n': newNum });
+      if (props.parentNum !== "-1") {
+        let tmpNewNum = '';
+        nums.forEach((num, i) => {
+          if (num.includes(props.parentNum)) {
+            tmpNewNum = num;
+          }
+
+        });
+
+        if (tmpNewNum.length === props.parentNum.length) {
+          newNum = `${tmpNewNum}.1`;
+        } else {
+          if (tmpNewNum.length > 1) {
+            let numArr = tmpNewNum.split('.');
+            let end = numArr[numArr.length - 1];
+            let before = '';
+            for (let i = 0; i < numArr.length - 1; i++) {
+              before += numArr[i] + '.';
+            }
+            newNum = before + (parseInt(end) + 1);
+          }
+
         }
+      } else {
+        nums.forEach(num => {
+          if (num.split('.').length === 1) {
+            newNum = parseInt(num) + 1;
+          }
+        });
       }
-    });
-
-    newNums.sort((a, b) => a['n'].split('.')[0] - b['n'].split('.')[0]);
-  } else {
-    newNums.push({ 'p': '', 'n': '0' })
+    }
   }
 
-  const changeAbove = (index) => {
-    setAbove(newNums[index]['p']);
-    setNum(newNums[index]['n']);
-  }
+
+
 
 
   const [foundMembersHTML, setfoundMembersHTML] = useState('');
@@ -179,7 +177,10 @@ const AddTaskModal = (props) => {
     setLinksHTML(html);
   }
 
-
+  // Hours estimate
+  const calHoursEstimate = () => {
+    setHoursEstimate(parseInt((parseInt(hoursMost) + parseInt(hoursWorst) + parseInt(hoursBest)) / 3));
+  }
 
 
   const addNewTask = () => {
@@ -187,8 +188,8 @@ const AddTaskModal = (props) => {
     {
       "wbsId": props.wbsId,
       "taskName": taskName,
-      "num": num,
-      "level": "2",
+      "num": newNum,
+      "level": newNum.length > 1 ? newNum.split('.').length : 1,
       "priority": priority,
       "resources": resources,
       "isAssigned": assigned,
@@ -200,25 +201,25 @@ const AddTaskModal = (props) => {
       "startedDatetime": startedDate,
       "dueDatetime": dueDate,
       "links": links,
-      "parentId": "5e7ffefa4dc6e30a6d70e041",
+      "parentId": props.taskId,
       "isActive": true
     }
 
     props.addNewTask(newTask, props.wbsId);
-    //console.log(newTask);
+    if (props.tasks.error === "none") {
+      toggle();
+      getNewNum();
+    }
   }
 
   useEffect(() => {
-    setAbove(newNums[0]['p']);
-  }, [tasks]);
 
+  }, [tasks]);
+  getNewNum();
 
   return (
-    <div>
-      <Button color="primary" onClick={toggle}>Add Task</Button>
-      <div>
-        <br />
-      </div>
+    <div className='controlBtn'>
+
       <Modal isOpen={modal} toggle={toggle} >
         <ModalHeader toggle={toggle}>Add New Task</ModalHeader>
         <ModalBody>
@@ -228,17 +229,10 @@ const AddTaskModal = (props) => {
             <tbody>
               <tr>
                 <td scope="col" data-tip="WBS ID">
-                  <div></div><br /><br />
                   WBS #
                   </td>
                 <td scope="col" >
-                  <div className='above'><i>{above}</i></div>
-                  <div><i className="fa fa-arrows-v" aria-hidden="true"></i></div>
-                  <select id="nums"
-                    onChange={(e) => changeAbove(e.target.value)}
-                  >
-                    {newNums.map((num, i) => <option value={i} >{num['n']}</option>)}
-                  </select>
+                  {newNum}
                 </td>
               </tr>
               <tr>
@@ -325,31 +319,38 @@ const AddTaskModal = (props) => {
               <tr>
                 <td scope="col" data-tip="Hours-Best">Hours-Best</td>
                 <td scope="col" data-tip="Hours-Best">
-                  <input type='number' min='0'
+                  <input type='number' min='0' max='500' value={hoursBest}
                     onChange={(e) => setHoursBest(e.target.value)}
+                    onBlur={() => calHoursEstimate()}
+
+
                   />
                 </td>
               </tr>
               <tr>
                 <td scope="col" data-tip="Hours-Worst">Hours-Worst</td>
                 <td scope="col" data-tip="Hours-Worst">
-                  <input type='number' min='0'
+                  <input type='number' min={hoursBest} max='500' value={hoursWorst}
                     onChange={(e) => setHoursWorst(e.target.value)}
+                    onBlur={() => calHoursEstimate()}
+
                   />
                 </td>
               </tr>
               <tr>
                 <td scope="col" data-tip="Hours-Most">Hours-Most</td>
                 <td scope="col" data-tip="Hours-Most">
-                  <input type='number' min='0'
+                  <input type='number' min='0' max='500' value={hoursMost}
                     onChange={(e) => setHoursMost(e.target.value)}
+                    onBlur={() => calHoursEstimate()}
+
                   />
                 </td>
               </tr>
               <tr>
                 <td scope="col" data-tip="Estimated Hours">Estimated Hours</td>
                 <td scope="col" data-tip="Estimated Hours">
-                  <input type='number' min='0'
+                  <input type='number' min='0' max='500' value={hoursEstimate}
                     onChange={(e) => setHoursEstimate(e.target.value)}
                   />
                 </td>
@@ -411,7 +412,11 @@ const AddTaskModal = (props) => {
           <Button color="secondary" onClick={toggle}>Cancel</Button>
         </ModalFooter>
       </Modal >
+      <Button color="primary" size="sm" onClick={toggle} >Add Task</Button>
+
     </div >
+
+
   );
 }
 

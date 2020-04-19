@@ -8,40 +8,38 @@
 }
 
 .level-space-2{
-  margin-left: 10px;
+  margin-left: 15px;
 }
 
 .level-space-3{
-  margin-left: 20px;
+  margin-left: 25px;
 }
 
 .level-space-4{
-  margin-left: 30px;
+  margin-left: 35px;
 }
 
 .dot {
-  height: 25px;
-  width: 25px;
+  height: 17px;
+  width: 17px;
   background-color: #bbb;
   border-radius: 50%;
   display: inline-block;
-  padding: 3px;
   font-size: 12px;
   text-align: center;
   text-transform: uppercase;
-  margin: 3px;
 }
 
 .img-circle{
   border-radius: 50%;
   border-radius: 50%;
-  height: 25px;
-  width: 25px;
-  margin:3px;
+  height: 17px;
+  width: 17px;
 }
 
 .task-name{
   width: 100%;
+  min-width: 200px;
 }
 
 .task-hour{
@@ -60,4 +58,49 @@
   margin-top: 3px;
   float: left;
   width: 100%;
+}
+
+.wbsTaskController{
+  display: none;
+}
+.wbsTask{
+  
+  line-height: 14px;
+
+}
+
+.controlBtn{
+  float: left;
+  margin-bottom: 10px;
+  margin-right: 10px;
+}
+
+.controlTd{
+  background-color: #effff2;
+}
+
+.controlBtn_remove{
+  float:right;
+}
+
+.newTask{
+  background-color: #effff2;
+}
+
+.fa_dropdown{
+  visibility: hidden;
+  cursor: pointer;
+}
+
+.table td {
+  padding: 0.45rem;
+}
+
+.taskNum{
+  cursor: context-menu;
+  width: 80px;
+}
+
+.taskName{
+  width: 300px;
 }

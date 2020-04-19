@@ -6,11 +6,15 @@ import React, { useState, useEffect } from 'react'
 import { connect } from 'react-redux'
 import { fetchAllTasks } from './../../../../actions/task'
 import Task from './Task/'
-import AddTask from './AddTask/AddTaskModal'
+import AddTaskModal from './AddTask/AddTaskModal'
 import './wbs.css';
 import ReactTooltip from 'react-tooltip'
 
 const WBSTasks = (props) => {
+
+  // modal
+  const [modal, setModal] = useState(false);
+  const toggle = () => setModal(!modal);
 
   const wbsId = props.match.params.wbsId;
   const projectId = props.match.params.projectId;
@@ -18,15 +22,31 @@ const WBSTasks = (props) => {
 
   useEffect(() => {
     props.fetchAllTasks(wbsId);
+    const tasks = props.state.tasks.taskItems;
+    groupItems(tasks);
+
   }, [wbsId]);
 
   const selectTaskFunc = (id) => {
     if (selectedId !== null) {
       document.getElementById(selectedId).style.background = 'white';
+      document.getElementById(`controller_${selectedId}`).style.display = 'none';
     }
     setSelectedId(id);
-
   }
+
+
+
+  const groupItems = (tasks) => {
+    // group sub items 
+    tasks.forEach(task => {
+      let subTasks = document.getElementsByClassName(`parentId_${task._id}`);
+      if (subTasks.length > 0) {
+        document.getElementById(`dropdown_${task._id}`).style.visibility = 'visible';
+      }
+    });
+  }
+
 
 
   return (
@@ -34,7 +54,10 @@ const WBSTasks = (props) => {
       <ReactTooltip />
 
       <div className='container' >
-        <AddTask projectId={projectId} wbsId={wbsId} />
+
+        <AddTaskModal parentNum={"-1"} taskId={null} wbsId={wbsId} />
+
+
         <table className="table table-bordered">
           <thead>
             <tr>
@@ -59,8 +82,9 @@ const WBSTasks = (props) => {
 
 
             {props.state.tasks.taskItems.map((task, i) =>
+
               <Task
-                key={task._id}
+                key={i}
                 id={task._id}
                 level={task.level}
                 num={task.num}
@@ -76,7 +100,12 @@ const WBSTasks = (props) => {
                 startedDatetime={task.startedDatetime}
                 dueDatetime={task.dueDatetime}
                 links={task.links[0]}
+                projectId={projectId}
+                wbsId={wbsId}
                 selectTask={selectTaskFunc}
+                isNew={task.new ? true : false}
+                parentId={task.parentId}
+                isOpen={true}
 
               />)}
 

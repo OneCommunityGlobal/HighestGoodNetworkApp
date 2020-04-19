@@ -10,22 +10,26 @@ import { ENDPOINTS } from '../utils/URL'
 
 export const addNewTask = (newTask, wbsId) => {
   const url = ENDPOINTS.TASK(wbsId);
-  console.log("Call API: ", url);
   return async dispatch => {
     let status = 200;
     let _id = null;
+    let task = {};
 
     try {
       const res = await axios.post(url, newTask)
+      _id = res.data._id;
       status = res.status;
+      task = res.data;
 
     } catch (err) {
       console.log("TRY CATCH ERR", err);
       status = 400;
     }
 
+    newTask._id = _id;
+
     await dispatch(
-      postNewTask(newTask,
+      postNewTask(task,
         status
       ));
 
@@ -77,8 +81,6 @@ export const setTasksError = (err) => {
     err
   }
 }
-
-
 
 
 export const postNewTask = (newTask, status) => {
