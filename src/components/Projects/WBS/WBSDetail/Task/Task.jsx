@@ -35,15 +35,54 @@ const Task = (props) => {
     isOpen = !isOpen;
   }
 
+  const swap = (unit = 1) => {
+    const numArr = props.num.split('.');
+    let numUp = parseInt(numArr[numArr.length - 1]);
+    let newNum = '';
+    for (let i = 0; i < numArr.length - 1; i++) {
+      newNum += numArr[i] + '.';
+    }
+
+    numUp += unit;
+
+  }
+
+  const allowDrop = (ev) => {
+    ev.preventDefault();
+    let id = ev.target.id.split('_')[2];
+    let tasks = document.getElementsByClassName('taskDrop');
+    for (let i = 0; i < tasks.length; i++) {
+      tasks[i].style.display = 'none';
+    }
+    document.getElementById(`taskDrop_${id}`).style.display = 'table-row';
+  }
+
+  const drag = (ev, from) => {
+    props.drag(from, props.parentId);
+    document.getElementById(`taskDrop_${from}`).style.display = 'none';
+  }
+
+  const drop = (ev, to) => {
+    ev.preventDefault();
+    props.drop(to, props.parentId);
+  }
+
 
 
   return (
     <React.Fragment>
 
-      <tr className={`wbsTask  ${props.isNew ? 'newTask' : ''} parentId_${props.parentId} num_${props.num}`} id={props.id} >
-        <th scope="row" className={`taskNum tag_color_${props.num.length > 0 ? props.num.split('.')[0] : props.num}`} onClick={() => selectTask(props.id)}>{props.num}</th>
-        <td className="taskName">
+      <tr className={`wbsTask  ${props.isNew ? 'newTask' : ''} parentId_${props.parentId} num_${props.num}`} id={props.id}
 
+      >
+        <th
+          id={`r_${props.num}_${props.id}`}
+          onDragOver={e => allowDrop(e)}
+          onDrop={(e) => drop(e, props.id)}
+          draggable="true" onDragStart={e => drag(e, props.id)}
+          scope="row"
+          className={`taskNum tag_color_${props.num.length > 0 ? props.num.split('.')[0] : props.num}`} onClick={() => selectTask(props.id)}>{props.num}</th>
+        <td className="taskName">
           {props.level === 1 ? <div className='level-space-1' data-tip="Level 1"><span onClick={(e) => toggleGroups(props.num, props.id)} className='fa_dropdown' id={`dropdown_${props.id}`}><i className="fa fa-caret-down" aria-hidden="true"></i></span> {props.name}</div> : null}
           {props.level === 2 ? <div className='level-space-2' data-tip="Level 2"><span onClick={(e) => toggleGroups(props.num, props.id)} className='fa_dropdown' id={`dropdown_${props.id}`}><i className="fa fa-caret-down" aria-hidden="true"></i></span> {props.name}</div> : null}
           {props.level === 3 ? <div className='level-space-3' data-tip="Level 3"><span onClick={(e) => toggleGroups(props.num, props.id)} className='fa_dropdown' id={`dropdown_${props.id}`}><i className="fa fa-caret-down" aria-hidden="true"></i></span> {props.name}</div> : null}
@@ -88,14 +127,17 @@ const Task = (props) => {
         </td>
         <td>{props.links}</td>
       </tr>
+      <tr className='taskDrop' id={`taskDrop_${props.id}`}>
+        <td colspan="13"></td>
+      </tr>
 
       <tr className='wbsTaskController' id={`controller_${props.id}`}>
         <td colspan="13" className='controlTd'>
           <AddTaskModal parentNum={props.num} taskId={props.id} wbsId={props.wbsId} />
           <Button color="info" size="sm" className='controlBtn'>Edit</Button>
 
-          <Button color="success" size="sm" className='controlBtn'><i class="fa fa-arrow-up" aria-hidden="true"></i></Button>
-          <Button color="success" size="sm" className='controlBtn'><i class="fa fa-arrow-down" aria-hidden="true"></i></Button>
+          <Button color="success" size="sm" className='controlBtn' onClick={e => swap(-1)}><i class="fa fa-arrow-up" aria-hidden="true"></i></Button>
+          <Button color="success" size="sm" className='controlBtn' onClick={e => swap(1)}><i class="fa fa-arrow-down" aria-hidden="true"></i></Button>
           <Button color="danger" size="sm" className='controlBtn controlBtn_remove'>Remove</Button>
 
         </td>

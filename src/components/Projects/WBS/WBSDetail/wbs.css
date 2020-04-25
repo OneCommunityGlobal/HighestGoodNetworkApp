@@ -104,3 +104,9 @@
 .taskName{
   width: 300px;
 }
+
+.taskDrop{
+  width: 100%;
+  background: #effff2;
+  display: none
+}

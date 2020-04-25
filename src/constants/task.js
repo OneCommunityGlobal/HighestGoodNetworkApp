@@ -17,3 +17,10 @@ export const UPDATE_TASK = "UPDATE_TASK";
 
 // DELETE TASK 
 export const DELETE_TASK = 'DELETE_TASK';
+
+// SWAP TASKS
+export const SWAP_TASKS = 'SWAP_TASKS';
+
+// UPDATE NUMS 
+export const UPDATE_NUMS = 'UPDATE_NUMS';
+

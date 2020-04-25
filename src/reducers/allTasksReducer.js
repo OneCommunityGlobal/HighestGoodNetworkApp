@@ -38,6 +38,29 @@ export const taskReducer = (allTasks = allTasksInital, action) => {
         return 0;
       });
       return { ...allTasks }
+    case types.UPDATE_NUMS:
+      const listOfNums = action.list;
+
+      listOfNums.forEach((numTask) => {
+        allTasks.taskItems.forEach(task => {
+          console.log(task._id, '=', numTask.id);
+          if (numTask.id === task._id) {
+            task.num = numTask.num;
+          }
+        })
+      });
+
+      allTasks.taskItems.sort(function (a, b) {
+        if (a.num < b.num) {
+          return -1;
+        }
+        if (a.num > b.num) {
+          return 1;
+        }
+        return 0;
+      });
+      return { ...allTasks }
+
 
   }
   return allTasks;

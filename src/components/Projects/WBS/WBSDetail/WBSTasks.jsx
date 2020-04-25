@@ -4,7 +4,7 @@
  ********************************************************************************/
 import React, { useState, useEffect } from 'react'
 import { connect } from 'react-redux'
-import { fetchAllTasks } from './../../../../actions/task'
+import { fetchAllTasks, updateNumList } from './../../../../actions/task'
 import Task from './Task/'
 import AddTaskModal from './AddTask/AddTaskModal'
 import './wbs.css';
@@ -22,8 +22,7 @@ const WBSTasks = (props) => {
 
   useEffect(() => {
     props.fetchAllTasks(wbsId);
-    const tasks = props.state.tasks.taskItems;
-    groupItems(tasks);
+    groupItems(props.state.tasks.taskItems);
 
   }, [wbsId]);
 
@@ -46,6 +45,56 @@ const WBSTasks = (props) => {
       }
     });
   }
+
+  let drag = '';
+  const dragTask = (taskIdFrom) => {
+    console.log('draggg', taskIdFrom);
+    drag = taskIdFrom;
+  }
+
+  const dropTask = (taskIdTo, parentId) => {
+    console.log('drop', drag, taskIdTo);
+    const tasks = props.state.tasks.taskItems;
+
+    let tasksClass = document.getElementsByClassName('taskDrop');
+    for (let i = 0; i < tasks.length; i++) {
+      tasksClass[i].style.display = 'none';
+    }
+
+    const list = [];
+    let target = tasks.find(task => task._id === taskIdTo);
+    let siblings = tasks.filter(task => task.parentId === parentId);
+    console.log(siblings);
+
+    let modifiedList = false;
+    for (let i = 0; i < siblings.length - 1; i++) {
+      if (siblings[i]._id === drag) {
+        modifiedList = false;
+      }
+      if (modifiedList) {
+        console.log(siblings[i]._id, siblings[i + 1].num);
+        list.push({
+          id: siblings[i]._id,
+          num: siblings[i + 1].num
+        });
+
+      }
+      if (siblings[i]._id === target._id) {
+        list.push({
+          id: drag,
+          num: siblings[i + 1].num
+        });
+        modifiedList = true;
+      }
+    }
+
+    console.log(list);
+    props.updateNumList(wbsId, list);
+
+
+  }
+
+
 
 
 
@@ -106,6 +155,8 @@ const WBSTasks = (props) => {
                 isNew={task.new ? true : false}
                 parentId={task.parentId}
                 isOpen={true}
+                drop={dropTask}
+                drag={dragTask}
 
               />)}
 
@@ -121,5 +172,5 @@ const WBSTasks = (props) => {
   )
 }
 const mapStateToProps = state => { return { state } }
-export default connect(mapStateToProps, { fetchAllTasks })(WBSTasks)
+export default connect(mapStateToProps, { fetchAllTasks, updateNumList })(WBSTasks)
 
