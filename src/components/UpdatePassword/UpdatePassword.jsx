@@ -1,9 +1,12 @@
 import React from "react";
-import { toast } from "react-toastify";
+import { connect } from "react-redux";
+import { withRouter } from "react-router-dom";
 import Form from "../common/Form";
-import { updatePasswordSchema as schema } from "../../schema";
-import { updatePassword } from "../../services/userProfileService";
-import { logout } from "../../services/loginService";
+import Joi from "joi";
+import { toast } from "react-toastify";
+import { updatePassword } from "../../actions/updatePassword";
+import { logoutUser } from "../../actions/authActions";
+import { clearErrors } from "../../actions/errorsActions"
 
 class UpdatePassword extends Form {
   state = {
@@ -12,34 +15,75 @@ class UpdatePassword extends Form {
   };
 
   componentDidMount() {
-    document.title = "Update Password";
+    // document.title = "Update Password";
   }
 
-  schema = schema;
+  componentDidUpdate(prevProps) {
+    if (prevProps.errors.error !== this.props.errors.error){
+      this.setState({ errors: this.props.errors });
+    }
+  }
+
+  componentWillUnmount(){
+    this.props.clearErrors();
+  }
+
+  schema = {
+    currentpassword: Joi.string()
+      .required()
+      .label("Current Password"),
+    newpassword: Joi.string()
+      .regex(
+        /(?=^.{8,}$)((?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$/
+      )
+      .required()
+      .disallow(Joi.ref("currentpassword"))
+      .label("New Password")
+      .options({
+        language: {
+          any: {
+            invalid: "should not be same as old password"
+          },
+          string: {
+            regex: {
+              base:
+                "should be at least 8 characters long and must include at least one uppercase letter, one lowercase letter, and one number or special character"
+            }
+          }
+        }
+      }),
+
+    confirmnewpassword: Joi.any()
+      .valid(Joi.ref("newpassword"))
+      .options({ language: { any: { allowOnly: "must match new password" } } })
+      .label("Confirm Password")
+  };
 
   doSubmit = async () => {
     const { currentpassword, newpassword, confirmnewpassword } = {
       ...this.state.data
     };
-    const userId = this.props.match.params.userId;
-    const data = { currentpassword, newpassword, confirmnewpassword };
-    try {
-      await updatePassword(userId, data);
-      logout();
+    let userId = this.props.match.params.userId;
+    let data = { currentpassword, newpassword, confirmnewpassword };
+
+    const status = await this.props.updatePassword(userId, data)
+    if (status === 200){
       toast.success(
         "Your password has been updated. You will be logged out and directed to login page where you can login with your new password.",
         {
-          onClose: () => window.location.assign("/login")
+          onClose: () => {
+            this.props.logoutUser();
+            this.props.history.replace("/login");
+          }
         }
       );
-    } catch (exception) {
-      if (exception.response.status === 400) {
-        const { errors } = this.state;
-        errors.currentpassword = exception.response.data.error;
-        this.setState({ errors });
-      } else {
-        toast.error("Something went wrong. Please contact your administrator.");
-      }
+    }
+    else if (status === 400){
+      let { errors } = this.state;
+      errors["currentpassword"] = this.props.errors.error;
+      this.setState({ errors });
+    } else {
+      toast.error("Something went wrong. Please contact your administrator.");
     }
   };
 
@@ -72,4 +116,12 @@ class UpdatePassword extends Form {
   }
 }
 
-export default UpdatePassword;
+const mapStateToProps = state => ({
+  errors: state.errors
+});
+
+export default withRouter(
+  connect(mapStateToProps, { 
+    logoutUser, updatePassword, clearErrors
+  })(UpdatePassword)
+);

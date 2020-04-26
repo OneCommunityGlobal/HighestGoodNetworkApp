@@ -1,28 +1,18 @@
-// import React from 'react';
-// import ReactDOM from 'react-dom';
-// import { shallow } from 'enzyme'
-// import App from '../components/App';
-// import Dashboard from '../components/Dashboard';
+import React from 'react';
+import ReactDOM from 'react-dom';
+import { shallow } from 'enzyme';
+import App from '../components/App';
+import Dashboard from '../components/Dashboard';
 
-// describe('App tests', () => {
-//   let mountedapp;
-//   })
-// })
-
-import React from "react";
-import ReactDOM from "react-dom";
-import { shallow } from "enzyme";
-import App from "../components/App";
-import Dashboard from "../components/Dashboard";
-
-describe("App tests", () => {
+describe('App tests', () => {
   let mountedapp;
+
 
   beforeEach(() => {
     mountedapp = shallow(<App />);
   });
 
-  it("renders without crashing", () => {
+  it('renders without crashing', () => {
     shallow(<App />);
   });
 });

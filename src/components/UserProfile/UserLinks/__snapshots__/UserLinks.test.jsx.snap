@@ -1,0 +1,220 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`UserLinks UserLinks with linkType Admin and links 1`] = `
+<Card
+  body={true}
+  tag="div"
+>
+  <CardTitle
+    style={
+      Object {
+        "fontSize": 20,
+        "fontWeight": "bold",
+      }
+    }
+    tag="div"
+  >
+    Admin
+     Links :
+  </CardTitle>
+  <CardBody
+    tag="div"
+  >
+    <CardText
+      key="0"
+      style={
+        Object {
+          "display": "flex",
+          "fontSize": 20,
+          "justifyContent": "space-between",
+          "paddingLeft": 20,
+          "paddingRight": 20,
+        }
+      }
+      tag="p"
+    >
+      <Badge
+        color="secondary"
+        pill={false}
+        style={
+          Object {
+            "width": "10vw",
+          }
+        }
+        tag="span"
+      >
+        Google
+      </Badge>
+      <Badge
+        color="warning"
+        href="www.google.com"
+        pill={false}
+        style={
+          Object {
+            "width": "40vw",
+          }
+        }
+        tag="span"
+      >
+        www.google.com
+      </Badge>
+    </CardText>
+  </CardBody>
+  <Button
+    color="primary"
+    onClick={[Function]}
+    outline={true}
+    tag="button"
+  >
+    Add a new Link
+  </Button>
+</Card>
+`;
+
+exports[`UserLinks UserLinks with linkType Volunteer and links with click simulation 1`] = `
+<Card
+  body={true}
+  tag="div"
+>
+  <CardTitle
+    style={
+      Object {
+        "fontSize": 20,
+        "fontWeight": "bold",
+      }
+    }
+    tag="div"
+  >
+    Volunteer
+     Links :
+  </CardTitle>
+  <CardBody
+    tag="div"
+  >
+    <CardText
+      key="0"
+      style={
+        Object {
+          "display": "flex",
+          "fontSize": 20,
+          "justifyContent": "space-between",
+          "paddingLeft": 20,
+          "paddingRight": 20,
+        }
+      }
+      tag="p"
+    >
+      <Badge
+        color="secondary"
+        pill={false}
+        style={
+          Object {
+            "width": "10vw",
+          }
+        }
+        tag="span"
+      >
+        Google
+      </Badge>
+      <Badge
+        color="warning"
+        href="www.google.com"
+        pill={false}
+        style={
+          Object {
+            "width": "40vw",
+          }
+        }
+        tag="span"
+      >
+        www.google.com
+      </Badge>
+    </CardText>
+  </CardBody>
+  <Button
+    color="primary"
+    onClick={[Function]}
+    outline={true}
+    tag="button"
+  >
+    Add a new Link
+  </Button>
+</Card>
+`;
+
+exports[`UserLinks UserLinks with linkType and empty links 1`] = `
+<Card
+  body={true}
+  tag="div"
+>
+  <CardTitle
+    style={
+      Object {
+        "fontSize": 20,
+        "fontWeight": "bold",
+      }
+    }
+    tag="div"
+  >
+    Admin
+     Links :
+  </CardTitle>
+  <CardBody
+    tag="div"
+  >
+    <CardText
+      tag="p"
+    >
+      <Badge
+        color="danger"
+        pill={false}
+        tag="span"
+      >
+        No Links present
+      </Badge>
+    </CardText>
+  </CardBody>
+</Card>
+`;
+
+exports[`UserLinks UserLinks without any links 1`] = `
+<Card
+  body={true}
+  tag="div"
+>
+  <CardTitle
+    style={
+      Object {
+        "fontSize": 20,
+        "fontWeight": "bold",
+      }
+    }
+    tag="div"
+  >
+     Links :
+  </CardTitle>
+  <CardBody
+    tag="div"
+  >
+    <CardText
+      tag="p"
+    >
+      <Badge
+        color="danger"
+        pill={false}
+        tag="span"
+      >
+        No Links present
+      </Badge>
+    </CardText>
+  </CardBody>
+  <Button
+    color="primary"
+    onClick={[Function]}
+    outline={true}
+    tag="button"
+  >
+    Add a new Link
+  </Button>
+</Card>
+`;

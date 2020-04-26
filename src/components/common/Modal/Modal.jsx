@@ -1,46 +1,98 @@
-import React from "react";
-import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from "reactstrap";
+import React, { useState } from 'react'
+import {
+	Button,
+	Modal,
+	ModalHeader,
+	ModalBody,
+	ModalFooter,
+	InputGroup,
+	InputGroupAddon,
+	InputGroupText,
+	Input
+} from 'reactstrap'
+const ModalExample = props => {
+	const {
+		isOpen,
+		closeModal,
+		confirmModal,
+		setInactiveModal,
+		modalTitle,
+		modalMessage,
+		type,
+		linkType
+	} = props
 
-class ModalA extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      modal: false
-    };
+	const [modal, setModal] = useState(false)
+	const [linkName, setLinkName] = useState('')
+	const [linkURL, setLinkURL] = useState('')
 
-    this.toggle = this.toggle.bind(this);
-  }
+	const toggle = () => setModal(!modal)
 
-  toggle = () => {
-    this.setState({
-      modal: !this.state.modal
-    });
-  };
+	const handleChange = event => {
+		event.preventDefault()
 
-  render() {
-    return (
-      <div>
-        <Button color={this.props.color} onClick={this.toggle}>
-          {this.props.buttonLabel}
-        </Button>
-        <Modal
-          isOpen={this.state.modal}
-          toggle={this.toggle}
-          className={this.props.className}
-        >
-          <ModalHeader toggle={this.toggle}>{this.props.header}</ModalHeader>
-          <ModalBody>
-            {React.Children.map(this.props.children, child => {
-              return React.cloneElement(child, {
-                toggle: this.toggle
-              });
-            })}
-          </ModalBody>
-          <ModalFooter />
-        </Modal>
-      </div>
-    );
-  }
+		if (event.target.id === 'linkName') {
+			setLinkName(event.target.value.trim())
+		} else {
+			setLinkURL(event.target.value.trim())
+		}
+	}
+
+	const buttonDisabled = !(linkName && linkURL)
+
+	if (type) {
+		console.log('Type of Modal is ', type, linkName, linkURL, buttonDisabled)
+	}
+
+	return (
+		<Modal isOpen={isOpen} toggle={closeModal}>
+			<ModalHeader toggle={closeModal}>{modalTitle}</ModalHeader>
+
+			<ModalBody>
+				{type === 'input' ? (
+					<>
+						<InputGroup>
+							<InputGroupAddon addonType='prepend'>
+								<InputGroupText style={{ width: '80px' }}>Name</InputGroupText>
+							</InputGroupAddon>
+							<Input
+								id='linkName'
+								placeholder='Name of the link'
+								onChange={handleChange}
+							/>
+						</InputGroup>
+						<br />
+
+						<InputGroup>
+							<InputGroupAddon addonType='prepend'>
+								<InputGroupText style={{ width: '80px' }}>Link URL</InputGroupText>
+							</InputGroupAddon>
+							<Input id='linkURL' placeholder='URL of the link' onChange={handleChange} />
+						</InputGroup>
+					</>
+				) : (
+						modalMessage
+					)}
+			</ModalBody>
+			<ModalFooter>
+				<Button color='primary' onClick={closeModal}>
+					Close
+				</Button>
+
+				{confirmModal != null ? <Button color="danger" onClick={confirmModal}>Confirm</Button> : null}
+				{setInactiveModal != null ? <Button color="warning" onClick={setInactiveModal}>Set inactive</Button> : null}
+
+				{type === 'input' && (
+					<Button
+						color='danger'
+						onClick={() => confirmModal(linkName, linkURL, linkType)}
+						disabled={buttonDisabled}>
+						Add
+					</Button>
+				)}
+			</ModalFooter>
+		</Modal>
+	)
 }
 
-export default ModalA;
+export default ModalExample

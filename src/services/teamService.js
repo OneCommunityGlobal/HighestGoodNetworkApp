@@ -1,9 +1,8 @@
-import httpService from './httpService'
+import httpService from './httpService';
 
-const ApiEndpoint = `${process.env.REACT_APP_APIENDPOINT}/team`; 
+const ApiEndpoint = `${process.env.REACT_APP_APIENDPOINT}/team`;
 
 
-export function getAllTeams()
-{   
-    return httpService.get(`${ApiEndpoint}`)
+export function getAllTeams() {
+  return httpService.get(`${ApiEndpoint}`);
 }

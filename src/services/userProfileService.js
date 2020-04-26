@@ -1,20 +1,15 @@
-import httpService from "./httpService";
+import httpService from './httpService'
 
-const APIEndPoint = `${process.env.REACT_APP_APIENDPOINT}/userprofile`;
+const APIEndPoint = `${process.env.REACT_APP_APIENDPOINT}/userprofile`
 
-export function getUserProfile(userId) {
-  return httpService.get(`${APIEndPoint}/${userId}`);
-}
+// export function getUserProfile(userId) {
+// 	return httpService.get(`${APIEndPoint}/${userId}`)
+// }
 
-export function editUserProfileData(user, userId) {}
+// export function editUserProfileData(user, userId) {}
 
-export function postUserProfileData(user) {}
+// export function postUserProfileData(user) {}
 
 // export function updatePassword(userId, newpassworddata) {
-
-export function updatePassword(userId, newpassworddata) {
-  return httpService.patch(
-    `${APIEndPoint}/${userId}/updatePassword`,
-    newpassworddata
-  );
-}
+// 	return httpService.patch(`${APIEndPoint}/${userId}/updatePassword`, newpassworddata)
+// }

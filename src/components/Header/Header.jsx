@@ -1,5 +1,12 @@
-import React from "react";
-import { Link } from "react-router-dom";
+import React from 'react'
+// import { getUserProfile } from '../../actions/userProfile'
+import { getHeaderData } from '../../actions/authActions'
+import { Link } from 'react-router-dom'
+import { connect } from 'react-redux'
+import {
+  LOGO, DASHBOARD, TIMELOG, REPORTS, OTHER_LINKS, 
+  USER_MANAGEMENT, PROJECTS, TEAMS, WELCOME, VIEW_PROFILE, UPDATE_PASSWORD, LOGOUT
+} from '../../languages/en/ui'
 import {
   Collapse,
   Navbar,
@@ -12,129 +19,131 @@ import {
   DropdownToggle,
   DropdownMenu,
   DropdownItem
-} from "reactstrap";
-import { connect } from "react-redux";
-import { getUserProfile } from "../../services/userProfileService";
-import { getCurrentUser } from "../../services/loginService";
+} from 'reactstrap'
 
 class Header extends React.Component {
-  state = {
-    userId: 0,
-    userProfileData: { a: 1, b: 2 },
-    name: "",
-    profilePic: ""
-  };
+  state = {}
 
-  async componentDidMount() {
-    const user = getCurrentUser();
-    if (user) {
-      const { userid: userId } = user;
-      const { data: userProfileData } = { ...(await getUserProfile(userId)) };
-      const name = userProfileData.firstName;
-      const profilePic = userProfileData.profilePic;
-      this.setState({ userId, userProfileData, name, profilePic });
+  componentDidMount(){
+    if (this.props.auth.isAuthenticated){
+      // this.props.getUserProfile(this.props.auth.user.userid)
+      this.props.getHeaderData(this.props.auth.user.userid)
+    }
+  }
+
+  componentDidUpdate(prevProps) {
+    if (!prevProps.auth.isAuthenticated && this.props.auth.isAuthenticated ){
+      // this.props.getUserProfile(this.props.auth.user.userid)
+      this.props.getHeaderData(this.props.auth.user.userid)
     }
   }
 
   render() {
-    const { userId, profilePic } = this.state;
+    const { isAuthenticated, user, firstName, profilePic } = this.props.auth;
+    // let firstName = "", profilePic = "";
+    // if (this.props.userProfile){
+    //   ({ firstName, profilePic } = this.props.userProfile);
+    // }
+
     return (
       <div>
-        <Navbar color="dark" dark expand="md" style={{ marginBottom: "20px" }}>
-          <NavbarBrand tag={Link} to="/">
-            Time Tracking Tool
+        <Navbar color='dark' dark expand='md' style={{ marginBottom: '20px' }}>
+          <NavbarBrand tag={Link} to='/'>
+             {LOGO}
           </NavbarBrand>
           <NavbarToggler onClick={this.toggle} />
-          <Collapse isOpen={this.state.isOpen} navbar>
-            <Nav className="ml-auto" navbar>
+          {isAuthenticated &&
+            <Collapse isOpen={this.state.isOpen} navbar>
+            <Nav className='ml-auto' navbar>
               <NavItem>
-                <NavLink tag={Link} to="/dashboard">
-                  Dashboard
+                <NavLink tag={Link} to='/dashboard'>
+                  {DASHBOARD}
                 </NavLink>
               </NavItem>
               <NavItem>
-                <NavLink tag={Link} to={`/timelog/${userId}`}>
-                  Timelog
+                <NavLink tag={Link} to={`/timelog/${user.userid}`}>
+                  {TIMELOG}
                 </NavLink>
               </NavItem>
               <NavItem>
-                <NavLink tag={Link} to="/reports">
-                  Reports
+                <NavLink tag={Link} to='/reports'>
+                  {REPORTS}
                 </NavLink>
               </NavItem>
               <NavItem>
-                <NavLink tag={Link} to={`/timelog/${userId}`}>
-                  <i className="fa fa-bell i-large">
-                    <i className="badge badge-pill badge-danger badge-notify">
+                <NavLink tag={Link} to={`/timelog/${user.userid}`}>
+                  <i className='fa fa-bell i-large'>
+                    <i className='badge badge-pill badge-danger badge-notify'>
                       {/* Pull number of unread messages */}
                     </i>
-                    <span className="sr-only">unread messages</span>
+                    <span className='sr-only'>unread messages</span>
                   </i>
                 </NavLink>
               </NavItem>
               <UncontrolledDropdown nav inNavbar>
                 <DropdownToggle nav caret>
-                  Other Links
+                  {OTHER_LINKS}
                 </DropdownToggle>
                 <DropdownMenu>
-                  <DropdownItem tag={Link} to="/usermanagement">
-                    User Management
+                  <DropdownItem tag={Link} to='/usermanagement'>
+                    {USER_MANAGEMENT}
                   </DropdownItem>
-                  <DropdownItem tag={Link} to="">
-                    Projects
+                  <DropdownItem tag={Link} to='/projects'>
+                    {PROJECTS}
                   </DropdownItem>
-                  <DropdownItem tag={Link} to="">
-                    Teams
+                  <DropdownItem tag={Link} to=''>
+                    {TEAMS}
                   </DropdownItem>
                 </DropdownMenu>
               </UncontrolledDropdown>
               <NavItem>
-                <NavLink tag={Link} to={`/profile/${userId}`}>
+                <NavLink tag={Link} to={`/profile/${user.userid}`}>
                   <img
                     src={`${profilePic}`}
-                    alt=""
-                    height="35"
-                    width="40"
-                    className="dashboardimg"
+                    alt=''
+                    height='35'
+                    width='40'
+                    className='dashboardimg'
                   />
                 </NavLink>
               </NavItem>
               <UncontrolledDropdown nav>
                 <DropdownToggle nav caret>
-                  Welcome 
-{' '}
-{this.props.state.userProfile.firstName}
+                  {WELCOME} {firstName}
                 </DropdownToggle>
                 <DropdownMenu>
-                  <DropdownItem header>
-                    Hello 
-{' '}
-{this.props.state.userProfile.firstName}
+                  <DropdownItem header>Hello {firstName}</DropdownItem>
+                  <DropdownItem divider />
+                  <DropdownItem tag={Link} to={`/userprofile/${user.userid}`}>
+                    {VIEW_PROFILE}
+                  </DropdownItem>
+                  <DropdownItem tag={Link} to={`/updatepassword/${user.userid}`}>
+                    {UPDATE_PASSWORD}
                   </DropdownItem>
                   <DropdownItem divider />
-                  <DropdownItem tag={Link} to={`/userprofile/${userId}`}>
-                    View Profile
-                  </DropdownItem>
-                  <DropdownItem tag={Link} to={`/updatepassword/${userId}`}>
-                    Update Password
-                  </DropdownItem>
-                  <DropdownItem divider />
-                  <DropdownItem tag={Link} to="/logout">
-                    Logout
+                  <DropdownItem tag={Link} to='/logout'>
+                    {LOGOUT}
                   </DropdownItem>
                 </DropdownMenu>
               </UncontrolledDropdown>
             </Nav>
           </Collapse>
+          }
         </Navbar>
       </div>
-    );
+    )
   }
 }
 
-const mapStateToProps = state => ({ state });
+const mapStateToProps = state => ({
+  auth: state.auth,
+  userProfile: state.userProfile
+});
 
 export default connect(
   mapStateToProps,
-  { getCurrentUser, getUserProfile }
-)(Header);
+  {
+    // getUserProfile,
+    getHeaderData
+  }
+)(Header)

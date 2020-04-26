@@ -1,13 +1,13 @@
 import React from "react";
 import { Redirect, Route } from "react-router-dom";
-import { getCurrentUser } from "../../../services/loginService";
+import { connect } from "react-redux";
 
-const ProtectedRoute = ({ component: Component, render, ...rest }) => {
+const ProtectedRoute = ({ component: Component, render, auth, ...rest }) => {
   return (
     <Route
       {...rest}
       render={props => {
-        if (!getCurrentUser())
+        if (!auth.isAuthenticated)
           return (
             <Redirect
               to={{ pathname: "/login", state: { from: props.location } }}
@@ -19,4 +19,8 @@ const ProtectedRoute = ({ component: Component, render, ...rest }) => {
   );
 };
 
-export default ProtectedRoute;
+const mapStateToProps = state => ({
+  auth: state.auth
+});
+
+export default connect(mapStateToProps)(ProtectedRoute);
