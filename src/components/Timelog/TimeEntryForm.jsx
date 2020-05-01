@@ -18,6 +18,7 @@ import moment from "moment"
 import _ from "lodash"
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faEdit } from '@fortawesome/free-regular-svg-icons'
+import { Editor } from '@tinymce/tinymce-react';
 
 const TimeEntryForm = ({userId, edit, data}) => {
     const initialState = {
@@ -74,7 +75,7 @@ const TimeEntryForm = ({userId, edit, data}) => {
         }
 
         if (inputs.notes === "") {
-            result["notes"] = "Notes is required"
+            result["notes"] = "Description and reference link are required"
         }
 
         setErrors(result);
@@ -118,6 +119,10 @@ const TimeEntryForm = ({userId, edit, data}) => {
     const handleInputChange = event => {
         event.persist();
         setInputs(inputs => ({...inputs, [event.target.name]: event.target.value}));
+    }
+
+    const handleEditorChange = (content, editor) => {
+        setInputs(inputs => ({...inputs, [editor.id]: content}));
     }
 
     const handleCheckboxChange = event => {
@@ -184,8 +189,26 @@ const TimeEntryForm = ({userId, edit, data}) => {
                         </FormGroup>
                         <FormGroup>
                             <Label for="notes">Notes</Label>
-                            <Input type="textarea" name="notes" id="notes" placeholder="Notes" 
-                                value={inputs.notes} onChange={handleInputChange}/>
+                            <Editor
+                                init={{
+                                    menubar: false,
+                                    placeholder: "Description and reference link",
+                                    plugins: 'advlist autolink autoresize lists link charmap table paste help wordcount',
+                                    toolbar:
+                                      'bold italic underline link removeformat | bullist numlist outdent indent |\
+                                       styleselect fontsizeselect | table| strikethrough forecolor backcolor |\
+                                       subscript superscript charmap  | help',
+                                    branding: false,
+                                    min_height: 180,
+                                    max_height: 300,
+                                    autoresize_bottom_margin: 1
+                                  }}
+                                id="notes"
+                                name = "notes"      
+                                className={`form-control`}
+                                value={inputs.notes}
+                                onEditorChange={handleEditorChange}
+                            />  
                             {'notes' in errors && <div className="text-danger"><small>{errors.notes}</small></div>}
                         </FormGroup>
                         <FormGroup check>
