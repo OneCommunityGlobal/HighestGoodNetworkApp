@@ -1,0 +1,54 @@
+/*
+ * BEM CSS naming convention is used where possible as per
+ * "Codebase Rules & Conventions" document recommendations
+ */
+
+.btn--dark-sea-green {
+  background-color: #c9d6c6 !important;
+  border-color: #225163 !important;
+  color: #225163 !important;
+}
+
+.btn--white-smoke {
+  background-color: #f6f6f3 !important;
+  border-color: #225163 !important;
+  color: #225163 !important;
+}
+
+.btn--dark-sea-green:hover {
+  background-color: #225163 !important;
+  border-color: #225163 !important;
+  color: #fff !important;
+}
+
+.btn--white-smoke:hover {
+  background-color: #ffffff !important;
+}
+
+.bg--white-smoke {
+  background-color: #f6f6f3;
+}
+
+.text--silver {
+  color: #acacac;
+}
+
+.media-url {
+  line-height: 2.3;
+}
+
+.due-section {
+  border: solid 2px #225163;
+  color: #2c2c2c;
+  border-radius: 6px;
+  width: 180px;
+}
+
+.due-section__date {
+  background-color: #225163;
+  padding: 9px;
+}
+
+.due-section__time {
+  padding: 7px;
+}
