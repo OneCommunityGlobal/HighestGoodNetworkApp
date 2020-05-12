@@ -15,14 +15,17 @@
   color: #225163 !important;
 }
 
-.btn--dark-sea-green:hover {
+.btn--dark-sea-green:hover:not([disabled]) {
   background-color: #225163 !important;
   border-color: #225163 !important;
   color: #fff !important;
 }
 
-.btn--white-smoke:hover {
+.btn--white-smoke:hover:not([disabled]) {
   background-color: #ffffff !important;
+}
+.btn:disabled {
+  cursor: not-allowed;
 }
 
 .bg--white-smoke {
