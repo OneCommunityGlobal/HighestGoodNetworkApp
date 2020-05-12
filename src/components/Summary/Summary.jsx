@@ -17,7 +17,6 @@ import { faExternalLinkAlt } from '@fortawesome/free-solid-svg-icons';
 import { Editor } from '@tinymce/tinymce-react';
 import { getUserProfile, updateUserProfile } from '../../actions/userProfile';
 import DueDateTime from './DueDateTime';
-import _ from 'lodash';
 import moment from 'moment';
 import Joi from 'joi';
 import { toast } from "react-toastify";
