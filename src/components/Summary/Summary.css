@@ -55,3 +55,8 @@
 .due-section__time {
   padding: 7px;
 }
+
+.summaryContentTooltip, .mediaURLTooltip {
+  max-width: 300px !important;
+  padding: 10px !important;
+}

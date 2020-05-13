@@ -8,7 +8,9 @@ import {
   FormGroup,
   Label,
   Input,
+  CustomInput,
   Button,
+  Tooltip,
 } from 'reactstrap';
 import './Summary.css';
 import { connect } from 'react-redux';
@@ -20,18 +22,20 @@ import DueDateTime from './DueDateTime';
 import moment from 'moment';
 import Joi from 'joi';
 import { toast } from "react-toastify";
+import { SummaryContentTooltip, MediaURLTooltip } from './SummaryTooltips';
 
 class Summary extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      formElements: { summary: '', mediaUrl: '' },
+      formElements: { summary: '', mediaUrl: '', mediaConfirm: false },
       dueDate: moment().endOf('week'),
       userProfile: {},
       errors: {},
     }
     this.handleInputChange = this.handleInputChange.bind(this);
     this.handleEditorChange = this.handleEditorChange.bind(this);
+    this.handleCheckboxChange = this.handleCheckboxChange.bind(this);
     this.handleSave = this.handleSave.bind(this);
   }
 
@@ -40,7 +44,8 @@ class Summary extends Component {
     this.setState({
       formElements: {
         summary: this.props.summary || '',
-        mediaUrl: this.props.mediaUrl || ''
+        mediaUrl: this.props.mediaUrl || '',
+        mediaConfirm: false,
       },
       userProfile: this.props.userProfile || {},
     })
@@ -49,6 +54,7 @@ class Summary extends Component {
   schema = {
     mediaUrl: Joi.string().trim().uri().required().label("Media URL"),
     summary: Joi.optional(),
+    mediaConfirm: Joi.boolean().invalid(false).label("Media Confirm"),
   };
 
   validate = () => {
@@ -60,8 +66,9 @@ class Summary extends Component {
     return errors;
   };
 
-  validateProperty = ({ name, value }) => {
-    const obj = { [name]: value };
+  validateProperty = ({ name, value, type, checked }) => {
+    let attr = (type === "checkbox") ? checked : value;
+    const obj = { [name]: attr };
     const schema = { [name]: this.schema[name] };
     const { error } = Joi.validate(obj, schema);
     return error ? error.details[0].message : null;
@@ -70,6 +77,7 @@ class Summary extends Component {
   handleInputChange = (event) => {
     event.persist();
     const { name, value } = event.target;
+
     const errors = { ...this.state.errors };
     const errorMessage = this.validateProperty(event.target);
     if (errorMessage) errors[name] = errorMessage;
@@ -85,6 +93,20 @@ class Summary extends Component {
     formElements[editor.id] = content;
     this.setState({ formElements });
   };
+
+  handleCheckboxChange = (event) => {
+    event.persist();
+    const { name, checked } = event.target;
+
+    const errors = { ...this.state.errors };
+    const errorMessage = this.validateProperty(event.target);
+    if (errorMessage) errors[name] = errorMessage;
+    else delete errors[name];
+
+    const formElements = { ...this.state.formElements };
+    formElements[name] = checked;
+    this.setState({ formElements, errors });
+  }
 
   handleSave = async event => {
     event.preventDefault();
@@ -132,8 +154,8 @@ class Summary extends Component {
             <Form>
               <FormGroup>
                 <Label for="summaryContent">
-                  Enter your weekly summary below
-              </Label>
+                  Enter your weekly summary below weekly below. <SummaryContentTooltip />
+                </Label>
                 <Editor
                   init={{
                     menubar: false,
@@ -154,8 +176,8 @@ class Summary extends Component {
                 />
               </FormGroup>
               <Label for="mediaURL" className="mt-3">
-                Link to your media files (eg. DropBox or Google Doc)
-            </Label>
+                Link to your media files (eg. DropBox or Google Doc). <MediaURLTooltip />
+              </Label>
               <Row form>
                 <Col md={8}>
                   <FormGroup>
@@ -170,7 +192,7 @@ class Summary extends Component {
                   </FormGroup>
                   {errors.mediaUrl && <Alert color="danger">{errors.mediaUrl}</Alert>}
                 </Col>
-                {formElements.mediaUrl && !this.validate() && (
+                {formElements.mediaUrl && !errors.mediaUrl && (
                   <Col md={4}>
                     <FormGroup className="media-url">
                       <FontAwesomeIcon
@@ -188,9 +210,29 @@ class Summary extends Component {
                   </Col>
                 )}
               </Row>
-              <FormGroup className="mt-2">
-                <Button className="px-5 btn--dark-sea-green" disabled={this.validate() || (!formElements.mediaUrl && !formElements.summary) ? true : false} onClick={this.handleSave}>Save</Button>
-              </FormGroup>
+              <Row>
+                <Col>
+                  <FormGroup>
+                    <CustomInput
+                      id="mediaConfirm"
+                      name="mediaConfirm"
+                      type="checkbox"
+                      label="I have provided screenshots and video for this week's work." htmlFor="mediaConfirm"
+                      checked={formElements.mediaConfirm}
+                      valid={formElements.mediaConfirm}
+                      onChange={this.handleCheckboxChange}
+                    />
+                  </FormGroup>
+                  {errors.mediaConfirm && <Alert color="danger">Please confirm that you have provided the required media files.</Alert>}
+                </Col>
+              </Row>
+              <Row className="mt-4">
+                <Col>
+                  <FormGroup className="mt-2">
+                    <Button className="px-5 btn--dark-sea-green" disabled={this.validate() || (!formElements.mediaUrl && !formElements.summary) ? true : false} onClick={this.handleSave}>Save</Button>
+                  </FormGroup>
+                </Col>
+              </Row>
             </Form>
           </Col>
         </Row>
