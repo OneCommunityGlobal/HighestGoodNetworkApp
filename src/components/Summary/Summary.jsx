@@ -10,7 +10,7 @@ import {
   Input,
   CustomInput,
   Button,
-  Tooltip,
+  TabContent, TabPane, Nav, NavItem, NavLink,
 } from 'reactstrap';
 import './Summary.css';
 import { connect } from 'react-redux';
@@ -23,6 +23,7 @@ import moment from 'moment';
 import Joi from 'joi';
 import { toast } from "react-toastify";
 import { SummaryContentTooltip, MediaURLTooltip } from './SummaryTooltips';
+import classnames from 'classnames';
 
 class Summary extends Component {
   constructor(props) {
@@ -31,12 +32,14 @@ class Summary extends Component {
       formElements: { summary: '', mediaUrl: '', mediaConfirm: false },
       dueDate: moment().endOf('week'),
       userProfile: {},
+      activeTab: '1',
       errors: {},
     }
     this.handleInputChange = this.handleInputChange.bind(this);
     this.handleEditorChange = this.handleEditorChange.bind(this);
     this.handleCheckboxChange = this.handleCheckboxChange.bind(this);
     this.handleSave = this.handleSave.bind(this);
+    this.toggleTab = this.toggleTab.bind(this);
   }
 
   async componentDidMount() {
@@ -48,8 +51,16 @@ class Summary extends Component {
         mediaConfirm: false,
       },
       userProfile: this.props.userProfile || {},
+      activeTab: '1',
     })
   };
+
+  toggleTab = tab => {
+    const activeTab = this.state.activeTab;
+    if (activeTab !== tab) {
+      this.setState({ activeTab: tab });
+    };
+  }
 
   schema = {
     mediaUrl: Joi.string().trim().uri().required().label("Media URL"),
@@ -134,7 +145,7 @@ class Summary extends Component {
   };
 
   render() {
-    const { formElements, dueDate, errors } = this.state;
+    const { formElements, dueDate, userProfile, activeTab, errors } = this.state;
 
     return (
       <Container fluid className="bg--white-smoke py-3 mb-5">
@@ -149,93 +160,158 @@ class Summary extends Component {
             <DueDateTime dueDate={dueDate.format('YYYY-MM-DD')} />
           </Col>
         </Row>
-        <Row>
-          <Col>
-            <Form>
-              <FormGroup>
-                <Label for="summaryContent">
-                  Enter your weekly summary below weekly below. <SummaryContentTooltip />
-                </Label>
+
+        <Nav tabs>
+          <NavItem>
+            <NavLink
+              className={classnames({ active: activeTab === '1' })} onClick={() => { this.toggleTab('1'); }}>
+              This Week
+            </NavLink>
+          </NavItem>
+          <NavItem>
+            <NavLink
+              className={classnames({ active: activeTab === '2' })} onClick={() => { this.toggleTab('2'); }}>
+              Last Week
+            </NavLink>
+          </NavItem>
+          <NavItem>
+            <NavLink
+              className={classnames({ active: activeTab === '3' })} onClick={() => { this.toggleTab('3'); }}>
+              Week Before Last
+            </NavLink>
+          </NavItem>
+        </Nav>
+        <TabContent activeTab={activeTab} className="p-4">
+          <TabPane tabId="1">
+            <Row>
+              <Col>
+                <Form>
+                  <FormGroup>
+                    <Label for="summaryContent">
+                      Enter your weekly summary below weekly below. <SummaryContentTooltip />
+                    </Label>
+                    <Editor
+                      init={{
+                        menubar: false,
+                        placeholder: 'Weekly summary content...',
+                        plugins:
+                          'advlist autolink autoresize lists link charmap table paste help wordcount',
+                        toolbar:
+                          'bold italic underline link removeformat | bullist numlist outdent indent | styleselect fontsizeselect | table| strikethrough forecolor backcolor | subscript superscript charmap | help',
+                        branding: false,
+                        min_height: 180,
+                        max_height: 500,
+                        autoresize_bottom_margin: 1,
+                      }}
+                      id="summary"
+                      name="summary"
+                      value={formElements.summary}
+                      onEditorChange={this.handleEditorChange}
+                    />
+                  </FormGroup>
+                  <Label for="mediaURL" className="mt-3">
+                    Link to your media files (eg. DropBox or Google Doc). <MediaURLTooltip />
+                  </Label>
+                  <Row form>
+                    <Col md={8}>
+                      <FormGroup>
+                        <Input
+                          type="url"
+                          name="mediaUrl"
+                          id="mediaUrl"
+                          placeholder="Enter a link"
+                          value={formElements.mediaUrl}
+                          onChange={this.handleInputChange}
+                        />
+                      </FormGroup>
+                      {errors.mediaUrl && <Alert color="danger">{errors.mediaUrl}</Alert>}
+                    </Col>
+                    {formElements.mediaUrl && !errors.mediaUrl && (
+                      <Col md={4}>
+                        <FormGroup className="media-url">
+                          <FontAwesomeIcon icon={faExternalLinkAlt} className="mx-1 text--silver" />
+                          <a href={formElements.mediaUrl} target="_blank" rel="noopener noreferrer">Open link</a>
+                        </FormGroup>
+                      </Col>
+                    )}
+                  </Row>
+                  <Row>
+                    <Col>
+                      <FormGroup>
+                        <CustomInput
+                          id="mediaConfirm"
+                          name="mediaConfirm"
+                          type="checkbox"
+                          label="I have provided screenshots and video for this week's work." htmlFor="mediaConfirm"
+                          checked={formElements.mediaConfirm}
+                          valid={formElements.mediaConfirm}
+                          onChange={this.handleCheckboxChange}
+                        />
+                      </FormGroup>
+                      {errors.mediaConfirm && <Alert color="danger">Please confirm that you have provided the required media files.</Alert>}
+                    </Col>
+                  </Row>
+                  <Row className="mt-4">
+                    <Col>
+                      <FormGroup className="mt-2">
+                        <Button className="px-5 btn--dark-sea-green" disabled={this.validate() || (!formElements.mediaUrl && !formElements.summary) ? true : false} onClick={this.handleSave}>Save</Button>
+                      </FormGroup>
+                    </Col>
+                  </Row>
+                </Form>
+              </Col>
+            </Row>
+          </TabPane>
+          <TabPane tabId="2">
+            <Row>
+              <Col>
+                <Editor
+                  init={{ menubar: false, plugins: 'autoresize', toolbar: '', branding: false, min_height: 180, max_height: 500, statusbar: false }}
+                  id="summary-last-week"
+                  name="summary-last-week"
+                  value={userProfile.weeklySummary && userProfile.weeklySummary[1] && userProfile.weeklySummary[1].summary}
+                  disabled
+                />
+              </Col>
+            </Row>
+            {formElements.mediaUrl && (
+              <Row className="mt-3">
+                <Col>
+                  <div>
+                    <FontAwesomeIcon icon={faExternalLinkAlt} className="mx-1 text--silver" />
+                    <a href={formElements.mediaUrl} target="_blank" rel="noopener noreferrer">Open link to media files</a>
+                  </div>
+                </Col>
+              </Row>
+            )}
+          </TabPane>
+          <TabPane tabId="3">
+            <Row>
+              <Col sm="12">
                 <Editor
                   init={{
-                    menubar: false,
-                    placeholder: 'Weekly summary content...',
-                    plugins:
-                      'advlist autolink autoresize lists link charmap table paste help wordcount',
-                    toolbar:
-                      'bold italic underline link removeformat | bullist numlist outdent indent | styleselect fontsizeselect | table| strikethrough forecolor backcolor | subscript superscript charmap | help',
-                    branding: false,
-                    min_height: 180,
-                    max_height: 500,
-                    autoresize_bottom_margin: 1,
+                    menubar: false, plugins: 'autoresize', toolbar: '', branding: false, min_height: 180, max_height: 500, statusbar: false,
                   }}
-                  id="summary"
-                  name="summary"
-                  value={formElements.summary}
-                  onEditorChange={this.handleEditorChange}
+                  id="summary-week-before-last"
+                  name="summary-week-before-last"
+                  value={userProfile.weeklySummary && userProfile.weeklySummary[2] && userProfile.weeklySummary[2].summary}
+                  disabled
                 />
-              </FormGroup>
-              <Label for="mediaURL" className="mt-3">
-                Link to your media files (eg. DropBox or Google Doc). <MediaURLTooltip />
-              </Label>
-              <Row form>
-                <Col md={8}>
-                  <FormGroup>
-                    <Input
-                      type="url"
-                      name="mediaUrl"
-                      id="mediaUrl"
-                      placeholder="Enter a link"
-                      value={formElements.mediaUrl}
-                      onChange={this.handleInputChange}
-                    />
-                  </FormGroup>
-                  {errors.mediaUrl && <Alert color="danger">{errors.mediaUrl}</Alert>}
-                </Col>
-                {formElements.mediaUrl && !errors.mediaUrl && (
-                  <Col md={4}>
-                    <FormGroup className="media-url">
-                      <FontAwesomeIcon
-                        icon={faExternalLinkAlt}
-                        className="mx-1 text--silver"
-                      />
-                      <a
-                        href={formElements.mediaUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        Open link
-                    </a>
-                    </FormGroup>
-                  </Col>
-                )}
-              </Row>
-              <Row>
+              </Col>
+            </Row>
+            {formElements.mediaUrl && (
+              <Row className="mt-3">
                 <Col>
-                  <FormGroup>
-                    <CustomInput
-                      id="mediaConfirm"
-                      name="mediaConfirm"
-                      type="checkbox"
-                      label="I have provided screenshots and video for this week's work." htmlFor="mediaConfirm"
-                      checked={formElements.mediaConfirm}
-                      valid={formElements.mediaConfirm}
-                      onChange={this.handleCheckboxChange}
-                    />
-                  </FormGroup>
-                  {errors.mediaConfirm && <Alert color="danger">Please confirm that you have provided the required media files.</Alert>}
+                  <div>
+                    <FontAwesomeIcon icon={faExternalLinkAlt} className="mx-1 text--silver" />
+                    <a href={formElements.mediaUrl} target="_blank" rel="noopener noreferrer">Open link to media files</a>
+                  </div>
                 </Col>
               </Row>
-              <Row className="mt-4">
-                <Col>
-                  <FormGroup className="mt-2">
-                    <Button className="px-5 btn--dark-sea-green" disabled={this.validate() || (!formElements.mediaUrl && !formElements.summary) ? true : false} onClick={this.handleSave}>Save</Button>
-                  </FormGroup>
-                </Col>
-              </Row>
-            </Form>
-          </Col>
-        </Row>
+            )}
+          </TabPane>
+
+        </TabContent>
       </Container >
     );
   }

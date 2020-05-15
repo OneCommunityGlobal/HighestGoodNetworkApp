@@ -60,3 +60,13 @@
   max-width: 300px !important;
   padding: 10px !important;
 }
+
+.nav-tabs .nav-link {
+	cursor: pointer;
+}
+
+.tab-content {
+	background-color: #fff;
+	border: 1px solid transparent;
+	border-color:#fff #dee2e6 #dee2e6;
+}

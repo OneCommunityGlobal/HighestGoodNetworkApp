@@ -14,8 +14,8 @@ class Dashboard extends Component {
       <Container fluid>
         <Row>
           <Col sm={{ size: 9 }}>
-            <Leaderboard />
             <Summary />
+            <Leaderboard />
           </Col>
           <Col sm={{ size: 3 }}>
             <Card body inverse color="info">
