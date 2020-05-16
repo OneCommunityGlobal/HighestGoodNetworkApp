@@ -157,7 +157,7 @@ class Summary extends Component {
             md={{ size: 5, offset: 7 }}
             lg={{ size: 4, offset: 8 }}
           >
-            <DueDateTime dueDate={dueDate.format('YYYY-MM-DD')} />
+            <DueDateTime dueDate={dueDate} />
           </Col>
         </Row>
 

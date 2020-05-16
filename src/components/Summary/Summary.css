@@ -44,16 +44,39 @@
   border: solid 2px #225163;
   color: #2c2c2c;
   border-radius: 6px;
-  width: 180px;
+  width: 240px;
 }
 
 .due-section__date {
   background-color: #225163;
-  padding: 9px;
+  padding: 14px;
 }
 
 .due-section__time {
   padding: 7px;
+}
+
+.countdown {
+  margin: 10px auto;
+}
+
+.countdown__col {
+  display: inline-block;
+}
+
+.countdown__col__element {
+  display: inline-block;
+  margin: 0 12px;
+  display: flex;
+  flex-direction: column;
+}
+
+.countdown__col__element strong {
+  font-size: 28px;
+}
+
+.countdown__col__element span {
+  font-size: 12px;
 }
 
 .summaryContentTooltip, .mediaURLTooltip {

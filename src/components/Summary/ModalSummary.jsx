@@ -1,3 +1,15 @@
+/**
+ * To turn the Modal Summary implementation on do the following.
+ *  1 ) In the Dashboard.jsx make sure to add these:
+ *
+ *        import ModalSummary from '../Summary/ModalSummary';
+ *
+ *  2 ) Replace <Summary /> with this:
+ *
+ *        <ModalSummary buttonLabel="Weekly Summary" className="weekly-summary-modal" />
+ *
+ */
+
 import React, { useState } from 'react';
 import {
   Button, Modal, ModalHeader, ModalBody, ModalFooter,
