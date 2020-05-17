@@ -1,16 +1,14 @@
-import React, { Component } from 'react'
+import React from 'react'
 
 import {
 	Input,
 	FormGroup,
 	Label,
 	CardImg,
-	Button,
-	Badge,
 	InputGroupAddon,
 	InputGroupText
 } from 'reactstrap'
-import { orange, silverGray } from '../../../constants/colors'
+import { orange } from '../../../constants/colors'
 
 const SideBar = ({
 	firstName,

@@ -1,20 +1,26 @@
-##HGN TIME Tracking Application in React##
+# HGN TIME Tracking Application in React
 
+### Installation
 
-'npm install' to install the dependencies.
-'npm start' to run the application
+1. Node v12.5 or higher installed on your machine.
+2. A decent code editor like VS Code or Atom.
+3. Git
+4. Yarn v1.21.1
+
+```sh
+$ yarn install
+$ yarn start
+```
+
+'yarn install' to install the dependencies.
+'yarn start' to run the application
 
 To get started, make sure you have:
 
-1. Node v9.5 or higher installed on your machine.
-2. A decent code editor like VS Code or Atom.
-3. Git
-
 Step1: Clone the App
-To clone the code, navigate to the source directory where you want to maintain the code and via terminal or GUI of your choice, run : git clone https://github.com/OneCommunityGlobal/HighestGoodNetworkApp.git . You can also setup SSH and then use that for working with remote. 
+To clone the code, navigate to the source directory where you want to maintain the code and via terminal or GUI of your choice, run : git clone https://github.com/OneCommunityGlobal/HighestGoodNetworkApp.git . You can also setup SSH and then use that for working with remote.
 
-Step2: Run npm install.
-Best way is to open the code in the editor and open integrated teminal. Run npm install.
+Step2: Run yarn install or yarn from root directory.
 
 Step3: Start the app:
 To start the app, you need to set up the api endpoint as a process.env variable. You can just run
@@ -24,9 +30,11 @@ The application, by default, starts on port 3000. If 3000 is busy, then the star
 
 Note:
 Once you check in the code in github, the application will be publsihed to following:
-  - All branches except master : https://hgnapplication_react_dev.surge.sh
-  - Master: https://hgnapplicationv2.surge.sh
+
+- All branches except master : https://hgnapplication_react_dev.surge.sh
+- Master: https://hgnapplicationv2.surge.sh
 
 Other key touchpoints:
+
 1. Build: CircleCI
 2. Monitoring and logging: Sentry.io

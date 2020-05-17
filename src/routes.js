@@ -5,7 +5,7 @@ import Timelog from './components/Timelog'
 import Reports from './components/Reports'
 import UserProfile from './components/UserProfile'
 import Dashboard from './components/Dashboard'
-import {Logout}  from './components/Logout/Logout'
+import { Logout } from './components/Logout/Logout'
 import Login from './components/Login'
 import ForcePasswordUpdate from './components/ForcePasswordUpdate'
 import ProtectedRoute from './components/common/ProtectedRoute'
@@ -16,29 +16,23 @@ import Members from './components/Projects/Members'
 import 'react-toastify/dist/ReactToastify.css'
 
 export default (
-  <React.Fragment>
-    <Header />
-    <ToastContainer />
-    <Switch>
-      <ProtectedRoute path='/dashboard' exact component={Dashboard} />
-      <ProtectedRoute path='/timelog/:userId' exact component={Timelog} />
-      <ProtectedRoute path='/reports' exact component={Reports} />
-      <ProtectedRoute path='/projects' exact component={Projects} />
-      <ProtectedRoute path='/project/members' exact component={Members} />
+	<React.Fragment>
+		<Header />
+		<ToastContainer />
+		<Switch>
+			<ProtectedRoute path='/dashboard' exact component={Dashboard} />
+			<ProtectedRoute path='/timelog/:userId' exact component={Timelog} />
+			<ProtectedRoute path='/reports' exact component={Reports} />
+			<ProtectedRoute path='/projects' exact component={Projects} />
+			<ProtectedRoute path='/project/members/:projectId' component={Members} />
 
-      <Route path='/login' component={Login} />
+			<Route path='/login' component={Login} />
 
-      <ProtectedRoute path='/userprofile/:userId' component={UserProfile} />
-      <ProtectedRoute
-        path='/updatepassword/:userId'
-        component={UpdatePassword}
-      />
-      <Route path='/Logout' component={Logout} />
-      <Route
-        path='/forcePasswordUpdate/:userId'
-        component={ForcePasswordUpdate}
-      />
-      <ProtectedRoute path='/' exact component={Dashboard} />
-    </Switch>
-  </React.Fragment>
+			<ProtectedRoute path='/userprofile/:userId' component={UserProfile} />
+			<ProtectedRoute path='/updatepassword/:userId' component={UpdatePassword} />
+			<Route path='/Logout' component={Logout} />
+			<Route path='/forcePasswordUpdate/:userId' component={ForcePasswordUpdate} />
+			<ProtectedRoute path='/' exact component={Dashboard} />
+		</Switch>
+	</React.Fragment>
 )
