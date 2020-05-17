@@ -40,6 +40,7 @@ class Summary extends Component {
     this.handleCheckboxChange = this.handleCheckboxChange.bind(this);
     this.handleSave = this.handleSave.bind(this);
     this.toggleTab = this.toggleTab.bind(this);
+    this.setLocalDueDateInDatabase = this.setLocalDueDateInDatabase.bind(this);
   }
 
   async componentDidMount() {
@@ -52,8 +53,29 @@ class Summary extends Component {
       },
       userProfile: this.props.userProfile || {},
       activeTab: '1',
-    })
+    });
+
+    // Make sure the dueDate in the databse is synchronized with the current user's local timezone.
+    this.setLocalDueDateInDatabase();
   };
+
+  /**
+   * Store/update the dueDate in the database for the current user relative to their local time.
+   * This is necessary because the server has no way of knowing what timezone the current user is in,
+   * currently no location or timezone info are stored for a user.
+   * In the process, if the weeklySummary array doesn't already exist in the database it will also be created.
+   */
+  setLocalDueDateInDatabase = async () => {
+    if (!this.props.dueDate || +new Date(this.props.dueDate) !== +this.state.dueDate) {
+      let [weeklySummary, ...rest] = this.state.userProfile.weeklySummary;
+      let weeklySummaryNew = { ...weeklySummary, dueDate: this.state.dueDate };
+      const userProfileSummaryDueDate = {
+        ...this.state.userProfile,
+        weeklySummary: [weeklySummaryNew, ...rest],
+      }
+      await this.props.updateUserProfile(this.props.currentUser.userid, userProfileSummaryDueDate);
+    }
+  }
 
   toggleTab = tab => {
     const activeTab = this.state.activeTab;
@@ -210,7 +232,7 @@ class Summary extends Component {
                     />
                   </FormGroup>
                   <Label for="mediaURL" className="mt-3">
-                    Link to your media files (eg. DropBox or Google Doc). <MediaURLTooltip />
+                    Link to your media files (eg. DropBox or Google Doc). (required) <MediaURLTooltip />
                   </Label>
                   <Row form>
                     <Col md={8}>
@@ -242,7 +264,7 @@ class Summary extends Component {
                           id="mediaConfirm"
                           name="mediaConfirm"
                           type="checkbox"
-                          label="I have provided screenshots and video for this week's work." htmlFor="mediaConfirm"
+                          label="I have provided screenshots and video for this week's work. (required)" htmlFor="mediaConfirm"
                           checked={formElements.mediaConfirm}
                           valid={formElements.mediaConfirm}
                           onChange={this.handleCheckboxChange}
@@ -321,6 +343,7 @@ class Summary extends Component {
 const mapStateToProps = ({ auth, userProfile }) => ({
   currentUser: auth.user,
   summary: userProfile.weeklySummary && userProfile.weeklySummary[0] && userProfile.weeklySummary[0].summary ? userProfile.weeklySummary[0].summary : '',
+  dueDate: userProfile.weeklySummary && userProfile.weeklySummary[0] && userProfile.weeklySummary[0].dueDate ? userProfile.weeklySummary[0].dueDate : '',
   mediaUrl: userProfile.mediaUrl,
   userProfile: userProfile,
 });
