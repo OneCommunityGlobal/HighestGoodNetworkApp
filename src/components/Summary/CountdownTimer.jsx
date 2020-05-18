@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import _ from 'lodash';
 
 function CountdownTimer({ date }) {
   const calcTimeLeft = () => {
@@ -45,17 +46,17 @@ function CountdownTimer({ date }) {
   return (
     <div className="countdown">
       {
-        Object.keys(timeLeft).map(interval => (
-          <span key={interval} className="countdown__col">
-            <span className="countdown__col__element">
-              <strong>{addLeadingZeros(interval)}</strong>
-              {' '}
-              <span>{pluralOrSingle(interval)}</span>
+        !_.isEmpty(timeLeft)
+          ? Object.keys(timeLeft).map(interval => (
+            <span key={interval} className="countdown__col">
+              <span className="countdown__col__element">
+                <strong>{addLeadingZeros(interval)}</strong>
+                {' '}
+                <span>{pluralOrSingle(interval)}</span>
+              </span>
             </span>
-          </span>
-        ))
+          )) : <span className="countdown__times-up">Times up!</span>
       }
-
     </div>
   );
 }

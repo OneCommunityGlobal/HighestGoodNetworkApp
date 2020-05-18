@@ -71,7 +71,8 @@
   flex-direction: column;
 }
 
-.countdown__col__element strong {
+.countdown__col__element strong,
+.countdown__times-up {
   font-size: 28px;
 }
 
