@@ -8919,6 +8919,14 @@
       "resolved": "https://registry.npmjs.org/moment/-/moment-2.25.3.tgz",
       "integrity": "sha512-PuYv0PHxZvzc15Sp8ybUCoQ+xpyPWvjOuK72a5ovzp2LI32rJXOiIfyoFoYvG3s6EwwrdkMyWuRiEHSZRLJNdg=="
     },
+    "moment-timezone": {
+      "version": "0.5.31",
+      "resolved": "https://registry.npmjs.org/moment-timezone/-/moment-timezone-0.5.31.tgz",
+      "integrity": "sha512-+GgHNg8xRhMXfEbv81iDtrVeTcWt0kWmTEY1XQK14dICTXnWJnT0dxdlPspwqF3keKMVPXwayEsk1DI0AA/jdA==",
+      "requires": {
+        "moment": ">= 2.9.0"
+      }
+    },
     "moniker": {
       "version": "0.1.2",
       "resolved": "https://registry.npmjs.org/moniker/-/moniker-0.1.2.tgz",

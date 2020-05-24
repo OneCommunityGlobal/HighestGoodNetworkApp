@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import _ from 'lodash';
+import { toast } from 'react-toastify';
 
 function CountdownTimer({ date }) {
   const calcTimeLeft = () => {
@@ -21,12 +22,11 @@ function CountdownTimer({ date }) {
 
   const [timeLeft, setTimeLeft] = useState(calcTimeLeft());
 
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setTimeLeft(calcTimeLeft());
-    }, 1000);
-    return () => clearTimeout(timer);
-  });
+  const timer = setTimeout(() => {
+    setTimeLeft(calcTimeLeft());
+  }, 1000);
+
+  useEffect(() => () => clearTimeout(timer));
 
   const addLeadingZeros = (interval) => {
     let tli = String(timeLeft[interval]);
@@ -43,6 +43,16 @@ function CountdownTimer({ date }) {
     return tempInterval;
   };
 
+  const whenTimeIsUp = () => {
+    clearTimeout(timer);
+
+    toast('✔ Time is up!', {
+      onClose: () => window.location.reload(true),
+    });
+
+    return <span className="countdown__times-up">Time's up!</span>;
+  };
+
   return (
     <div className="countdown">
       {
@@ -55,7 +65,8 @@ function CountdownTimer({ date }) {
                 <span>{pluralOrSingle(interval)}</span>
               </span>
             </span>
-          )) : <span className="countdown__times-up">Times up!</span>
+            // )) : <span className="countdown__times-up">Times up!</span>
+          )) : whenTimeIsUp()
       }
     </div>
   );

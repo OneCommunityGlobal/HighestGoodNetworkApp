@@ -20,6 +20,7 @@ import { Editor } from '@tinymce/tinymce-react';
 import { getUserProfile, updateUserProfile } from '../../actions/userProfile';
 import DueDateTime from './DueDateTime';
 import moment from 'moment';
+import 'moment-timezone';
 import Joi from 'joi';
 import { toast } from "react-toastify";
 import { SummaryContentTooltip, MediaURLTooltip } from './SummaryTooltips';
@@ -30,7 +31,7 @@ class Summary extends Component {
     super(props);
     this.state = {
       formElements: { summary: '', mediaUrl: '', mediaConfirm: false },
-      dueDate: moment().endOf('week'),
+      dueDate: moment().tz('America/Los_Angeles').endOf('week'),
       userProfile: {},
       activeTab: '1',
       errors: {},
@@ -40,7 +41,6 @@ class Summary extends Component {
     this.handleCheckboxChange = this.handleCheckboxChange.bind(this);
     this.handleSave = this.handleSave.bind(this);
     this.toggleTab = this.toggleTab.bind(this);
-    this.setLocalDueDateInDatabase = this.setLocalDueDateInDatabase.bind(this);
   }
 
   async componentDidMount() {
@@ -54,28 +54,8 @@ class Summary extends Component {
       userProfile: this.props.userProfile || {},
       activeTab: '1',
     });
-
-    // Make sure the dueDate in the databse is synchronized with the current user's local timezone.
-    this.setLocalDueDateInDatabase();
   };
 
-  /**
-   * Store/update the dueDate in the database for the current user relative to their local time.
-   * This is necessary because the server has no way of knowing what timezone the current user is in,
-   * currently no location or timezone info are stored for a user.
-   * In the process, if the weeklySummary array doesn't already exist in the database it will also be created.
-   */
-  setLocalDueDateInDatabase = async () => {
-    if (!this.props.dueDate || +new Date(this.props.dueDate) !== +this.state.dueDate) {
-      let [weeklySummary, ...rest] = this.state.userProfile.weeklySummary;
-      let weeklySummaryNew = { ...weeklySummary, dueDate: this.state.dueDate };
-      const userProfileSummaryDueDate = {
-        ...this.state.userProfile,
-        weeklySummary: [weeklySummaryNew, ...rest],
-      }
-      await this.props.updateUserProfile(this.props.currentUser.userid, userProfileSummaryDueDate);
-    }
-  }
 
   toggleTab = tab => {
     const activeTab = this.state.activeTab;

@@ -18,6 +18,7 @@
     "jwt-decode": "^2.2.0",
     "lodash": ">4.17.13",
     "moment": "^2.25.3",
+    "moment-timezone": "^0.5.31",
     "react": "^16.13.1",
     "react-bootstrap": "^1.0.1",
     "react-dom": "^16.13.1",
