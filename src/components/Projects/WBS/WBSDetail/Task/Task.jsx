@@ -68,13 +68,29 @@ const Task = (props) => {
   }
 
 
+  let toggleMoreResourcesStatus = true;
+  const toggleMoreResources = (id) => {
+    if (toggleMoreResourcesStatus) {
+      document.getElementById(id).style.display = 'block';
+    } else {
+      document.getElementById(id).style.display = 'none';
+    }
+    toggleMoreResourcesStatus = !toggleMoreResourcesStatus;
+
+  }
+
+
+  const deleteTask = (taskId) => {
+    props.deleteTask(taskId);
+  }
+
+
 
   return (
     <React.Fragment>
 
-      <tr className={`wbsTask  ${props.isNew ? 'newTask' : ''} parentId_${props.parentId} num_${props.num}`} id={props.id}
 
-      >
+      <tr key={props.key} className={`wbsTask  ${props.isNew ? 'newTask' : ''} parentId_${props.parentId} num_${props.num}`} id={props.id}>
         <th
           id={`r_${props.num}_${props.id}`}
           onDragOver={e => allowDrop(e)}
@@ -83,6 +99,7 @@ const Task = (props) => {
           scope="row"
           className={`taskNum tag_color_${props.num.length > 0 ? props.num.split('.')[0] : props.num}`} onClick={() => selectTask(props.id)}>{props.num}</th>
         <td className="taskName">
+          {/*props.parentId ? props.parentId.substring(props.parentId.length - 3, props.parentId.length) : null}/{props.id.substring(props.id.length - 3, props.id.length)*/}
           {props.level === 1 ? <div className='level-space-1' data-tip="Level 1"><span onClick={(e) => toggleGroups(props.num, props.id)} className='fa_dropdown' id={`dropdown_${props.id}`}><i className="fa fa-caret-down" aria-hidden="true"></i></span> {props.name}</div> : null}
           {props.level === 2 ? <div className='level-space-2' data-tip="Level 2"><span onClick={(e) => toggleGroups(props.num, props.id)} className='fa_dropdown' id={`dropdown_${props.id}`}><i className="fa fa-caret-down" aria-hidden="true"></i></span> {props.name}</div> : null}
           {props.level === 3 ? <div className='level-space-3' data-tip="Level 3"><span onClick={(e) => toggleGroups(props.num, props.id)} className='fa_dropdown' id={`dropdown_${props.id}`}><i className="fa fa-caret-down" aria-hidden="true"></i></span> {props.name}</div> : null}
@@ -95,20 +112,64 @@ const Task = (props) => {
           {props.priority === "Tertiary" ? <i data-tip="Tertiary" className="fa fa-star-o" aria-hidden="true"></i> : null}
 
         </td>
-        <td>
-          {props.resources.map((elm) => {
-            if (!elm.profilePic) {
-              return (
-                <a data-tip={elm.name}
-                  href={`/userprofile/${elm.userID}`} target='_blank'><span className="dot">{elm.name.substring(0, 2)}</span>
-                </a>)
+        <td >
+
+          {
+            props.resources.map((elm, i) => {
+              if (i < 2) {
+
+
+                if (!elm.profilePic) {
+                  return (
+                    <a data-tip={elm.name} className="name"
+                      href={`/userprofile/${elm.userID}`} target='_blank'><span className="dot">{elm.name.substring(0, 2)}</span>
+                    </a>
+
+                  )
+
+                }
+                return (
+                  <a data-tip={elm.name} className="name"
+                    href={`/userprofile/${elm.userID}`} target='_blank'><img className='img-circle' src={elm.profilePic} />
+                  </a>
+                )
+              }
+            })
+          }
+
+          {
+            props.resources.length > 2 ? <a className="name resourceMoreToggle" onClick={() => toggleMoreResources(`res-${props.id}`)}><span className="dot">{props.resources.length}+</span></a> : null
+          }
+
+          <div id={`res-${props.id}`} className="resourceMore">
+            {
+              props.resources.map((elm, i) => {
+                if (i >= 2) {
+
+
+                  if (!elm.profilePic) {
+                    return (
+                      <a data-tip={elm.name} className="name"
+                        href={`/userprofile/${elm.userID}`} target='_blank'><span className="dot">{elm.name.substring(0, 2)}</span>
+                      </a>
+
+                    )
+
+                  }
+                  return (
+                    <a data-tip={elm.name} className="name"
+                      href={`/userprofile/${elm.userID}`} target='_blank'><img className='img-circle' src={elm.profilePic} />
+                    </a>
+                  )
+                }
+              })
+
             }
-            return (
-              <a data-tip={elm.name}
-                href={`/userprofile/${elm.userID}`} target='_blank'><img className='img-circle' src={elm.profilePic} />
-              </a>
-            )
-          })}
+          </div>
+
+
+
+
 
 
         </td>
@@ -128,17 +189,15 @@ const Task = (props) => {
         <td>{props.links}</td>
       </tr>
       <tr className='taskDrop' id={`taskDrop_${props.id}`}>
-        <td colspan="13"></td>
+        <td colSpan={13}></td>
       </tr>
 
       <tr className='wbsTaskController' id={`controller_${props.id}`}>
-        <td colspan="13" className='controlTd'>
-          <AddTaskModal parentNum={props.num} taskId={props.id} wbsId={props.wbsId} />
+        <td colSpan={13} className='controlTd'>
+          <AddTaskModal parentNum={props.num} taskId={props.id} wbsId={props.wbsId} parentId1={props.parentId1} parentId2={props.parentId2} parentId3={props.parentId3} level={props.level} />
           <Button color="info" size="sm" className='controlBtn'>Edit</Button>
 
-          <Button color="success" size="sm" className='controlBtn' onClick={e => swap(-1)}><i class="fa fa-arrow-up" aria-hidden="true"></i></Button>
-          <Button color="success" size="sm" className='controlBtn' onClick={e => swap(1)}><i class="fa fa-arrow-down" aria-hidden="true"></i></Button>
-          <Button color="danger" size="sm" className='controlBtn controlBtn_remove'>Remove</Button>
+          <Button color="danger" size="sm" className='controlBtn controlBtn_remove' onClick={() => deleteTask(props.id)}>Remove</Button>
 
         </td>
       </tr>

@@ -44,15 +44,11 @@ export const updateNumList = (wbsId, list) => {
     try {
       const res = await axios.put(url, { wbsId, "nums": list });
       status = res.status;
+
     } catch (err) {
       status = 400;
     }
-
-    if (status === 200) {
-      await dispatch(
-        updateNums(list));
-    }
-
+    await dispatch(updateNums(list));
   }
 
 }
@@ -67,6 +63,21 @@ export const fetchAllTasks = (wbsId) => {
     }).catch((err) => {
       dispatch(setTasksError(err));
     })
+  }
+}
+
+
+export const deleteTask = (taskId) => {
+  const url = ENDPOINTS.TASK_DEL(taskId);
+  return async dispatch => {
+    let status = 200;
+    try {
+      const res = await axios.delete(url);
+      status = res.status;
+    } catch (err) {
+      status = 400;
+    }
+    await dispatch(removeTask(taskId, status));
   }
 }
 
@@ -120,10 +131,19 @@ export const swapTasks = (tasks, status) => {
   }
 }
 
-export const updateNums = (list) => {
+export const updateNums = (updatedList) => {
+  //console.log('updated list', updatedList);
   return {
     type: types.UPDATE_NUMS,
-    list
+    updatedList
+  }
+}
+
+export const removeTask = (taskId, status) => {
+  return {
+    type: types.DELETE_TASK,
+    taskId,
+    status,
   }
 }
 

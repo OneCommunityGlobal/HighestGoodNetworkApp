@@ -19,7 +19,7 @@ const AddTaskModal = (props) => {
 
 
   // task Num
-  let newNum = '0';
+  let newNum = '1';
 
   // task name
   const [taskName, setTaskName] = useState('')
@@ -62,47 +62,10 @@ const AddTaskModal = (props) => {
   const [links] = useState([]);
 
 
-  // list of num
-  const nums = [];
-  tasks.forEach(task => {
-    nums.push(task.num);
-  });
-
-
   const getNewNum = () => {
-    // get new num
-    if (tasks.length >= 1) {
-
-      if (props.parentNum !== "-1") {
-        let tmpNewNum = '';
-        nums.forEach((num, i) => {
-          if (num.includes(props.parentNum)) {
-            tmpNewNum = num;
-          }
-
-        });
-
-        if (tmpNewNum.length === props.parentNum.length) {
-          newNum = `${tmpNewNum}.1`;
-        } else {
-          if (tmpNewNum.length > 1) {
-            let numArr = tmpNewNum.split('.');
-            let end = numArr[numArr.length - 1];
-            let before = '';
-            for (let i = 0; i < numArr.length - 1; i++) {
-              before += numArr[i] + '.';
-            }
-            newNum = before + (parseInt(end) + 1);
-          }
-
-        }
-      } else {
-        nums.forEach(num => {
-          if (num.split('.').length === 1) {
-            newNum = parseInt(num) + 1;
-          }
-        });
-      }
+    if (tasks.length > 0) {
+      const childTasks = tasks.filter(task => task.mother === props.taskId);
+      newNum = `${props.parentNum !== null ? props.parentNum + '.' : ''}${childTasks.length + 1}`;
     }
   }
 
@@ -183,6 +146,23 @@ const AddTaskModal = (props) => {
   }
 
 
+
+  // parent Id
+  let parentId1 = props.parentId1 ? props.parentId1 : null;
+  let parentId2 = props.parentId2 ? props.parentId2 : null;
+  let parentId3 = props.parentId3 ? props.parentId3 : null;
+
+
+  if (props.parentId1 === null) {
+    parentId1 = props.taskId;
+  } else if (props.parentId2 === null) {
+    parentId2 = props.taskId;
+  } else if (props.parentId3 === null) {
+    parentId3 = props.taskId;
+  }
+
+
+
   const addNewTask = () => {
     const newTask =
     {
@@ -201,9 +181,15 @@ const AddTaskModal = (props) => {
       "startedDatetime": startedDate,
       "dueDatetime": dueDate,
       "links": links,
-      "parentId": props.taskId,
+      "mother": props.taskId,
+      "parentId1": parentId1,
+      "parentId2": parentId2,
+      "parentId3": parentId3,
+      "position": tasks.length,
       "isActive": true
     }
+
+
 
     props.addNewTask(newTask, props.wbsId);
     if (props.tasks.error === "none") {
@@ -215,6 +201,7 @@ const AddTaskModal = (props) => {
   useEffect(() => {
 
   }, [tasks]);
+
   getNewNum();
 
   return (

@@ -4,7 +4,7 @@
  ********************************************************************************/
 import React, { useState, useEffect } from 'react'
 import { connect } from 'react-redux'
-import { fetchAllTasks, updateNumList } from './../../../../actions/task'
+import { fetchAllTasks, updateNumList, deleteTask } from './../../../../actions/task'
 import Task from './Task/'
 import AddTaskModal from './AddTask/AddTaskModal'
 import './wbs.css';
@@ -47,13 +47,15 @@ const WBSTasks = (props) => {
   }
 
   let drag = '';
-  const dragTask = (taskIdFrom) => {
+  let dragParent = '';
+  const dragTask = (taskIdFrom, parentId) => {
     console.log('draggg', taskIdFrom);
     drag = taskIdFrom;
+    dragParent = parentId;
   }
 
   const dropTask = (taskIdTo, parentId) => {
-    console.log('drop', drag, taskIdTo);
+    // console.log('drop', drag, taskIdTo);
     const tasks = props.state.tasks.taskItems;
 
     let tasksClass = document.getElementsByClassName('taskDrop');
@@ -63,16 +65,23 @@ const WBSTasks = (props) => {
 
     const list = [];
     let target = tasks.find(task => task._id === taskIdTo);
-    let siblings = tasks.filter(task => task.parentId === parentId);
-    console.log(siblings);
+    let siblings = tasks.filter(task => task.parentId === dragParent);
+    //console.log('sibs', siblings);
 
     let modifiedList = false;
+    if (dragParent === target._id) {
+      list.push({
+        id: drag,
+        num: siblings[0].num
+      });
+      modifiedList = true;
+    }
     for (let i = 0; i < siblings.length - 1; i++) {
       if (siblings[i]._id === drag) {
         modifiedList = false;
       }
       if (modifiedList) {
-        console.log(siblings[i]._id, siblings[i + 1].num);
+        //console.log('sib', siblings[i]._id, siblings[i + 1].num);
         list.push({
           id: siblings[i]._id,
           num: siblings[i + 1].num
@@ -88,12 +97,15 @@ const WBSTasks = (props) => {
       }
     }
 
-    console.log(list);
+    //console.log(list);
     props.updateNumList(wbsId, list);
-
 
   }
 
+
+  const deleteTask = (taskId) => {
+    props.deleteTask(taskId);
+  }
 
 
 
@@ -104,7 +116,7 @@ const WBSTasks = (props) => {
 
       <div className='container' >
 
-        <AddTaskModal parentNum={"-1"} taskId={null} wbsId={wbsId} />
+        <AddTaskModal parentNum={null} taskId={null} wbsId={wbsId} />
 
 
         <table className="table table-bordered">
@@ -133,7 +145,7 @@ const WBSTasks = (props) => {
             {props.state.tasks.taskItems.map((task, i) =>
 
               <Task
-                key={i}
+                key={`${task._id}${i}`}
                 id={task._id}
                 level={task.level}
                 num={task.num}
@@ -148,15 +160,19 @@ const WBSTasks = (props) => {
                 estimatedHours={task.estimatedHours}
                 startedDatetime={task.startedDatetime}
                 dueDatetime={task.dueDatetime}
-                links={task.links[0]}
+                links={['1', '2']}
                 projectId={projectId}
                 wbsId={wbsId}
                 selectTask={selectTaskFunc}
                 isNew={task.new ? true : false}
-                parentId={task.parentId}
+                parentId1={task.parentId1}
+                parentId2={task.parentId2}
+                parentId3={task.parentId3}
+                mother={task._id}
                 isOpen={true}
                 drop={dropTask}
                 drag={dragTask}
+                deleteTask={deleteTask}
 
               />)}
 
@@ -172,5 +188,5 @@ const WBSTasks = (props) => {
   )
 }
 const mapStateToProps = state => { return { state } }
-export default connect(mapStateToProps, { fetchAllTasks, updateNumList })(WBSTasks)
+export default connect(mapStateToProps, { fetchAllTasks, updateNumList, deleteTask })(WBSTasks)
 
