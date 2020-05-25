@@ -27,21 +27,14 @@ import { SummaryContentTooltip, MediaURLTooltip } from './SummaryTooltips';
 import classnames from 'classnames';
 
 class Summary extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      formElements: { summary: '', mediaUrl: '', mediaConfirm: false },
-      dueDate: moment().tz('America/Los_Angeles').endOf('week'),
-      userProfile: {},
-      activeTab: '1',
-      errors: {},
-    }
-    this.handleInputChange = this.handleInputChange.bind(this);
-    this.handleEditorChange = this.handleEditorChange.bind(this);
-    this.handleCheckboxChange = this.handleCheckboxChange.bind(this);
-    this.handleSave = this.handleSave.bind(this);
-    this.toggleTab = this.toggleTab.bind(this);
-  }
+
+  state = {
+    formElements: { summary: '', mediaUrl: '', mediaConfirm: false },
+    dueDate: moment().tz('America/Los_Angeles').endOf('week'),
+    userProfile: {},
+    activeTab: '1',
+    errors: {},
+  };
 
   async componentDidMount() {
     await this.props.getUserProfile(this.props.currentUser.userid);
@@ -55,7 +48,6 @@ class Summary extends Component {
       activeTab: '1',
     });
   };
-
 
   toggleTab = tab => {
     const activeTab = this.state.activeTab;
