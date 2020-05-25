@@ -14,5 +14,6 @@ export const ENDPOINTS = {
   LEADER_BOARD: userId => `${APIEndpoint}/dashboard/leaderboard/${userId}`,
   TIME_ENTRIES_PERIOD: (userId, fromDate, toDate) => `${APIEndpoint}/TimeEntry/user/${userId}/${fromDate}/${toDate}`,
   TIME_ENTRY: () => `${APIEndpoint}/TimeEntry`,
-  TIME_ENTRY_CHANGE: timeEntryId => `${APIEndpoint}/TimeEntry/${timeEntryId}`
+  TIME_ENTRY_CHANGE: timeEntryId => `${APIEndpoint}/TimeEntry/${timeEntryId}`,
+  TIMER: userId => `${APIEndpoint}/timer/${userId}`,
 }

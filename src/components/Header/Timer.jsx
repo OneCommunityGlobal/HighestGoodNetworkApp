@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux'
+import { startTimer, pauseTimer, stopTimer } from '../../actions/timer';
 import {
   Badge,
   Button,
@@ -8,16 +10,38 @@ import {
 import './Timer.css'
 
 const Timer = () => {
-  const [seconds, setSeconds] = useState(0);
+  const userId = useSelector(state => state.auth.user.userid);
+  const pausedAt = useSelector(state => state.timer.seconds);
+  const dispatch = useDispatch();
+
+  const [seconds, setSeconds] = useState(pausedAt);
   const [isActive, setIsActive] = useState(false);
 
-  function toggle() {
-    setIsActive(!isActive);
-  }
+  const toggle = () => setIsActive(!isActive);
 
-  function reset() {
+  const reset = () => {
     setSeconds(0);
     setIsActive(false);
+  }
+
+  const handleStart = async event => {
+    const status = await startTimer(userId, seconds);
+    if (status === 200 || status === 201) {
+      toggle();
+    }  
+  }
+
+  const handlePause = async event => {
+    const status = await dispatch(pauseTimer(userId, seconds));
+    if (status === 200 || status === 201) {
+      toggle();
+    }
+  }
+  const handleStop = async event => {
+    const status = await dispatch(stopTimer(userId));
+    if (status === 200 || status === 201) {
+      reset();
+    }
   }
 
   useEffect(() => {
@@ -43,10 +67,10 @@ const Timer = () => {
             {padZero(minutes)}:
             {padZero(secondsRemainder)}
         </Badge>
-        <Button onClick={toggle} color={isActive ? 'primary' : 'success'} className="ml-1 p-1 align-middle">
+        <Button onClick={isActive ? handlePause : handleStart} color={isActive ? 'primary' : 'success'} className="ml-1 p-1 align-middle">
           {isActive ? 'Pause' : 'Start'}
         </Button>
-        <Button onClick={reset} color="danger" className="ml-1 p-1 align-middle">
+        <Button onClick={handleStop} color="danger" className="ml-1 p-1 align-middle">
           Stop
         </Button>
       </div>

@@ -1,6 +1,7 @@
 import React from 'react'
 // import { getUserProfile } from '../../actions/userProfile'
 import { getHeaderData } from '../../actions/authActions'
+import { getTimerData } from '../../actions/timer'
 import { Link } from 'react-router-dom'
 import { connect } from 'react-redux'
 import Timer from './Timer'
@@ -27,24 +28,20 @@ class Header extends React.Component {
 
   componentDidMount(){
     if (this.props.auth.isAuthenticated){
-      // this.props.getUserProfile(this.props.auth.user.userid)
       this.props.getHeaderData(this.props.auth.user.userid)
+      this.props.getTimerData(this.props.auth.user.userid)
     }
   }
 
   componentDidUpdate(prevProps) {
     if (!prevProps.auth.isAuthenticated && this.props.auth.isAuthenticated ){
-      // this.props.getUserProfile(this.props.auth.user.userid)
       this.props.getHeaderData(this.props.auth.user.userid)
+      this.props.getTimerData(this.props.auth.user.userid)
     }
   }
 
   render() {
     const { isAuthenticated, user, firstName, profilePic } = this.props.auth;
-    // let firstName = "", profilePic = "";
-    // if (this.props.userProfile){
-    //   ({ firstName, profilePic } = this.props.userProfile);
-    // }
 
     return (
       <div>
@@ -147,7 +144,7 @@ const mapStateToProps = state => ({
 export default connect(
   mapStateToProps,
   {
-    // getUserProfile,
-    getHeaderData
+    getHeaderData,
+    getTimerData
   }
 )(Header)

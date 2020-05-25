@@ -23,6 +23,7 @@ import { allTimeEntriesReducer } from './allTimeEntriesReducer'
 import { timeEntriesForSpecifiedPeriodReducer } from './timeEntriesForSpecifiedPeriodReducer'
 import { errorsReducer } from './errorsReducer'
 import { timeEntriesReducer } from './timeEntriesReducer'
+import { timerReducer } from './timerReducer'
 
 export default combineReducers({
 	auth: authReducer,
@@ -48,5 +49,6 @@ export default combineReducers({
 	//projectTimeEntries: timeEntriesForSpecifiedProjectReducer,
 	//requestStatus: handleSuccessReducer,
 	errors: errorsReducer,
-  timeEntries: timeEntriesReducer
+  timeEntries: timeEntriesReducer,
+  timer: timerReducer,
 })
