@@ -3,7 +3,8 @@ import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import { connect } from 'react-redux'
 import ReactTooltip from 'react-tooltip'
 import { fetchAllMembers } from './../../../../../actions/projectMembers'
-import { addNewTask } from './../../../../../actions/task'
+import { addNewTask } from './../../../../../actions/task';
+import { DUE_DATE_MUST_GREATER_THAN_START_DATE } from './../../../../../languages/en/messages';
 import DayPickerInput from 'react-day-picker/DayPickerInput';
 import 'react-day-picker/lib/style.css';
 import dateFnsFormat from 'date-fns/format';
@@ -57,10 +58,12 @@ const AddTaskModal = (props) => {
   // due date
   const [dueDate, setDueDate] = useState('');
 
-
   // links
   const [links] = useState([]);
 
+  // Warning
+  const [dateWarning, setDateWarning] = useState(false);
+  const [hoursWarning, setHoursWarning] = useState(false);
 
   const getNewNum = () => {
     if (tasks.length > 0) {
@@ -141,10 +144,33 @@ const AddTaskModal = (props) => {
   }
 
   // Hours estimate
-  const calHoursEstimate = () => {
-    setHoursEstimate(parseInt((parseInt(hoursMost) + parseInt(hoursWorst) + parseInt(hoursBest)) / 3));
-  }
+  const calHoursEstimate = (isOn = null) => {
+    let currHoursMost = parseInt(hoursMost);
+    let currHoursWorst = parseInt(hoursWorst);
+    let currHoursBest = parseInt(hoursBest);
+    if (isOn !== 'hoursMost') {
+      currHoursMost = Math.round((currHoursWorst - currHoursBest) / 2 + currHoursBest);
+      setHoursMost(currHoursMost);
+      if (isOn !== 'hoursWorst') {
+        console.log('is on best', currHoursBest);
+        currHoursWorst = Math.round(currHoursBest * 2);
+        setHoursWorst(currHoursWorst);
+        currHoursMost = Math.round((currHoursWorst - currHoursBest) / 2 + currHoursBest);
+        setHoursMost(currHoursMost);
 
+      }
+    }
+
+    setHoursEstimate(parseInt((currHoursMost + currHoursBest + currHoursWorst) / 3));
+
+    if (!((currHoursBest <= currHoursMost) && (currHoursMost <= currHoursWorst))) {
+      setHoursWarning(true);
+    } else {
+      setHoursWarning(false);
+    }
+
+
+  }
 
 
   // parent Id
@@ -160,6 +186,31 @@ const AddTaskModal = (props) => {
   } else if (props.parentId3 === null) {
     parentId3 = props.taskId;
   }
+
+  const changeDateStart = (startDate) => {
+    setStartedDate(startDate);
+    if (dueDate) {
+      if (startDate > dueDate) {
+        setDateWarning(true);
+      } else {
+        setDateWarning(false);
+
+      }
+    }
+  }
+
+  const changeDateEnd = (dueDate) => {
+    setDueDate(dueDate);
+    if (startedDate) {
+      if (dueDate < startedDate) {
+        setDateWarning(true);
+      } else {
+        setDateWarning(false);
+
+      }
+    }
+  }
+
 
 
 
@@ -309,9 +360,10 @@ const AddTaskModal = (props) => {
                   <input type='number' min='0' max='500' value={hoursBest}
                     onChange={(e) => setHoursBest(e.target.value)}
                     onBlur={() => calHoursEstimate()}
-
-
                   />
+                  <div className='warning'>
+                    {hoursWarning ? "Hours-Best < Hours-Most < Hours-Worst" : ''}
+                  </div>
                 </td>
               </tr>
               <tr>
@@ -319,9 +371,11 @@ const AddTaskModal = (props) => {
                 <td scope="col" data-tip="Hours-Worst">
                   <input type='number' min={hoursBest} max='500' value={hoursWorst}
                     onChange={(e) => setHoursWorst(e.target.value)}
-                    onBlur={() => calHoursEstimate()}
-
+                    onBlur={() => calHoursEstimate("hoursWorst")}
                   />
+                  <div className='warning'>
+                    {hoursWarning ? "Hours-Best < Hours-Most < Hours-Worst" : ''}
+                  </div>
                 </td>
               </tr>
               <tr>
@@ -329,9 +383,11 @@ const AddTaskModal = (props) => {
                 <td scope="col" data-tip="Hours-Most">
                   <input type='number' min='0' max='500' value={hoursMost}
                     onChange={(e) => setHoursMost(e.target.value)}
-                    onBlur={() => calHoursEstimate()}
-
+                    onBlur={() => calHoursEstimate("hoursMost")}
                   />
+                  <div className='warning'>
+                    {hoursWarning ? "Hours-Best < Hours-Most < Hours-Worst" : ''}
+                  </div>
                 </td>
               </tr>
               <tr>
@@ -350,7 +406,11 @@ const AddTaskModal = (props) => {
                       format={FORMAT}
                       formatDate={formatDate}
                       placeholder={`${dateFnsFormat(new Date(), FORMAT)}`}
-                      onDayChange={(day, mod, input) => setStartedDate(input.state.value)} />
+                      onDayChange={(day, mod, input) => changeDateStart(input.state.value)}
+                    />
+                    <div className='warning'>
+                      {dateWarning ? DUE_DATE_MUST_GREATER_THAN_START_DATE : ''}
+                    </div>
                   </div>
                 </td>
               </tr>
@@ -361,7 +421,10 @@ const AddTaskModal = (props) => {
                     format={FORMAT}
                     formatDate={formatDate}
                     placeholder={`${dateFnsFormat(new Date(), FORMAT)}`}
-                    onDayChange={(day, mod, input) => setDueDate(input.state.value)} />
+                    onDayChange={(day, mod, input) => changeDateEnd(input.state.value)} />
+                  <div className='warning'>
+                    {dateWarning ? DUE_DATE_MUST_GREATER_THAN_START_DATE : ''}
+                  </div>
                 </td>
               </tr>
               <tr>

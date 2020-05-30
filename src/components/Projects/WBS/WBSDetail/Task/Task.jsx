@@ -49,22 +49,25 @@ const Task = (props) => {
 
   const allowDrop = (ev) => {
     ev.preventDefault();
+    console.log('drop');
     let id = ev.target.id.split('_')[2];
     let tasks = document.getElementsByClassName('taskDrop');
     for (let i = 0; i < tasks.length; i++) {
-      tasks[i].style.display = 'none';
+      //tasks[i].style.display = 'none';
     }
-    document.getElementById(`taskDrop_${id}`).style.display = 'table-row';
+    //document.getElementById(`taskDrop_${id}`).style.display = 'table-row';
   }
 
   const drag = (ev, from) => {
     props.drag(from, props.parentId);
-    document.getElementById(`taskDrop_${from}`).style.display = 'none';
+    //document.getElementById(`taskDrop_${from}`).style.display = 'none';
   }
 
   const drop = (ev, to) => {
     ev.preventDefault();
-    props.drop(to, props.parentId);
+
+    console.log('droped', to);
+    //props.drop(to, props.parentId);
   }
 
 
@@ -94,7 +97,7 @@ const Task = (props) => {
         <th
           id={`r_${props.num}_${props.id}`}
           onDragOver={e => allowDrop(e)}
-          onDrop={(e) => drop(e, props.id)}
+          onDrop={(e) => drop(e, props)}
           draggable="true" onDragStart={e => drag(e, props.id)}
           scope="row"
           className={`taskNum tag_color_${props.num.length > 0 ? props.num.split('.')[0] : props.num}`} onClick={() => selectTask(props.id)}>{props.num}</th>

@@ -55,7 +55,11 @@ const WBSTasks = (props) => {
   }
 
   const dropTask = (taskIdTo, parentId) => {
-    // console.log('drop', drag, taskIdTo);
+
+    console.log('droppppped');
+    console.log('drop', drag, taskIdTo);
+
+    /* console.log('drop', drag, taskIdTo);
     const tasks = props.state.tasks.taskItems;
 
     let tasksClass = document.getElementsByClassName('taskDrop');
@@ -97,8 +101,8 @@ const WBSTasks = (props) => {
       }
     }
 
-    //console.log(list);
-    props.updateNumList(wbsId, list);
+    console.log(list);
+    props.updateNumList(wbsId, list);*/
 
   }
 
@@ -139,6 +143,9 @@ const WBSTasks = (props) => {
             </tr>
           </thead>
           <tbody>
+            <tr className='taskDrop' >
+              <td colSpan={13}></td>
+            </tr>
 
 
 

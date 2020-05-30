@@ -108,7 +108,7 @@
 .taskDrop{
   width: 100%;
   background: #effff2;
-  display: none
+  display: none;
 }
 
 .name{
@@ -122,4 +122,9 @@
 }
 .resourceMore{
   display: none
+}
+
+.warning{
+  color:red;
+  font-size: 10px;
 }
