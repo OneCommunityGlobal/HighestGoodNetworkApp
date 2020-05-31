@@ -15,8 +15,8 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faEdit } from '@fortawesome/free-regular-svg-icons'
 
 const TimeEntry = ({data, displayYear}) => {
-    const [ modalOpen, setModalOpen ] = useState(false);
-    const toggle = () => setModalOpen(modalOpen => !modalOpen);
+    const [ modal, setModal ] = useState(false);
+    const toggle = () => setModal(modal => !modal);
 
     const dateOfWork = moment(data.dateOfWork);
     const { user } = useSelector(state => state.auth);
@@ -64,7 +64,7 @@ const TimeEntry = ({data, displayYear}) => {
                         {( isAdmin || (!data.isTangible && isOwner && isSameDay) ) && 
                             <span> 
                                 <FontAwesomeIcon icon={faEdit} size="lg" className="mr-3 text-primary" onClick={ toggle }/>
-                                <TimeEntryForm edit={true} userId={data.personId} data={data} toggle={toggle} isOpen={modalOpen}/>
+                                <TimeEntryForm edit={true} userId={data.personId} data={data} toggle={toggle} isOpen={modal}/>
                             </span>
                         }
                         {( isAdmin || (!data.isTangible && isOwner && isSameDay) ) && 

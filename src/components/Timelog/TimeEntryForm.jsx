@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
+import { useHistory } from 'react-router';
 import {
     Form,
     FormGroup,
@@ -13,12 +14,13 @@ import {
     ModalBody,
     ModalFooter
 } from 'reactstrap'
-import { postTimeEntry, editTimeEntry } from '../../actions/timeEntries' 
+import { postTimeEntry, editTimeEntry } from '../../actions/timeEntries'
+import { stopTimer } from '../../actions/timer'
 import moment from "moment"
 import _ from "lodash"
 import { Editor } from '@tinymce/tinymce-react';
 
-const TimeEntryForm = ({userId, edit, data, isOpen, toggle}) => {
+const TimeEntryForm = ({userId, edit, data, isOpen, toggle, timer}) => {
     const initialState = {
         dateOfWork: moment().format("YYYY-MM-DD"),
         hours: 0,
@@ -28,9 +30,16 @@ const TimeEntryForm = ({userId, edit, data, isOpen, toggle}) => {
         isTangible: data ? data.isTangible : true
     }
 
+    const fromTimer = !_.isEmpty(timer);
+    if (fromTimer) {
+        initialState.hours = timer.hours;
+        initialState.minutes = timer.minutes;
+    }
+
     const [inputs, setInputs] = useState(edit ? data : initialState);
     const [errors, setErrors] = useState({});
     const dispatch = useDispatch();
+    const history = useHistory();
 
     const { projects } = useSelector(state => state.userProjects);
     const projectOptions = projects.map(project => 
@@ -97,18 +106,26 @@ const TimeEntryForm = ({userId, edit, data, isOpen, toggle}) => {
     
         const hours = inputs.hours === "" ? "0" : inputs.hours;
         const minutes = inputs.minutes === "" ? "0" : inputs.minutes;
+
+        let status;
         if (edit) {
             timeEntry.hours = hours;
             timeEntry.minutes = minutes;
-            await dispatch(editTimeEntry(data._id, timeEntry));
+            status = await dispatch(editTimeEntry(data._id, timeEntry));
         }
         else {
             timeEntry.timeSpent = `${hours}:${minutes}:00`;
-            await dispatch(postTimeEntry(timeEntry));
+            status = await dispatch(postTimeEntry(timeEntry));
         }
 
-        setInputs(inputs => initialState);
-        toggle();
+        if (fromTimer && status === 200) {
+            const timerStatus = await dispatch(stopTimer(userId));
+            if (timerStatus === 200 || timerStatus === 201) {
+                setInputs(inputs => initialState);
+                toggle();
+            }
+            history.push(`/timelog/${userId}`);
+        }
     }
 
     const handleInputChange = event => {
@@ -141,7 +158,7 @@ const TimeEntryForm = ({userId, edit, data, isOpen, toggle}) => {
                 <Form>
                     <FormGroup>
                         <Label for="dateOfWork">Date</Label>
-                        {isAdmin ? 
+                        {isAdmin && !fromTimer ? 
                             <Input type="date" name="dateOfWork" id="dateOfWork"
                                 value={inputs.dateOfWork} onChange={handleInputChange}/> :
                             <Input type="date" name="dateOfWork" id="dateOfWork" 
@@ -154,11 +171,11 @@ const TimeEntryForm = ({userId, edit, data, isOpen, toggle}) => {
                         <Row form>
                             <Col>
                                 <Input type="number" name="hours" id="hours" placeholder="Hours" 
-                                    value={inputs.hours} onChange={handleInputChange}/>
+                                    value={inputs.hours} onChange={handleInputChange} disabled={fromTimer}/>
                             </Col>
                             <Col>
                                 <Input type="number" name="minutes" id="minutes" placeholder="Minutes" 
-                                    value={inputs.minutes} onChange={handleInputChange}/>
+                                    value={inputs.minutes} onChange={handleInputChange} disabled={fromTimer}/>
                             </Col>
                         </Row>
                         {'time' in errors && <div className="text-danger"><small>{errors.time}</small></div>}
