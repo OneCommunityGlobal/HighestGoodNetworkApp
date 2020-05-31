@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useHistory } from 'react-router';
 import {
@@ -21,6 +21,8 @@ import _ from "lodash"
 import { Editor } from '@tinymce/tinymce-react';
 
 const TimeEntryForm = ({userId, edit, data, isOpen, toggle, timer}) => {
+    const fromTimer = !_.isEmpty(timer);
+
     const initialState = {
         dateOfWork: moment().format("YYYY-MM-DD"),
         hours: 0,
@@ -30,16 +32,14 @@ const TimeEntryForm = ({userId, edit, data, isOpen, toggle, timer}) => {
         isTangible: data ? data.isTangible : true
     }
 
-    const fromTimer = !_.isEmpty(timer);
-    if (fromTimer) {
-        initialState.hours = timer.hours;
-        initialState.minutes = timer.minutes;
-    }
-
     const [inputs, setInputs] = useState(edit ? data : initialState);
     const [errors, setErrors] = useState({});
     const dispatch = useDispatch();
     const history = useHistory();
+
+    useEffect(() => {
+        setInputs({...inputs, ...timer})
+    }, [timer]);
 
     const { projects } = useSelector(state => state.userProjects);
     const projectOptions = projects.map(project => 

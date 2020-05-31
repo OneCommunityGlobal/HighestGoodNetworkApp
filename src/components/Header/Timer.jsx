@@ -75,12 +75,10 @@ const Timer = () => {
         <Button onClick={isActive ? handlePause : handleStart} color={isActive ? 'primary' : 'success'} className="ml-1 p-1 align-middle">
           {isActive ? 'Pause' : 'Start'}
         </Button>
-        <span>
-          <Button onClick={handleStop} color="danger" className="ml-1 p-1 align-middle">
-            Stop
-          </Button>
-          <TimeEntryForm edit={false} userId={userId} toggle={toggle} isOpen={modal} timer={{hours, minutes}}/>
-        </span>
+        <Button onClick={handleStop} color="danger" className="ml-1 p-1 align-middle">
+          Stop
+        </Button>
+        <TimeEntryForm edit={false} userId={userId} toggle={toggle} isOpen={modal} timer={{hours, minutes}}/>
       </div>
   );
 };

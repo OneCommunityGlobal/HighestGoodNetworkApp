@@ -157,18 +157,16 @@ class TimelogPage extends Component {
                                         </CardSubtitle>
                                     </Col>
                                     <Col md={5}>
-                                        <span>
-                                            {isOwner ? 
-                                                (<Button color="success" className="float-right" onClick={ this.toggle }> 
-                                                    Add Time Entry
-                                                </Button>) 
-                                            : isAdmin && 
-                                                (<Button color="warning" className="float-right" onClick={ this.toggle }>
-                                                    Add Time Entry {!isOwner && `for ${fullName}`}
-                                                </Button>)}
-                                            <TimeEntryForm userId={this.props.match.params.userId} edit={false} 
-                                                toggle={this.toggle} isOpen={this.state.modal}/>
-                                        </span>
+                                        {isOwner ? 
+                                            (<Button color="success" className="float-right" onClick={ this.toggle }> 
+                                                Add Time Entry
+                                            </Button>) 
+                                        : isAdmin && 
+                                            (<Button color="warning" className="float-right" onClick={ this.toggle }>
+                                                Add Time Entry {!isOwner && `for ${fullName}`}
+                                            </Button>)}
+                                        <TimeEntryForm userId={this.props.match.params.userId} edit={false} 
+                                            toggle={this.toggle} isOpen={this.state.modal}/>
                                     </Col>
                                 </Row>
                             </CardHeader>
