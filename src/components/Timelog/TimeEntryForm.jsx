@@ -97,7 +97,7 @@ const TimeEntryForm = ({userId, edit, data}) => {
         timeEntry.dateOfWork = inputs.dateOfWork;
 
         timeEntry.projectId = inputs.projectId;
-        timeEntry.notes = `<p>${inputs.notes}</p>`;
+        timeEntry.notes = inputs.notes;
         timeEntry.isTangible = inputs.isTangible.toString();
     
         const hours = inputs.hours === "" ? "0" : inputs.hours;
