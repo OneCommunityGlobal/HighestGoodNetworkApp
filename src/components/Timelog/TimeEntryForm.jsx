@@ -16,11 +16,9 @@ import {
 import { postTimeEntry, editTimeEntry } from '../../actions/timeEntries' 
 import moment from "moment"
 import _ from "lodash"
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faEdit } from '@fortawesome/free-regular-svg-icons'
 import { Editor } from '@tinymce/tinymce-react';
 
-const TimeEntryForm = ({userId, edit, data}) => {
+const TimeEntryForm = ({userId, edit, data, isOpen, toggle}) => {
     const initialState = {
         dateOfWork: moment().format("YYYY-MM-DD"),
         hours: 0,
@@ -31,7 +29,6 @@ const TimeEntryForm = ({userId, edit, data}) => {
     }
 
     const [inputs, setInputs] = useState(edit ? data : initialState);
-    const [isOpen, setOpen] = useState(false);
     const [errors, setErrors] = useState({});
     const dispatch = useDispatch();
 
@@ -40,8 +37,6 @@ const TimeEntryForm = ({userId, edit, data}) => {
         <option value={project.projectId} key={project.projectId}> {project.projectName} </option>
     )
     projectOptions.unshift(<option value="" key="" disabled>Select Project</option>);
-
-    const toggle = () => setOpen(isOpen => !isOpen);
     
     const validateForm = () => {
         const result = {};
@@ -135,103 +130,91 @@ const TimeEntryForm = ({userId, edit, data}) => {
         setErrors(errors => ({}));
     }
 
-    const isOwner = useSelector(state => state.auth.user.userid) === userId;
-    const name = useSelector(state => state.userProfile.firstName) + " " + 
-                    useSelector(state => state.userProfile.lastName);
     const isAdmin = useSelector(state => state.auth.user.role) === "Administrator";
 
     return (
-        <span>
-            {edit ? <FontAwesomeIcon icon={faEdit} size="lg" className="mr-3 text-primary" onClick={ toggle }/>
-            : isOwner ? (<Button color="success" className="float-right" onClick={ toggle }>
-                Add Time Entry
-            </Button>) : 
-            (<Button color="warning" className="float-right" onClick={ toggle }>
-                Add Time Entry {!isOwner && `for ${name}`}
-            </Button>)}
-            <Modal isOpen={isOpen} toggle={ toggle }>
-                <ModalHeader toggle={toggle}>
-                    { edit ? "Edit " : "Add " }Time Entry
-                </ModalHeader>
-                <ModalBody>
-                    <Form>
-                        <FormGroup>
-                            <Label for="dateOfWork">Date</Label>
-                            {isAdmin ? 
-                                <Input type="date" name="dateOfWork" id="dateOfWork"
-                                    value={inputs.dateOfWork} onChange={handleInputChange}/> :
-                                <Input type="date" name="dateOfWork" id="dateOfWork" 
-                                    value={inputs.dateOfWork} disabled/>
+        <Modal isOpen={isOpen} toggle={ toggle }>
+            <ModalHeader toggle={toggle}>
+                { edit ? "Edit " : "Add " }Time Entry
+            </ModalHeader>
+            <ModalBody>
+                <Form>
+                    <FormGroup>
+                        <Label for="dateOfWork">Date</Label>
+                        {isAdmin ? 
+                            <Input type="date" name="dateOfWork" id="dateOfWork"
+                                value={inputs.dateOfWork} onChange={handleInputChange}/> :
+                            <Input type="date" name="dateOfWork" id="dateOfWork" 
+                                value={inputs.dateOfWork} disabled/>
+                        }
+                        {'dateOfWork' in errors && <div className="text-danger"><small>{errors.dateOfWork}</small></div>}
+                    </FormGroup>
+                    <FormGroup>
+                        <Label for="timeSpent">Time (HH:MM)</Label>
+                        <Row form>
+                            <Col>
+                                <Input type="number" name="hours" id="hours" placeholder="Hours" 
+                                    value={inputs.hours} onChange={handleInputChange}/>
+                            </Col>
+                            <Col>
+                                <Input type="number" name="minutes" id="minutes" placeholder="Minutes" 
+                                    value={inputs.minutes} onChange={handleInputChange}/>
+                            </Col>
+                        </Row>
+                        {'time' in errors && <div className="text-danger"><small>{errors.time}</small></div>}
+                    </FormGroup>
+                    <FormGroup>
+                        <Label for="project">Project</Label>
+                        <Input type="select" name="projectId" id="projectId" 
+                            value={inputs.projectId} onChange={handleInputChange}>
+                            {projectOptions}
+                        </Input>
+                        {'projectId' in errors && <div className="text-danger"><small>{errors.projectId}</small></div>}
+                    </FormGroup>
+                    <FormGroup>
+                        <Label for="notes">Notes</Label>
+                        <Editor
+                            init={{
+                                menubar: false,
+                                placeholder: "Description and reference link",
+                                plugins: 'advlist autolink autoresize lists link charmap table paste help wordcount',
+                                toolbar:
+                                    'bold italic underline link removeformat | bullist numlist outdent indent |\
+                                    styleselect fontsizeselect | table| strikethrough forecolor backcolor |\
+                                    subscript superscript charmap  | help',
+                                branding: false,
+                                min_height: 180,
+                                max_height: 300,
+                                autoresize_bottom_margin: 1
+                                }}
+                            id="notes"
+                            name = "notes"      
+                            className={`form-control`}
+                            value={inputs.notes}
+                            onEditorChange={handleEditorChange}
+                        />  
+                        {'notes' in errors && <div className="text-danger"><small>{errors.notes}</small></div>}
+                    </FormGroup>
+                    <FormGroup check>
+                        <Label check>
+                            {(isAdmin || !edit) ? 
+                                <Input type="checkbox" name="isTangible" checked={inputs.isTangible} 
+                                    onChange={handleCheckboxChange}/> : 
+                                <Input type="checkbox" name="isTangible" checked={inputs.isTangible} disabled />   
                             }
-                            {'dateOfWork' in errors && <div className="text-danger"><small>{errors.dateOfWork}</small></div>}
-                        </FormGroup>
-                        <FormGroup>
-                            <Label for="timeSpent">Time (HH:MM)</Label>
-                            <Row form>
-                                <Col>
-                                    <Input type="number" name="hours" id="hours" placeholder="Hours" 
-                                        value={inputs.hours} onChange={handleInputChange}/>
-                                </Col>
-                                <Col>
-                                    <Input type="number" name="minutes" id="minutes" placeholder="Minutes" 
-                                        value={inputs.minutes} onChange={handleInputChange}/>
-                                </Col>
-                            </Row>
-                            {'time' in errors && <div className="text-danger"><small>{errors.time}</small></div>}
-                        </FormGroup>
-                        <FormGroup>
-                            <Label for="project">Project</Label>
-                            <Input type="select" name="projectId" id="projectId" 
-                                value={inputs.projectId} onChange={handleInputChange}>
-                                {projectOptions}
-                            </Input>
-                            {'projectId' in errors && <div className="text-danger"><small>{errors.projectId}</small></div>}
-                        </FormGroup>
-                        <FormGroup>
-                            <Label for="notes">Notes</Label>
-                            <Editor
-                                init={{
-                                    menubar: false,
-                                    placeholder: "Description and reference link",
-                                    plugins: 'advlist autolink autoresize lists link charmap table paste help wordcount',
-                                    toolbar:
-                                      'bold italic underline link removeformat | bullist numlist outdent indent |\
-                                       styleselect fontsizeselect | table| strikethrough forecolor backcolor |\
-                                       subscript superscript charmap  | help',
-                                    branding: false,
-                                    min_height: 180,
-                                    max_height: 300,
-                                    autoresize_bottom_margin: 1
-                                  }}
-                                id="notes"
-                                name = "notes"      
-                                className={`form-control`}
-                                value={inputs.notes}
-                                onEditorChange={handleEditorChange}
-                            />  
-                            {'notes' in errors && <div className="text-danger"><small>{errors.notes}</small></div>}
-                        </FormGroup>
-                        <FormGroup check>
-                            <Label check>
-                                {(isAdmin || !edit) ? 
-                                    <Input type="checkbox" name="isTangible" checked={inputs.isTangible} 
-                                        onChange={handleCheckboxChange}/> : 
-                                    <Input type="checkbox" name="isTangible" checked={inputs.isTangible} disabled />   
-                                }
-                                {' '}Tangible
-                            </Label>
-                        </FormGroup>
-                    </Form>
-                </ModalBody>
-                <ModalFooter>
-                    <small className="mr-auto text-secondary">* All the fields are required</small>
-                    <Button onClick={clearForm} color="danger"> Clear Form </Button>
-                    <Button onClick={handleSubmit} color="primary"> 
-                        { edit ? "Save" : "Submit" } 
-                    </Button>
-                </ModalFooter>
-            </Modal>
-        </span>
+                            {' '}Tangible
+                        </Label>
+                    </FormGroup>
+                </Form>
+            </ModalBody>
+            <ModalFooter>
+                <small className="mr-auto text-secondary">* All the fields are required</small>
+                <Button onClick={clearForm} color="danger"> Clear Form </Button>
+                <Button onClick={handleSubmit} color="primary"> 
+                    { edit ? "Save" : "Submit" } 
+                </Button>
+            </ModalFooter>
+        </Modal>
     )
 }
 

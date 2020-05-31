@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import {
     Card,
     Row,
@@ -11,8 +11,13 @@ import moment from "moment";
 import "./Timelog.css";
 import TimeEntryForm from './TimeEntryForm';
 import DeleteModal from './DeleteModal';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faEdit } from '@fortawesome/free-regular-svg-icons'
 
 const TimeEntry = ({data, displayYear}) => {
+    const [ modalOpen, setModalOpen ] = useState(false);
+    const toggle = () => setModalOpen(modalOpen => !modalOpen);
+
     const dateOfWork = moment(data.dateOfWork);
     const { user } = useSelector(state => state.auth);
     const isOwner = data.personId === user.userid;
@@ -57,7 +62,10 @@ const TimeEntry = ({data, displayYear}) => {
                     {ReactHtmlParser(data.notes)}
                     <div className="buttons">
                         {( isAdmin || (!data.isTangible && isOwner && isSameDay) ) && 
-                            <TimeEntryForm edit={true} userId={data.personId} data={data}/>
+                            <span> 
+                                <FontAwesomeIcon icon={faEdit} size="lg" className="mr-3 text-primary" onClick={ toggle }/>
+                                <TimeEntryForm edit={true} userId={data.personId} data={data} toggle={toggle} isOpen={modalOpen}/>
+                            </span>
                         }
                         {( isAdmin || (!data.isTangible && isOwner && isSameDay) ) && 
                             <DeleteModal timeEntry={data}/>

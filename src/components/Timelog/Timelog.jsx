@@ -132,6 +132,7 @@ class TimelogPage extends Component {
 
         const isAdmin = this.props.auth.user.role === "Administrator";
         const isOwner = this.props.auth.user.userid === this.props.match.params.userId;
+        const fullName = this.props.userProfile.firstName + " " + this.props.userProfile.lastName;
 
         const { projects } = this.props.userProjects;
         const projectOptions = projects.map(project => 
@@ -149,16 +150,25 @@ class TimelogPage extends Component {
                                 <Row>
                                     <Col md={7}>
                                         <CardTitle tag="h4">
-                                        Time Entries
+                                            Time Entries
                                         </CardTitle>
                                         <CardSubtitle tag="h6" className="text-muted">
-                                        Viewing time entries logged in last 3 weeks
+                                            Viewing time entries logged in last 3 weeks
                                         </CardSubtitle>
                                     </Col>
                                     <Col md={5}>
-                                        {(isAdmin || isOwner) && 
-                                            <TimeEntryForm userId={this.props.match.params.userId} edit={false}/>
-                                        }
+                                        <span>
+                                            {isOwner ? 
+                                                (<Button color="success" className="float-right" onClick={ this.toggle }> 
+                                                    Add Time Entry
+                                                </Button>) 
+                                            : isAdmin && 
+                                                (<Button color="warning" className="float-right" onClick={ this.toggle }>
+                                                    Add Time Entry {!isOwner && `for ${fullName}`}
+                                                </Button>)}
+                                            <TimeEntryForm userId={this.props.match.params.userId} edit={false} 
+                                                toggle={this.toggle} isOpen={this.state.modal}/>
+                                        </span>
                                     </Col>
                                 </Row>
                             </CardHeader>
