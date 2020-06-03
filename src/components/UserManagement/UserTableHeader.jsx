@@ -8,13 +8,13 @@ const UserTableHeader = React.memo(() => {
 
   return (
     <tr>
-      <th scope="col" id="user_active">{ACTIVE}</th>
-      <th scope="col" id="user_first">{FIRST_NAME}</th>
-      <th scope="col" id="user_last_name">{LAST_NAME}</th>
-      <th scope="col" id="user_role">{ROLE}</th>
-      <th scope="col" id="user_email">{EMAIL}</th>
-      <th scope="col" id="user_hrs">{WEEKLY_COMMITTED_HRS}</th>
-      <th scope="col" id="user__delete"></th>
+      <th scope="col" id="usermanagement_active">{ACTIVE}</th>
+      <th scope="col" id="usermanagement_first">{FIRST_NAME}</th>
+      <th scope="col" id="usermanagement_last_name">{LAST_NAME}</th>
+      <th scope="col" id="usermanagement_role">{ROLE}</th>
+      <th scope="col" id="usermanagement_email">{EMAIL}</th>
+      <th scope="col" id="usermanagement_hrs">{WEEKLY_COMMITTED_HRS}</th>
+      <th scope="col" id="usermanagement_delete"></th>
     </tr>
   )
 });

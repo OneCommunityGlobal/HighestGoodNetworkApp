@@ -6,8 +6,8 @@ import { DELETE } from '../../languages/en/ui'
  */
 const UserTableData = React.memo((props) => {
   return (
-    <tr className="projects__tr" id={"tr_user_" + props.index}>
-      <td className='projects__active--input'>
+    <tr className="usermanagement__tr" id={"tr_user_" + props.index}>
+      <td className='usermanagement__active--input'>
         <ActiveCell isActive={props.isActive}
           key={"active_cell" + props.index}
           index={props.index} />

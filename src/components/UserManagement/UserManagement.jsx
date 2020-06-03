@@ -12,6 +12,8 @@ import UserTableHeader from './UserTableHeader'
 import UserTableData from './UserTableData'
 import UserTableSearchHeader from './UserTableSearchHeader'
 import UserTableFooter from './UserTableFooter'
+import './usermanagement.css'
+import UserSearchPanel from './UserSearchPanel'
 
 class UserManagement extends React.PureComponent {
   filteredUserDataCount = 0;
@@ -24,8 +26,10 @@ class UserManagement extends React.PureComponent {
       roleSearchText: '',
       weeklyHrsSearchText: '',
       emailSearchText: '',
+      searchText: '',
       selectedPage: 1,
-      pageSize: 10
+      pageSize: 10,
+      isActive: undefined
     };
   }
 
@@ -43,6 +47,9 @@ class UserManagement extends React.PureComponent {
       {fetching ?
         <Loading /> :
         <React.Fragment>
+          <UserSearchPanel
+            onSearch={this.onSearch}
+            onActiveFiter={this.onActiveFiter} />
           <table className="table table-bordered table-responsive-sm">
             <thead>
               <UserTableHeader />
@@ -76,6 +83,7 @@ class UserManagement extends React.PureComponent {
 
     if (userProfiles && userProfiles.length > 0) {
       let usersSearchData = this.filteredUserList(userProfiles);
+      debugger;
       this.filteredUserDataCount = usersSearchData.length;
       /* Builiding the table body for users users based on the page size and selected page number and returns 
         the rows for currently selected page */
@@ -98,11 +106,20 @@ class UserManagement extends React.PureComponent {
   filteredUserList = (userProfiles) => {
     let filteredList = userProfiles.filter((user) => {
       //Applying the search filters before creating each table data element
-      if (user.firstName.toLowerCase().indexOf(this.state.firstNameSearchText.toLowerCase()) > -1
+      if ((user.firstName.toLowerCase().indexOf(this.state.firstNameSearchText.toLowerCase()) > -1
         && user.lastName.toLowerCase().indexOf(this.state.lastNameSearchText.toLowerCase()) > -1
         && user.role.toLowerCase().indexOf(this.state.roleSearchText.toLowerCase()) > -1
         && user.email.toLowerCase().indexOf(this.state.emailSearchText.toLowerCase()) > -1
-        && (this.state.weeklyHrsSearchText === '' || user.weeklyComittedHours == this.state.weeklyHrsSearchText)
+        && (this.state.weeklyHrsSearchText === ''
+          || user.weeklyComittedHours == this.state.weeklyHrsSearchText)
+        && (this.state.isActive === undefined || user.isActive === this.state.isActive)
+        && this.state.searchText === '')
+        || (this.state.searchText !== '' &&
+          (user.firstName.toLowerCase().indexOf(this.state.searchText.toLowerCase()) > -1
+            || user.lastName.toLowerCase().indexOf(this.state.searchText.toLowerCase()) > -1
+            || user.role.toLowerCase().indexOf(this.state.searchText.toLowerCase()) > -1
+            || user.email.toLowerCase().indexOf(this.state.searchText.toLowerCase()) > -1
+            || user.weeklyComittedHours == this.state.searchText))
       ) {
         return user;
       }
@@ -171,6 +188,30 @@ class UserManagement extends React.PureComponent {
   onSelectPageSize = (pageSize) => {
     this.setState({
       pageSize: pageSize
+    })
+  }
+
+  /**
+   * callback for search
+   */
+  onSearch = (searchText) => {
+    this.setState({
+      searchText: searchText
+    })
+  }
+
+  /**
+   * call back for active/inactive search filter
+   */
+  onActiveFiter = (value) => {
+    let active = undefined;
+    if (value === "active") {
+      active = true;
+    } else if (value === "inactive") {
+      active = false;
+    }
+    this.setState({
+      isActive: active
     })
   }
 }

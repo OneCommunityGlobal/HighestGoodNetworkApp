@@ -86,6 +86,8 @@ const PageLinks = React.memo((props) => {
   let pageLinks = [];
   let totalPages = parseInt(props.datacount / props.pageSize) + 1;
 
+  /* Start page will be 1 for the first time,  
+   and it will change based on the selected page and total page so that we can show the lin for 5 . */
   let startPage = (totalPages <= NUMBER_OF_PAGE_LINK) ? 1 :
     (totalPages - props.selectedPage < NUMBER_OF_PAGE_LINK ?
       (totalPages - (NUMBER_OF_PAGE_LINK - 1)) :
@@ -93,7 +95,7 @@ const PageLinks = React.memo((props) => {
 
   let pageCounter = startPage;
 
-  while (pageCounter < (startPage + NUMBER_OF_PAGE_LINK)) {
+  while (pageCounter < (startPage + (totalPages < NUMBER_OF_PAGE_LINK ? totalPages : NUMBER_OF_PAGE_LINK))) {
     pageLinks.push(<PageLinkItem pageNo={pageCounter} onPageSelect={onPageSelect}
       key={'page-link-' + (pageCounter)} isSelected={props.selectedPage === pageCounter} />)
 
@@ -102,6 +104,9 @@ const PageLinks = React.memo((props) => {
   return pageLinks;
 });
 
+/**
+ * Single page lin item 
+ */
 const PageLinkItem = React.memo((props) => {
   return <a href="javascript:void(0)"
     style={{ marginLeft: "10px", textAlign: "center", fontWeight: (props.isSelected ? "bold" : "normal") }}
