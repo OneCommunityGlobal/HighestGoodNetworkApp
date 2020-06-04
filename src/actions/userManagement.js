@@ -16,7 +16,6 @@ export const getAllUserProfile = () => {
     userProfilesPromise.then(res => {
       dispatch(userProfilesFetchComplete(res.data))
     }).catch(err => {
-      console.log("Error Fetching User Profiles - ", err);
       dispatch(userProfilesFetchError());
     })
   }
