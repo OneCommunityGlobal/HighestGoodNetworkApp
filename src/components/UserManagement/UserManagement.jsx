@@ -14,6 +14,7 @@ import UserTableSearchHeader from './UserTableSearchHeader'
 import UserTableFooter from './UserTableFooter'
 import './usermanagement.css'
 import UserSearchPanel from './UserSearchPanel'
+import NewUserPopup from './NewUserPopup'
 
 class UserManagement extends React.PureComponent {
   filteredUserDataCount = 0;
@@ -47,9 +48,13 @@ class UserManagement extends React.PureComponent {
       {fetching ?
         <Loading /> :
         <React.Fragment>
+          <NewUserPopup
+            open={this.state.newUserPoupOPen}
+            onUserPopupClose={this.onUserPopupClose} />
           <UserSearchPanel
             onSearch={this.onSearch}
-            onActiveFiter={this.onActiveFiter} />
+            onActiveFiter={this.onActiveFiter}
+            onNewUserClick={this.onNewUserClick} />
           <table className="table table-bordered table-responsive-sm">
             <thead>
               <UserTableHeader />
@@ -83,7 +88,6 @@ class UserManagement extends React.PureComponent {
 
     if (userProfiles && userProfiles.length > 0) {
       let usersSearchData = this.filteredUserList(userProfiles);
-      debugger;
       this.filteredUserDataCount = usersSearchData.length;
       /* Builiding the table body for users users based on the page size and selected page number and returns 
         the rows for currently selected page */
@@ -212,6 +216,24 @@ class UserManagement extends React.PureComponent {
     }
     this.setState({
       isActive: active
+    })
+  }
+
+  /**
+   * New user button click
+   */
+  onNewUserClick = () => {
+    this.setState({
+      newUserPoupOPen: true
+    })
+  }
+
+  /**
+   * New user popup close button click
+   */
+  onUserPopupClose = () => {
+    this.setState({
+      newUserPoupOPen: false
     })
   }
 }

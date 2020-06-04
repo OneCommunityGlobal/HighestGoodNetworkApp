@@ -3,7 +3,8 @@ import React from 'react'
 const UserSearchPanel = (props) => {
   return (
     <div className="input-group" id="new_usermanagement">
-      <button type="button" className="btn btn-info">Create New User</button>
+      <button type="button" className="btn btn-info"
+        onClick={(e) => { props.onNewUserClick() }}>Create New User</button>
       <div className="input-group-prepend" style={{ marginLeft: "10px" }}>
         <span className="input-group-text">Search</span>
       </div>
