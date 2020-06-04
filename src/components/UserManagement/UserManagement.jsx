@@ -27,7 +27,7 @@ class UserManagement extends React.PureComponent {
       roleSearchText: '',
       weeklyHrsSearchText: '',
       emailSearchText: '',
-      searchText: '',
+      wildCardSearchText: '',
       selectedPage: 1,
       pageSize: 10,
       isActive: undefined
@@ -117,13 +117,14 @@ class UserManagement extends React.PureComponent {
         && (this.state.weeklyHrsSearchText === ''
           || user.weeklyComittedHours == this.state.weeklyHrsSearchText)
         && (this.state.isActive === undefined || user.isActive === this.state.isActive)
-        && this.state.searchText === '')
-        || (this.state.searchText !== '' &&
-          (user.firstName.toLowerCase().indexOf(this.state.searchText.toLowerCase()) > -1
-            || user.lastName.toLowerCase().indexOf(this.state.searchText.toLowerCase()) > -1
-            || user.role.toLowerCase().indexOf(this.state.searchText.toLowerCase()) > -1
-            || user.email.toLowerCase().indexOf(this.state.searchText.toLowerCase()) > -1
-            || user.weeklyComittedHours == this.state.searchText))
+        && this.state.wildCardSearchText === '')
+        //the wild card serach, the search text can be match with any item
+        || (this.state.wildCardSearchText !== '' &&
+          (user.firstName.toLowerCase().indexOf(this.state.wildCardSearchText.toLowerCase()) > -1
+            || user.lastName.toLowerCase().indexOf(this.state.wildCardSearchText.toLowerCase()) > -1
+            || user.role.toLowerCase().indexOf(this.state.wildCardSearchText.toLowerCase()) > -1
+            || user.email.toLowerCase().indexOf(this.state.wildCardSearchText.toLowerCase()) > -1
+            || user.weeklyComittedHours == this.state.wildCardSearchText))
       ) {
         return user;
       }

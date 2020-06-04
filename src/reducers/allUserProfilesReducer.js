@@ -7,7 +7,6 @@ const userProfilesInitial = {
   status: 404
 }
 
-
 export const updateObject = (oldObject, updatedProperties) => {
   return {
     ...oldObject,
@@ -22,8 +21,7 @@ export const allUserProfilesReducer = (userProfiles = userProfilesInitial, actio
       return { ...userProfiles, fetching: true, status: "200" }
 
     case types.FETCH_USER_PROFILES_ERROR:
-      console.log("Reducers error", action.payload);
-      return { ...userProfiles, fetching: false, status: action.payload }
+      return { ...userProfiles, fetching: false, status: "404" }
 
     case types.RECEIVE_USER_PROFILES:
       return updateObject(userProfiles, {

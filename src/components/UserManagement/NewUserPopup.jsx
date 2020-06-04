@@ -1,6 +1,9 @@
 import React from 'react'
 import UserProfile from '../UserProfile'
 
+/**
+ * Modal popup to show the user profile in create mode
+ */
 const NewUserPopup = React.memo((props) => {
   return <div id="newUserModal" role="dialog" className="modal"
     style={{ display: props.open ? "block" : "none" }} aria-hidden="true">

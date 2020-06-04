@@ -68,8 +68,6 @@ thead{
   color:#dee2e6
 }
 
-
-
 .isDisabled{
   opacity: 0;
   transition: opacity 10ms;
