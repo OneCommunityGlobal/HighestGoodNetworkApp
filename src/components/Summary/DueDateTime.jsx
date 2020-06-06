@@ -13,7 +13,7 @@ function DueDateTime({ dueDate }) {
           {' '}
           {dueDate.format('YYYY-MM-DD')}
           {' '}
-          at 23:59
+          at 23:59:59
         </div>
         <CountdownTimer date={dueDate} />
       </div>

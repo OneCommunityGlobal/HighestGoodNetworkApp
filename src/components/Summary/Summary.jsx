@@ -182,7 +182,7 @@ class Summary extends Component {
                 <Form>
                   <FormGroup>
                     <Label for="summaryContent">
-                      Enter your weekly summary below weekly below. <SummaryContentTooltip />
+                      Enter your weekly summary below. <SummaryContentTooltip />
                     </Label>
                     <Editor
                       init={{
