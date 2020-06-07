@@ -27,10 +27,6 @@ const WBSTasks = (props) => {
   }, [wbsId]);
 
   const selectTaskFunc = (id) => {
-    if (selectedId !== null) {
-      document.getElementById(selectedId).style.background = 'white';
-      document.getElementById(`controller_${selectedId}`).style.display = 'none';
-    }
     setSelectedId(id);
   }
 
@@ -109,6 +105,7 @@ const WBSTasks = (props) => {
 
   const deleteTask = (taskId) => {
     props.deleteTask(taskId);
+    setTimeout(() => { props.fetchAllTasks(wbsId); }, 4000);
   }
 
 
@@ -120,7 +117,7 @@ const WBSTasks = (props) => {
 
       <div className='container' >
 
-        <AddTaskModal parentNum={null} taskId={null} wbsId={wbsId} />
+        <AddTaskModal parentNum={null} taskId={null} wbsId={wbsId} projectId={projectId} />
 
 
         <table className="table table-bordered">

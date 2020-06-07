@@ -14,9 +14,18 @@ const Task = (props) => {
   let isOpen = true;
 
 
+  let controllerToggle = true;
   const selectTask = (id) => {
-    document.getElementById(id).style.background = '#effff2';
-    document.getElementById(`controller_${id}`).style.display = 'contents';
+    if (controllerToggle) {
+      document.getElementById(id).style.background = '#effff2';
+      document.getElementById(`controller_${id}`).style.display = 'contents';
+      controllerToggle = false;
+    } else {
+      document.getElementById(id).style.background = 'white';
+      document.getElementById(`controller_${id}`).style.display = '';
+      controllerToggle = true;
+    }
+
     props.selectTask(id);
   }
 
@@ -121,27 +130,33 @@ const Task = (props) => {
             props.resources.map((elm, i) => {
               if (i < 2) {
 
+                try {
+                  if (!elm.profilePic) {
+                    return (
+                      <a data-tip={elm.name} className="name"
+                        href={`/userprofile/${elm.userID}`} target='_blank'><span className="dot">{elm.name.substring(0, 2)}</span>
+                      </a>
 
-                if (!elm.profilePic) {
+                    )
+
+                  }
                   return (
                     <a data-tip={elm.name} className="name"
-                      href={`/userprofile/${elm.userID}`} target='_blank'><span className="dot">{elm.name.substring(0, 2)}</span>
+                      href={`/userprofile/${elm.userID}`} target='_blank'><img className='img-circle' src={elm.profilePic} />
                     </a>
-
                   )
 
+                } catch (err) {
+
                 }
-                return (
-                  <a data-tip={elm.name} className="name"
-                    href={`/userprofile/${elm.userID}`} target='_blank'><img className='img-circle' src={elm.profilePic} />
-                  </a>
-                )
+
+
               }
             })
           }
 
           {
-            props.resources.length > 2 ? <a className="name resourceMoreToggle" onClick={() => toggleMoreResources(`res-${props.id}`)}><span className="dot">{props.resources.length}+</span></a> : null
+            props.resources.length > 2 ? <a className="name resourceMoreToggle" onClick={() => toggleMoreResources(`res-${props.id}`)}><span className="dot">{props.resources.length - 2}+</span></a> : null
           }
 
           <div id={`res-${props.id}`} className="resourceMore">
@@ -197,7 +212,7 @@ const Task = (props) => {
 
       <tr className='wbsTaskController' id={`controller_${props.id}`}>
         <td colSpan={13} className='controlTd'>
-          <AddTaskModal parentNum={props.num} taskId={props.id} wbsId={props.wbsId} parentId1={props.parentId1} parentId2={props.parentId2} parentId3={props.parentId3} level={props.level} />
+          <AddTaskModal parentNum={props.num} taskId={props.id} projectId={props.projectId} wbsId={props.wbsId} parentId1={props.parentId1} parentId2={props.parentId2} parentId3={props.parentId3} level={props.level} />
           <Button color="info" size="sm" className='controlBtn'>Edit</Button>
 
           <Button color="danger" size="sm" className='controlBtn controlBtn_remove' onClick={() => deleteTask(props.id)}>Remove</Button>

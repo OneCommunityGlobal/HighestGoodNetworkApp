@@ -3,6 +3,7 @@ import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import { connect } from 'react-redux'
 import ReactTooltip from 'react-tooltip'
 import { fetchAllMembers } from './../../../../../actions/projectMembers'
+import { fetchAllTasks } from './../../../../../actions/task'
 import { addNewTask } from './../../../../../actions/task';
 import { DUE_DATE_MUST_GREATER_THAN_START_DATE } from './../../../../../languages/en/messages';
 import DayPickerInput from 'react-day-picker/DayPickerInput';
@@ -12,6 +13,7 @@ import dateFnsFormat from 'date-fns/format';
 const AddTaskModal = (props) => {
   const tasks = props.tasks.taskItems;
   const { members } = props.projectMembers;
+  console.log('proid', props.projectId);
   let foundedMembers = [];
 
   // modal
@@ -243,6 +245,8 @@ const AddTaskModal = (props) => {
 
 
     props.addNewTask(newTask, props.wbsId);
+    setTimeout(() => { props.fetchAllTasks(props.wbsId); }, 4000);
+
     if (props.tasks.error === "none") {
       toggle();
       getNewNum();
@@ -308,6 +312,7 @@ const AddTaskModal = (props) => {
                       onChange={(e) => setMemberName(e.target.value)}
                       onKeyPress={(e) => setMemberName(e.target.value)}
                       onKeyPress={findMembers}
+                      onFocus={() => props.fetchAllMembers(props.projectId)}
 
                     />
                     <button
@@ -355,38 +360,38 @@ const AddTaskModal = (props) => {
                 </td>
               </tr>
               <tr>
-                <td scope="col" data-tip="Hours-Best">Hours-Best</td>
-                <td scope="col" data-tip="Hours-Best">
+                <td scope="col" data-tip="Hours - Best-case">Hours - Best-case</td>
+                <td scope="col" data-tip="Hours - Best-case">
                   <input type='number' min='0' max='500' value={hoursBest}
                     onChange={(e) => setHoursBest(e.target.value)}
                     onBlur={() => calHoursEstimate()}
                   />
                   <div className='warning'>
-                    {hoursWarning ? "Hours-Best < Hours-Most < Hours-Worst" : ''}
+                    {hoursWarning ? "Hours - Best-case < Hours - Most-case < Hours - Most-case" : ''}
                   </div>
                 </td>
               </tr>
               <tr>
-                <td scope="col" data-tip="Hours-Worst">Hours-Worst</td>
-                <td scope="col" data-tip="Hours-Worst">
+                <td scope="col" data-tip="Hours - Worst-case">Hours - Worst-case</td>
+                <td scope="col" data-tip="Hours - Worst-case">
                   <input type='number' min={hoursBest} max='500' value={hoursWorst}
                     onChange={(e) => setHoursWorst(e.target.value)}
                     onBlur={() => calHoursEstimate("hoursWorst")}
                   />
                   <div className='warning'>
-                    {hoursWarning ? "Hours-Best < Hours-Most < Hours-Worst" : ''}
+                    {hoursWarning ? "Hours - Best-case < Hours - Most-case < Hours - Most-case" : ''}
                   </div>
                 </td>
               </tr>
               <tr>
-                <td scope="col" data-tip="Hours-Most">Hours-Most</td>
-                <td scope="col" data-tip="Hours-Most">
+                <td scope="col" data-tip="Hours - Most-case">Hours - Most-case</td>
+                <td scope="col" data-tip="Hours - Most-case">
                   <input type='number' min='0' max='500' value={hoursMost}
                     onChange={(e) => setHoursMost(e.target.value)}
                     onBlur={() => calHoursEstimate("hoursMost")}
                   />
                   <div className='warning'>
-                    {hoursWarning ? "Hours-Best < Hours-Most < Hours-Worst" : ''}
+                    {hoursWarning ? "Hours - Best-case < Hours - Most-case < Hours - Most-case" : ''}
                   </div>
                 </td>
               </tr>
@@ -458,7 +463,7 @@ const AddTaskModal = (props) => {
 
         </ModalBody>
         <ModalFooter>
-          <Button color="primary" onClick={toggle} onClick={addNewTask}>Save</Button>{' '}
+          {taskName !== '' && startedDate !== '' && dueDate !== '' ? <Button color="primary" onClick={toggle} onClick={addNewTask}>Save</Button> : null}
           <Button color="secondary" onClick={toggle}>Cancel</Button>
         </ModalFooter>
       </Modal >
@@ -472,5 +477,5 @@ const AddTaskModal = (props) => {
 
 const mapStateToProps = state => { return state }
 export default connect(mapStateToProps, {
-  fetchAllMembers, addNewTask
+  fetchAllMembers, addNewTask, fetchAllTasks
 })(AddTaskModal);

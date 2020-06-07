@@ -58,7 +58,7 @@ export const fetchAllMembers = (projectId) => {
     await dispatch(setMemberStart());
     await dispatch(foundUsers([]));
     request.then(res => {
-      //console.log("RES", res);
+      console.log("RES", res);
       dispatch(setMembers(res.data));
     }).catch((err) => {
       //console.log("Error", err);
