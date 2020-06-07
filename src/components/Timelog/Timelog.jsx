@@ -22,6 +22,7 @@ import {
 import classnames from 'classnames';
 import { connect } from 'react-redux'
 import moment from "moment";
+import _ from "lodash";
 import { 
     getTimeEntriesForWeek, 
     getTimeEntriesForPeriod,
@@ -134,7 +135,10 @@ class TimelogPage extends Component {
         const isOwner = this.props.auth.user.userid === this.props.match.params.userId;
         const fullName = this.props.userProfile.firstName + " " + this.props.userProfile.lastName;
 
-        const { projects } = this.props.userProjects;
+        let projects = [];
+        if (!_.isEmpty(this.props.userProjects.projects)) {
+            projects = this.props.userProjects.projects;
+        }
         const projectOptions = projects.map(project => 
             <option value={project.projectId} key={project.projectId}> {project.projectName} </option>
         )

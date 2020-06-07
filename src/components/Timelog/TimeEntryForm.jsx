@@ -15,6 +15,7 @@ import {
     ModalFooter
 } from 'reactstrap'
 import { postTimeEntry, editTimeEntry } from '../../actions/timeEntries'
+import { getUserProjects } from '../../actions/userProjects'
 import { stopTimer } from '../../actions/timer'
 import moment from "moment"
 import _ from "lodash"
@@ -38,10 +39,21 @@ const TimeEntryForm = ({userId, edit, data, isOpen, toggle, timer}) => {
     const history = useHistory();
 
     useEffect(() => {
+        const fetchProjects = async(userId) => {
+            await dispatch(getUserProjects(userId));
+        };
+        fetchProjects(userId); 
+    }, [userId]);
+
+    useEffect(() => {
         setInputs({...inputs, ...timer})
     }, [timer]);
 
-    const { projects } = useSelector(state => state.userProjects);
+    const userProjects = useSelector(state => state.userProjects);
+    let projects = [];
+    if (!_.isEmpty(userProjects)) {
+        const { projects } = userProjects;
+    }
     const projectOptions = projects.map(project => 
         <option value={project.projectId} key={project.projectId}> {project.projectName} </option>
     )
