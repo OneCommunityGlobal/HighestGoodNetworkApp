@@ -118,13 +118,18 @@ const TimeEntryForm = ({userId, edit, data, isOpen, toggle, timer}) => {
             status = await dispatch(postTimeEntry(timeEntry));
         }
 
-        if (fromTimer && status === 200) {
-            const timerStatus = await dispatch(stopTimer(userId));
-            if (timerStatus === 200 || timerStatus === 201) {
-                setInputs(inputs => initialState);
-                toggle();
+        if (fromTimer) {
+            if (status === 200) {
+                const timerStatus = await dispatch(stopTimer(userId));
+                if (timerStatus === 200 || timerStatus === 201) {
+                    setInputs(inputs => initialState);
+                    toggle();
+                }
+                history.push(`/timelog/${userId}`);
             }
-            history.push(`/timelog/${userId}`);
+        } else {
+            setInputs(inputs => initialState);
+            toggle();
         }
     }
 
