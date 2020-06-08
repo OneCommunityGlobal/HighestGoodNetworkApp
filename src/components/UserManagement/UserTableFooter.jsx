@@ -109,7 +109,8 @@ const PageLinks = React.memo((props) => {
  */
 const PageLinkItem = React.memo((props) => {
   return <a href="#"
-    style={{ marginLeft: "10px", textAlign: "center", fontWeight: (props.isSelected ? "bold" : "normal") }}
+    style={{ fontWeight: (props.isSelected ? "bold" : "normal") }}
+    className="page-no-link "
     onClick={(e) => {
       e.preventDefault();
       props.onPageSelect(props.pageNo)
