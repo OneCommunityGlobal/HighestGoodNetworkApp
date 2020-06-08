@@ -52,7 +52,7 @@ class UserManagement extends React.PureComponent {
             open={this.state.newUserPoupOPen}
             onUserPopupClose={this.onUserPopupClose} />
           <UserSearchPanel
-            onSearch={this.onSearch}
+            onSearch={this.onWildCardSearch}
             onActiveFiter={this.onActiveFiter}
             onNewUserClick={this.onNewUserClick} />
           <table className="table table-bordered table-responsive-sm">
@@ -199,9 +199,9 @@ class UserManagement extends React.PureComponent {
   /**
    * callback for search
    */
-  onSearch = (searchText) => {
+  onWildCardSearch = (searchText) => {
     this.setState({
-      searchText: searchText
+      wildCardSearchText: searchText
     })
   }
 

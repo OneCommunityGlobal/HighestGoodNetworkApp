@@ -108,9 +108,12 @@ const PageLinks = React.memo((props) => {
  * Single page lin item 
  */
 const PageLinkItem = React.memo((props) => {
-  return <a href="javascript:void(0)"
+  return <a href="#"
     style={{ marginLeft: "10px", textAlign: "center", fontWeight: (props.isSelected ? "bold" : "normal") }}
-    onClick={() => { props.onPageSelect(props.pageNo) }} key={'page-' + props.pageNo}>{props.pageNo}</a>;
+    onClick={(e) => {
+      e.preventDefault();
+      props.onPageSelect(props.pageNo)
+    }} key={'page-' + props.pageNo}>{props.pageNo}</a>;
 });
 
 export default UserTableFooter;
