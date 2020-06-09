@@ -2,7 +2,7 @@
  * To turn the Modal WeeklySummary implementation on do the following.
  *  1 ) In the Dashboard.jsx make sure to add these:
  *
- *        import ModalSummary from '../WeeklySummary/ModalWeeklySummary';
+ *        import ModalWeeklySummary from '../WeeklySummary/ModalWeeklySummary';
  *
  *  2 ) Replace <WeeklySummary /> with this:
  *
