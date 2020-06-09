@@ -1,22 +1,22 @@
 /**
- * To turn the Modal Summary implementation on do the following.
+ * To turn the Modal WeeklySummary implementation on do the following.
  *  1 ) In the Dashboard.jsx make sure to add these:
  *
- *        import ModalSummary from '../Summary/ModalSummary';
+ *        import ModalSummary from '../WeeklySummary/ModalWeeklySummary';
  *
- *  2 ) Replace <Summary /> with this:
+ *  2 ) Replace <WeeklySummary /> with this:
  *
- *        <ModalSummary buttonLabel="Weekly Summary" className="weekly-summary-modal" />
+ *        <ModalWeeklySummary buttonLabel="Weekly Summary" className="weekly-summary-modal" />
  *
  */
 
 import React, { useState } from 'react';
 import {
-  Button, Modal, ModalHeader, ModalBody, ModalFooter,
+  Button, Modal, ModalHeader, ModalBody,
 } from 'reactstrap';
-import Summary from './Summary';
+import WeeklySummary from './WeeklySummary';
 
-const ModalSummary = (props) => {
+const ModalWeeklySummary = (props) => {
   const {
     buttonLabel,
     className,
@@ -32,11 +32,11 @@ const ModalSummary = (props) => {
       <Modal isOpen={modal} toggle={toggle} backdrop="static" size="lg" className={className}>
         <ModalHeader toggle={toggle}>Weekly Summary</ModalHeader>
         <ModalBody>
-          <Summary />
+          <WeeklySummary />
         </ModalBody>
       </Modal>
     </div>
   );
 };
 
-export default ModalSummary;
+export default ModalWeeklySummary;

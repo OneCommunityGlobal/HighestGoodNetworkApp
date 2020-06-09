@@ -5,7 +5,7 @@ import {
 } from 'reactstrap';
 import MonthlyEffort from '../MonthlyEffort';
 import Leaderboard from '../LeaderBoard';
-import Summary from '../Summary';
+import WeeklySummary from '../WeeklySummary';
 import '../../App.css';
 
 class Dashboard extends Component {
@@ -14,7 +14,7 @@ class Dashboard extends Component {
       <Container fluid>
         <Row>
           <Col sm={{ size: 9 }}>
-            <Summary />
+            <WeeklySummary />
             <Leaderboard />
           </Col>
           <Col sm={{ size: 3 }}>

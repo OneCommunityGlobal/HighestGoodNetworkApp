@@ -12,7 +12,7 @@ import {
   Button,
   TabContent, TabPane, Nav, NavItem, NavLink,
 } from 'reactstrap';
-import './Summary.css';
+import './WeeklySummary.css';
 import { connect } from 'react-redux';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faExternalLinkAlt } from '@fortawesome/free-solid-svg-icons';
@@ -23,10 +23,10 @@ import moment from 'moment';
 import 'moment-timezone';
 import Joi from 'joi';
 import { toast } from "react-toastify";
-import { SummaryContentTooltip, MediaURLTooltip } from './SummaryTooltips';
+import { WeeklySummaryContentTooltip, MediaURLTooltip } from './WeeklySummaryTooltips';
 import classnames from 'classnames';
 
-class Summary extends Component {
+class WeeklySummary extends Component {
 
   state = {
     formElements: { summary: '', mediaUrl: '', mediaConfirm: false },
@@ -120,16 +120,16 @@ class Summary extends Component {
     this.setState({ errors: errors || {} });
     if (errors) return;
 
-    let [weeklySummary, ...rest] = this.state.userProfile.weeklySummary;
-    let weeklySummaryNew = { ...weeklySummary, summary: this.state.formElements.summary, dueDate: this.state.dueDate };
+    let [currentWeeklySummary, ...rest] = this.state.userProfile.weeklySummaries;
+    let currentWeeklySummaryWithUpdates = { ...currentWeeklySummary, summary: this.state.formElements.summary, dueDate: this.state.dueDate };
 
-    const userProfileWithSummaryUpdates = {
+    const userProfileWithWeeklySummaryUpdates = {
       ...this.state.userProfile,
       mediaUrl: this.state.formElements.mediaUrl.trim(),
-      weeklySummary: [weeklySummaryNew, ...rest],
+      weeklySummaries: [currentWeeklySummaryWithUpdates, ...rest],
     }
 
-    const saveResult = await this.props.updateUserProfile(this.props.currentUser.userid, userProfileWithSummaryUpdates);
+    const saveResult = await this.props.updateUserProfile(this.props.currentUser.userid, userProfileWithWeeklySummaryUpdates);
 
     if (saveResult === 200) {
       toast.success("✔ The summary was saved!");
@@ -182,7 +182,7 @@ class Summary extends Component {
                 <Form>
                   <FormGroup>
                     <Label for="summaryContent">
-                      Enter your weekly summary below. <SummaryContentTooltip />
+                      Enter your weekly summary below. <WeeklySummaryContentTooltip />
                     </Label>
                     <Editor
                       init={{
@@ -263,7 +263,7 @@ class Summary extends Component {
                   init={{ menubar: false, plugins: 'autoresize', toolbar: '', branding: false, min_height: 180, max_height: 500, statusbar: false }}
                   id="summary-last-week"
                   name="summary-last-week"
-                  value={userProfile.weeklySummary && userProfile.weeklySummary[1] && userProfile.weeklySummary[1].summary}
+                  value={userProfile.weeklySummaries && userProfile.weeklySummaries[1] && userProfile.weeklySummaries[1].summary}
                   disabled
                 />
               </Col>
@@ -288,7 +288,7 @@ class Summary extends Component {
                   }}
                   id="summary-week-before-last"
                   name="summary-week-before-last"
-                  value={userProfile.weeklySummary && userProfile.weeklySummary[2] && userProfile.weeklySummary[2].summary}
+                  value={userProfile.weeklySummaries && userProfile.weeklySummaries[2] && userProfile.weeklySummaries[2].summary}
                   disabled
                 />
               </Col>
@@ -314,10 +314,10 @@ class Summary extends Component {
 
 const mapStateToProps = ({ auth, userProfile }) => ({
   currentUser: auth.user,
-  summary: userProfile.weeklySummary && userProfile.weeklySummary[0] && userProfile.weeklySummary[0].summary ? userProfile.weeklySummary[0].summary : '',
-  dueDate: userProfile.weeklySummary && userProfile.weeklySummary[0] && userProfile.weeklySummary[0].dueDate ? userProfile.weeklySummary[0].dueDate : '',
+  summary: userProfile.weeklySummaries && userProfile.weeklySummaries[0] && userProfile.weeklySummaries[0].summary ? userProfile.weeklySummaries[0].summary : '',
+  dueDate: userProfile.weeklySummaries && userProfile.weeklySummaries[0] && userProfile.weeklySummaries[0].dueDate ? userProfile.weeklySummaries[0].dueDate : '',
   mediaUrl: userProfile.mediaUrl,
   userProfile: userProfile,
 });
 
-export default connect(mapStateToProps, { getUserProfile, updateUserProfile })(Summary);
+export default connect(mapStateToProps, { getUserProfile, updateUserProfile })(WeeklySummary);

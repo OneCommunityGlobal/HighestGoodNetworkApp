@@ -3,7 +3,7 @@ import { Tooltip } from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faInfoCircle } from '@fortawesome/free-solid-svg-icons';
 
-const SummaryContentTooltip = () => {
+const WeeklySummaryContentTooltip = () => {
   const [tooltipOpen, setTooltipOpen] = useState(false);
   const toggle = () => setTooltipOpen(!tooltipOpen);
   return (
@@ -32,4 +32,4 @@ const MediaURLTooltip = () => {
   );
 };
 
-export { MediaURLTooltip, SummaryContentTooltip };
+export { MediaURLTooltip, WeeklySummaryContentTooltip };
