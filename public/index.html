@@ -22,10 +22,15 @@
     -->
     <title>HGN APP</title>
   </head>
-  <body>
+  <body onbeforeunload="return leaveAlert()">
     <noscript>
       You need to enable JavaScript to run this app.
     </noscript>
+    <script>
+      function leaveAlert() {
+        return "Don't forget to log your time before leaving the page!";
+      }
+    </script>
     <div id="root"></div>
     <!--
       This HTML file is a template.

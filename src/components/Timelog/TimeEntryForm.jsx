@@ -52,7 +52,7 @@ const TimeEntryForm = ({userId, edit, data, isOpen, toggle, timer}) => {
     const userProjects = useSelector(state => state.userProjects);
     let projects = [];
     if (!_.isEmpty(userProjects)) {
-        const { projects } = userProjects;
+        projects = userProjects.projects;
     }
     const projectOptions = projects.map(project => 
         <option value={project.projectId} key={project.projectId}> {project.projectName} </option>

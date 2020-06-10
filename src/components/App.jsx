@@ -44,18 +44,18 @@ if (localStorage.getItem(tokenKey)) {
 class App extends Component {
   state = {};
 
-  confirmAlert(e) {
-    e.preventDefault();
-    return e.returnValue = "Are you sure you want to leave?\nPlease don't forget to log your time!";
-  }
+  // confirmAlert(e) {
+  //   e.preventDefault();
+  //   return e.returnValue = "Are you sure you want to leave?\nPlease don't forget to log your time!";
+  // }
 
-  componentDidMount() {
-    window.addEventListener('beforeunload', this.confirmAlert);
-  }
+  // componentDidMount() {
+  //   window.addEventListener('beforeunload', this.confirmAlert);
+  // }
   
-  componentWillUnmount() {
-    window.removeEventListener('beforeunload', this.confirmAlert);
-  }
+  // componentWillUnmount() {
+  //   window.removeEventListener('beforeunload', this.confirmAlert);
+  // }
 
   componentDidCatch(error, errorInfo) {
     logger.logError(error);
