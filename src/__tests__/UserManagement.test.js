@@ -120,39 +120,39 @@ describe('User Management Component', () => {
   describe("Behavior", () => {
     it('verifying the active filter', () => {
       const event = { target: { name: "active-filter-dropdown", value: "active" } };
-      // verifying before changing the active filter - 2 rows
+      // verifying that there are 2 rows before changing the active filter .
       expect(userManagementComponent.find('.usermanagement__tr').length).toBe(2);
       userManagementComponent.find('#active-filter-dropdown').simulate('change', event);
-      //verifyung after applying the filter as actibe - 1 row
+      //verifying that there is only 1 row after applying the filter as active.
       expect(userManagementComponent.find('.usermanagement__tr').length).toBe(1);
       console.log(userManagementComponent.state)
     })
 
     it('verifying the wild card search', () => {
       const event = { target: { name: "user-profiles-wild-card-search", value: "Admin" } };
-      // verifying before entering the search text - 2 rows
+      // verifying that there are 2 rows  before entering the search text.
       expect(userManagementComponent.find('.usermanagement__tr').length).toBe(2);
       userManagementComponent.find('#user-profiles-wild-card-search').simulate('change', event);
-      //verifyung after entering the search text- 1 row
+      //verifying that there is only one row after entering the search text.
       expect(userManagementComponent.find('.usermanagement__tr').length).toBe(1);
     })
 
     it('verifying the column filters', () => {
       const event = { target: { name: "search_email_search", value: "onecommunityglobal@gmail.com" } };
-      // verifying before entering  email the search text , there should be  2 rows
+      // verifying that there are 2 rows before entering email email search text.
       expect(userManagementComponent.find('.usermanagement__tr').length).toBe(2);
       userManagementComponent.find('#search_email_search').simulate('change', event);
-      //verifyung after entering the email search text , there should be 2 rows 
+      //verifying that there are 2 rows after entering the email search text.
       expect(userManagementComponent.find('.usermanagement__tr').length).toBe(2);
 
       const dropdownevent = { target: { name: "search_role_search", value: "Volunteer" } };
       userManagementComponent.find('#search_role_search').simulate('change', dropdownevent);
-      //verifyung after choosing the role from the drop down , there should be only 1 row
+      //verifying  that there is only 1 row after choosing the role from the drop down.
       expect(userManagementComponent.find('.usermanagement__tr').length).toBe(1);
 
       const commitedhrsevent = { target: { name: "search_hrs_search", value: "10" } };
       userManagementComponent.find('#search_hrs_search').simulate('change', dropdownevent);
-      //verifyung after entering the  weekly committed hours search text - 2 row
+      //verifying that there is no rows after entering the  weekly committed hours search text .
       expect(userManagementComponent.find('.usermanagement__tr').length).toBe(0);
 
     })
