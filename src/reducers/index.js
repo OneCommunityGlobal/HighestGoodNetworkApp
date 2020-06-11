@@ -28,7 +28,7 @@ import { timerReducer } from './timerReducer'
 export default combineReducers({
 	auth: authReducer,
 	userProfile: userProfileByIdReducer,
-	//allUserProfiles: allUserProfilesReducer,
+	allUserProfiles: allUserProfilesReducer,
 	//userTeamMembers: userTeamMembersReducer,
 	//userProjectMembers: userProjectMembersReducer,
 	//dashboardData: dashboardDataReducer,
@@ -39,7 +39,7 @@ export default combineReducers({
 	//	notifications: notificationsReducer,
 	allProjects: allProjectsReducer,
 	//project: projectByIdReducer,
-  userProjects: userProjectsReducer,
+	userProjects: userProjectsReducer,
 	projectMembers: projectMembershipReducer,
 	//allTeams: allTeamsReducer,
 	//team: teamByIdReducer,
@@ -49,6 +49,6 @@ export default combineReducers({
 	//projectTimeEntries: timeEntriesForSpecifiedProjectReducer,
 	//requestStatus: handleSuccessReducer,
 	errors: errorsReducer,
-  timeEntries: timeEntriesReducer,
-  timer: timerReducer,
+	timeEntries: timeEntriesReducer,
+	timer: timerReducer,
 })
