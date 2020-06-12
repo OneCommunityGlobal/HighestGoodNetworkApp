@@ -78,15 +78,19 @@ describe('User Management Component', () => {
 
     it('verifying the table data component structure', () => {
       let component = shallow(<UserTableData index={1}
-        firstName="New"
-        lastName="Test"
-        role="Administrator"
-        email="infor@hgn.net"
-        weeklyComittedHours={10}
+        user={{
+          email: "onecommunityglobal@gmail.com",
+          firstName: "Test",
+          isActive: true,
+          lastName: "Admin",
+          role: "Administrator",
+          weeklyComittedHours: 0,
+          _id: "5c4cc2109487b0003924f1e3"
+        }}
         isActive={true} />)
       expect(component).not.toBeNull();
       expect(component.find('.usermanagement__tr').length).toBe(1);
-      expect(component.find('td').length).toBe(7);
+      expect(component.find('td').length).toBe(8);
     })
 
     it('verifying the table footer component structure', () => {
@@ -101,7 +105,7 @@ describe('User Management Component', () => {
     it('verifying the table header component structure', () => {
       let component = shallow(<UserTableHeader />)
       expect(component).not.toBeNull();
-      expect(component.find('th').length).toBe(7);
+      expect(component.find('th').length).toBe(8);
     })
 
     it('verifying the table search header component structure', () => {
@@ -113,7 +117,7 @@ describe('User Management Component', () => {
         onWeeklyHrsSearch={jest.fn()}
       />)
       expect(component).not.toBeNull();
-      expect(component.find('td').length).toBe(7);
+      expect(component.find('td').length).toBe(8);
     })
   })
 

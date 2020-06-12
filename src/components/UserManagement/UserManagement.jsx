@@ -5,7 +5,7 @@
  * List the users in the application for administrator.
  *****************************************************************/
 import React from 'react'
-import { getAllUserProfile } from '../../actions/userManagement'
+import { getAllUserProfile, updateUserStatus, deleteUser } from '../../actions/userManagement'
 import { connect } from 'react-redux'
 import Loading from '../common/Loading'
 import UserTableHeader from './UserTableHeader'
@@ -89,6 +89,7 @@ class UserManagement extends React.PureComponent {
     if (userProfiles && userProfiles.length > 0) {
       let usersSearchData = this.filteredUserList(userProfiles);
       this.filteredUserDataCount = usersSearchData.length;
+      let that = this;
       /* Builiding the table body for users users based on the page size and selected page number and returns 
         the rows for currently selected page */
       return usersSearchData.slice((this.state.selectedPage - 1) * this.state.pageSize, (this.state.selectedPage * this.state.pageSize))
@@ -97,11 +98,9 @@ class UserManagement extends React.PureComponent {
             key={'user_' + index}
             index={index}
             isActive={user.isActive}
-            firstName={user.firstName}
-            lastName={user.lastName}
-            role={user.role}
-            email={user.email}
-            weeklyComittedHours={user.weeklyComittedHours}
+            onPauseResumeClick={that.onPauseResumeClick}
+            onDeleteClick={that.onDeleteClick}
+            user={user}
           />
         });
     }
@@ -131,6 +130,20 @@ class UserManagement extends React.PureComponent {
     })
 
     return filteredList;
+  }
+
+  /**
+   * Call back on Pause or Resume button click to trigger the action to update user status
+   */
+  onPauseResumeClick = (user, status) => {
+    this.props.updateUserStatus(user, status);
+  }
+
+  /**
+   * Call back on delete button clic and triggering the delete action
+   */
+  onDeleteClick = (user, option) => {
+    this.props.deleteUser(user, option);
   }
 
   /**
@@ -240,5 +253,5 @@ class UserManagement extends React.PureComponent {
 }
 
 const mapStateToProps = state => { return { state } }
-export default connect(mapStateToProps, { getAllUserProfile })(UserManagement)
+export default connect(mapStateToProps, { getAllUserProfile, updateUserStatus, deleteUser })(UserManagement)
 
