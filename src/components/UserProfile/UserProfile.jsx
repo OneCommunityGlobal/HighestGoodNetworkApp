@@ -75,7 +75,6 @@ class UserProfile extends Component {
 				modalMessage: 'First Name cannot be empty'
 			})
 		}
-
 		if (event.target.id === 'lastName') {
 			this.setState({
 				userProfile: {
@@ -146,6 +145,7 @@ class UserProfile extends Component {
 			isValid = false
 
 			return this.setState({
+				type: 'image',
 				imageUploadError,
 				isValid,
 				showModal: true,
@@ -161,11 +161,13 @@ class UserProfile extends Component {
 			isValid = false
 
 			return this.setState({
+				type: 'image',
 				imageUploadError,
 				isValid,
 				showModal: true,
 				modalTitle: 'Profile Pic Error',
-				modalMessage: imageUploadError
+				modalMessage: imageUploadError,
+				url: "https://www.w3schools.com"
 			})
 		}
 
@@ -193,6 +195,7 @@ class UserProfile extends Component {
 			type: type
 		})
 	}
+
 
 	addLink = (linkName, linkURL, linkType) => {
 		console.log('addLink', linkName, linkURL, linkType)
@@ -322,6 +325,7 @@ class UserProfile extends Component {
 							isUserAdmin={isUserAdmin}
 							canEditFields={canEditFields}
 						/>
+
 						<br />
 						<UserLinks
 							linkType='Social/Professional'

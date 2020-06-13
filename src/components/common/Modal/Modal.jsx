@@ -10,6 +10,9 @@ import {
 	InputGroupText,
 	Input
 } from 'reactstrap'
+
+
+
 const ModalExample = props => {
 	const {
 		isOpen,
@@ -19,7 +22,8 @@ const ModalExample = props => {
 		modalTitle,
 		modalMessage,
 		type,
-		linkType
+		linkType,
+		url,
 	} = props
 
 	const [modal, setModal] = useState(false)
@@ -43,6 +47,7 @@ const ModalExample = props => {
 	if (type) {
 		console.log('Type of Modal is ', type, linkName, linkURL, buttonDisabled)
 	}
+
 
 	return (
 		<Modal isOpen={isOpen} toggle={closeModal}>
@@ -74,13 +79,34 @@ const ModalExample = props => {
 						modalMessage
 					)}
 			</ModalBody>
-			<ModalFooter>
-				<Button color='primary' onClick={closeModal}>
-					Close
-				</Button>
 
-				{confirmModal != null ? <Button color="danger" onClick={confirmModal}>Confirm</Button> : null}
-				{setInactiveModal != null ? <Button color="warning" onClick={setInactiveModal}>Set inactive</Button> : null}
+			<ModalFooter>
+				{type === 'image' ?
+					(
+						<>
+							<Button color='primary' onClick={closeModal}>
+								Close
+							</Button>
+							{/* <Button color="danger" onClick={ window.open("https://www.w3schools.com") }>
+								Confirm
+							</Button> */}
+							{ confirmModal != null ? 
+							<Button color="danger" onClick={window.open(url)}>
+								Confirm
+							</Button> : null }
+						</>
+					) : (
+						<Button color='primary' onClick={closeModal}>
+							Close
+						</Button>
+					)}
+
+				{/*  OLD CODE  */}
+				{/* { confirmModal != null ? 
+					<Button color="danger" onClick={confirmModal}>
+					Confirm
+					</Button> : null } */}
+				{/* {setInactiveModal != null ? <Button color="warning" onClick={setInactiveModal}>Set inactive</Button> : null} */}
 
 				{type === 'input' && (
 					<Button
@@ -90,6 +116,7 @@ const ModalExample = props => {
 						Add
 					</Button>
 				)}
+
 			</ModalFooter>
 		</Modal>
 	)
