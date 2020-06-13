@@ -23,7 +23,7 @@ export const allUserProfilesReducer = (userProfiles = userProfilesInitial, actio
     case types.FETCH_USER_PROFILES_ERROR:
       return { ...userProfiles, fetching: false, status: "404" }
 
-    case types.RECEIVE_USER_PROFILES:
+    case types.RECEIVE_ALL_USER_PROFILES:
       return updateObject(userProfiles, {
         userProfiles: action.payload,
         fetching: false,

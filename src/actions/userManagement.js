@@ -2,7 +2,7 @@ import axios from 'axios'
 import {
   FETCH_USER_PROFILES_ERROR,
   FETCH_USER_PROFILES_START,
-  RECEIVE_USER_PROFILES
+  RECEIVE_ALL_USER_PROFILES
 } from '../constants/userManagement'
 import { ENDPOINTS } from '../utils/URL'
 
@@ -36,7 +36,7 @@ export const userProfilesFetchStart = () => {
  */
 export const userProfilesFetchComplete = payload => {
   return {
-    type: RECEIVE_USER_PROFILES,
+    type: RECEIVE_ALL_USER_PROFILES,
     payload
   }
 }

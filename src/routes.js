@@ -25,7 +25,7 @@ export default (
 			<ProtectedRoute path='/timelog/:userId' exact component={Timelog} />
 			<ProtectedRoute path='/reports' exact component={Reports} />
 			<ProtectedRoute path='/projects' exact component={Projects} />
-			<ProtectedRoute path='/usermanagement' exact component={UserManagement} />
+			<ProtectedRoute path='/usermanagement' exact component={UserManagement} adminroute={true} />
 			<ProtectedRoute path='/project/members/:projectId' component={Members} />
 
 			<Route path='/login' component={Login} />

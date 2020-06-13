@@ -9,7 +9,7 @@ class DropDownSearchBox extends React.PureComponent {
   }
 
   render() {
-    return <select onChange={this.onSelectionChange}>
+    return <select onChange={this.onSelectionChange} id={"search_" + this.props.id}>
       <option value={''} >{''}</option>
       {this.props.items.map((item, index) => {
         return <option value={item} key={'search-dropdown-' + index}>{item}</option>
