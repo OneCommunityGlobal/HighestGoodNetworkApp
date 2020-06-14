@@ -53,7 +53,6 @@ export const updateNumList = (wbsId, list) => {
 
 }
 
-
 export const fetchAllTasks = (wbsId) => {
   const request = axios.get(ENDPOINTS.TASKS(wbsId));
   return async dispatch => {
@@ -66,6 +65,28 @@ export const fetchAllTasks = (wbsId) => {
   }
 }
 
+export const updateTask = (taskId, updatedTask) => {
+  console.log('update', taskId);
+  const url = ENDPOINTS.TASK_UPDATE(taskId);
+  return async dispatch => {
+    let status = 200;
+    let task = {};
+    try {
+      const res = await axios.put(url, updatedTask)
+      task = res.data;
+
+    } catch (err) {
+      status = 400;
+    }
+
+    await dispatch(
+      putUpdatedTask(updatedTask,
+        taskId,
+        status
+      ));
+
+  }
+}
 
 export const deleteTask = (taskId) => {
   const url = ENDPOINTS.TASK_DEL(taskId);
@@ -115,10 +136,18 @@ export const setTasksError = (err) => {
 
 
 export const postNewTask = (newTask, status) => {
-  console.log(newTask);
   return {
     type: types.ADD_NEW_TASK,
     newTask,
+    status
+  }
+}
+
+export const putUpdatedTask = (updatedTask, taskId, status) => {
+  return {
+    type: types.UPDATE_TASK,
+    updatedTask,
+    taskId,
     status
   }
 }

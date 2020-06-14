@@ -6,6 +6,7 @@ import React from 'react'
 import { connect } from 'react-redux'
 import { Button } from 'reactstrap';
 import AddTaskModal from '../AddTask/AddTaskModal';
+import EditTaskModal from "../EditTask/EditTaskModal";
 import './tagcolor.css';
 
 const Task = (props) => {
@@ -213,7 +214,7 @@ const Task = (props) => {
       <tr className='wbsTaskController' id={`controller_${props.id}`}>
         <td colSpan={13} className='controlTd'>
           <AddTaskModal parentNum={props.num} taskId={props.id} projectId={props.projectId} wbsId={props.wbsId} parentId1={props.parentId1} parentId2={props.parentId2} parentId3={props.parentId3} level={props.level} />
-          <Button color="info" size="sm" className='controlBtn'>Edit</Button>
+          <EditTaskModal parentNum={props.num} taskId={props.id} projectId={props.projectId} wbsId={props.wbsId} parentId1={props.parentId1} parentId2={props.parentId2} parentId3={props.parentId3} level={props.level} />
 
           <Button color="danger" size="sm" className='controlBtn controlBtn_remove' onClick={() => deleteTask(props.id)}>Remove</Button>
 

@@ -19,6 +19,7 @@ export const ENDPOINTS = {
   TASKS: wbsId => `${APIEndpoint}/tasks/${wbsId}`,
   TASK: wbsId => `${APIEndpoint}/task/${wbsId}`,
   TASKS_UPDATE: `${APIEndpoint}/tasks/update`,
-  TASK_DEL: taskId => `${APIEndpoint}/task/del/${taskId}`
-
+  TASK_DEL: taskId => `${APIEndpoint}/task/del/${taskId}`,
+  GET_TASK: taskId => `${APIEndpoint}/task/${taskId}`,
+  TASK_UPDATE: taskId => `${APIEndpoint}/task/update/${taskId}`
 }

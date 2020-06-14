@@ -29,7 +29,6 @@ export const taskReducer = (allTasks = allTasksInital, action) => {
     case types.FETCH_TASKS_ERROR:
       return { ...allTasks, fetched: true, fetching: false, error: action.err }
     case types.RECEIVE_TASKS:
-      console.log('tasks', action.taskItems);
       return { ...allTasks, taskItems: [...sortByNum(action.taskItems)], fetched: true, fetching: false, error: "none" }
     case types.ADD_NEW_TASK:
       action.newTask.new = true;
@@ -50,7 +49,13 @@ export const taskReducer = (allTasks = allTasksInital, action) => {
         }
       });
       return { ...allTasks, taskItems: [...allTasks.taskItems.slice(0, indexStart), ...allTasks.taskItems.slice(indexEnd + 1)], fetched: true, fetching: false, error: "none" }
+    case types.UPDATE_TASK:
 
+      indexStart = allTasks.taskItems.findIndex(task => task._id == action.taskId);
+      indexEnd = indexStart;
+      let updatedTask = allTasks.taskItems.filter(task => task._id === action.taskId)[0];
+      updatedTask = { ...updatedTask, ...action.updatedTask };
+      return { ...allTasks, taskItems: [...allTasks.taskItems.slice(0, indexStart), updatedTask, ...allTasks.taskItems.slice(indexEnd + 1)], fetched: true, fetching: false, error: "none" }
 
   }
   return allTasks;
