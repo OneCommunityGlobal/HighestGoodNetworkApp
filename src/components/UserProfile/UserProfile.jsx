@@ -132,6 +132,7 @@ class UserProfile extends Component {
 	}
 
 	handleImageUpload = async e => {
+
 		e.preventDefault()
 
 		const file = e.target.files[0]
@@ -157,7 +158,7 @@ class UserProfile extends Component {
 		console.log(filesizeKB)
 
 		if (filesizeKB > 50) {
-			imageUploadError = `\nThe file you are trying to upload exceed the maximum size of 50KB. You can choose a different file or use an online file compressor.`
+			imageUploadError = `\nThe file you are trying to upload exceeds the maximum size of 50KB. You can either choose a different file, or use an online file compressor.`
 			isValid = false
 
 			return this.setState({

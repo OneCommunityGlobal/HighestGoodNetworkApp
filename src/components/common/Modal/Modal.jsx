@@ -84,30 +84,15 @@ const ModalExample = props => {
 				{type === 'image' ?
 					(
 						<>
-							<Button color='primary' onClick={closeModal}>
-								Close
-							</Button>
-							{/* <Button color="danger" onClick={ window.open("https://www.w3schools.com") }>
-								Confirm
-							</Button> */}
-							{ confirmModal != null ? 
-							<Button color="danger" onClick={window.open(url)}>
-								Confirm
-							</Button> : null }
+							<Button color='primary' onClick={closeModal}> Close </Button>
+							<Button color="info" onClick={() => { window.open('https://picresize.com/') }  }> Resize </Button>
 						</>
 					) : (
 						<Button color='primary' onClick={closeModal}>
 							Close
 						</Button>
 					)}
-
-				{/*  OLD CODE  */}
-				{/* { confirmModal != null ? 
-					<Button color="danger" onClick={confirmModal}>
-					Confirm
-					</Button> : null } */}
-				{/* {setInactiveModal != null ? <Button color="warning" onClick={setInactiveModal}>Set inactive</Button> : null} */}
-
+					
 				{type === 'input' && (
 					<Button
 						color='danger'
