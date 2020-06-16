@@ -13,7 +13,7 @@ const UserTableData = React.memo((props) => {
    */
   useEffect(() => {
     onReset(false);
-  }, [props.isActive])
+  }, [props.isActive, props.resetLoading])
 
   return (
     <tr className="usermanagement__tr" id={"tr_user_" + props.index}>

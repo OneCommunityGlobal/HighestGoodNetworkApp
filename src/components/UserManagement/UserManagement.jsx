@@ -15,6 +15,8 @@ import UserTableFooter from './UserTableFooter'
 import './usermanagement.css'
 import UserSearchPanel from './UserSearchPanel'
 import NewUserPopup from './NewUserPopup'
+import ActivationDatePopup from './ActivationDatePopup'
+import { ACTIVE, INACTIVE } from '../../languages/en/ui'
 
 class UserManagement extends React.PureComponent {
   filteredUserDataCount = 0;
@@ -30,7 +32,8 @@ class UserManagement extends React.PureComponent {
       wildCardSearchText: '',
       selectedPage: 1,
       pageSize: 10,
-      isActive: undefined
+      isActive: undefined,
+      activationDateOpen: false
     };
   }
 
@@ -48,6 +51,10 @@ class UserManagement extends React.PureComponent {
       {fetching ?
         <Loading /> :
         <React.Fragment>
+          <ActivationDatePopup
+            open={this.state.activationDateOpen}
+            onClose={this.activationDatePopupClose}
+            onPause={this.pauseUser} />
           <NewUserPopup
             open={this.state.newUserPoupOPen}
             onUserPopupClose={this.onUserPopupClose} />
@@ -98,6 +105,9 @@ class UserManagement extends React.PureComponent {
             key={'user_' + index}
             index={index}
             isActive={user.isActive}
+            resetLoading={(this.state.selectedUser
+              && this.state.selectedUser._id === user._id
+              && this.state.activationDateOpen)}
             onPauseResumeClick={that.onPauseResumeClick}
             onDeleteClick={that.onDeleteClick}
             user={user}
@@ -136,9 +146,35 @@ class UserManagement extends React.PureComponent {
    * Call back on Pause or Resume button click to trigger the action to update user status
    */
   onPauseResumeClick = (user, status) => {
-    this.props.updateUserStatus(user, status);
+    if (status === ACTIVE) {
+      this.props.updateUserStatus(user, status, Date.now());
+    } else {
+      this.setState({
+        activationDateOpen: true,
+        selectedUser: user
+      })
+    }
   }
 
+  /**
+   * call back function to close the activation date popup
+   */
+  activationDatePopupClose = () => {
+    this.setState({
+      activationDateOpen: false
+    })
+  }
+
+  /**
+  * Call back on Pause confirmation button click to trigger the action to update user status
+  */
+  pauseUser = (reActivationDate) => {
+    this.props.updateUserStatus(this.state.selectedUser, INACTIVE, reActivationDate);
+    this.setState({
+      activationDateOpen: false,
+      selectedUser: undefined
+    })
+  }
   /**
    * Call back on delete button clic and triggering the delete action
    */

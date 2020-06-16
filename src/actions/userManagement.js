@@ -28,10 +28,12 @@ export const getAllUserProfile = () => {
  * @param {*} user - the user to be updated
  * @param {*} status  - Active/InActive
  */
-export const updateUserStatus = (user, status) => {
+export const updateUserStatus = (user, status, reactivationDate) => {
   const userProfile = Object.assign({}, user);
   userProfile.isActive = (status === 'Active'); //TODO: move the magic string to constatnts
-  const updateProfilePromise = axios.patch(ENDPOINTS.USER_PROFILE(user._id), { status: status })
+  userProfile.reactivationDate = reactivationDate;
+  const patchData = { status: status, reactivationDate: reactivationDate };
+  const updateProfilePromise = axios.patch(ENDPOINTS.USER_PROFILE(user._id), patchData)
   return async dispatch => {
     updateProfilePromise.then(res => {
       dispatch(userProfileUpdateAction(userProfile));
