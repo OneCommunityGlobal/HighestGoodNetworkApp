@@ -16,7 +16,7 @@ import './usermanagement.css'
 import UserSearchPanel from './UserSearchPanel'
 import NewUserPopup from './NewUserPopup'
 import ActivationDatePopup from './ActivationDatePopup'
-import { ACTIVE, INACTIVE } from '../../languages/en/ui'
+import { UserStatus } from '../../utils/enums'
 
 class UserManagement extends React.PureComponent {
   filteredUserDataCount = 0;
@@ -146,7 +146,7 @@ class UserManagement extends React.PureComponent {
    * Call back on Pause or Resume button click to trigger the action to update user status
    */
   onPauseResumeClick = (user, status) => {
-    if (status === ACTIVE) {
+    if (status === UserStatus.Active) {
       this.props.updateUserStatus(user, status, Date.now());
     } else {
       this.setState({
@@ -169,7 +169,7 @@ class UserManagement extends React.PureComponent {
   * Call back on Pause confirmation button click to trigger the action to update user status
   */
   pauseUser = (reActivationDate) => {
-    this.props.updateUserStatus(this.state.selectedUser, INACTIVE, reActivationDate);
+    this.props.updateUserStatus(this.state.selectedUser, UserStatus.InActive, reActivationDate);
     this.setState({
       activationDateOpen: false,
       selectedUser: undefined
