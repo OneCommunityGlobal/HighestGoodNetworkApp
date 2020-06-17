@@ -7,10 +7,10 @@ import { useState } from 'react';
  */
 const ActivationDatePopup = React.memo((props) => {
 
-  const [activationDate, onDateChange] = useState(undefined)
+  const [activationDate, onDateChange] = useState(Date.now())
   const closePopup = (e) => { props.onClose() };
   const pauseUser = () => {
-    if (activationDate && Date.parse(activationDate) > Date.now()) {
+    if (Date.parse(activationDate) > Date.now()) {
       props.onPause(activationDate);
     } else {
       alert("Please choose a future date")
@@ -20,7 +20,7 @@ const ActivationDatePopup = React.memo((props) => {
   return <Modal isOpen={props.open} toggle={closePopup}>
     <ModalHeader toggle={closePopup}>Pause until</ModalHeader>
     <ModalBody>
-      <Input type="date" name="dateOfWork" id="dateOfWork"
+      <Input type="date" name="pauseUntilDate" id="pauseUntilDate"
         value={activationDate}
         onChange={(event) => {
           onDateChange(event.target.value)
