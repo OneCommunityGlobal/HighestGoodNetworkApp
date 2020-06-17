@@ -15,6 +15,7 @@ import Projects from './components/Projects'
 import UserManagement from './components/UserManagement'
 import Members from './components/Projects/Members'
 import 'react-toastify/dist/ReactToastify.css'
+import { UserRole } from './utils/enums'
 
 export default (
 	<React.Fragment>
@@ -25,7 +26,7 @@ export default (
 			<ProtectedRoute path='/timelog/:userId' exact component={Timelog} />
 			<ProtectedRoute path='/reports' exact component={Reports} />
 			<ProtectedRoute path='/projects' exact component={Projects} />
-			<ProtectedRoute path='/usermanagement' exact component={UserManagement} adminroute={true} />
+			<ProtectedRoute path='/usermanagement' exact component={UserManagement} allowedRoles={[UserRole.Administrator]} />
 			<ProtectedRoute path='/project/members/:projectId' component={Members} />
 
 			<Route path='/login' component={Login} />

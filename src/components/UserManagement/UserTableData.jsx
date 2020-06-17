@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { DELETE, PAUSE, RESUME, ACTIVE, INACTIVE } from '../../languages/en/ui'
+import { UserStatus } from '../../utils/enums'
 
 /**
  * The body row of the user table
@@ -31,7 +32,7 @@ const UserTableData = React.memo((props) => {
         <button type="button" className={"btn btn-outline-" + (props.isActive ? "warning" : "success")}
           onClick={(e) => {
             onReset(true);
-            props.onPauseResumeClick(props.user, (props.isActive ? INACTIVE : ACTIVE));
+            props.onPauseResumeClick(props.user, (props.isActive ? UserStatus.InActive : UserStatus.Active));
           }}>
           {isChanging ? "..." : (props.isActive ? PAUSE : RESUME)}
         </button>
