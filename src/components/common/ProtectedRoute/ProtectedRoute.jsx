@@ -1,7 +1,6 @@
 import React from "react";
 import { Redirect, Route } from "react-router-dom";
 import { connect } from "react-redux";
-import { ADMIN_ROLE } from "../../../utils/constants";
 
 const ProtectedRoute = ({ component: Component, render, auth, ...rest }) => {
   let allowedRoles = rest.allowedRoles;
