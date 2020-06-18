@@ -5,7 +5,7 @@
  * List the users in the application for administrator.
  *****************************************************************/
 import React from 'react'
-import { getAllUserProfile } from '../../actions/userManagement'
+import { getAllUserProfile, updateUserStatus, deleteUser } from '../../actions/userManagement'
 import { connect } from 'react-redux'
 import Loading from '../common/Loading'
 import UserTableHeader from './UserTableHeader'
@@ -15,6 +15,8 @@ import UserTableFooter from './UserTableFooter'
 import './usermanagement.css'
 import UserSearchPanel from './UserSearchPanel'
 import NewUserPopup from './NewUserPopup'
+import ActivationDatePopup from './ActivationDatePopup'
+import { UserStatus } from '../../utils/enums'
 
 class UserManagement extends React.PureComponent {
   filteredUserDataCount = 0;
@@ -30,7 +32,8 @@ class UserManagement extends React.PureComponent {
       wildCardSearchText: '',
       selectedPage: 1,
       pageSize: 10,
-      isActive: undefined
+      isActive: undefined,
+      activationDateOpen: false
     };
   }
 
@@ -48,6 +51,10 @@ class UserManagement extends React.PureComponent {
       {fetching ?
         <Loading /> :
         <React.Fragment>
+          <ActivationDatePopup
+            open={this.state.activationDateOpen}
+            onClose={this.activationDatePopupClose}
+            onPause={this.pauseUser} />
           <NewUserPopup
             open={this.state.newUserPoupOPen}
             onUserPopupClose={this.onUserPopupClose} />
@@ -89,6 +96,7 @@ class UserManagement extends React.PureComponent {
     if (userProfiles && userProfiles.length > 0) {
       let usersSearchData = this.filteredUserList(userProfiles);
       this.filteredUserDataCount = usersSearchData.length;
+      let that = this;
       /* Builiding the table body for users users based on the page size and selected page number and returns 
         the rows for currently selected page */
       return usersSearchData.slice((this.state.selectedPage - 1) * this.state.pageSize, (this.state.selectedPage * this.state.pageSize))
@@ -97,11 +105,12 @@ class UserManagement extends React.PureComponent {
             key={'user_' + index}
             index={index}
             isActive={user.isActive}
-            firstName={user.firstName}
-            lastName={user.lastName}
-            role={user.role}
-            email={user.email}
-            weeklyComittedHours={user.weeklyComittedHours}
+            resetLoading={(this.state.selectedUser
+              && this.state.selectedUser._id === user._id
+              && this.state.activationDateOpen)}
+            onPauseResumeClick={that.onPauseResumeClick}
+            onDeleteClick={that.onDeleteClick}
+            user={user}
           />
         });
     }
@@ -131,6 +140,46 @@ class UserManagement extends React.PureComponent {
     })
 
     return filteredList;
+  }
+
+  /**
+   * Call back on Pause or Resume button click to trigger the action to update user status
+   */
+  onPauseResumeClick = (user, status) => {
+    if (status === UserStatus.Active) {
+      this.props.updateUserStatus(user, status, Date.now());
+    } else {
+      this.setState({
+        activationDateOpen: true,
+        selectedUser: user
+      })
+    }
+  }
+
+  /**
+   * call back function to close the activation date popup
+   */
+  activationDatePopupClose = () => {
+    this.setState({
+      activationDateOpen: false
+    })
+  }
+
+  /**
+  * Call back on Pause confirmation button click to trigger the action to update user status
+  */
+  pauseUser = (reActivationDate) => {
+    this.props.updateUserStatus(this.state.selectedUser, UserStatus.InActive, reActivationDate);
+    this.setState({
+      activationDateOpen: false,
+      selectedUser: undefined
+    })
+  }
+  /**
+   * Call back on delete button clic and triggering the delete action
+   */
+  onDeleteClick = (user, option) => {
+    this.props.deleteUser(user, option);
   }
 
   /**
@@ -240,5 +289,5 @@ class UserManagement extends React.PureComponent {
 }
 
 const mapStateToProps = state => { return { state } }
-export default connect(mapStateToProps, { getAllUserProfile })(UserManagement)
+export default connect(mapStateToProps, { getAllUserProfile, updateUserStatus, deleteUser })(UserManagement)
 

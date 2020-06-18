@@ -3,6 +3,7 @@
  * Stores all variables that display texts on the UI
  ********************************************************************************/
 export const ACTIVE = 'Active';
+export const INACTIVE = 'InActive';
 export const ACTIVE_PROJECTS = 'Active Projects';
 export const DASHBOARD = 'Dashboard';
 export const DELETE = "Delete";
@@ -29,3 +30,5 @@ export const WEEKLY_COMMITTED_HRS = 'Weekly Committed Hrs';
 export const CREATE_NEW_USER = 'Create New User';
 export const SEARCH = 'Search';
 export const SHOW = 'Show';
+export const PAUSE = 'Pause';
+export const RESUME = 'Resume';
