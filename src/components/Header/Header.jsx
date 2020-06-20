@@ -74,9 +74,14 @@ class Header extends React.Component {
                     <DropdownItem tag={Link} to='/reports'>
                       {REPORTS}
                     </DropdownItem>
-                    <DropdownItem tag={Link} to='/weeklysummariesreport'>
-                      {WEEKLY_SUMMARIES_REPORT}
-                    </DropdownItem>
+                    {
+                      this.props.auth.user.role === ADMIN_ROLE ?
+                        <DropdownItem tag={Link} to='/weeklysummariesreport'>
+                          {WEEKLY_SUMMARIES_REPORT}
+                        </DropdownItem>
+                        :
+                        <React.Fragment></React.Fragment>
+                    }
                   </DropdownMenu>
                 </UncontrolledDropdown>
                 <NavItem>
