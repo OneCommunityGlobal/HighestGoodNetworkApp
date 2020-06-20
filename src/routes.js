@@ -1,20 +1,22 @@
-import React from 'react';
-import { Route, Switch } from 'react-router-dom';
-import { ToastContainer } from 'react-toastify';
-import Timelog from './components/Timelog';
-import Reports from './components/Reports';
-import UserProfile from './components/UserProfile';
-import Dashboard from './components/Dashboard';
-import { Logout } from './components/Logout/Logout';
-import Login from './components/Login';
-import ForcePasswordUpdate from './components/ForcePasswordUpdate';
-import ProtectedRoute from './components/common/ProtectedRoute';
-import UpdatePassword from './components/UpdatePassword';
-import Header from './components/Header';
-import Projects from './components/Projects';
-import Members from './components/Projects/Members';
-import WeeklySummariesReport from './components/WeeklySummariesReport';
-import 'react-toastify/dist/ReactToastify.css';
+import React from 'react'
+import { Route, Switch } from 'react-router-dom'
+import { ToastContainer } from 'react-toastify'
+import Timelog from './components/Timelog'
+import Reports from './components/Reports'
+import UserProfile from './components/UserProfile'
+import Dashboard from './components/Dashboard'
+import { Logout } from './components/Logout/Logout'
+import Login from './components/Login'
+import ForcePasswordUpdate from './components/ForcePasswordUpdate'
+import ProtectedRoute from './components/common/ProtectedRoute'
+import UpdatePassword from './components/UpdatePassword'
+import Header from './components/Header'
+import Projects from './components/Projects'
+import UserManagement from './components/UserManagement'
+import Members from './components/Projects/Members'
+import WeeklySummariesReport from './components/WeeklySummariesReport'
+import 'react-toastify/dist/ReactToastify.css'
+import { UserRole } from './utils/enums'
 
 export default (
   <React.Fragment>
@@ -26,6 +28,7 @@ export default (
       <ProtectedRoute path="/reports" exact component={Reports} />
       <ProtectedRoute path="/weeklysummariesreport" exact component={WeeklySummariesReport} />
       <ProtectedRoute path="/projects" exact component={Projects} />
+      <ProtectedRoute path="/usermanagement" exact component={UserManagement} allowedRoles={[UserRole.Administrator]} />
       <ProtectedRoute path="/project/members/:projectId" component={Members} />
 
       <Route path="/login" component={Login} />
@@ -37,4 +40,4 @@ export default (
       <ProtectedRoute path="/" exact component={Dashboard} />
     </Switch>
   </React.Fragment>
-);
+)

@@ -48,13 +48,15 @@ class UserProfile extends Component {
 
 	async componentDidMount() {
 		// this.props.getCurrentUser(getjwt())
-		let userId = this.props.match.params.userId
-		await this.props.getUserProfile(userId)
-		await this.props.getUserTeamMembers(userId)
-		//console.log(this.props.userProfile)
-		if (this.props.userProfile.firstName.length) {
-			//	console.log(this.props.userProfile)
-			this.setState({ isLoading: false, userProfile: this.props.userProfile })
+		if (this.props.match) {
+			let userId = this.props.match.params.userId
+			await this.props.getUserProfile(userId)
+			await this.props.getUserTeamMembers(userId)
+			//console.log(this.props.userProfile)
+			if (this.props.userProfile.firstName.length) {
+				//	console.log(this.props.userProfile)
+				this.setState({ isLoading: false, userProfile: this.props.userProfile })
+			}
 		}
 		//console.log(this.props.userProfile)
 	}
@@ -246,7 +248,7 @@ class UserProfile extends Component {
 	}
 
 	render() {
-		let { userId: targetUserId } = this.props.match.params
+		let { userId: targetUserId } = this.props.match ? this.props.match.params : { userId: undefined };
 		let { userid: requestorId, role: requestorRole } = this.props.auth.user
 
 		const { userProfile, isLoading, showModal } = this.state

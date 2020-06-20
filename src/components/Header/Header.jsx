@@ -20,6 +20,7 @@ import {
   DropdownMenu,
   DropdownItem
 } from 'reactstrap'
+import { ADMIN_ROLE } from '../../utils/constants'
 
 class Header extends React.Component {
   state = {}
@@ -93,9 +94,14 @@ class Header extends React.Component {
                     {OTHER_LINKS}
                   </DropdownToggle>
                   <DropdownMenu>
-                    <DropdownItem tag={Link} to='/usermanagement'>
-                      {USER_MANAGEMENT}
-                    </DropdownItem>
+                    {
+                      this.props.auth.user.role === ADMIN_ROLE ?
+                        <DropdownItem tag={Link} to='/usermanagement'>
+                          {USER_MANAGEMENT}
+                        </DropdownItem>
+                        :
+                        <React.Fragment></React.Fragment>
+                    }
                     <DropdownItem tag={Link} to='/projects'>
                       {PROJECTS}
                     </DropdownItem>
