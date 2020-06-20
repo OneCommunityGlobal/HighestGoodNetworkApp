@@ -1,5 +1,6 @@
 import React from 'react';
 import moment from 'moment';
+import 'moment-timezone';
 import ReactHtmlParser from 'react-html-parser';
 
 const FormattedReport = ({ summaries, weekIndex }) => {
@@ -16,7 +17,7 @@ const FormattedReport = ({ summaries, weekIndex }) => {
     if (Array.isArray(weeklySummaries) && weeklySummaries.length && weeklySummaries[weekIndex]) {
       const { dueDate, summary } = weeklySummaries[weekIndex];
       if (summary) {
-        weeklySummaryMessage = `<b>Weekly Summary</b> (for the week ending on <b>${moment(dueDate).format('YYYY-MM-DD')}</b>):<br />
+        weeklySummaryMessage = `<b>Weekly Summary</b> (for the week ending on <b>${moment(dueDate).tz('America/Los_Angeles').format('YYYY-MM-DD')}</b>):<br />
                                 <div style="padding: 10px 20px 0;">${summary}</div>`;
       }
     }

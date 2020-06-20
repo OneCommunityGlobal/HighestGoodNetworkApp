@@ -6,12 +6,24 @@ import {
 } from 'reactstrap';
 import './WeeklySummariesReport.css';
 import classnames from 'classnames';
+import moment from 'moment';
+import 'moment-timezone';
 import Loading from '../common/Loading';
 import { getWeeklySummariesReport } from '../../actions/weeklySummariesReport';
 import FormattedReport from './FormattedReport';
+import GeneratePdfReport from './GeneratePdfReport';
 
 
 const WeeklySummariesReport = () => {
+  const getWeekDates = weekIndex => (
+    {
+      fromDate: moment().tz('America/Los_Angeles').startOf('week').subtract(weekIndex, 'week')
+        .format('MMMM Do'),
+      toDate: moment().tz('America/Los_Angeles').endOf('week').subtract(weekIndex, 'week')
+        .format('MMMM Do, YYYY'),
+    }
+  );
+
   const dispatch = useDispatch();
 
   const { error, loading, summaries } = useSelector(state => state.weeklySummariesReport);
@@ -72,6 +84,10 @@ const WeeklySummariesReport = () => {
           <TabContent activeTab={activeTab} className="p-4">
             <TabPane tabId="1">
               <Row>
+                <Col sm="12" md="8" className="mb-2">From <b>{getWeekDates(0).fromDate}</b> to <b>{getWeekDates(0).toDate}</b></Col>
+                <Col sm="12" md="4"><GeneratePdfReport summaries={summaries} weekIndex="0" weekDates={getWeekDates(0)} /></Col>
+              </Row>
+              <Row>
                 <Col>
                   <FormattedReport summaries={summaries} weekIndex="0" />
                 </Col>
@@ -79,12 +95,20 @@ const WeeklySummariesReport = () => {
             </TabPane>
             <TabPane tabId="2">
               <Row>
+                <Col sm="12" md="8" className="mb-2">From <b>{getWeekDates(1).fromDate}</b> to <b>{getWeekDates(1).toDate}</b></Col>
+                <Col sm="12" md="4"><GeneratePdfReport summaries={summaries} weekIndex="1" weekDates={getWeekDates(1)} /></Col>
+              </Row>
+              <Row>
                 <Col>
                   <FormattedReport summaries={summaries} weekIndex="1" />
                 </Col>
               </Row>
             </TabPane>
             <TabPane tabId="3">
+              <Row>
+                <Col sm="12" md="8" className="mb-2">From <b>{getWeekDates(2).fromDate}</b> to <b>{getWeekDates(2).toDate}</b></Col>
+                <Col sm="12" md="4"><GeneratePdfReport summaries={summaries} weekIndex="2" weekDates={getWeekDates(2)} /></Col>
+              </Row>
               <Row>
                 <Col>
                   <FormattedReport summaries={summaries} weekIndex="2" />
