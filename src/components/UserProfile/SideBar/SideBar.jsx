@@ -34,9 +34,11 @@ const SideBar = ({
 		if (event.target.id === 'lastName') {
 			payload = { lastName: event.target.value }
 		}
-
 		if (event.target.id === 'email') {
 			payload = { email: event.target.value }
+		}
+		if (event.target.id === 'jobTitle') {
+			payload = { jobTitle: event.target.value }
 		}
 	}
 
@@ -79,6 +81,7 @@ const SideBar = ({
 					readOnly={canEditFields ? null : true}
 				/>
 			</FormGroup>
+
 			<FormGroup>
 				<Label for='lastName'>Last Name:</Label>
 				<Input
@@ -92,6 +95,21 @@ const SideBar = ({
 					readOnly={canEditFields ? null : true}
 				/>
 			</FormGroup>
+
+			<FormGroup>
+				<Label for='jobTitle'>Job Title:</Label>
+				<Input
+					type='title'
+					name='jobTitle'
+					id='jobTitle'
+					value={jobTitle}
+					style={{ color: orange }}
+					onChange={handleUserProfile}
+					placeholder=''
+					readOnly={canEditFields ? null : true}
+				/>	
+			</FormGroup>
+
 			<FormGroup>
 				<Label for='email'>Email:</Label>
 				<InputGroupAddon addonType='prepend'>
@@ -118,8 +136,10 @@ const SideBar = ({
 					readOnly={canEditFields ? null : true}
 				/>
 			</FormGroup>
+
 			<FormGroup>
 				<Label for='phoneNumber'>Phone Number:</Label>
+
 				<InputGroupAddon addonType='prepend'>
 					<InputGroupText>
 						<Input
@@ -133,6 +153,7 @@ const SideBar = ({
 					</InputGroupText>
 					<Label style={{ textAlign: 'center' }}>Publicly Accessible?</Label>
 				</InputGroupAddon>
+
 				<Input
 					type='number'
 					name='phoneNumber'
@@ -142,19 +163,9 @@ const SideBar = ({
 					onChange={handleUserProfile}
 					readOnly={canEditFields ? null : true}
 				/>
+
 			</FormGroup>
-			<FormGroup>
-				<Label for='jobTitle'>Job Title:</Label>
-				<Input
-					type='text'
-					name='jobTitle'
-					id='jobTitle'
-					style={{ color: orange }}
-					value={jobTitle}
-					onChange={handleUserProfile}
-					readOnly={canEditFields ? null : true}
-				/>
-			</FormGroup>
+
 		</>
 	)
 }

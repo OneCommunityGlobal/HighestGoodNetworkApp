@@ -29,6 +29,7 @@ class Profile extends Form {
       .uri()
       .required()
   }
+
   infringmentsSchema = {
     _id: Joi.string()
       .allow('')
@@ -41,6 +42,7 @@ class Profile extends Form {
       .required()
       .label('Infringement Description')
   }
+
   teamsSchema = {
     _id: Joi.string().required(),
     teamName: Joi.string().required()
@@ -90,6 +92,9 @@ class Profile extends Form {
       .email()
       .required()
       .label('Email'),
+    jobTitle: Joi.string()
+      .optional()
+      .label('Job Title'),
     weeklyComittedHours: Joi.number()
       .required()
       .min(0)
@@ -124,6 +129,7 @@ class Profile extends Form {
   handleInfringment = (item, action, index = null) => {
     this.handleCollection('infringments', item, action, index)
   }
+
   handleMemberships = (collection, value) => {
     this.updateCollection(collection, value)
   }
@@ -136,6 +142,7 @@ class Profile extends Form {
       lastName,
       profilePic,
       email,
+      jobTitle,
       weeklyComittedHours,
       infringments,
       adminLinks,
@@ -156,6 +163,7 @@ class Profile extends Form {
             <div className='row my-auto'>
               <div className='col-md-4'>
                 <div className='form-row text-center'>
+
                   {this.renderImage({
                     name: 'currentprofilePic',
                     label: '',
@@ -163,6 +171,7 @@ class Profile extends Form {
                     type: 'image',
                     src: profilePic || '/defaultprofilepic.jpg'
                   })}
+
                   {canEditFields &&
                     this.renderFileUpload({
                       name: 'profilePic',
@@ -180,6 +189,7 @@ class Profile extends Form {
                       className: 'btn btn-info btn-sm text-center m-1'
                     })}
                 </div>
+
                 <div className='form-row text-center'>
                   {canEditFields &&
                     !!targetUserId &&
@@ -207,6 +217,7 @@ class Profile extends Form {
                     ))}
                 </div>
               </div>
+
               <div className='col-md-8'>
                 <div className='form-row'>
                   {this.renderInput({
@@ -221,6 +232,13 @@ class Profile extends Form {
                     label: 'Last Name:',
                     className: 'col-md-4',
                     value: lastName,
+                    readOnly: canEditFields ? null : true
+                  })}
+                  {this.renderInput({
+                    name: 'jobTitle',
+                    label: 'Job Title:',
+                    className: 'col-md-4',
+                    value: jobTitle,
                     readOnly: canEditFields ? null : true
                   })}
                   {this.renderRadio({
@@ -255,6 +273,8 @@ class Profile extends Form {
                     min: 0
                   })}
                 </div>
+
+
               </div>
             </div>
 

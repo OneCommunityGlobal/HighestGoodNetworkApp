@@ -25,6 +25,7 @@ export const FIRST_NAME = 'First Name';
 export const LAST_NAME = 'Last Name';
 export const ROLE = 'Role';
 export const EMAIL = 'Email';
+export const JOB_TITLE = 'Job Title';
 export const WEEKLY_COMMITTED_HRS = 'Weekly Committed Hrs';
 export const CREATE_NEW_USER = 'Create New User';
 export const SEARCH = 'Search';

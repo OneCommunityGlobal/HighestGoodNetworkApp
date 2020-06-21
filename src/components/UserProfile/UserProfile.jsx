@@ -21,7 +21,7 @@ import {
 	Label,
 	CardImg
 } from 'reactstrap'
-import { orange, silverGray } from '../../constants/colors'
+import { orange, silverGray, warningRed } from '../../constants/colors'
 import cx from 'classnames'
 import Memberships from '../Memberships/Memberships'
 import ProfileLinks from '../ProfileLinks/ProfileLinks'
@@ -58,12 +58,13 @@ class UserProfile extends Component {
 				this.setState({ isLoading: false, userProfile: this.props.userProfile })
 			}
 		}
-		//console.log(this.props.userProfile)
+		// console.log(this.props.userProfile)
 	}
 
 	handleUserProfile = event => {
 		console.log('handleUserProfile')
 		event.preventDefault()
+		
 		if (event.target.id === 'firstName') {
 			this.setState({
 				userProfile: {
@@ -86,6 +87,16 @@ class UserProfile extends Component {
 				modalMessage: 'Last Name cannot be empty'
 			})
 		}
+
+		if (event.target.id === 'jobTitle') {
+			this.setState({
+				userProfile: {
+					...this.state.userProfile,
+					jobTitle: event.target.value
+				}
+			})
+		}
+
 		if (event.target.id === 'email') {
 			this.setState({
 				userProfile: {
@@ -95,19 +106,12 @@ class UserProfile extends Component {
 				emailError: event.target.value ? '' : 'Email cannot be empty '
 			})
 		}
+
 		if (event.target.id === 'phoneNumber') {
 			this.setState({
 				userProfile: {
 					...this.state.userProfile,
 					phoneNumber: event.target.value.trim()
-				}
-			})
-		}
-		if (event.target.id === 'jobTitle') {
-			this.setState({
-				userProfile: {
-					...this.state.userProfile,
-					jobTitle: event.target.value
 				}
 			})
 		}
@@ -129,6 +133,10 @@ class UserProfile extends Component {
 				}
 			})
 		}
+
+		var elem = document.getElementById('warningCard');
+		elem.style.display = 'block';
+
 	}
 
 	handleImageUpload = async e => {
@@ -158,7 +166,8 @@ class UserProfile extends Component {
 		console.log(filesizeKB)
 
 		if (filesizeKB > 50) {
-			imageUploadError = `\nThe file you are trying to upload exceeds the maximum size of 50KB. You can either choose a different file, or use an online file compressor.`
+			imageUploadError = `\nThe file you are trying to upload exceeds the maximum size of 50KB. You can either 
+														choose a different file, or use an online file compressor.`
 			isValid = false
 
 			return this.setState({
@@ -168,7 +177,6 @@ class UserProfile extends Component {
 				showModal: true,
 				modalTitle: 'Profile Pic Error',
 				modalMessage: imageUploadError,
-				url: "https://www.w3schools.com"
 			})
 		}
 
@@ -241,6 +249,8 @@ class UserProfile extends Component {
 				modalTitle: 'Success',
 				type: 'message'
 			})
+			var elem = document.getElementById('warningCard');
+			elem.style.display = 'none';
 		} else {
 			this.setState({
 				showModal: true,
@@ -252,17 +262,19 @@ class UserProfile extends Component {
 	}
 
 	render() {
+
 		let { userId: targetUserId } = this.props.match ? this.props.match.params : { userId: undefined };
 		let { userid: requestorId, role: requestorRole } = this.props.auth.user
 
 		const { userProfile, isLoading, showModal } = this.state
+
 		const {
 			firstName,
 			lastName,
 			email,
-			profilePic = '',
+			profilePic,
 			phoneNumber,
-			jobTitle,
+			jobTitle = '',
 			personalLinks,
 			adminLinks,
 			phoneNumberPubliclyAccessible,
@@ -274,11 +286,34 @@ class UserProfile extends Component {
 		let canEditFields = isUserAdmin || isUserSelf
 		const isUserAdmin = requestorRole === 'Administrator'
 
+		if (isUserAdmin) {
+			console.log("User is viewing as admin")
+		} else if (isUserSelf) {
+			console.log("User is viewing self")
+		} else {
+			console.log("User is viewing profile")
+		}
+
 		if (isLoading === true) {
 			return <Loading />
 		}
+
 		return (
 			<Container className='themed-container' fluid={true}>
+
+				<CardTitle 
+				id="warningCard" 
+				className='themed-container' 
+				fluid={true}
+				style={
+				{	position: 'fixed', top: '7vh', left: '0', width: '100%',
+					color: 'white', backgroundColor: warningRed,
+					border: '1px solid #A8A8A8', textAlign: "center", display: 'none', zIndex: 2, opacity:'70%'}}
+				>
+					Don't forget to click / tap "Save Changes". If you don't then changes to your profile will not be saved.
+				</CardTitle>
+
+
 				{showModal && (
 					<Modal
 						isOpen={this.state.showModal}
@@ -292,6 +327,7 @@ class UserProfile extends Component {
 						linkType={this.state.linkType}
 					/>
 				)}
+
 				<Row>
 					<Col
 						xs={12}
@@ -347,6 +383,7 @@ class UserProfile extends Component {
 						</Button>
 					</Col>
 				</Row>
+
 			</Container>
 		)
 	}

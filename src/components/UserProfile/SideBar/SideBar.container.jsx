@@ -1,7 +1,7 @@
 import { connect } from 'react-redux'
 import _ from 'lodash'
 
-import { editFirstName, editUserProfile } from '../../../actions/userProfile'
+import { editUserProfile } from '../../../actions/userProfile'
 import SideBar from './SideBar'
 
 const mapStateToProps = state => {

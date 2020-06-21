@@ -92,7 +92,7 @@ const ModalExample = props => {
 							Close
 						</Button>
 					)}
-					
+
 				{type === 'input' && (
 					<Button
 						color='danger'
