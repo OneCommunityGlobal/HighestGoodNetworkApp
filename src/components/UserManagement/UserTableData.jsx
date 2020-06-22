@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { DELETE, PAUSE, RESUME, ACTIVE, INACTIVE } from '../../languages/en/ui'
+import { DELETE, PAUSE, RESUME } from '../../languages/en/ui'
 import { UserStatus } from '../../utils/enums'
 
 /**

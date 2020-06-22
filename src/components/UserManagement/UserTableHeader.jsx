@@ -8,7 +8,7 @@ import {
 /**
  * The header row of the user table. 
  */
-const UserTableHeader = React.memo(() => {
+const UserTableHeader = React.memo((props) => {
 
   return (
     <tr>
