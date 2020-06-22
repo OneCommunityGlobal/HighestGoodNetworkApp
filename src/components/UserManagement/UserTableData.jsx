@@ -38,7 +38,7 @@ const UserTableData = React.memo((props) => {
         </button>
       </td>
       <td><button type="button" className="btn btn-outline-danger" onClick={(e) => {
-        props.onDeleteClick(props.user, 'archive');
+        props.onDeleteClick(props.user);
       }}>{DELETE}</button></td>
     </tr>
   )
