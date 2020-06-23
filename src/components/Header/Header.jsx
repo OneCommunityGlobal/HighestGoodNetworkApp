@@ -87,7 +87,7 @@ class Header extends React.Component {
                   </DropdownToggle>
                   <DropdownMenu>
                     {
-                      this.props.auth.user.role === UserRole.ADMIN_ROLE ?
+                      this.props.auth.user.role === UserRole.Administrator ?
                         <DropdownItem tag={Link} to='/usermanagement'>
                           {USER_MANAGEMENT}
                         </DropdownItem>
