@@ -44,30 +44,31 @@ const SideBar = ({
 
 	return (
 		<>
-			<>
-				<Label
-					for='newProfilePic'
-					htmlFor={'newProfilePic'}
-					style={{ color: 'red', cursor: 'pointer' }}>
-					Change Profile Picture
-				</Label>
+			<div style={{width:'100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center'}}>
+				<>
+					<Label
+						for='newProfilePic'
+						htmlFor={'newProfilePic'}
+						style={{ color: 'red', cursor: 'pointer' }}>
+						Change Profile Picture
+					</Label>
 
-				<Input
-					type='file'
-					name='newProfilePic'
-					id={'newProfilePic'}
-					style={{ visibility: 'hidden', width: 0, height: 0 }}
-					onChange={handleImageUpload}
-					accept={'image/png,image/jpeg, image/jpg'}
+					<Input
+						type='file'
+						name='newProfilePic'
+						id={'newProfilePic'}
+						style={{ visibility: 'hidden', width: 0, height: 0 }}
+						onChange={handleImageUpload}
+						accept={'image/png,image/jpeg, image/jpg'}
+					/>
+				</>
+
+				<CardImg
+					src={profilePic || '/defaultprofilepic.png'}
+					alt='Profile pic'
+					style={{ width: '250px', height: '250px' }}
 				/>
-			</>
-
-			<CardImg
-				src={profilePic || '/defaultprofilepic.png'}
-				alt='Profile pic'
-				style={{ width: '250px', height: '250px' }}
-			/>
-
+			</div>
 			<FormGroup>
 				<Label for='firstName'>First Name:</Label>
 				<Input

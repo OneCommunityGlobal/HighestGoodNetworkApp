@@ -2,7 +2,9 @@ import React from 'react'
 
 import { Card, Row, CardTitle, CardText, Col, Badge } from 'reactstrap'
 const WorkHistory = () => (
-	<Row>
+	<Row style={{
+		marginRight: 0
+	}}>
 		<Col lg={true}>
 			<Card body>
 				<CardTitle style={{ fontWeight: 'bold' }}>Hours Contributed :</CardTitle>

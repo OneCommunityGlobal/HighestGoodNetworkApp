@@ -303,14 +303,13 @@ class UserProfile extends Component {
 
 				<CardTitle 
 				id="warningCard" 
-				className='themed-container' 
-				fluid={true}
+				className='themed-container'
 				style={
-				{	position: 'fixed', top: '7vh', left: '0', width: '100%',
+				{	position: 'fixed', top: '7vh', width: '100%',
 					color: 'white', backgroundColor: warningRed,
 					border: '1px solid #A8A8A8', textAlign: "center", display: 'none', zIndex: 2, opacity:'70%'}}
 				>
-					Don't forget to click / tap "Save Changes". If you don't then changes to your profile will not be saved.
+					Reminder: You must click "Save Changes" at the bottom of this page. If you don't, changes to your profile will not be saved.
 				</CardTitle>
 
 
@@ -356,7 +355,7 @@ class UserProfile extends Component {
 
 						<br />
 						<UserLinks
-							linkType='Admin'
+							linkType='Google Doc'
 							links={adminLinks}
 							handleModelState={this.handleModelState}
 							isUserAdmin={isUserAdmin}
@@ -372,15 +371,18 @@ class UserProfile extends Component {
 							canEditFields={canEditFields}
 						/>
 						<br />
-
+						
 						<Badges />
+
 						<br />
 						<Button outline color='primary' onClick={this.handleSubmit}>
 							{'Save Changes'}
 						</Button>
+
 						<Button outline color='danger'>
 							Cancel
 						</Button>
+						
 					</Col>
 				</Row>
 
