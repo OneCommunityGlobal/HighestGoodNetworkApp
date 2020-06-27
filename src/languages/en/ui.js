@@ -32,3 +32,4 @@ export const SEARCH = 'Search';
 export const SHOW = 'Show';
 export const PAUSE = 'Pause';
 export const RESUME = 'Resume';
+export const CLOSE = 'Close';

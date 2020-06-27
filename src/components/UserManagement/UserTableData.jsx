@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { DELETE, PAUSE, RESUME, ACTIVE, INACTIVE } from '../../languages/en/ui'
+import { DELETE, PAUSE, RESUME } from '../../languages/en/ui'
 import { UserStatus } from '../../utils/enums'
 
 /**
@@ -38,7 +38,7 @@ const UserTableData = React.memo((props) => {
         </button>
       </td>
       <td><button type="button" className="btn btn-outline-danger" onClick={(e) => {
-        props.onDeleteClick(props.user, 'archive');
+        props.onDeleteClick(props.user);
       }}>{DELETE}</button></td>
     </tr>
   )
