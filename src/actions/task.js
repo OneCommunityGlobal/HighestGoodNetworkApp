@@ -6,6 +6,34 @@ import axios from 'axios'
 import * as types from '../constants/task'
 import { ENDPOINTS } from '../utils/URL'
 
+export const importTask = (newTask, wbsId) => {
+  const url = ENDPOINTS.TASK(wbsId);
+  return async dispatch => {
+    let status = 200;
+    let _id = null;
+    let task = {};
+
+    try {
+      const res = await axios.put(url, newTask)
+      _id = res.data._id;
+      status = res.status;
+      task = res.data;
+
+    } catch (err) {
+      console.log("TRY CATCH ERR", err);
+      status = 400;
+    }
+
+    newTask._id = _id;
+
+    await dispatch(
+      postNewTask(task,
+        status
+      ));
+
+  }
+
+}
 
 
 export const addNewTask = (newTask, wbsId) => {

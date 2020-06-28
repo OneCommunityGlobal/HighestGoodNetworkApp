@@ -69,7 +69,7 @@ const Task = (props) => {
   }
 
   const drag = (ev, from) => {
-    props.drag(from, props.parentId);
+    //props.drag(from, props.parentId);
     //document.getElementById(`taskDrop_${from}`).style.display = 'none';
   }
 
@@ -110,7 +110,7 @@ const Task = (props) => {
           onDrop={(e) => drop(e, props)}
           draggable="true" onDragStart={e => drag(e, props.id)}
           scope="row"
-          className={`taskNum tag_color_${props.num.length > 0 ? props.num.split('.')[0] : props.num}`} onClick={() => selectTask(props.id)}>{props.num}</th>
+          className={"hhi"/*`taskNum tag_color_${props.num.length > 0 ? props.num.split('.')[0] : props.num}`*/} onClick={() => selectTask(props.id)}>{props.num.split('.0').join('')}</th>
         <td className="taskName">
           {/*props.parentId ? props.parentId.substring(props.parentId.length - 3, props.parentId.length) : null}/{props.id.substring(props.id.length - 3, props.id.length)*/}
           {props.level === 1 ? <div className='level-space-1' data-tip="Level 1"><span onClick={(e) => toggleGroups(props.num, props.id)} className='fa_dropdown' id={`dropdown_${props.id}`}><i className="fa fa-caret-down" aria-hidden="true"></i></span> {props.name}</div> : null}
@@ -199,11 +199,11 @@ const Task = (props) => {
         <td data-tip="Hours-Most" >{props.hoursMost}</td>
         <td data-tip="Estimated Hours" >{props.estimatedHours}</td>
         <td>
-          {(startedDate.getMonth() + 1)}/{startedDate.getDate()}/{startedDate.getFullYear()}
+          {startedDate.getFullYear() !== 1969 ? `${(startedDate.getMonth() + 1)}/${startedDate.getDate()}/${startedDate.getFullYear()}` : null}
           <br />
         </td>
         <td>
-          {(dueDate.getMonth() + 1)}/{dueDate.getDate()}/{dueDate.getFullYear()}
+          {dueDate.getFullYear() !== 1969 ? `${(dueDate.getMonth() + 1)}/${dueDate.getDate()}/${dueDate.getFullYear()}` : null}
         </td>
         <td>{props.links}</td>
       </tr>

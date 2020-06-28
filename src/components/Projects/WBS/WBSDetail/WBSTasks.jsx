@@ -1,5 +1,5 @@
 /*********************************************************************************
- * Component: TAKS 
+ * Component: TASK 
  * Author: Henry Ng - 21/03/20 ≢
  ********************************************************************************/
 import React, { useState, useEffect } from 'react'
@@ -7,6 +7,7 @@ import { connect } from 'react-redux'
 import { fetchAllTasks, updateNumList, deleteTask } from './../../../../actions/task'
 import Task from './Task/'
 import AddTaskModal from './AddTask/AddTaskModal'
+import ImportTask from "./ImportTask/"
 import './wbs.css';
 import ReactTooltip from 'react-tooltip'
 
@@ -118,7 +119,7 @@ const WBSTasks = (props) => {
       <div className='container' >
 
         <AddTaskModal parentNum={null} taskId={null} wbsId={wbsId} projectId={projectId} />
-
+        <ImportTask wbsId={wbsId} projectId={projectId} />
 
         <table className="table table-bordered">
           <thead>

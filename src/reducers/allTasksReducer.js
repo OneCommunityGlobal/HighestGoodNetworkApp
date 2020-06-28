@@ -7,9 +7,48 @@ const allTasksInital = {
   error: ""
 }
 
+const filterAndSort = (tasks, level) => {
+  return tasks.sort((a, b) => {
+
+    const aArr = a.num.split('.');
+    const bArr = b.num.split('.');
+    for (let i = 0; i < level; i++) {
+      if (parseInt(aArr[i]) < parseInt(bArr[i])) {
+        return -1;
+      }
+      if (parseInt(aArr[i]) > parseInt(bArr[i])) {
+        return 1;
+      }
+    }
+  });
+}
+
 const sortByNum = (tasks) => {
+  //const lv1Tasks = filterAndSort(tasks, 1);
+  //const lv2Tasks = filterAndSort(tasks, 2);
+  //const lv3Tasks = filterAndSort(appendTasks, 4);
+  //const lv4Tasks = filterAndSort(tasks, 4);
+
+  const appendTasks = [];
+  tasks.forEach(task => {
+    if (task.level === 1) {
+      task.num += '.0.0.0';
+    }
+    if (task.level === 2) {
+      task.num += '.0.0';
+    }
+    if (task.level === 3) {
+      task.num += '.0';
+    }
+    appendTasks.push(task);
+  })
+
+  return filterAndSort(appendTasks, 4);
+}
+
+const sortByPosition = (tasks) => {
   tasks.sort(function (a, b) {
-    if (a.num < b.num) {
+    if (a.position < b.position) {
       return -1;
     }
     if (a.num > b.num) {
@@ -31,9 +70,7 @@ export const taskReducer = (allTasks = allTasksInital, action) => {
     case types.RECEIVE_TASKS:
       return { ...allTasks, taskItems: [...sortByNum(action.taskItems)], fetched: true, fetching: false, error: "none" }
     case types.ADD_NEW_TASK:
-      action.newTask.new = true;
-      allTasks.taskItems.push(action.newTask);
-      return { ...allTasks, taskItems: sortByNum(allTasks.taskItems), fetched: true, fetching: false, error: "none" }
+      return { ...allTasks }
     case types.DELETE_TASK:
       let indexStart = allTasks.taskItems.findIndex(task => task._id == action.taskId);
       let indexEnd = indexStart;
