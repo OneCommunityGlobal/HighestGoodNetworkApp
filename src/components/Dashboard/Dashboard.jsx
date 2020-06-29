@@ -11,6 +11,7 @@ class Dashboard extends Component {
 			<Container>
 				<Row>
 					<Col sm={{ offset: 1, size: 7 }}>
+						Testing deployment automation!
 						<Leaderboard />
 					</Col>
 					<Col sm={{ size: 3 }}>
