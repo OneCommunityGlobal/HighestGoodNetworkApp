@@ -90,7 +90,7 @@ describe('User Management Component', () => {
         isActive={true} />)
       expect(component).not.toBeNull();
       expect(component.find('.usermanagement__tr').length).toBe(1);
-      expect(component.find('td').length).toBe(8);
+      expect(component.find('td').length).toBe(9);
     })
 
     it('verifying the table footer component structure', () => {
@@ -105,7 +105,7 @@ describe('User Management Component', () => {
     it('verifying the table header component structure', () => {
       let component = shallow(<UserTableHeader />)
       expect(component).not.toBeNull();
-      expect(component.find('th').length).toBe(8);
+      expect(component.find('th').length).toBe(9);
     })
 
     it('verifying the table search header component structure', () => {
@@ -117,7 +117,7 @@ describe('User Management Component', () => {
         onWeeklyHrsSearch={jest.fn()}
       />)
       expect(component).not.toBeNull();
-      expect(component.find('td').length).toBe(8);
+      expect(component.find('td').length).toBe(9);
     })
   })
 
