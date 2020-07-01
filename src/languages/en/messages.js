@@ -10,3 +10,4 @@ export const USER_DELETE_DATA_FOREVER = "Understood, C-ya! Delete their Data For
 export const USER_DELETE_DATA_INACTIVE = "Oops, My Bad! Just Make Them Inactive";
 export const USER_DELETE_DATA_ARCHIVE = "Wait, Save the Data! Data Archiving is Cool";
 export const USER_DELETE_OPTION_HEADING = "Choose A Delete Action";
+export const USER_STATUS_CHANGE_CONFIRMATION = (fullName, status) => `Please confirm that you want to make "${fullName}" as ${status}.`

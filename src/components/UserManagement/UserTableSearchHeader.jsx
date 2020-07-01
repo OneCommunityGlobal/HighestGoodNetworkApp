@@ -53,6 +53,7 @@ const UserTableSearchHeader = React.memo((props) => {
           searchCallback={onWeeklyHrsSearch} />
       </td>
       <td id="user_pause"></td>
+      <td id="user_resume_date"></td>
       <td id="user__delete"></td>
     </tr>
   )
