@@ -1,6 +1,5 @@
 import React from 'react';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
-import { INACTIVE, ACTIVE } from '../../languages/en/ui';
 import { USER_STATUS_CHANGE_CONFIRMATION } from '../../languages/en/messages';
 
 /**
@@ -15,7 +14,7 @@ const ActiveInactiveConfirmationPopup = React.memo((props) => {
   return <Modal isOpen={props.open} toggle={closePopup}>
     <ModalHeader toggle={closePopup}>Change the user status</ModalHeader>
     <ModalBody>
-      <p>{USER_STATUS_CHANGE_CONFIRMATION(props.fullName, (props.isActive ? INACTIVE : ACTIVE))}</p>
+      <p>{USER_STATUS_CHANGE_CONFIRMATION(props.fullName, (props.isActive ? 'INACTIVE' : 'ACTIVE'))}</p>
     </ModalBody>
     <ModalFooter>
       <Button color="primary" onClick={setActiveInactive}>Ok</Button>
