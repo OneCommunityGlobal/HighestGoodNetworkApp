@@ -1,0 +1,53 @@
+
+#wrapper .report {
+  position: absolute;
+  left: 10px;
+  right: 10px;
+  top: 10vh;
+  visibility:hidden;
+}
+  
+#wrapper:hover .report {
+  visibility:visible;
+}
+
+.title {
+  padding: 5px;
+  background-color: slategray;
+  outline-width: 2px;
+  outline-style: solid;
+  outline-color: black;
+  margin: 2px;
+}
+
+.summary {  
+  padding: 5px;
+  background-color: slategray;
+  outline-width: 2px;
+  outline-style: solid;
+  outline-color: black;
+  margin: 2px;
+}
+
+
+.blueSquareButton {
+	background:linear-gradient(to bottom, #007dc1 5%, #0061a7 100%);
+	background-color: dodgerblue;
+	border-radius:4px;
+
+	cursor:pointer;
+	color:#ffffff;
+	font-family:Arial;
+  margin: 5px;
+  width: 18px;
+  height: 18px;
+	text-decoration:none;
+}
+.blueSquareButton:hover {
+	background:linear-gradient(to bottom, #0061a7 5%, #007dc1 100%);
+	background-color:#0061a7;
+}
+/* .blueSquareButton:active {
+	position:relative;
+	top:1px;
+} */

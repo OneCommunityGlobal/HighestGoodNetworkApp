@@ -2,62 +2,99 @@ import React from 'react'
 
 import { Card, CardTitle, CardText, Badge, Button, CardBody } from 'reactstrap'
 
+
 const UserLinks = ({
-	linkType,
+	linkSection,
+	linkSectionName,
 	links = [],
 	handleModelState,
 	isUserAdmin,
-	canEditFields
+	canEditFields,
+	removeLink,
 }) => {
-	return (
-		<Card body>
-			<CardTitle style={{ fontWeight: 'bold', fontSize: 20 }}>
-				{linkType} Links :
+
+
+	return(
+			<Card body>
+				<CardTitle style={{ fontWeight: 'bold', fontSize: 20 }}>
+				{linkSectionName} Links :
 			</CardTitle>
+
 			<CardBody>
 				{!links.length && (
 					<CardText>
 						<Badge color='danger'>No Links present</Badge>
 					</CardText>
 				)}
-				{links.map((item, key) => (
+
+				{links.map((item, index) => (
+
 					<CardText
-						key={key}
+						key={index}
 						style={{
 							fontSize: 20,
 							justifyContent: 'space-between',
 							display: 'flex',
-							paddingLeft: 20,
-							paddingRight: 20
+							paddingLeft: 10,
+							paddingRight: 10
 						}}>
-						<Badge style={{ width: '10vw' }} color='secondary'>
+
+						{ (linkSection === 'admin') && isUserAdmin && (
+							<button 
+								type="button" 
+								className="close"
+								aria-label="Close" 
+								style={{paddingRight:2 }}
+								onClick={() => removeLink(linkSection, item)}>				
+									<span aria-hidden="true">&times;</span>
+							</button>
+						)}
+
+						{ (linkSection === 'user') && canEditFields && (
+							<button 
+							type="button" 
+							className="close"
+							aria-label="Close" 
+							style={{paddingRight:2 }}
+							onClick={() => removeLink(linkSection, item)}>				
+								<span aria-hidden="true">&times;</span>
+							</button>
+						)}
+
+						<Badge style={{ width: '25vw', marginRight: '2vw', overflow: 'hidden', textOverflow: 'ellipsis' }} color='secondary'>
 							{item.Name}
 						</Badge>
-						<Badge style={{ width: '40vw' }} href={item.Link} color='warning'>
+
+						<Badge style={{ width: '30vw', overflow: 'hidden', textOverflow: 'ellipsis' }} href={item.Link} color='warning'>
 							{item.Link}
 						</Badge>
-					</CardText>
-				))}
-			</CardBody>
 
-			{linkType === 'Admin' && isUserAdmin && (
+					</CardText>
+					))}
+
+			</CardBody>
+			
+			{ (linkSection === 'admin') && isUserAdmin && (
+				<Button
+				outline
+				color='primary'
+				onClick={() => handleModelState(true, 'input', linkSection)}>
+				Add a new Link
+				</Button>
+			)}
+
+			{ (linkSection === 'user') && canEditFields && (
 				<Button
 					outline
 					color='primary'
-					onClick={() => handleModelState(true, 'input', linkType)}>
+					onClick={() => handleModelState(true, 'input', linkSection)}>
 					Add a new Link
 				</Button>
 			)}
-			{linkType !== 'Admin' && (
-				<Button
-					outline
-					color='primary'
-					onClick={() => handleModelState(true, 'input', linkType)}>
-					Add a new Link
-				</Button>
-			)}
+
 		</Card>
 	)
+
 }
 
 export default UserLinks

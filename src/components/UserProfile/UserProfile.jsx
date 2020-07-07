@@ -26,7 +26,7 @@ import cx from 'classnames'
 import Memberships from '../Memberships/Memberships'
 import ProfileLinks from '../ProfileLinks/ProfileLinks'
 import Joi from 'joi'
-import ShowSaveWarning from '../common/ShowSaveWarning'
+import BlueSquare from './BlueSquares'
 import Modal from '../common/Modal'
 
 import Badges from './Badges'
@@ -34,6 +34,7 @@ import WorkHistory from './WorkHistory'
 import UserLinks from './UserLinks'
 
 import SideBar from './SideBar'
+
 
 class UserProfile extends Component {
 	state = {
@@ -61,10 +62,23 @@ class UserProfile extends Component {
 		// console.log(this.props.userProfile)
 	}
 
+	// refreshProfile = async() => {
+	// 	let userId = this.props.match.params.userId
+
+	// 	try {
+	// 		const newProfile = await this.props.getUserProfile(userId)
+	// 		this.setState({
+	// 			userProfile: newProfile
+	// 		})
+	// 	} catch (error) {
+	// 		// show error here, like modal error
+	// 	}
+	// }
+
 	handleUserProfile = event => {
-		console.log('handleUserProfile')
-		event.preventDefault()
-		
+		console.log('handleUserProfile............')
+
+
 		if (event.target.id === 'firstName') {
 			this.setState({
 				userProfile: {
@@ -117,20 +131,35 @@ class UserProfile extends Component {
 		}
 
 		if (event.target.id === 'emailPubliclyAccessible') {
+			
+			const newValue =  event.target.checked
+			
+			console.log(this.state)
+
 			this.setState({
 				userProfile: {
 					...this.state.userProfile,
-					emailPubliclyAccessible: event.target.checked
+					privacySettings: {
+						...this.state.userProfile.privacySettings,
+						email: !this.state.userProfile.privacySettings.email
+					}
 				}
 			})
+
 		}
+
 		if (event.target.id === 'phoneNumberPubliclyAccessible') {
-			this.setState({
-				userProfile: {
-					...this.state.userProfile,
-					phoneNumberPubliclyAccessible: !this.state.userProfile
-						.phoneNumberPubliclyAccessible
-				}
+			this.setState(prevState => {
+				var newPrivacySettings = prevState.userProfile.privacySettings
+				newPrivacySettings.phoneNumber = !newPrivacySettings.phoneNumber
+				
+				this.setState({
+					userProfile: {
+						...this.state.userProfile,
+						privacySettings: newPrivacySettings,
+					}
+				})
+
 			})
 		}
 
@@ -205,19 +234,37 @@ class UserProfile extends Component {
 		})
 	}
 
+	handleBlueSquare = (status = true, type = 'message') => {
+		
+		if (type === 'addBlueSquare'){
+			this.setState({
+				showModal: status,
+				modalTitle: 'Blue Square',
+				type: type
+			})
+		}else{
+			console.log('delete blue square...')
+		}
 
-	addLink = (linkName, linkURL, linkType) => {
-		console.log('addLink', linkName, linkURL, linkType)
+	}
+
+	addLink = (linkName, linkURL, linkSection) => {
+		console.log('addLink', linkName, linkURL, linkSection)
+
+		var elem = document.getElementById('warningCard');
+		elem.style.display = 'block';
 
 		const link = { Name: linkName, Link: linkURL }
-		if (linkType !== 'Admin') {
+		if (linkSection == 'user') {
 			return this.setState(prevState => {
+
 				return {
 					showModal: false,
 					userProfile: {
 						...this.state.userProfile,
 						personalLinks: prevState.userProfile.personalLinks.concat(link)
 					}
+
 				}
 			})
 		}
@@ -233,6 +280,65 @@ class UserProfile extends Component {
 		})
 	}
 
+	removeLink = (linkSection, item) => {
+
+		if (linkSection === 'user') {
+			return this.setState(prevState => {
+				var prevLinks = prevState.userProfile.personalLinks
+				var newLinks = prevLinks.filter(function(arrayItem) {
+					if (arrayItem != item){
+						return arrayItem
+					}
+				});
+
+				return {
+					showModal: false,
+					userProfile: {
+						...this.state.userProfile,
+						personalLinks: newLinks
+					}
+				}
+			})
+		}
+
+		return this.setState(prevState => {
+			var prevLinks = prevState.userProfile.adminLinks
+			var newLinks = prevLinks.filter(function(arrayItem) {
+				if (arrayItem != item){
+					return arrayItem
+				}
+			});
+
+			return {
+				showModal: false,
+				userProfile: {
+					...this.state.userProfile,
+					adminLinks: newLinks
+				}
+			}
+		})
+
+
+
+	}
+
+	addInfringment = (dateStamp, report) => {
+
+		let newInfringment = { date: dateStamp, description: report}
+
+		this.setState(prevState => {
+			return {
+				showModal: false,
+				userProfile: {
+					...this.state.userProfile,
+					infringments: prevState.userProfile.infringments.concat(newInfringment)
+				}
+			}
+		})
+
+	}
+
+	
 	handleSubmit = async event => {
 		event.preventDefault()
 
@@ -277,117 +383,128 @@ class UserProfile extends Component {
 			jobTitle = '',
 			personalLinks,
 			adminLinks,
-			phoneNumberPubliclyAccessible,
-			emailPubliclyAccessible
+			infringments,
+			privacySettings,
 		} = userProfile
 
-		console.log('phoneNumberPubliclyAccessible', phoneNumberPubliclyAccessible)
 		let isUserSelf = targetUserId === requestorId
-		let canEditFields = isUserAdmin || isUserSelf
 		const isUserAdmin = requestorRole === 'Administrator'
-
-		if (isUserAdmin) {
-			console.log("User is viewing as admin")
-		} else if (isUserSelf) {
-			console.log("User is viewing self")
-		} else {
-			console.log("User is viewing profile")
-		}
+		let canEditFields = isUserAdmin || isUserSelf
 
 		if (isLoading === true) {
 			return <Loading />
 		}
 
-		return (
-			<Container className='themed-container' fluid={true}>
+		// if (canEditFields) {
+			return (
+				<Container className='themed-container' fluid={true}>
 
-				<CardTitle 
-				id="warningCard" 
-				className='themed-container'
-				style={
-				{	position: 'fixed', top: '7vh', width: '100%',
-					color: 'white', backgroundColor: warningRed,
-					border: '1px solid #A8A8A8', textAlign: "center", display: 'none', zIndex: 2, opacity:'70%'}}
-				>
-					Reminder: You must click "Save Changes" at the bottom of this page. If you don't, changes to your profile will not be saved.
-				</CardTitle>
-
-
-				{showModal && (
-					<Modal
-						isOpen={this.state.showModal}
-						closeModal={() => {
-							this.setState({ showModal: false })
+					<CardTitle
+						id="warningCard"
+						className='themed-container'
+						style={{
+							position: 'fixed', top: '7vh', left: '0', width: '100%',
+							color: 'white', backgroundColor: warningRed,
+							border: '1px solid #A8A8A8', textAlign: "center", display: 'none', zIndex: 2, opacity: '70%'
 						}}
-						modalMessage={this.state.modalMessage}
-						modalTitle={this.state.modalTitle}
-						type={this.state.type}
-						confirmModal={this.addLink}
-						linkType={this.state.linkType}
-					/>
-				)}
+					>
+						Reminder: You must click "Save Changes" at the bottom of this page. If you don't, changes to your profile will not be saved.
+					</CardTitle>
 
-				<Row>
-					<Col
-						xs={12}
-						md={3}
-						sm={12}
-						style={{ backgroundColor: silverGray, border: '1px solid #A8A8A8' }}>
-						<SideBar
-							profilePic={profilePic}
-							firstName={firstName}
-							lastName={lastName}
-							email={email}
-							phoneNumber={phoneNumber}
-							jobTitle={jobTitle}
-							phoneNumberPubliclyAccessible={phoneNumberPubliclyAccessible}
-							emailPubliclyAccessible={emailPubliclyAccessible}
-							canEditFields={canEditFields}
-							isUserAdmin={isUserAdmin}
-							handleUserProfile={this.handleUserProfile}
-							handleImageUpload={this.handleImageUpload}
+
+					{showModal && (
+						<Modal
+							isOpen={this.state.showModal}
+							closeModal={() => {
+								this.setState({ showModal: false })
+							}}
+							modalMessage={this.state.modalMessage}
+							modalTitle={this.state.modalTitle}
+							type={this.state.type}
+							confirmModal={this.addLink}
+							confirmInfringment={this.addInfringment}
+							linkType={this.state.linkType}
+							infringments={this.state.infringments}
 						/>
+					)}
 
-						<br />
-					</Col>
-					<Col xs={12} md={9} sm={12} style={{ backgroundColor: 'white', padding: 5 }}>
-						<WorkHistory />
+					<Row>
+						<Col
+							xs={12}
+							md={3}
+							sm={12}
+							style={{ backgroundColor: silverGray, border: '1px solid #A8A8A8' }}>
+							<SideBar
+								profilePic={profilePic}
+								firstName={firstName}
+								lastName={lastName}
+								email={email}
+								phoneNumber={phoneNumber}
+								jobTitle={jobTitle}
+								privacySettings={privacySettings}
+								canEditFields={canEditFields}
+								isUserAdmin={isUserAdmin}
+								infringments={infringments}
+								handleUserProfile={this.handleUserProfile}
+								handleImageUpload={this.handleImageUpload}
+								handleBlueSquare={this.handleBlueSquare}
+							/>
 
-						<br />
-						<UserLinks
-							linkType='Google Doc'
-							links={adminLinks}
-							handleModelState={this.handleModelState}
-							isUserAdmin={isUserAdmin}
-							canEditFields={canEditFields}
-						/>
+							<br />
+						</Col>
 
-						<br />
-						<UserLinks
-							linkType='Social/Professional'
-							links={personalLinks}
-							handleModelState={this.handleModelState}
-							isUserAdmin={isUserAdmin}
-							canEditFields={canEditFields}
-						/>
-						<br />
-						
-						<Badges />
+						<Col xs={12} md={9} sm={12} style={{ backgroundColor: 'white', padding: 5 }}>
+							<WorkHistory />
 
-						<br />
-						<Button outline color='primary' onClick={this.handleSubmit}>
-							{'Save Changes'}
-						</Button>
+							<br />
+							<UserLinks
+								linkSection='admin'
+								linkSectionName='Google Doc'
+								links={adminLinks}
+								handleModelState={this.handleModelState}
+								isUserAdmin={isUserAdmin}
+								canEditFields={canEditFields}
+								removeLink={this.removeLink}
+							/>
 
-						<Button outline color='danger'>
-							Cancel
-						</Button>
-						
-					</Col>
-				</Row>
+							<br />
+							<UserLinks
+								linkSection='user'
+								linkSectionName='Social/Professional'
+								links={personalLinks}
+								handleModelState={this.handleModelState}
+								isUserAdmin={isUserAdmin}
+								canEditFields={canEditFields}
+								removeLink={this.removeLink}
+							/>
+							<br />
 
-			</Container>
-		)
+							<Badges />
+
+							<br />
+							<Button outline color='primary' onClick={this.handleSubmit}>
+								{'Save Changes'}
+							</Button>
+
+							<Button outline color='danger' onClick={() => window.location.reload()}>
+								Cancel
+							</Button>
+
+						</Col>
+					</Row>
+
+				</Container>
+			)
+		// } else {
+		// 	return (
+		// 		<Container className='themed-container' fluid={true}>
+		// 			Hello User who does not own this profile
+
+		// 		</Container>
+		// 	)
+		// }
+
+
 	}
 }
 

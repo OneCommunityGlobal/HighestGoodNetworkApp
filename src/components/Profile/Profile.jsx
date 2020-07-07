@@ -65,6 +65,21 @@ class Profile extends Form {
     { _id: 'Volunteer', name: 'Volunteer' }
   ]
 
+  emailSchema = [
+    {
+      email: Joi.string()
+      .trim()
+      .email()
+      .required()
+      .label('Email')
+    },
+    {
+      public: Joi.boolean()
+      .required()
+      .label('EmailPrivacy')
+    }
+  ]
+
   schema = {
     _id: Joi.string()
       .allow('')
@@ -87,11 +102,14 @@ class Profile extends Form {
       .allow(['Administrator', 'Core Team', 'Manager', 'Volunteer'])
       .default('Volunteer')
       .label('Role'),
-    email: Joi.string()
-      .trim()
-      .email()
-      .required()
-      .label('Email'),
+    // email: Joi.string()
+    //   .trim()
+    //   .email()
+    //   .required()
+    //   .label('Email'),
+    email: Joi.array()
+      .items(this.emailSchema)
+      .min(0),
     jobTitle: Joi.string()
       .optional()
       .label('Job Title'),
@@ -142,6 +160,7 @@ class Profile extends Form {
       lastName,
       profilePic,
       email,
+      emailSchema,
       jobTitle,
       weeklyComittedHours,
       infringments,

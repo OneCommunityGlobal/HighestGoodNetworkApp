@@ -1,4 +1,7 @@
 import React from 'react'
+import BlueSquare from '../BlueSquares'
+
+import Image from 'react-bootstrap/Image'
 
 import {
 	Input,
@@ -6,7 +9,11 @@ import {
 	Label,
 	CardImg,
 	InputGroupAddon,
-	InputGroupText
+	InputGroupText,
+	Button,
+	Container,
+	Row,
+	Badge
 } from 'reactstrap'
 import { orange } from '../../../constants/colors'
 
@@ -19,12 +26,12 @@ const SideBar = ({
 	jobTitle,
 	canEditFields,
 	isUserAdmin,
-	phoneNumberPubliclyAccessible,
-	emailPubliclyAccessible,
+	infringments,
+	privacySettings,
 	handleUserProfile,
-	handleImageUpload
+	handleImageUpload,
+	handleBlueSquare
 }) => {
-	console.log('phoneNumberPubliclyAccessible props', phoneNumberPubliclyAccessible)
 	const edit = event => {
 		console.log(event.target.value, event.target.id)
 		let payload = null
@@ -44,7 +51,7 @@ const SideBar = ({
 
 	return (
 		<>
-			<div style={{width:'100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center'}}>
+			<div style={{ width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
 				<>
 					<Label
 						for='newProfilePic'
@@ -63,13 +70,29 @@ const SideBar = ({
 					/>
 				</>
 
-				<CardImg
-					src={profilePic || '/defaultprofilepic.png'}
-					alt='Profile pic'
+				<Image src={profilePic || '/defaultprofilepic.png'}
+					alt='Profile Picture'
+					roundedCircle
 					style={{ width: '250px', height: '250px' }}
 				/>
+
+				<Container style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+
+					<BlueSquare blueSquares={infringments} />
+
+					<Button color='primary' style={{
+						height: '18px', width: '18px', left:0, position: "relative", top: '50%',
+						display: 'flex', alignItems: 'center', justifyContent: 'center', marginRight: '5px',
+						marginLeft: '5px'
+					}} onClick={() => handleBlueSquare(true, 'addBlueSquare')}>+</Button>
+					
+				</Container>
+
+
 			</div>
+
 			<FormGroup>
+				<br />
 				<Label for='firstName'>First Name:</Label>
 				<Input
 					type='text'
@@ -108,23 +131,25 @@ const SideBar = ({
 					onChange={handleUserProfile}
 					placeholder=''
 					readOnly={canEditFields ? null : true}
-				/>	
+				/>
 			</FormGroup>
 
 			<FormGroup>
 				<Label for='email'>Email:</Label>
 				<InputGroupAddon addonType='prepend'>
 					<InputGroupText>
+					{console.log('checkbox email:',privacySettings.email)}
 						<Input
 							addon
 							type='checkbox'
 							aria-label='Checkbox for following text input'
-							checked={emailPubliclyAccessible}
+							// checked={privacySettings.email}
+							defaultChecked={privacySettings.email}
 							onChange={handleUserProfile}
 							id='emailPubliclyAccessible'
 						/>
 					</InputGroupText>
-					<Label style={{ textAlign: 'center' }}>Publicly Accessible?</Label>
+					<Label style={{ textAlign: 'center', marginBottom: '0' }}>Publicly Accessible?</Label>
 				</InputGroupAddon>
 				<Input
 					type='email'
@@ -143,16 +168,18 @@ const SideBar = ({
 
 				<InputGroupAddon addonType='prepend'>
 					<InputGroupText>
+
 						<Input
 							addon
 							type='checkbox'
 							aria-label='Checkbox for following text input'
-							checked={phoneNumberPubliclyAccessible}
+							checked={privacySettings.phoneNumber}
 							onChange={handleUserProfile}
 							id='phoneNumberPubliclyAccessible'
 						/>
+
 					</InputGroupText>
-					<Label style={{ textAlign: 'center' }}>Publicly Accessible?</Label>
+					<Label style={{ textAlign: 'center', marginBottom: '0' }}>Publicly Accessible?</Label>
 				</InputGroupAddon>
 
 				<Input
