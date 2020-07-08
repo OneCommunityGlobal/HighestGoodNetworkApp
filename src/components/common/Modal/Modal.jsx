@@ -13,7 +13,7 @@ import {
 	FormGroup,
 	Container
 } from 'reactstrap'
-
+import { filter } from 'lodash'
 
 
 const ModalExample = props => {
@@ -21,13 +21,13 @@ const ModalExample = props => {
 		isOpen,
 		closeModal,
 		confirmModal,
-		confirmInfringment,
-		setInactiveModal,
+		updateBlueSquare,
 		modalTitle,
 		modalMessage,
 		type,
 		linkType,
 		infringments,
+		id,
 	} = props
 
 	const [modal, setModal] = useState(false)
@@ -35,9 +35,20 @@ const ModalExample = props => {
 	const [linkURL, setLinkURL] = useState('')
 
 	const [dateStamp, setDateStamp] = useState('')
-	const [report, setReport] = useState('')
+	const [summary, setSummary] = useState('')
 
 	const toggle = () => setModal(!modal)
+
+	let blueSquare = ''
+
+	if (type === 'modBlueSquare' || type === 'viewBlueSquare') {
+		if (id.length > 0){
+			console.log('id:',id)
+			blueSquare = infringments.filter(blueSquare => blueSquare._id === id);
+			console.log("blue square:",blueSquare[0])
+			console.log('date:', blueSquare[0].date)
+		}
+	}
 
 	const handleChange = event => {
 		event.preventDefault()
@@ -46,8 +57,8 @@ const ModalExample = props => {
 			setLinkName(event.target.value.trim())
 		} else if (event.target.id === 'linkURL') {
 			setLinkURL(event.target.value.trim())
-		} else if (event.target.id === 'report') {
-			setReport(event.target.value)
+		} else if (event.target.id === 'summary') {
+			setSummary(event.target.value)
 		} else if (event.target.id === 'date') {
 			setDateStamp(event.target.value)
 		}
@@ -92,47 +103,48 @@ const ModalExample = props => {
 					<>
 						<FormGroup>
 							<Label for="date">Date</Label>
-							<Input type="date" name="date" id="date" placeholder="date placeholder" onChange={handleChange} />
+							<Input type="date" name="date" id="date" onChange={handleChange} />
 						</FormGroup>
 
 						<FormGroup>
 							<Label for="report">Summary</Label>
-							<Input type="textarea" name="report" id="report" onChange={handleChange} />
+							<Input type="textarea" id="summary" onChange={handleChange} />
 						</FormGroup>
 					</>
 				)}
 
-				{/* {type === 'editBlueSquare' && (
+				{type === 'modBlueSquare' && (
 					<>
+						<Label>Current Date: {blueSquare[0].date}</Label>
 						<FormGroup>
 							<Label for="date">Date</Label>
-							<Input type="date" name="date" id="date" placeholder={fetchedDate} onChange={handleChange} />
+							<Input type="date" id="date" onChange={handleChange} />
 						</FormGroup>
 
+						<Label>Current Summary:</Label>
+						<Label>{blueSquare[0].description}</Label>
 						<FormGroup>
 							<Label for="report">Summary</Label>
-							<Input type="textarea" name="report" id="report" placeholder={fetchedSummary} onChange={handleChange} />
+							<Input type="textarea" id="summary" onChange={handleChange} />
 						</FormGroup>
-					</>
-				)} */}
-
-				{type === 'removeBlueSquare' && (
-					<>
-						{/* <FormGroup>
-							<Label for="date">Date</Label>
-							<Input type="date" name="date" id="date" placeholder="date placeholder" onChange={handleChange} />
-						</FormGroup>
-
-						<FormGroup>
-							<Label for="report">Report</Label>
-							<Input type="textarea" name="report" id="report" onChange={handleChange} />
-						</FormGroup> */}
-
-						{/* Pop off the last blue square... */}
 					</>
 				)}
 
-				{modalMessage}
+				{type === 'viewBlueSquare' && (
+					<>
+						<FormGroup>
+							<Label for="date">Date: {blueSquare[0].date}</Label>
+						</FormGroup>
+						<FormGroup>
+							<Label for="description">Summary:</Label>
+							<Label>{blueSquare[0].description}</Label>
+						</FormGroup>
+					</>
+				)}
+
+				{type === 'message' && (
+					modalMessage
+				)}
 
 			</ModalBody>
 
@@ -142,9 +154,20 @@ const ModalExample = props => {
 				{type === 'addBlueSquare' && (
 					<Button
 						color='danger'
-						onClick={() => confirmInfringment(dateStamp, report)}>
+						onClick={() => updateBlueSquare('', dateStamp, summary, 'add')}>
 						Submit
 					</Button>
+				)}
+
+				{type === 'modBlueSquare' && (
+					<>
+						<Button color='info' onClick={() => updateBlueSquare(id, dateStamp, summary, 'update')}>
+							Update
+						</Button>
+						<Button color='danger' onClick={() => updateBlueSquare(id, dateStamp, summary, 'delete')}>
+							Delete
+						</Button>
+					</>
 				)}
 
 				{type === 'image' ?

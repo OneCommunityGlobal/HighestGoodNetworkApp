@@ -44,7 +44,8 @@ class UserProfile extends Component {
 		firstNameError: '',
 		lastNameError: '',
 		imageUploadError: '',
-		isValid: false
+		isValid: false,
+		id: ''
 	}
 
 	async componentDidMount() {
@@ -62,22 +63,7 @@ class UserProfile extends Component {
 		// console.log(this.props.userProfile)
 	}
 
-	// refreshProfile = async() => {
-	// 	let userId = this.props.match.params.userId
-
-	// 	try {
-	// 		const newProfile = await this.props.getUserProfile(userId)
-	// 		this.setState({
-	// 			userProfile: newProfile
-	// 		})
-	// 	} catch (error) {
-	// 		// show error here, like modal error
-	// 	}
-	// }
-
 	handleUserProfile = event => {
-		console.log('handleUserProfile............')
-
 
 		if (event.target.id === 'firstName') {
 			this.setState({
@@ -90,6 +76,7 @@ class UserProfile extends Component {
 				modalMessage: 'First Name cannot be empty'
 			})
 		}
+
 		if (event.target.id === 'lastName') {
 			this.setState({
 				userProfile: {
@@ -234,16 +221,78 @@ class UserProfile extends Component {
 		})
 	}
 
-	handleBlueSquare = (status = true, type = 'message') => {
-		
+	handleBlueSquare = (status = true, type = 'message', blueSquareID='') => {
 		if (type === 'addBlueSquare'){
 			this.setState({
 				showModal: status,
 				modalTitle: 'Blue Square',
 				type: type
 			})
-		}else{
-			console.log('delete blue square...')
+		} else if (type === 'modBlueSquare'){
+			this.setState({
+				showModal: status,
+				modalTitle: 'Blue Square',
+				type: type,
+				id: blueSquareID
+			})
+		} else if (type === 'viewBlueSquare'){
+			this.setState({
+				showModal: status,
+				modalTitle: 'Blue Square',
+				type: type,
+				id: blueSquareID
+			})
+		}
+	}
+
+	updateBlueSquare = (id, dateStamp, summary, kind) => {
+		console.log('-> NEW updateBlueSquare function?')
+
+		if (kind === 'add'){
+			let newBlueSquare = { date: dateStamp, description: summary}
+			this.setState(prevState => {
+				return {
+					showModal: false,
+					userProfile: {
+						...this.state.userProfile,
+						infringments: prevState.userProfile.infringments.concat(newBlueSquare)
+					}
+				}
+			})
+		}else if(kind === 'update'){
+			this.setState( () => {
+				let currentBlueSquares = this.state.userProfile.infringments
+				if (dateStamp != ''){
+					currentBlueSquares.find(blueSquare => blueSquare._id == id).date = dateStamp
+				}
+				if (summary != ''){
+					currentBlueSquares.find(blueSquare => blueSquare._id == id).description = summary
+				}
+				return {
+					showModal: false,
+					userProfile: {
+						...this.state.userProfile,
+						infringments: currentBlueSquares
+					}
+				}
+			})
+		}else if(kind === 'delete'){
+			this.setState( () => {
+				var currentBlueSquares = this.state.userProfile.infringments.filter(function(blueSquare) {
+					if (blueSquare._id != id){
+						return blueSquare
+					}
+				})
+				// console.log('new blue squares after delete:', currentBlueSquares)
+				return {
+					showModal: false,
+					userProfile: {
+						...this.state.userProfile,
+						infringments: currentBlueSquares
+					}
+				}
+
+			})
 		}
 
 	}
@@ -283,11 +332,10 @@ class UserProfile extends Component {
 	removeLink = (linkSection, item) => {
 
 		if (linkSection === 'user') {
-			return this.setState(prevState => {
-				var prevLinks = prevState.userProfile.personalLinks
-				var newLinks = prevLinks.filter(function(arrayItem) {
-					if (arrayItem != item){
-						return arrayItem
+			return this.setState( () => {
+				var newLinks = this.state.userProfile.personalLinks.filter(function(link) {
+					if (link != item){
+						return link
 					}
 				});
 
@@ -321,26 +369,9 @@ class UserProfile extends Component {
 
 
 	}
-
-	addInfringment = (dateStamp, report) => {
-
-		let newInfringment = { date: dateStamp, description: report}
-
-		this.setState(prevState => {
-			return {
-				showModal: false,
-				userProfile: {
-					...this.state.userProfile,
-					infringments: prevState.userProfile.infringments.concat(newInfringment)
-				}
-			}
-		})
-
-	}
-
 	
 	handleSubmit = async event => {
-		event.preventDefault()
+		// event.preventDefault()
 
 		const submitResult = await this.props.updateUserProfile(
 			this.props.match.params.userId,
@@ -395,115 +426,106 @@ class UserProfile extends Component {
 			return <Loading />
 		}
 
-		// if (canEditFields) {
-			return (
-				<Container className='themed-container' fluid={true}>
+		return (
+			<Container className='themed-container' fluid={true}>
 
-					<CardTitle
-						id="warningCard"
-						className='themed-container'
-						style={{
-							position: 'fixed', top: '7vh', left: '0', width: '100%',
-							color: 'white', backgroundColor: warningRed,
-							border: '1px solid #A8A8A8', textAlign: "center", display: 'none', zIndex: 2, opacity: '70%'
+				<CardTitle
+					id="warningCard"
+					className='themed-container'
+					style={{
+						position: 'fixed', top: '7vh', left: '0', width: '100%',
+						color: 'white', backgroundColor: warningRed,
+						border: '1px solid #A8A8A8', textAlign: "center", display: 'none', zIndex: 2, opacity: '70%'
+					}}
+				>
+					Reminder: You must click "Save Changes" at the bottom of this page. If you don't, changes to your profile will not be saved.
+				</CardTitle>
+
+
+				{showModal && (
+					<Modal
+						isOpen={this.state.showModal}
+						closeModal={() => {
+							this.setState({ showModal: false })
 						}}
-					>
-						Reminder: You must click "Save Changes" at the bottom of this page. If you don't, changes to your profile will not be saved.
-					</CardTitle>
+						modalMessage={this.state.modalMessage}
+						modalTitle={this.state.modalTitle}
+						type={this.state.type}
+						confirmModal={this.addLink}
+						updateBlueSquare={this.updateBlueSquare}
+						linkType={this.state.linkType}
+						infringments={this.state.userProfile.infringments}
+						id={this.state.id}
+					/>
+				)}
 
-
-					{showModal && (
-						<Modal
-							isOpen={this.state.showModal}
-							closeModal={() => {
-								this.setState({ showModal: false })
-							}}
-							modalMessage={this.state.modalMessage}
-							modalTitle={this.state.modalTitle}
-							type={this.state.type}
-							confirmModal={this.addLink}
-							confirmInfringment={this.addInfringment}
-							linkType={this.state.linkType}
-							infringments={this.state.infringments}
+				<Row>
+					<Col
+						xs={12}
+						md={3}
+						sm={12}
+						style={{ backgroundColor: silverGray, border: '1px solid #A8A8A8' }}>
+						<SideBar
+							profilePic={profilePic}
+							firstName={firstName}
+							lastName={lastName}
+							email={email}
+							phoneNumber={phoneNumber}
+							jobTitle={jobTitle}
+							privacySettings={privacySettings}
+							canEditFields={canEditFields}
+							isUserAdmin={isUserAdmin}
+							infringments={infringments}
+							handleUserProfile={this.handleUserProfile}
+							handleImageUpload={this.handleImageUpload}
+							handleBlueSquare={this.handleBlueSquare}
 						/>
-					)}
 
-					<Row>
-						<Col
-							xs={12}
-							md={3}
-							sm={12}
-							style={{ backgroundColor: silverGray, border: '1px solid #A8A8A8' }}>
-							<SideBar
-								profilePic={profilePic}
-								firstName={firstName}
-								lastName={lastName}
-								email={email}
-								phoneNumber={phoneNumber}
-								jobTitle={jobTitle}
-								privacySettings={privacySettings}
-								canEditFields={canEditFields}
-								isUserAdmin={isUserAdmin}
-								infringments={infringments}
-								handleUserProfile={this.handleUserProfile}
-								handleImageUpload={this.handleImageUpload}
-								handleBlueSquare={this.handleBlueSquare}
-							/>
+						<br />
+					</Col>
 
-							<br />
-						</Col>
+					<Col xs={12} md={9} sm={12} style={{ backgroundColor: 'white', padding: 5 }}>
+						<WorkHistory />
 
-						<Col xs={12} md={9} sm={12} style={{ backgroundColor: 'white', padding: 5 }}>
-							<WorkHistory />
+						<br />
+						<UserLinks
+							linkSection='admin'
+							linkSectionName='Google Doc'
+							links={adminLinks}
+							handleModelState={this.handleModelState}
+							isUserAdmin={isUserAdmin}
+							canEditFields={canEditFields}
+							removeLink={this.removeLink}
+						/>
 
-							<br />
-							<UserLinks
-								linkSection='admin'
-								linkSectionName='Google Doc'
-								links={adminLinks}
-								handleModelState={this.handleModelState}
-								isUserAdmin={isUserAdmin}
-								canEditFields={canEditFields}
-								removeLink={this.removeLink}
-							/>
+						<br />
+						<UserLinks
+							linkSection='user'
+							linkSectionName='Social/Professional'
+							links={personalLinks}
+							handleModelState={this.handleModelState}
+							isUserAdmin={isUserAdmin}
+							canEditFields={canEditFields}
+							removeLink={this.removeLink}
+						/>
+						<br />
 
-							<br />
-							<UserLinks
-								linkSection='user'
-								linkSectionName='Social/Professional'
-								links={personalLinks}
-								handleModelState={this.handleModelState}
-								isUserAdmin={isUserAdmin}
-								canEditFields={canEditFields}
-								removeLink={this.removeLink}
-							/>
-							<br />
+						<Badges />
 
-							<Badges />
+						<br />
+						<Button outline color='primary' onClick={this.handleSubmit}>
+							{'Save Changes'}
+						</Button>
 
-							<br />
-							<Button outline color='primary' onClick={this.handleSubmit}>
-								{'Save Changes'}
-							</Button>
+						<Button outline color='danger' onClick={() => window.location.reload()}>
+							Cancel
+						</Button>
 
-							<Button outline color='danger' onClick={() => window.location.reload()}>
-								Cancel
-							</Button>
+					</Col>
+				</Row>
 
-						</Col>
-					</Row>
-
-				</Container>
-			)
-		// } else {
-		// 	return (
-		// 		<Container className='themed-container' fluid={true}>
-		// 			Hello User who does not own this profile
-
-		// 		</Container>
-		// 	)
-		// }
-
+			</Container>
+		)
 
 	}
 }

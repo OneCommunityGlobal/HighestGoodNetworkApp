@@ -3,7 +3,7 @@
   position: absolute;
   left: 10px;
   right: 10px;
-  top: 10vh;
+  top: 2vh;
   visibility:hidden;
 }
   
@@ -29,8 +29,27 @@
   margin: 2px;
 }
 
+.blueSquareContainer {
+  display: flex;
+  text-decoration:none;
+  align-items: center;
+  justify-content: center;
+  height: 50px;
+}
+
+.blueSquares {
+  width: 150px; 
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 
 .blueSquareButton {
+  display: flex;
+  text-decoration:none;
+  align-items: center;
+  justify-content: center;
+
 	background:linear-gradient(to bottom, #007dc1 5%, #0061a7 100%);
 	background-color: dodgerblue;
 	border-radius:4px;
@@ -39,15 +58,12 @@
 	color:#ffffff;
 	font-family:Arial;
   margin: 5px;
-  width: 18px;
-  height: 18px;
-	text-decoration:none;
+  width: 20px;
+  height: 20px;
+
 }
+
 .blueSquareButton:hover {
 	background:linear-gradient(to bottom, #0061a7 5%, #007dc1 100%);
 	background-color:#0061a7;
 }
-/* .blueSquareButton:active {
-	position:relative;
-	top:1px;
-} */

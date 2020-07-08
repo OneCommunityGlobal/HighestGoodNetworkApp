@@ -76,18 +76,12 @@ const SideBar = ({
 					style={{ width: '250px', height: '250px' }}
 				/>
 
-				<Container style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-
-					<BlueSquare blueSquares={infringments} />
-
-					<Button color='primary' style={{
-						height: '18px', width: '18px', left:0, position: "relative", top: '50%',
-						display: 'flex', alignItems: 'center', justifyContent: 'center', marginRight: '5px',
-						marginLeft: '5px'
-					}} onClick={() => handleBlueSquare(true, 'addBlueSquare')}>+</Button>
+				<BlueSquare 
+					isUserAdmin={isUserAdmin}
+					blueSquares={infringments}
+					handleBlueSquare={handleBlueSquare}
+				/>
 					
-				</Container>
-
 
 			</div>
 
