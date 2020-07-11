@@ -18,6 +18,9 @@ thead{
   width: 20px;
 }
 
+#usermanagement_resume_date {
+  min-width: 125px;
+}
 .usermanagement__tr{
   text-align: center;
 }

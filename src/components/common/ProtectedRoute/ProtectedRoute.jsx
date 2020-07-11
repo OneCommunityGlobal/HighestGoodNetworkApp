@@ -1,10 +1,9 @@
 import React from "react";
 import { Redirect, Route } from "react-router-dom";
 import { connect } from "react-redux";
-import { ADMIN_ROLE } from "../../../utils/constants";
 
 const ProtectedRoute = ({ component: Component, render, auth, ...rest }) => {
-  let adminroute = rest.adminroute;
+  let allowedRoles = rest.allowedRoles;
   return (
     <Route
       {...rest}
@@ -15,7 +14,7 @@ const ProtectedRoute = ({ component: Component, render, auth, ...rest }) => {
               to={{ pathname: "/login", state: { from: props.location } }}
             />
           );
-        } else if (adminroute === true && auth.user.role !== ADMIN_ROLE) {
+        } else if (allowedRoles && allowedRoles.indexOf(auth.user.role) < 0) {
           return (
             <Redirect
               to={{ pathname: "/dashboard", state: { from: props.location } }}

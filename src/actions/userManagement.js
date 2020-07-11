@@ -7,6 +7,7 @@ import {
   USER_PROFILE_DELETE
 } from '../constants/userManagement'
 import { ENDPOINTS } from '../utils/URL'
+import { UserStatus } from '../utils/enums'
 
 /**
  * fetching all user profiles
@@ -30,7 +31,7 @@ export const getAllUserProfile = () => {
  */
 export const updateUserStatus = (user, status, reactivationDate) => {
   const userProfile = Object.assign({}, user);
-  userProfile.isActive = (status === 'Active'); //TODO: move the magic string to constatnts
+  userProfile.isActive = (status === UserStatus.Active);
   userProfile.reactivationDate = reactivationDate;
   const patchData = { status: status, reactivationDate: reactivationDate };
   const updateProfilePromise = axios.patch(ENDPOINTS.USER_PROFILE(user._id), patchData)
@@ -47,7 +48,8 @@ export const updateUserStatus = (user, status, reactivationDate) => {
  * @param {*} option - archive / delete
  */
 export const deleteUser = (user, option) => {
-  const deleteProfilePromise = axios.delete(ENDPOINTS.USER_PROFILE(user._id), { option: option })
+  const requestData = { option: option, userId: user._id };
+  const deleteProfilePromise = axios.delete(ENDPOINTS.USER_PROFILE(user._id), { data: requestData })
   return async dispatch => {
     deleteProfilePromise.then(res => {
       dispatch(userProfileDeleteAction(user));

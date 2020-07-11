@@ -22,8 +22,8 @@ const UserTableData = React.memo((props) => {
           key={"active_cell" + props.index}
           index={props.index} />
       </td>
-      <td>{props.user.firstName}</td>
-      <td>{props.user.lastName}</td>
+      <td><a href={"/userprofile/" + props.user._id} >{props.user.firstName}</a></td>
+      <td><a href={"/userprofile/" + props.user._id} >{props.user.lastName}</a></td>
       <td>{props.user.role}</td>
       <td>{props.user.email}</td>
       <td>{props.user.weeklyComittedHours}</td>
