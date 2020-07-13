@@ -34,6 +34,7 @@ import WorkHistory from './WorkHistory'
 import UserLinks from './UserLinks'
 
 import SideBar from './SideBar'
+import ResetPasswordButton from '../UserManagement/ResetPasswordButton'
 
 class UserProfile extends Component {
 	state = {
@@ -312,6 +313,15 @@ class UserProfile extends Component {
 						<br />
 					</Col>
 					<Col xs={12} md={9} sm={12} style={{ backgroundColor: 'white', padding: 5 }}>
+						{this.state.userProfile ?
+							<Row>
+								<Col lg={true} style={{ textAlign: "right", paddingBottom: "10px" }}>
+									<ResetPasswordButton
+										user={this.state.userProfile}
+										buttonText={"Reset Password"} />
+								</Col>
+							</Row> : <React.Fragment></React.Fragment>
+						}
 						<WorkHistory />
 
 						<br />

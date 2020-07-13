@@ -144,6 +144,7 @@ class UserManagement extends React.PureComponent {
             onPauseResumeClick={that.onPauseResumeClick}
             onDeleteClick={that.onDeleteButtonClick}
             onActiveInactiveClick={that.onActiveInactiveClick}
+            onResetClick={that.onResetClick}
             user={user}
           />
         });
