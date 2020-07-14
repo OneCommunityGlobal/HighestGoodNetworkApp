@@ -30,8 +30,8 @@ const UserTableData = React.memo((props) => {
           user={props.user}
           onActiveInactiveClick={onActiveInactiveClick} />
       </td>
-      <td><a href={"/userprofile/" + props.user._id} >{props.user.firstName}</a></td>
-      <td><a href={"/userprofile/" + props.user._id} >{props.user.lastName}</a></td>
+      <td><UserHyperLink text={props.user.firstName} userId={props.user._id} key={"firstName"} /></td>
+      <td><UserHyperLink text={props.user.lastName} userId={props.user._id} key={"lastName"} /></td>
       <td>{props.user.role}</td>
       <td>{props.user.email}</td>
       <td>{props.user.weeklyComittedHours}</td>
@@ -56,7 +56,7 @@ const UserTableData = React.memo((props) => {
             }}>{DELETE}</button>
         </span>
         <span className="usermanagement-actions-cell">
-          <ResetPasswordButton user={props.user} buttonText="Reset" />
+          <ResetPasswordButton user={props.user} isSmallButton={true} />
         </span>
       </td>
     </tr>
@@ -74,6 +74,13 @@ const ActiveCell = React.memo((props) => {
     }}>
     <i className="fa fa-circle" aria-hidden="true"></i>
   </div>;
+});
+
+/**
+ * User prfoile hyper link component
+ */
+const UserHyperLink = React.memo((props) => {
+  return <a href={"/userprofile/" + props.userId} >{props.text}</a>
 });
 
 export default UserTableData

@@ -16,8 +16,9 @@ class ResetPasswordButton extends React.PureComponent {
         open={this.state.resetPopupOpen}
         onClose={this.resetPopupClose}
         onReset={this.resetPassword} />
-      <button type="button" className="btn  btn-outline-success btn-sm"
-        onClick={this.onResetClick}>{this.props.buttonText}</button>
+      <button type="button" style={{ minWidth: "115px" }}
+        className={"btn  btn-outline-success" + (this.props.isSmallButton ? " btn-sm" : "")}
+        onClick={this.onResetClick}>{"Reset Password"}</button>
     </React.Fragment>)
   }
 

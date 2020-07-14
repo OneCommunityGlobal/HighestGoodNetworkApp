@@ -60,21 +60,23 @@ class UserManagement extends React.PureComponent {
             onSearch={this.onWildCardSearch}
             onActiveFiter={this.onActiveFiter}
             onNewUserClick={this.onNewUserClick} />
-          <table className="table table-bordered table-responsive-sm">
-            <thead>
-              <UserTableHeader />
-              <UserTableSearchHeader
-                onFirstNameSearch={this.onFirstNameSearch}
-                onLastNameSearch={this.onLastNameSearch}
-                onRoleSearch={this.onRoleSearch}
-                onEmailSearch={this.onEmailSearch}
-                onWeeklyHrsSearch={this.onWeeklyHrsSearch}
-                roles={roles} />
-            </thead>
-            <tbody>
-              {userTable}
-            </tbody>
-          </table>
+          <div style={{ width: "100%", overflow: "auto" }}>
+            <table className="table table-bordered table-responsive-sm">
+              <thead>
+                <UserTableHeader />
+                <UserTableSearchHeader
+                  onFirstNameSearch={this.onFirstNameSearch}
+                  onLastNameSearch={this.onLastNameSearch}
+                  onRoleSearch={this.onRoleSearch}
+                  onEmailSearch={this.onEmailSearch}
+                  onWeeklyHrsSearch={this.onWeeklyHrsSearch}
+                  roles={roles} />
+              </thead>
+              <tbody>
+                {userTable}
+              </tbody>
+            </table>
+          </div>
           <UserTableFooter
             datacount={this.filteredUserDataCount}
             selectedPage={this.state.selectedPage}

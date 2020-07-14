@@ -35,6 +35,7 @@ import UserLinks from './UserLinks'
 
 import SideBar from './SideBar'
 import ResetPasswordButton from '../UserManagement/ResetPasswordButton'
+import { UserRole } from '../../utils/enums'
 
 class UserProfile extends Component {
 	state = {
@@ -313,12 +314,12 @@ class UserProfile extends Component {
 						<br />
 					</Col>
 					<Col xs={12} md={9} sm={12} style={{ backgroundColor: 'white', padding: 5 }}>
-						{this.state.userProfile ?
+						{this.doShowResetButton() ?
 							<Row>
 								<Col lg={true} style={{ textAlign: "right", paddingBottom: "10px" }}>
 									<ResetPasswordButton
 										user={this.state.userProfile}
-										buttonText={"Reset Password"} />
+										isSmallButton={false} />
 								</Col>
 							</Row> : <React.Fragment></React.Fragment>
 						}
@@ -354,6 +355,13 @@ class UserProfile extends Component {
 				</Row>
 			</Container>
 		)
+	}
+
+	/**
+	 * Show the reset password button for all user profiles if the logged in user is an administartor.
+	 */
+	doShowResetButton = () => {
+		return (this.props.auth.user.role === UserRole.Administrator && this.state.userProfile);
 	}
 }
 
