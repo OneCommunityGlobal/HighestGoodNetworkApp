@@ -60,8 +60,8 @@ class UserManagement extends React.PureComponent {
             onSearch={this.onWildCardSearch}
             onActiveFiter={this.onActiveFiter}
             onNewUserClick={this.onNewUserClick} />
-          <div style={{ width: "100%", overflow: "auto" }}>
-            <table className="table table-bordered table-responsive-sm">
+          <div className="table-responsive">
+            <table className="table table-bordered">
               <thead>
                 <UserTableHeader />
                 <UserTableSearchHeader
