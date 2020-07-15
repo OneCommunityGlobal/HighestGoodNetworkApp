@@ -1,6 +1,11 @@
 import React, { useState, useEffect } from 'react'
+<<<<<<< HEAD
 import { DELETE, PAUSE, RESUME, ACTIVE, INACTIVE } from '../../languages/en/ui'
 import ResetPasswordButton from './ResetPasswordButton';
+=======
+import { DELETE, PAUSE, RESUME } from '../../languages/en/ui'
+import { UserStatus } from '../../utils/enums'
+>>>>>>> development
 
 /**
  * The body row of the user table
@@ -39,7 +44,7 @@ const UserTableData = React.memo((props) => {
         <button type="button" className={"btn btn-outline-" + (props.isActive ? "warning" : "success") + " btn-sm"}
           onClick={(e) => {
             onReset(true);
-            props.onPauseResumeClick(props.user, (props.isActive ? INACTIVE : ACTIVE));
+            props.onPauseResumeClick(props.user, (props.isActive ? UserStatus.InActive : UserStatus.Active));
           }}>
           {isChanging ? "..." : (props.isActive ? PAUSE : RESUME)}
         </button>
@@ -59,7 +64,7 @@ const UserTableData = React.memo((props) => {
           <ResetPasswordButton user={props.user} isSmallButton={true} />
         </span>
       </td>
-    </tr>
+    </tr >
   )
 });
 
