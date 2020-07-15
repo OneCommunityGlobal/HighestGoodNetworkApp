@@ -15,3 +15,9 @@ export const UserRole = {
   Manager: "Manager",
   CoreTeam: "Core Team"
 }
+
+export const UserDeleteType = {
+  HardDelete: "delete",
+  SoftDelete: "archive",
+  Inactive: "Inactive"
+}

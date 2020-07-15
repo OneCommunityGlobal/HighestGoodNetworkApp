@@ -48,7 +48,8 @@ export const updateUserStatus = (user, status, reactivationDate) => {
  * @param {*} option - archive / delete
  */
 export const deleteUser = (user, option) => {
-  const deleteProfilePromise = axios.delete(ENDPOINTS.USER_PROFILE(user._id), { option: option })
+  const requestData = { option: option, userId: user._id };
+  const deleteProfilePromise = axios.delete(ENDPOINTS.USER_PROFILE(user._id), { data: requestData })
   return async dispatch => {
     deleteProfilePromise.then(res => {
       dispatch(userProfileDeleteAction(user));
