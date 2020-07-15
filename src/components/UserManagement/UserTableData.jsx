@@ -1,11 +1,7 @@
 import React, { useState, useEffect } from 'react'
-<<<<<<< HEAD
-import { DELETE, PAUSE, RESUME, ACTIVE, INACTIVE } from '../../languages/en/ui'
 import ResetPasswordButton from './ResetPasswordButton';
-=======
 import { DELETE, PAUSE, RESUME } from '../../languages/en/ui'
 import { UserStatus } from '../../utils/enums'
->>>>>>> development
 
 /**
  * The body row of the user table
