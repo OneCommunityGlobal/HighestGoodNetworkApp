@@ -10,9 +10,9 @@ export const fetchWeeklySummariesBegin = () => ({
 });
 
 /**
- * This action is used to set the weekly summaries reports in store.
+ * This action is used to set the weekly summaries in store.
  *
- * @param {array} weeklySummariesData An array of all active users.
+ * @param {array} weeklySummariesData An array of weekly summaries data.
  */
 export const fetchWeeklySummariesSuccess = weeklySummariesData => ({
   type: actions.FETCH_WEEKLY_SUMMARIES_SUCCESS,
@@ -30,7 +30,7 @@ export const fetchWeeklySummariesError = error => ({
 });
 
 /**
- * Gets a user profile based on userId.
+ * Gets the weekly summaries related data for a specific user based on the userId.
  *
  * @param {ObjectId} userId The user id.
  */
