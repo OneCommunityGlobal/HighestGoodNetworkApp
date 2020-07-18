@@ -26,7 +26,7 @@ export default (
       <ProtectedRoute path="/dashboard" exact component={Dashboard} />
       <ProtectedRoute path="/timelog/:userId" exact component={Timelog} />
       <ProtectedRoute path="/reports" exact component={Reports} />
-      <ProtectedRoute path="/weeklysummariesreport" exact component={WeeklySummariesReport} allowedRoles={[UserRole.Administrator]} />
+      <ProtectedRoute path="/weeklysummariesreport" exact component={WeeklySummariesReport} allowedRoles={[UserRole.Administrator, UserRole.Manager, UserRole.CoreTeam]} />
       <ProtectedRoute path="/projects" exact component={Projects} />
       <ProtectedRoute path="/usermanagement" exact component={UserManagement} allowedRoles={[UserRole.Administrator]} />
       <ProtectedRoute path="/project/members/:projectId" component={Members} />

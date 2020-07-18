@@ -1,34 +1,33 @@
-import * as actions from '../constants/weeklySummariesReport';
+import * as actions from '../constants/weeklySummaries';
 
 const initialState = {
   summaries: [],
   loading: false,
-  error: null,
+  fetchError: null,
 };
 
 // eslint-disable-next-line import/prefer-default-export
-export const weeklySummariesReportReducer = (state = initialState, action) => {
+export const weeklySummariesReducer = (state = initialState, action) => {
   switch (action.type) {
-    case actions.FETCH_SUMMARIES_REPORT_BEGIN:
+    case actions.FETCH_WEEKLY_SUMMARIES_BEGIN:
       return {
         ...state,
         loading: true,
-        error: null,
+        fetchError: null,
       };
 
-    case actions.FETCH_SUMMARIES_REPORT_SUCCESS:
+    case actions.FETCH_WEEKLY_SUMMARIES_SUCCESS:
       return {
         ...state,
         loading: false,
         summaries: action.payload.weeklySummariesData,
       };
 
-    case actions.FETCH_SUMMARIES_REPORT_ERROR:
+    case actions.FETCH_WEEKLY_SUMMARIES_ERROR:
       return {
         ...state,
         loading: false,
-        error: action.payload.error,
-        // summaries: [],
+        fetchError: action.payload.error,
       };
 
     default:

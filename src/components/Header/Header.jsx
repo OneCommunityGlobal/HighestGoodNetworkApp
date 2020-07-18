@@ -75,7 +75,9 @@ class Header extends React.Component {
                       {REPORTS}
                     </DropdownItem>
                     {
-                      this.props.auth.user.role === UserRole.Administrator ?
+                      user.role === UserRole.Administrator ||
+                        user.role === UserRole.Manager ||
+                        user.role === UserRole.CoreTeam ?
                         <DropdownItem tag={Link} to='/weeklysummariesreport'>
                           {WEEKLY_SUMMARIES_REPORT}
                         </DropdownItem>
@@ -100,7 +102,7 @@ class Header extends React.Component {
                   </DropdownToggle>
                   <DropdownMenu>
                     {
-                      this.props.auth.user.role === UserRole.Administrator ?
+                      user.role === UserRole.Administrator ?
                         <DropdownItem tag={Link} to='/usermanagement'>
                           {USER_MANAGEMENT}
                         </DropdownItem>

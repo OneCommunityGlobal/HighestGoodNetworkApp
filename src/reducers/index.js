@@ -9,6 +9,7 @@ import { dashboardDataReducer } from './dashboardDataReducer';
 import { weeklyDashboardDataReducer } from './weeklyDashboardDataReducer';
 import { monthlyDashboardDataReducer } from './monthlyDashboardDataReducer';
 import { leaderboardDataReducer } from './leaderboardDataReducer';
+import { weeklySummariesReducer } from './weeklySummariesReducer';
 import { weeklySummariesReportReducer } from './weeklySummariesReportReducer';
 import { actionItemsReducer } from './actionItemsReducer';
 import { notificationsReducer } from './notificationsReducer';
@@ -29,26 +30,27 @@ export default combineReducers({
   auth: authReducer,
   userProfile: userProfileByIdReducer,
   allUserProfiles: allUserProfilesReducer,
-  //userTeamMembers: userTeamMembersReducer,
-  //userProjectMembers: userProjectMembersReducer,
-  //dashboardData: dashboardDataReducer,
+  // userTeamMembers: userTeamMembersReducer,
+  // userProjectMembers: userProjectMembersReducer,
+  // dashboardData: dashboardDataReducer,
   leaderBoardData: leaderboardDataReducer,
+  weeklySummaries: weeklySummariesReducer,
   weeklySummariesReport: weeklySummariesReportReducer,
-  //weeklyDashboardData: weeklyDashboardDataReducer,
-  //monthlyDashboardData: monthlyDashboardDataReducer,
+  // weeklyDashboardData: weeklyDashboardDataReducer,
+  // monthlyDashboardData: monthlyDashboardDataReducer,
   //	actionItems: actionItemsReducer,
   //	notifications: notificationsReducer,
   allProjects: allProjectsReducer,
-  //project: projectByIdReducer,
+  // project: projectByIdReducer,
   userProjects: userProjectsReducer,
   projectMembers: projectMembershipReducer,
-  //allTeams: allTeamsReducer,
-  //team: teamByIdReducer,
-  //teamMembers: teamMembershipReducer,
-  //allTimeEntries: allTimeEntriesReducer,
-  //userTimeEntries: timeEntriesForSpecifiedPeriodReducer,
-  //projectTimeEntries: timeEntriesForSpecifiedProjectReducer,
-  //requestStatus: handleSuccessReducer,
+  // allTeams: allTeamsReducer,
+  // team: teamByIdReducer,
+  // teamMembers: teamMembershipReducer,
+  // allTimeEntries: allTimeEntriesReducer,
+  // userTimeEntries: timeEntriesForSpecifiedPeriodReducer,
+  // projectTimeEntries: timeEntriesForSpecifiedProjectReducer,
+  // requestStatus: handleSuccessReducer,
   errors: errorsReducer,
-  timeEntries: timeEntriesReducer
-})
+  timeEntries: timeEntriesReducer,
+});

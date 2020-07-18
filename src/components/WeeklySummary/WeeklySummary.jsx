@@ -1,26 +1,18 @@
 import React, { Component } from 'react';
 import {
-  Alert,
-  Container,
-  Row,
-  Col,
-  Form,
-  FormGroup,
-  Label,
-  Input,
-  CustomInput,
-  Button,
-  TabContent, TabPane, Nav, NavItem, NavLink,
+  Alert, Container, Row, Col, Form, FormGroup, Label, Input,
+  CustomInput, Button, TabContent, TabPane, Nav, NavItem, NavLink,
 } from 'reactstrap';
 import './WeeklySummary.css';
 import { connect } from 'react-redux';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faExternalLinkAlt } from '@fortawesome/free-solid-svg-icons';
 import { Editor } from '@tinymce/tinymce-react';
-import { getUserProfile, updateUserProfile } from '../../actions/userProfile';
+import { getWeeklySummaries, updateWeeklySummaries } from '../../actions/weeklySummaries'
 import DueDateTime from './DueDateTime';
 import moment from 'moment';
 import 'moment-timezone';
+import Loading from '../common/Loading';
 import Joi from 'joi';
 import { toast } from "react-toastify";
 import { WeeklySummaryContentTooltip, MediaURLTooltip } from './WeeklySummaryTooltips';
@@ -29,23 +21,41 @@ import classnames from 'classnames';
 class WeeklySummary extends Component {
 
   state = {
-    formElements: { summary: '', mediaUrl: '', mediaConfirm: false },
+    formElements: {
+      summary: '',
+      summaryLastWeek: '',
+      summaryBeforeLast: '',
+      mediaUrl: '',
+      weeklySummariesCount: 0,
+      mediaConfirm: false
+    },
     dueDate: moment().tz('America/Los_Angeles').endOf('week'),
-    userProfile: {},
+    dueDateLastWeek: moment().tz('America/Los_Angeles').endOf('week').subtract(1, 'week').toISOString(),
+    dueDateBeforeLast: moment().tz('America/Los_Angeles').endOf('week').subtract(2, 'week').toISOString(),
     activeTab: '1',
     errors: {},
+    fetchError: null,
+    loading: true,
   };
 
   async componentDidMount() {
-    await this.props.getUserProfile(this.props.currentUser.userid);
+    await this.props.getWeeklySummaries(this.props.currentUser.userid);
+    const { mediaUrl, weeklySummaries, weeklySummariesCount } = this.props.summaries;
+
     this.setState({
       formElements: {
-        summary: this.props.summary || '',
-        mediaUrl: this.props.mediaUrl || '',
+        summary: weeklySummaries && weeklySummaries[0] && weeklySummaries[0].summary ? weeklySummaries[0].summary : '',
+        summaryLastWeek: weeklySummaries && weeklySummaries[1] && weeklySummaries[1].summary || '',
+        summaryBeforeLast: weeklySummaries && weeklySummaries[2] && weeklySummaries[2].summary || '',
+        mediaUrl: mediaUrl || '',
+        weeklySummariesCount: weeklySummariesCount || 0,
         mediaConfirm: false,
       },
-      userProfile: this.props.userProfile || {},
+      dueDateLastWeek: weeklySummaries && weeklySummaries[1] && weeklySummaries[1].dueDate || this.state.dueDateLastWeek,
+      dueDateBeforeLast: weeklySummaries && weeklySummaries[2] && weeklySummaries[2].dueDate || this.state.dueDateBeforeLast,
       activeTab: '1',
+      fetchError: this.props.fetchError,
+      loading: this.props.loading,
     });
   };
 
@@ -59,6 +69,9 @@ class WeeklySummary extends Component {
   schema = {
     mediaUrl: Joi.string().trim().uri().required().label("Media URL"),
     summary: Joi.optional(),
+    summaryLastWeek: Joi.optional(),
+    summaryBeforeLast: Joi.optional(),
+    weeklySummariesCount: Joi.optional(),
     mediaConfirm: Joi.boolean().invalid(false).label("Media Confirm"),
   };
 
@@ -120,30 +133,54 @@ class WeeklySummary extends Component {
     this.setState({ errors: errors || {} });
     if (errors) return;
 
-    let [currentWeeklySummary, ...rest] = this.state.userProfile.weeklySummaries;
-    let currentWeeklySummaryWithUpdates = { ...currentWeeklySummary, summary: this.state.formElements.summary, dueDate: this.state.dueDate };
-
-    const userProfileWithWeeklySummaryUpdates = {
-      ...this.state.userProfile,
+    const modifiedWeeklySummaries = {
       mediaUrl: this.state.formElements.mediaUrl.trim(),
-      weeklySummaries: [currentWeeklySummaryWithUpdates, ...rest],
+      weeklySummaries: [
+        { summary: this.state.formElements.summary, dueDate: this.state.dueDate.toISOString() },
+        { summary: this.state.formElements.summaryLastWeek, dueDate: this.state.dueDateLastWeek },
+        { summary: this.state.formElements.summaryBeforeLast, dueDate: this.state.dueDateBeforeLast },
+      ],
+      weeklySummariesCount: this.state.formElements.weeklySummariesCount,
     }
 
-    const saveResult = await this.props.updateUserProfile(this.props.currentUser.userid, userProfileWithWeeklySummaryUpdates);
+    const saveResult = await this.props.updateWeeklySummaries(this.props.currentUser.userid, modifiedWeeklySummaries);
 
     if (saveResult === 200) {
-      toast.success("✔ The summary was saved!");
+      toast.success("✔ The data was saved successfully!");
     } else {
-      toast.error("✘ The summary could not be saved!");
+      toast.error("✘ The data could not be saved!");
     }
   };
 
   render() {
-    const { formElements, dueDate, userProfile, activeTab, errors } = this.state;
+    const { formElements, dueDate, activeTab, errors, loading, fetchError } = this.state;
+
+    if (fetchError) {
+      return (
+        <Container>
+          <Row className="align-self-center" data-testid="error">
+            <Col>
+              <Alert color="danger">Fetch error! {fetchError.message}</Alert>
+            </Col>
+          </Row>
+        </Container>
+      );
+    }
+
+    if (loading) {
+      return (
+        <Container fluid>
+          <Row className="text-center" data-testid="loading">
+            <Loading />
+          </Row>
+        </Container>
+      );
+    }
 
     return (
       <Container fluid className="bg--white-smoke py-3 mb-5">
-        <h3>Weekly Summary</h3>
+        <h3>Weekly Summaries</h3>
+        <div>Total submitted: {formElements.weeklySummariesCount}</div>
         <Row>
           <Col
             className="pb-2 text-center"
@@ -155,31 +192,31 @@ class WeeklySummary extends Component {
           </Col>
         </Row>
 
-        <Nav tabs>
-          <NavItem>
-            <NavLink
-              className={classnames({ active: activeTab === '1' })} onClick={() => { this.toggleTab('1'); }}>
-              This Week
+        <Form>
+          <Nav tabs>
+            <NavItem>
+              <NavLink
+                className={classnames({ active: activeTab === '1' })} onClick={() => { this.toggleTab('1'); }}>
+                This Week
             </NavLink>
-          </NavItem>
-          <NavItem>
-            <NavLink
-              className={classnames({ active: activeTab === '2' })} onClick={() => { this.toggleTab('2'); }}>
-              Last Week
+            </NavItem>
+            <NavItem>
+              <NavLink
+                className={classnames({ active: activeTab === '2' })} onClick={() => { this.toggleTab('2'); }}>
+                Last Week
             </NavLink>
-          </NavItem>
-          <NavItem>
-            <NavLink
-              className={classnames({ active: activeTab === '3' })} onClick={() => { this.toggleTab('3'); }}>
-              Week Before Last
+            </NavItem>
+            <NavItem>
+              <NavLink
+                className={classnames({ active: activeTab === '3' })} onClick={() => { this.toggleTab('3'); }}>
+                Week Before Last
             </NavLink>
-          </NavItem>
-        </Nav>
-        <TabContent activeTab={activeTab} className="p-4">
-          <TabPane tabId="1">
-            <Row>
-              <Col>
-                <Form>
+            </NavItem>
+          </Nav>
+          <TabContent activeTab={activeTab} className="p-4">
+            <TabPane tabId="1">
+              <Row>
+                <Col>
                   <FormGroup>
                     <Label for="summaryContent">
                       Enter your weekly summary below. <WeeklySummaryContentTooltip />
@@ -203,121 +240,133 @@ class WeeklySummary extends Component {
                       onEditorChange={this.handleEditorChange}
                     />
                   </FormGroup>
-                  <Label for="mediaURL" className="mt-3">
-                    Link to your media files (eg. DropBox or Google Doc). (required) <MediaURLTooltip />
-                  </Label>
-                  <Row form>
-                    <Col md={8}>
-                      <FormGroup>
-                        <Input
-                          type="url"
-                          name="mediaUrl"
-                          id="mediaUrl"
-                          placeholder="Enter a link"
-                          value={formElements.mediaUrl}
-                          onChange={this.handleInputChange}
-                        />
-                      </FormGroup>
-                      {errors.mediaUrl && <Alert color="danger">{errors.mediaUrl}</Alert>}
-                    </Col>
-                    {formElements.mediaUrl && !errors.mediaUrl && (
-                      <Col md={4}>
-                        <FormGroup className="media-url">
-                          <FontAwesomeIcon icon={faExternalLinkAlt} className="mx-1 text--silver" />
-                          <a href={formElements.mediaUrl} target="_blank" rel="noopener noreferrer">Open link</a>
-                        </FormGroup>
-                      </Col>
-                    )}
-                  </Row>
-                  <Row>
-                    <Col>
-                      <FormGroup>
-                        <CustomInput
-                          id="mediaConfirm"
-                          name="mediaConfirm"
-                          type="checkbox"
-                          label="I have provided screenshots and video for this week's work. (required)" htmlFor="mediaConfirm"
-                          checked={formElements.mediaConfirm}
-                          valid={formElements.mediaConfirm}
-                          onChange={this.handleCheckboxChange}
-                        />
-                      </FormGroup>
-                      {errors.mediaConfirm && <Alert color="danger">Please confirm that you have provided the required media files.</Alert>}
-                    </Col>
-                  </Row>
-                  <Row className="mt-4">
-                    <Col>
-                      <FormGroup className="mt-2">
-                        <Button className="px-5 btn--dark-sea-green" disabled={this.validate() || (!formElements.mediaUrl && !formElements.summary) ? true : false} onClick={this.handleSave}>Save</Button>
-                      </FormGroup>
-                    </Col>
-                  </Row>
-                </Form>
-              </Col>
-            </Row>
-          </TabPane>
-          <TabPane tabId="2">
+                </Col>
+              </Row>
+            </TabPane>
+            <TabPane tabId="2">
+              <Row>
+                <Col>
+                  <FormGroup>
+                    <Label for="summaryContent">
+                      Enter your weekly summary below. <WeeklySummaryContentTooltip />
+                    </Label>
+                    <Editor
+                      init={{
+                        menubar: false,
+                        placeholder: 'Weekly summary content...',
+                        plugins:
+                          'advlist autolink autoresize lists link charmap table paste help wordcount',
+                        toolbar:
+                          'bold italic underline link removeformat | bullist numlist outdent indent | styleselect fontsizeselect | table| strikethrough forecolor backcolor | subscript superscript charmap | help',
+                        branding: false,
+                        min_height: 180,
+                        max_height: 500,
+                        autoresize_bottom_margin: 1,
+                      }}
+                      id="summaryLastWeek"
+                      name="summaryLastWeek"
+                      value={formElements.summaryLastWeek}
+                      onEditorChange={this.handleEditorChange}
+                    />
+                  </FormGroup>
+                </Col>
+              </Row>
+            </TabPane>
+            <TabPane tabId="3">
+              <Row>
+                <Col>
+                  <FormGroup>
+                    <Label for="summaryContent">
+                      Enter your weekly summary below. <WeeklySummaryContentTooltip />
+                    </Label>
+                    <Editor
+                      init={{
+                        menubar: false,
+                        placeholder: 'Weekly summary content...',
+                        plugins:
+                          'advlist autolink autoresize lists link charmap table paste help wordcount',
+                        toolbar:
+                          'bold italic underline link removeformat | bullist numlist outdent indent | styleselect fontsizeselect | table| strikethrough forecolor backcolor | subscript superscript charmap | help',
+                        branding: false,
+                        min_height: 180,
+                        max_height: 500,
+                        autoresize_bottom_margin: 1,
+                      }}
+                      id="summaryBeforeLast"
+                      name="summaryBeforeLast"
+                      value={formElements.summaryBeforeLast}
+                      onEditorChange={this.handleEditorChange}
+                    />
+                  </FormGroup>
+                </Col>
+              </Row>
+            </TabPane>
             <Row>
               <Col>
-                <Editor
-                  init={{ menubar: false, plugins: 'autoresize', toolbar: '', branding: false, min_height: 180, max_height: 500, statusbar: false }}
-                  id="summary-last-week"
-                  name="summary-last-week"
-                  value={userProfile.weeklySummaries && userProfile.weeklySummaries[1] && userProfile.weeklySummaries[1].summary}
-                  disabled
-                />
+                <Label for="mediaURL" className="mt-3">
+                  Link to your media files (eg. DropBox or Google Doc). (required) <MediaURLTooltip />
+                </Label>
+                <Row form>
+                  <Col md={8}>
+                    <FormGroup>
+                      <Input
+                        type="url"
+                        name="mediaUrl"
+                        id="mediaUrl"
+                        placeholder="Enter a link"
+                        value={formElements.mediaUrl}
+                        onChange={this.handleInputChange}
+                      />
+                    </FormGroup>
+                    {errors.mediaUrl && <Alert color="danger">{errors.mediaUrl}</Alert>}
+                  </Col>
+                  {formElements.mediaUrl && !errors.mediaUrl && (
+                    <Col md={4}>
+                      <FormGroup className="media-url">
+                        <FontAwesomeIcon icon={faExternalLinkAlt} className="mx-1 text--silver" />
+                        <a href={formElements.mediaUrl} target="_blank" rel="noopener noreferrer">Open link</a>
+                      </FormGroup>
+                    </Col>
+                  )}
+                </Row>
+                <Row>
+                  <Col>
+                    <FormGroup>
+                      <CustomInput
+                        id="mediaConfirm"
+                        name="mediaConfirm"
+                        type="checkbox"
+                        label="I have provided screenshots and video for this week's work. (required)" htmlFor="mediaConfirm"
+                        checked={formElements.mediaConfirm}
+                        valid={formElements.mediaConfirm}
+                        onChange={this.handleCheckboxChange}
+                      />
+                    </FormGroup>
+                    {errors.mediaConfirm && <Alert color="danger">Please confirm that you have provided the required media files.</Alert>}
+                  </Col>
+                </Row>
+                <Row className="mt-4">
+                  <Col>
+                    <FormGroup className="mt-2">
+                      <Button className="px-5 btn--dark-sea-green" disabled={this.validate() || !formElements.mediaUrl ? true : false} onClick={this.handleSave}>Save</Button>
+                    </FormGroup>
+                  </Col>
+                </Row>
               </Col>
             </Row>
-            {formElements.mediaUrl && (
-              <Row className="mt-3">
-                <Col>
-                  <div>
-                    <FontAwesomeIcon icon={faExternalLinkAlt} className="mx-1 text--silver" />
-                    <a href={formElements.mediaUrl} target="_blank" rel="noopener noreferrer">Open link to media files</a>
-                  </div>
-                </Col>
-              </Row>
-            )}
-          </TabPane>
-          <TabPane tabId="3">
-            <Row>
-              <Col sm="12">
-                <Editor
-                  init={{
-                    menubar: false, plugins: 'autoresize', toolbar: '', branding: false, min_height: 180, max_height: 500, statusbar: false,
-                  }}
-                  id="summary-week-before-last"
-                  name="summary-week-before-last"
-                  value={userProfile.weeklySummaries && userProfile.weeklySummaries[2] && userProfile.weeklySummaries[2].summary}
-                  disabled
-                />
-              </Col>
-            </Row>
-            {formElements.mediaUrl && (
-              <Row className="mt-3">
-                <Col>
-                  <div>
-                    <FontAwesomeIcon icon={faExternalLinkAlt} className="mx-1 text--silver" />
-                    <a href={formElements.mediaUrl} target="_blank" rel="noopener noreferrer">Open link to media files</a>
-                  </div>
-                </Col>
-              </Row>
-            )}
-          </TabPane>
-
-        </TabContent>
+          </TabContent>
+        </Form>
       </Container >
     );
   }
 }
 
 
-const mapStateToProps = ({ auth, userProfile }) => ({
+const mapStateToProps = ({ auth, weeklySummaries }) => ({
   currentUser: auth.user,
-  summary: userProfile.weeklySummaries && userProfile.weeklySummaries[0] && userProfile.weeklySummaries[0].summary ? userProfile.weeklySummaries[0].summary : '',
-  dueDate: userProfile.weeklySummaries && userProfile.weeklySummaries[0] && userProfile.weeklySummaries[0].dueDate ? userProfile.weeklySummaries[0].dueDate : '',
-  mediaUrl: userProfile.mediaUrl,
-  userProfile: userProfile,
+  summaries: weeklySummaries.summaries,
+  loading: weeklySummaries.loading,
+  fetchError: weeklySummaries.fetchError,
 });
 
-export default connect(mapStateToProps, { getUserProfile, updateUserProfile })(WeeklySummary);
+export default connect(mapStateToProps, { getWeeklySummaries, updateWeeklySummaries })(WeeklySummary);
