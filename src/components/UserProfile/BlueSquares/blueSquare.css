@@ -40,8 +40,9 @@
 .blueSquares {
   width: 150px; 
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
-  justify-content: center;
+  /* justify-content: center; */
 }
 
 .blueSquareButton {

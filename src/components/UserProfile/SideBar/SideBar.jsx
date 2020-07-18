@@ -7,13 +7,8 @@ import {
 	Input,
 	FormGroup,
 	Label,
-	CardImg,
 	InputGroupAddon,
-	InputGroupText,
-	Button,
-	Container,
-	Row,
-	Badge
+	InputGroupText
 } from 'reactstrap'
 import { orange } from '../../../constants/colors'
 
@@ -30,23 +25,35 @@ const SideBar = ({
 	privacySettings,
 	handleUserProfile,
 	handleImageUpload,
-	handleBlueSquare
+	handleBlueSquare,
+	handleNullState,
+	handleSaveError
 }) => {
-	const edit = event => {
-		console.log(event.target.value, event.target.id)
-		let payload = null
-		if (event.target.id === 'firstName') {
-			payload = { firstName: event.target.value }
+	
+	// const edit = event => {
+	// 	console.log(event.target.value, event.target.id)
+	// 	let payload = null
+	// 	if (event.target.id === 'firstName') {
+	// 		payload = { firstName: event.target.value }
+	// 	}
+	// 	if (event.target.id === 'lastName') {
+	// 		payload = { lastName: event.target.value }
+	// 	}
+	// 	if (event.target.id === 'email') {
+	// 		payload = { email: event.target.value }
+	// 	}
+	// 	if (event.target.id === 'jobTitle') {
+	// 		payload = { jobTitle: event.target.value }
+	// 	}
+	// }
+
+	if ((privacySettings == null) || (privacySettings.email == null) || (privacySettings.phoneNumber == null) || (privacySettings.blueSquares == null)) {
+		privacySettings = {
+			email: false,
+			phoneNumber: false,
+			blueSquares: false
 		}
-		if (event.target.id === 'lastName') {
-			payload = { lastName: event.target.value }
-		}
-		if (event.target.id === 'email') {
-			payload = { email: event.target.value }
-		}
-		if (event.target.id === 'jobTitle') {
-			payload = { jobTitle: event.target.value }
-		}
+		handleNullState('settings')
 	}
 
 	return (
@@ -76,14 +83,31 @@ const SideBar = ({
 					style={{ width: '250px', height: '250px' }}
 				/>
 
+			</div>
+
+			<FormGroup>
+				<Label for='blueSquares'>Blue Squares:</Label>
+				<InputGroupAddon addonType='prepend'>
+					<InputGroupText>
+						<Input
+							addon
+							type='checkbox'
+							aria-label='Checkbox for following text input'
+							defaultChecked={privacySettings.blueSquares}
+							onChange={handleUserProfile}
+							id='blueSquaresPubliclyAccessible'
+						/>
+					</InputGroupText>
+					<Label style={{ textAlign: 'center', marginBottom: '0' }}>Publicly Accessible?</Label>
+				</InputGroupAddon>
+
 				<BlueSquare 
 					isUserAdmin={isUserAdmin}
 					blueSquares={infringments}
 					handleBlueSquare={handleBlueSquare}
+					handleSaveError={handleSaveError}
 				/>
-					
-
-			</div>
+			</FormGroup>
 
 			<FormGroup>
 				<br />
@@ -130,14 +154,13 @@ const SideBar = ({
 
 			<FormGroup>
 				<Label for='email'>Email:</Label>
+
 				<InputGroupAddon addonType='prepend'>
 					<InputGroupText>
-					{console.log('checkbox email:',privacySettings.email)}
 						<Input
 							addon
 							type='checkbox'
 							aria-label='Checkbox for following text input'
-							// checked={privacySettings.email}
 							defaultChecked={privacySettings.email}
 							onChange={handleUserProfile}
 							id='emailPubliclyAccessible'
@@ -145,6 +168,7 @@ const SideBar = ({
 					</InputGroupText>
 					<Label style={{ textAlign: 'center', marginBottom: '0' }}>Publicly Accessible?</Label>
 				</InputGroupAddon>
+
 				<Input
 					type='email'
 					name='email'
@@ -162,7 +186,6 @@ const SideBar = ({
 
 				<InputGroupAddon addonType='prepend'>
 					<InputGroupText>
-
 						<Input
 							addon
 							type='checkbox'
@@ -171,7 +194,6 @@ const SideBar = ({
 							onChange={handleUserProfile}
 							id='phoneNumberPubliclyAccessible'
 						/>
-
 					</InputGroupText>
 					<Label style={{ textAlign: 'center', marginBottom: '0' }}>Publicly Accessible?</Label>
 				</InputGroupAddon>

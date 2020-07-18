@@ -4,22 +4,9 @@ import {
 	Card,
 	Row,
 	CardTitle,
-	CardText,
 	Col,
 	Container,
-	CardSubtitle,
-	CardBody,
-	Input,
-	InputGroup,
-	InputGroupAddon,
-	InputGroupText,
-	CardHeader,
-	CardFooter,
-	Badge,
 	Button,
-	FormGroup,
-	Label,
-	CardImg
 } from 'reactstrap'
 import { orange, silverGray, warningRed } from '../../constants/colors'
 import cx from 'classnames'
@@ -34,6 +21,8 @@ import WorkHistory from './WorkHistory'
 import UserLinks from './UserLinks'
 
 import SideBar from './SideBar'
+import { method } from 'lodash'
+
 
 
 class UserProfile extends Component {
@@ -118,9 +107,7 @@ class UserProfile extends Component {
 		}
 
 		if (event.target.id === 'emailPubliclyAccessible') {
-			
-			const newValue =  event.target.checked
-			
+
 			console.log(this.state)
 
 			this.setState({
@@ -136,19 +123,31 @@ class UserProfile extends Component {
 		}
 
 		if (event.target.id === 'phoneNumberPubliclyAccessible') {
-			this.setState(prevState => {
-				var newPrivacySettings = prevState.userProfile.privacySettings
-				newPrivacySettings.phoneNumber = !newPrivacySettings.phoneNumber
-				
-				this.setState({
-					userProfile: {
-						...this.state.userProfile,
-						privacySettings: newPrivacySettings,
+			this.setState({
+				userProfile: {
+					...this.state.userProfile,
+					privacySettings: {
+						...this.state.userProfile.privacySettings,
+						phoneNumber: !this.state.userProfile.privacySettings.phoneNumber
 					}
-				})
-
+				}
 			})
 		}
+
+		if (event.target.id === 'blueSquaresPubliclyAccessible') {
+
+			this.setState({
+				userProfile: {
+					...this.state.userProfile,
+					privacySettings: {
+						...this.state.userProfile.privacySettings,
+						blueSquares: !this.state.userProfile.privacySettings.blueSquares
+					}
+				}
+			})
+
+		}
+
 
 		var elem = document.getElementById('warningCard');
 		elem.style.display = 'block';
@@ -211,45 +210,68 @@ class UserProfile extends Component {
 		}
 	}
 
-	handleModelState = (status = true, type = 'message', linkType) => {
-		console.log(linkType)
-		this.setState({
-			showModal: status,
-			modalTitle: 'Add a New Link',
-			linkType: linkType,
-			type: type
-		})
+	handleNullState = (kind) => {
+
+		if (kind === 'settings') {
+			const defaultSettings = {
+				email: true,
+				phoneNumber: true,
+				blueSquares: true
+			}
+
+			this.setState(() => {
+				return {
+					showModal: false,
+					userProfile: {
+						...this.state.userProfile,
+						privacySettings: defaultSettings
+					}
+				}
+			})
+
+		}
+
 	}
 
-	handleBlueSquare = (status = true, type = 'message', blueSquareID='') => {
-		if (type === 'addBlueSquare'){
+	handleBlueSquare = (status = true, type = 'message', blueSquareID = '') => {
+		if (type === 'addBlueSquare') {
 			this.setState({
 				showModal: status,
 				modalTitle: 'Blue Square',
 				type: type
 			})
-		} else if (type === 'modBlueSquare'){
+		} else if (type === 'modBlueSquare') {
 			this.setState({
 				showModal: status,
 				modalTitle: 'Blue Square',
 				type: type,
 				id: blueSquareID
 			})
-		} else if (type === 'viewBlueSquare'){
+		} else if (type === 'viewBlueSquare') {
 			this.setState({
 				showModal: status,
 				modalTitle: 'Blue Square',
 				type: type,
 				id: blueSquareID
+			})
+		} else if (blueSquareID === 'none') {
+			this.setState({
+				showModal: status,
+				modalTitle: 'Save & Refresh',
+				modalMessage: '',
+				type: type
 			})
 		}
+
 	}
 
 	updateBlueSquare = (id, dateStamp, summary, kind) => {
-		console.log('-> NEW updateBlueSquare function?')
+		// console.log('Handle Blue Square: ', kind, ' date:', dateStamp, ' summary:', summary)
+		var elem = document.getElementById('warningCard');
+		elem.style.display = 'block';
 
-		if (kind === 'add'){
-			let newBlueSquare = { date: dateStamp, description: summary}
+		if (kind === 'add') {
+			let newBlueSquare = { date: dateStamp, description: summary }
 			this.setState(prevState => {
 				return {
 					showModal: false,
@@ -259,13 +281,13 @@ class UserProfile extends Component {
 					}
 				}
 			})
-		}else if(kind === 'update'){
-			this.setState( () => {
+		} else if (kind === 'update') {
+			this.setState(() => {
 				let currentBlueSquares = this.state.userProfile.infringments
-				if (dateStamp != ''){
+				if (dateStamp != null) {
 					currentBlueSquares.find(blueSquare => blueSquare._id == id).date = dateStamp
 				}
-				if (summary != ''){
+				if (summary != null) {
 					currentBlueSquares.find(blueSquare => blueSquare._id == id).description = summary
 				}
 				return {
@@ -276,14 +298,13 @@ class UserProfile extends Component {
 					}
 				}
 			})
-		}else if(kind === 'delete'){
-			this.setState( () => {
-				var currentBlueSquares = this.state.userProfile.infringments.filter(function(blueSquare) {
-					if (blueSquare._id != id){
+		} else if (kind === 'delete') {
+			this.setState(() => {
+				var currentBlueSquares = this.state.userProfile.infringments.filter(function (blueSquare) {
+					if (blueSquare._id != id) {
 						return blueSquare
 					}
 				})
-				// console.log('new blue squares after delete:', currentBlueSquares)
 				return {
 					showModal: false,
 					userProfile: {
@@ -297,81 +318,17 @@ class UserProfile extends Component {
 
 	}
 
-	addLink = (linkName, linkURL, linkSection) => {
-		console.log('addLink', linkName, linkURL, linkSection)
-
-		var elem = document.getElementById('warningCard');
-		elem.style.display = 'block';
-
-		const link = { Name: linkName, Link: linkURL }
-		if (linkSection == 'user') {
-			return this.setState(prevState => {
-
-				return {
-					showModal: false,
-					userProfile: {
-						...this.state.userProfile,
-						personalLinks: prevState.userProfile.personalLinks.concat(link)
-					}
-
-				}
-			})
-		}
-
-		this.setState(prevState => {
-			return {
-				showModal: false,
-				userProfile: {
-					...this.state.userProfile,
-					adminLinks: prevState.userProfile.adminLinks.concat(link)
-				}
-			}
+	handleSaveError = (message) => {
+		this.setState({
+			showModal: true,
+			modalMessage: 'Must save first.',
+			modalTitle: 'Error, ' + message,
+			type: 'message'
 		})
 	}
 
-	removeLink = (linkSection, item) => {
-
-		if (linkSection === 'user') {
-			return this.setState( () => {
-				var newLinks = this.state.userProfile.personalLinks.filter(function(link) {
-					if (link != item){
-						return link
-					}
-				});
-
-				return {
-					showModal: false,
-					userProfile: {
-						...this.state.userProfile,
-						personalLinks: newLinks
-					}
-				}
-			})
-		}
-
-		return this.setState(prevState => {
-			var prevLinks = prevState.userProfile.adminLinks
-			var newLinks = prevLinks.filter(function(arrayItem) {
-				if (arrayItem != item){
-					return arrayItem
-				}
-			});
-
-			return {
-				showModal: false,
-				userProfile: {
-					...this.state.userProfile,
-					adminLinks: newLinks
-				}
-			}
-		})
-
-
-
-	}
-	
 	handleSubmit = async event => {
-		// event.preventDefault()
+		event.preventDefault()
 
 		const submitResult = await this.props.updateUserProfile(
 			this.props.match.params.userId,
@@ -397,6 +354,64 @@ class UserProfile extends Component {
 			})
 		}
 	}
+
+	updateLink = (personalLinksUpdate, adminLinksUpdate) => {
+		var elem = document.getElementById('warningCard');
+		elem.style.display = 'block';
+		
+		return this.setState(() => {
+				return {
+					showModal: false,
+					userProfile: {
+						...this.state.userProfile,
+						personalLinks: personalLinksUpdate,
+						adminLinks: adminLinksUpdate
+					}
+				}
+		})
+	}
+
+	handleLinkModel = (status = true, type = 'message', linkSection) => {
+		if (type === 'addLink') {
+			this.setState({
+				showModal: status,
+				modalTitle: 'Add a New Link',
+				linkType: linkSection,
+				type: type
+			})
+		} else if (type === 'updateLink') {
+			this.setState({
+				showModal: status,
+				modalTitle: 'Edit Links',
+				linkType: linkSection,
+				type: type
+			})
+		}
+	}
+
+	modLinkButton = (canEditFields, isUserAdmin) => {
+		if (canEditFields) {
+			let user = 'user'
+			if (isUserAdmin) {
+				user = 'admin'
+			}
+			return (
+				<button style={{
+					display: 'flex', width: '25px', height: '25px', padding: '0px',
+					alignItems: 'center', justifyContent: 'center', backgroundColor: 'white', border: 'none'
+				}}
+					onClick={() => { this.handleLinkModel(true, 'updateLink', user) }}>
+					<svg style={{ width: '20px', height: '20px' }} viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+						<path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456l-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z" />
+						<path d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z" />
+					</svg>
+				</button>
+
+			)
+		}
+
+	}
+
 
 	render() {
 
@@ -451,11 +466,13 @@ class UserProfile extends Component {
 						modalMessage={this.state.modalMessage}
 						modalTitle={this.state.modalTitle}
 						type={this.state.type}
-						confirmModal={this.addLink}
+						updateLink={this.updateLink}
 						updateBlueSquare={this.updateBlueSquare}
 						linkType={this.state.linkType}
-						infringments={this.state.userProfile.infringments}
+						userProfile={this.state.userProfile}
 						id={this.state.id}
+						isUserAdmin={isUserAdmin}
+						handleLinkModel={this.handleLinkModel}
 					/>
 				)}
 
@@ -479,40 +496,45 @@ class UserProfile extends Component {
 							handleUserProfile={this.handleUserProfile}
 							handleImageUpload={this.handleImageUpload}
 							handleBlueSquare={this.handleBlueSquare}
+							handleNullState={this.handleNullState}
+							handleSaveError={this.handleSaveError}
 						/>
 
 						<br />
 					</Col>
 
 					<Col xs={12} md={9} sm={12} style={{ backgroundColor: 'white', padding: 5 }}>
+
 						<WorkHistory />
 
 						<br />
-						<UserLinks
-							linkSection='admin'
-							linkSectionName='Google Doc'
-							links={adminLinks}
-							handleModelState={this.handleModelState}
-							isUserAdmin={isUserAdmin}
-							canEditFields={canEditFields}
-							removeLink={this.removeLink}
-						/>
+						<Card>
 
-						<br />
-						<UserLinks
-							linkSection='user'
-							linkSectionName='Social/Professional'
-							links={personalLinks}
-							handleModelState={this.handleModelState}
-							isUserAdmin={isUserAdmin}
-							canEditFields={canEditFields}
-							removeLink={this.removeLink}
-						/>
+							{this.modLinkButton(canEditFields, isUserAdmin)}
+
+							<div style={{ display: 'flex', alignItems: 'center', padding: 5 }}>
+								<UserLinks
+									linkSection='admin'
+									links={adminLinks}
+									handleLinkModel={this.handleLinkModel}
+									isUserAdmin={isUserAdmin}
+									canEditFields={canEditFields}
+								/>
+							</div>
+							<div style={{ display: 'flex', alignItems: 'center', padding: 5 }}>
+								<UserLinks
+									linkSection='user'
+									links={personalLinks}
+									handleLinkModel={this.handleLinkModel}
+									isUserAdmin={isUserAdmin}
+									canEditFields={canEditFields}
+								/>
+							</div>
+						</Card>
 						<br />
 
-						<Badges />
+						{/* <Badges /> */}
 
-						<br />
 						<Button outline color='primary' onClick={this.handleSubmit}>
 							{'Save Changes'}
 						</Button>
