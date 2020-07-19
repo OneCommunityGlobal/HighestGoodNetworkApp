@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import React from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCalendarCheck } from '@fortawesome/free-regular-svg-icons';
@@ -20,5 +21,11 @@ function DueDateTime({ dueDate }) {
     </div>
   );
 }
+
+DueDateTime.propTypes = {
+  dueDate: PropTypes.shape({
+    format: PropTypes.func,
+  }).isRequired,
+};
 
 export default DueDateTime;

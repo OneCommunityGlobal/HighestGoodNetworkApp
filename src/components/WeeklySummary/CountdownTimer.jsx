@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import React, { useEffect, useState } from 'react';
 import _ from 'lodash';
 import { toast } from 'react-toastify';
@@ -50,7 +51,7 @@ function CountdownTimer({ date }) {
       onClose: () => window.location.reload(true),
     });
 
-    return <span className="countdown__times-up">Time's up!</span>;
+    return <span className="countdown__times-up">Time&apos;s up!</span>;
   };
 
   return (
@@ -65,11 +66,18 @@ function CountdownTimer({ date }) {
                 <span>{pluralOrSingle(interval)}</span>
               </span>
             </span>
-            // )) : <span className="countdown__times-up">Times up!</span>
           )) : whenTimeIsUp()
       }
     </div>
   );
 }
+
+CountdownTimer.propTypes = {
+  date: PropTypes.shape({
+    _d: PropTypes.instanceOf(Date).isRequired,
+    _isAMomentObject: PropTypes.bool.isRequired,
+    _isValid: PropTypes.bool.isRequired,
+  }).isRequired,
+};
 
 export default CountdownTimer;

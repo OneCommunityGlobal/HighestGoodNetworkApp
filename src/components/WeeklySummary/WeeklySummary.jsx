@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import {
   Alert, Container, Row, Col, Form, FormGroup, Label, Input,
   CustomInput, Button, TabContent, TabPane, Nav, NavItem, NavLink,
@@ -361,6 +362,16 @@ class WeeklySummary extends Component {
   }
 }
 
+WeeklySummary.propTypes = {
+  currentUser: PropTypes.shape({
+    userid: PropTypes.string.isRequired
+  }).isRequired,
+  fetchError: PropTypes.any,
+  getWeeklySummaries: PropTypes.func.isRequired,
+  loading: PropTypes.bool.isRequired,
+  summaries: PropTypes.object.isRequired,
+  updateWeeklySummaries: PropTypes.func.isRequired
+}
 
 const mapStateToProps = ({ auth, weeklySummaries }) => ({
   currentUser: auth.user,
