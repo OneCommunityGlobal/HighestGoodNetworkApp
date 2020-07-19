@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import moment from 'moment';
 import 'moment-timezone';
 import ReactHtmlParser from 'react-html-parser';
@@ -34,6 +35,11 @@ const FormattedReport = ({ summaries, weekIndex }) => {
   return (
     <div>{ReactHtmlParser(wsReport)}</div>
   );
+};
+
+FormattedReport.propTypes = {
+  summaries: PropTypes.arrayOf(PropTypes.object).isRequired,
+  weekIndex: PropTypes.string.isRequired,
 };
 
 export default FormattedReport;

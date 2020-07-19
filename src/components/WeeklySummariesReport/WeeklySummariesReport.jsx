@@ -1,5 +1,6 @@
 /* eslint-disable react/jsx-one-expression-per-line */
 import React, { Component } from 'react';
+import PropTypes from "prop-types";
 import { connect } from 'react-redux';
 import {
   Alert, Container, Row, Col, TabContent, TabPane, Nav, NavItem, NavLink,
@@ -145,6 +146,13 @@ export class WeeklySummariesReport extends Component {
       </Container>
     );
   }
+}
+
+WeeklySummariesReport.propTypes = {
+  error: PropTypes.any,
+  getWeeklySummariesReport: PropTypes.func.isRequired,
+  loading: PropTypes.bool.isRequired,
+  summaries: PropTypes.array.isRequired
 }
 
 const mapStateToProps = ({ weeklySummariesReport }) => ({

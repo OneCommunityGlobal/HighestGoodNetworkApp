@@ -12,6 +12,8 @@ describe('WeeklySummariesReport page', () => {
       const props = {
         getWeeklySummariesReport: jest.fn(),
         error: { message: 'SOME ERROR CONNECTING!!!' },
+        loading: false,
+        summaries: [],
       };
       render(<WeeklySummariesReport {...props} />);
 
@@ -24,6 +26,7 @@ describe('WeeklySummariesReport page', () => {
       const props = {
         getWeeklySummariesReport: jest.fn(),
         loading: true,
+        summaries: [],
       };
       render(<WeeklySummariesReport {...props} />);
       expect(screen.getByTestId('loading')).toBeInTheDocument();
@@ -33,6 +36,7 @@ describe('WeeklySummariesReport page', () => {
   describe('Tabs display', () => {
     const props = {
       getWeeklySummariesReport: jest.fn(),
+      loading: false,
       summaries: [],
     };
     beforeEach(() => {

@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import React from 'react';
 import pdfMake from 'pdfmake/build/pdfmake';
 import pdfFonts from 'pdfmake/build/vfs_fonts';
@@ -10,7 +11,7 @@ pdfMake.vfs = pdfFonts.pdfMake.vfs;
 
 
 const GeneratePdfReport = ({ summaries, weekIndex, weekDates }) => {
-  const FormatReportForPdf = (summaries, weekIndex) => {
+  const FormatReportForPdf = () => {
     let wsReport = `<h3>Weekly Summaries Report</h3>
     <div style="margin-bottom: 20px; color: orange;">From <b>${weekDates.fromDate}</b> to <b>${weekDates.toDate}</b></div>`;
     const weeklySummaryNotProvidedMessage = '<div><b>Weekly Summary:</b> Not provided!</div>';
@@ -41,7 +42,7 @@ const GeneratePdfReport = ({ summaries, weekIndex, weekDates }) => {
     return wsReport;
   };
 
-  const formattedReport = FormatReportForPdf(summaries, weekIndex);
+  const formattedReport = FormatReportForPdf();
   const html = htmlToPdfmake(formattedReport);
 
   const docDefinition = {
@@ -63,6 +64,15 @@ const GeneratePdfReport = ({ summaries, weekIndex, weekDates }) => {
   return (
     <Button className="px-5 btn--dark-sea-green float-right" onClick={pdfDocGenerator}>Open PDF</Button>
   );
+};
+
+GeneratePdfReport.propTypes = {
+  summaries: PropTypes.arrayOf(PropTypes.object).isRequired,
+  weekDates: PropTypes.shape({
+    fromDate: PropTypes.string,
+    toDate: PropTypes.string,
+  }).isRequired,
+  weekIndex: PropTypes.string.isRequired,
 };
 
 export default GeneratePdfReport;
