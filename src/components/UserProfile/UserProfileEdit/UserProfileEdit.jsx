@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import Loading from '../common/Loading'
+import Loading from '../../common/Loading'
 import {
 	Card,
 	Row,
@@ -13,24 +13,22 @@ import {
 
 import Image from 'react-bootstrap/Image'
 
-import { orange, silverGray, warningRed } from '../../constants/colors'
+import { orange, silverGray, warningRed } from '../../../constants/colors'
 import cx from 'classnames'
-import Memberships from '../Memberships/Memberships'
-import ProfileLinks from '../ProfileLinks/ProfileLinks'
+// import Memberships from '../Memberships/Memberships'
+// import ProfileLinks from '../ProfileLinks/ProfileLinks'
 import Joi from 'joi'
-import BlueSquare from './BlueSquares'
-import Modal from '../common/Modal'
+import BlueSquare from '../BlueSquares'
+import Modal from '../../common/Modal'
 
-import Badges from './Badges'
-import WorkHistory from './WorkHistory'
-import UserLinks from './UserLinks'
+import Badges from '../Badges'
+import WorkHistory from '../WorkHistory'
+import UserLinks from '../UserLinks'
 
-import SideBar from './SideBar'
-import SideBarRedo from './SideBar copy'
 import { method } from 'lodash'
 
 
-class UserProfile extends Component {
+class EditProfile extends Component {
 	state = {
 		isLoading: true,
 		error: '',
@@ -345,7 +343,7 @@ class UserProfile extends Component {
 				showModal: true,
 				modalMessage: 'Your Changes were saved successfully',
 				modalTitle: 'Success',
-				type: 'message'
+				type: 'save'
 			})
 			var elem = document.getElementById('warningCard');
 			elem.style.display = 'none';
@@ -354,7 +352,7 @@ class UserProfile extends Component {
 				showModal: true,
 				modalMessage: 'Please try again.',
 				modalTitle: 'Error',
-				type: 'message'
+				type: 'save'
 			})
 		}
 	}
@@ -481,33 +479,76 @@ class UserProfile extends Component {
 
 				<Col style={{ height: '100%', backgroundColor: 'white' }}>
 					<Row style={{ color: 'white', backgroundColor: 'grey', padding: 10, margin: 5}}>
-						<Col>
-							<div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+						<div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+							<Label
+								for='newProfilePic'
+								htmlFor={'newProfilePic'}
+								style={{ color: 'orange', cursor: 'pointer' }}>
+								Change Profile Picture
+							</Label>
+							
+							<Input
+								type='file'
+								name='newProfilePic'
+								id={'newProfilePic'}
+								style={{ visibility: 'hidden', width: 0, height: 0 }}
+								onChange={this.handleImageUpload}
+								accept={'image/png,image/jpeg, image/jpg'}
+							/>
+							
+							<Image src={profilePic || '/defaultprofilepic.png'}
+								alt='Profile Picture'
+								roundedCircle
+								style={{ width: '200px', height: '200px' }}
+							/>
 
-								<Input
-									type='file'
-									name='newProfilePic'
-									id={'newProfilePic'}
-									style={{ visibility: 'hidden', width: 0, height: 0 }}
-									onChange={this.handleImageUpload}
-									accept={'image/png,image/jpeg, image/jpg'}
-								/>
-								
-								<Image src={profilePic || '/defaultprofilepic.png'}
-									alt='Profile Picture'
-									roundedCircle
-									style={{ width: '200px', height: '200px' }}
-								/>
-
-								<br/>
-
-								<div>
-									<Label>{firstName} {lastName}</Label>
-								</div>
-
-								<div>
-									<Label>{jobTitle}</Label>
-								</div>
+							<br/>
+							<Col style={{ display: 'flex', flexDirection: 'column', justifyContent:'center'}}> 
+								<Row style={{ display: 'flex', flexDirection: 'row', justifyContent:'center'}}>
+									<Input
+										type='text'
+										name='firstName'
+										id='firstName'
+										value={firstName}
+										style={{ color: orange, width:'auto', margin: 2}}
+										onChange={this.handleUserProfile}
+										placeholder='First Name'
+										readOnly={canEditFields ? null : true}
+									/>
+									<Input
+										type='text'
+										name='lastName'
+										id='lastName'
+										value={lastName}
+										style={{ color: orange, width:'auto', margin: 2 }}
+										onChange={this.handleUserProfile}
+										placeholder='Last Name'
+										readOnly={canEditFields ? null : true}
+									/>
+									{/* 										
+									<Input
+										type='title'
+										name='jobTitle'
+										id='jobTitle'
+										value={jobTitle}
+										style={{ color: orange, width:'auto', margin: 2  }}
+										onChange={this.handleUserProfile}
+										placeholder='Job Title'
+										readOnly={canEditFields ? null : true}
+									/> */}
+								</Row>
+								<Row style={{ display: 'flex', flexDirection: 'row', justifyContent:'center'}}>
+									<Input
+										type='title'
+										name='jobTitle'
+										id='jobTitle'
+										value={jobTitle}
+										style={{color: orange, width:'auto', margin: 2}}
+										onChange={this.handleUserProfile}
+										placeholder='Job Title'
+										readOnly={canEditFields ? null : true}
+									/>
+								</Row>
 
 								<BlueSquare 
 									isUserAdmin={isUserAdmin}
@@ -515,20 +556,34 @@ class UserProfile extends Component {
 									handleBlueSquare={this.handleBlueSquare}
 									handleSaveError={this.handleSaveError}
 								/>
-
-							</div>
-						</Col>
-					
+							</Col>
+						</div>					
 
 						<Col>
-
-							<Col> 
-									<Label>{email}</Label>
-								</Col>
-
-								<Col>
-									<Label>{phoneNumber}</Label>
-							</Col>
+							<div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'flex-start', width: '80%' }}>
+								<Row>
+									<Input
+										type='email'
+										name='email'
+										id='email'
+										style={{ color: orange, margin: 2 }}
+										value={email}
+										onChange={this.handleUserProfile}
+										placeholder='Email'
+										readOnly={canEditFields ? null : true}
+									/>							
+									<Input
+										type='number'
+										name='phoneNumber'
+										id='phoneNumber'
+										style={{ color: orange, margin: 2 }}
+										value={phoneNumber}
+										onChange={this.handleUserProfile}
+										placeholder='Phone'
+										readOnly={canEditFields ? null : true}
+									/>
+								</Row>
+							</div>
 
 							<div style={{ width: '80%', display: 'flex', alignItems: 'center', padding: 5 }}>
 								<UserLinks
@@ -538,9 +593,6 @@ class UserProfile extends Component {
 									isUserAdmin={isUserAdmin}
 									canEditFields={canEditFields}
 								/>
-							</div>
-
-							<div style={{ display: 'flex', alignItems: 'center', padding: 5 }}>
 								<UserLinks
 									linkSection='user'
 									links={personalLinks}
@@ -550,22 +602,20 @@ class UserProfile extends Component {
 								/>
 							</div>
 						
-
-						
 						</Col>
 
-
-						{/* {this.modLinkButton(canEditFields, isUserAdmin)} */}
+						{this.modLinkButton(canEditFields, isUserAdmin)}
 					
 					</Row>
-					<br />
-
-					{/* <Button outline color='primary' onClick={this.handleSubmit}>
-					{'Save Changes'}
-					</Button>
-					<Button outline color='danger' onClick={() => window.location.reload()}>
-						Cancel
-					</Button> */}
+					
+					<Row style={{ display: 'flex', justifyContent: 'center', padding: 10, margin: 5}}>
+						<Button outline color='primary' onClick={this.handleSubmit} style={{ display: 'flex', margin: 5}}>
+							{'Save Changes'}
+						</Button>
+						<Button outline color='danger' onClick={() => window.location.reload()} style={{ display: 'flex', margin: 5}} >
+							Cancel
+						</Button>
+					</Row>
 					
 				</Col>
 
@@ -575,4 +625,4 @@ class UserProfile extends Component {
 	}
 }
 
-export default UserProfile
+export default EditProfile

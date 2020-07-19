@@ -3,16 +3,11 @@ import Loading from '../common/Loading'
 import {
 	Card,
 	Row,
-	Label,
-	Input,
 	CardTitle,
 	Col,
 	Container,
 	Button,
 } from 'reactstrap'
-
-import Image from 'react-bootstrap/Image'
-
 import { orange, silverGray, warningRed } from '../../constants/colors'
 import cx from 'classnames'
 import Memberships from '../Memberships/Memberships'
@@ -54,6 +49,7 @@ class UserProfile extends Component {
 				this.setState({ isLoading: false, userProfile: this.props.userProfile })
 			}
 		}
+		// console.log(this.props.userProfile)
 	}
 
 	handleUserProfile = event => {
@@ -151,7 +147,6 @@ class UserProfile extends Component {
 			})
 
 		}
-
 
 		var elem = document.getElementById('warningCard');
 		elem.style.display = 'block';
@@ -479,58 +474,42 @@ class UserProfile extends Component {
 					/>
 				)}
 
-				<Col style={{ height: '100%', backgroundColor: 'white' }}>
-					<Row style={{ color: 'white', backgroundColor: 'grey', padding: 10, margin: 5}}>
-						<Col>
-							<div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+				{/* <Row> */}
+					{/* <Col
+						xs={12}
+						md={3}
+						sm={12}
+						style={{ backgroundColor: silverGray, border: '1px solid #A8A8A8' }}>
+						<SideBarRedo
+							profilePic={profilePic}
+							firstName={firstName}
+							lastName={lastName}
+							email={email}
+							phoneNumber={phoneNumber}
+							jobTitle={jobTitle}
+							privacySettings={privacySettings}
+							canEditFields={canEditFields}
+							isUserAdmin={isUserAdmin}
+							infringments={infringments}
+							handleUserProfile={this.handleUserProfile}
+							handleImageUpload={this.handleImageUpload}
+							handleBlueSquare={this.handleBlueSquare}
+							handleNullState={this.handleNullState}
+							handleSaveError={this.handleSaveError}
+						/>
+						<br />
+					</Col> */}
 
-								<Input
-									type='file'
-									name='newProfilePic'
-									id={'newProfilePic'}
-									style={{ visibility: 'hidden', width: 0, height: 0 }}
-									onChange={this.handleImageUpload}
-									accept={'image/png,image/jpeg, image/jpg'}
-								/>
-								
-								<Image src={profilePic || '/defaultprofilepic.png'}
-									alt='Profile Picture'
-									roundedCircle
-									style={{ width: '200px', height: '200px' }}
-								/>
+					<Col xs={12} md={9} sm={12} style={{ backgroundColor: 'white', padding: 5 }}>
 
-								<br/>
+						<WorkHistory />
 
-								<div>
-									<Label>{firstName} {lastName}</Label>
-								</div>
+						<br />
+						<Card>
 
-								<div>
-									<Label>{jobTitle}</Label>
-								</div>
+							{this.modLinkButton(canEditFields, isUserAdmin)}
 
-								<BlueSquare 
-									isUserAdmin={isUserAdmin}
-									blueSquares={infringments}
-									handleBlueSquare={this.handleBlueSquare}
-									handleSaveError={this.handleSaveError}
-								/>
-
-							</div>
-						</Col>
-					
-
-						<Col>
-
-							<Col> 
-									<Label>{email}</Label>
-								</Col>
-
-								<Col>
-									<Label>{phoneNumber}</Label>
-							</Col>
-
-							<div style={{ width: '80%', display: 'flex', alignItems: 'center', padding: 5 }}>
+							<div style={{ display: 'flex', alignItems: 'center', padding: 5 }}>
 								<UserLinks
 									linkSection='admin'
 									links={adminLinks}
@@ -539,7 +518,6 @@ class UserProfile extends Component {
 									canEditFields={canEditFields}
 								/>
 							</div>
-
 							<div style={{ display: 'flex', alignItems: 'center', padding: 5 }}>
 								<UserLinks
 									linkSection='user'
@@ -549,25 +527,21 @@ class UserProfile extends Component {
 									canEditFields={canEditFields}
 								/>
 							</div>
-						
+						</Card>
+						<br />
 
-						
-						</Col>
+						{/* <Badges /> */}
 
+						<Button outline color='primary' onClick={this.handleSubmit}>
+							{'Save Changes'}
+						</Button>
 
-						{/* {this.modLinkButton(canEditFields, isUserAdmin)} */}
-					
-					</Row>
-					<br />
+						<Button outline color='danger' onClick={() => window.location.reload()}>
+							Cancel
+						</Button>
 
-					{/* <Button outline color='primary' onClick={this.handleSubmit}>
-					{'Save Changes'}
-					</Button>
-					<Button outline color='danger' onClick={() => window.location.reload()}>
-						Cancel
-					</Button> */}
-					
-				</Col>
+					</Col>
+				{/* </Row> */}
 
 			</Container>
 		)

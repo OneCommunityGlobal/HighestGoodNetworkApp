@@ -4,6 +4,7 @@ import { ToastContainer } from 'react-toastify'
 import Timelog from './components/Timelog'
 import Reports from './components/Reports'
 import UserProfile from './components/UserProfile'
+import UserProfileEdit from './components/UserProfile/UserProfileEdit'
 import Dashboard from './components/Dashboard'
 import { Logout } from './components/Logout/Logout'
 import Login from './components/Login'
@@ -31,6 +32,7 @@ export default (
 			<Route path='/login' component={Login} />
 
 			<ProtectedRoute path='/userprofile/:userId' component={UserProfile} />
+			<ProtectedRoute path='/userprofileedit/:userId' component={UserProfileEdit} />
 			<ProtectedRoute path='/updatepassword/:userId' component={UpdatePassword} />
 			<Route path='/Logout' component={Logout} />
 			<Route path='/forcePasswordUpdate/:userId' component={ForcePasswordUpdate} />

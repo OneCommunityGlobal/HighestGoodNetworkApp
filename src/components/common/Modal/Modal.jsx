@@ -271,6 +271,10 @@ const ModalExample = props => {
 					</>
 				)}
 
+				{type === 'save' && (
+					modalMessage
+				)}
+
 				{type === 'message' && (
 					modalMessage
 				)}
@@ -308,16 +312,22 @@ const ModalExample = props => {
 					</Button>
 				)}
 
-				{type === 'image' ? (
+				{type === 'image' && (
 					<>
 						<Button color='primary' onClick={closeModal}> Close </Button>
 						<Button color="info" onClick={() => { window.open('https://picresize.com/') }}> Resize </Button>
 					</>
+				)}
+
+				{type === 'save' ? (
+					<Button color='primary' onClick={closeModal}>
+						Close
+					</Button>
 				) : (
-						<Button color='primary' onClick={closeModal}>
-							Cancel
-						</Button>
-					)}
+					<Button color='primary' onClick={closeModal}>
+						Cancel
+					</Button>
+				)}
 
 			</ModalFooter>
 		</Modal>
