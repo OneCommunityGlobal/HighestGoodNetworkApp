@@ -246,7 +246,7 @@ const EditTaskModal = (props) => {
                   WBS #
                   </td>
                 <td scope="col" >
-                  {thisTask.num}
+                  {thisTask.num.replace(/.0/g, '')}
                 </td>
               </tr>
               <tr>

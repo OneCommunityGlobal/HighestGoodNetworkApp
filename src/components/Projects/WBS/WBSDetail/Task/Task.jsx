@@ -8,11 +8,12 @@ import { Button } from 'reactstrap';
 import AddTaskModal from '../AddTask/AddTaskModal';
 import EditTaskModal from "../EditTask/EditTaskModal";
 import './tagcolor.css';
+import './task.css';
 
 const Task = (props) => {
   const startedDate = new Date(props.startedDatetime);
   const dueDate = new Date(props.dueDatetime);
-  let isOpen = true;
+  let isOpen = false;
 
 
   let controllerToggle = true;
@@ -30,16 +31,13 @@ const Task = (props) => {
     props.selectTask(id);
   }
 
-  const toggleGroups = (num, id) => {
-    const allItems = document.getElementsByClassName('wbsTask');
+  const toggleGroups = (id) => {
+    const allItems = document.getElementsByClassName(`child_${id}`);
     for (let i = 0; i < allItems.length; i++) {
-      if (allItems[i].className.includes(`num_${num}`) && allItems[i].id !== id) {
-        if (isOpen) {
-          allItems[i].style.display = 'none';
-        } else {
-          allItems[i].style.display = 'table-row';
-        }
-
+      if (isOpen) {
+        allItems[i].style.display = 'none';
+      } else {
+        allItems[i].style.display = 'table-row';
       }
     }
     isOpen = !isOpen;
@@ -99,24 +97,24 @@ const Task = (props) => {
 
 
 
+
   return (
     <React.Fragment>
-
-
-      <tr key={props.key} className={`wbsTask  ${props.isNew ? 'newTask' : ''} parentId_${props.parentId} num_${props.num}`} id={props.id}>
-        <th
+      <tr key={props.key} className={`wbsTask  ${props.isNew ? 'newTask' : ''} parentId_${props.parentId} lv_${props.level} child_${props.mother}`} id={props.id}>
+        <td className={`tag_color tag_color_${props.num.length > 0 ? props.num.split('.')[0] : props.num} tag_color_lv_${props.level}`}></td>
+        <td
           id={`r_${props.num}_${props.id}`}
           onDragOver={e => allowDrop(e)}
           onDrop={(e) => drop(e, props)}
           draggable="true" onDragStart={e => drag(e, props.id)}
           scope="row"
-          className={"hhi"/*`taskNum tag_color_${props.num.length > 0 ? props.num.split('.')[0] : props.num}`*/} onClick={() => selectTask(props.id)}>{props.num.split('.0').join('')}</th>
+          className="taskNum" onClick={() => selectTask(props.id)}>
+          {props.num.split('.0').join('')}</td>
         <td className="taskName">
-          {/*props.parentId ? props.parentId.substring(props.parentId.length - 3, props.parentId.length) : null}/{props.id.substring(props.id.length - 3, props.id.length)*/}
-          {props.level === 1 ? <div className='level-space-1' data-tip="Level 1"><span onClick={(e) => toggleGroups(props.num, props.id)} className='fa_dropdown' id={`dropdown_${props.id}`}><i className="fa fa-caret-down" aria-hidden="true"></i></span> {props.name}</div> : null}
-          {props.level === 2 ? <div className='level-space-2' data-tip="Level 2"><span onClick={(e) => toggleGroups(props.num, props.id)} className='fa_dropdown' id={`dropdown_${props.id}`}><i className="fa fa-caret-down" aria-hidden="true"></i></span> {props.name}</div> : null}
-          {props.level === 3 ? <div className='level-space-3' data-tip="Level 3"><span onClick={(e) => toggleGroups(props.num, props.id)} className='fa_dropdown' id={`dropdown_${props.id}`}><i className="fa fa-caret-down" aria-hidden="true"></i></span> {props.name}</div> : null}
-          {props.level === 4 ? <div className='level-space-4' data-tip="Level 4"><span onClick={(e) => toggleGroups(props.num, props.id)} className='fa_dropdown' id={`dropdown_${props.id}`}><i className="fa fa-caret-down" aria-hidden="true"></i></span> {props.name}</div> : null}
+          {props.level === 1 ? <div className='level-space-1' data-tip="Level 1"><span onClick={(e) => toggleGroups(props.id)} id={`task_name_${props.id}`} className={props.hasChildren ? 'has_children' : ''}>{props.name}</span></div> : null}
+          {props.level === 2 ? <div className='level-space-2' data-tip="Level 2"><span onClick={(e) => toggleGroups(props.id)} id={`task_name_${props.id}`} className={props.hasChildren ? 'has_children' : ''}>{props.name}</span></div> : null}
+          {props.level === 3 ? <div className='level-space-3' data-tip="Level 3"><span onClick={(e) => toggleGroups(props.id)} id={`task_name_${props.id}`} className={props.hasChildren ? 'has_children' : ''}>{props.name}</span></div> : null}
+          {props.level === 4 ? <div className='level-space-4' data-tip="Level 4"><span onClick={(e) => toggleGroups(props.id)} id={`task_name_${props.id}`} className={props.hasChildren ? 'has_children' : ''}>{props.name}</span></div> : null}
 
         </td>
         <td>
@@ -168,7 +166,7 @@ const Task = (props) => {
 
                   if (!elm.profilePic) {
                     return (
-                      <a data-tip={elm.name} className="name"
+                      <a data-tip={elm.name} className="name" key={i}
                         href={`/userprofile/${elm.userID}`} target='_blank'><span className="dot">{elm.name.substring(0, 2)}</span>
                       </a>
 
@@ -176,7 +174,7 @@ const Task = (props) => {
 
                   }
                   return (
-                    <a data-tip={elm.name} className="name"
+                    <a data-tip={elm.name} className="name" key={i}
                       href={`/userprofile/${elm.userID}`} target='_blank'><img className='img-circle' src={elm.profilePic} />
                     </a>
                   )
@@ -185,11 +183,6 @@ const Task = (props) => {
 
             }
           </div>
-
-
-
-
-
 
         </td>
         <td>{props.isAssigned ? <i data-tip="Assigned" className="fa fa-check-square" aria-hidden="true"></i> : <i data-tip="Not Assigned" className="fa fa-square-o" aria-hidden="true"></i>}</td>

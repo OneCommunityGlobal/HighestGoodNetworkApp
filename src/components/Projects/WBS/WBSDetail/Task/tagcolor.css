@@ -1,43 +1,64 @@
+.tag_color{
+  width: 5px !important;
+  padding: 3px !important;
+}
+
+.tag_color_lv_1{
+  opacity: 1;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+.tag_color_lv_2{
+  opacity: 0.8;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+
+}
+.tag_color_lv_3{
+  opacity: 0.5;
+}
+.tag_color_lv_4{
+  opacity: 0.3;
+}
+
 .tag_color_0{
-  border-left: 3px solid rebeccapurple !important;
+  background: rebeccapurple !important;
 }
 
 .tag_color_1{
-  border-left: 3px solid coral !important;
+  background: coral !important;
 }
 
 .tag_color_2{
-  border-left: 3px solid  forestgreen !important;
+  background:  forestgreen !important;
 }
 
 .tag_color_3{
-  border-left: 3px solid aquamarine !important;
+  background: aquamarine !important;
 }
 
 .tag_color_4{
-  border-left: 3px solid lightskyblue !important;
+  background: lightskyblue !important;
 }
 
 .tag_color_5{
-  border-left: 3px solid mediumslateblue !important;
+  background: mediumslateblue !important;
 }
 
 .tag_color_6{
-  border-left: 3px solid indigo !important;
+  background: indigo !important;
 }
 
 .tag_color_7{
-  border-left: 3px solid hotpink !important;
+  background: hotpink !important;
 }
 
 .tag_color_8{
-  border-left: 3px solid lightcyan !important;
+  background: lightcyan !important;
 }
 
 .tag_color_9{
-  border-left: 3px solid orangered !important;
+  background: orangered !important;
 }
 
 .tag_color_10{
-  border-left: 3px solid skyblue !important;
+  background: skyblue !important;
 }

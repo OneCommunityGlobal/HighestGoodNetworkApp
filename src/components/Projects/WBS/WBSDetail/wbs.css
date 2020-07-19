@@ -4,7 +4,6 @@
 
 .level-space-1{
   margin-left: 0px;
-  font-weight: bold;
 }
 
 .level-space-2{
@@ -85,11 +84,6 @@
 
 .newTask{
   background-color: #effff2;
-}
-
-.fa_dropdown{
-  visibility: hidden;
-  cursor: pointer;
 }
 
 .table td {

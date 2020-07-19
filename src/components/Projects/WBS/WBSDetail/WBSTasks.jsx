@@ -13,6 +13,7 @@ import ReactTooltip from 'react-tooltip'
 
 const WBSTasks = (props) => {
 
+  console.log(props);
   // modal
   const [modal, setModal] = useState(false);
   const toggle = () => setModal(!modal);
@@ -23,7 +24,6 @@ const WBSTasks = (props) => {
 
   useEffect(() => {
     props.fetchAllTasks(wbsId);
-    groupItems(props.state.tasks.taskItems);
 
   }, [wbsId]);
 
@@ -31,22 +31,9 @@ const WBSTasks = (props) => {
     setSelectedId(id);
   }
 
-
-
-  const groupItems = (tasks) => {
-    // group sub items 
-    tasks.forEach(task => {
-      let subTasks = document.getElementsByClassName(`parentId_${task._id}`);
-      if (subTasks.length > 0) {
-        document.getElementById(`dropdown_${task._id}`).style.visibility = 'visible';
-      }
-    });
-  }
-
   let drag = '';
   let dragParent = '';
   const dragTask = (taskIdFrom, parentId) => {
-    console.log('draggg', taskIdFrom);
     drag = taskIdFrom;
     dragParent = parentId;
   }
@@ -119,12 +106,14 @@ const WBSTasks = (props) => {
       <div className='container' >
 
         <AddTaskModal parentNum={null} taskId={null} wbsId={wbsId} projectId={projectId} />
-        <ImportTask wbsId={wbsId} projectId={projectId} />
+        {props.state.tasks.taskItems.length === 0 ?
+          <ImportTask wbsId={wbsId} projectId={projectId} />
+          : null}
 
         <table className="table table-bordered">
           <thead>
             <tr>
-              <th scope="col" data-tip="WBS ID">#</th>
+              <th scope="col" data-tip="WBS ID" colSpan="2">#</th>
               <th scope="col" data-tip="Task Name">Task</th>
               <th scope="col" data-tip="Priority"><i className="fa fa-star" aria-hidden="true"></i></th>
               <th scope="col" data-tip="Resources"><i className="fa fa-users" aria-hidden="true"></i></th>
@@ -173,16 +162,14 @@ const WBSTasks = (props) => {
                 parentId1={task.parentId1}
                 parentId2={task.parentId2}
                 parentId3={task.parentId3}
-                mother={task._id}
+                mother={task.mother}
                 isOpen={true}
                 drop={dropTask}
                 drag={dragTask}
                 deleteTask={deleteTask}
+                hasChildren={task.hasChildren}
 
               />)}
-
-
-
           </tbody>
         </table>
 

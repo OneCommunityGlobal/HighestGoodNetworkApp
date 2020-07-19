@@ -13,7 +13,6 @@ import dateFnsFormat from 'date-fns/format';
 const AddTaskModal = (props) => {
   const tasks = props.tasks.taskItems;
   const { members } = props.projectMembers;
-  console.log('proid', props.projectId);
   let foundedMembers = [];
 
   // modal
@@ -69,9 +68,16 @@ const AddTaskModal = (props) => {
 
   const getNewNum = () => {
     if (tasks.length > 0) {
-      const childTasks = tasks.filter(task => task.mother === props.taskId);
-      newNum = `${props.parentNum !== null ? props.parentNum + '.' : ''}${childTasks.length + 1}`;
+      if (props.taskId) {
+        const childTasks = tasks.filter(task => task.mother === props.taskId);
+        newNum = `${props.parentNum !== null ? props.parentNum + '.' : ''}${childTasks.length + 1}`;
+        newNum = newNum.replace(/.0/g, '');
+      } else {
+        newNum = tasks.filter(task => task.level === 1).length + 1 + '';
+      }
+
     }
+
   }
 
 
@@ -274,7 +280,7 @@ const AddTaskModal = (props) => {
                   WBS #
                   </td>
                 <td scope="col" >
-                  {newNum}
+                  {newNum.replace(/.0/g, '')}
                 </td>
               </tr>
               <tr>
@@ -354,8 +360,9 @@ const AddTaskModal = (props) => {
                   <select id="Status"
                     onChange={(e) => setStatus(e.target.value)}
                   >
-                    <option value='Started'>Started</option>
                     <option value='Not Started'>Not Started</option>
+                    <option value='Started'>Started</option>
+
                   </select>
                 </td>
               </tr>
@@ -463,7 +470,7 @@ const AddTaskModal = (props) => {
 
         </ModalBody>
         <ModalFooter>
-          {taskName !== '' && startedDate !== '' && dueDate !== '' ? <Button color="primary" onClick={toggle} onClick={addNewTask}>Save</Button> : null}
+          {taskName !== '' ? <Button color="primary" onClick={toggle} onClick={addNewTask}>Save</Button> : null}
           <Button color="secondary" onClick={toggle}>Cancel</Button>
         </ModalFooter>
       </Modal >

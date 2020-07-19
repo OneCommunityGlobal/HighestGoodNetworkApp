@@ -24,13 +24,15 @@ const filterAndSort = (tasks, level) => {
 }
 
 const sortByNum = (tasks) => {
-  //const lv1Tasks = filterAndSort(tasks, 1);
-  //const lv2Tasks = filterAndSort(tasks, 2);
-  //const lv3Tasks = filterAndSort(appendTasks, 4);
-  //const lv4Tasks = filterAndSort(tasks, 4);
 
   const appendTasks = [];
-  tasks.forEach(task => {
+  tasks.forEach((task, i) => {
+    let numChildren = tasks.filter(item => item.mother === task._id).length;
+    if (numChildren > 0) {
+      task.hasChildren = true;
+    } else {
+      task.hasChildren = false;
+    }
     if (task.level === 1) {
       task.num += '.0.0.0';
     }
@@ -44,20 +46,6 @@ const sortByNum = (tasks) => {
   })
 
   return filterAndSort(appendTasks, 4);
-}
-
-const sortByPosition = (tasks) => {
-  tasks.sort(function (a, b) {
-    if (a.position < b.position) {
-      return -1;
-    }
-    if (a.num > b.num) {
-      return 1;
-    }
-    return 0;
-  });
-
-  return tasks;
 }
 
 

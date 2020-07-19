@@ -5,25 +5,38 @@
  ********************************************************************************/
 import React, { useState } from 'react'
 import { connect } from 'react-redux'
-import { importTask } from './../../../../../actions/task';
+import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
+import { importTask, fetchAllTasks } from './../../../../../actions/task';
 import { ENDPOINTS } from './../../../../../utils/URL';
 import axios from 'axios'
 
 const ImportTask = (props) => {
   let fileReader;
 
+  const [isDone, setIsDone] = useState(0);
+  // modal
+  const [modal, setModal] = useState(false);
+  const toggle = () => setModal(!modal);
+
   const handleFileRead = (e) => {
     const content = fileReader.result;
+    setIsDone(1);
     content.split('\n').forEach((row, i) => {
       if (i > 0) {
         handleRow(row);
       }
     })
+
     setTimeout(() => {
-      axios.put(ENDPOINTS.FIX_TASKS(props.wbsId))
-    },
-      4000
-    )
+      axios.put(ENDPOINTS.FIX_TASKS(props.wbsId));
+      setTimeout(() => {
+        axios.put(`http://localhost:4500/api/task/updateAllParents/${props.wbsId}`)
+        setTimeout(() => {
+          props.fetchAllTasks(props.wbsId);
+          toggle()
+        }, 8000)
+      }, 8000);
+    }, 10000);
 
   }
 
@@ -108,16 +121,60 @@ const ImportTask = (props) => {
   return (
     <React.Fragment>
 
-      <input type='file'
-        id='file'
-        accept='.csv'
-        onChange={e => handleFileChosen(e.target.files[0])}
-      />
+      <Modal isOpen={modal} toggle={toggle} >
+        <ModalHeader toggle={toggle}>Import Tasks</ModalHeader>
+        <ModalBody>
+          <table className="table table-bordered">
+            <tbody>
+              <tr>
+                <td scope="col" >
+                  <p>
+                    Before importing a Work Breakdown Structure (WBS) to this software, the following steps must be taken:<br />
+                    1. Confirm the WBS was created using the Google Spreadsheet template: https://tinyurl.com/oc-wbs-template<br />
+                    2. Confirm all fields in the form contain values<br />
+                    3. Use the "Find" function to convert all the commas in the spreadsheet to semicolons<br />
+                    4. Export the spreadsheet as a .csv file<br />
+                    5. Click the button below and find and import your prepared file<br />
+                    6. After import, check your file imported correctly and fix any content that didn't import correctly<br />
+                  </p>
+                </td>
+              </tr>
+              {isDone === 0 ?
+                <tr>
+                  <td scope="col" >
+                    <input type='file'
+                      id='file'
+                      accept='.csv'
+                      onChange={e => handleFileChosen(e.target.files[0])}
+                    />
+                  </td>
+                </tr>
+                : null}
+              {isDone === 1 ?
+                <tr>
+                  <td>
+
+                    <button className="btn btn-primary" type="button" disabled>
+                      <span className="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span>
+                    Importing...
+                </button>
+                  </td>
+                </tr>
+                : null}
+            </tbody>
+          </table>
+        </ModalBody>
+        <ModalFooter>
+          <Button color="secondary" onClick={toggle}>{isDone === 2 ? 'Done' : 'Cancel'}</Button>
+        </ModalFooter>
+      </Modal >
+      <Button color="primary" size="sm" onClick={toggle} >Import Tasks</Button>
+
 
 
     </React.Fragment>
   )
 }
 
-export default connect(null, { importTask })(ImportTask)
+export default connect(null, { importTask, fetchAllTasks })(ImportTask)
 
