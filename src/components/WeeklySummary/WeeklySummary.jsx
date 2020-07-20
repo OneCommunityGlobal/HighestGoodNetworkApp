@@ -155,6 +155,11 @@ class WeeklySummary extends Component {
 
   render() {
     const { formElements, dueDate, activeTab, errors, loading, fetchError } = this.state;
+    const summariesLabels = {
+      'summary': 'This Week',
+      'summaryLastWeek': 'Last Week',
+      'summaryBeforeLast': 'Week Before Last',
+    };
 
     if (fetchError) {
       return (
@@ -195,113 +200,53 @@ class WeeklySummary extends Component {
 
         <Form>
           <Nav tabs>
-            <NavItem>
-              <NavLink
-                className={classnames({ active: activeTab === '1' })} onClick={() => { this.toggleTab('1'); }}>
-                This Week
-            </NavLink>
-            </NavItem>
-            <NavItem>
-              <NavLink
-                className={classnames({ active: activeTab === '2' })} onClick={() => { this.toggleTab('2'); }}>
-                Last Week
-            </NavLink>
-            </NavItem>
-            <NavItem>
-              <NavLink
-                className={classnames({ active: activeTab === '3' })} onClick={() => { this.toggleTab('3'); }}>
-                Week Before Last
-            </NavLink>
-            </NavItem>
+            {Object.values(summariesLabels).map((weekName, i) => {
+              let tId = String(i + 1);
+              return (
+                <NavItem key={tId}>
+                  <NavLink
+                    className={classnames({ active: activeTab === tId })} onClick={() => { this.toggleTab(tId); }}>
+                    {weekName}
+                  </NavLink>
+                </NavItem>
+              );
+            })}
           </Nav>
           <TabContent activeTab={activeTab} className="p-4">
-            <TabPane tabId="1">
-              <Row>
-                <Col>
-                  <FormGroup>
-                    <Label for="summaryContent">
-                      Enter your weekly summary below. <WeeklySummaryContentTooltip />
-                    </Label>
-                    <Editor
-                      init={{
-                        menubar: false,
-                        placeholder: 'Weekly summary content...',
-                        plugins:
-                          'advlist autolink autoresize lists link charmap table paste help wordcount',
-                        toolbar:
-                          'bold italic underline link removeformat | bullist numlist outdent indent | styleselect fontsizeselect | table| strikethrough forecolor backcolor | subscript superscript charmap | help',
-                        branding: false,
-                        min_height: 180,
-                        max_height: 500,
-                        autoresize_bottom_margin: 1,
-                      }}
-                      id="summary"
-                      name="summary"
-                      value={formElements.summary}
-                      onEditorChange={this.handleEditorChange}
-                    />
-                  </FormGroup>
-                </Col>
-              </Row>
-            </TabPane>
-            <TabPane tabId="2">
-              <Row>
-                <Col>
-                  <FormGroup>
-                    <Label for="summaryContent">
-                      Enter your weekly summary below. <WeeklySummaryContentTooltip />
-                    </Label>
-                    <Editor
-                      init={{
-                        menubar: false,
-                        placeholder: 'Weekly summary content...',
-                        plugins:
-                          'advlist autolink autoresize lists link charmap table paste help wordcount',
-                        toolbar:
-                          'bold italic underline link removeformat | bullist numlist outdent indent | styleselect fontsizeselect | table| strikethrough forecolor backcolor | subscript superscript charmap | help',
-                        branding: false,
-                        min_height: 180,
-                        max_height: 500,
-                        autoresize_bottom_margin: 1,
-                      }}
-                      id="summaryLastWeek"
-                      name="summaryLastWeek"
-                      value={formElements.summaryLastWeek}
-                      onEditorChange={this.handleEditorChange}
-                    />
-                  </FormGroup>
-                </Col>
-              </Row>
-            </TabPane>
-            <TabPane tabId="3">
-              <Row>
-                <Col>
-                  <FormGroup>
-                    <Label for="summaryContent">
-                      Enter your weekly summary below. <WeeklySummaryContentTooltip />
-                    </Label>
-                    <Editor
-                      init={{
-                        menubar: false,
-                        placeholder: 'Weekly summary content...',
-                        plugins:
-                          'advlist autolink autoresize lists link charmap table paste help wordcount',
-                        toolbar:
-                          'bold italic underline link removeformat | bullist numlist outdent indent | styleselect fontsizeselect | table| strikethrough forecolor backcolor | subscript superscript charmap | help',
-                        branding: false,
-                        min_height: 180,
-                        max_height: 500,
-                        autoresize_bottom_margin: 1,
-                      }}
-                      id="summaryBeforeLast"
-                      name="summaryBeforeLast"
-                      value={formElements.summaryBeforeLast}
-                      onEditorChange={this.handleEditorChange}
-                    />
-                  </FormGroup>
-                </Col>
-              </Row>
-            </TabPane>
+            {Object.keys(summariesLabels).map((summaryName, i) => {
+              let tId = String(i + 1);
+              return (
+                <TabPane tabId={tId} key={tId}>
+                  <Row>
+                    <Col>
+                      <FormGroup>
+                        <Label for="summaryContent">
+                          Enter your weekly summary below. <WeeklySummaryContentTooltip />
+                        </Label>
+                        <Editor
+                          init={{
+                            menubar: false,
+                            placeholder: 'Weekly summary content...',
+                            plugins:
+                              'advlist autolink autoresize lists link charmap table paste help wordcount',
+                            toolbar:
+                              'bold italic underline link removeformat | bullist numlist outdent indent | styleselect fontsizeselect | table| strikethrough forecolor backcolor | subscript superscript charmap | help',
+                            branding: false,
+                            min_height: 180,
+                            max_height: 500,
+                            autoresize_bottom_margin: 1,
+                          }}
+                          id={summaryName}
+                          name={summaryName}
+                          value={formElements[summaryName]}
+                          onEditorChange={this.handleEditorChange}
+                        />
+                      </FormGroup>
+                    </Col>
+                  </Row>
+                </TabPane>
+              );
+            })}
             <Row>
               <Col>
                 <Label for="mediaURL" className="mt-3">
