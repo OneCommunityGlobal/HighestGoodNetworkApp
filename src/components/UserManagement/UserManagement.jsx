@@ -19,6 +19,7 @@ import ActivationDatePopup from './ActivationDatePopup'
 import { UserStatus, UserDeleteType } from '../../utils/enums'
 import DeleteUserPopup from './DeleteUserPopup'
 import ActiveInactiveConfirmationPopup from './ActiveInactiveConfirmationPopup'
+import { Container } from 'reactstrap'
 
 class UserManagement extends React.PureComponent {
   filteredUserDataCount = 0;
@@ -51,7 +52,7 @@ class UserManagement extends React.PureComponent {
     let userTable = this.userTableElements(userProfiles);
     let roles = [...new Set(userProfiles.map(item => item.role))];
 
-    return <div className='container'>
+    return <Container fluid>
       {fetching ?
         <Loading /> :
         <React.Fragment>
@@ -85,7 +86,7 @@ class UserManagement extends React.PureComponent {
             pageSize={this.state.pageSize} />
         </React.Fragment>
       }
-    </div>
+    </Container>
   }
 
   /**

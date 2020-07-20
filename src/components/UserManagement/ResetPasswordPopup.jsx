@@ -1,5 +1,5 @@
 import React from 'react'
-import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Input, Label, Alert } from 'reactstrap';
+import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Input, Label, Alert, FormGroup } from 'reactstrap';
 import { useState } from 'react';
 
 /**
@@ -7,36 +7,45 @@ import { useState } from 'react';
  */
 const ResetPasswordPopup = React.memo((props) => {
 
-  const [newPassword, onNewPasswordChange] = useState('')
-  const [confirmPassword, onConfirmPasswordChange] = useState('')
-  const [errorMessage, serError] = useState('')
+  const [newPassword, onNewPasswordChange] = useState({ newPassword: '', isValid: true });
+  const [confirmPassword, onConfirmPasswordChange] = useState({ confirmPassword: '', isValid: true });
+  const [errorMessage, setError] = useState('');
   const closePopup = (e) => { props.onClose() };
 
   const resetPassword = () => {
-    if (newPassword === '') {
-      serError("Please enter the new password.")
-    } else if (newPassword === confirmPassword) {
-      props.onReset(newPassword, confirmPassword)
+    if (!newPassword.isValid) {
+      setError("Please choose a strong password with atleast one digit, one capital letter and a special character.");
+    } else if (newPassword.isValid && newPassword.newPassword === confirmPassword.confirmPassword) {
+      props.onReset(newPassword.newPassword, confirmPassword.confirmPassword)
     } else {
-      serError("Your password and confirmation password do not match.")
+      setError("Your password and confirmation password do not match.");
     }
+  }
+
+  const isValidPassword = (password) => {
+    let regex = /(?=^.{8,}$)((?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$/;
+    return regex.test(password);
   }
 
   return <Modal isOpen={props.open} toggle={closePopup}>
     <ModalHeader toggle={closePopup}>Reset Password</ModalHeader>
     <ModalBody>
-      <Label>{'New Password'}</Label>
-      <Input type="password" name="newpassword" id="newpasssword"
-        value={newPassword}
-        onChange={(event) => {
-          onNewPasswordChange(event.target.value)
-        }} />
-      <Label>{'Confirm Password'}</Label>
-      <Input type="password" name="confirmpassword" id="confirmpassword"
-        value={confirmPassword}
-        onChange={(event) => {
-          onConfirmPasswordChange(event.target.value)
-        }} />
+      <FormGroup>
+        <Label for="newpassword">{'New Password'}</Label>
+        <Input type="password" name="newpassword" id="newpasssword"
+          value={newPassword.newPassword}
+          onChange={(event) => {
+            onNewPasswordChange({ newPassword: event.target.value, isValid: isValidPassword(event.target.value) });
+          }} />
+      </FormGroup>
+      <FormGroup>
+        <Label for="confirmpassword">{'Confirm Password'}</Label>
+        <Input type="password" name="confirmpassword" id="confirmpassword"
+          value={confirmPassword.confirmPassword}
+          onChange={(event) => {
+            onConfirmPasswordChange({ confirmPassword: event.target.value, isValid: isValidPassword(event.target.value) })
+          }} />
+      </FormGroup>
     </ModalBody>
     <ModalFooter>
       {errorMessage === '' ? <React.Fragment></React.Fragment> :

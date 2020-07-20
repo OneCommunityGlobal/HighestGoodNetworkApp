@@ -41,6 +41,8 @@ class ResetPasswordButton extends React.PureComponent {
       this.setState({
         resetPopupOpen: false
       })
+    }).catch(error => {
+      alert("Password reset failed ! Please try again with a strong password.");
     })
   }
 
