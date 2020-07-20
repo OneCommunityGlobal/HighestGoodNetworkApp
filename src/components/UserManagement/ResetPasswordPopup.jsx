@@ -7,8 +7,8 @@ import { useState } from 'react';
  */
 const ResetPasswordPopup = React.memo((props) => {
 
-  const [newPassword, onNewPasswordChange] = useState({ newPassword: '', isValid: true });
-  const [confirmPassword, onConfirmPasswordChange] = useState({ confirmPassword: '', isValid: true });
+  const [newPassword, onNewPasswordChange] = useState({ newPassword: '', isValid: false });
+  const [confirmPassword, onConfirmPasswordChange] = useState({ confirmPassword: '', isValid: false });
   const [errorMessage, setError] = useState('');
   const closePopup = (e) => { props.onClose() };
 
