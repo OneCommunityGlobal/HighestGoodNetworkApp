@@ -7,16 +7,16 @@ import { useState } from 'react';
  */
 const ResetPasswordPopup = React.memo((props) => {
 
-  const [newPassword, onNewPasswordChange] = useState({ newPassword: '', isValid: false });
-  const [confirmPassword, onConfirmPasswordChange] = useState({ confirmPassword: '', isValid: false });
+  const [newPassword, onNewPasswordChange] = useState({ password: '', isValid: false });
+  const [confirmPassword, onConfirmPasswordChange] = useState({ password: '', isValid: false });
   const [errorMessage, setError] = useState('');
   const closePopup = (e) => { props.onClose() };
 
   const resetPassword = () => {
     if (!newPassword.isValid) {
       setError("Please choose a strong password with atleast one digit, one capital letter and a special character.");
-    } else if (newPassword.isValid && newPassword.newPassword === confirmPassword.confirmPassword) {
-      props.onReset(newPassword.newPassword, confirmPassword.confirmPassword)
+    } else if (newPassword.isValid && newPassword.password === confirmPassword.password) {
+      props.onReset(newPassword.password, confirmPassword.password)
     } else {
       setError("Your password and confirmation password do not match.");
     }
@@ -33,17 +33,17 @@ const ResetPasswordPopup = React.memo((props) => {
       <FormGroup>
         <Label for="newpassword">{'New Password'}</Label>
         <Input type="password" name="newpassword" id="newpasssword"
-          value={newPassword.newPassword}
+          value={newPassword.password}
           onChange={(event) => {
-            onNewPasswordChange({ newPassword: event.target.value, isValid: isValidPassword(event.target.value) });
+            onNewPasswordChange({ password: event.target.value, isValid: isValidPassword(event.target.value) });
           }} />
       </FormGroup>
       <FormGroup>
         <Label for="confirmpassword">{'Confirm Password'}</Label>
         <Input type="password" name="confirmpassword" id="confirmpassword"
-          value={confirmPassword.confirmPassword}
+          value={confirmPassword.password}
           onChange={(event) => {
-            onConfirmPasswordChange({ confirmPassword: event.target.value, isValid: isValidPassword(event.target.value) })
+            onConfirmPasswordChange({ password: event.target.value, isValid: isValidPassword(event.target.value) })
           }} />
       </FormGroup>
     </ModalBody>
