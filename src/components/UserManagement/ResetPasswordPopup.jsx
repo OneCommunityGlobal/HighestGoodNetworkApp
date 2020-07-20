@@ -1,6 +1,7 @@
 import React from 'react'
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Input, Label, Alert, FormGroup } from 'reactstrap';
 import { useState } from 'react';
+import { useEffect } from 'react';
 
 /**
  * Modal popup to show the reset password action
@@ -11,6 +12,13 @@ const ResetPasswordPopup = React.memo((props) => {
   const [confirmPassword, onConfirmPasswordChange] = useState({ password: '', isValid: false });
   const [errorMessage, setError] = useState('');
   const closePopup = (e) => { props.onClose() };
+
+  useEffect(() => {
+    // Resetting the initail state upon close and reopen.
+    onNewPasswordChange({ password: '', isValid: false });
+    onConfirmPasswordChange({ password: '', isValid: false });
+    setError('');
+  }, [props.open]);
 
   const resetPassword = () => {
     if (!newPassword.isValid) {
@@ -36,6 +44,7 @@ const ResetPasswordPopup = React.memo((props) => {
           value={newPassword.password}
           onChange={(event) => {
             onNewPasswordChange({ password: event.target.value, isValid: isValidPassword(event.target.value) });
+            setError('');
           }} />
       </FormGroup>
       <FormGroup>
@@ -43,7 +52,8 @@ const ResetPasswordPopup = React.memo((props) => {
         <Input type="password" name="confirmpassword" id="confirmpassword"
           value={confirmPassword.password}
           onChange={(event) => {
-            onConfirmPasswordChange({ password: event.target.value, isValid: isValidPassword(event.target.value) })
+            onConfirmPasswordChange({ password: event.target.value, isValid: isValidPassword(event.target.value) });
+            setError('');
           }} />
       </FormGroup>
     </ModalBody>
