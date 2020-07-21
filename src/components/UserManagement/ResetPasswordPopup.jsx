@@ -22,7 +22,7 @@ const ResetPasswordPopup = React.memo((props) => {
 
   const resetPassword = () => {
     if (!newPassword.isValid) {
-      setError("Please choose a strong password with atleast one digit, one capital letter and a special character.");
+      setError("Please choose a strong password with atleast one digit and one capital letter.");
     } else if (newPassword.isValid && newPassword.password === confirmPassword.password) {
       props.onReset(newPassword.password, confirmPassword.password)
     } else {
