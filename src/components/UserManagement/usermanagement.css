@@ -83,7 +83,27 @@ thead{
     margin-top: 7px;
 }
 
+.usermanagement-actions-cell {
+    display: table-cell;
+    padding-left: 10px;
+}
 
 tr:hover{
   background: #e9f6ff
+}
+
+.link-button {
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  text-decoration: underline;
+  display: inline;
+  margin: 0;
+  padding: 5px;
+  color: #1D62F0;
+}
+
+.link-button:hover,
+.link-button:focus {
+text-decoration: none;
 }

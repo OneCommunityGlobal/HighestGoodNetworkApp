@@ -19,6 +19,7 @@ import ActivationDatePopup from './ActivationDatePopup'
 import { UserStatus, UserDeleteType } from '../../utils/enums'
 import DeleteUserPopup from './DeleteUserPopup'
 import ActiveInactiveConfirmationPopup from './ActiveInactiveConfirmationPopup'
+import { Container } from 'reactstrap'
 
 class UserManagement extends React.PureComponent {
   filteredUserDataCount = 0;
@@ -51,7 +52,7 @@ class UserManagement extends React.PureComponent {
     let userTable = this.userTableElements(userProfiles);
     let roles = [...new Set(userProfiles.map(item => item.role))];
 
-    return <div className='container'>
+    return <Container fluid>
       {fetching ?
         <Loading /> :
         <React.Fragment>
@@ -60,21 +61,23 @@ class UserManagement extends React.PureComponent {
             onSearch={this.onWildCardSearch}
             onActiveFiter={this.onActiveFiter}
             onNewUserClick={this.onNewUserClick} />
-          <table className="table table-bordered table-responsive-sm">
-            <thead>
-              <UserTableHeader />
-              <UserTableSearchHeader
-                onFirstNameSearch={this.onFirstNameSearch}
-                onLastNameSearch={this.onLastNameSearch}
-                onRoleSearch={this.onRoleSearch}
-                onEmailSearch={this.onEmailSearch}
-                onWeeklyHrsSearch={this.onWeeklyHrsSearch}
-                roles={roles} />
-            </thead>
-            <tbody>
-              {userTable}
-            </tbody>
-          </table>
+          <div className="table-responsive">
+            <table className="table table-bordered">
+              <thead>
+                <UserTableHeader />
+                <UserTableSearchHeader
+                  onFirstNameSearch={this.onFirstNameSearch}
+                  onLastNameSearch={this.onLastNameSearch}
+                  onRoleSearch={this.onRoleSearch}
+                  onEmailSearch={this.onEmailSearch}
+                  onWeeklyHrsSearch={this.onWeeklyHrsSearch}
+                  roles={roles} />
+              </thead>
+              <tbody>
+                {userTable}
+              </tbody>
+            </table>
+          </div>
           <UserTableFooter
             datacount={this.filteredUserDataCount}
             selectedPage={this.state.selectedPage}
@@ -83,7 +86,7 @@ class UserManagement extends React.PureComponent {
             pageSize={this.state.pageSize} />
         </React.Fragment>
       }
-    </div>
+    </Container>
   }
 
   /**
@@ -144,6 +147,7 @@ class UserManagement extends React.PureComponent {
             onPauseResumeClick={that.onPauseResumeClick}
             onDeleteClick={that.onDeleteButtonClick}
             onActiveInactiveClick={that.onActiveInactiveClick}
+            onResetClick={that.onResetClick}
             user={user}
           />
         });
