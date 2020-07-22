@@ -1,14 +1,24 @@
-import React from 'react'
+import React from "react";
 // import { getUserProfile } from '../../actions/userProfile'
-import { getHeaderData } from '../../actions/authActions'
-import { getTimerData } from '../../actions/timer'
-import { Link } from 'react-router-dom'
-import { connect } from 'react-redux'
-import Timer from './Timer'
+import { getHeaderData } from "../../actions/authActions";
+import { getTimerData } from "../../actions/timer";
+import { Link } from "react-router-dom";
+import { connect } from "react-redux";
+import Timer from "Timer/Timer";
 import {
-  LOGO, DASHBOARD, TIMELOG, REPORTS, OTHER_LINKS, 
-  USER_MANAGEMENT, PROJECTS, TEAMS, WELCOME, VIEW_PROFILE, UPDATE_PASSWORD, LOGOUT
-} from '../../languages/en/ui'
+  LOGO,
+  DASHBOARD,
+  TIMELOG,
+  REPORTS,
+  OTHER_LINKS,
+  USER_MANAGEMENT,
+  PROJECTS,
+  TEAMS,
+  WELCOME,
+  VIEW_PROFILE,
+  UPDATE_PASSWORD,
+  LOGOUT,
+} from "../../languages/en/ui";
 import {
   Collapse,
   Navbar,
@@ -20,23 +30,23 @@ import {
   UncontrolledDropdown,
   DropdownToggle,
   DropdownMenu,
-  DropdownItem
-} from 'reactstrap'
+  DropdownItem,
+} from "reactstrap";
 
 class Header extends React.Component {
-  state = {}
+  state = {};
 
-  componentDidMount(){
-    if (this.props.auth.isAuthenticated){
-      this.props.getHeaderData(this.props.auth.user.userid)
-      this.props.getTimerData(this.props.auth.user.userid)
+  componentDidMount() {
+    if (this.props.auth.isAuthenticated) {
+      this.props.getHeaderData(this.props.auth.user.userid);
+      this.props.getTimerData(this.props.auth.user.userid);
     }
   }
 
   componentDidUpdate(prevProps) {
-    if (!prevProps.auth.isAuthenticated && this.props.auth.isAuthenticated ){
-      this.props.getHeaderData(this.props.auth.user.userid)
-      this.props.getTimerData(this.props.auth.user.userid)
+    if (!prevProps.auth.isAuthenticated && this.props.auth.isAuthenticated) {
+      this.props.getHeaderData(this.props.auth.user.userid);
+      this.props.getTimerData(this.props.auth.user.userid);
     }
   }
 
@@ -45,106 +55,106 @@ class Header extends React.Component {
 
     return (
       <div>
-        <Navbar color='dark' dark expand='md' style={{ marginBottom: '20px' }}>
-          <NavbarBrand tag={Link} to='/'>
-             {LOGO}
+        <Navbar color="dark" dark expand="md" style={{ marginBottom: "20px" }}>
+          <NavbarBrand tag={Link} to="/">
+            {LOGO}
           </NavbarBrand>
           <NavbarToggler onClick={this.toggle} />
-          {isAuthenticated &&
+          {isAuthenticated && (
             <Collapse isOpen={this.state.isOpen} navbar>
-            <Nav className='ml-auto' navbar>
-              <NavItem>
-                <Timer/>
-              </NavItem>
-              <NavItem>
-                <NavLink tag={Link} to='/dashboard'>
-                  {DASHBOARD}
-                </NavLink>
-              </NavItem>
-              <NavItem>
-                <NavLink tag={Link} to={`/timelog/${user.userid}`}>
-                  {TIMELOG}
-                </NavLink>
-              </NavItem>
-              <NavItem>
-                <NavLink tag={Link} to='/reports'>
-                  {REPORTS}
-                </NavLink>
-              </NavItem>
-              <NavItem>
-                <NavLink tag={Link} to={`/timelog/${user.userid}`}>
-                  <i className='fa fa-bell i-large'>
-                    <i className='badge badge-pill badge-danger badge-notify'>
-                      {/* Pull number of unread messages */}
+              <Nav className="ml-auto" navbar>
+                <NavItem>
+                  <Timer />
+                </NavItem>
+                <NavItem>
+                  <NavLink tag={Link} to="/dashboard">
+                    {DASHBOARD}
+                  </NavLink>
+                </NavItem>
+                <NavItem>
+                  <NavLink tag={Link} to={`/timelog/${user.userid}`}>
+                    {TIMELOG}
+                  </NavLink>
+                </NavItem>
+                <NavItem>
+                  <NavLink tag={Link} to="/reports">
+                    {REPORTS}
+                  </NavLink>
+                </NavItem>
+                <NavItem>
+                  <NavLink tag={Link} to={`/timelog/${user.userid}`}>
+                    <i className="fa fa-bell i-large">
+                      <i className="badge badge-pill badge-danger badge-notify">
+                        {/* Pull number of unread messages */}
+                      </i>
+                      <span className="sr-only">unread messages</span>
                     </i>
-                    <span className='sr-only'>unread messages</span>
-                  </i>
-                </NavLink>
-              </NavItem>
-              <UncontrolledDropdown nav inNavbar>
-                <DropdownToggle nav caret>
-                  {OTHER_LINKS}
-                </DropdownToggle>
-                <DropdownMenu>
-                  <DropdownItem tag={Link} to='/usermanagement'>
-                    {USER_MANAGEMENT}
-                  </DropdownItem>
-                  <DropdownItem tag={Link} to='/projects'>
-                    {PROJECTS}
-                  </DropdownItem>
-                  <DropdownItem tag={Link} to=''>
-                    {TEAMS}
-                  </DropdownItem>
-                </DropdownMenu>
-              </UncontrolledDropdown>
-              <NavItem>
-                <NavLink tag={Link} to={`/profile/${user.userid}`}>
-                  <img
-                    src={`${profilePic}`}
-                    alt=''
-                    height='35'
-                    width='40'
-                    className='dashboardimg'
-                  />
-                </NavLink>
-              </NavItem>
-              <UncontrolledDropdown nav>
-                <DropdownToggle nav caret>
-                  {WELCOME} {firstName}
-                </DropdownToggle>
-                <DropdownMenu>
-                  <DropdownItem header>Hello {firstName}</DropdownItem>
-                  <DropdownItem divider />
-                  <DropdownItem tag={Link} to={`/userprofile/${user.userid}`}>
-                    {VIEW_PROFILE}
-                  </DropdownItem>
-                  <DropdownItem tag={Link} to={`/updatepassword/${user.userid}`}>
-                    {UPDATE_PASSWORD}
-                  </DropdownItem>
-                  <DropdownItem divider />
-                  <DropdownItem tag={Link} to='/logout'>
-                    {LOGOUT}
-                  </DropdownItem>
-                </DropdownMenu>
-              </UncontrolledDropdown>
-            </Nav>
-          </Collapse>
-          }
+                  </NavLink>
+                </NavItem>
+                <UncontrolledDropdown nav inNavbar>
+                  <DropdownToggle nav caret>
+                    {OTHER_LINKS}
+                  </DropdownToggle>
+                  <DropdownMenu>
+                    <DropdownItem tag={Link} to="/usermanagement">
+                      {USER_MANAGEMENT}
+                    </DropdownItem>
+                    <DropdownItem tag={Link} to="/projects">
+                      {PROJECTS}
+                    </DropdownItem>
+                    <DropdownItem tag={Link} to="">
+                      {TEAMS}
+                    </DropdownItem>
+                  </DropdownMenu>
+                </UncontrolledDropdown>
+                <NavItem>
+                  <NavLink tag={Link} to={`/profile/${user.userid}`}>
+                    <img
+                      src={`${profilePic}`}
+                      alt=""
+                      height="35"
+                      width="40"
+                      className="dashboardimg"
+                    />
+                  </NavLink>
+                </NavItem>
+                <UncontrolledDropdown nav>
+                  <DropdownToggle nav caret>
+                    {WELCOME} {firstName}
+                  </DropdownToggle>
+                  <DropdownMenu>
+                    <DropdownItem header>Hello {firstName}</DropdownItem>
+                    <DropdownItem divider />
+                    <DropdownItem tag={Link} to={`/userprofile/${user.userid}`}>
+                      {VIEW_PROFILE}
+                    </DropdownItem>
+                    <DropdownItem
+                      tag={Link}
+                      to={`/updatepassword/${user.userid}`}
+                    >
+                      {UPDATE_PASSWORD}
+                    </DropdownItem>
+                    <DropdownItem divider />
+                    <DropdownItem tag={Link} to="/logout">
+                      {LOGOUT}
+                    </DropdownItem>
+                  </DropdownMenu>
+                </UncontrolledDropdown>
+              </Nav>
+            </Collapse>
+          )}
         </Navbar>
       </div>
-    )
+    );
   }
 }
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state) => ({
   auth: state.auth,
-  userProfile: state.userProfile
+  userProfile: state.userProfile,
 });
 
-export default connect(
-  mapStateToProps,
-  {
-    getHeaderData,
-    getTimerData
-  }
-)(Header)
+export default connect(mapStateToProps, {
+  getHeaderData,
+  getTimerData,
+})(Header);
