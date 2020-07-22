@@ -4,7 +4,7 @@ import { getHeaderData } from "../../actions/authActions";
 import { getTimerData } from "../../actions/timer";
 import { Link } from "react-router-dom";
 import { connect } from "react-redux";
-import Timer from "Timer/Timer";
+import Timer from "../Timer/Timer";
 import {
   LOGO,
   DASHBOARD,
