@@ -30,7 +30,7 @@ class WeeklySummary extends Component {
       weeklySummariesCount: 0,
       mediaConfirm: false
     },
-    dueDate: moment().tz('America/Los_Angeles').endOf('week'),
+    dueDate: moment().tz('America/Los_Angeles').endOf('week').toISOString(),
     dueDateLastWeek: moment().tz('America/Los_Angeles').endOf('week').subtract(1, 'week').toISOString(),
     dueDateBeforeLast: moment().tz('America/Los_Angeles').endOf('week').subtract(2, 'week').toISOString(),
     activeTab: '1',
@@ -43,17 +43,25 @@ class WeeklySummary extends Component {
     await this.props.getWeeklySummaries(this.props.currentUser.userid);
     const { mediaUrl, weeklySummaries, weeklySummariesCount } = this.props.summaries;
 
+    const summary = weeklySummaries && weeklySummaries[0] && weeklySummaries[0].summary || '';
+    const summaryLastWeek = weeklySummaries && weeklySummaries[1] && weeklySummaries[1].summary || '';
+    const summaryBeforeLast = weeklySummaries && weeklySummaries[2] && weeklySummaries[2].summary || '';
+    const dueDate = weeklySummaries && weeklySummaries[0] && weeklySummaries[0].dueDate || this.state.dueDate;
+    const dueDateLastWeek = weeklySummaries && weeklySummaries[1] && weeklySummaries[1].dueDate || this.state.dueDateLastWeek;
+    const dueDateBeforeLast = weeklySummaries && weeklySummaries[2] && weeklySummaries[2].dueDate || this.state.dueDateBeforeLast;
+
     this.setState({
       formElements: {
-        summary: weeklySummaries && weeklySummaries[0] && weeklySummaries[0].summary ? weeklySummaries[0].summary : '',
-        summaryLastWeek: weeklySummaries && weeklySummaries[1] && weeklySummaries[1].summary || '',
-        summaryBeforeLast: weeklySummaries && weeklySummaries[2] && weeklySummaries[2].summary || '',
+        summary,
+        summaryLastWeek,
+        summaryBeforeLast,
         mediaUrl: mediaUrl || '',
         weeklySummariesCount: weeklySummariesCount || 0,
         mediaConfirm: false,
       },
-      dueDateLastWeek: weeklySummaries && weeklySummaries[1] && weeklySummaries[1].dueDate || this.state.dueDateLastWeek,
-      dueDateBeforeLast: weeklySummaries && weeklySummaries[2] && weeklySummaries[2].dueDate || this.state.dueDateBeforeLast,
+      dueDate,
+      dueDateLastWeek,
+      dueDateBeforeLast,
       activeTab: '1',
       fetchError: this.props.fetchError,
       loading: this.props.loading,
@@ -137,7 +145,7 @@ class WeeklySummary extends Component {
     const modifiedWeeklySummaries = {
       mediaUrl: this.state.formElements.mediaUrl.trim(),
       weeklySummaries: [
-        { summary: this.state.formElements.summary, dueDate: this.state.dueDate.toISOString() },
+        { summary: this.state.formElements.summary, dueDate: this.state.dueDate },
         { summary: this.state.formElements.summaryLastWeek, dueDate: this.state.dueDateLastWeek },
         { summary: this.state.formElements.summaryBeforeLast, dueDate: this.state.dueDateBeforeLast },
       ],
@@ -194,7 +202,7 @@ class WeeklySummary extends Component {
             md={{ size: 5, offset: 7 }}
             lg={{ size: 4, offset: 8 }}
           >
-            <DueDateTime dueDate={dueDate} />
+            <DueDateTime dueDate={moment(dueDate)} />
           </Col>
         </Row>
 
