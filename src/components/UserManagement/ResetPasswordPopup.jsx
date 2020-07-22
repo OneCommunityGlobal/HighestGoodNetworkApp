@@ -22,7 +22,7 @@ const ResetPasswordPopup = React.memo((props) => {
 
   const resetPassword = () => {
     if (!newPassword.isValid) {
-      setError("Please choose a strong password with atleast one digit and one capital letter.");
+      setError("Please choose a strong password which is at least 8 characters long and should contains a digit , a capital letter and a special character.");
     } else if (newPassword.isValid && newPassword.password === confirmPassword.password) {
       props.onReset(newPassword.password, confirmPassword.password)
     } else {
@@ -31,7 +31,7 @@ const ResetPasswordPopup = React.memo((props) => {
   }
 
   const isValidPassword = (password) => {
-    let regex = /(?=^.{8,}$)((?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$/;
+    let regex = new RegExp("^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})");
     return regex.test(password);
   }
 
