@@ -30,11 +30,9 @@ const ModalExample = props => {
 		modalTitle,
 		modalMessage,
 		type,
-		linkType,
 		userProfile,
 		id,
 		isUserAdmin,
-		handleLinkModel
 	} = props
 
 	console.log('user:', userProfile)
@@ -61,16 +59,24 @@ const ModalExample = props => {
 	const [adminLinkName, setAdminLinkName] = useState('')
 	const [adminLinkURL, setAdminLinkURL] = useState('')
 
-	const [dateStamp, setDateStamp] = useState(id.length > 0 ? blueSquare[0].date : '')
-	const [summary, setSummary] = useState(id.length > 0 ? blueSquare[0].description : '')
+	const [dateStamp, setDateStamp] = useState(id != null ? blueSquare[0].date : '')
+	const [summary, setSummary] = useState(id != null ? blueSquare[0].description : '')
 
 	const [addButton, setAddButton] = useState(true)
 	const [summaryFieldView, setSummaryFieldView] = useState(true)
 
 	const toggle = () => setModal(!modal)
 
-	console.log('grabed personal links:', personalLinks)
+	// console.log('grabed personal links:', personalLinks)
 
+	// let nullProfile = {}
+
+	// if (userProfile == null){
+	// 	nullProfile = {
+	// 		personalLinks: {},
+	// 		adminLinks: {}
+	// 	}
+	// }
 
 	const [personalLinks, dispatchPersonalLinks] = useReducer((personalLinks, { type, value, passedIndex }) => {
 		switch (type) {
