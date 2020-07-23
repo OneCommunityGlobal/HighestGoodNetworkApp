@@ -19,7 +19,7 @@ import Memberships from '../Memberships/Memberships'
 import ProfileLinks from '../ProfileLinks/ProfileLinks'
 import Joi from 'joi'
 import BlueSquare from './BlueSquares'
-import Modal from '../common/Modal'
+import Modal from './UserProfileModal'
 
 import Badges from './Badges'
 import WorkHistory from './WorkHistory'
