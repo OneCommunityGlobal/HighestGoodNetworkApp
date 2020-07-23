@@ -26,7 +26,7 @@ import WorkHistory from './WorkHistory'
 import UserLinks from './UserLinks'
 
 import SideBar from './SideBar'
-import SideBarRedo from './SideBar copy'
+import SideBarRedo from './SideBar_old'
 import { method } from 'lodash'
 
 

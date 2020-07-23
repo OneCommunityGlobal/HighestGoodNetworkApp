@@ -22,31 +22,11 @@ const UserLinks = ({
 
 			{links.map((item, index) => (
 				<div key={index} className='linkContainer'>
-
 					<Badge className='link' href={item.Link} color='success'>
 						{item.Name}
 					</Badge>
-
 				</div>
 			))}
-
-			{/* { (linkSection === 'admin') && isUserAdmin && (
-				<div
-				color='primary'
-				className='linkAddButton'
-				onClick={() => handleLinkModel(true, 'addLink', linkSection)}>
-					<span>+</span>
-				</div>
-			)}
-
-			{ (linkSection === 'user') && canEditFields && (
-				<div
-				color='primary'
-				className='linkAddButton'
-				onClick={() => handleLinkModel(true, 'addLink', linkSection)}>
-					<span>+</span>
-				</div>
-			)} */}
 		</>
 	)
 

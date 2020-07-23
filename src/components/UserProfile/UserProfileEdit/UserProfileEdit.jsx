@@ -1,7 +1,6 @@
 import React, { Component } from 'react'
 import Loading from '../../common/Loading'
 import {
-	Card,
 	Row,
 	Label,
 	Input,
@@ -10,23 +9,11 @@ import {
 	Container,
 	Button,
 } from 'reactstrap'
-
 import Image from 'react-bootstrap/Image'
-
-import { orange, silverGray, warningRed } from '../../../constants/colors'
-import cx from 'classnames'
-// import Memberships from '../Memberships/Memberships'
-// import ProfileLinks from '../ProfileLinks/ProfileLinks'
-import Joi from 'joi'
+import { orange, warningRed } from '../../../constants/colors'
 import BlueSquare from '../BlueSquares'
 import Modal from '../UserProfileModal'
-
-import Badges from '../Badges'
-import WorkHistory from '../WorkHistory'
 import UserLinks from '../UserLinks'
-
-import { method } from 'lodash'
-
 
 class EditProfile extends Component {
 	state = {
@@ -287,10 +274,10 @@ class EditProfile extends Component {
 			this.setState(() => {
 				let currentBlueSquares = this.state.userProfile.infringments
 				if (dateStamp != null) {
-					currentBlueSquares.find(blueSquare => blueSquare._id == id).date = dateStamp
+					currentBlueSquares.find(blueSquare => blueSquare._id === id).date = dateStamp
 				}
 				if (summary != null) {
-					currentBlueSquares.find(blueSquare => blueSquare._id == id).description = summary
+					currentBlueSquares.find(blueSquare => blueSquare._id === id).description = summary
 				}
 				return {
 					showModal: false,
@@ -303,7 +290,7 @@ class EditProfile extends Component {
 		} else if (kind === 'delete') {
 			this.setState(() => {
 				var currentBlueSquares = this.state.userProfile.infringments.filter(function (blueSquare) {
-					if (blueSquare._id != id) {
+					if (blueSquare._id !== id) {
 						return blueSquare
 					}
 				})
@@ -432,7 +419,6 @@ class EditProfile extends Component {
 			personalLinks,
 			adminLinks,
 			infringments,
-			privacySettings,
 		} = userProfile
 
 		let isUserSelf = targetUserId === requestorId
@@ -525,17 +511,6 @@ class EditProfile extends Component {
 										placeholder='Last Name'
 										readOnly={canEditFields ? null : true}
 									/>
-									{/* 										
-									<Input
-										type='title'
-										name='jobTitle'
-										id='jobTitle'
-										value={jobTitle}
-										style={{ color: orange, width:'auto', margin: 2  }}
-										onChange={this.handleUserProfile}
-										placeholder='Job Title'
-										readOnly={canEditFields ? null : true}
-									/> */}
 								</Row>
 								<Row style={{ display: 'flex', flexDirection: 'row', justifyContent:'center'}}>
 									<Input
