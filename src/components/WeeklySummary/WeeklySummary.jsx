@@ -16,7 +16,7 @@ import 'moment-timezone';
 import Loading from '../common/Loading';
 import Joi from 'joi';
 import { toast } from "react-toastify";
-import { WeeklySummaryContentTooltip, MediaURLTooltip } from './WeeklySummaryTooltips';
+import { WeeklySummaryContentTooltip, WeeklySummaryTabsTooltip, MediaURLTooltip } from './WeeklySummaryTooltips';
 import classnames from 'classnames';
 
 class WeeklySummary extends Component {
@@ -219,6 +219,7 @@ class WeeklySummary extends Component {
                 </NavItem>
               );
             })}
+            <WeeklySummaryTabsTooltip />
           </Nav>
           <TabContent activeTab={activeTab} className="p-4">
             {Object.keys(summariesLabels).map((summaryName, i) => {

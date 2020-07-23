@@ -32,4 +32,19 @@ const MediaURLTooltip = () => {
   );
 };
 
-export { MediaURLTooltip, WeeklySummaryContentTooltip };
+const WeeklySummaryTabsTooltip = () => {
+  const [tooltipOpen, setTooltipOpen] = useState(false);
+  const toggle = () => setTooltipOpen(!tooltipOpen);
+  return (
+    <>
+      <span id="summaryTabsTooltip"><FontAwesomeIcon icon={faInfoCircle} /></span>
+      <Tooltip placement="top" isOpen={tooltipOpen} innerClassName="summaryTabsTooltip" target="summaryTabsTooltip" toggle={toggle}>
+        Please note that "Last Week" or "Week Before Last" tabs are not necessarily referring to the last calendar week or
+        the week before that respectfully. For example, if you had taken time off, in this case "Last Week" would refer to the
+        last time you had submitted a summary.
+      </Tooltip>
+    </>
+  );
+};
+
+export { MediaURLTooltip, WeeklySummaryContentTooltip, WeeklySummaryTabsTooltip };

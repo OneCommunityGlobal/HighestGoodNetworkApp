@@ -80,7 +80,11 @@
   font-size: 12px;
 }
 
-.summaryContentTooltip, .mediaURLTooltip {
+#summaryTabsTooltip {
+	margin-left: 5px;
+	padding-top: 5px;
+}
+.summaryContentTooltip, .summaryTabsTooltip, .mediaURLTooltip {
   max-width: 300px !important;
   padding: 10px !important;
 }
