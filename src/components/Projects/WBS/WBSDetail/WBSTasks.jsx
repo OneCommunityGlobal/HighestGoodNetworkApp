@@ -5,6 +5,7 @@
 import React, { useState, useEffect } from 'react'
 import { connect } from 'react-redux'
 import { fetchAllTasks, updateNumList, deleteTask } from './../../../../actions/task'
+import { fetchAllMembers } from "./../../../../actions/projectMembers.js"
 import Task from './Task/'
 import AddTaskModal from './AddTask/AddTaskModal'
 import ImportTask from "./ImportTask/"
@@ -13,7 +14,6 @@ import ReactTooltip from 'react-tooltip'
 
 const WBSTasks = (props) => {
 
-  console.log(props);
   // modal
   const [modal, setModal] = useState(false);
   const toggle = () => setModal(!modal);
@@ -24,8 +24,9 @@ const WBSTasks = (props) => {
 
   useEffect(() => {
     props.fetchAllTasks(wbsId);
+    props.fetchAllMembers(projectId);
 
-  }, [wbsId]);
+  }, [wbsId, projectId]);
 
   const selectTaskFunc = (id) => {
     setSelectedId(id);
@@ -105,7 +106,7 @@ const WBSTasks = (props) => {
 
       <div className='container' >
 
-        <AddTaskModal parentNum={null} taskId={null} wbsId={wbsId} projectId={projectId} />
+        <AddTaskModal key="task_modal_null" parentNum={null} taskId={null} wbsId={wbsId} projectId={projectId} />
         {props.state.tasks.taskItems.length === 0 ?
           <ImportTask wbsId={wbsId} projectId={projectId} />
           : null}
@@ -131,7 +132,7 @@ const WBSTasks = (props) => {
           </thead>
           <tbody>
             <tr className='taskDrop' >
-              <td colSpan={13}></td>
+              <td colSpan={14}></td>
             </tr>
 
 
@@ -180,5 +181,5 @@ const WBSTasks = (props) => {
   )
 }
 const mapStateToProps = state => { return { state } }
-export default connect(mapStateToProps, { fetchAllTasks, updateNumList, deleteTask })(WBSTasks)
+export default connect(mapStateToProps, { fetchAllTasks, updateNumList, deleteTask, fetchAllMembers })(WBSTasks)
 

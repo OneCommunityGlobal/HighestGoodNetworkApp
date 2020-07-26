@@ -82,14 +82,15 @@ export const updateNumList = (wbsId, list) => {
 }
 
 export const fetchAllTasks = (wbsId) => {
-  const request = axios.get(ENDPOINTS.TASKS(wbsId));
   return async dispatch => {
+    await axios.put(ENDPOINTS.UPDATE_PARENT_TASKS(wbsId));
     await dispatch(setTasksStart());
-    request.then(res => {
-      dispatch(setTasks(res.data));
-    }).catch((err) => {
+    try {
+      const request = await axios.get(ENDPOINTS.TASKS(wbsId));
+      dispatch(setTasks(request.data));
+    } catch (err) {
       dispatch(setTasksError(err));
-    })
+    }
   }
 }
 

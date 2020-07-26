@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import { connect } from 'react-redux'
 import ReactTooltip from 'react-tooltip'
-import { fetchAllMembers } from './../../../../../actions/projectMembers'
 import { fetchAllTasks } from './../../../../../actions/task'
 import { addNewTask } from './../../../../../actions/task';
 import { DUE_DATE_MUST_GREATER_THAN_START_DATE } from './../../../../../languages/en/messages';
@@ -19,6 +18,7 @@ const AddTaskModal = (props) => {
   const [modal, setModal] = useState(false);
   const toggle = () => setModal(!modal);
 
+  const [isLoading, setIsLoading] = useState(false);
 
   // task Num
   let newNum = '1';
@@ -33,7 +33,7 @@ const AddTaskModal = (props) => {
   const [memberName, setMemberName] = useState(' ');
 
   // resources 
-  const [resources] = useState([]);
+  const [resourceItems, setResourceItems] = useState([]);
 
   // assigned
   const [assigned, setAssigned] = useState(true)
@@ -60,7 +60,7 @@ const AddTaskModal = (props) => {
   const [dueDate, setDueDate] = useState('');
 
   // links
-  const [links] = useState([]);
+  const [links, setLinks] = useState([]);
 
   // Warning
   const [dateWarning, setDateWarning] = useState(false);
@@ -84,16 +84,20 @@ const AddTaskModal = (props) => {
 
 
 
+
+
   const [foundMembersHTML, setfoundMembersHTML] = useState('');
   const findMembers = () => {
     foundedMembers = members.filter(user => ((user.firstName + " " + user.lastName)).toLowerCase().includes(memberName.toLowerCase()));
     const html = foundedMembers.map(elm =>
       <div>
-        <input
-          type="text"
-          className='task-resouces-input'
-          value={elm.firstName + ' ' + elm.lastName}
-          disabled />
+        <a href={`/userprofile/${elm._id}`} target='_blank'>
+          <input
+            type="text"
+            className='task-resouces-input'
+            value={elm.firstName + ' ' + elm.lastName}
+            disabled />
+        </a>
         <button
           data-tip="Add this member"
           className="task-resouces-btn"
@@ -107,31 +111,20 @@ const AddTaskModal = (props) => {
     setfoundMembersHTML(html);
   }
 
-  // Add Resources
-  const [resourcesHTML, setResourcesHTML] = useState('');
+
+  const removeResource = (userID) => {
+    var removeIndex = resourceItems.map(item => item.userID).indexOf(userID);
+    setResourceItems([...resourceItems.slice(0, removeIndex), ...resourceItems.slice(removeIndex + 1)]);
+  }
+
+  let res = [];
   const addResources = (userID, first, last, profilePic) => {
-    resources.push({
+    res.push({
       userID,
       name: `${first} ${last}`,
-      profilePic,
+      profilePic
     });
-
-    const html = resources.map(elm => {
-      if (!elm.profilePic) {
-        return (
-          <a data-tip={elm.name}
-            href={`/userprofile/${elm.userID}`} target='_blank'><span className="dot">{elm.name.substring(0, 2)}</span>
-          </a>)
-      }
-      return (
-        <a data-tip={elm.name}
-          href={`/userprofile/${elm.userID}`} target='_blank'><img className='img-circle' src={elm.profilePic} />
-        </a>
-      )
-
-    });
-    setResourcesHTML(html);
-
+    setResourceItems([...res]);
   }
 
   // Date picker
@@ -160,7 +153,6 @@ const AddTaskModal = (props) => {
       currHoursMost = Math.round((currHoursWorst - currHoursBest) / 2 + currHoursBest);
       setHoursMost(currHoursMost);
       if (isOn !== 'hoursWorst') {
-        console.log('is on best', currHoursBest);
         currHoursWorst = Math.round(currHoursBest * 2);
         setHoursWorst(currHoursWorst);
         currHoursMost = Math.round((currHoursWorst - currHoursBest) / 2 + currHoursBest);
@@ -219,10 +211,28 @@ const AddTaskModal = (props) => {
     }
   }
 
+  const clear = () => {
+    setTaskName('');
+    setPriority('Primary')
+    setMemberName(' ');
+    setResourceItems([]);
+    res = [];
+    setAssigned(false);
+    setStatus('Started')
+    setHoursBest(0);
+    setHoursWorst(0);
+    setHoursMost(0);
+    setHoursEstimate(0);
+    setStartedDate('');
+    setDueDate('');
+    setLinks([]);
+  }
+
 
 
 
   const addNewTask = () => {
+    setIsLoading(true);
     const newTask =
     {
       "wbsId": props.wbsId,
@@ -230,13 +240,13 @@ const AddTaskModal = (props) => {
       "num": newNum,
       "level": newNum.length > 1 ? newNum.split('.').length : 1,
       "priority": priority,
-      "resources": resources,
+      "resources": resourceItems,
       "isAssigned": assigned,
       "status": status,
-      "hoursBest": parseInt(hoursBest),
-      "hoursWorst": parseInt(hoursWorst),
-      "hoursMost": parseInt(hoursMost),
-      "estimatedHours": parseInt(hoursEstimate),
+      "hoursBest": parseFloat(hoursBest),
+      "hoursWorst": parseFloat(hoursWorst),
+      "hoursMost": parseFloat(hoursMost),
+      "estimatedHours": parseFloat(hoursEstimate),
       "startedDatetime": startedDate,
       "dueDatetime": dueDate,
       "links": links,
@@ -251,12 +261,19 @@ const AddTaskModal = (props) => {
 
 
     props.addNewTask(newTask, props.wbsId);
-    setTimeout(() => { props.fetchAllTasks(props.wbsId); }, 4000);
+    clear();
+    setTimeout(() => {
+      props.fetchAllTasks(props.wbsId);
+      setTimeout(() => {
+        setIsLoading(false);
+        if (props.tasks.error === "none") {
+          toggle();
+          getNewNum();
+        }
+      }, 2000);
+    }, 4000);
 
-    if (props.tasks.error === "none") {
-      toggle();
-      getNewNum();
-    }
+
   }
 
   useEffect(() => {
@@ -269,7 +286,7 @@ const AddTaskModal = (props) => {
     <div className='controlBtn'>
 
       <Modal isOpen={modal} toggle={toggle} >
-        <ModalHeader toggle={toggle}>Add New Task</ModalHeader>
+        <ModalHeader toggle={toggle}>Add New Task <button type="button" class="btn btn-primary btn-sm" onClick={() => clear()}>Reset</button></ModalHeader>
         <ModalBody>
           <ReactTooltip />
 
@@ -291,6 +308,7 @@ const AddTaskModal = (props) => {
                     className='task-name'
                     onChange={(e) => setTaskName(e.target.value)}
                     onKeyPress={(e) => setTaskName(e.target.value)}
+                    value={taskName}
                   />
                 </td>
               </tr>
@@ -318,7 +336,6 @@ const AddTaskModal = (props) => {
                       onChange={(e) => setMemberName(e.target.value)}
                       onKeyPress={(e) => setMemberName(e.target.value)}
                       onKeyPress={findMembers}
-                      onFocus={() => props.fetchAllMembers(props.projectId)}
 
                     />
                     <button
@@ -337,8 +354,26 @@ const AddTaskModal = (props) => {
                     </div>
                   </div>
                   <div className='task-reousces-list'>
+                    {
+                      resourceItems.map(elm => {
+                        if (!elm.profilePic) {
+                          return (
+                            <a data-tip={elm.name}
+                              onClick={(e) => removeResource(elm.userID, e.target)}
+                            ><span className="dot">{elm.name.substring(0, 2)}</span>
+                            </a>)
+                        }
+                        return (
+                          <a data-tip={elm.name}
+                            onClick={(e) => removeResource(elm.userID, e.target)}
 
-                    {resourcesHTML}
+                          ><img className='img-circle' src={elm.profilePic} />
+                          </a>
+                        )
+
+                      })
+                    }
+
                   </div>
                 </td>
               </tr>
@@ -470,7 +505,7 @@ const AddTaskModal = (props) => {
 
         </ModalBody>
         <ModalFooter>
-          {taskName !== '' ? <Button color="primary" onClick={toggle} onClick={addNewTask}>Save</Button> : null}
+          {taskName !== '' ? isLoading ? " Adding..." : <Button color="primary" onClick={toggle} onClick={addNewTask}>Save</Button> : null}
           <Button color="secondary" onClick={toggle}>Cancel</Button>
         </ModalFooter>
       </Modal >
@@ -484,5 +519,5 @@ const AddTaskModal = (props) => {
 
 const mapStateToProps = state => { return state }
 export default connect(mapStateToProps, {
-  fetchAllMembers, addNewTask, fetchAllTasks
+  addNewTask, fetchAllTasks
 })(AddTaskModal);

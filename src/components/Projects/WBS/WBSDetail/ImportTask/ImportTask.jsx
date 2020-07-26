@@ -12,7 +12,7 @@ import axios from 'axios'
 
 const ImportTask = (props) => {
   let fileReader;
-
+  const [importStatus, setImportStatus] = useState(0);
   const [isDone, setIsDone] = useState(0);
   // modal
   const [modal, setModal] = useState(false);
@@ -25,18 +25,26 @@ const ImportTask = (props) => {
       if (i > 0) {
         handleRow(row);
       }
+
+      if (i >= content.split('\n').length - 1) {
+        setImportStatus(1);
+        setTimeout(() => {
+          setImportStatus(2);
+          axios.put(ENDPOINTS.FIX_TASKS(props.wbsId));
+          setTimeout(() => {
+            setImportStatus(3);
+            axios.put(ENDPOINTS.UPDATE_PARENT_TASKS(props.wbsId)).then(() => {
+              setTimeout(() => {
+                setImportStatus(4);
+                props.fetchAllTasks(props.wbsId);
+              }, 10000)
+            })
+          }, 10000);
+        }, 10000);
+      }
     })
 
-    setTimeout(() => {
-      axios.put(ENDPOINTS.FIX_TASKS(props.wbsId));
-      setTimeout(() => {
-        axios.put(`http://localhost:4500/api/task/updateAllParents/${props.wbsId}`)
-        setTimeout(() => {
-          props.fetchAllTasks(props.wbsId);
-          toggle()
-        }, 8000)
-      }, 8000);
-    }, 10000);
+
 
   }
 
@@ -113,11 +121,6 @@ const ImportTask = (props) => {
     position++;
   }
 
-
-
-
-
-
   return (
     <React.Fragment>
 
@@ -156,7 +159,7 @@ const ImportTask = (props) => {
 
                     <button className="btn btn-primary" type="button" disabled>
                       <span className="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span>
-                    Importing...
+                    Importing...({importStatus}/3)
                 </button>
                   </td>
                 </tr>

@@ -5,6 +5,7 @@ import config from '../config.json';
 const loginApiEndpoint = `${process.env.REACT_APP_APIENDPOINT}/login`;
 
 const { tokenKey } = config;
+console.log(tokenKey)
 
 // export async function login(credentials) {
 //   const { data } = await httpService.post(loginApiEndpoint, credentials);

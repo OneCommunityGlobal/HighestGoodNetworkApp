@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import { connect } from 'react-redux'
 import ReactTooltip from 'react-tooltip'
-import { fetchAllMembers } from './../../../../../actions/projectMembers'
 import { fetchAllTasks } from './../../../../../actions/task'
 import { updateTask } from './../../../../../actions/task';
 import { DUE_DATE_MUST_GREATER_THAN_START_DATE } from './../../../../../languages/en/messages';
@@ -46,7 +45,7 @@ const EditTaskModal = (props) => {
   const [memberName, setMemberName] = useState('');
 
   // resources 
-  const [resources] = useState(thisTask.resources);
+  const [resourceItems, setResourceItems] = useState(thisTask.resources);
 
   // assigned
   const [assigned, setAssigned] = useState(thisTask.assigned)
@@ -103,15 +102,20 @@ const EditTaskModal = (props) => {
     setfoundMembersHTML(html);
   }
 
-  // Add Resources
-  const addResources = (userID, first, last, profilePic) => {
-    resources.push({
-      userID,
-      name: `${first} ${last}`,
-      profilePic,
-    });
+  const removeResource = (userID) => {
+    var removeIndex = resourceItems.map(item => item.userID).indexOf(userID);
+    setResourceItems([...resourceItems.slice(0, removeIndex), ...resourceItems.slice(removeIndex + 1)]);
   }
 
+  let res = [...resourceItems];
+  const addResources = (userID, first, last, profilePic) => {
+    res.push({
+      userID,
+      name: `${first} ${last}`,
+      profilePic
+    });
+    setResourceItems([...res]);
+  }
 
 
 
@@ -204,13 +208,13 @@ const EditTaskModal = (props) => {
     {
       "taskName": taskName,
       "priority": priority,
-      "resources": resources,
+      "resources": resourceItems,
       "isAssigned": assigned,
       "status": status,
-      "hoursBest": parseInt(hoursBest),
-      "hoursWorst": parseInt(hoursWorst),
-      "hoursMost": parseInt(hoursMost),
-      "estimatedHours": parseInt(hoursEstimate),
+      "hoursBest": parseFloat(hoursBest),
+      "hoursWorst": parseFloat(hoursWorst),
+      "hoursMost": parseFloat(hoursMost),
+      "estimatedHours": parseFloat(hoursEstimate),
       "startedDatetime": startedDate,
       "dueDatetime": dueDate,
       "links": links
@@ -306,16 +310,19 @@ const EditTaskModal = (props) => {
                   </div>
                   <div className='task-reousces-list'>
                     {
-                      resources.map(elm => {
+                      resourceItems.map(elm => {
                         if (!elm.profilePic) {
                           return (
                             <a data-tip={elm.name}
-                              href={`/userprofile/${elm.userID}`} target='_blank'><span className="dot">{elm.name.substring(0, 2)}</span>
+                              onClick={(e) => removeResource(elm.userID, e.target)}
+                            ><span className="dot">{elm.name.substring(0, 2)}</span>
                             </a>)
                         }
                         return (
                           <a data-tip={elm.name}
-                            href={`/userprofile/${elm.userID}`} target='_blank'><img className='img-circle' src={elm.profilePic} />
+                            onClick={(e) => removeResource(elm.userID, e.target)}
+
+                          ><img className='img-circle' src={elm.profilePic} />
                           </a>
                         )
 
@@ -471,5 +478,5 @@ const EditTaskModal = (props) => {
 
 const mapStateToProps = state => { return state }
 export default connect(mapStateToProps, {
-  fetchAllMembers, updateTask, fetchAllTasks
+  updateTask, fetchAllTasks
 })(EditTaskModal);

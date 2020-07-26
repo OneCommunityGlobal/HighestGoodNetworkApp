@@ -13,7 +13,7 @@ import './task.css';
 const Task = (props) => {
   const startedDate = new Date(props.startedDatetime);
   const dueDate = new Date(props.dueDatetime);
-  let isOpen = false;
+  let isOpen = true;
 
 
   let controllerToggle = true;
@@ -31,13 +31,16 @@ const Task = (props) => {
     props.selectTask(id);
   }
 
-  const toggleGroups = (id) => {
-    const allItems = document.getElementsByClassName(`child_${id}`);
+
+  const toggleGroups = (num, id) => {
+    const allItems = document.getElementsByClassName(`wbsTask`);
     for (let i = 0; i < allItems.length; i++) {
-      if (isOpen) {
-        allItems[i].style.display = 'none';
-      } else {
-        allItems[i].style.display = 'table-row';
+      if (allItems[i].className.indexOf(`num_${num.split('.').join('').replace(/0/g, '')}`) === 0 && allItems[i].id !== id) {
+        if (isOpen) {
+          allItems[i].style.display = 'none';
+        } else {
+          allItems[i].style.display = 'table-row';
+        }
       }
     }
     isOpen = !isOpen;
@@ -57,7 +60,6 @@ const Task = (props) => {
 
   const allowDrop = (ev) => {
     ev.preventDefault();
-    console.log('drop');
     let id = ev.target.id.split('_')[2];
     let tasks = document.getElementsByClassName('taskDrop');
     for (let i = 0; i < tasks.length; i++) {
@@ -74,7 +76,6 @@ const Task = (props) => {
   const drop = (ev, to) => {
     ev.preventDefault();
 
-    console.log('droped', to);
     //props.drop(to, props.parentId);
   }
 
@@ -100,7 +101,7 @@ const Task = (props) => {
 
   return (
     <React.Fragment>
-      <tr key={props.key} className={`wbsTask  ${props.isNew ? 'newTask' : ''} parentId_${props.parentId} lv_${props.level} child_${props.mother}`} id={props.id}>
+      <tr key={props.key} className={`num_${props.num.split('.').join('')} wbsTask  ${props.isNew ? 'newTask' : ''} parentId_${props.parentId} lv_${props.level}`} id={props.id}>
         <td className={`tag_color tag_color_${props.num.length > 0 ? props.num.split('.')[0] : props.num} tag_color_lv_${props.level}`}></td>
         <td
           id={`r_${props.num}_${props.id}`}
@@ -111,11 +112,10 @@ const Task = (props) => {
           className="taskNum" onClick={() => selectTask(props.id)}>
           {props.num.split('.0').join('')}</td>
         <td className="taskName">
-          {props.level === 1 ? <div className='level-space-1' data-tip="Level 1"><span onClick={(e) => toggleGroups(props.id)} id={`task_name_${props.id}`} className={props.hasChildren ? 'has_children' : ''}>{props.name}</span></div> : null}
-          {props.level === 2 ? <div className='level-space-2' data-tip="Level 2"><span onClick={(e) => toggleGroups(props.id)} id={`task_name_${props.id}`} className={props.hasChildren ? 'has_children' : ''}>{props.name}</span></div> : null}
-          {props.level === 3 ? <div className='level-space-3' data-tip="Level 3"><span onClick={(e) => toggleGroups(props.id)} id={`task_name_${props.id}`} className={props.hasChildren ? 'has_children' : ''}>{props.name}</span></div> : null}
-          {props.level === 4 ? <div className='level-space-4' data-tip="Level 4"><span onClick={(e) => toggleGroups(props.id)} id={`task_name_${props.id}`} className={props.hasChildren ? 'has_children' : ''}>{props.name}</span></div> : null}
-
+          {props.level === 1 ? <div className='level-space-1' data-tip="Level 1"><span onClick={(e) => toggleGroups(props.num, props.id)} id={`task_name_${props.id}`} className={props.hasChildren ? 'has_children' : ''}>{props.name}</span></div> : null}
+          {props.level === 2 ? <div className='level-space-2' data-tip="Level 2"><span onClick={(e) => toggleGroups(props.num, props.id)} id={`task_name_${props.id}`} className={props.hasChildren ? 'has_children' : ''}>{props.name}</span></div> : null}
+          {props.level === 3 ? <div className='level-space-3' data-tip="Level 3"><span onClick={(e) => toggleGroups(props.num, props.id)} id={`task_name_${props.id}`} className={props.hasChildren ? 'has_children' : ''}>{props.name}</span></div> : null}
+          {props.level === 4 ? <div className='level-space-4' data-tip="Level 4"><span onClick={(e) => toggleGroups(props.num, props.id)} id={`task_name_${props.id}`} className={props.hasChildren ? 'has_children' : ''}>{props.name}</span></div> : null}
         </td>
         <td>
           {props.priority === "Primary" ? <i data-tip="Primary" className="fa fa-star" aria-hidden="true"></i> : null}
@@ -201,13 +201,13 @@ const Task = (props) => {
         <td>{props.links}</td>
       </tr>
       <tr className='taskDrop' id={`taskDrop_${props.id}`}>
-        <td colSpan={13}></td>
+        <td colSpan={14}></td>
       </tr>
 
       <tr className='wbsTaskController' id={`controller_${props.id}`}>
-        <td colSpan={13} className='controlTd'>
-          <AddTaskModal parentNum={props.num} taskId={props.id} projectId={props.projectId} wbsId={props.wbsId} parentId1={props.parentId1} parentId2={props.parentId2} parentId3={props.parentId3} level={props.level} />
-          <EditTaskModal parentNum={props.num} taskId={props.id} projectId={props.projectId} wbsId={props.wbsId} parentId1={props.parentId1} parentId2={props.parentId2} parentId3={props.parentId3} level={props.level} />
+        <td colSpan={14} className='controlTd'>
+          <AddTaskModal key={`addTask_${props.id}`} parentNum={props.num} taskId={props.id} projectId={props.projectId} wbsId={props.wbsId} parentId1={props.parentId1} parentId2={props.parentId2} parentId3={props.parentId3} level={props.level} />
+          <EditTaskModal key={`editTask_${props.id}`} parentNum={props.num} taskId={props.id} projectId={props.projectId} wbsId={props.wbsId} parentId1={props.parentId1} parentId2={props.parentId2} parentId3={props.parentId3} level={props.level} />
 
           <Button color="danger" size="sm" className='controlBtn controlBtn_remove' onClick={() => deleteTask(props.id)}>Remove</Button>
 
