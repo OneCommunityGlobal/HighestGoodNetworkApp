@@ -19,7 +19,7 @@ import { toast } from "react-toastify";
 import { WeeklySummaryContentTooltip, WeeklySummaryTabsTooltip, MediaURLTooltip } from './WeeklySummaryTooltips';
 import classnames from 'classnames';
 
-class WeeklySummary extends Component {
+export class WeeklySummary extends Component {
 
   state = {
     formElements: {
@@ -46,7 +46,10 @@ class WeeklySummary extends Component {
     const summary = weeklySummaries && weeklySummaries[0] && weeklySummaries[0].summary || '';
     const summaryLastWeek = weeklySummaries && weeklySummaries[1] && weeklySummaries[1].summary || '';
     const summaryBeforeLast = weeklySummaries && weeklySummaries[2] && weeklySummaries[2].summary || '';
-    const dueDate = weeklySummaries && weeklySummaries[0] && weeklySummaries[0].dueDate || this.state.dueDate;
+
+    const dueDateThisWeek = weeklySummaries && weeklySummaries[0] && weeklySummaries[0].dueDate;
+    // Make sure server dueDate is not before the localtime dueDate.
+    const dueDate = (moment(dueDateThisWeek).isBefore(this.state.dueDate)) ? this.state.dueDate : dueDateThisWeek;
     const dueDateLastWeek = weeklySummaries && weeklySummaries[1] && weeklySummaries[1].dueDate || this.state.dueDateLastWeek;
     const dueDateBeforeLast = weeklySummaries && weeklySummaries[2] && weeklySummaries[2].dueDate || this.state.dueDateBeforeLast;
 
@@ -213,7 +216,7 @@ class WeeklySummary extends Component {
               return (
                 <NavItem key={tId}>
                   <NavLink
-                    className={classnames({ active: activeTab === tId })} onClick={() => { this.toggleTab(tId); }}>
+                    className={classnames({ active: activeTab === tId })} data-testid={`tab-${tId}`} onClick={() => { this.toggleTab(tId); }}>
                     {weekName}
                   </NavLink>
                 </NavItem>
@@ -229,8 +232,8 @@ class WeeklySummary extends Component {
                   <Row>
                     <Col>
                       <FormGroup>
-                        <Label for="summaryContent">
-                          Enter your weekly summary below. <WeeklySummaryContentTooltip />
+                        <Label for={summaryName}>
+                          Enter your weekly summary below. <WeeklySummaryContentTooltip tabId={tId} />
                         </Label>
                         <Editor
                           init={{
@@ -258,7 +261,7 @@ class WeeklySummary extends Component {
             })}
             <Row>
               <Col>
-                <Label for="mediaURL" className="mt-3">
+                <Label for="mediaUrl" className="mt-3">
                   Link to your media files (eg. DropBox or Google Doc). (required) <MediaURLTooltip />
                 </Label>
                 <Row form>
@@ -291,7 +294,7 @@ class WeeklySummary extends Component {
                         id="mediaConfirm"
                         name="mediaConfirm"
                         type="checkbox"
-                        label="I have provided screenshots and video for this week's work. (required)" htmlFor="mediaConfirm"
+                        label="I have provided a minimum of 4 screenshots (6-10 preferred) of this week's work. (required)" htmlFor="mediaConfirm"
                         checked={formElements.mediaConfirm}
                         valid={formElements.mediaConfirm}
                         onChange={this.handleCheckboxChange}
