@@ -3,7 +3,9 @@ import React, { useEffect, useState } from 'react';
 import _ from 'lodash';
 import { toast } from 'react-toastify';
 
-function CountdownTimer({ date }) {
+// Use named export in order for automated tests to work properly.
+// eslint-disable-next-line import/prefer-default-export
+export function CountdownTimer({ date }) {
   const calcTimeLeft = () => {
     const difference = +date - +new Date();
 
@@ -79,5 +81,3 @@ CountdownTimer.propTypes = {
     _isValid: PropTypes.bool.isRequired,
   }).isRequired,
 };
-
-export default CountdownTimer;

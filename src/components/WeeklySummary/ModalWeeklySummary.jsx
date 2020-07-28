@@ -1,4 +1,12 @@
 /**
+ * The line below will exclude/ignore this file from Jest test coverage.
+ * This is because the file is not currently being used.
+ * If should be used make sure to remove the line below
+ */
+/* istanbul ignore file */
+
+
+/**
  * To turn the Modal WeeklySummary implementation on do the following.
  *  1 ) In the Dashboard.jsx make sure to add these:
  *

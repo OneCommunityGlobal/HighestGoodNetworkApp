@@ -19,6 +19,7 @@ import { toast } from "react-toastify";
 import { WeeklySummaryContentTooltip, WeeklySummaryTabsTooltip, MediaURLTooltip } from './WeeklySummaryTooltips';
 import classnames from 'classnames';
 
+// Need this export here in order for automated testing to work.
 export class WeeklySummary extends Component {
 
   state = {
