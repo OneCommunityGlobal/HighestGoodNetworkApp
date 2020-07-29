@@ -4,21 +4,6 @@ import { Tooltip } from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faInfoCircle } from '@fortawesome/free-solid-svg-icons';
 
-const WeeklySummaryTabsTooltip = () => {
-  const [tooltipOpen, setTooltipOpen] = useState(false);
-  const toggle = () => setTooltipOpen(!tooltipOpen);
-  return (
-    <>
-      <span id="summaryTabsTooltip"><FontAwesomeIcon icon={faInfoCircle} data-testid="summary-tabs-tooltip" /></span>
-      <Tooltip placement="top" isOpen={tooltipOpen} innerClassName="summaryTabsTooltip" target="summaryTabsTooltip" toggle={toggle}>
-        Please note that "Last Week" or "Week Before Last" tabs are not necessarily referring to the last calendar week or
-        the week before that respectfully. For example, if you had taken time off, in this case "Last Week" would refer to the
-        last time you had submitted a summary.
-      </Tooltip>
-    </>
-  );
-};
-
 const WeeklySummaryContentTooltip = ({ tabId }) => {
   const [tooltipOpen, setTooltipOpen] = useState(false);
   const toggle = () => setTooltipOpen(!tooltipOpen);
@@ -53,4 +38,4 @@ WeeklySummaryContentTooltip.propTypes = {
   tabId: PropTypes.string.isRequired,
 };
 
-export { MediaURLTooltip, WeeklySummaryContentTooltip, WeeklySummaryTabsTooltip };
+export { MediaURLTooltip, WeeklySummaryContentTooltip };

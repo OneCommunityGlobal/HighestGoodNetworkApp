@@ -16,7 +16,7 @@ import 'moment-timezone';
 import Loading from '../common/Loading';
 import Joi from 'joi';
 import { toast } from "react-toastify";
-import { WeeklySummaryContentTooltip, WeeklySummaryTabsTooltip, MediaURLTooltip } from './WeeklySummaryTooltips';
+import { WeeklySummaryContentTooltip, MediaURLTooltip } from './WeeklySummaryTooltips';
 import classnames from 'classnames';
 
 // Need this export here in order for automated testing to work.
@@ -70,6 +70,14 @@ export class WeeklySummary extends Component {
       fetchError: this.props.fetchError,
       loading: this.props.loading,
     });
+  };
+
+  doesDateBelongToWeek = (dueDate, weekIndex) => {
+    const pstStartOfWeek = moment().tz('America/Los_Angeles').startOf('week').subtract(weekIndex, 'week');
+    const pstEndOfWeek = moment().tz('America/Los_Angeles').endOf('week').subtract(weekIndex, 'week');
+    const fromDate = moment(pstStartOfWeek).toDate();
+    const toDate = moment(pstEndOfWeek).toDate();
+    return moment(dueDate).isBetween(fromDate, toDate, undefined, '[]');
   };
 
   toggleTab = tab => {
@@ -166,11 +174,11 @@ export class WeeklySummary extends Component {
   };
 
   render() {
-    const { formElements, dueDate, activeTab, errors, loading, fetchError } = this.state;
+    const { formElements, dueDate, activeTab, errors, loading, fetchError, dueDateLastWeek, dueDateBeforeLast } = this.state;
     const summariesLabels = {
       'summary': 'This Week',
-      'summaryLastWeek': 'Last Week',
-      'summaryBeforeLast': 'Week Before Last',
+      'summaryLastWeek': this.doesDateBelongToWeek(dueDateLastWeek, 1) ? 'Last Week' : moment(dueDateLastWeek).format('YYYY-MM-DD'),
+      'summaryBeforeLast': this.doesDateBelongToWeek(dueDateBeforeLast, 2) ? 'Week Before Last' : moment(dueDateBeforeLast).format('YYYY-MM-DD'),
     };
 
     if (fetchError) {
@@ -223,7 +231,6 @@ export class WeeklySummary extends Component {
                 </NavItem>
               );
             })}
-            <WeeklySummaryTabsTooltip />
           </Nav>
           <TabContent activeTab={activeTab} className="p-4">
             {Object.keys(summariesLabels).map((summaryName, i) => {

@@ -133,12 +133,6 @@ describe('WeeklySummary page', () => {
       expect(tooltip).toBeInTheDocument();
     };
 
-    describe('Tabs tooltip', () => {
-      it('opens on mouse over (hover)', async () => {
-        await testTooltip('summary-tabs-tooltip');
-      });
-    });
-
     describe('Tabs content tooltip', () => {
       it('opens on mouse over (hover)', async () => {
         await testTooltip('summary-content-tooltip-1');
