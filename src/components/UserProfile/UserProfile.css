@@ -1,0 +1,53 @@
+
+
+.profilePicture {
+  width: 200px;
+  height: 200px;
+}
+.whoSection {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-content: center;
+  text-align: center;
+  width: 45%;
+
+}
+.detailSection {
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+  width: 55%;
+
+}
+.customRow {
+  display: flex;
+  flex-direction: row;
+}
+@media only screen and (max-width: 600px) {
+  .profilePicture {
+    width: 100px;
+    height: 100px;
+  }
+}
+@media only screen and (max-width: 500px) {
+  .profilePicture {
+    width: 100px;
+    height: 100px;
+  }
+  .whoSection{
+    width: 65%;
+  }
+}
+@media only screen and (max-width: 400px) {
+  .profilePicture {
+    width: 100px;
+    height: 100px;
+  }
+  .whoSection{
+    width: 100%;
+  }
+  .detailSection{
+    width: auto;
+  }
+}

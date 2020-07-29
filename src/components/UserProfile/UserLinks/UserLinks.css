@@ -27,14 +27,15 @@
 .linkContainer{
   display: flex;
   align-items: center;
-  padding-left: 5px;
-  padding-right: 5px;
+  flex-wrap: wrap;
   font-size: 20px;
 }
 
 .link{
+  display: flex;
   width: 'auto';
-  padding: '2px'; 
-  overflow: 'hidden'; 
+  height: 25px;
+  margin: 2px;
+  overflow: 'hidden';
   text-overflow: ellipsis;
 }

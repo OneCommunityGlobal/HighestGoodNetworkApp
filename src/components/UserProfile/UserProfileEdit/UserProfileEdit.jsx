@@ -8,12 +8,16 @@ import {
 	Col,
 	Container,
 	Button,
+	Badge,
+	Collapse,
 } from 'reactstrap'
 import Image from 'react-bootstrap/Image'
 import { orange, warningRed } from '../../../constants/colors'
 import BlueSquare from '../BlueSquares'
 import Modal from '../UserProfileModal'
 import UserLinks from '../UserLinks'
+import '../UserProfile.css'
+
 
 class EditProfile extends Component {
 	state = {
@@ -347,16 +351,16 @@ class EditProfile extends Component {
 	updateLink = (personalLinksUpdate, adminLinksUpdate) => {
 		var elem = document.getElementById('warningCard');
 		elem.style.display = 'block';
-		
+
 		return this.setState(() => {
-				return {
-					showModal: false,
-					userProfile: {
-						...this.state.userProfile,
-						personalLinks: personalLinksUpdate,
-						adminLinks: adminLinksUpdate
-					}
+			return {
+				showModal: false,
+				userProfile: {
+					...this.state.userProfile,
+					personalLinks: personalLinksUpdate,
+					adminLinks: adminLinksUpdate
 				}
+			}
 		})
 	}
 
@@ -386,14 +390,11 @@ class EditProfile extends Component {
 			}
 			return (
 				<button style={{
-					display: 'flex', width: '25px', height: '25px', padding: '0px',
-					alignItems: 'center', justifyContent: 'center', backgroundColor: 'white', border: 'none'
+					display: 'flex', width: '25px', height: '25px', padding: '5px', color: 'white', borderRadius: '.25rem',
+					alignItems: 'center', justifyContent: 'center', backgroundColor: 'darkslategrey', border: 'none'
 				}}
 					onClick={() => { this.handleLinkModel(true, 'updateLink', user) }}>
-					<svg style={{ width: '20px', height: '20px' }} viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-						<path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456l-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z" />
-						<path d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z" />
-					</svg>
+					<i class="fa fa-wrench fa-lg" aria-hidden="true"> </i>
 				</button>
 
 			)
@@ -430,8 +431,7 @@ class EditProfile extends Component {
 		}
 
 		return (
-			<Container className='themed-container' fluid={true}>
-
+			<div style={{display: 'flex'}}>
 				<CardTitle
 					id="warningCard"
 					className='themed-container'
@@ -439,11 +439,9 @@ class EditProfile extends Component {
 						position: 'fixed', top: '7vh', left: '0', width: '100%',
 						color: 'white', backgroundColor: warningRed,
 						border: '1px solid #A8A8A8', textAlign: "center", display: 'none', zIndex: 2, opacity: '70%'
-					}}
-				>
+					}}>
 					Reminder: You must click "Save Changes" at the bottom of this page. If you don't, changes to your profile will not be saved.
 				</CardTitle>
-
 				{showModal && (
 					<Modal
 						isOpen={this.state.showModal}
@@ -462,17 +460,16 @@ class EditProfile extends Component {
 						handleLinkModel={this.handleLinkModel}
 					/>
 				)}
+				<Col>
+					<Row style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center', color: 'white', backgroundColor: 'grey', padding: 10, margin: 10 }}>
 
-				<Col style={{ height: '100%', backgroundColor: 'white' }}>
-					<Row style={{ color: 'white', backgroundColor: 'grey', padding: 10, margin: 5}}>
-						<div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+						<div className='whoSection'>
 							<Label
 								for='newProfilePic'
 								htmlFor={'newProfilePic'}
 								style={{ color: 'orange', cursor: 'pointer' }}>
 								Change Profile Picture
 							</Label>
-							
 							<Input
 								type='file'
 								name='newProfilePic'
@@ -481,120 +478,117 @@ class EditProfile extends Component {
 								onChange={this.handleImageUpload}
 								accept={'image/png,image/jpeg, image/jpg'}
 							/>
-							
-							<Image src={profilePic || '/defaultprofilepic.png'}
-								alt='Profile Picture'
-								roundedCircle
-								style={{ width: '200px', height: '200px' }}
+							<div>
+								<Image src={profilePic || '/defaultprofilepic.png'}
+									alt='Profile Picture'
+									roundedCircle
+									className='profilePicture'
+								/>
+							</div>
+							<Input
+								type='text'
+								name='firstName'
+								id='firstName'
+								value={firstName}
+								style={{ color: orange, width: 'auto', margin: 2 }}
+								onChange={this.handleUserProfile}
+								placeholder='First Name'
+								readOnly={canEditFields ? null : true}
+							/>
+							<Input
+								type='text'
+								name='lastName'
+								id='lastName'
+								value={lastName}
+								style={{ color: orange, width: 'auto', margin: 2 }}
+								onChange={this.handleUserProfile}
+								placeholder='Last Name'
+								readOnly={canEditFields ? null : true}
+							/>
+							<Input
+								type='title'
+								name='jobTitle'
+								id='jobTitle'
+								value={jobTitle}
+								style={{ color: orange, width: 'auto', margin: 2 }}
+								onChange={this.handleUserProfile}
+								placeholder='Job Title'
+								readOnly={canEditFields ? null : true}
+							/>
+							<br/>
+							<BlueSquare
+								isUserAdmin={isUserAdmin}
+								blueSquares={infringments}
+								handleBlueSquare={this.handleBlueSquare}
+								handleSaveError={this.handleSaveError}
+							/>
+						</div>
+						
+						<div className='detailSection'>
+							<Input
+								type='email'
+								name='email'
+								id='email'
+								style={{ color: orange, margin: 2 }}
+								value={email}
+								onChange={this.handleUserProfile}
+								placeholder='Email'
+								readOnly={canEditFields ? null : true}
 							/>
 
-							<br/>
-							<Col style={{ display: 'flex', flexDirection: 'column', justifyContent:'center'}}> 
-								<Row style={{ display: 'flex', flexDirection: 'row', justifyContent:'center'}}>
-									<Input
-										type='text'
-										name='firstName'
-										id='firstName'
-										value={firstName}
-										style={{ color: orange, width:'auto', margin: 2}}
-										onChange={this.handleUserProfile}
-										placeholder='First Name'
-										readOnly={canEditFields ? null : true}
-									/>
-									<Input
-										type='text'
-										name='lastName'
-										id='lastName'
-										value={lastName}
-										style={{ color: orange, width:'auto', margin: 2 }}
-										onChange={this.handleUserProfile}
-										placeholder='Last Name'
-										readOnly={canEditFields ? null : true}
-									/>
-								</Row>
-								<Row style={{ display: 'flex', flexDirection: 'row', justifyContent:'center'}}>
-									<Input
-										type='title'
-										name='jobTitle'
-										id='jobTitle'
-										value={jobTitle}
-										style={{color: orange, width:'auto', margin: 2}}
-										onChange={this.handleUserProfile}
-										placeholder='Job Title'
-										readOnly={canEditFields ? null : true}
-									/>
-								</Row>
-
-								<BlueSquare 
-									isUserAdmin={isUserAdmin}
-									blueSquares={infringments}
-									handleBlueSquare={this.handleBlueSquare}
-									handleSaveError={this.handleSaveError}
-								/>
-							</Col>
-						</div>					
-
-						<Col>
-							<div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'flex-start', width: '80%' }}>
-								<Row>
-									<Input
-										type='email'
-										name='email'
-										id='email'
-										style={{ color: orange, margin: 2 }}
-										value={email}
-										onChange={this.handleUserProfile}
-										placeholder='Email'
-										readOnly={canEditFields ? null : true}
-									/>							
-									<Input
-										type='number'
-										name='phoneNumber'
-										id='phoneNumber'
-										style={{ color: orange, margin: 2 }}
-										value={phoneNumber}
-										onChange={this.handleUserProfile}
-										placeholder='Phone'
-										readOnly={canEditFields ? null : true}
-									/>
-								</Row>
+							<Input
+								type='number'
+								name='phoneNumber'
+								id='phoneNumber'
+								style={{ color: orange, margin: 2 }}
+								value={phoneNumber}
+								onChange={this.handleUserProfile}
+								placeholder='Phone'
+								readOnly={canEditFields ? null : true}
+							/>
+							
+							<div className='customRow' >
+								{this.modLinkButton(canEditFields, isUserAdmin)}
+								<div>
+										<UserLinks
+											linkSection='admin'
+											links={adminLinks}
+											handleLinkModel={this.handleLinkModel}
+											isUserAdmin={isUserAdmin}
+											canEditFields={canEditFields}
+										/>
+										<UserLinks
+											linkSection='user'
+											links={personalLinks}
+											handleLinkModel={this.handleLinkModel}
+											isUserAdmin={isUserAdmin}
+											canEditFields={canEditFields}
+										/>
+								</div>
 							</div>
+						</div>
 
-							<div style={{ width: '80%', display: 'flex', alignItems: 'center', padding: 5 }}>
-								<UserLinks
-									linkSection='admin'
-									links={adminLinks}
-									handleLinkModel={this.handleLinkModel}
-									isUserAdmin={isUserAdmin}
-									canEditFields={canEditFields}
-								/>
-								<UserLinks
-									linkSection='user'
-									links={personalLinks}
-									handleLinkModel={this.handleLinkModel}
-									isUserAdmin={isUserAdmin}
-									canEditFields={canEditFields}
-								/>
-							</div>
-						
-						</Col>
+						<div style={{ display: 'flex', width: '100%', height: '30px', justifyContent: 'flex-end' }}>
+							<Badge style={{
+								display: 'flex', width: 'auto', height: '25px', padding: '5px',
+								alignItems: 'center', justifyContent: 'center', backgroundColor: 'darkslategrey', border: 'none'
+							}} href={'/userprofile/' + this.state.userProfile._id}>
+								<i class="fa fa-eye fa-lg" aria-hidden="true"> View</i>
+							</Badge>
+						</div>
 
-						{this.modLinkButton(canEditFields, isUserAdmin)}
-					
 					</Row>
-					
-					<Row style={{ display: 'flex', justifyContent: 'center', padding: 10, margin: 5}}>
-						<Button outline color='primary' onClick={this.handleSubmit} style={{ display: 'flex', margin: 5}}>
+
+					<Row style={{ display: 'flex', justifyContent: 'center', padding: 10, margin: 5 }}>
+						<Button outline color='primary' onClick={this.handleSubmit} style={{ display: 'flex', margin: 5 }}>
 							{'Save Changes'}
 						</Button>
-						<Button outline color='danger' onClick={() => window.location.reload()} style={{ display: 'flex', margin: 5}} >
+						<Button outline color='danger' onClick={() => window.location.reload()} style={{ display: 'flex', margin: 5 }} >
 							Cancel
 						</Button>
 					</Row>
-					
 				</Col>
-
-			</Container>
+			</div>
 		)
 
 	}
