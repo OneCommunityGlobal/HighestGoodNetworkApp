@@ -26,7 +26,7 @@ const GeneratePdfReport = ({ summaries, weekIndex, weekDates }) => {
       if (Array.isArray(weeklySummaries) && weeklySummaries.length && weeklySummaries[weekIndex]) {
         const { dueDate, summary } = weeklySummaries[weekIndex];
         if (summary) {
-          weeklySummaryMessage = `<div><b>Weekly Summary</b> (for the week ending on <b>${moment(dueDate).tz('America/Los_Angeles').format('YYYY-MM-DD')}</b>):</div>
+          weeklySummaryMessage = `<div><b>Weekly Summary</b> (for the week ending on <b>${moment(dueDate).tz('America/Los_Angeles').format('YYYY-MMM-DD')}</b>):</div>
                                   <div data-pdfmake="{&quot;margin&quot;:[20,0,20,0]}">${summary}</div>`;
         }
       }

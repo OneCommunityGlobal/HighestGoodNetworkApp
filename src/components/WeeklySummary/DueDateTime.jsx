@@ -16,7 +16,7 @@ function DueDateTime({ dueDate }) {
           <FontAwesomeIcon icon={faCalendarCheck} className="mr-1" />
           {' '}
           {/* eslint-disable-next-line react/jsx-one-expression-per-line */}
-          {displayTime.format('YYYY-MM-DD')} at {displayTime.format('HH:mm')} PST
+          {displayTime.format('YYYY-MMM-DD')} at {displayTime.format('HH:mm')} PST
         </div>
         <CountdownTimer date={dueDate} />
       </div>

@@ -177,8 +177,8 @@ export class WeeklySummary extends Component {
     const { formElements, dueDate, activeTab, errors, loading, fetchError, dueDateLastWeek, dueDateBeforeLast } = this.state;
     const summariesLabels = {
       'summary': 'This Week',
-      'summaryLastWeek': this.doesDateBelongToWeek(dueDateLastWeek, 1) ? 'Last Week' : moment(dueDateLastWeek).format('YYYY-MM-DD'),
-      'summaryBeforeLast': this.doesDateBelongToWeek(dueDateBeforeLast, 2) ? 'Week Before Last' : moment(dueDateBeforeLast).format('YYYY-MM-DD'),
+      'summaryLastWeek': this.doesDateBelongToWeek(dueDateLastWeek, 1) ? 'Last Week' : moment(dueDateLastWeek).format('YYYY-MMM-DD'),
+      'summaryBeforeLast': this.doesDateBelongToWeek(dueDateBeforeLast, 2) ? 'Week Before Last' : moment(dueDateBeforeLast).format('YYYY-MMM-DD'),
     };
 
     if (fetchError) {

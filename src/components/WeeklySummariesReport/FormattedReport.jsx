@@ -18,7 +18,7 @@ const FormattedReport = ({ summaries, weekIndex }) => {
     if (Array.isArray(weeklySummaries) && weeklySummaries.length && weeklySummaries[weekIndex]) {
       const { dueDate, summary } = weeklySummaries[weekIndex];
       if (summary) {
-        weeklySummaryMessage = `<b>Weekly Summary</b> (for the week ending on <b>${moment(dueDate).tz('America/Los_Angeles').format('YYYY-MM-DD')}</b>):<br />
+        weeklySummaryMessage = `<b>Weekly Summary</b> (for the week ending on <b>${moment(dueDate).tz('America/Los_Angeles').format('YYYY-MMM-DD')}</b>):<br />
                                 <div style="padding: 10px 20px 0;">${summary}</div>`;
       }
     }
