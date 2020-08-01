@@ -17,6 +17,7 @@ import {
 import moment from "moment";
 import _ from "lodash";
 import { Editor } from "@tinymce/tinymce-react";
+import ReactHtmlParser from "react-html-parser";
 import { postTimeEntry, editTimeEntry } from "../../actions/timeEntries";
 import { getUserProjects } from "../../actions/userProjects";
 import { stopTimer } from "../../actions/timer";
@@ -34,6 +35,7 @@ const TimeEntryForm = ({ userId, edit, data, isOpen, toggle, timer }) => {
   };
   const initialReminder = {
     notification: false,
+    has_link: false,
     remind: "",
     num_words: 0,
   };
@@ -117,6 +119,16 @@ const TimeEntryForm = ({ userId, edit, data, isOpen, toggle, timer }) => {
       result.notes = "Description and reference link are required";
     }
 
+    if (reminder.num_words >= 10 && !reminder.has_link) {
+      openModal();
+      setReminder((reminder) => ({
+        ...reminder,
+        remind:
+          "Do you have a link to your Google Doc or other place to review this work? You should add it if you do.",
+      }));
+      result.notes = "Description and reference link are required";
+    }
+
     // if (inputs.notes === "") {
     //   result.notes = "Description and reference link are required";
     // }
@@ -188,6 +200,7 @@ const TimeEntryForm = ({ userId, edit, data, isOpen, toggle, timer }) => {
     setReminder((reminder) => ({
       ...reminder,
       num_words: wordcount.body.getWordCount(),
+      has_link: inputs.notes.indexOf("http://") > -1,
     }));
   };
 
