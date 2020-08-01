@@ -310,16 +310,20 @@ const EditTaskModal = (props) => {
                   </div>
                   <div className='task-reousces-list'>
                     {
-                      resourceItems.map(elm => {
+                      resourceItems.map((elm, i) => {
                         if (!elm.profilePic) {
                           return (
-                            <a data-tip={elm.name}
+                            <a
+                              key={`res_${i}`}
+                              data-tip={elm.name}
                               onClick={(e) => removeResource(elm.userID, e.target)}
                             ><span className="dot">{elm.name.substring(0, 2)}</span>
                             </a>)
                         }
                         return (
-                          <a data-tip={elm.name}
+                          <a
+                            key={`res_${i}`}
+                            data-tip={elm.name}
                             onClick={(e) => removeResource(elm.userID, e.target)}
 
                           ><img className='img-circle' src={elm.profilePic} />

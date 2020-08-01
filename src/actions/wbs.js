@@ -6,11 +6,8 @@ import axios from 'axios'
 import * as types from '../constants/WBS'
 import { ENDPOINTS } from '../utils/URL'
 
-
-
 export const addNewWBS = (wbsName, projectId) => {
   const url = ENDPOINTS.WBS(projectId);
-  console.log("Call API: ", url);
   return async dispatch => {
     let status = 200;
     let _id = null;
@@ -42,10 +39,22 @@ export const addNewWBS = (wbsName, projectId) => {
 
 }
 
+export const deleteWBS = (wbsId) => {
+  const request = axios.delete(ENDPOINTS.WBS(wbsId));
+  return async dispatch => {
+    axios.delete(ENDPOINTS.TASK_WBS(wbsId));
+    request.then(res => {
+      dispatch(removeWBS(wbsId));
+    }).catch((err) => {
+      dispatch(setWBSError(err));
+    })
+  }
+}
+
 
 export const fetchAllWBS = (projectId) => {
 
-  const request = axios.get(ENDPOINTS.WBS(''));
+  const request = axios.get(ENDPOINTS.WBS(projectId));
 
   return async dispatch => {
     await dispatch(setWBSStart());
@@ -86,6 +95,14 @@ export const setWBSError = (err) => {
   return {
     type: types.FETCH_WBS_ERROR,
     err
+  }
+}
+
+
+export const removeWBS = (wbsId) => {
+  return {
+    type: types.DELETE_WBS,
+    wbsId
   }
 }
 

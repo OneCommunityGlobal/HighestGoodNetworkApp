@@ -95,7 +95,6 @@ export const fetchAllTasks = (wbsId) => {
 }
 
 export const updateTask = (taskId, updatedTask) => {
-  console.log('update', taskId);
   const url = ENDPOINTS.TASK_UPDATE(taskId);
   return async dispatch => {
     let status = 200;

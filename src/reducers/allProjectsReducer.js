@@ -20,10 +20,8 @@ export const allProjectsReducer = (allProjects = allProjectsInital, action) => {
     case types.FETCH_PROJECTS_START:
       return { ...allProjects, fetching: true, status: "200" }
     case types.FETCH_PROJECTS_ERROR:
-      console.log("Reducers error", action.payload);
       return { ...allProjects, fetching: false, status: action.payload }
     case types.RECEIVE_PROJECTS:
-      console.log("Reducers projects", action.payload);
       return updateObject(allProjects, {
         projects: action.payload,
         fetching: false,
@@ -31,7 +29,6 @@ export const allProjectsReducer = (allProjects = allProjectsInital, action) => {
         status: "200"
       });
     case types.ADD_NEW_PROJECT:
-      console.log("PAYLOAD ADD", action.payload, action.status)
       if (action.status === 201) {
         return { ...allProjects, projects: [action.payload, ...allProjects.projects] };
       } else {

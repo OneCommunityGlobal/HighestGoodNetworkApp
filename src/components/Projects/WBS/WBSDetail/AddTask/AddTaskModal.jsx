@@ -20,6 +20,13 @@ const AddTaskModal = (props) => {
 
   const [isLoading, setIsLoading] = useState(false);
 
+  const setToggle = () => {
+    try {
+      props.openChild();
+    } catch{ }
+    toggle();
+  }
+
   // task Num
   let newNum = '1';
 
@@ -89,8 +96,8 @@ const AddTaskModal = (props) => {
   const [foundMembersHTML, setfoundMembersHTML] = useState('');
   const findMembers = () => {
     foundedMembers = members.filter(user => ((user.firstName + " " + user.lastName)).toLowerCase().includes(memberName.toLowerCase()));
-    const html = foundedMembers.map(elm =>
-      <div>
+    const html = foundedMembers.map((elm, i) =>
+      <div key={i}>
         <a href={`/userprofile/${elm._id}`} target='_blank'>
           <input
             type="text"
@@ -139,8 +146,8 @@ const AddTaskModal = (props) => {
   const addLink = () => {
     links.push(link);
 
-    const html = links.map(link =>
-      <div><a href={link} target='_blank'>{link.replace('http://', '')}</a></div>);
+    const html = links.map((link, i) =>
+      <div><a key={i} href={link} target='_blank'>{link.replace('http://', '')}</a></div>);
     setLinksHTML(html);
   }
 
@@ -286,7 +293,7 @@ const AddTaskModal = (props) => {
     <div className='controlBtn'>
 
       <Modal isOpen={modal} toggle={toggle} >
-        <ModalHeader toggle={toggle}>Add New Task <button type="button" class="btn btn-primary btn-sm" onClick={() => clear()}>Reset</button></ModalHeader>
+        <ModalHeader toggle={toggle}>Add New Task <button type="button" className="btn btn-primary btn-sm" onClick={() => clear()}>Reset</button></ModalHeader>
         <ModalBody>
           <ReactTooltip />
 
@@ -355,16 +362,20 @@ const AddTaskModal = (props) => {
                   </div>
                   <div className='task-reousces-list'>
                     {
-                      resourceItems.map(elm => {
+                      resourceItems.map((elm, i) => {
                         if (!elm.profilePic) {
                           return (
-                            <a data-tip={elm.name}
+                            <a
+                              key={`res_${i}`}
+                              data-tip={elm.name}
                               onClick={(e) => removeResource(elm.userID, e.target)}
                             ><span className="dot">{elm.name.substring(0, 2)}</span>
                             </a>)
                         }
                         return (
-                          <a data-tip={elm.name}
+                          <a
+                            key={`res_${i}`}
+                            data-tip={elm.name}
                             onClick={(e) => removeResource(elm.userID, e.target)}
 
                           ><img className='img-circle' src={elm.profilePic} />
@@ -509,7 +520,7 @@ const AddTaskModal = (props) => {
           <Button color="secondary" onClick={toggle}>Cancel</Button>
         </ModalFooter>
       </Modal >
-      <Button color="primary" size="sm" onClick={toggle} >Add Task</Button>
+      <Button color="primary" size="sm" onClick={setToggle} >Add Task</Button>
 
     </div >
 

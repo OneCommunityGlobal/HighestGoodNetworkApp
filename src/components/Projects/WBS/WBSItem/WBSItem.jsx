@@ -1,13 +1,21 @@
 /*********************************************************************************
  * Component: MEMBER 
- * Author: Henry Ng - 02/03/20
+ * Author: Henry Ng - 08/01/20
  * Display member of the members list 
  ********************************************************************************/
-import React from 'react'
+import React, { useState } from 'react'
 import { connect } from 'react-redux'
-import { assignProject } from './../../../../actions/projectMembers'
+import ModalDelete from './../../../common/Modal'
+import { deleteWBS } from './../../../../actions/wbs'
 
 const WBSItem = (props) => {
+  const [showModalDelete, setShowModalDelete] = useState(false);
+
+  const confirmDelete = () => {
+    props.deleteWBS(props.wbsId);
+    setShowModalDelete(false);
+  }
+
 
   return (
     <React.Fragment>
@@ -20,15 +28,25 @@ const WBSItem = (props) => {
         </td>
 
         <td className='members__assign'>
-          <button className="btn btn-outline-danger btn-sm" type="button" onClick={(e) => props.assignProject(props.projectId, props.uid, "unAssign", props.firstName, props.lastName)}>
+          <button className="btn btn-outline-danger btn-sm" type="button" onClick={(e) => setShowModalDelete(true)}>
             <i className="fa fa-minus" aria-hidden="true"></i>
           </button>
         </td>
 
       </tr>
+
+
+      <ModalDelete
+        isOpen={showModalDelete}
+        closeModal={() => setShowModalDelete(false)}
+        confirmModal={() => confirmDelete()}
+        modalMessage={`Are you sure you want to delete this ${props.name}`}
+        modalTitle="Confirm Deletion"
+      />
+
     </React.Fragment>
   )
 }
 
-export default connect(null, { assignProject })(WBSItem)
+export default connect(null, { deleteWBS })(WBSItem)
 

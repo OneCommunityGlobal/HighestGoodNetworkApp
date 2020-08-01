@@ -159,7 +159,7 @@ const ImportTask = (props) => {
 
                     <button className="btn btn-primary" type="button" disabled>
                       <span className="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span>
-                    Importing...({importStatus}/3)
+                    Importing...({importStatus}/4)
                 </button>
                   </td>
                 </tr>
