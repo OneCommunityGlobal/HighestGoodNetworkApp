@@ -122,3 +122,7 @@
   color:red;
   font-size: 10px;
 }
+
+.toggle-all{
+  float:right;
+}

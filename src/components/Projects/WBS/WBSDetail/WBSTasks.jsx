@@ -9,6 +9,8 @@ import { fetchAllMembers } from "./../../../../actions/projectMembers.js"
 import Task from './Task/'
 import AddTaskModal from './AddTask/AddTaskModal'
 import ImportTask from "./ImportTask/"
+import { Link } from 'react-router-dom'
+import { NavItem, Button } from 'reactstrap'
 import './wbs.css';
 import ReactTooltip from 'react-tooltip'
 
@@ -97,6 +99,21 @@ const WBSTasks = (props) => {
     setTimeout(() => { props.fetchAllTasks(wbsId); }, 4000);
   }
 
+  const toggleGroups = (open) => {
+    const items2 = document.getElementsByClassName(`lv_2`);
+    const items3 = document.getElementsByClassName(`lv_3`);
+    const items4 = document.getElementsByClassName(`lv_4`);
+    const allItems = [...items2, ...items3, ...items4];
+
+    for (let i = 0; i < allItems.length; i++) {
+      if (!open) {
+        allItems[i].style.display = 'none';
+      } else {
+        allItems[i].style.display = 'table-row';
+      }
+    }
+  }
+
 
 
 
@@ -106,10 +123,31 @@ const WBSTasks = (props) => {
 
       <div className='container' >
 
+        <nav aria-label="breadcrumb">
+          <ol className="breadcrumb">
+            <NavItem tag={Link} to={`/project/wbs/${projectId}`}>
+              <button type="button" className="btn btn-secondary" >
+                <i className="fa fa-chevron-circle-left" aria-hidden="true"></i>
+              </button>
+            </NavItem>
+
+            <div id="member_project__name">
+              Work breakdown structure
+            </div>
+
+          </ol>
+        </nav>
+
         <AddTaskModal key="task_modal_null" parentNum={null} taskId={null} wbsId={wbsId} projectId={projectId} />
         {props.state.tasks.taskItems.length === 0 ?
           <ImportTask wbsId={wbsId} projectId={projectId} />
           : null}
+
+        <div className="toggle-all">
+          <Button color="light" size="sm" onClick={() => toggleGroups(true)} >Open</Button>
+          <Button color="dark" size="sm" onClick={() => toggleGroups(false)}>Close</Button>
+        </div>
+
 
         <table className="table table-bordered">
           <thead>

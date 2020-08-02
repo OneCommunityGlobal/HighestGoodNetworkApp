@@ -32,7 +32,7 @@ const WBS = (props) => {
             </NavItem>
 
             <div id="member_project__name">
-              PROJECTS {props.projectId}
+              Projects
             </div>
 
           </ol>

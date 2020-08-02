@@ -203,10 +203,10 @@ const Task = (props) => {
         </td>
         <td>{props.isAssigned ? <i data-tip="Assigned" className="fa fa-check-square" aria-hidden="true"></i> : <i data-tip="Not Assigned" className="fa fa-square-o" aria-hidden="true"></i>}</td>
         <td>{props.status === "Started" ? <i data-tip="Started" className="fa fa-pause" aria-hidden="true"></i> : <i data-tip="Not Started" className="fa fa-play" aria-hidden="true"></i>}</td>
-        <td data-tip="Hours-Best" >{props.hoursBest}</td>
-        <td data-tip="Hours-Worst" >{props.hoursWorst}</td>
-        <td data-tip="Hours-Most" >{props.hoursMost}</td>
-        <td data-tip="Estimated Hours" >{props.estimatedHours}</td>
+        <td data-tip={`Hours-Best-case: ${props.hoursBest / 8} day(s)`} >{props.hoursBest}</td>
+        <td data-tip={`Hours-Worst-case: ${props.hoursWorst / 8} day(s)`} >{props.hoursWorst}</td>
+        <td data-tip={`Hours-Most-case: ${props.hoursMost / 8} day(s)`} >{props.hoursMost}</td>
+        <td data-tip={`Estimated Hours: ${props.estimatedHours / 8} day(s)`} >{props.estimatedHours}</td>
         <td>
           {startedDate.getFullYear() !== 1969 ? `${(startedDate.getMonth() + 1)}/${startedDate.getDate()}/${startedDate.getFullYear()}` : null}
           <br />
