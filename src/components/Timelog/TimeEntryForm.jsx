@@ -44,7 +44,7 @@ const TimeEntryForm = ({ userId, edit, data, isOpen, toggle, timer }) => {
   const [errors, setErrors] = useState({});
   const dispatch = useDispatch();
   const history = useHistory();
-  const [reminder, setReminder] = useState(initialReminder);
+  const [reminder, setReminder] = useState(edit ? data : initialReminder);
 
   const openModal = () =>
     setReminder((reminder) => ({
@@ -178,9 +178,11 @@ const TimeEntryForm = ({ userId, edit, data, isOpen, toggle, timer }) => {
         }
         history.push(`/timelog/${userId}`);
       }
-    } else {
+    } else if (!edit) {
       setInputs((inputs) => initialState);
       setReminder((reminder) => initialReminder);
+      toggle();
+    } else {
       toggle();
     }
   };
@@ -200,17 +202,12 @@ const TimeEntryForm = ({ userId, edit, data, isOpen, toggle, timer }) => {
     setReminder((reminder) => ({
       ...reminder,
       num_words: wordcount.body.getWordCount(),
-      has_link: inputs.notes.indexOf("http://") > -1,
+      has_link:
+        inputs.notes.indexOf("http://") > -1 ||
+        inputs.notes.indexOf("https://") > -1,
     }));
   };
 
-  // handleEditorChange(content, Editor) {
-  //   const wordcount = Editor.plugins.wordcount;
-  //   this.setState({
-  //   content,
-  //   numberOfCharacter: wordcount.body.getCharacterCountWithoutSpaces(),
-  //   });
-  //   }
   const handleCheckboxChange = (event) => {
     event.persist();
     setInputs((inputs) => ({
@@ -221,6 +218,7 @@ const TimeEntryForm = ({ userId, edit, data, isOpen, toggle, timer }) => {
 
   const clearForm = (event) => {
     setInputs((inputs) => initialState);
+    setReminder((reminder) => initialReminder);
     setErrors((errors) => ({}));
   };
 
