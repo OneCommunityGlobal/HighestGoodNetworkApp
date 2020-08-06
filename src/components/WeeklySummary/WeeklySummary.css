@@ -50,6 +50,7 @@
 .due-section__date {
   background-color: #225163;
   padding: 14px;
+  font-size: 15px;
 }
 
 .due-section__time {
@@ -73,7 +74,7 @@
 
 .countdown__col__element strong,
 .countdown__times-up {
-  font-size: 28px;
+  font-size: 27px;
 }
 
 .countdown__col__element span {
