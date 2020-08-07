@@ -269,8 +269,8 @@ class UserProfile extends Component {
 
 		console.log('phoneNumberPubliclyAccessible', phoneNumberPubliclyAccessible)
 		let isUserSelf = targetUserId === requestorId
-		let canEditFields = isUserAdmin || isUserSelf
 		const isUserAdmin = requestorRole === 'Administrator'
+		let canEditFields = isUserAdmin || isUserSelf
 
 		if (isLoading === true) {
 			return <Loading />
