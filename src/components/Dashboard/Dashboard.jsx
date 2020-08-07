@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import {
-  Card, Row, Col, Container,
+  Alert, Card, Row, Col, Container,
 } from 'reactstrap';
 import MonthlyEffort from '../MonthlyEffort';
 import Leaderboard from '../LeaderBoard';
@@ -13,6 +13,13 @@ class Dashboard extends Component {
     return (
       <Container fluid>
         <Row>
+          <Col sm={{ size: 12 }}>
+            <Alert color="info">
+              <b>Reminder</b>
+              : Make sure to purge the cache or "hard" refresh the page in your browser if you don's see the changes you had merged with the "development" branch.
+              This message will be removed before the site goes "live".
+            </Alert>
+          </Col>
           <Col sm={{ size: 9 }}>
             <WeeklySummary />
             <Leaderboard />
