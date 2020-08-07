@@ -16,7 +16,8 @@ import { orange, warningRed } from '../../../constants/colors'
 import BlueSquare from '../BlueSquares'
 import Modal from '../UserProfileModal'
 import UserLinks from '../UserLinks'
-import '../UserProfile.css'
+import styleProfile from '../UserProfile.css'
+import styleEdit from './UserProfileEdit.css'
 
 
 class EditProfile extends Component {
@@ -431,17 +432,12 @@ class EditProfile extends Component {
 		}
 
 		return (
-			<div style={{display: 'flex'}}>
-				<CardTitle
-					id="warningCard"
-					className='themed-container'
-					style={{
-						position: 'fixed', top: '7vh', left: '0', width: '100%',
-						color: 'white', backgroundColor: warningRed,
-						border: '1px solid #A8A8A8', textAlign: "center", display: 'none', zIndex: 2, opacity: '70%'
-					}}>
+			<div style={{ display: 'flex' }}>
+
+				<CardTitle id="warningCard" className={'saveChangesWarning'}>
 					Reminder: You must click "Save Changes" at the bottom of this page. If you don't, changes to your profile will not be saved.
 				</CardTitle>
+
 				{showModal && (
 					<Modal
 						isOpen={this.state.showModal}
@@ -460,16 +456,14 @@ class EditProfile extends Component {
 						handleLinkModel={this.handleLinkModel}
 					/>
 				)}
-				<Col>
-					<Row style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center', color: 'white', backgroundColor: 'grey', padding: 10, margin: 10 }}>
 
+				<Col>
+					<Row className={'profileContainer'}>
 						<div className='whoSection'>
-							<Label
-								for='newProfilePic'
-								htmlFor={'newProfilePic'}
-								style={{ color: 'orange', cursor: 'pointer' }}>
+							<Label for='newProfilePic' htmlFor={'newProfilePic'} className={'profileText'}>
 								Change Profile Picture
 							</Label>
+
 							<Input
 								type='file'
 								name='newProfilePic'
@@ -485,37 +479,28 @@ class EditProfile extends Component {
 									className='profilePicture'
 								/>
 							</div>
-							<Input
-								type='text'
-								name='firstName'
-								id='firstName'
+							<Input type='text' name='firstName' id='firstName'
 								value={firstName}
-								style={{ color: orange, width: 'auto', margin: 2 }}
+								className={'profileText'}
 								onChange={this.handleUserProfile}
 								placeholder='First Name'
 								readOnly={canEditFields ? null : true}
 							/>
-							<Input
-								type='text'
-								name='lastName'
-								id='lastName'
+							<Input type='text' name='lastName' id='lastName'
 								value={lastName}
-								style={{ color: orange, width: 'auto', margin: 2 }}
+								className={'profileText'}
 								onChange={this.handleUserProfile}
 								placeholder='Last Name'
 								readOnly={canEditFields ? null : true}
 							/>
-							<Input
-								type='title'
-								name='jobTitle'
-								id='jobTitle'
+							<Input type='title' name='jobTitle' id='jobTitle'
 								value={jobTitle}
-								style={{ color: orange, width: 'auto', margin: 2 }}
+								className={'profileText'}
 								onChange={this.handleUserProfile}
 								placeholder='Job Title'
 								readOnly={canEditFields ? null : true}
 							/>
-							<br/>
+							<br />
 							<BlueSquare
 								isUserAdmin={isUserAdmin}
 								blueSquares={infringments}
@@ -523,13 +508,13 @@ class EditProfile extends Component {
 								handleSaveError={this.handleSaveError}
 							/>
 						</div>
-						
+
 						<div className='detailSection'>
 							<Input
 								type='email'
 								name='email'
 								id='email'
-								style={{ color: orange, margin: 2 }}
+								className={'profileText'}
 								value={email}
 								onChange={this.handleUserProfile}
 								placeholder='Email'
@@ -540,39 +525,41 @@ class EditProfile extends Component {
 								type='number'
 								name='phoneNumber'
 								id='phoneNumber'
-								style={{ color: orange, margin: 2 }}
+								className={'profileText'}
 								value={phoneNumber}
 								onChange={this.handleUserProfile}
 								placeholder='Phone'
 								readOnly={canEditFields ? null : true}
 							/>
-							
-							<div className='customRow' >
+
+							<div>
 								{this.modLinkButton(canEditFields, isUserAdmin)}
-								<div>
-										<UserLinks
-											linkSection='admin'
-											links={adminLinks}
-											handleLinkModel={this.handleLinkModel}
-											isUserAdmin={isUserAdmin}
-											canEditFields={canEditFields}
-										/>
-										<UserLinks
-											linkSection='user'
-											links={personalLinks}
-											handleLinkModel={this.handleLinkModel}
-											isUserAdmin={isUserAdmin}
-											canEditFields={canEditFields}
-										/>
+								<div className={'profileLinks'}>
+
+									<UserLinks
+										linkSection='admin'
+										links={adminLinks}
+										handleLinkModel={this.handleLinkModel}
+										isUserAdmin={isUserAdmin}
+										canEditFields={canEditFields}
+									/>
+								</div>
+
+								<div className={'profileLinks'}>
+									<UserLinks
+										linkSection='user'
+										links={personalLinks}
+										handleLinkModel={this.handleLinkModel}
+										isUserAdmin={isUserAdmin}
+										canEditFields={canEditFields}
+									/>
 								</div>
 							</div>
+
 						</div>
 
-						<div style={{ display: 'flex', width: '100%', height: '30px', justifyContent: 'flex-end' }}>
-							<Badge style={{
-								display: 'flex', width: 'auto', height: '25px', padding: '5px',
-								alignItems: 'center', justifyContent: 'center', backgroundColor: 'darkslategrey', border: 'none'
-							}} href={'/userprofile/' + this.state.userProfile._id}>
+						<div className={'profileViewButtonContainer'}>
+							<Badge className={'profileViewButton'} href={'/userprofile/' + this.state.userProfile._id}>
 								<i class="fa fa-eye fa-lg" aria-hidden="true"> View</i>
 							</Badge>
 						</div>

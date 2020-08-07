@@ -1,49 +1,94 @@
 
 
-.profilePicture {
-  width: 200px;
-  height: 200px;
+.profileContainer{
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  color: white;
+  background-color: grey;
+  padding: 10px;
+  margin: 10px;
 }
+
+.profileText{
+  color: orange;
+  width: auto;
+  margin: 5px;
+}
+
+.profileEditButton{
+  display: flex;
+  width: auto;
+  height: 25px;
+  padding: 5px;
+  align-items: center;
+  justify-content: center;
+  background-color: darkgray;
+  border: none;
+}
+
+.profileEditButtonContainer{
+  position: absolute;
+  display: flex;
+  right: 1%;
+  justify-content: flex-end;
+}
+
+.profilePicture {
+  width: 25vh;
+  height: 25vh;
+}
+
 .whoSection {
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-content: center;
   text-align: center;
-  width: 45%;
+  width: 40%;
 
 }
 .detailSection {
   display: flex;
   flex-direction: column;
   text-align: center;
-  width: 55%;
+  width: 40%;
 
 }
-.customRow {
+
+.profileLinks{
   display: flex;
-  flex-direction: row;
+  width: 80%;
+  align-items: center;
+  padding: 5px;
 }
+
 @media only screen and (max-width: 600px) {
   .profilePicture {
-    width: 100px;
-    height: 100px;
+    width: 20vh;
+    height: 20vh;
   }
 }
-@media only screen and (max-width: 500px) {
+
+@media only screen and (max-height: 500px){
   .profilePicture {
-    width: 100px;
-    height: 100px;
+    width: 30vh;
+    height: 30vh;
   }
+}
+
+@media only screen and (max-width: 500px) {
   .whoSection{
+    margin-top: 5%;
+    width: 65%;
+  }
+  .detailSection{
+    margin-top: 5%;
     width: 65%;
   }
 }
+
 @media only screen and (max-width: 400px) {
-  .profilePicture {
-    width: 100px;
-    height: 100px;
-  }
   .whoSection{
     width: 100%;
   }

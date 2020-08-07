@@ -1,2 +1,1 @@
-import BlueSquare from './BlueSquare'
-export default BlueSquare
+export { default } from './BlueSquare';

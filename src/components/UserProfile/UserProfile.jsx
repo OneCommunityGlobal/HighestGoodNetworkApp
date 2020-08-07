@@ -13,7 +13,7 @@ import { orange, silverGray, warningRed } from '../../constants/colors'
 import BlueSquare from './BlueSquares'
 import Modal from './UserProfileModal'
 import UserLinks from './UserLinks'
-import './UserProfile.css'
+import styleProfile from './UserProfile.css'
 
 class UserProfile extends Component {
 	state = {
@@ -120,7 +120,8 @@ class UserProfile extends Component {
 					/>
 				)}
 				<Col>
-					<Row style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center', color: 'white', backgroundColor: 'grey', padding: 10, margin: 10 }}>
+					<Row id='profileContainer' className={'profileContainer'}>
+						
 						<div className='whoSection'>
 							<div>
 								<Image src={profilePic || '/defaultprofilepic.png'}
@@ -143,7 +144,7 @@ class UserProfile extends Component {
 							<Label>{email}</Label>
 							<Label>{phoneNumber}</Label>
 
-							<div style={{ width: '80%', display: 'flex', alignItems: 'center', padding: 5 }}>
+							<div className={'profileLinks'}>
 								<UserLinks
 									linkSection='admin'
 									links={adminLinks}
@@ -153,7 +154,7 @@ class UserProfile extends Component {
 								/>
 							</div>
 
-							<div style={{ display: 'flex', alignItems: 'center', padding: 5 }}>
+							<div className={'profileLinks'}>
 								<UserLinks
 									linkSection='user'
 									links={personalLinks}
@@ -164,11 +165,8 @@ class UserProfile extends Component {
 							</div>
 						</div>
 
-						<div style={{ display: 'flex', width: '100%', justifyContent: 'flex-end' }}>
-							<Badge style={{
-								display: 'flex', width: 'auto', height: '25px', padding: '5px',
-								alignItems: 'center', justifyContent: 'center', backgroundColor: 'darkslategrey', border: 'none'
-							}} href={'/userprofileedit/' + this.state.userProfile._id}>
+						<div className={'profileEditButtonContainer'}>
+							<Badge className={'profileEditButton'} href={'/userprofileedit/' + this.state.userProfile._id}>
 								<i class="fa fa-pencil-square-o fa-lg" aria-hidden="true"> Edit</i>
 							</Badge>
 						</div>
