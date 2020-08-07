@@ -38,7 +38,7 @@ const TimeEntryForm = ({ userId, edit, data, isOpen, toggle, timer }) => {
     has_link: false,
     remind: "",
     num_words: 0,
-    edit_count: data ? data.editCount : 1,
+    edit_count: data ? data.editCount : 0,
     edit_notice: true,
   };
 
