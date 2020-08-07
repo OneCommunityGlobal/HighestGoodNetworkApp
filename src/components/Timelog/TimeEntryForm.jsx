@@ -38,13 +38,15 @@ const TimeEntryForm = ({ userId, edit, data, isOpen, toggle, timer }) => {
     has_link: false,
     remind: "",
     num_words: 0,
+    edit_count: data ? data.editCount : 1,
+    edit_notice: true,
   };
 
   const [inputs, setInputs] = useState(edit ? data : initialState);
   const [errors, setErrors] = useState({});
   const dispatch = useDispatch();
   const history = useHistory();
-  const [reminder, setReminder] = useState(edit ? data : initialReminder);
+  const [reminder, setReminder] = useState(initialReminder);
 
   const openModal = () =>
     setReminder((reminder) => ({
@@ -129,9 +131,35 @@ const TimeEntryForm = ({ userId, edit, data, isOpen, toggle, timer }) => {
       result.notes = "Description and reference link are required";
     }
 
-    // if (inputs.notes === "") {
-    //   result.notes = "Description and reference link are required";
-    // }
+    if (edit && reminder.edit_notice && reminder.edit_count < 4) {
+      openModal();
+      setReminder((reminder) => ({
+        ...reminder,
+        remind:
+          "You are about to edit your time, if you do this your manager will be notified you’ve edited it. The system automatically tracks how many times you’ve edited your time and will issue blue squares if you edit it repeatedly. Please use the timer properly so your time is logged accurately.",
+        edit_notice: !reminder.edit_notice,
+      }));
+    }
+
+    if (edit && reminder.edit_notice && reminder.edit_count == 4) {
+      openModal();
+      setReminder((reminder) => ({
+        ...reminder,
+        remind:
+          "You’ve edited your time 3 times already as a member of the team, are you sure you want to edit it again? Editing your time more than 5 times in a calendar year will result in you receiving a blue square.",
+        edit_notice: !reminder.edit_notice,
+      }));
+    }
+
+    if (edit && reminder.edit_notice && reminder.edit_count == 5) {
+      openModal();
+      setReminder((reminder) => ({
+        ...reminder,
+        remind:
+          "Heads up this is your fifth and final time being allowed to edit your time without receiving a blue square. Please use the timer properly from this point forward if you’d like to avoid receiving one.",
+        edit_notice: !reminder.edit_notice,
+      }));
+    }
 
     setErrors(result);
     return _.isEmpty(result);
@@ -154,6 +182,7 @@ const TimeEntryForm = ({ userId, edit, data, isOpen, toggle, timer }) => {
     timeEntry.projectId = inputs.projectId;
     timeEntry.notes = inputs.notes;
     timeEntry.isTangible = inputs.isTangible.toString();
+    timeEntry.editCount = reminder.edit_count + 1;
 
     const hours = inputs.hours === "" ? "0" : inputs.hours;
     const minutes = inputs.minutes === "" ? "0" : inputs.minutes;
@@ -183,7 +212,18 @@ const TimeEntryForm = ({ userId, edit, data, isOpen, toggle, timer }) => {
       setReminder((reminder) => initialReminder);
       toggle();
     } else {
-      toggle();
+      if (!reminder.edit_notice) {
+        setReminder((reminder) => ({
+          ...reminder,
+          edit_count: reminder.edit_count + 1,
+          edit_notice: !reminder.edit_notice,
+        }));
+        toggle();
+      }
+      // setReminder((reminder) => ({
+      //   ...reminder,
+      //   edit_notice: !reminder.edit_notice,
+      // }));
     }
   };
 
