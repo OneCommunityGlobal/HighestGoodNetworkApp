@@ -4,7 +4,7 @@ import { getHeaderData } from '../../actions/authActions'
 import { Link } from 'react-router-dom'
 import { connect } from 'react-redux'
 import {
-  LOGO, DASHBOARD, TIMELOG, REPORTS, OTHER_LINKS,
+  LOGO, DASHBOARD, TIMELOG, REPORTS, WEEKLY_SUMMARIES_REPORT, OTHER_LINKS,
   USER_MANAGEMENT, PROJECTS, TEAMS, WELCOME, VIEW_PROFILE, UPDATE_PASSWORD, LOGOUT
 } from '../../languages/en/ui'
 import {
@@ -66,11 +66,26 @@ class Header extends React.Component {
                     {TIMELOG}
                   </NavLink>
                 </NavItem>
-                <NavItem>
-                  <NavLink tag={Link} to='/reports'>
+                <UncontrolledDropdown nav inNavbar>
+                  <DropdownToggle nav caret>
                     {REPORTS}
-                  </NavLink>
-                </NavItem>
+                  </DropdownToggle>
+                  <DropdownMenu>
+                    <DropdownItem tag={Link} to='/reports'>
+                      {REPORTS}
+                    </DropdownItem>
+                    {
+                      user.role === UserRole.Administrator ||
+                        user.role === UserRole.Manager ||
+                        user.role === UserRole.CoreTeam ?
+                        <DropdownItem tag={Link} to='/weeklysummariesreport'>
+                          {WEEKLY_SUMMARIES_REPORT}
+                        </DropdownItem>
+                        :
+                        <React.Fragment></React.Fragment>
+                    }
+                  </DropdownMenu>
+                </UncontrolledDropdown>
                 <NavItem>
                   <NavLink tag={Link} to={`/timelog/${user.userid}`}>
                     <i className='fa fa-bell i-large'>
@@ -87,7 +102,7 @@ class Header extends React.Component {
                   </DropdownToggle>
                   <DropdownMenu>
                     {
-                      this.props.auth.user.role === UserRole.Administrator ?
+                      user.role === UserRole.Administrator ?
                         <DropdownItem tag={Link} to='/usermanagement'>
                           {USER_MANAGEMENT}
                         </DropdownItem>
