@@ -1,5 +1,4 @@
 
-
 .profileContainer{
   display: flex;
   flex-direction: row;
@@ -7,29 +6,24 @@
   color: white;
   background-color: grey;
   padding: 10px;
-  margin: 10px;
-}
-
-.profileText{
-  color: orange;
-  width: auto;
-  margin: 5px;
+  padding-bottom: 10px;
+  margin-left: 10vw;
+  margin-right: 10vw;
 }
 
 .profileEditButton{
   display: flex;
-  width: auto;
-  height: 25px;
-  padding: 5px;
-  align-items: center;
-  justify-content: center;
-  background-color: darkgray;
-  border: none;
+  padding: 0.25em 0.4em;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1;
 }
 
 .profileEditButtonContainer{
   position: absolute;
   display: flex;
+  align-items: center;
+  justify-content: center;
   right: 1%;
   justify-content: flex-end;
 }
@@ -43,17 +37,22 @@
   display: flex;
   flex-direction: column;
   justify-content: center;
-  align-content: center;
+  align-items: center;
   text-align: center;
-  width: 40%;
-
+  width: 300px;
+  margin-left: 5%;
+  margin-right: 5%;
 }
+
 .detailSection {
   display: flex;
   flex-direction: column;
+  justify-content: center;
+  align-items: center;
   text-align: center;
-  width: 40%;
-
+  width: 300px;
+  margin-left: 5%;
+  margin-right: 5%;
 }
 
 .profileLinks{
@@ -61,6 +60,15 @@
   width: 80%;
   align-items: center;
   padding: 5px;
+}
+
+@media only screen and (max-width: 750px) {
+  .whoSection{
+    width: 250px;
+  }
+  .detailSection{
+    width: 250px;
+  }
 }
 
 @media only screen and (max-width: 600px) {
@@ -77,22 +85,6 @@
   }
 }
 
-@media only screen and (max-width: 500px) {
-  .whoSection{
-    margin-top: 5%;
-    width: 65%;
-  }
-  .detailSection{
-    margin-top: 5%;
-    width: 65%;
-  }
-}
-
+/* 
 @media only screen and (max-width: 400px) {
-  .whoSection{
-    width: 100%;
-  }
-  .detailSection{
-    width: auto;
-  }
-}
+} */

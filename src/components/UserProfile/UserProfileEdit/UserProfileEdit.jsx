@@ -390,10 +390,8 @@ class EditProfile extends Component {
 				user = 'admin'
 			}
 			return (
-				<button style={{
-					display: 'flex', width: '25px', height: '25px', padding: '5px', color: 'white', borderRadius: '.25rem',
-					alignItems: 'center', justifyContent: 'center', backgroundColor: 'darkslategrey', border: 'none'
-				}}
+				<button
+					className={'modLinkButton'}
 					onClick={() => { this.handleLinkModel(true, 'updateLink', user) }}>
 					<i class="fa fa-wrench fa-lg" aria-hidden="true"> </i>
 				</button>
@@ -460,10 +458,9 @@ class EditProfile extends Component {
 				<Col>
 					<Row className={'profileContainer'}>
 						<div className='whoSection'>
-							<Label for='newProfilePic' htmlFor={'newProfilePic'} className={'profileText'}>
+							<Label for='newProfilePic' htmlFor={'newProfilePic'} className={'profileEditTitleCenter'}>
 								Change Profile Picture
 							</Label>
-
 							<Input
 								type='file'
 								name='newProfilePic'
@@ -479,82 +476,91 @@ class EditProfile extends Component {
 									className='profilePicture'
 								/>
 							</div>
-							<Input type='text' name='firstName' id='firstName'
-								value={firstName}
-								className={'profileText'}
-								onChange={this.handleUserProfile}
-								placeholder='First Name'
-								readOnly={canEditFields ? null : true}
-							/>
-							<Input type='text' name='lastName' id='lastName'
-								value={lastName}
-								className={'profileText'}
-								onChange={this.handleUserProfile}
-								placeholder='Last Name'
-								readOnly={canEditFields ? null : true}
-							/>
-							<Input type='title' name='jobTitle' id='jobTitle'
-								value={jobTitle}
-								className={'profileText'}
-								onChange={this.handleUserProfile}
-								placeholder='Job Title'
-								readOnly={canEditFields ? null : true}
-							/>
-							<br />
-							<BlueSquare
-								isUserAdmin={isUserAdmin}
-								blueSquares={infringments}
-								handleBlueSquare={this.handleBlueSquare}
-								handleSaveError={this.handleSaveError}
-							/>
+							<div className='inputSections'>
+								<Label className={'profileEditTitle'}>Name:</Label>
+								<Input type='text' name='firstName' id='firstName'
+									value={firstName}
+									className={'profileText'}
+									onChange={this.handleUserProfile}
+									placeholder='First Name'
+									readOnly={canEditFields ? null : true}
+								/>
+								<Input type='text' name='lastName' id='lastName'
+									value={lastName}
+									className={'profileText'}
+									onChange={this.handleUserProfile}
+									placeholder='Last Name'
+									readOnly={canEditFields ? null : true}
+								/>
+								<Label className={'profileEditTitle'}>Title:</Label>
+								<Input type='title' name='jobTitle' id='jobTitle'
+									value={jobTitle}
+									className={'profileText'}
+									onChange={this.handleUserProfile}
+									placeholder='Job Title'
+									readOnly={canEditFields ? null : true}
+								/>					
+								<Label className={'profileEditTitle'}>Blue Square Privacy:</Label>		
+								<BlueSquare
+									isUserAdmin={isUserAdmin}
+									blueSquares={infringments}
+									handleBlueSquare={this.handleBlueSquare}
+									handleSaveError={this.handleSaveError}
+								/>	
+								<br />
+							</div>
+
 						</div>
 
 						<div className='detailSection'>
-							<Input
-								type='email'
-								name='email'
-								id='email'
-								className={'profileText'}
-								value={email}
-								onChange={this.handleUserProfile}
-								placeholder='Email'
-								readOnly={canEditFields ? null : true}
-							/>
+							<div className='inputSections'>
+								<Label className={'profileEditTitle'}>Email:</Label>
+								<Input
+									type='email'
+									name='email'
+									id='email'
+									className={'profileText'}
+									value={email}
+									onChange={this.handleUserProfile}
+									placeholder='Email'
+									readOnly={canEditFields ? null : true}
+								/>
+								<Label className={'profileEditTitle'}>Phone:</Label>
+								<Input
+									type='number'
+									name='phoneNumber'
+									id='phoneNumber'
+									className={'profileText'}
+									value={phoneNumber}
+									onChange={this.handleUserProfile}
+									placeholder='Phone'
+									readOnly={canEditFields ? null : true}
+								/>
+								<div>
+									<Label className={'profileEditTitle'}>Links:</Label>
+									<div className={'profileLinks'}>
+										{this.modLinkButton(canEditFields, isUserAdmin)}
+										<UserLinks
+											linkSection='admin'
+											links={adminLinks}
+											handleLinkModel={this.handleLinkModel}
+											isUserAdmin={isUserAdmin}
+											canEditFields={canEditFields}
+										/>
+									</div>
 
-							<Input
-								type='number'
-								name='phoneNumber'
-								id='phoneNumber'
-								className={'profileText'}
-								value={phoneNumber}
-								onChange={this.handleUserProfile}
-								placeholder='Phone'
-								readOnly={canEditFields ? null : true}
-							/>
-
-							<div>
-								{this.modLinkButton(canEditFields, isUserAdmin)}
-								<div className={'profileLinks'}>
-
-									<UserLinks
-										linkSection='admin'
-										links={adminLinks}
-										handleLinkModel={this.handleLinkModel}
-										isUserAdmin={isUserAdmin}
-										canEditFields={canEditFields}
-									/>
-								</div>
-
-								<div className={'profileLinks'}>
-									<UserLinks
-										linkSection='user'
-										links={personalLinks}
-										handleLinkModel={this.handleLinkModel}
-										isUserAdmin={isUserAdmin}
-										canEditFields={canEditFields}
-									/>
-								</div>
+									<div className={'profileLinks'}>
+										<UserLinks
+											linkSection='user'
+											links={personalLinks}
+											handleLinkModel={this.handleLinkModel}
+											isUserAdmin={isUserAdmin}
+											canEditFields={canEditFields}
+										/>
+									</div>
 							</div>
+							</div>
+
 
 						</div>
 

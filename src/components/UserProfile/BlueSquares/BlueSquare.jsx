@@ -37,6 +37,7 @@ const BlueSquare = ({ blueSquares = [], handleBlueSquare, isUserAdmin }) => (
       <span>+</span>
     </div>
     )}
+    <br />
   </div>
 );
 

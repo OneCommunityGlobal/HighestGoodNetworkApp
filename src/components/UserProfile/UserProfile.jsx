@@ -70,6 +70,19 @@ class UserProfile extends Component {
 
 	}
 
+	formatPhoneNumber = (str) => {
+		// Filter only numbers from the input
+		let cleaned = ('' + str).replace(/\D/g, '');
+		if (cleaned.length == 10) {
+			// Domestic (USA)
+			return ['( ',cleaned.substring(0,3),' ) ',cleaned.substring(3,6),' - ',cleaned.substring(6, 10)].join('')
+		}else if (cleaned.length == 11){
+			// International
+			return ['+' , cleaned.substring(0, 1),'( ',cleaned.substring(1,4),' ) ',cleaned.substring(4,7),' - ',cleaned.substring(7, 11)].join('')
+		}
+		// Unconventional 
+		return str;
+	}
 
 	render() {
 
@@ -94,6 +107,8 @@ class UserProfile extends Component {
 		let isUserSelf = targetUserId === requestorId
 		const isUserAdmin = requestorRole === 'Administrator'
 		let canEditFields = isUserAdmin || isUserSelf
+
+		console.log('p:', this.formatPhoneNumber(phoneNumber))
 
 		if (isLoading === true) {
 			return <Loading />
@@ -142,7 +157,7 @@ class UserProfile extends Component {
 
 						<div className='detailSection'>
 							<Label>{email}</Label>
-							<Label>{phoneNumber}</Label>
+							<Label >{this.formatPhoneNumber(phoneNumber)}</Label>
 
 							<div className={'profileLinks'}>
 								<UserLinks
