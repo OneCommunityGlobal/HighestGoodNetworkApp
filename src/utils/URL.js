@@ -6,6 +6,7 @@ export const ENDPOINTS = {
   USER_TEAM: userId => `${APIEndpoint}/userprofile/teammembers/${userId}`,
   LOGIN: `${APIEndpoint}/login`,
   PROJECTS: `${APIEndpoint}/projects`,
+  TEAM: `${APIEndpoint}/team`,
   USER_PROJECTS: userId => `${APIEndpoint}/projects/user/${userId}`,
   PROJECT: `${APIEndpoint}/project/`,
   PROJECT_MEMBER: projectId => `${APIEndpoint}/project/${projectId}/users`,
@@ -15,4 +16,5 @@ export const ENDPOINTS = {
   TIME_ENTRIES_PERIOD: (userId, fromDate, toDate) => `${APIEndpoint}/TimeEntry/user/${userId}/${fromDate}/${toDate}`,
   TIME_ENTRY: () => `${APIEndpoint}/TimeEntry`,
   TIME_ENTRY_CHANGE: timeEntryId => `${APIEndpoint}/TimeEntry/${timeEntryId}`
+
 }

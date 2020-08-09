@@ -104,7 +104,7 @@ class Projects extends Component {
     let numberOfActive = projects.filter(project => project.isActive).length;
 
     let showModalMsg = false;
-    console.log("STSTUS", status);
+    console.log("STATUS", status);
 
     if (status == 400 && trackModelMsg) {
       showModalMsg = true;
@@ -112,18 +112,19 @@ class Projects extends Component {
     // Display project lists 
     let ProjectsList = [];
     if (projects.length > 0) {
-      ProjectsList = projects.map((project, index) => <Project
-        key={project._id}
-        index={index}
-        projectId={project._id}
-        name={project.projectName}
-        active={project.isActive}
-        onClickActive={this.onClickActive}
-        onUpdateProjectName={this.onUpdateProjectName}
-        onClickDelete={this.onClickDelete}
-        confirmDelete={this.confirmDelete}
+      ProjectsList = projects.map((project, index) =>
+        <Project
+          key={project._id}
+          index={index}
+          projectId={project._id}
+          name={project.projectName}
+          active={project.isActive}
+          onClickActive={this.onClickActive}
+          onUpdateProjectName={this.onUpdateProjectName}
+          onClickDelete={this.onClickDelete}
+          confirmDelete={this.confirmDelete}
 
-      />);
+        />);
     }
 
 

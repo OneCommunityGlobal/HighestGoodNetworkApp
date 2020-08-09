@@ -15,7 +15,7 @@ import { allProjectsReducer } from './allProjectsReducer'
 import { projectByIdReducer } from './projectByIdReducer'
 import { userProjectsReducer } from './userProjectsReducer'
 import { projectMembershipReducer } from './projectMembershipReducer'
-import { allTeamsReducer } from './allTeamsReducer'
+import { allUserTeamsReducer } from './allTeamsReducer'
 import { teamByIdReducer } from './teamByIdReducer'
 import { teamMembershipReducer } from './teamMembershipReducer'
 import { timeEntriesForSpecifiedProjectReducer } from './timeEntriesForSpecifiedProjectReducer'
@@ -40,7 +40,7 @@ export default combineReducers({
 	//project: projectByIdReducer,
 	userProjects: userProjectsReducer,
 	projectMembers: projectMembershipReducer,
-	//allTeams: allTeamsReducer,
+	allTeamsData: allUserTeamsReducer,
 	//team: teamByIdReducer,
 	//teamMembers: teamMembershipReducer,
 	//allTimeEntries: allTimeEntriesReducer,

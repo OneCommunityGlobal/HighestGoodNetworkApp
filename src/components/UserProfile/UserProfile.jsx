@@ -30,6 +30,7 @@ import ShowSaveWarning from '../common/ShowSaveWarning'
 import Modal from '../common/Modal'
 
 import Badges from './Badges'
+import Teams from './Teamsview'
 import WorkHistory from './WorkHistory'
 import UserLinks from './UserLinks'
 
@@ -49,6 +50,7 @@ class UserProfile extends Component {
 	}
 
 	async componentDidMount() {
+
 		// this.props.getCurrentUser(getjwt())
 		if (this.props.match) {
 			let userId = this.props.match.params.userId
@@ -250,9 +252,10 @@ class UserProfile extends Component {
 	}
 
 	render() {
+
 		let { userId: targetUserId } = this.props.match ? this.props.match.params : { userId: undefined };
 		let { userid: requestorId, role: requestorRole } = this.props.auth.user
-
+		debugger;
 		const { userProfile, isLoading, showModal } = this.state
 		const {
 			firstName,
@@ -344,6 +347,10 @@ class UserProfile extends Component {
 						<br />
 
 						<Badges />
+						<br />
+
+						<Teams
+							teamsdata={this.state.userProfile.teams} />
 						<br />
 						<Button outline color='primary' onClick={this.handleSubmit}>
 							{'Save Changes'}
