@@ -9,6 +9,30 @@ import { ENDPOINTS } from '../utils/URL'
  * ACTION CREATORS 
  *******************************************/
 
+export const getAllUserProfiles = () => {
+  const request = axios.get(ENDPOINTS.USER_PROFILES);
+  return async (dispatch, getState) => {
+    await dispatch(findUsersStart());
+    request.then(res => {
+      let users = res.data;
+      let members = getState().projectMembers.members;
+      users = users.map((user) => {
+        if (!members.find(member => member._id === user._id)) {
+          return user = { ...user, assigned: false }
+        } else {
+          return user = { ...user, assigned: true }
+        }
+      })
+      console.log(users);
+      dispatch(foundUsers(users));
+
+    }).catch((err) => {
+      console.log("Error", err);
+      dispatch(findUsersError(err));
+    })
+  }
+}
+
 /**
 * Call API to find a user profile
 */
@@ -32,7 +56,7 @@ export const findUserProfiles = (keyword) => {
             return user = { ...user, assigned: true }
           }
         })
-        //console.log(users);
+        console.log(users);
         dispatch(foundUsers(users));
       } else {
         dispatch(foundUsers([]));

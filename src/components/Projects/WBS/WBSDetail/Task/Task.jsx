@@ -214,7 +214,7 @@ const Task = (props) => {
         <td>
           {dueDate.getFullYear() !== 1969 ? `${(dueDate.getMonth() + 1)}/${dueDate.getDate()}/${dueDate.getFullYear()}` : null}
         </td>
-        <td>{props.links}</td>
+        <td>{props.links.map((link, i) => link.length > 1 ? <a key={i} href={link} target="_blank" data-tip={link}><i className="fa fa-link" aria-hidden="true"></i></a> : null)}</td>
       </tr>
       <tr className='taskDrop' id={`taskDrop_${props.id}`}>
         <td colSpan={14}></td>

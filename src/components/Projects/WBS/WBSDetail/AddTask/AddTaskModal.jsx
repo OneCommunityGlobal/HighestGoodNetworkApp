@@ -142,13 +142,12 @@ const AddTaskModal = (props) => {
 
   // Links
   const [link, setLink] = useState('');
-  const [linksHTML, setLinksHTML] = useState('');
   const addLink = () => {
-    links.push(link);
+    setLinks([...links, link]);
+  }
 
-    const html = links.map((link, i) =>
-      <div><a key={i} href={link} target='_blank'>{link.replace('http://', '')}</a></div>);
-    setLinksHTML(html);
+  const removeLink = (index) => {
+    setLinks([...links.slice(0, index), ...links.slice(index + 1)]);
   }
 
   // Hours estimate
@@ -336,6 +335,7 @@ const AddTaskModal = (props) => {
                 <td scope="col" >
                   <div>
                     <input type="text"
+
                       aria-label="Search user"
                       placeholder="Name"
                       className='task-resouces-input'
@@ -500,13 +500,13 @@ const AddTaskModal = (props) => {
                       className="task-resouces-btn"
                       type="button"
                       data-tip="Add Link"
-                      onClick={addLink}
+                      onClick={() => addLink()}
                     >
                       <i className="fa fa-plus" aria-hidden="true"></i>
                     </button>
                   </div>
                   <div>
-                    {linksHTML}
+                    {links.map((link, i) => link.length > 1 ? <div key={i}><a href={link} target='_blank'>{link}</a><span className="remove-link" onClick={() => removeLink(i)}>x</span></div> : null)}
                   </div>
                 </td>
               </tr>

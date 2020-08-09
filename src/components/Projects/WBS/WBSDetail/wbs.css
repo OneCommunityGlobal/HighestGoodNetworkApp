@@ -126,3 +126,6 @@
 .toggle-all{
   float:right;
 }
+.tasks-table{
+  overflow-x:scroll;
+}

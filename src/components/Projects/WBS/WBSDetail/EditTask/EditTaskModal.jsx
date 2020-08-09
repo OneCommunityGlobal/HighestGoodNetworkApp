@@ -72,7 +72,7 @@ const EditTaskModal = (props) => {
   const [dueDate, setDueDate] = useState(thisTask.dueDatetime);
 
   // links
-  const [links] = useState(thisTask.links);
+  const [links, setLinks] = useState(thisTask.links);
 
   // Warning
   const [dateWarning, setDateWarning] = useState(false);
@@ -124,13 +124,8 @@ const EditTaskModal = (props) => {
 
   // Links
   const [link, setLink] = useState('');
-  const [linksHTML, setLinksHTML] = useState('');
   const addLink = () => {
-    links.push(link);
-
-    const html = links.map(link =>
-      <div><a href={link} target='_blank'>{link.replace('http://', '')}</a></div>);
-    setLinksHTML(html);
+    setLinks([...links, link]);
   }
 
   // Hours estimate
@@ -198,6 +193,10 @@ const EditTaskModal = (props) => {
 
       }
     }
+  }
+
+  const removeLink = (index) => {
+    setLinks([...links.splice(0, index), ...links.splice(index + 1)]);
   }
 
 
@@ -290,8 +289,6 @@ const EditTaskModal = (props) => {
                       onChange={(e) => setMemberName(e.target.value)}
                       onKeyPress={(e) => setMemberName(e.target.value)}
                       onKeyPress={findMembers}
-                      onFocus={() => props.fetchAllMembers(props.projectId)}
-
                     />
                     <button
                       className="task-resouces-btn"
@@ -458,7 +455,7 @@ const EditTaskModal = (props) => {
                     </button>
                   </div>
                   <div>
-                    {linksHTML}
+                    {links.map((link, i) => link.length > 1 ? <div key={i}><a href={link} target='_blank'>{link.replace('http://', '')}</a><span className="remove-link" onClick={() => removeLink(i)}>x</span></div> : null)}
                   </div>
                 </td>
               </tr>

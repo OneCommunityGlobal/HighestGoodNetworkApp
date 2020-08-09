@@ -149,7 +149,7 @@ const WBSTasks = (props) => {
         </div>
 
 
-        <table className="table table-bordered">
+        <table className="table table-bordered tasks-table">
           <thead>
             <tr>
               <th scope="col" data-tip="WBS ID" colSpan="2">#</th>
@@ -193,7 +193,7 @@ const WBSTasks = (props) => {
                 estimatedHours={task.estimatedHours}
                 startedDatetime={task.startedDatetime}
                 dueDatetime={task.dueDatetime}
-                links={['1', '2']}
+                links={task.links}
                 projectId={projectId}
                 wbsId={wbsId}
                 selectTask={selectTaskFunc}
