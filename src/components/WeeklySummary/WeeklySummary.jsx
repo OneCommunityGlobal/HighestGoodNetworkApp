@@ -208,12 +208,7 @@ export class WeeklySummary extends Component {
         <h3>Weekly Summaries</h3>
         <div>Total submitted: {formElements.weeklySummariesCount}</div>
         <Row>
-          <Col
-            className="pb-2 text-center"
-            sm="12"
-            md={{ size: 5, offset: 7 }}
-            lg={{ size: 4, offset: 8 }}
-          >
+          <Col className="pb-2 text-center" sm="12">
             <DueDateTime dueDate={moment(dueDate)} />
           </Col>
         </Row>
