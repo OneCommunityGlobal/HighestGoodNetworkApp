@@ -44,13 +44,12 @@
   border: solid 2px #225163;
   color: #2c2c2c;
   border-radius: 6px;
-  width: 240px;
+  width: 254px;
 }
 
 .due-section__date {
   background-color: #225163;
   padding: 14px;
-  font-size: 15px;
 }
 
 .due-section__time {
@@ -74,7 +73,7 @@
 
 .countdown__col__element strong,
 .countdown__times-up {
-  font-size: 27px;
+  font-size: 28px;
 }
 
 .countdown__col__element span {

@@ -20,11 +20,11 @@ class Dashboard extends Component {
               This message will be removed before the site goes "live".
             </Alert>
           </Col>
-          <Col sm={{ size: 9 }}>
+          <Col lg={{ size: 9 }}>
             <WeeklySummary />
             <Leaderboard />
           </Col>
-          <Col sm={{ size: 3 }}>
+          <Col lg={{ size: 3 }}>
             <Card body inverse color="info">
               <MonthlyEffort />
             </Card>
