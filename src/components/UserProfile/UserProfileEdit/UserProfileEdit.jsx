@@ -18,6 +18,7 @@ import Modal from '../UserProfileModal'
 import UserLinks from '../UserLinks'
 import styleProfile from '../UserProfile.css'
 import styleEdit from './UserProfileEdit.css'
+import styleSwitch from './ToggleSwitch.css'
 
 
 class EditProfile extends Component {
@@ -500,7 +501,16 @@ class EditProfile extends Component {
 									placeholder='Job Title'
 									readOnly={canEditFields ? null : true}
 								/>					
-								<Label className={'profileEditTitle'}>Blue Square Privacy:</Label>		
+
+
+								<div className={'blueSquareSection'}>
+									Blue Squares Publicly Viewable:
+									<label class="switch">
+										<input type="checkbox" />
+										<span class="slider round"></span>
+									</label>
+								</div>
+								
 								<BlueSquare
 									isUserAdmin={isUserAdmin}
 									blueSquares={infringments}
@@ -536,6 +546,7 @@ class EditProfile extends Component {
 									placeholder='Phone'
 									readOnly={canEditFields ? null : true}
 								/>
+
 								<div>
 									<Label className={'profileEditTitle'}>Links:</Label>
 									<div className={'profileLinks'}>
@@ -558,10 +569,8 @@ class EditProfile extends Component {
 											canEditFields={canEditFields}
 										/>
 									</div>
+								</div>
 							</div>
-							</div>
-
-
 						</div>
 
 						<div className={'profileViewButtonContainer'}>
@@ -580,6 +589,7 @@ class EditProfile extends Component {
 							Cancel
 						</Button>
 					</Row>
+
 				</Col>
 			</div>
 		)

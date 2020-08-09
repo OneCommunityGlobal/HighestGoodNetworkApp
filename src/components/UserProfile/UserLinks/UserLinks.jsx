@@ -1,14 +1,12 @@
 import React from 'react';
 import { CardText, Badge, Tooltip } from 'reactstrap';
 import styles from './UserLinks.css';
+import styleProfile from '../UserProfile.css';
 
 
 const UserLinks = ({
-  linkSection,
+  // eslint-disable-next-line react/prop-types
   links = [],
-  handleLinkModel,
-  isUserAdmin,
-  canEditFields,
 }) => (
   <>
     <div className="linkContainer">
@@ -19,7 +17,7 @@ const UserLinks = ({
       )}
 
       {links.map((item, index) => (
-        <Badge key={index} className="link" href={item.Link} color="success">
+        <Badge key={index} className="profileEditButton" href={item.Link} color="success">
           {item.Name}
         </Badge>
       ))}

@@ -1,4 +1,8 @@
 
+form-control{
+  width: 0;
+}
+
 .saveChangesWarning{
   display: none;
   position: fixed;
@@ -13,18 +17,6 @@
   opacity: 70%;
 }
 
-form-control{
-  width: 0;
-}
-
-.profileViewButton{
-  display: flex;
-  padding: 0.25em 0.4em;
-  font-size: 16px;
-  font-weight: 700;
-  line-height: 1;
-}
-
 .profileEditTitleCenter{
   display: flex;
   justify-content: center;
@@ -37,7 +29,6 @@ form-control{
 
 .profileEditTitle{
   color: orange;
-  width: 100%;
   display: flex;
   margin: 5px;
   font-weight: bold;
@@ -59,6 +50,15 @@ form-control{
   justify-content: flex-end;
 }
 
+.profileViewButton{
+  display: flex;
+  padding: 0.25em 0.4em;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1;
+  background-color: darkslategrey;
+}
+
 .modLinkButton{
   display: flex;
   width: 25px;
@@ -68,6 +68,16 @@ form-control{
   border-radius: 25%;
   align-items: center;
   justify-content: center;
-  background-color: darkslategrey;
+  background-color: #6d757d;
   border: none;
+}
+
+.blueSquareSection{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  color: orange;
+  font-weight: bold;
+  margin: 5px;
 }
