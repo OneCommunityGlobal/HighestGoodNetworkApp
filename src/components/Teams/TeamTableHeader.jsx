@@ -10,12 +10,11 @@ const TeamTableHeader = React.memo((props) => {
 
   return (
     <tr>
-      <th scope="col" id="projects__order">#</th>
+      <th scope="col" id="teams__order">#</th>
       <th scope="col">{TEAM_NAME}</th>
-      <th scope="col" id="projects__active">{ACTIVE}</th>
-      <th scope="col" id="projects__members">{MEMBERS}</th>
-
-      <th scope="col" id="projects__delete"></th>
+      <th scope="col" id="teams__active">{ACTIVE}</th>
+      <th scope="col" id="teams__members">{MEMBERS}</th>
+      <th scope="col" id="teams__delete"></th>
 
     </tr>
   )

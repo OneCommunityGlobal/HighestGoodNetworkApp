@@ -2,46 +2,46 @@ thead{
   background: aliceblue;
 }
 
-#new_project{
+#new_team{
   margin-bottom: 10px;
 }
 
-#projects__order{
+#teams__order{
   width: 5px;
 }
 
-#projects__active{
+#teams__active{
   width: 10px;
 }
 
-#projects__members{
+#teams__members{
   width: 15px;
 }
 
-#projects__wbs{
+#teams__wbs{
   width: 15px;
 }
 
-#projects__delete{
+#teams__delete{
   width: 20px;
 }
 
-.projects__tr{
+.teams__tr{
   text-align: start;
 }
 
-.projects__overview--top{
+.teams__overview--top{
   background: gray;
 }
 
-.projects__overview--top .card{
+.teams__overview--top .card{
   width: 200px;
   float: left;
   margin-right: 10px;
   margin-bottom: 10px;
 }
 
-#card_project{
+#card_team{
   background:#1D62F0;
   color: white
 }
@@ -51,22 +51,22 @@ thead{
   color: white
 }
 
-.projects__order--input div{
+.teams__order--input div{
   margin-top: 7px;
 }
 
-.projects__active--input i{
+.teams__active--input i{
   margin-top: 10px;
   cursor: pointer;
 }
 
-/* .projects__name--input input{
+.teams__name--input input{
   border: 1px solid white;
 }
 
-.projects__name--input input:hover{
+.teams__name--input input:hover{
   border: 1px solid #dee2e6;
-} */
+}
 
 .isActive i{
   color: lawngreen;

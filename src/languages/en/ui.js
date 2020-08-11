@@ -29,6 +29,7 @@ export const EMAIL = 'Email';
 export const WEEKLY_COMMITTED_HRS = 'Weekly Committed Hrs';
 export const USER_RESUME_DATE = 'Paused Until'
 export const CREATE_NEW_USER = 'Create New User';
+export const CREATE_NEW_TEAM = 'Create New Team';
 export const SEARCH = 'Search';
 export const SHOW = 'Show';
 export const PAUSE = 'Pause';

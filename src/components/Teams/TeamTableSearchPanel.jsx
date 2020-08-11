@@ -1,18 +1,20 @@
 import React from 'react';
-import { SEARCH, } from '../../languages/en/ui'
+import { SEARCH, CREATE_NEW_TEAM, } from '../../languages/en/ui'
 
 /**
- * The search panel stateless component for user management grid
+ * The search panel stateless component for  Teams grid
  */
 const TeamTablesearchPanel = (props) => {
   return (
-    <div className="input-group" id="new_teams">
+    <div className="input-group" id="new_team">
 
-
-      <span className="input-group-text">{SEARCH}</span>
+      <button type="button" className="btn btn-info" onClick={(e) => { props.onCreateNewTeamClick() }}>{CREATE_NEW_TEAM}</button>
+      <div className="input-group-prepend" style={{ marginLeft: "10px" }}>
+        <span className="input-group-text">{SEARCH}</span>
+      </div>
 
       <input type="text" className="form-control" aria-label="Search"
-        placeholder="Search Text" id="user-profiles-wild-card-search"
+        placeholder="Search Text" id="team-profiles-wild-card-search"
         onChange={(e) => {
           props.onSearch(e.target.value);
         }} />
