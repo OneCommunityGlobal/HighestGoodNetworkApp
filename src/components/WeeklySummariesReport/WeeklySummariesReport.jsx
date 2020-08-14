@@ -34,9 +34,9 @@ export class WeeklySummariesReport extends Component {
   getWeekDates = weekIndex => (
     {
       fromDate: moment().tz('America/Los_Angeles').startOf('week').subtract(weekIndex, 'week')
-        .format('MMMM Do'),
+        .format('MMM-DD-YY'),
       toDate: moment().tz('America/Los_Angeles').endOf('week').subtract(weekIndex, 'week')
-        .format('MMMM Do, YYYY'),
+        .format('MMM-DD-YY'),
     }
   );
 
