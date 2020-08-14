@@ -61,8 +61,7 @@ export const postNewProject = (projectName, isActive) => {
 					"projectName": projectName,
 					"isActive": isActive
 
-				},
-				status
+				},status
 			));
 
 	}

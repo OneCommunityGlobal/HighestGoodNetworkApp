@@ -1,5 +1,5 @@
 import React from 'react';
-import { getAllUserTeams } from '../../actions/allTeamsAction'
+import { getAllUserTeams, postNewTeam } from '../../actions/allTeamsAction'
 // import { defaults } from 'lodash';
 import { connect } from 'react-redux'
 import Loading from '../common/Loading'
@@ -132,11 +132,13 @@ class Teams extends React.PureComponent {
       <CreateNewTeamPopup
         open={this.state.createNewTeamPopupOpen}
         onClose={this.onCreateNewTeamClose}
+        onOkClick={this.addNewTeam}
       />
 
       <DeleteTeamPopup
         open={this.state.deleteTeamPopupOpen}
         onClose={this.onDeleteTeamPopupClose}
+        data={this.state.selectedTeam}
       />
 
     </React.Fragment>
@@ -162,10 +164,10 @@ class Teams extends React.PureComponent {
   /**
     * call back to show delete team popup
     */
-  onDeleteTeamPopupShow = () => {
+  onDeleteTeamPopupShow = (deletedname) => {
     this.setState({
       deleteTeamPopupOpen: true,
-
+      selectedTeam: deletedname
     })
   }
 
@@ -200,11 +202,13 @@ class Teams extends React.PureComponent {
   onWildCardSearch = (searchText) => {
     this.setState({
       wildCardSearchText: searchText,
-      selectedPage: 1
+
     })
   }
-
+  addNewTeam = (name) => {
+    this.props.postNewTeam(name, true)
+  }
 
 }
 const mapStateToProps = state => { return { state } }
-export default connect(mapStateToProps, { getAllUserTeams })(Teams)
+export default connect(mapStateToProps, { getAllUserTeams, postNewTeam })(Teams)

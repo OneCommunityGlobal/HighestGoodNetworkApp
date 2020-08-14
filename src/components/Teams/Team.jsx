@@ -18,7 +18,7 @@ const Team = props => {
       <td><button type="button" className="btn btn-outline-info" onClick={(e) => { props.onMembersClick() }}>
         <i className="fa fa-users" aria-hidden="true"></i></button></td>
 
-      <td><button type="button" className="btn btn-outline-danger" onClick={(e) => { props.onDeleteClick() }}>{DELETE}</button></td>
+      <td><button type="button" className="btn btn-outline-danger" onClick={(e) => { props.onDeleteClick(props.name) }}>{DELETE}</button></td>
 
 
 

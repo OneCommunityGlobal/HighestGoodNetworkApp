@@ -6,7 +6,9 @@ import {
   RECEIVE_ALL_USER_TEAMS,
   FETCH_USER_TEAMS_START,
   FETCH_USER_TEAMS_ERROR,
-  USER_TEAMS_UPDATE
+  USER_TEAMS_UPDATE,
+  USER_TEAM_CREATION,
+  ADD_NEW_TEAM
 } from '../constants/allTeamsConstants'
 
 /**
@@ -25,13 +27,26 @@ export const getAllUserTeams = () => {
   }
 }
 
+export const postNewTeam = (name, status) => {
+  const data = { teamName: name, isActive: status }
+  const url = ENDPOINTS.TEAM
+  const teamCreationPromise = axios.post(url, data)
+  return dispatch => {
+    teamCreationPromise.then(res=>{
+      console.log(res.data)
+      dispatch(addNewTeam(data))
+    })
+    
+
+  }
+}
+
 /**
  * update the user profile
  * @param {*} team - the user to be updated
  * @param {*} status  - Active/InActive
  */
 export const updateTeamsStatus = (team, status, reactivationDate) => {
-  debugger;
   const allTeams = Object.assign({}, team);
   allTeams.isActive = (status === UserStatus.Active);
   allTeams.reactivationDate = reactivationDate;
@@ -104,6 +119,22 @@ export const userTeamsUpdateAction = (team) => {
   }
 }
 
+/**
+ * Action for Creating New Team
+ */
+export const userTeamCreationAction = () => {
+  return {
+    type: USER_TEAM_CREATION,
+  }
+}
+
+export const addNewTeam = (payload, status) => {
+  return {
+    type: ADD_NEW_TEAM,
+    payload,
+    status
+  }
+}
 /**
  * Delete user profile action
  * @param {*} user : the deleted user

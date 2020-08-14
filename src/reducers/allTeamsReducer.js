@@ -39,7 +39,8 @@ export const allUserTeamsReducer = (allTeams = userTeamsInitial, action) => {
         fetched: true,
         status: "200"
       });
-
+    case types.ADD_NEW_TEAM:
+      return { ...allTeams }
     case types.USER_TEAMS_UPDATE:
       let index = allTeams.allTeams.findIndex(team => team._id == action.team._id);
       return updateObject(allTeams, {
