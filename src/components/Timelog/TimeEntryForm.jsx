@@ -197,6 +197,10 @@ const TimeEntryForm = ({ userId, edit, data, isOpen, toggle, timer }) => {
       status = await dispatch(postTimeEntry(timeEntry));
     }
 
+    // if (timeEntry.editCount > 5) {
+    //   <div>
+    // }
+    
     if (fromTimer) {
       if (status === 200) {
         const timerStatus = await dispatch(stopTimer(userId));
@@ -211,19 +215,13 @@ const TimeEntryForm = ({ userId, edit, data, isOpen, toggle, timer }) => {
       setInputs((inputs) => initialState);
       setReminder((reminder) => initialReminder);
       toggle();
-    } else {
-      if (!reminder.edit_notice) {
-        setReminder((reminder) => ({
-          ...reminder,
-          edit_count: reminder.edit_count + 1,
-          edit_notice: !reminder.edit_notice,
-        }));
-        toggle();
-      }
-      // setReminder((reminder) => ({
-      //   ...reminder,
-      //   edit_notice: !reminder.edit_notice,
-      // }));
+    } else if (!reminder.edit_notice) {
+      setReminder((reminder) => ({
+        ...reminder,
+        edit_count: reminder.edit_count + 1,
+        edit_notice: !reminder.edit_notice,
+      }));
+      toggle();
     }
   };
 
