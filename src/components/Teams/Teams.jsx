@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Table } from 'reactstrap';
 import { fetchAllManagingTeams } from '../../actions/team';
+import { getUserProfile } from '../../actions/userProfile';
 import Loading from '../common/Loading';
 
 class Teams extends Component {
@@ -10,8 +11,12 @@ class Teams extends Component {
     this.state = {};
   }
 
+  // async componentWillMount() {
+  //   await this.props.getUserProfile(this.props.match.params.userId);
+  // }
+
   componentDidMount() {
-    this.props.fetchAllManagingTeams(this.props.userId, this.props.managingTeams);
+    fetchAllManagingTeams(this.props.userId, this.props.managingTeams);
   }
 
   render() {
@@ -19,7 +24,7 @@ class Teams extends Component {
 
     // console.log('teams: ', teams);
     let teamsList = [];
-    if (teams.length > 0) {
+    if (teams && teams.length > 0) {
       teamsList = teams.map((team, index) => (
         <tr key={index}>
           <td>{team.teamName}</td>
@@ -42,9 +47,6 @@ class Teams extends Component {
             </thead>
             <tbody>{teamsList}</tbody>
           </Table>
-          {teams.forEach((team) => {
-            // console.log(team);
-          })}
         </div>
       </React.Fragment>
     );
@@ -57,4 +59,4 @@ const mapStateToProps = (state) => ({
   teamsInfo: state.managingTeams,
 });
 
-export default connect(mapStateToProps, { fetchAllManagingTeams })(Teams);
+export default connect(mapStateToProps, { getUserProfile, fetchAllManagingTeams })(Teams);

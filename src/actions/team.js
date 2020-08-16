@@ -22,7 +22,6 @@ export const getUserTeamMembers = (userId) => {
   const url = ENDPOINTS.USER_TEAM(userId);
   return async (dispatch) => {
     const res = await httpService.get(url);
-    // await dispatch(getUserProfileActionCreator(res.data))
   };
 };
 
@@ -31,15 +30,12 @@ export const fetchAllManagingTeams = (userId, managingTeams) => {
   let allMembers = [];
   const teamMembersPromises = [];
   const memberTimeEntriesPromises = [];
-  managingTeams.forEach(async (team) => {
+  managingTeams.forEach((team) => {
     // req = await httpService.get(ENDPOINTS.TEAM_MEMBERS(team._id));
     teamMembersPromises.push(httpService.get(ENDPOINTS.TEAM_MEMBERS(team._id)));
   });
 
-  console.log('managingTeams:', managingTeams);
-
   Promise.all(teamMembersPromises).then((data) => {
-    console.log('after promises:', data);
     for (let i = 0; i < managingTeams.length; i++) {
       allManagingTeams[i] = {
         ...managingTeams[i],
@@ -49,7 +45,6 @@ export const fetchAllManagingTeams = (userId, managingTeams) => {
     }
     console.log('allManagingTeams:', allManagingTeams);
     const uniqueMembers = _.uniqBy(allMembers, '_id');
-    console.log('uniq:', uniqueMembers);
     uniqueMembers.forEach(async (member) => {
       const fromDate = moment()
         .startOf('week')
@@ -63,31 +58,27 @@ export const fetchAllManagingTeams = (userId, managingTeams) => {
     });
 
     Promise.all(memberTimeEntriesPromises).then((data) => {
-      console.log('After time entries: ', data);
+      // console.log('After time entries: ', data);
+      // console.log('uniqueMemberTimeEntries: ', uniqueMemberTimeEntries);
+      for (let i = 0; i < uniqueMembers.length; i++) {
+        uniqueMembers[i] = {
+          ...uniqueMembers[i],
+          timeEntries: data[i].data,
+        };
+      }
+
+      for (let i = 0; i < allManagingTeams.length; i++) {
+        for (let j = 0; j < allManagingTeams[i].members.length; j++) {
+          const memberDataWithTimeEntries = uniqueMembers.find(
+            (member) => member._id === allManagingTeams[i].members[j]._id
+          );
+          allManagingTeams[i].members[j] = memberDataWithTimeEntries;
+        }
+      }
+
+      console.log('after processing: ', allManagingTeams);
     });
   });
-
-  // const allUniqueMembers = _.uniqBy(allMembers, '_id');
-  // console.log('allUniqueMembers: ', allUniqueMembers);
-
-  // console.log('allManagingTeams:', allManagingTeams);
-
-  // allManagingTeams.forEach((team) => {
-  //   console.log('squad');
-  //   team.members.forEach(async (member, index) => {
-  //     const fromDate = moment()
-  //       .startOf('week')
-  //       .subtract(0, 'weeks');
-  //     const toDate = moment()
-  //       .endOf('week')
-  //       .subtract(0, 'weeks');
-  //     req = await httpService.get(
-  //       ENDPOINTS.TIME_ENTRIES_PERIOD(userId, fromDate, toDate)
-  //     );
-  //     console.log(req);
-  //     team.members[index].push({ ...member, timeEntries: req.data });
-  //   });
-  // });
 
   return async (dispatch) => {
     await dispatch(setTeamsStart());
@@ -95,7 +86,7 @@ export const fetchAllManagingTeams = (userId, managingTeams) => {
       dispatch(setTeams(allManagingTeams));
     } catch (err) {
       console.error(err);
-      dispatch(setTeamsError());
+      dispatch(setTeamsError(err));
     }
   };
 };
