@@ -139,6 +139,7 @@ class Teams extends React.PureComponent {
         open={this.state.deleteTeamPopupOpen}
         onClose={this.onDeleteTeamPopupClose}
         data={this.state.selectedTeam}
+        onDeleteClick={this.onDeleteUser}
       />
 
     </React.Fragment>
@@ -206,8 +207,16 @@ class Teams extends React.PureComponent {
     })
   }
   addNewTeam = (name) => {
-    this.props.postNewTeam(name, true)
+    this.props.postNewTeam(name, true);
+    alert("Team added successfully");
+    this.setState({
+      createNewTeamPopupOpen: false,
+    })
   }
+
+  // onDeleteUser = (deletedId) => {
+  //   this.props.deleteUser(deletedId)
+  // }
 
 }
 const mapStateToProps = state => { return { state } }

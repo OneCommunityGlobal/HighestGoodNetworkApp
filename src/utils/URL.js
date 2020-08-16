@@ -1,3 +1,5 @@
+import Team from "../components/Teams/Team"
+
 const APIEndpoint = process.env.REACT_APP_APIENDPOINT
 
 export const ENDPOINTS = {
@@ -7,6 +9,7 @@ export const ENDPOINTS = {
   LOGIN: `${APIEndpoint}/login`,
   PROJECTS: `${APIEndpoint}/projects`,
   TEAM: `${APIEndpoint}/team`,
+  TEAM_USERS: teamId => `${APIEndpoint}/team/${teamId}/users`,
   USER_PROJECTS: userId => `${APIEndpoint}/projects/user/${userId}`,
   PROJECT: `${APIEndpoint}/project/`,
   PROJECT_MEMBER: projectId => `${APIEndpoint}/project/${projectId}/users`,

@@ -14,7 +14,7 @@ const CreateNewTeamPopup = React.memo((props) => {
       <Input placeholder='Please enter a new team name'
 
         value={newTeam}
-        onChange={(e) => { onNewName(e.target.value) }} />
+        onChange={(e) => { onNewName(e.target.value) }} required />
 
     </ModalBody>
     <ModalFooter>

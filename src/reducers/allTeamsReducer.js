@@ -6,6 +6,7 @@
 //   return allTeams;
 // };
 import * as types from '../constants/allTeamsConstants'
+import { object } from 'joi';
 
 const userTeamsInitial = {
   fetching: false,
@@ -40,7 +41,12 @@ export const allUserTeamsReducer = (allTeams = userTeamsInitial, action) => {
         status: "200"
       });
     case types.ADD_NEW_TEAM:
-      return { ...allTeams }
+      // return { ...allTeams }
+      return updateObject(allTeams, {
+        allTeams: Object.assign([...allTeams.allTeams, action.payload]), fetching: false,
+        fetched: true,
+        status: "200"
+      })
     case types.USER_TEAMS_UPDATE:
       let index = allTeams.allTeams.findIndex(team => team._id == action.team._id);
       return updateObject(allTeams, {

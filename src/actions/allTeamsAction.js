@@ -7,7 +7,7 @@ import {
   FETCH_USER_TEAMS_START,
   FETCH_USER_TEAMS_ERROR,
   USER_TEAMS_UPDATE,
-  USER_TEAM_CREATION,
+
   ADD_NEW_TEAM
 } from '../constants/allTeamsConstants'
 
@@ -29,14 +29,14 @@ export const getAllUserTeams = () => {
 
 export const postNewTeam = (name, status) => {
   const data = { teamName: name, isActive: status }
-  const url = ENDPOINTS.TEAM
-  const teamCreationPromise = axios.post(url, data)
+  // const url = ENDPOINTS.TEAM
+  const teamCreationPromise = axios.post(ENDPOINTS.TEAM, data)
   return dispatch => {
-    teamCreationPromise.then(res=>{
+    teamCreationPromise.then(res => {
       console.log(res.data)
-      dispatch(addNewTeam(data))
+      dispatch(addNewTeam(res.data, true))
     })
-    
+
 
   }
 }
@@ -122,11 +122,11 @@ export const userTeamsUpdateAction = (team) => {
 /**
  * Action for Creating New Team
  */
-export const userTeamCreationAction = () => {
-  return {
-    type: USER_TEAM_CREATION,
-  }
-}
+// export const userTeamCreationAction = () => {
+//   return {
+//     type: USER_TEAM_CREATION,
+//   }
+// }
 
 export const addNewTeam = (payload, status) => {
   return {
