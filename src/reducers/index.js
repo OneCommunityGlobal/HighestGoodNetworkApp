@@ -40,7 +40,7 @@ export default combineReducers({
 	//project: projectByIdReducer,
 	userProjects: userProjectsReducer,
 	projectMembers: projectMembershipReducer,
-	//allTeams: allTeamsReducer,
+	// allTeams: allTeamsReducer,
 	//team: teamByIdReducer,
 	//teamMembers: teamMembershipReducer,
 	//allTimeEntries: allTimeEntriesReducer,

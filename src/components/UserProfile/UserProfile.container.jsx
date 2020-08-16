@@ -7,6 +7,7 @@ import {
 } from '../../actions/userProfile';
 import { getUserTeamMembers } from '../../actions/team';
 
+
 import UserProfile from './UserProfile';
 
 const mapStateToProps = state => ({

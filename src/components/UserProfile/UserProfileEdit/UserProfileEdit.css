@@ -34,6 +34,16 @@ form-control{
   font-weight: bold;
 }
 
+.detailEditSection {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  text-align: center;
+  width: 300px;
+  margin-left: 5%;
+  margin-right: 5%;
+}
+
 .inputSections{
   display: flex;
   flex-direction: column;
@@ -81,3 +91,4 @@ form-control{
   font-weight: bold;
   margin: 5px;
 }
+

@@ -6,10 +6,19 @@
   color: white;
   background-color: grey;
   padding: 10px;
-  padding-bottom: 10px;
+  padding-bottom: 50px;
   margin-left: 10vw;
   margin-right: 10vw;
   font-weight: bold;
+}
+
+.iconContainer{
+  display: flex;
+  flex-direction: row;
+}
+
+.icon{
+  padding-right: 10px;
 }
 
 .profileEditButton{
@@ -27,12 +36,11 @@
   align-items: center;
   justify-content: center;
   right: 1%;
-  justify-content: flex-end;
 }
 
 .profilePicture {
-  width: 25vh;
-  height: 25vh;
+  width: 150px;
+  height: 150px;
 }
 
 .whoSection {
@@ -41,20 +49,21 @@
   justify-content: center;
   align-items: center;
   text-align: center;
-  width: 300px;
-  margin-left: 5%;
-  margin-right: 5%;
+  margin-right: 10vh;
+  margin-left: 10vh;
+
 }
 
-.detailSection {
+.detailSectionContainer{
   display: flex;
   flex-direction: column;
   justify-content: center;
-  align-items: center;
-  text-align: center;
+  margin-right: 10vh;
+  margin-left: 10vh;
+}
+
+.detailSection {
   width: 300px;
-  margin-left: 5%;
-  margin-right: 5%;
 }
 
 .profileLinks{
@@ -64,14 +73,20 @@
   padding: 5px;
 }
 
+.linkIconSection{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  color: orange;
+  font-weight: bold;
+  margin: 5px;
+}
+
 
 @media only screen and (max-width: 750px) {
   .profileContainer{
     justify-content: space-around;
-  }
-  .profilePicture {
-    width: 30vh;
-    height: 30vh;
   }
   .whoSection{
     width: 250px;
@@ -84,10 +99,6 @@
 @media only screen and (max-height: 650px){
   .profileContainer{
     justify-content: space-around;
-  }
-  .profilePicture {
-    width: 25vh;
-    height: 25vh;
   }
   .whoSection{
     width: 240px;

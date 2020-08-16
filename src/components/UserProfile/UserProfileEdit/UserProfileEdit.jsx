@@ -11,14 +11,16 @@ import {
 	Badge,
 	Collapse,
 } from 'reactstrap'
+
 import Image from 'react-bootstrap/Image'
 import { orange, warningRed } from '../../../constants/colors'
 import BlueSquare from '../BlueSquares'
 import Modal from '../UserProfileModal'
 import UserLinks from '../UserLinks'
+import ToggleSwitch from './ToggleSwitch'
+
 import styleProfile from '../UserProfile.css'
 import styleEdit from './UserProfileEdit.css'
-import styleSwitch from './ToggleSwitch.css'
 
 
 class EditProfile extends Component {
@@ -30,7 +32,12 @@ class EditProfile extends Component {
 		lastNameError: '',
 		imageUploadError: '',
 		isValid: false,
-		id: ''
+		id: '',
+		privacySettings:{
+			email: true,
+			phoneNumber: true,
+			blueSquares: true
+		}
 	}
 
 	async componentDidMount() {
@@ -41,8 +48,20 @@ class EditProfile extends Component {
 			await this.props.getUserTeamMembers(userId)
 			//console.log(this.props.userProfile)
 			if (this.props.userProfile.firstName.length) {
-				//	console.log(this.props.userProfile)
+				// check props:
+				console.log('props:', this.props.userProfile)
+				// fill in defaults where needed
 				this.setState({ isLoading: false, userProfile: this.props.userProfile })
+
+				if (this.props.userProfile.privacySettings){
+					this.setState({
+						isLoading: false,
+						userProfile:{
+							...this.props.userProfile
+						}
+					})
+				}
+
 			}
 		}
 	}
@@ -110,20 +129,20 @@ class EditProfile extends Component {
 					...this.state.userProfile,
 					privacySettings: {
 						...this.state.userProfile.privacySettings,
-						email: !this.state.userProfile.privacySettings.email
+						email: !this.state.userProfile.privacySettings?.email
 					}
 				}
 			})
 
 		}
 
-		if (event.target.id === 'phoneNumberPubliclyAccessible') {
+		if (event.target.id === 'phonePubliclyAccessible') {
 			this.setState({
 				userProfile: {
 					...this.state.userProfile,
 					privacySettings: {
 						...this.state.userProfile.privacySettings,
-						phoneNumber: !this.state.userProfile.privacySettings.phoneNumber
+						phoneNumber: !this.state.userProfile.privacySettings?.phoneNumber
 					}
 				}
 			})
@@ -136,13 +155,12 @@ class EditProfile extends Component {
 					...this.state.userProfile,
 					privacySettings: {
 						...this.state.userProfile.privacySettings,
-						blueSquares: !this.state.userProfile.privacySettings.blueSquares
+						blueSquares: !this.state.userProfile.privacySettings?.blueSquares
 					}
 				}
 			})
 
 		}
-
 
 		var elem = document.getElementById('warningCard');
 		elem.style.display = 'block';
@@ -206,26 +224,27 @@ class EditProfile extends Component {
 	}
 
 	handleNullState = (kind) => {
+		console.log('before handle def:', this.state.userProfile)
 
-		if (kind === 'settings') {
-			const defaultSettings = {
-				email: true,
-				phoneNumber: true,
-				blueSquares: true
-			}
-
-			this.setState(() => {
-				return {
-					showModal: false,
-					userProfile: {
-						...this.state.userProfile,
-						privacySettings: defaultSettings
+		switch (kind) {
+			case 'settings':
+				this.setState(() => {
+					return {
+						showModal: false,
+						userProfile: {
+							...this.state.userProfile,
+							privacySettings: {
+								email: true,
+								phoneNumber: true,
+								blueSquares: true
+							}
+						}
 					}
-				}
-			})
-
+				})
+				break;
+			default:
+				break;
 		}
-
 	}
 
 	handleBlueSquare = (status = true, type = 'message', blueSquareID = '') => {
@@ -394,9 +413,8 @@ class EditProfile extends Component {
 				<button
 					className={'modLinkButton'}
 					onClick={() => { this.handleLinkModel(true, 'updateLink', user) }}>
-					<i class="fa fa-wrench fa-lg" aria-hidden="true"> </i>
+					<i className="fa fa-wrench fa-lg" aria-hidden="true"> </i>
 				</button>
-
 			)
 		}
 
@@ -409,7 +427,6 @@ class EditProfile extends Component {
 		let { userid: requestorId, role: requestorRole } = this.props.auth.user
 
 		const { userProfile, isLoading, showModal } = this.state
-
 		const {
 			firstName,
 			lastName,
@@ -420,6 +437,7 @@ class EditProfile extends Component {
 			personalLinks,
 			adminLinks,
 			infringments,
+			privacySettings
 		} = userProfile
 
 		let isUserSelf = targetUserId === requestorId
@@ -430,8 +448,21 @@ class EditProfile extends Component {
 			return <Loading />
 		}
 
+		console.log("prof:", userProfile)
+
+
+		if (!canEditFields) {
+			return(
+				<Col>
+					<Row className={'profileContainer'}>
+						<Label>Sorry, you do not have permison to edit this profile.</Label>
+					</Row>
+				</Col>
+			)
+		}
+
 		return (
-			<div style={{ display: 'flex' }}>
+			<div >
 
 				<CardTitle id="warningCard" className={'saveChangesWarning'}>
 					Reminder: You must click "Save Changes" at the bottom of this page. If you don't, changes to your profile will not be saved.
@@ -458,6 +489,7 @@ class EditProfile extends Component {
 
 				<Col>
 					<Row className={'profileContainer'}>
+
 						<div className='whoSection'>
 							<Label for='newProfilePic' htmlFor={'newProfilePic'} className={'profileEditTitleCenter'}>
 								Change Profile Picture
@@ -484,14 +516,12 @@ class EditProfile extends Component {
 									className={'profileText'}
 									onChange={this.handleUserProfile}
 									placeholder='First Name'
-									readOnly={canEditFields ? null : true}
 								/>
 								<Input type='text' name='lastName' id='lastName'
 									value={lastName}
 									className={'profileText'}
 									onChange={this.handleUserProfile}
 									placeholder='Last Name'
-									readOnly={canEditFields ? null : true}
 								/>
 								<Label className={'profileEditTitle'}>Title:</Label>
 								<Input type='title' name='jobTitle' id='jobTitle'
@@ -499,18 +529,13 @@ class EditProfile extends Component {
 									className={'profileText'}
 									onChange={this.handleUserProfile}
 									placeholder='Job Title'
-									readOnly={canEditFields ? null : true}
 								/>					
-
-
-								<div className={'blueSquareSection'}>
-									Blue Squares Publicly Viewable:
-									<label class="switch">
-										<input type="checkbox" />
-										<span class="slider round"></span>
-									</label>
-								</div>
 								
+								<ToggleSwitch 
+									switchType='bluesquares' 
+									state={privacySettings?.blueSquares} 
+									handleUserProfile={this.handleUserProfile}/>
+
 								<BlueSquare
 									isUserAdmin={isUserAdmin}
 									blueSquares={infringments}
@@ -519,12 +544,16 @@ class EditProfile extends Component {
 								/>	
 								<br />
 							</div>
-
 						</div>
 
-						<div className='detailSection'>
+						<div className='detailEditSection'>
 							<div className='inputSections'>
-								<Label className={'profileEditTitle'}>Email:</Label>
+								
+								<ToggleSwitch 
+									switchType='email' 
+									state={ userProfile.privacySettings?.email  } 
+									handleUserProfile={this.handleUserProfile}/> 
+								
 								<Input
 									type='email'
 									name='email'
@@ -533,9 +562,13 @@ class EditProfile extends Component {
 									value={email}
 									onChange={this.handleUserProfile}
 									placeholder='Email'
-									readOnly={canEditFields ? null : true}
 								/>
-								<Label className={'profileEditTitle'}>Phone:</Label>
+
+								<ToggleSwitch 
+									switchType='phone' 
+									state={userProfile.privacySettings?.phoneNumber} 
+									handleUserProfile={this.handleUserProfile}/>
+								
 								<Input
 									type='number'
 									name='phoneNumber'
@@ -544,11 +577,15 @@ class EditProfile extends Component {
 									value={phoneNumber}
 									onChange={this.handleUserProfile}
 									placeholder='Phone'
-									readOnly={canEditFields ? null : true}
 								/>
 
 								<div>
-									<Label className={'profileEditTitle'}>Links:</Label>
+									<div className={'linkIconSection'}>
+										<div className={'icon'}>
+											<i className="fa fa-link" aria-hidden="true"></i>
+										</div>
+									</div>
+
 									<div className={'profileLinks'}>
 										{this.modLinkButton(canEditFields, isUserAdmin)}
 										<UserLinks
@@ -556,7 +593,6 @@ class EditProfile extends Component {
 											links={adminLinks}
 											handleLinkModel={this.handleLinkModel}
 											isUserAdmin={isUserAdmin}
-											canEditFields={canEditFields}
 										/>
 									</div>
 
@@ -566,7 +602,6 @@ class EditProfile extends Component {
 											links={personalLinks}
 											handleLinkModel={this.handleLinkModel}
 											isUserAdmin={isUserAdmin}
-											canEditFields={canEditFields}
 										/>
 									</div>
 								</div>
@@ -575,7 +610,7 @@ class EditProfile extends Component {
 
 						<div className={'profileViewButtonContainer'}>
 							<Badge className={'profileViewButton'} href={'/userprofile/' + this.state.userProfile._id}>
-								<i class="fa fa-eye fa-lg" aria-hidden="true"> View</i>
+								<i className="fa fa-eye fa-lg" aria-hidden="true"> View</i>
 							</Badge>
 						</div>
 

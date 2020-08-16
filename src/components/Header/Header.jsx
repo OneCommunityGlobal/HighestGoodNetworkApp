@@ -74,7 +74,6 @@ class Header extends React.Component {
                 <NavLink tag={Link} to={`/timelog/${user.userid}`}>
                   <i className='fa fa-bell i-large'>
                     <i className='badge badge-pill badge-danger badge-notify'>
-                      {/* Pull number of unread messages */}
                     </i>
                     <span className='sr-only'>unread messages</span>
                   </i>
