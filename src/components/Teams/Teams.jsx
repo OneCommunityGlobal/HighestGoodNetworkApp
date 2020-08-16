@@ -73,7 +73,7 @@ class Teams extends React.PureComponent {
   teamTableElements = (allTeams) => {
 
     if (allTeams && allTeams.length > 0) {
-      let teamSearchData = this.filteredUserList(allTeams);
+      let teamSearchData = this.filteredTeamsList(allTeams);
       this.filteredTeamDataCount = teamSearchData.length;
       /* 
       * Builiding the table body for users based on the page size and selected page number and returns 
@@ -81,8 +81,8 @@ class Teams extends React.PureComponent {
        * Applying the Default sort in the order of created date as well
        */
       return teamSearchData.sort((a, b) => {
-        if (a.createdDate > b.createdDate) return -1;
-        if (a.createdDate < b.createdDate) return 1;
+        if (a.createdDate > b.createdDate) return 1;
+        if (a.createdDate < b.createdDate) return -1;
         return 0;
       }).map((team, index) => {
         return (
@@ -99,10 +99,11 @@ class Teams extends React.PureComponent {
     }
   }
 
-  filteredUserList = (allTeams) => {
+  filteredTeamsList = (allTeams) => {
     let filteredList = allTeams.filter((team) => {
       //Applying the search filters before creating each table data element
-      if ((team.teamName.toLowerCase().indexOf(this.state.teamNameSearchText.toLowerCase()) > -1
+      if ((team.teamName
+        && team.teamName.toLowerCase().indexOf(this.state.teamNameSearchText.toLowerCase()) > -1
         && (this.state.isActive === undefined || team.isActive === this.state.isActive)
         && this.state.wildCardSearchText === '')
         //the wild card serach, the search text can be match with any item
