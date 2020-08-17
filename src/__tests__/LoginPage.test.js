@@ -1,18 +1,25 @@
 import React from 'react';
 import { shallow, mount } from 'enzyme';
 import { MemoryRouter } from 'react-router-dom';
-import Login from '../components/Login';
-
 import { getCurrentUser } from '../services/loginService';
+import {Login} from '../components/Login/Login.jsx';
+import { loginUser } from "../actions/authActions";
+import { clearErrors } from "../actions/errorsActions";
+import { render } from '@testing-library/react';
+import { GET_ERRORS } from '../constants/errors';
 
-jest.mock('../services/loginService');
 
 
 describe('Login page structure', () => {
-  let mountedLogin;
+  let mountedLogin, props;
   beforeEach(() => {
-    getCurrentUser.__setValue('userNotPresent');
-    mountedLogin = shallow(<Login />);
+    props = ({
+      auth: {isAuthenticated: false},
+      errors: {},
+      "loginUser":  loginUser,
+      "clearErrors": clearErrors
+    });
+    mountedLogin = shallow(<Login {...props} />);
   });
 
   it('should be rendered with two input fields', () => {
@@ -24,22 +31,29 @@ describe('Login page structure', () => {
     const button = mountedLogin.find('button');
     expect(button.length).toBe(1);
   });
+
   it('should be rendered with one h2', () => {
     const h2 = mountedLogin.find('h2');
     expect(h2.length).toEqual(1);
     expect(h2.first().text()).toContain('Please Sign in');
   });
   it('should match the snapshot', () => {
-    expect(mountedLogin).toMatchSnapshot();
+    const { asFragment } = render(<Login {...props} />);
+    expect(asFragment()).toMatchSnapshot();
   });
 });
 
 describe('When user tries to input data', () => {
-  let mountedLoginPage;
+  let mountedLoginPage, props, loginU;
 
   beforeEach(() => {
-    getCurrentUser.__setValue('userNotPresent');
-    mountedLoginPage = shallow(<Login />);
+    loginU = jest.fn();
+    props = ({
+      auth: {isAuthenticated: false},
+      errors: {},
+      "loginUser":  loginU
+    });
+    mountedLoginPage = shallow(<Login {...props} />);
   });
 
 
@@ -96,24 +110,24 @@ describe('When user tries to input data', () => {
     expect(callback).toHaveBeenCalled();
   });
 
-  it('onSubmit login method is called', async () => {
-    const loginService = require('../services/loginService');
-    const syplogin = jest.spyOn(loginService, 'login');
+  it('onSubmit loginPage method is called with credentials', async () => {
     await mountedLoginPage.instance().doSubmit();
-    expect(syplogin).toHaveBeenCalled();
+    expect(loginU).toHaveBeenCalledWith({email: "", password: ""});
   });
 });
 
 
 describe('Login behavior', () => {
+  let props;
   it('should have redirection set to homepage ', () => {
-    getCurrentUser.__setValue('userPresent');
-    const wrapper = mount(<MemoryRouter>
-      <Login />
-    </MemoryRouter>);
-
-    const redirect = wrapper.find('Redirect');
-    expect(redirect.props()).toHaveProperty('to', '/');
+    props = ({
+      auth: {isAuthenticated: true},
+      errors: {},
+      "loginUser":  loginUser,
+      history: []
+    });
+    const wrapper = mount(<Login {...props} />);
+    expect(wrapper.instance().props.history).toEqual(['/']);
   });
 
 
@@ -122,7 +136,7 @@ describe('Login behavior', () => {
 
     const somepath = '/profile/1234';
     const location = { state: { from: { pathname: somepath } } };
-    const wrapper = shallow(<MemoryRouter><Login location={location} /></MemoryRouter>);
+    const wrapper = shallow(<MemoryRouter><Login location={location} auth={{isAuthenticated: false}} errors={{}}/></MemoryRouter>);
     expect(wrapper.instance().props.location.state.from.pathname).toEqual(somepath);
     wrapper.instance().doSubmit();
     console.log(`Location is : ${global.location.pathname}`);
@@ -130,15 +144,34 @@ describe('Login behavior', () => {
   });
 
   it('should populate errors if login fails', async () => {
-    const errorMessage = { message: 'Invalid email and/ or password.' };
-
-    const loginService = require('../services/loginService');
-    loginService.login = jest.fn(() => {
-      throw ({ response: { status: 403, data: errorMessage } });
+    const expectedAction = {
+          type: GET_ERRORS,
+          payload: {email: 'Invalid email and/ or password.'}
+        };
+    let cred = {email: "incorrectEmail", password: "incorrectPassword"};
+    let anAction = await loginUser(cred);
+    expect((typeof anAction)).toEqual('function');
+    const dispatch = jest.fn();
+    return anAction(dispatch).finally(()=>{
+      expect(dispatch).toBeCalledWith(expectedAction);
     });
-
-    const mountedLoginPage = shallow(<Login />);
-    await mountedLoginPage.instance().doSubmit();
-    expect(mountedLoginPage.instance().state.errors.email).toEqual(errorMessage.message);
+    
   });
 });
+
+
+//Mock Store
+// {
+//   auth: {
+//     isAuthenticated: false,
+//      "user": {
+//       userid: 0,
+//     },
+//     firstName: "First",  //name
+//     profilePic: "/img/blah.jpg" //havent seen what it looks like
+//   },
+//   errors: {},
+//   "loginUser":  loginUser,
+//   "clearErrors": clearErrors
+// }
+
