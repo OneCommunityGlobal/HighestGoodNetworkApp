@@ -58,7 +58,7 @@ const GeneratePdfReport = ({ summaries, weekIndex, weekDates }) => {
   };
 
   const pdfDocGenerator = () => {
-    pdfMake.createPdf(docDefinition).open();
+    pdfMake.createPdf(docDefinition).download(`WeeklySummary-${weekDates.fromDate}-to-${weekDates.toDate}`);
   };
 
   return (
