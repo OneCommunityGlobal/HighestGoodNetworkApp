@@ -1,146 +1,134 @@
-import React from 'react';
-import { shallow, mount } from 'enzyme';
-import { MemoryRouter } from 'react-router-dom';
-import { getCurrentUser } from '../services/loginService';
-import {Login} from '../components/Login/Login.jsx';
-import { loginUser } from "../actions/authActions";
-import { clearErrors } from "../actions/errorsActions";
-import { render } from '@testing-library/react';
+
+import { renderWithProvider, renderWithRouterMatch } from './utils.js'
+import '@testing-library/jest-dom/extend-expect'
+import thunk from 'redux-thunk';
+import mockState from './mockAdminState.js'
 import { GET_ERRORS } from '../constants/errors';
+import { createMemoryHistory } from 'history';
+import { rest } from 'msw';
+import { setupServer } from 'msw/node';
+import { ENDPOINTS } from '../utils/URL';
+import { render, fireEvent} from "@testing-library/react";
+import routes from './../routes';
+const url = ENDPOINTS.LOGIN;
 
+const server = setupServer(
+  rest.post(url, (req, res, ctx) =>  {
+    if (req.body.email === 'validEmail@gmail.com' && req.body.password === 'validPass') {
+      return res(ctx.status(200), ctx.json({token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyaWQiOiI1ZWRmMTQxYzc4ZjEzODAwMTdiODI5YTYiLCJyb2xlIjoiQWRtaW5pc3RyYXRvciIsImV4cGlyeVRpbWVzdGFtcCI6IjIwMjAtMDgtMjhUMDU6MDA6NTguOTE0WiIsImlhdCI6MTU5NzcyNjg1OH0.zyPNn0laHv0iQONoIczZt1r5wNWlwSm286xDj-eYC4o'}), )
+    } else if (req.body.email === 'newUserEmail@gmail.com' && req.body.password === 'validPass'){
+      return res(ctx.status(200), ctx.json({new: true, token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyaWQiOiI1ZWRmMTQxYzc4ZjEzODAwMTdiODI5YTYiLCJyb2xlIjoiQWRtaW5pc3RyYXRvciIsImV4cGlyeVRpbWVzdGFtcCI6IjIwMjAtMDgtMjhUMDU6MDA6NTguOTE0WiIsImlhdCI6MTU5NzcyNjg1OH0.zyPNn0laHv0iQONoIczZt1r5wNWlwSm286xDj-eYC4o'}), )
+    } else {
+      return res(ctx.status(403), ctx.json({message: 'Invalid email and/ or password.'}), )
+    }
+  }),  
+  rest.get('http://localhost:4500/api/userprofile/*', (req, res, ctx) =>  {
+      return res(ctx.status(200), ctx.json({}), )  
+  }),
+  rest.get('http://localhost:4500/api/dashboard/*', (req, res, ctx) =>  {
+    return res(ctx.status(200), ctx.json({leaderBoardData: [
+      {
+        "personId": "5edf141c78f1380017b829a6",
+        "name": "Dev Admin",
+        "weeklyComittedHours": 10,
+        "totaltime_hrs": 6,
+        "totaltangibletime_hrs": 6,
+        "totalintangibletime_hrs": 0,
+        "percentagespentintangible": 100,
+        "didMeetWeeklyCommitment": false,
+        "weeklycommited": 10,
+        "tangibletime": 6,
+        "intangibletime": 0,
+        "tangibletimewidth": 100,
+        "intangibletimewidth": 0,
+        "tangiblebarcolor": "orange",
+        "totaltime": 6
+      }]}), )  
+  }),
+  rest.get('*', (req, res, ctx) => {
+    console.error(`Please add request handler for ${req.url.toString()} in your MSW server requests.`);
+    return res(
+      ctx.status(500),
+      ctx.json({ error: 'You must add request handler.' }),
+    );
+  }),
+);
 
+beforeAll(() => server.listen());
+afterAll(() => server.close());
+afterEach(() => server.resetHandlers());
 
-describe('Login page structure', () => {
-  let mountedLogin, props;
-  beforeEach(() => {
-    props = ({
-      auth: {isAuthenticated: false},
-      errors: {},
-      "loginUser":  loginUser,
-      "clearErrors": clearErrors
-    });
-    mountedLogin = shallow(<Login {...props} />);
-  });
+import { loginUser } from "../actions/authActions";
 
-  it('should be rendered with two input fields', () => {
-    const inputs = mountedLogin.find('Input');
-    expect(inputs.length).toBe(2);
-  });
-
-  it('should be rendered with one button', () => {
-    const button = mountedLogin.find('button');
-    expect(button.length).toBe(1);
-  });
-
-  it('should be rendered with one h2', () => {
-    const h2 = mountedLogin.find('h2');
-    expect(h2.length).toEqual(1);
-    expect(h2.first().text()).toContain('Please Sign in');
-  });
-  it('should match the snapshot', () => {
-    const { asFragment } = render(<Login {...props} />);
-    expect(asFragment()).toMatchSnapshot();
-  });
-});
-
-describe('When user tries to input data', () => {
-  let mountedLoginPage, props, loginU;
-
-  beforeEach(() => {
-    loginU = jest.fn();
-    props = ({
-      auth: {isAuthenticated: false},
-      errors: {},
-      "loginUser":  loginU
-    });
-    mountedLoginPage = shallow(<Login {...props} />);
-  });
-
-
-  it('should call handleInput when input is changed', () => {
-    const spy = jest.spyOn(mountedLoginPage.instance(), 'handleInput');
-    mountedLoginPage.find("[name='email']").simulate('change', { currentTarget: { name: 'email', value: 'abc' } });
-    expect(spy).toHaveBeenCalled();
-  });
-
-  it('should correctly update the email value in the state', () => {
-    const expected = 'sh@gmail.com';
-    const Input = { name: 'email', value: expected };
-    const mockEvent = { currentTarget: Input };
-    mountedLoginPage.instance().handleInput(mockEvent);
-
-    expect(mountedLoginPage.instance().state.data.email).toEqual(expected);
-  });
-
-  it('should correctly update the error if the email is not in correct format', () => {
-    const expected = 'sh';
-    const Input = { name: 'email', value: expected };
-    const mockEvent = { currentTarget: Input };
-    mountedLoginPage.instance().handleInput(mockEvent);
-    expect(mountedLoginPage.instance().state.errors.email).toEqual('"Email" must be a valid email');
-  });
-
-
-  it('should correctly update the password value in the state', () => {
-    const expected = 'trapp';
-    const Input = { name: 'password', value: expected };
-    const mockEvent = { currentTarget: Input };
-    mountedLoginPage.instance().handleInput(mockEvent);
-
-    expect(mountedLoginPage.instance().state.data.password).toEqual(expected);
-  });
-
-  it('should correctly update the errors object if the password is empty', () => {
-    const expected = '';
-    const Input = { name: 'password', value: expected };
-    const mockEvent = { currentTarget: Input };
-    mountedLoginPage.instance().handleInput(mockEvent);
-    expect(mountedLoginPage.instance().state.errors.password).toEqual('"Password" is not allowed to be empty');
-  });
-
-  it('should have disabled submit button if form is invalid', () => {
-    const button = mountedLoginPage.find('button');
-    expect(button.props()).toHaveProperty('disabled');
-  });
-
-  it('form can be submitted', () => {
-    const callback = jest.fn();
-    const mountedLoginPagewithCallBack = shallow(<form onSubmit={callback} />);
-    mountedLoginPagewithCallBack.find('form').simulate('submit');
-    expect(callback).toHaveBeenCalled();
-  });
-
-  it('onSubmit loginPage method is called with credentials', async () => {
-    await mountedLoginPage.instance().doSubmit();
-    expect(loginU).toHaveBeenCalledWith({email: "", password: ""});
-  });
-});
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
 
 
 describe('Login behavior', () => {
-  let props;
-  it('should have redirection set to homepage ', () => {
-    props = ({
-      auth: {isAuthenticated: true},
-      errors: {},
-      "loginUser":  loginUser,
-      history: []
+
+  it('should perform correct redirection if user tries to access a proctected route from some other location', async () => {
+
+    mockState.auth.isAuthenticated = false;
+    let rt = '/updatepassword/5edf141c78f1380017b829a6'
+    const hist = createMemoryHistory({ initialEntries: [rt] });
+    let loginMountedPage = renderWithRouterMatch(routes , {initialState: mockState, route: rt, history: hist});
+    await sleep(100);
+    let {getByLabelText, getByText} = loginMountedPage;
+    fireEvent.change(getByLabelText('Email:'), {
+      target: {value: 'validEmail@gmail.com'}
     });
-    const wrapper = mount(<Login {...props} />);
-    expect(wrapper.instance().props.history).toEqual(['/']);
+    await sleep(10);
+    fireEvent.change(getByLabelText('Password:'), {
+      target: {value: 'validPass'}
+    });
+    await sleep(10);
+    fireEvent.click(getByText('Submit'));
+    await sleep(100);
+    expect(getByLabelText('Current Password:')).toBeTruthy();
+    return;
   });
 
+  it('should redirect to dashboard if no previous redirection', async () => {
 
-  xit('should perform correct redirection if user was redirected to login page from some other location', async () => {
-    getCurrentUser.__setValue('userPresent');
+    mockState.auth.isAuthenticated = false;
+    const rt = '/login'
+    const hist = createMemoryHistory({ initialEntries: [rt] });
+    let loginMountedPage = renderWithRouterMatch(routes , {initialState: mockState, route: rt, history: hist});
+    await sleep(100);
+    let {getByLabelText, getByText} = loginMountedPage;
+    fireEvent.change(getByLabelText('Email:'), {
+      target: {value: 'validEmail@gmail.com'}
+    });
+    await sleep(10);
+    fireEvent.change(getByLabelText('Password:'), {
+      target: {value: 'validPass'}
+    });
+    await sleep(10);
+    fireEvent.click(getByText('Submit'));
+    await sleep(100);
+    expect(getByText(/weekly summaries/i)).toBeTruthy();
+  });
 
-    const somepath = '/profile/1234';
-    const location = { state: { from: { pathname: somepath } } };
-    const wrapper = shallow(<MemoryRouter><Login location={location} auth={{isAuthenticated: false}} errors={{}}/></MemoryRouter>);
-    expect(wrapper.instance().props.location.state.from.pathname).toEqual(somepath);
-    wrapper.instance().doSubmit();
-    console.log(`Location is : ${global.location.pathname}`);
-    expect(window.location.pathname).toEqual(somepath);
+  it('should redirect to forcePassword Update if new User', async () => {
+
+    mockState.auth.isAuthenticated = false;
+    let rt = '/login'
+    const hist = createMemoryHistory({ initialEntries: [rt] });
+    let nuLoginMountedPage = renderWithRouterMatch(routes , {initialState: mockState, route: rt, history: hist});
+    let {getByLabelText, getByText} = nuLoginMountedPage;
+    fireEvent.change(getByLabelText('Email:'), {
+      target: {value: 'newUserEmail@gmail.com'}
+    });
+    await sleep(100);
+    fireEvent.change(getByLabelText('Password:'), {
+      target: {value: 'validPass'}
+    });
+    await sleep(10);
+    fireEvent.click(getByText('Submit'));
+    await sleep(100);
+    expect(getByLabelText('New Password:')).toBeTruthy();
+    return;
   });
 
   it('should populate errors if login fails', async () => {
@@ -160,7 +148,7 @@ describe('Login behavior', () => {
 });
 
 
-//Mock Store
+//Mock State
 // {
 //   auth: {
 //     isAuthenticated: false,

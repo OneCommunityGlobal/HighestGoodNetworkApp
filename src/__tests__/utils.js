@@ -14,6 +14,21 @@ function renderWithProvider(
   {
     initialState = {},
     store = createStore(reducer, initialState, compose(applyMiddleware(...middleware))),
+    ...renderOptions
+  } = {},
+) {
+  function Wrapper({ children }) {
+    return <Provider store={store}>{children}</Provider>;
+  }
+  return rtlRender(ui, { wrapper: Wrapper, ...renderOptions });
+}
+
+// Helper function
+function renderWithRouterMatch(
+  ui,
+  {
+    initialState = {},
+    store = createStore(reducer, initialState, compose(applyMiddleware(...middleware))),
     route = '/',
     history = createMemoryHistory({ initialEntries: [route] }),
     ...renderOptions
@@ -23,27 +38,6 @@ function renderWithProvider(
     return <Provider store={store}><Router history={history}>{children}</Router></Provider>;
   }
   return rtlRender(ui, { wrapper: Wrapper, ...renderOptions });
-}
-
-// Helper function
-function renderWithRouterMatch(
-  ui,
-  {
-    initialState,
-    store = createStore(reducer, initialState),
-    route = '/',
-    history = createMemoryHistory({ initialEntries: [route] }),
-  } = {},
-) {
-  return {
-    ...rtlRender(
-      <Provider store={store}>
-        <Router history={history}>{ui}</Router>
-      </Provider>,
-    ),
-    store,
-    history,
-  };
 }
 
 // re-export everything
