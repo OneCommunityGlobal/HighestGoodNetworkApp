@@ -8,7 +8,7 @@ import Leaderboard from '../LeaderBoard';
 import WeeklySummary from '../WeeklySummary';
 import '../../App.css';
 
-export class Dashboard extends Component {
+class Dashboard extends Component {
   render() {
     return (
       <Container fluid>
