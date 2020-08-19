@@ -30,7 +30,6 @@ export class Login extends Form {
   }
 
   componentDidUpdate(prevProps) {
-    
     if (prevProps.auth !== this.props.auth) {
       if (this.props.auth.user.new) {
         const url = `/forcePasswordUpdate/${this.props.auth.user.userId}`;
