@@ -7,7 +7,7 @@ import Form from "../common/Form";
 import Joi from "joi";
 import { toast } from "react-toastify";
 
-class ForcePasswordUpdate extends Form {
+export class ForcePasswordUpdate extends Form {
   state = {
     data: { newpassword: "", confirmnewpassword: "" },
     errors: {}

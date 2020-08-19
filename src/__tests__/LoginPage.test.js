@@ -8,7 +8,7 @@ import { createMemoryHistory } from 'history';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import { ENDPOINTS } from '../utils/URL';
-import { render, fireEvent} from "@testing-library/react";
+import { render, fireEvent, waitFor, waitForElementToBeRemoved, cleanup} from "@testing-library/react";
 import routes from './../routes';
 import { Login } from './../components/Login/Login';
 import { clearErrors } from "../actions/errorsActions";
@@ -69,87 +69,102 @@ function sleep(ms) {
 mockState.auth.isAuthenticated = false;
 
 describe('Login behavior', () => {
+  let loginMountedPage;
 
   it('should perform correct redirection if user tries to access a proctected route from some other location', async () => {
-
     
     let rt = '/updatepassword/5edf141c78f1380017b829a6'
     const hist = createMemoryHistory({ initialEntries: [rt] });
-    let loginMountedPage = renderWithRouterMatch(routes , {initialState: mockState, route: rt, history: hist});
-    await sleep(20);
+    loginMountedPage = renderWithRouterMatch(routes , {initialState: mockState, route: rt, history: hist});
     let {getByLabelText, getByText} = loginMountedPage;
-    fireEvent.change(getByLabelText('Email:'), {
-      target: {value: 'validEmail@gmail.com'}
+    
+    await waitFor(()=> {
+      fireEvent.change(getByLabelText('Email:'), {
+        target: {value: 'validEmail@gmail.com'}
+      });
+      fireEvent.change(getByLabelText('Password:'), {
+        target: {value: 'validPass'}
+      });
     });
-    await sleep(20);
-    fireEvent.change(getByLabelText('Password:'), {
-      target: {value: 'validPass'}
+
+    await waitFor(()=> {
+      fireEvent.click(getByText('Submit'))
     });
-    await sleep(20);
-    fireEvent.click(getByText('Submit'));
-    await sleep(20);
-    expect(getByLabelText('Current Password:')).toBeTruthy();
-    await sleep(20);
+
+    await waitFor(()=> {
+      expect(getByLabelText('Current Password:')).toBeTruthy();
+    });
   });
 
   it('should redirect to dashboard if no previous redirection', async () => {
 
     const rt = '/login'
     const hist = createMemoryHistory({ initialEntries: [rt] });
-    let loginMountedPage = renderWithRouterMatch(routes , {initialState: mockState, route: rt, history: hist});
-    await sleep(20);
+    loginMountedPage = renderWithRouterMatch(routes , {initialState: mockState, route: rt, history: hist});
     let {getByLabelText, getByText} = loginMountedPage;
-    fireEvent.change(getByLabelText('Email:'), {
-      target: {value: 'validEmail@gmail.com'}
+
+    await waitFor(()=> {
+      fireEvent.change(getByLabelText('Email:'), {
+        target: {value: 'validEmail@gmail.com'}
+      });
+      
+      fireEvent.change(getByLabelText('Password:'), {
+        target: {value: 'validPass'}
+      });
+
+      fireEvent.click(getByText('Submit'));
     });
-    await sleep(20);
-    fireEvent.change(getByLabelText('Password:'), {
-      target: {value: 'validPass'}
+    
+    await waitFor(()=> {
+      expect(getByText(/weekly summaries/i)).toBeTruthy();
+      
     });
-    await sleep(20);
-    fireEvent.click(getByText('Submit'));
-    await sleep(20);
-    expect(getByText(/weekly summaries/i)).toBeTruthy();
-    await sleep(20);
+    await sleep(10);
   });
 
   it('should redirect to forcePassword Update if new User', async () => {
 
     let rt = '/login'
     const hist = createMemoryHistory({ initialEntries: [rt] });
-    let loginMountedPage = renderWithRouterMatch(routes , {initialState: mockState, route: rt, history: hist});
+    loginMountedPage = renderWithRouterMatch(routes , {initialState: mockState, route: rt, history: hist});
     let {getByLabelText, getByText} = loginMountedPage;
-    fireEvent.change(getByLabelText('Email:'), {
-      target: {value: 'newUserEmail@gmail.com'}
+    await sleep(10);
+    await waitFor(()=> {  
+      fireEvent.change(getByLabelText('Email:'), {
+        target: {value: 'newUserEmail@gmail.com'}
+      });
+      fireEvent.change(getByLabelText('Password:'), {
+        target: {value: 'validPass'}
+      });
+      fireEvent.click(getByText('Submit'));
     });
-    await sleep(20);
-    fireEvent.change(getByLabelText('Password:'), {
-      target: {value: 'validPass'}
+    await waitFor(()=> { 
+      expect(getByLabelText('New Password:')).toBeTruthy();
     });
-    await sleep(20);
-    fireEvent.click(getByText('Submit'));
-    await sleep(20);
-    expect(getByLabelText('New Password:')).toBeTruthy();
-    await sleep(20);
   });
 
   it('should populate errors if login fails', async () => {
     let rt = '/login'
     const hist = createMemoryHistory({ initialEntries: [rt] });
-    let loginMountedPage = renderWithRouterMatch(routes , {initialState: mockState, route: rt, history: hist});
+    loginMountedPage = renderWithRouterMatch(routes , {initialState: mockState, route: rt, history: hist});
     let {getByLabelText, getByText} = loginMountedPage;
-    fireEvent.change(getByLabelText('Email:'), {
-      target: {value: 'incorrectEmail@gmail.com'}
+    await sleep(10);
+    await waitFor(()=> {  
+      fireEvent.change(getByLabelText('Email:'), {
+        target: {value: 'incorrectEmail@gmail.com'}
+      });
+      fireEvent.change(getByLabelText('Password:'), {
+        target: {value: 'incorrectPassword'}
+      });  
+      fireEvent.click(getByText('Submit'));
+      
     });
-    await sleep(20);
-    fireEvent.change(getByLabelText('Password:'), {
-      target: {value: 'incorrectPassword'}
+
+    await waitFor(()=> {  
+      expect(getByText('Invalid email and/ or password.')).toBeTruthy();
     });
-    await sleep(20);
-    fireEvent.click(getByText('Submit'));
-    await sleep(20);
-    expect(getByText('Invalid email and/ or password.')).toBeTruthy();
-    await sleep(20);
+    
+    await sleep(10);
   });
 
   it('should test if loginUser action works correctly', async () => {
