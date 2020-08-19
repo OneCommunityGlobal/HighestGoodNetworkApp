@@ -28,7 +28,7 @@ const server = setupServer(
       return res(ctx.status(200), ctx.json({}), )  
   }),
   rest.get('http://localhost:4500/api/dashboard/*', (req, res, ctx) =>  {
-    return res(ctx.status(200), ctx.json({leaderBoardData: [
+    return res(ctx.status(200), ctx.json( [
       {
         "personId": "5edf141c78f1380017b829a6",
         "name": "Dev Admin",
@@ -45,7 +45,7 @@ const server = setupServer(
         "intangibletimewidth": 0,
         "tangiblebarcolor": "orange",
         "totaltime": 6
-      }]}), )  
+      }]), )  
   }),
   rest.get('*', (req, res, ctx) => {
     console.error(`Please add request handler for ${req.url.toString()} in your MSW server requests.`);
@@ -76,20 +76,20 @@ describe('Login behavior', () => {
     let rt = '/updatepassword/5edf141c78f1380017b829a6'
     const hist = createMemoryHistory({ initialEntries: [rt] });
     let loginMountedPage = renderWithRouterMatch(routes , {initialState: mockState, route: rt, history: hist});
-    await sleep(100);
+    await sleep(20);
     let {getByLabelText, getByText} = loginMountedPage;
     fireEvent.change(getByLabelText('Email:'), {
       target: {value: 'validEmail@gmail.com'}
     });
-    await sleep(10);
+    await sleep(20);
     fireEvent.change(getByLabelText('Password:'), {
       target: {value: 'validPass'}
     });
-    await sleep(10);
+    await sleep(20);
     fireEvent.click(getByText('Submit'));
-    await sleep(100);
+    await sleep(20);
     expect(getByLabelText('Current Password:')).toBeTruthy();
-    return;
+    await sleep(20);
   });
 
   it('should redirect to dashboard if no previous redirection', async () => {
@@ -97,19 +97,20 @@ describe('Login behavior', () => {
     const rt = '/login'
     const hist = createMemoryHistory({ initialEntries: [rt] });
     let loginMountedPage = renderWithRouterMatch(routes , {initialState: mockState, route: rt, history: hist});
-    await sleep(100);
+    await sleep(20);
     let {getByLabelText, getByText} = loginMountedPage;
     fireEvent.change(getByLabelText('Email:'), {
       target: {value: 'validEmail@gmail.com'}
     });
-    await sleep(10);
+    await sleep(20);
     fireEvent.change(getByLabelText('Password:'), {
       target: {value: 'validPass'}
     });
-    await sleep(10);
+    await sleep(20);
     fireEvent.click(getByText('Submit'));
-    await sleep(100);
+    await sleep(20);
     expect(getByText(/weekly summaries/i)).toBeTruthy();
+    await sleep(20);
   });
 
   it('should redirect to forcePassword Update if new User', async () => {
@@ -121,15 +122,15 @@ describe('Login behavior', () => {
     fireEvent.change(getByLabelText('Email:'), {
       target: {value: 'newUserEmail@gmail.com'}
     });
-    await sleep(10);
+    await sleep(20);
     fireEvent.change(getByLabelText('Password:'), {
       target: {value: 'validPass'}
     });
-    await sleep(10);
+    await sleep(20);
     fireEvent.click(getByText('Submit'));
-    await sleep(100);
+    await sleep(20);
     expect(getByLabelText('New Password:')).toBeTruthy();
-
+    await sleep(20);
   });
 
   it('should populate errors if login fails', async () => {
@@ -140,15 +141,15 @@ describe('Login behavior', () => {
     fireEvent.change(getByLabelText('Email:'), {
       target: {value: 'incorrectEmail@gmail.com'}
     });
-    await sleep(10);
+    await sleep(20);
     fireEvent.change(getByLabelText('Password:'), {
       target: {value: 'incorrectPassword'}
     });
-    await sleep(10);
+    await sleep(20);
     fireEvent.click(getByText('Submit'));
-    await sleep(100);
+    await sleep(20);
     expect(getByText('Invalid email and/ or password.')).toBeTruthy();
-    
+    await sleep(20);
   });
 
   it('should test if loginUser action works correctly', async () => {
