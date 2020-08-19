@@ -1,9 +1,8 @@
 import React from "react";
-import { shallow } from "enzyme";
+import { shallow, mount } from "enzyme";
 import { Login } from "./Login";
 import { loginUser } from "../../actions/authActions";
 import { clearErrors } from "../../actions/errorsActions";
-import { render } from '@testing-library/react';
 
 describe('Login page structure', () => {
   let mountedLogin, props;
@@ -31,11 +30,6 @@ describe('Login page structure', () => {
     const h2 = mountedLogin.find('h2');
     expect(h2.length).toEqual(1);
     expect(h2.first().text()).toContain('Please Sign in');
-  });
-
-  it('should match the snapshot', () => {
-    const { asFragment } = render(<Login {...props} />);
-    expect(asFragment()).toMatchSnapshot();
   });
 });
 

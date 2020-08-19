@@ -1,7 +1,7 @@
 
 import { renderWithProvider, renderWithRouterMatch } from './utils.js'
 import '@testing-library/jest-dom/extend-expect'
-import thunk from 'redux-thunk';
+import React from 'react';
 import mockState from './mockAdminState.js'
 import { GET_ERRORS } from '../constants/errors';
 import { createMemoryHistory } from 'history';
@@ -10,6 +10,8 @@ import { setupServer } from 'msw/node';
 import { ENDPOINTS } from '../utils/URL';
 import { render, fireEvent} from "@testing-library/react";
 import routes from './../routes';
+import { Login } from './../components/Login/Login';
+import { clearErrors } from "../actions/errorsActions";
 const url = ENDPOINTS.LOGIN;
 
 const server = setupServer(
@@ -164,5 +166,18 @@ describe('Login behavior', () => {
     
   });
 
+});
 
+describe('Login page structure', () => {
+
+    it('should match the snapshot', () => {
+      let props = ({
+        auth: {isAuthenticated: false},
+        errors: {},
+        "loginUser":  loginUser,
+        "clearErrors": clearErrors
+      });
+      const { asFragment } = render(<Login {...props} />);
+      expect(asFragment()).toMatchSnapshot();
+    });
 });
