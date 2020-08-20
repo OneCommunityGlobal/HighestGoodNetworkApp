@@ -1,16 +1,17 @@
 import React from 'react';
-import { getAllUserTeams, postNewTeam } from '../../actions/allTeamsAction'
+import { getAllUserTeams, postNewTeam, deleteUser, updateTeam } from '../../actions/allTeamsAction'
 // import { defaults } from 'lodash';
 import { connect } from 'react-redux'
 import Loading from '../common/Loading'
-import TeamTableHeader from './TeamTableHeader';
+import TeamTableHeader from './TeamTableHeader'
 import { Container } from 'reactstrap'
 import Team from './Team'
 import TeamOverview from './TeamsOverview'
 import TeamTableSearchPanel from './TeamTableSearchPanel'
 import TeamMembersPopup from './TeamMembersPopup'
-import CreateNewTeamPopup from './CreateNewTeamPopup';
-import DeleteTeamPopup from './DeleteTeamPopup';
+import CreateNewTeamPopup from './CreateNewTeamPopup'
+import DeleteTeamPopup from './DeleteTeamPopup'
+import TeamStatusPopup from './TeamStatusPopup'
 
 class Teams extends React.PureComponent {
   filteredTeamDataCount = 0;
@@ -22,14 +23,16 @@ class Teams extends React.PureComponent {
       teamMembersPopupOpen: false,
       deleteTeamPopupOpen: false,
       createNewTeamPopupOpen: false,
-      selectedTeam: '',
-      isACtive: '',
+      teamStatusPopupOpen: false,
       wildCardSearchText: '',
+      selectedTeamId: 0,
+      selectedTeam: '',
+      isActive: '',
     }
   }
 
   componentDidMount() {
-    // Initiating the user teams fetch action.
+    // Initiating the teams fetch action.
     this.props.getAllUserTeams();
   }
 
@@ -73,39 +76,43 @@ class Teams extends React.PureComponent {
   teamTableElements = (allTeams) => {
 
     if (allTeams && allTeams.length > 0) {
-      let teamSearchData = this.filteredUserList(allTeams);
+      let teamSearchData = this.filteredTeamList(allTeams);
       this.filteredTeamDataCount = teamSearchData.length;
       /* 
-      * Builiding the table body for users based on the page size and selected page number and returns 
+      * Builiding the table body for teams returns 
        * the rows for currently selected page . 
        * Applying the Default sort in the order of created date as well
        */
       return teamSearchData.sort((a, b) => {
-        if (a.createdDate > b.createdDate) return -1;
-        if (a.createdDate < b.createdDate) return 1;
+        if (a.createdDatetime > b.createdDatetime) return -1;
+        if (a.createdDatetime < b.createdDatetime) return 1;
         return 0;
       }).map((team, index) => {
+
         return (
           <Team
             key={team._id}
             index={index}
             name={team.teamName}
+            teamId={team._id}
             active={team.isActive}
             onMembersClick={this.onTeamMembersPopupShow}
             onDeleteClick={this.onDeleteTeamPopupShow}
+            onStatusClick={this.onTeamStatusShow}
+            onClickActive={this.onClickActive}
             team={team}
           />)
       });
     }
   }
 
-  filteredUserList = (allTeams) => {
+  filteredTeamList = (allTeams) => {
     let filteredList = allTeams.filter((team) => {
-      //Applying the search filters before creating each table data element
-      if ((team.teamName.toLowerCase().indexOf(this.state.teamNameSearchText.toLowerCase()) > -1
-        && (this.state.isActive === undefined || team.isActive === this.state.isActive)
-        && this.state.wildCardSearchText === '')
-        //the wild card serach, the search text can be match with any item
+      //Applying the search filters before creating each team table data element
+      if (team.teamName &&
+        (team.teamName.toLowerCase().indexOf(this.state.teamNameSearchText.toLowerCase()) > -1
+          && this.state.wildCardSearchText === '')
+        //the wild card search, the search text can be match with any item
         || (this.state.wildCardSearchText !== '' &&
           (team.teamName.toLowerCase().indexOf(this.state.wildCardSearchText.toLowerCase()) > -1
           ))
@@ -138,8 +145,19 @@ class Teams extends React.PureComponent {
       <DeleteTeamPopup
         open={this.state.deleteTeamPopupOpen}
         onClose={this.onDeleteTeamPopupClose}
-        data={this.state.selectedTeam}
+        selectedTeamName={this.state.selectedTeam}
+        selectedTeamId={this.state.selectedTeamId}
         onDeleteClick={this.onDeleteUser}
+      />
+
+      <TeamStatusPopup
+        open={this.state.teamStatusPopupOpen}
+        onClose={this.onTeamStatusClose}
+        selectedTeamName={this.state.selectedTeam}
+        selectedTeamId={this.state.selectedTeamId}
+        selectedStatus={this.state.isActive}
+        onConfirmClick={this.onConfirmClick}
+
       />
 
     </React.Fragment>
@@ -165,10 +183,11 @@ class Teams extends React.PureComponent {
   /**
     * call back to show delete team popup
     */
-  onDeleteTeamPopupShow = (deletedname) => {
+  onDeleteTeamPopupShow = (deletedname, teamId) => {
     this.setState({
       deleteTeamPopupOpen: true,
-      selectedTeam: deletedname
+      selectedTeam: deletedname,
+      selectedTeamId: teamId,
     })
   }
 
@@ -196,7 +215,26 @@ class Teams extends React.PureComponent {
       createNewTeamPopupOpen: false,
     })
   }
+  /**
+     * call back to show team status popup
+     */
+  onTeamStatusShow = (teamName, teamId, isActive) => {
+    this.setState({
+      teamStatusPopupOpen: true,
+      selectedTeam: teamName,
+      selectedTeamId: teamId,
+      isActive: isActive
 
+    })
+  }
+  /**
+      * To hide the team status popup upon close button click
+      */
+  onTeamStatusClose = () => {
+    this.setState({
+      teamStatusPopupOpen: false
+    })
+  }
   /**
    * callback for search
    */
@@ -206,6 +244,9 @@ class Teams extends React.PureComponent {
 
     })
   }
+  /**
+  * callback for adding new team
+  */
   addNewTeam = (name) => {
     this.props.postNewTeam(name, true);
     alert("Team added successfully");
@@ -213,11 +254,30 @@ class Teams extends React.PureComponent {
       createNewTeamPopupOpen: false,
     })
   }
+  /**
+     * callback for deleting a team
+     */
 
-  // onDeleteUser = (deletedId) => {
-  //   this.props.deleteUser(deletedId)
-  // }
+  onDeleteUser = (deletedId) => {
+    debugger;
+    this.props.deleteUser(deletedId, 'delete')
+    alert("Team deleted successfully");
+    this.setState({
+      deleteTeamPopupOpen: false,
+    })
+  }
+  /**
+      * callback for changing the status of a team
+      */
+  onConfirmClick = (teamName, teamId, isActive) => {
+
+    this.props.updateTeam(teamName, teamId, isActive)
+    this.setState({
+      teamStatusPopupOpen: false,
+    })
+  }
+
 
 }
 const mapStateToProps = state => { return { state } }
-export default connect(mapStateToProps, { getAllUserTeams, postNewTeam })(Teams)
+export default connect(mapStateToProps, { getAllUserTeams, postNewTeam, deleteUser, updateTeam })(Teams)
