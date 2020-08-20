@@ -77,11 +77,7 @@ class Teams extends React.PureComponent {
   teamTableElements = (allTeams) => {
 
     if (allTeams && allTeams.length > 0) {
-<<<<<<< HEAD
       let teamSearchData = this.filteredTeamList(allTeams);
-=======
-      let teamSearchData = this.filteredTeamsList(allTeams);
->>>>>>> ac8edac0c5eaf4194d50ff3e08e2b680afc4490d
       this.filteredTeamDataCount = teamSearchData.length;
       /* 
       * Builiding the table body for teams returns 
@@ -89,13 +85,8 @@ class Teams extends React.PureComponent {
        * Applying the Default sort in the order of created date as well
        */
       return teamSearchData.sort((a, b) => {
-<<<<<<< HEAD
         if (a.createdDatetime > b.createdDatetime) return -1;
         if (a.createdDatetime < b.createdDatetime) return 1;
-=======
-        if (a.createdDate > b.createdDate) return 1;
-        if (a.createdDate < b.createdDate) return -1;
->>>>>>> ac8edac0c5eaf4194d50ff3e08e2b680afc4490d
         return 0;
       }).map((team, index) => {
 
@@ -116,7 +107,6 @@ class Teams extends React.PureComponent {
     }
   }
 
-<<<<<<< HEAD
   filteredTeamList = (allTeams) => {
     let filteredList = allTeams.filter((team) => {
       //Applying the search filters before creating each team table data element
@@ -124,16 +114,6 @@ class Teams extends React.PureComponent {
         (team.teamName.toLowerCase().indexOf(this.state.teamNameSearchText.toLowerCase()) > -1
           && this.state.wildCardSearchText === '')
         //the wild card search, the search text can be match with any item
-=======
-  filteredTeamsList = (allTeams) => {
-    let filteredList = allTeams.filter((team) => {
-      //Applying the search filters before creating each table data element
-      if ((team.teamName
-        && team.teamName.toLowerCase().indexOf(this.state.teamNameSearchText.toLowerCase()) > -1
-        && (this.state.isActive === undefined || team.isActive === this.state.isActive)
-        && this.state.wildCardSearchText === '')
-        //the wild card serach, the search text can be match with any item
->>>>>>> ac8edac0c5eaf4194d50ff3e08e2b680afc4490d
         || (this.state.wildCardSearchText !== '' &&
           (team.teamName.toLowerCase().indexOf(this.state.wildCardSearchText.toLowerCase()) > -1
           ))
