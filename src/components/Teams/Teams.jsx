@@ -41,7 +41,7 @@ class Teams extends React.PureComponent {
     let { allTeams, fetching } = this.props.state.allTeamsData;
     let teamTable = this.teamTableElements(allTeams);
     let numberOfTeams = allTeams.length;
-    let numberOfActiveTeams = allTeams.filter(team => team.isActive).length;
+    // let numberOfActiveTeams = allTeams.filter(team => team.isActive).length;
 
     return <Container fluid>
       {fetching ?
@@ -51,7 +51,8 @@ class Teams extends React.PureComponent {
             {this.teampopupElements()}
             <TeamOverview
               numberOfTeams={numberOfTeams}
-              numberOfActiveTeams={numberOfActiveTeams} />
+            // numberOfActiveTeams={numberOfActiveTeams}
+            />
             <TeamTableSearchPanel
               onSearch={this.onWildCardSearch}
               onCreateNewTeamClick={this.onCreateNewTeamShow} />

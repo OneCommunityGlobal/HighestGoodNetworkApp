@@ -6,8 +6,7 @@ const CreateNewTeamPopup = React.memo((props) => {
   const [newTeam, onNewName] = useState('')
   const closePopup = (e) => { props.onClose() };
 
-  return
-  <Modal isOpen={props.open} toggle={closePopup}>
+  return <Modal isOpen={props.open} toggle={closePopup}>
     <ModalHeader toggle={closePopup}>Create New Team</ModalHeader>
     <ModalBody style={{ textAlign: 'start' }}>
       <label>Name of the Team</label>

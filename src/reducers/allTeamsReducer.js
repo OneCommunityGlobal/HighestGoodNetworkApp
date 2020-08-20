@@ -1,10 +1,4 @@
-// export const allTeamsReducer = (allTeams = null, action) => {
-//   if (action.type === 'GET_ALL_TEAMS') {
-//     return action.payload;
-//   }
 
-//   return allTeams;
-// };
 import * as types from '../constants/allTeamsConstants'
 // import { object } from 'joi';
 
@@ -48,12 +42,6 @@ export const allUserTeamsReducer = (allTeams = userTeamsInitial, action) => {
         status: "200"
       })
 
-    // case types.TEAMS_DELETE:
-    //   return updateObject(allTeams, {
-    //     allTeams: Object.assign([...allTeams.allTeams, action.team]), fetching: false,
-    //     fetched: true,
-    //     status: "200"
-    //   })
     case types.USER_TEAMS_UPDATE:
       let index = allTeams.allTeams.findIndex(team => team._id == action.team._id);
       return updateObject(allTeams, {
@@ -66,9 +54,6 @@ export const allUserTeamsReducer = (allTeams = userTeamsInitial, action) => {
       });
 
     case types.TEAMS_DELETE:
-
-      let deletedIndex = allTeams.allTeams.findIndex(team => team.teamId == action.team);
-
       return updateObject(allTeams, {
         allTeams: Object.assign(allTeams.allTeams.filter(item => item._id !== action.team)),
         fetching: false,
@@ -76,29 +61,25 @@ export const allUserTeamsReducer = (allTeams = userTeamsInitial, action) => {
         status: "200"
       });
 
-    // case types.UPDATE_TEAM:
-    //   return updateObject(allTeams, {
-    //     allTeams: Object.assign([...allTeams.allTeams, action.teamId]), fetching: false,
-    //     fetched: true,
-    //     status: "200"
-    //   });
+
 
     case types.UPDATE_TEAM:
       debugger;
-
+      let index1 = allTeams.allTeams.findIndex(team => team._id == action.teamId)
       return updateObject(allTeams, {
-        allTeams: Object.assign(...allTeams.allTeams.filter(item => {
-          if (item._id === action.teamId) {
-            let data = item; data.isActive = action.isActive;
-            return data
-          } else {
-            return item
-          }
-        }
-        )
-        )
+        allTeams: Object.assign([...allTeams.allTeams.slice(0, index1), {
+          _id: action.teamId,
+          isActive: action.isActive
+        }, ...allTeams.allTeams.slice(index1 + 1)])
+
       });
     default:
       return allTeams
   }
 };
+// if (item._id === action.teamId) {
+//   let data = item; data.isActive = action.isActive;
+//   return data
+// } else {
+//   return item
+// }
