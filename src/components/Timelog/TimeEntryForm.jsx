@@ -191,16 +191,14 @@ const TimeEntryForm = ({ userId, edit, data, isOpen, toggle, timer }) => {
     if (edit) {
       timeEntry.hours = hours;
       timeEntry.minutes = minutes;
-      status = await dispatch(editTimeEntry(data._id, timeEntry));
+      if (!reminder.edit_notice) {
+        status = await dispatch(editTimeEntry(data._id, timeEntry));
+      }
     } else {
       timeEntry.timeSpent = `${hours}:${minutes}:00`;
       status = await dispatch(postTimeEntry(timeEntry));
     }
 
-    // if (timeEntry.editCount > 5) {
-    //   <div>
-    // }
-    
     if (fromTimer) {
       if (status === 200) {
         const timerStatus = await dispatch(stopTimer(userId));
@@ -417,6 +415,9 @@ const TimeEntryForm = ({ userId, edit, data, isOpen, toggle, timer }) => {
         </Button>
         <Button onClick={handleSubmit} color="primary">
           {edit ? "Save" : "Submit"}
+        </Button>
+        <Button onClick={toggle} color="danger">
+          Cancel
         </Button>
       </ModalFooter>
     </Modal>

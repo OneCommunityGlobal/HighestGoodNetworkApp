@@ -7,6 +7,7 @@ import moment from "moment";
 import "./Timelog.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEdit } from "@fortawesome/free-regular-svg-icons";
+import { postTimeEntry, editTimeEntry } from "../../actions/timeEntries";
 import TimeEntryForm from "./TimeEntryForm";
 import DeleteModal from "./DeleteModal";
 
@@ -29,7 +30,14 @@ const TimeEntry = ({ data, displayYear }) => {
               <h4>{dateOfWork.format("MMM D")}</h4>
               {displayYear && <h5>{dateOfWork.format("YYYY")}</h5>}
               <h5 className="text-info">{dateOfWork.format("dddd")}</h5>
-              <div className="form-row text-center">Blue Squares</div>
+              {data.editCount > 5 && (
+                <input
+                  type="checkbox"
+                  name="BlueBadge"
+                  checked="true"
+                  readOnly
+                />
+              )}
             </div>
           </div>
         </Col>
@@ -51,7 +59,11 @@ const TimeEntry = ({ data, displayYear }) => {
           <div className="text-muted">Notes:</div>
           {ReactHtmlParser(data.notes)}
           <div className="buttons">
-            {(isAdmin || (!data.isTangible && isOwner && isSameDay)) && (
+            {(isAdmin ||
+              (!data.isTangible &&
+                isOwner &&
+                isSameDay &&
+                data.editCount <= 5)) && (
               <span>
                 <FontAwesomeIcon
                   icon={faEdit}
