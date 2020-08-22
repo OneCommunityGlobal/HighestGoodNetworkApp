@@ -19,7 +19,7 @@
     "joi": "^14.0.6",
     "js-levenshtein": "^1.1.6",
     "jwt-decode": "^2.2.0",
-    "lodash": ">4.17.13",
+    "lodash": "^4.17.20",
     "moment": "^2.25.3",
     "moment-timezone": "^0.5.31",
     "pdfmake": "^0.1.65",
@@ -32,7 +32,7 @@
     "react-redux": "^7.2.0",
     "react-router-bootstrap": "^0.25.0",
     "react-router-dom": "^5.2.0",
-    "react-scripts": "^3.4.1",
+    "react-scripts": "^3.4.3",
     "react-table": "^6.10.0",
     "react-toastify": "^5.3.1",
     "reactstrap": "^8.4.1",
@@ -80,6 +80,6 @@
     "prettier": "^1.19.1",
     "redux-mock-store": "^1.5.4",
     "sinon": "^7.3.2",
-    "surge": "^0.21.3"
+    "surge": "^0.21.6"
   }
 }
