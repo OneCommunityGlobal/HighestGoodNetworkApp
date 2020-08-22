@@ -1,26 +1,45 @@
 import React from 'react'
-import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Input } from 'reactstrap';
+import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Input, Container } from 'reactstrap';
+
+
+
+const TeamMembersPopup = React.memo((props) => {
+
+
+  const closePopup = (e) => { props.onClose() };
+
+  debugger;
+  return (<Container fluid>
+    <div className='container'>
+      <Modal isOpen={props.open} toggle={closePopup}>
+        <ModalHeader toggle={closePopup}>Team Members</ModalHeader>
+        <ModalBody style={{ textAlign: 'center' }}>
+          <table className="table table-bordered table-responsive-sm">
+
+            <Header />
+
+
+          </table>
+
+        </ModalBody>
+        <ModalFooter>
+          <Button color="secondary" onClick={closePopup}>Close</Button>
+        </ModalFooter>
+      </Modal>
+    </div>
+  </Container>)
+});
 
 const Header = () => {
   return (
     <tr>
-      <th>Name</th>
-
+      <th>#</th>
+      <th>First Name</th>
+      <th>Last Name</th>
     </tr>
   )
 }
-const TeamMembersPopup = React.memo((props) => {
-  const closePopup = (e) => { props.onClose() };
 
-  return <Modal isOpen={props.open} toggle={closePopup}>
-    <ModalHeader toggle={closePopup}>Team Members</ModalHeader>
-    <ModalBody style={{ textAlign: 'center' }}>
-      <Header />
 
-    </ModalBody>
-    <ModalFooter>
-      <Button color="secondary" onClick={closePopup}>Close</Button>
-    </ModalFooter>
-  </Modal>
-});
-export default TeamMembersPopup
+
+export default TeamMembersPopup;

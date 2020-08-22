@@ -5,7 +5,7 @@ import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Input } from 'react
 const DeleteTeamPopup = React.memo((props) => {
 
   const closePopup = (e) => { props.onClose() };
-  debugger;
+
   return <Modal isOpen={props.open} toggle={closePopup}>
     <ModalHeader toggle={closePopup}>Delete</ModalHeader>
     <ModalBody style={{ textAlign: 'center' }}>
@@ -15,7 +15,7 @@ const DeleteTeamPopup = React.memo((props) => {
     <ModalFooter>
 
       <Button color="danger" onClick={(e) => { props.onDeleteClick(props.selectedTeamId) }}>Confirm</Button>
-      <Button color="warning" onClick={closePopup}>Set Inactive</Button>
+      <Button color="warning" onClick={(e) => { props.onSetInactiveClick(props.selectedTeamName, props.selectedTeamId, !props.selectedStatus) }}>Set Inactive</Button>
       <Button color="primary" onClick={closePopup}>Close</Button>
     </ModalFooter>
   </Modal>

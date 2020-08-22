@@ -1,5 +1,5 @@
 import React from 'react';
-import { getAllUserTeams, postNewTeam, deleteUser, updateTeam } from '../../actions/allTeamsAction'
+import { getAllUserTeams, postNewTeam, deleteUser, updateTeam, getTeamMembers } from '../../actions/allTeamsAction'
 // import { defaults } from 'lodash';
 import { connect } from 'react-redux'
 import Loading from '../common/Loading'
@@ -28,6 +28,7 @@ class Teams extends React.PureComponent {
       selectedTeamId: 0,
       selectedTeam: '',
       isActive: '',
+      teamUsers: [],
     }
   }
 
@@ -41,7 +42,12 @@ class Teams extends React.PureComponent {
     let { allTeams, fetching } = this.props.state.allTeamsData;
     let teamTable = this.teamTableElements(allTeams);
     let numberOfTeams = allTeams.length;
-    // let numberOfActiveTeams = allTeams.filter(team => team.isActive).length;
+    let numberOfActiveTeams = allTeams.filter(team => team.isActive).length;
+
+    let teamMembers = this.props.state.teamsTeamMembers;
+
+    this.state.teamUsers = teamMembers;
+
 
     return <Container fluid>
       {fetching ?
@@ -51,7 +57,7 @@ class Teams extends React.PureComponent {
             {this.teampopupElements()}
             <TeamOverview
               numberOfTeams={numberOfTeams}
-            // numberOfActiveTeams={numberOfActiveTeams}
+              numberOfActiveTeams={numberOfActiveTeams}
             />
             <TeamTableSearchPanel
               onSearch={this.onWildCardSearch}
@@ -136,6 +142,9 @@ class Teams extends React.PureComponent {
       <TeamMembersPopup
         open={this.state.teamMembersPopupOpen}
         onClose={this.onTeamMembersPopupClose}
+        members={this.state.teamUsers}
+
+
       />
       <CreateNewTeamPopup
         open={this.state.createNewTeamPopupOpen}
@@ -148,7 +157,9 @@ class Teams extends React.PureComponent {
         onClose={this.onDeleteTeamPopupClose}
         selectedTeamName={this.state.selectedTeam}
         selectedTeamId={this.state.selectedTeamId}
+        selectedStatus={this.state.isActive}
         onDeleteClick={this.onDeleteUser}
+        onSetInactiveClick={this.onConfirmClick}
       />
 
       <TeamStatusPopup
@@ -167,11 +178,13 @@ class Teams extends React.PureComponent {
   /**
     * call back to show team members popup
     */
-  onTeamMembersPopupShow = () => {
+  onTeamMembersPopupShow = (teamId) => {
+    this.props.getTeamMembers(teamId);
     this.setState({
       teamMembersPopupOpen: true,
 
     })
+
   }
   /**
    * To hide the team members popup upon close button click
@@ -184,11 +197,12 @@ class Teams extends React.PureComponent {
   /**
     * call back to show delete team popup
     */
-  onDeleteTeamPopupShow = (deletedname, teamId) => {
+  onDeleteTeamPopupShow = (deletedname, teamId, status) => {
     this.setState({
       deleteTeamPopupOpen: true,
       selectedTeam: deletedname,
       selectedTeamId: teamId,
+      isActive: status
     })
   }
 
@@ -271,14 +285,15 @@ class Teams extends React.PureComponent {
       * callback for changing the status of a team
       */
   onConfirmClick = (teamName, teamId, isActive) => {
-
     this.props.updateTeam(teamName, teamId, isActive)
     this.setState({
       teamStatusPopupOpen: false,
-    })
+      deleteTeamPopupOpen: false
+    });
+    alert("Status Updated Successfully")
   }
 
 
 }
 const mapStateToProps = state => { return { state } }
-export default connect(mapStateToProps, { getAllUserTeams, postNewTeam, deleteUser, updateTeam })(Teams)
+export default connect(mapStateToProps, { getAllUserTeams, postNewTeam, deleteUser, updateTeam, getTeamMembers })(Teams)

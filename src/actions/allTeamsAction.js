@@ -9,14 +9,16 @@ import {
   USER_TEAMS_UPDATE,
   UPDATE_TEAM,
   ADD_NEW_TEAM,
-  TEAMS_DELETE
+  TEAMS_DELETE,
+  FETCH_TEAM_USERS_START,
+  RECEIVE_TEAM_USERS,
+  FETCH_TEAM_USERS_ERROR
 } from '../constants/allTeamsConstants'
 
 /**
  * fetching all user teams
  */
 export const getAllUserTeams = () => {
-  debugger;
   const userTeamsPromise = axios.get(ENDPOINTS.TEAM)
   return async dispatch => {
     await dispatch(userTeamsFetchStartAction());
@@ -27,7 +29,9 @@ export const getAllUserTeams = () => {
     })
   }
 }
-
+/**
+ * posting new user 
+ */
 export const postNewTeam = (name, status) => {
   const data = { teamName: name, isActive: status }
   // const url = ENDPOINTS.TEAM
@@ -66,9 +70,9 @@ export const updateTeamsStatus = (team, status, reactivationDate) => {
  * @param {*} option - archive / delete
  */
 
-export const deleteUser = (teamId, option) => {
+export const deleteUser = (teamId) => {
   // const requestData = { option: option, teamId: team._id };
-  const deleteTeamPromise = axios.delete(ENDPOINTS.TEAM_DELETE(teamId))
+  const deleteTeamPromise = axios.delete(ENDPOINTS.TEAM_DATA(teamId))
   return async dispatch => {
     deleteTeamPromise.then(res => {
       dispatch(teamsDeleteAction(teamId));
@@ -80,7 +84,7 @@ export const deleteUser = (teamId, option) => {
 
 export const updateTeam = (teamName, teamId, isActive) => {
   const requestData = { teamName: teamName, isActive: isActive };
-  const deleteTeamPromise = axios.put(ENDPOINTS.TEAM_UPDATE(teamId), requestData)
+  const deleteTeamPromise = axios.put(ENDPOINTS.TEAM_DATA(teamId), requestData)
   return async dispatch => {
     deleteTeamPromise.then(res => {
       debugger;
@@ -90,7 +94,19 @@ export const updateTeam = (teamName, teamId, isActive) => {
 }
 
 
+export const getTeamMembers = (teamId) => {
 
+  const teamMembersPromise = axios.get(ENDPOINTS.TEAM_USERS(teamId))
+  return async dispatch => {
+    await dispatch(teamUsersFetchAction());
+    teamMembersPromise.then(res => {
+      dispatch(teamUsersFetchCompleteAction(res.data))
+    }).catch(err => {
+      dispatch(teamUsersFetchErrorAction())
+    })
+
+  }
+}
 
 
 
@@ -157,11 +173,39 @@ export const teamsDeleteAction = (team) => {
     team
   }
 }
-
+/**
+ * Action for updating the status of a team
+ */
 export const updateTeamAction = (teamId, isActive) => {
   return {
     type: UPDATE_TEAM,
     teamId, isActive
 
+  }
+}
+/**
+ * Set a flag that fetching team users
+ */
+export const teamUsersFetchAction = () => {
+  return {
+    type: FETCH_TEAM_USERS_START
+  }
+}
+
+/**
+ * set allteams in store
+ * @param payload : allteams []
+ */
+export const teamUsersFetchCompleteAction = (payload) => {
+  return {
+    type: RECEIVE_TEAM_USERS,
+    payload
+  }
+}
+
+export const teamUsersFetchErrorAction = (payload) => {
+  return {
+    type: FETCH_TEAM_USERS_ERROR,
+    payload
   }
 }

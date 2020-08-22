@@ -37,7 +37,8 @@ export const allUserTeamsReducer = (allTeams = userTeamsInitial, action) => {
     case types.ADD_NEW_TEAM:
       // return { ...allTeams }
       return updateObject(allTeams, {
-        allTeams: Object.assign([...allTeams.allTeams, action.payload]), fetching: false,
+        allTeams: Object.assign([...allTeams.allTeams, action.payload]),
+        fetching: false,
         fetched: true,
         status: "200"
       })
@@ -62,7 +63,6 @@ export const allUserTeamsReducer = (allTeams = userTeamsInitial, action) => {
       });
 
 
-
     case types.UPDATE_TEAM:
       debugger;
       let index1 = allTeams.allTeams.findIndex(team => team._id == action.teamId)
@@ -73,6 +73,10 @@ export const allUserTeamsReducer = (allTeams = userTeamsInitial, action) => {
         }, ...allTeams.allTeams.slice(index1 + 1)])
 
       });
+
+
+
+
     default:
       return allTeams
   }

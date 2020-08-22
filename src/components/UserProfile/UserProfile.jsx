@@ -30,7 +30,7 @@ import ShowSaveWarning from '../common/ShowSaveWarning'
 import Modal from '../common/Modal'
 
 import Badges from './Badges'
-import Teams from './Teamsview'
+import Teamsview from './Teamsview'
 import WorkHistory from './WorkHistory'
 import UserLinks from './UserLinks'
 
@@ -349,7 +349,7 @@ class UserProfile extends Component {
 						<Badges />
 						<br />
 
-						<Teams
+						<Teamsview
 							teamsdata={this.state.userProfile.teams} />
 						<br />
 						<Button outline color='primary' onClick={this.handleSubmit}>

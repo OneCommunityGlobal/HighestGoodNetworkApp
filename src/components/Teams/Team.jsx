@@ -22,10 +22,10 @@ const Team = (props) => {
           <div className="isActive"><i className="fa fa-circle" aria-hidden="true"></i></div> :
           <div className="isNotActive"><i className="fa fa-circle-o" aria-hidden="true"></i></div>}
       </td>
-      <td><button type="button" className="btn btn-outline-info" onClick={(e) => { props.onMembersClick() }}>
+      <td><button type="button" className="btn btn-outline-info" onClick={(e) => { props.onMembersClick(props.teamId) }}>
         <i className="fa fa-users" aria-hidden="true"></i></button></td>
 
-      <td><button type="button" className="btn btn-outline-danger" onClick={(e) => { props.onDeleteClick(props.name, props.teamId) }}>{DELETE}</button></td>
+      <td><button type="button" className="btn btn-outline-danger" onClick={(e) => { props.onDeleteClick(props.name, props.teamId, props.active) }}>{DELETE}</button></td>
 
 
 

@@ -23,6 +23,7 @@ import { allTimeEntriesReducer } from './allTimeEntriesReducer'
 import { timeEntriesForSpecifiedPeriodReducer } from './timeEntriesForSpecifiedPeriodReducer'
 import { errorsReducer } from './errorsReducer'
 import { timeEntriesReducer } from './timeEntriesReducer'
+import { teamUsersReducer } from './teamsTeamMembersReducer'
 
 export default combineReducers({
 	auth: authReducer,
@@ -41,6 +42,7 @@ export default combineReducers({
 	userProjects: userProjectsReducer,
 	projectMembers: projectMembershipReducer,
 	allTeamsData: allUserTeamsReducer,
+	teamsTeamMembers: teamUsersReducer,
 	//team: teamByIdReducer,
 	//teamMembers: teamMembershipReducer,
 	//allTimeEntries: allTimeEntriesReducer,
