@@ -1,6 +1,6 @@
 import httpService from './httpService'
 
-const APIEndPoint = `${process.env.REACT_APP_APIENDPOINT}/userprofile`
+// const APIEndPoint = `${process.env.REACT_APP_APIENDPOINT}/userprofile`
 
 // export function getUserProfile(userId) {
 // 	return httpService.get(`${APIEndPoint}/${userId}`)

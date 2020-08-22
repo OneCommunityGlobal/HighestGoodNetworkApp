@@ -7,6 +7,7 @@ import { orange, silverGray, warningRed } from "../../constants/colors";
 import BlueSquare from "./BlueSquares";
 import Modal from "./UserProfileModal";
 import UserLinks from "./UserLinks";
+import FourOFour from "./FourOFour";
 
 // import Teams from "./UserTeams";
 
@@ -33,27 +34,33 @@ class UserProfile extends Component {
     if (this.props.match) {
       let userId = this.props.match.params.userId;
       await this.props.getUserProfile(userId);
-      await this.props.getUserTeamMembers(userId);
-      if (this.props.userProfile.firstName.length) {
-				if (!this.props.userProfile.privacySettings){
-					this.setState({
-						isLoading: false,
-						userProfile:{
-							...this.props.userProfile,
-							privacySettings:{
-								email: true,
-								phoneNumber: true,
-								blueSquares: true
-							}
-						}
-					});
-				}else{
-					this.setState({
-						isLoading: false,
-						userProfile: this.props.userProfile
-					});
-				}
-				
+      if ( this.props.userProfile === '404'){
+        this.setState({
+          isLoading: false
+        })
+      }else{
+        await this.props.getUserTeamMembers(userId);
+        if (this.props.userProfile.firstName.length) {
+          if (!this.props.userProfile.privacySettings){
+            this.setState({
+              isLoading: false,
+              userProfile:{
+                ...this.props.userProfile,
+                privacySettings:{
+                  email: true,
+                  phoneNumber: true,
+                  blueSquares: true
+                }
+              }
+            });
+          }else{
+            this.setState({
+              isLoading: false,
+              userProfile: this.props.userProfile
+            });
+          }
+          
+        }
       }
     }
   }
@@ -107,11 +114,6 @@ class UserProfile extends Component {
   };
 
   render() {
-    let { userId: targetUserId } = this.props.match
-      ? this.props.match.params
-      : { userId: undefined };
-    let { userid: requestorId, role: requestorRole } = this.props.auth.user;
-
     const { userProfile, isLoading, showModal } = this.state;
 
     let {
@@ -128,15 +130,31 @@ class UserProfile extends Component {
       teams,
     } = userProfile;
 
-    console.log( 'user profile data:', userProfile)
+    if (isLoading === true) {
+      return (
+        <Container fluid>
+          <Row className="text-center" data-test="loading">
+            <Loading />
+          </Row>
+        </Container>
+      )
+    }
+
+    if ( this.props.userProfile === "404"){
+      return <FourOFour />
+    }
+
+    let { userId: targetUserId } = this.props.match
+    ? this.props.match.params
+    : { userId: undefined };
+
+    let { userid: requestorId, role: requestorRole } = this.props.auth.user;
 
     let isUserSelf = targetUserId === requestorId;
     const isUserAdmin = requestorRole === "Administrator";
     let canEdit = isUserAdmin || isUserSelf;
 
-    if (isLoading === true) {
-      return <Loading />;
-    }
+
 
     return (
       <div>
@@ -161,7 +179,7 @@ class UserProfile extends Component {
           )}
 
           <Col>
-            <Row id="profileContainer" className={"profileContainer"}>
+            <Row id="profileContainer" className="profileContainer">
               <div className="whoSection">
                 <div>
                   <Image

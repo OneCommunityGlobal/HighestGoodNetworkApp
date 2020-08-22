@@ -13,8 +13,6 @@ export const userProfileByIdReducer = (userProfile = initialUserProfileState, ac
 	}
 
 	if (action.type === EDIT_USER_PROFILE) {
-		console.log('Payload is ', action.payload)
-
 		return { ...userProfile, ...action.payload }
 	}
 

@@ -9,13 +9,18 @@ import { ENDPOINTS } from '../utils/URL';
 
 export const getUserProfile = (userId) => {
   const url = ENDPOINTS.USER_PROFILE(userId);
-  return async (dispatch) => {
-    const res = await axios.get(url);
-    // console.log('userrprofie', res)
 
-    await dispatch(getUserProfileActionCreator(res.data));
+  return async (dispatch) => {
+    try {
+      const res = await axios.get(url);
+      await dispatch(getUserProfileActionCreator(res.data));
+    } catch (error) {
+      await dispatch(getUserProfileActionCreator('404'));
+    }
   };
 };
+
+
 
 export const editFirstName = data => (dispatch) => {
   dispatch(editFirstNameActionCreator(data));
@@ -36,8 +41,6 @@ export const updateUserProfile = (userId, userProfile) => {
   console.log('userProfile', userProfile);
   return async (dispatch) => {
     const res = await axios.put(url, userProfile);
-
-    // console.log('Result is ', res, userProfile)
 
     if (res.status === 200) {
       await dispatch(getUserProfileActionCreator(userProfile));
