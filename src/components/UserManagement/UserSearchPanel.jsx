@@ -12,18 +12,21 @@ const UserSearchPanel = (props) => {
       <div className="input-group-prepend" style={{ marginLeft: "10px" }}>
         <span className="input-group-text">{SEARCH}</span>
       </div>
-      <input type="text" className="form-control" aria-label="Search" placeholder="Search Text"
+      <input type="text" className="form-control" aria-label="Search"
+        placeholder="Search Text" id="user-profiles-wild-card-search"
         onChange={(e) => {
           props.onSearch(e.target.value);
         }} />
       <div className="input-group-prepend" style={{ marginLeft: "10px" }}>
         <span className="input-group-text">{SHOW}</span>
-        <select onChange={(e) => {
-          props.onActiveFiter(e.target.value);
-        }}>
+        <select id="active-filter-dropdown"
+          onChange={(e) => {
+            props.onActiveFiter(e.target.value);
+          }}>
           <option value="all">All</option>
           <option value="active">Active</option>
           <option value="inactive">Inactive</option>
+          <option value="paused">Paused</option>
         </select>
       </div>
 

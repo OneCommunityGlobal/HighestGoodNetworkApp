@@ -5,7 +5,7 @@
  * List the users in the application for administrator.
  *****************************************************************/
 import React from 'react'
-import { getAllUserProfile } from '../../actions/userManagement'
+import { getAllUserProfile, updateUserStatus, deleteUser } from '../../actions/userManagement'
 import { connect } from 'react-redux'
 import Loading from '../common/Loading'
 import UserTableHeader from './UserTableHeader'
@@ -15,6 +15,11 @@ import UserTableFooter from './UserTableFooter'
 import './usermanagement.css'
 import UserSearchPanel from './UserSearchPanel'
 import NewUserPopup from './NewUserPopup'
+import ActivationDatePopup from './ActivationDatePopup'
+import { UserStatus, UserDeleteType } from '../../utils/enums'
+import DeleteUserPopup from './DeleteUserPopup'
+import ActiveInactiveConfirmationPopup from './ActiveInactiveConfirmationPopup'
+import { Container } from 'reactstrap'
 
 class UserManagement extends React.PureComponent {
   filteredUserDataCount = 0;
@@ -30,7 +35,10 @@ class UserManagement extends React.PureComponent {
       wildCardSearchText: '',
       selectedPage: 1,
       pageSize: 10,
-      isActive: undefined
+      isActive: undefined,
+      activationDateOpen: false,
+      deletePopupOpen: false,
+      isPaused: false
     };
   }
 
@@ -44,32 +52,32 @@ class UserManagement extends React.PureComponent {
     let userTable = this.userTableElements(userProfiles);
     let roles = [...new Set(userProfiles.map(item => item.role))];
 
-    return <div className='container'>
+    return <Container fluid>
       {fetching ?
         <Loading /> :
         <React.Fragment>
-          <NewUserPopup
-            open={this.state.newUserPoupOPen}
-            onUserPopupClose={this.onUserPopupClose} />
+          {this.popupElements()}
           <UserSearchPanel
             onSearch={this.onWildCardSearch}
             onActiveFiter={this.onActiveFiter}
             onNewUserClick={this.onNewUserClick} />
-          <table className="table table-bordered table-responsive-sm">
-            <thead>
-              <UserTableHeader />
-              <UserTableSearchHeader
-                onFirstNameSearch={this.onFirstNameSearch}
-                onLastNameSearch={this.onLastNameSearch}
-                onRoleSearch={this.onRoleSearch}
-                onEmailSearch={this.onEmailSearch}
-                onWeeklyHrsSearch={this.onWeeklyHrsSearch}
-                roles={roles} />
-            </thead>
-            <tbody>
-              {userTable}
-            </tbody>
-          </table>
+          <div className="table-responsive">
+            <table className="table table-bordered">
+              <thead>
+                <UserTableHeader />
+                <UserTableSearchHeader
+                  onFirstNameSearch={this.onFirstNameSearch}
+                  onLastNameSearch={this.onLastNameSearch}
+                  onRoleSearch={this.onRoleSearch}
+                  onEmailSearch={this.onEmailSearch}
+                  onWeeklyHrsSearch={this.onWeeklyHrsSearch}
+                  roles={roles} />
+              </thead>
+              <tbody>
+                {userTable}
+              </tbody>
+            </table>
+          </div>
           <UserTableFooter
             datacount={this.filteredUserDataCount}
             selectedPage={this.state.selectedPage}
@@ -78,7 +86,36 @@ class UserManagement extends React.PureComponent {
             pageSize={this.state.pageSize} />
         </React.Fragment>
       }
-    </div>
+    </Container>
+  }
+
+  /**
+   * Returns the differenet popup components to render
+   * 1. Popup to show the reactivation date selection
+   * 2. Popup to show the profile creation (new user)
+   * 3. Popup to choose the delete option upon clicking delete button.
+   * 4. Popup to confirm the action of setting a user active or inactive upon the status column click.
+   */
+  popupElements = () => {
+    return <React.Fragment>
+      <ActivationDatePopup
+        open={this.state.activationDateOpen}
+        onClose={this.activationDatePopupClose}
+        onPause={this.pauseUser} />
+      <NewUserPopup
+        open={this.state.newUserPopupOpen}
+        onUserPopupClose={this.onUserPopupClose} />
+      <DeleteUserPopup
+        open={this.state.deletePopupOpen}
+        onClose={this.deletePopupClose}
+        onDelete={this.onDeleteUser} />
+      <ActiveInactiveConfirmationPopup
+        isActive={this.state.selectedUser ? this.state.selectedUser.isActive : false}
+        fullName={this.state.selectedUser ? (this.state.selectedUser.firstName + " " + this.state.selectedUser.lastName) : ""}
+        open={this.state.activeInactivePopupOpen}
+        setActiveInactive={this.setActiveInactive}
+        onClose={this.activeInactivePopupClose} />
+    </React.Fragment>
   }
 
   /**
@@ -89,19 +126,29 @@ class UserManagement extends React.PureComponent {
     if (userProfiles && userProfiles.length > 0) {
       let usersSearchData = this.filteredUserList(userProfiles);
       this.filteredUserDataCount = usersSearchData.length;
-      /* Builiding the table body for users users based on the page size and selected page number and returns 
-        the rows for currently selected page */
-      return usersSearchData.slice((this.state.selectedPage - 1) * this.state.pageSize, (this.state.selectedPage * this.state.pageSize))
+      let that = this;
+      /* Builiding the table body for users based on the page size and selected page number and returns 
+       * the rows for currently selected page . 
+       * Applying the Default sort in the order of created date as well
+       */
+      return usersSearchData.sort((a, b) => {
+        if (a.createdDate > b.createdDate) return -1;
+        if (a.createdDate < b.createdDate) return 1;
+        return 0;
+      }).slice((this.state.selectedPage - 1) * this.state.pageSize, (this.state.selectedPage * this.state.pageSize))
         .map((user, index) => {
           return <UserTableData
             key={'user_' + index}
             index={index}
             isActive={user.isActive}
-            firstName={user.firstName}
-            lastName={user.lastName}
-            role={user.role}
-            email={user.email}
-            weeklyComittedHours={user.weeklyComittedHours}
+            resetLoading={(this.state.selectedUser
+              && this.state.selectedUser._id === user._id
+              && this.state.activationDateOpen)}
+            onPauseResumeClick={that.onPauseResumeClick}
+            onDeleteClick={that.onDeleteButtonClick}
+            onActiveInactiveClick={that.onActiveInactiveClick}
+            onResetClick={that.onResetClick}
+            user={user}
           />
         });
     }
@@ -117,6 +164,7 @@ class UserManagement extends React.PureComponent {
         && (this.state.weeklyHrsSearchText === ''
           || user.weeklyComittedHours == this.state.weeklyHrsSearchText)
         && (this.state.isActive === undefined || user.isActive === this.state.isActive)
+        && (this.state.isPaused === false || user.reactivationDate)
         && this.state.wildCardSearchText === '')
         //the wild card serach, the search text can be match with any item
         || (this.state.wildCardSearchText !== '' &&
@@ -134,11 +182,110 @@ class UserManagement extends React.PureComponent {
   }
 
   /**
+   * Call back on Pause or Resume button click to trigger the action to update user status
+   */
+  onPauseResumeClick = (user, status) => {
+    if (status === UserStatus.Active) {
+      this.props.updateUserStatus(user, status, Date.now());
+    } else {
+      this.setState({
+        activationDateOpen: true,
+        selectedUser: user
+      })
+    }
+  }
+
+  /**
+   * call back function to close the activation date popup
+   */
+  activationDatePopupClose = () => {
+    this.setState({
+      activationDateOpen: false
+    })
+  }
+
+  /**
+  * Call back on Pause confirmation button click to trigger the action to update user status
+  */
+  pauseUser = (reActivationDate) => {
+    this.props.updateUserStatus(this.state.selectedUser, UserStatus.InActive, reActivationDate);
+    this.setState({
+      activationDateOpen: false,
+      selectedUser: undefined
+    })
+  }
+
+  /**
+   * Callback to trigger on the status (active/inactive) column click to show the confirmaton change the status
+   */
+  onActiveInactiveClick = (user) => {
+    this.setState({
+      activeInactivePopupOpen: true,
+      selectedUser: user
+    })
+  }
+
+  /**
+   * Callback to trigger the status change on confirmation ok click.
+   */
+  setActiveInactive = (isActive) => {
+    this.props.updateUserStatus(this.state.selectedUser, (isActive ? UserStatus.Active : UserStatus.Inactive), undefined);
+    this.setState({
+      activeInactivePopupOpen: false,
+      selectedUser: undefined
+    })
+  }
+
+  /**
+   * Callback to close the confirmation popup on close button click.
+   */
+  activeInactivePopupClose = () => {
+    this.setState({
+      activeInactivePopupOpen: false
+    })
+  }
+
+  /**
+   * Call back on delete button clic and triggering the delete action.
+   */
+  onDeleteButtonClick = (user) => {
+    this.setState({
+      deletePopupOpen: true,
+      selectedUser: user
+    })
+  }
+
+  /**
+   * Call back to trigger the delete based on the type chosen from the popup.
+   */
+  onDeleteUser = (deleteType) => {
+    if (deleteType === UserDeleteType.Inactive) {
+      this.props.updateUserStatus(this.state.selectedUser, UserStatus.InActive, undefined);
+    } else {
+      this.props.deleteUser(this.state.selectedUser, deleteType);
+    }
+    this.setState({
+      deletePopupOpen: false,
+      selectedUser: undefined
+    })
+  }
+
+  /**
+   * To hide the delete user popup upon close button click
+   */
+  deletePopupClose = () => {
+    this.setState({
+      deletePopupOpen: false
+    })
+  }
+
+  /**
    * Call back for search filter - First name
    */
   onFirstNameSearch = (searchText) => {
     this.setState({
-      firstNameSearchText: searchText
+      firstNameSearchText: searchText,
+      selectedPage: 1
     })
   }
 
@@ -147,7 +294,8 @@ class UserManagement extends React.PureComponent {
    */
   onLastNameSearch = (searchText) => {
     this.setState({
-      lastNameSearchText: searchText
+      lastNameSearchText: searchText,
+      selectedPage: 1
     })
   }
 
@@ -156,7 +304,8 @@ class UserManagement extends React.PureComponent {
    */
   onRoleSearch = (searchText) => {
     this.setState({
-      roleSearchText: searchText
+      roleSearchText: searchText,
+      selectedPage: 1
     })
   }
 
@@ -165,7 +314,8 @@ class UserManagement extends React.PureComponent {
    */
   onEmailSearch = (searchText) => {
     this.setState({
-      emailSearchText: searchText
+      emailSearchText: searchText,
+      selectedPage: 1
     })
   }
 
@@ -174,7 +324,8 @@ class UserManagement extends React.PureComponent {
    */
   onWeeklyHrsSearch = (searchText) => {
     this.setState({
-      weeklyHrsSearchText: searchText
+      weeklyHrsSearchText: searchText,
+      selectedPage: 1
     })
   }
 
@@ -192,7 +343,8 @@ class UserManagement extends React.PureComponent {
    */
   onSelectPageSize = (pageSize) => {
     this.setState({
-      pageSize: pageSize
+      pageSize: pageSize,
+      selectedPage: 1
     })
   }
 
@@ -201,7 +353,8 @@ class UserManagement extends React.PureComponent {
    */
   onWildCardSearch = (searchText) => {
     this.setState({
-      wildCardSearchText: searchText
+      wildCardSearchText: searchText,
+      selectedPage: 1
     })
   }
 
@@ -210,13 +363,24 @@ class UserManagement extends React.PureComponent {
    */
   onActiveFiter = (value) => {
     let active = undefined;
-    if (value === "active") {
-      active = true;
-    } else if (value === "inactive") {
-      active = false;
+    let paused = false;
+
+    switch (value) {
+      case "active":
+        active = true;
+        break;
+      case "inactive":
+        active = false;
+        break;
+      case "paused":
+        active = false;
+        paused = true;
     }
+
     this.setState({
-      isActive: active
+      isActive: active,
+      selectedPage: 1,
+      isPaused: paused
     })
   }
 
@@ -225,7 +389,7 @@ class UserManagement extends React.PureComponent {
    */
   onNewUserClick = () => {
     this.setState({
-      newUserPoupOPen: true
+      newUserPopupOpen: true
     })
   }
 
@@ -234,11 +398,11 @@ class UserManagement extends React.PureComponent {
    */
   onUserPopupClose = () => {
     this.setState({
-      newUserPoupOPen: false
+      newUserPopupOpen: false
     })
   }
 }
 
 const mapStateToProps = state => { return { state } }
-export default connect(mapStateToProps, { getAllUserProfile })(UserManagement)
+export default connect(mapStateToProps, { getAllUserProfile, updateUserStatus, deleteUser })(UserManagement)
 

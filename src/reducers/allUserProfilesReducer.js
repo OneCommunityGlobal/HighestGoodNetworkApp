@@ -23,9 +23,30 @@ export const allUserProfilesReducer = (userProfiles = userProfilesInitial, actio
     case types.FETCH_USER_PROFILES_ERROR:
       return { ...userProfiles, fetching: false, status: "404" }
 
-    case types.RECEIVE_USER_PROFILES:
+    case types.RECEIVE_ALL_USER_PROFILES:
       return updateObject(userProfiles, {
         userProfiles: action.payload,
+        fetching: false,
+        fetched: true,
+        status: "200"
+      });
+
+    case types.USER_PROFILE_UPDATE:
+      let index = userProfiles.userProfiles.findIndex(user => user._id == action.user._id);
+      return updateObject(userProfiles, {
+        userProfiles: Object.assign([...userProfiles.userProfiles.slice(0, index),
+        action.user,
+        ...userProfiles.userProfiles.slice(index + 1)]),
+        fetching: false,
+        fetched: true,
+        status: "200"
+      });
+
+    case types.USER_PROFILE_DELETE:
+      let deletedIndex = userProfiles.userProfiles.findIndex(user => user._id == action.user._id);
+      return updateObject(userProfiles, {
+        userProfiles: Object.assign([...userProfiles.userProfiles.slice(0, deletedIndex),
+        ...userProfiles.userProfiles.slice(deletedIndex + 1)]),
         fetching: false,
         fetched: true,
         status: "200"

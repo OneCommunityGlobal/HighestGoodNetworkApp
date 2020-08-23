@@ -20,7 +20,7 @@ const UserTableFooter = React.memo((props) => {
     <div id="ember745" className="table-nav col-md-6 col-sm-6 col-xs-6 ember-view">
       <div role="toolbar" className="btn-toolbar pull-right">
         <div role="group" className="btn-group">
-          <button type="button" className=" btn btn-default"
+          <button type="button" className="btn btn-default"
             onClick={(e) => {
               if (props.selectedPage > 1) {
                 props.onPageSelect(props.selectedPage - 1)
@@ -31,7 +31,7 @@ const UserTableFooter = React.memo((props) => {
             pageSize={props.pageSize}
             datacount={props.datacount}
             onPageSelect={onPageSelect} />
-          <button type="button" className="  btn btn-default"
+          <button type="button" className="btn btn-default"
             onClick={(e) => {
               if (props.selectedPage <= parseInt(props.datacount / props.pageSize)) {
                 props.onPageSelect(props.selectedPage + 1)
@@ -108,13 +108,13 @@ const PageLinks = React.memo((props) => {
  * Single page lin item 
  */
 const PageLinkItem = React.memo((props) => {
-  return <a href="#"
+  return <button
     style={{ fontWeight: (props.isSelected ? "bold" : "normal") }}
-    className="page-no-link "
+    className="page-no-link link-button"
     onClick={(e) => {
       e.preventDefault();
       props.onPageSelect(props.pageNo)
-    }} key={'page-' + props.pageNo}>{props.pageNo}</a>;
+    }} key={'page-' + props.pageNo}>{props.pageNo}</button>;
 });
 
 export default UserTableFooter;
