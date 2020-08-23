@@ -44,11 +44,6 @@ class Teams extends React.PureComponent {
     let numberOfTeams = allTeams.length;
     let numberOfActiveTeams = allTeams.filter(team => team.isActive).length;
 
-    let teamMembers = this.props.state.teamsTeamMembers;
-
-    this.state.teamUsers = teamMembers;
-
-
     return <Container fluid>
       {fetching ?
         <Loading /> :
@@ -142,9 +137,7 @@ class Teams extends React.PureComponent {
       <TeamMembersPopup
         open={this.state.teamMembersPopupOpen}
         onClose={this.onTeamMembersPopupClose}
-        members={this.state.teamUsers}
-
-
+        members={(this.props.state ? this.props.state.teamsTeamMembers: [])}
       />
       <CreateNewTeamPopup
         open={this.state.createNewTeamPopupOpen}

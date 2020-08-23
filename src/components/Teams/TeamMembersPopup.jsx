@@ -1,24 +1,37 @@
-import React from 'react'
-import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Input, Container } from 'reactstrap';
-
-
+/* eslint-disable react/prop-types */
+import React from 'react';
+import {
+  Button, Modal, ModalHeader, ModalBody, ModalFooter, Container,
+} from 'reactstrap';
 
 const TeamMembersPopup = React.memo((props) => {
-
-
-  const closePopup = (e) => { props.onClose() };
-
-  debugger;
-  return (<Container fluid>
-    <div className='container'>
+  const closePopup = () => { props.onClose(); };
+  return (
+    <Container fluid>
       <Modal isOpen={props.open} toggle={closePopup}>
         <ModalHeader toggle={closePopup}>Team Members</ModalHeader>
         <ModalBody style={{ textAlign: 'center' }}>
           <table className="table table-bordered table-responsive-sm">
-
-            <Header />
-
-
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>User Name</th>
+                <th>
+                  {' '}
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {props.members.teamMembers.length > 0
+                ? props.members.teamMembers.map((user, index) => (
+                  <tr>
+                    <td>{index + 1}</td>
+                    <td>{`${user.firstName} ${user.lastName}`}</td>
+                    <td><Button color="danger">Delete</Button></td>
+                  </tr>
+                ))
+                : <></>}
+            </tbody>
           </table>
 
         </ModalBody>
@@ -26,20 +39,8 @@ const TeamMembersPopup = React.memo((props) => {
           <Button color="secondary" onClick={closePopup}>Close</Button>
         </ModalFooter>
       </Modal>
-    </div>
-  </Container>)
+    </Container>
+  );
 });
-
-const Header = () => {
-  return (
-    <tr>
-      <th>#</th>
-      <th>First Name</th>
-      <th>Last Name</th>
-    </tr>
-  )
-}
-
-
 
 export default TeamMembersPopup;

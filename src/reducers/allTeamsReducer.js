@@ -1,30 +1,27 @@
-
-import * as types from '../constants/allTeamsConstants'
+/* eslint-disable no-underscore-dangle */
+/* eslint-disable no-case-declarations */
+import * as types from '../constants/allTeamsConstants';
 // import { object } from 'joi';
 
 const userTeamsInitial = {
   fetching: false,
   fetched: false,
   allTeams: [],
-  status: 404
-}
-
-export const updateObject = (oldObject, updatedProperties) => {
-  return {
-    ...oldObject,
-    ...updatedProperties
-  };
+  status: 404,
 };
 
+export const updateObject = (oldObject, updatedProperties) => ({
+  ...oldObject,
+  ...updatedProperties,
+});
+
 export const allUserTeamsReducer = (allTeams = userTeamsInitial, action) => {
-
   switch (action.type) {
-
     case types.FETCH_USER_TEAMS_START:
-      return { ...allTeams, fetching: true, status: "200" }
+      return { ...allTeams, fetching: true, status: '200' };
 
     case types.FETCH_USER_TEAMS_ERROR:
-      return { ...allTeams, fetching: false, status: "404" }
+      return { ...allTeams, fetching: false, status: '404' };
 
     case types.RECEIVE_ALL_USER_TEAMS:
       return updateObject(allTeams, {
@@ -32,7 +29,7 @@ export const allUserTeamsReducer = (allTeams = userTeamsInitial, action) => {
         allTeams: action.payload,
         fetching: false,
         fetched: true,
-        status: "200"
+        status: '200',
       });
     case types.ADD_NEW_TEAM:
       // return { ...allTeams }
@@ -40,45 +37,41 @@ export const allUserTeamsReducer = (allTeams = userTeamsInitial, action) => {
         allTeams: Object.assign([...allTeams.allTeams, action.payload]),
         fetching: false,
         fetched: true,
-        status: "200"
-      })
+        status: '200',
+      });
 
     case types.USER_TEAMS_UPDATE:
-      let index = allTeams.allTeams.findIndex(team => team._id == action.team._id);
+      const index = allTeams.allTeams.findIndex((team) => team._id === action.team._id);
       return updateObject(allTeams, {
         allTeams: Object.assign([...allTeams.allTeams.slice(0, index),
         action.team,
         ...allTeams.allTeams.slice(index + 1)]),
         fetching: false,
         fetched: true,
-        status: "200"
+        status: '200',
       });
 
     case types.TEAMS_DELETE:
       return updateObject(allTeams, {
-        allTeams: Object.assign(allTeams.allTeams.filter(item => item._id !== action.team)),
+        allTeams: Object.assign(allTeams.allTeams.filter((item) => item._id !== action.team)),
         fetching: false,
         fetched: true,
-        status: "200"
+        status: '200',
       });
-
 
     case types.UPDATE_TEAM:
-      debugger;
-      let index1 = allTeams.allTeams.findIndex(team => team._id == action.teamId)
+      const teams = Object.assign([...allTeams.allTeams]);
+      const updatedTeam = teams.find((team) => team._id === action.teamId);
+      updatedTeam.isActive = action.isActive;
       return updateObject(allTeams, {
-        allTeams: Object.assign([...allTeams.allTeams.slice(0, index1), {
-          _id: action.teamId,
-          isActive: action.isActive
-        }, ...allTeams.allTeams.slice(index1 + 1)])
-
+        allTeams: teams,
+        fetching: false,
+        fetched: true,
+        status: '200',
       });
 
-
-
-
     default:
-      return allTeams
+      return allTeams;
   }
 };
 // if (item._id === action.teamId) {
