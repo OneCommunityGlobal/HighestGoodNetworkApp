@@ -1,25 +1,25 @@
-import React, { useState } from "react";
-import { Card, Row, Col } from "reactstrap";
-import { useSelector } from "react-redux";
-import ReactHtmlParser from "react-html-parser";
-import moment from "moment";
+import React, { useState } from 'react'
+import { Card, Row, Col } from 'reactstrap'
+import { useSelector } from 'react-redux'
+import ReactHtmlParser from 'react-html-parser'
+import moment from 'moment'
 
-import "./Timelog.css";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faEdit } from "@fortawesome/free-regular-svg-icons";
-import { postTimeEntry, editTimeEntry } from "../../actions/timeEntries";
-import TimeEntryForm from "./TimeEntryForm";
-import DeleteModal from "./DeleteModal";
+import './Timelog.css'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faEdit, faSquare } from '@fortawesome/free-regular-svg-icons'
+import { postTimeEntry, editTimeEntry } from '../../actions/timeEntries'
+import TimeEntryForm from './TimeEntryForm'
+import DeleteModal from './DeleteModal'
 
 const TimeEntry = ({ data, displayYear }) => {
-  const [modal, setModal] = useState(false);
-  const toggle = () => setModal((modal) => !modal);
+  const [modal, setModal] = useState(false)
+  const toggle = () => setModal(modal => !modal)
 
-  const dateOfWork = moment(data.dateOfWork);
-  const { user } = useSelector((state) => state.auth);
-  const isOwner = data.personId === user.userid;
-  const isSameDay = moment().isSame(data.dateOfWork, "day");
-  const isAdmin = user.role === "Administrator";
+  const dateOfWork = moment(data.dateOfWork)
+  const { user } = useSelector(state => state.auth)
+  const isOwner = data.personId === user.userid
+  const isSameDay = moment().isSame(data.dateOfWork, 'day')
+  const isAdmin = user.role === 'Administrator'
 
   return (
     <Card className="mb-1 p-2">
@@ -27,16 +27,11 @@ const TimeEntry = ({ data, displayYear }) => {
         <Col md={3} className="date-block px-0">
           <div className="date-div">
             <div>
-              <h4>{dateOfWork.format("MMM D")}</h4>
-              {displayYear && <h5>{dateOfWork.format("YYYY")}</h5>}
-              <h5 className="text-info">{dateOfWork.format("dddd")}</h5>
+              <h4>{dateOfWork.format('MMM D')}</h4>
+              {displayYear && <h5>{dateOfWork.format('YYYY')}</h5>}
+              <h5 className="text-info">{dateOfWork.format('dddd')}</h5>
               {data.editCount > 5 && (
-                <input
-                  type="checkbox"
-                  name="BlueBadge"
-                  checked="true"
-                  readOnly
-                />
+                <FontAwesomeIcon icon={faSquare} className="mr-1 text-primary" />
               )}
             </div>
           </div>
@@ -47,23 +42,14 @@ const TimeEntry = ({ data, displayYear }) => {
           </h4>
           <div className="text-muted">Project:</div>
           <h6> {data.projectName} </h6>
-          <span className="text-muted">Tangible: </span>{" "}
-          <input
-            type="checkbox"
-            name="isTangible"
-            checked={data.isTangible}
-            readOnly
-          />
+          <span className="text-muted">Tangible: </span>{' '}
+          <input type="checkbox" name="isTangible" checked={data.isTangible} readOnly />
         </Col>
         <Col md={5} className="pl-2 pr-0">
           <div className="text-muted">Notes:</div>
           {ReactHtmlParser(data.notes)}
           <div className="buttons">
-            {(isAdmin ||
-              (!data.isTangible &&
-                isOwner &&
-                isSameDay &&
-                data.editCount <= 5)) && (
+            {(isAdmin || (!data.isTangible && isOwner && isSameDay && data.editCount <= 5)) && (
               <span>
                 <FontAwesomeIcon
                   icon={faEdit}
@@ -87,7 +73,7 @@ const TimeEntry = ({ data, displayYear }) => {
         </Col>
       </Row>
     </Card>
-  );
-};
+  )
+}
 
-export default TimeEntry;
+export default TimeEntry
