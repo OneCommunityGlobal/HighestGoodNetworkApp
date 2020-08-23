@@ -25,5 +25,6 @@ export const ENDPOINTS = {
   TASK_UPDATE: taskId => `${APIEndpoint}/task/update/${taskId}`,
   GET_USER_BY_NAME: name => `${APIEndpoint}/userprofile/name/${name}`,
   FIX_TASKS: wbsId => `${APIEndpoint}/tasks/${wbsId}`,
-  UPDATE_PARENT_TASKS: wbsId => `${APIEndpoint}/task/updateAllParents/${wbsId}`
+  UPDATE_PARENT_TASKS: wbsId => `${APIEndpoint}/task/updateAllParents/${wbsId}`,
+  MOVE_TASKS: wbsId => `${APIEndpoint}/tasks/moveTasks/${wbsId}`,
 }

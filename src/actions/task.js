@@ -81,6 +81,18 @@ export const updateNumList = (wbsId, list) => {
 
 }
 
+export const moveTasks = (wbsId, fromNum, toNum) => {
+  const url = ENDPOINTS.MOVE_TASKS(wbsId);
+  return async dispatch => {
+    try {
+      const res = await axios.put(url, { fromNum, toNum });
+    } catch (err) {
+
+    }
+    dispatch(setTasksError());
+  }
+}
+
 export const fetchAllTasks = (wbsId) => {
   return async dispatch => {
     await axios.put(ENDPOINTS.UPDATE_PARENT_TASKS(wbsId));
@@ -189,7 +201,7 @@ export const swapTasks = (tasks, status) => {
 }
 
 export const updateNums = (updatedList) => {
-  //console.log('updated list', updatedList);
+  console.log('updated list', updatedList);
   return {
     type: types.UPDATE_NUMS,
     updatedList

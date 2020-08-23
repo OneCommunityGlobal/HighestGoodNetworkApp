@@ -2,18 +2,23 @@
  * Component: TAK
  * Author: Henry Ng - 21/03/20
  ********************************************************************************/
-import React from 'react'
+import React, { useState } from 'react'
 import { connect } from 'react-redux'
-import { Button } from 'reactstrap';
+import { Button, Dropdown, DropdownItem, DropdownToggle, DropdownMenu } from 'reactstrap';
 import AddTaskModal from '../AddTask/AddTaskModal';
 import EditTaskModal from "../EditTask/EditTaskModal";
+import { moveTasks, fetchAllTasks } from "../../../../../actions/task.js";
 import './tagcolor.css';
 import './task.css';
 
 const Task = (props) => {
   const startedDate = new Date(props.startedDatetime);
   const dueDate = new Date(props.dueDatetime);
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const toggle = () => setDropdownOpen(prevState => !prevState);
+
   let isOpen = true;
+  let passCurrentNum = false;
 
 
   let controllerToggle = true;
@@ -83,11 +88,12 @@ const Task = (props) => {
   const drag = (ev, from) => {
     //props.drag(from, props.parentId);
     //document.getElementById(`taskDrop_${from}`).style.display = 'none';
+    //console.log(from);
   }
 
   const drop = (ev, to) => {
     ev.preventDefault();
-
+    //console.log(to);
     //props.drop(to, props.parentId);
   }
 
@@ -108,6 +114,14 @@ const Task = (props) => {
     props.deleteTask(taskId);
   }
 
+  const onMove = (from, to) => {
+    const fromNum = from.split('.0').join('');
+    const toNum = to.split('.0').join('');
+    props.moveTasks(props.wbsId, from, to);
+    setTimeout(() => {
+      props.fetchAllTasks(props.wbsId);
+    }, 4000);
+  }
 
 
 
@@ -227,11 +241,30 @@ const Task = (props) => {
 
           <Button color="danger" size="sm" className='controlBtn controlBtn_remove' onClick={() => deleteTask(props.id)}>Remove</Button>
 
+          <Dropdown direction="up" isOpen={dropdownOpen} toggle={toggle} style={{ float: "left" }}>
+            <DropdownToggle caret caret color="primary" size="sm" >
+              Move to
+                </DropdownToggle>
+            <DropdownMenu >
+              {props.siblings.map((item, i) => {
+                if (item.num !== props.num) {
+                  return (
+                    <DropdownItem key={i} onClick={(e) => onMove(props.num, item.num)}>{item.num.split('.0')[0]}</DropdownItem>
+                  )
+                } else {
+                  passCurrentNum = true;
+                }
+              })}
+            </DropdownMenu>
+          </Dropdown>
+
+
+
         </td>
       </tr>
     </React.Fragment >
   )
 }
 
-export default connect(null)(Task)
+export default connect(null, { moveTasks, fetchAllTasks })(Task)
 
