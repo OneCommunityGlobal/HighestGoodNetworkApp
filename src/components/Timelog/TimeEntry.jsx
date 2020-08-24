@@ -49,7 +49,7 @@ const TimeEntry = ({ data, displayYear }) => {
           <div className="text-muted">Notes:</div>
           {ReactHtmlParser(data.notes)}
           <div className="buttons">
-            {(isAdmin || (!data.isTangible && isOwner && isSameDay && data.editCount <= 5)) && (
+            {(isAdmin || (!data.isTangible && isOwner && isSameDay)) && (
               <span>
                 <FontAwesomeIcon
                   icon={faEdit}
