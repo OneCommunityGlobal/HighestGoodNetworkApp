@@ -147,8 +147,11 @@ export class WeeklySummary extends Component {
     this.setState({ formElements, errors });
   }
 
+
   handleSave = async event => {
     event.preventDefault();
+    // Providing a custom toast id to prevent duplicate.
+    const toastIdOnSave = 'toast-on-save';
 
     const errors = this.validate();
     this.setState({ errors: errors || {} });
@@ -167,9 +170,9 @@ export class WeeklySummary extends Component {
     const saveResult = await this.props.updateWeeklySummaries(this.props.currentUser.userid, modifiedWeeklySummaries);
 
     if (saveResult === 200) {
-      toast.success("✔ The data was saved successfully!");
+      toast.success("✔ The data was saved successfully!", { toastId: toastIdOnSave, pauseOnFocusLoss: false, autoClose: 3000 });
     } else {
-      toast.error("✘ The data could not be saved!");
+      toast.error("✘ The data could not be saved!", { toastId: toastIdOnSave, pauseOnFocusLoss: false, autoClose: 3000 });
     }
   };
 
