@@ -445,7 +445,13 @@ class EditProfile extends Component {
 		let canEditFields = isUserAdmin || isUserSelf
 
 		if (isLoading === true) {
-			return <Loading />
+			return (
+        <Container fluid>
+          <Row className="text-center" data-test="loading">
+            <Loading />
+          </Row>
+        </Container>
+			)		
 		}
 
 		console.log("prof:", userProfile)

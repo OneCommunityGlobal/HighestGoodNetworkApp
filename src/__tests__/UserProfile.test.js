@@ -85,14 +85,8 @@ describe('UserProfile Redux related actions', () => {
       await store.dispatch(getUserProfile('1234'));
       expect(userProfileSlice().personalLinks).toHaveProperty([0], {Name: 'personal', Link:'https://www.google.com/'})
     });
-
-
-
-
     
   })
-
-
 
 });
 

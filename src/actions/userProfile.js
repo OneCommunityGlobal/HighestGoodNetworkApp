@@ -15,7 +15,7 @@ export const getUserProfile = (userId) => {
       const res = await axios.get(url);
       await dispatch(getUserProfileActionCreator(res.data));
     } catch (error) {
-      await dispatch(getUserProfileActionCreator('404'));
+      await dispatch(getUserProfileActionCreator({message:error}));
     }
   };
 };

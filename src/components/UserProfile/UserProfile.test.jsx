@@ -3,7 +3,8 @@ import { shallow } from 'enzyme';
 import UserProfile from './UserProfile';
 import { render, screen } from '@testing-library/react';
 import { findByTestAtrr } from '../../../Utils'
-import { before } from 'lodash';
+import { before, iteratee } from 'lodash';
+import { expectation } from 'sinon';
 
 const setUp = (props={}) => {
   const component = shallow(<UserProfile {...props} />);
@@ -12,31 +13,33 @@ const setUp = (props={}) => {
 
 describe(' User Profile Component', () => {
 
-  let component;
-  beforeEach(() => {
-    component = setUp();
-  });
-
-  it('Should render without errors', () => {
-    const wrapper = findByTestAtrr(component, 'loading');
-    expect(wrapper.length).toBe(1);
-  });
-
-  // describe('On page load', () => {
-
-  //   it('displays loading indicator', () => {
-  //     const props = {
-  //       userid: '1',
-  //       isLoading: true,
-  //     }
-
-  //     // render(<UserProfile {...props} />);
-      
-  //     const component = shallow(<UserProfile {...props} />)
-  //     const wrapper = component.find('loading');
-  //     expect(wrapper.length).toBe(1);
-  //   });
+  // let component;
+  // beforeEach(() => {
+  //   component = setUp();
   // });
+
+  // it('Should render without errors', () => {
+  //   const wrapper = findByTestAtrr(component, 'loading');
+  //   expect(wrapper.length).toBe(1);
+  // });
+
+  describe('On page load', () => {
+    
+    let wrapper;
+    beforeEach(() => {
+      const props = {
+        userid: '1',
+        isLoading: true,
+      };
+      wrapper = setUp(props)
+    })
+
+    it('Displays loading without errors', () => {
+      const component = findByTestAtrr(wrapper, 'loading');
+      expect(component.length).toBe(1);
+    })
+
+  });
 
 
   // describe('On page load', () => {

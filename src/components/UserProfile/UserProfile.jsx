@@ -30,6 +30,17 @@ class UserProfile extends Component {
 		}
   };
 
+  // async componentDidMount() {
+
+  //   let userId = this.props.match.params.userId;
+  //   await this.props.getUserProfile(userId);
+
+  //   this.setState({
+  //     isLoading: this.props.isLoading,
+  //   })
+
+  // }
+
   async componentDidMount() {
     if (this.props.match) {
       let userId = this.props.match.params.userId;
@@ -59,7 +70,6 @@ class UserProfile extends Component {
               userProfile: this.props.userProfile
             });
           }
-          
         }
       }
     }
@@ -114,7 +124,7 @@ class UserProfile extends Component {
   };
 
   render() {
-    const { userProfile, isLoading, showModal } = this.state;
+    const { userProfile, isLoading, error, showModal } = this.state;
 
     let {
       firstName,
@@ -130,7 +140,19 @@ class UserProfile extends Component {
       teams,
     } = userProfile;
 
-    if (isLoading === true) {
+    // if (error) {
+    //   return (
+    //     <Container>
+    //       <Row className="align-self-center" data-testid="error">
+    //         <Col>
+    //           <div color="danger"> Fetch error! {error} </div>
+    //         </Col>
+    //       </Row>
+    //     </Container>
+    //   );
+    // }
+
+    if (isLoading) {
       return (
         <Container fluid>
           <Row className="text-center" data-test="loading">
@@ -140,7 +162,7 @@ class UserProfile extends Component {
       )
     }
 
-    if ( this.props.userProfile === "404"){
+    if ( this.props.userProfile === '404'){
       return <FourOFour />
     }
 
@@ -153,6 +175,11 @@ class UserProfile extends Component {
     let isUserSelf = targetUserId === requestorId;
     const isUserAdmin = requestorRole === "Administrator";
     let canEdit = isUserAdmin || isUserSelf;
+
+
+    console.log('this.state:', this.state)
+
+    console.log('this.props.userProfile', this.props.userProfile)
 
 
 
