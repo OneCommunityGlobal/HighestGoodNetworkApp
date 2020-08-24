@@ -55,6 +55,18 @@ const TimeEntryForm = ({ userId, edit, data, isOpen, toggle, timer }) => {
       notification: !reminder.notification,
     }))
 
+  const cancelChange = () => {
+    setReminder(reminder => ({
+      ...reminder,
+      notification: !reminder.notification,
+    }))
+    setInputs(inputs => ({
+      ...inputs,
+      hours: data.hours,
+      minutes: data.minutes,
+    }))
+  }
+
   useEffect(() => {
     const fetchProjects = async userId => {
       await dispatch(getUserProjects(userId))
@@ -405,6 +417,11 @@ const TimeEntryForm = ({ userId, edit, data, isOpen, toggle, timer }) => {
             <Button onClick={openModal} color="primary">
               close
             </Button>
+            {edit && (data.hours != inputs.hours || data.minutes != inputs.minutes) && (
+              <Button onClick={cancelChange} color="secondary">
+                Cancel
+              </Button>
+            )}
           </ModalFooter>
         </Modal>
       </ModalBody>
@@ -416,9 +433,6 @@ const TimeEntryForm = ({ userId, edit, data, isOpen, toggle, timer }) => {
         </Button>
         <Button onClick={handleSubmit} color="primary">
           {edit ? 'Save' : 'Submit'}
-        </Button>
-        <Button onClick={toggle} color="danger">
-          Cancel
         </Button>
       </ModalFooter>
     </Modal>
