@@ -89,9 +89,9 @@ export class WeeklySummary extends Component {
 
   schema = {
     mediaUrl: Joi.string().trim().uri().required().label("Media URL"),
-    summary: Joi.optional(),
-    summaryLastWeek: Joi.optional(),
-    summaryBeforeLast: Joi.optional(),
+    summary: Joi.string().allow('').regex(/^\s*(?:\S+(?:\s+|$)){50,}$/).label("Minimum 50 words"), // Allow empty string OR the minimum word count of 50 (handle words that also use non-ASCII characters by counting whitespace rather than word character sequences).
+    summaryLastWeek: Joi.string().allow('').regex(/^\s*(?:\S+(?:\s+|$)){50,}$/).label("Minimum 50 words"),
+    summaryBeforeLast: Joi.string().allow('').regex(/^\s*(?:\S+(?:\s+|$)){50,}$/).label("Minimum 50 words"),
     weeklySummariesCount: Joi.optional(),
     mediaConfirm: Joi.boolean().invalid(false).label("Media Confirm"),
   };
@@ -113,6 +113,13 @@ export class WeeklySummary extends Component {
     return error ? error.details[0].message : null;
   };
 
+  validateEditorProperty = (content, name) => {
+    const obj = { [name]: content };
+    const schema = { [name]: this.schema[name] };
+    const { error } = Joi.validate(obj, schema);
+    return error ? error.details[0].message : null;
+  };
+
   handleInputChange = (event) => {
     event.persist();
     const { name, value } = event.target;
@@ -128,9 +135,14 @@ export class WeeklySummary extends Component {
   };
 
   handleEditorChange = (content, editor) => {
+    const errors = { ...this.state.errors };
+    const errorMessage = this.validateEditorProperty(content, editor.id);
+    if (errorMessage) errors[editor.id] = errorMessage;
+    else delete errors[editor.id];
+
     const formElements = { ...this.state.formElements };
     formElements[editor.id] = content;
-    this.setState({ formElements });
+    this.setState({ formElements, errors });
   };
 
   handleCheckboxChange = (event) => {
@@ -239,7 +251,7 @@ export class WeeklySummary extends Component {
                     <Col>
                       <FormGroup>
                         <Label for={summaryName}>
-                          Enter your weekly summary below. <WeeklySummaryContentTooltip tabId={tId} />
+                          Enter your weekly summary below. (required) <WeeklySummaryContentTooltip tabId={tId} />
                         </Label>
                         <Editor
                           init={{
@@ -260,6 +272,7 @@ export class WeeklySummary extends Component {
                           onEditorChange={this.handleEditorChange}
                         />
                       </FormGroup>
+                      {(errors.summary || errors.summaryLastWeek || errors.summaryBeforeLast) && <Alert color="danger">The summary must contain a minimum of 50 words.</Alert>}
                     </Col>
                   </Row>
                 </TabPane>
