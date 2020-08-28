@@ -19,6 +19,7 @@
     "lodash": ">4.17.13",
     "moment": "^2.22.2",
     "react": "^16.12.0",
+    "react-autocomplete": "^1.8.1",
     "react-bootstrap": "^1.0.0-beta.9",
     "react-dom": "^16.12.0",
     "react-html-parser": "^2.0.2",

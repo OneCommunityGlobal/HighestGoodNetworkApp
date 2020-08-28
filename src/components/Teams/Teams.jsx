@@ -1,5 +1,6 @@
 import React from 'react';
-import { getAllUserTeams, postNewTeam, deleteUser, updateTeam, getTeamMembers } from '../../actions/allTeamsAction'
+import { getAllUserTeams, postNewTeam, deleteUser, updateTeam, getTeamMembers, deleteTeamMember } from '../../actions/allTeamsAction'
+import { getAllUserProfile } from '../../actions/userManagement'
 // import { defaults } from 'lodash';
 import { connect } from 'react-redux'
 import Loading from '../common/Loading'
@@ -28,13 +29,14 @@ class Teams extends React.PureComponent {
       selectedTeamId: 0,
       selectedTeam: '',
       isActive: '',
-      teamUsers: [],
+
     }
   }
 
   componentDidMount() {
     // Initiating the teams fetch action.
     this.props.getAllUserTeams();
+    this.props.getAllUserProfile();
   }
 
   render() {
@@ -43,7 +45,7 @@ class Teams extends React.PureComponent {
     let teamTable = this.teamTableElements(allTeams);
     let numberOfTeams = allTeams.length;
     let numberOfActiveTeams = allTeams.filter(team => team.isActive).length;
-
+    debugger;
     return <Container fluid>
       {fetching ?
         <Loading /> :
@@ -134,10 +136,14 @@ class Teams extends React.PureComponent {
 
   teampopupElements = () => {
     return <React.Fragment>
+
       <TeamMembersPopup
+
         open={this.state.teamMembersPopupOpen}
         onClose={this.onTeamMembersPopupClose}
-        members={(this.props.state ? this.props.state.teamsTeamMembers: [])}
+        members={(this.props.state ? this.props.state.teamsTeamMembers : [])}
+        onDeleteClick={this.onDeleteTeamMember}
+        usersdata={this.props.state ? this.props.state.allUserProfiles : []}
       />
       <CreateNewTeamPopup
         open={this.state.createNewTeamPopupOpen}
@@ -267,7 +273,7 @@ class Teams extends React.PureComponent {
      */
 
   onDeleteUser = (deletedId) => {
-    debugger;
+
     this.props.deleteUser(deletedId, 'delete')
     alert("Team deleted successfully");
     this.setState({
@@ -286,7 +292,12 @@ class Teams extends React.PureComponent {
     alert("Status Updated Successfully")
   }
 
+  onDeleteTeamMember = (deletedUserId) => {
+    this.props.deleteTeamMember(deletedUserId)
+    alert("Deleted Succefully")
+  }
+
 
 }
 const mapStateToProps = state => { return { state } }
-export default connect(mapStateToProps, { getAllUserTeams, postNewTeam, deleteUser, updateTeam, getTeamMembers })(Teams)
+export default connect(mapStateToProps, { getAllUserProfile, getAllUserTeams, postNewTeam, deleteUser, updateTeam, getTeamMembers, deleteTeamMember })(Teams)

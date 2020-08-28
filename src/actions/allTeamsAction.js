@@ -14,6 +14,7 @@ import {
   FETCH_TEAM_USERS_START,
   RECEIVE_TEAM_USERS,
   FETCH_TEAM_USERS_ERROR,
+  TEAM_MEMBER_DELETE,
 } from '../constants/allTeamsConstants';
 
 /**
@@ -59,7 +60,7 @@ export const addNewTeam = (payload, status) => ({
   status,
 });
 /**
- * Delete user profile action
+ * Delete team action
  * @param {*} team : the deleted team
  */
 export const teamsDeleteAction = (team) => ({
@@ -83,7 +84,7 @@ export const teamUsersFetchAction = () => ({
 });
 
 /**
- * set allteams in store
+ * setting team users in store
  * @param payload : allteams []
  */
 export const teamUsersFetchCompleteAction = (payload) => ({
@@ -91,11 +92,19 @@ export const teamUsersFetchCompleteAction = (payload) => ({
   payload,
 });
 
+/**
+ * Error when setting the team users list
+ * @param payload : error status code
+ */
 export const teamUsersFetchErrorAction = (payload) => ({
   type: FETCH_TEAM_USERS_ERROR,
   payload,
 });
 
+export const teamMemberDeleteAction = (member) => ({
+  type: TEAM_MEMBER_DELETE,
+  member,
+});
 /**
  * fetching all user teams
  */
@@ -111,7 +120,7 @@ export const getAllUserTeams = () => {
   };
 };
 /**
- * posting new user
+ * posting new team
  */
 export const postNewTeam = (name, status) => {
   const data = { teamName: name, isActive: status };
@@ -124,27 +133,11 @@ export const postNewTeam = (name, status) => {
   };
 };
 
-/**
- * update the teams
- * @param {*} team - the team to be updated
- * @param {*} status  - Active/InActive
- */
-export const updateTeamsStatus = (team, status, reactivationDate) => {
-  const allTeams = { ...team };
-  allTeams.isActive = (status === UserStatus.Active);
-  allTeams.reactivationDate = reactivationDate;
-  const patchData = { status, reactivationDate };
-  const updateTeamsPromise = axios.patch(ENDPOINTS.TEAM(team._id), patchData);
-  return async (dispatch) => {
-    updateTeamsPromise.then(() => {
-      dispatch(userTeamsUpdateAction(allTeams));
-    });
-  };
-};
+
 
 /**
  * delete an existing team
- * @param {*} team  - the team to be deleted
+ * @param {*} teamId  - the team to be deleted
  * @param {*} option - archive / delete
  */
 
@@ -160,6 +153,9 @@ export const deleteUser = (teamId) => {
   };
 };
 
+/**
+ * updating the team status
+ */
 export const updateTeam = (teamName, teamId, isActive) => {
   const requestData = { teamName, isActive };
   const deleteTeamPromise = axios.put(ENDPOINTS.TEAM_DATA(teamId), requestData);
@@ -170,6 +166,9 @@ export const updateTeam = (teamName, teamId, isActive) => {
   };
 };
 
+/**
+ * fetching team members
+ */
 export const getTeamMembers = (teamId) => {
   const teamMembersPromise = axios.get(ENDPOINTS.TEAM_USERS(teamId));
   return async (dispatch) => {
@@ -181,3 +180,22 @@ export const getTeamMembers = (teamId) => {
     });
   };
 };
+
+/**
+ * delete an existing team member
+ * @param {*} teamId  - the team to be deleted
+ * @param {*} option - archive / delete
+ */
+
+export const deleteTeamMember = (teamId) => {
+  // const requestData = { option: option, teamId: team._id };
+  const teamMemberDeletePromise = axios.get(ENDPOINTS.TEAM_USERS(teamId));
+  return async (dispatch) => {
+    teamMemberDeletePromise.then(() => {
+      dispatch(teamMemberDeleteAction(teamId));
+    }).catch(() => {
+      dispatch(teamMemberDeleteAction(teamId));
+    });
+  };
+};
+

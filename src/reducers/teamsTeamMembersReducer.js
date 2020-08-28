@@ -14,7 +14,7 @@ export const updateObject = (oldObject, updatedProperties) => {
     ...updatedProperties
   };
 };
-debugger;
+
 export const teamUsersReducer = (teamMembers = teamUsersInitial, action) => {
 
   switch (action.type) {
@@ -33,6 +33,16 @@ export const teamUsersReducer = (teamMembers = teamUsersInitial, action) => {
         fetched: true,
         status: "200"
       });
+
+    case types.TEAM_MEMBER_DELETE:
+      debugger;
+      return updateObject(teamMembers, {
+        teamMembers: Object.assign(teamMembers.teamMembers.filter((item) => item._id !== action.member)),
+        fetching: false,
+        fetched: true,
+        status: '200',
+      });
+
     default:
       return teamMembers
   }
