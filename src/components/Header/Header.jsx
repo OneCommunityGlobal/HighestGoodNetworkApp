@@ -22,7 +22,7 @@ import {
 } from 'reactstrap'
 import { UserRole } from '../../utils/enums'
 
-class Header extends React.Component {
+export class Header extends React.Component {
   state = {}
 
   componentDidMount() {

@@ -1,5 +1,4 @@
 
-import { shallow, mount } from 'enzyme';
 import { renderWithProvider, renderWithRouterMatch } from './utils.js'
 import '@testing-library/jest-dom/extend-expect'
 import React from 'react';
