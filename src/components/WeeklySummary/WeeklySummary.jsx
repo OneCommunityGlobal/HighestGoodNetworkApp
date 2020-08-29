@@ -87,11 +87,13 @@ export class WeeklySummary extends Component {
     };
   }
 
+  // Minimum word count of 50 (handle words that also use non-ASCII characters by counting whitespace rather than word character sequences).
+  regexPattern = new RegExp(/^\s*(?:\S+(?:\s+|$)){50,}$/);
   schema = {
     mediaUrl: Joi.string().trim().uri().required().label("Media URL"),
-    summary: Joi.string().allow('').regex(/^\s*(?:\S+(?:\s+|$)){50,}$/).label("Minimum 50 words"), // Allow empty string OR the minimum word count of 50 (handle words that also use non-ASCII characters by counting whitespace rather than word character sequences).
-    summaryLastWeek: Joi.string().allow('').regex(/^\s*(?:\S+(?:\s+|$)){50,}$/).label("Minimum 50 words"),
-    summaryBeforeLast: Joi.string().allow('').regex(/^\s*(?:\S+(?:\s+|$)){50,}$/).label("Minimum 50 words"),
+    summary: Joi.string().allow('').regex(this.regexPattern).label("Minimum 50 words"), // Allow empty string OR the minimum word count of 50.
+    summaryLastWeek: Joi.string().allow('').regex(this.regexPattern).label("Minimum 50 words"),
+    summaryBeforeLast: Joi.string().allow('').regex(this.regexPattern).label("Minimum 50 words"),
     weeklySummariesCount: Joi.optional(),
     mediaConfirm: Joi.boolean().invalid(false).label("Media Confirm"),
   };
