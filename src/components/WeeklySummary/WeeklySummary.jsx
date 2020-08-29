@@ -137,8 +137,10 @@ export class WeeklySummary extends Component {
   };
 
   handleEditorChange = (content, editor) => {
+    // Filter out blank pagagraphs inserted by tinymce replacing new line characters. Need those removed so Joi could do word count checks properly.
+    const filteredContent = content.replace(/<p>&nbsp;<\/p>/g, '');
     const errors = { ...this.state.errors };
-    const errorMessage = this.validateEditorProperty(content, editor.id);
+    const errorMessage = this.validateEditorProperty(filteredContent, editor.id);
     if (errorMessage) errors[editor.id] = errorMessage;
     else delete errors[editor.id];
 
