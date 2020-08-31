@@ -9,8 +9,11 @@ import { dashboardDataReducer } from './dashboardDataReducer';
 import { weeklyDashboardDataReducer } from './weeklyDashboardDataReducer';
 import { monthlyDashboardDataReducer } from './monthlyDashboardDataReducer';
 import { leaderboardDataReducer } from './leaderboardDataReducer';
+<<<<<<< HEAD
 import { weeklySummariesReducer } from './weeklySummariesReducer';
 import { weeklySummariesReportReducer } from './weeklySummariesReportReducer';
+=======
+>>>>>>> WBS2.2.1
 import { actionItemsReducer } from './actionItemsReducer';
 import { notificationsReducer } from './notificationsReducer';
 import { allProjectsReducer } from './allProjectsReducer';
@@ -25,6 +28,10 @@ import { allTimeEntriesReducer } from './allTimeEntriesReducer';
 import { timeEntriesForSpecifiedPeriodReducer } from './timeEntriesForSpecifiedPeriodReducer';
 import { errorsReducer } from './errorsReducer';
 import { timeEntriesReducer } from './timeEntriesReducer';
+<<<<<<< HEAD
+=======
+import { managingTeamsReducer } from './managingTeamsReducer';
+>>>>>>> WBS2.2.1
 
 export default combineReducers({
   auth: authReducer,
@@ -34,8 +41,11 @@ export default combineReducers({
   // userProjectMembers: userProjectMembersReducer,
   // dashboardData: dashboardDataReducer,
   leaderBoardData: leaderboardDataReducer,
+<<<<<<< HEAD
   weeklySummaries: weeklySummariesReducer,
   weeklySummariesReport: weeklySummariesReportReducer,
+=======
+>>>>>>> WBS2.2.1
   // weeklyDashboardData: weeklyDashboardDataReducer,
   // monthlyDashboardData: monthlyDashboardDataReducer,
   //	actionItems: actionItemsReducer,
@@ -44,6 +54,10 @@ export default combineReducers({
   // project: projectByIdReducer,
   userProjects: userProjectsReducer,
   projectMembers: projectMembershipReducer,
+<<<<<<< HEAD
+=======
+  managingTeams: managingTeamsReducer,
+>>>>>>> WBS2.2.1
   // allTeams: allTeamsReducer,
   // team: teamByIdReducer,
   // teamMembers: teamMembershipReducer,
