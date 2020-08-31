@@ -1,8 +1,7 @@
 /* eslint-disable no-underscore-dangle */
 import axios from 'axios';
-
 import { ENDPOINTS } from '../utils/URL';
-import { UserStatus } from '../utils/enums';
+
 import {
   RECEIVE_ALL_USER_TEAMS,
   FETCH_USER_TEAMS_START,
@@ -133,8 +132,6 @@ export const postNewTeam = (name, status) => {
   };
 };
 
-
-
 /**
  * delete an existing team
  * @param {*} teamId  - the team to be deleted
@@ -187,15 +184,22 @@ export const getTeamMembers = (teamId) => {
  * @param {*} option - archive / delete
  */
 
-export const deleteTeamMember = (teamId) => {
-  // const requestData = { option: option, teamId: team._id };
-  const teamMemberDeletePromise = axios.get(ENDPOINTS.TEAM_USERS(teamId));
+export const deleteTeamMember = (teamId, userId) => {
+  const requestData = { users: [{ userId, operation: 'UnAssign' }] };
+  const teamMemberDeletePromise = axios.post(ENDPOINTS.TEAM_USERS(teamId), requestData);
   return async (dispatch) => {
     teamMemberDeletePromise.then(() => {
-      dispatch(teamMemberDeleteAction(teamId));
-    }).catch(() => {
       dispatch(teamMemberDeleteAction(teamId));
     });
   };
 };
 
+export const addTeamMember = (teamId, userId) => {
+  const requestData = { users: [{ userId, operation: 'Assign' }] };
+  const teamMemberAddPromise = axios.post(ENDPOINTS.TEAM_USERS(teamId), requestData);
+  return async () => {
+    teamMemberAddPromise.then(() => {
+      getTeamMembers(teamId);
+    });
+  };
+};

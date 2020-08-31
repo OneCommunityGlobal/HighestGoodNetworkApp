@@ -76,15 +76,21 @@ thead{
   color:#dee2e6
 }
 
-
-
 .isDisabled{
   opacity: 0;
   transition: opacity 10ms;
   display:none;
 }
 
-
 tr:hover{
   background: #e9f6ff
+}
+
+.user-auto-cpmplete {
+  cursor: pointer;
+  padding: 5px;
+}
+
+.user-auto-cpmplete:hover {
+  background: #1D62F0;
 }

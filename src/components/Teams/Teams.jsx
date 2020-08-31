@@ -1,5 +1,8 @@
 import React from 'react';
-import { getAllUserTeams, postNewTeam, deleteUser, updateTeam, getTeamMembers, deleteTeamMember } from '../../actions/allTeamsAction'
+import {
+  getAllUserTeams, postNewTeam, deleteUser, updateTeam, getTeamMembers, deleteTeamMember,
+  addTeamMember
+} from '../../actions/allTeamsAction'
 import { getAllUserProfile } from '../../actions/userManagement'
 // import { defaults } from 'lodash';
 import { connect } from 'react-redux'
@@ -28,8 +31,7 @@ class Teams extends React.PureComponent {
       wildCardSearchText: '',
       selectedTeamId: 0,
       selectedTeam: '',
-      isActive: '',
-
+      isActive: ''
     }
   }
 
@@ -44,8 +46,8 @@ class Teams extends React.PureComponent {
     let { allTeams, fetching } = this.props.state.allTeamsData;
     let teamTable = this.teamTableElements(allTeams);
     let numberOfTeams = allTeams.length;
-    let numberOfActiveTeams = allTeams.filter(team => team.isActive).length;
-    debugger;
+    let numberOfActiveTeams = numberOfTeams ? allTeams.filter(team => team.isActive).length : 0;
+
     return <Container fluid>
       {fetching ?
         <Loading /> :
@@ -135,15 +137,16 @@ class Teams extends React.PureComponent {
    */
 
   teampopupElements = () => {
+    let members = (this.props.state ? this.props.state.teamsTeamMembers : [])
     return <React.Fragment>
 
       <TeamMembersPopup
-
         open={this.state.teamMembersPopupOpen}
         onClose={this.onTeamMembersPopupClose}
-        members={(this.props.state ? this.props.state.teamsTeamMembers : [])}
+        members={members}
         onDeleteClick={this.onDeleteTeamMember}
         usersdata={this.props.state ? this.props.state.allUserProfiles : []}
+        onAddUser={this.onAddUser}
       />
       <CreateNewTeamPopup
         open={this.state.createNewTeamPopupOpen}
@@ -174,6 +177,10 @@ class Teams extends React.PureComponent {
     </React.Fragment>
   }
 
+  onAddUser = (user) => {
+    this.props.addTeamMember(this.state.selectedTeamId, user._id);
+  }
+
   /**
     * call back to show team members popup
     */
@@ -181,7 +188,7 @@ class Teams extends React.PureComponent {
     this.props.getTeamMembers(teamId);
     this.setState({
       teamMembersPopupOpen: true,
-
+      selectedTeamId: teamId
     })
 
   }
@@ -293,11 +300,14 @@ class Teams extends React.PureComponent {
   }
 
   onDeleteTeamMember = (deletedUserId) => {
-    this.props.deleteTeamMember(deletedUserId)
+    this.props.deleteTeamMember(this.state.selectedTeamId, deletedUserId)
     alert("Deleted Succefully")
   }
 
 
 }
 const mapStateToProps = state => { return { state } }
-export default connect(mapStateToProps, { getAllUserProfile, getAllUserTeams, postNewTeam, deleteUser, updateTeam, getTeamMembers, deleteTeamMember })(Teams)
+export default connect(mapStateToProps, {
+  getAllUserProfile, getAllUserTeams, postNewTeam,
+  deleteUser, updateTeam, getTeamMembers, deleteTeamMember, addTeamMember
+})(Teams)
