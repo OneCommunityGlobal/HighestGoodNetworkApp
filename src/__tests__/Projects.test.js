@@ -13,9 +13,12 @@ import routes from './../routes';
 
 const projectsUrl = ENDPOINTS.PROJECTS;
 const projectUrl = ENDPOINTS.PROJECT + '*';
+const userProfileUrl = ENDPOINTS.USER_PROFILE(mockState.auth.user.userid);
+const leaderboardUrl = ENDPOINTS.LEADER_BOARD(mockState.auth.user.userid);
 let deleteProjectCalled = false;
 let inActivateProjectCalled = false;
 let activatedProjectCalled = false;
+let nameChangeCalled = false;
 mockState.allProjects.fetched = false;
 
 const server = setupServer(
@@ -42,13 +45,15 @@ const server = setupServer(
         inActivateProjectCalled = true;
     } else if (!req.body.isActive && req.body.projectName === "HG Fake Project") {
         activatedProjectCalled = true;
+    } else if (req.body.projectName === "HG Fake Project2") {
+      nameChangeCalled = true;
     }
     return res(ctx.status(200), ctx.json({}));
   }),    
-  rest.get('http://localhost:4500/api/userprofile/*', (req, res, ctx) =>  {
+  rest.get(userProfileUrl, (req, res, ctx) =>  {
       return res(ctx.status(200), ctx.json({}), )  
   }),
-  rest.get('http://localhost:4500/api/dashboard/*', (req, res, ctx) =>  {
+  rest.get(leaderboardUrl, (req, res, ctx) =>  {
     return res(ctx.status(200), ctx.json( [
       {
         "personId": "5edf141c78f1380017b829a6",
@@ -186,6 +191,27 @@ describe('Projects behavior', () => {
     activatedProjectCalled = false;
     
   });
+
+  it('should be able to change the name of a project to a new name', async () => {
+    
+    let rt = '/projects'
+    const hist = createMemoryHistory({ initialEntries: [rt] });
+    projectsMountedPage = renderWithRouterMatch(routes , {initialState: mockState, route: rt, history: hist});
+
+    await waitFor(() => expect(screen.getByDisplayValue('HG Fake Project')).toBeTruthy());
+    
+    fireEvent.change(screen.getByDisplayValue('HG Fake Project'), { target: { value: 'HG Fake Project2'}});
+    fireEvent.blur(screen.getByDisplayValue('HG Fake Project2'));
+
+    await waitFor(() => expect(screen.getByDisplayValue('HG Fake Project2')).toBeTruthy());
+    await waitFor(() => expect(nameChangeCalled).toBeTruthy());
+    nameChangeCalled = false;
+    
+  });
+
+  //add test for adding a new project
+
+  //add test for error updating project modal
   
 
   it('should delete a project when the delete button is clicked and confirmed', async () => {
