@@ -9,8 +9,6 @@ import Modal from "./UserProfileModal";
 import UserLinks from "./UserLinks";
 import FourOFour from "./FourOFour";
 
-// import Teams from "./UserTeams";
-
 import styleProfile from "./UserProfile.css";
 
 class UserProfile extends Component {
@@ -29,17 +27,6 @@ class UserProfile extends Component {
 			blueSquares: true
 		}
   };
-
-  // async componentDidMount() {
-
-  //   let userId = this.props.match.params.userId;
-  //   await this.props.getUserProfile(userId);
-
-  //   this.setState({
-  //     isLoading: this.props.isLoading,
-  //   })
-
-  // }
 
   async componentDidMount() {
     if (this.props.match) {
@@ -139,18 +126,6 @@ class UserProfile extends Component {
       privacySettings,
       teams,
     } = userProfile;
-
-    // if (error) {
-    //   return (
-    //     <Container>
-    //       <Row className="align-self-center" data-testid="error">
-    //         <Col>
-    //           <div color="danger"> Fetch error! {error} </div>
-    //         </Col>
-    //       </Row>
-    //     </Container>
-    //   );
-    // }
 
     if (isLoading) {
       return (

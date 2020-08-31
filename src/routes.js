@@ -15,21 +15,24 @@ import Header from './components/Header'
 import Projects from './components/Projects'
 import UserManagement from './components/UserManagement'
 import Members from './components/Projects/Members'
+import WeeklySummariesReport from './components/WeeklySummariesReport'
 import 'react-toastify/dist/ReactToastify.css'
+import { UserRole } from './utils/enums'
 
 export default (
-	<React.Fragment>
-		<Header />
-		<ToastContainer />
-		<Switch>
-			<ProtectedRoute path='/dashboard' exact component={Dashboard} />
-			<ProtectedRoute path='/timelog/:userId' exact component={Timelog} />
-			<ProtectedRoute path='/reports' exact component={Reports} />
-			<ProtectedRoute path='/projects' exact component={Projects} />
-			<ProtectedRoute path='/usermanagement' exact component={UserManagement} />
-			<ProtectedRoute path='/project/members/:projectId' component={Members} />
+  <React.Fragment>
+    <Header />
+    <ToastContainer />
+    <Switch>
+      <ProtectedRoute path="/dashboard" exact component={Dashboard} />
+      <ProtectedRoute path="/timelog/:userId" exact component={Timelog} />
+      <ProtectedRoute path="/reports" exact component={Reports} />
+      <ProtectedRoute path="/weeklysummariesreport" exact component={WeeklySummariesReport} allowedRoles={[UserRole.Administrator, UserRole.Manager, UserRole.CoreTeam]} />
+      <ProtectedRoute path="/projects" exact component={Projects} />
+      <ProtectedRoute path="/usermanagement" exact component={UserManagement} allowedRoles={[UserRole.Administrator]} />
+      <ProtectedRoute path="/project/members/:projectId" component={Members} />
 
-			<Route path='/login' component={Login} />
+      <Route path="/login" component={Login} />
 
 			<ProtectedRoute path='/userprofile/:userId' component={UserProfile} />
 			<ProtectedRoute path='/userprofileedit/:userId' component={UserProfileEdit} />
