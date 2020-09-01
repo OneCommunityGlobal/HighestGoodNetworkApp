@@ -75,7 +75,7 @@ describe('Projects page structure', () => {
     }
   });
 
-  it('should be rendered with 4 links to the member pages', async () => {
+  it('should be rendered with 8 links to the member and WBS pages', async () => {
     const links = mountedProjects.find('a');
     expect(links.length).toEqual(4);
     
