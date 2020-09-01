@@ -2,22 +2,37 @@
 /* eslint-disable react/prop-types */
 import React, { useState } from 'react';
 import {
-  Button, Modal, ModalHeader, ModalBody, ModalFooter, Container,
+  Button, Modal, ModalHeader, ModalBody, ModalFooter, Container, Alert,
 } from 'reactstrap';
+import { useEffect } from 'react';
 import MembersAutoComplete from './MembersAutoComplete';
 
 const TeamMembersPopup = React.memo((props) => {
   const closePopup = () => { props.onClose(); };
   const [selectedUser, onSelectUser] = useState(undefined);
-  const onAddUser = () => { props.onAddUser(selectedUser); };
+  const [isValidUser, onValidation] = useState(true);
+  const onAddUser = () => {
+    if (selectedUser && !props.members.teamMembers.some((x) => x._id === selectedUser._id)) {
+      props.onAddUser(selectedUser);
+    } else {
+      onValidation(false);
+    }
+  };
   const selectUser = (user) => {
     onSelectUser(user);
+    onValidation(true);
   };
+
+  useEffect(() => {
+    onValidation(true);
+  }, [props.open]);
 
   return (
     <Container fluid>
       <Modal isOpen={props.open} toggle={closePopup}>
-        <ModalHeader toggle={closePopup}>Members of  "{props.selectedTeamName}"</ModalHeader>
+        <ModalHeader toggle={closePopup}>
+          {`Members of ${props.selectedTeamName}`}
+        </ModalHeader>
         <ModalBody style={{ textAlign: 'center' }}>
           <div className="input-group-prepend" style={{ marginBottom: '10px' }}>
             <MembersAutoComplete
@@ -31,6 +46,11 @@ const TeamMembersPopup = React.memo((props) => {
               Add
             </Button>
           </div>
+          {(isValidUser === false) ? (
+            <Alert color="danger">
+              Please choose a valid user.
+            </Alert>
+          ) : <></>}
           <div>
             <table className="table table-bordered table-responsive-sm">
               <thead>

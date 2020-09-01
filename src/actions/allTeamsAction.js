@@ -4,8 +4,6 @@ import { ENDPOINTS } from '../utils/URL';
 
 import {
   RECEIVE_ALL_USER_TEAMS,
-  FETCH_USER_TEAMS_START,
-  FETCH_USER_TEAMS_ERROR,
   USER_TEAMS_UPDATE,
   UPDATE_TEAM,
   ADD_NEW_TEAM,
@@ -14,30 +12,15 @@ import {
   RECEIVE_TEAM_USERS,
   FETCH_TEAM_USERS_ERROR,
   TEAM_MEMBER_DELETE,
+  TEAM_MEMBER_ADD,
 } from '../constants/allTeamsConstants';
-
-/**
- * Set a flag that fetching teams
- */
-export const userTeamsFetchStartAction = () => ({
-  type: FETCH_USER_TEAMS_START,
-});
 
 /**
  * set allteams in store
  * @param payload : allteams []
  */
-export const userTeamsFetchCompleteACtion = (payload) => ({
+export const teamMembersFectchACtion = (payload) => ({
   type: RECEIVE_ALL_USER_TEAMS,
-  payload,
-});
-
-/**
- * Error when setting the teams list
- * @param payload : error status code
- */
-export const userTeamsFetchErrorAction = (payload) => ({
-  type: FETCH_USER_TEAMS_ERROR,
   payload,
 });
 
@@ -58,6 +41,7 @@ export const addNewTeam = (payload, status) => ({
   payload,
   status,
 });
+
 /**
  * Delete team action
  * @param {*} team : the deleted team
@@ -66,6 +50,7 @@ export const teamsDeleteAction = (team) => ({
   type: TEAMS_DELETE,
   team,
 });
+
 /**
  * Action for updating the status of a team
  */
@@ -75,6 +60,7 @@ export const updateTeamAction = (teamId, isActive) => ({
   isActive,
 
 });
+
 /**
  * Set a flag that fetching team users
  */
@@ -107,17 +93,25 @@ export const teamMemberDeleteAction = (member) => ({
   type: TEAM_MEMBER_DELETE,
   member,
 });
+
+/*
+delete team member action
+*/
+export const teamMemberAddAction = (member) => ({
+  type: TEAM_MEMBER_ADD,
+  member,
+});
+
 /**
  * fetching all user teams
  */
 export const getAllUserTeams = () => {
   const userTeamsPromise = axios.get(ENDPOINTS.TEAM);
   return async (dispatch) => {
-    await dispatch(userTeamsFetchStartAction());
     userTeamsPromise.then((res) => {
-      dispatch(userTeamsFetchCompleteACtion(res.data));
+      dispatch(teamMembersFectchACtion(res.data));
     }).catch(() => {
-      dispatch(userTeamsFetchErrorAction());
+      dispatch(teamMembersFectchACtion(undefined));
     });
   };
 };
@@ -140,13 +134,10 @@ export const postNewTeam = (name, status) => {
  * delete an existing team
  * @param {*} teamId  - the team to be deleted
  */
-
 export const deleteTeam = (teamId) => {
   const deleteTeamPromise = axios.delete(ENDPOINTS.TEAM_DATA(teamId));
   return async (dispatch) => {
     deleteTeamPromise.then(() => {
-      dispatch(teamsDeleteAction(teamId));
-    }).catch(() => {
       dispatch(teamsDeleteAction(teamId));
     });
   };
@@ -184,13 +175,12 @@ export const getTeamMembers = (teamId) => {
  * delete an existing team member
  * @param {*} teamId  - the team to be deleted
  */
-
 export const deleteTeamMember = (teamId, userId) => {
   const requestData = { users: [{ userId, operation: 'UnAssign' }] };
   const teamMemberDeletePromise = axios.post(ENDPOINTS.TEAM_USERS(teamId), requestData);
   return async (dispatch) => {
     teamMemberDeletePromise.then(() => {
-      dispatch(teamMemberDeleteAction(teamId));
+      dispatch(teamMemberDeleteAction(userId));
     });
   };
 };
@@ -198,12 +188,12 @@ export const deleteTeamMember = (teamId, userId) => {
 /**
  * Adding an existing user to team
  */
-export const addTeamMember = (teamId, userId) => {
+export const addTeamMember = (teamId, userId, firstName, lastName) => {
   const requestData = { users: [{ userId, operation: 'Assign' }] };
   const teamMemberAddPromise = axios.post(ENDPOINTS.TEAM_USERS(teamId), requestData);
-  return async () => {
+  return async (dispatch) => {
     teamMemberAddPromise.then(() => {
-      getTeamMembers(teamId);
+      dispatch(teamMemberAddAction({ _id: userId, firstName, lastName }));
     });
   };
 };

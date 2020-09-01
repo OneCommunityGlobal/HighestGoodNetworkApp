@@ -181,7 +181,7 @@ class Teams extends React.PureComponent {
 
   onAddUser = (user) => {
 
-    this.props.addTeamMember(this.state.selectedTeamId, user._id);
+    this.props.addTeamMember(this.state.selectedTeamId, user._id, user.firstName, user.lastName);
   }
 
   /**
