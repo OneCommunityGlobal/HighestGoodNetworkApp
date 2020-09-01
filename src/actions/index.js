@@ -6,19 +6,6 @@ export function clearUserProfile() {
 	return { type: 'CLEAR_USER_PROFILE' }
 }
 
-export function getAllUserProfiles() {
-	const request = httpService.get(`${APIEndpoint}/userprofile`)
-
-	return dispatch => {
-		request.then(({ data }) => {
-			dispatch({
-				type: 'GET_ALL_USER_PROFILES',
-				payload: data
-			})
-		})
-	}
-}
-
 export function getUserTeamMembers(userId) {
 	const request = httpService.get(`${APIEndpoint}/userprofile/teammembers/${userId}`)
 

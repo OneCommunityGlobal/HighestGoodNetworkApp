@@ -34,6 +34,8 @@ import WorkHistory from './WorkHistory'
 import UserLinks from './UserLinks'
 
 import SideBar from './SideBar'
+import ResetPasswordButton from '../UserManagement/ResetPasswordButton'
+import { UserRole } from '../../utils/enums'
 
 class UserProfile extends Component {
 	state = {
@@ -48,13 +50,15 @@ class UserProfile extends Component {
 
 	async componentDidMount() {
 		// this.props.getCurrentUser(getjwt())
-		let userId = this.props.match.params.userId
-		await this.props.getUserProfile(userId)
-		await this.props.getUserTeamMembers(userId)
-		//console.log(this.props.userProfile)
-		if (this.props.userProfile.firstName.length) {
-			//	console.log(this.props.userProfile)
-			this.setState({ isLoading: false, userProfile: this.props.userProfile })
+		if (this.props.match) {
+			let userId = this.props.match.params.userId
+			await this.props.getUserProfile(userId)
+			await this.props.getUserTeamMembers(userId)
+			//console.log(this.props.userProfile)
+			if (this.props.userProfile.firstName.length) {
+				//	console.log(this.props.userProfile)
+				this.setState({ isLoading: false, userProfile: this.props.userProfile })
+			}
 		}
 		//console.log(this.props.userProfile)
 	}
@@ -246,7 +250,7 @@ class UserProfile extends Component {
 	}
 
 	render() {
-		let { userId: targetUserId } = this.props.match.params
+		let { userId: targetUserId } = this.props.match ? this.props.match.params : { userId: undefined };
 		let { userid: requestorId, role: requestorRole } = this.props.auth.user
 
 		const { userProfile, isLoading, showModal } = this.state
@@ -265,8 +269,8 @@ class UserProfile extends Component {
 
 		console.log('phoneNumberPubliclyAccessible', phoneNumberPubliclyAccessible)
 		let isUserSelf = targetUserId === requestorId
-		let canEditFields = isUserAdmin || isUserSelf
 		const isUserAdmin = requestorRole === 'Administrator'
+		let canEditFields = isUserAdmin || isUserSelf
 
 		if (isLoading === true) {
 			return <Loading />
@@ -310,6 +314,15 @@ class UserProfile extends Component {
 						<br />
 					</Col>
 					<Col xs={12} md={9} sm={12} style={{ backgroundColor: 'white', padding: 5 }}>
+						{this.doShowResetButton() ?
+							<Row>
+								<Col lg={true} style={{ textAlign: "right", paddingBottom: "10px" }}>
+									<ResetPasswordButton
+										user={this.state.userProfile}
+										isSmallButton={false} />
+								</Col>
+							</Row> : <React.Fragment></React.Fragment>
+						}
 						<WorkHistory />
 
 						<br />
@@ -342,6 +355,13 @@ class UserProfile extends Component {
 				</Row>
 			</Container>
 		)
+	}
+
+	/**
+	 * Show the reset password button for all user profiles if the logged in user is an administartor.
+	 */
+	doShowResetButton = () => {
+		return (this.props.auth.user.role === UserRole.Administrator && this.state.userProfile);
 	}
 }
 

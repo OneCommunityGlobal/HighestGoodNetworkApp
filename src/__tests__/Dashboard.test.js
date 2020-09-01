@@ -1,16 +1,15 @@
-import { shallow } from 'enzyme';
+
+import { renderWithProvider, renderWithRouterMatch } from './utils.js'
+import '@testing-library/jest-dom/extend-expect'
 import React from 'react';
+import mockState from './mockAdminState.js'
 import Dashboard from '../components/Dashboard';
 
 
-describe('Dashboard tests', () => {
-  let dashBoardMountedPage;
-  beforeEach(() => {
-    dashBoardMountedPage = shallow(<Dashboard />);
-  });
+describe('Dashboard ', () => {
+    let dashBoardMountedPage = renderWithRouterMatch(<Dashboard />, {initialState: mockState});
 
-  xit('should render a leaderboard', () => {
-    const leaderboard = dashBoardMountedPage.find('Leaderboard').length;
-    expect(leaderboard).toBe(1);
-  });
+    it('should match snapshot', async () =>  { 
+     expect(dashBoardMountedPage.asFragment()).toMatchSnapshot();
+   });
 });
