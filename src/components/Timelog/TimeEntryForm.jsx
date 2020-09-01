@@ -176,19 +176,18 @@ const TimeEntryForm = ({ userId, edit, data, isOpen, toggle, timer }) => {
       }))
       return false
     }
+    if (edit && reminder.edit_notice && (reminder.edit_count - 5) % 2 == 1 && edittime) {
+      setReminder(reminder => ({
+        ...reminder,
+        edit_notice: !reminder.edit_notice,
+      }))
+    }
 
-    if (
-      edit &&
-      reminder.edit_notice &&
-      reminder.edit_count > 5 &&
-      reminder.edit_count % 2 == 1 &&
-      edittime
-    ) {
+    if (edit && reminder.edit_notice && (reminder.edit_count - 5) % 2 == 0 && edittime) {
       openModal()
       setReminder(reminder => ({
         ...reminder,
-        remind:
-          'Heads up this is your ${reminder.edit_count}th and this edit would make you receive a blue square. Please use the timer properly from this point forward if you’d like to avoid receiving one.',
+        remind: `Heads up this is your ${reminder.edit_count}th time and this edit would make you receive a blue square. Please use the timer properly from this point forward if you’d like to avoid receiving one.`,
         edit_notice: !reminder.edit_notice,
       }))
       return false
