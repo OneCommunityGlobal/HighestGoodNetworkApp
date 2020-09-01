@@ -1,10 +1,9 @@
 import React from 'react';
 import {
-  getAllUserTeams, postNewTeam, deleteUser, updateTeam, getTeamMembers, deleteTeamMember,
+  getAllUserTeams, postNewTeam, deleteTeam, updateTeam, getTeamMembers, deleteTeamMember,
   addTeamMember
 } from '../../actions/allTeamsAction'
 import { getAllUserProfile } from '../../actions/userManagement'
-// import { defaults } from 'lodash';
 import { connect } from 'react-redux'
 import Loading from '../common/Loading'
 import TeamTableHeader from './TeamTableHeader'
@@ -31,7 +30,8 @@ class Teams extends React.PureComponent {
       wildCardSearchText: '',
       selectedTeamId: 0,
       selectedTeam: '',
-      isActive: ''
+      isActive: '',
+
     }
   }
 
@@ -147,6 +147,8 @@ class Teams extends React.PureComponent {
         onDeleteClick={this.onDeleteTeamMember}
         usersdata={this.props.state ? this.props.state.allUserProfiles : []}
         onAddUser={this.onAddUser}
+        selectedTeamName={this.state.selectedTeam}
+
       />
       <CreateNewTeamPopup
         open={this.state.createNewTeamPopupOpen}
@@ -178,17 +180,19 @@ class Teams extends React.PureComponent {
   }
 
   onAddUser = (user) => {
+
     this.props.addTeamMember(this.state.selectedTeamId, user._id);
   }
 
   /**
     * call back to show team members popup
     */
-  onTeamMembersPopupShow = (teamId) => {
+  onTeamMembersPopupShow = (teamId, teamName) => {
     this.props.getTeamMembers(teamId);
     this.setState({
       teamMembersPopupOpen: true,
-      selectedTeamId: teamId
+      selectedTeamId: teamId,
+      selectedTeam: teamName
     })
 
   }
@@ -281,7 +285,7 @@ class Teams extends React.PureComponent {
 
   onDeleteUser = (deletedId) => {
 
-    this.props.deleteUser(deletedId, 'delete')
+    this.props.deleteTeam(deletedId, 'delete')
     alert("Team deleted successfully");
     this.setState({
       deleteTeamPopupOpen: false,
@@ -299,6 +303,9 @@ class Teams extends React.PureComponent {
     alert("Status Updated Successfully")
   }
 
+  /**
+    * callback for deleting a member in a team
+    */
   onDeleteTeamMember = (deletedUserId) => {
     this.props.deleteTeamMember(this.state.selectedTeamId, deletedUserId)
     alert("Deleted Succefully")
@@ -309,5 +316,5 @@ class Teams extends React.PureComponent {
 const mapStateToProps = state => { return { state } }
 export default connect(mapStateToProps, {
   getAllUserProfile, getAllUserTeams, postNewTeam,
-  deleteUser, updateTeam, getTeamMembers, deleteTeamMember, addTeamMember
+  deleteTeam, updateTeam, getTeamMembers, deleteTeamMember, addTeamMember
 })(Teams)

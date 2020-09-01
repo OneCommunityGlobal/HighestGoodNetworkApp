@@ -100,6 +100,9 @@ export const teamUsersFetchErrorAction = (payload) => ({
   payload,
 });
 
+/*
+delete team member action
+*/
 export const teamMemberDeleteAction = (member) => ({
   type: TEAM_MEMBER_DELETE,
   member,
@@ -118,6 +121,7 @@ export const getAllUserTeams = () => {
     });
   };
 };
+
 /**
  * posting new team
  */
@@ -135,11 +139,9 @@ export const postNewTeam = (name, status) => {
 /**
  * delete an existing team
  * @param {*} teamId  - the team to be deleted
- * @param {*} option - archive / delete
  */
 
-export const deleteUser = (teamId) => {
-  // const requestData = { option: option, teamId: team._id };
+export const deleteTeam = (teamId) => {
   const deleteTeamPromise = axios.delete(ENDPOINTS.TEAM_DATA(teamId));
   return async (dispatch) => {
     deleteTeamPromise.then(() => {
@@ -181,7 +183,6 @@ export const getTeamMembers = (teamId) => {
 /**
  * delete an existing team member
  * @param {*} teamId  - the team to be deleted
- * @param {*} option - archive / delete
  */
 
 export const deleteTeamMember = (teamId, userId) => {
@@ -194,6 +195,9 @@ export const deleteTeamMember = (teamId, userId) => {
   };
 };
 
+/**
+ * Adding an existing user to team
+ */
 export const addTeamMember = (teamId, userId) => {
   const requestData = { users: [{ userId, operation: 'Assign' }] };
   const teamMemberAddPromise = axios.post(ENDPOINTS.TEAM_USERS(teamId), requestData);

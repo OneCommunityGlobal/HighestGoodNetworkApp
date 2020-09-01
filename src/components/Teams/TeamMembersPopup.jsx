@@ -17,7 +17,7 @@ const TeamMembersPopup = React.memo((props) => {
   return (
     <Container fluid>
       <Modal isOpen={props.open} toggle={closePopup}>
-        <ModalHeader toggle={closePopup}>Team Members</ModalHeader>
+        <ModalHeader toggle={closePopup}>Members of  "{props.selectedTeamName}"</ModalHeader>
         <ModalBody style={{ textAlign: 'center' }}>
           <div className="input-group-prepend" style={{ marginBottom: '10px' }}>
             <MembersAutoComplete

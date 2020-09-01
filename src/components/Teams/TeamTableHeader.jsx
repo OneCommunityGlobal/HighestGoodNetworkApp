@@ -4,7 +4,7 @@ import { ID, TEAM_NAME, ACTIVE, MEMBERS } from '../../languages/en/ui';
 
 
 /**
- * The header row of the user table. 
+ * The header row of the team table. 
  */
 const TeamTableHeader = React.memo((props) => {
 

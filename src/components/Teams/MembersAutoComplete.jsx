@@ -8,7 +8,7 @@ import React, { useState } from 'react';
 import {
   Dropdown, Input,
 } from 'reactstrap';
-
+debugger;
 const MemberAutoComplete = (props) => {
   const [searchText, onInputChange] = useState('');
   const [isOpen, toggle] = useState(false);
@@ -49,6 +49,7 @@ const MemberAutoComplete = (props) => {
                   onInputChange(`${item.firstName} ${item.lastName}`);
                   toggle(false);
                   props.onAddUser(item);
+
                 }}
               >
                 {`${item.firstName} ${item.lastName}`}

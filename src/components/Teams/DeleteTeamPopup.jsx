@@ -3,7 +3,6 @@ import React from 'react';
 import {
   Button, Modal, ModalHeader, ModalBody, ModalFooter,
 } from 'reactstrap';
-// import { useState } from 'react';
 
 const DeleteTeamPopup = React.memo((props) => {
   const closePopup = () => { props.onClose(); };

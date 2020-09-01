@@ -1,7 +1,6 @@
 /* eslint-disable no-underscore-dangle */
 /* eslint-disable no-case-declarations */
 import * as types from '../constants/allTeamsConstants';
-// import { object } from 'joi';
 
 const userTeamsInitial = {
   fetching: false,
@@ -32,7 +31,6 @@ export const allUserTeamsReducer = (allTeams = userTeamsInitial, action) => {
         status: '200',
       });
     case types.ADD_NEW_TEAM:
-      // return { ...allTeams }
       return updateObject(allTeams, {
         allTeams: Object.assign([...allTeams.allTeams, action.payload]),
         fetching: false,
@@ -74,9 +72,3 @@ export const allUserTeamsReducer = (allTeams = userTeamsInitial, action) => {
       return allTeams;
   }
 };
-// if (item._id === action.teamId) {
-//   let data = item; data.isActive = action.isActive;
-//   return data
-// } else {
-//   return item
-// }
