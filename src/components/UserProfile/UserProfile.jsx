@@ -36,7 +36,7 @@ class UserProfile extends Component {
         this.setState({
           isLoading: false
         })
-      }else{
+      } else {
         await this.props.getUserTeamMembers(userId);
         if (this.props.userProfile.firstName.length) {
           if (!this.props.userProfile.privacySettings){
@@ -51,7 +51,7 @@ class UserProfile extends Component {
                 }
               }
             });
-          }else{
+          } else {
             this.setState({
               isLoading: false,
               userProfile: this.props.userProfile
