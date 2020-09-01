@@ -1,0 +1,19 @@
+.bg--white-smoke {
+  background-color: #f6f6f3;
+}
+
+.nav-tabs .nav-link {
+	cursor: pointer;
+}
+
+.tab-content {
+	background-color: #fff;
+	border: 1px solid transparent;
+	border-color:#fff #dee2e6 #dee2e6;
+}
+
+.report-wrapper {
+  padding: 20px 0;
+  margin-top: 5px;
+  border-bottom: 1px solid #828282;
+}
