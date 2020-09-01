@@ -1,13 +1,24 @@
-import React from "react";
+import React from 'react'
 // import { getUserProfile } from '../../actions/userProfile'
-import { getHeaderData } from "../../actions/authActions";
-import { getTimerData } from "../../actions/timer";
-import { Link } from "react-router-dom";
-import { connect } from "react-redux";
-import Timer from "../Timer/Timer";
+import { getHeaderData } from '../../actions/authActions'
+import { getTimerData } from '../../actions/timer'
+import { Link } from 'react-router-dom'
+import { connect } from 'react-redux'
+import Timer from '../Timer/Timer'
 import {
-  LOGO, DASHBOARD, TIMELOG, REPORTS, WEEKLY_SUMMARIES_REPORT, OTHER_LINKS,
-  USER_MANAGEMENT, PROJECTS, TEAMS, WELCOME, VIEW_PROFILE, UPDATE_PASSWORD, LOGOUT
+  LOGO,
+  DASHBOARD,
+  TIMELOG,
+  REPORTS,
+  WEEKLY_SUMMARIES_REPORT,
+  OTHER_LINKS,
+  USER_MANAGEMENT,
+  PROJECTS,
+  TEAMS,
+  WELCOME,
+  VIEW_PROFILE,
+  UPDATE_PASSWORD,
+  LOGOUT,
 } from '../../languages/en/ui'
 import {
   Collapse,
@@ -20,18 +31,18 @@ import {
   UncontrolledDropdown,
   DropdownToggle,
   DropdownMenu,
-  DropdownItem
+  DropdownItem,
 } from 'reactstrap'
 import { UserRole } from '../../utils/enums'
 
-class Header extends React.Component {
-  state = {};
+export class Header extends React.Component {
+  state = {}
 
   componentDidMount() {
     if (this.props.auth.isAuthenticated) {
       // this.props.getUserProfile(this.props.auth.user.userid)
       this.props.getHeaderData(this.props.auth.user.userid)
-      this.props.getTimerData(this.props.auth.user.userid);
+      this.props.getTimerData(this.props.auth.user.userid)
     }
   }
 
@@ -39,28 +50,28 @@ class Header extends React.Component {
     if (!prevProps.auth.isAuthenticated && this.props.auth.isAuthenticated) {
       // this.props.getUserProfile(this.props.auth.user.userid)
       this.props.getHeaderData(this.props.auth.user.userid)
-      this.props.getTimerData(this.props.auth.user.userid);
+      this.props.getTimerData(this.props.auth.user.userid)
     }
   }
 
   render() {
-    const { isAuthenticated, user, firstName, profilePic } = this.props.auth;
+    const { isAuthenticated, user, firstName, profilePic } = this.props.auth
 
     return (
       <div>
-        <Navbar color='dark' dark expand='md' style={{ marginBottom: '20px' }}>
-          <NavbarBrand tag={Link} to='/'>
+        <Navbar color="dark" dark expand="md" style={{ marginBottom: '20px' }}>
+          <NavbarBrand tag={Link} to="/">
             {LOGO}
           </NavbarBrand>
           <NavbarToggler onClick={this.toggle} />
           {isAuthenticated && (
             <Collapse isOpen={this.state.isOpen} navbar>
-              <Nav className='ml-auto' navbar>
+              <Nav className="ml-auto" navbar>
                 <NavItem>
                   <Timer />
                 </NavItem>
                 <NavItem>
-                  <NavLink tag={Link} to='/dashboard'>
+                  <NavLink tag={Link} to="/dashboard">
                     {DASHBOARD}
                   </NavLink>
                 </NavItem>
@@ -74,28 +85,27 @@ class Header extends React.Component {
                     {REPORTS}
                   </DropdownToggle>
                   <DropdownMenu>
-                    <DropdownItem tag={Link} to='/reports'>
+                    <DropdownItem tag={Link} to="/reports">
                       {REPORTS}
                     </DropdownItem>
-                    {
-                      user.role === UserRole.Administrator ||
-                        user.role === UserRole.Manager ||
-                        user.role === UserRole.CoreTeam ?
-                        <DropdownItem tag={Link} to='/weeklysummariesreport'>
-                          {WEEKLY_SUMMARIES_REPORT}
-                        </DropdownItem>
-                        :
-                        <React.Fragment></React.Fragment>
-                    }
+                    {user.role === UserRole.Administrator ||
+                    user.role === UserRole.Manager ||
+                    user.role === UserRole.CoreTeam ? (
+                      <DropdownItem tag={Link} to="/weeklysummariesreport">
+                        {WEEKLY_SUMMARIES_REPORT}
+                      </DropdownItem>
+                    ) : (
+                      <React.Fragment></React.Fragment>
+                    )}
                   </DropdownMenu>
                 </UncontrolledDropdown>
                 <NavItem>
                   <NavLink tag={Link} to={`/timelog/${user.userid}`}>
-                    <i className='fa fa-bell i-large'>
-                      <i className='badge badge-pill badge-danger badge-notify'>
+                    <i className="fa fa-bell i-large">
+                      <i className="badge badge-pill badge-danger badge-notify">
                         {/* Pull number of unread messages */}
                       </i>
-                      <span className='sr-only'>unread messages</span>
+                      <span className="sr-only">unread messages</span>
                     </i>
                   </NavLink>
                 </NavItem>
@@ -104,18 +114,17 @@ class Header extends React.Component {
                     {OTHER_LINKS}
                   </DropdownToggle>
                   <DropdownMenu>
-                    {
-                      user.role === UserRole.Administrator ?
-                        <DropdownItem tag={Link} to='/usermanagement'>
-                          {USER_MANAGEMENT}
-                        </DropdownItem>
-                        :
-                        <React.Fragment></React.Fragment>
-                    }
-                    <DropdownItem tag={Link} to='/projects'>
+                    {user.role === UserRole.Administrator ? (
+                      <DropdownItem tag={Link} to="/usermanagement">
+                        {USER_MANAGEMENT}
+                      </DropdownItem>
+                    ) : (
+                      <React.Fragment></React.Fragment>
+                    )}
+                    <DropdownItem tag={Link} to="/projects">
                       {PROJECTS}
                     </DropdownItem>
-                    <DropdownItem tag={Link} to=''>
+                    <DropdownItem tag={Link} to="">
                       {TEAMS}
                     </DropdownItem>
                   </DropdownMenu>
@@ -124,10 +133,10 @@ class Header extends React.Component {
                   <NavLink tag={Link} to={`/profile/${user.userid}`}>
                     <img
                       src={`${profilePic}`}
-                      alt=''
-                      height='35'
-                      width='40'
-                      className='dashboardimg'
+                      alt=""
+                      height="35"
+                      width="40"
+                      className="dashboardimg"
                     />
                   </NavLink>
                 </NavItem>
@@ -145,7 +154,7 @@ class Header extends React.Component {
                       {UPDATE_PASSWORD}
                     </DropdownItem>
                     <DropdownItem divider />
-                    <DropdownItem tag={Link} to='/logout'>
+                    <DropdownItem tag={Link} to="/logout">
                       {LOGOUT}
                     </DropdownItem>
                   </DropdownMenu>
@@ -155,16 +164,16 @@ class Header extends React.Component {
           )}
         </Navbar>
       </div>
-    );
+    )
   }
 }
 
-const mapStateToProps = (state) => ({
+const mapStateToProps = state => ({
   auth: state.auth,
   userProfile: state.userProfile,
-});
+})
 
 export default connect(mapStateToProps, {
   getHeaderData,
   getTimerData,
-})(Header);
+})(Header)
