@@ -42,7 +42,12 @@ export const addNewWBS = (wbsName, projectId) => {
 export const deleteWBS = (wbsId) => {
   const request = axios.delete(ENDPOINTS.WBS(wbsId));
   return async dispatch => {
-    axios.delete(ENDPOINTS.TASK_WBS(wbsId));
+    try {
+      //axios.delete(ENDPOINTS.TASK_WBS(wbsId));
+    } catch (err) {
+      dispatch(setWBSError(err));
+    }
+
     request.then(res => {
       dispatch(removeWBS(wbsId));
     }).catch((err) => {
