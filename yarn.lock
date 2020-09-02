@@ -2115,6 +2115,11 @@ acorn-walk@^7.0.0, acorn-walk@^7.1.1:
   resolved "https://registry.yarnpkg.com/acorn-walk/-/acorn-walk-7.2.0.tgz#0de889a601203909b0fbe07b8938dc21d2e967bc"
   integrity sha512-OPdCF6GsMIP+Az+aWfAAOEt2/+iVDKE7oy6lJ098aoe59oAmK76qV6Gw60SbZ8jHuG2wH058GF4pLFbYamYrVA==
 
+acorn@>=5.7.4:
+  version "8.0.1"
+  resolved "https://registry.yarnpkg.com/acorn/-/acorn-8.0.1.tgz#d7e8eca9b71d5840db0e7e415b3b2b20e250f938"
+  integrity sha512-dmKn4pqZ29iQl2Pvze1zTrps2luvls2PBY//neO2WJ0s10B3AxJXshN+Ph7B4GrhfGhHXrl4dnUwyNNXQcnWGQ==
+
 acorn@^5.5.3:
   version "5.7.4"
   resolved "https://registry.yarnpkg.com/acorn/-/acorn-5.7.4.tgz#3e8d8a9947d0599a1796d10225d7432f4a4acf5e"
@@ -4061,6 +4066,11 @@ data-urls@^2.0.0:
     abab "^2.0.3"
     whatwg-mimetype "^2.3.0"
     whatwg-url "^8.0.0"
+
+date-fns@^2.14.0:
+  version "2.16.1"
+  resolved "https://registry.yarnpkg.com/date-fns/-/date-fns-2.16.1.tgz#05775792c3f3331da812af253e1a935851d3834b"
+  integrity sha512-sAJVKx/FqrLYHAQeN7VpJrPhagZc9R4ImZIWYRFZaaohR3KzmuK88touwsSwSVT8Qcbd4zoDsnGfX4GFB4imyQ==
 
 debug@2.6.9, debug@^2.2.0, debug@^2.3.3, debug@^2.6.0, debug@^2.6.9:
   version "2.6.9"
@@ -10121,6 +10131,13 @@ react-bootstrap@^1.0.1:
     uncontrollable "^7.0.0"
     warning "^4.0.3"
 
+react-day-picker@^7.4.8:
+  version "7.4.8"
+  resolved "https://registry.yarnpkg.com/react-day-picker/-/react-day-picker-7.4.8.tgz#675625240d3fae1b41c0a9d5177c968c8517c1d4"
+  integrity sha512-pp0hnxFVoRuBQcRdR1Hofw4CQtOCGVmzCNrscyvS0Q8NEc+UiYLEDqE5dk37bf0leSnBW4lheIt0CKKhuKzDVw==
+  dependencies:
+    prop-types "^15.6.2"
+
 react-dev-utils@^10.2.1:
   version "10.2.1"
   resolved "https://registry.yarnpkg.com/react-dev-utils/-/react-dev-utils-10.2.1.tgz#f6de325ae25fa4d546d09df4bb1befdc6dd19c19"
@@ -10353,12 +10370,13 @@ react-toastify@^5.3.1:
     prop-types "^15.7.2"
     react-transition-group "^4"
 
-react-tooltip@^4.1.2:
-  version "4.1.2"
-  resolved "https://registry.yarnpkg.com/react-tooltip/-/react-tooltip-4.1.2.tgz#bc9f8620759518f6ef294198d082097e968d549c"
-  integrity sha512-AXQ5uumN/ZpPO6mlPrV52S1As1OOHhyp3pinWFEtTlpKojS8+CL5r/n0oiO8GR5hWqrvEONU34NEF01N2ODwqg==
+react-tooltip@^4.2.9:
+  version "4.2.9"
+  resolved "https://registry.yarnpkg.com/react-tooltip/-/react-tooltip-4.2.9.tgz#0dd08d14191f5d0e56b51c822fa20c2d81a24272"
+  integrity sha512-DgZyg5oxk9/orgePDLLeuDtlwwYv7CalJRahk9nNsoEJDzIO58GC6zSAet4bKTm6c01hg1z3EocP9H0nmMHTMA==
   dependencies:
     prop-types "^15.7.2"
+    uuid "^7.0.3"
 
 react-transition-group@^2.3.1:
   version "2.9.0"
@@ -12400,6 +12418,11 @@ uuid@^3.3.2, uuid@^3.4.0:
   resolved "https://registry.yarnpkg.com/uuid/-/uuid-3.4.0.tgz#b23e4358afa8a202fe7a100af1f5f883f02007ee"
   integrity sha512-HjSDRw6gZE5JMggctHBcjVak08+KEVhSIiDzFnT9S9aegmp85S/bReBVTb4QTFaRNptJ9kuYaNhnbNEOkbKb/A==
 
+uuid@^7.0.3:
+  version "7.0.3"
+  resolved "https://registry.yarnpkg.com/uuid/-/uuid-7.0.3.tgz#c5c9f2c8cf25dc0a372c4df1441c41f5bd0c680b"
+  integrity sha512-DPSke0pXhTZgoF/d+WSt2QaKMCFSfx7QegxEWT+JOuHF5aWrKEn0G+ztjuJg/gG8/ItK+rbPCD/yNv8yyih6Cg==
+
 v8-compile-cache@^2.0.3:
   version "2.1.1"
   resolved "https://registry.yarnpkg.com/v8-compile-cache/-/v8-compile-cache-2.1.1.tgz#54bc3cdd43317bca91e35dcaf305b1a7237de745"
@@ -12640,7 +12663,7 @@ websocket-driver@>=0.5.1:
     safe-buffer ">=5.1.0"
     websocket-extensions ">=0.1.1"
 
-websocket-extensions@>=0.1.1:
+websocket-extensions@>=0.1.1, websocket-extensions@>=0.1.4:
   version "0.1.4"
   resolved "https://registry.yarnpkg.com/websocket-extensions/-/websocket-extensions-0.1.4.tgz#7f8473bc839dfd87608adb95d7eb075211578a42"
   integrity sha512-OqedPIGOfsDlo31UNwYbCFMSaO9m9G/0faIHj5/dZFDMFqPTcx6UwqyOy3COEaEOg/9VsGIpdqn62W5KhoKSpg==

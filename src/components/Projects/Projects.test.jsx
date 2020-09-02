@@ -75,13 +75,14 @@ describe('Projects page structure', () => {
     }
   });
 
-  it('should be rendered with 4 links to the member pages', async () => {
+  it('should be rendered with 8 links to the member and WBS pages', async () => {
     const links = mountedProjects.find('a');
-    expect(links.length).toEqual(4);
+    expect(links.length).toEqual(8);
     
     let projects = props.state.allProjects.projects;
     for (let i = 0; i<projects.length; i++) {
-        expect(links.at(i).prop('href')).toContain(`members/${projects[i]._id}`);
+        expect(links.at(2 * i).prop('href')).toContain(`members/${projects[i]._id}`);
+        expect(links.at(2 * i + 1).prop('href')).toContain(`/project/wbs/${projects[i]._id}`);
     }
   });
 
