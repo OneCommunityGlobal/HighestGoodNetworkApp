@@ -1,9 +1,3 @@
-/* eslint-disable consistent-return */
-/* eslint-disable array-callback-return */
-/* eslint-disable react/destructuring-assignment */
-/* eslint-disable jsx-a11y/click-events-have-key-events */
-/* eslint-disable jsx-a11y/no-static-element-interactions */
-/* eslint-disable react/prop-types */
 import React, { useState } from 'react';
 import {
   Dropdown, Input,

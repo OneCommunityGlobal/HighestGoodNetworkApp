@@ -1,10 +1,9 @@
 /* eslint-disable no-underscore-dangle */
 /* eslint-disable react/prop-types */
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Button, Modal, ModalHeader, ModalBody, ModalFooter, Container, Alert,
 } from 'reactstrap';
-import { useEffect } from 'react';
 import MembersAutoComplete from './MembersAutoComplete';
 
 const TeamMembersPopup = React.memo((props) => {
