@@ -43,8 +43,16 @@ const Project = props => {
 				<NavItem tag={Link} to={`/project/members/${props.projectId}`}>
 					<button type="button" className="btn btn-outline-info"> <i className="fa fa-users" aria-hidden="true"></i></button>
 				</NavItem>
+
 			</td>
-			<td><button type="button" className="btn btn-outline-info"><i className="fa fa-tasks" aria-hidden="true"></i></button></td>
+
+			<td>
+
+				<NavItem tag={Link} to={`/project/wbs/${props.projectId}`}>
+					<button type="button" className="btn btn-outline-info"><i className="fa fa-tasks" aria-hidden="true"></i></button>
+				</NavItem>
+			</td>
+
 			<td><button type="button" className="btn btn-outline-danger"
 				onClick={(e) => props.onClickDelete(
 					props.projectId,

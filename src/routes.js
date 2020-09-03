@@ -14,6 +14,8 @@ import Header from './components/Header'
 import Projects from './components/Projects'
 import UserManagement from './components/UserManagement'
 import Members from './components/Projects/Members'
+import WBS from './components/Projects/WBS'
+import WBSDetail from './components/Projects/WBS/WBSDetail'
 import WeeklySummariesReport from './components/WeeklySummariesReport'
 import 'react-toastify/dist/ReactToastify.css'
 import { UserRole } from './utils/enums'
@@ -28,6 +30,8 @@ export default (
       <ProtectedRoute path="/reports" exact component={Reports} />
       <ProtectedRoute path="/weeklysummariesreport" exact component={WeeklySummariesReport} allowedRoles={[UserRole.Administrator, UserRole.Manager, UserRole.CoreTeam]} />
       <ProtectedRoute path="/projects" exact component={Projects} />
+      <ProtectedRoute path='/project/wbs/:projectId' component={WBS} />
+      <ProtectedRoute path='/wbs/tasks/:wbsId/:projectId' component={WBSDetail} />
       <ProtectedRoute path="/usermanagement" exact component={UserManagement} allowedRoles={[UserRole.Administrator]} />
       <ProtectedRoute path="/project/members/:projectId" component={Members} />
 
