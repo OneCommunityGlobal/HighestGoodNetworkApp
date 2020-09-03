@@ -17,7 +17,7 @@ import {
 import moment from 'moment'
 import _ from 'lodash'
 import { Editor } from '@tinymce/tinymce-react'
-import ReactHtmlParser from 'react-html-parser'
+// import ReactHtmlParser from 'react-html-parser'
 import { postTimeEntry, editTimeEntry } from '../../actions/timeEntries'
 import { getUserProjects } from '../../actions/userProjects'
 import { stopTimer } from '../../actions/timer'
@@ -35,9 +35,9 @@ const TimeEntryForm = ({ userId, edit, data, isOpen, toggle, timer }) => {
   }
   const initialReminder = {
     notification: false,
-    has_link: false,
+    has_link: !!data,
     remind: '',
-    num_words: 0,
+    num_words: data ? 10 : 0,
     edit_count: data ? data.editCount : 0,
     edit_notice: true,
     // edittime: false,
