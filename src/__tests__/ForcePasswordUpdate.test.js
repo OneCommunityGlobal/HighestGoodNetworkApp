@@ -1,32 +1,38 @@
 import { renderWithProvider, renderWithRouterMatch } from './utils.js'
 import '@testing-library/jest-dom/extend-expect'
-import thunk from 'redux-thunk';
+import React from 'react';
 import mockState from './mockAdminState.js'
-import { GET_ERRORS } from '../constants/errors';
 import { createMemoryHistory } from 'history';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import { ENDPOINTS } from '../utils/URL';
-import { render, fireEvent} from "@testing-library/react";
+import { render, screen, fireEvent, waitFor} from "@testing-library/react";
 import routes from './../routes';
+import { ForcePasswordUpdate } from '../components/ForcePasswordUpdate/ForcePasswordUpdate'
+import { forcePasswordUpdate as fPU } from "./../actions/updatePassword";
+import { clearErrors } from "./../actions/errorsActions";
+
 const url = ENDPOINTS.FORCE_PASSWORD;
+let passwordUpdated = false;
+//When user is sent to forced Password Update they are not 
+//authenticated yet and will be sent to login afterwards
+mockState.auth.isAuthenticated = false;
 
 const server = setupServer(
-    rest.post(url, (req, res, ctx) =>  {
-      console.log(req.body);
-      // if (req.body.email === 'validEmail@gmail.com' && req.body.password === 'validPass') {
-      //   return res(ctx.status(200), ctx.json({token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyaWQiOiI1ZWRmMTQxYzc4ZjEzODAwMTdiODI5YTYiLCJyb2xlIjoiQWRtaW5pc3RyYXRvciIsImV4cGlyeVRpbWVzdGFtcCI6IjIwMjAtMDgtMjhUMDU6MDA6NTguOTE0WiIsImlhdCI6MTU5NzcyNjg1OH0.zyPNn0laHv0iQONoIczZt1r5wNWlwSm286xDj-eYC4o'}), )
-      // } else if (req.body.email === 'newUserEmail@gmail.com' && req.body.password === 'validPass'){
-      //   return res(ctx.status(200), ctx.json({new: true, token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyaWQiOiI1ZWRmMTQxYzc4ZjEzODAwMTdiODI5YTYiLCJyb2xlIjoiQWRtaW5pc3RyYXRvciIsImV4cGlyeVRpbWVzdGFtcCI6IjIwMjAtMDgtMjhUMDU6MDA6NTguOTE0WiIsImlhdCI6MTU5NzcyNjg1OH0.zyPNn0laHv0iQONoIczZt1r5wNWlwSm286xDj-eYC4o'}), )
-      // } else {
-      //   return res(ctx.status(403), ctx.json({message: 'Invalid email and/ or password.'}), )
-      // }
+    //request for a forced password update.
+    rest.patch(url, (req, res, ctx) =>  {
+      passwordUpdated = true;
+      if (req.body.newpassword === 'newPassword8') {
+        return res(ctx.status(200));
+      }
     }),  
+    //prevents errors when loading header
     rest.get('http://localhost:4500/api/userprofile/*', (req, res, ctx) =>  {
         return res(ctx.status(200), ctx.json({}), )  
     }),
+    //Leaderboard Data in case user gets to dashboard.
     rest.get('http://localhost:4500/api/dashboard/*', (req, res, ctx) =>  {
-      return res(ctx.status(200), ctx.json({leaderBoardData: [
+      return res(ctx.status(200), ctx.json( [
         {
           "personId": "5edf141c78f1380017b829a6",
           "name": "Dev Admin",
@@ -43,8 +49,9 @@ const server = setupServer(
           "intangibletimewidth": 0,
           "tangiblebarcolor": "orange",
           "totaltime": 6
-        }]}), )  
+        }]), )  
     }),
+    //Any other requests error out
     rest.get('*', (req, res, ctx) => {
       console.error(`Please add request handler for ${req.url.toString()} in your MSW server requests.`);
       return res(
@@ -58,39 +65,100 @@ beforeAll(() => server.listen());
 afterAll(() => server.close());
 afterEach(() => server.resetHandlers());
 
-import { loginUser } from "../actions/authActions";
-import { describe } from 'joi';
-
-function sleep(ms) {
-  return new Promise(resolve => setTimeout(resolve, ms));
-}
 
 describe('Force Password Update behaviour', () => {
+  let fPUMountedPage, rt, hist;
+  beforeEach(()=> {
+    rt = '/forcePasswordUpdate/5edf141c78f1380017b829a6';
+    hist = createMemoryHistory({ initialEntries: [rt] });
+    fPUMountedPage = renderWithRouterMatch(routes , {initialState: mockState, route: rt, history: hist});
+  });
+
+  it('should pop up an error if password doesnt meet requirements', async () => {
+    
+    let reqError = '"New Password" should be at least 8 characters long and must include at least one uppercase letter, one lowercase letter, and one number or special character';
+    //No number or special char
+    fireEvent.change(screen.getByLabelText('New Password:'), {
+      target: {value: 'newPassword'}
+    });
+
+    await waitFor(()=> {
+      expect(passwordUpdated).toBeFalsy();
+      expect(screen.getByText(reqError)).toBeTruthy();
+    });
+    
+    //No capatalized char
+    fireEvent.change(screen.getByLabelText('New Password:'), {
+      target: {value: 'newpassword8'}
+    });
+
+    await waitFor(()=> {
+      expect(passwordUpdated).toBeFalsy();
+      expect(screen.getByText(reqError)).toBeTruthy();
+    });
+
+    //Not long enough
+    fireEvent.change(screen.getByLabelText('New Password:'), {
+      target: {value: 'word8'}
+    });
+
+    await waitFor(()=> {
+      expect(passwordUpdated).toBeFalsy();
+      expect(screen.getByText(reqError)).toBeTruthy();
+    });
+  });
+
+  it('should pop up an error if passwords dont match', async () => {
+    
+    fireEvent.change(screen.getByLabelText('New Password:'), {
+      target: {value: 'newPassword8'}
+    });
+    
+    fireEvent.change(screen.getByLabelText('Confirm Password:'), {
+      target: {value: 'Password8'}
+    });
+
+    fireEvent.click(screen.getByText('Submit'));
+
+    await waitFor(()=> {
+      expect(passwordUpdated).toBeFalsy();
+      expect(screen.getByText('"Confirm Password" must match new password')).toBeTruthy();
+    });
+  });
 
   it('should update password after submit is clicked', async () => {
-    // let rt = '/updatepassword/5edf141c78f1380017b829a6'
-    // const hist = createMemoryHistory({ initialEntries: [rt] });
-    // let loginMountedPage = renderWithRouterMatch(routes , {initialState: mockState, route: rt, history: hist});
-    // await sleep(100);
-    // let {getByLabelText, getByText} = loginMountedPage;
-    // fireEvent.change(getByLabelText('Email:'), {
-    //   target: {value: 'validEmail@gmail.com'}
-    // });
-    // await sleep(10);
-    // fireEvent.change(getByLabelText('Password:'), {
-    //   target: {value: 'validPass'}
-    // });
-    // await sleep(10);
-    // fireEvent.click(getByText('Submit'));
-    // await sleep(100);
-    // expect(getByLabelText('Current Password:')).toBeTruthy();
-    // return;
+
+    fireEvent.change(screen.getByLabelText('New Password:'), {
+      target: {value: 'newPassword8'}
+    });
+    
+    fireEvent.change(screen.getByLabelText('Confirm Password:'), {
+      target: {value: 'newPassword8'}
+    });
+
+    fireEvent.click(screen.getByText('Submit'));
+
+    await waitFor(()=> {
+      expect(passwordUpdated).toBeTruthy();
+      fireEvent.click(screen.getByText('You will now be directed to the login page where you can login with your new password.'));
+    });
+    
+    await waitFor(()=> {
+      expect(screen.getByLabelText('Email:')).toBeTruthy();
+    });
   });
 
 });
 
 describe('Force Password Update page structure', () => {
     it('should match the snapshot', () => {
+      let props = ({
+        match: { params: {userId: "5edf141c78f1380017b829a6"}},
+        auth: {isAuthenticated: true},
+        errors: {},
+        "clearErrors": clearErrors,
+        "forcePasswordUpdate": fPU
+      });
       const { asFragment } = render(<ForcePasswordUpdate {...props} />);
       expect(asFragment()).toMatchSnapshot();
     });

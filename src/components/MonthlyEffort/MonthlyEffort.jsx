@@ -2,7 +2,7 @@ import React from 'react';
 import { connect } from "react-redux";
 
 
-class MonthlyEffort extends React.Component {
+export class MonthlyEffort extends React.Component {
     state = { };
     
   async componentDidMount() {
