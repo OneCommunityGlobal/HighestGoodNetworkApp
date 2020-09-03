@@ -8,7 +8,7 @@ import { createMemoryHistory } from 'history';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import { ENDPOINTS } from '../utils/URL';
-import { render, fireEvent, waitFor, waitForElementToBeRemoved, cleanup} from "@testing-library/react";
+import { render, fireEvent, waitFor, screen} from "@testing-library/react";
 import routes from './../routes';
 import { Login } from './../components/Login/Login';
 import { clearErrors } from "../actions/errorsActions";
@@ -76,23 +76,22 @@ describe('Login behavior', () => {
     let rt = '/updatepassword/5edf141c78f1380017b829a6'
     const hist = createMemoryHistory({ initialEntries: [rt] });
     loginMountedPage = renderWithRouterMatch(routes , {initialState: mockState, route: rt, history: hist});
-    let {getByLabelText, getByText} = loginMountedPage;
     
-    await waitFor(()=> {
-      fireEvent.change(getByLabelText('Email:'), {
-        target: {value: 'validEmail@gmail.com'}
-      });
-      fireEvent.change(getByLabelText('Password:'), {
-        target: {value: 'validPass'}
-      });
+
+    fireEvent.change(screen.getByLabelText('Email:'), {
+      target: {value: 'validEmail@gmail.com'}
+    });
+    fireEvent.change(screen.getByLabelText('Password:'), {
+      target: {value: 'validPass'}
     });
 
-    await waitFor(()=> {
-      fireEvent.click(getByText('Submit'))
-    });
+
+
+    fireEvent.click(screen.getByText('Submit'));
+
 
     await waitFor(()=> {
-      expect(getByLabelText('Current Password:')).toBeTruthy();
+      expect(screen.getByLabelText('Current Password:')).toBeTruthy();
     });
   });
 
@@ -101,23 +100,20 @@ describe('Login behavior', () => {
     const rt = '/login'
     const hist = createMemoryHistory({ initialEntries: [rt] });
     loginMountedPage = renderWithRouterMatch(routes , {initialState: mockState, route: rt, history: hist});
-    let {getByLabelText, getByText} = loginMountedPage;
 
-    await waitFor(()=> {
-      fireEvent.change(getByLabelText('Email:'), {
-        target: {value: 'validEmail@gmail.com'}
-      });
-      
-      fireEvent.change(getByLabelText('Password:'), {
-        target: {value: 'validPass'}
-      });
-
-      fireEvent.click(getByText('Submit'));
+    fireEvent.change(screen.getByLabelText('Email:'), {
+      target: {value: 'validEmail@gmail.com'}
     });
     
+    fireEvent.change(screen.getByLabelText('Password:'), {
+      target: {value: 'validPass'}
+    });
+
+    fireEvent.click(screen.getByText('Submit'));
+
+    
     await waitFor(()=> {
-      expect(getByText(/weekly summaries/i)).toBeTruthy();
-      
+      expect(screen.getByText(/weekly summaries/i)).toBeTruthy();
     });
     await sleep(10);
   });
@@ -127,44 +123,43 @@ describe('Login behavior', () => {
     let rt = '/login'
     const hist = createMemoryHistory({ initialEntries: [rt] });
     loginMountedPage = renderWithRouterMatch(routes , {initialState: mockState, route: rt, history: hist});
-    let {getByLabelText, getByText} = loginMountedPage;
     await sleep(10);
-    await waitFor(()=> {  
-      fireEvent.change(getByLabelText('Email:'), {
-        target: {value: 'newUserEmail@gmail.com'}
-      });
-      fireEvent.change(getByLabelText('Password:'), {
-        target: {value: 'validPass'}
-      });
-      fireEvent.click(getByText('Submit'));
+     
+    fireEvent.change(screen.getByLabelText('Email:'), {
+      target: {value: 'newUserEmail@gmail.com'}
     });
+    fireEvent.change(screen.getByLabelText('Password:'), {
+      target: {value: 'validPass'}
+    });
+    fireEvent.click(screen.getByText('Submit'));
+
     await waitFor(()=> { 
-      expect(getByLabelText('New Password:')).toBeTruthy();
+      expect(screen.getByLabelText('New Password:')).toBeTruthy();
     });
   });
 
   it('should populate errors if login fails', async () => {
     let rt = '/login'
     const hist = createMemoryHistory({ initialEntries: [rt] });
+
     loginMountedPage = renderWithRouterMatch(routes , {initialState: mockState, route: rt, history: hist});
-    let {getByLabelText, getByText} = loginMountedPage;
-    await sleep(10);
-    await waitFor(()=> {  
-      fireEvent.change(getByLabelText('Email:'), {
-        target: {value: 'incorrectEmail@gmail.com'}
-      });
-      fireEvent.change(getByLabelText('Password:'), {
-        target: {value: 'incorrectPassword'}
-      });  
-      fireEvent.click(getByText('Submit'));
-      
+
+    sleep(10);
+
+    fireEvent.change(screen.getByLabelText('Email:'), {
+      target: {value: 'incorrectEmail@gmail.com'}
     });
+    fireEvent.change(screen.getByLabelText('Password:'), {
+      target: {value: 'incorrectPassword'}
+    });  
+    fireEvent.click(screen.getByText('Submit'));
+
 
     await waitFor(()=> {  
-      expect(getByText('Invalid email and/ or password.')).toBeTruthy();
+      expect(screen.getByText('Invalid email and/ or password.')).toBeTruthy();
     });
     
-    await sleep(10);
+
   });
 
   it('should test if loginUser action works correctly', async () => {

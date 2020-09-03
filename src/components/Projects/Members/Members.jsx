@@ -7,7 +7,7 @@ import React, { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { NavItem } from 'reactstrap'
 import { connect } from 'react-redux'
-import { fetchAllMembers, findUserProfiles } from './../../../actions/projectMembers'
+import { fetchAllMembers, findUserProfiles, getAllUserProfiles, assignProject } from './../../../actions/projectMembers'
 import Member from './Member'
 import FoundUser from './FoundUser'
 import './members.css'
@@ -30,6 +30,13 @@ const Members = (props) => {
         if (event.key === "Enter") {
             props.findUserProfiles(keyword);
         }
+    }
+
+    const assignAll = () => {
+        const allUsers = props.state.projectMembers.foundUsers.filter(user => user.assigned === false);
+        allUsers.forEach(user => {
+            props.assignProject(projectId, user._id, "Assign", user.firstName, user.lastName);
+        });
     }
 
 
@@ -66,6 +73,10 @@ const Members = (props) => {
                             onClick={(e) => props.findUserProfiles(keyword)}>
                             <i className="fa fa-search" aria-hidden="true"></i>
                         </button>
+                        <button className="btn btn-outline-primary" type="button"
+                            onClick={(e) => props.getAllUserProfiles()}>
+                            All
+                        </button>
 
                     </div>
                 </div>
@@ -78,7 +89,11 @@ const Members = (props) => {
                                 <th scope="col" id="foundUsers__order">#</th>
                                 <th scope="col" >Name</th>
                                 <th scope="col" >Email</th>
-                                <th scope="col" >Assign</th>
+                                <th scope="col" >Assign
+                                <button className="btn btn-outline-primary" type="button" onClick={() => assignAll()}>
+                                        +All
+                                </button>
+                                </th>
                             </tr>
                         </thead>
                         <tbody>
@@ -124,5 +139,5 @@ const Members = (props) => {
 
 
 const mapStateToProps = state => { return { state } }
-export default connect(mapStateToProps, { fetchAllMembers, findUserProfiles })(Members)
+export default connect(mapStateToProps, { fetchAllMembers, findUserProfiles, getAllUserProfiles, assignProject })(Members)
 
