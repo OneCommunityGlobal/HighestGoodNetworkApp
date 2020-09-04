@@ -6424,6 +6424,11 @@
         }
       }
     },
+    "date-fns": {
+      "version": "2.16.1",
+      "resolved": "https://registry.npmjs.org/date-fns/-/date-fns-2.16.1.tgz",
+      "integrity": "sha512-sAJVKx/FqrLYHAQeN7VpJrPhagZc9R4ImZIWYRFZaaohR3KzmuK88touwsSwSVT8Qcbd4zoDsnGfX4GFB4imyQ=="
+    },
     "debug": {
       "version": "3.1.0",
       "resolved": "https://registry.npmjs.org/debug/-/debug-3.1.0.tgz",
@@ -12024,7 +12029,8 @@
     "nan": {
       "version": "2.14.1",
       "resolved": "https://registry.npmjs.org/nan/-/nan-2.14.1.tgz",
-      "integrity": "sha512-isWHgVjnFjh2x2yuJ/tj3JbwoHu3UC2dX5G/88Cm24yB6YopVgxvBObDY7n5xW6ExmFhJpSEQqFPvq9zaXc8Jw=="
+      "integrity": "sha512-isWHgVjnFjh2x2yuJ/tj3JbwoHu3UC2dX5G/88Cm24yB6YopVgxvBObDY7n5xW6ExmFhJpSEQqFPvq9zaXc8Jw==",
+      "optional": true
     },
     "nanomatch": {
       "version": "1.2.13",
@@ -14420,6 +14426,14 @@
         }
       }
     },
+    "react-day-picker": {
+      "version": "7.4.8",
+      "resolved": "https://registry.npmjs.org/react-day-picker/-/react-day-picker-7.4.8.tgz",
+      "integrity": "sha512-pp0hnxFVoRuBQcRdR1Hofw4CQtOCGVmzCNrscyvS0Q8NEc+UiYLEDqE5dk37bf0leSnBW4lheIt0CKKhuKzDVw==",
+      "requires": {
+        "prop-types": "^15.6.2"
+      }
+    },
     "react-dev-utils": {
       "version": "10.2.1",
       "resolved": "https://registry.npmjs.org/react-dev-utils/-/react-dev-utils-10.2.1.tgz",
@@ -15002,6 +15016,22 @@
         "classnames": "^2.2.6",
         "prop-types": "^15.7.2",
         "react-transition-group": "^4"
+      }
+    },
+    "react-tooltip": {
+      "version": "4.2.9",
+      "resolved": "https://registry.npmjs.org/react-tooltip/-/react-tooltip-4.2.9.tgz",
+      "integrity": "sha512-DgZyg5oxk9/orgePDLLeuDtlwwYv7CalJRahk9nNsoEJDzIO58GC6zSAet4bKTm6c01hg1z3EocP9H0nmMHTMA==",
+      "requires": {
+        "prop-types": "^15.7.2",
+        "uuid": "^7.0.3"
+      },
+      "dependencies": {
+        "uuid": {
+          "version": "7.0.3",
+          "resolved": "https://registry.npmjs.org/uuid/-/uuid-7.0.3.tgz",
+          "integrity": "sha512-DPSke0pXhTZgoF/d+WSt2QaKMCFSfx7QegxEWT+JOuHF5aWrKEn0G+ztjuJg/gG8/ItK+rbPCD/yNv8yyih6Cg=="
+        }
       }
     },
     "react-transition-group": {
