@@ -27,6 +27,7 @@ import { errorsReducer } from './errorsReducer';
 import { timeEntriesReducer } from './timeEntriesReducer';
 import { wbsReducer } from './wbsReducer'
 import { taskReducer } from './allTasksReducer'
+import { timerReducer } from './timerReducer'
 
 export default combineReducers({
   auth: authReducer,
@@ -56,5 +57,6 @@ export default combineReducers({
   wbs: wbsReducer,
   tasks: taskReducer,
   errors: errorsReducer,
-  timeEntries: timeEntriesReducer
-});
+  timeEntries: timeEntriesReducer,
+  timer: timerReducer,
+})

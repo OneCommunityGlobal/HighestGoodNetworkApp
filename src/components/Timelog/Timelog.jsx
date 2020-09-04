@@ -16,11 +16,13 @@ import {
     Form,
     FormGroup,
     Label,
-    Input
+    Input,
+    Button
 } from 'reactstrap'
 import classnames from 'classnames';
 import { connect } from 'react-redux'
 import moment from "moment";
+import _ from "lodash";
 import { 
     getTimeEntriesForWeek, 
     getTimeEntriesForPeriod,
@@ -32,19 +34,26 @@ import {
 import TimeEntryForm from './TimeEntryForm'
 import TimelogNavbar from './TimelogNavbar'
 import TimeEntry from './TimeEntry'
+import EffortBar from './EffortBar';
 
 class TimelogPage extends Component {
     constructor(props) {
         super(props);
         this.toggle = this.toggle.bind(this);
         this.changeTab = this.changeTab.bind(this);
+        this.handleInputChange = this.handleInputChange.bind(this);
+        this.handleSearch = this.handleSearch.bind(this);
     }
 
-    state = {
+    initialState = {
         modal: false,
         activeTab: 0,
-        projectSelected: "all"
+        projectSelected: "all",
+        fromDate: this.startOfWeek(0),
+        toDate: this.endOfWeek(0)
     };
+
+    state = this.initialState
 
     async componentDidMount() {
         const userId = this.props.match.params.userId;
@@ -52,17 +61,21 @@ class TimelogPage extends Component {
         await this.props.getTimeEntriesForWeek(userId, 0);
         await this.props.getTimeEntriesForWeek(userId, 1);
         await this.props.getTimeEntriesForWeek(userId, 2);
-        await this.props.getTimeEntriesForPeriod(userId, "2020-02-02", "2020-02-18");
+        await this.props.getTimeEntriesForPeriod(userId, this.state.fromDate, this.state.toDate);
         await this.props.getUserProjects(userId);
     }
 
     async componentDidUpdate(prevProps) {
         if (prevProps.match.params.userId !== this.props.match.params.userId) {
-            await this.props.getUserProfile(this.props.match.params.userId);
-            await this.props.getTimeEntriesForWeek(this.props.match.params.userId, 0);
-            await this.props.getTimeEntriesForWeek(this.props.match.params.userId, 1);
-            await this.props.getTimeEntriesForWeek(this.props.match.params.userId, 2);
-            await this.props.getUserProjects(this.props.match.params.userId);
+            this.setState(this.initialState);
+            
+            const userId = this.props.match.params.userId;
+            await this.props.getUserProfile(userId);
+            await this.props.getTimeEntriesForWeek(userId, 0);
+            await this.props.getTimeEntriesForWeek(userId, 1);
+            await this.props.getTimeEntriesForWeek(userId, 2);
+            await this.props.getTimeEntriesForPeriod(userId, this.state.fromDate, this.state.toDate);
+            await this.props.getUserProjects(userId);
         }
     }
 
@@ -76,6 +89,16 @@ class TimelogPage extends Component {
         this.setState({
             activeTab: tab
         });
+    }
+
+    handleInputChange(e) {
+        this.setState({ [e.target.name]: e.target.value });
+    }
+
+    handleSearch(e) {
+        e.preventDefault();
+        this.props.getTimeEntriesForPeriod(this.props.match.params.userId, 
+            this.state.fromDate, this.state.toDate);
     }
 
     startOfWeek(offset) {
@@ -106,11 +129,16 @@ class TimelogPage extends Component {
         const currentWeekEntries = this.generateTimeEntries(this.props.timeEntries.weeks[0]);
         const lastWeekEntries = this.generateTimeEntries(this.props.timeEntries.weeks[1]);
         const beforeLastEntries = this.generateTimeEntries(this.props.timeEntries.weeks[2]);
+        const periodEntries = this.generateTimeEntries(this.props.timeEntries.period);
 
         const isAdmin = this.props.auth.user.role === "Administrator";
         const isOwner = this.props.auth.user.userid === this.props.match.params.userId;
+        const fullName = this.props.userProfile.firstName + " " + this.props.userProfile.lastName;
 
-        const { projects } = this.props.userProjects;
+        let projects = [];
+        if (!_.isEmpty(this.props.userProjects.projects)) {
+            projects = this.props.userProjects.projects;
+        }
         const projectOptions = projects.map(project => 
             <option value={project.projectId} key={project.projectId}> {project.projectName} </option>
         )
@@ -124,18 +152,25 @@ class TimelogPage extends Component {
                         <Card>
                             <CardHeader>
                                 <Row>
-                                    <Col md={8}>
+                                    <Col md={7}>
                                         <CardTitle tag="h4">
-                                        Time Entries
+                                            Time Entries
                                         </CardTitle>
                                         <CardSubtitle tag="h6" className="text-muted">
-                                        Viewing time entries logged in last 3 weeks
+                                            Viewing time entries logged in last 3 weeks
                                         </CardSubtitle>
                                     </Col>
-                                    <Col md={4}>
-                                        {(isAdmin || isOwner) && 
-                                            <TimeEntryForm userId={this.props.match.params.userId} edit={false}/>
-                                        }
+                                    <Col md={5}>
+                                        {isOwner ? 
+                                            (<Button color="success" className="float-right" onClick={ this.toggle }> 
+                                                Add Time Entry
+                                            </Button>) 
+                                        : isAdmin && 
+                                            (<Button color="warning" className="float-right" onClick={ this.toggle }>
+                                                Add Time Entry {!isOwner && `for ${fullName}`}
+                                            </Button>)}
+                                        <TimeEntryForm userId={this.props.match.params.userId} edit={false} 
+                                            toggle={this.toggle} isOpen={this.state.modal}/>
                                     </Col>
                                 </Row>
                             </CardHeader>
@@ -145,6 +180,7 @@ class TimelogPage extends Component {
                                         <NavLink
                                             className={classnames({ active: this.state.activeTab === 0 })}
                                             onClick={() => { this.changeTab(0); }}
+                                            href="#"
                                         >
                                             Current Week
                                         </NavLink>
@@ -153,6 +189,7 @@ class TimelogPage extends Component {
                                         <NavLink
                                             className={classnames({ active: this.state.activeTab === 1 })}
                                             onClick={() => { this.changeTab(1); }}
+                                            href="#"
                                         >
                                             Last Week
                                         </NavLink>
@@ -161,29 +198,66 @@ class TimelogPage extends Component {
                                         <NavLink
                                             className={classnames({ active: this.state.activeTab === 2 })}
                                             onClick={() => { this.changeTab(2); }}
+                                            href="#"
                                         >
                                             Week Before Last
                                         </NavLink>
                                     </NavItem>
+                                    <NavItem>
+                                        <NavLink
+                                            className={classnames({ active: this.state.activeTab === 3 })}
+                                            onClick={() => { this.changeTab(3); }}
+                                            href="#"
+                                        >
+                                            Search by Date Range
+                                        </NavLink>
+                                    </NavItem>
                                 </Nav>
+
                                 <TabContent activeTab={this.state.activeTab}>
-                                    <p>Viewing time Entries from {' '}
-                                        <b>{this.startOfWeek(this.state.activeTab)}</b>
-                                        {" to "} 
-                                        <b>{this.endOfWeek(this.state.activeTab)}</b>
-                                    </p>
+                                    {this.state.activeTab === 3 ?
+                                        <p>Viewing time Entries from {' '}
+                                            <b>{this.state.fromDate}</b>
+                                            {" to "} 
+                                            <b>{this.state.toDate}</b>
+                                        </p> :
+                                        <p>Viewing time Entries from {' '}
+                                            <b>{this.startOfWeek(this.state.activeTab)}</b>
+                                            {" to "} 
+                                            <b>{this.endOfWeek(this.state.activeTab)}</b>
+                                        </p>
+                                    }
+                                    {this.state.activeTab === 3 && 
+                                        <Form inline className="mb-2">
+                                            <FormGroup className="mr-2">
+                                                <Label for="fromDate" className="mr-2">From</Label>
+                                                    <Input type="date" name="fromDate" id="fromDate"
+                                                        value={this.state.fromDate} onChange={this.handleInputChange}/>
+                                            </FormGroup>
+                                            <FormGroup>
+                                                <Label for="toDate" className="mr-2">To</Label>
+                                                    <Input type="date" name="toDate" id="toDate"
+                                                        value={this.state.toDate} onChange={this.handleInputChange}/>
+                                            </FormGroup>
+                                            <Button color="primary" onClick={this.handleSearch} className="ml-2">
+                                                Search
+                                            </Button>
+                                        </Form>
+                                    }
                                     <Form inline className="mb-2">
                                         <FormGroup>
                                             <Label for="projectSelected" className="mr-2">Filter Entries by Project:</Label>
                                             <Input type="select" name="projectSelected" id="projectSelected" 
                                                 value={this.state.projectSelected} 
                                                 onChange={e => this.setState({
-                                                projectSelected: e.target.value
-                                            })}>
+                                                    projectSelected: e.target.value
+                                                })}>
                                                 {projectOptions}
                                             </Input>
                                         </FormGroup>
                                     </Form>
+                                    <EffortBar activeTab={this.state.activeTab} 
+                                        projectSelected={this.state.projectSelected}/>
                                     <TabPane tabId={0}>
                                         { currentWeekEntries }
                                     </TabPane>
@@ -192,6 +266,9 @@ class TimelogPage extends Component {
                                     </TabPane>
                                     <TabPane tabId={2}>
                                         { beforeLastEntries }
+                                    </TabPane>
+                                    <TabPane tabId={3}>
+                                        { periodEntries }
                                     </TabPane>
                                 </TabContent>
                             </CardBody>
