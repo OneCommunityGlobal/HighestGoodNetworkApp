@@ -24,6 +24,7 @@
     "moment-timezone": "^0.5.31",
     "pdfmake": "^0.1.65",
     "prop-types": "^15.7.2",
+    "node-sass": "^4.14.1",
     "react": "^16.13.1",
     "react-bootstrap": "^1.0.1",
     "react-day-picker": "^7.4.8",

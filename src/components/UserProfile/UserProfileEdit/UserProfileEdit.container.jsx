@@ -4,11 +4,10 @@ import {
   getUserProfile,
   updateUserProfile,
   clearUserProfile,
-} from '../../actions/userProfile';
-import { getUserTeamMembers } from '../../actions/team';
+} from '../../../actions/userProfile';
+import { getUserTeamMembers } from '../../../actions/team';
 
-
-import UserProfile from './UserProfile';
+import UserProfileEdit from './UserProfileEdit';
 
 const mapStateToProps = state => ({
   auth: state.auth,
@@ -21,4 +20,4 @@ export default connect(mapStateToProps, {
   clearUserProfile,
   updateUserProfile,
   getUserTeamMembers,
-})(UserProfile);
+})(UserProfileEdit);
