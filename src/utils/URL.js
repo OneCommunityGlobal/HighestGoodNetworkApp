@@ -16,9 +16,7 @@ export const ENDPOINTS = {
     `${APIEndpoint}/TimeEntry/user/${userId}/${fromDate}/${toDate}`,
   TIME_ENTRY: () => `${APIEndpoint}/TimeEntry`,
   TIME_ENTRY_CHANGE: timeEntryId => `${APIEndpoint}/TimeEntry/${timeEntryId}`,
-<<<<<<< HEAD
   TIMER: userId => `${APIEndpoint}/timer/${userId}`,
-=======
   WBS: projectId => `${APIEndpoint}/wbs/${projectId}`,
   TASKS: wbsId => `${APIEndpoint}/tasks/${wbsId}`,
   TASK: wbsId => `${APIEndpoint}/task/${wbsId}`,
@@ -31,6 +29,5 @@ export const ENDPOINTS = {
   FIX_TASKS: wbsId => `${APIEndpoint}/tasks/${wbsId}`,
   UPDATE_PARENT_TASKS: wbsId => `${APIEndpoint}/task/updateAllParents/${wbsId}`,
   MOVE_TASKS: wbsId => `${APIEndpoint}/tasks/moveTasks/${wbsId}`,
->>>>>>> ccf1827f9e0c3ade4a3994b4066f1a1c60ccf851
   WEEKLY_SUMMARIES_REPORT: () => `${APIEndpoint}/reports/weeklysummaries`,
 }
