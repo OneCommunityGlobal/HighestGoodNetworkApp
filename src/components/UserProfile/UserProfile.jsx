@@ -62,6 +62,43 @@ class UserProfile extends Component {
     }
   }
 
+  async componentDidUpdate(prevProps, prevState) {
+    if (this.props.match !== prevProps.match){
+      console.log('component needs to update')
+      
+      let userId = this.props.match.params.userId;
+      await this.props.getUserProfile(userId);
+
+      if ( this.props.userProfile === '404'){
+        this.setState({
+          isLoading: false
+        })
+      } else {
+        await this.props.getUserTeamMembers(userId);
+        if (this.props.userProfile.firstName.length) {
+          if (!this.props.userProfile.privacySettings){
+            this.setState({
+              isLoading: false,
+              userProfile:{
+                ...this.props.userProfile,
+                privacySettings:{
+                  email: true,
+                  phoneNumber: true,
+                  blueSquares: true
+                }
+              }
+            });
+          } else {
+            this.setState({
+              isLoading: false,
+              userProfile: this.props.userProfile
+            });
+          }
+        }
+      }
+    }
+  }
+
   handleBlueSquare = (status = true, type = "message", blueSquareID = "") => {
     if (type === "viewBlueSquare") {
       this.setState({
@@ -152,9 +189,8 @@ class UserProfile extends Component {
     let canEdit = isUserAdmin || isUserSelf;
 
 
-    console.log('this.state:', this.state)
-
-    console.log('this.props.userProfile', this.props.userProfile)
+    // console.log('this.state:', this.state)
+    // console.log('this.props.userProfile', this.props.userProfile)
 
 
 
