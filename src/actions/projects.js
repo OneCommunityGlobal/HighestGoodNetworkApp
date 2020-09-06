@@ -17,13 +17,13 @@ export const fetchAllProjects = () => {
 
 	const request = axios.get(ENDPOINTS.PROJECTS);
 
-	console.log(ENDPOINTS.PROJECTS);
-	console.log(request);
+	//console.log(ENDPOINTS.PROJECTS);
+	//console.log(request);
 
 	return async dispatch => {
 		await dispatch(setProjectsStart());
 		request.then(res => {
-			console.log("RES", res);
+			//console.log("RES", res);
 			dispatch(setProjects(res.data));
 		}).catch((err) => {
 			console.log("Error", err);
@@ -39,7 +39,7 @@ export const fetchAllProjects = () => {
  */
 export const postNewProject = (projectName, isActive) => {
 	const url = ENDPOINTS.PROJECTS;
-	console.log("Call API: ", url);
+	//console.log("Call API: ", url);
 	return async dispatch => {
 		let status = 200;
 		let _id = null;
@@ -74,9 +74,7 @@ export const postNewProject = (projectName, isActive) => {
 export const deleteProject = (projectId) => {
 	const url = ENDPOINTS.PROJECT + projectId;
 
-	console.log("Delete", projectId);
-
-	console.log('Delete', projectId)
+	//console.log("Delete", projectId);
 
 	return async dispatch => {
 		let status = 200
@@ -95,7 +93,7 @@ export const deleteProject = (projectId) => {
 
 export const modifyProject = (type, projectId, projectName, isActive) => {
 	const url = ENDPOINTS.PROJECT + projectId;
-	console.log("set Active", projectId, projectName, isActive);
+	//console.log("set Active", projectId, projectName, isActive);
 
 	if (type === "setActive") {
 		isActive = !isActive;

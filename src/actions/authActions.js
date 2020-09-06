@@ -9,7 +9,7 @@ import { SET_CURRENT_USER, SET_HEADER_DATA } from '../constants/auth'
 const { tokenKey } = config
 
 export const loginUser = credentials => dispatch => {
-  httpService
+  return httpService
     .post(ENDPOINTS.LOGIN, credentials)
     .then(res => {
       if (res.data.new) {
@@ -17,7 +17,6 @@ export const loginUser = credentials => dispatch => {
       } else {
         localStorage.setItem(tokenKey, res.data.token)
         httpService.setjwt(res.data.token)
-        console.log(res.data.token)
         const decoded = jwtDecode(res.data.token)
         dispatch(setCurrentUser(decoded))
       }

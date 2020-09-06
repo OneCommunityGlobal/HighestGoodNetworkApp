@@ -22,7 +22,7 @@ import './projects.css'
 import { connect } from 'react-redux'
 import Loading from '../common/Loading'
 
-class Projects extends Component {
+export class Projects extends Component {
 
   constructor(props) {
     super(props);
@@ -104,7 +104,7 @@ class Projects extends Component {
     let numberOfActive = projects.filter(project => project.isActive).length;
 
     let showModalMsg = false;
-    console.log("STATUS", status);
+    //console.log("STATUS", status);
 
     if (status == 400 && trackModelMsg) {
       showModalMsg = true;

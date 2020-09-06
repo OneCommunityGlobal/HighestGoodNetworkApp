@@ -8,7 +8,6 @@ import getcolor from '../../utils/effortColors'
 import { Table, Badge, Progress } from 'reactstrap'
 
 const LeaderBoard = ({ getLeaderboardData, leaderBoardData, loggedInUser }) => {
-	//console.log('Logged in User userid ', loggedInUser.userid)
 
 	useEffect(() => {
 		getLeaderboardData(loggedInUser.userid)
