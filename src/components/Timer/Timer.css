@@ -1,0 +1,9 @@
+.timer button {
+    width: 3.75rem;
+    box-shadow: none !important;
+}
+
+.timer .badge {
+    font-size: 1.5rem;
+    font-variant-numeric: tabular-nums;
+}

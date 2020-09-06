@@ -1,17 +1,20 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <meta name="theme-color" content="#000000">
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <meta name="theme-color" content="#000000" />
     <!--
       manifest.json provides metadata used when your web app is added to the
       homescreen on Android. See https://developers.google.com/web/fundamentals/engage-and-retain/web-app-manifest/
     -->
-    <link rel="manifest" href="%PUBLIC_URL%/manifest.json">
-    <link rel="shortcut icon" href="%PUBLIC_URL%/favicon.ico">
+    <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
+    <link rel="shortcut icon" href="%PUBLIC_URL%/favicon.ico" />
 
-    <script src="https://cdn.tiny.cloud/1/1rsz7lmakcvzg8trwjy91zht48pj4oubz8jrdyqxbbr63pvs/tinymce/5/tinymce.min.js" referrerpolicy="origin"></script>
+    <script
+      src="https://cdn.tiny.cloud/1/1rsz7lmakcvzg8trwjy91zht48pj4oubz8jrdyqxbbr63pvs/tinymce/5/tinymce.min.js"
+      referrerpolicy="origin"
+    ></script>
 
     <!--
       Notice the use of %PUBLIC_URL% in the tags above.
@@ -24,10 +27,15 @@
     -->
     <title>HGN APP</title>
   </head>
-  <body>
+  <body onbeforeunload="return leaveAlert()">
     <noscript>
       You need to enable JavaScript to run this app.
     </noscript>
+    <script>
+      function leaveAlert() {
+        return "Don't forget to log your time before leaving the page!"
+      }
+    </script>
     <div id="root"></div>
     <!--
       This HTML file is a template.

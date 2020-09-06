@@ -5,20 +5,42 @@
 import axios from 'axios'
 import * as types from './../constants/projectMembership'
 import { ENDPOINTS } from '../utils/URL'
-import { useRowSelect } from 'react-table';
-import store from './../store'
 /*******************************************
  * ACTION CREATORS 
  *******************************************/
+
+export const getAllUserProfiles = () => {
+  const request = axios.get(ENDPOINTS.USER_PROFILES);
+  return async (dispatch, getState) => {
+    await dispatch(findUsersStart());
+    request.then(res => {
+      let users = res.data;
+      let members = getState().projectMembers.members;
+      users = users.map((user) => {
+        if (!members.find(member => member._id === user._id)) {
+          return user = { ...user, assigned: false }
+        } else {
+          return user = { ...user, assigned: true }
+        }
+      })
+      console.log(users);
+      dispatch(foundUsers(users));
+
+    }).catch((err) => {
+      console.log("Error", err);
+      dispatch(findUsersError(err));
+    })
+  }
+}
 
 /**
 * Call API to find a user profile
 */
 export const findUserProfiles = (keyword) => {
 
-  console.log(ENDPOINTS.USER_PROFILES, keyword);
+  //console.log(ENDPOINTS.USER_PROFILES, keyword);
   const request = axios.get(ENDPOINTS.USER_PROFILES);
-  console.log(request);
+  //console.log(request);
 
   return async (dispatch, getState) => {
     await dispatch(findUsersStart());
@@ -60,7 +82,7 @@ export const fetchAllMembers = (projectId) => {
     await dispatch(setMemberStart());
     await dispatch(foundUsers([]));
     request.then(res => {
-      //console.log("RES", res);
+      console.log("RES", res);
       dispatch(setMembers(res.data));
     }).catch((err) => {
       //console.log("Error", err);

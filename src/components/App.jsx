@@ -17,6 +17,9 @@ import "../App.css";
 
 const { persistor, store } = configureStore();
 const tokenKey = config.tokenKey;
+// Require re-login 2 days before the token expires on server side
+// Avoid failure due to token expiration when user is working
+const TOKEN_LIFETIME_BUFFER = 86400 * 2;
 
 // Check for token
 if (localStorage.getItem(tokenKey)) {
@@ -26,7 +29,7 @@ if (localStorage.getItem(tokenKey)) {
   const currentTime = Date.now() / 1000;
   const expiryTime = new Date(decoded.expiryTimestamp).getTime() / 1000;
   console.log(currentTime, expiryTime);
-  if (expiryTime < currentTime) {
+  if (expiryTime - TOKEN_LIFETIME_BUFFER < currentTime) {
     // Logout user
     store.dispatch(logoutUser());
   }
@@ -40,6 +43,19 @@ if (localStorage.getItem(tokenKey)) {
 
 class App extends Component {
   state = {};
+
+  // confirmAlert(e) {
+  //   e.preventDefault();
+  //   return e.returnValue = "Are you sure you want to leave?\nPlease don't forget to log your time!";
+  // }
+
+  // componentDidMount() {
+  //   window.addEventListener('beforeunload', this.confirmAlert);
+  // }
+  
+  // componentWillUnmount() {
+  //   window.removeEventListener('beforeunload', this.confirmAlert);
+  // }
 
   componentDidCatch(error, errorInfo) {
     logger.logError(error);
