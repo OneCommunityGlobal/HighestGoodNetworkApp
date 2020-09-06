@@ -10,6 +10,8 @@ import { ENDPOINTS } from '../utils/URL';
 import { render, fireEvent, waitFor, screen} from "@testing-library/react";
 import routes from './../routes';
 const url = ENDPOINTS.LEADER_BOARD(mockState.auth.user.userid);
+const timerUrl = ENDPOINTS.TIMER(mockState.auth.user.userid);
+const userProjectsUrl = ENDPOINTS.USER_PROJECTS(mockState.auth.user.userid);
 let requestedLeaderBoard = false;
 
 const server = setupServer( 
@@ -35,6 +37,20 @@ const server = setupServer(
         }]), )  
   }),
   rest.get('http://localhost:4500/api/userprofile/*', (req, res, ctx) =>  {
+    return res(ctx.status(200), ctx.json({}), )  
+  }),
+  rest.get(userProjectsUrl, (req, res, ctx) =>  {
+    return res(ctx.status(200), ctx.json(
+      [
+        {
+          "isActive": true,
+          "_id": "5ad91ec3590b19002acfcd26",
+          "projectName": "HG Fake Project"
+        }
+      ]
+    ));
+  }),
+  rest.get(timerUrl, (req, res, ctx) =>  {
     return res(ctx.status(200), ctx.json({}), )  
   }),
   rest.get('*', (req, res, ctx) => {
