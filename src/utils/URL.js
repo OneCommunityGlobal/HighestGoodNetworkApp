@@ -1,10 +1,9 @@
 /* eslint-disable import/prefer-default-export */
-import config from '../config.json';
 
 let APIEndpoint = process.env.REACT_APP_APIENDPOINT;
 if (!APIEndpoint) {
   // This is to resolve the issue in azure env variable
-  APIEndpoint = config.RestApi;
+  APIEndpoint = window.BASE_URL;
 }
 
 export const ENDPOINTS = {
