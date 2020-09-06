@@ -1,6 +1,10 @@
-import Team from "../components/Teams/Team"
+import Team from '../components/Teams/Team';
 
-const APIEndpoint = process.env.REACT_APP_APIENDPOINT
+let APIEndpoint = process.env.REACT_APP_APIENDPOINT;
+if (!APIEndpoint) {
+  // This is to resolve the issue in azure env variable
+  APIEndpoint = '$(RestApi)';
+}
 
 export const ENDPOINTS = {
   USER_PROFILE: userId => `${APIEndpoint}/userprofile/${userId}`,
@@ -18,8 +22,7 @@ export const ENDPOINTS = {
   UPDATE_PASSWORD: userId => `${APIEndpoint}/userprofile/${userId}/updatePassword`,
   FORCE_PASSWORD: `${APIEndpoint}/forcepassword`,
   LEADER_BOARD: userId => `${APIEndpoint}/dashboard/leaderboard/${userId}`,
-  TIME_ENTRIES_PERIOD: (userId, fromDate, toDate) =>
-    `${APIEndpoint}/TimeEntry/user/${userId}/${fromDate}/${toDate}`,
+  TIME_ENTRIES_PERIOD: (userId, fromDate, toDate) => `${APIEndpoint}/TimeEntry/user/${userId}/${fromDate}/${toDate}`,
   TIME_ENTRY: () => `${APIEndpoint}/TimeEntry`,
   TIME_ENTRY_CHANGE: timeEntryId => `${APIEndpoint}/TimeEntry/${timeEntryId}`,
   TIMER: userId => `${APIEndpoint}/timer/${userId}`,
@@ -36,4 +39,4 @@ export const ENDPOINTS = {
   UPDATE_PARENT_TASKS: wbsId => `${APIEndpoint}/task/updateAllParents/${wbsId}`,
   MOVE_TASKS: wbsId => `${APIEndpoint}/tasks/moveTasks/${wbsId}`,
   WEEKLY_SUMMARIES_REPORT: () => `${APIEndpoint}/reports/weeklysummaries`,
-}
+};
