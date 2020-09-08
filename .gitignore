@@ -5,7 +5,7 @@
 
 # testing
 /coverage
-
+*.code-snippets
 # production
 /build
 
