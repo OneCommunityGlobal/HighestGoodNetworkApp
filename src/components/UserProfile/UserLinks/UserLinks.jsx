@@ -1,63 +1,28 @@
-import React from 'react'
+import React from 'react';
+import { CardText, Badge, Tooltip } from 'reactstrap';
+import styles from './UserLinks.css';
+import styleProfile from '../UserProfile.css';
 
-import { Card, CardTitle, CardText, Badge, Button, CardBody } from 'reactstrap'
 
 const UserLinks = ({
-	linkType,
-	links = [],
-	handleModelState,
-	isUserAdmin,
-	canEditFields
-}) => {
-	return (
-		<Card body>
-			<CardTitle style={{ fontWeight: 'bold', fontSize: 20 }}>
-				{linkType} Links :
-			</CardTitle>
-			<CardBody>
-				{!links.length && (
-					<CardText>
-						<Badge color='danger'>No Links present</Badge>
-					</CardText>
-				)}
-				{links.map((item, key) => (
-					<CardText
-						key={key}
-						style={{
-							fontSize: 20,
-							justifyContent: 'space-between',
-							display: 'flex',
-							paddingLeft: 20,
-							paddingRight: 20
-						}}>
-						<Badge style={{ width: '10vw' }} color='secondary'>
-							{item.Name}
-						</Badge>
-						<Badge style={{ width: '40vw' }} href={item.Link} color='warning'>
-							{item.Link}
-						</Badge>
-					</CardText>
-				))}
-			</CardBody>
+  // eslint-disable-next-line react/prop-types
+  links = [],
+}) => (
+  <>
+    <div className="linkContainer">
+      {!links.length && (
+      <CardText className="linkContainer">
+        <Badge color="danger">No Links present</Badge>
+      </CardText>
+      )}
 
-			{linkType === 'Admin' && isUserAdmin && (
-				<Button
-					outline
-					color='primary'
-					onClick={() => handleModelState(true, 'input', linkType)}>
-					Add a new Link
-				</Button>
-			)}
-			{linkType !== 'Admin' && (
-				<Button
-					outline
-					color='primary'
-					onClick={() => handleModelState(true, 'input', linkType)}>
-					Add a new Link
-				</Button>
-			)}
-		</Card>
-	)
-}
+      {links.map((item, index) => (
+        <Badge key={index} className="profileEditButton" href={item.Link} color="success">
+          {item.Name}
+        </Badge>
+      ))}
+    </div>
+  </>
+);
 
-export default UserLinks
+export default UserLinks;

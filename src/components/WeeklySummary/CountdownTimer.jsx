@@ -46,10 +46,16 @@ export function CountdownTimer({ date }) {
     return tempInterval;
   };
 
+  // Providing a custom toast id to prevent duplicate.
+  const toastCustomId = 'toast-times-up';
+
   const whenTimeIsUp = () => {
     clearTimeout(timer);
 
     toast('✔ Time is up!', {
+      toastId: toastCustomId,
+      pauseOnFocusLoss: false,
+      autoClose: 4000,
       onClose: () => window.location.reload(true),
     });
 

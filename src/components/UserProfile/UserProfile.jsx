@@ -1,368 +1,309 @@
-import React, { Component } from 'react'
-import Loading from '../common/Loading'
-import {
-	Card,
-	Row,
-	CardTitle,
-	CardText,
-	Col,
-	Container,
-	CardSubtitle,
-	CardBody,
-	Input,
-	InputGroup,
-	InputGroupAddon,
-	InputGroupText,
-	CardHeader,
-	CardFooter,
-	Badge,
-	Button,
-	FormGroup,
-	Label,
-	CardImg
-} from 'reactstrap'
-import { orange, silverGray } from '../../constants/colors'
-import cx from 'classnames'
-import Memberships from '../Memberships/Memberships'
-import ProfileLinks from '../ProfileLinks/ProfileLinks'
-import Joi from 'joi'
-import ShowSaveWarning from '../common/ShowSaveWarning'
-import Modal from '../common/Modal'
+import React, { Component } from "react";
+import Loading from "../common/Loading";
 
-import Badges from './Badges'
-import WorkHistory from './WorkHistory'
-import UserLinks from './UserLinks'
+import { Row, Label, Input, Badge, Col, Container } from "reactstrap";
+import Image from "react-bootstrap/Image";
+import { orange, silverGray, warningRed } from "../../constants/colors";
+import BlueSquare from "./BlueSquares";
+import Modal from "./UserProfileModal";
+import UserLinks from "./UserLinks";
+import FourOFour from "./FourOFour";
 
-import SideBar from './SideBar'
-import ResetPasswordButton from '../UserManagement/ResetPasswordButton'
-import { UserRole } from '../../utils/enums'
+import styleProfile from "./UserProfile.css";
 
 class UserProfile extends Component {
-	state = {
-		isLoading: true,
-		error: '',
-		userProfile: {},
-		firstNameError: '',
-		lastNameError: '',
-		imageUploadError: '',
-		isValid: false
-	}
-
-	async componentDidMount() {
-		// this.props.getCurrentUser(getjwt())
-		if (this.props.match) {
-			let userId = this.props.match.params.userId
-			await this.props.getUserProfile(userId)
-			await this.props.getUserTeamMembers(userId)
-			//console.log(this.props.userProfile)
-			if (this.props.userProfile.firstName.length) {
-				//	console.log(this.props.userProfile)
-				this.setState({ isLoading: false, userProfile: this.props.userProfile })
-			}
+  state = {
+    isLoading: true,
+    error: "",
+    userProfile: {},
+    firstNameError: "",
+    lastNameError: "",
+    imageUploadError: "",
+    isValid: false,
+		id: "",
+		privacySettings:{
+			email: true,
+			phoneNumber: true,
+			blueSquares: true
 		}
-		//console.log(this.props.userProfile)
-	}
+  };
 
-	handleUserProfile = event => {
-		console.log('handleUserProfile')
-		event.preventDefault()
-		if (event.target.id === 'firstName') {
-			this.setState({
-				userProfile: {
-					...this.state.userProfile,
-					firstName: event.target.value.trim()
-				},
-				showModal: event.target.value ? false : true,
-				modalTitle: 'First Name Error',
-				modalMessage: 'First Name cannot be empty'
-			})
-		}
+  async componentDidMount() {
+    if (this.props.match) {
+      let userId = this.props.match.params.userId;
+      await this.props.getUserProfile(userId);
+      if ( this.props.userProfile === '404'){
+        this.setState({
+          isLoading: false
+        })
+      } else {
+        await this.props.getUserTeamMembers(userId);
+        if (this.props.userProfile.firstName.length) {
+          if (!this.props.userProfile.privacySettings){
+            this.setState({
+              isLoading: false,
+              userProfile:{
+                ...this.props.userProfile,
+                privacySettings:{
+                  email: true,
+                  phoneNumber: true,
+                  blueSquares: true
+                }
+              }
+            });
+          } else {
+            this.setState({
+              isLoading: false,
+              userProfile: this.props.userProfile
+            });
+          }
+        }
+      }
+    }
+  }
 
-		if (event.target.id === 'lastName') {
-			this.setState({
-				userProfile: {
-					...this.state.userProfile,
-					lastName: event.target.value.trim()
-				},
-				showModal: event.target.value ? false : true,
-				modalTitle: 'First Name Error',
-				modalMessage: 'Last Name cannot be empty'
-			})
-		}
-		if (event.target.id === 'email') {
-			this.setState({
-				userProfile: {
-					...this.state.userProfile,
-					email: event.target.value.trim()
-				},
-				emailError: event.target.value ? '' : 'Email cannot be empty '
-			})
-		}
-		if (event.target.id === 'phoneNumber') {
-			this.setState({
-				userProfile: {
-					...this.state.userProfile,
-					phoneNumber: event.target.value.trim()
-				}
-			})
-		}
-		if (event.target.id === 'jobTitle') {
-			this.setState({
-				userProfile: {
-					...this.state.userProfile,
-					jobTitle: event.target.value
-				}
-			})
-		}
+  async componentDidUpdate(prevProps, prevState) {
+    if (this.props.match !== prevProps.match){
+      console.log('component needs to update')
+      
+      let userId = this.props.match.params.userId;
+      await this.props.getUserProfile(userId);
 
-		if (event.target.id === 'emailPubliclyAccessible') {
-			this.setState({
-				userProfile: {
-					...this.state.userProfile,
-					emailPubliclyAccessible: event.target.checked
-				}
-			})
-		}
-		if (event.target.id === 'phoneNumberPubliclyAccessible') {
-			this.setState({
-				userProfile: {
-					...this.state.userProfile,
-					phoneNumberPubliclyAccessible: !this.state.userProfile
-						.phoneNumberPubliclyAccessible
-				}
-			})
-		}
-	}
+      if ( this.props.userProfile === '404'){
+        this.setState({
+          isLoading: false
+        })
+      } else {
+        await this.props.getUserTeamMembers(userId);
+        if (this.props.userProfile.firstName.length) {
+          if (!this.props.userProfile.privacySettings){
+            this.setState({
+              isLoading: false,
+              userProfile:{
+                ...this.props.userProfile,
+                privacySettings:{
+                  email: true,
+                  phoneNumber: true,
+                  blueSquares: true
+                }
+              }
+            });
+          } else {
+            this.setState({
+              isLoading: false,
+              userProfile: this.props.userProfile
+            });
+          }
+        }
+      }
+    }
+  }
 
-	handleImageUpload = async e => {
-		e.preventDefault()
+  handleBlueSquare = (status = true, type = "message", blueSquareID = "") => {
+    if (type === "viewBlueSquare") {
+      this.setState({
+        showModal: status,
+        modalTitle: "Blue Square",
+        type: type,
+        id: blueSquareID,
+      });
+    } else if (blueSquareID === "none") {
+      this.setState({
+        showModal: status,
+        modalTitle: "Save & Refresh",
+        modalMessage: "",
+        type: type,
+      });
+    }
+  };
 
-		const file = e.target.files[0]
+  formatPhoneNumber = (str) => {
+    // Filter only numbers from the input
+    let cleaned = ("" + str).replace(/\D/g, "");
+    if (cleaned.length == 10) {
+      // Domestic (USA)
+      return [
+        "( ",
+        cleaned.substring(0, 3),
+        " ) ",
+        cleaned.substring(3, 6),
+        " - ",
+        cleaned.substring(6, 10),
+      ].join("");
+    } else if (cleaned.length == 11) {
+      // International
+      return [
+        "+",
+        cleaned.substring(0, 1),
+        "( ",
+        cleaned.substring(1, 4),
+        " ) ",
+        cleaned.substring(4, 7),
+        " - ",
+        cleaned.substring(7, 11),
+      ].join("");
+    }
+    // Unconventional
+    return str;
+  };
 
-		const allowedTypesString = 'image/png,image/jpeg, image/jpg'
-		const allowedTypes = allowedTypesString.split(',')
-		let isValid = true
-		let imageUploadError = ''
-		if (!allowedTypes.includes(file.type)) {
-			imageUploadError = `File type must be ${allowedTypesString}.`
-			isValid = false
+  render() {
+    const { userProfile, isLoading, error, showModal } = this.state;
 
-			return this.setState({
-				imageUploadError,
-				isValid,
-				showModal: true,
-				modalTitle: 'Profile Pic Error',
-				modalMessage: imageUploadError
-			})
-		}
-		let filesizeKB = file.size / 1024
-		console.log(filesizeKB)
+    let {
+      firstName,
+      lastName,
+      email,
+      profilePic,
+      phoneNumber,
+      jobTitle = "",
+      personalLinks,
+      adminLinks,
+      infringments,
+      privacySettings,
+      teams,
+    } = userProfile;
 
-		if (filesizeKB > 50) {
-			imageUploadError = `\nThe file you are trying to upload exceed the maximum size of 50KB. You can choose a different file or use an online file compressor.`
-			isValid = false
+    if (isLoading) {
+      return (
+        <Container fluid>
+          <Row className="text-center" data-test="loading">
+            <Loading />
+          </Row>
+        </Container>
+      )
+    }
 
-			return this.setState({
-				imageUploadError,
-				isValid,
-				showModal: true,
-				modalTitle: 'Profile Pic Error',
-				modalMessage: imageUploadError
-			})
-		}
+    if ( this.props.userProfile === '404'){
+      return <FourOFour />
+    }
 
-		let reader = new FileReader()
-		reader.readAsDataURL(file)
-		reader.onloadend = () => {
-			console.log(reader, file)
+    let { userId: targetUserId } = this.props.match
+    ? this.props.match.params
+    : { userId: undefined };
 
-			this.setState({
-				imageUploadError: '',
-				userProfile: {
-					...this.state.userProfile,
-					profilePic: reader.result
-				}
-			})
-		}
-	}
+    let { userid: requestorId, role: requestorRole } = this.props.auth.user;
 
-	handleModelState = (status = true, type = 'message', linkType) => {
-		console.log(linkType)
-		this.setState({
-			showModal: status,
-			modalTitle: 'Add a New Link',
-			linkType: linkType,
-			type: type
-		})
-	}
+    let isUserSelf = targetUserId === requestorId;
+    const isUserAdmin = requestorRole === "Administrator";
+    let canEdit = isUserAdmin || isUserSelf;
 
-	addLink = (linkName, linkURL, linkType) => {
-		console.log('addLink', linkName, linkURL, linkType)
 
-		const link = { Name: linkName, Link: linkURL }
-		if (linkType !== 'Admin') {
-			return this.setState(prevState => {
-				return {
-					showModal: false,
-					userProfile: {
-						...this.state.userProfile,
-						personalLinks: prevState.userProfile.personalLinks.concat(link)
-					}
-				}
-			})
-		}
+    // console.log('this.state:', this.state)
+    // console.log('this.props.userProfile', this.props.userProfile)
 
-		this.setState(prevState => {
-			return {
-				showModal: false,
-				userProfile: {
-					...this.state.userProfile,
-					adminLinks: prevState.userProfile.adminLinks.concat(link)
-				}
-			}
-		})
-	}
 
-	handleSubmit = async event => {
-		event.preventDefault()
 
-		const submitResult = await this.props.updateUserProfile(
-			this.props.match.params.userId,
-			this.state.userProfile
-		)
-		console.log(submitResult)
+    return (
+      <div>
+        <div style={{ display: "flex" }}>
+          {showModal && (
+            <Modal
+              isOpen={this.state.showModal}
+              closeModal={() => {
+                this.setState({ showModal: false });
+              }}
+              modalMessage={this.state.modalMessage}
+              modalTitle={this.state.modalTitle}
+              type={this.state.type}
+              updateLink={this.updateLink}
+              updateBlueSquare={this.updateBlueSquare}
+              linkType={this.state.linkType}
+              userProfile={this.state.userProfile}
+              id={this.state.id}
+              isUserAdmin={isUserAdmin}
+              handleLinkModel={this.handleLinkModel}
+            />
+          )}
 
-		if (submitResult === 200) {
-			this.setState({
-				showModal: true,
-				modalMessage: 'Your Changes were saved successfully',
-				modalTitle: 'Success',
-				type: 'message'
-			})
-		} else {
-			this.setState({
-				showModal: true,
-				modalMessage: 'Please try again.',
-				modalTitle: 'Error',
-				type: 'message'
-			})
-		}
-	}
+          <Col>
+            <Row id="profileContainer" className="profileContainer">
+              <div className="whoSection">
+                <div>
+                  <Image
+                    src={profilePic || "/defaultprofilepic.png"}
+                    alt="Profile Picture"
+                    roundedCircle
+                    className="profilePicture"
+                  />
+                </div>
+                <Label>
+                  {firstName} {lastName}
+                </Label>
+                <Label>{jobTitle}</Label>
+                {privacySettings["blueSquares"] && (
+                  <div>
+                    <BlueSquare
+                      isUserAdmin={false}
+                      blueSquares={infringments}
+                      handleBlueSquare={this.handleBlueSquare}
+                    />
+                  </div>
+                )}
+              </div>
 
-	render() {
-		let { userId: targetUserId } = this.props.match ? this.props.match.params : { userId: undefined };
-		let { userid: requestorId, role: requestorRole } = this.props.auth.user
+              <div className="detailSectionContainer">
+                <div className="detailSection">
+                  {privacySettings["email"] && (
+                    <div className={"iconContainer"}>
+                      <div className={"icon"}>
+                        <i className="fa fa-envelope-o" aria-hidden="true" />
+                      </div>
+                      {email}
+                    </div>
+                  )}
+                  {privacySettings["phoneNumber"] && (
+                    <div className={"iconContainer"}>
+                      <div className={"icon"}>
+                        <i className="fa fa-phone" aria-hidden="true"></i>
+                      </div>
+                      {this.formatPhoneNumber(phoneNumber)}
+                    </div>
+                  )}
+                  <div className={"iconContainer"}>
+                    <div className={"icon"}>
+                      <i className="fa fa-link" aria-hidden="true"></i>
+                    </div>
+                  </div>
+                  <div className={"profileLinks"}>
+                    <UserLinks
+                      linkSection="admin"
+                      links={adminLinks}
+                      handleLinkModel={this.handleLinkModel}
+                      isUserAdmin={isUserAdmin}
+                    />
+                  </div>
+                  <div className={"profileLinks"}>
+                    <UserLinks
+                      linkSection="user"
+                      links={personalLinks}
+                      handleLinkModel={this.handleLinkModel}
+                      isUserAdmin={isUserAdmin}
+                    />
+                  </div>
+                </div>
+              </div>
 
-		const { userProfile, isLoading, showModal } = this.state
-		const {
-			firstName,
-			lastName,
-			email,
-			profilePic = '',
-			phoneNumber,
-			jobTitle,
-			personalLinks,
-			adminLinks,
-			phoneNumberPubliclyAccessible,
-			emailPubliclyAccessible
-		} = userProfile
+              {canEdit && (
+                <div className={"profileEditButtonContainer"}>
+                  <Badge
+                    className={"profileEditButton"}
+                    href={"/userprofileedit/" + this.state.userProfile._id}
+                  >
+                    <i className="fa fa-pencil-square-o fa-lg" aria-hidden="true">
+                      {" "}
+                      Edit
+                    </i>
+                  </Badge>
+                </div>
+              )}
+            </Row>
+          </Col>
 
-		console.log('phoneNumberPubliclyAccessible', phoneNumberPubliclyAccessible)
-		let isUserSelf = targetUserId === requestorId
-		const isUserAdmin = requestorRole === 'Administrator'
-		let canEditFields = isUserAdmin || isUserSelf
-
-		if (isLoading === true) {
-			return <Loading />
-		}
-		return (
-			<Container className='themed-container' fluid={true}>
-				{showModal && (
-					<Modal
-						isOpen={this.state.showModal}
-						closeModal={() => {
-							this.setState({ showModal: false })
-						}}
-						modalMessage={this.state.modalMessage}
-						modalTitle={this.state.modalTitle}
-						type={this.state.type}
-						confirmModal={this.addLink}
-						linkType={this.state.linkType}
-					/>
-				)}
-				<Row>
-					<Col
-						xs={12}
-						md={3}
-						sm={12}
-						style={{ backgroundColor: silverGray, border: '1px solid #A8A8A8' }}>
-						<SideBar
-							profilePic={profilePic}
-							firstName={firstName}
-							lastName={lastName}
-							email={email}
-							phoneNumber={phoneNumber}
-							jobTitle={jobTitle}
-							phoneNumberPubliclyAccessible={phoneNumberPubliclyAccessible}
-							emailPubliclyAccessible={emailPubliclyAccessible}
-							canEditFields={canEditFields}
-							isUserAdmin={isUserAdmin}
-							handleUserProfile={this.handleUserProfile}
-							handleImageUpload={this.handleImageUpload}
-						/>
-
-						<br />
-					</Col>
-					<Col xs={12} md={9} sm={12} style={{ backgroundColor: 'white', padding: 5 }}>
-						{this.doShowResetButton() ?
-							<Row>
-								<Col lg={true} style={{ textAlign: "right", paddingBottom: "10px" }}>
-									<ResetPasswordButton
-										user={this.state.userProfile}
-										isSmallButton={false} />
-								</Col>
-							</Row> : <React.Fragment></React.Fragment>
-						}
-						<WorkHistory />
-
-						<br />
-						<UserLinks
-							linkType='Admin'
-							links={adminLinks}
-							handleModelState={this.handleModelState}
-							isUserAdmin={isUserAdmin}
-							canEditFields={canEditFields}
-						/>
-						<br />
-						<UserLinks
-							linkType='Social/Professional'
-							links={personalLinks}
-							handleModelState={this.handleModelState}
-							isUserAdmin={isUserAdmin}
-							canEditFields={canEditFields}
-						/>
-						<br />
-
-						<Badges />
-						<br />
-						<Button outline color='primary' onClick={this.handleSubmit}>
-							{'Save Changes'}
-						</Button>
-						<Button outline color='danger'>
-							Cancel
-						</Button>
-					</Col>
-				</Row>
-			</Container>
-		)
-	}
-
-	/**
-	 * Show the reset password button for all user profiles if the logged in user is an administartor.
-	 */
-	doShowResetButton = () => {
-		return (this.props.auth.user.role === UserRole.Administrator && this.state.userProfile);
-	}
+        </div>
+      </div>
+    );
+  }
 }
 
-export default UserProfile
+export default UserProfile;

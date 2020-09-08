@@ -3,10 +3,8 @@ import moment from 'moment';
 import {
     GET_TIME_ENTRIES_WEEK,
     GET_TIME_ENTRIES_PERIOD,
-    ADD_TIME_ENTRY,
 } from '../constants/timeEntries';
 import { ENDPOINTS } from '../utils/URL';
-import { timeEntriesReducer } from '../reducers/timeEntriesReducer';
 
 /**
  * number === 0 current week

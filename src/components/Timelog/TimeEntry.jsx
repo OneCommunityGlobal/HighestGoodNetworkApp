@@ -1,17 +1,19 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { Card, Row, Col } from 'reactstrap'
 import { useSelector } from 'react-redux'
 import ReactHtmlParser from 'react-html-parser'
 import moment from 'moment'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faEdit, faTrashAlt } from '@fortawesome/free-regular-svg-icons'
 
-import './TimeEntry.css'
+import './Timelog.css'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faEdit, faSquare } from '@fortawesome/free-regular-svg-icons'
+import { postTimeEntry, editTimeEntry } from '../../actions/timeEntries'
 import TimeEntryForm from './TimeEntryForm'
 import DeleteModal from './DeleteModal'
 
 const TimeEntry = ({ data, displayYear }) => {
-  const padZero = number => `0${number}`.slice(-2)
+  const [modal, setModal] = useState(false)
+  const toggle = () => setModal(modal => !modal)
 
   const dateOfWork = moment(data.dateOfWork)
   const { user } = useSelector(state => state.auth)
@@ -28,11 +30,14 @@ const TimeEntry = ({ data, displayYear }) => {
               <h4>{dateOfWork.format('MMM D')}</h4>
               {displayYear && <h5>{dateOfWork.format('YYYY')}</h5>}
               <h5 className="text-info">{dateOfWork.format('dddd')}</h5>
+              {data.editCount > 5 && (
+                <FontAwesomeIcon icon={faSquare} className="mr-1 text-primary" />
+              )}
             </div>
           </div>
         </Col>
         <Col md={4} className="px-0">
-          <h4 className="text-primary">
+          <h4 className="text-success">
             {data.hours}h {data.minutes}m
           </h4>
           <div className="text-muted">Project:</div>
@@ -45,11 +50,23 @@ const TimeEntry = ({ data, displayYear }) => {
           {ReactHtmlParser(data.notes)}
           <div className="buttons">
             {(isAdmin || (!data.isTangible && isOwner && isSameDay)) && (
-              // <FontAwesomeIcon icon={faEdit} size="lg" className="mr-3 text-primary"/>
-              <TimeEntryForm edit userId={data.personId} data={data} />
+              <span>
+                <FontAwesomeIcon
+                  icon={faEdit}
+                  size="lg"
+                  className="mr-3 text-primary"
+                  onClick={toggle}
+                />
+                <TimeEntryForm
+                  edit
+                  userId={data.personId}
+                  data={data}
+                  toggle={toggle}
+                  isOpen={modal}
+                />
+              </span>
             )}
             {(isAdmin || (!data.isTangible && isOwner && isSameDay)) && (
-              // <FontAwesomeIcon icon={faTrashAlt} size="lg" className="mr-3 text-primary"/>
               <DeleteModal timeEntry={data} />
             )}
           </div>

@@ -1,8 +1,47 @@
 import React from 'react'
+import { Progress } from 'reactstrap'
 import { useSelector } from 'react-redux'
 
 const TimelogNavbar = ({ userId }) => {
   const { firstName, lastName } = useSelector(state => state.userProfile)
+
+  const timeEntries = useSelector(state => state.timeEntries.weeks[0])
+  const reducer = (total, entry) => total + parseInt(entry.hours) + parseInt(entry.minutes) / 60
+  const totalEffort = timeEntries.reduce(reducer, 0)
+  const weeklyComittedHours = useSelector(state => state.userProfile.weeklyComittedHours)
+  const progressPercentage = (totalEffort / weeklyComittedHours) * 100
+
+  const getBarColor = hours => {
+    if (hours < 5) {
+      return 'red'
+    }
+    if (hours < 10) {
+      return 'orange'
+    }
+    if (hours < 20) {
+      return 'green'
+    }
+    if (hours < 30) {
+      return 'blue'
+    }
+    if (hours < 40) {
+      return 'indigo'
+    }
+    if (hours < 50) {
+      return 'violet'
+    }
+    return 'purple'
+  }
+
+  const getBarValue = hours => {
+    if (hours <= 40) {
+      return hours * 2
+    }
+    if (hours <= 50) {
+      return (hours - 40) * 1.5 + 80
+    }
+    return ((hours - 50) * 5) / 40 + 95
+  }
 
   return (
     <div>
@@ -23,7 +62,20 @@ const TimelogNavbar = ({ userId }) => {
         <div className="collapse navbar-collapse" id="timelogsnapshot">
           <ul className="navbar-nav w-100">
             <li className="nav-item navbar-text mr-3 w-25" id="timelogweeklychart">
-              progress bar
+              <div>
+                Current Week : {totalEffort.toFixed(2)} / {weeklyComittedHours}
+              </div>
+              {/* <Progress striped value={progressPercentage} color={
+                  progressPercentage < 30 ?
+                  "danger" :
+                  progressPercentage < 90 ?
+                  "warning" : "success"}
+                /> */}
+              <Progress
+                value={getBarValue(totalEffort)}
+                className={getBarColor(totalEffort)}
+                striped={totalEffort < weeklyComittedHours}
+              />
             </li>
             <li className="nav-item  navbar-text">
               <span
