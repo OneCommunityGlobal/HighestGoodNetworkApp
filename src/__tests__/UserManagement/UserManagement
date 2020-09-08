@@ -4,12 +4,12 @@ import thunk from 'redux-thunk';
 import fetchMock from 'fetch-mock';
 import { shallow, mount } from 'enzyme';
 import { Provider } from 'react-redux';
-import UserManagement from '../components/UserManagement';
-import UserSearchPanel from '../components/UserManagement/UserSearchPanel';
-import UserTableHeader from '../components/UserManagement/UserTableHeader';
-import UserTableData from '../components/UserManagement/UserTableData';
-import UserTableSearchHeader from '../components/UserManagement/UserTableSearchHeader';
-import UserTableFooter from '../components/UserManagement/UserTableFooter';
+import UserManagement from '../../components/UserManagement';
+import UserSearchPanel from '../../components/UserManagement/UserSearchPanel';
+import UserTableHeader from '../../components/UserManagement/UserTableHeader';
+import UserTableData from '../../components/UserManagement/UserTableData';
+import UserTableSearchHeader from '../../components/UserManagement/UserTableSearchHeader';
+import UserTableFooter from '../../components/UserManagement/UserTableFooter';
 
 jest.mock('../components/UserProfile');
 

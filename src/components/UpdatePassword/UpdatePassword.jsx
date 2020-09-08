@@ -65,7 +65,6 @@ class UpdatePassword extends Form {
     let data = { currentpassword, newpassword, confirmnewpassword }
 
     const status = await this.props.updatePassword(userId, data)
-    console.log(status)
     if (status === 200) {
       toast.success(
         'Your password has been updated. You will be logged out and directed to login page where you can login with your new password.',

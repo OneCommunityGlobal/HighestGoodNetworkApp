@@ -471,6 +471,7 @@ describe('<TimeEntryForm />', () => {
     user.selectOptions(screen.getByDisplayValue('Select Project'), userProjectMock.projects[0].projectId);
     await sleep(100);
     const notes = screen.getByLabelText(/notes/i);
+    // await user.type(notes, 'Test123', { allAtOnce: false });
     fireEvent.change(notes, { target: { value: 'Test123' } });
     await sleep(1000);
     user.click(screen.getByRole('button', { name: /submit/i }));

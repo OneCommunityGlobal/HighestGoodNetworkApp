@@ -45,6 +45,23 @@ export function renderWithRouterMatch(
   };
 }
 
+
+// export function renderWithRouterMatch_1(
+//   ui,
+//   {
+//     initialState = {},
+//     store = createStore(reducer, initialState, compose(applyMiddleware(...middleware))),
+//     route = '/',
+//     history = createMemoryHistory({ initialEntries: [route] }),
+//     ...renderOptions
+//   } = {},
+// ) {
+//   function Wrapper({ children }) {
+//     return <Provider store={store}><Router history={history}>{children}</Router></Provider>;
+//   }
+//   return rtlRender(ui, { wrapper: Wrapper, ...renderOptions });
+// }
+
 // re-export everything
 export * from '@testing-library/react';
 // override render method
