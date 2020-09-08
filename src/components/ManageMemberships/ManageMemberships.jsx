@@ -28,18 +28,17 @@ class ManageMemberships extends Form {
 
         this.toggle();
         let {data:allEntities} = this.props.collection === "teams" ?  await getAllTeams() : await getAllProjects()
-       let isLoading = false;       
-       this.setState({allEntities, isLoading})       
+        let isLoading = false;       
+        this.setState({allEntities, isLoading})       
     }
 
     toggle() {
         this.setState({
           modal: !this.state.modal
         });
-      }
+    }
 
-      onCancel = ()=>
-    {
+    onCancel = () => {
         this.resetForm();
         this.toggle();
     }
@@ -75,24 +74,23 @@ class ManageMemberships extends Form {
         let {label} = this.props;
         return(
 
-            <Fragment>
-         <div className="btn btn-success" onClick = {this.loadData}>{`Manage ${_.startCase(label)}s`}</div>
+        <Fragment>
+            <div className="btn btn-success" onClick = {this.loadData}>{`Manage ${_.startCase(label)}s`}</div>
 
-<Modal isOpen={this.state.modal} toggle={this.toggle} >
-  <ModalHeader toggle={this.toggle}>{`${_.startCase(label)}s`}</ModalHeader>
-  <form>
-  <ModalBody>
-    {this.isStateChanged() && <ShowSaveWarning/>}
-    {this.renderCheckboxCollection({items: allEntities, pathName:this.pathName(), isChecked : this.getCheckedStatus,onChange : this.handleChange   })} 
-  </ModalBody>
-  <ModalFooter>            
- <Button color="primary"onClick = {e=> this.doSubmit(e)}>Done</Button>
-<Button color="secondary" onClick={this.onCancel}>Cancel</Button>
-  </ModalFooter>
-  </form>
-</Modal>
+            <Modal isOpen={this.state.modal} toggle={this.toggle} >
+                <ModalHeader toggle={this.toggle}>{`${_.startCase(label)}s`}</ModalHeader>
+                <form>
+                    <ModalBody>
+                        {this.isStateChanged() && <ShowSaveWarning/>}
+                        {this.renderCheckboxCollection({items: allEntities, pathName:this.pathName(), isChecked : this.getCheckedStatus,onChange : this.handleChange   })} 
+                    </ModalBody>
+                    <ModalFooter>            
+                        <Button color="primary"onClick = {e=> this.doSubmit(e)}>Done</Button>
+                        <Button color="secondary" onClick={this.onCancel}>Cancel</Button>
+                    </ModalFooter>
+                </form>
+            </Modal>
        </Fragment>
-
            
         )
 
