@@ -3,6 +3,10 @@ import { connect } from 'react-redux'
 import { Table, Progress } from 'reactstrap'
 import moment from 'moment'
 import _ from 'lodash'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faClock } from '@fortawesome/free-solid-svg-icons'
+// import { farClock } from '@fortawesome/free-regular-svg-icons'
+
 import httpService from '../../services/httpService'
 import { ENDPOINTS } from '../../utils/URL'
 import { fetchAllManagingTeams } from '../../actions/team'
@@ -20,21 +24,23 @@ class TeamMemberTasks extends Component {
 
   async componentDidMount() {
     const userId = this.props.auth.user.userid
-    console.log(userId)
     await this.props.getUserProfile(userId)
 
-    // fetchAllManagingTeams(this.props.userId, this.props.managingTeams);
     const leaderBoardData = this.props.leaderboardData
     const allManagingTeams = []
     let allMembers = []
     const teamMembersPromises = []
     const memberTimeEntriesPromises = []
+    const teamMemberTasksPromises = []
+    const userProfilePromises = []
+    const finalData = []
+
     const { managingTeams } = this.props
+
+    // fetch all team members for each time
     managingTeams.forEach(team => {
-      // req = await httpService.get(ENDPOINTS.TEAM_MEMBERS(team._id));
       teamMembersPromises.push(httpService.get(ENDPOINTS.TEAM_MEMBERS(team._id)))
     })
-
     Promise.all(teamMembersPromises).then(data => {
       for (let i = 0; i < managingTeams.length; i++) {
         allManagingTeams[i] = {
@@ -43,9 +49,10 @@ class TeamMemberTasks extends Component {
         }
         allMembers = allMembers.concat(data[i].data)
       }
-      // console.log('allManagingTeams:', allManagingTeams);
+
+      // fetch all time entries for current week for all members
       const uniqueMembers = _.uniqBy(allMembers, '_id')
-      uniqueMembers.forEach(async member => {
+      uniqueMembers.forEach(member => {
         const fromDate = moment()
           .startOf('week')
           .subtract(0, 'weeks')
@@ -56,10 +63,8 @@ class TeamMemberTasks extends Component {
           httpService.get(ENDPOINTS.TIME_ENTRIES_PERIOD(member._id, fromDate, toDate)),
         )
       })
-
       Promise.all(memberTimeEntriesPromises).then(data => {
-        // console.log('After time entries: ', data);
-        // console.log('uniqueMemberTimeEntries: ', uniqueMemberTimeEntries);
+        // merge time entries into each user obj
         for (let i = 0; i < uniqueMembers.length; i++) {
           uniqueMembers[i] = {
             ...uniqueMembers[i],
@@ -67,35 +72,57 @@ class TeamMemberTasks extends Component {
           }
         }
 
-        for (let i = 0; i < allManagingTeams.length; i++) {
-          for (let j = 0; j < allManagingTeams[i].members.length; j++) {
-            let memberDataWithTimeEntries = uniqueMembers.find(
-              member => member._id === allManagingTeams[i].members[j]._id,
-            )
-            const memberLeaderboardData = leaderBoardData.find(
-              member => member.personId === allManagingTeams[i].members[j]._id,
-            )
-            // console.log('memberDataWithTimeENtries: ', memberDataWithTimeEntries);
-            // console.log('memberLeaderboardData', memberLeaderboardData);
-            if (memberLeaderboardData) {
-              memberDataWithTimeEntries = {
-                ...memberDataWithTimeEntries,
-                totaltangibletime_hrs: memberLeaderboardData.totaltangibletime_hrs,
+        // fetch all tasks for each member
+        uniqueMembers.forEach(member => {
+          teamMemberTasksPromises.push(httpService.get(ENDPOINTS.TASKS_BY_USERID(member._id)))
+        })
+        Promise.all(teamMemberTasksPromises).then(data => {
+          // merge assigned tasks into each user obj
+          for (let i = 0; i < uniqueMembers.length; i++) {
+            uniqueMembers[i] = {
+              ...uniqueMembers[i],
+              tasks: data[i].data,
+            }
+          }
+
+          // fetch full user profile for each team member
+          uniqueMembers.forEach(member => {
+            userProfilePromises.push(httpService.get(ENDPOINTS.USER_PROFILE(member._id)))
+          })
+          Promise.all(userProfilePromises).then(data => {
+            for (let i = 0; i < uniqueMembers.length; i++) {
+              const user = uniqueMembers[i]
+              const userLeaderBoardData = data.find(member => member.data._id === user._id)
+              let userWeeklyCommittedHours = 0
+              if (userLeaderBoardData) {
+                userWeeklyCommittedHours = userLeaderBoardData.data.weeklyComittedHours
               }
-            } else {
-              memberDataWithTimeEntries = {
-                ...memberDataWithTimeEntries,
-                totaltangibletime_hrs: 0,
+              uniqueMembers[i] = {
+                ...uniqueMembers[i],
+                weeklyCommittedHours: userWeeklyCommittedHours,
               }
             }
 
-            allManagingTeams[i].members[j] = memberDataWithTimeEntries
-          }
-        }
+            // calculate hours done in current week and add to user obj for ease of access
+            for (let i = 0; i < uniqueMembers.length; i++) {
+              let hoursCurrentWeek = 0
+              if (uniqueMembers[i].timeEntries.length > 0) {
+                hoursCurrentWeek = uniqueMembers[i].timeEntries.reduce(
+                  (acc, current) => Number(current.hours) + acc,
+                  0,
+                )
+              }
 
-        // console.log('after processing: ', allManagingTeams);
+              finalData[i] = {
+                ...uniqueMembers[i],
+                hoursCurrentWeek,
+              }
+            }
+            console.log('final data ', finalData)
 
-        this.setState({ fetched: true, teams: allManagingTeams })
+            this.setState({ fetched: true, teams: finalData })
+          })
+        })
       })
     })
   }
@@ -103,44 +130,47 @@ class TeamMemberTasks extends Component {
   render() {
     const { teams, fetching, fetched } = this.state
 
-    console.log('teams: ', teams)
+    // console.log('teams: ', teams)
     // console.log('leaderboardData: ', this.props.leaderboardData);
 
     let teamsList = []
     if (teams && teams.length > 0) {
-      teamsList = teams.map((team, index) => (
-        <Table key={index}>
-          <thead>
-            <tr>
-              <th>{team.teamName}</th>
-            </tr>
-            <tr>
-              <th>Name</th>
-              <th>Weekly Progress</th>
-              <th>Total Hours</th>
-            </tr>
-          </thead>
-          <tbody>
-            {team.members.map((member, index) => (
-              <tr key={index}>
-                <td>{`${member.firstName} ${member.lastName}`}</td>
-                <td />
-                <td>{member.totaltangibletime_hrs}</td>
-              </tr>
-            ))}
-          </tbody>
-        </Table>
+      teamsList = teams.map((member, index) => (
+        <tr>
+          <td>tempstatus</td>
+          <td>{`${member.firstName} ${member.lastName}`}</td>
+          <td>{`${member.hoursCurrentWeek} / ${member.weeklyCommittedHours}`}</td>
+          <td>
+            {member.tasks &&
+              member.tasks.map(task => (
+                <p>
+                  {task.num}
+                  {task.taskName}
+                </p>
+              ))}
+          </td>
+          <td>tempprogress</td>
+        </tr>
       ))
     }
-
-    // console.log('teamsList: ', teamsList);
 
     return (
       <React.Fragment>
         <div className="container">
           {fetching || !fetched ? <Loading /> : null}
-          <h1>Teams</h1>
-          {teamsList}
+          <h1>Team Member Tasks</h1>
+          <Table striped bordered variant="dark" size="sm">
+            <thead>
+              <th>Status</th>
+              <th>Team Member</th>
+              <th>
+                <FontAwesomeIcon icon={faClock} /> / <FontAwesomeIcon icon={faClock} />
+              </th>
+              <th>Tasks(s)</th>
+              <th>Progress</th>
+            </thead>
+            <tbody>{teamsList}</tbody>
+          </Table>
         </div>
       </React.Fragment>
     )
@@ -152,7 +182,9 @@ const mapStateToProps = state => ({
   userId: state.userProfile.id,
   managingTeams: state.userProfile.teams,
   teamsInfo: state.managingTeams,
-  leaderboardData: state.leaderBoardData,
 })
 
-export default connect(mapStateToProps, { getUserProfile, fetchAllManagingTeams })(TeamMemberTasks)
+export default connect(mapStateToProps, {
+  getUserProfile,
+  fetchAllManagingTeams,
+})(TeamMemberTasks)
