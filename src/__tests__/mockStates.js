@@ -147,28 +147,28 @@ export const timeEntryMock = {
   weeks: {
     0: [
       {
-        _id: '5f34bf2678b914671b3976a1',
-        notes: '<p>Test Delete</p>',
-        isTangible: true,
-        personId: '5edf141c78f1380017b829a6',
-        projectId: '5e606e4f37477100173680ac',
-        projectName: 'Mock Project 2',
-        dateOfWork: '2020-08-12',
-        hours: '3',
-        minutes: '0',
-      },
-    ],
-    1: [
-      {
         _id: '5f2e1d4eb0186f202baf9d22',
         notes: '<p>asfa as f as fa sfa f as f aas f sgsd faasf asfaf dhch</p>\n<p><a href="https://docs.google.com/document/d/1AQVluo0JNhAsqul-Zv1aNMhjX2eGuHKMCoGcvCI7XU4/edit">https://docs.google.com/document/d/1AQVluo0JNhAsqul-Zv1aNMhjX2eGuHKMCoGcvCI7XU4/edit#</a></p>\n<p>&nbsp;</p>',
         isTangible: true,
         personId: '5edf141c78f1380017b829a6',
         projectId: '5a849055592ca46b43db2729',
         projectName: 'Mock Project 4',
-        dateOfWork: '2020-08-07',
+        dateOfWork: '2020-08-12',
         hours: '1',
         minutes: '43',
+      },
+    ],
+    1: [
+      {
+        _id: '5f34bf2678b914671b3976a1',
+        notes: '<p>Test Delete</p>',
+        isTangible: true,
+        personId: '5edf141c78f1380017b829a6',
+        projectId: '5e606e4f37477100173680ac',
+        projectName: 'Mock Project 2',
+        dateOfWork: '2020-08-07',
+        hours: '3',
+        minutes: '0',
       },
       {
         _id: '5f2e1c7ab0186f202baf9d20',
