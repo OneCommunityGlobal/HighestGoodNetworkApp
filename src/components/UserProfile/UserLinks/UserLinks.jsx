@@ -1,7 +1,7 @@
 import React from 'react';
 import { CardText, Badge, Tooltip } from 'reactstrap';
 import styles from './UserLinks.css';
-import styleProfile from '../UserProfile.css';
+// import styleProfile from '../UserProfile.module.scss';
 
 
 const UserLinks = ({
