@@ -35,16 +35,16 @@ describe('<ActivationDatePopup />', () => {
   it('should fire onPause() when user clicks `pause the user` button', async () => {
     const date = screen.getByTestId('date-input');
     const button = screen.getByRole('button', { name: /pause the user/i });
-    await userEvent.type(date, '2020-08-30', { allAtOnce: false });
+    await userEvent.type(date, '2100-08-30', { allAtOnce: false });
     userEvent.click(button);
     expect(onPause).toBeCalledTimes(1);
-    expect(onPause).toBeCalledWith('2020-08-30');
+    expect(onPause).toBeCalledWith('2100-08-30');
   });
   it('should popup warning when selected date is earier than today', async () => {
     const spy = jest.spyOn(window, 'alert').mockImplementation(() => { });
     const date = screen.getByTestId('date-input');
     const button = screen.getByRole('button', { name: /pause the user/i });
-    await userEvent.type(date, '2020-08-08', { allAtOnce: false });
+    await userEvent.type(date, '2000-08-08', { allAtOnce: false });
     userEvent.click(button);
     expect(spy).toHaveBeenCalledWith('Please choose a future date');
   });

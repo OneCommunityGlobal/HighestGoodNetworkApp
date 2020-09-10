@@ -241,3 +241,306 @@ export const userProjectMock = {
     },
   ],
 };
+export const allUserProfilesMock = {
+  fetching: false,
+  fetched: true,
+  userProfiles: [
+    {
+      isActive: true,
+      weeklyComittedHours: 0,
+      _id: '5c4cc2109487b0003924f1e3',
+      role: 'Administrator',
+      firstName: 'Test',
+      lastName: 'Admin',
+      email: 'onecommunityglobal@gmail.com'
+    },
+    {
+      isActive: true,
+      weeklyComittedHours: 20,
+      _id: '5e2cc6df7a91aaf820510a55',
+      role: 'Volunteer',
+      firstName: 'Sidd',
+      lastName: 'Admin',
+      email: 'devadmin@live.com'
+    },
+    {
+      isActive: true,
+      weeklyComittedHours: 10,
+      _id: '5ede6be453a0480017164a5b',
+      role: 'Administrator',
+      firstName: 'Nithesh',
+      lastName: 'Admin',
+      email: 'nithuan141@gmail.com'
+    },
+    {
+      isActive: true,
+      weeklyComittedHours: 10,
+      _id: '5edf141c78f1380017b829a6',
+      role: 'Administrator',
+      firstName: 'Dev',
+      lastName: 'Admin',
+      email: 'devadmin@hgn.net'
+    },
+    {
+      isActive: true,
+      weeklyComittedHours: 15,
+      _id: '5f20d19160bd1734f069dadb',
+      role: 'Administrator',
+      firstName: 'Jerry',
+      lastName: 'Administrator',
+      email: 'jerryadmin@example.com'
+    },
+    {
+      isActive: true,
+      weeklyComittedHours: 0,
+      _id: '5be0952c633dae0016081b4b',
+      role: 'Administrator',
+      firstName: 'Tyler',
+      lastName: 'Calvert',
+      email: 'tyjcalvert@gmail.com'
+    },
+    {
+      isActive: true,
+      weeklyComittedHours: 0,
+      _id: '5bef421d908c1b0038d06dbd',
+      role: 'Administrator',
+      firstName: 'Adam',
+      lastName: 'Capdeville',
+      email: 'agcapdeville@gmail.com'
+    },
+    {
+      isActive: true,
+      weeklyComittedHours: 2,
+      _id: '5e2a76cb0441c30039a6909a',
+      role: 'Volunteer',
+      firstName: 'Test',
+      lastName: 'Cat',
+      email: 'testcat@yopmail.com'
+    },
+    {
+      isActive: true,
+      weeklyComittedHours: 10,
+      _id: '5ef771cf612d522c54f9b637',
+      role: 'Volunteer',
+      firstName: 'Testing',
+      lastName: 'Delete',
+      email: 'testing.delete@example.com'
+    },
+    {
+      isActive: true,
+      weeklyComittedHours: 3,
+      _id: '5eff58c34c9f52001786f031',
+      role: 'Volunteer',
+      firstName: 'Test',
+      lastName: 'Delete',
+      email: 'td@td.com'
+    },
+    {
+      isActive: false,
+      weeklyComittedHours: 0,
+      _id: '5b3013287275b6002e3b2de4',
+      role: 'Volunteer',
+      firstName: 'Dipti',
+      lastName: 'Dhondarkar',
+      email: 'DiptiDhondarkar@yopmail.com'
+    },
+    {
+      isActive: false,
+      weeklyComittedHours: 0,
+      _id: '5b3013087275b6002e3b2de3',
+      role: 'Volunteer',
+      firstName: 'Dehua',
+      lastName: 'Feng',
+      email: 'dehuafeng@yopmail.com'
+    },
+    {
+      isActive: true,
+      weeklyComittedHours: 15,
+      _id: '5f421a54552a840017149d32',
+      role: 'Volunteer',
+      firstName: 'Cheryl',
+      lastName: 'Feng',
+      email: 'yiqifeng1717@gmail.com'
+    },
+    {
+      isActive: false,
+      weeklyComittedHours: 0,
+      _id: '5b3013847275b6002e3b2de7',
+      role: 'Volunteer',
+      firstName: 'Michael',
+      lastName: 'Hagler',
+      email: 'MichaelHagler@yopmail.com'
+    },
+    {
+      isActive: true,
+      weeklyComittedHours: 20,
+      _id: '5f31dcb9a1a909eadee0eecb',
+      role: 'Volunteer',
+      firstName: 'Jun',
+      lastName: 'Hao',
+      email: 'junhao6503.work@gmail.com'
+    },
+    {
+      isActive: true,
+      weeklyComittedHours: 10,
+      _id: '5e9fa3d9b5dc3c2e48c10989',
+      role: 'Manager',
+      firstName: 'Alvaro',
+      lastName: 'Hernández',
+      email: 'alaherma@mail.com'
+    },
+    {
+      isActive: false,
+      weeklyComittedHours: 0,
+      _id: '5b3013f57275b6002e3b2dea',
+      role: 'Volunteer',
+      firstName: 'Mike',
+      lastName: 'Hogan',
+      email: 'MikeHogan@yopmail.com'
+    },
+    {
+      isActive: false,
+      weeklyComittedHours: 0,
+      _id: '5ae0badeb3f1241c28c9b4e3',
+      role: 'Volunteer',
+      firstName: 'Swathy',
+      lastName: 'Jayaseelan',
+      email: 'SwathyJayaseelan@yopmail.com'
+    },
+    {
+      isActive: false,
+      weeklyComittedHours: 0,
+      _id: '5b30136d7275b6002e3b2de6',
+      role: 'Volunteer',
+      firstName: 'Michael',
+      lastName: 'Kowalski',
+      email: 'MichaelKowalski@yopmail.com'
+    },
+    {
+      isActive: false,
+      weeklyComittedHours: 0,
+      _id: '5b3013c47275b6002e3b2de9',
+      role: 'Volunteer',
+      firstName: 'Yun',
+      lastName: 'Lin',
+      email: 'YunLin@yopmail.com'
+    },
+    {
+      isActive: true,
+      weeklyComittedHours: 10,
+      _id: '5ea5ba581446e1164098fa7b',
+      role: 'Manager',
+      firstName: 'New',
+      lastName: 'Manager',
+      email: 'new.manager@example.com'
+    },
+    {
+      isActive: true,
+      weeklyComittedHours: 15,
+      _id: '5f20d18660bd1734f069dada',
+      role: 'Manager',
+      firstName: 'Jerry',
+      lastName: 'Manager',
+      email: 'jerrymanager@example.com'
+    },
+    {
+      isActive: false,
+      weeklyComittedHours: 0,
+      _id: '5b0585ffd68f7f002dbcf4de',
+      role: 'Administrator',
+      firstName: 'Sowmya',
+      lastName: 'Manohar',
+      email: 'sowmisarojini@yopmail.com'
+    },
+    {
+      isActive: false,
+      weeklyComittedHours: 0,
+      _id: '5be0964d633dae0016081b4c',
+      role: 'Administrator',
+      firstName: 'Jordan',
+      lastName: 'Miller',
+      email: 'jordan@yopmail.com'
+    },
+    {
+      isActive: false,
+      weeklyComittedHours: 20,
+      _id: '5ae0afcab3f1241c28c9b4e2',
+      role: 'Administrator',
+      firstName: 'Shubhra',
+      lastName: 'Mittal2',
+      email: 'shubhra.goel@gmail.com'
+    },
+    {
+      isActive: true,
+      weeklyComittedHours: 10,
+      _id: '5eddbcd353a0480017164a57',
+      role: 'Administrator',
+      firstName: 'Admin',
+      lastName: 'New',
+      email: 'ss@ram.com'
+    },
+    {
+      isActive: false,
+      weeklyComittedHours: 10,
+      _id: '5eddc35953a0480017164a58',
+      role: 'Administrator',
+      firstName: 'AdminTest',
+      lastName: 'New',
+      email: 'ss@admin.com'
+    },
+    {
+      isActive: false,
+      weeklyComittedHours: 16,
+      _id: '5e1a685add8cea0ea3420141',
+      role: 'Administrator',
+      firstName: 'Henry',
+      lastName: 'Nguyen',
+      email: 'thankyouforyouremail3000@gmail.com'
+    },
+    {
+      isActive: false,
+      weeklyComittedHours: 0,
+      _id: '5bad2979e168140090176793',
+      role: 'Volunteer',
+      firstName: 'Emilio',
+      lastName: 'Nájera',
+      email: 'emilionájera@yopmail.com'
+    },
+    {
+      isActive: false,
+      weeklyComittedHours: 0,
+      _id: '5bec67ee0df8050016d2e21c',
+      role: 'Volunteer',
+      firstName: 'Ram',
+      lastName: 'Ram',
+      email: 'ram@yopmail.com'
+    },
+    {
+      isActive: false,
+      weeklyComittedHours: 0,
+      _id: '5bc4f3d1476a8e009034264c',
+      role: 'Core Team',
+      firstName: 'Sara',
+      lastName: 'Sabol',
+      email: 'sarasabol@yopmail.com'
+    },
+    {
+      isActive: true,
+      weeklyComittedHours: 30,
+      _id: '5ab1713bba0e82002b182206',
+      role: 'Administrator',
+      firstName: 'Jae',
+      lastName: 'Sabol',
+      email: 'jae@onecommunityglobal.org'
+    },
+    {
+      isActive: true,
+      weeklyComittedHours: 20,
+      _id: '5e28bdaab9ec7807f278aea3',
+      role: 'Manager',
+      firstName: 'Rafel',
+      lastName: 'Sabol',
+      email: 'jae123s33@mail.com'
+    },
+  ]
+};
