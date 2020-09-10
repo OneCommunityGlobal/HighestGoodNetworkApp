@@ -4,7 +4,7 @@ import { Table, Progress } from 'reactstrap'
 import moment from 'moment'
 import _ from 'lodash'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faClock } from '@fortawesome/free-solid-svg-icons'
+import { faClock, faCircle } from '@fortawesome/free-solid-svg-icons'
 // import { farClock } from '@fortawesome/free-regular-svg-icons'
 
 import httpService from '../../services/httpService'
@@ -137,9 +137,15 @@ class TeamMemberTasks extends Component {
     if (teams && teams.length > 0) {
       teamsList = teams.map((member, index) => (
         <tr>
-          <td>tempstatus</td>
+          <td>
+            {member.hoursCurrentWeek >= member.weeklyComittedHours ? (
+              <FontAwesomeIcon style={{ color: 'green' }} icon={faClock} />
+            ) : (
+              <FontAwesomeIcon style={{ color: 'red' }} icon={faClock} />
+            )}
+          </td>
           <td>{`${member.firstName} ${member.lastName}`}</td>
-          <td>{`${member.hoursCurrentWeek} / ${member.weeklyCommittedHours}`}</td>
+          <td>{`${member.weeklyCommittedHours} / ${member.hoursCurrentWeek}`}</td>
           <td>
             {member.tasks &&
               member.tasks.map(task => (
@@ -161,10 +167,11 @@ class TeamMemberTasks extends Component {
           <h1>Team Member Tasks</h1>
           <Table striped bordered variant="dark" size="sm">
             <thead>
-              <th>Status</th>
+              <th />
               <th>Team Member</th>
               <th>
-                <FontAwesomeIcon icon={faClock} /> / <FontAwesomeIcon icon={faClock} />
+                <FontAwesomeIcon icon={faClock} /> /{' '}
+                <FontAwesomeIcon style={{ color: 'green' }} icon={faClock} />
               </th>
               <th>Tasks(s)</th>
               <th>Progress</th>
