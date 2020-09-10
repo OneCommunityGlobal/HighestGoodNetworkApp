@@ -88,6 +88,7 @@ exports[`Dashboard  should match snapshot 1`] = `
               <td>
                 <div
                   class="progress"
+                  style="background-color: orange;"
                 >
                   <div
                     aria-valuemax="100"
@@ -95,7 +96,7 @@ exports[`Dashboard  should match snapshot 1`] = `
                     aria-valuenow="10"
                     class="progress-bar"
                     role="progressbar"
-                    style="background-color: orange; width: 10%;"
+                    style="width: 10%;"
                   />
                 </div>
               </td>
@@ -124,6 +125,7 @@ exports[`Dashboard  should match snapshot 1`] = `
               <td>
                 <div
                   class="progress"
+                  style="background-color: red;"
                 >
                   <div
                     aria-valuemax="100"
@@ -131,7 +133,7 @@ exports[`Dashboard  should match snapshot 1`] = `
                     aria-valuenow="10"
                     class="progress-bar"
                     role="progressbar"
-                    style="background-color: red; width: 10%;"
+                    style="width: 10%;"
                   />
                 </div>
               </td>
@@ -160,6 +162,7 @@ exports[`Dashboard  should match snapshot 1`] = `
               <td>
                 <div
                   class="progress"
+                  style="background-color: red;"
                 >
                   <div
                     aria-valuemax="100"
@@ -167,7 +170,7 @@ exports[`Dashboard  should match snapshot 1`] = `
                     aria-valuenow="10"
                     class="progress-bar"
                     role="progressbar"
-                    style="background-color: red; width: 10%;"
+                    style="width: 10%;"
                   />
                 </div>
               </td>
@@ -196,6 +199,7 @@ exports[`Dashboard  should match snapshot 1`] = `
               <td>
                 <div
                   class="progress"
+                  style="background-color: red;"
                 >
                   <div
                     aria-valuemax="100"
@@ -203,7 +207,7 @@ exports[`Dashboard  should match snapshot 1`] = `
                     aria-valuenow="10"
                     class="progress-bar"
                     role="progressbar"
-                    style="background-color: red; width: 10%;"
+                    style="width: 10%;"
                   />
                 </div>
               </td>
@@ -232,6 +236,7 @@ exports[`Dashboard  should match snapshot 1`] = `
               <td>
                 <div
                   class="progress"
+                  style="background-color: red;"
                 >
                   <div
                     aria-valuemax="100"
@@ -239,7 +244,7 @@ exports[`Dashboard  should match snapshot 1`] = `
                     aria-valuenow="10"
                     class="progress-bar"
                     role="progressbar"
-                    style="background-color: red; width: 10%;"
+                    style="width: 10%;"
                   />
                 </div>
               </td>
@@ -268,6 +273,7 @@ exports[`Dashboard  should match snapshot 1`] = `
               <td>
                 <div
                   class="progress"
+                  style="background-color: red;"
                 >
                   <div
                     aria-valuemax="100"
@@ -275,7 +281,7 @@ exports[`Dashboard  should match snapshot 1`] = `
                     aria-valuenow="10"
                     class="progress-bar"
                     role="progressbar"
-                    style="background-color: red; width: 10%;"
+                    style="width: 10%;"
                   />
                 </div>
               </td>
@@ -304,6 +310,7 @@ exports[`Dashboard  should match snapshot 1`] = `
               <td>
                 <div
                   class="progress"
+                  style="background-color: red;"
                 >
                   <div
                     aria-valuemax="100"
@@ -311,7 +318,7 @@ exports[`Dashboard  should match snapshot 1`] = `
                     aria-valuenow="10"
                     class="progress-bar"
                     role="progressbar"
-                    style="background-color: red; width: 10%;"
+                    style="width: 10%;"
                   />
                 </div>
               </td>
@@ -340,6 +347,7 @@ exports[`Dashboard  should match snapshot 1`] = `
               <td>
                 <div
                   class="progress"
+                  style="background-color: red;"
                 >
                   <div
                     aria-valuemax="100"
@@ -347,7 +355,7 @@ exports[`Dashboard  should match snapshot 1`] = `
                     aria-valuenow="10"
                     class="progress-bar"
                     role="progressbar"
-                    style="background-color: red; width: 10%;"
+                    style="width: 10%;"
                   />
                 </div>
               </td>
@@ -376,6 +384,7 @@ exports[`Dashboard  should match snapshot 1`] = `
               <td>
                 <div
                   class="progress"
+                  style="background-color: red;"
                 >
                   <div
                     aria-valuemax="100"
@@ -383,7 +392,7 @@ exports[`Dashboard  should match snapshot 1`] = `
                     aria-valuenow="10"
                     class="progress-bar"
                     role="progressbar"
-                    style="background-color: red; width: 10%;"
+                    style="width: 10%;"
                   />
                 </div>
               </td>
@@ -412,6 +421,7 @@ exports[`Dashboard  should match snapshot 1`] = `
               <td>
                 <div
                   class="progress"
+                  style="background-color: red;"
                 >
                   <div
                     aria-valuemax="100"
@@ -419,7 +429,7 @@ exports[`Dashboard  should match snapshot 1`] = `
                     aria-valuenow="10"
                     class="progress-bar"
                     role="progressbar"
-                    style="background-color: red; width: 10%;"
+                    style="width: 10%;"
                   />
                 </div>
               </td>
@@ -448,6 +458,7 @@ exports[`Dashboard  should match snapshot 1`] = `
               <td>
                 <div
                   class="progress"
+                  style="background-color: red;"
                 >
                   <div
                     aria-valuemax="100"
@@ -455,7 +466,7 @@ exports[`Dashboard  should match snapshot 1`] = `
                     aria-valuenow="10"
                     class="progress-bar"
                     role="progressbar"
-                    style="background-color: red; width: 10%;"
+                    style="width: 10%;"
                   />
                 </div>
               </td>
@@ -484,6 +495,7 @@ exports[`Dashboard  should match snapshot 1`] = `
               <td>
                 <div
                   class="progress"
+                  style="background-color: red;"
                 >
                   <div
                     aria-valuemax="100"
@@ -491,7 +503,7 @@ exports[`Dashboard  should match snapshot 1`] = `
                     aria-valuenow="10"
                     class="progress-bar"
                     role="progressbar"
-                    style="background-color: red; width: 10%;"
+                    style="width: 10%;"
                   />
                 </div>
               </td>
@@ -520,6 +532,7 @@ exports[`Dashboard  should match snapshot 1`] = `
               <td>
                 <div
                   class="progress"
+                  style="background-color: red;"
                 >
                   <div
                     aria-valuemax="100"
@@ -527,7 +540,7 @@ exports[`Dashboard  should match snapshot 1`] = `
                     aria-valuenow="10"
                     class="progress-bar"
                     role="progressbar"
-                    style="background-color: red; width: 10%;"
+                    style="width: 10%;"
                   />
                 </div>
               </td>
@@ -556,6 +569,7 @@ exports[`Dashboard  should match snapshot 1`] = `
               <td>
                 <div
                   class="progress"
+                  style="background-color: red;"
                 >
                   <div
                     aria-valuemax="100"
@@ -563,7 +577,7 @@ exports[`Dashboard  should match snapshot 1`] = `
                     aria-valuenow="10"
                     class="progress-bar"
                     role="progressbar"
-                    style="background-color: red; width: 10%;"
+                    style="width: 10%;"
                   />
                 </div>
               </td>
@@ -592,6 +606,7 @@ exports[`Dashboard  should match snapshot 1`] = `
               <td>
                 <div
                   class="progress"
+                  style="background-color: red;"
                 >
                   <div
                     aria-valuemax="100"
@@ -599,7 +614,7 @@ exports[`Dashboard  should match snapshot 1`] = `
                     aria-valuenow="10"
                     class="progress-bar"
                     role="progressbar"
-                    style="background-color: red; width: 10%;"
+                    style="width: 10%;"
                   />
                 </div>
               </td>
@@ -628,6 +643,7 @@ exports[`Dashboard  should match snapshot 1`] = `
               <td>
                 <div
                   class="progress"
+                  style="background-color: red;"
                 >
                   <div
                     aria-valuemax="100"
@@ -635,7 +651,7 @@ exports[`Dashboard  should match snapshot 1`] = `
                     aria-valuenow="10"
                     class="progress-bar"
                     role="progressbar"
-                    style="background-color: red; width: 10%;"
+                    style="width: 10%;"
                   />
                 </div>
               </td>
@@ -664,6 +680,7 @@ exports[`Dashboard  should match snapshot 1`] = `
               <td>
                 <div
                   class="progress"
+                  style="background-color: red;"
                 >
                   <div
                     aria-valuemax="100"
@@ -671,7 +688,7 @@ exports[`Dashboard  should match snapshot 1`] = `
                     aria-valuenow="10"
                     class="progress-bar"
                     role="progressbar"
-                    style="background-color: red; width: 10%;"
+                    style="width: 10%;"
                   />
                 </div>
               </td>
@@ -700,6 +717,7 @@ exports[`Dashboard  should match snapshot 1`] = `
               <td>
                 <div
                   class="progress"
+                  style="background-color: red;"
                 >
                   <div
                     aria-valuemax="100"
@@ -707,7 +725,7 @@ exports[`Dashboard  should match snapshot 1`] = `
                     aria-valuenow="10"
                     class="progress-bar"
                     role="progressbar"
-                    style="background-color: red; width: 10%;"
+                    style="width: 10%;"
                   />
                 </div>
               </td>
@@ -736,6 +754,7 @@ exports[`Dashboard  should match snapshot 1`] = `
               <td>
                 <div
                   class="progress"
+                  style="background-color: red;"
                 >
                   <div
                     aria-valuemax="100"
@@ -743,7 +762,7 @@ exports[`Dashboard  should match snapshot 1`] = `
                     aria-valuenow="10"
                     class="progress-bar"
                     role="progressbar"
-                    style="background-color: red; width: 10%;"
+                    style="width: 10%;"
                   />
                 </div>
               </td>
@@ -772,6 +791,7 @@ exports[`Dashboard  should match snapshot 1`] = `
               <td>
                 <div
                   class="progress"
+                  style="background-color: red;"
                 >
                   <div
                     aria-valuemax="100"
@@ -779,7 +799,7 @@ exports[`Dashboard  should match snapshot 1`] = `
                     aria-valuenow="10"
                     class="progress-bar"
                     role="progressbar"
-                    style="background-color: red; width: 10%;"
+                    style="width: 10%;"
                   />
                 </div>
               </td>
@@ -808,6 +828,7 @@ exports[`Dashboard  should match snapshot 1`] = `
               <td>
                 <div
                   class="progress"
+                  style="background-color: red;"
                 >
                   <div
                     aria-valuemax="100"
@@ -815,7 +836,7 @@ exports[`Dashboard  should match snapshot 1`] = `
                     aria-valuenow="10"
                     class="progress-bar"
                     role="progressbar"
-                    style="background-color: red; width: 10%;"
+                    style="width: 10%;"
                   />
                 </div>
               </td>
@@ -844,6 +865,7 @@ exports[`Dashboard  should match snapshot 1`] = `
               <td>
                 <div
                   class="progress"
+                  style="background-color: red;"
                 >
                   <div
                     aria-valuemax="100"
@@ -851,7 +873,7 @@ exports[`Dashboard  should match snapshot 1`] = `
                     aria-valuenow="10"
                     class="progress-bar"
                     role="progressbar"
-                    style="background-color: red; width: 10%;"
+                    style="width: 10%;"
                   />
                 </div>
               </td>
@@ -880,6 +902,7 @@ exports[`Dashboard  should match snapshot 1`] = `
               <td>
                 <div
                   class="progress"
+                  style="background-color: red;"
                 >
                   <div
                     aria-valuemax="100"
@@ -887,7 +910,7 @@ exports[`Dashboard  should match snapshot 1`] = `
                     aria-valuenow="10"
                     class="progress-bar"
                     role="progressbar"
-                    style="background-color: red; width: 10%;"
+                    style="width: 10%;"
                   />
                 </div>
               </td>
@@ -916,6 +939,7 @@ exports[`Dashboard  should match snapshot 1`] = `
               <td>
                 <div
                   class="progress"
+                  style="background-color: red;"
                 >
                   <div
                     aria-valuemax="100"
@@ -923,7 +947,7 @@ exports[`Dashboard  should match snapshot 1`] = `
                     aria-valuenow="10"
                     class="progress-bar"
                     role="progressbar"
-                    style="background-color: red; width: 10%;"
+                    style="width: 10%;"
                   />
                 </div>
               </td>
@@ -952,6 +976,7 @@ exports[`Dashboard  should match snapshot 1`] = `
               <td>
                 <div
                   class="progress"
+                  style="background-color: red;"
                 >
                   <div
                     aria-valuemax="100"
@@ -959,7 +984,7 @@ exports[`Dashboard  should match snapshot 1`] = `
                     aria-valuenow="10"
                     class="progress-bar"
                     role="progressbar"
-                    style="background-color: red; width: 10%;"
+                    style="width: 10%;"
                   />
                 </div>
               </td>
@@ -988,6 +1013,7 @@ exports[`Dashboard  should match snapshot 1`] = `
               <td>
                 <div
                   class="progress"
+                  style="background-color: red;"
                 >
                   <div
                     aria-valuemax="100"
@@ -995,7 +1021,7 @@ exports[`Dashboard  should match snapshot 1`] = `
                     aria-valuenow="10"
                     class="progress-bar"
                     role="progressbar"
-                    style="background-color: red; width: 10%;"
+                    style="width: 10%;"
                   />
                 </div>
               </td>
@@ -1024,6 +1050,7 @@ exports[`Dashboard  should match snapshot 1`] = `
               <td>
                 <div
                   class="progress"
+                  style="background-color: red;"
                 >
                   <div
                     aria-valuemax="100"
@@ -1031,7 +1058,7 @@ exports[`Dashboard  should match snapshot 1`] = `
                     aria-valuenow="10"
                     class="progress-bar"
                     role="progressbar"
-                    style="background-color: red; width: 10%;"
+                    style="width: 10%;"
                   />
                 </div>
               </td>
@@ -1060,6 +1087,7 @@ exports[`Dashboard  should match snapshot 1`] = `
               <td>
                 <div
                   class="progress"
+                  style="background-color: red;"
                 >
                   <div
                     aria-valuemax="100"
@@ -1067,7 +1095,7 @@ exports[`Dashboard  should match snapshot 1`] = `
                     aria-valuenow="10"
                     class="progress-bar"
                     role="progressbar"
-                    style="background-color: red; width: 10%;"
+                    style="width: 10%;"
                   />
                 </div>
               </td>
@@ -1096,6 +1124,7 @@ exports[`Dashboard  should match snapshot 1`] = `
               <td>
                 <div
                   class="progress"
+                  style="background-color: red;"
                 >
                   <div
                     aria-valuemax="100"
@@ -1103,7 +1132,7 @@ exports[`Dashboard  should match snapshot 1`] = `
                     aria-valuenow="10"
                     class="progress-bar"
                     role="progressbar"
-                    style="background-color: red; width: 10%;"
+                    style="width: 10%;"
                   />
                 </div>
               </td>
@@ -1132,6 +1161,7 @@ exports[`Dashboard  should match snapshot 1`] = `
               <td>
                 <div
                   class="progress"
+                  style="background-color: red;"
                 >
                   <div
                     aria-valuemax="100"
@@ -1139,7 +1169,7 @@ exports[`Dashboard  should match snapshot 1`] = `
                     aria-valuenow="10"
                     class="progress-bar"
                     role="progressbar"
-                    style="background-color: red; width: 10%;"
+                    style="width: 10%;"
                   />
                 </div>
               </td>
