@@ -4,10 +4,13 @@ import userEvent from '@testing-library/user-event';
 import configureStore from 'redux-mock-store';
 import TimelogNavbar from '../../components/Timelog/TimelogNavbar';
 import { renderWithProvider } from '../utils';
-import { authMock, userProfileMock, timeEntryMock, userProjectMock } from '../mockStates';
+import {
+  authMock, userProfileMock, timeEntryMock, userProjectMock,
+} from '../mockStates';
+
 const mockStore = configureStore();
+const userId = '5edf141c78f1380017b829a6';
 describe('<TimelogNavbar/>', () => {
-  const userId = '5edf141c78f1380017b829a6';
   beforeEach(() => {
     const store = mockStore({
       userProfile: userProfileMock,
@@ -30,3 +33,21 @@ describe('<TimelogNavbar/>', () => {
     expect(viewProfileLink).toHaveAttribute('href', expect.stringContaining(userId));
   });
 });
+// describe('test effort bar', () => {
+//   it('should render red bar', () => {
+//     const store = mockStore({
+//       userProfile: userProfileMock,
+//       timeEntries: {
+//         weeks:
+//           [[
+//             {
+//               hours: 0,
+//               minutes: 0,
+//             },
+//           ]],
+//       },
+//     });
+//     renderWithProvider(<TimelogNavbar userId={userId} />,
+//       { store });
+//   });
+// });

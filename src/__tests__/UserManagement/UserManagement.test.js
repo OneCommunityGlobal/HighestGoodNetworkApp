@@ -1,13 +1,17 @@
 import React from 'react';
 import { screen, render, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { authMock, userProfileMock, timeEntryMock, userProjectMock, allUserProfilesMock } from '../mockStates';
-import { renderWithProvider, renderWithRouterMatch } from '../utils';
 import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
+import {
+  authMock, userProfileMock, timeEntryMock, userProjectMock, allUserProfilesMock,
+} from '../mockStates';
+import { renderWithProvider, renderWithRouterMatch } from '../utils';
 import UserManagement from '../../components/UserManagement/UserManagement';
-const mockStore = configureMockStore([thunk]);
 import * as actions from '../../actions/userManagement';
+
+const mockStore = configureMockStore([thunk]);
+
 jest.mock('../../actions/userManagement.js');
 describe('user management', () => {
   let store;
@@ -21,7 +25,7 @@ describe('user management', () => {
       <UserManagement />,
       {
         store,
-      }
+      },
     );
   });
   describe('structure', () => {
@@ -93,16 +97,26 @@ describe('user management', () => {
       userEvent.click(screen.getByRole('button', { name: /oops,.*/i }));
       expect(actions.updateUserStatus).toHaveBeenCalled();
     });
-
-
-
-
-
-
-
+    it('should popup a modal once the user clicks the `create new user` button', () => {
+      userEvent.click(screen.getByRole('button', { name: /create new user/i }));
+      expect(screen.getByRole('dialog')).toBeInTheDocument();
+    });
+    it('should close the modal once the user clicks `close`', () => {
+      userEvent.click(screen.getByRole('button', { name: /create new user/i }));
+      userEvent.click(screen.getAllByRole('button', { name: /close/i })[1]);
+      // expect(screen.getByRole('dialog')).not.toBeInTheDocument();
+    });
+    it('should filter active/inactive once the user select the filter', () => {
+      userEvent.selectOptions(screen.getByDisplayValue('All'), 'active');
+      expect(screen.getAllByTitle('Click here to change the user status')[0]).not.toHaveClass('inactive');
+    });
+    it('should filter pause once the user select the filter', () => {
+      userEvent.selectOptions(screen.getByDisplayValue('All'), 'paused');
+      expect(screen.queryByRole('button', { name: /pause/i })).toBeFalsy();
+    });
+    it('should perform wildcard search while the user typing in the search box', async () => {
+      await userEvent.type(screen.getByPlaceholderText(/search text/i), 'gmail.com', { allAtOnce: false });
+      expect(screen.queryByText(/.*hgn.net.*/)).toBeFalsy();
+    });
   });
-
-
 });
-
-
