@@ -9,6 +9,9 @@ import TeamMemberTasks from '../TeamMemberTasks/TeamMemberTasks'
 
 export class Dashboard extends Component {
   render() {
+    const userRole = this.props.state.userProfile.role
+    const userIsAdminOrManager = userRole === 'Administrator' || userRole === 'Manager'
+
     return (
       <Container fluid>
         <Row>
@@ -20,7 +23,7 @@ export class Dashboard extends Component {
             </Alert>
           </Col>
           <Col lg={{ size: 9 }}>
-            <TeamMemberTasks />
+            {userIsAdminOrManager ? <TeamMemberTasks /> : null}
             <WeeklySummary />
             <Leaderboard />
           </Col>

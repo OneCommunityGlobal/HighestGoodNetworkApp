@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
+import { Link } from 'react-router-dom'
 import { Table, Progress } from 'reactstrap'
 import moment from 'moment'
 import _ from 'lodash'
@@ -134,26 +135,25 @@ class TeamMemberTasks extends Component {
     // console.log('leaderboardData: ', this.props.leaderboardData);
 
     let teamsList = []
+    console.log('teams: ', teams)
     if (teams && teams.length > 0) {
       teamsList = teams.map((member, index) => (
         <tr>
           <td>
             {member.hoursCurrentWeek >= member.weeklyComittedHours ? (
-              <FontAwesomeIcon style={{ color: 'green' }} icon={faClock} />
+              <FontAwesomeIcon style={{ color: 'green' }} icon={faCircle} />
             ) : (
-              <FontAwesomeIcon style={{ color: 'red' }} icon={faClock} />
+              <FontAwesomeIcon style={{ color: 'red' }} icon={faCircle} />
             )}
           </td>
-          <td>{`${member.firstName} ${member.lastName}`}</td>
+          <td>
+            <Link to={`/userprofile/${member._id}`}>
+              {`${member.firstName} ${member.lastName}`}
+            </Link>
+          </td>
           <td>{`${member.weeklyCommittedHours} / ${member.hoursCurrentWeek}`}</td>
           <td>
-            {member.tasks &&
-              member.tasks.map(task => (
-                <p>
-                  {task.num}
-                  {task.taskName}
-                </p>
-              ))}
+            {member.tasks && member.tasks.map(task => <p>{`${task.num} ${task.taskName}`}</p>)}
           </td>
           <td>tempprogress</td>
         </tr>
@@ -165,7 +165,7 @@ class TeamMemberTasks extends Component {
         <div className="container">
           {fetching || !fetched ? <Loading /> : null}
           <h1>Team Member Tasks</h1>
-          <Table striped bordered variant="dark" size="sm">
+          <Table>
             <thead>
               <th />
               <th>Team Member</th>
