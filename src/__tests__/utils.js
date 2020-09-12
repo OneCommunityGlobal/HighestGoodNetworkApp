@@ -4,16 +4,17 @@ import { createStore, applyMiddleware, compose } from 'redux';
 import { Provider } from 'react-redux';
 import { createMemoryHistory } from 'history';
 import { Router, Route } from 'react-router-dom';
-import reducer from '../reducers';
 import thunk from 'redux-thunk';
+import reducer from '../reducers';
+
 const middleware = [thunk];
 
 
 function renderWithProvider(
   ui,
   {
-    initialState = {},
-    store = createStore(reducer, initialState, compose(applyMiddleware(...middleware))),
+    initialState,
+    store = createStore(reducer),
     ...renderOptions
   } = {},
 ) {
@@ -24,23 +25,44 @@ function renderWithProvider(
 }
 
 // Helper function
-function renderWithRouterMatch(
+export function renderWithRouterMatch(
   ui,
   {
-    initialState = {},
+    initialState,
     store = createStore(reducer, initialState, compose(applyMiddleware(...middleware))),
     route = '/',
     history = createMemoryHistory({ initialEntries: [route] }),
-    ...renderOptions
   } = {},
 ) {
-  function Wrapper({ children }) {
-    return <Provider store={store}><Router history={history}>{children}</Router></Provider>;
-  }
-  return rtlRender(ui, { wrapper: Wrapper, ...renderOptions });
+  return {
+    ...rtlRender(
+      <Provider store={store}>
+        <Router history={history}>{ui}</Router>
+      </Provider>,
+    ),
+    store,
+    history,
+  };
 }
+
+
+// export function renderWithRouterMatch_1(
+//   ui,
+//   {
+//     initialState = {},
+//     store = createStore(reducer, initialState, compose(applyMiddleware(...middleware))),
+//     route = '/',
+//     history = createMemoryHistory({ initialEntries: [route] }),
+//     ...renderOptions
+//   } = {},
+// ) {
+//   function Wrapper({ children }) {
+//     return <Provider store={store}><Router history={history}>{children}</Router></Provider>;
+//   }
+//   return rtlRender(ui, { wrapper: Wrapper, ...renderOptions });
+// }
 
 // re-export everything
 export * from '@testing-library/react';
 // override render method
-export { renderWithProvider, renderWithRouterMatch };
+export { renderWithProvider };
