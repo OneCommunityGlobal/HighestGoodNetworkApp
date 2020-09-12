@@ -65,7 +65,7 @@ const TeamMembersPopup = React.memo((props) => {
               <tbody>
                 {props.members.teamMembers.length > 0
                   ? props.members.teamMembers.map((user, index) => (
-                    <tr>
+                    <tr key={`team_member_${index}`}>
                       <td>{index + 1}</td>
                       <td>{`${user.firstName} ${user.lastName}`}</td>
                       <td><Button color="danger" onClick={() => { props.onDeleteClick(`${user._id}`); }}>Delete</Button></td>

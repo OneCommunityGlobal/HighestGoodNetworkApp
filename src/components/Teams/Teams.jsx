@@ -115,9 +115,9 @@ class Teams extends React.PureComponent {
   filteredTeamList = (allTeams) => {
     let filteredList = allTeams.filter((team) => {
       //Applying the search filters before creating each team table data element
-      if (team.teamName &&
-        (team.teamName.toLowerCase().indexOf(this.state.teamNameSearchText.toLowerCase()) > -1
-          && this.state.wildCardSearchText === '')
+      if ((team.teamName &&
+        team.teamName.toLowerCase().indexOf(this.state.teamNameSearchText.toLowerCase()) > -1
+        && this.state.wildCardSearchText === '')
         //the wild card search, the search text can be match with any item
         || (this.state.wildCardSearchText !== '' &&
           (team.teamName.toLowerCase().indexOf(this.state.wildCardSearchText.toLowerCase()) > -1
