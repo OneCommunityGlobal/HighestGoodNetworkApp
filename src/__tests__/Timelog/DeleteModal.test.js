@@ -1,11 +1,11 @@
 import React from 'react';
-import { screen, render, fireEvent } from '@testing-library/react';
+import { screen, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { authMock, userProfileMock, timeEntryMock, userProjectMock } from '../mockStates';
-import { renderWithProvider, renderWithRouterMatch } from '../utils';
 import thunk from 'redux-thunk';
-import DeleteModal from '../../components/Timelog/DeleteModal';
 import configureStore from 'redux-mock-store';
+import { timeEntryMock } from '../mockStates';
+import { renderWithProvider } from '../utils';
+import DeleteModal from '../../components/Timelog/DeleteModal';
 import * as actions from '../../actions/timeEntries';
 
 const mockStore = configureStore([thunk]);
@@ -18,12 +18,8 @@ describe('<DeleteModal />', () => {
       { store });
   });
   it('should generate Modal after click', () => {
-    // const {
-    //   debug, getByText, container, getByTestId,
-    // } = render(<DeleteModal timeEntry={timeEntryMock} />);
     const icon = screen.getByRole('img', { hidden: true });
     fireEvent.click(icon);
-    // const noButton = screen.getByText(/cancel/i, { selector: 'button' });
     const modalBody = screen.getByRole('dialog');
     const yesButton = screen.getByRole('button', { name: /delete/i });
     const noButton = screen.getByRole('button', { name: /cancel/i });
@@ -32,9 +28,6 @@ describe('<DeleteModal />', () => {
     expect(noButton).toBeInTheDocument();
   });
   it('should unmount modal after click cancel', () => {
-    // const {
-    //   debug, getByText, container, getByTestId,
-    // } = render(<DeleteModal timeEntry={timeEntryMock} />);
     const icon = screen.getByRole('img', { hidden: true });
     userEvent.click(icon);
     const noButton = screen.getByRole('button', { name: /cancel/i });

@@ -1,13 +1,17 @@
 import React from 'react';
-import { screen, render, fireEvent, waitFor } from '@testing-library/react';
+import {
+  screen, render, fireEvent, waitFor,
+} from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { authMock, userProfileMock, timeEntryMock, userProjectMock } from '../mockStates';
-import { renderWithProvider, renderWithRouterMatch } from '../utils';
 import thunk from 'redux-thunk';
-import TimeEntryForm from '../../components/Timelog/TimeEntryForm';
 import configureStore from 'redux-mock-store';
-import * as actions from '../../actions/timeEntries';
 import moment from 'moment';
+import {
+  authMock, userProfileMock, timeEntryMock, userProjectMock,
+} from '../mockStates';
+import { renderWithProvider, renderWithRouterMatch } from '../utils';
+import TimeEntryForm from '../../components/Timelog/TimeEntryForm';
+import * as actions from '../../actions/timeEntries';
 
 const mockStore = configureStore([thunk]);
 function sleep(ms) {
@@ -63,6 +67,14 @@ describe('<TimeEntryForm edit/>', () => {
     userEvent.selectOptions(project, userProjectMock.projects[1].projectId);
     expect(project).toHaveValue(userProjectMock.projects[1].projectId);
   });
+  it('should clear the form once the user clicked the `clear form` button', () => {
+    userEvent.click(screen.getByRole('button', { name: /clear form/i }));
+    expect(screen.getAllByRole('spinbutton')[0]).toHaveValue(0);
+    expect(screen.getAllByRole('spinbutton')[1]).toHaveValue(0);
+    expect(screen.getByLabelText('Date')).toHaveValue(moment().format('YYYY-MM-DD'));
+    expect(screen.getByRole('combobox')).toHaveValue('');
+  });
+
   it('should change Notes with user input', async () => {
     const notes = screen.getByLabelText(/notes/i);
     fireEvent.change(notes, { target: { value: 'this is a test' } });
@@ -74,6 +86,13 @@ describe('<TimeEntryForm edit/>', () => {
     userEvent.click(tengible);
     expect(tengible).not.toBeChecked();
   });
+  it('should generate warnings if some of the required fields are left blank', () => {
+    userEvent.click(screen.getByRole('button', { name: /clear form/i }));
+    userEvent.click(screen.getByRole('button', { name: /save/i }));
+    expect(screen.getByText(/time should be greater than 0/i)).toBeInTheDocument();
+    expect(screen.getByText(/project is required/i)).toBeInTheDocument();
+  });
+
   it('should dispatch action when click Save', async () => {
     const save = screen.getByRole('button', { name: /save/i });
     actions.editTimeEntry = jest.fn();

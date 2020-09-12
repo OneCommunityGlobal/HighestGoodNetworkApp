@@ -1,15 +1,18 @@
 import React from 'react';
-import { screen, render, fireEvent, waitFor } from '@testing-library/react';
+import {
+  screen,
+} from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { authMock, userProfileMock, timeEntryMock, userProjectMock } from '../mockStates';
-import { renderWithProvider } from '../utils';
 import thunk from 'redux-thunk';
-import { Route } from 'react-router-dom';
-import TimeEntry from '../../components/Timelog/TimeEntry';
 import configureStore from 'redux-mock-store';
 import moment from 'moment';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
+import {
+  authMock, userProfileMock, timeEntryMock, userProjectMock,
+} from '../mockStates';
+import { renderWithProvider } from '../utils';
+import TimeEntry from '../../components/Timelog/TimeEntry';
 
 const mockStore = configureStore([thunk]);
 const weekDayRegex = /monday|tuesday|wednesday|thursday|friyday|saturday|sunday/i;
@@ -17,11 +20,9 @@ const dateRegex = /(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec) \d\d?/i;
 
 const server = setupServer(
 
-  rest.get('*', (req, res, ctx) => {
-    return res(
-      ctx.status(200),
-    );
-  }),
+  rest.get('*', (req, res, ctx) => res(
+    ctx.status(200),
+  )),
 );
 
 beforeAll(() => server.listen());

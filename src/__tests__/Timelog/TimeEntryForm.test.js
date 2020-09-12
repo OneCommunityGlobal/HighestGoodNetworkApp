@@ -1,13 +1,17 @@
 import React from 'react';
-import { screen, render, fireEvent, waitFor } from '@testing-library/react';
+import {
+  screen, render, fireEvent, waitFor,
+} from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { authMock, userProfileMock, timeEntryMock, userProjectMock } from '../mockStates';
-import { renderWithProvider, renderWithRouterMatch } from '../utils';
 import thunk from 'redux-thunk';
-import TimeEntryForm from '../../components/Timelog/TimeEntryForm';
 import configureStore from 'redux-mock-store';
-import * as actions from '../../actions/timeEntries';
 import moment from 'moment';
+import {
+  authMock, userProfileMock, timeEntryMock, userProjectMock,
+} from '../mockStates';
+import { renderWithProvider, renderWithRouterMatch } from '../utils';
+import TimeEntryForm from '../../components/Timelog/TimeEntryForm';
+import * as actions from '../../actions/timeEntries';
 
 const mockStore = configureStore([thunk]);
 
@@ -27,7 +31,6 @@ describe('<TimeEntryForm />', () => {
     });
     toggle = jest.fn();
     store.dispatch = jest.fn();
-    // useDispatch.mockReturnValue(jest.fn());
     renderWithProvider(
       <TimeEntryForm
         userId={data.personId}
@@ -40,8 +43,6 @@ describe('<TimeEntryForm />', () => {
         store,
       },
     );
-    // screen.debug();
-    // userEvent.click(screen.getByRole('button', { name: /add time entry/i }));
   });
   it('should dispatch the right action with the right payload after add new time entry', async () => {
     const expectedPayload = {
@@ -65,7 +66,6 @@ describe('<TimeEntryForm />', () => {
     await sleep(100);
     userEvent.selectOptions(screen.getByRole('combobox'), userProjectMock.projects[0].projectId);
     const notes = screen.getByLabelText(/notes/i);
-    // await userEvent.type(notes, 'Test123', { allAtOnce: false });
     fireEvent.change(notes, { target: { value: 'Test123' } });
     await sleep(1000);
     userEvent.click(screen.getByRole('button', { name: /submit/i }));
