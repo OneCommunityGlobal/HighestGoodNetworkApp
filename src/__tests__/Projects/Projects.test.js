@@ -1,16 +1,16 @@
 
-import { renderWithProvider, renderWithRouterMatch } from './utils.js'
+import { renderWithProvider, renderWithRouterMatch } from '../utils.js'
 import '@testing-library/jest-dom/extend-expect'
 import React from 'react';
-import mockState from './mockAdminState.js'
-import { GET_ERRORS } from '../constants/errors';
+import mockState from '../mockAdminState.js'
+import { GET_ERRORS } from '../../constants/errors';
 import { createMemoryHistory } from 'history';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
-import { ENDPOINTS } from '../utils/URL';
-import * as Message from './../languages/en/messages'
+import { ENDPOINTS } from '../../utils/URL';
+import * as Message from '../../languages/en/messages'
 import { render, fireEvent, waitFor, screen} from "@testing-library/react";
-import routes from './../routes';
+import routes from '../../routes';
 
 const projectsUrl = ENDPOINTS.PROJECTS;
 const projectUrl = ENDPOINTS.PROJECT + '*';

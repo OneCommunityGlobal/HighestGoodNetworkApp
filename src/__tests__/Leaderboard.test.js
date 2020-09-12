@@ -85,9 +85,9 @@ describe('Leaderboard structure', () => {
       await waitFor(()=>{
         expect(screen.getByText('Status')).toBeTruthy();
         expect(screen.getByText('Name')).toBeTruthy();
-        expect(screen.getByText('intangibletime')).toBeTruthy();
+        expect(screen.getByText('Intangible Time')).toBeTruthy();
         expect(screen.getByText('Progress')).toBeTruthy();
-        expect(screen.getByText('totaltime')).toBeTruthy();
+        expect(screen.getByText('Total Time')).toBeTruthy();
       });
 
       await sleep(20);
