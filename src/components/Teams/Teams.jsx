@@ -17,7 +17,6 @@ import DeleteTeamPopup from './DeleteTeamPopup'
 import TeamStatusPopup from './TeamStatusPopup'
 
 class Teams extends React.PureComponent {
-  filteredTeamDataCount = 0;
 
   constructor(props) {
     super(props);
@@ -83,7 +82,6 @@ class Teams extends React.PureComponent {
 
     if (allTeams && allTeams.length > 0) {
       let teamSearchData = this.filteredTeamList(allTeams);
-      this.filteredTeamDataCount = teamSearchData.length;
       /* 
       * Builiding the table body for teams returns 
        * the rows for currently selected page . 
@@ -105,6 +103,7 @@ class Teams extends React.PureComponent {
             onMembersClick={this.onTeamMembersPopupShow}
             onDeleteClick={this.onDeleteTeamPopupShow}
             onStatusClick={this.onTeamStatusShow}
+            onEditTeam={this.onEidtTeam}
             onClickActive={this.onClickActive}
             team={team}
           />)
@@ -154,6 +153,10 @@ class Teams extends React.PureComponent {
         open={this.state.createNewTeamPopupOpen}
         onClose={this.onCreateNewTeamClose}
         onOkClick={this.addNewTeam}
+        teamName={this.state.selectedTeam}
+        teamId={this.state.selectedTeamId}
+        isActive={this.state.isActive}
+        isEdit={this.state.isEdit}
       />
 
       <DeleteTeamPopup
@@ -201,6 +204,8 @@ class Teams extends React.PureComponent {
    */
   onTeamMembersPopupClose = () => {
     this.setState({
+      selectedTeamId: undefined,
+      selectedTeam: '',
       teamMembersPopupOpen: false,
     })
   }
@@ -221,6 +226,8 @@ class Teams extends React.PureComponent {
    */
   onDeleteTeamPopupClose = () => {
     this.setState({
+      selectedTeamId: undefined,
+      selectedTeam: '',
       deleteTeamPopupOpen: false,
     })
   }
@@ -237,9 +244,23 @@ class Teams extends React.PureComponent {
      */
   onCreateNewTeamClose = () => {
     this.setState({
+      selectedTeamId: undefined,
+      selectedTeam: '',
       createNewTeamPopupOpen: false,
+      isEdit: false
     })
   }
+
+  onEidtTeam = (teamName, teamId, status) => {
+    this.setState({
+      isEdit: true,
+      createNewTeamPopupOpen: true,
+      selectedTeam: teamName,
+      selectedTeamId: teamId,
+      isActive: status
+    })
+  }
+
   /**
      * call back to show team status popup
      */
@@ -257,6 +278,9 @@ class Teams extends React.PureComponent {
       */
   onTeamStatusClose = () => {
     this.setState({
+      selectedTeamId: undefined,
+      selectedTeam: '',
+      isEdit: false,
       teamStatusPopupOpen: false
     })
   }
@@ -272,10 +296,18 @@ class Teams extends React.PureComponent {
   /**
   * callback for adding new team
   */
-  addNewTeam = (name) => {
-    this.props.postNewTeam(name, true);
-    alert("Team added successfully");
+  addNewTeam = (name, isEdit) => {
+    if (isEdit) {
+      this.props.updateTeam(name, this.state.selectedTeamId, this.state.isActive)
+      alert("Team updated successfully");
+    } else {
+      this.props.postNewTeam(name, true);
+      alert("Team added successfully");
+    }
     this.setState({
+      selectedTeamId: undefined,
+      selectedTeam: '',
+      isEdit: false,
       createNewTeamPopupOpen: false,
     })
   }
@@ -284,7 +316,6 @@ class Teams extends React.PureComponent {
      */
 
   onDeleteUser = (deletedId) => {
-
     this.props.deleteTeam(deletedId, 'delete')
     alert("Team deleted successfully");
     this.setState({
