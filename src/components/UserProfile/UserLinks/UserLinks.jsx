@@ -2,6 +2,7 @@ import React from 'react';
 import { CardText, Badge, Tooltip } from 'reactstrap';
 import styles from './UserLinks.css';
 // import styleProfile from '../UserProfile.module.scss';
+import { Link } from 'react-router-dom';
 
 
 const UserLinks = ({
@@ -17,9 +18,11 @@ const UserLinks = ({
       )}
 
       {links.map((item, index) => (
-        <Badge key={index} className="profileEditButton" href={item.Link} color="success">
-          {item.Name}
-        </Badge>
+        <Link key={index} to={item.Link} >
+          <Badge className="link" color="success">
+            {item.Name}
+          </Badge>
+        </Link>
       ))}
     </div>
   </>
