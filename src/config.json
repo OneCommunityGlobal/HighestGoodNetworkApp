@@ -1,3 +1,4 @@
 {
-    "tokenKey" : "token"
+    "tokenKey": "token",
+    "RestApi": "$(RestApi)"
 }

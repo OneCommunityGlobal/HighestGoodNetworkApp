@@ -12,7 +12,9 @@ import {
   import { ENDPOINTS } from '../utils/URL';
   import { render, fireEvent, waitFor, screen} from "@testing-library/react";
   import routes from './../routes';
-  const url = ENDPOINTS.USER_PROFILE('5edf141c78f1380017b829a6');
+  const url = ENDPOINTS.USER_PROFILE(mockState.auth.user.userid);
+  const timerUrl = ENDPOINTS.TIMER(mockState.auth.user.userid);
+  const userProjectsUrl = ENDPOINTS.USER_PROJECTS(mockState.auth.user.userid);
   
   const server = setupServer( 
     rest.get(url, (req, res, ctx) =>  {
@@ -37,6 +39,20 @@ import {
           "tangiblebarcolor": "orange",
           "totaltime": 6
         }]), )  
+    }),
+    rest.get(userProjectsUrl, (req, res, ctx) =>  {
+        return res(ctx.status(200), ctx.json(
+          [
+          {
+            "isActive": true,
+            "_id": "5ad91ec3590b19002acfcd26",
+            "projectName": "HG Fake Project"
+          }
+        ]
+      ));
+    }),
+    rest.get(timerUrl, (req, res, ctx) =>  {
+      return res(ctx.status(200), ctx.json({}), )  
     }),
     rest.get('*', (req, res, ctx) => {
       console.error(`Please add request handler for ${req.url.toString()} in your MSW server requests.`);

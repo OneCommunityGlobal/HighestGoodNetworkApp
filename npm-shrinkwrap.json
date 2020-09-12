@@ -6749,6 +6749,11 @@
         "csstype": "^2.6.7"
       }
     },
+    "dom-scroll-into-view": {
+      "version": "1.0.1",
+      "resolved": "https://registry.npmjs.org/dom-scroll-into-view/-/dom-scroll-into-view-1.0.1.tgz",
+      "integrity": "sha1-Mqu5Lw2P7KYhUWKu9D5LRJq42Zw="
+    },
     "dom-serializer": {
       "version": "0.2.2",
       "resolved": "https://registry.npmjs.org/dom-serializer/-/dom-serializer-0.2.2.tgz",
@@ -12029,8 +12034,7 @@
     "nan": {
       "version": "2.14.1",
       "resolved": "https://registry.npmjs.org/nan/-/nan-2.14.1.tgz",
-      "integrity": "sha512-isWHgVjnFjh2x2yuJ/tj3JbwoHu3UC2dX5G/88Cm24yB6YopVgxvBObDY7n5xW6ExmFhJpSEQqFPvq9zaXc8Jw==",
-      "optional": true
+      "integrity": "sha512-isWHgVjnFjh2x2yuJ/tj3JbwoHu3UC2dX5G/88Cm24yB6YopVgxvBObDY7n5xW6ExmFhJpSEQqFPvq9zaXc8Jw=="
     },
     "nanomatch": {
       "version": "1.2.13",

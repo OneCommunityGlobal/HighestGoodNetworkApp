@@ -8,6 +8,7 @@ const ProfileLinksCard = ({
 	handleProfileLinks,
 	collection
 }) => {
+
 	return (
 		<div className='card border-secondary w-100'>
 			<div className='card-body'>

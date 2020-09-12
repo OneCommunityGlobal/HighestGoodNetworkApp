@@ -32,6 +32,14 @@
   background-color: #f6f6f3;
 }
 
+.bg--cadet-blue {
+  background-color: #509999;
+}
+
+.bg--dark-sea-green {
+  background-color: #c9d6c6;
+}
+
 .text--silver {
   color: #acacac;
 }
@@ -44,7 +52,7 @@
   border: solid 2px #225163;
   color: #2c2c2c;
   border-radius: 6px;
-  width: 254px;
+  width: 260px;
 }
 
 .due-section__date {
@@ -66,7 +74,7 @@
 
 .countdown__col__element {
   display: inline-block;
-  margin: 0 12px;
+  margin: 0 9px;
   display: flex;
   flex-direction: column;
 }
@@ -74,6 +82,7 @@
 .countdown__col__element strong,
 .countdown__times-up {
   font-size: 28px;
+  width: 41px;
 }
 
 .countdown__col__element span {
@@ -81,20 +90,34 @@
 }
 
 #summaryTabsTooltip {
-	margin-left: 5px;
-	padding-top: 5px;
+  margin-left: 5px;
+  padding-top: 5px;
 }
-.summaryContentTooltip, .summaryTabsTooltip, .mediaURLTooltip {
+.summaryContentTooltip,
+.summaryTabsTooltip,
+.mediaURLTooltip {
   max-width: 300px !important;
   padding: 10px !important;
 }
 
 .nav-tabs .nav-link {
-	cursor: pointer;
+  cursor: pointer;
 }
 
 .tab-content {
-	background-color: #fff;
-	border: 1px solid transparent;
-	border-color:#fff #dee2e6 #dee2e6;
+  background-color: #fff;
+  border: 1px solid transparent;
+  border-color: #fff #dee2e6 #dee2e6;
+}
+
+@media screen and (min-width: 992px) {
+  .left-col-dashboard {
+    margin-top: -200px;
+  }
+}
+
+@media screen and (min-width: 576px) and (max-width: 992px) {
+  .modal-dialog.weekly-summary-modal {
+    max-width: 85%;
+  }
 }
