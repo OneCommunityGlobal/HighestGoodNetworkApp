@@ -20,31 +20,31 @@ class UserProfile extends Component {
     lastNameError: "",
     imageUploadError: "",
     isValid: false,
-		id: "",
-		privacySettings:{
-			email: true,
-			phoneNumber: true,
-			blueSquares: true
-		}
+    id: "",
+    privacySettings: {
+      email: true,
+      phoneNumber: true,
+      blueSquares: true
+    }
   };
 
   async componentDidMount() {
     if (this.props.match) {
       let userId = this.props.match.params.userId;
       await this.props.getUserProfile(userId);
-      if ( this.props.userProfile === '404'){
+      if (this.props.userProfile === '404') {
         this.setState({
           isLoading: false
         })
       } else {
         await this.props.getUserTeamMembers(userId);
         if (this.props.userProfile.firstName.length) {
-          if (!this.props.userProfile.privacySettings){
+          if (!this.props.userProfile.privacySettings) {
             this.setState({
               isLoading: false,
-              userProfile:{
+              userProfile: {
                 ...this.props.userProfile,
-                privacySettings:{
+                privacySettings: {
                   email: true,
                   phoneNumber: true,
                   blueSquares: true
@@ -63,25 +63,25 @@ class UserProfile extends Component {
   }
 
   async componentDidUpdate(prevProps, prevState) {
-    if (this.props.match !== prevProps.match){
+    if (this.props.match !== prevProps.match) {
       console.log('component needs to update')
-      
+
       let userId = this.props.match.params.userId;
       await this.props.getUserProfile(userId);
 
-      if ( this.props.userProfile === '404'){
+      if (this.props.userProfile === '404') {
         this.setState({
           isLoading: false
         })
       } else {
         await this.props.getUserTeamMembers(userId);
         if (this.props.userProfile.firstName.length) {
-          if (!this.props.userProfile.privacySettings){
+          if (!this.props.userProfile.privacySettings) {
             this.setState({
               isLoading: false,
-              userProfile:{
+              userProfile: {
                 ...this.props.userProfile,
-                privacySettings:{
+                privacySettings: {
                   email: true,
                   phoneNumber: true,
                   blueSquares: true
@@ -174,13 +174,13 @@ class UserProfile extends Component {
       )
     }
 
-    if ( this.props.userProfile === '404'){
+    if (this.props.userProfile === '404') {
       return <FourOFour />
     }
 
     let { userId: targetUserId } = this.props.match
-    ? this.props.match.params
-    : { userId: undefined };
+      ? this.props.match.params
+      : { userId: undefined };
 
     let { userid: requestorId, role: requestorRole } = this.props.auth.user;
 
