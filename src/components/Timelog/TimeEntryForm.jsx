@@ -91,7 +91,7 @@ const TimeEntryForm = ({ userId, edit, data, isOpen, toggle, timer }) => {
   ))
   projectOptions.unshift(
     <option value="" key="" disabled>
-      Select Project
+      Select Project/Task
     </option>,
   )
 
@@ -121,7 +121,7 @@ const TimeEntryForm = ({ userId, edit, data, isOpen, toggle, timer }) => {
     }
 
     if (inputs.projectId === '') {
-      result.projectId = 'Project is required'
+      result.projectId = 'Project/Task is required'
     }
 
     if (reminder.num_words < 10) {
@@ -177,17 +177,20 @@ const TimeEntryForm = ({ userId, edit, data, isOpen, toggle, timer }) => {
       return false
     }
     if (edit && reminder.edit_notice && (reminder.edit_count - 5) % 2 == 1 && edittime) {
+      openModal()
       setReminder(reminder => ({
         ...reminder,
+        remind: `Heads up this is your ${reminder.edit_count}th time editing your recorded time. The next time you do this, you receive a blue square. Please use the timer properly from this point forward to avoid this.`,
         edit_notice: !reminder.edit_notice,
       }))
+      return false
     }
 
     if (edit && reminder.edit_notice && (reminder.edit_count - 5) % 2 == 0 && edittime) {
       openModal()
       setReminder(reminder => ({
         ...reminder,
-        remind: `Heads up this is your ${reminder.edit_count}th time and this edit would make you receive a blue square. Please use the timer properly from this point forward if you’d like to avoid receiving one.`,
+        remind: `Heads up this is your ${reminder.edit_count}th time editing your recorded time and this edit will make you receive a blue square. Please use the timer properly from this point forward to avoid receiving additional blue subQuarters.`,
         edit_notice: !reminder.edit_notice,
       }))
       return false
@@ -301,6 +304,7 @@ const TimeEntryForm = ({ userId, edit, data, isOpen, toggle, timer }) => {
       <ModalHeader toggle={toggle}>
         {edit ? 'Edit ' : 'Add '}
         Time Entry
+        <i className="fa fa-info-circle" aria-hidden="true" />
       </ModalHeader>
       <ModalBody>
         <Form>
@@ -362,7 +366,7 @@ const TimeEntryForm = ({ userId, edit, data, isOpen, toggle, timer }) => {
             )}
           </FormGroup>
           <FormGroup>
-            <Label for="project">Project</Label>
+            <Label for="project">Project/Task</Label>
             <Input
               type="select"
               name="projectId"
@@ -430,7 +434,7 @@ const TimeEntryForm = ({ userId, edit, data, isOpen, toggle, timer }) => {
           <ModalBody>{reminder.remind}</ModalBody>
           <ModalFooter>
             <Button onClick={openModal} color="primary">
-              close
+              Close
             </Button>
             {edit && (data.hours != inputs.hours || data.minutes != inputs.minutes) && (
               <Button onClick={cancelChange} color="secondary">
