@@ -9,7 +9,10 @@ import Modal from "./UserProfileModal";
 import UserLinks from "./UserLinks";
 import FourOFour from "./FourOFour";
 
-import styleProfile from "./UserProfile.css";
+import styleProfile from "./UserProfile.module.scss";
+
+import { Link } from 'react-router-dom';
+
 
 class UserProfile extends Component {
   state = {
@@ -189,11 +192,6 @@ class UserProfile extends Component {
     let canEdit = isUserAdmin || isUserSelf;
 
 
-    // console.log('this.state:', this.state)
-    // console.log('this.props.userProfile', this.props.userProfile)
-
-
-
     return (
       <div>
         <div style={{ display: "flex" }}>
@@ -217,14 +215,14 @@ class UserProfile extends Component {
           )}
 
           <Col>
-            <Row id="profileContainer" className="profileContainer">
-              <div className="whoSection">
+            <Row id="profileContainer" className={styleProfile.profileContainer}>
+              <div className={styleProfile.whoSection}>
                 <div>
                   <Image
                     src={profilePic || "/defaultprofilepic.png"}
                     alt="Profile Picture"
                     roundedCircle
-                    className="profilePicture"
+                    className={styleProfile.profilePicture}
                   />
                 </div>
                 <Label>
@@ -242,30 +240,30 @@ class UserProfile extends Component {
                 )}
               </div>
 
-              <div className="detailSectionContainer">
-                <div className="detailSection">
+              <div className={styleProfile.detailSectionContainer}>
+                <div className={styleProfile.detailSection}>
                   {privacySettings["email"] && (
-                    <div className={"iconContainer"}>
-                      <div className={"icon"}>
+                    <div className={styleProfile.iconContainer}>
+                      <div className={styleProfile.icon}>
                         <i className="fa fa-envelope-o" aria-hidden="true" />
                       </div>
                       {email}
                     </div>
                   )}
                   {privacySettings["phoneNumber"] && (
-                    <div className={"iconContainer"}>
-                      <div className={"icon"}>
+                    <div className={styleProfile.iconContainer}>
+                      <div className={styleProfile.icon}>
                         <i className="fa fa-phone" aria-hidden="true"></i>
                       </div>
                       {this.formatPhoneNumber(phoneNumber)}
                     </div>
                   )}
-                  <div className={"iconContainer"}>
-                    <div className={"icon"}>
+                  <div className={styleProfile.iconContainer}>
+                    <div className={styleProfile.icon}>
                       <i className="fa fa-link" aria-hidden="true"></i>
                     </div>
                   </div>
-                  <div className={"profileLinks"}>
+                  <div className={styleProfile.profileLinks}>
                     <UserLinks
                       linkSection="admin"
                       links={adminLinks}
@@ -273,7 +271,7 @@ class UserProfile extends Component {
                       isUserAdmin={isUserAdmin}
                     />
                   </div>
-                  <div className={"profileLinks"}>
+                  <div className={styleProfile.profileLinks}>
                     <UserLinks
                       linkSection="user"
                       links={personalLinks}
@@ -285,16 +283,15 @@ class UserProfile extends Component {
               </div>
 
               {canEdit && (
-                <div className={"profileEditButtonContainer"}>
-                  <Badge
-                    className={"profileEditButton"}
-                    href={"/userprofileedit/" + this.state.userProfile._id}
-                  >
+                <div className={styleProfile.profileEditButtonContainer}>
+
+                  <Link to={"/userprofileedit/" + this.state.userProfile._id} className={styleProfile.profileEditButton}>
                     <i className="fa fa-pencil-square-o fa-lg" aria-hidden="true">
                       {" "}
                       Edit
                     </i>
-                  </Badge>
+                  </Link>
+
                 </div>
               )}
             </Row>
