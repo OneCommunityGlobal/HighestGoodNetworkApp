@@ -16,14 +16,27 @@ const UserLinks = ({
         <Badge color="danger">No Links present</Badge>
       </CardText>
       )}
+      
+      {links.map((item, index) => {
+        if( item.Link.includes("http") ){
+          return (
+            <a key={index} href={item.Link}>
+              <Badge className="link" color="success">
+               {item.Name}
+             </Badge>
+            </a>
+          )
+        }else{
+          return (
+            <Link key={index} to={item.Link} >
+              <Badge className="link" color="success">
+                {item.Name}
+              </Badge>
+            </Link>          
+          )
+        }
 
-      {links.map((item, index) => (
-        <Link key={index} to={item.Link} >
-          <Badge className="link" color="success">
-            {item.Name}
-          </Badge>
-        </Link>
-      ))}
+      })}
     </div>
   </>
 );
