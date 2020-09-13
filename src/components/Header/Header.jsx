@@ -130,7 +130,7 @@ export class Header extends React.Component {
                   </DropdownMenu>
                 </UncontrolledDropdown>
                 <NavItem>
-                  <NavLink tag={Link} to={`/profile/${user.userid}`}>
+                  <NavLink tag={Link} to={`/userprofile/${user.userid}`}>
                     <img
                       src={`${profilePic}`}
                       alt=""
