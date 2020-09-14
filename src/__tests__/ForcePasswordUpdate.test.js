@@ -13,10 +13,13 @@ import { forcePasswordUpdate as fPU } from "./../actions/updatePassword";
 import { clearErrors } from "./../actions/errorsActions";
 
 const url = ENDPOINTS.FORCE_PASSWORD;
+const timerUrl = ENDPOINTS.TIMER(mockState.auth.user.userid);
+const userProjectsUrl = ENDPOINTS.USER_PROJECTS(mockState.auth.user.userid);
 let passwordUpdated = false;
 //When user is sent to forced Password Update they are not 
 //authenticated yet and will be sent to login afterwards
 mockState.auth.isAuthenticated = false;
+
 
 const server = setupServer(
     //request for a forced password update.
@@ -50,6 +53,20 @@ const server = setupServer(
           "tangiblebarcolor": "orange",
           "totaltime": 6
         }]), )  
+    }),
+    rest.get(userProjectsUrl, (req, res, ctx) =>  {
+      return res(ctx.status(200), ctx.json(
+        [
+          {
+            "isActive": true,
+            "_id": "5ad91ec3590b19002acfcd26",
+            "projectName": "HG Fake Project"
+          }
+        ]
+      ));
+    }),
+    rest.get(timerUrl, (req, res, ctx) =>  {
+      return res(ctx.status(200), ctx.json({}), )  
     }),
     //Any other requests error out
     rest.get('*', (req, res, ctx) => {

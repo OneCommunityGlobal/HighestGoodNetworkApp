@@ -11,6 +11,7 @@ describe('Header page structure', () => {
   beforeEach(() => {
     props = mockAdminState;
     props.getHeaderData = getHeaderData;
+    props.getTimerData = jest.fn();
     mountedHeader = shallow(<Header {...props} />);
   });
 
@@ -42,6 +43,7 @@ describe('UnAuthenticated Header page structure', () => {
     props = {auth:{isAuthenticated: false}};
     props.isAuthenticated = false;
     props.getHeaderData = getHeaderData;
+    props.getTimerData = jest.fn();
     mountedHeader = shallow(<Header {...props} />);
   });
 
