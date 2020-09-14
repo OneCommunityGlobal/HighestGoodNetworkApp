@@ -1,6 +1,7 @@
 import httpService from '../services/httpService';
+import { ApiEndpoint } from '../utils/URL';
 
-const APIEndpoint = process.env.REACT_APP_APIENDPOINT;
+const APIEndpoint = ApiEndpoint;
 
 export function clearUserProfile() {
   return { type: 'CLEAR_USER_PROFILE' };
@@ -11,7 +12,6 @@ export function getUserTeamMembers(userId) {
 
   return (dispatch) => {
     request.then(({ data }) => {
-      console.log('data', data);
       dispatch({
         type: 'GET_USER_TEAM_MEMBERS',
         payload: data,
