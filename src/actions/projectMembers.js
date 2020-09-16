@@ -45,7 +45,7 @@ export const findUserProfiles = (keyword) => {
   return async (dispatch, getState) => {
     await dispatch(findUsersStart());
     request.then(res => {
-      console.log("FOUND USER ", res);
+      // console.log("FOUND USER ", res);
       if (keyword.trim() !== "") {
         let users = res.data.filter(user => (user.firstName + " " + user.lastName).toLowerCase().includes(keyword.toLowerCase()));
         let members = getState().projectMembers.members;
