@@ -169,8 +169,9 @@ class TeamMemberTasks extends Component {
             <thead>
               <th />
               <th>Team Member</th>
-              <th>
-                <FontAwesomeIcon icon={faClock} /> /{' '}
+              <th width="100px">
+                <FontAwesomeIcon icon={faClock} />
+                /
                 <FontAwesomeIcon style={{ color: 'green' }} icon={faClock} />
               </th>
               <th>Tasks(s)</th>

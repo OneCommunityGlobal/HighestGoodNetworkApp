@@ -6,14 +6,18 @@ import Leaderboard from '../LeaderBoard'
 import WeeklySummary from '../WeeklySummary'
 import '../../App.css'
 import TeamMemberTasks from '../TeamMemberTasks/TeamMemberTasks'
+import { getUserProfile } from '../../actions/userProfile'
 
 export class Dashboard extends Component {
   render() {
+    console.log('')
     const userRole = this.props.state.userProfile.role
+    console.log('userRole ', userRole)
     const userIsAdminOrManager = userRole === 'Administrator' || userRole === 'Manager'
+    console.log('userIsAdminOrManager: ', userIsAdminOrManager)
 
     return (
-      <Container fluid>
+      <Container fluisd>
         <Row>
           <Col sm={{ size: 12 }}>
             <Alert color="info">
@@ -38,6 +42,6 @@ export class Dashboard extends Component {
   }
 }
 
-const mapStateToProps = state => ({ state })
+const mapStateToProps = state => ({ state, userId: state.userProfile.id })
 
-export default connect(mapStateToProps, {})(Dashboard)
+export default connect(mapStateToProps, { getUserProfile })(Dashboard)
