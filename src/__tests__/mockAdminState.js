@@ -1560,3 +1560,8 @@ export default {
       "period": []
     }
   };
+
+  describe('Stop Error', () => {
+    it('should not error out do to no tests', () => {
+    });
+  });

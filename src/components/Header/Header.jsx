@@ -89,14 +89,14 @@ export class Header extends React.Component {
                       {REPORTS}
                     </DropdownItem>
                     {user.role === UserRole.Administrator ||
-                    user.role === UserRole.Manager ||
-                    user.role === UserRole.CoreTeam ? (
-                      <DropdownItem tag={Link} to="/weeklysummariesreport">
-                        {WEEKLY_SUMMARIES_REPORT}
-                      </DropdownItem>
-                    ) : (
-                      <React.Fragment></React.Fragment>
-                    )}
+                      user.role === UserRole.Manager ||
+                      user.role === UserRole.CoreTeam ? (
+                        <DropdownItem tag={Link} to="/weeklysummariesreport">
+                          {WEEKLY_SUMMARIES_REPORT}
+                        </DropdownItem>
+                      ) : (
+                        <React.Fragment></React.Fragment>
+                      )}
                   </DropdownMenu>
                 </UncontrolledDropdown>
                 <NavItem>
@@ -119,18 +119,18 @@ export class Header extends React.Component {
                         {USER_MANAGEMENT}
                       </DropdownItem>
                     ) : (
-                      <React.Fragment></React.Fragment>
-                    )}
+                        <React.Fragment></React.Fragment>
+                      )}
                     <DropdownItem tag={Link} to="/projects">
                       {PROJECTS}
                     </DropdownItem>
-                    <DropdownItem tag={Link} to="">
+                    <DropdownItem tag={Link} to='/teams'>
                       {TEAMS}
                     </DropdownItem>
                   </DropdownMenu>
                 </UncontrolledDropdown>
                 <NavItem>
-                  <NavLink tag={Link} to={`/profile/${user.userid}`}>
+                  <NavLink tag={Link} to={`/userprofile/${user.userid}`}>
                     <img
                       src={`${profilePic}`}
                       alt=""

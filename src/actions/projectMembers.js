@@ -23,11 +23,11 @@ export const getAllUserProfiles = () => {
           return user = { ...user, assigned: true }
         }
       })
-      console.log(users);
+      // console.log(users);
       dispatch(foundUsers(users));
 
     }).catch((err) => {
-      console.log("Error", err);
+      // console.log("Error", err);
       dispatch(findUsersError(err));
     })
   }
@@ -45,7 +45,7 @@ export const findUserProfiles = (keyword) => {
   return async (dispatch, getState) => {
     await dispatch(findUsersStart());
     request.then(res => {
-      console.log("FOUND USER ", res);
+      // console.log("FOUND USER ", res);
       if (keyword.trim() !== "") {
         let users = res.data.filter(user => (user.firstName + " " + user.lastName).toLowerCase().includes(keyword.toLowerCase()));
         let members = getState().projectMembers.members;
@@ -56,13 +56,13 @@ export const findUserProfiles = (keyword) => {
             return user = { ...user, assigned: true }
           }
         })
-        console.log(users);
+        // console.log(users);
         dispatch(foundUsers(users));
       } else {
         dispatch(foundUsers([]));
       }
     }).catch((err) => {
-      console.log("Error", err);
+      // console.log("Error", err);
       dispatch(findUsersError(err));
     })
   }
@@ -82,7 +82,7 @@ export const fetchAllMembers = (projectId) => {
     await dispatch(setMemberStart());
     await dispatch(foundUsers([]));
     request.then(res => {
-      console.log("RES", res);
+      // console.log("RES", res);
       dispatch(setMembers(res.data));
     }).catch((err) => {
       //console.log("Error", err);
@@ -168,7 +168,7 @@ export const setMembersError = (err) => {
 * Set a flag that finding Members  
 */
 export const findUsersStart = () => {
-  console.log("find user start");
+  // console.log("find user start");
 
   return {
     type: types.FIND_USERS_START,
@@ -181,7 +181,7 @@ export const findUsersStart = () => {
  * @param payload : Users [] 
  */
 export const foundUsers = (users) => {
-  console.log("foundUsers");
+  // console.log("foundUsers");
   return {
     type: types.FOUND_USERS,
     users
@@ -207,7 +207,7 @@ export const findUsersError = (err) => {
  * @param member : {}
  */
 export const assignNewMember = (member) => {
-  console.log("new member", member);
+  // console.log("new member", member);
   return {
     type: types.ADD_NEW_MEMBER,
     member
