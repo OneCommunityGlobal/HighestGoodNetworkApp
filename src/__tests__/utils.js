@@ -45,9 +45,28 @@ export function renderWithRouterMatch(
   };
 }
 
-// export function sleep(ms) {
-//   return new Promise(resolve => setTimeout(resolve, ms));
-// }
+export function renderWithRouter(
+  ui,
+  {
+    route = '/',
+    history = createMemoryHistory({ initialEntries: [route] }),
+  } = {},
+) {
+  const Wrapper = ({ children }) => (
+    <Router history={history}>{children}</Router>
+  );
+  return {
+    ...rtlRender(ui, { wrapper: Wrapper }),
+    // adding `history` to the returned utilities to allow us
+    // to reference it in our tests (just try to avoid using
+    // this to test implementation details).
+    history,
+  };
+}
+
+export function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
 
 
 // export function renderWithRouterMatch(

@@ -1,10 +1,9 @@
 import React from 'react';
-import { screen, render, fireEvent } from '@testing-library/react';
+import { screen, render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import {
   authMock, userProfileMock, timeEntryMock, userProjectMock,
 } from '../mockStates';
-import { renderWithProvider, renderWithRouterMatch } from '../utils';
 import BlueSquare from '../../components/UserProfile/BlueSquares';
 
 describe('blue squre is user admin', () => {
@@ -14,7 +13,7 @@ describe('blue squre is user admin', () => {
       <BlueSquare
         blueSquares={userProfileMock.infringments}
         handleBlueSquare={handleBlueSquare}
-        isUserAdmin={false}
+        isUserAdmin
       />,
     );
   });
@@ -27,5 +26,8 @@ describe('blue squre is user admin', () => {
   it('should fire handleBlueSquare once the user clicks ', () => {
     userEvent.click(screen.getAllByRole('button')[0]);
     expect(handleBlueSquare).toHaveBeenCalled();
+  });
+  it('should have a + button', () => {
+    expect(screen.getByText('+')).toBeInTheDocument();
   });
 });

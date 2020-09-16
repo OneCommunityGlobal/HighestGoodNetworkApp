@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useReducer } from 'react';
+import React, { useState, useEffect, useReducer } from 'react'
 import {
   Button,
   Modal,
@@ -11,13 +11,12 @@ import {
   CardBody,
   Card,
   Col,
-} from 'reactstrap';
-import { date } from 'joi';
+} from 'reactstrap'
+import { date } from 'joi'
 
+import modalStyle from './UserProfileModal.css'
 
-import modalStyle from './UserProfileModal.css';
-
-const ModalExample = (props) => {
+const ModalExample = props => {
   const {
     isOpen,
     closeModal,
@@ -29,39 +28,39 @@ const ModalExample = (props) => {
     userProfile,
     id,
     isUserAdmin,
-  } = props;
+  } = props
 
-  console.log('user:', userProfile);
+  // console.log('user:', userProfile);
 
   let blueSquare = [
     {
       date: 'ERROR',
-      description: 'This is auto generated text. You must save the document first before viewing newly created blue squares.',
+      description:
+        'This is auto generated text. You must save the document first before viewing newly created blue squares.',
     },
-  ];
+  ]
 
   if (type === 'modBlueSquare' || type === 'viewBlueSquare') {
     if (id.length > 0) {
-      blueSquare = userProfile.infringments.filter(blueSquare => blueSquare._id === id);
+      blueSquare = userProfile.infringments.filter(blueSquare => blueSquare._id === id)
     }
   }
 
+  const [modal, setModal] = useState(false)
 
-  const [modal, setModal] = useState(false);
+  const [linkName, setLinkName] = useState('')
+  const [linkURL, setLinkURL] = useState('')
 
-  const [linkName, setLinkName] = useState('');
-  const [linkURL, setLinkURL] = useState('');
+  const [adminLinkName, setAdminLinkName] = useState('')
+  const [adminLinkURL, setAdminLinkURL] = useState('')
 
-  const [adminLinkName, setAdminLinkName] = useState('');
-  const [adminLinkURL, setAdminLinkURL] = useState('');
+  const [dateStamp, setDateStamp] = useState(id != null ? blueSquare[0].date : '')
+  const [summary, setSummary] = useState(id != null ? blueSquare[0].description : '')
 
-  const [dateStamp, setDateStamp] = useState(id != null ? blueSquare[0].date : '');
-  const [summary, setSummary] = useState(id != null ? blueSquare[0].description : '');
+  const [addButton, setAddButton] = useState(true)
+  const [summaryFieldView, setSummaryFieldView] = useState(true)
 
-  const [addButton, setAddButton] = useState(true);
-  const [summaryFieldView, setSummaryFieldView] = useState(true);
-
-  const toggle = () => setModal(!modal);
+  const toggle = () => setModal(!modal)
 
   // console.log('grabed personal links:', personalLinks)
 
@@ -74,154 +73,251 @@ const ModalExample = (props) => {
   // 	}
   // }
 
-  const [personalLinks, dispatchPersonalLinks] = useReducer((personalLinks, { type, value, passedIndex }) => {
-    switch (type) {
-      case 'add':
-        return [...personalLinks, value];
-      case 'remove':
-        return personalLinks.filter((_, index) => index !== passedIndex);
-      case 'updateName':
-        return personalLinks.filter((_, index) => {
-          if (index === passedIndex) {
-            _.Name = value;
-          }
-          return (_);
-        });
-      case 'updateLink':
-        return personalLinks.filter((_, index) => {
-          if (index === passedIndex) {
-            _.Link = value;
-          }
-          return (_);
-        });
-      default:
-        return personalLinks;
-    }
-  }, userProfile.personalLinks);
+  const [personalLinks, dispatchPersonalLinks] = useReducer(
+    (personalLinks, { type, value, passedIndex }) => {
+      switch (type) {
+        case 'add':
+          return [...personalLinks, value]
+        case 'remove':
+          return personalLinks.filter((_, index) => index !== passedIndex)
+        case 'updateName':
+          return personalLinks.filter((_, index) => {
+            if (index === passedIndex) {
+              _.Name = value
+            }
+            return _
+          })
+        case 'updateLink':
+          return personalLinks.filter((_, index) => {
+            if (index === passedIndex) {
+              _.Link = value
+            }
+            return _
+          })
+        default:
+          return personalLinks
+      }
+    },
+    userProfile.personalLinks,
+  )
 
-  const [adminLinks, dispatchAdminLinks] = useReducer((adminLinks, { type, value, passedIndex }) => {
-    switch (type) {
-      case 'add':
-        return [...adminLinks, value];
-      case 'remove':
-        return adminLinks.filter((_, index) => index !== passedIndex);
-      case 'updateName':
-        return adminLinks.filter((_, index) => {
-          if (index === passedIndex) {
-            _.Name = value;
-          }
-          return (_);
-        });
-      case 'updateLink':
-        return adminLinks.filter((_, index) => {
-          if (index === passedIndex) {
-            _.Link = value;
-          }
-          return (_);
-        });
-      default:
-        return adminLinks;
-    }
-  }, userProfile.adminLinks);
+  const [adminLinks, dispatchAdminLinks] = useReducer(
+    (adminLinks, { type, value, passedIndex }) => {
+      switch (type) {
+        case 'add':
+          return [...adminLinks, value]
+        case 'remove':
+          return adminLinks.filter((_, index) => index !== passedIndex)
+        case 'updateName':
+          return adminLinks.filter((_, index) => {
+            if (index === passedIndex) {
+              _.Name = value
+            }
+            return _
+          })
+        case 'updateLink':
+          return adminLinks.filter((_, index) => {
+            if (index === passedIndex) {
+              _.Link = value
+            }
+            return _
+          })
+        default:
+          return adminLinks
+      }
+    },
+    userProfile.adminLinks,
+  )
 
-
-  const handleChange = (event) => {
-    event.preventDefault();
+  const handleChange = event => {
+    event.preventDefault()
 
     if (event.target.id === 'linkName') {
-      setLinkName(event.target.value.trim());
+      setLinkName(event.target.value.trim())
     } else if (event.target.id === 'linkURL') {
-      setLinkURL(event.target.value.trim());
+      setLinkURL(event.target.value.trim())
     } else if (event.target.id === 'summary') {
-      setSummary(event.target.value);
-      checkFields(dateStamp, summary);
+      setSummary(event.target.value)
+      checkFields(dateStamp, summary)
     } else if (event.target.id === 'date') {
-      setDateStamp(event.target.value);
-      setSummaryFieldView(false);
-      checkFields(dateStamp, summary);
-    }
-  };
-
-  function checkFields(field1, field2) {
-    console.log('f1:', field1, ' f2:', field2);
-
-    if (field1 != null && field2 != null) {
-      setAddButton(false);
-    } else {
-      setAddButton(true);
+      setDateStamp(event.target.value)
+      setSummaryFieldView(false)
+      checkFields(dateStamp, summary)
     }
   }
 
-  const buttonDisabled = !(linkName && linkURL);
+  function checkFields(field1, field2) {
+    console.log('f1:', field1, ' f2:', field2)
+
+    if (field1 != null && field2 != null) {
+      setAddButton(false)
+    } else {
+      setAddButton(true)
+    }
+  }
+
+  const buttonDisabled = !(linkName && linkURL)
 
   return (
     <Modal isOpen={isOpen} toggle={closeModal}>
       <ModalHeader toggle={closeModal}>{modalTitle}</ModalHeader>
 
       <ModalBody>
-
         {type === 'updateLink' && (
-        <div>
-          {isUserAdmin && (
-          <CardBody>
-            <Card>
-              <Label style={{ display: 'flex', margin: '5px' }}>Admin Links:</Label>
-              <Col>
-                <div style={{ display: 'flex', margin: '5px' }}>
-                <div className="customTitle">Name</div>
-                <div className="customTitle">Link URL</div>
-              </div>
-                {adminLinks.map((link, index) => (
-                <div key={index} style={{ display: 'flex', margin: '5px' }}>
-                <input className="customInput" value={link.Name} onChange={e => dispatchAdminLinks({ type: 'updateName', value: e.target.value, passedIndex: index })} />
-                <input className="customInput" value={link.Link} onChange={e => dispatchAdminLinks({ type: 'updateLink', value: e.target.value, passedIndex: index })} />
-                <button className="closeButton" color="danger" onClick={() => dispatchAdminLinks({ type: 'remove', passedIndex: index })}>X</button>
-              </div>
-              ))}
+          <div>
+            {isUserAdmin && (
+              <CardBody>
+                <Card>
+                  <Label style={{ display: 'flex', margin: '5px' }}>Admin Links:</Label>
+                  <Col>
+                    <div style={{ display: 'flex', margin: '5px' }}>
+                      <div className="customTitle">Name</div>
+                      <div className="customTitle">Link URL</div>
+                    </div>
+                    {adminLinks.map((link, index) => (
+                      <div key={index} style={{ display: 'flex', margin: '5px' }}>
+                        <input
+                          className="customInput"
+                          value={link.Name}
+                          onChange={e =>
+                            dispatchAdminLinks({
+                              type: 'updateName',
+                              value: e.target.value,
+                              passedIndex: index,
+                            })
+                          }
+                        />
+                        <input
+                          className="customInput"
+                          value={link.Link}
+                          onChange={e =>
+                            dispatchAdminLinks({
+                              type: 'updateLink',
+                              value: e.target.value,
+                              passedIndex: index,
+                            })
+                          }
+                        />
+                        <button
+                          className="closeButton"
+                          color="danger"
+                          onClick={() => dispatchAdminLinks({ type: 'remove', passedIndex: index })}
+                        >
+                          X
+                        </button>
+                      </div>
+                    ))}
 
-                <div style={{ display: 'flex', margin: '5px' }}>
-                <div className="customTitle">+ ADD LINK:</div>
-              </div>
+                    <div style={{ display: 'flex', margin: '5px' }}>
+                      <div className="customTitle">+ ADD LINK:</div>
+                    </div>
 
-                <div style={{ display: 'flex', margin: '5px' }}>
-                <input className="customEdit" id="linkName" placeholder="enter name" onChange={e => setAdminLinkName(e.target.value)} />
-                <input className="customEdit" id="linkURL" placeholder="enter link" onChange={e => setAdminLinkURL(e.target.value.trim())} />
-                <button className="addButton" onClick={() => dispatchAdminLinks({ type: 'add', value: { Name: adminLinkName, Link: adminLinkURL } })}>+</button>
-              </div>
-              </Col>
-            </Card>
-          </CardBody>
-          )}
-          <CardBody>
-            <Card>
-              <Label style={{ display: 'flex', margin: '5px' }}>Personal Links:</Label>
-              <Col>
-                <div style={{ display: 'flex', margin: '5px' }}>
-                  <div className="customTitle">Name</div>
-                  <div className="customTitle">Link URL</div>
-                </div>
-                {personalLinks.map((link, index) => (
-                  <div key={index} style={{ display: 'flex', margin: '5px' }}>
-                  <input className="customInput" value={link.Name} onChange={e => dispatchPersonalLinks({ type: 'updateName', value: e.target.value, passedIndex: index })} />
-                  <input className="customInput" value={link.Link} onChange={e => dispatchPersonalLinks({ type: 'updateLink', value: e.target.value, passedIndex: index })} />
-                  <button className="closeButton" color="danger" onClick={() => dispatchPersonalLinks({ type: 'remove', passedIndex: index })}>X</button>
-                </div>
-                ))}
+                    <div style={{ display: 'flex', margin: '5px' }}>
+                      <input
+                        className="customEdit"
+                        id="linkName"
+                        placeholder="enter name"
+                        onChange={e => setAdminLinkName(e.target.value)}
+                      />
+                      <input
+                        className="customEdit"
+                        id="linkURL"
+                        placeholder="enter link"
+                        onChange={e => setAdminLinkURL(e.target.value.trim())}
+                      />
+                      <button
+                        className="addButton"
+                        onClick={() =>
+                          dispatchAdminLinks({
+                            type: 'add',
+                            value: { Name: adminLinkName, Link: adminLinkURL },
+                          })
+                        }
+                      >
+                        +
+                      </button>
+                    </div>
+                  </Col>
+                </Card>
+              </CardBody>
+            )}
+            <CardBody>
+              <Card>
+                <Label style={{ display: 'flex', margin: '5px' }}>Personal Links:</Label>
+                <Col>
+                  <div style={{ display: 'flex', margin: '5px' }}>
+                    <div className="customTitle">Name</div>
+                    <div className="customTitle">Link URL</div>
+                  </div>
+                  {personalLinks.map((link, index) => (
+                    <div key={index} style={{ display: 'flex', margin: '5px' }}>
+                      <input
+                        className="customInput"
+                        value={link.Name}
+                        onChange={e =>
+                          dispatchPersonalLinks({
+                            type: 'updateName',
+                            value: e.target.value,
+                            passedIndex: index,
+                          })
+                        }
+                      />
+                      <input
+                        className="customInput"
+                        value={link.Link}
+                        onChange={e =>
+                          dispatchPersonalLinks({
+                            type: 'updateLink',
+                            value: e.target.value,
+                            passedIndex: index,
+                          })
+                        }
+                      />
+                      <button
+                        className="closeButton"
+                        color="danger"
+                        onClick={() =>
+                          dispatchPersonalLinks({ type: 'remove', passedIndex: index })
+                        }
+                      >
+                        X
+                      </button>
+                    </div>
+                  ))}
 
-                <div style={{ display: 'flex', margin: '5px' }}>
-                  <div className="customTitle">+ ADD LINK:</div>
-                </div>
+                  <div style={{ display: 'flex', margin: '5px' }}>
+                    <div className="customTitle">+ ADD LINK:</div>
+                  </div>
 
-                <div style={{ display: 'flex', margin: '5px' }}>
-                  <input className="customEdit" id="linkName" placeholder="enter name" onChange={e => setLinkName(e.target.value)} />
-                  <input className="customEdit" id="linkURL" placeholder="enter link" onChange={e => setLinkURL(e.target.value.trim())} />
-                  <button className="addButton" onClick={() => dispatchPersonalLinks({ type: 'add', value: { Name: linkName, Link: linkURL } })}>+</button>
-                </div>
-
-              </Col>
-            </Card>
-          </CardBody>
-        </div>
+                  <div style={{ display: 'flex', margin: '5px' }}>
+                    <input
+                      className="customEdit"
+                      id="linkName"
+                      placeholder="enter name"
+                      onChange={e => setLinkName(e.target.value)}
+                    />
+                    <input
+                      className="customEdit"
+                      id="linkURL"
+                      placeholder="enter link"
+                      onChange={e => setLinkURL(e.target.value.trim())}
+                    />
+                    <button
+                      className="addButton"
+                      onClick={() =>
+                        dispatchPersonalLinks({
+                          type: 'add',
+                          value: { Name: linkName, Link: linkURL },
+                        })
+                      }
+                    >
+                      +
+                    </button>
+                  </div>
+                </Col>
+              </Card>
+            </CardBody>
+          </div>
         )}
 
         {type === 'addBlueSquare' && (
@@ -242,20 +338,12 @@ const ModalExample = (props) => {
           <>
             <FormGroup>
               <Label for="date">Date</Label>
-              <Input
-                type="date"
-                onChange={e => setDateStamp(e.target.value)}
-                value={dateStamp}
-              />
+              <Input type="date" onChange={e => setDateStamp(e.target.value)} value={dateStamp} />
             </FormGroup>
 
             <FormGroup>
               <Label for="report">Summary</Label>
-              <Input
-                type="textarea"
-                onChange={e => setSummary(e.target.value)}
-                value={summary}
-              />
+              <Input type="textarea" onChange={e => setSummary(e.target.value)} value={summary} />
             </FormGroup>
           </>
         )}
@@ -275,29 +363,23 @@ const ModalExample = (props) => {
           </>
         )}
 
-        {type === 'save' && (
-				  modalMessage
-        )}
+        {type === 'save' && modalMessage}
 
-        {type === 'message' && (
-				  modalMessage
-        )}
-
+        {type === 'message' && modalMessage}
       </ModalBody>
-
 
       <ModalFooter>
         {type === 'addBlueSquare' && (
-        <Button
-          color="danger"
-          id="addBlueSquare"
-          disabled={addButton}
-          onClick={() => {
-						  updateBlueSquare('', dateStamp, summary, 'add');
-          }}
-        >
-          Submit
-        </Button>
+          <Button
+            color="danger"
+            id="addBlueSquare"
+            disabled={addButton}
+            onClick={() => {
+              updateBlueSquare('', dateStamp, summary, 'add')
+            }}
+          >
+            Submit
+          </Button>
         )}
 
         {type === 'modBlueSquare' && (
@@ -305,22 +387,41 @@ const ModalExample = (props) => {
             <Button color="info" onClick={() => updateBlueSquare(id, dateStamp, summary, 'update')}>
               Update
             </Button>
-            <Button color="danger" onClick={() => updateBlueSquare(id, dateStamp, summary, 'delete')}>
+            <Button
+              color="danger"
+              onClick={() => updateBlueSquare(id, dateStamp, summary, 'delete')}
+            >
               Delete
             </Button>
           </>
         )}
 
         {type === 'updateLink' && (
-        <Button color="info" onClick={() => { updateLink(personalLinks, adminLinks); }}>
-          Update
-        </Button>
+          <Button
+            color="info"
+            onClick={() => {
+              updateLink(personalLinks, adminLinks)
+            }}
+          >
+            Update
+          </Button>
         )}
 
         {type === 'image' && (
           <>
-            <Button color="primary" onClick={closeModal}> Close </Button>
-            <Button color="info" onClick={() => { window.open('https://picresize.com/'); }}> Resize </Button>
+            <Button color="primary" onClick={closeModal}>
+              {' '}
+              Close{' '}
+            </Button>
+            <Button
+              color="info"
+              onClick={() => {
+                window.open('https://picresize.com/')
+              }}
+            >
+              {' '}
+              Resize{' '}
+            </Button>
           </>
         )}
 
@@ -333,10 +434,9 @@ const ModalExample = (props) => {
             Cancel
           </Button>
         )}
-
       </ModalFooter>
     </Modal>
-  );
-};
+  )
+}
 
-export default ModalExample;
+export default ModalExample
