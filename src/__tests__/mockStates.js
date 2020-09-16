@@ -549,6 +549,6 @@ export const allUserProfilesMock = {
 };
 
 describe('Stop Error', () => {
-  it('should not error out do to no tests', () => {
+  it('should not error out due to no tests (mockStates.js)', () => {
   });
 });
