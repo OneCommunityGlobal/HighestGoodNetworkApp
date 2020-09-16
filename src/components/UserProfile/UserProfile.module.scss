@@ -27,15 +27,21 @@
   font-size: 16px;
   font-weight: 700;
   line-height: 1;
-  margin: 3px;
+  border-radius: 20px;
+  background-color: dodgerblue;
+  color: white;
+
+  &:hover{
+    text-decoration: none;
+  }
+  
 }
 
 .profileEditButtonContainer{
   position: absolute;
   display: flex;
-  align-items: center;
-  justify-content: center;
   right: 1%;
+  justify-content: flex-end;
 }
 
 .profilePicture {
