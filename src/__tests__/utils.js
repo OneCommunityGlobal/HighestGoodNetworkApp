@@ -70,3 +70,8 @@ export function sleep(ms) {
 export * from '@testing-library/react';
 // override render method
 export { renderWithProvider };
+
+describe('Stop Error', () => {
+  it('should not error out do to no tests', () => {
+  });
+});

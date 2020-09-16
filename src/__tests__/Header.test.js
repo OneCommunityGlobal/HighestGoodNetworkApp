@@ -101,7 +101,7 @@ describe('Header structure', () => {
 
         const linkItems = [[LOGO, '/'], [DASHBOARD, '/dashboard'], [TIMELOG, `/timelog/${mockState.auth.user.userid}`], 
         [REPORTS,'/reports'], [WEEKLY_SUMMARIES_REPORT, '/weeklysummariesreport'], [USER_MANAGEMENT, '/usermanagement'], 
-        [PROJECTS, '/projects'], [TEAMS,'/'], [VIEW_PROFILE, `/userprofile/${mockState.auth.user.userid}`], 
+        [PROJECTS, '/projects'], [TEAMS,'/teams'], [VIEW_PROFILE, `/userprofile/${mockState.auth.user.userid}`], 
         [UPDATE_PASSWORD,`/updatepassword/${mockState.auth.user.userid}`], [LOGOUT,'/logout']];
 
         for (let i=0; i<linkItems.length; i++) {
