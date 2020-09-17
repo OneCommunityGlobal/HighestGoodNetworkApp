@@ -58,6 +58,7 @@ class TimelogPage extends Component {
     await this.props.getTimeEntriesForWeek(userId, 2)
     await this.props.getTimeEntriesForPeriod(userId, this.state.fromDate, this.state.toDate)
     await this.props.getUserProjects(userId)
+    console.log('props:',this.props)
   }
 
   async componentDidUpdate(prevProps) {

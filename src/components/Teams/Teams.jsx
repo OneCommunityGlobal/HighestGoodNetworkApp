@@ -30,7 +30,6 @@ class Teams extends React.PureComponent {
       selectedTeamId: 0,
       selectedTeam: '',
       isActive: '',
-
     }
   }
 
@@ -38,6 +37,7 @@ class Teams extends React.PureComponent {
     // Initiating the teams fetch action.
     this.props.getAllUserTeams();
     this.props.getAllUserProfile();
+    console.log('teams: props', this.props)
   }
 
   render() {

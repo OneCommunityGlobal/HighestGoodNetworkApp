@@ -12,6 +12,8 @@ import {
 	Collapse,
 } from 'reactstrap'
 
+
+
 import Image from 'react-bootstrap/Image'
 import { orange, warningRed } from '../../../constants/colors'
 import BlueSquare from '../BlueSquares'
@@ -23,6 +25,7 @@ import { Link } from 'react-router-dom';
 import styleProfile from '../UserProfile.module.scss'
 import styleEdit from './UserProfileEdit.module.scss'
 
+import TeamView from "../Teamsview";
 
 class EditProfile extends Component {
 	state = {
@@ -38,22 +41,20 @@ class EditProfile extends Component {
 			email: true,
 			phoneNumber: true,
 			blueSquares: true
-		}
+		},
+		selectedTeamId: 0,
+		selectedTeam: '',
 	}
 
 	async componentDidMount() {
-		// this.props.getCurrentUser(getjwt())
+		this.props.getAllUserTeams();
+    // this.props.getAllUserProfile();
+
 		if (this.props.match) {
 			let userId = this.props.match.params.userId
-			await this.props.getUserProfile(userId)
-			await this.props.getUserTeamMembers(userId)
-			//console.log(this.props.userProfile)
+			await this.props.getUserProfile(userId);
 			if (this.props.userProfile.firstName.length) {
-				// check props:
-				console.log('props:', this.props.userProfile)
-				// fill in defaults where needed
 				this.setState({ isLoading: false, userProfile: this.props.userProfile })
-
 				if (this.props.userProfile.privacySettings){
 					this.setState({
 						isLoading: false,
@@ -62,10 +63,13 @@ class EditProfile extends Component {
 						}
 					})
 				}
-
 			}
 		}
+
+		console.log('edit profile, component did mount, props: ', this.props)
+		console.log('edit profile, state:', this.state)
 	}
+
 
 	handleUserProfile = event => {
 
@@ -422,12 +426,26 @@ class EditProfile extends Component {
 	}
 
 
+// render drop down list of teams, or auto-fill team names...
+// fetch and display available teams
+// once team is selected, push userid & teamid with addTeamMember...
+
+// HOW TO UPDATE TEAM WITH NEW MEMBER  this.props.addTeamMember(this.state.selectedTeamId, user._id, user.firstName, user.lastName);
+
+	addUserToTeam = () => {
+		this.props.addTeamMember(this.state.selectedTeamId, this.user._id, this.user.firstName, this.user.lastName);
+	}
+
 	render() {
+		let { allTeams, fetching } = this.props.state.allTeamsData;
+
+		// console.log('allteams...', allTeams)
 
 		let { userId: targetUserId } = this.props.match ? this.props.match.params : { userId: undefined };
 		let { userid: requestorId, role: requestorRole } = this.props.auth.user
 
 		const { userProfile, isLoading, showModal } = this.state
+
 		const {
 			firstName,
 			lastName,
@@ -438,7 +456,7 @@ class EditProfile extends Component {
 			personalLinks,
 			adminLinks,
 			infringments,
-			privacySettings
+			privacySettings,
 		} = userProfile
 
 		let isUserSelf = targetUserId === requestorId
@@ -472,6 +490,7 @@ class EditProfile extends Component {
 					Reminder: You must click "Save Changes" at the bottom of this page. If you don't, changes to your profile will not be saved.
 				</CardTitle>
 
+
 				{showModal && (
 					<Modal
 						isOpen={this.state.showModal}
@@ -492,6 +511,7 @@ class EditProfile extends Component {
 				)}
 
 				<Col>
+
 					<Row className={styleProfile.profileContainer}>
 
 						<div className={styleProfile.whoSection}>
@@ -612,11 +632,17 @@ class EditProfile extends Component {
 							</div>
 						</div>
 
+						<TeamView teamsdata={userProfile.teams} edit={true} allTeams={allTeams}/>
+
+						{/* {allTeams.map(team => <div>{team.teamName}</div>)} */}
+
 						<div className={styleEdit.profileViewButtonContainer}>
 							<Link to={'/userprofile/' + this.state.userProfile._id} className={styleEdit.profileViewButton}>
 								<i className="fa fa-eye fa-lg" aria-hidden="true"> View</i>
 							</Link>
 						</div>
+
+						
 
 					</Row>
 
@@ -635,5 +661,6 @@ class EditProfile extends Component {
 
 	}
 }
+
 
 export default EditProfile

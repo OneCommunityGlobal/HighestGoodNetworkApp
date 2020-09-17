@@ -1,17 +1,17 @@
 import React, { Component } from "react";
 import Loading from "../common/Loading";
-
 import { Row, Label, Input, Badge, Col, Container } from "reactstrap";
 import Image from "react-bootstrap/Image";
 import { orange, silverGray, warningRed } from "../../constants/colors";
 import BlueSquare from "./BlueSquares";
 import Modal from "./UserProfileModal";
 import UserLinks from "./UserLinks";
-import FourOFour from "./FourOFour";
-
 import styleProfile from "./UserProfile.module.scss";
-
+import TeamView from "./Teamsview";
 import { Link } from 'react-router-dom';
+
+import { getTimeEntriesForWeek, getTimeEntriesForPeriod } from '../../actions/timeEntries';
+import { getUserProjects } from '../../actions/userProjects'
 
 
 class UserProfile extends Component {
@@ -28,46 +28,40 @@ class UserProfile extends Component {
       email: true,
       phoneNumber: true,
       blueSquares: true
-    }
+    },
+    createdDate: ''
   };
+
 
   async componentDidMount() {
     if (this.props.match) {
       let userId = this.props.match.params.userId;
       await this.props.getUserProfile(userId);
-      if (this.props.userProfile === '404') {
+      await this.props.getUserTeamMembers(userId);
+      if (!this.props.userProfile.privacySettings) {
         this.setState({
-          isLoading: false
-        })
-      } else {
-        await this.props.getUserTeamMembers(userId);
-        if (this.props.userProfile.firstName.length) {
-          if (!this.props.userProfile.privacySettings) {
-            this.setState({
-              isLoading: false,
-              userProfile: {
-                ...this.props.userProfile,
-                privacySettings: {
-                  email: true,
-                  phoneNumber: true,
-                  blueSquares: true
-                }
-              }
-            });
-          } else {
-            this.setState({
-              isLoading: false,
-              userProfile: this.props.userProfile
-            });
+          isLoading: false,
+          userProfile: {
+            ...this.props.userProfile,
+            privacySettings: {
+              email: true,
+              phoneNumber: true,
+              blueSquares: true
+            }
           }
-        }
+        });
+      } else {
+        this.setState({
+          isLoading: false,
+          userProfile: this.props.userProfile
+        });
       }
     }
   }
 
   async componentDidUpdate(prevProps, prevState) {
     if (this.props.match !== prevProps.match) {
-      console.log('component needs to update')
+      console.log('component on needs to update')
 
       let userId = this.props.match.params.userId;
       await this.props.getUserProfile(userId);
@@ -150,6 +144,8 @@ class UserProfile extends Component {
     return str;
   };
 
+  
+
   render() {
     const { userProfile, isLoading, error, showModal } = this.state;
 
@@ -167,6 +163,8 @@ class UserProfile extends Component {
       teams,
     } = userProfile;
 
+    console.log('user profile:',userProfile.teams)
+
     if (isLoading) {
       return (
         <Container fluid>
@@ -177,9 +175,6 @@ class UserProfile extends Component {
       )
     }
 
-    if (this.props.userProfile === '404') {
-      return <FourOFour />
-    }
 
     let { userId: targetUserId } = this.props.match
       ? this.props.match.params
@@ -190,7 +185,6 @@ class UserProfile extends Component {
     let isUserSelf = targetUserId === requestorId;
     const isUserAdmin = requestorRole === "Administrator";
     let canEdit = isUserAdmin || isUserSelf;
-
 
     return (
       <div>
@@ -281,6 +275,8 @@ class UserProfile extends Component {
                   </div>
                 </div>
               </div>
+              
+              {/* <TeamView teamsdata={userProfile.teams} /> */}
 
               {canEdit && (
                 <div className={styleProfile.profileEditButtonContainer}>
