@@ -1,13 +1,13 @@
 import React from 'react';
 import { Route } from 'react-router-dom';
-import { screen, render, fireEvent } from '@testing-library/react';
+import {
+  screen, fireEvent,
+} from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
-import { mock } from 'fetch-mock';
-import { faUserClock } from '@fortawesome/free-solid-svg-icons';
 import {
-  authMock, userProfileMock, timeEntryMock, userProjectMock,
+  authMock, userProfileMock,
 } from '../mockStates';
 import { renderWithRouterMatch } from '../utils';
 import UserProfileEdit from '../../components/UserProfile/UserProfileEdit/UserProfileEdit.container';
@@ -131,8 +131,41 @@ describe('user profile edit page', () => {
       expect(screen.getByRole('dialog'));
     });
     it('should fire updateProfile once the user clicks save changes', () => {
+      // actions.updateUserProfile = jest.fn().mockResolvedValue(200);
+      actions.updateUserProfile.mockResolvedValue(200);
       userEvent.click(screen.getByRole('button', { name: /save changes/i }));
       expect(actions.updateUserProfile).toHaveBeenCalled();
+    });
+    it('should go back to user profile view mode', () => {
+      const { location } = window;
+      delete window.location;
+      window.location = { reload: jest.fn() };
+      userEvent.click(screen.getByRole('button', { name: /cancel/i }));
+      expect(window.location.reload).toHaveBeenCalled();
+    });
+    it('should popup an error when the first name is left blank', () => {
+      const input = screen.getByPlaceholderText(/last name/i);
+      fireEvent.change(input, { target: { value: '' } });
+      expect(screen.getByRole('dialog')).toBeInTheDocument();
+    });
+    it('should popup an error when the last name is left blank', () => {
+      fireEvent.change(screen.getByPlaceholderText(/last name/i), { target: { value: '' } });
+      expect(screen.getByRole('dialog')).toBeInTheDocument();
+    });
+    it('should popup an modal after the user clicks on any bluesquare', () => {
+      userEvent.click(screen.getAllByRole('button', { name: /\d\d\d\d-\d\d-\d\d/i })[0]);
+      expect(screen.getByRole('dialog')).toBeInTheDocument();
+    });
+    it('should fire change blusqaure information after the update the bluesquare with the modal', () => {
+      userEvent.click(screen.getAllByRole('button', { name: /\d\d\d\d-\d\d-\d\d/i })[0]);
+      fireEvent.change(screen.getAllByRole('textbox')[3], { target: { value: 'uniqueTest' } });
+      userEvent.click(screen.getByRole('button', { name: /update/i }));
+      expect(screen.getByText(/uniquetest/i)).toBeInTheDocument();
+    });
+    it('should delete one bluesquare after the user clicks the delete button in the modal', () => {
+      userEvent.click(screen.getAllByRole('button', { name: /\d\d\d\d-\d\d-\d\d/i })[0]);
+      userEvent.click(screen.getByRole('button', { name: /delete/i }));
+      expect(screen.getAllByRole('button', { name: /\d\d\d\d-\d\d-\d\d/i })).toHaveLength(userProfileMock.infringments.length - 1);
     });
   });
 });

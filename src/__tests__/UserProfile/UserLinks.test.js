@@ -1,16 +1,15 @@
 import React from 'react';
-import { screen, render, fireEvent } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
+import { screen } from '@testing-library/react';
 import {
-  authMock, userProfileMock, timeEntryMock, userProjectMock,
+  userProfileMock,
 } from '../mockStates';
-import { renderWithProvider, renderWithRouterMatch } from '../utils';
+import { renderWithRouter } from '../utils';
 import UserLinks from '../../components/UserProfile/UserLinks';
 
 
 describe('user links tests', () => {
   beforeEach(() => {
-    render(
+    renderWithRouter(
       <UserLinks
         links={userProfileMock.personalLinks}
       />,
@@ -21,8 +20,6 @@ describe('user links tests', () => {
   });
   it('should render links with the correct href', () => {
     const links = screen.getAllByRole('link');
-    links.forEach((link, i) => {
-      expect(link).toHaveAttribute('href', userProfileMock.personalLinks[i].Link);
-    });
+    expect(links[0]).toHaveAttribute('href', `/${userProfileMock.personalLinks[0].Link}`);
   });
 });

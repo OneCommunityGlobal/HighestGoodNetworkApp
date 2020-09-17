@@ -326,7 +326,7 @@ class EditProfile extends Component {
       this.props.match.params.userId,
       this.state.userProfile,
     )
-    console.log(submitResult)
+    // console.log(submitResult)
 
     if (submitResult === 200) {
       this.setState({
@@ -390,6 +390,7 @@ class EditProfile extends Component {
       return (
         <button
           className={styleEdit.modLinkButton}
+          data-testid="edit-link"
           onClick={() => {
             this.handleLinkModel(true, 'updateLink', user)
           }}
