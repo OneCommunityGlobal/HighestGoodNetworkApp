@@ -18,9 +18,10 @@ import BlueSquare from '../BlueSquares'
 import Modal from '../UserProfileModal'
 import UserLinks from '../UserLinks'
 import ToggleSwitch from './ToggleSwitch'
+import { Link } from 'react-router-dom';
 
-import styleProfile from '../UserProfile.css'
-import styleEdit from './UserProfileEdit.css'
+import styleProfile from '../UserProfile.module.scss'
+import styleEdit from './UserProfileEdit.module.scss'
 
 
 class EditProfile extends Component {
@@ -411,7 +412,7 @@ class EditProfile extends Component {
 			}
 			return (
 				<button
-					className={'modLinkButton'}
+					className={styleEdit.modLinkButton}
 					onClick={() => { this.handleLinkModel(true, 'updateLink', user) }}>
 					<i className="fa fa-wrench fa-lg" aria-hidden="true"> </i>
 				</button>
@@ -454,13 +455,10 @@ class EditProfile extends Component {
 			)		
 		}
 
-		console.log("prof:", userProfile)
-
-
 		if (!canEditFields) {
 			return(
 				<Col>
-					<Row className={'profileContainer'}>
+					<Row className={styleProfile.profileContainer}>
 						<Label>Sorry, you do not have permison to edit this profile.</Label>
 					</Row>
 				</Col>
@@ -470,7 +468,7 @@ class EditProfile extends Component {
 		return (
 			<div >
 
-				<CardTitle id="warningCard" className={'saveChangesWarning'}>
+				<CardTitle id="warningCard" className={styleEdit.saveChangesWarning}>
 					Reminder: You must click "Save Changes" at the bottom of this page. If you don't, changes to your profile will not be saved.
 				</CardTitle>
 
@@ -494,10 +492,10 @@ class EditProfile extends Component {
 				)}
 
 				<Col>
-					<Row className={'profileContainer'}>
+					<Row className={styleProfile.profileContainer}>
 
-						<div className='whoSection'>
-							<Label for='newProfilePic' htmlFor={'newProfilePic'} className={'profileEditTitleCenter'}>
+						<div className={styleProfile.whoSection}>
+							<Label for='newProfilePic' htmlFor={'newProfilePic'} className={styleEdit.profileEditTitleCenter}>
 								Change Profile Picture
 							</Label>
 							<Input
@@ -515,24 +513,24 @@ class EditProfile extends Component {
 									className='profilePicture'
 								/>
 							</div>
-							<div className='inputSections'>
-								<Label className={'profileEditTitle'}>Name:</Label>
+							<div className={styleEdit.inputSections}>
+								<Label className={styleEdit.profileEditTitle}>Name:</Label>
 								<Input type='text' name='firstName' id='firstName'
 									value={firstName}
-									className={'profileText'}
+									className={styleProfile.profileText}
 									onChange={this.handleUserProfile}
 									placeholder='First Name'
 								/>
 								<Input type='text' name='lastName' id='lastName'
 									value={lastName}
-									className={'profileText'}
+									className={styleProfile.profileText}
 									onChange={this.handleUserProfile}
 									placeholder='Last Name'
 								/>
-								<Label className={'profileEditTitle'}>Title:</Label>
+								<Label className={styleEdit.profileEditTitle}>Title:</Label>
 								<Input type='title' name='jobTitle' id='jobTitle'
 									value={jobTitle}
-									className={'profileText'}
+									className={styleProfile.profileText}
 									onChange={this.handleUserProfile}
 									placeholder='Job Title'
 								/>					
@@ -552,8 +550,8 @@ class EditProfile extends Component {
 							</div>
 						</div>
 
-						<div className='detailEditSection'>
-							<div className='inputSections'>
+						<div className={styleEdit.detailEditSection}>
+							<div className={styleEdit.inputSections}>
 								
 								<ToggleSwitch 
 									switchType='email' 
@@ -564,7 +562,7 @@ class EditProfile extends Component {
 									type='email'
 									name='email'
 									id='email'
-									className={'profileText'}
+									className={styleProfile.profileText}
 									value={email}
 									onChange={this.handleUserProfile}
 									placeholder='Email'
@@ -579,20 +577,20 @@ class EditProfile extends Component {
 									type='number'
 									name='phoneNumber'
 									id='phoneNumber'
-									className={'profileText'}
+									className={styleProfile.profileText}
 									value={phoneNumber}
 									onChange={this.handleUserProfile}
 									placeholder='Phone'
 								/>
 
 								<div>
-									<div className={'linkIconSection'}>
-										<div className={'icon'}>
+									<div className={styleProfile.linkIconSection}>
+										<div className={styleProfile.icon}>
 											<i className="fa fa-link" aria-hidden="true"></i>
 										</div>
 									</div>
 
-									<div className={'profileLinks'}>
+									<div className={styleProfile.profileLinks}>
 										{this.modLinkButton(canEditFields, isUserAdmin)}
 										<UserLinks
 											linkSection='admin'
@@ -602,7 +600,7 @@ class EditProfile extends Component {
 										/>
 									</div>
 
-									<div className={'profileLinks'}>
+									<div className={styleProfile.profileLinks}>
 										<UserLinks
 											linkSection='user'
 											links={personalLinks}
@@ -614,10 +612,10 @@ class EditProfile extends Component {
 							</div>
 						</div>
 
-						<div className={'profileViewButtonContainer'}>
-							<Badge className={'profileViewButton'} href={'/userprofile/' + this.state.userProfile._id}>
+						<div className={styleEdit.profileViewButtonContainer}>
+							<Link to={'/userprofile/' + this.state.userProfile._id} className={styleEdit.profileViewButton}>
 								<i className="fa fa-eye fa-lg" aria-hidden="true"> View</i>
-							</Badge>
+							</Link>
 						</div>
 
 					</Row>

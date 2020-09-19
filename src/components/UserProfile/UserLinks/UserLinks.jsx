@@ -1,7 +1,8 @@
 import React from 'react';
 import { CardText, Badge, Tooltip } from 'reactstrap';
 import styles from './UserLinks.css';
-import styleProfile from '../UserProfile.css';
+// import styleProfile from '../UserProfile.module.scss';
+import { Link } from 'react-router-dom';
 
 
 const UserLinks = ({
@@ -15,12 +16,27 @@ const UserLinks = ({
         <Badge color="danger">No Links present</Badge>
       </CardText>
       )}
+      
+      {links.map((item, index) => {
+        if( item.Link.includes("http") ){
+          return (
+            <a key={index} href={item.Link}>
+              <Badge className="link" color="success">
+               {item.Name}
+             </Badge>
+            </a>
+          )
+        }else{
+          return (
+            <Link key={index} to={item.Link} >
+              <Badge className="link" color="success">
+                {item.Name}
+              </Badge>
+            </Link>          
+          )
+        }
 
-      {links.map((item, index) => (
-        <Badge key={index} className="profileEditButton" href={item.Link} color="success">
-          {item.Name}
-        </Badge>
-      ))}
+      })}
     </div>
   </>
 );
