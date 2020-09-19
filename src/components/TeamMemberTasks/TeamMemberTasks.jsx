@@ -34,6 +34,8 @@ class TeamMemberTasks extends Component {
     const memberTimeEntriesPromises = []
     const teamMemberTasksPromises = []
     const userProfilePromises = []
+    const wbsProjectPromises = []
+    const fetchedProjects = []
     const finalData = []
 
     const { managingTeams } = this.props
@@ -90,7 +92,7 @@ class TeamMemberTasks extends Component {
           uniqueMembers.forEach(member => {
             userProfilePromises.push(httpService.get(ENDPOINTS.USER_PROFILE(member._id)))
           })
-          Promise.all(userProfilePromises).then(data => {
+          Promise.all(userProfilePromises).then(async data => {
             for (let i = 0; i < uniqueMembers.length; i++) {
               const user = uniqueMembers[i]
               const userLeaderBoardData = data.find(member => member.data._id === user._id)
@@ -103,6 +105,12 @@ class TeamMemberTasks extends Component {
                 weeklyCommittedHours: userWeeklyCommittedHours,
               }
             }
+
+            // for each task, must fetch the projectId of its wbs in order to generate appropriate link
+            // currently fetches all projects, should consider refactoring if number of projects increases
+            const WBSRes = await httpService.get(ENDPOINTS.WBS_ALL)
+            const allWBS = WBSRes.data
+            console.log('allWBS ', allWBS)
 
             // calculate hours done in current week and add to user obj for ease of access
             for (let i = 0; i < uniqueMembers.length; i++) {
@@ -117,6 +125,17 @@ class TeamMemberTasks extends Component {
               finalData[i] = {
                 ...uniqueMembers[i],
                 hoursCurrentWeek,
+              }
+            }
+
+            for (let i = 0; i < uniqueMembers.length; i++) {
+              for (let j = 0; j < uniqueMembers[i].tasks.length; j++) {
+                const { wbsId } = uniqueMembers[i].tasks[j]
+                const project = allWBS.find(wbs => wbs._id == wbsId)
+                finalData[i].tasks[j] = {
+                  ...finalData[i].tasks[j],
+                  projectId: project ? project.projectId : '',
+                }
               }
             }
             console.log('final data ', finalData)
@@ -153,7 +172,12 @@ class TeamMemberTasks extends Component {
           </td>
           <td>{`${member.weeklyCommittedHours} / ${member.hoursCurrentWeek}`}</td>
           <td>
-            {member.tasks && member.tasks.map(task => <p>{`${task.num} ${task.taskName}`}</p>)}
+            {member.tasks &&
+              member.tasks.map(task => (
+                <Link to={task.projectId ? `/wbs/tasks/${task.wbsId}/${task.projectId}` : '/'}>
+                  <p>{`${task.num} ${task.taskName}`}</p>
+                </Link>
+              ))}
           </td>
           <td>tempprogress</td>
         </tr>
