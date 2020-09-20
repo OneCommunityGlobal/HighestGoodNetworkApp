@@ -5,3 +5,9 @@ import {
   authMock, userProfileMock, timeEntryMock, userProjectMock,
 } from '../mockStates';
 import { renderWithProvider, renderWithRouterMatch } from '../utils';
+
+describe('UserProfileModal', () => {
+  it('should do nothing', () => {
+
+  });
+});
