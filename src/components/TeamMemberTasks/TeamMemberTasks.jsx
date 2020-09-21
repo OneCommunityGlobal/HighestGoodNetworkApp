@@ -110,7 +110,6 @@ class TeamMemberTasks extends Component {
             // currently fetches all projects, should consider refactoring if number of projects increases
             const WBSRes = await httpService.get(ENDPOINTS.WBS_ALL)
             const allWBS = WBSRes.data
-            console.log('allWBS ', allWBS)
 
             // calculate hours done in current week and add to user obj for ease of access
             for (let i = 0; i < uniqueMembers.length; i++) {
@@ -128,6 +127,7 @@ class TeamMemberTasks extends Component {
               }
             }
 
+            // attach projectId of each task onto final user objects
             for (let i = 0; i < uniqueMembers.length; i++) {
               for (let j = 0; j < uniqueMembers[i].tasks.length; j++) {
                 const { wbsId } = uniqueMembers[i].tasks[j]
@@ -138,6 +138,17 @@ class TeamMemberTasks extends Component {
                 }
               }
             }
+
+            // // sort each members' tasks by last modified time
+            // finalData.forEach(user => {
+            //   user.tasks.sort((task1, task2) => {
+            //     const date1 = new Date(task1.modifiedDatetime).valueOf()
+            //     const date2 = new Date(task2.modifiedDatetime).valueOf()
+            //     const timeDifference = date1 - date2
+            //     return timeDifference
+            //   })
+            // })
+
             console.log('final data ', finalData)
 
             this.setState({ fetched: true, teams: finalData })
@@ -154,7 +165,6 @@ class TeamMemberTasks extends Component {
     // console.log('leaderboardData: ', this.props.leaderboardData);
 
     let teamsList = []
-    console.log('teams: ', teams)
     if (teams && teams.length > 0) {
       teamsList = teams.map((member, index) => (
         <tr>
