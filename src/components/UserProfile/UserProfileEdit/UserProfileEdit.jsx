@@ -1,5 +1,19 @@
 import React, { Component } from 'react';
-import { Row, Label, Input, CardTitle, Col, Container, Button, Badge, Collapse } from 'reactstrap';
+import {
+  Row,
+  Label,
+  Input,
+  CardTitle,
+  Col,
+  Container,
+  Button,
+  Form,
+  FormFeedback,
+  FormGroup,
+  Badge,
+  Collapse,
+  Alert,
+} from 'reactstrap';
 import Image from 'react-bootstrap/Image';
 import { Link } from 'react-router-dom';
 import Loading from '../../common/Loading';
@@ -17,7 +31,13 @@ import TeamView from '../Teamsview';
 
 class EditProfile extends Component {
   state = {
+    showWarning: false,
     isLoading: true,
+    formValid: {
+      firstName: true,
+      lastName: true,
+      email: true,
+    },
     error: '',
     userProfile: {},
     firstNameError: '',
@@ -59,98 +79,101 @@ class EditProfile extends Component {
   }
 
   handleUserProfile = (event) => {
-    if (event.target.id === 'firstName') {
-      this.setState({
-        userProfile: {
-          ...this.state.userProfile,
-          firstName: event.target.value.trim(),
-        },
-        showModal: !event.target.value,
-        modalTitle: 'First Name Error',
-        modalMessage: 'First Name cannot be empty',
-      });
-    }
-
-    if (event.target.id === 'lastName') {
-      this.setState({
-        userProfile: {
-          ...this.state.userProfile,
-          lastName: event.target.value.trim(),
-        },
-        showModal: !event.target.value,
-        modalTitle: 'First Name Error',
-        modalMessage: 'Last Name cannot be empty',
-      });
-    }
-
-    if (event.target.id === 'jobTitle') {
-      this.setState({
-        userProfile: {
-          ...this.state.userProfile,
-          jobTitle: event.target.value,
-        },
-      });
-    }
-
-    if (event.target.id === 'email') {
-      this.setState({
-        userProfile: {
-          ...this.state.userProfile,
-          email: event.target.value.trim(),
-        },
-        emailError: event.target.value ? '' : 'Email cannot be empty ',
-      });
-    }
-
-    if (event.target.id === 'phoneNumber') {
-      this.setState({
-        userProfile: {
-          ...this.state.userProfile,
-          phoneNumber: event.target.value.trim(),
-        },
-      });
-    }
-
-    if (event.target.id === 'emailPubliclyAccessible') {
-      console.log(this.state);
-
-      this.setState({
-        userProfile: {
-          ...this.state.userProfile,
-          privacySettings: {
-            ...this.state.userProfile.privacySettings,
-            email: !this.state.userProfile.privacySettings?.email,
+    this.setState({
+      showWarning: true,
+    });
+    const { userProfile, formValid } = this.state;
+    switch (event.target.id) {
+      case 'firstName':
+        this.setState({
+          userProfile: {
+            ...userProfile,
+            firstName: event.target.value.trim(),
           },
-        },
-      });
-    }
-
-    if (event.target.id === 'phonePubliclyAccessible') {
-      this.setState({
-        userProfile: {
-          ...this.state.userProfile,
-          privacySettings: {
-            ...this.state.userProfile.privacySettings,
-            phoneNumber: !this.state.userProfile.privacySettings?.phoneNumber,
+          formValid: {
+            ...formValid,
+            firstName: !!event.target.value,
           },
-        },
-      });
-    }
-
-    if (event.target.id === 'blueSquaresPubliclyAccessible') {
-      this.setState({
-        userProfile: {
-          ...this.state.userProfile,
-          privacySettings: {
-            ...this.state.userProfile.privacySettings,
-            blueSquares: !this.state.userProfile.privacySettings?.blueSquares,
+        });
+        break;
+      case 'lastName':
+        this.setState({
+          userProfile: {
+            ...userProfile,
+            lastName: event.target.value.trim(),
           },
-        },
-      });
+          formValid: {
+            ...formValid,
+            lastName: !!event.target.value,
+          },
+        });
+        break;
+      case 'jobTitle':
+        this.setState({
+          userProfile: {
+            ...userProfile,
+            jobTitle: event.target.value,
+          },
+        });
+        break;
+      case 'email':
+        this.setState({
+          userProfile: {
+            ...userProfile,
+            email: event.target.value,
+          },
+          formValid: {
+            ...formValid,
+            email: !event.target.value,
+          },
+        });
+        break;
+      case 'phoneNumber':
+        this.setState({
+          userProfile: {
+            ...userProfile,
+            phoneNumber: event.target.value.trim(),
+          },
+        });
+        break;
+      case 'emailPubliclyAccessible':
+        this.setState({
+          userProfile: {
+            ...userProfile,
+            privacySettings: {
+              ...userProfile.privacySettings,
+              email: !userProfile.privacySettings?.email,
+            },
+          },
+        });
+        break;
+      case 'phonePubliclyAccessible':
+        this.setState({
+          userProfile: {
+            ...userProfile,
+            privacySettings: {
+              ...userProfile.privacySettings,
+              phoneNumber: !userProfile.privacySettings?.phoneNumber,
+            },
+          },
+        });
+        break;
+      case 'blueSquaresPubliclyAccessible':
+        this.setState({
+          userProfile: {
+            ...userProfile,
+            privacySettings: {
+              ...userProfile.privacySettings,
+              blueSquares: !userProfile.privacySettings?.blueSquares,
+            },
+          },
+        });
+        break;
+      default:
+        this.setState({
+          ...userProfile,
+        });
     }
-
-    const elem = document.getElementById('warningCard');
-    elem.style.display = 'block';
   };
 
   handleImageUpload = async (e) => {
@@ -450,7 +473,20 @@ class EditProfile extends Component {
     const { userid: requestorId, role: requestorRole } = this.props.auth.user;
 
     const { userProfile, isLoading, showModal } = this.state;
-
+    const renderWarningCard = () => {
+      const { showWarning } = this.state;
+      if (showWarning) {
+        return (
+          <CardTitle id="warningCard" className={styleEdit.saveChangesWarning}>
+            Reminder: You must click "Save Changes" at the bottom of this page. If you don't,
+            changes to your profile will not be saved.
+          </CardTitle>
+          // <Alert color="primary" className={styleEdit.saveChangesWarning}>
+          //   This is a primary alert — check it out!
+          // </Alert>
+        );
+      }
+    };
     const {
       firstName,
       lastName,
@@ -490,11 +526,6 @@ class EditProfile extends Component {
 
     return (
       <div>
-        <CardTitle id="warningCard" className={styleEdit.saveChangesWarning}>
-          Reminder: You must click "Save Changes" at the bottom of this page. If you don't, changes
-          to your profile will not be saved.
-        </CardTitle>
-
         {showModal && (
           <Modal
             isOpen={this.state.showModal}
@@ -515,6 +546,7 @@ class EditProfile extends Component {
         )}
 
         <Col>
+          {renderWarningCard()}
           <Row className={styleProfile.profileContainer}>
             <div className={styleProfile.whoSection}>
               <Label
@@ -541,42 +573,53 @@ class EditProfile extends Component {
                 />
               </div>
               <div className={styleEdit.inputSections}>
-                <Label className={styleEdit.profileEditTitle}>Name:</Label>
-                <Input
-                  type="text"
-                  name="firstName"
-                  id="firstName"
-                  value={firstName}
-                  className={styleProfile.profileText}
-                  onChange={this.handleUserProfile}
-                  placeholder="First Name"
-                />
-                <Input
-                  type="text"
-                  name="lastName"
-                  id="lastName"
-                  value={lastName}
-                  className={styleProfile.profileText}
-                  onChange={this.handleUserProfile}
-                  placeholder="Last Name"
-                />
-                <Label className={styleEdit.profileEditTitle}>Title:</Label>
-                <Input
-                  type="title"
-                  name="jobTitle"
-                  id="jobTitle"
-                  value={jobTitle}
-                  className={styleProfile.profileText}
-                  onChange={this.handleUserProfile}
-                  placeholder="Job Title"
-                />
+                <Form>
+                  <FormGroup>
+                    <Label className={styleEdit.profileEditTitle}>Name:</Label>
+                    <Input
+                      type="text"
+                      name="firstName"
+                      id="firstName"
+                      value={firstName}
+                      className={styleProfile.profileText}
+                      onChange={this.handleUserProfile}
+                      placeholder="First Name"
+                      invalid={!this.state.formValid.firstName}
+                    />
+                    <FormFeedback invalid>First Name Can't be null</FormFeedback>
+                  </FormGroup>
+                  <FormGroup>
+                    <Input
+                      type="text"
+                      name="lastName"
+                      id="lastName"
+                      value={lastName}
+                      className={styleProfile.profileText}
+                      onChange={this.handleUserProfile}
+                      placeholder="Last Name"
+                      invalid={!this.state.formValid.lastName}
+                    />
+                    <FormFeedback invalid>Last Name Can't be Null</FormFeedback>
+                  </FormGroup>
+                  <FormGroup>
+                    <Label className={styleEdit.profileEditTitle}>Title:</Label>
+                    <Input
+                      type="title"
+                      name="jobTitle"
+                      id="jobTitle"
+                      value={jobTitle}
+                      className={styleProfile.profileText}
+                      onChange={this.handleUserProfile}
+                      placeholder="Job Title"
+                    />
 
-                <ToggleSwitch
-                  switchType="bluesquares"
-                  state={privacySettings?.blueSquares}
-                  handleUserProfile={this.handleUserProfile}
-                />
-
+                    <ToggleSwitch
+                      switchType="bluesquares"
+                      state={privacySettings?.blueSquares}
+                      handleUserProfile={this.handleUserProfile}
+                    />
+                  </FormGroup>
+                </Form>
                 <BlueSquare
                   isUserAdmin={isUserAdmin}
                   blueSquares={infringments}

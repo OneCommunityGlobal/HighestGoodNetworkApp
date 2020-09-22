@@ -1,5 +1,4 @@
-
-.profileContainer{
+.profileContainer {
   display: flex;
   flex-direction: row;
   justify-content: center;
@@ -8,19 +7,19 @@
   margin-left: 10vw;
   margin-right: 10vw;
   font-weight: bold;
-  background-color: lightgray;
+  background-color: white;
 }
 
-.iconContainer{
+.iconContainer {
   display: flex;
   flex-direction: row;
 }
 
-.icon{
+.icon {
   padding-right: 10px;
 }
 
-.profileEditButton{
+.profileEditButton {
   display: flex;
   padding: 0.25em 0.4em;
   font-size: 16px;
@@ -30,13 +29,12 @@
   background-color: dodgerblue;
   color: white;
 
-  &:hover{
+  &:hover {
     text-decoration: none;
   }
-  
 }
 
-.profileEditButtonContainer{
+.profileEditButtonContainer {
   position: absolute;
   display: flex;
   right: 1%;
@@ -58,7 +56,7 @@
   padding: 5vh;
 }
 
-.detailSectionContainer{
+.detailSectionContainer {
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -70,14 +68,14 @@
   width: 300px;
 }
 
-.profileLinks{
+.profileLinks {
   display: flex;
   width: 80%;
   align-items: center;
   padding: 5px;
 }
 
-.linkIconSection{
+.linkIconSection {
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -87,27 +85,26 @@
   margin: 5px;
 }
 
-
 @media only screen and (max-width: 750px) {
-  .profileContainer{
+  .profileContainer {
     justify-content: space-around;
   }
-  .whoSection{
+  .whoSection {
     width: 250px;
   }
-  .detailSection{
+  .detailSection {
     width: 250px;
   }
 }
 
-@media only screen and (max-height: 650px){
-  .profileContainer{
+@media only screen and (max-height: 650px) {
+  .profileContainer {
     justify-content: space-around;
   }
-  .whoSection{
+  .whoSection {
     width: 240px;
   }
-  .detailSection{
+  .detailSection {
     width: 240px;
   }
 }
