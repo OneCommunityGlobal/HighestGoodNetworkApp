@@ -83,6 +83,7 @@ class EditProfile extends Component {
       showWarning: true,
     });
     const { userProfile, formValid } = this.state;
+    const patt = new RegExp(/^\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/i);
     switch (event.target.id) {
       case 'firstName':
         this.setState({
@@ -124,7 +125,7 @@ class EditProfile extends Component {
           },
           formValid: {
             ...formValid,
-            email: !event.target.value,
+            email: patt.test(event.target.value),
           },
         });
         break;
@@ -367,11 +368,12 @@ class EditProfile extends Component {
 
   handleSubmit = async (event) => {
     event.preventDefault();
-
-    const submitResult = await this.props.updateUserProfile(
-      this.props.match.params.userId,
-      this.state.userProfile,
-    );
+    const { updateUserProfile, match } = this.props;
+    const { userProfile, formValid } = this.state;
+    if (!formValid.email || !formValid.firstName || !formValid.lastName) {
+      return;
+    }
+    const submitResult = await updateUserProfile(match.params.userId, userProfile);
     console.log(submitResult);
 
     if (submitResult === 200) {
@@ -472,7 +474,16 @@ class EditProfile extends Component {
       : { userId: undefined };
     const { userid: requestorId, role: requestorRole } = this.props.auth.user;
 
-    const { userProfile, isLoading, showModal } = this.state;
+    const {
+      userProfile,
+      isLoading,
+      showModal,
+      modalMessage,
+      modalTitle,
+      type,
+      linkType,
+      id,
+    } = this.state;
     const renderWarningCard = () => {
       const { showWarning } = this.state;
       if (showWarning) {
@@ -528,18 +539,18 @@ class EditProfile extends Component {
       <div>
         {showModal && (
           <Modal
-            isOpen={this.state.showModal}
+            isOpen={showModal}
             closeModal={() => {
               this.setState({ showModal: false });
             }}
-            modalMessage={this.state.modalMessage}
-            modalTitle={this.state.modalTitle}
-            type={this.state.type}
+            modalMessage={modalMessage}
+            modalTitle={modalTitle}
+            type={type}
             updateLink={this.updateLink}
             updateBlueSquare={this.updateBlueSquare}
-            linkType={this.state.linkType}
-            userProfile={this.state.userProfile}
-            id={this.state.id}
+            linkType={linkType}
+            userProfile={userProfile}
+            id={id}
             isUserAdmin={isUserAdmin}
             handleLinkModel={this.handleLinkModel}
           />
@@ -586,7 +597,7 @@ class EditProfile extends Component {
                       placeholder="First Name"
                       invalid={!this.state.formValid.firstName}
                     />
-                    <FormFeedback invalid>First Name Can't be null</FormFeedback>
+                    <FormFeedback>First Name Can't be null</FormFeedback>
                   </FormGroup>
                   <FormGroup>
                     <Input
@@ -599,7 +610,7 @@ class EditProfile extends Component {
                       placeholder="Last Name"
                       invalid={!this.state.formValid.lastName}
                     />
-                    <FormFeedback invalid>Last Name Can't be Null</FormFeedback>
+                    <FormFeedback>Last Name Can't be Null</FormFeedback>
                   </FormGroup>
                   <FormGroup>
                     <Label className={styleEdit.profileEditTitle}>Title:</Label>
@@ -629,41 +640,46 @@ class EditProfile extends Component {
                 <br />
               </div>
             </div>
-
             <div className={styleEdit.detailEditSection}>
               <div className={styleEdit.inputSections}>
-                <ToggleSwitch
-                  switchType="email"
-                  state={userProfile.privacySettings?.email}
-                  handleUserProfile={this.handleUserProfile}
-                />
+                <Form>
+                  <FormGroup>
+                    <ToggleSwitch
+                      switchType="email"
+                      state={userProfile.privacySettings?.email}
+                      handleUserProfile={this.handleUserProfile}
+                    />
 
-                <Input
-                  type="email"
-                  name="email"
-                  id="email"
-                  className={styleProfile.profileText}
-                  value={email}
-                  onChange={this.handleUserProfile}
-                  placeholder="Email"
-                />
+                    <Input
+                      type="email"
+                      name="email"
+                      id="email"
+                      className={styleProfile.profileText}
+                      value={email}
+                      onChange={this.handleUserProfile}
+                      placeholder="Email"
+                      invalid={!this.state.formValid.email}
+                    />
+                    <FormFeedback>Email is not Valid</FormFeedback>
+                  </FormGroup>
+                  <FormGroup>
+                    <ToggleSwitch
+                      switchType="phone"
+                      state={userProfile.privacySettings?.phoneNumber}
+                      handleUserProfile={this.handleUserProfile}
+                    />
 
-                <ToggleSwitch
-                  switchType="phone"
-                  state={userProfile.privacySettings?.phoneNumber}
-                  handleUserProfile={this.handleUserProfile}
-                />
-
-                <Input
-                  type="number"
-                  name="phoneNumber"
-                  id="phoneNumber"
-                  className={styleProfile.profileText}
-                  value={phoneNumber}
-                  onChange={this.handleUserProfile}
-                  placeholder="Phone"
-                />
-
+                    <Input
+                      type="number"
+                      name="phoneNumber"
+                      id="phoneNumber"
+                      className={styleProfile.profileText}
+                      value={phoneNumber}
+                      onChange={this.handleUserProfile}
+                      placeholder="Phone"
+                    />
+                  </FormGroup>
+                </Form>
                 <div>
                   <div className={styleProfile.linkIconSection}>
                     <div className={styleProfile.icon}>
