@@ -25,12 +25,13 @@ import Modal from '../UserProfileModal';
 import UserLinks from '../UserLinks';
 import ToggleSwitch from './ToggleSwitch';
 
-import styleProfile from '../UserProfile.module.scss';
+// import styleProfile from '../UserProfile.module.scss';
+
 import styleEdit from './UserProfileEdit.module.scss';
 
 import TeamView from '../Teamsview';
 
-// const styleProfile = {};
+const styleProfile = {};
 class EditProfile extends Component {
   state = {
     showWarning: false,

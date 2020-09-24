@@ -11,6 +11,7 @@ import {
   Nav,
   NavItem,
   NavLink,
+  Button,
 } from 'reactstrap';
 import Image from 'react-bootstrap/Image';
 import { Link } from 'react-router-dom';
@@ -20,8 +21,8 @@ import { orange, silverGray, warningRed } from '../../constants/colors';
 import BlueSquare from './BlueSquares';
 import Modal from './UserProfileModal';
 import UserLinks from './UserLinks';
-import styleProfile from './UserProfile.module.scss';
-// import './UserProfile.scss';
+// import styleProfile from './UserProfile.module.scss';
+import './UserProfile.scss';
 import TeamView from './Teamsview';
 
 import { getTimeEntriesForWeek, getTimeEntriesForPeriod } from '../../actions/timeEntries';
@@ -226,31 +227,28 @@ class UserProfile extends Component {
             handleLinkModel={this.handleLinkModel}
           />
         )}
-        <Container className={styleProfile.empProfile}>
+        <Container className="emp-profile">
           <Row>
             <Col md="4" id="profileContainer">
               {/* <div className={styleProfile.whoSection}> */}
-              <div className={styleProfile.profileImg}>
+              <div className="profile-img">
                 <Image
                   src={profilePic || '/defaultprofilepic.png'}
                   alt="Profile Picture"
                   roundedCircle
-                  className={styleProfile.profilePicture}
+                  className="profilePicture"
                 />
               </div>
               {/* </div> */}
             </Col>
             <Col md="6">
-              <div className={styleProfile.profileHead}>
+              <div className="profile-head">
                 <h5>{`${firstName} ${lastName}`}</h5>
                 <h6>{jobTitle}</h6>
-                <Nav tabs className={styleProfile.navTabs}>
+                <Nav tabs>
                   <NavItem>
                     <NavLink
-                      className={classnames(
-                        { active: this.state.activeTab === '1' },
-                        styleProfile.navLink,
-                      )}
+                      className={classnames({ active: this.state.activeTab === '1' }, 'nav-link')}
                       onClick={() => {
                         this.toggleTab('1');
                       }}
@@ -260,7 +258,7 @@ class UserProfile extends Component {
                   </NavItem>
                   <NavItem>
                     <NavLink
-                      className={classnames({ active: this.state.activeTab === '2' })}
+                      className={classnames({ active: this.state.activeTab === '2' }, 'nav-link')}
                       onClick={() => {
                         this.toggleTab('2');
                       }}
@@ -277,15 +275,15 @@ class UserProfile extends Component {
             </Col>
             <Col md="2">
               {canEdit && (
-                <div className={styleProfile.profileEditButtonContainer}>
+                <div className="profileEditButtonContainer">
                   <Link
                     to={`/userprofileedit/${this.state.userProfile._id}`}
-                    className={styleProfile.profileEditButton}
+                    className="profileEditButton"
                   >
-                    <i className="fa fa-pencil-square-o fa-lg" aria-hidden="true">
+                    <Button className="profileEditButton" aria-hidden="true">
                       {' '}
                       Edit
-                    </i>
+                    </Button>
                   </Link>
                 </div>
               )}
@@ -293,7 +291,7 @@ class UserProfile extends Component {
           </Row>
           <Row>
             <Col md="4">
-              <div className={styleProfile.profileWork}>
+              <div className="profile-work">
                 <p>LINKS</p>
                 <UserLinks
                   linkSection="user"
@@ -301,12 +299,24 @@ class UserProfile extends Component {
                   handleLinkModel={this.handleLinkModel}
                   isUserAdmin={isUserAdmin}
                 />
+                <UserLinks
+                  linkSection="user"
+                  links={adminLinks}
+                  handleLinkModel={this.handleLinkModel}
+                  isUserAdmin={isUserAdmin}
+                />
+                <p>BLUE SQAURES</p>
+                <BlueSquare
+                  isUserAdmin={false}
+                  blueSquares={infringments}
+                  handleBlueSquare={this.handleBlueSquare}
+                />
               </div>
             </Col>
             <Col md="8">
               <TabContent
                 activeTab={this.state.activeTab}
-                className={styleProfile.profileTab}
+                className="tab-content profile-tab"
                 id="myTabContent"
                 style={{ border: 0 }}
               >
@@ -332,7 +342,7 @@ class UserProfile extends Component {
                       <Label>Phone</Label>
                     </Col>
                     <Col md="6">
-                      <p>{phoneNumber}</p>
+                      <p>{this.formatPhoneNumber(phoneNumber)}</p>
                     </Col>
                   </Row>
                 </TabPane>
