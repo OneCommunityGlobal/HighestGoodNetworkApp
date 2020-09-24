@@ -14,6 +14,7 @@ import {
   Collapse,
   Alert,
 } from 'reactstrap';
+import { StickyContainer, Sticky } from 'react-sticky';
 import Image from 'react-bootstrap/Image';
 import { Link } from 'react-router-dom';
 import Loading from '../../common/Loading';
@@ -29,6 +30,7 @@ import styleEdit from './UserProfileEdit.module.scss';
 
 import TeamView from '../Teamsview';
 
+// const styleProfile = {};
 class EditProfile extends Component {
   state = {
     showWarning: false,
@@ -370,9 +372,6 @@ class EditProfile extends Component {
     event.preventDefault();
     const { updateUserProfile, match } = this.props;
     const { userProfile, formValid } = this.state;
-    if (!formValid.email || !formValid.firstName || !formValid.lastName) {
-      return;
-    }
     const submitResult = await updateUserProfile(match.params.userId, userProfile);
     console.log(submitResult);
 
@@ -483,18 +482,33 @@ class EditProfile extends Component {
       type,
       linkType,
       id,
+      formValid,
     } = this.state;
     const renderWarningCard = () => {
       const { showWarning } = this.state;
       if (showWarning) {
         return (
-          <CardTitle id="warningCard" className={styleEdit.saveChangesWarning}>
-            Reminder: You must click "Save Changes" at the bottom of this page. If you don't,
-            changes to your profile will not be saved.
-          </CardTitle>
-          // <Alert color="primary" className={styleEdit.saveChangesWarning}>
-          //   This is a primary alert — check it out!
-          // </Alert>
+          <Sticky topOffset={0}>
+            {({ style }) => (
+              <h7
+                id="warningCard"
+                style={{
+                  ...style,
+                  // marginTop: '-20px',
+                  display: 'block',
+                  color: 'white',
+                  backgroundColor: 'red',
+                  border: '1px solid #a8a8a8',
+                  textAlign: 'center',
+                  opacity: '70%',
+                  zIndex: '9',
+                }}
+              >
+                Reminder: You must click "Save Changes" at the bottom of this page. If you don't,
+                changes to your profile will not be saved.
+              </h7>
+            )}
+          </Sticky>
         );
       }
     };
@@ -557,206 +571,209 @@ class EditProfile extends Component {
         )}
 
         <Col>
-          {renderWarningCard()}
-          <Row className={styleProfile.profileContainer}>
-            <div className={styleProfile.whoSection}>
-              <Label
-                for="newProfilePic"
-                htmlFor="newProfilePic"
-                className={styleEdit.profileEditTitleCenter}
-              >
-                Change Profile Picture
-              </Label>
-              <Input
-                type="file"
-                name="newProfilePic"
-                id="newProfilePic"
-                style={{ visibility: 'hidden', width: 0, height: 0 }}
-                onChange={this.handleImageUpload}
-                accept="image/png,image/jpeg, image/jpg"
-              />
-              <div>
-                <Image
-                  src={profilePic || '/defaultprofilepic.png'}
-                  alt="Profile Picture"
-                  roundedCircle
-                  className="profilePicture"
+          <StickyContainer>
+            {renderWarningCard()}
+            <Row className={styleProfile.profileContainer}>
+              <div className={styleProfile.whoSection}>
+                <Label
+                  for="newProfilePic"
+                  htmlFor="newProfilePic"
+                  className={styleEdit.profileEditTitleCenter}
+                >
+                  Change Profile Picture
+                </Label>
+                <Input
+                  type="file"
+                  name="newProfilePic"
+                  id="newProfilePic"
+                  style={{ visibility: 'hidden', width: 0, height: 0 }}
+                  onChange={this.handleImageUpload}
+                  accept="image/png,image/jpeg, image/jpg"
                 />
-              </div>
-              <div className={styleEdit.inputSections}>
-                <Form>
-                  <FormGroup>
-                    <Label className={styleEdit.profileEditTitle}>Name:</Label>
-                    <Input
-                      type="text"
-                      name="firstName"
-                      id="firstName"
-                      value={firstName}
-                      className={styleProfile.profileText}
-                      onChange={this.handleUserProfile}
-                      placeholder="First Name"
-                      invalid={!this.state.formValid.firstName}
-                    />
-                    <FormFeedback>First Name Can't be null</FormFeedback>
-                  </FormGroup>
-                  <FormGroup>
-                    <Input
-                      type="text"
-                      name="lastName"
-                      id="lastName"
-                      value={lastName}
-                      className={styleProfile.profileText}
-                      onChange={this.handleUserProfile}
-                      placeholder="Last Name"
-                      invalid={!this.state.formValid.lastName}
-                    />
-                    <FormFeedback>Last Name Can't be Null</FormFeedback>
-                  </FormGroup>
-                  <FormGroup>
-                    <Label className={styleEdit.profileEditTitle}>Title:</Label>
-                    <Input
-                      type="title"
-                      name="jobTitle"
-                      id="jobTitle"
-                      value={jobTitle}
-                      className={styleProfile.profileText}
-                      onChange={this.handleUserProfile}
-                      placeholder="Job Title"
-                    />
-
-                    <ToggleSwitch
-                      switchType="bluesquares"
-                      state={privacySettings?.blueSquares}
-                      handleUserProfile={this.handleUserProfile}
-                    />
-                  </FormGroup>
-                </Form>
-                <BlueSquare
-                  isUserAdmin={isUserAdmin}
-                  blueSquares={infringments}
-                  handleBlueSquare={this.handleBlueSquare}
-                  handleSaveError={this.handleSaveError}
-                />
-                <br />
-              </div>
-            </div>
-            <div className={styleEdit.detailEditSection}>
-              <div className={styleEdit.inputSections}>
-                <Form>
-                  <FormGroup>
-                    <ToggleSwitch
-                      switchType="email"
-                      state={userProfile.privacySettings?.email}
-                      handleUserProfile={this.handleUserProfile}
-                    />
-
-                    <Input
-                      type="email"
-                      name="email"
-                      id="email"
-                      className={styleProfile.profileText}
-                      value={email}
-                      onChange={this.handleUserProfile}
-                      placeholder="Email"
-                      invalid={!this.state.formValid.email}
-                    />
-                    <FormFeedback>Email is not Valid</FormFeedback>
-                  </FormGroup>
-                  <FormGroup>
-                    <ToggleSwitch
-                      switchType="phone"
-                      state={userProfile.privacySettings?.phoneNumber}
-                      handleUserProfile={this.handleUserProfile}
-                    />
-
-                    <Input
-                      type="number"
-                      name="phoneNumber"
-                      id="phoneNumber"
-                      className={styleProfile.profileText}
-                      value={phoneNumber}
-                      onChange={this.handleUserProfile}
-                      placeholder="Phone"
-                    />
-                  </FormGroup>
-                </Form>
                 <div>
-                  <div className={styleProfile.linkIconSection}>
-                    <div className={styleProfile.icon}>
-                      <i className="fa fa-link" aria-hidden="true" />
-                    </div>
-                  </div>
+                  <Image
+                    src={profilePic || '/defaultprofilepic.png'}
+                    alt="Profile Picture"
+                    roundedCircle
+                    className="profilePicture"
+                  />
+                </div>
+                <div className={styleEdit.inputSections}>
+                  <Form>
+                    <FormGroup>
+                      <Label className={styleEdit.profileEditTitle}>Name:</Label>
+                      <Input
+                        type="text"
+                        name="firstName"
+                        id="firstName"
+                        value={firstName}
+                        className={styleProfile.profileText}
+                        onChange={this.handleUserProfile}
+                        placeholder="First Name"
+                        invalid={!this.state.formValid.firstName}
+                      />
+                      <FormFeedback>First Name Can't be null</FormFeedback>
+                    </FormGroup>
+                    <FormGroup>
+                      <Input
+                        type="text"
+                        name="lastName"
+                        id="lastName"
+                        value={lastName}
+                        className={styleProfile.profileText}
+                        onChange={this.handleUserProfile}
+                        placeholder="Last Name"
+                        invalid={!this.state.formValid.lastName}
+                      />
+                      <FormFeedback>Last Name Can't be Null</FormFeedback>
+                    </FormGroup>
+                    <FormGroup>
+                      <Label className={styleEdit.profileEditTitle}>Title:</Label>
+                      <Input
+                        type="title"
+                        name="jobTitle"
+                        id="jobTitle"
+                        value={jobTitle}
+                        className={styleProfile.profileText}
+                        onChange={this.handleUserProfile}
+                        placeholder="Job Title"
+                      />
 
-                  <div className={styleProfile.profileLinks}>
-                    {this.modLinkButton(canEditFields, isUserAdmin)}
-                    <UserLinks
-                      linkSection="admin"
-                      links={adminLinks}
-                      handleLinkModel={this.handleLinkModel}
-                      isUserAdmin={isUserAdmin}
-                    />
-                  </div>
-
-                  <div className={styleProfile.profileLinks}>
-                    <UserLinks
-                      linkSection="user"
-                      links={personalLinks}
-                      handleLinkModel={this.handleLinkModel}
-                      isUserAdmin={isUserAdmin}
-                    />
-                  </div>
+                      <ToggleSwitch
+                        switchType="bluesquares"
+                        state={privacySettings?.blueSquares}
+                        handleUserProfile={this.handleUserProfile}
+                      />
+                    </FormGroup>
+                  </Form>
+                  <BlueSquare
+                    isUserAdmin={isUserAdmin}
+                    blueSquares={infringments}
+                    handleBlueSquare={this.handleBlueSquare}
+                    handleSaveError={this.handleSaveError}
+                  />
+                  <br />
                 </div>
               </div>
-              <Label className={styleEdit.profileEditTitle}>Teams:</Label>
-              <div className={styleEdit.teamsView}>
-                <TeamView
-                  teamsdata={userProfile.teams}
-                  edit
-                  allTeams={allTeams}
-                  handleTeam={this.handleTeam}
-                />
+              <div className={styleEdit.detailEditSection}>
+                <div className={styleEdit.inputSections}>
+                  <Form>
+                    <FormGroup>
+                      <ToggleSwitch
+                        switchType="email"
+                        state={userProfile.privacySettings?.email}
+                        handleUserProfile={this.handleUserProfile}
+                      />
+
+                      <Input
+                        type="email"
+                        name="email"
+                        id="email"
+                        className={styleProfile.profileText}
+                        value={email}
+                        onChange={this.handleUserProfile}
+                        placeholder="Email"
+                        invalid={!this.state.formValid.email}
+                      />
+                      <FormFeedback>Email is not Valid</FormFeedback>
+                    </FormGroup>
+                    <FormGroup>
+                      <ToggleSwitch
+                        switchType="phone"
+                        state={userProfile.privacySettings?.phoneNumber}
+                        handleUserProfile={this.handleUserProfile}
+                      />
+
+                      <Input
+                        type="number"
+                        name="phoneNumber"
+                        id="phoneNumber"
+                        className={styleProfile.profileText}
+                        value={phoneNumber}
+                        onChange={this.handleUserProfile}
+                        placeholder="Phone"
+                      />
+                    </FormGroup>
+                  </Form>
+                  <div>
+                    <div className={styleProfile.linkIconSection}>
+                      <div className={styleProfile.icon}>
+                        <i className="fa fa-link" aria-hidden="true" />
+                      </div>
+                    </div>
+
+                    <div className={styleProfile.profileLinks}>
+                      {this.modLinkButton(canEditFields, isUserAdmin)}
+                      <UserLinks
+                        linkSection="admin"
+                        links={adminLinks}
+                        handleLinkModel={this.handleLinkModel}
+                        isUserAdmin={isUserAdmin}
+                      />
+                    </div>
+
+                    <div className={styleProfile.profileLinks}>
+                      <UserLinks
+                        linkSection="user"
+                        links={personalLinks}
+                        handleLinkModel={this.handleLinkModel}
+                        isUserAdmin={isUserAdmin}
+                      />
+                    </div>
+                  </div>
+                </div>
+                <Label className={styleEdit.profileEditTitle}>Teams:</Label>
+                <div className={styleEdit.teamsView}>
+                  <TeamView
+                    teamsdata={userProfile.teams}
+                    edit
+                    allTeams={allTeams}
+                    handleTeam={this.handleTeam}
+                  />
+                </div>
               </div>
-            </div>
 
-            {/* {allTeams.map(team => <div>{team.teamName}</div>)} */}
+              {/* {allTeams.map(team => <div>{team.teamName}</div>)} */}
 
-            <div className={styleEdit.profileViewButtonContainer}>
-              <Link
-                to={`/userprofile/${this.state.userProfile._id}`}
-                className={styleEdit.profileViewButton}
+              <div className={styleEdit.profileViewButtonContainer}>
+                <Link
+                  to={`/userprofile/${this.state.userProfile._id}`}
+                  className={styleEdit.profileViewButton}
+                >
+                  <i className="fa fa-eye fa-lg" aria-hidden="true">
+                    {' '}
+                    View
+                  </i>
+                </Link>
+              </div>
+            </Row>
+            <Row
+              style={{
+                display: 'flex',
+                justifyContent: 'center',
+                padding: 10,
+                margin: 5,
+              }}
+            >
+              <Button
+                outline
+                color="primary"
+                onClick={this.handleSubmit}
+                style={{ display: 'flex', margin: 5 }}
+                disabled={!formValid.firstName || !formValid.lastName || !formValid.email}
               >
-                <i className="fa fa-eye fa-lg" aria-hidden="true">
-                  {' '}
-                  View
-                </i>
-              </Link>
-            </div>
-          </Row>
-          <Row
-            style={{
-              display: 'flex',
-              justifyContent: 'center',
-              padding: 10,
-              margin: 5,
-            }}
-          >
-            <Button
-              outline
-              color="primary"
-              onClick={this.handleSubmit}
-              style={{ display: 'flex', margin: 5 }}
-            >
-              Save Changes
-            </Button>
-            <Button
-              outline
-              color="danger"
-              onClick={() => window.location.reload()}
-              style={{ display: 'flex', margin: 5 }}
-            >
-              Cancel
-            </Button>
-          </Row>
+                Save Changes
+              </Button>
+              <Button
+                outline
+                color="danger"
+                onClick={() => window.location.reload()}
+                style={{ display: 'flex', margin: 5 }}
+              >
+                Cancel
+              </Button>
+            </Row>
+          </StickyContainer>
         </Col>
       </div>
     );

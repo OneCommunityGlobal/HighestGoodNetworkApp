@@ -41,42 +41,23 @@
   flex-direction: row;
 }
 
-// .profileHead h5 {
-
-// }
-
-// .profileHead h6 {
-
-// }
-
-.profileHead {
-  h5 {
-    color: #333;
-  }
-
-  h6 {
-    color: #0062cc;
-  }
-
-  .navTabs {
-    margin-bottom: 5%;
-
-    .navLink {
-      font-weight: 600;
-      border: none;
-
-      &.active {
-        border: none;
-        border-bottom: 2px solid #0062cc;
-      }
-    }
-  }
-
+.profileHead h5 {
+  color: #333;
 }
-
-
-
-
+.profileHead h6 {
+  color: #0062cc;
+}
+.profileHead .navTabs {
+  margin-bottom: 5%;
+}
+.profileHead .navTabs .navLink {
+  font-weight: 600;
+  border: none;
+}
+.profileHead .navTabs .navLink.active {
+  border: none;
+  border-bottom: 2px solid #0062cc;
+}
 
 .profileWork {
   padding: 14%;
@@ -103,10 +84,9 @@
   border-radius: 20px;
   background-color: dodgerblue;
   color: white;
-
-  &:hover {
-    text-decoration: none;
-  }
+}
+.profileEditButton:hover {
+  text-decoration: none;
 }
 
 .profileEditButtonContainer {
@@ -173,7 +153,6 @@
     width: 250px;
   }
 }
-
 @media only screen and (max-height: 650px) {
   .profileContainer {
     justify-content: space-around;
