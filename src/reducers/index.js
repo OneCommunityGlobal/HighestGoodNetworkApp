@@ -1,34 +1,34 @@
-import { combineReducers } from 'redux';
-import { userProfileByIdReducer } from './userProfileByIdReducer';
-import { authReducer } from './authReducer';
-import { handleSuccessReducer } from './handleSuccessReducer';
-import { allUserProfilesReducer } from './allUserProfilesReducer';
-import { userTeamMembersReducer } from './userTeamMembersReducer';
-import { userProjectMembersReducer } from './userProjectMembersReducer';
-import { dashboardDataReducer } from './dashboardDataReducer';
-import { weeklyDashboardDataReducer } from './weeklyDashboardDataReducer';
-import { monthlyDashboardDataReducer } from './monthlyDashboardDataReducer';
-import { leaderboardDataReducer } from './leaderboardDataReducer';
-import { weeklySummariesReducer } from './weeklySummariesReducer';
-import { weeklySummariesReportReducer } from './weeklySummariesReportReducer';
-import { actionItemsReducer } from './actionItemsReducer';
-import { notificationsReducer } from './notificationsReducer';
-import { allProjectsReducer } from './allProjectsReducer';
-import { projectByIdReducer } from './projectByIdReducer';
-import { userProjectsReducer } from './userProjectsReducer';
-import { projectMembershipReducer } from './projectMembershipReducer';
-import { allTeamsReducer, allUserTeamsReducer } from './allTeamsReducer';
-import { teamByIdReducer } from './teamByIdReducer';
-import { teamMembershipReducer } from './teamMembershipReducer';
-import { timeEntriesForSpecifiedProjectReducer } from './timeEntriesForSpecifiedProjectReducer';
-import { allTimeEntriesReducer } from './allTimeEntriesReducer';
-import { timeEntriesForSpecifiedPeriodReducer } from './timeEntriesForSpecifiedPeriodReducer';
-import { errorsReducer } from './errorsReducer';
-import { timeEntriesReducer } from './timeEntriesReducer';
+import { combineReducers } from 'redux'
+import { userProfileByIdReducer } from './userProfileByIdReducer'
+import { authReducer } from './authReducer'
+import { handleSuccessReducer } from './handleSuccessReducer'
+import { allUserProfilesReducer } from './allUserProfilesReducer'
+import { userTeamMembersReducer } from './userTeamMembersReducer'
+import { userProjectMembersReducer } from './userProjectMembersReducer'
+import { dashboardDataReducer } from './dashboardDataReducer'
+import { weeklyDashboardDataReducer } from './weeklyDashboardDataReducer'
+import { monthlyDashboardDataReducer } from './monthlyDashboardDataReducer'
+import { leaderboardDataReducer } from './leaderboardDataReducer'
+import { weeklySummariesReducer } from './weeklySummariesReducer'
+import { weeklySummariesReportReducer } from './weeklySummariesReportReducer'
+import { actionItemsReducer } from './actionItemsReducer'
+import { notificationsReducer } from './notificationsReducer'
+import { allProjectsReducer } from './allProjectsReducer'
+import { projectByIdReducer } from './projectByIdReducer'
+import { userProjectsReducer } from './userProjectsReducer'
+import { projectMembershipReducer } from './projectMembershipReducer'
+import { allTeamsReducer, allUserTeamsReducer } from './allTeamsReducer'
+import { teamByIdReducer } from './teamByIdReducer'
+import { teamMembershipReducer } from './teamMembershipReducer'
+import { timeEntriesForSpecifiedProjectReducer } from './timeEntriesForSpecifiedProjectReducer'
+import { allTimeEntriesReducer } from './allTimeEntriesReducer'
+import { timeEntriesForSpecifiedPeriodReducer } from './timeEntriesForSpecifiedPeriodReducer'
+import { errorsReducer } from './errorsReducer'
+import { timeEntriesReducer } from './timeEntriesReducer'
 import { wbsReducer } from './wbsReducer'
 import { taskReducer } from './allTasksReducer'
 import { timerReducer } from './timerReducer'
-
+import { managingTeamsReducer } from './managingTeamsReducer'
 import { teamUsersReducer } from './teamsTeamMembersReducer'
 
 export default combineReducers({
@@ -49,12 +49,9 @@ export default combineReducers({
   // project: projectByIdReducer,
   userProjects: userProjectsReducer,
   projectMembers: projectMembershipReducer,
-<<<<<<< HEAD
   managingTeams: managingTeamsReducer,
-=======
   allTeamsData: allUserTeamsReducer,
   teamsTeamMembers: teamUsersReducer,
->>>>>>> 02b480c5b543b4bbd4ccebfd66d6a3814785eb7d
   // allTeams: allTeamsReducer,
   // team: teamByIdReducer,
   // teamMembers: teamMembershipReducer,
@@ -66,8 +63,5 @@ export default combineReducers({
   tasks: taskReducer,
   errors: errorsReducer,
   timeEntries: timeEntriesReducer,
-<<<<<<< HEAD
-=======
   timer: timerReducer,
->>>>>>> 02b480c5b543b4bbd4ccebfd66d6a3814785eb7d
 })
