@@ -1,12 +1,19 @@
+<<<<<<< HEAD
 import moment from 'moment';
 import _ from 'lodash';
 import httpService from '../services/httpService';
 import { FETCH_TEAMS_START, RECEIVE_TEAMS, FETCH_TEAMS_ERROR } from '../constants/teams';
 import { ENDPOINTS } from '../utils/URL';
+=======
+import httpService from '../services/httpService'
+import { ENDPOINTS } from '../utils/URL'
+
+>>>>>>> 02b480c5b543b4bbd4ccebfd66d6a3814785eb7d
 
 export function getUserTeamMembers1(userId) {
   const request = httpService.get(ENDPOINTS.USER_TEAM(userId));
 
+<<<<<<< HEAD
   return (dispatch) => {
     request.then(({ data }) => {
       console.log('data', data);
@@ -104,3 +111,22 @@ const setTeamsError = (payload) => ({
   type: FETCH_TEAMS_ERROR,
   payload,
 });
+=======
+  return dispatch => {
+
+    request.then(({ data }) => {
+      dispatch({
+        type: 'GET_USER_TEAM_MEMBERS',
+        payload: data
+      })
+    })
+  }
+}
+
+export const getUserTeamMembers = userId => {
+  const url = ENDPOINTS.USER_TEAM(userId)
+  return async dispatch => {
+    const res = await httpService.get(url)
+  };
+};
+>>>>>>> 02b480c5b543b4bbd4ccebfd66d6a3814785eb7d

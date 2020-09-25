@@ -2,10 +2,9 @@
 
 # dependencies
 /node_modules
-
 # testing
 /coverage
-
+*.code-snippets
 # production
 /build
 

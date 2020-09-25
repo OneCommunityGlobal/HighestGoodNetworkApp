@@ -1,4 +1,13 @@
-const APIEndpoint = process.env.REACT_APP_APIENDPOINT
+/* eslint-disable import/prefer-default-export */
+import axios from 'axios'
+
+let APIEndpoint = process.env.REACT_APP_APIENDPOINT
+if (!APIEndpoint) {
+  // This is to resolve the issue in azure env variable
+  APIEndpoint = axios.get('../../config.json').then(data => {
+    APIEndpoint = data.data.restapi
+  })
+}
 
 export const ENDPOINTS = {
   USER_PROFILE: userId => `${APIEndpoint}/userprofile/${userId}`,
@@ -6,6 +15,10 @@ export const ENDPOINTS = {
   USER_TEAM: userId => `${APIEndpoint}/userprofile/teammembers/${userId}`,
   LOGIN: `${APIEndpoint}/login`,
   PROJECTS: `${APIEndpoint}/projects`,
+  TEAM: `${APIEndpoint}/team`,
+  TEAM_DATA: teamId => `${APIEndpoint}/team/${teamId}`,
+
+  TEAM_USERS: teamId => `${APIEndpoint}/team/${teamId}/users`,
   USER_PROJECTS: userId => `${APIEndpoint}/projects/user/${userId}`,
   PROJECT: `${APIEndpoint}/project/`,
   PROJECT_MEMBER: projectId => `${APIEndpoint}/project/${projectId}/users`,
@@ -17,6 +30,7 @@ export const ENDPOINTS = {
   TIME_ENTRY: () => `${APIEndpoint}/TimeEntry`,
   TIME_ENTRY_CHANGE: timeEntryId => `${APIEndpoint}/TimeEntry/${timeEntryId}`,
   WBS_ALL: `${APIEndpoint}/wbs`,
+  TIMER: userId => `${APIEndpoint}/timer/${userId}`,
   WBS: projectId => `${APIEndpoint}/wbs/${projectId}`,
   TASKS: wbsId => `${APIEndpoint}/tasks/${wbsId}`,
   TASK: wbsId => `${APIEndpoint}/task/${wbsId}`,

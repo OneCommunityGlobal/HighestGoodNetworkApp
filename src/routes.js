@@ -4,6 +4,7 @@ import { ToastContainer } from 'react-toastify'
 import Timelog from './components/Timelog'
 import Reports from './components/Reports'
 import UserProfile from './components/UserProfile'
+import UserProfileEdit from './components/UserProfile/UserProfileEdit'
 import Dashboard from './components/Dashboard'
 import { Logout } from './components/Logout/Logout'
 import Login from './components/Login'
@@ -12,6 +13,7 @@ import ProtectedRoute from './components/common/ProtectedRoute'
 import UpdatePassword from './components/UpdatePassword'
 import Header from './components/Header'
 import Projects from './components/Projects'
+import Teams from './components/Teams/Teams'
 import UserManagement from './components/UserManagement'
 import Members from './components/Projects/Members'
 import WBS from './components/Projects/WBS'
@@ -43,11 +45,13 @@ export default (
         component={UserManagement}
         allowedRoles={[UserRole.Administrator]}
       />
+      <ProtectedRoute path="/teams" exact component={Teams} />
       <ProtectedRoute path="/project/members/:projectId" component={Members} />
 
       <Route path="/login" component={Login} />
 
       <ProtectedRoute path="/userprofile/:userId" component={UserProfile} />
+      <ProtectedRoute path="/userprofileedit/:userId" component={UserProfileEdit} />
       <ProtectedRoute path="/updatepassword/:userId" component={UpdatePassword} />
       <Route path="/Logout" component={Logout} />
       <Route path="/forcePasswordUpdate/:userId" component={ForcePasswordUpdate} />

@@ -16,6 +16,19 @@ module.exports = {
 		ecmaVersion: 2018,
 		sourceType: 'module'
 	},
-	plugins: ['react'],
-	rules: {}
-}
+	plugins: ['react', "testing-library"],
+	rules: {
+		"react/jsx-filename-extension": [1, { "extensions": [".js", ".jsx"] }],
+	},
+	overrides: [
+		{
+			files: [
+				"**/*.test.js",
+				"**/*.test.jsx"
+			],
+			env: {
+				jest: true
+			}
+		}
+	]
+};
