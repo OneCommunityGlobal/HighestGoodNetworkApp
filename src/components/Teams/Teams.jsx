@@ -41,10 +41,10 @@ class Teams extends React.PureComponent {
   }
 
   render() {
-
+    debugger;
     let { allTeams, fetching } = this.props.state.allTeamsData;
     let teamTable = this.teamTableElements(allTeams);
-    let numberOfTeams = allTeams.length;
+    let numberOfTeams = allTeams.length
     let numberOfActiveTeams = numberOfTeams ? allTeams.filter(team => team.isActive).length : 0;
 
     return <Container fluid>

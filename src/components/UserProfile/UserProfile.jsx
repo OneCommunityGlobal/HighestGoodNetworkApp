@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import Loading from "../common/Loading";
 
-import { Row, Label, Input, Badge, Col, Container } from "reactstrap";
+import { Row, Label, Input, Badge, Col, Container, Button } from "reactstrap";
 import Image from "react-bootstrap/Image";
 import { orange, silverGray, warningRed } from "../../constants/colors";
 import BlueSquare from "./BlueSquares";
@@ -12,9 +12,11 @@ import FourOFour from "./FourOFour";
 import styleProfile from "./UserProfile.module.scss";
 
 import { Link } from 'react-router-dom';
+import UserTeamProjectContainer from "./TeamsAndProjects/UserTeamProjectContainer";
 
 
 class UserProfile extends Component {
+
   state = {
     isLoading: true,
     error: "",
@@ -32,6 +34,9 @@ class UserProfile extends Component {
   };
 
   async componentDidMount() {
+    debugger;
+
+
     if (this.props.match) {
       let userId = this.props.match.params.userId;
       await this.props.getUserProfile(userId);
@@ -63,6 +68,8 @@ class UserProfile extends Component {
         }
       }
     }
+    this.props.getAllUserTeams();
+    this.props.fetchAllProjects();
   }
 
   async componentDidUpdate(prevProps, prevState) {
@@ -151,7 +158,11 @@ class UserProfile extends Component {
   };
 
   render() {
+    debugger;
     const { userProfile, isLoading, error, showModal } = this.state;
+    // let { allTeams } = this.props.allTeams.allTeamsData;
+    // let { projects } = this.props.allProjects.projects;
+    // console.log(projects);
 
     let {
       firstName,
@@ -298,6 +309,17 @@ class UserProfile extends Component {
           </Col>
 
         </div>
+
+        <div >
+
+          <UserTeamProjectContainer
+            userTeams={this.state ? this.state.userProfile.teams : []}
+            userProjects={this.state ? this.state.userProfile.projects : []}
+            teamsData={this.props ? this.props.allTeams.allTeamsData : []}
+            projectsData={this.props ? this.props.allProjects.projects : []} />
+
+        </div>
+
       </div>
     );
   }

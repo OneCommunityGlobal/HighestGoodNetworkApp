@@ -4,9 +4,11 @@ import {
   getUserProfile,
   updateUserProfile,
   clearUserProfile,
+
 } from '../../actions/userProfile';
 import { getUserTeamMembers } from '../../actions/team';
-
+import { getAllUserTeams } from '../../actions/allTeamsAction';
+import { fetchAllProjects } from '../../actions/projects'
 
 import UserProfile from './UserProfile';
 
@@ -14,6 +16,8 @@ const mapStateToProps = state => ({
   auth: state.auth,
   userProfile: _.get(state, 'userProfile'),
   user: _.get(state, 'user', {}),
+  allProjects: _.get(state, 'allProjects'),
+  allTeams: state,
 });
 
 export default connect(mapStateToProps, {
@@ -21,4 +25,7 @@ export default connect(mapStateToProps, {
   clearUserProfile,
   updateUserProfile,
   getUserTeamMembers,
+  getAllUserTeams,
+  fetchAllProjects,
+
 })(UserProfile);
