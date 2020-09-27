@@ -1,5 +1,5 @@
 /*********************************************************************************
- * Component: TASK 
+ * Component: TASK
  * Author: Henry Ng - 21/03/20 ≢
  ********************************************************************************/
 import React, { useState, useEffect } from 'react'
@@ -208,7 +208,7 @@ const WBSTasks = (props) => {
                 deleteTask={deleteTask}
                 hasChildren={task.hasChildren}
                 siblings={props.state.tasks.taskItems.filter(item => item.mother === task.mother)}
-
+                taskId={task.taskId}
               />)}
           </tbody>
         </table>

@@ -1,5 +1,5 @@
 /*********************************************************************************
- * Action: Tasks  
+ * Action: Tasks
  * Author: Henry Ng - 03/20/20
  ********************************************************************************/
 import axios from 'axios'
@@ -7,14 +7,14 @@ import * as types from '../constants/task'
 import { ENDPOINTS } from '../utils/URL'
 
 export const importTask = (newTask, wbsId) => {
-  const url = ENDPOINTS.TASK(wbsId);
+  const url = ENDPOINTS.TASK_IMPORT(wbsId);
   return async dispatch => {
     let status = 200;
     let _id = null;
     let task = {};
 
     try {
-      const res = await axios.put(url, newTask)
+      const res = await axios.post(url, { list: newTask })
       _id = res.data._id;
       status = res.status;
       task = res.data;
@@ -95,10 +95,11 @@ export const moveTasks = (wbsId, fromNum, toNum) => {
 
 export const fetchAllTasks = (wbsId) => {
   return async dispatch => {
-    await axios.put(ENDPOINTS.UPDATE_PARENT_TASKS(wbsId));
+    //await axios.put(ENDPOINTS.UPDATE_PARENT_TASKS(wbsId));
     await dispatch(setTasksStart());
     try {
       const request = await axios.get(ENDPOINTS.TASKS(wbsId));
+      console.log(request.data);
       dispatch(setTasks(request.data));
     } catch (err) {
       dispatch(setTasksError(err));
@@ -143,7 +144,7 @@ export const deleteTask = (taskId) => {
 }
 
 /**
-* Set a flag that fetching Task  
+* Set a flag that fetching Task
 */
 export const setTasksStart = () => {
   return {
@@ -153,8 +154,8 @@ export const setTasksStart = () => {
 
 
 /**
- * set Task in store 
- * @param payload : Task [] 
+ * set Task in store
+ * @param payload : Task []
  */
 export const setTasks = (taskItems) => {
   return {
@@ -164,8 +165,8 @@ export const setTasks = (taskItems) => {
 }
 
 /**
- * Error when setting project 
- * @param payload : error status code 
+ * Error when setting project
+ * @param payload : error status code
  */
 export const setTasksError = (err) => {
   return {

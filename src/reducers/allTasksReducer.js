@@ -26,8 +26,9 @@ const filterAndSort = (tasks, level) => {
 const sortByNum = (tasks) => {
 
   const appendTasks = [];
+
   tasks.forEach((task, i) => {
-    let numChildren = tasks.filter(item => item.mother === task._id).length;
+    let numChildren = tasks.filter(item => item.mother === task.taskId).length;
     if (numChildren > 0) {
       task.hasChildren = true;
     } else {
@@ -42,7 +43,10 @@ const sortByNum = (tasks) => {
     if (task.level === 3) {
       task.num += '.0';
     }
+
     appendTasks.push(task);
+
+
   })
 
   return filterAndSort(appendTasks, 4);

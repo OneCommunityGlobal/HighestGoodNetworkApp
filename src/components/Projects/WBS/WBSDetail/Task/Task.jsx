@@ -138,6 +138,7 @@ const Task = (props) => {
           className="taskNum" onClick={() => selectTask(props.id)}>
           {props.num.split('.0').join('')}</td>
         <td className="taskName">
+
           {props.level === 1 ? <div className='level-space-1' data-tip="Level 1"><span onClick={(e) => toggleGroups(props.num, props.id, props.level)} id={`task_name_${props.id}`} className={props.hasChildren ? 'has_children' : ''}>{props.name}</span></div> : null}
           {props.level === 2 ? <div className='level-space-2' data-tip="Level 2"><span onClick={(e) => toggleGroups(props.num, props.id, props.level)} id={`task_name_${props.id}`} className={props.hasChildren ? 'has_children' : ''}>{props.name}</span></div> : null}
           {props.level === 3 ? <div className='level-space-3' data-tip="Level 3"><span onClick={(e) => toggleGroups(props.num, props.id, props.level)} id={`task_name_${props.id}`} className={props.hasChildren ? 'has_children' : ''}>{props.name}</span></div> : null}
@@ -220,7 +221,7 @@ const Task = (props) => {
         <td data-tip={`Hours-Best-case: ${props.hoursBest / 8} day(s)`} >{props.hoursBest}</td>
         <td data-tip={`Hours-Worst-case: ${props.hoursWorst / 8} day(s)`} >{props.hoursWorst}</td>
         <td data-tip={`Hours-Most-case: ${props.hoursMost / 8} day(s)`} >{props.hoursMost}</td>
-        <td data-tip={`Estimated Hours: ${props.estimatedHours / 8} day(s)`} >{props.estimatedHours}</td>
+        <td data-tip={`Estimated Hours: ${props.estimatedHours / 8} day(s)`} >{Math.round(props.estimatedHours)}</td>
         <td>
           {startedDate.getFullYear() !== 1969 ? `${(startedDate.getMonth() + 1)}/${startedDate.getDate()}/${startedDate.getFullYear()}` : null}
           <br />
