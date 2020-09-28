@@ -65,14 +65,14 @@
   font-size: 15px;
   font-weight: 600;
 }
-.profile-head .nav-tabs {
+.profile-tabs .nav-tabs {
   margin-bottom: 5%;
 }
-.profile-head .nav-tabs .nav-link {
+.profile-tabs .nav-tabs .nav-link {
   font-weight: 600;
   border: none;
 }
-.profile-head .nav-tabs .nav-link.active {
+.profile-tabs .nav-tabs .nav-link.active {
   border: none;
   border-bottom: 2px solid #0062cc;
 }
@@ -120,6 +120,7 @@
   font-weight: 600;
   color: #6c757d;
   cursor: pointer;
+  // margin-left: 5%;
 
   // &:hover {
   //   text-decoration: none;

@@ -169,7 +169,17 @@ class UserProfile extends Component {
   };
 
   render() {
-    const { userProfile, isLoading, error, showModal } = this.state;
+    const {
+      userProfile,
+      linkType,
+      id,
+      isLoading,
+      error,
+      showModal,
+      type,
+      modalMessage,
+      modalTitle,
+    } = this.state;
 
     const {
       firstName,
@@ -211,18 +221,18 @@ class UserProfile extends Component {
       <div>
         {showModal && (
           <Modal
-            isOpen={this.state.showModal}
+            isOpen={showModal}
             closeModal={() => {
               this.setState({ showModal: false });
             }}
-            modalMessage={this.state.modalMessage}
-            modalTitle={this.state.modalTitle}
-            type={this.state.type}
+            modalMessage={modalMessage}
+            modalTitle={modalTitle}
+            type={type}
             updateLink={this.updateLink}
             updateBlueSquare={this.updateBlueSquare}
-            linkType={this.state.linkType}
-            userProfile={this.state.userProfile}
-            id={this.state.id}
+            linkType={linkType}
+            userProfile={userProfile}
+            id={id}
             isUserAdmin={isUserAdmin}
             handleLinkModel={this.handleLinkModel}
           />
@@ -241,52 +251,16 @@ class UserProfile extends Component {
               </div>
               {/* </div> */}
             </Col>
-            <Col md="6">
+            <Col md="8">
               <div className="profile-head">
                 <h5>{`${firstName} ${lastName}`}</h5>
                 <h6>{jobTitle}</h6>
-                <Nav tabs>
-                  <NavItem>
-                    <NavLink
-                      className={classnames({ active: this.state.activeTab === '1' }, 'nav-link')}
-                      onClick={() => {
-                        this.toggleTab('1');
-                      }}
-                    >
-                      Basic Information
-                    </NavLink>
-                  </NavItem>
-                  <NavItem>
-                    <NavLink
-                      className={classnames({ active: this.state.activeTab === '2' }, 'nav-link')}
-                      onClick={() => {
-                        this.toggleTab('2');
-                      }}
-                      // style={{
-                      //   fontWeight: 600,
-                      //   border: 'none',
-                      // }}
-                    >
-                      More Tabs
-                    </NavLink>
-                  </NavItem>
-                </Nav>
               </div>
-            </Col>
-            <Col md="2">
-              {canEdit && (
-                <div className="profileEditButtonContainer">
-                  <Link
-                    to={`/userprofileedit/${this.state.userProfile._id}`}
-                    className="profileEditButton"
-                  >
-                    <Button className="profileEditButton" aria-hidden="true">
-                      {' '}
-                      Edit
-                    </Button>
-                  </Link>
-                </div>
-              )}
+              <div className="p-5 my-2 bg--cadet-blue text-light">
+                <div className="py-2 my-2"> </div>
+                <h3>Badges goes here...</h3>
+                <div className="py-2 my-2"> </div>
+              </div>
             </Col>
           </Row>
           <Row>
@@ -314,6 +288,30 @@ class UserProfile extends Component {
               </div>
             </Col>
             <Col md="8">
+              <div className="profile-tabs">
+                <Nav tabs>
+                  <NavItem>
+                    <NavLink
+                      className={classnames({ active: this.state.activeTab === '1' }, 'nav-link')}
+                      onClick={() => {
+                        this.toggleTab('1');
+                      }}
+                    >
+                      Basic Information
+                    </NavLink>
+                  </NavItem>
+                  <NavItem>
+                    <NavLink
+                      className={classnames({ active: this.state.activeTab === '2' }, 'nav-link')}
+                      onClick={() => {
+                        this.toggleTab('2');
+                      }}
+                    >
+                      More Tabs
+                    </NavLink>
+                  </NavItem>
+                </Nav>
+              </div>
               <TabContent
                 activeTab={this.state.activeTab}
                 className="tab-content profile-tab"
@@ -348,6 +346,20 @@ class UserProfile extends Component {
                 </TabPane>
                 <TabPane tabId="2" />
               </TabContent>
+            </Col>
+          </Row>
+          <Row>
+            <Col sm="12" md={{ size: 4, offset: 4 }}>
+              {canEdit && (
+                <div className="profileEditButtonContainer">
+                  <Link to={`/userprofileedit/${this.state.userProfile._id}`}>
+                    <Button className="profileEditButton" color="primary" aria-hidden="true">
+                      {' '}
+                      Edit
+                    </Button>
+                  </Link>
+                </div>
+              )}
             </Col>
           </Row>
         </Container>

@@ -13,12 +13,17 @@ import {
   Badge,
   Collapse,
   Alert,
+  Nav,
+  NavItem,
+  NavLink,
+  TabContent,
+  TabPane,
 } from 'reactstrap';
 import { StickyContainer, Sticky } from 'react-sticky';
 import Image from 'react-bootstrap/Image';
-import { Link } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
+import classnames from 'classnames';
 import Loading from '../../common/Loading';
-
 import { orange, warningRed } from '../../../constants/colors';
 import BlueSquare from '../BlueSquares';
 import Modal from '../UserProfileModal';
@@ -26,7 +31,7 @@ import UserLinks from '../UserLinks';
 import ToggleSwitch from './ToggleSwitch';
 
 // import styleProfile from '../UserProfile.module.scss';
-
+import '../UserProfile.scss';
 import styleEdit from './UserProfileEdit.module.scss';
 
 import TeamView from '../Teamsview';
@@ -55,6 +60,7 @@ class EditProfile extends Component {
     },
     selectedTeamId: 0,
     selectedTeam: '',
+    activeTab: '1',
   };
 
   async componentDidMount() {
@@ -80,6 +86,14 @@ class EditProfile extends Component {
     console.log('edit profile, component did mount, props: ', this.props);
     console.log('edit profile, state:', this.state);
   }
+
+  toggleTab = (tab) => {
+    if (this.state.activeTab !== tab) {
+      this.setState({
+        activeTab: tab,
+      });
+    }
+  };
 
   handleUserProfile = (event) => {
     this.setState({
@@ -571,182 +585,192 @@ class EditProfile extends Component {
           />
         )}
 
-        <Col>
-          <StickyContainer>
-            {renderWarningCard()}
-            <Row className={styleProfile.profileContainer}>
-              <div className={styleProfile.whoSection}>
-                <Label
-                  for="newProfilePic"
-                  htmlFor="newProfilePic"
-                  className={styleEdit.profileEditTitleCenter}
-                >
-                  Change Profile Picture
-                </Label>
-                <Input
-                  type="file"
-                  name="newProfilePic"
-                  id="newProfilePic"
-                  style={{ visibility: 'hidden', width: 0, height: 0 }}
-                  onChange={this.handleImageUpload}
-                  accept="image/png,image/jpeg, image/jpg"
-                />
-                <div>
+        <StickyContainer>
+          {renderWarningCard()}
+          <Container className="emp-profile">
+            <Row>
+              <Col md="4" id="profileContainer">
+                <div className="profile-img">
                   <Image
                     src={profilePic || '/defaultprofilepic.png'}
                     alt="Profile Picture"
                     roundedCircle
                     className="profilePicture"
                   />
+                  <div className="file btn btn-lg btn-primary">
+                    Change Photo
+                    <Input
+                      type="file"
+                      name="newProfilePic"
+                      id="newProfilePic"
+                      onChange={this.handleImageUpload}
+                      accept="image/png,image/jpeg, image/jpg"
+                    />
+                  </div>
                 </div>
-                <div className={styleEdit.inputSections}>
-                  <Form>
-                    <FormGroup>
-                      <Label className={styleEdit.profileEditTitle}>Name:</Label>
-                      <Input
-                        type="text"
-                        name="firstName"
-                        id="firstName"
-                        value={firstName}
-                        className={styleProfile.profileText}
-                        onChange={this.handleUserProfile}
-                        placeholder="First Name"
-                        invalid={!this.state.formValid.firstName}
-                      />
-                      <FormFeedback>First Name Can't be null</FormFeedback>
-                    </FormGroup>
-                    <FormGroup>
-                      <Input
-                        type="text"
-                        name="lastName"
-                        id="lastName"
-                        value={lastName}
-                        className={styleProfile.profileText}
-                        onChange={this.handleUserProfile}
-                        placeholder="Last Name"
-                        invalid={!this.state.formValid.lastName}
-                      />
-                      <FormFeedback>Last Name Can't be Null</FormFeedback>
-                    </FormGroup>
-                    <FormGroup>
-                      <Label className={styleEdit.profileEditTitle}>Title:</Label>
-                      <Input
-                        type="title"
-                        name="jobTitle"
-                        id="jobTitle"
-                        value={jobTitle}
-                        className={styleProfile.profileText}
-                        onChange={this.handleUserProfile}
-                        placeholder="Job Title"
-                      />
-
-                      <ToggleSwitch
-                        switchType="bluesquares"
-                        state={privacySettings?.blueSquares}
-                        handleUserProfile={this.handleUserProfile}
-                      />
-                    </FormGroup>
-                  </Form>
+              </Col>
+              <Col md="8">
+                <div className="profile-head">
+                  <h5>{`${firstName} ${lastName}`}</h5>
+                  <h6>{jobTitle}</h6>
+                </div>
+                <div className="p-5 my-2 bg--cadet-blue text-light">
+                  <div className="py-2 my-2"> </div>
+                  <h3>Badges goes here...</h3>
+                  <div className="py-2 my-2"> </div>
+                </div>
+              </Col>
+            </Row>
+            <Row>
+              <Col md="4">
+                <div className="profile-work">
+                  <p>LINKS</p>
+                  {this.modLinkButton(canEditFields, isUserAdmin)}
+                  <UserLinks
+                    linkSection="user"
+                    links={personalLinks}
+                    handleLinkModel={this.handleLinkModel}
+                    isUserAdmin={isUserAdmin}
+                  />
+                  <UserLinks
+                    linkSection="user"
+                    links={adminLinks}
+                    handleLinkModel={this.handleLinkModel}
+                    isUserAdmin={isUserAdmin}
+                  />
+                  <p>BLUE SQAURES</p>
                   <BlueSquare
                     isUserAdmin={isUserAdmin}
                     blueSquares={infringments}
                     handleBlueSquare={this.handleBlueSquare}
                     handleSaveError={this.handleSaveError}
                   />
-                  <br />
                 </div>
-              </div>
-              <div className={styleEdit.detailEditSection}>
-                <div className={styleEdit.inputSections}>
-                  <Form>
-                    <FormGroup>
-                      <ToggleSwitch
-                        switchType="email"
-                        state={userProfile.privacySettings?.email}
-                        handleUserProfile={this.handleUserProfile}
-                      />
-
-                      <Input
-                        type="email"
-                        name="email"
-                        id="email"
-                        className={styleProfile.profileText}
-                        value={email}
-                        onChange={this.handleUserProfile}
-                        placeholder="Email"
-                        invalid={!this.state.formValid.email}
-                      />
-                      <FormFeedback>Email is not Valid</FormFeedback>
-                    </FormGroup>
-                    <FormGroup>
-                      <ToggleSwitch
-                        switchType="phone"
-                        state={userProfile.privacySettings?.phoneNumber}
-                        handleUserProfile={this.handleUserProfile}
-                      />
-
-                      <Input
-                        type="number"
-                        name="phoneNumber"
-                        id="phoneNumber"
-                        className={styleProfile.profileText}
-                        value={phoneNumber}
-                        onChange={this.handleUserProfile}
-                        placeholder="Phone"
-                      />
-                    </FormGroup>
-                  </Form>
-                  <div>
-                    <div className={styleProfile.linkIconSection}>
-                      <div className={styleProfile.icon}>
-                        <i className="fa fa-link" aria-hidden="true" />
-                      </div>
-                    </div>
-
-                    <div className={styleProfile.profileLinks}>
-                      {this.modLinkButton(canEditFields, isUserAdmin)}
-                      <UserLinks
-                        linkSection="admin"
-                        links={adminLinks}
-                        handleLinkModel={this.handleLinkModel}
-                        isUserAdmin={isUserAdmin}
-                      />
-                    </div>
-
-                    <div className={styleProfile.profileLinks}>
-                      <UserLinks
-                        linkSection="user"
-                        links={personalLinks}
-                        handleLinkModel={this.handleLinkModel}
-                        isUserAdmin={isUserAdmin}
-                      />
-                    </div>
-                  </div>
+              </Col>
+              <Col md="8">
+                <div className="profile-tabs">
+                  <Nav tabs>
+                    <NavItem>
+                      <NavLink
+                        className={classnames({ active: this.state.activeTab === '1' }, 'nav-link')}
+                        onClick={() => {
+                          this.toggleTab('1');
+                        }}
+                      >
+                        Basic Information
+                      </NavLink>
+                    </NavItem>
+                    <NavItem>
+                      <NavLink
+                        className={classnames({ active: this.state.activeTab === '2' }, 'nav-link')}
+                        onClick={() => {
+                          this.toggleTab('2');
+                        }}
+                      >
+                        More Tabs
+                      </NavLink>
+                    </NavItem>
+                  </Nav>
                 </div>
-                <Label className={styleEdit.profileEditTitle}>Teams:</Label>
-                <div className={styleEdit.teamsView}>
-                  <TeamView
-                    teamsdata={userProfile.teams}
-                    edit
-                    allTeams={allTeams}
-                    handleTeam={this.handleTeam}
-                  />
-                </div>
-              </div>
+                <TabContent
+                  activeTab={this.state.activeTab}
+                  className="tab-content profile-tab"
+                  id="myTabContent"
+                  style={{ border: 0 }}
+                >
+                  <TabPane tabId="1">
+                    <Form>
+                      <Row>
+                        <Col md="6">
+                          <Label>Name</Label>
+                        </Col>
+                        <Col md="3">
+                          <FormGroup>
+                            <Input
+                              type="text"
+                              name="firstName"
+                              id="firstName"
+                              value={firstName}
+                              className={styleProfile.profileText}
+                              onChange={this.handleUserProfile}
+                              placeholder="First Name"
+                              invalid={!this.state.formValid.firstName}
+                            />
+                            <FormFeedback>First Name Can't be null</FormFeedback>
+                          </FormGroup>
+                        </Col>
+                        <Col md="3">
+                          <FormGroup>
+                            <Input
+                              type="text"
+                              name="lastName"
+                              id="lastName"
+                              value={lastName}
+                              className={styleProfile.profileText}
+                              onChange={this.handleUserProfile}
+                              placeholder="Last Name"
+                              invalid={!this.state.formValid.lastName}
+                            />
+                            <FormFeedback>Last Name Can't be Null</FormFeedback>
+                          </FormGroup>
+                        </Col>
+                      </Row>
+                      <Row>
+                        <Col md="6">
+                          <Label>Email</Label>
+                        </Col>
+                        <Col md="6">
+                          <FormGroup>
+                            <ToggleSwitch
+                              switchType="email"
+                              state={userProfile.privacySettings?.email}
+                              handleUserProfile={this.handleUserProfile}
+                            />
+
+                            <Input
+                              type="email"
+                              name="email"
+                              id="email"
+                              value={email}
+                              onChange={this.handleUserProfile}
+                              placeholder="Email"
+                              invalid={!this.state.formValid.email}
+                            />
+                            <FormFeedback>Email is not Valid</FormFeedback>
+                          </FormGroup>
+                        </Col>
+                      </Row>
+                      <Row>
+                        <Col md="6">
+                          <Label>Phone</Label>
+                        </Col>
+                        <Col md="6">
+                          <FormGroup>
+                            <ToggleSwitch
+                              switchType="phone"
+                              state={userProfile.privacySettings?.phoneNumber}
+                              handleUserProfile={this.handleUserProfile}
+                            />
+
+                            <Input
+                              type="number"
+                              name="phoneNumber"
+                              id="phoneNumber"
+                              className={styleProfile.profileText}
+                              value={phoneNumber}
+                              onChange={this.handleUserProfile}
+                              placeholder="Phone"
+                            />
+                          </FormGroup>
+                        </Col>
+                      </Row>
+                    </Form>
+                  </TabPane>
+                  <TabPane tabId="2" />
+                </TabContent>
+              </Col>
 
               {/* {allTeams.map(team => <div>{team.teamName}</div>)} */}
-
-              <div className={styleEdit.profileViewButtonContainer}>
-                <Link
-                  to={`/userprofile/${this.state.userProfile._id}`}
-                  className={styleEdit.profileViewButton}
-                >
-                  <i className="fa fa-eye fa-lg" aria-hidden="true">
-                    {' '}
-                    View
-                  </i>
-                </Link>
-              </div>
             </Row>
             <Row
               style={{
@@ -765,17 +789,16 @@ class EditProfile extends Component {
               >
                 Save Changes
               </Button>
-              <Button
-                outline
-                color="danger"
-                onClick={() => window.location.reload()}
+              <Link
+                to={`/userprofile/${this.state.userProfile._id}`}
+                className="btn btn-outline-danger"
                 style={{ display: 'flex', margin: 5 }}
               >
                 Cancel
-              </Button>
+              </Link>
             </Row>
-          </StickyContainer>
-        </Col>
+          </Container>
+        </StickyContainer>
       </div>
     );
   }
