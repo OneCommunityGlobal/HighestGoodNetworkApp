@@ -255,6 +255,9 @@ class UserProfile extends Component {
               <div className="profile-head">
                 <h5>{`${firstName} ${lastName}`}</h5>
                 <h6>{jobTitle}</h6>
+                <p className="proile-rating">
+                  Volunteering Period : <span>****-****</span>
+                </p>
               </div>
               <div className="p-5 my-2 bg--cadet-blue text-light">
                 <div className="py-2 my-2"> </div>
