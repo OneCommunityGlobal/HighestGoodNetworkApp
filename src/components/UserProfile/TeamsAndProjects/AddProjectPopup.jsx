@@ -13,7 +13,7 @@ const AddProjectPopup = React.memo((props) => {
       <ModalBody style={{ textAlign: 'center', display: 'flex' }}>
 
         <AddProjectsAutoComplete
-          projectsData={props.projectsData} />
+          projectsData={props.projects} />
         <Button color='primary' style={{ marginLeft: '5px' }}>Confirm</Button>
 
       </ModalBody>

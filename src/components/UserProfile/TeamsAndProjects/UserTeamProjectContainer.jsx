@@ -19,16 +19,20 @@ class UserTeamProjectContainer extends React.PureComponent {
   render() {
 
     debugger;
+    console.log(this.state.selectedAssignTeam)
     return (
       <Container fluid>
         <AddTeamPopup
           open={this.state.addTeamPopupOpen}
           onClose={this.onAddTeamPopupClose}
-          teamsData={this.props.teamsData} />
+          teamsData={this.props.teamsData}
+          userTeamsById={this.props.userTeams}
+          onSelectAssignTeam={this.onSelectAssignTeam}
+        />
         <AddProjectPopup
           open={this.state.addProjectPopupOpen}
           onClose={this.onAddProjectPopupClose}
-          projectsData={this.props.projectsData} />
+          projects={this.props.projectsData} />
 
         <div className='container'  >
           <div className='row' >
@@ -46,6 +50,10 @@ class UserTeamProjectContainer extends React.PureComponent {
         </div>
       </Container>
     )
+  }
+
+  onSelectAssignTeam = (team) => {
+    this.props.onAssignTeam(team)
   }
 
   onAddProjectPopupShow = () => {

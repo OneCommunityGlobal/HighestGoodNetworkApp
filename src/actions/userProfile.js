@@ -3,7 +3,7 @@ import {
 	getUserProfile as getUserProfileActionCreator,
 	editFirstName as editFirstNameActionCreator,
 	editUserProfile as editUserProfileActionCreator,
-	CLEAR_USER_PROFILE
+	CLEAR_USER_PROFILE, updateTeamsListActionCreator
 } from '../constants/userProfile'
 import { ENDPOINTS } from '../utils/URL'
 
@@ -30,15 +30,20 @@ export const editUserProfile = data => {
 export const clearUserProfile = () => ({ type: CLEAR_USER_PROFILE })
 
 export const updateUserProfile = (userId, userProfile) => {
-  console.log('updateUserProfile');
-  const url = ENDPOINTS.USER_PROFILE(userId);
-  console.log('userProfile', userProfile);
-  return async (dispatch) => {
-    const res = await axios.put(url, userProfile);
+	console.log('updateUserProfile');
+	const url = ENDPOINTS.USER_PROFILE(userId);
+	console.log('userProfile', userProfile);
+	return async (dispatch) => {
+		const res = await axios.put(url, userProfile);
 
-    if (res.status === 200) {
-      await dispatch(getUserProfileActionCreator(userProfile));
-    }
-    return res.status;
-  };
+		if (res.status === 200) {
+			await dispatch(getUserProfileActionCreator(userProfile));
+		}
+		return res.status;
+	};
 };
+export const updateTeamsList = (updateTeam) => {
+	return dispatch => {
+		dispatch(updateTeamsListActionCreator(updateTeam))
+	}
+}

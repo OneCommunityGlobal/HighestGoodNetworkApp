@@ -316,12 +316,17 @@ class UserProfile extends Component {
             userTeams={this.state ? this.state.userProfile.teams : []}
             userProjects={this.state ? this.state.userProfile.projects : []}
             teamsData={this.props ? this.props.allTeams.allTeamsData : []}
-            projectsData={this.props ? this.props.allProjects.projects : []} />
+            projectsData={this.props ? this.props.allProjects.projects : []}
+            onAssignTeam={this.onAssignTeam} />
 
         </div>
 
       </div>
     );
+  }
+  onAssignTeam = (assignTeam) => {
+    console.log(assignTeam);
+    this.props.updateTeamsList(assignTeam);
   }
 }
 

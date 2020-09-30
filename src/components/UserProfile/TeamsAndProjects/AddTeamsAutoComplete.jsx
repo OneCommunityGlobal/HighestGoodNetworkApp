@@ -5,10 +5,12 @@ import {
 import './TeamsAndProjects.css'
 
 const AddTeamsAutoComplete = React.memo((props) => {
+
   const [searchText, onInputChange] = useState('');
   const [isOpen, toggle] = useState(false);
 
   return (
+
     <Dropdown
       isOpen={isOpen}
       toggle={() => { toggle(!isOpen); }}
@@ -43,7 +45,8 @@ const AddTeamsAutoComplete = React.memo((props) => {
                 onClick={() => {
                   onInputChange(`${item.teamName}`);
                   toggle(false);
-                  props.onAddUser(item);
+                  props.onDropDownSelect(item);
+
                 }}
               >
                 {`${item.teamName}`}

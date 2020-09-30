@@ -8,7 +8,7 @@ const UserTeamsTable = React.memo((props) => {
     <div className='teamtable-container' >
       <div className='container'>
         <div className='row'>
-          <div className='col' style={{ backgroundColor: ' #e9ecef', border: '1px solid #ced4da;', marginBottom: '10px' }}>
+          <div className='col' style={{ backgroundColor: ' #e9ecef', border: '1px solid #ced4da', marginBottom: '10px' }}>
             <span className='teams-span'>Teams</span>
           </div>
           <div className='col'>

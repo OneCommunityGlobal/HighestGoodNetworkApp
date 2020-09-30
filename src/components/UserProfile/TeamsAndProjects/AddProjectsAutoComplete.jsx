@@ -43,7 +43,7 @@ const AddProjectsAutoComplete = React.memo((props) => {
                 onClick={() => {
                   onInputChange(`${item.projectName}`);
                   toggle(false);
-                  props.onAddUser(item);
+
                 }}
               >
                 {`${item.projectName}`}
