@@ -83,13 +83,7 @@ const server = setupServer(
   }),
   rest.get(userProjectsUrl, (req, res, ctx) =>  {
       return res(ctx.status(200), ctx.json(
-        [
-          {
-            "isActive": true,
-            "_id": "5ad91ec3590b19002asacd26",
-            "projectName": "HG Fake Project"
-          }
-      ]
+        []
     ));
   }),
   rest.get(userProfileUrl, (req, res, ctx) =>  {
@@ -182,15 +176,39 @@ describe('Project Members behavior', () => {
     fireEvent.click(screen.getByText('All'));
     await waitFor(() => expect(screen.getAllByRole('table').length).toBe(2));
     await waitFor(() => expect(screen.getByText('Test Admin')).toBeTruthy());
+    await waitFor(() => expect(screen.getByText('Test Admin').closest('a')).toHaveAttribute('href', "/userprofile/5c4cc2109487b0003924f1e3"));
   });
 
-  it('should be able to add Test Admin to members list', async () => {
+  it('should be able to add Test Admin to members list by click +All button', async () => {
     let rt = '/project/members/5ad91ec3590b19002asacd26'
     const hist = createMemoryHistory({ initialEntries: [rt] });
     projectMemMountedPage = renderWithRouterMatch(routes , {initialState: mockState, route: rt, history: hist});
     fireEvent.click(screen.getByText('All'));
-    await waitFor(() => expect(screen.getAllByRole('table').length).toBe(2));
+    let tables 
+    await waitFor(() => {
+      tables = screen.getAllByRole('table');
+      expect(tables.length).toBe(2);
+    });
     await waitFor(() => expect(screen.getByText('Test Admin')).toBeTruthy());
+    fireEvent.click(screen.getByText('+All'));
+    const { getByText } = within(tables[1])
+    await waitFor(() => expect(getByText('Test Admin')).toBeTruthy());
+  });
+
+  it('should be able to add Test Admin to members list by click that users plus button', async () => {
+    let rt = '/project/members/5ad91ec3590b19002asacd26'
+    const hist = createMemoryHistory({ initialEntries: [rt] });
+    projectMemMountedPage = renderWithRouterMatch(routes , {initialState: mockState, route: rt, history: hist});
+    fireEvent.click(screen.getByText('All'));
+    let tables 
+    await waitFor(() => {
+      tables = screen.getAllByRole('table');
+      expect(tables.length).toBe(2);
+    });
+    await waitFor(() => expect(screen.getByText('Test Admin')).toBeTruthy());
+    fireEvent.click(within(tables[0]).getAllByRole('button')[1]);
+    const { getByText } = within(tables[1])
+    await waitFor(() => expect(getByText('Test Admin')).toBeTruthy());
   });
 
 });
