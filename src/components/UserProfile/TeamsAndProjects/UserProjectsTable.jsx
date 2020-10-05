@@ -1,7 +1,6 @@
 import React, { useState } from 'react'
 import { Button } from 'reactstrap'
 import './TeamsAndProjects.css'
-import AddProjectPopup from './AddProjectPopup';
 
 const UserProjectsTable = React.memo((props) => {
 
@@ -15,8 +14,11 @@ const UserProjectsTable = React.memo((props) => {
             <span className='projects-span'>Projects</span>
           </div>
           <div className='col'>
-            <Button className='btn-addproject' color="primary" onClick={() => { props.onButtonClick() }} >Assign Project</Button>
-
+            {
+              props.isUserAdmin ?
+                <Button className='btn-addproject' color="primary" onClick={() => { props.onButtonClick() }} >Assign Project</Button>
+                : <></>
+            }
           </div>
         </div>
       </div>

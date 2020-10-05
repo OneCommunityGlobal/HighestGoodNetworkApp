@@ -13,7 +13,7 @@ class UserTeamProjectContainer extends React.PureComponent {
     this.state = {
       addTeamPopupOpen: false,
       addProjectPopupOpen: false,
-
+      renderedOn: 0
     }
   }
   render() {
@@ -32,19 +32,24 @@ class UserTeamProjectContainer extends React.PureComponent {
         <AddProjectPopup
           open={this.state.addProjectPopupOpen}
           onClose={this.onAddProjectPopupClose}
-          projects={this.props.projectsData} />
+          projects={this.props.projectsData}
+          onSelectAssignProject={this.onSelectAssignProject} />
 
-        <div className='container'  >
+        <div >
           <div className='row' >
             <div className='col'>
               <UserTeamsTable
                 userTeamsById={this.props.userTeams}
-                onButtonClick={this.onAddTeamPopupShow} />
+                onButtonClick={this.onAddTeamPopupShow}
+                renderedOn={this.state.renderedOn}
+                isUserAdmin={this.props.isUserAdmin} />
             </div>
             <div className='col'>
               <UserProjectsTable
                 userProjectsById={this.props.userProjects}
-                onButtonClick={this.onAddProjectPopupShow} />
+                onButtonClick={this.onAddProjectPopupShow}
+                renderedOn={this.state.renderedOn}
+                isUserAdmin={this.props.isUserAdmin} />
             </div>
           </div>
         </div>
@@ -53,7 +58,19 @@ class UserTeamProjectContainer extends React.PureComponent {
   }
 
   onSelectAssignTeam = (team) => {
-    this.props.onAssignTeam(team)
+    this.props.onAssignTeam(team);
+    this.setState({
+      renderedOn: Date.now(),
+      addTeamPopupOpen: false
+    })
+  }
+
+  onSelectAssignProject = (project) => {
+    this.props.onAssignProject(project);
+    this.setState({
+      renderedOn: Date.now(),
+      addProjectPopupOpen: false
+    })
   }
 
   onAddProjectPopupShow = () => {
@@ -68,6 +85,7 @@ class UserTeamProjectContainer extends React.PureComponent {
       addProjectPopupOpen: false
     })
   }
+
   onAddTeamPopupShow = () => {
     this.setState({
       addTeamPopupOpen: true

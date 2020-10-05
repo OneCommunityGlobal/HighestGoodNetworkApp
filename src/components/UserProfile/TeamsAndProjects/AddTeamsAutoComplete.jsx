@@ -35,8 +35,7 @@ const AddTeamsAutoComplete = React.memo((props) => {
             style={{ marginTop: '0px', width: '100%' }}
           >
             {props.teamsData.allTeams.filter((team) => {
-              if (team.teamName.toLowerCase().indexOf(searchText.toLowerCase()) > -1
-              ) {
+              if (team.teamName.toLowerCase().indexOf(searchText.toLowerCase()) > -1) {
                 return team;
               }
             }).slice(0, 10).map((item) => (

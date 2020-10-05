@@ -5,7 +5,6 @@ import {
 import AddTeamsAutoComplete from './AddTeamsAutoComplete';
 
 const AddTeamPopup = React.memo((props) => {
-  debugger;
   const closePopup = () => { props.onClose(); };
   const [selectedTeam, onSelectTeam] = useState(undefined);
   const [isValidTeam, onValidation] = useState(true);
@@ -25,8 +24,6 @@ const AddTeamPopup = React.memo((props) => {
     onValidation(true);
   }, [props.open]);
 
-
-
   return (
     <Modal isOpen={props.open} toggle={closePopup}>
       <ModalHeader toggle={closePopup}>Add Team </ModalHeader>
@@ -40,7 +37,7 @@ const AddTeamPopup = React.memo((props) => {
 
         </div>
         <div>
-          {(isValidTeam === false) ? (<Alert color="danger">Please choose a valid user.</Alert>) : <></>}
+          {(isValidTeam === false) ? (<Alert color="danger">Please choose a valid team which is not already added.</Alert>) : <></>}
         </div>
 
       </ModalBody>

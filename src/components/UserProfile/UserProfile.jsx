@@ -34,9 +34,6 @@ class UserProfile extends Component {
   };
 
   async componentDidMount() {
-    debugger;
-
-
     if (this.props.match) {
       let userId = this.props.match.params.userId;
       await this.props.getUserProfile(userId);
@@ -317,16 +314,47 @@ class UserProfile extends Component {
             userProjects={this.state ? this.state.userProfile.projects : []}
             teamsData={this.props ? this.props.allTeams.allTeamsData : []}
             projectsData={this.props ? this.props.allProjects.projects : []}
-            onAssignTeam={this.onAssignTeam} />
+            onAssignTeam={this.onAssignTeam}
+            onAssignProject={this.onAssignProject}
+            isUserAdmin={isUserAdmin} />
 
         </div>
 
       </div>
     );
   }
-  onAssignTeam = (assignTeam) => {
-    console.log(assignTeam);
-    this.props.updateTeamsList(assignTeam);
+
+  onAssignTeam = (assignedTeam) => {
+    let _userProfile = Object.assign({}, this.state.userProfile);
+    if (_userProfile.teams) {
+      _userProfile.teams.push(assignedTeam)
+    } else {
+      _userProfile.teams = [assignedTeam]
+    }
+
+    this.setState({
+      userProfile: _userProfile
+    }, () => { this.saveChanges() })
+  }
+
+  onAssignProject = (assignedProject) => {
+    let _userProfile = Object.assign({}, this.state.userProfile);
+    if (_userProfile.teams) {
+      _userProfile.projects.push(assignedProject)
+    } else {
+      _userProfile.projects = [assignedProject]
+    }
+
+    this.setState({
+      userProfile: _userProfile
+    }, () => { this.saveChanges() })
+  }
+
+  saveChanges = () => {
+    this.props.updateUserProfile(
+      this.props.match.params.userId,
+      this.state.userProfile
+    )
   }
 }
 

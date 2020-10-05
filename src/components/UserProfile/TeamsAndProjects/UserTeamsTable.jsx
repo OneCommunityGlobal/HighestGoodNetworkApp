@@ -1,9 +1,8 @@
 import React from 'react'
 import { Button } from 'reactstrap'
 import './TeamsAndProjects.css'
-const UserTeamsTable = React.memo((props) => {
 
-
+const UserTeamsTable = (props) => {
   return (
     <div className='teamtable-container' >
       <div className='container'>
@@ -12,7 +11,9 @@ const UserTeamsTable = React.memo((props) => {
             <span className='teams-span'>Teams</span>
           </div>
           <div className='col'>
-            <Button className='btn-addteam' color="primary" onClick={() => { props.onButtonClick() }}>Assign Team</Button>
+            {props.isUserAdmin ?
+              <Button className='btn-addteam' color="primary" onClick={() => { props.onButtonClick() }}>Assign Team</Button>
+              : <></>}
           </div>
         </div>
       </div>
@@ -41,5 +42,6 @@ const UserTeamsTable = React.memo((props) => {
       </div>
     </div>
   )
-})
+}
+
 export default UserTeamsTable;

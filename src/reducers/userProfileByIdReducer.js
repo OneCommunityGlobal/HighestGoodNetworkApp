@@ -24,9 +24,10 @@ export const userProfileByIdReducer = (userProfile = initialUserProfileState, ac
 		return { ...userProfile, ...action.payload }
 	}
 	if (action.type === ASSIGN_TEAM_TO_TEAMS_LIST) {
+		debugger;
 		let _userProfile = Object.assign({}, userProfile)
 		_userProfile.teams = [..._userProfile.teams, action.payload]
-		return updateObject(userProfile, _userProfile)
+		return _userProfile;
 
 	}
 
