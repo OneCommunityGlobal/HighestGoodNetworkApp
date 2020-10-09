@@ -6,8 +6,10 @@ import AddTeamsAutoComplete from './AddTeamsAutoComplete';
 
 const AddTeamPopup = React.memo((props) => {
   const closePopup = () => { props.onClose(); };
+
   const [selectedTeam, onSelectTeam] = useState(undefined);
   const [isValidTeam, onValidation] = useState(true);
+
   const onAssignTeam = () => {
     if (selectedTeam && !props.userTeamsById.some((x) => x._id === selectedTeam._id)) {
       props.onSelectAssignTeam(selectedTeam)

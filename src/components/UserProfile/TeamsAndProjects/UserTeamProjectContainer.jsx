@@ -32,6 +32,7 @@ class UserTeamProjectContainer extends React.PureComponent {
         <AddProjectPopup
           open={this.state.addProjectPopupOpen}
           onClose={this.onAddProjectPopupClose}
+          userProjectsById={this.props.userProjects}
           projects={this.props.projectsData}
           onSelectAssignProject={this.onSelectAssignProject} />
 
@@ -41,6 +42,7 @@ class UserTeamProjectContainer extends React.PureComponent {
               <UserTeamsTable
                 userTeamsById={this.props.userTeams}
                 onButtonClick={this.onAddTeamPopupShow}
+                onDeleteClick={this.onSelectDeleteTeam}
                 renderedOn={this.state.renderedOn}
                 isUserAdmin={this.props.isUserAdmin} />
             </div>
@@ -48,6 +50,7 @@ class UserTeamProjectContainer extends React.PureComponent {
               <UserProjectsTable
                 userProjectsById={this.props.userProjects}
                 onButtonClick={this.onAddProjectPopupShow}
+                onDeleteClicK={this.onSelectDeleteProject}
                 renderedOn={this.state.renderedOn}
                 isUserAdmin={this.props.isUserAdmin} />
             </div>
@@ -55,6 +58,14 @@ class UserTeamProjectContainer extends React.PureComponent {
         </div>
       </Container>
     )
+  }
+
+  onSelectDeleteTeam = (teamId) => {
+    this.props.onDeleteteam(teamId);
+  }
+
+  onSelectDeleteProject = (projectId) => {
+    this.props.onDeleteProject(projectId);
   }
 
   onSelectAssignTeam = (team) => {

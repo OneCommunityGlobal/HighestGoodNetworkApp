@@ -42,13 +42,13 @@ const AddTeamsAutoComplete = React.memo((props) => {
               <div
                 className="team-auto-complete"
                 onClick={() => {
-                  onInputChange(`${item.teamName}`);
+                  onInputChange(item.teamName);
                   toggle(false);
                   props.onDropDownSelect(item);
 
                 }}
               >
-                {`${item.teamName}`}
+                {item.teamName}
               </div>
             ))}
           </div>

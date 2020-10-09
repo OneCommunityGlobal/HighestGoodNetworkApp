@@ -41,12 +41,12 @@ const AddProjectsAutoComplete = React.memo((props) => {
               <div
                 className="project-auto-complete"
                 onClick={() => {
-                  onInputChange(`${item.projectName}`);
+                  onInputChange(item.projectName);
                   toggle(false);
                   props.onDropDownSelect(item)
                 }}
               >
-                {`${item.projectName}`}
+                {item.projectName}
               </div>
             ))}
           </div>

@@ -316,12 +316,33 @@ class UserProfile extends Component {
             projectsData={this.props ? this.props.allProjects.projects : []}
             onAssignTeam={this.onAssignTeam}
             onAssignProject={this.onAssignProject}
+            onDeleteteam={this.onDeleteTeam}
+            onDeleteProject={this.onDeleteProject}
             isUserAdmin={isUserAdmin} />
 
         </div>
 
       </div>
     );
+  }
+  onDeleteTeam = (deletedTeamId) => {
+    let _userProfile = Object.assign({}, this.state.userProfile);
+    let filteredTeam = _userProfile.teams.filter(team => team._id !== deletedTeamId);
+    _userProfile.teams = filteredTeam
+
+    this.setState({
+      userProfile: _userProfile
+    }, () => { this.saveChanges() })
+  }
+
+  onDeleteProject = (deletedProjectId) => {
+    let _userProfile = Object.assign({}, this.state.userProfile);
+    let filteredProject = _userProfile.projects.filter(project => project._id !== deletedProjectId);
+    _userProfile.projects = filteredProject
+
+    this.setState({
+      userProfile: _userProfile
+    }, () => { this.saveChanges() })
   }
 
   onAssignTeam = (assignedTeam) => {
@@ -339,7 +360,7 @@ class UserProfile extends Component {
 
   onAssignProject = (assignedProject) => {
     let _userProfile = Object.assign({}, this.state.userProfile);
-    if (_userProfile.teams) {
+    if (_userProfile.projects) {
       _userProfile.projects.push(assignedProject)
     } else {
       _userProfile.projects = [assignedProject]

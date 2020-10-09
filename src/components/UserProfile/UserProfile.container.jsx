@@ -8,8 +8,7 @@ import {
 } from '../../actions/userProfile';
 import { getUserTeamMembers } from '../../actions/team';
 import { getAllUserTeams } from '../../actions/allTeamsAction';
-import { fetchAllProjects } from '../../actions/projects'
-import { updateTeamsList } from '../../actions/userProfile'
+import { fetchAllProjects } from '../../actions/projects';
 import UserProfile from './UserProfile';
 
 const mapStateToProps = state => ({
@@ -27,6 +26,6 @@ export default connect(mapStateToProps, {
   getUserTeamMembers,
   getAllUserTeams,
   fetchAllProjects,
-  updateTeamsList,
+
 
 })(UserProfile);

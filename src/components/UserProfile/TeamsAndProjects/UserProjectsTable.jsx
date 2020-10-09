@@ -37,7 +37,7 @@ const UserProjectsTable = React.memo((props) => {
                 <tr>
                   <td>{index + 1}</td>
                   <td>{`${project.projectName}`}</td>
-                  <td><Button color="danger">Delete</Button></td>
+                  <td><Button color="danger" onClick={(e) => { props.onDeleteClicK(project._id) }}>Delete</Button></td>
                 </tr>
               )) : <></>
             }

@@ -3,6 +3,7 @@ import { Button } from 'reactstrap'
 import './TeamsAndProjects.css'
 
 const UserTeamsTable = (props) => {
+  debugger;
   return (
     <div className='teamtable-container' >
       <div className='container'>
@@ -32,7 +33,7 @@ const UserTeamsTable = (props) => {
                 <tr>
                   <td>{index + 1}</td>
                   <td>{`${team.teamName}`}</td>
-                  <td><Button color="danger">Delete</Button></td>
+                  <td><Button color="danger" onClick={(e) => { props.onDeleteClick(team._id) }}>Delete</Button></td>
                 </tr>
               )) : <></>
             }

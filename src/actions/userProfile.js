@@ -3,7 +3,7 @@ import {
 	getUserProfile as getUserProfileActionCreator,
 	editFirstName as editFirstNameActionCreator,
 	editUserProfile as editUserProfileActionCreator,
-	CLEAR_USER_PROFILE, updateTeamsListActionCreator
+	CLEAR_USER_PROFILE
 } from '../constants/userProfile'
 import { ENDPOINTS } from '../utils/URL'
 
@@ -42,8 +42,3 @@ export const updateUserProfile = (userId, userProfile) => {
 		return res.status;
 	};
 };
-export const updateTeamsList = (updateTeam) => {
-	return dispatch => {
-		dispatch(updateTeamsListActionCreator(updateTeam))
-	}
-}
