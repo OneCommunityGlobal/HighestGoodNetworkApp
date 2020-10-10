@@ -93,14 +93,14 @@ export const moveTasks = (wbsId, fromNum, toNum) => {
   }
 }
 
-export const fetchAllTasks = (wbsId) => {
+export const fetchAllTasks = (wbsId, level = 0, mother = null) => {
   return async dispatch => {
     //await axios.put(ENDPOINTS.UPDATE_PARENT_TASKS(wbsId));
     await dispatch(setTasksStart());
     try {
-      const request = await axios.get(ENDPOINTS.TASKS(wbsId));
+      const request = await axios.get(ENDPOINTS.TASKS(wbsId, (level + 1), mother));
       console.log(request.data);
-      dispatch(setTasks(request.data));
+      dispatch(setTasks(request.data, level, mother));
     } catch (err) {
       dispatch(setTasksError(err));
     }
@@ -157,10 +157,12 @@ export const setTasksStart = () => {
  * set Task in store
  * @param payload : Task []
  */
-export const setTasks = (taskItems) => {
+export const setTasks = (taskItems, level, mother) => {
   return {
     type: types.RECEIVE_TASKS,
-    taskItems
+    taskItems,
+    level,
+    mother
   }
 }
 

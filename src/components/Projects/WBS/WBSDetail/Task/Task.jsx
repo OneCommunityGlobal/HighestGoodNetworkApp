@@ -15,6 +15,7 @@ const Task = (props) => {
   const startedDate = new Date(props.startedDatetime);
   const dueDate = new Date(props.dueDatetime);
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [isLoad, setIsLoad] = useState(false);
   const toggle = () => setDropdownOpen(prevState => !prevState);
 
   let isOpen = true;
@@ -38,7 +39,12 @@ const Task = (props) => {
 
 
   const toggleGroups = (num, id, level) => {
-    const allItems = document.getElementsByClassName(`wbsTask`);
+    if (!isLoad) {
+      props.fetchAllTasks(props.wbsId, level, props.id);
+      setIsLoad(true);
+    }
+
+    /*const allItems = document.getElementsByClassName(`wbsTask`);
     for (let i = 0; i < allItems.length; i++) {
       if (allItems[i].className.indexOf(`num_${num.split('.').join('').replace(/0/g, '')}`) === 0 && allItems[i].id !== id) {
         if (isOpen) {
@@ -49,9 +55,24 @@ const Task = (props) => {
           }
         }
       }
+    }*/
+    if (isOpen) {
+      const allItems = [...document.getElementsByClassName(`parentId1_${props.id}`), ...document.getElementsByClassName(`parentId2_${props.id}`), ...document.getElementsByClassName(`parentId3_${props.id}`)];
+      for (let i = 0; i < allItems.length; i++) {
+        allItems[i].style.display = 'none';
+      }
+    } else {
+      const allItems = [...document.getElementsByClassName(`mother_${props.id}`)];
+      for (let i = 0; i < allItems.length; i++) {
+        allItems[i].style.display = 'table-row';
+      }
     }
+
+
     isOpen = !isOpen;
   }
+
+
 
   const openChild = (num, id) => {
     const allItems = document.getElementsByClassName(`wbsTask`);
@@ -124,10 +145,9 @@ const Task = (props) => {
   }
 
 
-
   return (
     <React.Fragment>
-      <tr key={props.key} className={`num_${props.num.split('.').join('')} wbsTask  ${props.isNew ? 'newTask' : ''} parentId_${props.parentId} lv_${props.level}`} id={props.id}>
+      <tr key={props.key} className={`num_${props.num.split('.').join('')} wbsTask  ${props.isNew ? 'newTask' : ''} parentId1_${props.parentId1} parentId2_${props.parentId2} parentId3_${props.parentId3} mother_${props.mother} lv_${props.level}`} id={props.id}>
         <td className={`tag_color tag_color_${props.num.length > 0 ? props.num.split('.')[0] : props.num} tag_color_lv_${props.level}`}></td>
         <td
           id={`r_${props.num}_${props.id}`}
@@ -138,7 +158,6 @@ const Task = (props) => {
           className="taskNum" onClick={() => selectTask(props.id)}>
           {props.num.split('.0').join('')}</td>
         <td className="taskName">
-
           {props.level === 1 ? <div className='level-space-1' data-tip="Level 1"><span onClick={(e) => toggleGroups(props.num, props.id, props.level)} id={`task_name_${props.id}`} className={props.hasChildren ? 'has_children' : ''}>{props.name}</span></div> : null}
           {props.level === 2 ? <div className='level-space-2' data-tip="Level 2"><span onClick={(e) => toggleGroups(props.num, props.id, props.level)} id={`task_name_${props.id}`} className={props.hasChildren ? 'has_children' : ''}>{props.name}</span></div> : null}
           {props.level === 3 ? <div className='level-space-3' data-tip="Level 3"><span onClick={(e) => toggleGroups(props.num, props.id, props.level)} id={`task_name_${props.id}`} className={props.hasChildren ? 'has_children' : ''}>{props.name}</span></div> : null}
@@ -218,10 +237,10 @@ const Task = (props) => {
         </td>
         <td>{props.isAssigned ? <i data-tip="Assigned" className="fa fa-check-square" aria-hidden="true"></i> : <i data-tip="Not Assigned" className="fa fa-square-o" aria-hidden="true"></i>}</td>
         <td>{props.status === "Started" ? <i data-tip="Started" className="fa fa-pause" aria-hidden="true"></i> : <i data-tip="Not Started" className="fa fa-play" aria-hidden="true"></i>}</td>
-        <td data-tip={`Hours-Best-case: ${props.hoursBest / 8} day(s)`} >{props.hoursBest}</td>
-        <td data-tip={`Hours-Worst-case: ${props.hoursWorst / 8} day(s)`} >{props.hoursWorst}</td>
-        <td data-tip={`Hours-Most-case: ${props.hoursMost / 8} day(s)`} >{props.hoursMost}</td>
-        <td data-tip={`Estimated Hours: ${props.estimatedHours / 8} day(s)`} >{Math.round(props.estimatedHours)}</td>
+        <td data-tip={`Hours-Best-case: ${parseFloat(props.hoursBest / 8).toFixed(2)} day(s)`} >{props.hoursBest}</td>
+        <td data-tip={`Hours-Worst-case: ${parseFloat(props.hoursWorst / 8).toFixed(2)} day(s)`} >{props.hoursWorst}</td>
+        <td data-tip={`Hours-Most-case: ${parseFloat(props.hoursMost / 8).toFixed(2)} day(s)`} >{props.hoursMost}</td>
+        <td data-tip={`Estimated Hours: ${parseFloat(props.estimatedHours / 8).toFixed(2)} day(s)`} >{parseFloat(props.estimatedHours).toFixed(2)}</td>
         <td>
           {startedDate.getFullYear() !== 1969 ? `${(startedDate.getMonth() + 1)}/${startedDate.getDate()}/${startedDate.getFullYear()}` : null}
           <br />

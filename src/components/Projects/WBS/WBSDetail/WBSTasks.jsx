@@ -25,7 +25,7 @@ const WBSTasks = (props) => {
   const [selectedId, setSelectedId] = useState(null);
 
   useEffect(() => {
-    props.fetchAllTasks(wbsId);
+    props.fetchAllTasks(wbsId, 0);
     props.fetchAllMembers(projectId);
 
   }, [wbsId, projectId]);
@@ -206,9 +206,10 @@ const WBSTasks = (props) => {
                 drop={dropTask}
                 drag={dragTask}
                 deleteTask={deleteTask}
-                hasChildren={task.hasChildren}
+                hasChildren={task.hasChild}
                 siblings={props.state.tasks.taskItems.filter(item => item.mother === task.mother)}
                 taskId={task.taskId}
+
               />)}
           </tbody>
         </table>

@@ -50,7 +50,7 @@ const ImportTask = (props) => {
 
           setTimeout(() => {
             setIsDone(2);
-          }, 2000)
+          }, 1000)
 
         }
 
@@ -87,8 +87,11 @@ const ImportTask = (props) => {
     setIsDone(3);
     props.importTask(taskList, props.wbsId);
     setTimeout(() => {
-      setIsDone(4);
-    }, 2000)
+      setTimeout(() => {
+        setIsDone(4);
+      }, 1000);
+      props.fetchAllTasks(props.wbsId, 0);
+    }, 1000)
   }
 
   const handleFileChosen = (file) => {
