@@ -85,6 +85,7 @@ const ImportTask = (props) => {
 
   const uploadTaskList = () => {
     setIsDone(3);
+    //console.log(taskList);
     props.importTask(taskList, props.wbsId);
     setTimeout(() => {
       setTimeout(() => {
@@ -117,24 +118,27 @@ const ImportTask = (props) => {
   const foundUser = [];
 
   const newTask = (num, taskName, level, rowArr) => {
-    /*let resourceObj;
-    if (!foundUser.includes(rowArr[9])) {
+    let resourceObj;
+    //if (!foundUser.includes(rowArr[9]) && rowArr[9] !== null) {
 
-      const userName = await axios.get(ENDPOINTS.GET_USER_BY_NAME(rowArr[9]));
-      if (userName.data.length > 0) {
-        resourceObj = {
-          name: rowArr[9],
-          userID: userName.data[0]._id,
-          profilePic: userName.data[0].profilePic
-        }
-
+    //const userName = axios.get(ENDPOINTS.GET_USER_BY_NAME(rowArr[9]));
+    /*if (userName.data) {
+      resourceObj = {
+        name: rowArr[9],
+        userID: userName.data[0]._id,
+        profilePic: userName.data[0].profilePic
       }
-      foundUser.push(rowArr[9]);
-
     }*/
 
-    console.log(rowArr);
+    //console.log(rowArr[9]);
 
+    if (rowArr[9] !== null) {
+      resourceObj = {
+        name: rowArr[9],
+        userID: null,
+        profilePic: null
+      }
+    }
 
     let newTask = {
       'taskName': `${taskName}`,
@@ -143,7 +147,7 @@ const ImportTask = (props) => {
       'position': `${position}`,
       'wbsId': `${props.wbsId}`,
       'priority': `${rowArr[8]}`,
-      'resources': rowArr[9],
+      'resources': rowArr[9] !== null ? [resourceObj] : null,
       'isAssigned': `${rowArr[10]}` === 'yes' ? true : false,
       'status': `${rowArr[11]}`,
       'hoursBest': `${rowArr[12]}`,
