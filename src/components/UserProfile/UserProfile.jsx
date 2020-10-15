@@ -25,6 +25,7 @@ import UserLinks from './UserLinks';
 // import styleProfile from './UserProfile.module.scss';
 import './UserProfile.scss';
 import TeamView from './Teamsview';
+import UserTeamProjectContainer from './TeamsAndProjects/UserTeamProjectContainer';
 
 import { getTimeEntriesForWeek, getTimeEntriesForPeriod } from '../../actions/timeEntries';
 import { getUserProjects } from '../../actions/userProjects';
@@ -73,6 +74,8 @@ class UserProfile extends Component {
         });
       }
     }
+    this.props.getAllUserTeams();
+    this.props.fetchAllProjects();
   }
 
   async componentDidUpdate(prevProps, prevState) {
@@ -110,6 +113,59 @@ class UserProfile extends Component {
         }
       }
     }
+  }
+
+  onDeleteTeam = (deletedTeamId) => {
+    const _userProfile = Object.assign({}, this.state.userProfile);
+    const filteredTeam = _userProfile.teams.filter(team => team._id !== deletedTeamId);
+    _userProfile.teams = filteredTeam;
+
+    this.setState({
+      userProfile: _userProfile,
+    }, () => { this.saveChanges(); });
+  }
+
+  onDeleteProject = (deletedProjectId) => {
+    const _userProfile = Object.assign({}, this.state.userProfile);
+    const filteredProject = _userProfile.projects.filter(project => project._id !== deletedProjectId);
+    _userProfile.projects = filteredProject;
+
+    this.setState({
+      userProfile: _userProfile,
+    }, () => { this.saveChanges(); });
+  }
+
+  onAssignTeam = (assignedTeam) => {
+    const _userProfile = Object.assign({}, this.state.userProfile);
+    if (_userProfile.teams) {
+      _userProfile.teams.push(assignedTeam);
+    } else {
+      _userProfile.teams = [assignedTeam];
+    }
+
+    this.setState({
+      userProfile: _userProfile,
+    }, () => { this.saveChanges(); });
+  }
+
+  onAssignProject = (assignedProject) => {
+    const _userProfile = Object.assign({}, this.state.userProfile);
+    if (_userProfile.projects) {
+      _userProfile.projects.push(assignedProject);
+    } else {
+      _userProfile.projects = [assignedProject];
+    }
+
+    this.setState({
+      userProfile: _userProfile,
+    }, () => { this.saveChanges(); });
+  }
+
+  saveChanges = () => {
+    this.props.updateUserProfile(
+      this.props.match.params.userId,
+      this.state.userProfile,
+    );
   }
 
   handleBlueSquare = (status = true, type = 'message', blueSquareID = '') => {
@@ -181,6 +237,11 @@ class UserProfile extends Component {
       modalMessage,
       modalTitle,
     } = this.state;
+    // debugger;
+    // const { userProfile, isLoading, error, showModal } = this.state;
+    // let { allTeams } = this.props.allTeams.allTeamsData;
+    // let { projects } = this.props.allProjects.projects;
+    // console.log(projects);
 
     const {
       firstName,
@@ -434,6 +495,26 @@ class UserProfile extends Component {
             </Col>
           </Row>
         </Container>
+        {/* </Row>
+          </Col>
+
+        </div>
+
+        <div >
+
+          <UserTeamProjectContainer
+            userTeams={this.state ? this.state.userProfile.teams : []}
+            userProjects={this.state ? this.state.userProfile.projects : []}
+            teamsData={this.props ? this.props.allTeams.allTeamsData : []}
+            projectsData={this.props ? this.props.allProjects.projects : []}
+            onAssignTeam={this.onAssignTeam}
+            onAssignProject={this.onAssignProject}
+            onDeleteteam={this.onDeleteTeam}
+            onDeleteProject={this.onDeleteProject}
+            isUserAdmin={isUserAdmin} />
+
+        </div> */}
+
       </div>
     );
   }
