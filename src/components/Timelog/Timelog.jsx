@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import React, { Component } from 'react';
 import {
   Container,
   Row,
@@ -18,26 +18,26 @@ import {
   Label,
   Input,
   Button,
-} from 'reactstrap'
-import classnames from 'classnames'
-import { connect } from 'react-redux'
-import moment from 'moment'
-import _ from 'lodash'
-import { getTimeEntriesForWeek, getTimeEntriesForPeriod } from '../../actions/timeEntries'
-import { getUserProfile } from '../../actions/userProfile'
-import { getUserProjects } from '../../actions/userProjects'
-import TimeEntryForm from './TimeEntryForm'
-import TimelogNavbar from './TimelogNavbar'
-import TimeEntry from './TimeEntry'
-import EffortBar from './EffortBar'
+} from 'reactstrap';
+import classnames from 'classnames';
+import { connect } from 'react-redux';
+import moment from 'moment';
+import _ from 'lodash';
+import { getTimeEntriesForWeek, getTimeEntriesForPeriod } from '../../actions/timeEntries';
+import { getUserProfile } from '../../actions/userProfile';
+import { getUserProjects } from '../../actions/userProjects';
+import TimeEntryForm from './TimeEntryForm';
+import TimelogNavbar from './TimelogNavbar';
+import TimeEntry from './TimeEntry';
+import EffortBar from './EffortBar';
 
 class TimelogPage extends Component {
   constructor(props) {
-    super(props)
-    this.toggle = this.toggle.bind(this)
-    this.changeTab = this.changeTab.bind(this)
-    this.handleInputChange = this.handleInputChange.bind(this)
-    this.handleSearch = this.handleSearch.bind(this)
+    super(props);
+    this.toggle = this.toggle.bind(this);
+    this.changeTab = this.changeTab.bind(this);
+    this.handleInputChange = this.handleInputChange.bind(this);
+    this.handleSearch = this.handleSearch.bind(this);
   }
 
   initialState = {
@@ -46,107 +46,114 @@ class TimelogPage extends Component {
     projectSelected: 'all',
     fromDate: this.startOfWeek(0),
     toDate: this.endOfWeek(0),
-  }
+  };
 
-  state = this.initialState
+  state = this.initialState;
 
   async componentDidMount() {
-    const userId = this.props.match.params.userId
-    await this.props.getUserProfile(userId)
-    await this.props.getTimeEntriesForWeek(userId, 0)
-    await this.props.getTimeEntriesForWeek(userId, 1)
-    await this.props.getTimeEntriesForWeek(userId, 2)
-    await this.props.getTimeEntriesForPeriod(userId, this.state.fromDate, this.state.toDate)
-    await this.props.getUserProjects(userId)
-    console.log('props:',this.props)
+    const { userId } = this.props.match.params;
+    await this.props.getUserProfile(userId);
+    await this.props.getTimeEntriesForWeek(userId, 0);
+    await this.props.getTimeEntriesForWeek(userId, 1);
+    await this.props.getTimeEntriesForWeek(userId, 2);
+    await this.props.getTimeEntriesForPeriod(userId, this.state.fromDate, this.state.toDate);
+    await this.props.getUserProjects(userId);
+    console.log('props:', this.props);
   }
 
   async componentDidUpdate(prevProps) {
     if (prevProps.match.params.userId !== this.props.match.params.userId) {
-      this.setState(this.initialState)
+      this.setState(this.initialState);
 
-      const userId = this.props.match.params.userId
-      await this.props.getUserProfile(userId)
-      await this.props.getTimeEntriesForWeek(userId, 0)
-      await this.props.getTimeEntriesForWeek(userId, 1)
-      await this.props.getTimeEntriesForWeek(userId, 2)
-      await this.props.getTimeEntriesForPeriod(userId, this.state.fromDate, this.state.toDate)
-      await this.props.getUserProjects(userId)
+      const { userId } = this.props.match.params;
+      await this.props.getUserProfile(userId);
+      await this.props.getTimeEntriesForWeek(userId, 0);
+      await this.props.getTimeEntriesForWeek(userId, 1);
+      await this.props.getTimeEntriesForWeek(userId, 2);
+      await this.props.getTimeEntriesForPeriod(userId, this.state.fromDate, this.state.toDate);
+      await this.props.getUserProjects(userId);
     }
   }
 
   toggle() {
     this.setState({
       modal: !this.state.modal,
-    })
+    });
   }
 
   changeTab(tab) {
     this.setState({
       activeTab: tab,
-    })
+    });
   }
 
   handleInputChange(e) {
-    this.setState({ [e.target.name]: e.target.value })
+    this.setState({ [e.target.name]: e.target.value });
   }
 
   handleSearch(e) {
-    e.preventDefault()
+    e.preventDefault();
     this.props.getTimeEntriesForPeriod(
       this.props.match.params.userId,
       this.state.fromDate,
       this.state.toDate,
-    )
+    );
   }
 
   startOfWeek(offset) {
     return moment()
       .startOf('week')
       .subtract(offset, 'weeks')
-      .format('YYYY-MM-DD')
+      .format('YYYY-MM-DD');
   }
 
   endOfWeek(offset) {
     return moment()
       .endOf('week')
       .subtract(offset, 'weeks')
-      .format('YYYY-MM-DD')
+      .format('YYYY-MM-DD');
   }
 
   generateTimeEntries(data) {
-    let filteredData = data
+    let filteredData = data;
     if (this.state.projectSelected !== 'all') {
-      filteredData = data.filter(entry => entry.projectId === this.state.projectSelected)
+      filteredData = data.filter((entry) => entry.projectId === this.state.projectSelected);
     }
-    return filteredData.map(entry => <TimeEntry data={entry} displayYear={false} key={entry._id} />)
+    return filteredData.map((entry) => (
+      <TimeEntry
+        data={entry}
+        displayYear={false}
+        key={entry._id}
+        userProfile={this.props.userProfile}
+      />
+    ));
   }
 
   render() {
-    const currentWeekEntries = this.generateTimeEntries(this.props.timeEntries.weeks[0])
-    const lastWeekEntries = this.generateTimeEntries(this.props.timeEntries.weeks[1])
-    const beforeLastEntries = this.generateTimeEntries(this.props.timeEntries.weeks[2])
-    const periodEntries = this.generateTimeEntries(this.props.timeEntries.period)
+    const currentWeekEntries = this.generateTimeEntries(this.props.timeEntries.weeks[0]);
+    const lastWeekEntries = this.generateTimeEntries(this.props.timeEntries.weeks[1]);
+    const beforeLastEntries = this.generateTimeEntries(this.props.timeEntries.weeks[2]);
+    const periodEntries = this.generateTimeEntries(this.props.timeEntries.period);
 
-    const isAdmin = this.props.auth.user.role === 'Administrator'
-    const isOwner = this.props.auth.user.userid === this.props.match.params.userId
-    const fullName = this.props.userProfile.firstName + ' ' + this.props.userProfile.lastName
+    const isAdmin = this.props.auth.user.role === 'Administrator';
+    const isOwner = this.props.auth.user.userid === this.props.match.params.userId;
+    const fullName = `${this.props.userProfile.firstName} ${this.props.userProfile.lastName}`;
 
-    let projects = []
+    let projects = [];
     if (!_.isEmpty(this.props.userProjects.projects)) {
-      projects = this.props.userProjects.projects
+      projects = this.props.userProjects.projects;
     }
-    const projectOptions = projects.map(project => (
+    const projectOptions = projects.map((project) => (
       <option value={project.projectId} key={project.projectId}>
         {' '}
         {project.projectName}{' '}
       </option>
-    ))
+    ));
     projectOptions.unshift(
       <option value="all" key="all">
         All Projects (Default)
       </option>,
-    )
+    );
 
     return (
       <Container>
@@ -179,6 +186,7 @@ class TimelogPage extends Component {
                       edit={false}
                       toggle={this.toggle}
                       isOpen={this.state.modal}
+                      userProfile={this.props.userProfile}
                     />
                   </Col>
                 </Row>
@@ -189,7 +197,7 @@ class TimelogPage extends Component {
                     <NavLink
                       className={classnames({ active: this.state.activeTab === 0 })}
                       onClick={() => {
-                        this.changeTab(0)
+                        this.changeTab(0);
                       }}
                       href="#"
                     >
@@ -200,7 +208,7 @@ class TimelogPage extends Component {
                     <NavLink
                       className={classnames({ active: this.state.activeTab === 1 })}
                       onClick={() => {
-                        this.changeTab(1)
+                        this.changeTab(1);
                       }}
                       href="#"
                     >
@@ -211,7 +219,7 @@ class TimelogPage extends Component {
                     <NavLink
                       className={classnames({ active: this.state.activeTab === 2 })}
                       onClick={() => {
-                        this.changeTab(2)
+                        this.changeTab(2);
                       }}
                       href="#"
                     >
@@ -222,7 +230,7 @@ class TimelogPage extends Component {
                     <NavLink
                       className={classnames({ active: this.state.activeTab === 3 })}
                       onClick={() => {
-                        this.changeTab(3)
+                        this.changeTab(3);
                       }}
                       href="#"
                     >
@@ -286,7 +294,7 @@ class TimelogPage extends Component {
                         name="projectSelected"
                         id="projectSelected"
                         value={this.state.projectSelected}
-                        onChange={e =>
+                        onChange={(e) =>
                           this.setState({
                             projectSelected: e.target.value,
                           })
@@ -308,23 +316,23 @@ class TimelogPage extends Component {
               </CardBody>
             </Card>
           </Col>
-          <Col md={4}></Col>
+          <Col md={4} />
         </Row>
       </Container>
-    )
+    );
   }
 }
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state) => ({
   auth: state.auth,
   userProfile: state.userProfile,
   timeEntries: state.timeEntries,
   userProjects: state.userProjects,
-})
+});
 
 export default connect(mapStateToProps, {
   getTimeEntriesForWeek,
   getTimeEntriesForPeriod,
   getUserProjects,
   getUserProfile,
-})(TimelogPage)
+})(TimelogPage);

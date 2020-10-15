@@ -19,9 +19,11 @@ import {
   TabContent,
   TabPane,
 } from 'reactstrap';
+import moment from 'moment';
 import { StickyContainer, Sticky } from 'react-sticky';
 import Image from 'react-bootstrap/Image';
-import { Link, useHistory } from 'react-router-dom';
+import { Link, useHistory, withRouter } from 'react-router-dom';
+
 import classnames from 'classnames';
 import Loading from '../../common/Loading';
 import { orange, warningRed } from '../../../constants/colors';
@@ -29,11 +31,13 @@ import BlueSquare from '../BlueSquares';
 import Modal from '../UserProfileModal';
 import UserLinks from '../UserLinks';
 import ToggleSwitch from './ToggleSwitch';
-
+import EditConfirmModal from '../UserProfileModal/EditConfirmModal';
+import SaveButton from './SaveButton';
 // import styleProfile from '../UserProfile.module.scss';
 import '../UserProfile.scss';
-import styleEdit from './UserProfileEdit.module.scss';
-
+// import styleEdit from './UserProfileEdit.module.scss';
+import './UserProfileEdit.scss';
+import LinkModButton from './LinkModButton';
 import TeamView from '../Teamsview';
 
 const styleProfile = {};
@@ -83,8 +87,8 @@ class EditProfile extends Component {
       }
     }
 
-    console.log('edit profile, component did mount, props: ', this.props);
-    console.log('edit profile, state:', this.state);
+    // console.log('edit profile, component did mount, props: ', this.props);
+    // console.log('edit profile, state:', this.state);
   }
 
   toggleTab = (tab) => {
@@ -187,6 +191,22 @@ class EditProfile extends Component {
           },
         });
         break;
+      case 'totalComittedHours':
+        this.setState({
+          userProfile: {
+            ...userProfile,
+            totalComittedHours: event.target.value,
+          },
+        });
+        break;
+      case 'weeklyComittedHours':
+        this.setState({
+          userProfile: {
+            ...userProfile,
+            weeklyComittedHours: event.target.value,
+          },
+        });
+        break;
       default:
         this.setState({
           ...userProfile,
@@ -259,7 +279,7 @@ class EditProfile extends Component {
         });
         break;
       case 'delete':
-        userProfile.teams = userProfile.teams.filter((team) => team._id !== newTeam);
+        userProfile.teams = userProfile.teams.filter(team => team._id !== newTeam);
         this.setState({
           ...userProfile,
         });
@@ -332,7 +352,7 @@ class EditProfile extends Component {
 
     if (kind === 'add') {
       const newBlueSquare = { date: dateStamp, description: summary };
-      this.setState((prevState) => ({
+      this.setState(prevState => ({
         showModal: false,
         userProfile: {
           ...this.state.userProfile,
@@ -343,10 +363,10 @@ class EditProfile extends Component {
       this.setState(() => {
         const currentBlueSquares = this.state.userProfile.infringments;
         if (dateStamp != null) {
-          currentBlueSquares.find((blueSquare) => blueSquare._id === id).date = dateStamp;
+          currentBlueSquares.find(blueSquare => blueSquare._id === id).date = dateStamp;
         }
         if (summary != null) {
-          currentBlueSquares.find((blueSquare) => blueSquare._id === id).description = summary;
+          currentBlueSquares.find(blueSquare => blueSquare._id === id).description = summary;
         }
         return {
           showModal: false,
@@ -384,44 +404,38 @@ class EditProfile extends Component {
   };
 
   handleSubmit = async (event) => {
-    event.preventDefault();
     const { updateUserProfile, match } = this.props;
     const { userProfile, formValid } = this.state;
     const submitResult = await updateUserProfile(match.params.userId, userProfile);
     console.log(submitResult);
 
-    if (submitResult === 200) {
-      this.setState({
-        showModal: true,
-        modalMessage: 'Your Changes were saved successfully',
-        modalTitle: 'Success',
-        type: 'save',
-      });
-      const elem = document.getElementById('warningCard');
-      elem.style.display = 'none';
-    } else {
-      this.setState({
-        showModal: true,
-        modalMessage: 'Please try again.',
-        modalTitle: 'Error',
-        type: 'save',
-      });
-    }
+    // if (submitResult === 200) {
+    //   this.setState({
+    //     showModal: true,
+    //     modalMessage: 'Your Changes were saved successfully',
+    //     modalTitle: 'Success',
+    //     type: 'save',
+    //   });
+    //   const elem = document.getElementById('warningCard');
+    //   // elem.style.display = 'none';
+    // } else {
+    //   this.setState({
+    //     showModal: true,
+    //     modalMessage: 'Please try again.',
+    //     modalTitle: 'Error',
+    //     type: 'save',
+    //   });
+    // }
   };
 
-  updateLink = (personalLinksUpdate, adminLinksUpdate) => {
-    const elem = document.getElementById('warningCard');
-    elem.style.display = 'block';
-
-    return this.setState(() => ({
-      showModal: false,
-      userProfile: {
-        ...this.state.userProfile,
-        personalLinks: personalLinksUpdate,
-        adminLinks: adminLinksUpdate,
-      },
-    }));
-  };
+  updateLink = (personalLinksUpdate, adminLinksUpdate) => this.setState(() => ({
+    showModal: false,
+    userProfile: {
+      ...this.state.userProfile,
+      personalLinks: personalLinksUpdate,
+      adminLinks: adminLinksUpdate,
+    },
+  }));
 
   handleLinkModel = (status = true, type = 'message', linkSection) => {
     if (type === 'addLink') {
@@ -450,7 +464,7 @@ class EditProfile extends Component {
       return (
         <button
           type="button"
-          className={styleEdit.modLinkButton}
+          className="modLinkButton"
           onClick={() => {
             this.handleLinkModel(true, 'updateLink', user);
           }}
@@ -505,7 +519,7 @@ class EditProfile extends Component {
         return (
           <Sticky topOffset={0}>
             {({ style }) => (
-              <h7
+              <h6
                 id="warningCard"
                 style={{
                   ...style,
@@ -521,7 +535,7 @@ class EditProfile extends Component {
               >
                 Reminder: You must click "Save Changes" at the bottom of this page. If you don't,
                 changes to your profile will not be saved.
-              </h7>
+              </h6>
             )}
           </Sticky>
         );
@@ -543,6 +557,7 @@ class EditProfile extends Component {
     const isUserSelf = targetUserId === requestorId;
     const isUserAdmin = requestorRole === 'Administrator';
     const canEditFields = isUserAdmin || isUserSelf;
+    const weeklyHoursReducer = (acc, val) => acc + (parseInt(val.hours, 10) + parseInt(val.minutes, 10) / 60);
 
     if (isLoading === true) {
       return (
@@ -625,7 +640,12 @@ class EditProfile extends Component {
               <Col md="4">
                 <div className="profile-work">
                   <p>LINKS</p>
-                  {this.modLinkButton(canEditFields, isUserAdmin)}
+                  {/* {this.modLinkButton(canEditFields, isUserAdmin)} */}
+                  <LinkModButton
+                    updateLink={this.updateLink}
+                    userProfile={userProfile}
+                    isUserAdmin={isUserAdmin}
+                  />
                   <UserLinks
                     linkSection="user"
                     links={personalLinks}
@@ -638,7 +658,17 @@ class EditProfile extends Component {
                     handleLinkModel={this.handleLinkModel}
                     isUserAdmin={isUserAdmin}
                   />
-                  <p>BLUE SQAURES</p>
+                  {/* <p>BLUE SQAURES</p> */}
+                  <div className="blueSquare-toggle">
+                    <div style={{ display: 'inline-block' }}>BLUE SQUARES</div>
+                    <ToggleSwitch
+                      style={{ display: 'inline-block' }}
+                      switchType="bluesquares"
+                      state={privacySettings?.blueSquares}
+                      handleUserProfile={this.handleUserProfile}
+                    />
+                  </div>
+
                   <BlueSquare
                     isUserAdmin={isUserAdmin}
                     blueSquares={infringments}
@@ -665,6 +695,16 @@ class EditProfile extends Component {
                         className={classnames({ active: this.state.activeTab === '2' }, 'nav-link')}
                         onClick={() => {
                           this.toggleTab('2');
+                        }}
+                      >
+                        Volunteering Times
+                      </NavLink>
+                    </NavItem>
+                    <NavItem>
+                      <NavLink
+                        className={classnames({ active: this.state.activeTab === '3' }, 'nav-link')}
+                        onClick={() => {
+                          this.toggleTab('3');
                         }}
                       >
                         More Tabs
@@ -766,7 +806,66 @@ class EditProfile extends Component {
                       </Row>
                     </Form>
                   </TabPane>
-                  <TabPane tabId="2" />
+                  <TabPane tabId="2">
+                    <Row>
+                      <Col md="6">
+                        <Label>Start Date</Label>
+                      </Col>
+                      <Col md="6">
+                        <p>{moment(userProfile.createdDate).format('YYYY-MM-DD')}</p>
+                      </Col>
+                    </Row>
+                    <Row>
+                      <Col md="6">
+                        <Label>End Date</Label>
+                      </Col>
+                      <Col md="6">
+                        <p>Present</p>
+                      </Col>
+                    </Row>
+                    <Row>
+                      <Col md="6">
+                        <Label>Total Hours This Week</Label>
+                      </Col>
+                      <Col md="6">
+                        <p>{this.props.timeEntries.weeks[0].reduce(weeklyHoursReducer, 0)}</p>
+                      </Col>
+                    </Row>
+                    <Row>
+                      <Col md="6">
+                        <Label>Weekly Commited Hours </Label>
+                      </Col>
+                      <Col md="6">
+                        <Input
+                          type="number"
+                          name="weeklyComittedHours"
+                          id="weeklyComittedHours"
+                          className={styleProfile.profileText}
+                          value={userProfile.weeklyComittedHours}
+                          onChange={this.handleUserProfile}
+                          placeholder="weeklyComittedHours"
+                          invalid={!isUserAdmin}
+                        />
+                      </Col>
+                    </Row>
+                    <Row>
+                      <Col md="6">
+                        <Label>Total Hours </Label>
+                      </Col>
+                      <Col md="6">
+                        <Input
+                          type="number"
+                          name="totalComittedHours"
+                          id="totalComittedHours"
+                          className={styleProfile.profileText}
+                          value={userProfile.totalComittedHours}
+                          onChange={this.handleUserProfile}
+                          placeholder="TotalComittedHours"
+                          invalid={!isUserAdmin}
+                        />
+                      </Col>
+                    </Row>
+                  </TabPane>
                 </TabContent>
               </Col>
 
@@ -780,15 +879,11 @@ class EditProfile extends Component {
                 margin: 5,
               }}
             >
-              <Button
-                outline
-                color="primary"
-                onClick={this.handleSubmit}
-                style={{ display: 'flex', margin: 5 }}
+              <SaveButton
+                handleSubmit={this.handleSubmit}
                 disabled={!formValid.firstName || !formValid.lastName || !formValid.email}
-              >
-                Save Changes
-              </Button>
+                userProfile={userProfile}
+              />
               <Link
                 to={`/userprofile/${this.state.userProfile._id}`}
                 className="btn btn-outline-danger"

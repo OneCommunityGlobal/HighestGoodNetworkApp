@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
-import { useHistory } from 'react-router'
+import React, { useState, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { useHistory } from 'react-router';
 import {
   Form,
   FormGroup,
@@ -13,17 +13,18 @@ import {
   ModalHeader,
   ModalBody,
   ModalFooter,
-} from 'reactstrap'
-import moment from 'moment'
-import _ from 'lodash'
-import { Editor } from '@tinymce/tinymce-react'
-import ReactHtmlParser from 'react-html-parser'
-import { postTimeEntry, editTimeEntry } from '../../actions/timeEntries'
-import { getUserProjects } from '../../actions/userProjects'
-import { stopTimer } from '../../actions/timer'
+} from 'reactstrap';
+import moment from 'moment';
+import _ from 'lodash';
+import { Editor } from '@tinymce/tinymce-react';
+import ReactHtmlParser from 'react-html-parser';
+import { postTimeEntry, editTimeEntry } from '../../actions/timeEntries';
+import { getUserProjects } from '../../actions/userProjects';
+import { stopTimer } from '../../actions/timer';
+import { updateUserProfile } from '../../actions/userProfile';
 
-const TimeEntryForm = ({ userId, edit, data, isOpen, toggle, timer }) => {
-  const fromTimer = !_.isEmpty(timer)
+const TimeEntryForm = ({ userId, edit, data, isOpen, toggle, timer, userProfile }) => {
+  const fromTimer = !_.isEmpty(timer);
 
   const initialState = {
     dateOfWork: moment().format('YYYY-MM-DD'),
@@ -32,7 +33,7 @@ const TimeEntryForm = ({ userId, edit, data, isOpen, toggle, timer }) => {
     projectId: '',
     notes: '',
     isTangible: data ? data.isTangible : true,
-  }
+  };
   const initialReminder = {
     notification: false,
     has_link: !!data,
@@ -41,260 +42,278 @@ const TimeEntryForm = ({ userId, edit, data, isOpen, toggle, timer }) => {
     edit_count: data ? data.editCount : 0,
     edit_notice: true,
     // edittime: false,
-  }
+  };
 
-  const [inputs, setInputs] = useState(edit ? data : initialState)
-  const [errors, setErrors] = useState({})
-  const dispatch = useDispatch()
-  const history = useHistory()
-  const [reminder, setReminder] = useState(initialReminder)
+  const [inputs, setInputs] = useState(edit ? data : initialState);
+  const [errors, setErrors] = useState({});
+  const dispatch = useDispatch();
+  const history = useHistory();
+  const [reminder, setReminder] = useState(initialReminder);
 
   const openModal = () =>
-    setReminder(reminder => ({
+    setReminder((reminder) => ({
       ...reminder,
       notification: !reminder.notification,
-    }))
+    }));
 
   const cancelChange = () => {
-    setReminder(reminder => ({
+    setReminder((reminder) => ({
       ...reminder,
       notification: !reminder.notification,
-    }))
-    setInputs(inputs => ({
+    }));
+    setInputs((inputs) => ({
       ...inputs,
       hours: data.hours,
       minutes: data.minutes,
-    }))
-  }
+    }));
+  };
 
   useEffect(() => {
-    const fetchProjects = async userId => {
-      await dispatch(getUserProjects(userId))
-    }
-    fetchProjects(userId)
-  }, [userId])
+    const fetchProjects = async (userId) => {
+      await dispatch(getUserProjects(userId));
+    };
+    fetchProjects(userId);
+  }, [userId]);
 
   useEffect(() => {
-    setInputs({ ...inputs, ...timer })
-  }, [timer])
+    setInputs({ ...inputs, ...timer });
+  }, [timer]);
 
-  const userProjects = useSelector(state => state.userProjects)
-  let projects = []
+  const userProjects = useSelector((state) => state.userProjects);
+  let projects = [];
   if (!_.isEmpty(userProjects)) {
-    projects = userProjects.projects
+    projects = userProjects.projects;
   }
-  const projectOptions = projects.map(project => (
+  const projectOptions = projects.map((project) => (
     <option value={project.projectId} key={project.projectId}>
       {' '}
       {project.projectName}{' '}
     </option>
-  ))
+  ));
   projectOptions.unshift(
     <option value="" key="" disabled>
       Select Project
     </option>,
-  )
+  );
 
-  const validateForm = edittime => {
-    const result = {}
+  const validateForm = (edittime) => {
+    const result = {};
 
     if (inputs.dateOfWork === '') {
-      result.dateOfWork = 'Date is required'
+      result.dateOfWork = 'Date is required';
     } else {
-      const date = moment(inputs.dateOfWork)
+      const date = moment(inputs.dateOfWork);
       if (!date.isValid()) {
-        result.dateOfWork = 'Invalid date'
+        result.dateOfWork = 'Invalid date';
       }
     }
 
     if (inputs.hours === '' && inputs.minutes === '') {
-      result.time = 'Time is required'
+      result.time = 'Time is required';
     } else {
-      const hours = inputs.hours === '' ? 0 : inputs.hours * 1
-      const minutes = inputs.minutes === '' ? 0 : inputs.minutes * 1
+      const hours = inputs.hours === '' ? 0 : inputs.hours * 1;
+      const minutes = inputs.minutes === '' ? 0 : inputs.minutes * 1;
       if (!Number.isInteger(hours) || !Number.isInteger(minutes)) {
-        result.time = 'Hours and minutes should be integers'
+        result.time = 'Hours and minutes should be integers';
       }
       if (hours < 0 || minutes < 0 || (hours === 0 && minutes === 0)) {
-        result.time = 'Time should be greater than 0'
+        result.time = 'Time should be greater than 0';
       }
     }
 
     if (inputs.projectId === '') {
-      result.projectId = 'Project is required'
+      result.projectId = 'Project is required';
     }
 
     if (reminder.num_words < 10) {
-      openModal()
-      setReminder(reminder => ({
+      openModal();
+      setReminder((reminder) => ({
         ...reminder,
         remind:
           'Please write a more detailed description of your work completed, write at least 1-2 sentences.',
-      }))
-      result.notes = 'Description and reference link are required'
+      }));
+      result.notes = 'Description and reference link are required';
     }
 
     if (reminder.num_words >= 10 && !reminder.has_link) {
-      openModal()
-      setReminder(reminder => ({
+      openModal();
+      setReminder((reminder) => ({
         ...reminder,
         remind:
           'Do you have a link to your Google Doc or other place to review this work? You should add it if you do.',
-      }))
-      result.notes = 'Description and reference link are required'
+      }));
+      result.notes = 'Description and reference link are required';
     }
 
     if (edit && reminder.edit_notice && reminder.edit_count < 4 && edittime) {
-      openModal()
-      setReminder(reminder => ({
+      openModal();
+      setReminder((reminder) => ({
         ...reminder,
         remind:
           'You are about to edit your time, if you do this your manager will be notified you’ve edited it. The system automatically tracks how many times you’ve edited your time and will issue blue squares if you edit it repeatedly. Please use the timer properly so your time is logged accurately.',
         edit_notice: !reminder.edit_notice,
-      }))
-      return false
+      }));
+      return false;
     }
 
     if (edit && reminder.edit_notice && reminder.edit_count == 4 && edittime) {
-      openModal()
-      setReminder(reminder => ({
+      openModal();
+      setReminder((reminder) => ({
         ...reminder,
         remind:
           'You’ve edited your time 3 times already as a member of the team, are you sure you want to edit it again? Editing your time more than 5 times in a calendar year will result in you receiving a blue square.',
         edit_notice: !reminder.edit_notice,
-      }))
-      return false
+      }));
+      return false;
     }
 
     if (edit && reminder.edit_notice && reminder.edit_count == 5 && edittime) {
-      openModal()
-      setReminder(reminder => ({
+      openModal();
+      setReminder((reminder) => ({
         ...reminder,
         remind:
           'Heads up this is your fifth and final time being allowed to edit your time without receiving a blue square. Please use the timer properly from this point forward if you’d like to avoid receiving one.',
         edit_notice: !reminder.edit_notice,
-      }))
-      return false
+      }));
+      return false;
     }
     if (edit && reminder.edit_notice && (reminder.edit_count - 5) % 2 == 1 && edittime) {
-      setReminder(reminder => ({
+      setReminder((reminder) => ({
         ...reminder,
         edit_notice: !reminder.edit_notice,
-      }))
+      }));
     }
 
     if (edit && reminder.edit_notice && (reminder.edit_count - 5) % 2 == 0 && edittime) {
-      openModal()
-      setReminder(reminder => ({
+      openModal();
+      setReminder((reminder) => ({
         ...reminder,
         remind: `Heads up this is your ${reminder.edit_count}th time and this edit would make you receive a blue square. Please use the timer properly from this point forward if you’d like to avoid receiving one.`,
         edit_notice: !reminder.edit_notice,
-      }))
-      return false
+      }));
+      return false;
     }
 
-    setErrors(result)
-    return _.isEmpty(result)
-  }
+    setErrors(result);
+    return _.isEmpty(result);
+  };
 
-  const handleSubmit = async event => {
+  const handleSubmit = async (event) => {
     if (event) {
-      event.preventDefault()
+      event.preventDefault();
     }
 
-    const hours = inputs.hours === '' ? '0' : inputs.hours
-    const minutes = inputs.minutes === '' ? '0' : inputs.minutes
+    const hours = inputs.hours === '' ? '0' : inputs.hours;
+    const minutes = inputs.minutes === '' ? '0' : inputs.minutes;
 
-    const edittime = edit && (data.hours != hours || data.minutes != minutes)
+    const edittime = edit && (data.hours != hours || data.minutes != minutes);
 
     if (!validateForm(edittime)) {
-      return
+      return;
     }
-    const timeEntry = {}
-    timeEntry.personId = userId
-    timeEntry.dateOfWork = inputs.dateOfWork
+    const timeEntry = {};
+    timeEntry.personId = userId;
+    timeEntry.dateOfWork = inputs.dateOfWork;
 
-    timeEntry.projectId = inputs.projectId
-    timeEntry.notes = inputs.notes
-    timeEntry.isTangible = inputs.isTangible.toString()
+    timeEntry.projectId = inputs.projectId;
+    timeEntry.notes = inputs.notes;
+    timeEntry.isTangible = inputs.isTangible.toString();
 
-    let status
+    let status;
     if (edit) {
       if (edittime) {
-        timeEntry.editCount = reminder.edit_count + 1
+        timeEntry.editCount = reminder.edit_count + 1;
       }
-      timeEntry.hours = hours
-      timeEntry.minutes = minutes
+      timeEntry.hours = hours;
+      timeEntry.minutes = minutes;
       if (!edittime || !reminder.notice) {
-        status = await dispatch(editTimeEntry(data._id, timeEntry))
+        status = await dispatch(editTimeEntry(data._id, timeEntry));
       }
     } else {
-      timeEntry.timeSpent = `${hours}:${minutes}:00`
-      status = await dispatch(postTimeEntry(timeEntry))
+      timeEntry.timeSpent = `${hours}:${minutes}:00`;
+      status = await dispatch(postTimeEntry(timeEntry));
     }
+    let deltatime;
+    if (edit) {
+      deltatime = (
+        hours -
+        parseInt(data.hours, 10) +
+        (parseInt(minutes, 10) - parseInt(data.minutes, 10)) / 60
+      ).toFixed(2);
+    } else {
+      deltatime = (parseInt(hours, 10) + parseInt(minutes, 10) / 60).toFixed(2);
+    }
+
+    const totalTime = parseInt(userProfile.totalComittedHours, 10) + parseInt(deltatime, 10);
+    console.log(totalTime);
+    const updatedUserprofile = {
+      ...userProfile,
+      totalComittedHours: totalTime,
+    };
+    await dispatch(updateUserProfile(userProfile._id, updatedUserprofile));
     // console.log('kkk')
     if (fromTimer) {
       if (status === 200) {
-        const timerStatus = await dispatch(stopTimer(userId))
+        const timerStatus = await dispatch(stopTimer(userId));
         if (timerStatus === 200 || timerStatus === 201) {
-          setInputs(inputs => initialState)
-          setReminder(reminder => initialReminder)
-          toggle()
+          setInputs((inputs) => initialState);
+          setReminder((reminder) => initialReminder);
+          toggle();
         }
-        history.push(`/timelog/${userId}`)
+        history.push(`/timelog/${userId}`);
       }
     } else if (!edit) {
-      setInputs(inputs => initialState)
-      setReminder(reminder => initialReminder)
-      toggle()
+      setInputs((inputs) => initialState);
+      setReminder((reminder) => initialReminder);
+      toggle();
     } else if (!reminder.notice && edittime) {
-      setReminder(reminder => ({
+      setReminder((reminder) => ({
         ...reminder,
         edit_count: reminder.edit_count + 1,
         edit_notice: !reminder.edit_notice,
-      }))
-      toggle()
+      }));
+      toggle();
     } else if (!edittime) {
       // setReminder(reminder => initialReminder)
       // console.log('kkkkkkkkk')
-      toggle()
+      toggle();
     }
-  }
+  };
 
-  const handleInputChange = event => {
-    event.persist()
-    setInputs(inputs => ({
+  const handleInputChange = (event) => {
+    event.persist();
+    setInputs((inputs) => ({
       ...inputs,
       [event.target.name]: event.target.value,
-    }))
-  }
+    }));
+  };
 
   const handleEditorChange = (content, editor) => {
-    const { wordcount } = editor.plugins
+    const { wordcount } = editor.plugins;
 
-    setInputs(inputs => ({ ...inputs, [editor.id]: content }))
-    setReminder(reminder => ({
+    setInputs((inputs) => ({ ...inputs, [editor.id]: content }));
+    setReminder((reminder) => ({
       ...reminder,
       num_words: wordcount.body.getWordCount(),
       has_link: inputs.notes.indexOf('http://') > -1 || inputs.notes.indexOf('https://') > -1,
-    }))
-  }
+    }));
+  };
 
-  const handleCheckboxChange = event => {
-    event.persist()
-    setInputs(inputs => ({
+  const handleCheckboxChange = (event) => {
+    event.persist();
+    setInputs((inputs) => ({
       ...inputs,
       [event.target.name]: event.target.checked,
-    }))
-  }
+    }));
+  };
 
-  const clearForm = event => {
-    setInputs(inputs => initialState)
-    setReminder(reminder => initialReminder)
-    setErrors(errors => ({}))
-  }
+  const clearForm = (event) => {
+    setInputs((inputs) => initialState);
+    setReminder((reminder) => initialReminder);
+    setErrors((errors) => ({}));
+  };
 
-  const isAdmin = useSelector(state => state.auth.user.role) === 'Administrator'
+  const isAdmin = useSelector((state) => state.auth.user.role) === 'Administrator';
 
   return (
     <Modal isOpen={isOpen} toggle={toggle}>
@@ -451,7 +470,7 @@ const TimeEntryForm = ({ userId, edit, data, isOpen, toggle, timer }) => {
         </Button>
       </ModalFooter>
     </Modal>
-  )
-}
+  );
+};
 
-export default TimeEntryForm
+export default TimeEntryForm;

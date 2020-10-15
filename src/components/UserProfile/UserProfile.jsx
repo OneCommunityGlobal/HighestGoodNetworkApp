@@ -16,6 +16,7 @@ import {
 import Image from 'react-bootstrap/Image';
 import { Link } from 'react-router-dom';
 import classnames from 'classnames';
+import moment from 'moment';
 import Loading from '../common/Loading';
 import { orange, silverGray, warningRed } from '../../constants/colors';
 import BlueSquare from './BlueSquares';
@@ -216,6 +217,8 @@ class UserProfile extends Component {
     const isUserSelf = targetUserId === requestorId;
     const isUserAdmin = requestorRole === 'Administrator';
     const canEdit = isUserAdmin || isUserSelf;
+    const weeklyHoursReducer = (acc, val) => acc + (parseInt(val.hours, 10) + parseInt(val.minutes, 10) / 60);
+    // (parseInt(a.minutes, 10) + parseInt(b.minutes, 10)) / 60;
 
     return (
       <div>
@@ -256,7 +259,13 @@ class UserProfile extends Component {
                 <h5>{`${firstName} ${lastName}`}</h5>
                 <h6>{jobTitle}</h6>
                 <p className="proile-rating">
-                  Volunteering Period : <span>****-****</span>
+                  From :
+                  {' '}
+                  <span>{moment(userProfile.createdDate).format('YYYY-MM-DD')}</span>
+                  {'   '}
+                  To:
+                  {' '}
+                  <span>Present</span>
                 </p>
               </div>
               <div className="p-5 my-2 bg--cadet-blue text-light">
@@ -282,12 +291,16 @@ class UserProfile extends Component {
                   handleLinkModel={this.handleLinkModel}
                   isUserAdmin={isUserAdmin}
                 />
-                <p>BLUE SQAURES</p>
-                <BlueSquare
-                  isUserAdmin={false}
-                  blueSquares={infringments}
-                  handleBlueSquare={this.handleBlueSquare}
-                />
+                {privacySettings.blueSquares && (
+                  <div>
+                    <p>BLUE SQAURES</p>
+                    <BlueSquare
+                      isUserAdmin={false}
+                      blueSquares={infringments}
+                      handleBlueSquare={this.handleBlueSquare}
+                    />
+                  </div>
+                )}
               </div>
             </Col>
             <Col md="8">
@@ -310,6 +323,16 @@ class UserProfile extends Component {
                         this.toggleTab('2');
                       }}
                     >
+                      Volunteering Times
+                    </NavLink>
+                  </NavItem>
+                  <NavItem>
+                    <NavLink
+                      className={classnames({ active: this.state.activeTab === '3' }, 'nav-link')}
+                      onClick={() => {
+                        this.toggleTab('3');
+                      }}
+                    >
                       More Tabs
                     </NavLink>
                   </NavItem>
@@ -330,24 +353,69 @@ class UserProfile extends Component {
                       <p>{`${firstName} ${lastName}`}</p>
                     </Col>
                   </Row>
+                  {privacySettings.email && (
+                    <Row>
+                      <Col md="6">
+                        <Label>Email</Label>
+                      </Col>
+                      <Col md="6">
+                        <p>{email}</p>
+                      </Col>
+                    </Row>
+                  )}
+                  {privacySettings.phoneNumber && (
+                    <Row>
+                      <Col md="6">
+                        <Label>Phone</Label>
+                      </Col>
+                      <Col md="6">
+                        <p>{this.formatPhoneNumber(phoneNumber)}</p>
+                      </Col>
+                    </Row>
+                  )}
+                </TabPane>
+                <TabPane tabId="2">
                   <Row>
                     <Col md="6">
-                      <Label>Email</Label>
+                      <Label>Start Date</Label>
                     </Col>
                     <Col md="6">
-                      <p>{email}</p>
+                      <p>{moment(userProfile.createdDate).format('YYYY-MM-DD')}</p>
                     </Col>
                   </Row>
                   <Row>
                     <Col md="6">
-                      <Label>Phone</Label>
+                      <Label>End Date</Label>
                     </Col>
                     <Col md="6">
-                      <p>{this.formatPhoneNumber(phoneNumber)}</p>
+                      <p>Present</p>
+                    </Col>
+                  </Row>
+                  <Row>
+                    <Col md="6">
+                      <Label>Total Hours This Week</Label>
+                    </Col>
+                    <Col md="6">
+                      <p>{this.props.timeEntries.weeks[0].reduce(weeklyHoursReducer, 0)}</p>
+                    </Col>
+                  </Row>
+                  <Row>
+                    <Col md="6">
+                      <Label>Weekly Commited Hours </Label>
+                    </Col>
+                    <Col md="6">
+                      <p>{this.state.userProfile.weeklyComittedHours}</p>
+                    </Col>
+                  </Row>
+                  <Row>
+                    <Col md="6">
+                      <Label>Total Hours </Label>
+                    </Col>
+                    <Col md="6">
+                      <p>{this.state.userProfile.totalComittedHours}</p>
                     </Col>
                   </Row>
                 </TabPane>
-                <TabPane tabId="2" />
               </TabContent>
             </Col>
           </Row>

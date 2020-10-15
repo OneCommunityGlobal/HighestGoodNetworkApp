@@ -1,21 +1,22 @@
 import { connect } from 'react-redux';
 import _ from 'lodash';
+import { getUserProfile, updateUserProfile, clearUserProfile } from '../../../actions/userProfile';
+
 import {
-  getUserProfile,
-  updateUserProfile,
-  clearUserProfile,
-} from '../../../actions/userProfile';
-
-import {  getAllUserTeams, updateTeam, deleteTeamMember, addTeamMember } from '../../../actions/allTeamsAction'
-
+  getAllUserTeams,
+  updateTeam,
+  deleteTeamMember,
+  addTeamMember,
+} from '../../../actions/allTeamsAction';
 
 import UserProfileEdit from './UserProfileEdit';
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state) => ({
   auth: state.auth,
   userProfile: _.get(state, 'userProfile'),
   user: _.get(state, 'user', {}),
-  state
+  timeEntries: state.timeEntries,
+  state,
 });
 
 export default connect(mapStateToProps, {
