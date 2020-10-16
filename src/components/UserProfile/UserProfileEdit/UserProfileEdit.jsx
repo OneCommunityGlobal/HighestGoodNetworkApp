@@ -39,6 +39,8 @@ import '../UserProfile.scss';
 import './UserProfileEdit.scss';
 import LinkModButton from './LinkModButton';
 import TeamView from '../Teamsview';
+import ProjectsTab from '../TeamsAndProjects/ProjectsTab';
+import TeamsTab from '../TeamsAndProjects/TeamsTab';
 
 const styleProfile = {};
 class EditProfile extends Component {
@@ -98,6 +100,59 @@ class EditProfile extends Component {
       });
     }
   };
+
+  onDeleteTeam = (deletedTeamId) => {
+    const _userProfile = Object.assign({}, this.state.userProfile);
+    const filteredTeam = _userProfile.teams.filter(team => team._id !== deletedTeamId);
+    _userProfile.teams = filteredTeam;
+
+    this.setState({
+      userProfile: _userProfile,
+    }, () => { this.saveChanges(); });
+  }
+
+  onDeleteProject = (deletedProjectId) => {
+    const _userProfile = Object.assign({}, this.state.userProfile);
+    const filteredProject = _userProfile.projects.filter(project => project._id !== deletedProjectId);
+    _userProfile.projects = filteredProject;
+
+    this.setState({
+      userProfile: _userProfile,
+    }, () => { this.saveChanges(); });
+  }
+
+  onAssignTeam = (assignedTeam) => {
+    const _userProfile = Object.assign({}, this.state.userProfile);
+    if (_userProfile.teams) {
+      _userProfile.teams.push(assignedTeam);
+    } else {
+      _userProfile.teams = [assignedTeam];
+    }
+
+    this.setState({
+      userProfile: _userProfile,
+    }, () => { this.saveChanges(); });
+  }
+
+  onAssignProject = (assignedProject) => {
+    const _userProfile = Object.assign({}, this.state.userProfile);
+    if (_userProfile.projects) {
+      _userProfile.projects.push(assignedProject);
+    } else {
+      _userProfile.projects = [assignedProject];
+    }
+
+    this.setState({
+      userProfile: _userProfile,
+    }, () => { this.saveChanges(); });
+  }
+
+  saveChanges = () => {
+    this.props.updateUserProfile(
+      this.props.match.params.userId,
+      this.state.userProfile,
+    );
+  }
 
   handleUserProfile = (event) => {
     this.setState({
@@ -707,6 +762,26 @@ class EditProfile extends Component {
                           this.toggleTab('3');
                         }}
                       >
+                        Teams
+                      </NavLink>
+                    </NavItem>
+                    <NavItem>
+                      <NavLink
+                        className={classnames({ active: this.state.activeTab === '4' }, 'nav-link')}
+                        onClick={() => {
+                          this.toggleTab('4');
+                        }}
+                      >
+                        Projects
+                      </NavLink>
+                    </NavItem>
+                    <NavItem>
+                      <NavLink
+                        className={classnames({ active: this.state.activeTab === '5' }, 'nav-link')}
+                        onClick={() => {
+                          this.toggleTab('6');
+                        }}
+                      >
                         More Tabs
                       </NavLink>
                     </NavItem>
@@ -865,6 +940,27 @@ class EditProfile extends Component {
                         />
                       </Col>
                     </Row>
+                  </TabPane>
+                  <TabPane tabId="3">
+                    <TeamsTab
+                      userTeams={this.state ? this.state.userProfile.teams : []}
+                      teamsData={this.props ? this.props.allTeams.allTeamsData : []}
+                      onAssignTeam={this.onAssignTeam}
+                      onDeleteteam={this.onDeleteTeam}
+                      isUserAdmin={isUserAdmin}
+                      edit
+                    />
+                  </TabPane>
+                  <TabPane tabId="4">
+                    <ProjectsTab
+                      userProjects={this.state ? this.state.userProfile.projects : []}
+                      projectsData={this.props ? this.props.allProjects.projects : []}
+                      onAssignProject={this.onAssignProject}
+                      onDeleteProject={this.onDeleteProject}
+                      isUserAdmin={isUserAdmin}
+                      edit
+                    />
+
                   </TabPane>
                 </TabContent>
               </Col>

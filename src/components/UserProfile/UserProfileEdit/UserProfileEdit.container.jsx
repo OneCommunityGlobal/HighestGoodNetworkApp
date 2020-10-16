@@ -11,11 +11,14 @@ import {
 
 import UserProfileEdit from './UserProfileEdit';
 
-const mapStateToProps = (state) => ({
+const mapStateToProps = state => ({
   auth: state.auth,
   userProfile: _.get(state, 'userProfile'),
   user: _.get(state, 'user', {}),
   timeEntries: state.timeEntries,
+  userProjects: state.userProjects,
+  allProjects: _.get(state, 'allProjects'),
+  allTeams: state,
   state,
 });
 
@@ -27,4 +30,5 @@ export default connect(mapStateToProps, {
   updateTeam,
   deleteTeamMember,
   addTeamMember,
+
 })(UserProfileEdit);

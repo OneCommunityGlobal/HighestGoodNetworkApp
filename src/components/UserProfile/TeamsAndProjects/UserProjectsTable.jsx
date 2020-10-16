@@ -1,25 +1,26 @@
-import React, { useState } from 'react'
-import { Button } from 'reactstrap'
-import './TeamsAndProjects.css'
+import React, { useState } from 'react';
+import { Button } from 'reactstrap';
+import './TeamsAndProjects.css';
 
 const UserProjectsTable = React.memo((props) => {
-
-  const [addProjectPopupOpen, showProjectPopup] = useState(false)
+  const [addProjectPopupOpen, showProjectPopup] = useState(false);
 
   return (
-    <div className='projecttable-container'>
-      <div className='container'>
-        <div className='row'>
-          <div className='col' style={{ backgroundColor: ' #e9ecef', border: '1px solid #ced4da', marginBottom: '10px' }}>
-            <span className='projects-span'>Projects</span>
+    <div className="projecttable-container">
+      <div className="container">
+        <div className="row">
+          <div className="col" style={{ backgroundColor: ' #e9ecef', border: '1px solid #ced4da', marginBottom: '10px' }}>
+            <span className="projects-span">Projects</span>
           </div>
-          <div className='col'>
+          {props.edit && (
+          <div className="col">
             {
-              props.isUserAdmin ?
-                <Button className='btn-addproject' color="primary" onClick={() => { props.onButtonClick() }} >Assign Project</Button>
+              props.isUserAdmin
+                ? <Button className="btn-addproject" color="primary" onClick={() => { props.onButtonClick(); }}>Assign Project</Button>
                 : <></>
             }
           </div>
+          )}
         </div>
       </div>
       <div style={{ maxHeight: '300px', overflow: 'auto' }}>
@@ -37,7 +38,7 @@ const UserProjectsTable = React.memo((props) => {
                 <tr>
                   <td>{index + 1}</td>
                   <td>{`${project.projectName}`}</td>
-                  <td><Button color="danger" onClick={(e) => { props.onDeleteClicK(project._id) }}>Delete</Button></td>
+                  {props.edit && (<td><Button color="danger" onClick={(e) => { props.onDeleteClicK(project._id); }}>Delete</Button></td>)}
                 </tr>
               )) : <></>
             }
@@ -46,6 +47,6 @@ const UserProjectsTable = React.memo((props) => {
         </table>
       </div>
     </div>
-  )
-})
+  );
+});
 export default UserProjectsTable;

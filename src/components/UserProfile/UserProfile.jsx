@@ -24,6 +24,9 @@ import Modal from './UserProfileModal';
 import UserLinks from './UserLinks';
 // import styleProfile from './UserProfile.module.scss';
 import './UserProfile.scss';
+import TeamsTab from './TeamsAndProjects/TeamsTab';
+import ProjectsTab from './TeamsAndProjects/ProjectsTab';
+
 import TeamView from './Teamsview';
 import UserTeamProjectContainer from './TeamsAndProjects/UserTeamProjectContainer';
 
@@ -394,6 +397,26 @@ class UserProfile extends Component {
                         this.toggleTab('3');
                       }}
                     >
+                      Teams
+                    </NavLink>
+                  </NavItem>
+                  <NavItem>
+                    <NavLink
+                      className={classnames({ active: this.state.activeTab === '4' }, 'nav-link')}
+                      onClick={() => {
+                        this.toggleTab('4');
+                      }}
+                    >
+                      Projects
+                    </NavLink>
+                  </NavItem>
+                  <NavItem>
+                    <NavLink
+                      className={classnames({ active: this.state.activeTab === '5' }, 'nav-link')}
+                      onClick={() => {
+                        this.toggleTab('6');
+                      }}
+                    >
                       More Tabs
                     </NavLink>
                   </NavItem>
@@ -465,7 +488,7 @@ class UserProfile extends Component {
                       <Label>Weekly Commited Hours </Label>
                     </Col>
                     <Col md="6">
-                      <p>{this.state.userProfile.weeklyComittedHours}</p>
+                      <p>{userProfile.weeklyComittedHours}</p>
                     </Col>
                   </Row>
                   <Row>
@@ -473,9 +496,30 @@ class UserProfile extends Component {
                       <Label>Total Hours </Label>
                     </Col>
                     <Col md="6">
-                      <p>{this.state.userProfile.totalComittedHours}</p>
+                      <p>{userProfile.totalComittedHours}</p>
                     </Col>
                   </Row>
+                </TabPane>
+                <TabPane tabId="3">
+                  <TeamsTab
+                    userTeams={this.state ? this.state.userProfile.teams : []}
+                    teamsData={this.props ? this.props.allTeams.allTeamsData : []}
+                    onAssignTeam={this.onAssignTeam}
+                    onDeleteteam={this.onDeleteTeam}
+                    isUserAdmin={isUserAdmin}
+                    edit={false}
+                  />
+                </TabPane>
+                <TabPane tabId="4">
+                  <ProjectsTab
+                    userProjects={this.state ? this.state.userProfile.projects : []}
+                    projectsData={this.props ? this.props.allProjects.projects : []}
+                    onAssignProject={this.onAssignProject}
+                    onDeleteProject={this.onDeleteProject}
+                    isUserAdmin={isUserAdmin}
+                    edit={false}
+                  />
+
                 </TabPane>
               </TabContent>
             </Col>
