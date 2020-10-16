@@ -4,6 +4,7 @@ import MonthlyEffort from '../MonthlyEffort'
 import Leaderboard from '../LeaderBoard'
 import WeeklySummaryModal from '../WeeklySummary/WeeklySummaryModal'
 import '../../App.css'
+import TeamMemberTasks from '../TeamMemberTasks/TeamMemberTasks'
 
 const Dashboard = () => (
   <Container fluid>
@@ -31,7 +32,7 @@ const Dashboard = () => (
         </div>
         <div className="p-5 my-2 bg--cadet-blue text-light">
           <div className="py-3 my-3"> </div>
-          <h3>Tasks go here...</h3>
+          <TeamMemberTasks />
           <div className="py-3 my-3"> </div>
         </div>
         <div className="p-5 my-2 bg--dark-sea-green text-light">

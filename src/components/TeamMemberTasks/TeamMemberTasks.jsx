@@ -5,7 +5,7 @@ import { Table, Progress } from 'reactstrap'
 import moment from 'moment'
 import _ from 'lodash'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faClock, faCircle } from '@fortawesome/free-solid-svg-icons'
+import { faClock, faCircle, faBell } from '@fortawesome/free-solid-svg-icons'
 // import { farClock } from '@fortawesome/free-regular-svg-icons'
 
 import httpService from '../../services/httpService'
@@ -27,8 +27,8 @@ class TeamMemberTasks extends Component {
     const userId = this.props.auth.user.userid
     await this.props.getUserProfile(userId)
 
-    const leaderBoardData = this.props.leaderboardData
-    const allManagingTeams = []
+    const { leaderBoardData } = this.props
+    const { managingTeams } = this.props
     let allMembers = []
     const teamMembersPromises = []
     const memberTimeEntriesPromises = []
@@ -37,8 +37,9 @@ class TeamMemberTasks extends Component {
     const wbsProjectPromises = []
     const fetchedProjects = []
     const finalData = []
-
-    const { managingTeams } = this.props
+    const userNotifications = []
+    const taskNotificationPromises = []
+    const allManagingTeams = []
 
     // fetch all team members for each time
     managingTeams.forEach(team => {
@@ -139,6 +140,34 @@ class TeamMemberTasks extends Component {
               }
             }
 
+            const uniqueMemberIds = []
+            uniqueMembers.forEach(member => {
+              uniqueMemberIds.push(member._id)
+            })
+
+            uniqueMemberIds.forEach(memberId => {
+              taskNotificationPromises.push(
+                httpService.get(ENDPOINTS.USER_UNREAD_TASK_NOTIFICATIONS(memberId)),
+              )
+            })
+            Promise.all(taskNotificationPromises).then(data => {
+              for (let i = 0; i < uniqueMemberIds.length; i++) {
+                userNotifications.push({
+                  userId: uniqueMemberIds[i],
+                  taskNotifications: data[i].data,
+                })
+                finalData[i] = {
+                  ...finalData[i],
+                  taskNotifications: data[i].data,
+                }
+              }
+
+              console.log('userNotifications ', userNotifications)
+              console.log('final data ', finalData)
+
+              this.setState({ fetched: true, teams: finalData })
+            })
+
             // // sort each members' tasks by last modified time
             // finalData.forEach(user => {
             //   user.tasks.sort((task1, task2) => {
@@ -148,10 +177,6 @@ class TeamMemberTasks extends Component {
             //     return timeDifference
             //   })
             // })
-
-            console.log('final data ', finalData)
-
-            this.setState({ fetched: true, teams: finalData })
           })
         })
       })
@@ -167,7 +192,8 @@ class TeamMemberTasks extends Component {
     let teamsList = []
     if (teams && teams.length > 0) {
       teamsList = teams.map((member, index) => (
-        <tr>
+        <tr key={index}>
+          {/* green if member has met committed hours for the week, red if not */}
           <td>
             {member.hoursCurrentWeek >= member.weeklyComittedHours ? (
               <FontAwesomeIcon style={{ color: 'green' }} icon={faCircle} />
@@ -180,11 +206,20 @@ class TeamMemberTasks extends Component {
               {`${member.firstName} ${member.lastName}`}
             </Link>
           </td>
+          {/* if user has any task notifications, display bell */}
+          <td>
+            {member.taskNotifications.length > 0 ? (
+              <FontAwesomeIcon style={{ color: 'red' }} icon={faBell} />
+            ) : null}
+          </td>
           <td>{`${member.weeklyCommittedHours} / ${member.hoursCurrentWeek}`}</td>
           <td>
             {member.tasks &&
-              member.tasks.map(task => (
-                <Link to={task.projectId ? `/wbs/tasks/${task.wbsId}/${task.projectId}` : '/'}>
+              member.tasks.map((task, index) => (
+                <Link
+                  key={index}
+                  to={task.projectId ? `/wbs/tasks/${task.wbsId}/${task.projectId}` : '/'}
+                >
                   <p>{`${task.num} ${task.taskName}`}</p>
                 </Link>
               ))}
@@ -201,15 +236,24 @@ class TeamMemberTasks extends Component {
           <h1>Team Member Tasks</h1>
           <Table>
             <thead>
-              <th />
-              <th>Team Member</th>
-              <th width="100px">
-                <FontAwesomeIcon icon={faClock} />
-                /
-                <FontAwesomeIcon style={{ color: 'green' }} icon={faClock} />
-              </th>
-              <th>Tasks(s)</th>
-              <th>Progress</th>
+              <tr>
+                {/* Empty column header for hours completed icon */}
+                <th />
+                <th>Team Member</th>
+                {/* Empty column header for notification icon */}
+                <th />
+                <th width="100px">
+                  <FontAwesomeIcon icon={faClock} title="Weekly Committed Hours" />
+                  /
+                  <FontAwesomeIcon
+                    style={{ color: 'green' }}
+                    icon={faClock}
+                    title="Weekly Completed Hours"
+                  />
+                </th>
+                <th>Tasks(s)</th>
+                <th>Progress</th>
+              </tr>
             </thead>
             <tbody>{teamsList}</tbody>
           </Table>

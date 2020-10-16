@@ -17,7 +17,6 @@ export const ENDPOINTS = {
   PROJECTS: `${APIEndpoint}/projects`,
   TEAM: `${APIEndpoint}/team`,
   TEAM_DATA: teamId => `${APIEndpoint}/team/${teamId}`,
-
   TEAM_USERS: teamId => `${APIEndpoint}/team/${teamId}/users`,
   USER_PROJECTS: userId => `${APIEndpoint}/projects/user/${userId}`,
   PROJECT: `${APIEndpoint}/project/`,
@@ -45,7 +44,9 @@ export const ENDPOINTS = {
   UPDATE_PARENT_TASKS: wbsId => `${APIEndpoint}/task/updateAllParents/${wbsId}`,
   MOVE_TASKS: wbsId => `${APIEndpoint}/tasks/moveTasks/${wbsId}`,
   WEEKLY_SUMMARIES_REPORT: () => `${APIEndpoint}/reports/weeklysummaries`,
-  TIME_ENTRY_CHANGE: timeEntryId => `${APIEndpoint}/TimeEntry/${timeEntryId}`,
   TEAM_MEMBERS: teamId => `${APIEndpoint}/team/${teamId}/users`,
   TEAM_BY_ID: teamId => `${APIEndpoint}/team/${teamId}`,
+  TASKNOTIFICATION: `${APIEndpoint}/tasknotification`,
+  MARK_TASK_NOTIFICATION_READ: taskId => `${APIEndpoint}/tasknotification/read/${taskId}`,
+  USER_UNREAD_TASK_NOTIFICATIONS: userId => `${APIEndpoint}/tasknotification/user/${userId}`,
 }
