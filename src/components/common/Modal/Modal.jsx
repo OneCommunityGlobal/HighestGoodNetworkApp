@@ -1,98 +1,100 @@
-import React, { useState } from 'react'
+import React, { useState } from 'react';
 import {
-	Button,
-	Modal,
-	ModalHeader,
-	ModalBody,
-	ModalFooter,
-	InputGroup,
-	InputGroupAddon,
-	InputGroupText,
-	Input
-} from 'reactstrap'
-const ModalExample = props => {
-	const {
-		isOpen,
-		closeModal,
-		confirmModal,
-		setInactiveModal,
-		modalTitle,
-		modalMessage,
-		type,
-		linkType
-	} = props
+  Button,
+  Modal,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+  InputGroup,
+  InputGroupAddon,
+  InputGroupText,
+  Input,
+} from 'reactstrap';
 
-	const [modal, setModal] = useState(false)
-	const [linkName, setLinkName] = useState('')
-	const [linkURL, setLinkURL] = useState('')
+const ModalExample = (props) => {
+  const {
+    isOpen,
+    closeModal,
+    confirmModal,
+    setInactiveModal,
+    modalTitle,
+    modalMessage,
+    type,
+    linkType,
+  } = props;
 
-	const toggle = () => setModal(!modal)
+  const [modal, setModal] = useState(false);
+  const [linkName, setLinkName] = useState('');
+  const [linkURL, setLinkURL] = useState('');
 
-	const handleChange = event => {
-		event.preventDefault()
+  const toggle = () => setModal(!modal);
 
-		if (event.target.id === 'linkName') {
-			setLinkName(event.target.value.trim())
-		} else {
-			setLinkURL(event.target.value.trim())
-		}
-	}
+  const handleChange = (event) => {
+    event.preventDefault();
 
-	const buttonDisabled = !(linkName && linkURL)
+    if (event.target.id === 'linkName') {
+      setLinkName(event.target.value.trim());
+    } else {
+      setLinkURL(event.target.value.trim());
+    }
+  };
 
-	if (type) {
-		console.log('Type of Modal is ', type, linkName, linkURL, buttonDisabled)
-	}
+  const buttonDisabled = !(linkName && linkURL);
 
-	return (
-		<Modal isOpen={isOpen} toggle={closeModal}>
-			<ModalHeader toggle={closeModal}>{modalTitle}</ModalHeader>
+  if (type) {
+    console.log('Type of Modal is ', type, linkName, linkURL, buttonDisabled);
+  }
 
-			<ModalBody>
-				{type === 'input' ? (
-					<>
-						<InputGroup>
-							<InputGroupAddon addonType='prepend'>
-								<InputGroupText style={{ width: '80px' }}>Name</InputGroupText>
-							</InputGroupAddon>
-							<Input
-								id='linkName'
-								placeholder='Name of the link'
-								onChange={handleChange}
-							/>
-						</InputGroup>
-						<br />
+  return (
+    <Modal isOpen={isOpen} toggle={closeModal}>
+      <ModalHeader toggle={closeModal}>{modalTitle}</ModalHeader>
 
-						<InputGroup>
-							<InputGroupAddon addonType='prepend'>
-								<InputGroupText style={{ width: '80px' }}>Link URL</InputGroupText>
-							</InputGroupAddon>
-							<Input id='linkURL' placeholder='URL of the link' onChange={handleChange} />
-						</InputGroup>
-					</>
-				) : (
-						modalMessage
-					)}
-			</ModalBody>
-			<ModalFooter>
-				<Button color='primary' onClick={closeModal}>
-					Close
-				</Button>
+      <ModalBody>
+        {type === 'input' ? (
+          <>
+            <InputGroup>
+              <InputGroupAddon addonType="prepend">
+                <InputGroupText style={{ width: '80px' }}>Name</InputGroupText>
+              </InputGroupAddon>
+              <Input
+                id="linkName"
+                placeholder="Name of the link"
+                onChange={handleChange}
+              />
+            </InputGroup>
+            <br />
 
-				{confirmModal != null ? <Button color="danger" onClick={confirmModal}>Confirm</Button> : null}
-				{setInactiveModal != null ? <Button color="warning" onClick={setInactiveModal}>Set inactive</Button> : null}
+            <InputGroup>
+              <InputGroupAddon addonType="prepend">
+                <InputGroupText style={{ width: '80px' }}>Link URL</InputGroupText>
+              </InputGroupAddon>
+              <Input id="linkURL" placeholder="URL of the link" onChange={handleChange} />
+            </InputGroup>
+          </>
+        ) : (
+				  modalMessage
+        )}
+      </ModalBody>
+      <ModalFooter>
+        <Button color="primary" onClick={closeModal}>
+          Close
+        </Button>
 
-				{type === 'input' && (
-					<Button
-						color='danger'
-						onClick={() => confirmModal(linkName, linkURL, linkType)}
-						disabled={buttonDisabled}>
-						Add
-					</Button>
-				)}
-			</ModalFooter>
-		</Modal>
-	)
-}
+        {confirmModal != null ? <Button color="danger" onClick={confirmModal}>Confirm</Button> : null}
+        {setInactiveModal != null ? <Button color="warning" onClick={setInactiveModal}>Set inactive</Button> : null}
 
-export default ModalExample
+        {type === 'input' && (
+        <Button
+          color="danger"
+          onClick={() => confirmModal(linkName, linkURL, linkType)}
+          disabled={buttonDisabled}
+        >
+          Add
+        </Button>
+        )}
+      </ModalFooter>
+    </Modal>
+  );
+};
+
+export default ModalExample;

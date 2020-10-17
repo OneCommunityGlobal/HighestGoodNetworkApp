@@ -30,12 +30,13 @@ const successMessages = {
   updatePasswordSuccessful:
     'Your password has been updated. You will be logged out and directed to login page where you can login with your new password.',
 };
-
+let mountedPage;
 describe('Update Password Page', () => {
-  let mountedPage;
+  // let mountedPage;
   beforeEach(() => {
     mountedPage = shallow(
       <UpdatePassword
+
         match={{
           params: {
             userId: 1,
@@ -133,8 +134,8 @@ describe('Update Password Page', () => {
       setField(mountedPage, 'confirmnewpassword', 'ABCDabc1234');
 
       mountedPage.find('form').simulate('submit', {
-        preventDefault: () => {},
-        stopPropagation: () => {},
+        preventDefault: () => { },
+        stopPropagation: () => { },
       });
       expect(mountedPage.instance().state.errors.confirmnewpassword).toEqual(
         errorMessages.confirmpasswordMismatch,
@@ -146,8 +147,8 @@ describe('Update Password Page', () => {
       setField(mountedPage, 'newpassword', 'ABCDabc123');
       setField(mountedPage, 'confirmnewpassword', 'ABCDabc123');
       mountedPage.find('form').simulate('submit', {
-        preventDefault: () => {},
-        stopPropagation: () => {},
+        preventDefault: () => { },
+        stopPropagation: () => { },
       });
       expect(mountedPage.instance().state.errors.newpassword).toEqual(
         errorMessages.oldnewPasswordsSame,
@@ -165,8 +166,8 @@ describe('Update Password Page', () => {
       setField(mountedPage, 'confirmnewpassword', value);
 
       mountedPage.find('form').simulate('submit', {
-        preventDefault: () => {},
-        stopPropagation: () => {},
+        preventDefault: () => { },
+        stopPropagation: () => { },
       });
       expect(spy).toHaveBeenCalled();
     });
@@ -189,8 +190,8 @@ describe('Update Password Page', () => {
       setField(mountedPage, 'newpassword', value);
       setField(mountedPage, 'confirmnewpassword', value);
       mountedPage.find('form').simulate('submit', {
-        preventDefault: () => {},
-        stopPropagation: () => {},
+        preventDefault: () => { },
+        stopPropagation: () => { },
       });
       expect(mountedPage.instance().state.errors.currentpassword).toEqual(
         'Some Error',
@@ -216,8 +217,8 @@ describe('Update Password Page', () => {
       setField(mountedPage, 'newpassword', value);
       setField(mountedPage, 'confirmnewpassword', value);
       await mountedPage.find('form').simulate('submit', {
-        preventDefault: () => {},
-        stopPropagation: () => {},
+        preventDefault: () => { },
+        stopPropagation: () => { },
       });
 
       const message = errorMessages.errorNon400Response;
@@ -239,8 +240,8 @@ describe('Update Password Page', () => {
       setField(mountedPage, 'newpassword', value);
       setField(mountedPage, 'confirmnewpassword', value);
       await mountedPage.find('form').simulate('submit', {
-        preventDefault: () => {},
-        stopPropagation: () => {},
+        preventDefault: () => { },
+        stopPropagation: () => { },
       });
 
       const message = successMessages.updatePasswordSuccessful;

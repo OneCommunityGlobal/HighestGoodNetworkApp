@@ -17,7 +17,7 @@ import { allProjectsReducer } from './allProjectsReducer';
 import { projectByIdReducer } from './projectByIdReducer';
 import { userProjectsReducer } from './userProjectsReducer';
 import { projectMembershipReducer } from './projectMembershipReducer';
-import { allTeamsReducer } from './allTeamsReducer';
+import { allTeamsReducer, allUserTeamsReducer } from './allTeamsReducer';
 import { teamByIdReducer } from './teamByIdReducer';
 import { teamMembershipReducer } from './teamMembershipReducer';
 import { timeEntriesForSpecifiedProjectReducer } from './timeEntriesForSpecifiedProjectReducer';
@@ -27,6 +27,9 @@ import { errorsReducer } from './errorsReducer';
 import { timeEntriesReducer } from './timeEntriesReducer';
 import { wbsReducer } from './wbsReducer'
 import { taskReducer } from './allTasksReducer'
+import { timerReducer } from './timerReducer'
+
+import { teamUsersReducer } from './teamsTeamMembersReducer'
 
 export default combineReducers({
   auth: authReducer,
@@ -46,6 +49,8 @@ export default combineReducers({
   // project: projectByIdReducer,
   userProjects: userProjectsReducer,
   projectMembers: projectMembershipReducer,
+  allTeamsData: allUserTeamsReducer,
+  teamsTeamMembers: teamUsersReducer,
   // allTeams: allTeamsReducer,
   // team: teamByIdReducer,
   // teamMembers: teamMembershipReducer,
@@ -56,5 +61,6 @@ export default combineReducers({
   wbs: wbsReducer,
   tasks: taskReducer,
   errors: errorsReducer,
-  timeEntries: timeEntriesReducer
-});
+  timeEntries: timeEntriesReducer,
+  timer: timerReducer,
+})
