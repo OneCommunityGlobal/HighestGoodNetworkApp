@@ -47,9 +47,13 @@ background-color: black;
 }
 
 
-
 .hgn-leaderboard
 {
 /*background-color:#FFCCBC */
 background-color: black
+}
+
+/* Small devices (landscape phones, 544px and up) */
+@media (max-width: 544px) {  
+  .leaderboard {font-size:0.6rem;} /*1rem = 16px*/
 }

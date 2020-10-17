@@ -35,7 +35,7 @@ const Dashboard = () => (
         </div>
         <div className="p-5 my-2 bg--cadet-blue text-light">
           <div className="py-3 my-3"> </div>
-          <h3>Tasks go here...</h3>
+          <a name='tasksLink'><h3>Tasks go here...</h3></a>
           <div className="py-3 my-3"> </div>
         </div>
         <div className="p-5 my-2 bg--dark-sea-green text-light">

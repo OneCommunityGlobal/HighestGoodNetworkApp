@@ -4,48 +4,78 @@ import _ from 'lodash'
 import { Link } from 'react-router-dom'
 import Loading from '../common/Loading'
 
-import getcolor from '../../utils/effortColors'
+import {getcolor, getprogress} from '../../utils/effortColors'
+
 import { Table, Badge, Progress } from 'reactstrap'
 
-const LeaderBoard = ({ getLeaderboardData, leaderBoardData, loggedInUser }) => {
+const LeaderBoard = ({ getLeaderboardData, leaderBoardData, loggedInUser, organizationData }) => {
 
   useEffect(() => {
     getLeaderboardData(loggedInUser.userid)
   }, [leaderBoardData.length])
   return (
-    <Table>
+    <Table className="leaderboard">
       <thead>
         <tr>
           <th>Status</th>
           <th>Name</th>
-          <th>Intangible Time</th>
+          <th><span class="d-sm-none">Tan. Time</span><span class="d-none d-sm-block">Tangible Time</span></th>
           <th>Progress</th>
-          <th>Total Time</th>
+          <th><span class="d-sm-none">Tot. Time</span><span class="d-none d-sm-block">Total Time</span></th>
+          <th><i data-toggle="tooltip" data-placement="right" title="Click to refresh the leaderboard" style={{ fontSize: 24, cursor: 'pointer'}} aria-hidden="true" class="fa fa-refresh" onClick={()=>{getLeaderboardData(loggedInUser.userid)}}></i></th>
         </tr>
       </thead>
       <tbody>
-        {leaderBoardData.map((item, key) => (
-          <tr key={key}>
+      <tr>
             <td>
-              <div
+            <div title={`Weekly Committed: ${organizationData.weeklyComittedHours} hours`}
                 style={{
-                  backgroundColor: item.tangiblebarcolor,
+                  backgroundColor: organizationData.totaltime >= organizationData.weeklyComittedHours ? 'green' : 'red',
                   width: 15,
                   height: 15,
                   borderRadius: 7.5
                 }}></div>
             </td>
             <th scope='row'>
-              <Link to={`/userprofile/${item.personId}`}>{item.name}</Link>
+              {organizationData.name}
             </th>
-            <td>{item.intangibletime}</td>
+            <td><span title="Tangible time">{organizationData.tangibletime}</span></td>
             <td>
-              <Progress
-                value={2 * 5}
-                style={{ backgroundColor: item.tangiblebarcolor }}
+              <Progress title={`TangibleEffort: ${organizationData.tangibletime} hours`}
+                value={organizationData.barprogress}
+                style={{ backgroundColor: organizationData.barcolor }}
               />
             </td>
-            <td>{item.totaltime}</td>
+            <td><span title="Total time">{organizationData.totaltime}</span></td>
+            <td><i data-toggle="tooltip" data-placement="right" title="Click for more information" style={{ fontSize: 24, cursor: 'pointer'}} aria-hidden="true" class="fa fa-info-circle" onClick={()=>{}}></i></td>
+        </tr>
+
+        {leaderBoardData.map((item, key) => (
+          <tr key={key}>
+            <td>
+            <a href={'#tasksLink'}>
+            <div title={`Weekly Committed: ${item.weeklyComittedHours} hours`}
+                style={{
+                  backgroundColor: (item.totaltime >= item.weeklyComittedHours ? 'green' : 'red'),
+                  width: 15,
+                  height: 15,
+                  borderRadius: 7.5
+                }}></div>
+            </a>
+            </td>
+            <th scope='row'>
+              <Link to={`/userprofile/${item.personId}`} title="View Profile">{item.name}</Link>
+            </th>
+            <td><span title="Tangible time">{item.tangibletime}</span></td>
+            <td>
+              <Link to={`/timelog/${item.personId}`} title={`TangibleEffort: ${item.tangibletime} hours`}>
+              <Progress
+                value={item.barprogress}
+                style={{ backgroundColor: item.barcolor }}
+              /></Link>
+            </td>
+            <td><span title="Total time">{item.totaltime}</span></td>
+            <td><i data-toggle="tooltip" data-placement="right" title="Click for more information" style={{ fontSize: 24, cursor: 'pointer'}} aria-hidden="true" class="fa fa-info-circle" onClick={()=>{}}></i></td>
           </tr>
         ))}
       </tbody>
