@@ -61,7 +61,6 @@ const mapStateToProps = state => {
 
 	organization.barcolor = getcolor(orgTangibleColorTime);
 	organization.barprogress = getprogress(orgTangibleColorTime);
-	//console.log(leaderBoardData)
 
 	return {
 		isAuthenticated: _.get(state, 'auth.isAuthenticated', false),

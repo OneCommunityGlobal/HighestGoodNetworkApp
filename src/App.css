@@ -55,5 +55,5 @@ background-color: black
 
 /* Small devices (landscape phones, 544px and up) */
 @media (max-width: 544px) {  
-  .leaderboard {font-size:0.6rem;} /*1rem = 16px*/
+  .leaderboard {font-size:0.7rem;} /*1rem = 16px*/
 }
