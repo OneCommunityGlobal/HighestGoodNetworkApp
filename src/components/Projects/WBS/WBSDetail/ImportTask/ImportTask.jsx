@@ -132,13 +132,13 @@ const ImportTask = (props) => {
 
     //console.log(rowArr[9]);
 
-    if (rowArr[9] !== null) {
+    /*if (rowArr[9] !== null) {
       resourceObj = {
         name: rowArr[9],
         userID: null,
         profilePic: null
       }
-    }
+    }*/
 
     let newTask = {
       'taskName': `${taskName}`,
@@ -147,7 +147,7 @@ const ImportTask = (props) => {
       'position': `${position}`,
       'wbsId': `${props.wbsId}`,
       'priority': `${rowArr[8]}`,
-      'resources': rowArr[9] !== null ? [resourceObj] : null,
+      'resourceName': rowArr[9],
       'isAssigned': `${rowArr[10]}` === 'yes' ? true : false,
       'status': `${rowArr[11]}`,
       'hoursBest': `${rowArr[12]}`,
@@ -183,12 +183,8 @@ const ImportTask = (props) => {
                 <td scope="col" >
                   <p id="instruction">
                     Before importing a Work Breakdown Structure (WBS) to this software, the following steps must be taken:<br />
-                    1. Confirm the WBS was created using the Google Spreadsheet template: https://tinyurl.com/oc-wbs-template<br />
-                    2. Confirm all fields in the form contain values<br />
-                    3. Use the "Find" function to convert all the commas in the spreadsheet to semicolons<br />
-                    4. Export the spreadsheet as a .csv file<br />
-                    5. Click the button below and find and import your prepared file<br />
-                    6. After import, check your file imported correctly and fix any content that didn't import correctly<br />
+                    1.Check all numbers are sequential.
+                    2.Double check the number listed in the popup matches the number of rows being imported.
                   </p>
                 </td>
               </tr>
