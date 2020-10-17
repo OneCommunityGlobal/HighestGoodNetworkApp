@@ -1,7 +1,17 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { Link } from 'react-router-dom'
-import { Table, Progress } from 'reactstrap'
+import {
+  Table,
+  Button,
+  Modal,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+  Popover,
+  PopoverHeader,
+  PopoverBody,
+} from 'reactstrap'
 import moment from 'moment'
 import _ from 'lodash'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
@@ -20,7 +30,64 @@ class TeamMemberTasks extends Component {
     this.state = {
       fetched: false,
       teams: [],
+      taskNotificationModal: false,
+      currentTaskNotifications: [],
     }
+  }
+
+  setCurrentTaskNotifications = taskNotifications => {
+    this.setState({
+      ...this.state,
+      currentTaskNotifications: taskNotifications,
+    })
+  }
+
+  handleTaskNotificationRead = () => {
+    const taskReadPromises = []
+    const userId = this.state.currentTaskNotifications[0].recipient
+    this.state.currentTaskNotifications.forEach(notification => {
+      taskReadPromises.push(
+        httpService.post(ENDPOINTS.MARK_TASK_NOTIFICATION_READ(notification._id)),
+      )
+    })
+
+    Promise.all(taskReadPromises).then(data => {
+      const newTeamsState = []
+      this.state.teams.forEach(member => {
+        if (member._id === userId) {
+          newTeamsState.push({ ...member, taskNotifications: [] })
+        } else {
+          newTeamsState.push(member)
+        }
+      })
+      this.setState({
+        ...this.state,
+        teams: newTeamsState,
+      })
+      this.setCurrentTaskNotifications([])
+      this.toggleTaskNotificationModal()
+    })
+  }
+
+  toggleTaskNotificationModal = () => {
+    this.setState({
+      ...this.state,
+      taskNotificationModal: !this.state.taskNotificationModal,
+    })
+  }
+
+  handleOpenTaskNotificationModal = taskNotifications => {
+    console.log('task notifications...', taskNotifications)
+    this.setState(
+      {
+        ...this.state,
+        currentTaskNotifications: taskNotifications,
+      },
+      () => {
+        console.log('state current notifications', this.state.currentTaskNotifications)
+        this.toggleTaskNotificationModal()
+      },
+    )
   }
 
   async componentDidMount() {
@@ -140,11 +207,12 @@ class TeamMemberTasks extends Component {
               }
             }
 
+            // create array of just user ids to use for querying user tasks notifications
             const uniqueMemberIds = []
             uniqueMembers.forEach(member => {
               uniqueMemberIds.push(member._id)
             })
-
+            //
             uniqueMemberIds.forEach(memberId => {
               taskNotificationPromises.push(
                 httpService.get(ENDPOINTS.USER_UNREAD_TASK_NOTIFICATIONS(memberId)),
@@ -185,10 +253,6 @@ class TeamMemberTasks extends Component {
 
   render() {
     const { teams, fetching, fetched } = this.state
-
-    // console.log('teams: ', teams)
-    // console.log('leaderboardData: ', this.props.leaderboardData);
-
     let teamsList = []
     if (teams && teams.length > 0) {
       teamsList = teams.map((member, index) => (
@@ -209,7 +273,13 @@ class TeamMemberTasks extends Component {
           {/* if user has any task notifications, display bell */}
           <td>
             {member.taskNotifications.length > 0 ? (
-              <FontAwesomeIcon style={{ color: 'red' }} icon={faBell} />
+              <FontAwesomeIcon
+                style={{ color: 'red' }}
+                icon={faBell}
+                onClick={() => {
+                  this.handleOpenTaskNotificationModal(member.taskNotifications)
+                }}
+              />
             ) : null}
           </td>
           <td>{`${member.weeklyCommittedHours} / ${member.hoursCurrentWeek}`}</td>
@@ -234,6 +304,28 @@ class TeamMemberTasks extends Component {
         <div className="container">
           {fetching || !fetched ? <Loading /> : null}
           <h1>Team Member Tasks</h1>
+          <div>
+            <Modal
+              isOpen={this.state.taskNotificationModal}
+              toggle={this.handleOpenTaskNotificationModal}
+            >
+              <ModalHeader toggle={this.handleOpenTaskNotificationModal}>
+                Task Info Changes
+              </ModalHeader>
+              <ModalBody>
+                {this.state.currentTaskNotifications.map((notification, index) => (
+                  <span key={notification._id}>{`${JSON.stringify(
+                    notification.oldTaskInfos,
+                  )} => ${JSON.stringify(notification.newTaskInfos)}`}</span>
+                ))}
+              </ModalBody>
+              <ModalFooter>
+                <Button color="primary" onClick={this.handleTaskNotificationRead}>
+                  Okay
+                </Button>
+              </ModalFooter>
+            </Modal>
+          </div>
           <Table>
             <thead>
               <tr>
