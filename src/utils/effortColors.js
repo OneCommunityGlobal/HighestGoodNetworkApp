@@ -1,12 +1,12 @@
 import _ from 'lodash'
 export const getcolor = effort => {
-	let color = 'purple'
-	if (_.inRange(effort, 0, 5)) color = 'red'
-	if (_.inRange(effort, 5, 10)) color = 'orange'
-	if (_.inRange(effort, 10, 20)) color = 'green'
-	if (_.inRange(effort, 20, 30)) color = 'blue'
-	if (_.inRange(effort, 30, 40)) color = 'indigo'
-	if (_.inRange(effort, 40, 50)) color = 'violet'
+	let color = 'super-awesome'
+	if (_.inRange(effort, 0, 5)) color = 'danger' //red
+	if (_.inRange(effort, 5, 10)) color = 'warning' //orange
+	if (_.inRange(effort, 10, 20)) color = 'success' //green
+	if (_.inRange(effort, 20, 30)) color = 'primary' //blue
+	if (_.inRange(effort, 30, 40)) color = 'super' //indigo
+	if (_.inRange(effort, 40, 50)) color = 'awesome' //violet
 	return color
 }
 

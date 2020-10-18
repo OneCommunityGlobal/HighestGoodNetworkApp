@@ -57,3 +57,15 @@ background-color: black
 @media (max-width: 544px) {  
   .leaderboard {font-size:0.7rem;} /*1rem = 16px*/
 }
+
+.bg-super {
+  background-color: indigo !important;
+}
+
+.bg-awesome {
+  background-color: violet !important;
+}
+
+.bg-super-awesome {
+  background-color: purple !important;
+}

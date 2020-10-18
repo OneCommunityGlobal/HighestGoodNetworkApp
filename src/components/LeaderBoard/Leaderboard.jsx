@@ -101,11 +101,11 @@ const LeaderBoard = ({ getLeaderboardData, leaderBoardData, loggedInUser, organi
               <Progress
                 title={`TangibleEffort: ${organizationData.tangibletime} hours`}
                 value={organizationData.barprogress}
-                style={{ backgroundColor: organizationData.barcolor }}
+                striped color={organizationData.barcolor}
               />
             </td>
             <td>
-              <span title="Total time">{organizationData.totaltime}</span>
+              <span title="Tangible + Intangible time = Total time">{organizationData.totaltime}</span>
             </td>
           </tr>
 
@@ -137,7 +137,7 @@ const LeaderBoard = ({ getLeaderboardData, leaderBoardData, loggedInUser, organi
                   to={`/timelog/${item.personId}`}
                   title={`TangibleEffort: ${item.tangibletime} hours`}
                 >
-                  <Progress value={item.barprogress} style={{ backgroundColor: item.barcolor }} />
+                  <Progress value={item.barprogress} striped color={item.barcolor} />
                 </Link>
               </td>
               <td>
