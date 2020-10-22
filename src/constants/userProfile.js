@@ -3,6 +3,7 @@ export const CLEAR_USER_PROFILE = 'CLEAR_USER_PROFILE'
 export const EDIT_USER_PROFILE = 'EDIT_USER_PROFILE'
 export const EDIT_FIRST_NAME = 'EDIT_FIRST_NAME'
 
+
 export const getUserProfile = data => ({
 	type: GET_USER_PROFILE,
 	payload: data
@@ -17,3 +18,4 @@ export const editUserProfile = data => ({
 	type: EDIT_USER_PROFILE,
 	payload: data
 })
+

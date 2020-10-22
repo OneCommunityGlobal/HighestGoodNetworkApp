@@ -1,14 +1,13 @@
-
 #wrapper .report {
   position: absolute;
   left: 10px;
   right: 10px;
   top: 2vh;
-  visibility:hidden;
+  visibility: hidden;
 }
-  
+
 #wrapper:hover .report {
-  visibility:visible;
+  visibility: visible;
 }
 
 .title {
@@ -20,9 +19,9 @@
   margin: 2px;
 }
 
-.summary {  
+.summary {
   padding: 5px;
-  background-color: slategray;  
+  background-color: slategray;
   outline-width: 2px;
   outline-style: solid;
   outline-color: black;
@@ -30,14 +29,14 @@
 }
 
 .blueSquareContainer {
-  display: flex;
-  text-decoration:none;
+  /* display: flex; */
+  text-decoration: none;
   justify-content: center;
-  margin: 10px;
+  /* margin: 10px; */
 }
 
 .blueSquares {
-  width: 150px; 
+  width: 100%;
   display: flex;
   flex-wrap: wrap;
   align-items: center;
@@ -46,24 +45,23 @@
 
 .blueSquareButton {
   display: flex;
-  text-decoration:none;
+  text-decoration: none;
   align-items: center;
   justify-content: center;
 
-	background:linear-gradient(to bottom, #007dc1 5%, #0061a7 100%);
-	background-color: dodgerblue;
-	border-radius:4px;
+  background: linear-gradient(to bottom, #007dc1 5%, #0061a7 100%);
+  background-color: dodgerblue;
+  border-radius: 4px;
 
-	cursor:pointer;
-	color:#ffffff;
-	font-family:Arial;
+  cursor: pointer;
+  color: #ffffff;
+  font-family: Arial;
   margin: 5px;
   width: 20px;
   height: 20px;
-
 }
 
 .blueSquareButton:hover {
-	background:linear-gradient(to bottom, #0061a7 5%, #007dc1 100%);
-	background-color:#0061a7;
+  background: linear-gradient(to bottom, #0061a7 5%, #007dc1 100%);
+  background-color: #0061a7;
 }
