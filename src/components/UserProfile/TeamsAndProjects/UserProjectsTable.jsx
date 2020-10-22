@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Button } from 'reactstrap';
+import { Button, Col } from 'reactstrap';
 import './TeamsAndProjects.css';
 
 const UserProjectsTable = React.memo((props) => {
@@ -9,17 +9,17 @@ const UserProjectsTable = React.memo((props) => {
     <div className="projecttable-container">
       <div className="container">
         <div className="row">
-          <div className="col" style={{ backgroundColor: ' #e9ecef', border: '1px solid #ced4da', marginBottom: '10px' }}>
+          <Col md={props.edit ? '7' : '12'} style={{ backgroundColor: ' #e9ecef', border: '1px solid #ced4da', marginBottom: '10px' }}>
             <span className="projects-span">Projects</span>
-          </div>
+          </Col>
           {props.edit && (
-          <div className="col">
+          <Col md="5">
             {
               props.isUserAdmin
                 ? <Button className="btn-addproject" color="primary" onClick={() => { props.onButtonClick(); }}>Assign Project</Button>
                 : <></>
             }
-          </div>
+          </Col>
           )}
         </div>
       </div>
@@ -38,7 +38,7 @@ const UserProjectsTable = React.memo((props) => {
                 <tr>
                   <td>{index + 1}</td>
                   <td>{`${project.projectName}`}</td>
-                  {props.edit && (<td><Button color="danger" onClick={(e) => { props.onDeleteClicK(project._id); }}>Delete</Button></td>)}
+                  {props.edit && (<td><Button color="danger" disabled={!props.isUserAdmin} onClick={(e) => { props.onDeleteClicK(project._id); }}>Delete</Button></td>)}
                 </tr>
               )) : <></>
             }

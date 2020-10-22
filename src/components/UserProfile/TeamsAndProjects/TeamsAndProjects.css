@@ -1,34 +1,32 @@
-.teamtable-container,.projecttable-container{
+.teamtable-container,
+.projecttable-container {
   background-color: #fafafa;
   margin-top: 20px;
 }
-.btn-addteam,.btn-addproject{
-  width:300px;
+.btn-addteam,
+.btn-addproject {
+  width: 300px;
   margin-bottom: 10px;
   margin-left: -15px;
   outline: none;
 }
-.teams-span,.projects-span{
- 
-    font-size: x-large;
-    font-weight: 700;
-
-    
-   
-  
+.teams-span,
+.projects-span {
+  font-size: x-large;
+  font-weight: 700;
 }
 
-.project-auto-complete{
+.project-auto-complete {
   cursor: pointer;
   padding: 5px;
 }
 .project-auto-complete:hover {
-  background: #1D62F0;
+  background: #1d62f0;
 }
-.team-auto-complete{
+.team-auto-complete {
   cursor: pointer;
   padding: 5px;
 }
 .team-auto-complete:hover {
-  background: #1D62F0;
+  background: #1d62f0;
 }

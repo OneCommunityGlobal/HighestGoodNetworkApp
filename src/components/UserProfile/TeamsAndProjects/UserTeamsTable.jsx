@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button } from 'reactstrap';
+import { Button, Col } from 'reactstrap';
 import './TeamsAndProjects.css';
 
 const UserTeamsTable = (props) => {
@@ -8,15 +8,15 @@ const UserTeamsTable = (props) => {
     <div className="teamtable-container">
       <div className="container">
         <div className="row">
-          <div className="col" style={{ backgroundColor: ' #e9ecef', border: '1px solid #ced4da', marginBottom: '10px' }}>
+          <Col md={props.edit ? '7' : '12'} style={{ backgroundColor: ' #e9ecef', border: '1px solid #ced4da', marginBottom: '10px' }}>
             <span className="teams-span">Teams</span>
-          </div>
+          </Col>
           {props.edit && (
-          <div className="col">
+          <Col md="5">
             {props.isUserAdmin
               ? <Button className="btn-addteam" color="primary" onClick={() => { props.onButtonClick(); }}>Assign Team</Button>
               : <></>}
-          </div>
+          </Col>
           )}
         </div>
       </div>
@@ -35,7 +35,7 @@ const UserTeamsTable = (props) => {
                 <tr>
                   <td>{index + 1}</td>
                   <td>{`${team.teamName}`}</td>
-                  {props.edit && (<td><Button color="danger" onClick={(e) => { props.onDeleteClick(team._id); }}>Delete</Button></td>)}
+                  {props.edit && (<td><Button disabled={!props.isUserAdmin} color="danger" onClick={(e) => { props.onDeleteClick(team._id); }}>Delete</Button></td>)}
                 </tr>
               )) : <></>
             }
