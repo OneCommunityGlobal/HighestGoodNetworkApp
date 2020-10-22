@@ -35,7 +35,7 @@ const UserProjectsTable = React.memo((props) => {
           <tbody>
             {props.userProjectsById.length > 0
               ? props.userProjectsById.map((project, index) => (
-                <tr>
+                <tr key={index}>
                   <td>{index + 1}</td>
                   <td>{`${project.projectName}`}</td>
                   {props.edit && (<td><Button color="danger" disabled={!props.isUserAdmin} onClick={(e) => { props.onDeleteClicK(project._id); }}>Delete</Button></td>)}

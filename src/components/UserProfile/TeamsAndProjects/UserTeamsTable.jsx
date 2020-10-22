@@ -2,9 +2,9 @@ import React from 'react';
 import { Button, Col } from 'reactstrap';
 import './TeamsAndProjects.css';
 
-const UserTeamsTable = (props) => {
-  debugger;
-  return (
+const UserTeamsTable = props =>
+  // debugger;
+  (
     <div className="teamtable-container">
       <div className="container">
         <div className="row">
@@ -32,7 +32,7 @@ const UserTeamsTable = (props) => {
           <tbody>
             {props.userTeamsById.length > 0
               ? props.userTeamsById.map((team, index) => (
-                <tr>
+                <tr key={index}>
                   <td>{index + 1}</td>
                   <td>{`${team.teamName}`}</td>
                   {props.edit && (<td><Button disabled={!props.isUserAdmin} color="danger" onClick={(e) => { props.onDeleteClick(team._id); }}>Delete</Button></td>)}
@@ -45,6 +45,4 @@ const UserTeamsTable = (props) => {
       </div>
     </div>
   );
-};
-
 export default UserTeamsTable;

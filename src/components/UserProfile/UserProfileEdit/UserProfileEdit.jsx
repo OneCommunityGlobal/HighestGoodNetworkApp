@@ -292,7 +292,7 @@ class EditProfile extends Component {
       });
     }
     const filesizeKB = file.size / 1024;
-    console.log(filesizeKB);
+    // console.log(filesizeKB);
 
     if (filesizeKB > 50) {
       imageUploadError = `\nThe file you are trying to upload exceeds the maximum size of 50KB. You can either 
@@ -312,7 +312,7 @@ class EditProfile extends Component {
     const reader = new FileReader();
     reader.readAsDataURL(file);
     reader.onloadend = () => {
-      console.log(reader, file);
+      // console.log(reader, file);
 
       this.setState({
         imageUploadError: '',
@@ -348,7 +348,7 @@ class EditProfile extends Component {
   };
 
   handleNullState = (kind) => {
-    console.log('before handle def:', this.state.userProfile);
+    // console.log('before handle def:', this.state.userProfile);
 
     switch (kind) {
       case 'settings':
@@ -462,7 +462,7 @@ class EditProfile extends Component {
     const { updateUserProfile, match } = this.props;
     const { userProfile, formValid } = this.state;
     const submitResult = await updateUserProfile(match.params.userId, userProfile);
-    console.log(submitResult);
+    // console.log(submitResult);
 
     // if (submitResult === 200) {
     //   this.setState({

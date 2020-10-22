@@ -83,7 +83,7 @@ class UserProfile extends Component {
 
   async componentDidUpdate(prevProps, prevState) {
     if (this.props.match !== prevProps.match) {
-      console.log('component on needs to update');
+      // console.log('component on needs to update');
 
       const { userId } = this.props.match.params;
       await this.props.getUserProfile(userId);
@@ -260,7 +260,7 @@ class UserProfile extends Component {
       teams,
     } = userProfile;
 
-    console.log('user profile:', userProfile.teams);
+    // console.log('user profile:', userProfile.teams);
 
     if (isLoading) {
       return (
