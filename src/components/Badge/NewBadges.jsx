@@ -16,7 +16,7 @@ const NewBadges = () => (
       >
         New Badges Earned
       </CardTitle>
-      <div className="new_badges">
+      <div className="new_badges badge_image">
         <img src="badges/sample7.jpeg" alt="badge sample 7" />
         <img src="badges/sample8.jpeg" alt="badge sample 8" />
         <img src="badges/sample9.jpeg" alt="badge sample 9" />

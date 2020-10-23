@@ -3,7 +3,7 @@ import './Badge.css';
 
 
 const BadgeHistory = () => (
-  <div>
+  <div className="badge_image">
     <img src="https://www.dropbox.com/s/meoh1eueb97ns0y/5%2C000hrsInfrastrucure_200px.png?raw=1" alt="dropbox new 1" />
     <img src="https://www.dropbox.com/s/dmqtz2k63ew9jd7/30PlusTeam_200px.png?raw=1" alt="dropbox new 2" />
     <img src="https://www.dropbox.com/s/nr2afwylpaqudf8/40hrStreak_200px.png?raw=1" alt="dropbox new 3" />
