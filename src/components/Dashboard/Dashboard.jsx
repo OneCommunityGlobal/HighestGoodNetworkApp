@@ -5,6 +5,7 @@ import {
 import MonthlyEffort from '../MonthlyEffort';
 import Leaderboard from '../LeaderBoard';
 import WeeklySummaryModal from '../WeeklySummary/WeeklySummaryModal';
+import Badge from '../Badge';
 import '../../App.css';
 
 const Dashboard = () => (
@@ -38,17 +39,13 @@ const Dashboard = () => (
           <a name='tasksLink'><h3>Tasks go here...</h3></a>
           <div className="py-3 my-3"> </div>
         </div>
-        <div className="p-5 my-2 bg--dark-sea-green text-light">
-          <div className="py-2 my-2"> </div>
-          <h3>Badges Section goes here...</h3>
-          <div className="py-2 my-2"> </div>
-        </div>
+        <Badge />
       </Col>
       <Col lg={{ size: 5 }}>
         <Leaderboard />
       </Col>
     </Row>
-  </Container>
+  </Container >
 );
 
 export default Dashboard;
