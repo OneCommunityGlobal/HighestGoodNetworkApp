@@ -1,18 +1,13 @@
 import React from 'react';
 import style from './ToggleSwitch.module.scss';
 
-
-const ToggleSwitch = ({
-  switchType,
-  state,
-  handleUserProfile,
-}) => {
+const ToggleSwitch = ({ switchType, state, handleUserProfile }) => {
   switch (switchType) {
     case 'bluesquares':
       if (state) {
         return (
           <div className={style.switchSection}>
-            <div> Blue Squares: </div>
+            {/* <div> Blue Squares: </div> */}
             <div className={style.switchContainer}>
               public
               <input
@@ -28,7 +23,7 @@ const ToggleSwitch = ({
       }
       return (
         <div className={style.switchSection}>
-          <div> Blue Squares: </div>
+          {/* <div> Blue Squares: </div> */}
           <div className={style.switchContainer}>
             public
             <input
@@ -122,11 +117,7 @@ const ToggleSwitch = ({
     default:
       break;
   }
-  return (
-    <div>
-      ERROR: Toggle Switch.
-    </div>
-  );
+  return <div>ERROR: Toggle Switch.</div>;
 };
 
 export default ToggleSwitch;

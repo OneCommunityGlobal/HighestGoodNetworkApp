@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import React, { useState, useEffect } from 'react';
 import {
   Button, Modal, ModalHeader, ModalBody, ModalFooter, Input, Alert,
@@ -12,11 +13,11 @@ const CreateNewTeamPopup = React.memo((props) => {
   }, [props.open]);
   return (
     <Modal isOpen={props.open} toggle={closePopup}>
-      <ModalHeader toggle={closePopup}>Create New Team</ModalHeader>
+      <ModalHeader toggle={closePopup}>{(props.isEdit ? 'Update Team Name' : 'Create New Team')}</ModalHeader>
       <ModalBody style={{ textAlign: 'start' }}>
         <label>Name of the Team</label>
-
         <Input
+          id="teamName"
           placeholder="Please enter a new team name"
           value={newTeam}
           onChange={(e) => {
@@ -36,7 +37,7 @@ const CreateNewTeamPopup = React.memo((props) => {
         <Button color="secondary" onClick={closePopup}>Close</Button>
         <Button
           color="primary"
-          onClick={(e) => {
+          onClick={() => {
             if (newTeam !== '') {
               props.onOkClick(newTeam, props.isEdit);
             } else {

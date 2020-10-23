@@ -15,7 +15,7 @@ export const getTimeEntriesForWeek = (userId, offset) => {
     const fromDate = moment()
         .startOf('week')
         .subtract(offset, 'weeks');
-    const toDate = moment()
+        const toDate = moment()
         .endOf('week')
         .subtract(offset, 'weeks');
     const url = ENDPOINTS.TIME_ENTRIES_PERIOD(userId, fromDate, toDate);
