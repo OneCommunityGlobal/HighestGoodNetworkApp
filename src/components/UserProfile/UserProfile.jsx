@@ -329,7 +329,7 @@ class UserProfile extends Component {
                   {'   '}
                   To:
                   {' '}
-                  <span>Present</span>
+                  <span>N/A</span>
                 </p>
               </div>
               <div className="p-5 my-2 bg--cadet-blue text-light">
@@ -355,7 +355,7 @@ class UserProfile extends Component {
                   handleLinkModel={this.handleLinkModel}
                   isUserAdmin={isUserAdmin}
                 />
-                {privacySettings.blueSquares && (
+                {!privacySettings.blueSquares ? <p>Blue Square Info is Private</p> : (
                   <div>
                     <p>BLUE SQAURES</p>
                     <BlueSquare
@@ -472,7 +472,7 @@ class UserProfile extends Component {
                       <Label>End Date</Label>
                     </Col>
                     <Col md="6">
-                      <p>Present</p>
+                      <p>N/A</p>
                     </Col>
                   </Row>
                   <Row>

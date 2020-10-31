@@ -23,6 +23,7 @@ const LinkModButton = (props) => {
       <button
         type="button"
         className="modLinkButton"
+        data-testid="edit-link"
         onClick={() => {
           toggleModal();
         }}
