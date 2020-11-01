@@ -3,61 +3,25 @@
   border-color: #285739 !important;
   color: #285739 !important;
 }
-
-
-.badge_image > img {
+.badge_image_sm > img {
   border-radius: 50%;
-  height: 100px;
-  width: 100px;
-  margin:5px;
+  height: 50px;
+  width: 50px;
+  margin:2px;
 }
 
-
-/* .container {
-  position: relative;
-  width: 50%;
-}
-
-.image {
+.badge_image_lg > img {
   border-radius: 50%;
-  width: 100%;
-  height: auto;
+  height: 200px;
+  width: 200px;
 }
-
-.overlay {
-  position: absolute;
-  bottom: 0;
-  background:#fafafa;
-  color: #f1f1f1;
-  transition: .5s ease;
-  opacity:0;
-  color:#285739;
-  font-size: 5px;
-  font: bold;
-  padding: 5px;
-  text-align: left;
-  display: flex;
-  border: 0.5px solid #285739;
-  width: 15%;
-}
-
-
-.block_container:hover .overlay {
-  opacity: 1;
-}
-
-#bloc1, #bloc2 {
-    display:inline;
-    margin: 2px;
-} */
-
 
 .new_badges {
   overflow-y: scroll;
-  height: 150px;
+  height: 70px;
 }
 
 .old_badges {
   overflow-y: scroll;
-  height: 450px;
+  height: 220px;
 }
