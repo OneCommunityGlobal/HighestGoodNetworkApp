@@ -331,15 +331,18 @@ const TimeEntryForm = ({ userId, edit, data, isOpen, toggle, timer }) => {
   return (
     <Modal isOpen={isOpen} toggle={toggle}>
       <ModalHeader toggle={toggle}>
-        {edit ? 'Edit ' : 'Add '}
-        Time Entry
-        <i
-          className="fa fa-info-circle"
-          data-tip
-          data-for="registerTip"
-          aria-hidden="true"
-          onClick={openInfo}
-        />
+        <div>
+          {edit ? 'Edit ' : 'Add '}
+          Time Entry
+          <i
+            className="fa fa-info-circle"
+            data-tip
+            data-for="registerTip"
+            aria-hidden="true"
+            // style={{ 'text-align': 'center' }}
+            onClick={openInfo}
+          />
+        </div>
         <ReactTooltip id="registerTip" place="bottom" effect="solid">
           Click this icon to learn about this time entry form
         </ReactTooltip>

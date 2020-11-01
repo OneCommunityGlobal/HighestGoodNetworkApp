@@ -43,6 +43,7 @@ class TimelogPage extends Component {
     this.changeTab = this.changeTab.bind(this)
     this.handleInputChange = this.handleInputChange.bind(this)
     this.handleSearch = this.handleSearch.bind(this)
+    // this.openInfo = this.openInfo.bind(this)
   }
 
   initialState = {
@@ -87,22 +88,12 @@ class TimelogPage extends Component {
     })
   }
 
-  //   openInfo() {
-  //     const str = `This is the One Community time log! It is used to show a record of all the time you have volunteered with One Community, what you’ve done for each work session, etc.
-
-  //     “Add Time Entry” Button: Clicking this button will only allow you to add “Intangible” time. This is for time not related to your tasks OR for time you need a manager to change to “Tangible” for you because you were working away from your computer or made a mistake and are trying to manually log time. Intangible time will not be counted towards your committed time for the week or your tasks. “Intangible” time changed by a manager to “Tangible” time WILL be counted towards your committed time for the week and whatever task it is logged towards. For Blue Square purposes, changing Intangible Time to Tangible Time for any reason other than work away from your computer will count and be recorded in the system the same as a time edit.
-  //     Viewing Past Work: The current week is always shown by default but past weeks can also be viewed by clicking the tabs or selecting a date range.
-  //     Sorting by Project: All projects are shown by default but you can also choose to sort your time log by Project or Task.
-  //     Notes: The “Notes” section is where you write a summary of what you did during the time you are about to log. You must write a minimum of 10 words because we want you to be specific. You must include a link to your work so others can easily confirm and review it.
-  //     Tangible Time: By default, the “Tangible” box is clicked. Tangible time is any time spent working on your Projects/Tasks and counts towards your committed time for the week and also the time allocated for your task.
-  //     Intangible Time: Clicking the Tangible box OFF will mean you are logging “Intangible Time.” This is for time not related to your tasks OR for time you need a manager to change to “Tangible” for you because you were working away from your computer or made a mistake and are trying to manually log time. Intangible time will not be counted towards your committed time for the week or your tasks. “Intangible” time changed by a manager to “Tangible” time WILL be counted towards your committed time for the week and whatever task it is logged towards. For Blue Square purposes, changing Intangible Time to Tangible Time for any reason other than work away from your computer will count and be recorded in the system the same as a time edit. `
-
-  //     const newstr = str.split('\n').map((item, i) => <p key={i}>{item}</p>)
-  //     this.setState({
-  //       in: !this.state.in,
-  //       information: newstr,
-  //     })
-  //   }
+  // openInfo(str) {
+  //   this.setState({
+  //     in: !this.state.in,
+  //     information: str.split('\n').map((item, i) => <p key={i}>{item}</p>),
+  //   })
+  // }
 
   changeTab(tab) {
     this.setState({
@@ -150,6 +141,14 @@ class TimelogPage extends Component {
     const lastWeekEntries = this.generateTimeEntries(this.props.timeEntries.weeks[1])
     const beforeLastEntries = this.generateTimeEntries(this.props.timeEntries.weeks[2])
     const periodEntries = this.generateTimeEntries(this.props.timeEntries.period)
+    const str = `This is the One Community time log! It is used to show a record of all the time you have volunteered with One Community, what you’ve done for each work session, etc.
+
+    * “Add Time Entry” Button: Clicking this button will only allow you to add “Intangible” time. This is for time not related to your tasks OR for time you need a manager to change to “Tangible” for you because you were working away from your computer or made a mistake and are trying to manually log time. Intangible time will not be counted towards your committed time for the week or your tasks. “Intangible” time changed by a manager to “Tangible” time WILL be counted towards your committed time for the week and whatever task it is logged towards. For Blue Square purposes, changing Intangible Time to Tangible Time for any reason other than work away from your computer will count and be recorded in the system the same as a time edit.
+    * Viewing Past Work: The current week is always shown by default but past weeks can also be viewed by clicking the tabs or selecting a date range.
+    * Sorting by Project: All projects are shown by default but you can also choose to sort your time log by Project or Task.
+    * Notes: The “Notes” section is where you write a summary of what you did during the time you are about to log. You must write a minimum of 10 words because we want you to be specific. You must include a link to your work so others can easily confirm and review it.
+    * Tangible Time: By default, the “Tangible” box is clicked. Tangible time is any time spent working on your Projects/Tasks and counts towards your committed time for the week and also the time allocated for your task.
+    * Intangible Time: Clicking the Tangible box OFF will mean you are logging “Intangible Time.” This is for time not related to your tasks OR for time you need a manager to change to “Tangible” for you because you were working away from your computer or made a mistake and are trying to manually log time. Intangible time will not be counted towards your committed time for the week or your tasks. “Intangible” time changed by a manager to “Tangible” time WILL be counted towards your committed time for the week and whatever task it is logged towards. For Blue Square purposes, changing Intangible Time to Tangible Time for any reason other than work away from your computer will count and be recorded in the system the same as a time edit. `
 
     const isAdmin = this.props.auth.user.role === 'Administrator'
     const isOwner = this.props.auth.user.userid === this.props.match.params.userId
@@ -188,10 +187,27 @@ class TimelogPage extends Component {
                   <Col md={5}>
                     {isOwner ? (
                       <div className="float-right">
-                        <ul>
+                        <div>
+                          <Button color="success" onClick={this.toggle}>
+                            Add Time Entry
+                          </Button>
+                        </div>
+                        <div style={{ 'text-align': 'center' }}>
+                          <i
+                            className="fa fa-info-circle"
+                            data-tip
+                            data-for="registerTip"
+                            aria-hidden="true"
+                            // onClick={this.openInfo(str)}
+                          />
+                        </div>
+                      </div>
+                    ) : (
+                      isAdmin && (
+                        <div className="float-right">
                           <div>
-                            <Button color="success" onClick={this.toggle}>
-                              Add Time Entry
+                            <Button color="warning" onClick={this.toggle}>
+                              Add Time Entry {!isOwner && `for ${fullName}`}
                             </Button>
                           </div>
                           <div style={{ 'text-align': 'center' }}>
@@ -200,33 +216,26 @@ class TimelogPage extends Component {
                               data-tip
                               data-for="registerTip"
                               aria-hidden="true"
-                              onClick={this.openInfo}
+                              //  onClick={this.openInfo(str)}
                             />
                           </div>
-                        </ul>
-                      </div>
-                    ) : (
-                      isAdmin && (
-                        <div className="float-right">
-                          <ul>
-                            <div>
-                              <Button color="warning" onClick={this.toggle}>
-                                Add Time Entry {!isOwner && `for ${fullName}`}
-                              </Button>
-                            </div>
-                            <div style={{ 'text-align': 'center' }}>
-                              <i
-                                className="fa fa-info-circle"
-                                data-tip
-                                data-for="registerTip"
-                                aria-hidden="true"
-                                onClick={this.openInfo}
-                              />
-                            </div>
-                          </ul>
                         </div>
                       )
                     )}
+                    {/* <Modal isOpen={this.state.in} toggle={this.openInfo(str)}>
+                      <ModalHeader>Info</ModalHeader>
+                      <ModalBody>{this.state.information}</ModalBody>
+                      <ModalFooter>
+                        <Button onClick={this.openInfo(str)} color="primary">
+                          Close
+                        </Button>
+                        {isAdmin && (
+                          <Button onClick={this.openInfo(str)} color="secondary">
+                            Edit
+                          </Button>
+                        )}
+                      </ModalFooter>
+                    </Modal> */}
                     <TimeEntryForm
                       userId={this.props.match.params.userId}
                       edit={false}
@@ -366,20 +375,6 @@ class TimelogPage extends Component {
           </Col>
           <Col md={4}></Col>
         </Row>
-        {/* <Modal isOpen={this.state.in} toggle={this.openInfo}>
-          <ModalHeader>Info</ModalHeader>
-          <ModalBody>{this.state.information}</ModalBody>
-          <ModalFooter>
-            <Button onClick={this.openInfo} color="primary">
-              Close
-            </Button>
-            {isAdmin && (
-              <Button onClick={this.openInfo} color="secondary">
-                Edit
-              </Button>
-            )}
-          </ModalFooter>
-        </Modal> */}
       </Container>
     )
   }
