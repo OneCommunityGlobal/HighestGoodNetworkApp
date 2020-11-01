@@ -222,17 +222,18 @@ export class WeeklySummary extends Component {
       );
     }
 
+    if (this.props.isModal) {
+      return (
+        <DueDateTime dueDate={moment(dueDate)} />
+      );
+    }
+
     return (
       <Container fluid className="bg--white-smoke py-3 mb-5">
         <h3>Weekly Summaries</h3>
         <div>Total submitted: {formElements.weeklySummariesCount}</div>
-        <Row>
-          <Col className="pb-2 text-center" sm="12">
-            <DueDateTime dueDate={moment(dueDate)} />
-          </Col>
-        </Row>
 
-        <Form>
+        <Form className="mt-4">
           <Nav tabs>
             {Object.values(summariesLabels).map((weekName, i) => {
               let tId = String(i + 1);

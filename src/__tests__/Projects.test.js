@@ -8,6 +8,7 @@ import { createMemoryHistory } from 'history';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import { ENDPOINTS } from '../utils/URL';
+import * as Message from './../languages/en/messages'
 import { render, fireEvent, waitFor, screen} from "@testing-library/react";
 import routes from './../routes';
 
@@ -15,15 +16,34 @@ const projectsUrl = ENDPOINTS.PROJECTS;
 const projectUrl = ENDPOINTS.PROJECT + '*';
 const userProfileUrl = ENDPOINTS.USER_PROFILE(mockState.auth.user.userid);
 const leaderboardUrl = ENDPOINTS.LEADER_BOARD(mockState.auth.user.userid);
+const timerUrl = ENDPOINTS.TIMER(mockState.auth.user.userid);
+const userProjectsUrl = ENDPOINTS.USER_PROJECTS(mockState.auth.user.userid);
 let deleteProjectCalled = false;
 let inActivateProjectCalled = false;
 let activatedProjectCalled = false;
 let nameChangeCalled = false;
+let addedProject = false;
 mockState.allProjects.fetched = false;
+mockState.allProjects.projects = [];
 
 const server = setupServer(
   rest.get(projectsUrl, (req, res, ctx) =>  {
-    return res(ctx.status(200), ctx.json(
+    if (addedProject) {
+      return res(ctx.status(200), ctx.json(
+        [
+        {
+          "isActive": true,
+          "_id": "5ad91ec3590b19002asacd26",
+          "projectName": "HG Fake Project2"
+        },         {
+          "isActive": true,
+          "_id": "5ad91ec3590b19002acfcd26",
+          "projectName": "HG Fake Project"
+        }
+      ]
+    ));
+    } else {
+      return res(ctx.status(200), ctx.json(
         [
         {
           "isActive": true,
@@ -32,9 +52,48 @@ const server = setupServer(
         }
       ]
     ));
+    }
+
+  }),
+  rest.get(userProjectsUrl, (req, res, ctx) =>  {
+    if (addedProject) {
+      addedProject = false;
+      return res(ctx.status(200), ctx.json(
+        [
+          {
+            "isActive": true,
+            "_id": "5ad91ec3590b19002asacd26",
+            "projectName": "HG Fake Project2"
+          }, {
+          "isActive": true,
+          "_id": "5ad91ec3590b19002acfcd26",
+          "projectName": "HG Fake Project"
+        }
+      ]
+    ));
+    } else {
+      return res(ctx.status(200), ctx.json(
+        [
+        {
+          "isActive": true,
+          "_id": "5ad91ec3590b19002acfcd26",
+          "projectName": "HG Fake Project"
+        }
+      ]
+    ));
+    }
   }),
   rest.post(projectsUrl, (req, res, ctx) =>  {
-    return res(ctx.status(200), ctx.json({}));
+    //console.log(req.body);
+    if (req.body.projectName === "HG Fake Project2") {
+      addedProject = true;
+      return res(ctx.status(200), ctx.json({}));
+    } else {
+      console.log(req.body);
+      return res(ctx.status(400), ctx.json({}));
+    }
+
+    
   }),
   rest.delete(projectUrl, (req, res, ctx) =>  {
     deleteProjectCalled = true;
@@ -72,6 +131,9 @@ const server = setupServer(
         "tangiblebarcolor": "orange",
         "totaltime": 6
       }]), )  
+  }),
+  rest.get(timerUrl, (req, res, ctx) =>  {
+    return res(ctx.status(200), ctx.json({}), )  
   }),
   rest.get('*', (req, res, ctx) => {
     console.error(`Please add request handler for ${req.url.toString()} in your MSW server requests.`);
@@ -132,7 +194,8 @@ describe('Projects behavior', () => {
     await waitFor(() => expect(screen.getByText('Confirm Deletion')).toBeTruthy());
     fireEvent.click(screen.getByText('Close'));
     await waitFor(() => expect(screen.getByDisplayValue('HG Fake Project')).toBeTruthy());
-    await waitFor(() => expect(screen.queryByText('Confirm Deletion')).toBeNull());
+    await waitFor(() => expect(screen.queryByText(Message.ARE_YOU_SURE_YOU_WANT_TO + Message.DELETE + " \"" + 'HG Fake Project' + "\"? "
+    + Message.THIS_ACTION_CAN_NOT_BE_UNDONE + ". ")).toBeNull());
     expect(deleteProjectCalled).toBe(false);
     
   });
@@ -150,11 +213,27 @@ describe('Projects behavior', () => {
     await waitFor(() => expect(screen.getByText('Confirm Deletion')).toBeTruthy());
     fireEvent.click(screen.getByText('Set inactive'));
     await waitFor(() => expect(screen.getByDisplayValue('HG Fake Project')).toBeTruthy());
-    await waitFor(() => expect(screen.queryByText('Confirm Deletion')).toBeNull());
+    await waitFor(() => expect(screen.queryByText(Message.ARE_YOU_SURE_YOU_WANT_TO + Message.DELETE + " \"" + 'HG Fake Project' + "\"? "
+    + Message.THIS_ACTION_CAN_NOT_BE_UNDONE + ". ")).toBeNull());
     expect(deleteProjectCalled).toBe(false);
     expect(inActivateProjectCalled).toBeTruthy();
     inActivateProjectCalled = false;
     
+  });
+
+  it('should delete a project when the delete button is clicked and confirmed', async () => {
+    
+    let rt = '/projects'
+    const hist = createMemoryHistory({ initialEntries: [rt] });
+    projectsMountedPage = renderWithRouterMatch(routes , {initialState: mockState, route: rt, history: hist});
+
+    await waitFor(() => expect(screen.getByDisplayValue('HG Fake Project')).toBeTruthy());
+    fireEvent.click(screen.getByText('Delete'));
+    //Modal Pops Up
+    await waitFor(() => expect(screen.getByText('Confirm Deletion')).toBeTruthy());
+    fireEvent.click(screen.getByText('Confirm'));
+    await waitFor(() => expect(screen.queryByDisplayValue('HG Fake Project')).toBeNull());
+    expect(deleteProjectCalled).toBe(true);
   });
 
   it('should link to the members section', async () => {
@@ -209,24 +288,47 @@ describe('Projects behavior', () => {
     
   });
 
-  //add test for adding a new project
-
-  //add test for error updating project modal
-  
-
-  it('should delete a project when the delete button is clicked and confirmed', async () => {
+  it('should add a new project', async () => {
     
     let rt = '/projects'
     const hist = createMemoryHistory({ initialEntries: [rt] });
     projectsMountedPage = renderWithRouterMatch(routes , {initialState: mockState, route: rt, history: hist});
+    //HK Fake Project 3 Is an Existing name that gets thrown a 400 error
+    await waitFor(() => expect(screen.getByPlaceholderText('Project Name')).toBeTruthy());
+    
+    fireEvent.change(screen.getByPlaceholderText('Project Name'), { target: { value: 'HG Fake Project2'}});
+    //click the add button
+    fireEvent.click(projectsMountedPage.container.querySelector('.input-group-append button'));
 
-    await waitFor(() => expect(screen.getByDisplayValue('HG Fake Project')).toBeTruthy());
-    fireEvent.click(screen.getByText('Delete'));
-    //Modal Pops Up
-    await waitFor(() => expect(screen.getByText('Confirm Deletion')).toBeTruthy());
-    fireEvent.click(screen.getByText('Confirm'));
-    await waitFor(() => expect(screen.queryByDisplayValue('HG Fake Project')).toBeNull());
-    expect(deleteProjectCalled).toBe(true);
+    await sleep(10);
+    await waitFor(() => expect(screen.getAllByDisplayValue('HG Fake Project2').length).toBe(1));
+    await waitFor(() => expect(addedProject).toBe(true));
+
+    
   });
+
+  it('should be unable to add a project with an existing name', async () => {
+
+    let rt = '/projects'
+    const hist = createMemoryHistory({ initialEntries: [rt] });
+    projectsMountedPage = renderWithRouterMatch(routes , {initialState: mockState, route: rt, history: hist});
+    //HK Fake Project Is an Existing name that gets thrown a 400 error
+    await waitFor(() => expect(screen.getByPlaceholderText('Project Name')).toBeTruthy());
+    
+    fireEvent.change(screen.getByPlaceholderText('Project Name'), { target: { value: 'HG Fake Project'}});
+    //click the add button
+    fireEvent.click(projectsMountedPage.container.querySelector('.input-group-append button'));
+
+    await sleep(10);
+    await waitFor(() => expect(screen.getAllByDisplayValue('HG Fake Project').length).toBe(2));
+    await waitFor(() => expect(addedProject).toBe(false));
+
+    await waitFor(() => expect(screen.getByText(Message.THIS_PROJECT_NAME_IS_ALREADY_TAKEN)).toBeTruthy());
+
+
+    
+  });
+
+
 
 });

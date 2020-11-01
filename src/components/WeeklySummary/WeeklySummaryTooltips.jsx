@@ -25,7 +25,7 @@ const MediaURLTooltip = () => {
     <>
       <span id="mediaURLTooltip"><FontAwesomeIcon icon={faInfoCircle} data-testid="mediaurl-tooltip" /></span>
       <Tooltip placement="top" isOpen={tooltipOpen} innerClassName="mediaURLTooltip" target="mediaURLTooltip" toggle={toggle}>
-        This is the link to your shared DropBox where you upload a minimum of 4 pictures (6-10 are better) each week.
+        This is the link to your Google Doc or shared DropBox where you upload a minimum of 4 pictures (6-10 are better) each week.
         Be sure you also add a screen capture demonstration of your work progress for the week.
         Do this in the folder with your name on it and with a week number matching your volunteer week.
       </Tooltip>
