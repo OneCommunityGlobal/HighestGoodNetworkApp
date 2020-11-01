@@ -1,25 +1,24 @@
-import React, { useState } from 'react'
-import { Card, Row, Col } from 'reactstrap'
-import { useSelector } from 'react-redux'
-import ReactHtmlParser from 'react-html-parser'
-import moment from 'moment'
+import React, { useState } from 'react';
+import { Card, Row, Col } from 'reactstrap';
+import { useSelector } from 'react-redux';
+import ReactHtmlParser from 'react-html-parser';
+import moment from 'moment';
+import './Timelog.css';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faEdit } from '@fortawesome/free-regular-svg-icons';
+import { postTimeEntry, editTimeEntry } from '../../actions/timeEntries';
+import TimeEntryForm from './TimeEntryForm';
+import DeleteModal from './DeleteModal';
 
-import './Timelog.css'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faEdit } from '@fortawesome/free-regular-svg-icons'
-import { postTimeEntry, editTimeEntry } from '../../actions/timeEntries'
-import TimeEntryForm from './TimeEntryForm'
-import DeleteModal from './DeleteModal'
+const TimeEntry = ({ data, displayYear, userProfile }) => {
+  const [modal, setModal] = useState(false);
+  const toggle = () => setModal((modal) => !modal);
 
-const TimeEntry = ({ data, displayYear }) => {
-  const [modal, setModal] = useState(false)
-  const toggle = () => setModal(modal => !modal)
-
-  const dateOfWork = moment(data.dateOfWork)
-  const { user } = useSelector(state => state.auth)
-  const isOwner = data.personId === user.userid
-  const isSameDay = moment().isSame(data.dateOfWork, 'day')
-  const isAdmin = user.role === 'Administrator'
+  const dateOfWork = moment(data.dateOfWork);
+  const { user } = useSelector((state) => state.auth);
+  const isOwner = data.personId === user.userid;
+  const isSameDay = moment().isSame(data.dateOfWork, 'day');
+  const isAdmin = user.role === 'Administrator';
 
   return (
     <Card className="mb-1 p-2">
@@ -63,17 +62,18 @@ const TimeEntry = ({ data, displayYear }) => {
                   data={data}
                   toggle={toggle}
                   isOpen={modal}
+                  userProfile={userProfile}
                 />
               </span>
             )}
             {(isAdmin || (!data.isTangible && isOwner && isSameDay)) && (
-              <DeleteModal timeEntry={data} />
+              <DeleteModal timeEntry={data} userProfile={userProfile} />
             )}
           </div>
         </Col>
       </Row>
     </Card>
-  )
-}
+  );
+};
 
-export default TimeEntry
+export default TimeEntry;

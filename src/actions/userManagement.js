@@ -1,4 +1,4 @@
-import axios from 'axios'
+import axios from 'axios';
 import {
   FETCH_USER_PROFILES_ERROR,
   FETCH_USER_PROFILES_START,
