@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Popover, PopoverHeader, PopoverBody } from 'reactstrap';
+import { Popover, Card, CardTitle, CardBody, CardImg, CardText } from 'reactstrap';
 import './Badge.css';
 
 
@@ -16,12 +16,20 @@ const BadgeHistory = () => {
       <img src="https://www.dropbox.com/s/nr2afwylpaqudf8/40hrStreak_200px.png?raw=1" alt="dropbox new 3" />
       <img src="https://www.dropbox.com/s/pecypq02hp6805d/90hrStrk_200px.png?raw=1" alt="dropbox new 4" />
       <img src="https://www.dropbox.com/s/nsvn7x0p4ve0by7/150WksInARow_200px.png?raw=1" alt="dropbox new 5" id="popover2" />
-      <Popover isOpen={isOpen} toggle={toggle} target="popover2">
-        <PopoverHeader>150 Weeks of 60 Hours</PopoverHeader>
-        <PopoverBody className="badge_image_lg">
-          <img src="https://www.dropbox.com/s/nsvn7x0p4ve0by7/150WksInARow_200px.png?raw=1" alt="dropbox new 5" />
-          <p>This badge belongs to the Infrastructure category, and the Duplicable City Center project. People who earn this badge have committed 60 hours per week for 150 weeks. This badge has a ranking of 5. </p>
-        </PopoverBody>
+      <Popover trigger="legacy" isOpen={isOpen} toggle={toggle} target="popover2">
+        <Card>
+          <CardImg className="badge_image_lg" src="https://www.dropbox.com/s/nsvn7x0p4ve0by7/150WksInARow_200px.png?raw=1" alt="dropbox new 5" />
+          <CardBody>
+            <CardTitle
+              style={{
+                fontWeight: 'bold',
+                fontSize: 18,
+                color: '#285739',
+                marginBottom: 15
+              }}>150 Weeks of 60 Hours</CardTitle>
+            <CardText>This badge belongs to the Infrastructure category, and the Duplicable City Center project. People who earn this badge have committed 60 hours per week for 150 weeks. This badge has a ranking of 5.</CardText>
+          </CardBody>
+        </Card>
       </Popover>
       <img src="badges/sample1.jpeg" alt="badge sample 1" />
       <img src="badges/sample2.jpeg" alt="badge sample 2" />

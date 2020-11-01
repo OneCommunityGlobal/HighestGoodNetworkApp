@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import {
-  Card, CardTitle, CardBody, Popover, PopoverHeader, PopoverBody
+  Card, CardTitle, CardBody, CardImg, CardText, Popover,
 } from 'reactstrap';
 
 const NewBadges = () => {
@@ -23,12 +23,20 @@ const NewBadges = () => {
       </CardTitle>
         <div className="new_badges badge_image_sm">
           <img src="badges/sample7.jpeg" alt="badge sample 7" id="popover1" />
-          <Popover isOpen={isOpen} toggle={toggle} target="popover1">
-            <PopoverHeader>3000 Hours Education</PopoverHeader>
-            <PopoverBody className="badge_image_lg">
-              <img src="badges/sample7.jpeg" alt="badge sample 7" />
-              <p>This badge belongs to the Education category, and the HGN Software Development project. People who earn this badge have completed 3000 hours of computer science courses. This badge has a ranking of 21. </p>
-            </PopoverBody>
+          <Popover trigger="hover" isOpen={isOpen} toggle={toggle} target="popover1">
+            <Card>
+              <CardImg className="badge_image_lg" src="badges/sample7.jpeg" alt="badge sample 7" />
+              <CardBody>
+                <CardTitle
+                  style={{
+                    fontWeight: 'bold',
+                    fontSize: 18,
+                    color: '#285739',
+                    marginBottom: 15
+                  }}>3000 Hours Education</CardTitle>
+                <CardText>This badge belongs to the Education category, and the HGN Software Development project. People who earn this badge have completed 3000 hours of computer science courses. This badge has a ranking of 21.</CardText>
+              </CardBody>
+            </Card>
           </Popover>
           <img src="badges/sample8.jpeg" alt="badge sample 8" />
           <img src="badges/sample9.jpeg" alt="badge sample 9" />
