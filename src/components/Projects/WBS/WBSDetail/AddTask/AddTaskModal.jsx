@@ -23,7 +23,7 @@ const AddTaskModal = props => {
   const setToggle = () => {
     try {
       props.openChild()
-    } catch {}
+    } catch { }
     toggle()
   }
 
@@ -237,7 +237,8 @@ const AddTaskModal = props => {
   }
 
   const addNewTask = () => {
-    setIsLoading(true)
+    setIsLoading(true);
+
     const newTask = {
       wbsId: props.wbsId,
       taskName: taskName,
@@ -265,10 +266,10 @@ const AddTaskModal = props => {
       endstateInfo: endstateInfo,
     }
 
-    props.addNewTask(newTask, props.wbsId)
-    clear()
+    props.addNewTask(newTask, props.wbsId);
+    /*clear()
     setTimeout(() => {
-      props.fetchAllTasks(props.wbsId)
+      props.fetchAllTasks(props.wbsId, props.level, props.taskId);
       setTimeout(() => {
         setIsLoading(false)
         if (props.tasks.error === 'none') {
@@ -276,10 +277,10 @@ const AddTaskModal = props => {
           getNewNum()
         }
       }, 2000)
-    }, 4000)
+    }, 4000)*/
   }
 
-  useEffect(() => {}, [tasks])
+  useEffect(() => { }, [tasks])
 
   getNewNum()
 
@@ -586,10 +587,10 @@ const AddTaskModal = props => {
             isLoading ? (
               ' Adding...'
             ) : (
-              <Button color="primary" onClick={toggle} onClick={addNewTask}>
-                Save
-              </Button>
-            )
+                <Button color="primary" onClick={toggle} onClick={addNewTask}>
+                  Save
+                </Button>
+              )
           ) : null}
           <Button color="secondary" onClick={toggle}>
             Cancel

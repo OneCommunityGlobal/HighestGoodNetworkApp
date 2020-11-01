@@ -116,29 +116,29 @@ const ImportTask = (props) => {
 
   let position = 0;
   const foundUser = [];
+  const foundUserData = [];
 
   const newTask = (num, taskName, level, rowArr) => {
-    let resourceObj;
-    //if (!foundUser.includes(rowArr[9]) && rowArr[9] !== null) {
 
-    //const userName = axios.get(ENDPOINTS.GET_USER_BY_NAME(rowArr[9]));
-    /*if (userName.data) {
-      resourceObj = {
-        name: rowArr[9],
-        userID: userName.data[0]._id,
-        profilePic: userName.data[0].profilePic
+    const indexFoundUser = foundUser.findIndex(user => user === rowArr[9]);
+    if (indexFoundUser >= 0) {
+      rowArr[9] = foundUserData[indexFoundUser];
+    } else {
+      const members = props.projectMembers.members;
+      foundUser.push(rowArr[9]);
+
+      for (let i = 0; i < members.length; i++) {
+        if (`${members[i].firstName} ${members[i].lastName}` === rowArr[9]) {
+          rowArr[9] = rowArr[9] + '|' + members[i]._id + '|' + (members[i].profilePic || "/defaultprofilepic.png");
+          foundUserData.push(rowArr[9]);
+          break;
+        }
       }
-    }*/
 
-    //console.log(rowArr[9]);
+    }
 
-    /*if (rowArr[9] !== null) {
-      resourceObj = {
-        name: rowArr[9],
-        userID: null,
-        profilePic: null
-      }
-    }*/
+
+
 
     let newTask = {
       'taskName': `${taskName}`,
@@ -156,12 +156,16 @@ const ImportTask = (props) => {
       'estimatedHours': `${rowArr[15]}`,
       'startedDatetime': null,
       'dueDatetime': null,
+      'whyInfo': `${rowArr[18]}`,
+      'intentInfo': `${rowArr[19]}`,
+      'endstateInfo': `${rowArr[20]}`,
       'links': `${rowArr[21]}`,
       'mother': null,
       'parentId1': null,
       'parentId2': null,
       'parentId3': null,
       'isActive': true,
+
     }
 
     return newTask;
@@ -247,5 +251,8 @@ const ImportTask = (props) => {
   )
 }
 
-export default connect(null, { importTask, fetchAllTasks })(ImportTask)
+const mapStateToProps = state => {
+  return state
+}
+export default connect(mapStateToProps, { importTask, fetchAllTasks })(ImportTask)
 

@@ -1,3 +1,7 @@
+.container-tasks{
+  margin: 20px;
+}
+
 .container{
   overflow: auto;
 }
@@ -36,10 +40,6 @@
   width: 20px;
 }
 
-.task-name{
-  width: 100%;
-  min-width: 200px;
-}
 
 .task-hour{
   width: 35px;
@@ -63,7 +63,7 @@
   display: none;
 }
 .wbsTask{
-  
+
   line-height: 14px;
 
 }

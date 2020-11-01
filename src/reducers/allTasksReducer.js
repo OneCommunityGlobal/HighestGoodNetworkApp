@@ -60,17 +60,17 @@ export const taskReducer = (allTasks = allTasksInital, action) => {
     case types.FETCH_TASKS_ERROR:
       return { ...allTasks, fetched: true, fetching: false, error: action.err }
     case types.RECEIVE_TASKS:
-      console.log(action.taskItems);
+
       if (action.level === 0) {
         return { ...allTasks, taskItems: [...sortByNum(action.taskItems)], fetched: true, fetching: false, error: "none" };
       } else {
-
         const motherIndex = allTasks.taskItems.findIndex(item => item._id === action.mother);
         return { ...allTasks, taskItems: [...allTasks.taskItems.slice(0, motherIndex + 1), ...sortByNum(action.taskItems), ...allTasks.taskItems.slice(motherIndex + 1)], fetched: true, fetching: false, error: "none" }
       }
-
     case types.ADD_NEW_TASK:
-      return { ...allTasks }
+      const motherIndex = allTasks.taskItems.findIndex(item => item._id === action.newTask.mother);
+      const index = motherIndex + 1;
+      return { ...allTasks, taskItems: [...allTasks.taskItems.slice(0, index), ...sortByNum([action.newTask, ...allTasks.taskItems.slice(index)])], fetched: true, fetching: false, error: "none" }
     case types.DELETE_TASK:
       let indexStart = allTasks.taskItems.findIndex(task => task._id == action.taskId);
       let indexEnd = indexStart;

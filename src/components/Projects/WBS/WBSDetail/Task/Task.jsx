@@ -4,6 +4,7 @@
  ********************************************************************************/
 import React, { useState } from 'react'
 import { connect } from 'react-redux'
+import { Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap'
 import { Button, Dropdown, DropdownItem, DropdownToggle, DropdownMenu } from 'reactstrap';
 import AddTaskModal from '../AddTask/AddTaskModal';
 import EditTaskModal from "../EditTask/EditTaskModal";
@@ -12,6 +13,10 @@ import './tagcolor.css';
 import './task.css';
 
 const Task = (props) => {
+  // modal
+  const [modal, setModal] = useState(false)
+  const toggleModel = () => setModal(!modal)
+
   const startedDate = new Date(props.startedDatetime);
   const dueDate = new Date(props.dueDatetime);
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -155,7 +160,7 @@ const Task = (props) => {
           onDrop={(e) => drop(e, props)}
           draggable="true" onDragStart={e => drag(e, props.id)}
           scope="row"
-          className="taskNum" onClick={() => selectTask(props.id)}>
+          className="taskNum" onClick={() => { selectTask(props.id); toggleGroups(props.num, props.id, props.level) }}>
           {props.num.split('.0').join('')}</td>
         <td className="taskName">
           {props.level === 1 ? <div className='level-space-1' data-tip="Level 1"><span onClick={(e) => toggleGroups(props.num, props.id, props.level)} id={`task_name_${props.id}`} className={props.hasChildren ? 'has_children' : ''}>{props.name}</span></div> : null}
@@ -172,36 +177,38 @@ const Task = (props) => {
         <td >
 
           {
-            props.resources.map((elm, i) => {
-              if (i < 2) {
+            props.resources ?
+              props.resources.map((elm, i) => {
+                if (i < 2) {
 
-                try {
-                  if (!elm.profilePic) {
+                  try {
+                    if (!elm.profilePic) {
+                      return (
+                        <a
+                          key={`res_${i}`}
+                          data-tip={elm.name} className="name"
+                          href={`/userprofile/${elm.userID}`} target='_blank'><span className="dot">{elm.name.substring(0, 2)}</span>
+                        </a>
+
+                      )
+
+                    }
                     return (
                       <a
                         key={`res_${i}`}
                         data-tip={elm.name} className="name"
-                        href={`/userprofile/${elm.userID}`} target='_blank'><span className="dot">{elm.name.substring(0, 2)}</span>
+                        href={`/userprofile/${elm.userID}`} target='_blank'><img className='img-circle' src={elm.profilePic} />
                       </a>
-
                     )
 
-                  }
-                  return (
-                    <a
-                      key={`res_${i}`}
-                      data-tip={elm.name} className="name"
-                      href={`/userprofile/${elm.userID}`} target='_blank'><img className='img-circle' src={elm.profilePic} />
-                    </a>
-                  )
+                  } catch (err) {
 
-                } catch (err) {
+                  }
+
 
                 }
-
-
-              }
-            })
+              }) :
+              null
           }
 
           {
@@ -210,26 +217,28 @@ const Task = (props) => {
 
           <div id={`res-${props.id}`} className="resourceMore">
             {
-              props.resources.map((elm, i) => {
-                if (i >= 2) {
+              props.resources ?
+                props.resources.map((elm, i) => {
+                  if (i >= 2) {
 
 
-                  if (!elm.profilePic) {
+                    if (!elm.profilePic) {
+                      return (
+                        <a data-tip={elm.name} className="name" key={i}
+                          href={`/userprofile/${elm.userID}`} target='_blank'><span className="dot">{elm.name.substring(0, 2)}</span>
+                        </a>
+
+                      )
+
+                    }
                     return (
                       <a data-tip={elm.name} className="name" key={i}
-                        href={`/userprofile/${elm.userID}`} target='_blank'><span className="dot">{elm.name.substring(0, 2)}</span>
+                        href={`/userprofile/${elm.userID}`} target='_blank'><img className='img-circle' src={elm.profilePic} />
                       </a>
-
                     )
-
                   }
-                  return (
-                    <a data-tip={elm.name} className="name" key={i}
-                      href={`/userprofile/${elm.userID}`} target='_blank'><img className='img-circle' src={elm.profilePic} />
-                    </a>
-                  )
-                }
-              })
+                })
+                : null
 
             }
           </div>
@@ -249,6 +258,8 @@ const Task = (props) => {
           {dueDate.getFullYear() !== 1969 ? `${(dueDate.getMonth() + 1)}/${dueDate.getDate()}/${dueDate.getFullYear()}` : null}
         </td>
         <td>{props.links.map((link, i) => link.length > 1 ? <a key={i} href={link} target="_blank" data-tip={link}><i className="fa fa-link" aria-hidden="true"></i></a> : null)}</td>
+        <td onClick={toggleModel}><i className="fa fa-book" aria-hidden="true"></i></td>
+
       </tr>
       <tr className='taskDrop' id={`taskDrop_${props.id}`}>
         <td colSpan={14}></td>
@@ -256,8 +267,8 @@ const Task = (props) => {
 
       <tr className='wbsTaskController' id={`controller_${props.id}`}>
         <td colSpan={14} className='controlTd'>
-          <AddTaskModal key={`addTask_${props.id}`} parentNum={props.num} taskId={props.id} projectId={props.projectId} wbsId={props.wbsId} parentId1={props.parentId1} parentId2={props.parentId2} parentId3={props.parentId3} level={props.level} openChild={(e) => openChild(props.num, props.id)} />
-          <EditTaskModal key={`editTask_${props.id}`} parentNum={props.num} taskId={props.id} projectId={props.projectId} wbsId={props.wbsId} parentId1={props.parentId1} parentId2={props.parentId2} parentId3={props.parentId3} level={props.level} />
+          <AddTaskModal key={`addTask_${props.id}`} parentNum={props.num} taskId={props.id} projectId={props.projectId} wbsId={props.wbsId} parentId1={props.parentId1} parentId2={props.parentId2} parentId3={props.parentId3} mother={props.mother} level={props.level} openChild={(e) => openChild(props.num, props.id)} />
+          <EditTaskModal key={`editTask_${props.id}`} parentNum={props.num} taskId={props.id} projectId={props.projectId} wbsId={props.wbsId} parentId1={props.parentId1} parentId2={props.parentId2} parentId3={props.parentId3} mother={props.mother} level={props.level} />
 
           <Button color="danger" size="sm" className='controlBtn controlBtn_remove' onClick={() => deleteTask(props.id)}>Remove</Button>
 
@@ -278,7 +289,16 @@ const Task = (props) => {
             </DropdownMenu>
           </Dropdown>
 
-
+          <Modal isOpen={modal} toggle={toggleModel}>
+            <ModalBody>
+              <h6>WHY THIS TASK IS IMPORTANT:</h6>
+              {props.whyInfo}<br /><br />
+              <h6>THE DESIGN INTENT:</h6>
+              {props.intentInfo}<br /><br />
+              <h6>ENDSTATE:</h6>
+              {props.endstateInfo}<br /><br />
+            </ModalBody>
+          </Modal>
 
         </td>
       </tr>

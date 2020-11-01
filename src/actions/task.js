@@ -44,18 +44,16 @@ export const addNewTask = (newTask, wbsId) => {
     let task = {};
 
     try {
-      const res = await axios.post(url, newTask)
+      const res = await axios.post(url, newTask);
       _id = res.data._id;
       status = res.status;
       task = res.data;
 
     } catch (err) {
-      console.log("TRY CATCH ERR", err);
       status = 400;
     }
 
     newTask._id = _id;
-
     await dispatch(
       postNewTask(task,
         status
