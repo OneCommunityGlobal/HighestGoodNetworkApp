@@ -21,9 +21,10 @@ import { Editor } from '@tinymce/tinymce-react';
 import ReactTooltip from 'react-tooltip';
 import { postTimeEntry, editTimeEntry } from '../../actions/timeEntries';
 import { getUserProjects } from '../../actions/userProjects';
+import { updateUserProfile } from '../../actions/userProfile';
 import { stopTimer } from '../../actions/timer';
 
-const TimeEntryForm = ({ userId, edit, data, isOpen, toggle, timer }) => {
+const TimeEntryForm = ({ userId, edit, data, isOpen, toggle, timer, userProfile }) => {
   const fromTimer = !_.isEmpty(timer);
 
   const initialState = {
