@@ -134,7 +134,7 @@ class TimelogPage extends Component {
       filteredData = data.filter((entry) => entry.projectId === this.state.projectSelected);
     }
     return filteredData.map((entry) => (
-      <TimeEntry data={entry} displayYear={false} key={entry._id} />
+      <TimeEntry data={entry} displayYear={false} key={entry._id} userProfile={this.props.userProfile}/>
     ));
   }
 
