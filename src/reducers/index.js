@@ -25,11 +25,11 @@ import { allTimeEntriesReducer } from './allTimeEntriesReducer';
 import { timeEntriesForSpecifiedPeriodReducer } from './timeEntriesForSpecifiedPeriodReducer';
 import { errorsReducer } from './errorsReducer';
 import { timeEntriesReducer } from './timeEntriesReducer';
-import { wbsReducer } from './wbsReducer'
-import { taskReducer } from './allTasksReducer'
-import { timerReducer } from './timerReducer'
+import { wbsReducer } from './wbsReducer';
+import { taskReducer } from './allTasksReducer';
+import { timerReducer } from './timerReducer';
 
-import { teamUsersReducer } from './teamsTeamMembersReducer'
+import { teamUsersReducer } from './teamsTeamMembersReducer';
 
 export default combineReducers({
   auth: authReducer,
@@ -63,4 +63,4 @@ export default combineReducers({
   errors: errorsReducer,
   timeEntries: timeEntriesReducer,
   timer: timerReducer,
-})
+});
