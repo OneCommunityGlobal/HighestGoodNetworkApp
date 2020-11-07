@@ -1,14 +1,15 @@
 import httpService from './httpService';
-import { ENDPOINTS } from '../utils/URL';
+import { ENDPOINTS, ApiEndpoint } from '../utils/URL';
 
-const ApiEndpoint = `${process.env.REACT_APP_APIENDPOINT}/team`;
+const ApiUri = `${ApiEndpoint}/team`;
 
 
 export function getAllTeams() {
-  return httpService.get(`${ApiEndpoint}`);
+  return httpService.get(`${ApiUri}`);
 }
 
 export function getTeamUsers(teamId) {
   // return httpService.get(`${ApiEndpoint}/${teamId}/users`);
   return httpService.get(ENDPOINTS.TEAM_USERS(teamId));
 }
+
