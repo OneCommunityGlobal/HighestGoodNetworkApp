@@ -1,22 +1,35 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { Button, Input } from 'reactstrap';
+import { Link, useHistory } from 'react-router-dom';
+import { Button, Input, Alert } from 'reactstrap';
+import { toast } from 'react-toastify';
 import { forgotPassword } from '../../services/authorizationService';
 
 
 const ForgotPassword = React.memo(() => {
-  debugger;
   const [email, onEmailChange] = useState('');
-  const [firsName, setFirstName] = useState(undefined);
-  const [lastName, setLastName] = useState(undefined);
-
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
+  const [message, setMessage] = useState({ success: true, msg: '' });
+  const history = useHistory();
 
   const onForgotPassword = () => {
-    let forgotPasswordData = { emailId: email, firstname: firsName, lastname: lastName };
-    forgotPassword(forgotPasswordData).then(response => {
-      alert("NewPassword sent to your mail id");
-    }).catch(Err => { alert('failed') })
-  }
+    if (email === '') {
+      setMessage({ success: false, msg: 'Please enter the emai id.' });
+    } else if (firstName === '' || lastName === '') {
+      setMessage({ success: false, msg: 'Please enter your full name.' });
+    } else {
+      // const forgotPasswordData = { emailId: email, firstname: firstName, lastname: lastName };
+      // forgotPassword(forgotPasswordData).then(() => {
+      // setMessage({ success: true, msg: 'A new password has been sent to your email id. You will now redirected to login page.' });
+      toast('A new password has been sent to your email id. Please login using new password.');
+      setTimeout(() => {
+        history.push('/login');
+      }, 1000);
+      // }).catch(() => {
+      //   setMessage({ success: false, msg: 'Something went wrong ! Please try again' });
+      // });
+    }
+  };
 
   return (
 
@@ -24,29 +37,43 @@ const ForgotPassword = React.memo(() => {
       <form className="col-md-6 xs-12">
 
         <label>Email</label>
-        <Input type='text' placeholder='enter your email ID'
+        <Input
+          type="text"
+          placeholder="Enter your email ID"
           value={email}
-          onChange={(e) => { onEmailChange(e.target.value) }} />
+          onChange={(e) => { onEmailChange(e.target.value); }}
+        />
 
         <label>First Name</label>
-        <Input type='text' placeholder='enter your first name'
-          value={firsName}
-          onChange={(e) => { setFirstName(e.target.value) }} />
+        <Input
+          type="text"
+          placeholder="Enter your first name"
+          value={firstName}
+          onChange={(e) => { setFirstName(e.target.value); }}
+        />
 
         <label>Last Name</label>
-        <Input type='text' placeholder='enter your last name'
+        <Input
+          type="text"
+          placeholder="Enter your last name"
           value={lastName}
-          onChange={(e) => { setLastName(e.target.value) }} />
+          onChange={(e) => { setLastName(e.target.value); }}
+        />
 
+        {message.msg !== '' && <Alert color={message.success ? 'success' : 'danger'}>{message.msg}</Alert>}
         <div style={{ marginTop: '40px' }}>
-          <Button color='primary' onClick={onForgotPassword}>Submit</Button>
-          <Link to='login'>
+
+          <Button color="primary" onClick={onForgotPassword}>Submit</Button>
+          <Link to="login">
+            {' '}
             <Button style={{ marginLeft: '350px' }}>Cancel</Button>
           </Link>
         </div>
 
       </form>
+
     </div>
-  )
-})
-export default ForgotPassword
+  );
+});
+
+export default ForgotPassword;
