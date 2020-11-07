@@ -3,10 +3,9 @@ import { Card, Row, Col } from 'reactstrap';
 import { useSelector } from 'react-redux';
 import ReactHtmlParser from 'react-html-parser';
 import moment from 'moment';
-
 import './Timelog.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEdit, faSquare } from '@fortawesome/free-regular-svg-icons';
+import { faEdit } from '@fortawesome/free-regular-svg-icons';
 import { postTimeEntry, editTimeEntry } from '../../actions/timeEntries';
 import TimeEntryForm from './TimeEntryForm';
 import DeleteModal from './DeleteModal';
@@ -30,9 +29,9 @@ const TimeEntry = ({ data, displayYear, userProfile }) => {
               <h4>{dateOfWork.format('MMM D')}</h4>
               {displayYear && <h5>{dateOfWork.format('YYYY')}</h5>}
               <h5 className="text-info">{dateOfWork.format('dddd')}</h5>
-              {data.editCount > 5 && (
+              {/* {data.editCount > 5 && (
                 <FontAwesomeIcon icon={faSquare} className="mr-1 text-primary" />
-              )}
+              )} */}
             </div>
           </div>
         </Col>
@@ -40,7 +39,7 @@ const TimeEntry = ({ data, displayYear, userProfile }) => {
           <h4 className="text-success">
             {data.hours}h {data.minutes}m
           </h4>
-          <div className="text-muted">Project:</div>
+          <div className="text-muted">Project/Task:</div>
           <h6> {data.projectName} </h6>
           <span className="text-muted">Tangible: </span>{' '}
           <input type="checkbox" name="isTangible" checked={data.isTangible} readOnly />
