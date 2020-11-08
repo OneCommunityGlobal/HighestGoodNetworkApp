@@ -1,7 +1,7 @@
 import { getLeaderboardData } from '../../actions/leaderBoardData'
 import { connect } from 'react-redux'
 import Leaderboard from './Leaderboard'
-import getcolor from '../../utils/effortColors'
+import {getcolor, getprogress} from '../../utils/effortColors'
 import _ from 'lodash'
 const mapStateToProps = state => {
 	//console.log('State=Leaderboard container', state)
@@ -9,7 +9,7 @@ const mapStateToProps = state => {
 	let leaderBoardData = _.get(state, 'leaderBoardData', [])
 
 	//console.log('Leaderboard Unsorted Data', leaderBoardData)
-
+	let organization = {totaltime: 0, tangibletime: 0, weeklyComittedHours: 0, intangibletime: 0};
 	if (leaderBoardData.length) {
 		let maxtotal = _.maxBy(leaderBoardData, 'totaltime_hrs').totaltime_hrs
 		maxtotal = maxtotal === 0 ? 10 : maxtotal
@@ -19,29 +19,54 @@ const mapStateToProps = state => {
 				element.totaltangibletime_hrs >= element.weeklyComittedHours ? true : false
 
 			element.weeklycommited = _.round(element.weeklyComittedHours, 2)
-
-			element.tangibletime = _.round(element.totaltangibletime_hrs, 2)
+			organization.weeklyComittedHours += element.weeklyComittedHours;
+			element.tangibletime = _.round(element.totaltangibletime_hrs, 2);
 			element.intangibletime = _.round(element.totalintangibletime_hrs, 2)
+
 			element.tangibletimewidth = _.round(
 				(element.totaltangibletime_hrs * 100) / maxtotal,
 				0
 			)
+
 			element.intangibletimewidth = _.round(
 				(element.totalintangibletime_hrs * 100) / maxtotal,
 				0
 			)
-			element.tangiblebarcolor = getcolor(element.totaltangibletime_hrs)
+
+			element.barcolor = getcolor(element.totaltangibletime_hrs)
+			element.barprogress = getprogress(element.totaltangibletime_hrs)
 			element.totaltime = _.round(element.totaltime_hrs, 2)
+
+			organization.totaltime += element.totaltime;
+			organization.tangibletime += element.tangibletime;
+			organization.intangibletime += element.intangibletime;
+			
 			return element
 		})
 	}
 
-	//console.log(leaderBoardData)
+	organization.name = `HGN Totals: ${leaderBoardData.length} Members`
+
+	//Convert Org Time Color to 10,20,30,40,50,60,70% of totalTime/weeklyCommitted
+	let tenPTotalOrgTime = organization.weeklyComittedHours * 0.1;
+	let orgTangibleColorTime = (organization.totaltime < (tenPTotalOrgTime * 2)) ? 0 : 5;
+
+	if (orgTangibleColorTime == 5) {
+		let multipleRemaining = Math.floor((Math.abs((organization.totaltime - (tenPTotalOrgTime * 2))) / tenPTotalOrgTime));
+		orgTangibleColorTime += (multipleRemaining * 10);
+	}
+
+	console.log('Org Tabile Colors', orgTangibleColorTime);
+	
+
+	organization.barcolor = getcolor(orgTangibleColorTime);
+	organization.barprogress = getprogress(orgTangibleColorTime);
 
 	return {
 		isAuthenticated: _.get(state, 'auth.isAuthenticated', false),
 		leaderBoardData: leaderBoardData,
-		loggedInUser: _.get(state, 'auth.user', {})
+		loggedInUser: _.get(state, 'auth.user', {}),
+		organizationData: organization
 	}
 }
 export default connect(mapStateToProps, { getLeaderboardData })(Leaderboard)

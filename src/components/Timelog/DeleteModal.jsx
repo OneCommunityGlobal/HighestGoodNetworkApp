@@ -1,23 +1,34 @@
-import React, { useState } from 'react'
-import { Modal, ModalBody, ModalFooter, Button } from 'reactstrap'
-import { useDispatch } from 'react-redux'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faTrashAlt } from '@fortawesome/free-regular-svg-icons'
-import { deleteTimeEntry } from '../../actions/timeEntries'
+import React, { useState } from 'react';
+import { Modal, ModalBody, ModalFooter, Button } from 'reactstrap';
+import { useDispatch } from 'react-redux';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faTrashAlt } from '@fortawesome/free-regular-svg-icons';
+import { deleteTimeEntry } from '../../actions/timeEntries';
+import { updateUserProfile } from '../../actions/userProfile';
 
-const DeleteModal = ({ timeEntry }) => {
-  const [isOpen, setOpen] = useState(false)
-  const dispatch = useDispatch()
+const DeleteModal = ({ timeEntry, userProfile }) => {
+  const [isOpen, setOpen] = useState(false);
+  const dispatch = useDispatch();
 
-  const toggle = () => setOpen(isOpen => !isOpen)
+  const toggle = () => setOpen((isOpen) => !isOpen);
 
-  const deleteEntry = async event => {
+  const deleteEntry = async (event) => {
     if (event) {
-      event.preventDefault()
+      event.preventDefault();
     }
 
-    dispatch(deleteTimeEntry(timeEntry))
-  }
+    dispatch(deleteTimeEntry(timeEntry));
+    const newHour = (
+      userProfile.totalComittedHours -
+      timeEntry.hours -
+      timeEntry.minutes / 60
+    ).toFixed(2);
+    const updatedUserProfile = {
+      ...userProfile,
+      totalComittedHours: parseInt(newHour, 10),
+    };
+    dispatch(updateUserProfile(userProfile._id, updatedUserProfile));
+  };
   return (
     <span>
       <FontAwesomeIcon icon={faTrashAlt} size="lg" className="mr-3 text-primary" onClick={toggle} />
@@ -35,7 +46,7 @@ const DeleteModal = ({ timeEntry }) => {
         </ModalFooter>
       </Modal>
     </span>
-  )
-}
+  );
+};
 
-export default DeleteModal
+export default DeleteModal;

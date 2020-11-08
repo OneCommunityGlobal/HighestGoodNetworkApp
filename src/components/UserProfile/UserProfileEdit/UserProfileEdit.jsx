@@ -1,21 +1,57 @@
-import React, { Component } from 'react'
-import Loading from '../../common/Loading'
-import { Row, Label, Input, CardTitle, Col, Container, Button, Badge, Collapse } from 'reactstrap'
+import React, { Component } from 'react';
+import {
+  Row,
+  Label,
+  Input,
+  CardTitle,
+  Col,
+  Container,
+  Button,
+  Form,
+  FormFeedback,
+  FormGroup,
+  Badge,
+  Collapse,
+  Alert,
+  Nav,
+  NavItem,
+  NavLink,
+  TabContent,
+  TabPane,
+} from 'reactstrap';
+import moment from 'moment';
+import { StickyContainer, Sticky } from 'react-sticky';
+import Image from 'react-bootstrap/Image';
+import { Link, useHistory, withRouter } from 'react-router-dom';
 
-import Image from 'react-bootstrap/Image'
-import { orange, warningRed } from '../../../constants/colors'
-import BlueSquare from '../BlueSquares'
-import Modal from '../UserProfileModal'
-import UserLinks from '../UserLinks'
-import ToggleSwitch from './ToggleSwitch'
-import { Link } from 'react-router-dom'
+import classnames from 'classnames';
+import Loading from '../../common/Loading';
+import { orange, warningRed } from '../../../constants/colors';
+import BlueSquare from '../BlueSquares';
+import Modal from '../UserProfileModal';
+import UserLinks from '../UserLinks';
+import ToggleSwitch from './ToggleSwitch';
+import EditConfirmModal from '../UserProfileModal/EditConfirmModal';
+import SaveButton from './SaveButton';
+// import styleProfile from '../UserProfile.module.scss';
+import '../UserProfile.scss';
+// import styleEdit from './UserProfileEdit.module.scss';
+import './UserProfileEdit.scss';
+import LinkModButton from './LinkModButton';
+import TeamView from '../Teamsview';
+import ProjectsTab from '../TeamsAndProjects/ProjectsTab';
+import TeamsTab from '../TeamsAndProjects/TeamsTab';
 
-import styleProfile from '../UserProfile.module.scss'
-import styleEdit from './UserProfileEdit.module.scss'
-
+const styleProfile = {};
 class EditProfile extends Component {
   state = {
+    showWarning: false,
     isLoading: true,
+    formValid: {
+      firstName: true,
+      lastName: true,
+      email: true,
+    },
     error: '',
     userProfile: {},
     firstNameError: '',
@@ -28,139 +64,223 @@ class EditProfile extends Component {
       phoneNumber: true,
       blueSquares: true,
     },
-  }
+    selectedTeamId: 0,
+    selectedTeam: '',
+    activeTab: '1',
+  };
 
   async componentDidMount() {
-    // this.props.getCurrentUser(getjwt())
-    if (this.props.match) {
-      let userId = this.props.match.params.userId
-      await this.props.getUserProfile(userId)
-      await this.props.getUserTeamMembers(userId)
-      if (this.props.userProfile.firstName.length) {
-        // check props:
-        // console.log('props:', this.props.userProfile)
-        // fill in defaults where needed
-        this.setState({ isLoading: false, userProfile: this.props.userProfile })
+    this.props.getAllUserTeams();
+    // this.props.getAllUserProfile();
 
+    if (this.props.match) {
+      const { userId } = this.props.match.params;
+      await this.props.getUserProfile(userId);
+      if (this.props.userProfile.firstName.length) {
+        this.setState({ isLoading: false, userProfile: this.props.userProfile });
         if (this.props.userProfile.privacySettings) {
           this.setState({
             isLoading: false,
             userProfile: {
               ...this.props.userProfile,
             },
-          })
+          });
         }
       }
     }
+
+    // console.log('edit profile, component did mount, props: ', this.props);
+    // console.log('edit profile, state:', this.state);
   }
 
-  handleUserProfile = event => {
-    if (event.target.id === 'firstName') {
+  toggleTab = (tab) => {
+    if (this.state.activeTab !== tab) {
       this.setState({
-        userProfile: {
-          ...this.state.userProfile,
-          firstName: event.target.value.trim(),
-        },
-        showModal: event.target.value ? false : true,
-        modalTitle: 'First Name Error',
-        modalMessage: 'First Name cannot be empty',
-      })
+        activeTab: tab,
+      });
     }
+  };
 
-    if (event.target.id === 'lastName') {
-      this.setState({
-        userProfile: {
-          ...this.state.userProfile,
-          lastName: event.target.value.trim(),
-        },
-        showModal: event.target.value ? false : true,
-        modalTitle: 'First Name Error',
-        modalMessage: 'Last Name cannot be empty',
-      })
-    }
+  onDeleteTeam = (deletedTeamId) => {
+    const _userProfile = Object.assign({}, this.state.userProfile);
+    const filteredTeam = _userProfile.teams.filter(team => team._id !== deletedTeamId);
+    _userProfile.teams = filteredTeam;
 
-    if (event.target.id === 'jobTitle') {
-      this.setState({
-        userProfile: {
-          ...this.state.userProfile,
-          jobTitle: event.target.value,
-        },
-      })
-    }
-
-    if (event.target.id === 'email') {
-      this.setState({
-        userProfile: {
-          ...this.state.userProfile,
-          email: event.target.value.trim(),
-        },
-        emailError: event.target.value ? '' : 'Email cannot be empty ',
-      })
-    }
-
-    if (event.target.id === 'phoneNumber') {
-      this.setState({
-        userProfile: {
-          ...this.state.userProfile,
-          phoneNumber: event.target.value.trim(),
-        },
-      })
-    }
-
-    if (event.target.id === 'emailPubliclyAccessible') {
-      //   console.log(this.state)
-
-      this.setState({
-        userProfile: {
-          ...this.state.userProfile,
-          privacySettings: {
-            ...this.state.userProfile.privacySettings,
-            email: !this.state.userProfile.privacySettings?.email,
-          },
-        },
-      })
-    }
-
-    if (event.target.id === 'phonePubliclyAccessible') {
-      this.setState({
-        userProfile: {
-          ...this.state.userProfile,
-          privacySettings: {
-            ...this.state.userProfile.privacySettings,
-            phoneNumber: !this.state.userProfile.privacySettings?.phoneNumber,
-          },
-        },
-      })
-    }
-
-    if (event.target.id === 'blueSquaresPubliclyAccessible') {
-      this.setState({
-        userProfile: {
-          ...this.state.userProfile,
-          privacySettings: {
-            ...this.state.userProfile.privacySettings,
-            blueSquares: !this.state.userProfile.privacySettings?.blueSquares,
-          },
-        },
-      })
-    }
-
-    var elem = document.getElementById('warningCard')
-    elem.style.display = 'block'
+    this.setState({
+      userProfile: _userProfile,
+    }, () => { this.saveChanges(); });
   }
 
-  handleImageUpload = async e => {
-    e.preventDefault()
+  onDeleteProject = (deletedProjectId) => {
+    const _userProfile = Object.assign({}, this.state.userProfile);
+    const filteredProject = _userProfile.projects.filter(project => project._id !== deletedProjectId);
+    _userProfile.projects = filteredProject;
 
-    const file = e.target.files[0]
+    this.setState({
+      userProfile: _userProfile,
+    }, () => { this.saveChanges(); });
+  }
 
-    const allowedTypesString = 'image/png,image/jpeg, image/jpg'
-    const allowedTypes = allowedTypesString.split(',')
-    let isValid = true
-    let imageUploadError = ''
+  onAssignTeam = (assignedTeam) => {
+    const _userProfile = Object.assign({}, this.state.userProfile);
+    if (_userProfile.teams) {
+      _userProfile.teams.push(assignedTeam);
+    } else {
+      _userProfile.teams = [assignedTeam];
+    }
+
+    this.setState({
+      userProfile: _userProfile,
+    }, () => { this.saveChanges(); });
+  }
+
+  onAssignProject = (assignedProject) => {
+    const _userProfile = Object.assign({}, this.state.userProfile);
+    if (_userProfile.projects) {
+      _userProfile.projects.push(assignedProject);
+    } else {
+      _userProfile.projects = [assignedProject];
+    }
+
+    this.setState({
+      userProfile: _userProfile,
+    }, () => { this.saveChanges(); });
+  }
+
+  saveChanges = () => {
+    this.props.updateUserProfile(
+      this.props.match.params.userId,
+      this.state.userProfile,
+    );
+  }
+
+  handleUserProfile = (event) => {
+    this.setState({
+      showWarning: true,
+    });
+    const { userProfile, formValid } = this.state;
+    const patt = new RegExp(/^\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/i);
+    switch (event.target.id) {
+      case 'firstName':
+        this.setState({
+          userProfile: {
+            ...userProfile,
+            firstName: event.target.value.trim(),
+          },
+          formValid: {
+            ...formValid,
+            firstName: !!event.target.value,
+          },
+        });
+        break;
+      case 'lastName':
+        this.setState({
+          userProfile: {
+            ...userProfile,
+            lastName: event.target.value.trim(),
+          },
+          formValid: {
+            ...formValid,
+            lastName: !!event.target.value,
+          },
+        });
+        break;
+      case 'jobTitle':
+        this.setState({
+          userProfile: {
+            ...userProfile,
+            jobTitle: event.target.value,
+          },
+        });
+        break;
+      case 'email':
+        this.setState({
+          userProfile: {
+            ...userProfile,
+            email: event.target.value,
+          },
+          formValid: {
+            ...formValid,
+            email: patt.test(event.target.value),
+          },
+        });
+        break;
+      case 'phoneNumber':
+        this.setState({
+          userProfile: {
+            ...userProfile,
+            phoneNumber: event.target.value.trim(),
+          },
+        });
+        break;
+      case 'emailPubliclyAccessible':
+        this.setState({
+          userProfile: {
+            ...userProfile,
+            privacySettings: {
+              ...userProfile.privacySettings,
+              email: !userProfile.privacySettings?.email,
+            },
+          },
+        });
+        break;
+      case 'phonePubliclyAccessible':
+        this.setState({
+          userProfile: {
+            ...userProfile,
+            privacySettings: {
+              ...userProfile.privacySettings,
+              phoneNumber: !userProfile.privacySettings?.phoneNumber,
+            },
+          },
+        });
+        break;
+      case 'blueSquaresPubliclyAccessible':
+        this.setState({
+          userProfile: {
+            ...userProfile,
+            privacySettings: {
+              ...userProfile.privacySettings,
+              blueSquares: !userProfile.privacySettings?.blueSquares,
+            },
+          },
+        });
+        break;
+      case 'totalComittedHours':
+        this.setState({
+          userProfile: {
+            ...userProfile,
+            totalComittedHours: event.target.value,
+          },
+        });
+        break;
+      case 'weeklyComittedHours':
+        this.setState({
+          userProfile: {
+            ...userProfile,
+            weeklyComittedHours: event.target.value,
+          },
+        });
+        break;
+      default:
+        this.setState({
+          ...userProfile,
+        });
+    }
+  };
+
+  handleImageUpload = async (e) => {
+    e.preventDefault();
+
+    const file = e.target.files[0];
+
+    const allowedTypesString = 'image/png,image/jpeg, image/jpg';
+    const allowedTypes = allowedTypesString.split(',');
+    let isValid = true;
+    let imageUploadError = '';
     if (!allowedTypes.includes(file.type)) {
-      imageUploadError = `File type must be ${allowedTypesString}.`
-      isValid = false
+      imageUploadError = `File type must be ${allowedTypesString}.`;
+      isValid = false;
 
       return this.setState({
         type: 'image',
@@ -169,6 +289,7 @@ class EditProfile extends Component {
         showModal: true,
         modalTitle: 'Profile Pic Error',
         modalMessage: imageUploadError,
+<<<<<<< HEAD
       })
     }
     let filesizeKB = file.size / 1024
@@ -178,6 +299,17 @@ class EditProfile extends Component {
       imageUploadError = `\nThe file you are trying to upload exceeds the maximum size of 50KB. You can either 
 														choose a different file, or use an online file compressor.`
       isValid = false
+=======
+      });
+    }
+    const filesizeKB = file.size / 1024;
+    // console.log(filesizeKB);
+
+    if (filesizeKB > 50) {
+      imageUploadError = `\nThe file you are trying to upload exceeds the maximum size of 50KB. You can either 
+														choose a different file, or use an online file compressor.`;
+      isValid = false;
+>>>>>>> development
 
       return this.setState({
         type: 'image',
@@ -186,6 +318,7 @@ class EditProfile extends Component {
         showModal: true,
         modalTitle: 'Profile Pic Error',
         modalMessage: imageUploadError,
+<<<<<<< HEAD
       })
     }
 
@@ -193,6 +326,15 @@ class EditProfile extends Component {
     reader.readAsDataURL(file)
     reader.onloadend = () => {
       console.log(reader, file)
+=======
+      });
+    }
+
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onloadend = () => {
+      // console.log(reader, file);
+>>>>>>> development
 
       this.setState({
         imageUploadError: '',
@@ -200,6 +342,7 @@ class EditProfile extends Component {
           ...this.state.userProfile,
           profilePic: reader.result,
         },
+<<<<<<< HEAD
       })
     }
   }
@@ -227,33 +370,101 @@ class EditProfile extends Component {
         break
     }
   }
+=======
+      });
+    };
+  };
+
+  handleTeam = (type, newTeam) => {
+    const { userProfile } = this.state;
+    switch (type) {
+      case 'add':
+        userProfile.teams.push(newTeam);
+        this.setState({
+          ...userProfile,
+        });
+        break;
+      case 'delete':
+        userProfile.teams = userProfile.teams.filter(team => team._id !== newTeam);
+        this.setState({
+          ...userProfile,
+        });
+        break;
+      default:
+        this.setState({
+          ...userProfile,
+        });
+        break;
+    }
+  };
+
+  handleNullState = (kind) => {
+    // console.log('before handle def:', this.state.userProfile);
+
+    switch (kind) {
+      case 'settings':
+        this.setState(() => ({
+          showModal: false,
+          userProfile: {
+            ...this.state.userProfile,
+            privacySettings: {
+              email: true,
+              phoneNumber: true,
+              blueSquares: true,
+            },
+          },
+        }));
+        break;
+      default:
+        break;
+    }
+  };
+>>>>>>> development
 
   handleBlueSquare = (status = true, type = 'message', blueSquareID = '') => {
     if (type === 'addBlueSquare') {
       this.setState({
         showModal: status,
         modalTitle: 'Blue Square',
+<<<<<<< HEAD
         type: type,
       })
+=======
+        type,
+      });
+>>>>>>> development
     } else if (type === 'modBlueSquare') {
       this.setState({
         showModal: status,
         modalTitle: 'Blue Square',
+<<<<<<< HEAD
         type: type,
         id: blueSquareID,
       })
+=======
+        type,
+        id: blueSquareID,
+      });
+>>>>>>> development
     } else if (type === 'viewBlueSquare') {
       this.setState({
         showModal: status,
         modalTitle: 'Blue Square',
+<<<<<<< HEAD
         type: type,
         id: blueSquareID,
       })
+=======
+        type,
+        id: blueSquareID,
+      });
+>>>>>>> development
     } else if (blueSquareID === 'none') {
       this.setState({
         showModal: status,
         modalTitle: 'Save & Refresh',
         modalMessage: '',
+<<<<<<< HEAD
         type: type,
       })
     }
@@ -283,6 +494,35 @@ class EditProfile extends Component {
         }
         if (summary != null) {
           currentBlueSquares.find(blueSquare => blueSquare._id === id).description = summary
+=======
+        type,
+      });
+    }
+  };
+
+  updateBlueSquare = (id, dateStamp, summary, kind) => {
+    // console.log('Handle Blue Square: ', kind, ' date:', dateStamp, ' summary:', summary)
+    const elem = document.getElementById('warningCard');
+    elem.style.display = 'block';
+
+    if (kind === 'add') {
+      const newBlueSquare = { date: dateStamp, description: summary };
+      this.setState(prevState => ({
+        showModal: false,
+        userProfile: {
+          ...this.state.userProfile,
+          infringments: prevState.userProfile.infringments.concat(newBlueSquare),
+        },
+      }));
+    } else if (kind === 'update') {
+      this.setState(() => {
+        const currentBlueSquares = this.state.userProfile.infringments;
+        if (dateStamp != null) {
+          currentBlueSquares.find(blueSquare => blueSquare._id === id).date = dateStamp;
+        }
+        if (summary != null) {
+          currentBlueSquares.find(blueSquare => blueSquare._id === id).description = summary;
+>>>>>>> development
         }
         return {
           showModal: false,
@@ -290,6 +530,7 @@ class EditProfile extends Component {
             ...this.state.userProfile,
             infringments: currentBlueSquares,
           },
+<<<<<<< HEAD
         }
       })
     } else if (kind === 'delete') {
@@ -299,12 +540,24 @@ class EditProfile extends Component {
             return blueSquare
           }
         })
+=======
+        };
+      });
+    } else if (kind === 'delete') {
+      this.setState(() => {
+        const currentBlueSquares = this.state.userProfile.infringments.filter((blueSquare) => {
+          if (blueSquare._id !== id) {
+            return blueSquare;
+          }
+        });
+>>>>>>> development
         return {
           showModal: false,
           userProfile: {
             ...this.state.userProfile,
             infringments: currentBlueSquares,
           },
+<<<<<<< HEAD
         }
       })
     }
@@ -362,6 +615,55 @@ class EditProfile extends Component {
       }
     })
   }
+=======
+        };
+      });
+    }
+  };
+
+  handleSaveError = (message) => {
+    this.setState({
+      showModal: true,
+      modalMessage: 'Must save first.',
+      modalTitle: `Error, ${message}`,
+      type: 'message',
+    });
+  };
+
+  handleSubmit = async (event) => {
+    const { updateUserProfile, match } = this.props;
+    const { userProfile, formValid } = this.state;
+    const submitResult = await updateUserProfile(match.params.userId, userProfile);
+    // console.log(submitResult);
+
+    // if (submitResult === 200) {
+    //   this.setState({
+    //     showModal: true,
+    //     modalMessage: 'Your Changes were saved successfully',
+    //     modalTitle: 'Success',
+    //     type: 'save',
+    //   });
+    //   const elem = document.getElementById('warningCard');
+    //   // elem.style.display = 'none';
+    // } else {
+    //   this.setState({
+    //     showModal: true,
+    //     modalMessage: 'Please try again.',
+    //     modalTitle: 'Error',
+    //     type: 'save',
+    //   });
+    // }
+  };
+
+  updateLink = (personalLinksUpdate, adminLinksUpdate) => this.setState(() => ({
+    showModal: false,
+    userProfile: {
+      ...this.state.userProfile,
+      personalLinks: personalLinksUpdate,
+      adminLinks: adminLinksUpdate,
+    },
+  }));
+>>>>>>> development
 
   handleLinkModel = (status = true, type = 'message', linkSection) => {
     if (type === 'addLink') {
@@ -369,13 +671,19 @@ class EditProfile extends Component {
         showModal: status,
         modalTitle: 'Add a New Link',
         linkType: linkSection,
+<<<<<<< HEAD
         type: type,
       })
+=======
+        type,
+      });
+>>>>>>> development
     } else if (type === 'updateLink') {
       this.setState({
         showModal: status,
         modalTitle: 'Edit Links',
         linkType: linkSection,
+<<<<<<< HEAD
         type: type,
       })
     }
@@ -393,12 +701,32 @@ class EditProfile extends Component {
           data-testid="edit-link"
           onClick={() => {
             this.handleLinkModel(true, 'updateLink', user)
+=======
+        type,
+      });
+    }
+  };
+
+  modLinkButton = (canEditFields, isUserAdmin) => {
+    if (canEditFields) {
+      let user = 'user';
+      if (isUserAdmin) {
+        user = 'admin';
+      }
+      return (
+        <button
+          type="button"
+          className="modLinkButton"
+          onClick={() => {
+            this.handleLinkModel(true, 'updateLink', user);
+>>>>>>> development
           }}
         >
           <i className="fa fa-wrench fa-lg" aria-hidden="true">
             {' '}
           </i>
         </button>
+<<<<<<< HEAD
       )
     }
   }
@@ -410,6 +738,76 @@ class EditProfile extends Component {
     let { userid: requestorId, role: requestorRole } = this.props.auth.user
 
     const { userProfile, isLoading, showModal } = this.state
+=======
+      );
+    }
+  };
+
+  // render drop down list of teams, or auto-fill team names...
+  // fetch and display available teams
+  // once team is selected, push userid & teamid with addTeamMember...
+
+  // HOW TO UPDATE TEAM WITH NEW MEMBER  this.props.addTeamMember(this.state.selectedTeamId, user._id, user.firstName, user.lastName);
+
+  addUserToTeam = () => {
+    this.props.addTeamMember(
+      this.state.selectedTeamId,
+      this.user._id,
+      this.user.firstName,
+      this.user.lastName,
+    );
+  };
+
+  render() {
+    const { allTeams, fetching } = this.props.state.allTeamsData;
+
+    // console.log('allteams...', allTeams)
+
+    const { userId: targetUserId } = this.props.match
+      ? this.props.match.params
+      : { userId: undefined };
+    const { userid: requestorId, role: requestorRole } = this.props.auth.user;
+
+    const {
+      userProfile,
+      isLoading,
+      showModal,
+      modalMessage,
+      modalTitle,
+      type,
+      linkType,
+      id,
+      formValid,
+    } = this.state;
+    const renderWarningCard = () => {
+      const { showWarning } = this.state;
+      if (showWarning) {
+        return (
+          <Sticky topOffset={0}>
+            {({ style }) => (
+              <h6
+                id="warningCard"
+                style={{
+                  ...style,
+                  // marginTop: '-20px',
+                  display: 'block',
+                  color: 'white',
+                  backgroundColor: 'red',
+                  border: '1px solid #a8a8a8',
+                  textAlign: 'center',
+                  opacity: '70%',
+                  zIndex: '9',
+                }}
+              >
+                Reminder: You must click "Save Changes" at the bottom of this page. If you don't,
+                changes to your profile will not be saved.
+              </h6>
+            )}
+          </Sticky>
+        );
+      }
+    };
+>>>>>>> development
     const {
       firstName,
       lastName,
@@ -421,11 +819,20 @@ class EditProfile extends Component {
       adminLinks,
       infringments,
       privacySettings,
+<<<<<<< HEAD
     } = userProfile
 
     let isUserSelf = targetUserId === requestorId
     const isUserAdmin = requestorRole === 'Administrator'
     let canEditFields = isUserAdmin || isUserSelf
+=======
+    } = userProfile;
+
+    const isUserSelf = targetUserId === requestorId;
+    const isUserAdmin = requestorRole === 'Administrator';
+    const canEditFields = isUserAdmin || isUserSelf;
+    const weeklyHoursReducer = (acc, val) => acc + (parseInt(val.hours, 10) + parseInt(val.minutes, 10) / 60);
+>>>>>>> development
 
     if (isLoading === true) {
       return (
@@ -434,7 +841,11 @@ class EditProfile extends Component {
             <Loading />
           </Row>
         </Container>
+<<<<<<< HEAD
       )
+=======
+      );
+>>>>>>> development
     }
 
     if (!canEditFields) {
@@ -444,11 +855,16 @@ class EditProfile extends Component {
             <Label>Sorry, you do not have permison to edit this profile.</Label>
           </Row>
         </Col>
+<<<<<<< HEAD
       )
+=======
+      );
+>>>>>>> development
     }
 
     return (
       <div>
+<<<<<<< HEAD
         <CardTitle id="warningCard" className={styleEdit.saveChangesWarning}>
           Reminder: You must click "Save Changes" at the bottom of this page. If you don't, changes
           to your profile will not be saved.
@@ -468,11 +884,28 @@ class EditProfile extends Component {
             linkType={this.state.linkType}
             userProfile={this.state.userProfile}
             id={this.state.id}
+=======
+        {showModal && (
+          <Modal
+            isOpen={showModal}
+            closeModal={() => {
+              this.setState({ showModal: false });
+            }}
+            modalMessage={modalMessage}
+            modalTitle={modalTitle}
+            type={type}
+            updateLink={this.updateLink}
+            updateBlueSquare={this.updateBlueSquare}
+            linkType={linkType}
+            userProfile={userProfile}
+            id={id}
+>>>>>>> development
             isUserAdmin={isUserAdmin}
             handleLinkModel={this.handleLinkModel}
           />
         )}
 
+<<<<<<< HEAD
         <Col>
           <Row className={styleProfile.profileContainer}>
             <div className={styleProfile.whoSection}>
@@ -643,7 +1076,346 @@ class EditProfile extends Component {
         </Col>
       </div>
     )
+=======
+        <StickyContainer>
+          {renderWarningCard()}
+          <Container className="emp-profile">
+            <Row>
+              <Col md="4" id="profileContainer">
+                <div className="profile-img">
+                  <Image
+                    src={profilePic || '/defaultprofilepic.png'}
+                    alt="Profile Picture"
+                    roundedCircle
+                    className="profilePicture"
+                  />
+                  <div className="file btn btn-lg btn-primary">
+                    Change Photo
+                    <Input
+                      type="file"
+                      name="newProfilePic"
+                      id="newProfilePic"
+                      onChange={this.handleImageUpload}
+                      accept="image/png,image/jpeg, image/jpg"
+                    />
+                  </div>
+                </div>
+              </Col>
+              <Col md="8">
+                <div className="profile-head">
+                  <h5>{`${firstName} ${lastName}`}</h5>
+                  <h6>{jobTitle}</h6>
+                </div>
+                <div className="p-5 my-2 bg--cadet-blue text-light">
+                  <div className="py-2 my-2"> </div>
+                  <h3>Badges goes here...</h3>
+                  <div className="py-2 my-2"> </div>
+                </div>
+              </Col>
+            </Row>
+            <Row>
+              <Col md="4">
+                <div className="profile-work">
+                  <p>LINKS</p>
+                  {/* {this.modLinkButton(canEditFields, isUserAdmin)} */}
+                  <LinkModButton
+                    updateLink={this.updateLink}
+                    userProfile={userProfile}
+                    isUserAdmin={isUserAdmin}
+                  />
+                  <UserLinks
+                    linkSection="user"
+                    links={personalLinks}
+                    handleLinkModel={this.handleLinkModel}
+                    isUserAdmin={isUserAdmin}
+                  />
+                  <UserLinks
+                    linkSection="user"
+                    links={adminLinks}
+                    handleLinkModel={this.handleLinkModel}
+                    isUserAdmin={isUserAdmin}
+                  />
+                  {/* <p>BLUE SQAURES</p> */}
+                  <div className="blueSquare-toggle">
+                    <div style={{ display: 'inline-block' }}>BLUE SQUARES</div>
+                    <ToggleSwitch
+                      style={{ display: 'inline-block' }}
+                      switchType="bluesquares"
+                      state={privacySettings?.blueSquares}
+                      handleUserProfile={this.handleUserProfile}
+                    />
+                  </div>
+
+                  <BlueSquare
+                    isUserAdmin={isUserAdmin}
+                    blueSquares={infringments}
+                    handleBlueSquare={this.handleBlueSquare}
+                    handleSaveError={this.handleSaveError}
+                  />
+                </div>
+              </Col>
+              <Col md="8">
+                <div className="profile-tabs">
+                  <Nav tabs>
+                    <NavItem>
+                      <NavLink
+                        className={classnames({ active: this.state.activeTab === '1' }, 'nav-link')}
+                        onClick={() => {
+                          this.toggleTab('1');
+                        }}
+                      >
+                        Basic Information
+                      </NavLink>
+                    </NavItem>
+                    <NavItem>
+                      <NavLink
+                        className={classnames({ active: this.state.activeTab === '2' }, 'nav-link')}
+                        onClick={() => {
+                          this.toggleTab('2');
+                        }}
+                      >
+                        Volunteering Times
+                      </NavLink>
+                    </NavItem>
+                    <NavItem>
+                      <NavLink
+                        className={classnames({ active: this.state.activeTab === '3' }, 'nav-link')}
+                        onClick={() => {
+                          this.toggleTab('3');
+                        }}
+                      >
+                        Teams
+                      </NavLink>
+                    </NavItem>
+                    <NavItem>
+                      <NavLink
+                        className={classnames({ active: this.state.activeTab === '4' }, 'nav-link')}
+                        onClick={() => {
+                          this.toggleTab('4');
+                        }}
+                      >
+                        Projects
+                      </NavLink>
+                    </NavItem>
+                    <NavItem>
+                      <NavLink
+                        className={classnames({ active: this.state.activeTab === '5' }, 'nav-link')}
+                        onClick={() => {
+                          this.toggleTab('6');
+                        }}
+                      >
+                        More Tabs
+                      </NavLink>
+                    </NavItem>
+                  </Nav>
+                </div>
+                <TabContent
+                  activeTab={this.state.activeTab}
+                  className="tab-content profile-tab"
+                  id="myTabContent"
+                  style={{ border: 0 }}
+                >
+                  <TabPane tabId="1">
+                    <Form>
+                      <Row>
+                        <Col md="6">
+                          <Label>Name</Label>
+                        </Col>
+                        <Col md="3">
+                          <FormGroup>
+                            <Input
+                              type="text"
+                              name="firstName"
+                              id="firstName"
+                              value={firstName}
+                              className={styleProfile.profileText}
+                              onChange={this.handleUserProfile}
+                              placeholder="First Name"
+                              invalid={!this.state.formValid.firstName}
+                            />
+                            <FormFeedback>First Name Can't be null</FormFeedback>
+                          </FormGroup>
+                        </Col>
+                        <Col md="3">
+                          <FormGroup>
+                            <Input
+                              type="text"
+                              name="lastName"
+                              id="lastName"
+                              value={lastName}
+                              className={styleProfile.profileText}
+                              onChange={this.handleUserProfile}
+                              placeholder="Last Name"
+                              invalid={!this.state.formValid.lastName}
+                            />
+                            <FormFeedback>Last Name Can't be Null</FormFeedback>
+                          </FormGroup>
+                        </Col>
+                      </Row>
+                      <Row>
+                        <Col md="6">
+                          <Label>Email</Label>
+                        </Col>
+                        <Col md="6">
+                          <FormGroup>
+                            <ToggleSwitch
+                              switchType="email"
+                              state={userProfile.privacySettings?.email}
+                              handleUserProfile={this.handleUserProfile}
+                            />
+
+                            <Input
+                              type="email"
+                              name="email"
+                              id="email"
+                              value={email}
+                              onChange={this.handleUserProfile}
+                              placeholder="Email"
+                              invalid={!this.state.formValid.email}
+                            />
+                            <FormFeedback>Email is not Valid</FormFeedback>
+                          </FormGroup>
+                        </Col>
+                      </Row>
+                      <Row>
+                        <Col md="6">
+                          <Label>Phone</Label>
+                        </Col>
+                        <Col md="6">
+                          <FormGroup>
+                            <ToggleSwitch
+                              switchType="phone"
+                              state={userProfile.privacySettings?.phoneNumber}
+                              handleUserProfile={this.handleUserProfile}
+                            />
+
+                            <Input
+                              type="number"
+                              name="phoneNumber"
+                              id="phoneNumber"
+                              className={styleProfile.profileText}
+                              value={phoneNumber}
+                              onChange={this.handleUserProfile}
+                              placeholder="Phone"
+                            />
+                          </FormGroup>
+                        </Col>
+                      </Row>
+                    </Form>
+                  </TabPane>
+                  <TabPane tabId="2">
+                    <Row>
+                      <Col md="6">
+                        <Label>Start Date</Label>
+                      </Col>
+                      <Col md="6">
+                        <p>{moment(userProfile.createdDate).format('YYYY-MM-DD')}</p>
+                      </Col>
+                    </Row>
+                    <Row>
+                      <Col md="6">
+                        <Label>End Date</Label>
+                      </Col>
+                      <Col md="6">
+                        <p>Present</p>
+                      </Col>
+                    </Row>
+                    <Row>
+                      <Col md="6">
+                        <Label>Total Hours This Week</Label>
+                      </Col>
+                      <Col md="6">
+                        <p>{this.props.timeEntries.weeks[0].reduce(weeklyHoursReducer, 0)}</p>
+                      </Col>
+                    </Row>
+                    <Row>
+                      <Col md="6">
+                        <Label>Weekly Commited Hours </Label>
+                      </Col>
+                      <Col md="6">
+                        <Input
+                          type="number"
+                          name="weeklyComittedHours"
+                          id="weeklyComittedHours"
+                          className={styleProfile.profileText}
+                          value={userProfile.weeklyComittedHours}
+                          onChange={this.handleUserProfile}
+                          placeholder="weeklyComittedHours"
+                          invalid={!isUserAdmin}
+                        />
+                      </Col>
+                    </Row>
+                    <Row>
+                      <Col md="6">
+                        <Label>Total Hours </Label>
+                      </Col>
+                      <Col md="6">
+                        <Input
+                          type="number"
+                          name="totalComittedHours"
+                          id="totalComittedHours"
+                          className={styleProfile.profileText}
+                          value={userProfile.totalComittedHours}
+                          onChange={this.handleUserProfile}
+                          placeholder="TotalComittedHours"
+                          invalid={!isUserAdmin}
+                        />
+                      </Col>
+                    </Row>
+                  </TabPane>
+                  <TabPane tabId="3">
+                    <TeamsTab
+                      userTeams={this.state ? this.state.userProfile.teams : []}
+                      teamsData={this.props ? this.props.allTeams.allTeamsData : []}
+                      onAssignTeam={this.onAssignTeam}
+                      onDeleteteam={this.onDeleteTeam}
+                      isUserAdmin={isUserAdmin}
+                      edit
+                    />
+                  </TabPane>
+                  <TabPane tabId="4">
+                    <ProjectsTab
+                      userProjects={this.state ? this.state.userProfile.projects : []}
+                      projectsData={this.props ? this.props.allProjects.projects : []}
+                      onAssignProject={this.onAssignProject}
+                      onDeleteProject={this.onDeleteProject}
+                      isUserAdmin={isUserAdmin}
+                      edit
+                    />
+
+                  </TabPane>
+                </TabContent>
+              </Col>
+
+              {/* {allTeams.map(team => <div>{team.teamName}</div>)} */}
+            </Row>
+            <Row
+              style={{
+                display: 'flex',
+                justifyContent: 'center',
+                padding: 10,
+                margin: 5,
+              }}
+            >
+              <SaveButton
+                handleSubmit={this.handleSubmit}
+                disabled={!formValid.firstName || !formValid.lastName || !formValid.email}
+                userProfile={userProfile}
+              />
+              <Link
+                to={`/userprofile/${this.state.userProfile._id}`}
+                className="btn btn-outline-danger"
+                style={{ display: 'flex', margin: 5 }}
+              >
+                Cancel
+              </Link>
+            </Row>
+          </Container>
+        </StickyContainer>
+      </div>
+    );
+>>>>>>> development
   }
 }
 
-export default EditProfile
+export default EditProfile;

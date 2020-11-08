@@ -27,7 +27,10 @@ export const Dashboard = () => (
       </Col>
     </Row>
     <Row>
-      <Col lg={{ size: 7 }} className="left-col-dashboard">
+      <Col lg={{ size: 5 }} className="order-sm-12">
+        <Leaderboard />
+      </Col>
+      <Col lg={{ size: 7 }} className="left-col-dashboard order-sm-1">
         <div className="p-5 my-2 bg--cadet-blue text-light">
           <div className="py-5 my-5"> </div>
           <h3>Timelog goes here...</h3>
@@ -35,7 +38,7 @@ export const Dashboard = () => (
         </div>
         <div className="p-5 my-2 bg--cadet-blue text-light">
           <div className="py-3 my-3"> </div>
-          <h3>Tasks go here...</h3>
+          <a name='tasksLink'><h3>Tasks go here...</h3></a>
           <div className="py-3 my-3"> </div>
         </div>
         <div className="p-5 my-2 bg--dark-sea-green text-light">
@@ -44,9 +47,7 @@ export const Dashboard = () => (
           <div className="py-2 my-2"> </div>
         </div>
       </Col>
-      <Col lg={{ size: 5 }}>
-        <Leaderboard />
-      </Col>
+
     </Row>
   </Container>
 );

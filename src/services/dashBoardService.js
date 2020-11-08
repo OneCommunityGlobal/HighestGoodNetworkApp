@@ -1,9 +1,10 @@
 import httpService from './httpService';
+import { ApiEndpoint } from '../utils/URL';
 
 // const ApiEndpoint = `https://hgn-rest-dev.herokuapp.com/api/dashboard`;
-const ApiEndpoint = `${process.env.REACT_APP_APIENDPOINT}/dashboard`;
+const ApiUri = `${ApiEndpoint}/dashboard`;
 
 
 export function getLeaderboardData(userId) {
-  return httpService.get(`${ApiEndpoint}/leaderboard/${userId}`);
+  return httpService.get(`${ApiUri}/leaderboard/${userId}`);
 }

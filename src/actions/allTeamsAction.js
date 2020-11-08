@@ -110,6 +110,7 @@ export const getAllUserTeams = () => {
   return async (dispatch) => {
     userTeamsPromise.then((res) => {
       dispatch(teamMembersFectchACtion(res.data));
+      // console.log("getAllUserTeams: res:", res.data)
     }).catch(() => {
       dispatch(teamMembersFectchACtion(undefined));
     });

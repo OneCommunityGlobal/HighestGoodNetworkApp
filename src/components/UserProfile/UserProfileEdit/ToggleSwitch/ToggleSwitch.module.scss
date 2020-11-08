@@ -1,15 +1,15 @@
-input[type="checkbox"]{
+input[type='checkbox'] {
   -webkit-appearance: none;
   -moz-appearance: none;
   appearance: none;
   -webkit-tap-highlight-color: transparent;
   cursor: pointer;
-  &:focus{
+  &:focus {
     outline: 0;
   }
 }
 
-.toggle{
+.toggle {
   height: 21px;
   width: 36px;
   border-radius: 16px;
@@ -17,8 +17,8 @@ input[type="checkbox"]{
   position: relative;
   margin: 5px;
   background: dodgerblue;
-  transition: all .5s ease;
-  &:after{
+  transition: all 0.5s ease;
+  &:after {
     content: '';
     position: absolute;
     top: 3px;
@@ -28,28 +28,28 @@ input[type="checkbox"]{
     border-radius: 50%;
     background: dodgerblue;
     background: white;
-    box-shadow: 0 1px 2px rgba(44,44,44,.2);
-    transition: all .2s cubic-bezier(.5,.1,.75,1.35);
+    box-shadow: 0 1px 2px rgba(44, 44, 44, 0.2);
+    transition: all 0.2s cubic-bezier(0.5, 0.1, 0.75, 1.35);
   }
-  &:checked{
+  &:checked {
     background: darkslategrey;
-    &:after{
-    transform: translatex(15px);
-  }
+    &:after {
+      transform: translatex(15px);
+    }
   }
 }
 
-.switchSection{
+.switchSection {
   display: flex;
   flex-direction: row;
   align-items: center;
   justify-content: space-between;
-  color: orange;
+  color: #0062cc;
   font-weight: bold;
   margin: 5px;
 }
 
-.switchContainer{
+.switchContainer {
   display: flex;
   flex-direction: row;
   align-items: center;
