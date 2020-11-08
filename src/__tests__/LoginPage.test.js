@@ -1,68 +1,58 @@
 
-import { renderWithProvider, renderWithRouterMatch } from './utils.js'
-import '@testing-library/jest-dom/extend-expect'
+import { renderWithProvider, renderWithRouterMatch } from './utils.js';
+import '@testing-library/jest-dom/extend-expect';
 import React from 'react';
-import mockState from './mockAdminState.js'
-import { GET_ERRORS } from '../constants/errors';
 import { createMemoryHistory } from 'history';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
+import {
+  render, fireEvent, waitFor, screen,
+} from '@testing-library/react';
 import { ENDPOINTS } from '../utils/URL';
-import { render, fireEvent, waitFor, screen} from "@testing-library/react";
-import routes from './../routes';
-import { Login } from './../components/Login/Login';
-import { clearErrors } from "../actions/errorsActions";
+import { GET_ERRORS } from '../constants/errors';
+import mockState from './mockAdminState.js';
+import routes from '../routes';
+import { Login } from '../components/Login/Login';
+import { clearErrors } from '../actions/errorsActions';
+
+import { loginUser } from '../actions/authActions';
+
 const url = ENDPOINTS.LOGIN;
 const timerUrl = ENDPOINTS.TIMER(mockState.auth.user.userid);
 const userProjectsUrl = ENDPOINTS.USER_PROJECTS(mockState.auth.user.userid);
 
 const server = setupServer(
-  rest.post(url, (req, res, ctx) =>  {
+  rest.post(url, (req, res, ctx) => {
     if (req.body.email === 'validEmail@gmail.com' && req.body.password === 'validPass') {
-      return res(ctx.status(200), ctx.json({token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyaWQiOiI1ZWRmMTQxYzc4ZjEzODAwMTdiODI5YTYiLCJyb2xlIjoiQWRtaW5pc3RyYXRvciIsImV4cGlyeVRpbWVzdGFtcCI6IjIwMjAtMDgtMjhUMDU6MDA6NTguOTE0WiIsImlhdCI6MTU5NzcyNjg1OH0.zyPNn0laHv0iQONoIczZt1r5wNWlwSm286xDj-eYC4o'}), )
-    } else if (req.body.email === 'newUserEmail@gmail.com' && req.body.password === 'validPass'){
-      return res(ctx.status(200), ctx.json({new: true, token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyaWQiOiI1ZWRmMTQxYzc4ZjEzODAwMTdiODI5YTYiLCJyb2xlIjoiQWRtaW5pc3RyYXRvciIsImV4cGlyeVRpbWVzdGFtcCI6IjIwMjAtMDgtMjhUMDU6MDA6NTguOTE0WiIsImlhdCI6MTU5NzcyNjg1OH0.zyPNn0laHv0iQONoIczZt1r5wNWlwSm286xDj-eYC4o'}), )
-    } else {
-      return res(ctx.status(403), ctx.json({message: 'Invalid email and/ or password.'}), )
+      return res(ctx.status(200), ctx.json({ token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyaWQiOiI1ZWRmMTQxYzc4ZjEzODAwMTdiODI5YTYiLCJyb2xlIjoiQWRtaW5pc3RyYXRvciIsImV4cGlyeVRpbWVzdGFtcCI6IjIwMjAtMDgtMjhUMDU6MDA6NTguOTE0WiIsImlhdCI6MTU5NzcyNjg1OH0.zyPNn0laHv0iQONoIczZt1r5wNWlwSm286xDj-eYC4o' }));
+    } if (req.body.email === 'newUserEmail@gmail.com' && req.body.password === 'validPass') {
+      return res(ctx.status(200), ctx.json({ new: true, token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyaWQiOiI1ZWRmMTQxYzc4ZjEzODAwMTdiODI5YTYiLCJyb2xlIjoiQWRtaW5pc3RyYXRvciIsImV4cGlyeVRpbWVzdGFtcCI6IjIwMjAtMDgtMjhUMDU6MDA6NTguOTE0WiIsImlhdCI6MTU5NzcyNjg1OH0.zyPNn0laHv0iQONoIczZt1r5wNWlwSm286xDj-eYC4o' }));
     }
-  }),  
-  rest.get('http://localhost:4500/api/userprofile/*', (req, res, ctx) =>  {
-      return res(ctx.status(200), ctx.json({}), )  
+    return res(ctx.status(403), ctx.json({ message: 'Invalid email and/ or password.' }));
   }),
-  rest.get('http://localhost:4500/api/dashboard/*', (req, res, ctx) =>  {
-    return res(ctx.status(200), ctx.json( [
-      {
-        "personId": "5edf141c78f1380017b829a6",
-        "name": "Dev Admin",
-        "weeklyComittedHours": 10,
-        "totaltime_hrs": 6,
-        "totaltangibletime_hrs": 6,
-        "totalintangibletime_hrs": 0,
-        "percentagespentintangible": 100,
-        "didMeetWeeklyCommitment": false,
-        "weeklycommited": 10,
-        "tangibletime": 6,
-        "intangibletime": 0,
-        "tangibletimewidth": 100,
-        "intangibletimewidth": 0,
-        "tangiblebarcolor": "orange",
-        "totaltime": 6
-      }]), )  
-  }),
-  rest.get(userProjectsUrl, (req, res, ctx) =>  {
-      return res(ctx.status(200), ctx.json(
-        [
-        {
-          "isActive": true,
-          "_id": "5ad91ec3590b19002acfcd26",
-          "projectName": "HG Fake Project"
-        }
-      ]
-    ));
-  }),
-  rest.get(timerUrl, (req, res, ctx) =>  {
-    return res(ctx.status(200), ctx.json({}), )  
-  }),
+  rest.get('http://localhost:4500/api/userprofile/*', (req, res, ctx) => res(ctx.status(200), ctx.json({}))),
+  rest.get('http://localhost:4500/api/dashboard/*', (req, res, ctx) => res(ctx.status(200), ctx.json([
+    {
+      personId: '5edf141c78f1380017b829a6',
+      name: 'Dev Admin',
+      weeklyComittedHours: 10,
+      totaltime_hrs: 6,
+      totaltangibletime_hrs: 6,
+      totalintangibletime_hrs: 0,
+      percentagespentintangible: 100,
+      didMeetWeeklyCommitment: false,
+      weeklycommited: 10,
+      tangibletime: 6,
+      intangibletime: 0,
+      tangibletimewidth: 100,
+      intangibletimewidth: 0,
+      tangiblebarcolor: 'orange',
+      totaltime: 6,
+    }]))),
+  rest.get(userProjectsUrl, (req, res, ctx) => res(ctx.status(200), ctx.json(
+    []
+  ))),
+  rest.get(timerUrl, (req, res, ctx) => res(ctx.status(200), ctx.json({}))),
   rest.get('*', (req, res, ctx) => {
     console.error(`Please add request handler for ${req.url.toString()} in your MSW server requests.`);
     return res(
@@ -76,8 +66,6 @@ beforeAll(() => server.listen());
 afterAll(() => server.close());
 afterEach(() => server.resetHandlers());
 
-import { loginUser } from "../actions/authActions";
-
 function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
@@ -88,123 +76,114 @@ describe('Login behavior', () => {
   let loginMountedPage;
 
   it('should perform correct redirection if user tries to access a proctected route from some other location', async () => {
-    
-    let rt = '/updatepassword/5edf141c78f1380017b829a6'
+    const rt = '/updatepassword/5edf141c78f1380017b829a6';
     const hist = createMemoryHistory({ initialEntries: [rt] });
-    loginMountedPage = renderWithRouterMatch(routes , {initialState: mockState, route: rt, history: hist});
-    
+    loginMountedPage = renderWithRouterMatch(routes, { initialState: mockState, route: rt, history: hist });
+
 
     fireEvent.change(screen.getByLabelText('Email:'), {
-      target: {value: 'validEmail@gmail.com'}
+      target: { value: 'validEmail@gmail.com' },
     });
     fireEvent.change(screen.getByLabelText('Password:'), {
-      target: {value: 'validPass'}
+      target: { value: 'validPass' },
     });
-
 
 
     fireEvent.click(screen.getByText('Submit'));
 
 
-    await waitFor(()=> {
+    await waitFor(() => {
       expect(screen.getByLabelText('Current Password:')).toBeTruthy();
     });
   });
 
   it('should redirect to dashboard if no previous redirection', async () => {
-
-    const rt = '/login'
+    const rt = '/login';
     const hist = createMemoryHistory({ initialEntries: [rt] });
-    loginMountedPage = renderWithRouterMatch(routes , {initialState: mockState, route: rt, history: hist});
+    loginMountedPage = renderWithRouterMatch(routes, { initialState: mockState, route: rt, history: hist });
 
     fireEvent.change(screen.getByLabelText('Email:'), {
-      target: {value: 'validEmail@gmail.com'}
+      target: { value: 'validEmail@gmail.com' },
     });
-    
+
     fireEvent.change(screen.getByLabelText('Password:'), {
-      target: {value: 'validPass'}
+      target: { value: 'validPass' },
     });
 
     fireEvent.click(screen.getByText('Submit'));
 
-    
-    await waitFor(()=> {
+
+    await waitFor(() => {
       expect(screen.getByText(/weekly summaries/i)).toBeTruthy();
     });
     await sleep(10);
   });
 
   it('should redirect to forcePassword Update if new User', async () => {
-
-    let rt = '/login'
+    const rt = '/login';
     const hist = createMemoryHistory({ initialEntries: [rt] });
-    loginMountedPage = renderWithRouterMatch(routes , {initialState: mockState, route: rt, history: hist});
+    loginMountedPage = renderWithRouterMatch(routes, { initialState: mockState, route: rt, history: hist });
     await sleep(10);
-     
+
     fireEvent.change(screen.getByLabelText('Email:'), {
-      target: {value: 'newUserEmail@gmail.com'}
+      target: { value: 'newUserEmail@gmail.com' },
     });
     fireEvent.change(screen.getByLabelText('Password:'), {
-      target: {value: 'validPass'}
+      target: { value: 'validPass' },
     });
     fireEvent.click(screen.getByText('Submit'));
 
-    await waitFor(()=> { 
+    await waitFor(() => {
       expect(screen.getByLabelText('New Password:')).toBeTruthy();
     });
   });
 
   it('should populate errors if login fails', async () => {
-    let rt = '/login'
+    const rt = '/login';
     const hist = createMemoryHistory({ initialEntries: [rt] });
 
-    loginMountedPage = renderWithRouterMatch(routes , {initialState: mockState, route: rt, history: hist});
+    loginMountedPage = renderWithRouterMatch(routes, { initialState: mockState, route: rt, history: hist });
 
     sleep(10);
 
     fireEvent.change(screen.getByLabelText('Email:'), {
-      target: {value: 'incorrectEmail@gmail.com'}
+      target: { value: 'incorrectEmail@gmail.com' },
     });
     fireEvent.change(screen.getByLabelText('Password:'), {
-      target: {value: 'incorrectPassword'}
-    });  
+      target: { value: 'incorrectPassword' },
+    });
     fireEvent.click(screen.getByText('Submit'));
 
 
-    await waitFor(()=> {  
+    await waitFor(() => {
       expect(screen.getByText('Invalid email and/ or password.')).toBeTruthy();
     });
-    
-
   });
 
   it('should test if loginUser action works correctly', async () => {
     const expectedAction = {
-          type: GET_ERRORS,
-          payload: {email: 'Invalid email and/ or password.'}
-        };
-    let cred = {email: "incorrectEmail", password: "incorrectPassword"};
-    let anAction = await loginUser(cred);
+      type: GET_ERRORS,
+      payload: { email: 'Invalid email and/ or password.' },
+    };
+    const cred = { email: 'incorrectEmail', password: 'incorrectPassword' };
+    const anAction = await loginUser(cred);
     expect((typeof anAction)).toEqual('function');
     const dispatch = jest.fn();
-    return anAction(dispatch).finally(()=>{
+    return anAction(dispatch).finally(() => {
       expect(dispatch).toBeCalledWith(expectedAction);
     });
-    
   });
-
 });
 
 describe('Login page structure', () => {
-
-    it('should match the snapshot', () => {
-      let props = ({
-        auth: {isAuthenticated: false},
-        errors: {},
-        "loginUser":  loginUser,
-        "clearErrors": clearErrors
-      });
-      const { asFragment } = render(<Login {...props} />);
-      expect(asFragment()).toMatchSnapshot();
+  it('should match the snapshot', () => {
+    const props = ({
+      auth: { isAuthenticated: false },
+      errors: {},
+      loginUser,
+      clearErrors,
     });
+    const { asFragment } = render(<Login {...props} />);
+    expect(asFragment()).toMatchSnapshot();
+  });
 });

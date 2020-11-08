@@ -53,19 +53,18 @@ background-color: black;
 background-color: black
 }
 
-/* Small devices (landscape phones, 544px and up) */
-@media (max-width: 544px) {  
-  .leaderboard {font-size:0.7rem;} /*1rem = 16px*/
-}
-
 .bg-super {
-  background-color: indigo !important;
+  background-color:#0000CD !important; /* medium blue #0000CD*/
 }
 
 .bg-awesome {
-  background-color: violet !important;
+  background-color: #990099 !important; /*  violet */
 }
 
 .bg-super-awesome {
-  background-color: purple !important;
+  background-color: #660099 !important; /*  purple */
+}
+
+.bg-orange {
+  background-color: #FFA500 !important; /*  brighter orange */
 }

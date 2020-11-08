@@ -1,14 +1,36 @@
 import React, { Component, useEffect, useState } from 'react'
-
+import './Leaderboard.css'
 import _ from 'lodash'
 import { Link } from 'react-router-dom'
 import { Table, Badge, Progress, Modal, ModalBody, ModalFooter, ModalHeader, Button } from 'reactstrap'
+let scrolled = false;
 
 const LeaderBoard = ({ getLeaderboardData, leaderBoardData, loggedInUser, organizationData }) => {
   useEffect(() => {
-    getLeaderboardData(loggedInUser.userid)
+    getLeaderboardData(loggedInUser.userid);
   }, [leaderBoardData.length])
-  
+
+  useEffect(() => {
+    try {
+      if (window.screen.width < 540) {
+        let scrollWindow = document.getElementById('leaderboard');
+        if (scrollWindow) {
+          let elem = document.getElementById('id' + loggedInUser.userid); //
+          
+          if (elem) {
+            let topPos = elem.offsetTop;
+            console.log(topPos);
+            scrollWindow.scrollTo(0, (topPos - 100) < 100 ? 0 : (topPos - 100));
+            
+          }
+        }
+      }
+    } catch {
+      
+    }
+
+  }, [])
+
   const [isOpen, setOpen] = useState(false);
 
   const toggle = () => setOpen(isOpen => !isOpen);
@@ -23,7 +45,7 @@ const LeaderBoard = ({ getLeaderboardData, leaderBoardData, loggedInUser, organi
           title="Click to refresh the leaderboard"
           style={{ fontSize: 24, cursor: 'pointer' }}
           aria-hidden="true"
-          class="fa fa-refresh"
+          className="fa fa-refresh"
           onClick={() => {
             getLeaderboardData(loggedInUser.userid)
           }}
@@ -35,11 +57,11 @@ const LeaderBoard = ({ getLeaderboardData, leaderBoardData, loggedInUser, organi
           title="Click for more information"
           style={{ fontSize: 24, cursor: 'pointer' }}
           aria-hidden="true"
-          class="fa fa-info-circle"
+          className="fa fa-info-circle"
           onClick={toggle}
         ></i>
       </h3>
-      <span class="leaderboard">
+      <span className="leaderboard">
       <Modal isOpen={isOpen} toggle={toggle}>
         <ModalHeader toggle={toggle}>Leaderboard Info</ModalHeader>
         <ModalBody>
@@ -61,23 +83,24 @@ const LeaderBoard = ({ getLeaderboardData, leaderBoardData, loggedInUser, organi
         </ModalFooter>
       </Modal>
       </span>
-      <Table className="leaderboard">
+      <div id='leaderboard' className="my-custom-scrollbar table-wrapper-scroll-y">
+      <Table className="leaderboard table-fixed">
         <thead>
           <tr>
             <th>Status</th>
             <th>Name</th>
             <th>
-              <span class="d-sm-none">Tan. Time</span>
-              <span class="d-none d-sm-block">Tangible Time</span>
+              <span className="d-sm-none">Tan. Time</span>
+              <span className="d-none d-sm-block">Tangible Time</span>
             </th>
             <th>Progress</th>
             <th>
-              <span class="d-sm-none">Tot. Time</span>
-              <span class="d-none d-sm-block">Total Time</span>
+              <span className="d-sm-none">Tot. Time</span>
+              <span className="d-none d-sm-block">Total Time</span>
             </th>
           </tr>
         </thead>
-        <tbody>
+        <tbody className="my-custome-scrollbar">
           <tr>
             <td>
               <div
@@ -101,14 +124,13 @@ const LeaderBoard = ({ getLeaderboardData, leaderBoardData, loggedInUser, organi
               <Progress
                 title={`TangibleEffort: ${organizationData.tangibletime} hours`}
                 value={organizationData.barprogress}
-                striped color={organizationData.barcolor}
+                color={organizationData.barcolor}
               />
             </td>
             <td>
-              <span title="Tangible + Intangible time = Total time">{organizationData.totaltime}</span>
+              <span title="Tangible + Intangible time = Total time">{organizationData.totaltime} of {organizationData.weeklyComittedHours}</span>
             </td>
           </tr>
-
           {leaderBoardData.map((item, key) => (
             <tr key={key}>
               <td>
@@ -129,15 +151,15 @@ const LeaderBoard = ({ getLeaderboardData, leaderBoardData, loggedInUser, organi
                   {item.name}
                 </Link>
               </th>
-              <td>
-                <span title="Tangible time">{item.tangibletime}</span>
+              <td id={'id' + item.personId}>
+                  <span title="Tangible time">{item.tangibletime}</span>
               </td>
               <td>
                 <Link
                   to={`/timelog/${item.personId}`}
                   title={`TangibleEffort: ${item.tangibletime} hours`}
                 >
-                  <Progress value={item.barprogress} striped color={item.barcolor} />
+                  <Progress value={item.barprogress} color={item.barcolor} />
                 </Link>
               </td>
               <td>
@@ -147,6 +169,7 @@ const LeaderBoard = ({ getLeaderboardData, leaderBoardData, loggedInUser, organi
           ))}
         </tbody>
       </Table>
+      </div>
     </div>
   )
 }

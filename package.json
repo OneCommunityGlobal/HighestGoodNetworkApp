@@ -15,7 +15,7 @@
     "classnames": "^2.2.6",
     "date-fns": "^2.14.0",
     "font-awesome": "^4.7.0",
-    "history": "^5.0.0",
+    "history": "^4.0.0",
     "html-to-pdfmake": "^2.0.6",
     "jest-mock-axios": "^4.2.1",
     "joi": "^14.0.6",
@@ -90,3 +90,4 @@
     "surge": "^0.21.6"
   }
 }
+ 

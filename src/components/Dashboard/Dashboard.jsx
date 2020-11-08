@@ -7,7 +7,7 @@ import Leaderboard from '../LeaderBoard';
 import WeeklySummaryModal from '../WeeklySummary/WeeklySummaryModal';
 import '../../App.css';
 
-const Dashboard = () => (
+export const Dashboard = () => (
   <Container fluid>
     <Row>
       <Col sm={{ size: 12 }}>
@@ -27,7 +27,10 @@ const Dashboard = () => (
       </Col>
     </Row>
     <Row>
-      <Col lg={{ size: 7 }} className="left-col-dashboard">
+      <Col lg={{ size: 5 }} className="order-sm-12">
+        <Leaderboard />
+      </Col>
+      <Col lg={{ size: 7 }} className="left-col-dashboard order-sm-1">
         <div className="p-5 my-2 bg--cadet-blue text-light">
           <div className="py-5 my-5"> </div>
           <h3>Timelog goes here...</h3>
@@ -44,9 +47,7 @@ const Dashboard = () => (
           <div className="py-2 my-2"> </div>
         </div>
       </Col>
-      <Col lg={{ size: 5 }}>
-        <Leaderboard />
-      </Col>
+
     </Row>
   </Container>
 );
