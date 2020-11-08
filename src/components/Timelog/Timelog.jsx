@@ -27,6 +27,7 @@ import classnames from 'classnames';
 import { connect } from 'react-redux';
 import moment from 'moment';
 import _ from 'lodash';
+import ReactTooltip from 'react-tooltip';
 import { getTimeEntriesForWeek, getTimeEntriesForPeriod } from '../../actions/timeEntries';
 import { getUserProfile } from '../../actions/userProfile';
 import { getUserProjects } from '../../actions/userProjects';
@@ -34,7 +35,6 @@ import TimeEntryForm from './TimeEntryForm';
 import TimelogNavbar from './TimelogNavbar';
 import TimeEntry from './TimeEntry';
 import EffortBar from './EffortBar';
-import ReactTooltip from 'react-tooltip';
 
 class TimelogPage extends Component {
   constructor(props) {
@@ -43,7 +43,7 @@ class TimelogPage extends Component {
     this.changeTab = this.changeTab.bind(this);
     this.handleInputChange = this.handleInputChange.bind(this);
     this.handleSearch = this.handleSearch.bind(this);
-    // this.openInfo = this.openInfo.bind(this)
+    this.openInfo = this.openInfo.bind(this);
   }
 
   initialState = {
@@ -59,7 +59,7 @@ class TimelogPage extends Component {
   state = this.initialState;
 
   async componentDidMount() {
-    const userId = this.props.match.params.userId;
+    const { userId } = this.props.match.params;
     await this.props.getUserProfile(userId);
     await this.props.getTimeEntriesForWeek(userId, 0);
     await this.props.getTimeEntriesForWeek(userId, 1);
@@ -72,7 +72,7 @@ class TimelogPage extends Component {
     if (prevProps.match.params.userId !== this.props.match.params.userId) {
       this.setState(this.initialState);
 
-      const userId = this.props.match.params.userId;
+      const { userId } = this.props.match.params;
       await this.props.getUserProfile(userId);
       await this.props.getTimeEntriesForWeek(userId, 0);
       await this.props.getTimeEntriesForWeek(userId, 1);
@@ -88,12 +88,21 @@ class TimelogPage extends Component {
     });
   }
 
-  // openInfo(str) {
-  //   this.setState({
-  //     in: !this.state.in,
-  //     information: str.split('\n').map((item, i) => <p key={i}>{item}</p>),
-  //   })
-  // }
+  openInfo() {
+    const str = `This is the One Community time log! It is used to show a record of all the time you have volunteered with One Community, what you’ve done for each work session, etc.
+
+    * “Add Time Entry” Button: Clicking this button will only allow you to add “Intangible” time. This is for time not related to your tasks OR for time you need a manager to change to “Tangible” for you because you were working away from your computer or made a mistake and are trying to manually log time. Intangible time will not be counted towards your committed time for the week or your tasks. “Intangible” time changed by a manager to “Tangible” time WILL be counted towards your committed time for the week and whatever task it is logged towards. For Blue Square purposes, changing Intangible Time to Tangible Time for any reason other than work away from your computer will count and be recorded in the system the same as a time edit.
+    * Viewing Past Work: The current week is always shown by default but past weeks can also be viewed by clicking the tabs or selecting a date range.
+    * Sorting by Project: All projects are shown by default but you can also choose to sort your time log by Project or Task.
+    * Notes: The “Notes” section is where you write a summary of what you did during the time you are about to log. You must write a minimum of 10 words because we want you to be specific. You must include a link to your work so others can easily confirm and review it.
+    * Tangible Time: By default, the “Tangible” box is clicked. Tangible time is any time spent working on your Projects/Tasks and counts towards your committed time for the week and also the time allocated for your task.
+    * Intangible Time: Clicking the Tangible box OFF will mean you are logging “Intangible Time.” This is for time not related to your tasks OR for time you need a manager to change to “Tangible” for you because you were working away from your computer or made a mistake and are trying to manually log time. Intangible time will not be counted towards your committed time for the week or your tasks. “Intangible” time changed by a manager to “Tangible” time WILL be counted towards your committed time for the week and whatever task it is logged towards. For Blue Square purposes, changing Intangible Time to Tangible Time for any reason other than work away from your computer will count and be recorded in the system the same as a time edit. `;
+
+    this.setState({
+      in: !this.state.in,
+      information: str.split('\n').map((item, i) => <p key={i}>{item}</p>),
+    });
+  }
 
   changeTab(tab) {
     this.setState({
@@ -143,18 +152,10 @@ class TimelogPage extends Component {
     const lastWeekEntries = this.generateTimeEntries(this.props.timeEntries.weeks[1]);
     const beforeLastEntries = this.generateTimeEntries(this.props.timeEntries.weeks[2]);
     const periodEntries = this.generateTimeEntries(this.props.timeEntries.period);
-    const str = `This is the One Community time log! It is used to show a record of all the time you have volunteered with One Community, what you’ve done for each work session, etc.
-
-    * “Add Time Entry” Button: Clicking this button will only allow you to add “Intangible” time. This is for time not related to your tasks OR for time you need a manager to change to “Tangible” for you because you were working away from your computer or made a mistake and are trying to manually log time. Intangible time will not be counted towards your committed time for the week or your tasks. “Intangible” time changed by a manager to “Tangible” time WILL be counted towards your committed time for the week and whatever task it is logged towards. For Blue Square purposes, changing Intangible Time to Tangible Time for any reason other than work away from your computer will count and be recorded in the system the same as a time edit.
-    * Viewing Past Work: The current week is always shown by default but past weeks can also be viewed by clicking the tabs or selecting a date range.
-    * Sorting by Project: All projects are shown by default but you can also choose to sort your time log by Project or Task.
-    * Notes: The “Notes” section is where you write a summary of what you did during the time you are about to log. You must write a minimum of 10 words because we want you to be specific. You must include a link to your work so others can easily confirm and review it.
-    * Tangible Time: By default, the “Tangible” box is clicked. Tangible time is any time spent working on your Projects/Tasks and counts towards your committed time for the week and also the time allocated for your task.
-    * Intangible Time: Clicking the Tangible box OFF will mean you are logging “Intangible Time.” This is for time not related to your tasks OR for time you need a manager to change to “Tangible” for you because you were working away from your computer or made a mistake and are trying to manually log time. Intangible time will not be counted towards your committed time for the week or your tasks. “Intangible” time changed by a manager to “Tangible” time WILL be counted towards your committed time for the week and whatever task it is logged towards. For Blue Square purposes, changing Intangible Time to Tangible Time for any reason other than work away from your computer will count and be recorded in the system the same as a time edit. `;
 
     const isAdmin = this.props.auth.user.role === 'Administrator';
     const isOwner = this.props.auth.user.userid === this.props.match.params.userId;
-    const fullName = this.props.userProfile.firstName + ' ' + this.props.userProfile.lastName;
+    const fullName = `${this.props.userProfile.firstName} ${this.props.userProfile.lastName}`;
 
     let projects = [];
     if (!_.isEmpty(this.props.userProjects.projects)) {
@@ -200,7 +201,7 @@ class TimelogPage extends Component {
                             data-tip
                             data-for="registerTip"
                             aria-hidden="true"
-                            // onClick={this.openInfo(str)}
+                            onClick={this.openInfo}
                           />
                         </div>
                       </div>
@@ -218,26 +219,26 @@ class TimelogPage extends Component {
                               data-tip
                               data-for="registerTip"
                               aria-hidden="true"
-                              //  onClick={this.openInfo(str)}
+                              onClick={this.openInfo}
                             />
                           </div>
                         </div>
                       )
                     )}
-                    {/* <Modal isOpen={this.state.in} toggle={this.openInfo(str)}>
+                    <Modal isOpen={this.state.in} toggle={this.openInfo}>
                       <ModalHeader>Info</ModalHeader>
                       <ModalBody>{this.state.information}</ModalBody>
                       <ModalFooter>
-                        <Button onClick={this.openInfo(str)} color="primary">
+                        <Button onClick={this.openInfo} color="primary">
                           Close
                         </Button>
                         {isAdmin && (
-                          <Button onClick={this.openInfo(str)} color="secondary">
+                          <Button onClick={this.openInfo} color="secondary">
                             Edit
                           </Button>
                         )}
                       </ModalFooter>
-                    </Modal> */}
+                    </Modal>
                     <TimeEntryForm
                       userId={this.props.match.params.userId}
                       edit={false}
@@ -375,7 +376,7 @@ class TimelogPage extends Component {
               </CardBody>
             </Card>
           </Col>
-          <Col md={4}></Col>
+          <Col md={4} />
         </Row>
       </Container>
     );
