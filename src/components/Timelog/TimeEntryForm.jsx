@@ -21,8 +21,8 @@ import { Editor } from '@tinymce/tinymce-react';
 import ReactTooltip from 'react-tooltip';
 import { postTimeEntry, editTimeEntry } from '../../actions/timeEntries';
 import { getUserProjects } from '../../actions/userProjects';
-import { stopTimer } from '../../actions/timer';
 import { updateUserProfile } from '../../actions/userProfile';
+import { stopTimer } from '../../actions/timer';
 
 const TimeEntryForm = ({ userId, edit, data, isOpen, toggle, timer, userProfile }) => {
   const fromTimer = !_.isEmpty(timer);
@@ -42,7 +42,6 @@ const TimeEntryForm = ({ userId, edit, data, isOpen, toggle, timer, userProfile 
     num_words: data ? 10 : 0,
     edit_count: data ? data.editCount : 0,
     edit_notice: true,
-    // edittime: false,
   };
 
   const initialInfo = {

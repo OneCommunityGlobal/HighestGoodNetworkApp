@@ -35,6 +35,7 @@ import TimeEntryForm from './TimeEntryForm';
 import TimelogNavbar from './TimelogNavbar';
 import TimeEntry from './TimeEntry';
 import EffortBar from './EffortBar';
+import ReactTooltip from 'react-tooltip';
 
 class TimelogPage extends Component {
   constructor(props) {
@@ -59,7 +60,7 @@ class TimelogPage extends Component {
   state = this.initialState;
 
   async componentDidMount() {
-    const { userId } = this.props.match.params;
+    const userId = this.props.match.params.userId;
     await this.props.getUserProfile(userId);
     await this.props.getTimeEntriesForWeek(userId, 0);
     await this.props.getTimeEntriesForWeek(userId, 1);
@@ -72,7 +73,7 @@ class TimelogPage extends Component {
     if (prevProps.match.params.userId !== this.props.match.params.userId) {
       this.setState(this.initialState);
 
-      const { userId } = this.props.match.params;
+      const userId = this.props.match.params.userId;
       await this.props.getUserProfile(userId);
       await this.props.getTimeEntriesForWeek(userId, 0);
       await this.props.getTimeEntriesForWeek(userId, 1);
@@ -143,7 +144,12 @@ class TimelogPage extends Component {
       filteredData = data.filter((entry) => entry.projectId === this.state.projectSelected);
     }
     return filteredData.map((entry) => (
-      <TimeEntry data={entry} displayYear={false} key={entry._id} />
+      <TimeEntry
+        data={entry}
+        displayYear={false}
+        key={entry._id}
+        userProfile={this.props.userProfile}
+      />
     ));
   }
 
@@ -244,6 +250,7 @@ class TimelogPage extends Component {
                       edit={false}
                       toggle={this.toggle}
                       isOpen={this.state.modal}
+                      userProfile={this.props.userProfile}
                     />
                     <ReactTooltip id="registerTip" place="bottom" effect="solid">
                       Click this icon to learn about this time entry form
