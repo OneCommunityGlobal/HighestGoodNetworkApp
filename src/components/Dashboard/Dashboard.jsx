@@ -7,7 +7,7 @@ import Leaderboard from '../LeaderBoard';
 import WeeklySummaryModal from '../WeeklySummary/WeeklySummaryModal';
 import '../../App.css';
 
-const Dashboard = () => (
+export const Dashboard = () => (
   <Container fluid>
     <Row>
       <Col sm={{ size: 12 }}>
