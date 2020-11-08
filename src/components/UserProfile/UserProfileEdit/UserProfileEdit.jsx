@@ -289,17 +289,6 @@ class EditProfile extends Component {
         showModal: true,
         modalTitle: 'Profile Pic Error',
         modalMessage: imageUploadError,
-<<<<<<< HEAD
-      })
-    }
-    let filesizeKB = file.size / 1024
-    console.log(filesizeKB)
-
-    if (filesizeKB > 50) {
-      imageUploadError = `\nThe file you are trying to upload exceeds the maximum size of 50KB. You can either 
-														choose a different file, or use an online file compressor.`
-      isValid = false
-=======
       });
     }
     const filesizeKB = file.size / 1024;
@@ -309,7 +298,6 @@ class EditProfile extends Component {
       imageUploadError = `\nThe file you are trying to upload exceeds the maximum size of 50KB. You can either 
 														choose a different file, or use an online file compressor.`;
       isValid = false;
->>>>>>> development
 
       return this.setState({
         type: 'image',
@@ -318,15 +306,6 @@ class EditProfile extends Component {
         showModal: true,
         modalTitle: 'Profile Pic Error',
         modalMessage: imageUploadError,
-<<<<<<< HEAD
-      })
-    }
-
-    let reader = new FileReader()
-    reader.readAsDataURL(file)
-    reader.onloadend = () => {
-      console.log(reader, file)
-=======
       });
     }
 
@@ -334,7 +313,6 @@ class EditProfile extends Component {
     reader.readAsDataURL(file);
     reader.onloadend = () => {
       // console.log(reader, file);
->>>>>>> development
 
       this.setState({
         imageUploadError: '',
@@ -342,35 +320,6 @@ class EditProfile extends Component {
           ...this.state.userProfile,
           profilePic: reader.result,
         },
-<<<<<<< HEAD
-      })
-    }
-  }
-
-  handleNullState = kind => {
-    console.log('before handle def:', this.state.userProfile)
-
-    switch (kind) {
-      case 'settings':
-        this.setState(() => {
-          return {
-            showModal: false,
-            userProfile: {
-              ...this.state.userProfile,
-              privacySettings: {
-                email: true,
-                phoneNumber: true,
-                blueSquares: true,
-              },
-            },
-          }
-        })
-        break
-      default:
-        break
-    }
-  }
-=======
       });
     };
   };
@@ -419,82 +368,33 @@ class EditProfile extends Component {
         break;
     }
   };
->>>>>>> development
 
   handleBlueSquare = (status = true, type = 'message', blueSquareID = '') => {
     if (type === 'addBlueSquare') {
       this.setState({
         showModal: status,
         modalTitle: 'Blue Square',
-<<<<<<< HEAD
-        type: type,
-      })
-=======
         type,
       });
->>>>>>> development
     } else if (type === 'modBlueSquare') {
       this.setState({
         showModal: status,
         modalTitle: 'Blue Square',
-<<<<<<< HEAD
-        type: type,
-        id: blueSquareID,
-      })
-=======
         type,
         id: blueSquareID,
       });
->>>>>>> development
     } else if (type === 'viewBlueSquare') {
       this.setState({
         showModal: status,
         modalTitle: 'Blue Square',
-<<<<<<< HEAD
-        type: type,
-        id: blueSquareID,
-      })
-=======
         type,
         id: blueSquareID,
       });
->>>>>>> development
     } else if (blueSquareID === 'none') {
       this.setState({
         showModal: status,
         modalTitle: 'Save & Refresh',
         modalMessage: '',
-<<<<<<< HEAD
-        type: type,
-      })
-    }
-  }
-
-  updateBlueSquare = (id, dateStamp, summary, kind) => {
-    // console.log('Handle Blue Square: ', kind, ' date:', dateStamp, ' summary:', summary)
-    var elem = document.getElementById('warningCard')
-    elem.style.display = 'block'
-
-    if (kind === 'add') {
-      let newBlueSquare = { date: dateStamp, description: summary }
-      this.setState(prevState => {
-        return {
-          showModal: false,
-          userProfile: {
-            ...this.state.userProfile,
-            infringments: prevState.userProfile.infringments.concat(newBlueSquare),
-          },
-        }
-      })
-    } else if (kind === 'update') {
-      this.setState(() => {
-        let currentBlueSquares = this.state.userProfile.infringments
-        if (dateStamp != null) {
-          currentBlueSquares.find(blueSquare => blueSquare._id === id).date = dateStamp
-        }
-        if (summary != null) {
-          currentBlueSquares.find(blueSquare => blueSquare._id === id).description = summary
-=======
         type,
       });
     }
@@ -522,7 +422,6 @@ class EditProfile extends Component {
         }
         if (summary != null) {
           currentBlueSquares.find(blueSquare => blueSquare._id === id).description = summary;
->>>>>>> development
         }
         return {
           showModal: false,
@@ -530,17 +429,6 @@ class EditProfile extends Component {
             ...this.state.userProfile,
             infringments: currentBlueSquares,
           },
-<<<<<<< HEAD
-        }
-      })
-    } else if (kind === 'delete') {
-      this.setState(() => {
-        var currentBlueSquares = this.state.userProfile.infringments.filter(function(blueSquare) {
-          if (blueSquare._id !== id) {
-            return blueSquare
-          }
-        })
-=======
         };
       });
     } else if (kind === 'delete') {
@@ -550,72 +438,12 @@ class EditProfile extends Component {
             return blueSquare;
           }
         });
->>>>>>> development
         return {
           showModal: false,
           userProfile: {
             ...this.state.userProfile,
             infringments: currentBlueSquares,
           },
-<<<<<<< HEAD
-        }
-      })
-    }
-  }
-
-  handleSaveError = message => {
-    this.setState({
-      showModal: true,
-      modalMessage: 'Must save first.',
-      modalTitle: 'Error, ' + message,
-      type: 'message',
-    })
-  }
-
-  handleSubmit = async event => {
-    event.preventDefault()
-
-    const submitResult = await this.props.updateUserProfile(
-      this.props.match.params.userId,
-      this.state.userProfile,
-    )
-    // console.log(submitResult)
-
-    if (submitResult === 200) {
-      this.setState({
-        showModal: true,
-        modalMessage: 'Your Changes were saved successfully',
-        modalTitle: 'Success',
-        type: 'save',
-      })
-      var elem = document.getElementById('warningCard')
-      elem.style.display = 'none'
-    } else {
-      this.setState({
-        showModal: true,
-        modalMessage: 'Please try again.',
-        modalTitle: 'Error',
-        type: 'save',
-      })
-    }
-  }
-
-  updateLink = (personalLinksUpdate, adminLinksUpdate) => {
-    var elem = document.getElementById('warningCard')
-    elem.style.display = 'block'
-
-    return this.setState(() => {
-      return {
-        showModal: false,
-        userProfile: {
-          ...this.state.userProfile,
-          personalLinks: personalLinksUpdate,
-          adminLinks: adminLinksUpdate,
-        },
-      }
-    })
-  }
-=======
         };
       });
     }
@@ -663,7 +491,6 @@ class EditProfile extends Component {
       adminLinks: adminLinksUpdate,
     },
   }));
->>>>>>> development
 
   handleLinkModel = (status = true, type = 'message', linkSection) => {
     if (type === 'addLink') {
@@ -671,37 +498,13 @@ class EditProfile extends Component {
         showModal: status,
         modalTitle: 'Add a New Link',
         linkType: linkSection,
-<<<<<<< HEAD
-        type: type,
-      })
-=======
         type,
       });
->>>>>>> development
     } else if (type === 'updateLink') {
       this.setState({
         showModal: status,
         modalTitle: 'Edit Links',
         linkType: linkSection,
-<<<<<<< HEAD
-        type: type,
-      })
-    }
-  }
-
-  modLinkButton = (canEditFields, isUserAdmin) => {
-    if (canEditFields) {
-      let user = 'user'
-      if (isUserAdmin) {
-        user = 'admin'
-      }
-      return (
-        <button
-          className={styleEdit.modLinkButton}
-          data-testid="edit-link"
-          onClick={() => {
-            this.handleLinkModel(true, 'updateLink', user)
-=======
         type,
       });
     }
@@ -719,26 +522,12 @@ class EditProfile extends Component {
           className="modLinkButton"
           onClick={() => {
             this.handleLinkModel(true, 'updateLink', user);
->>>>>>> development
           }}
         >
           <i className="fa fa-wrench fa-lg" aria-hidden="true">
             {' '}
           </i>
         </button>
-<<<<<<< HEAD
-      )
-    }
-  }
-
-  render() {
-    let { userId: targetUserId } = this.props.match
-      ? this.props.match.params
-      : { userId: undefined }
-    let { userid: requestorId, role: requestorRole } = this.props.auth.user
-
-    const { userProfile, isLoading, showModal } = this.state
-=======
       );
     }
   };
@@ -807,7 +596,6 @@ class EditProfile extends Component {
         );
       }
     };
->>>>>>> development
     const {
       firstName,
       lastName,
@@ -819,20 +607,12 @@ class EditProfile extends Component {
       adminLinks,
       infringments,
       privacySettings,
-<<<<<<< HEAD
-    } = userProfile
-
-    let isUserSelf = targetUserId === requestorId
-    const isUserAdmin = requestorRole === 'Administrator'
-    let canEditFields = isUserAdmin || isUserSelf
-=======
     } = userProfile;
 
     const isUserSelf = targetUserId === requestorId;
     const isUserAdmin = requestorRole === 'Administrator';
     const canEditFields = isUserAdmin || isUserSelf;
     const weeklyHoursReducer = (acc, val) => acc + (parseInt(val.hours, 10) + parseInt(val.minutes, 10) / 60);
->>>>>>> development
 
     if (isLoading === true) {
       return (
@@ -841,11 +621,7 @@ class EditProfile extends Component {
             <Loading />
           </Row>
         </Container>
-<<<<<<< HEAD
-      )
-=======
       );
->>>>>>> development
     }
 
     if (!canEditFields) {
@@ -855,36 +631,11 @@ class EditProfile extends Component {
             <Label>Sorry, you do not have permison to edit this profile.</Label>
           </Row>
         </Col>
-<<<<<<< HEAD
-      )
-=======
       );
->>>>>>> development
     }
 
     return (
       <div>
-<<<<<<< HEAD
-        <CardTitle id="warningCard" className={styleEdit.saveChangesWarning}>
-          Reminder: You must click "Save Changes" at the bottom of this page. If you don't, changes
-          to your profile will not be saved.
-        </CardTitle>
-
-        {showModal && (
-          <Modal
-            isOpen={this.state.showModal}
-            closeModal={() => {
-              this.setState({ showModal: false })
-            }}
-            modalMessage={this.state.modalMessage}
-            modalTitle={this.state.modalTitle}
-            type={this.state.type}
-            updateLink={this.updateLink}
-            updateBlueSquare={this.updateBlueSquare}
-            linkType={this.state.linkType}
-            userProfile={this.state.userProfile}
-            id={this.state.id}
-=======
         {showModal && (
           <Modal
             isOpen={showModal}
@@ -899,184 +650,11 @@ class EditProfile extends Component {
             linkType={linkType}
             userProfile={userProfile}
             id={id}
->>>>>>> development
             isUserAdmin={isUserAdmin}
             handleLinkModel={this.handleLinkModel}
           />
         )}
 
-<<<<<<< HEAD
-        <Col>
-          <Row className={styleProfile.profileContainer}>
-            <div className={styleProfile.whoSection}>
-              <Label
-                for="newProfilePic"
-                htmlFor={'newProfilePic'}
-                className={styleEdit.profileEditTitleCenter}
-              >
-                Change Profile Picture
-              </Label>
-              <Input
-                type="file"
-                name="newProfilePic"
-                id={'newProfilePic'}
-                style={{ visibility: 'hidden', width: 0, height: 0 }}
-                onChange={this.handleImageUpload}
-                accept={'image/png,image/jpeg, image/jpg'}
-              />
-              <div>
-                <Image
-                  src={profilePic || '/defaultprofilepic.png'}
-                  alt="Profile Picture"
-                  roundedCircle
-                  className="profilePicture"
-                />
-              </div>
-              <div className={styleEdit.inputSections}>
-                <Label className={styleEdit.profileEditTitle}>Name:</Label>
-                <Input
-                  type="text"
-                  name="firstName"
-                  id="firstName"
-                  value={firstName}
-                  className={styleProfile.profileText}
-                  onChange={this.handleUserProfile}
-                  placeholder="First Name"
-                />
-                <Input
-                  type="text"
-                  name="lastName"
-                  id="lastName"
-                  value={lastName}
-                  className={styleProfile.profileText}
-                  onChange={this.handleUserProfile}
-                  placeholder="Last Name"
-                />
-                <Label className={styleEdit.profileEditTitle}>Title:</Label>
-                <Input
-                  type="title"
-                  name="jobTitle"
-                  id="jobTitle"
-                  value={jobTitle}
-                  className={styleProfile.profileText}
-                  onChange={this.handleUserProfile}
-                  placeholder="Job Title"
-                />
-
-                <ToggleSwitch
-                  switchType="bluesquares"
-                  state={privacySettings?.blueSquares}
-                  handleUserProfile={this.handleUserProfile}
-                />
-
-                <BlueSquare
-                  isUserAdmin={isUserAdmin}
-                  blueSquares={infringments}
-                  handleBlueSquare={this.handleBlueSquare}
-                  handleSaveError={this.handleSaveError}
-                />
-                <br />
-              </div>
-            </div>
-
-            <div className={styleEdit.detailEditSection}>
-              <div className={styleEdit.inputSections}>
-                <ToggleSwitch
-                  switchType="email"
-                  state={userProfile.privacySettings?.email}
-                  handleUserProfile={this.handleUserProfile}
-                />
-
-                <Input
-                  type="email"
-                  name="email"
-                  id="email"
-                  className={styleProfile.profileText}
-                  value={email}
-                  onChange={this.handleUserProfile}
-                  placeholder="Email"
-                />
-
-                <ToggleSwitch
-                  switchType="phone"
-                  state={userProfile.privacySettings?.phoneNumber}
-                  handleUserProfile={this.handleUserProfile}
-                />
-
-                <Input
-                  type="number"
-                  name="phoneNumber"
-                  id="phoneNumber"
-                  className={styleProfile.profileText}
-                  value={phoneNumber}
-                  onChange={this.handleUserProfile}
-                  placeholder="Phone"
-                />
-
-                <div>
-                  <div className={styleProfile.linkIconSection}>
-                    <div className={styleProfile.icon}>
-                      <i className="fa fa-link" aria-hidden="true"></i>
-                    </div>
-                  </div>
-
-                  <div className={styleProfile.profileLinks}>
-                    {this.modLinkButton(canEditFields, isUserAdmin)}
-                    <UserLinks
-                      linkSection="admin"
-                      links={adminLinks}
-                      handleLinkModel={this.handleLinkModel}
-                      isUserAdmin={isUserAdmin}
-                    />
-                  </div>
-
-                  <div className={styleProfile.profileLinks}>
-                    <UserLinks
-                      linkSection="user"
-                      links={personalLinks}
-                      handleLinkModel={this.handleLinkModel}
-                      isUserAdmin={isUserAdmin}
-                    />
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className={styleEdit.profileViewButtonContainer}>
-              <Link
-                to={'/userprofile/' + this.state.userProfile._id}
-                className={styleEdit.profileViewButton}
-              >
-                <i className="fa fa-eye fa-lg" aria-hidden="true">
-                  {' '}
-                  View
-                </i>
-              </Link>
-            </div>
-          </Row>
-
-          <Row style={{ display: 'flex', justifyContent: 'center', padding: 10, margin: 5 }}>
-            <Button
-              outline
-              color="primary"
-              onClick={this.handleSubmit}
-              style={{ display: 'flex', margin: 5 }}
-            >
-              {'Save Changes'}
-            </Button>
-            <Button
-              outline
-              color="danger"
-              onClick={() => window.location.reload()}
-              style={{ display: 'flex', margin: 5 }}
-            >
-              Cancel
-            </Button>
-          </Row>
-        </Col>
-      </div>
-    )
-=======
         <StickyContainer>
           {renderWarningCard()}
           <Container className="emp-profile">
@@ -1414,7 +992,6 @@ class EditProfile extends Component {
         </StickyContainer>
       </div>
     );
->>>>>>> development
   }
 }
 
