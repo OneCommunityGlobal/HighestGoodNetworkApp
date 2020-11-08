@@ -24,7 +24,7 @@ const NewBadges = () => {
         <div className="new_badges badge_image_sm">
           <img src="badges/sample7.jpeg" alt="badge sample 7" id="popover1" />
           <Popover trigger="hover" isOpen={isOpen} toggle={toggle} target="popover1">
-            <Card>
+            <Card className="text-center">
               <CardImg className="badge_image_lg" src="badges/sample7.jpeg" alt="badge sample 7" />
               <CardBody>
                 <CardTitle

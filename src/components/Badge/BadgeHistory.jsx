@@ -17,7 +17,7 @@ const BadgeHistory = () => {
       <img src="https://www.dropbox.com/s/pecypq02hp6805d/90hrStrk_200px.png?raw=1" alt="dropbox new 4" />
       <img src="https://www.dropbox.com/s/nsvn7x0p4ve0by7/150WksInARow_200px.png?raw=1" alt="dropbox new 5" id="popover2" />
       <Popover trigger="hover" isOpen={isOpen} toggle={toggle} target="popover2">
-        <Card>
+        <Card className="text-center">
           <CardImg className="badge_image_lg" src="https://www.dropbox.com/s/nsvn7x0p4ve0by7/150WksInARow_200px.png?raw=1" alt="dropbox new 5" />
           <CardBody>
             <CardTitle
