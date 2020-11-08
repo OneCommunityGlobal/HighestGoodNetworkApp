@@ -18,7 +18,7 @@ const AddTask = (props) => {
     nums.push(task.num);
   });
 
-  // all posible cases 
+  // all posible cases
   const newNums = [];
   nums.forEach(num => {
     let numArr = num.split('.');
@@ -42,6 +42,8 @@ const AddTask = (props) => {
   });
 
   newNums.sort((a, b) => a.split('.')[0] - b.split('.')[0]);
+
+
 
 
   return (

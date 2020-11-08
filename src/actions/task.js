@@ -26,10 +26,10 @@ export const importTask = (newTask, wbsId) => {
 
     newTask._id = _id;
 
-    await dispatch(
+    /*await dispatch(
       postNewTask(task,
         status
-      ));
+      ));*/
 
   }
 
@@ -127,8 +127,9 @@ export const updateTask = (taskId, updatedTask) => {
   }
 }
 
-export const deleteTask = (taskId) => {
-  const url = ENDPOINTS.TASK_DEL(taskId);
+export const deleteTask = (taskId, mother) => {
+  console.log(mother);
+  const url = ENDPOINTS.TASK_DEL(taskId, mother);
   return async dispatch => {
     let status = 200;
     try {

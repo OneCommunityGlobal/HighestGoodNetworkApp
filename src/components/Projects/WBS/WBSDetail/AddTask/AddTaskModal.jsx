@@ -182,15 +182,15 @@ const AddTaskModal = props => {
   }
 
   // parent Id
-  let parentId1 = props.parentId1 ? props.parentId1 : null
-  let parentId2 = props.parentId2 ? props.parentId2 : null
-  let parentId3 = props.parentId3 ? props.parentId3 : null
+  let parentId1 = null;
+  let parentId2 = null;
+  let parentId3 = null;
 
-  if (props.parentId1 === null) {
-    parentId1 = props.taskId
-  } else if (props.parentId2 === null) {
+  if (props.level === 1) {
+    parentId1 = props.taskId;
+  } else if (props.level === 2) {
     parentId2 = props.taskId
-  } else if (props.parentId3 === null) {
+  } else if (props.level === 3) {
     parentId3 = props.taskId
   }
 
@@ -267,17 +267,15 @@ const AddTaskModal = props => {
     }
 
     props.addNewTask(newTask, props.wbsId);
-    /*clear()
+
     setTimeout(() => {
-      props.fetchAllTasks(props.wbsId, props.level, props.taskId);
-      setTimeout(() => {
-        setIsLoading(false)
-        if (props.tasks.error === 'none') {
-          toggle()
-          getNewNum()
-        }
-      }, 2000)
-    }, 4000)*/
+      setIsLoading(false)
+      if (props.tasks.error === 'none') {
+        toggle()
+        getNewNum()
+      }
+    }, 1000)
+
   }
 
   useEffect(() => { }, [tasks])
@@ -592,9 +590,7 @@ const AddTaskModal = props => {
                 </Button>
               )
           ) : null}
-          <Button color="secondary" onClick={toggle}>
-            Cancel
-          </Button>
+
         </ModalFooter>
       </Modal>
       <Button color="primary" size="sm" onClick={setToggle}>

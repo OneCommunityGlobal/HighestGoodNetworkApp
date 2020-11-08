@@ -8,6 +8,7 @@
 
 .members__name{
     text-align: left;
+    width: 100%;
 }
 
 .members__assign{

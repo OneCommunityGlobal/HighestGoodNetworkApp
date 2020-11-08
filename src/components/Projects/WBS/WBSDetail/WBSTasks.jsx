@@ -22,6 +22,7 @@ const WBSTasks = (props) => {
 
   const wbsId = props.match.params.wbsId;
   const projectId = props.match.params.projectId;
+  const wbsName = props.match.params.wbsName;
   const [selectedId, setSelectedId] = useState(null);
 
   useEffect(() => {
@@ -132,7 +133,7 @@ const WBSTasks = (props) => {
             </NavItem>
 
             <div id="member_project__name">
-              Work breakdown structure
+              {wbsName}
             </div>
 
           </ol>
@@ -155,17 +156,17 @@ const WBSTasks = (props) => {
               <th scope="col" data-tip="WBS ID" colSpan="2">#</th>
               <th scope="col" data-tip="Task Name" className="task-name">Task</th>
               <th scope="col" data-tip="Priority"><i className="fa fa-star" aria-hidden="true"></i></th>
-              <th scope="col" data-tip="Resources"><i className="fa fa-users" aria-hidden="true"></i></th>
+              <th className='desktop-view' scope="col" data-tip="Resources"><i className="fa fa-users" aria-hidden="true"></i></th>
               <th scope="col" data-tip="Assigned" ><i className="fa fa-user-circle-o" aria-hidden="true"></i></th>
-              <th scope="col" data-tip="Status" ><i className="fa fa-tasks" aria-hidden="true"></i></th>
-              <th scope="col" data-tip="Hours-Best"><i className="fa fa-hourglass-start" aria-hidden="true"></i></th>
-              <th scope="col" data-tip="Hours-Worst"><i className="fa fa-hourglass" aria-hidden="true"></i></th>
-              <th scope="col" data-tip="Hours-Most"><i className="fa fa-hourglass-half" aria-hidden="true"></i></th>
-              <th scope="col" data-tip="Estimated Hours"><i className="fa fa-clock-o" aria-hidden="true"></i></th>
-              <th scope="col" data-tip="Start Date" ><i className="fa fa-calendar-check-o" aria-hidden="true"></i> Start</th>
-              <th scope="col" data-tip="Due Date"><i className="fa fa-calendar-times-o" aria-hidden="true"></i> End</th>
-              <th scope="col" data-tip="Links" ><i className="fa fa-link" aria-hidden="true"></i></th>
-              <th scope="col" data-tip="Details" ><i className="fa fa-question" aria-hidden="true"></i></th>
+              <th className='desktop-view' scope="col" data-tip="Status" ><i className="fa fa-tasks" aria-hidden="true"></i></th>
+              <th className='desktop-view' scope="col" data-tip="Hours-Best"><i className="fa fa-hourglass-start" aria-hidden="true"></i></th>
+              <th className='desktop-view' scope="col" data-tip="Hours-Worst"><i className="fa fa-hourglass" aria-hidden="true"></i></th>
+              <th className='desktop-view' scope="col" data-tip="Hours-Most"><i className="fa fa-hourglass-half" aria-hidden="true"></i></th>
+              <th className='desktop-view' scope="col" data-tip="Estimated Hours"><i className="fa fa-clock-o" aria-hidden="true"></i></th>
+              <th className='desktop-view' scope="col" data-tip="Start Date" ><i className="fa fa-calendar-check-o" aria-hidden="true"></i> Start</th>
+              <th className='desktop-view' scope="col" data-tip="Due Date"><i className="fa fa-calendar-times-o" aria-hidden="true"></i> End</th>
+              <th className='desktop-view' scope="col" data-tip="Links" ><i className="fa fa-link" aria-hidden="true"></i></th>
+              <th className='desktop-view' scope="col" data-tip="Details" ><i className="fa fa-question" aria-hidden="true"></i></th>
 
 
             </tr>

@@ -1,5 +1,6 @@
 .container-tasks{
   margin: 20px;
+  width: calc(100% - 40px);
 }
 
 .container{
@@ -90,6 +91,8 @@
   padding: 0.45rem;
 }
 
+
+
 .taskNum{
   cursor: context-menu;
   width: 80px;
@@ -128,4 +131,23 @@
 }
 .tasks-table{
   overflow-x:scroll;
+  width: 100% !important;
 }
+
+.task-link{
+  font-size: 10px;
+  float: left;
+}
+
+@media only screen and (max-width: 600px) {
+  .desktop-view{
+    display: none;
+  }
+
+  .table td {
+    padding: 5px !important;
+  }
+
+ }
+
+

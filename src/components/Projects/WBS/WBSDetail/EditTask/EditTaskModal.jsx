@@ -227,12 +227,12 @@ const EditTaskModal = (props) => {
     }
   };
 
-  useEffect(() => {}, [tasks]);
+  useEffect(() => { }, [tasks]);
 
   return (
     <div className="controlBtn">
       <Modal isOpen={modal} toggle={toggle}>
-        <ModalHeader toggle={toggle}>Edit Task</ModalHeader>
+        <ModalHeader toggle={toggle}>View/Edit</ModalHeader>
         <ModalBody>
           <ReactTooltip />
 
@@ -470,9 +470,9 @@ const EditTaskModal = (props) => {
                   </div>
                   <div>
                     {links.map((link, i) => (link.length > 1 ? (
-                      <div key={i}>
+                      <div key={i} className="task-link">
                         <a href={link} target="_blank">
-                          {link.replace('http://', '')}
+                          {link.slice(-10)}
                         </a>
                         <span className="remove-link" onClick={() => removeLink(i)}>
                           x
@@ -536,7 +536,7 @@ const EditTaskModal = (props) => {
         </ModalFooter>
       </Modal>
       <Button color="primary" size="sm" onClick={toggle}>
-        Edit Task
+        View/Edit
       </Button>
     </div>
   );

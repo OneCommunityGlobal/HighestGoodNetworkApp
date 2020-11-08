@@ -17,7 +17,7 @@ const ImportTask = (props) => {
   const [isDone, setIsDone] = useState(0);
   // modal
   const [modal, setModal] = useState(false);
-  const toggle = () => { setModal(!modal); setIsDone(0) };
+  const toggle = () => { setModal(!modal); setIsDone(0); props.fetchAllTasks(props.wbsId, 0); };
   const [taskList, setTaskList] = useState([]);
 
 
@@ -85,12 +85,11 @@ const ImportTask = (props) => {
 
   const uploadTaskList = () => {
     setIsDone(3);
-    //console.log(taskList);
     props.importTask(taskList, props.wbsId);
     setTimeout(() => {
       setTimeout(() => {
         setIsDone(4);
-      }, 1000);
+      }, 5000);
       props.fetchAllTasks(props.wbsId, 0);
     }, 1000)
   }
@@ -143,7 +142,7 @@ const ImportTask = (props) => {
     let newTask = {
       'taskName': `${taskName}`,
       'num': `${num}`,
-      'level': `${level}`,
+      'level': `${parseInt(level, 10)}`,
       'position': `${position}`,
       'wbsId': `${props.wbsId}`,
       'priority': `${rowArr[8]}`,
@@ -187,8 +186,8 @@ const ImportTask = (props) => {
                 <td scope="col" >
                   <p id="instruction">
                     Before importing a Work Breakdown Structure (WBS) to this software, the following steps must be taken:<br />
-                    1.Check all numbers are sequential.
-                    2.Double check the number listed in the popup matches the number of rows being imported.
+                    1.Check all numbers are sequential.<br />
+                    2.Double check the number listed in the popup matches the number of rows being imported.<br />
                   </p>
                 </td>
               </tr>

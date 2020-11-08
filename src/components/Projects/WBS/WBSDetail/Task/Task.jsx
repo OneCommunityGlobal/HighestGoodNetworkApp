@@ -8,11 +8,12 @@ import { Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap'
 import { Button, Dropdown, DropdownItem, DropdownToggle, DropdownMenu } from 'reactstrap';
 import AddTaskModal from '../AddTask/AddTaskModal';
 import EditTaskModal from "../EditTask/EditTaskModal";
-import { moveTasks, fetchAllTasks } from "../../../../../actions/task.js";
+import { moveTasks, fetchAllTasks, deleteTask } from "../../../../../actions/task.js";
 import './tagcolor.css';
 import './task.css';
 
 const Task = (props) => {
+
   // modal
   const [modal, setModal] = useState(false)
   const toggleModel = () => setModal(!modal)
@@ -136,8 +137,9 @@ const Task = (props) => {
   }
 
 
-  const deleteTask = (taskId) => {
-    props.deleteTask(taskId);
+  const deleteTask = (taskId, mother) => {
+    props.deleteTask(taskId, props.wbsId,);
+    //props.fetchAllTasks(props.wbsId, props.level, props.mother);
   }
 
   const onMove = (from, to) => {
@@ -174,7 +176,7 @@ const Task = (props) => {
           {props.priority === "Tertiary" ? <i data-tip="Tertiary" className="fa fa-star-o" aria-hidden="true"></i> : null}
 
         </td>
-        <td >
+        <td className='desktop-view'>
 
           {
             props.resources ?
@@ -244,33 +246,31 @@ const Task = (props) => {
           </div>
 
         </td>
-        <td>{props.isAssigned ? <i data-tip="Assigned" className="fa fa-check-square" aria-hidden="true"></i> : <i data-tip="Not Assigned" className="fa fa-square-o" aria-hidden="true"></i>}</td>
-        <td>{props.status === "Started" ? <i data-tip="Started" className="fa fa-pause" aria-hidden="true"></i> : <i data-tip="Not Started" className="fa fa-play" aria-hidden="true"></i>}</td>
-        <td data-tip={`Hours-Best-case: ${parseFloat(props.hoursBest / 8).toFixed(2)} day(s)`} >{props.hoursBest}</td>
-        <td data-tip={`Hours-Worst-case: ${parseFloat(props.hoursWorst / 8).toFixed(2)} day(s)`} >{props.hoursWorst}</td>
-        <td data-tip={`Hours-Most-case: ${parseFloat(props.hoursMost / 8).toFixed(2)} day(s)`} >{props.hoursMost}</td>
-        <td data-tip={`Estimated Hours: ${parseFloat(props.estimatedHours / 8).toFixed(2)} day(s)`} >{parseFloat(props.estimatedHours).toFixed(2)}</td>
-        <td>
+        <td >{props.isAssigned ? <i data-tip="Assigned" className="fa fa-check-square" aria-hidden="true"></i> : <i data-tip="Not Assigned" className="fa fa-square-o" aria-hidden="true"></i>}</td>
+        <td className='desktop-view'>{props.status === "Started" ? <i data-tip="Started" className="fa fa-pause" aria-hidden="true"></i> : <i data-tip="Not Started" className="fa fa-play" aria-hidden="true"></i>}</td>
+        <td className='desktop-view' data-tip={`Hours-Best-case: ${parseFloat(props.hoursBest / 8).toFixed(2)} day(s)`} >{props.hoursBest}</td>
+        <td className='desktop-view' data-tip={`Hours-Worst-case: ${parseFloat(props.hoursWorst / 8).toFixed(2)} day(s)`} >{props.hoursWorst}</td>
+        <td className='desktop-view' data-tip={`Hours-Most-case: ${parseFloat(props.hoursMost / 8).toFixed(2)} day(s)`} >{props.hoursMost}</td>
+        <td className='desktop-view' data-tip={`Estimated Hours: ${parseFloat(props.estimatedHours / 8).toFixed(2)} day(s)`} >{parseFloat(props.estimatedHours).toFixed(2)}</td>
+        <td className='desktop-view'>
           {startedDate.getFullYear() !== 1969 ? `${(startedDate.getMonth() + 1)}/${startedDate.getDate()}/${startedDate.getFullYear()}` : null}
           <br />
         </td>
-        <td>
+        <td className='desktop-view'>
           {dueDate.getFullYear() !== 1969 ? `${(dueDate.getMonth() + 1)}/${dueDate.getDate()}/${dueDate.getFullYear()}` : null}
         </td>
-        <td>{props.links.map((link, i) => link.length > 1 ? <a key={i} href={link} target="_blank" data-tip={link}><i className="fa fa-link" aria-hidden="true"></i></a> : null)}</td>
-        <td onClick={toggleModel}><i className="fa fa-book" aria-hidden="true"></i></td>
+        <td className='desktop-view'>{props.links.map((link, i) => link.length > 1 ? <a key={i} href={link} target="_blank" data-tip={link}><i className="fa fa-link" aria-hidden="true"></i></a> : null)}</td>
+        <td className='desktop-view' onClick={toggleModel}><i className="fa fa-book" aria-hidden="true"></i></td>
 
       </tr>
-      <tr className='taskDrop' id={`taskDrop_${props.id}`}>
-        <td colSpan={14}></td>
-      </tr>
 
-      <tr className='wbsTaskController' id={`controller_${props.id}`}>
-        <td colSpan={14} className='controlTd'>
+
+      <tr className='wbsTaskController desktop-view' id={`controller_${props.id}`}>
+        <td colSpan={15} className='controlTd'>
           <AddTaskModal key={`addTask_${props.id}`} parentNum={props.num} taskId={props.id} projectId={props.projectId} wbsId={props.wbsId} parentId1={props.parentId1} parentId2={props.parentId2} parentId3={props.parentId3} mother={props.mother} level={props.level} openChild={(e) => openChild(props.num, props.id)} />
           <EditTaskModal key={`editTask_${props.id}`} parentNum={props.num} taskId={props.id} projectId={props.projectId} wbsId={props.wbsId} parentId1={props.parentId1} parentId2={props.parentId2} parentId3={props.parentId3} mother={props.mother} level={props.level} />
 
-          <Button color="danger" size="sm" className='controlBtn controlBtn_remove' onClick={() => deleteTask(props.id)}>Remove</Button>
+          <Button color="danger" size="sm" className='controlBtn controlBtn_remove' onClick={() => deleteTask(props.id, props.mother)}>Remove</Button>
 
           <Dropdown direction="up" isOpen={dropdownOpen} toggle={toggle} style={{ float: "left" }}>
             <DropdownToggle caret caret color="primary" size="sm" >
@@ -292,11 +292,11 @@ const Task = (props) => {
           <Modal isOpen={modal} toggle={toggleModel}>
             <ModalBody>
               <h6>WHY THIS TASK IS IMPORTANT:</h6>
-              {props.whyInfo}<br /><br />
+              {props.whyInfo.split('-').map((item, index) => item !== '' ? <div key={index}>-{item}</div> : null)}<br /><br />
               <h6>THE DESIGN INTENT:</h6>
-              {props.intentInfo}<br /><br />
+              {props.intentInfo.split('-').join('<br/>')}<br /><br />
               <h6>ENDSTATE:</h6>
-              {props.endstateInfo}<br /><br />
+              {props.endstateInfo.split('-').join('<br/>')}<br /><br />
             </ModalBody>
           </Modal>
 
@@ -305,6 +305,6 @@ const Task = (props) => {
     </React.Fragment >
   )
 }
-
-export default connect(null, { moveTasks, fetchAllTasks })(Task)
+const mapStateToProps = state => { return { state } }
+export default connect(mapStateToProps, { moveTasks, fetchAllTasks, deleteTask })(Task)
 

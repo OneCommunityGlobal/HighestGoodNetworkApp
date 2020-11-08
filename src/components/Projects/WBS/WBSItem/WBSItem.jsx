@@ -1,7 +1,7 @@
 /*********************************************************************************
- * Component: MEMBER 
+ * Component: MEMBER
  * Author: Henry Ng - 08/01/20
- * Display member of the members list 
+ * Display member of the members list
  ********************************************************************************/
 import React, { useState } from 'react'
 import { connect } from 'react-redux'
@@ -19,10 +19,10 @@ const WBSItem = (props) => {
 
   return (
     <React.Fragment>
-      <tr className="members__tr">
+      <tr >
         <th scope="row"><div>{props.index}</div></th>
-        <td className='members__name'>
-          <a href={`/wbs/tasks/${props.wbsId}/${props.projectId}`}>
+        <td className='members__name' >
+          <a href={`/wbs/tasks/${props.wbsId}/${props.projectId}/${props.name}`}>
             {props.name}
           </a>
         </td>
