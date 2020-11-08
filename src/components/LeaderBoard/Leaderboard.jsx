@@ -131,10 +131,7 @@ const LeaderBoard = ({ getLeaderboardData, leaderBoardData, loggedInUser, organi
               <span title="Tangible + Intangible time = Total time">{organizationData.totaltime} of {organizationData.weeklyComittedHours}</span>
             </td>
           </tr>
-<<<<<<< HEAD
 
-=======
->>>>>>> 8b193e4dd122f848aa98df1e1069b0d43d4d6db7
           {leaderBoardData.map((item, key) => (
             <tr key={key}>
               <td>

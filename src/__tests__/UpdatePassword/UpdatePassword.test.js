@@ -23,6 +23,7 @@ jest.mock('../../actions/updatePassword.js');
 const server = setupServer(
   // request for a forced password update.
   rest.patch(url, (req, res, ctx) => {
+    console.log(req.body.newpassword);
     if (req.body.newpassword === 'newPassword8') {
       return res(ctx.status(200));
     }

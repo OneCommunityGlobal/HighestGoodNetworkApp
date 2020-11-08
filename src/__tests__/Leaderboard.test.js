@@ -64,7 +64,13 @@ const server = setupServer(
   }),
   rest.get(userProjectsUrl, (req, res, ctx) =>  {
     return res(ctx.status(200), ctx.json(
-      []
+      [
+        {
+          "isActive": true,
+          "_id": "5ad91ec3590b19002acfcd26",
+          "projectName": "HG Fake Project"
+        }
+      ]
     ));
   }),
   rest.get(timerUrl, (req, res, ctx) =>  {

@@ -42,7 +42,13 @@ import {
     }),
     rest.get(userProjectsUrl, (req, res, ctx) =>  {
         return res(ctx.status(200), ctx.json(
-          []
+          [
+          {
+            "isActive": true,
+            "_id": "5ad91ec3590b19002acfcd26",
+            "projectName": "HG Fake Project"
+          }
+        ]
       ));
     }),
     rest.get(timerUrl, (req, res, ctx) =>  {
@@ -95,7 +101,7 @@ describe('Header structure', () => {
 
         const linkItems = [[LOGO, '/'], [DASHBOARD, '/dashboard'], [TIMELOG, `/timelog/${mockState.auth.user.userid}`], 
         [REPORTS,'/reports'], [WEEKLY_SUMMARIES_REPORT, '/weeklysummariesreport'], [USER_MANAGEMENT, '/usermanagement'], 
-        [PROJECTS, '/projects'], [TEAMS,'/teams'], [VIEW_PROFILE, `/userprofile/${mockState.auth.user.userid}`], 
+        [PROJECTS, '/projects'], [TEAMS,'/'], [VIEW_PROFILE, `/userprofile/${mockState.auth.user.userid}`], 
         [UPDATE_PASSWORD,`/updatepassword/${mockState.auth.user.userid}`], [LOGOUT,'/logout']];
 
         for (let i=0; i<linkItems.length; i++) {

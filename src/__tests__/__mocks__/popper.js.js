@@ -13,8 +13,3 @@ export default class Popper {
     }
   }
 }
-
-describe('Stop Error', () => {
-  it('should not error out due to no tests (popper.js.js)', () => {
-  });
-});
