@@ -229,6 +229,7 @@ class UserProfile extends Component {
   };
 
   render() {
+    debugger;
     const {
       userProfile,
       linkType,
@@ -262,7 +263,7 @@ class UserProfile extends Component {
 
     // console.log('user profile:', userProfile.teams);
 
-    if (isLoading) {
+    if (isLoading && !this.props.isAddNewUser) {
       return (
         <Container fluid>
           <Row className="text-center" data-test="loading">
@@ -283,7 +284,7 @@ class UserProfile extends Component {
     const canEdit = isUserAdmin || isUserSelf;
     const weeklyHoursReducer = (acc, val) => acc + (parseInt(val.hours, 10) + parseInt(val.minutes, 10) / 60);
     // (parseInt(a.minutes, 10) + parseInt(b.minutes, 10)) / 60;
-
+    debugger;
     return (
       <div>
         {showModal && (
