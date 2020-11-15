@@ -23,8 +23,8 @@ const Task = (props) => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [isLoad, setIsLoad] = useState(false);
   const toggle = () => setDropdownOpen(prevState => !prevState);
-
-  let isOpen = true;
+  const [isOpen, setIsOpen] = useState(false);
+  //let isOpen = true;
   let passCurrentNum = false;
 
 
@@ -74,8 +74,7 @@ const Task = (props) => {
       }
     }
 
-
-    isOpen = !isOpen;
+    setIsOpen(!isOpen);
   }
 
 
@@ -87,7 +86,7 @@ const Task = (props) => {
         allItems[i].style.display = 'table-row';
       }
     }
-    isOpen = true;
+    setIsOpen(true);
   }
 
   const swap = (unit = 1) => {
@@ -138,8 +137,12 @@ const Task = (props) => {
 
 
   const deleteTask = (taskId, mother) => {
-    props.deleteTask(taskId, props.wbsId,);
-    //props.fetchAllTasks(props.wbsId, props.level, props.mother);
+    props.deleteTask(taskId, mother);
+    props.fetchAllTasks(props.wbsId, -1);
+    setTimeout(() => {
+      props.fetchAllTasks(props.wbsId, 0);
+    }, 2000);
+
   }
 
   const onMove = (from, to) => {
@@ -165,10 +168,11 @@ const Task = (props) => {
           className="taskNum" onClick={() => { selectTask(props.id); toggleGroups(props.num, props.id, props.level) }}>
           {props.num.split('.0').join('')}</td>
         <td className="taskName">
-          {props.level === 1 ? <div className='level-space-1' data-tip="Level 1"><span onClick={(e) => toggleGroups(props.num, props.id, props.level)} id={`task_name_${props.id}`} className={props.hasChildren ? 'has_children' : ''}>{props.name}</span></div> : null}
-          {props.level === 2 ? <div className='level-space-2' data-tip="Level 2"><span onClick={(e) => toggleGroups(props.num, props.id, props.level)} id={`task_name_${props.id}`} className={props.hasChildren ? 'has_children' : ''}>{props.name}</span></div> : null}
-          {props.level === 3 ? <div className='level-space-3' data-tip="Level 3"><span onClick={(e) => toggleGroups(props.num, props.id, props.level)} id={`task_name_${props.id}`} className={props.hasChildren ? 'has_children' : ''}>{props.name}</span></div> : null}
-          {props.level === 4 ? <div className='level-space-4' data-tip="Level 4"><span onClick={(e) => toggleGroups(props.num, props.id, props.level)} id={`task_name_${props.id}`} className={props.hasChildren ? 'has_children' : ''}>{props.name}</span></div> : null}
+
+          {props.level === 1 ? <div className='level-space-1' data-tip="Level 1"><span onClick={(e) => toggleGroups(props.num, props.id, props.level)} id={`task_name_${props.id}`} className={props.hasChildren ? 'has_children' : ''}>  {props.hasChildren ? <i data-tip="Not Started" className={`fa fa-folder${isOpen ? '-open' : ''}`} aria-hidden="true"></i> : null} {props.name}</span></div> : null}
+          {props.level === 2 ? <div className='level-space-2' data-tip="Level 2"><span onClick={(e) => toggleGroups(props.num, props.id, props.level)} id={`task_name_${props.id}`} className={props.hasChildren ? 'has_children' : ''}> {props.hasChildren ? <i data-tip="Not Started" className={`fa fa-folder${isOpen ? '-open' : ''}`} aria-hidden="true"></i> : null}  {props.name}</span></div> : null}
+          {props.level === 3 ? <div className='level-space-3' data-tip="Level 3"><span onClick={(e) => toggleGroups(props.num, props.id, props.level)} id={`task_name_${props.id}`} className={props.hasChildren ? 'has_children' : ''}> {props.hasChildren ? <i data-tip="Not Started" className={`fa fa-folder${isOpen ? '-open' : ''}`} aria-hidden="true"></i> : null}  {props.name}</span></div> : null}
+          {props.level === 4 ? <div className='level-space-4' data-tip="Level 4"><span onClick={(e) => toggleGroups(props.num, props.id, props.level)} id={`task_name_${props.id}`} className={props.hasChildren ? 'has_children' : ''}> {props.hasChildren ? <i data-tip="Not Started" className={`fa fa-folder${isOpen ? '-open' : ''}`} aria-hidden="true"></i> : null}  {props.name}</span></div> : null}
         </td>
         <td>
           {props.priority === "Primary" ? <i data-tip="Primary" className="fa fa-star" aria-hidden="true"></i> : null}
@@ -292,11 +296,11 @@ const Task = (props) => {
           <Modal isOpen={modal} toggle={toggleModel}>
             <ModalBody>
               <h6>WHY THIS TASK IS IMPORTANT:</h6>
-              {props.whyInfo.split('-').map((item, index) => item !== '' ? <div key={index}>-{item}</div> : null)}<br /><br />
+              {props.whyInfo.split('-').map((item, index) => item !== '' ? <div key={index}>-{item}</div> : null)}<br />
               <h6>THE DESIGN INTENT:</h6>
-              {props.intentInfo.split('-').join('<br/>')}<br /><br />
+              {props.intentInfo.split('-').map((item, index) => item !== '' ? <div key={index}>-{item}</div> : null)}<br />
               <h6>ENDSTATE:</h6>
-              {props.endstateInfo.split('-').join('<br/>')}<br /><br />
+              {props.endstateInfo.split('-').map((item, index) => item !== '' ? <div key={index}>-{item}</div> : null)}
             </ModalBody>
           </Modal>
 

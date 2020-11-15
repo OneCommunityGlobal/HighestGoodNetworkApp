@@ -60,8 +60,10 @@ export const taskReducer = (allTasks = allTasksInital, action) => {
     case types.FETCH_TASKS_ERROR:
       return { ...allTasks, fetched: true, fetching: false, error: action.err }
     case types.RECEIVE_TASKS:
-
-      if (action.level === 0) {
+      if (action.level === -1) {
+        return { ...allTasks, taskItems: [], fetched: true, fetching: false, error: "none" };
+      }
+      else if (action.level === 0) {
         return { ...allTasks, taskItems: [...sortByNum(action.taskItems)], fetched: true, fetching: false, error: "none" };
       } else {
         const motherIndex = allTasks.taskItems.findIndex(item => item._id === action.mother);
