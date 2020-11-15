@@ -16,13 +16,15 @@ import moment from 'moment'
 import _ from 'lodash'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faClock, faCircle, faBell } from '@fortawesome/free-solid-svg-icons'
-// import { farClock } from '@fortawesome/free-regular-svg-icons'
+import * as Diff from 'diff'
 
+import './style.css'
 import httpService from '../../services/httpService'
 import { ENDPOINTS } from '../../utils/URL'
 import { fetchAllManagingTeams } from '../../actions/team'
 import { getUserProfile } from '../../actions/userProfile'
 import Loading from '../common/Loading'
+import DiffedText from './DiffedText'
 
 class TeamMemberTasks extends Component {
   constructor(props) {
@@ -270,28 +272,31 @@ class TeamMemberTasks extends Component {
               {`${member.firstName} ${member.lastName}`}
             </Link>
           </td>
-          {/* if user has any task notifications, display bell */}
-          <td>
-            {member.taskNotifications.length > 0 ? (
-              <FontAwesomeIcon
-                style={{ color: 'red' }}
-                icon={faBell}
-                onClick={() => {
-                  this.handleOpenTaskNotificationModal(member.taskNotifications)
-                }}
-              />
-            ) : null}
-          </td>
           <td>{`${member.weeklyCommittedHours} / ${member.hoursCurrentWeek}`}</td>
           <td>
             {member.tasks &&
               member.tasks.map((task, index) => (
-                <Link
-                  key={index}
-                  to={task.projectId ? `/wbs/tasks/${task.wbsId}/${task.projectId}` : '/'}
-                >
-                  <p>{`${task.num} ${task.taskName}`}</p>
-                </Link>
+                <p>
+                  <Link
+                    key={index}
+                    to={task.projectId ? `/wbs/tasks/${task.wbsId}/${task.projectId}` : '/'}
+                  >
+                    <span>{`${task.num} ${task.taskName}`} </span>
+                  </Link>
+                  <span>
+                    {member.taskNotifications.find(notification => {
+                      return notification.taskId === task._id
+                    }) ? (
+                      <FontAwesomeIcon
+                        style={{ color: 'red' }}
+                        icon={faBell}
+                        onClick={() => {
+                          this.handleOpenTaskNotificationModal(member.taskNotifications)
+                        }}
+                      />
+                    ) : null}
+                  </span>
+                </p>
               ))}
           </td>
           <td>tempprogress</td>
@@ -301,7 +306,7 @@ class TeamMemberTasks extends Component {
 
     return (
       <React.Fragment>
-        <div className="container">
+        <div className="container team-member-tasks">
           {fetching || !fetched ? <Loading /> : null}
           <h1>Team Member Tasks</h1>
           <div>
@@ -313,11 +318,40 @@ class TeamMemberTasks extends Component {
                 Task Info Changes
               </ModalHeader>
               <ModalBody>
-                {this.state.currentTaskNotifications.map((notification, index) => (
-                  <span key={notification._id}>{`${JSON.stringify(
-                    notification.oldTaskInfos,
-                  )} => ${JSON.stringify(notification.newTaskInfos)}`}</span>
-                ))}
+                {this.state.currentTaskNotifications.length > 0
+                  ? this.state.currentTaskNotifications.map((notification, index) => (
+                      <>
+                        <h4>{`${notification.taskNum} ${notification.taskName}`}</h4>
+                        <p>
+                          {notification.oldTaskInfos.oldWhyInfo ? 'Why Info: ' : null}
+                          {notification.oldTaskInfos.oldWhyInfo ? (
+                            <DiffedText
+                              oldText={notification.oldTaskInfos.oldWhyInfo}
+                              newText={notification.newTaskInfos.newWhyInfo}
+                            />
+                          ) : null}
+                        </p>
+                        <p>
+                          {notification.oldTaskInfos.oldIntentInfo ? 'Intent Info: ' : null}
+                          {notification.oldTaskInfos.oldIntentInfo ? (
+                            <DiffedText
+                              oldText={notification.oldTaskInfos.oldIntentInfo}
+                              newText={notification.newTaskInfos.newIntentInfo}
+                            />
+                          ) : null}
+                        </p>
+                        <p>
+                          {notification.oldTaskInfos.oldEndstateInfo ? 'Endstate Info: ' : null}
+                          {notification.oldTaskInfos.oldEndstateInfo ? (
+                            <DiffedText
+                              oldText={notification.oldTaskInfos.oldEndstateInfo}
+                              newText={notification.newTaskInfos.newEndstateInfo}
+                            />
+                          ) : null}
+                        </p>
+                      </>
+                    ))
+                  : null}
               </ModalBody>
               <ModalFooter>
                 <Button color="primary" onClick={this.handleTaskNotificationRead}>
@@ -332,8 +366,6 @@ class TeamMemberTasks extends Component {
                 {/* Empty column header for hours completed icon */}
                 <th />
                 <th>Team Member</th>
-                {/* Empty column header for notification icon */}
-                <th />
                 <th width="100px">
                   <FontAwesomeIcon icon={faClock} title="Weekly Committed Hours" />
                   /
