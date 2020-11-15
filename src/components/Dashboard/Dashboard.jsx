@@ -1,11 +1,13 @@
 import React from 'react';
 import {
-  Alert, Card, Row, Col, Container,
+  Alert, Row, Col, Container,
 } from 'reactstrap';
-import MonthlyEffort from '../MonthlyEffort';
+//import MonthlyEffort from '../MonthlyEffort';
 import Leaderboard from '../LeaderBoard';
 import WeeklySummaryModal from '../WeeklySummary/WeeklySummaryModal';
+import Timelog from '../Timelog';
 import '../../App.css';
+import './Dashboard.css';
 
 export const Dashboard = () => (
   <Container fluid>
@@ -31,10 +33,8 @@ export const Dashboard = () => (
         <Leaderboard />
       </Col>
       <Col lg={{ size: 7 }} className="left-col-dashboard order-sm-1">
-        <div className="p-5 my-2 bg--cadet-blue text-light">
-          <div className="py-5 my-5"> </div>
-          <h3>Timelog goes here...</h3>
-          <div className="py-5 my-5"> </div>
+        <div className="my-2">
+          <Timelog/>
         </div>
         <div className="p-5 my-2 bg--cadet-blue text-light">
           <div className="py-3 my-3"> </div>

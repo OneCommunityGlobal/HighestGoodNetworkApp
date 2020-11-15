@@ -55,7 +55,7 @@ const TimeEntryForm = ({ userId, edit, data, isOpen, toggle, timer, userProfile 
   const history = useHistory();
   const [reminder, setReminder] = useState(initialReminder);
   const [inform, setInfo] = useState(initialInfo);
-
+  
   const openModal = () =>
     setReminder((reminder) => ({
       ...reminder,
@@ -168,7 +168,7 @@ const TimeEntryForm = ({ userId, edit, data, isOpen, toggle, timer, userProfile 
       setReminder((reminder) => ({
         ...reminder,
         remind:
-          'Do you have a link to your Google Doc or other place to review this work? You should add it if you do.',
+          'Do you have a link to your Google Doc or other place to review this work? You should add it if you do. (Note: Please include http[s]:// in your URL)',
       }));
       result.notes = 'Description and reference link are required';
     }
@@ -320,6 +320,8 @@ const TimeEntryForm = ({ userId, edit, data, isOpen, toggle, timer, userProfile 
   };
 
   const handleEditorChange = (content, editor) => {
+    console.log(content);
+    inputs.notes = content;
     const { wordcount } = editor.plugins;
 
     setInputs((inputs) => ({ ...inputs, [editor.id]: content }));
@@ -351,7 +353,7 @@ const TimeEntryForm = ({ userId, edit, data, isOpen, toggle, timer, userProfile 
       <ModalHeader toggle={toggle}>
         <div>
           {edit ? 'Edit ' : 'Add '}
-          Time Entry
+          Time Entry &nbsp;
           <i
             className="fa fa-info-circle"
             data-tip

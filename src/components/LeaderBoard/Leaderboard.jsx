@@ -1,8 +1,8 @@
-import React, { Component, useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import './Leaderboard.css'
-import _ from 'lodash'
+//import _ from 'lodash'
 import { Link } from 'react-router-dom'
-import { Table, Badge, Progress, Modal, ModalBody, ModalFooter, ModalHeader, Button } from 'reactstrap'
+import { Table, Progress, Modal, ModalBody, ModalFooter, ModalHeader, Button } from 'reactstrap'
 let scrolled = false;
 
 const LeaderBoard = ({ getLeaderboardData, leaderBoardData, loggedInUser, organizationData }) => {

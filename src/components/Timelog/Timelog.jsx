@@ -44,6 +44,7 @@ class TimelogPage extends Component {
     this.handleInputChange = this.handleInputChange.bind(this)
     this.handleSearch = this.handleSearch.bind(this)
     this.openInfo = this.openInfo.bind(this)
+    
   }
 
   initialState = {
@@ -59,7 +60,9 @@ class TimelogPage extends Component {
   state = this.initialState
 
   async componentDidMount() {
-    const { userId } = this.props.match.params
+    
+    const userId = this.props.match && this.props.match.params.userId ? this.props.match.params.userId : this.props.auth.user.userid;
+    console.log(userId);
     await this.props.getUserProfile(userId)
     await this.props.getTimeEntriesForWeek(userId, 0)
     await this.props.getTimeEntriesForWeek(userId, 1)
@@ -69,10 +72,10 @@ class TimelogPage extends Component {
   }
 
   async componentDidUpdate(prevProps) {
-    if (prevProps.match.params.userId !== this.props.match.params.userId) {
+    if (prevProps.match && prevProps.match.params.userId !== this.props.match.params.userId) {
       this.setState(this.initialState)
 
-      const { userId } = this.props.match.params
+      const userId = this.props.match && this.props.match.params.userId ? this.props.match.params.userId : this.props.auth.user.userid;
       await this.props.getUserProfile(userId)
       await this.props.getTimeEntriesForWeek(userId, 0)
       await this.props.getTimeEntriesForWeek(userId, 1)
@@ -116,8 +119,9 @@ class TimelogPage extends Component {
 
   handleSearch(e) {
     e.preventDefault()
+    const userId = this.props.match && this.props.match.params.userId ? this.props.match.params.userId : this.props.auth.user.userid;
     this.props.getTimeEntriesForPeriod(
-      this.props.match.params.userId,
+      userId,
       this.state.fromDate,
       this.state.toDate,
     )
@@ -157,9 +161,9 @@ class TimelogPage extends Component {
     const lastWeekEntries = this.generateTimeEntries(this.props.timeEntries.weeks[1])
     const beforeLastEntries = this.generateTimeEntries(this.props.timeEntries.weeks[2])
     const periodEntries = this.generateTimeEntries(this.props.timeEntries.period)
-
+    const userId = this.props.match && this.props.match.params.userId ? this.props.match.params.userId : this.props.auth.user.userid;
     const isAdmin = this.props.auth.user.role === 'Administrator'
-    const isOwner = this.props.auth.user.userid === this.props.match.params.userId
+    const isOwner = this.props.auth.user.userid === userId; 
     const fullName = `${this.props.userProfile.firstName} ${this.props.userProfile.lastName}`
 
     let projects = []
@@ -180,34 +184,32 @@ class TimelogPage extends Component {
 
     return (
       <Container>
-        <TimelogNavbar userId={this.props.match.params.userId} />
+        <TimelogNavbar userId={userId} />
         <Row>
-          <Col md={8}>
+          <Col md={12}>
             <Card>
               <CardHeader>
                 <Row>
-                  <Col md={7}>
-                    <CardTitle tag="h4">Time Entries</CardTitle>
+                  <Col md={11}>
+                    <CardTitle tag="h4">Time Entries &nbsp;
+                            <i
+                              className="fa fa-info-circle"
+                              data-tip
+                              data-for="registerTip"
+                              aria-hidden="true"
+                              onClick={this.openInfo}
+                            /></CardTitle>
                     <CardSubtitle tag="h6" className="text-muted">
-                      Viewing time entries logged in last 3 weeks
+                      Viewing time entries logged in the last 3 weeks 
                     </CardSubtitle>
                   </Col>
-                  <Col md={5}>
+                  <Col md={11}>
                     {isOwner ? (
                       <div className="float-right">
                         <div>
                           <Button color="success" onClick={this.toggle}>
                             Add Time Entry
                           </Button>
-                        </div>
-                        <div style={{ 'text-align': 'center' }}>
-                          <i
-                            className="fa fa-info-circle"
-                            data-tip
-                            data-for="registerTip"
-                            aria-hidden="true"
-                            onClick={this.openInfo}
-                          />
                         </div>
                       </div>
                     ) : (
@@ -218,15 +220,7 @@ class TimelogPage extends Component {
                               Add Time Entry {!isOwner && `for ${fullName}`}
                             </Button>
                           </div>
-                          <div style={{ 'text-align': 'center' }}>
-                            <i
-                              className="fa fa-info-circle"
-                              data-tip
-                              data-for="registerTip"
-                              aria-hidden="true"
-                              onClick={this.openInfo}
-                            />
-                          </div>
+
                         </div>
                       )
                     )}
@@ -245,14 +239,14 @@ class TimelogPage extends Component {
                       </ModalFooter>
                     </Modal>
                     <TimeEntryForm
-                      userId={this.props.match.params.userId}
+                      userId={userId}
                       edit={false}
                       toggle={this.toggle}
                       isOpen={this.state.modal}
                       userProfile={this.props.userProfile}
                     />
                     <ReactTooltip id="registerTip" place="bottom" effect="solid">
-                      Click this icon to learn about this time entry form
+                      Click this icon to learn about the timelog.
                     </ReactTooltip>
                   </Col>
                 </Row>

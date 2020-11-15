@@ -45,8 +45,8 @@ const TimelogNavbar = ({ userId }) => {
 
   return (
     <div>
-      <nav className="navbar navbar-expand-md navbar-light bg-light mb-3 nav-fill">
-        <li className="navbar-brand">
+      <nav className="navbar navbar-expand-sm navbar-light navbar-border bg-light mb-2 col-md-12 nav-fill ">
+        <li className="navbar-brand pb-3">
           {firstName} {lastName}
           's Timelog
         </li>
@@ -59,9 +59,9 @@ const TimelogNavbar = ({ userId }) => {
           aria-expanded="false"
           aria-label="Toggle navigation"
         />
-        <div className="collapse navbar-collapse" id="timelogsnapshot">
-          <ul className="navbar-nav w-100">
-            <li className="nav-item navbar-text mr-3 w-25" id="timelogweeklychart">
+        <div className="collapse navbar-collapse  ml-auto flex-column" id="timelogsnapshot">
+          <ul className="navbar-nav w-75">
+            <li className="nav-item navbar-text" id="timelogweeklychart">
               <div>
                 Current Week : {totalEffort.toFixed(2)} / {weeklyComittedHours}
               </div>
@@ -77,25 +77,27 @@ const TimelogNavbar = ({ userId }) => {
                 striped={totalEffort < weeklyComittedHours}
               />
             </li>
-            <li className="nav-item  navbar-text">
+            </ul>
+            <ul className="navbar-nav flex-row ml-auto">
+            <li className="nav-item navbar-text ml-4">
               <span
-                className="fa fa-tasks icon-large"
+                className="fa fa-tasks icon-large align-middle"
                 data-toggle="modal"
                 data-target="#actionItems"
               >
-                <icon className="badge badge-pill badge-warning badge-notify" />
+                <i className="badge badge-pill badge-warning badge-notify align-middle" />
               </span>
             </li>
-            <li className="nav-item navbar-text">
+            <li className="nav-item navbar-text ml-4">
               <i
-                className="fa fa-envelope icon-large"
+                className="fa fa-envelope icon-large align-middle"
                 data-toggle="modal"
                 data-target="#notifications"
               >
-                <icon className="badge badge-pill badge-warning badge-notify">noti</icon>
+                <i className="badge badge-pill badge-warning badge-notify align-middle ml-1">noti</i>
               </i>
             </li>
-            <li className="nav-item navbar-text">
+            <li className="nav-item navbar-text ml-4">
               <a className="nav-link" href={`/userprofile/${userId}`}>
                 View Profile
               </a>

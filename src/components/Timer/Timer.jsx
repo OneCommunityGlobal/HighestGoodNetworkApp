@@ -79,23 +79,23 @@ const Timer = () => {
 
   return (
     <div className="timer mr-4 my-auto">
-      <Button onClick={reset} color="secondary" className="mr-1 p-1 align-middle">
+      <Button onClick={reset} color="secondary" className="mr-1 p-1 mt-1 align-middle">
         Clear
       </Button>
-      <Badge className="mr-1 align-middle">
+      <Badge className="mr-1 mt-1 align-middle">
         {hours}:{padZero(minutes)}:{padZero(secondsRemainder)}
       </Badge>
       <Button
         onClick={isActive ? handlePause : handleStart}
         color={isActive ? 'primary' : 'success'}
-        className="ml-1 p-1 align-middle"
+        className="ml-1 mt-1 p-1 align-middle"
       >
         {isActive ? 'Pause' : 'Start'}
       </Button>
       <Button
         onClick={seconds !== 0 ? handleStop : null}
         color="danger"
-        className="ml-1 p-1 align-middle"
+        className="ml-1 p-1 mt-1 align-middle"
       >
         Stop
       </Button>

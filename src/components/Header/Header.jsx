@@ -59,7 +59,7 @@ export class Header extends React.Component {
 
     return (
       <div>
-        <Navbar color="dark" dark expand="md" style={{ marginBottom: '20px' }}>
+        <Navbar color="dark" dark expand="lg" style={{ marginBottom: '20px' }}>
           <NavbarBrand tag={Link} to="/">
             {LOGO}
           </NavbarBrand>
