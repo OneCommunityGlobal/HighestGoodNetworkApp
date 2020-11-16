@@ -1,17 +1,37 @@
 import React, { Component } from 'react';
 import { StickyContainer } from 'react-sticky';
-import { Container, Row, Col, Input, FormFeedback, FormGroup, Form, Label, Button } from 'reactstrap';
+import { Container, Row, Col, Input, FormFeedback, FormGroup, Form, Label, Button, TabPane, TabContent, NavItem, NavLink, Nav } from 'reactstrap';
 import Image from 'react-bootstrap/Image';
 import ToggleSwitch from '../UserProfileEdit/ToggleSwitch';
 import './UserProfileAdd.scss';
 import { createUser } from '../../../services/userProfileService';
 import { toast } from 'react-toastify';
+import TeamsTab from '../TeamsAndProjects/TeamsTab';
+import ProjectsTab from '../TeamsAndProjects/ProjectsTab';
+import { connect } from 'react-redux';
+import _ from 'lodash';
+import { getUserProfile, updateUserProfile, clearUserProfile } from '../../../actions/userProfile';
+import {
+  getAllUserTeams,
+  updateTeam,
+  deleteTeamMember,
+  addTeamMember,
+} from '../../../actions/allTeamsAction';
+
+import classnames from 'classnames';
 
 class AddUserProfile extends Component {
   constructor(props) {
     super(props)
     this.state = {
       weeklyComittedHours: 10,
+      teams: [],
+      projects: [],
+      activeTab: "1",
+      userProfile: {
+        weeklyComittedHours: 10,
+        role: 'Administrator'
+      },
       formValid: {
 
       }
@@ -23,26 +43,6 @@ class AddUserProfile extends Component {
     return <StickyContainer>
       <Container className="emp-profile">
         <Row>
-          {/* <Col md="4" id="profileContainer">
-            <div className="profile-img">
-              <Image
-                src={this.state.profilePic || '/defaultprofilepic.png'}
-                alt="Profile Picture"
-                roundedCircle
-                className="profilePicture"
-              />
-              <div className="file btn btn-lg btn-primary">
-                Upload Photo
-              <Input
-                  type="file"
-                  name="newProfilePic"
-                  id="newProfilePic"
-                  onChange={this.handleImageUpload}
-                  accept="image/png,image/jpeg, image/jpg"
-                />
-              </div>
-            </div>
-          </Col> */}
           <Col md="12">
             <Form>
               <Row>
@@ -85,12 +85,6 @@ class AddUserProfile extends Component {
                 </Col>
                 <Col md="6">
                   <FormGroup>
-                    {/* <ToggleSwitch
-                      switchType="email"
-                      state={email}
-                      handleUserProfile={this.handleUserProfile}
-                    /> */}
-
                     <Input
                       type="email"
                       name="email"
@@ -110,12 +104,6 @@ class AddUserProfile extends Component {
                 </Col>
                 <Col md="6">
                   <FormGroup>
-                    {/* <ToggleSwitch
-                      switchType="phone"
-                      state={phoneNumber}
-                      handleUserProfile={this.handleUserProfile}
-                    /> */}
-
                     <Input
                       type="number"
                       name="phoneNumber"
@@ -161,6 +149,62 @@ class AddUserProfile extends Component {
           </Col>
         </Row>
         <Row>
+          <Col md="12">
+            <div className="profile-tabs">
+              <Nav tabs>
+                <NavItem>
+                  <NavLink
+                    className={classnames({ active: this.state.activeTab === '1' }, 'nav-link')}
+                    onClick={() => {
+                      this.toggleTab('1');
+                    }}
+                  >
+                    Team
+                      </NavLink>
+                </NavItem>
+                <NavItem>
+                  <NavLink
+                    className={classnames({ active: this.state.activeTab === '2' }, 'nav-link')}
+                    onClick={() => {
+                      this.toggleTab('2');
+                    }}
+                  >
+                    Project
+                      </NavLink>
+                </NavItem>
+              </Nav>
+            </div>
+            <TabContent
+              activeTab={this.state.activeTab}
+              className="tab-content profile-tab"
+              id="myTabContent"
+              style={{ border: 0 }}
+            >
+              <TabPane tabId="1">
+                <TeamsTab
+                  userTeams={this.state.teams}
+                  teamsData={this.props ? this.props.allTeams.allTeamsData : []}
+                  onAssignTeam={this.onAssignTeam}
+                  onDeleteteam={this.onDeleteTeam}
+                  isUserAdmin={true}
+                  edit
+                />
+              </TabPane>
+              <TabPane tabId="2">
+                <ProjectsTab
+                  userProjects={this.state.projects}
+                  projectsData={this.props ? this.props.allProjects.projects : []}
+                  onAssignProject={this.onAssignProject}
+                  onDeleteProject={this.onDeleteProject}
+                  isUserAdmin={true}
+                  edit
+                />
+
+              </TabPane>
+            </TabContent>
+          </Col>
+        </Row>
+        <Row>
           <Col>
           </Col>
           <Col>
@@ -171,9 +215,47 @@ class AddUserProfile extends Component {
     </StickyContainer>
   }
 
+  onDeleteTeam = (deletedTeamId) => {
+    const teams = [...this.state.teams]
+    const filteredTeam = teams.filter(team => team._id !== deletedTeamId);
+
+    this.setState({
+      teams: filteredTeam,
+    });
+  }
+
+  onDeleteProject = (deletedProjectId) => {
+    const projects = [...this.state.projects]
+    const _projects = projects.filter(project => project._id !== deletedProjectId);
+    this.setState({
+      projects: _projects,
+    });
+  }
+
+  onAssignTeam = (assignedTeam) => {
+    const teams = [...this.state.teams]
+    teams.push(assignedTeam);
+
+    this.setState({
+      teams: teams,
+    });
+  }
+
+  onAssignProject = (assignedProject) => {
+    const projects = [...this.state.projects]
+    projects.push(assignedProject);
+
+    this.setState({
+      projects: projects,
+    });
+  }
+
+
   createUserProfile = () => {
-    const { firstName, email, lastName, phoneNumber, weeklyComittedHours, role } = this.state;
-    let postData = {
+    let that = this;
+    const { firstName, email, lastName, phoneNumber, role } = that.state.userProfile;
+
+    const userData = {
       password: "Welcome123!",
       role: role,
       firstName: firstName,
@@ -181,16 +263,16 @@ class AddUserProfile extends Component {
       jobTitle: "",
       phoneNumber: phoneNumber,
       bio: "bio",
-      weeklyComittedHours: weeklyComittedHours,
+      weeklyComittedHours: that.state.weeklyComittedHours,
       personalLinks: [],
       adminLinks: [],
-      teams: [],
-      projects: [],
+      teams: this.state.teams,
+      projects: this.state.projects,
       email: email
     }
-    let that = this;
-    createUser(postData).then(res => {
-      that.props.hitsory.push('userprofile/' + res.data._id)
+
+    createUser(userData).then(res => {
+      toast.success("User profile created.");
     }).catch(err => {
       toast.error(err.response.data.message)
     })
@@ -222,7 +304,7 @@ class AddUserProfile extends Component {
     // console.log(filesizeKB);
 
     if (filesizeKB > 50) {
-      imageUploadError = `\nThe file you are trying to upload exceeds the maximum size of 50KB. You can either 
+      imageUploadError = `\n The file you are trying to upload exceeds the maximum size of 50KB. You can either 
 														choose a different file, or use an online file compressor.`;
       isValid = false;
 
@@ -250,6 +332,14 @@ class AddUserProfile extends Component {
       });
     };
   }
+
+  toggleTab = (tab) => {
+    if (this.state.activeTab !== tab) {
+      this.setState({
+        activeTab: tab,
+      });
+    }
+  };
 
   handleUserProfile = (event) => {
     this.setState({
@@ -321,36 +411,6 @@ class AddUserProfile extends Component {
           },
         });
         break;
-      case 'phonePubliclyAccessible':
-        this.setState({
-          userProfile: {
-            ...userProfile,
-            privacySettings: {
-              ...userProfile.privacySettings,
-              phoneNumber: !userProfile.privacySettings?.phoneNumber,
-            },
-          },
-        });
-        break;
-      case 'blueSquaresPubliclyAccessible':
-        this.setState({
-          userProfile: {
-            ...userProfile,
-            privacySettings: {
-              ...userProfile.privacySettings,
-              blueSquares: !userProfile.privacySettings?.blueSquares,
-            },
-          },
-        });
-        break;
-      case 'totalComittedHours':
-        this.setState({
-          userProfile: {
-            ...userProfile,
-            totalComittedHours: event.target.value,
-          },
-        });
-        break;
       case 'weeklyComittedHours':
         this.setState({
           userProfile: {
@@ -375,4 +435,21 @@ class AddUserProfile extends Component {
   };
 }
 
-export default AddUserProfile;
+const mapStateToProps = state => ({
+  auth: state.auth,
+  userProjects: state.userProjects,
+  allProjects: _.get(state, 'allProjects'),
+  allTeams: state,
+  state,
+});
+
+export default connect(mapStateToProps, {
+  getUserProfile,
+  clearUserProfile,
+  updateUserProfile,
+  getAllUserTeams,
+  updateTeam,
+  deleteTeamMember,
+  addTeamMember,
+
+})(AddUserProfile);
