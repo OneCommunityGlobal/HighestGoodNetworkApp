@@ -20,18 +20,17 @@ const LinkModButton = (props) => {
         userProfile={userProfile}
         isUserAdmin={isUserAdmin}
       />
-      <button
-        type="button"
-        className="modLinkButton"
-        data-testid="edit-link"
-        onClick={() => {
-          toggleModal();
+      <span
+        style={{
+          textDecoration: 'underline', color: 'grey', fontSize: '11pt', fontWeight: 600,
         }}
+        role="button"
+        type="button"
+        onClick={toggleModal}
+        href="#"
       >
-        <i className="fa fa-wrench fa-lg" aria-hidden="true">
-          {' '}
-        </i>
-      </button>
+        Edit
+      </span>
     </React.Fragment>
   );
 };
