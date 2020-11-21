@@ -13,6 +13,7 @@ import { Link } from 'react-router-dom'
 import { NavItem, Button } from 'reactstrap'
 import './wbs.css';
 import ReactTooltip from 'react-tooltip'
+import { UserRole } from './../../../../utils/enums';
 
 const WBSTasks = (props) => {
 
@@ -116,8 +117,6 @@ const WBSTasks = (props) => {
   }
 
 
-
-
   return (
     <React.Fragment>
       <ReactTooltip />
@@ -138,8 +137,10 @@ const WBSTasks = (props) => {
 
           </ol>
         </nav>
+        {props.state.userProfile.role === UserRole.Administrator ?
+          <AddTaskModal key="task_modal_null" parentNum={null} taskId={null} wbsId={wbsId} projectId={projectId} />
+          : null}
 
-        <AddTaskModal key="task_modal_null" parentNum={null} taskId={null} wbsId={wbsId} projectId={projectId} />
         {props.state.tasks.taskItems.length === 0 ?
           <ImportTask wbsId={wbsId} projectId={projectId} />
           : null}

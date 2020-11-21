@@ -11,6 +11,8 @@ import EditTaskModal from "../EditTask/EditTaskModal";
 import { moveTasks, fetchAllTasks, deleteTask } from "../../../../../actions/task.js";
 import './tagcolor.css';
 import './task.css';
+import { Editor } from '@tinymce/tinymce-react'
+import { UserRole } from './../../../../../utils/enums';
 
 const Task = (props) => {
 
@@ -271,36 +273,77 @@ const Task = (props) => {
 
       <tr className='wbsTaskController desktop-view' id={`controller_${props.id}`}>
         <td colSpan={15} className='controlTd'>
-          <AddTaskModal key={`addTask_${props.id}`} parentNum={props.num} taskId={props.id} projectId={props.projectId} wbsId={props.wbsId} parentId1={props.parentId1} parentId2={props.parentId2} parentId3={props.parentId3} mother={props.mother} level={props.level} openChild={(e) => openChild(props.num, props.id)} />
+          {props.state.userProfile.role === UserRole.Administrator ?
+            <AddTaskModal key={`addTask_${props.id}`} parentNum={props.num} taskId={props.id} projectId={props.projectId} wbsId={props.wbsId} parentId1={props.parentId1} parentId2={props.parentId2} parentId3={props.parentId3} mother={props.mother} level={props.level} openChild={(e) => openChild(props.num, props.id)} />
+            : null}
           <EditTaskModal key={`editTask_${props.id}`} parentNum={props.num} taskId={props.id} projectId={props.projectId} wbsId={props.wbsId} parentId1={props.parentId1} parentId2={props.parentId2} parentId3={props.parentId3} mother={props.mother} level={props.level} />
+          {props.state.userProfile.role === UserRole.Administrator ?
+            <>
+              <Button color="danger" size="sm" className='controlBtn controlBtn_remove' onClick={() => deleteTask(props.id, props.mother)}>Remove</Button>
 
-          <Button color="danger" size="sm" className='controlBtn controlBtn_remove' onClick={() => deleteTask(props.id, props.mother)}>Remove</Button>
-
-          <Dropdown direction="up" isOpen={dropdownOpen} toggle={toggle} style={{ float: "left" }}>
-            <DropdownToggle caret caret color="primary" size="sm" >
-              Move to
+              <Dropdown direction="up" isOpen={dropdownOpen} toggle={toggle} style={{ float: "left" }}>
+                <DropdownToggle caret caret color="primary" size="sm" >
+                  Move to
                 </DropdownToggle>
-            <DropdownMenu >
-              {props.siblings.map((item, i) => {
-                if (item.num !== props.num) {
-                  return (
-                    <DropdownItem key={i} onClick={(e) => onMove(props.num, item.num)}>{item.num.split('.0')[0]}</DropdownItem>
-                  )
-                } else {
-                  passCurrentNum = true;
-                }
-              })}
-            </DropdownMenu>
-          </Dropdown>
+                <DropdownMenu >
+                  {props.siblings.map((item, i) => {
+                    if (item.num !== props.num) {
+                      return (
+                        <DropdownItem key={i} onClick={(e) => onMove(props.num, item.num)}>{item.num.split('.0')[0]}</DropdownItem>
+                      )
+                    } else {
+                      passCurrentNum = true;
+                    }
+                  })}
+                </DropdownMenu>
+              </Dropdown>
+            </>
+            : null}
 
           <Modal isOpen={modal} toggle={toggleModel}>
             <ModalBody>
               <h6>WHY THIS TASK IS IMPORTANT:</h6>
-              {props.whyInfo.split('-').map((item, index) => item !== '' ? <div key={index}>-{item}</div> : null)}<br />
+              <Editor
+                init={{
+                  menubar: false,
+                  toolbar: false,
+                  branding: false,
+                  min_height: 80,
+                  max_height: 300,
+                  autoresize_bottom_margin: 1,
+                }}
+                disabled={true}
+                value={props.whyInfo}
+              />
+
+
               <h6>THE DESIGN INTENT:</h6>
-              {props.intentInfo.split('-').map((item, index) => item !== '' ? <div key={index}>-{item}</div> : null)}<br />
+              <Editor
+                init={{
+                  menubar: false,
+                  toolbar: false,
+                  branding: false,
+                  min_height: 80,
+                  max_height: 300,
+                  autoresize_bottom_margin: 1,
+                }}
+                disabled={true}
+                value={props.intentInfo}
+              />
+
               <h6>ENDSTATE:</h6>
-              {props.endstateInfo.split('-').map((item, index) => item !== '' ? <div key={index}>-{item}</div> : null)}
+              <Editor
+                init={{
+                  menubar: false,
+                  toolbar: false,
+                  branding: false,
+                  min_height: 80,
+                  max_height: 300,
+                  autoresize_bottom_margin: 1,
+                }}
+                disabled={true}
+                value={props.endstateInfo}
+              />
             </ModalBody>
           </Modal>
 

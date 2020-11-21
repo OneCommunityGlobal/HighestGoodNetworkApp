@@ -8,6 +8,7 @@ import { DUE_DATE_MUST_GREATER_THAN_START_DATE } from './../../../../../language
 import DayPickerInput from 'react-day-picker/DayPickerInput'
 import 'react-day-picker/lib/style.css'
 import dateFnsFormat from 'date-fns/format'
+import { Editor } from '@tinymce/tinymce-react'
 
 const AddTaskModal = props => {
   const tasks = props.tasks.taskItems
@@ -471,36 +472,7 @@ const AddTaskModal = props => {
                   />
                 </td>
               </tr>
-              <tr>
-                <td scope="col">Start Date</td>
-                <td scope="col">
-                  <div>
-                    <DayPickerInput
-                      format={FORMAT}
-                      formatDate={formatDate}
-                      placeholder={`${dateFnsFormat(new Date(), FORMAT)}`}
-                      onDayChange={(day, mod, input) => changeDateStart(input.state.value)}
-                    />
-                    <div className="warning">
-                      {dateWarning ? DUE_DATE_MUST_GREATER_THAN_START_DATE : ''}
-                    </div>
-                  </div>
-                </td>
-              </tr>
-              <tr>
-                <td scope="col">End Date</td>
-                <td scope="col">
-                  <DayPickerInput
-                    format={FORMAT}
-                    formatDate={formatDate}
-                    placeholder={`${dateFnsFormat(new Date(), FORMAT)}`}
-                    onDayChange={(day, mod, input) => changeDateEnd(input.state.value)}
-                  />
-                  <div className="warning">
-                    {dateWarning ? DUE_DATE_MUST_GREATER_THAN_START_DATE : ''}
-                  </div>
-                </td>
-              </tr>
+
               <tr>
                 <td scope="col">Links</td>
                 <td scope="col">
@@ -539,42 +511,111 @@ const AddTaskModal = props => {
                 </td>
               </tr>
               <tr>
-                <td scope="col">Why this Task is Important</td>
-                <td scope="col">
-                  <textarea
-                    rows="4"
+                <td scope="col" colSpan="2">Why this Task is Important
+                  <Editor
+                    init={{
+                      menubar: false,
+                      plugins:
+                        'advlist autolink autoresize lists link charmap table paste help',
+                      toolbar:
+                        'bold italic  underline numlist   |  removeformat link bullist  outdent indent |\
+                                        styleselect fontsizeselect | table| strikethrough forecolor backcolor |\
+                                        subscript superscript charmap  | help',
+                      branding: false,
+                      min_height: 180,
+                      max_height: 300,
+                      autoresize_bottom_margin: 1,
+                    }}
                     name="why-info"
                     className="why-info"
-                    onChange={e => setWhyInfo(e.target.value)}
-                    onKeyPress={e => setWhyInfo(e.target.value)}
+                    className="form-control"
                     value={whyInfo}
-                  ></textarea>
+                    onEditorChange={content => setWhyInfo(content)}
+
+                  />
                 </td>
               </tr>
               <tr>
-                <td scope="col">Design Intent</td>
-                <td scope="col">
-                  <textarea
-                    rows="4"
+                <td scope="col" colSpan="2">Design Intent
+                <Editor
+                    init={{
+                      menubar: false,
+                      plugins:
+                        'advlist autolink autoresize lists link charmap table paste help',
+                      toolbar:
+                        'bold italic  underline numlist   |  removeformat link bullist  outdent indent |\
+                                        styleselect fontsizeselect | table| strikethrough forecolor backcolor |\
+                                        subscript superscript charmap  | help',
+                      branding: false,
+                      min_height: 180,
+                      max_height: 300,
+                      autoresize_bottom_margin: 1,
+                    }}
                     name="intent-info"
                     className="intent-info"
-                    onChange={e => setIntentInfo(e.target.value)}
-                    onKeyPress={e => setIntentInfo(e.target.value)}
+                    className="form-control"
                     value={intentInfo}
-                  ></textarea>
+                    onEditorChange={content => setIntentInfo(content)}
+
+                  />
+
                 </td>
               </tr>
               <tr>
-                <td scope="col">Endstate</td>
-                <td scope="col">
-                  <textarea
-                    rows="4"
+                <td scope="col" colSpan="2">Endstate
+
+                <Editor
+                    init={{
+                      menubar: false,
+                      plugins:
+                        'advlist autolink autoresize lists link charmap table paste help',
+                      toolbar:
+                        'bold italic  underline numlist   |  removeformat link bullist  outdent indent |\
+                                        styleselect fontsizeselect | table| strikethrough forecolor backcolor |\
+                                        subscript superscript charmap  | help',
+                      branding: false,
+                      min_height: 180,
+                      max_height: 300,
+                      autoresize_bottom_margin: 1,
+                    }}
                     name="endstate-info"
                     className="endstate-info"
-                    onChange={e => setEndstateInfo(e.target.value)}
-                    onKeyPress={e => setEndstateInfo(e.target.value)}
+                    className="form-control"
                     value={endstateInfo}
-                  ></textarea>
+                    onEditorChange={content => setEndstateInfo(content)}
+
+                  />
+
+                </td>
+              </tr>
+              <tr>
+                <td scope="col">Start Date</td>
+                <td scope="col">
+                  <div>
+                    <DayPickerInput
+                      format={FORMAT}
+                      formatDate={formatDate}
+                      placeholder={`${dateFnsFormat(new Date(), FORMAT)}`}
+                      onDayChange={(day, mod, input) => changeDateStart(input.state.value)}
+                    />
+                    <div className="warning">
+                      {dateWarning ? DUE_DATE_MUST_GREATER_THAN_START_DATE : ''}
+                    </div>
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td scope="col">End Date</td>
+                <td scope="col">
+                  <DayPickerInput
+                    format={FORMAT}
+                    formatDate={formatDate}
+                    placeholder={`${dateFnsFormat(new Date(), FORMAT)}`}
+                    onDayChange={(day, mod, input) => changeDateEnd(input.state.value)}
+                  />
+                  <div className="warning">
+                    {dateWarning ? DUE_DATE_MUST_GREATER_THAN_START_DATE : ''}
+                  </div>
                 </td>
               </tr>
             </tbody>

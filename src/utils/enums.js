@@ -10,7 +10,7 @@ export const UserStatus = {
  * Enum representing the different roles of a user
  */
 export const UserRole = {
-  Administrator: "Administrator",
+  Administrator: "Administratorsss",
   Volunteer: "Volunteer",
   Manager: "Manager",
   CoreTeam: "Core Team"
