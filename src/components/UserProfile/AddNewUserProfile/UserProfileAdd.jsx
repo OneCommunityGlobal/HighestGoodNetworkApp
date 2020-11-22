@@ -125,7 +125,7 @@ class AddUserProfile extends Component {
                       type="number"
                       name="weeklyComittedHours"
                       id="weeklyComittedHours"
-                      value={weeklyComittedHours}
+                      value={this.state.userProfile.weeklyComittedHours}
                       onChange={this.handleUserProfile}
                       placeholder="Weekly Comitted Hours"
                     />
@@ -265,7 +265,7 @@ class AddUserProfile extends Component {
       jobTitle: "",
       phoneNumber: phoneNumber,
       bio: "bio",
-      weeklyComittedHours: that.state.weeklyComittedHours,
+      weeklyComittedHours: that.state.userProfile.weeklyComittedHours,
       personalLinks: [],
       adminLinks: [],
       teams: this.state.teams,
