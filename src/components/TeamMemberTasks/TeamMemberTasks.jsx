@@ -1,22 +1,11 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { Link } from 'react-router-dom'
-import {
-  Table,
-  Button,
-  Modal,
-  ModalHeader,
-  ModalBody,
-  ModalFooter,
-  Popover,
-  PopoverHeader,
-  PopoverBody,
-} from 'reactstrap'
+import { Table, Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap'
 import moment from 'moment'
 import _ from 'lodash'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faClock, faCircle, faBell } from '@fortawesome/free-solid-svg-icons'
-import * as Diff from 'diff'
 
 import './style.css'
 import httpService from '../../services/httpService'
@@ -79,14 +68,12 @@ class TeamMemberTasks extends Component {
   }
 
   handleOpenTaskNotificationModal = taskNotifications => {
-    console.log('task notifications...', taskNotifications)
     this.setState(
       {
         ...this.state,
         currentTaskNotifications: taskNotifications,
       },
       () => {
-        console.log('state current notifications', this.state.currentTaskNotifications)
         this.toggleTaskNotificationModal()
       },
     )
@@ -232,21 +219,20 @@ class TeamMemberTasks extends Component {
                 }
               }
 
-              console.log('userNotifications ', userNotifications)
+              // sort each members' tasks by last modified time
+              finalData.forEach(user => {
+                user.tasks.sort((task1, task2) => {
+                  const date1 = new Date(task1.modifiedDatetime).valueOf()
+                  const date2 = new Date(task2.modifiedDatetime).valueOf()
+                  const timeDifference = date2 - date1
+                  return timeDifference
+                })
+              })
+
               console.log('final data ', finalData)
 
               this.setState({ fetched: true, teams: finalData })
             })
-
-            // // sort each members' tasks by last modified time
-            // finalData.forEach(user => {
-            //   user.tasks.sort((task1, task2) => {
-            //     const date1 = new Date(task1.modifiedDatetime).valueOf()
-            //     const date2 = new Date(task2.modifiedDatetime).valueOf()
-            //     const timeDifference = date1 - date2
-            //     return timeDifference
-            //   })
-            // })
           })
         })
       })
@@ -276,7 +262,7 @@ class TeamMemberTasks extends Component {
           <td>
             {member.tasks &&
               member.tasks.map((task, index) => (
-                <p>
+                <p key={`${task._id}${index}`}>
                   <Link
                     key={index}
                     to={task.projectId ? `/wbs/tasks/${task.wbsId}/${task.projectId}` : '/'}
@@ -320,36 +306,66 @@ class TeamMemberTasks extends Component {
               <ModalBody>
                 {this.state.currentTaskNotifications.length > 0
                   ? this.state.currentTaskNotifications.map((notification, index) => (
-                      <>
+                      <React.Fragment key={notification.id}>
                         <h4>{`${notification.taskNum} ${notification.taskName}`}</h4>
-                        <p>
-                          {notification.oldTaskInfos.oldWhyInfo ? 'Why Info: ' : null}
-                          {notification.oldTaskInfos.oldWhyInfo ? (
-                            <DiffedText
-                              oldText={notification.oldTaskInfos.oldWhyInfo}
-                              newText={notification.newTaskInfos.newWhyInfo}
-                            />
-                          ) : null}
-                        </p>
-                        <p>
-                          {notification.oldTaskInfos.oldIntentInfo ? 'Intent Info: ' : null}
-                          {notification.oldTaskInfos.oldIntentInfo ? (
-                            <DiffedText
-                              oldText={notification.oldTaskInfos.oldIntentInfo}
-                              newText={notification.newTaskInfos.newIntentInfo}
-                            />
-                          ) : null}
-                        </p>
-                        <p>
-                          {notification.oldTaskInfos.oldEndstateInfo ? 'Endstate Info: ' : null}
-                          {notification.oldTaskInfos.oldEndstateInfo ? (
-                            <DiffedText
-                              oldText={notification.oldTaskInfos.oldEndstateInfo}
-                              newText={notification.newTaskInfos.newEndstateInfo}
-                            />
-                          ) : null}
-                        </p>
-                      </>
+                        <Table striped>
+                          <thead>
+                            <tr>
+                              <th></th>
+                              <th>Previous</th>
+                              <th>New</th>
+                              <th>Difference</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {notification.oldTaskInfos.oldWhyInfo ? (
+                              <tr>
+                                <th>Why Task is Important</th>
+                                <td>{notification.oldTaskInfos.oldWhyInfo}</td>
+                                <td>{notification.newTaskInfos.newWhyInfo}</td>
+                                <td>
+                                  {
+                                    <DiffedText
+                                      oldText={notification.oldTaskInfos.oldWhyInfo}
+                                      newText={notification.newTaskInfos.newWhyInfo}
+                                    />
+                                  }
+                                </td>
+                              </tr>
+                            ) : null}
+                            {notification.oldTaskInfos.oldIntentInfo ? (
+                              <tr>
+                                <th>Intent of Task</th>
+                                <td>{notification.oldTaskInfos.oldIntentInfo}</td>
+                                <td>{notification.newTaskInfos.newIntentInfo}</td>
+                                <td>
+                                  {
+                                    <DiffedText
+                                      oldText={notification.oldTaskInfos.oldIntentInfo}
+                                      newText={notification.newTaskInfos.newIntentInfo}
+                                    />
+                                  }
+                                </td>
+                              </tr>
+                            ) : null}
+                            {notification.oldTaskInfos.oldEndstateInfo ? (
+                              <tr>
+                                <th>Task Endstate</th>
+                                <td>{notification.oldTaskInfos.oldEndstateInfo}</td>
+                                <td>{notification.newTaskInfos.newEndstateInfo}</td>
+                                <td>
+                                  {
+                                    <DiffedText
+                                      oldText={notification.oldTaskInfos.oldEndstateInfo}
+                                      newText={notification.newTaskInfos.newEndstateInfo}
+                                    />
+                                  }
+                                </td>
+                              </tr>
+                            ) : null}
+                          </tbody>
+                        </Table>
+                      </React.Fragment>
                     ))
                   : null}
               </ModalBody>
