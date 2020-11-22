@@ -18,16 +18,15 @@ const ForgotPassword = React.memo(() => {
     } else if (firstName === '' || lastName === '') {
       setMessage({ success: false, msg: 'Please enter your full name.' });
     } else {
-      // const forgotPasswordData = { emailId: email, firstname: firstName, lastname: lastName };
-      // forgotPassword(forgotPasswordData).then(() => {
-      // setMessage({ success: true, msg: 'A new password has been sent to your email id. You will now redirected to login page.' });
-      toast('A new password has been sent to your email id. Please login using new password.');
-      setTimeout(() => {
-        history.push('/login');
-      }, 1000);
-      // }).catch(() => {
-      //   setMessage({ success: false, msg: 'Something went wrong ! Please try again' });
-      // });
+      const forgotPasswordData = { emailId: email, firstname: firstName, lastname: lastName };
+      forgotPassword(forgotPasswordData).then(() => {
+        toast.success('A new password has been sent to your email id. Please login using new password.');
+        setTimeout(() => {
+          history.push('/login');
+        }, 1000);
+      }).catch(() => {
+        toast.error('Something went wrong ! Please try again');
+      });
     }
   };
 

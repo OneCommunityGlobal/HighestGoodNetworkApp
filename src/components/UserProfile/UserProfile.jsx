@@ -229,7 +229,6 @@ class UserProfile extends Component {
   };
 
   render() {
-    debugger;
     const {
       userProfile,
       linkType,
@@ -241,11 +240,6 @@ class UserProfile extends Component {
       modalMessage,
       modalTitle,
     } = this.state;
-    // debugger;
-    // const { userProfile, isLoading, error, showModal } = this.state;
-    // let { allTeams } = this.props.allTeams.allTeamsData;
-    // let { projects } = this.props.allProjects.projects;
-    // console.log(projects);
 
     const {
       firstName,
@@ -260,8 +254,6 @@ class UserProfile extends Component {
       privacySettings,
       teams,
     } = userProfile;
-
-    // console.log('user profile:', userProfile.teams);
 
     if (isLoading && !this.props.isAddNewUser) {
       return (
@@ -284,7 +276,6 @@ class UserProfile extends Component {
     const canEdit = isUserAdmin || isUserSelf;
     const weeklyHoursReducer = (acc, val) => acc + (parseInt(val.hours, 10) + parseInt(val.minutes, 10) / 60);
     // (parseInt(a.minutes, 10) + parseInt(b.minutes, 10)) / 60;
-    debugger;
     return (
       <div>
         {showModal && (

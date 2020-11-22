@@ -60,7 +60,7 @@ class AddUserProfile extends Component {
                       placeholder="First Name"
                       invalid={!this.state.formValid.firstName}
                     />
-                    <FormFeedback>First Name Can't be null</FormFeedback>
+                    <FormFeedback>First Name Can't be empty.</FormFeedback>
                   </FormGroup>
                 </Col>
                 <Col md="3">
@@ -75,7 +75,7 @@ class AddUserProfile extends Component {
                       placeholder="Last Name"
                       invalid={!this.state.formValid.lastName}
                     />
-                    <FormFeedback>Last Name Can't be Null</FormFeedback>
+                    <FormFeedback>Last Name Can't be empty.</FormFeedback>
                   </FormGroup>
                 </Col>
               </Row>
@@ -138,9 +138,11 @@ class AddUserProfile extends Component {
                 </Col>
                 <Col md="6">
                   <FormGroup>
-                    <select value={role} onChange={this.handleUserProfile} id="role" name="role">
-                      <option value={"Administrator"}>Administrator</option>
-                      <option value={"Volunteer"}>Volunteer</option>
+                    <select value={role} onChange={this.handleUserProfile} id="role" name="role" className="form-control">
+                      <option value="Administrator">Administrator</option>
+                      <option value="Volunteer">Volunteer</option>
+                      <option value="Manager">Manager</option>
+                      <option value="Core Team">Core Team</option>
                     </select>
                   </FormGroup>
                 </Col>
@@ -273,6 +275,7 @@ class AddUserProfile extends Component {
 
     createUser(userData).then(res => {
       toast.success("User profile created.");
+      this.props.userCreated();
     }).catch(err => {
       toast.error(err.response.data.message)
     })
