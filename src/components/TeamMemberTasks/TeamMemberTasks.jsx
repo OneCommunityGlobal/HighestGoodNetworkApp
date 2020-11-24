@@ -295,10 +295,11 @@ class TeamMemberTasks extends Component {
         <div className="container team-member-tasks">
           {fetching || !fetched ? <Loading /> : null}
           <h1>Team Member Tasks</h1>
-          <div>
+          <div class="row">
             <Modal
               isOpen={this.state.taskNotificationModal}
               toggle={this.handleOpenTaskNotificationModal}
+              size="xl"
             >
               <ModalHeader toggle={this.handleOpenTaskNotificationModal}>
                 Task Info Changes
@@ -318,7 +319,8 @@ class TeamMemberTasks extends Component {
                             </tr>
                           </thead>
                           <tbody>
-                            {notification.oldTaskInfos.oldWhyInfo ? (
+                            {notification.oldTaskInfos.oldWhyInfo !==
+                            notification.newTaskInfos.newWhyInfo ? (
                               <tr>
                                 <th>Why Task is Important</th>
                                 <td>{notification.oldTaskInfos.oldWhyInfo}</td>
@@ -333,7 +335,8 @@ class TeamMemberTasks extends Component {
                                 </td>
                               </tr>
                             ) : null}
-                            {notification.oldTaskInfos.oldIntentInfo ? (
+                            {notification.oldTaskInfos.oldIntentInfo !==
+                            notification.newTaskInfos.newIntentInfo ? (
                               <tr>
                                 <th>Intent of Task</th>
                                 <td>{notification.oldTaskInfos.oldIntentInfo}</td>
@@ -348,7 +351,8 @@ class TeamMemberTasks extends Component {
                                 </td>
                               </tr>
                             ) : null}
-                            {notification.oldTaskInfos.oldEndstateInfo ? (
+                            {notification.oldTaskInfos.oldEndstateInfo !==
+                            notification.newTaskInfos.newEndstateInfo ? (
                               <tr>
                                 <th>Task Endstate</th>
                                 <td>{notification.oldTaskInfos.oldEndstateInfo}</td>
