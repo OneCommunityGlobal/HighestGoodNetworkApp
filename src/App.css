@@ -47,9 +47,24 @@ background-color: black;
 }
 
 
-
 .hgn-leaderboard
 {
 /*background-color:#FFCCBC */
 background-color: black
+}
+
+.bg-super {
+  background-color:#0000CD !important; /* medium blue #0000CD*/
+}
+
+.bg-awesome {
+  background-color: #990099 !important; /*  violet */
+}
+
+.bg-super-awesome {
+  background-color: #660099 !important; /*  purple */
+}
+
+.bg-orange {
+  background-color: #FFA500 !important; /*  brighter orange */
 }

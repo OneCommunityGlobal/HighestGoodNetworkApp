@@ -13,41 +13,58 @@ const url = ENDPOINTS.LEADER_BOARD(mockState.auth.user.userid);
 const timerUrl = ENDPOINTS.TIMER(mockState.auth.user.userid);
 const userProjectsUrl = ENDPOINTS.USER_PROJECTS(mockState.auth.user.userid);
 let requestedLeaderBoard = false;
+let refreshed = false;
 
 const server = setupServer( 
   rest.get(url, (req, res, ctx) =>  {
       requestedLeaderBoard = true;
-      return res(ctx.status(200), ctx.json( [
-        {
-          "personId": "abdefghijklmnop",
-          "name": "Fake Admin",
-          "weeklyComittedHours": 10,
-          "totaltime_hrs": 105,
-          "totaltangibletime_hrs": 6,
-          "totalintangibletime_hrs": 99,
-          "percentagespentintangible": 100,
-          "didMeetWeeklyCommitment": false,
-          "weeklycommited": 10,
-          "tangibletime": 6,
-          "intangibletime": 9,
-          "tangibletimewidth": 100,
-          "intangibletimewidth": 0,
-          "tangiblebarcolor": "orange",
-          "totaltime": 15
-        }]), )  
+      if (!refreshed) {
+        return res(ctx.status(200), ctx.json( [
+          {
+            "personId": "abdefghijklmnop",
+            "name": "Fake Admin",
+            "weeklyComittedHours": 10,
+            "totaltime_hrs": 105,
+            "totaltangibletime_hrs": 6,
+            "totalintangibletime_hrs": 99,
+            "percentagespentintangible": 100,
+            "didMeetWeeklyCommitment": false,
+            "weeklycommited": 10,
+            "tangibletime": 6,
+            "intangibletime": 9,
+            "tangibletimewidth": 100,
+            "intangibletimewidth": 0,
+            "tangiblebarcolor": "orange",
+            "totaltime": 15
+          }]), )  
+      } else {
+        return res(ctx.status(200), ctx.json( [
+          {
+            "personId": "abdefghijklmnop",
+            "name": "Fake Admin",
+            "weeklyComittedHours": 10,
+            "totaltime_hrs": 125,
+            "totaltangibletime_hrs": 60,
+            "totalintangibletime_hrs": 99,
+            "percentagespentintangible": 100,
+            "didMeetWeeklyCommitment": false,
+            "weeklycommited": 10,
+            "tangibletime": 60,
+            "intangibletime": 9,
+            "tangibletimewidth": 100,
+            "intangibletimewidth": 0,
+            "tangiblebarcolor": "orange",
+            "totaltime": 15
+          }]), )  
+      }
+
   }),
   rest.get('http://localhost:4500/api/userprofile/*', (req, res, ctx) =>  {
     return res(ctx.status(200), ctx.json({}), )  
   }),
   rest.get(userProjectsUrl, (req, res, ctx) =>  {
     return res(ctx.status(200), ctx.json(
-      [
-        {
-          "isActive": true,
-          "_id": "5ad91ec3590b19002acfcd26",
-          "projectName": "HG Fake Project"
-        }
-      ]
+      []
     ));
   }),
   rest.get(timerUrl, (req, res, ctx) =>  {
@@ -85,9 +102,9 @@ describe('Leaderboard structure', () => {
       await waitFor(()=>{
         expect(screen.getByText('Status')).toBeTruthy();
         expect(screen.getByText('Name')).toBeTruthy();
-        expect(screen.getByText('intangibletime')).toBeTruthy();
+        expect(screen.getByText('Tangible Time')).toBeTruthy();
         expect(screen.getByText('Progress')).toBeTruthy();
-        expect(screen.getByText('totaltime')).toBeTruthy();
+        expect(screen.getByText('Total Time')).toBeTruthy();
       });
 
       await sleep(20);
@@ -99,15 +116,46 @@ describe('Leaderboard structure', () => {
       await waitFor(()=>{
         expect(requestedLeaderBoard).toBe(true);
       });
-
+      await sleep(20);
       //Check for name, intangible and total time created by our MSW Server to have been loaded onto the page
       await waitFor(()=>{
         let nameLink = screen.getByText('Fake Admin');
         expect(nameLink).toBeTruthy();
         expect(nameLink.getAttribute('href')).toBe('/userprofile/abdefghijklmnop');
-        expect(screen.getByText('99')).toBeTruthy();
+        expect(screen.getAllByText('6')[1]).toBeTruthy();
         expect(screen.getByText('105')).toBeTruthy();
       });
+
+      await sleep(20);
+
+    });
+
+    it('should have refreshed user data from server and have loaded that data into the leaderboard', async () => {
+      
+      await waitFor(()=>{
+        expect(requestedLeaderBoard).toBe(true);
+      });
+      await sleep(20);
+      //Check for name, intangible and total time created by our MSW Server to have been loaded onto the page
+      await waitFor(()=>{
+        let nameLink = screen.getByText('Fake Admin');
+        expect(nameLink).toBeTruthy();
+        expect(nameLink.getAttribute('href')).toBe('/userprofile/abdefghijklmnop');
+        expect(screen.getAllByText('6')[1]).toBeTruthy();
+        expect(screen.getByText('105')).toBeTruthy();
+      });
+      let refresh = screen.getByTitle('Click to refresh the leaderboard');
+      refreshed = true;
+      fireEvent.click(refresh);
+      //Check for name, intangible and total time created by our MSW Server to have been loaded onto the page
+      await waitFor(()=>{
+        let nameLink = screen.getByText('Fake Admin');
+        expect(nameLink).toBeTruthy();
+        expect(nameLink.getAttribute('href')).toBe('/userprofile/abdefghijklmnop');
+        expect(screen.getAllByText('60')[1]).toBeTruthy();
+        expect(screen.getByText('125')).toBeTruthy();
+      });
+
 
       await sleep(20);
 

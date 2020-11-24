@@ -50,7 +50,7 @@ export const postNewProject = (projectName, isActive) => {
 			status = res.status;
 
 		} catch (err) {
-			console.log("TRY CATCH ERR", err);
+			// console.log("TRY CATCH ERR", err);
 			status = 400;
 		}
 
@@ -83,7 +83,7 @@ export const deleteProject = (projectId) => {
 			const res = await axios.delete(url)
 			status = res.status
 		} catch (err) {
-			console.log("CAN'T DELETE", err)
+			// console.log("CAN'T DELETE", err)
 			status = 400
 		}
 
@@ -109,7 +109,7 @@ export const modifyProject = (type, projectId, projectName, isActive) => {
 			status = res.status;
 
 		} catch (err) {
-			console.log("CAN'T Set active", err);
+			// console.log("CAN'T Set active", err);
 			status = 400;
 		}
 

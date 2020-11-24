@@ -1,8 +1,9 @@
 import httpService from './httpService';
+import { ApiEndpoint } from '../utils/URL';
 
-const ApiEndpoint = `${process.env.REACT_APP_APIENDPOINT}/projects`;
+const ApiUri = `${ApiEndpoint}/projects`;
 
 
 export function getAllProjects() {
-  return httpService.get(`${ApiEndpoint}`);
+  return httpService.get(`${ApiUri}`);
 }
