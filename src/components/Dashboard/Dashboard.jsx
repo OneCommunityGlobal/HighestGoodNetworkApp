@@ -33,10 +33,8 @@ export const Dashboard = () => (
           <h3>Timelog goes here...</h3>
           <div className="py-5 my-5"> </div>
         </div>
-        <div className="p-5 my-2 bg--cadet-blue text-light">
-          <div className="py-3 my-3"> </div>
+        <div className="my-2">
           <TeamMemberTasks />
-          <div className="py-3 my-3"> </div>
         </div>
         <div className="p-5 my-2 bg--dark-sea-green text-light">
           <div className="py-2 my-2"> </div>
