@@ -1,4 +1,4 @@
-import React from 'react'
+import React from 'react';
 import { Container } from 'reactstrap';
 import AddProjectPopup from './AddProjectPopup';
 import AddTeamPopup from './AddTeamPopup';
@@ -7,19 +7,16 @@ import UserTeamsTable from './UserTeamsTable';
 
 
 class UserTeamProjectContainer extends React.PureComponent {
-
   constructor(props) {
     super(props);
     this.state = {
       addTeamPopupOpen: false,
       addProjectPopupOpen: false,
-      renderedOn: 0
-    }
+      renderedOn: 0,
+    };
   }
-  render() {
 
-    debugger;
-    console.log(this.state.selectedAssignTeam)
+  render() {
     return (
       <Container fluid>
         <AddTeamPopup
@@ -34,30 +31,33 @@ class UserTeamProjectContainer extends React.PureComponent {
           onClose={this.onAddProjectPopupClose}
           userProjectsById={this.props.userProjects}
           projects={this.props.projectsData}
-          onSelectAssignProject={this.onSelectAssignProject} />
+          onSelectAssignProject={this.onSelectAssignProject}
+        />
 
-        <div >
-          <div className='row' >
-            <div className='col'>
+        <div>
+          <div className="row">
+            <div className="col">
               <UserTeamsTable
                 userTeamsById={this.props.userTeams}
                 onButtonClick={this.onAddTeamPopupShow}
                 onDeleteClick={this.onSelectDeleteTeam}
                 renderedOn={this.state.renderedOn}
-                isUserAdmin={this.props.isUserAdmin} />
+                isUserAdmin={this.props.isUserAdmin}
+              />
             </div>
-            <div className='col'>
+            <div className="col">
               <UserProjectsTable
                 userProjectsById={this.props.userProjects}
                 onButtonClick={this.onAddProjectPopupShow}
                 onDeleteClicK={this.onSelectDeleteProject}
                 renderedOn={this.state.renderedOn}
-                isUserAdmin={this.props.isUserAdmin} />
+                isUserAdmin={this.props.isUserAdmin}
+              />
             </div>
           </div>
         </div>
       </Container>
-    )
+    );
   }
 
   onSelectDeleteTeam = (teamId) => {
@@ -72,42 +72,41 @@ class UserTeamProjectContainer extends React.PureComponent {
     this.props.onAssignTeam(team);
     this.setState({
       renderedOn: Date.now(),
-      addTeamPopupOpen: false
-    })
+      addTeamPopupOpen: false,
+    });
   }
 
   onSelectAssignProject = (project) => {
     this.props.onAssignProject(project);
     this.setState({
       renderedOn: Date.now(),
-      addProjectPopupOpen: false
-    })
+      addProjectPopupOpen: false,
+    });
   }
 
   onAddProjectPopupShow = () => {
     this.setState({
-      addProjectPopupOpen: true
-    })
+      addProjectPopupOpen: true,
+    });
   }
 
 
   onAddProjectPopupClose = () => {
     this.setState({
-      addProjectPopupOpen: false
-    })
+      addProjectPopupOpen: false,
+    });
   }
 
   onAddTeamPopupShow = () => {
     this.setState({
-      addTeamPopupOpen: true
-    })
+      addTeamPopupOpen: true,
+    });
   }
 
   onAddTeamPopupClose = () => {
     this.setState({
-      addTeamPopupOpen: false
-    })
+      addTeamPopupOpen: false,
+    });
   }
 }
 export default UserTeamProjectContainer;
-
