@@ -44,7 +44,10 @@ class TimelogPage extends Component {
     this.handleInputChange = this.handleInputChange.bind(this);
     this.handleSearch = this.handleSearch.bind(this);
     this.openInfo = this.openInfo.bind(this);
-    
+    this.data = {
+      disabled: this.props.auth.isAdmin ? false : true,
+      isTangible: this.props.auth.isAdmin ? true : false
+    }
   }
 
   initialState = {
@@ -240,6 +243,7 @@ class TimelogPage extends Component {
                     </Modal>
                     <TimeEntryForm
                       userId={userId}
+                      data={this.data}
                       edit={false}
                       toggle={this.toggle}
                       isOpen={this.state.modal}

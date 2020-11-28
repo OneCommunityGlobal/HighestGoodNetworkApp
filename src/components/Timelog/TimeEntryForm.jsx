@@ -34,6 +34,7 @@ const TimeEntryForm = ({ userId, edit, data, isOpen, toggle, timer, userProfile 
     projectId: '',
     notes: '',
     isTangible: data ? data.isTangible : true,
+    
   };
   const initialReminder = {
     notification: false,
@@ -48,7 +49,7 @@ const TimeEntryForm = ({ userId, edit, data, isOpen, toggle, timer, userProfile 
     in: false,
     information: '',
   };
-
+  const isDisabled = data ? data.disabled : false;
   const [inputs, setInputs] = useState(edit ? data : initialState);
   const [errors, setErrors] = useState({});
   const dispatch = useDispatch();
@@ -282,7 +283,7 @@ const TimeEntryForm = ({ userId, edit, data, isOpen, toggle, timer, userProfile 
       totalComittedHours: totalTime,
     };
     await dispatch(updateUserProfile(userProfile._id, updatedUserprofile));
-    // console.log('kkk')
+
     if (fromTimer) {
       if (status === 200) {
         const timerStatus = await dispatch(stopTimer(userId));
@@ -475,7 +476,7 @@ const TimeEntryForm = ({ userId, edit, data, isOpen, toggle, timer, userProfile 
           </FormGroup>
           <FormGroup check>
             <Label check>
-              {isAdmin || !edit ? (
+              {isAdmin || !edit  ? (
                 <Input
                   type="checkbox"
                   name="isTangible"

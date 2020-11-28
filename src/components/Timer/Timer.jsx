@@ -7,6 +7,10 @@ import './Timer.css'
 import { maxTime } from 'date-fns/esm'
 
 const Timer = () => {
+  const data = {
+    disabled: window.screenX > 500 ? false : true,
+    isTangible: window.screenX > 500 ? true : false
+  }
   const userId = useSelector(state => state.auth.user.userid)
   const pausedAt = useSelector(state => state.timer.seconds)
   const dispatch = useDispatch()
