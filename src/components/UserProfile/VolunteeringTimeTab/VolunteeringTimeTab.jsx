@@ -82,7 +82,7 @@ const ViewTab = (props) => {
   const canEdit = isUserAdmin || isUserSelf;
 
   return (
-    <div>
+    <div data-testid="volunteering-time-tab">
       <Row>
         <Col md="6">
           <Label>Start Date</Label>

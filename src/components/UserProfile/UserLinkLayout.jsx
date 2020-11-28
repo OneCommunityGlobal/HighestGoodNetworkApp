@@ -16,7 +16,7 @@ const UserLinkLayout = (props) => {
   } = userProfile;
   const canEdit = isUserAdmin || isUserSelf;
   return (
-    <div>
+    <div data-testid="user-link">
       <p style={{ display: 'inline-block', marginRight: 10 }}>LINKS </p>
       {canEdit ? (
         <EditLinkButton

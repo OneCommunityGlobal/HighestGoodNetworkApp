@@ -33,7 +33,7 @@ const BlueSqaureLayout = (props) => {
   const canEdit = isUserAdmin || isUserSelf;
   if (canEdit) {
     return (
-      <div>
+      <div data-testid="blueSqaure-field">
         <div className="blueSquare-toggle">
           <div style={{ display: 'inline-block' }}>BLUE SQUARES</div>
           {canEdit ? (

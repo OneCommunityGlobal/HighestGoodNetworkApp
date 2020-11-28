@@ -20,8 +20,8 @@ const UserLinks = ({
       {links.map((item, index) => {
         if (item.Link.includes('http')) {
           return (
-            <React.Fragment>
-              <a key={index} href={item.Link}>
+            <React.Fragment key={item.link}>
+              <a key={item.link} href={item.Link}>
                 {item.Name.toUpperCase()}
               </a>
               <br />
@@ -30,8 +30,8 @@ const UserLinks = ({
           );
         }
         return (
-          <React.Fragment>
-            <Link key={index} to={item.Link}>
+          <React.Fragment key={item.link}>
+            <Link key={item.link} to={item.Link}>
               {item.Name.toUpperCase()}
             </Link>
             <br />

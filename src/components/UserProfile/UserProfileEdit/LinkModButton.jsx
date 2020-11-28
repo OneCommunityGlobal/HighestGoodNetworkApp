@@ -24,6 +24,7 @@ const LinkModButton = (props) => {
         style={{
           textDecoration: 'underline', color: 'grey', fontSize: '11pt', fontWeight: 600,
         }}
+        data-testid="edit-link"
         role="button"
         type="button"
         onClick={toggleModal}
