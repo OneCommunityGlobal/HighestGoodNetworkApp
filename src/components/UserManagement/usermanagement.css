@@ -107,3 +107,8 @@ tr:hover{
 .link-button:focus {
 text-decoration: none;
 }
+
+.add-user-modal {
+  min-width: 50vw;    /* Occupy the 90% of the screen width */
+  max-width: 90vw !important;
+} 

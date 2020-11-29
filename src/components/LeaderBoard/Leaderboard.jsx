@@ -1,10 +1,12 @@
 import React, { Component, useEffect, useState } from 'react';
-
+import './Leaderboard.css';
 import _ from 'lodash';
 import { Link } from 'react-router-dom';
 import {
   Table, Badge, Progress, Modal, ModalBody, ModalFooter, ModalHeader, Button,
 } from 'reactstrap';
+
+const scrolled = false;
 
 const LeaderBoard = ({
   getLeaderboardData, leaderBoardData, loggedInUser, organizationData,
@@ -12,6 +14,25 @@ const LeaderBoard = ({
   useEffect(() => {
     getLeaderboardData(loggedInUser.userid);
   }, [leaderBoardData.length]);
+
+  useEffect(() => {
+    try {
+      if (window.screen.width < 540) {
+        const scrollWindow = document.getElementById('leaderboard');
+        if (scrollWindow) {
+          const elem = document.getElementById(`id${loggedInUser.userid}`); //
+
+          if (elem) {
+            const topPos = elem.offsetTop;
+            console.log(topPos);
+            scrollWindow.scrollTo(0, (topPos - 100) < 100 ? 0 : (topPos - 100));
+          }
+        }
+      }
+    } catch {
+
+    }
+  }, []);
 
   const [isOpen, setOpen] = useState(false);
 
@@ -66,93 +87,99 @@ const LeaderBoard = ({
           </ModalFooter>
         </Modal>
       </span>
-      <Table className="leaderboard">
-        <thead>
-          <tr>
-            <th>Status</th>
-            <th>Name</th>
-            <th>
-              <span className="d-sm-none">Tan. Time</span>
-              <span className="d-none d-sm-block">Tangible Time</span>
-            </th>
-            <th>Progress</th>
-            <th>
-              <span className="d-sm-none">Tot. Time</span>
-              <span className="d-none d-sm-block">Total Time</span>
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>
-              <div
-                title={`Weekly Committed: ${organizationData.weeklyComittedHours} hours`}
-                style={{
-                  backgroundColor:
+      <div id="leaderboard" className="my-custom-scrollbar table-wrapper-scroll-y">
+        <Table className="leaderboard table-fixed">
+          <thead>
+            <tr>
+              <th>Status</th>
+              <th>Name</th>
+              <th>
+                <span className="d-sm-none">Tan. Time</span>
+                <span className="d-none d-sm-block">Tangible Time</span>
+              </th>
+              <th>Progress</th>
+              <th>
+                <span className="d-sm-none">Tot. Time</span>
+                <span className="d-none d-sm-block">Total Time</span>
+              </th>
+            </tr>
+          </thead>
+          <tbody className="my-custome-scrollbar">
+            <tr>
+              <td>
+                <div
+                  title={`Weekly Committed: ${organizationData.weeklyComittedHours} hours`}
+                  style={{
+                    backgroundColor:
                     organizationData.totaltime >= organizationData.weeklyComittedHours
                       ? 'green'
                       : 'red',
-                  width: 15,
-                  height: 15,
-                  borderRadius: 7.5,
-                }}
-              />
-            </td>
-            <th scope="row">{organizationData.name}</th>
-            <td>
-              <span title="Tangible time">{organizationData.tangibletime}</span>
-            </td>
-            <td>
-              <Progress
-                title={`TangibleEffort: ${organizationData.tangibletime} hours`}
-                value={organizationData.barprogress}
-                striped
-                color={organizationData.barcolor}
-              />
-            </td>
-            <td>
-              <span title="Tangible + Intangible time = Total time">{organizationData.totaltime}</span>
-            </td>
-          </tr>
-
-          {leaderBoardData.map((item, key) => (
-            <tr key={key}>
-              <td>
-                <a href="#tasksLink">
-                  <div
-                    title={`Weekly Committed: ${item.weeklyComittedHours} hours`}
-                    style={{
-                      backgroundColor: item.totaltime >= item.weeklyComittedHours ? 'green' : 'red',
-                      width: 15,
-                      height: 15,
-                      borderRadius: 7.5,
-                    }}
-                  />
-                </a>
+                    width: 15,
+                    height: 15,
+                    borderRadius: 7.5,
+                  }}
+                />
               </td>
-              <th scope="row">
-                <Link to={`/userprofile/${item.personId}`} title="View Profile">
-                  {item.name}
-                </Link>
-              </th>
+              <th scope="row">{organizationData.name}</th>
               <td>
-                <span title="Tangible time">{item.tangibletime}</span>
+                <span title="Tangible time">{organizationData.tangibletime}</span>
               </td>
               <td>
-                <Link
-                  to={`/timelog/${item.personId}`}
-                  title={`TangibleEffort: ${item.tangibletime} hours`}
-                >
-                  <Progress value={item.barprogress} striped color={item.barcolor} />
-                </Link>
+                <Progress
+                  title={`TangibleEffort: ${organizationData.tangibletime} hours`}
+                  value={organizationData.barprogress}
+                  color={organizationData.barcolor}
+                />
               </td>
               <td>
-                <span title="Total time">{item.totaltime}</span>
+                <span title="Tangible + Intangible time = Total time">
+                  {organizationData.totaltime}
+                  {' '}
+                  of
+                  {' '}
+                  {organizationData.weeklyComittedHours}
+                </span>
               </td>
             </tr>
-          ))}
-        </tbody>
-      </Table>
+            {leaderBoardData.map((item, key) => (
+              <tr key={key}>
+                <td>
+                  <a href="#tasksLink">
+                    <div
+                      title={`Weekly Committed: ${item.weeklyComittedHours} hours`}
+                      style={{
+                        backgroundColor: item.totaltime >= item.weeklyComittedHours ? 'green' : 'red',
+                        width: 15,
+                        height: 15,
+                        borderRadius: 7.5,
+                      }}
+                    />
+                  </a>
+                </td>
+                <th scope="row">
+                  <Link to={`/userprofile/${item.personId}`} title="View Profile">
+                    {item.name}
+                  </Link>
+                </th>
+                <td id={`id${item.personId}`}>
+                  <span title="Tangible time">{item.tangibletime}</span>
+                </td>
+                <td>
+                  <Link
+                    to={`/timelog/${item.personId}`}
+                    title={`TangibleEffort: ${item.tangibletime} hours`}
+                  >
+                    <Progress value={item.barprogress} color={item.barcolor} />
+                  </Link>
+                </td>
+                <td>
+                  <span title="Total time">{item.totaltime}</span>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </Table>
+      </div>
     </div>
   );
 };

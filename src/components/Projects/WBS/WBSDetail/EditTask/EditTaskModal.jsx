@@ -1,94 +1,94 @@
-import React, { useState, useEffect } from 'react';
-import {
-  Button, Modal, ModalHeader, ModalBody, ModalFooter,
-} from 'reactstrap';
-import { connect } from 'react-redux';
-import ReactTooltip from 'react-tooltip';
-import { DUE_DATE_MUST_GREATER_THAN_START_DATE } from '../../../../../languages/en/messages';
-import DayPickerInput from 'react-day-picker/DayPickerInput';
-import { DateUtils } from 'react-day-picker';
-import 'react-day-picker/lib/style.css';
-import dateFnsFormat from 'date-fns/format';
-import dateFnsParse from 'date-fns/parse';
-import { updateTask, fetchAllTasks } from '../../../../../actions/task';
+import React, { useState, useEffect } from 'react'
+import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap'
+import { connect } from 'react-redux'
+import ReactTooltip from 'react-tooltip'
+import { DUE_DATE_MUST_GREATER_THAN_START_DATE } from '../../../../../languages/en/messages'
+import DayPickerInput from 'react-day-picker/DayPickerInput'
+import { DateUtils } from 'react-day-picker'
+import 'react-day-picker/lib/style.css'
+import dateFnsFormat from 'date-fns/format'
+import dateFnsParse from 'date-fns/parse'
+import { updateTask, fetchAllTasks } from '../../../../../actions/task'
 
-const EditTaskModal = (props) => {
-  const tasks = props.tasks.taskItems;
-  const { members } = props.projectMembers;
-  let foundedMembers = [];
+const EditTaskModal = props => {
+  const tasks = props.tasks.taskItems
+  const { members } = props.projectMembers
+  let foundedMembers = []
 
-  const thisTask = tasks.filter(task => task._id === props.taskId)[0];
+  const thisTask = tasks.filter(task => task._id === props.taskId)[0]
 
   // Date picker
-  const FORMAT = 'MM/dd/yy';
-  const formatDate = (date, format, locale) => dateFnsFormat(date, format, { locale });
+  const FORMAT = 'MM/dd/yy'
+  const formatDate = (date, format, locale) => dateFnsFormat(date, format, { locale })
   const parseDate = (str, format, locale) => {
-    const parsed = dateFnsParse(str, format, new Date(), { locale });
+    const parsed = dateFnsParse(str, format, new Date(), { locale })
     if (DateUtils.isDate(parsed)) {
-      return parsed;
+      return parsed
     }
-    return undefined;
-  };
+    return undefined
+  }
 
   // modal
-  const [modal, setModal] = useState(false);
-  const toggle = () => setModal(!modal);
+  const [modal, setModal] = useState(false)
+  const toggle = () => setModal(!modal)
 
   // task name
-  const [taskName, setTaskName] = useState(thisTask.taskName);
+  const [taskName, setTaskName] = useState(thisTask.taskName)
 
   // priority
-  const [priority, setPriority] = useState(thisTask.priority);
+  const [priority, setPriority] = useState(thisTask.priority)
 
   // members name
-  const [memberName, setMemberName] = useState('');
+  const [memberName, setMemberName] = useState('')
 
   // resources
-  const [resourceItems, setResourceItems] = useState(thisTask.resources);
+  const [resourceItems, setResourceItems] = useState(thisTask.resources)
 
   // assigned
-  const [assigned, setAssigned] = useState(thisTask.assigned);
+  const [assigned, setAssigned] = useState(thisTask.assigned)
 
   // status
-  const [status, setStatus] = useState(thisTask.status);
+  const [status, setStatus] = useState(thisTask.status)
 
   // hour best
-  const [hoursBest, setHoursBest] = useState(thisTask.hoursBest);
+  const [hoursBest, setHoursBest] = useState(thisTask.hoursBest)
 
   // hour worst
-  const [hoursWorst, setHoursWorst] = useState(thisTask.hoursWorst);
+  const [hoursWorst, setHoursWorst] = useState(thisTask.hoursWorst)
 
   // hour most
-  const [hoursMost, setHoursMost] = useState(thisTask.hoursMost);
+  const [hoursMost, setHoursMost] = useState(thisTask.hoursMost)
 
   // hour estimate
-  const [hoursEstimate, setHoursEstimate] = useState(thisTask.estimatedHours);
+  const [hoursEstimate, setHoursEstimate] = useState(thisTask.estimatedHours)
 
   // started date
-  const [startedDate, setStartedDate] = useState(thisTask.startedDatetime);
+  const [startedDate, setStartedDate] = useState(thisTask.startedDatetime)
 
   // due date
-  const [dueDate, setDueDate] = useState(thisTask.dueDatetime);
+  const [dueDate, setDueDate] = useState(thisTask.dueDatetime)
 
   // links
-  const [links, setLinks] = useState(thisTask.links);
+  const [links, setLinks] = useState(thisTask.links)
 
   // Why info (Why is this task important)
-  const [whyInfo, setWhyInfo] = useState(thisTask.whyInfo);
+  const [whyInfo, setWhyInfo] = useState(thisTask.whyInfo)
 
   // Intent info (Design intent)
-  const [intentInfo, setIntentInfo] = useState(thisTask.intentInfo);
+  const [intentInfo, setIntentInfo] = useState(thisTask.intentInfo)
 
   // Endstate info (what it should look like when done)
-  const [endstateInfo, setEndstateInfo] = useState(thisTask.endstateInfo);
+  const [endstateInfo, setEndstateInfo] = useState(thisTask.endstateInfo)
 
   // Warning
-  const [dateWarning, setDateWarning] = useState(false);
-  const [hoursWarning, setHoursWarning] = useState(false);
+  const [dateWarning, setDateWarning] = useState(false)
+  const [hoursWarning, setHoursWarning] = useState(false)
 
-  const [foundMembersHTML, setfoundMembersHTML] = useState('');
+  const [foundMembersHTML, setfoundMembersHTML] = useState('')
   const findMembers = () => {
-    foundedMembers = members.filter(user => `${user.firstName} ${user.lastName}`.toLowerCase().includes(memberName.toLowerCase()));
+    foundedMembers = members.filter(user =>
+      `${user.firstName} ${user.lastName}`.toLowerCase().includes(memberName.toLowerCase()),
+    )
     const html = foundedMembers.map(elm => (
       <div>
         <input
@@ -106,97 +106,97 @@ const EditTaskModal = (props) => {
           <i className="fa fa-plus" aria-hidden="true" />
         </button>
       </div>
-    ));
-    setfoundMembersHTML(html);
-  };
+    ))
+    setfoundMembersHTML(html)
+  }
 
-  const removeResource = (userID) => {
-    const removeIndex = resourceItems.map(item => item.userID).indexOf(userID);
+  const removeResource = userID => {
+    const removeIndex = resourceItems.map(item => item.userID).indexOf(userID)
     setResourceItems([
       ...resourceItems.slice(0, removeIndex),
       ...resourceItems.slice(removeIndex + 1),
-    ]);
-  };
+    ])
+  }
 
-  const res = [...resourceItems];
+  const res = [...resourceItems]
   const addResources = (userID, first, last, profilePic) => {
     res.push({
       userID,
       name: `${first} ${last}`,
       profilePic,
-    });
-    setResourceItems([...res]);
-  };
+    })
+    setResourceItems([...res])
+  }
 
   // Links
-  const [link, setLink] = useState('');
+  const [link, setLink] = useState('')
   const addLink = () => {
-    setLinks([...links, link]);
-  };
+    setLinks([...links, link])
+  }
 
   // Hours estimate
   const calHoursEstimate = (isOn = null) => {
-    let currHoursMost = parseInt(hoursMost);
-    let currHoursWorst = parseInt(hoursWorst);
-    const currHoursBest = parseInt(hoursBest);
+    let currHoursMost = parseInt(hoursMost)
+    let currHoursWorst = parseInt(hoursWorst)
+    const currHoursBest = parseInt(hoursBest)
     if (isOn !== 'hoursMost') {
-      currHoursMost = Math.round((currHoursWorst - currHoursBest) / 2 + currHoursBest);
-      setHoursMost(currHoursMost);
+      currHoursMost = Math.round((currHoursWorst - currHoursBest) / 2 + currHoursBest)
+      setHoursMost(currHoursMost)
       if (isOn !== 'hoursWorst') {
-        currHoursWorst = Math.round(currHoursBest * 2);
-        setHoursWorst(currHoursWorst);
-        currHoursMost = Math.round((currHoursWorst - currHoursBest) / 2 + currHoursBest);
-        setHoursMost(currHoursMost);
+        currHoursWorst = Math.round(currHoursBest * 2)
+        setHoursWorst(currHoursWorst)
+        currHoursMost = Math.round((currHoursWorst - currHoursBest) / 2 + currHoursBest)
+        setHoursMost(currHoursMost)
       }
     }
 
-    setHoursEstimate(parseInt((currHoursMost + currHoursBest + currHoursWorst) / 3));
+    setHoursEstimate(parseInt((currHoursMost + currHoursBest + currHoursWorst) / 3))
 
     if (!(currHoursBest <= currHoursMost && currHoursMost <= currHoursWorst)) {
-      setHoursWarning(true);
+      setHoursWarning(true)
     } else {
-      setHoursWarning(false);
+      setHoursWarning(false)
     }
-  };
-
-  // parent Id
-  let parentId1 = props.parentId1 ? props.parentId1 : null;
-  let parentId2 = props.parentId2 ? props.parentId2 : null;
-  let parentId3 = props.parentId3 ? props.parentId3 : null;
-
-  if (props.parentId1 === null) {
-    parentId1 = props.taskId;
-  } else if (props.parentId2 === null) {
-    parentId2 = props.taskId;
-  } else if (props.parentId3 === null) {
-    parentId3 = props.taskId;
   }
 
-  const changeDateStart = (startDate) => {
-    setStartedDate(startDate);
+  // parent Id
+  let parentId1 = props.parentId1 ? props.parentId1 : null
+  let parentId2 = props.parentId2 ? props.parentId2 : null
+  let parentId3 = props.parentId3 ? props.parentId3 : null
+
+  if (props.parentId1 === null) {
+    parentId1 = props.taskId
+  } else if (props.parentId2 === null) {
+    parentId2 = props.taskId
+  } else if (props.parentId3 === null) {
+    parentId3 = props.taskId
+  }
+
+  const changeDateStart = startDate => {
+    setStartedDate(startDate)
     if (dueDate) {
       if (startDate > dueDate) {
-        setDateWarning(true);
+        setDateWarning(true)
       } else {
-        setDateWarning(false);
+        setDateWarning(false)
       }
     }
-  };
+  }
 
-  const changeDateEnd = (dueDate) => {
-    setDueDate(dueDate);
+  const changeDateEnd = dueDate => {
+    setDueDate(dueDate)
     if (startedDate) {
       if (dueDate < startedDate) {
-        setDateWarning(true);
+        setDateWarning(true)
       } else {
-        setDateWarning(false);
+        setDateWarning(false)
       }
     }
-  };
+  }
 
-  const removeLink = (index) => {
-    setLinks([...links.splice(0, index), ...links.splice(index + 1)]);
-  };
+  const removeLink = index => {
+    setLinks([...links.splice(0, index), ...links.splice(index + 1)])
+  }
 
   const updateTask = () => {
     const updatedTask = {
@@ -215,23 +215,23 @@ const EditTaskModal = (props) => {
       whyInfo,
       intentInfo,
       endstateInfo,
-    };
+    }
 
-    props.updateTask(props.taskId, updatedTask);
+    props.updateTask(props.taskId, updatedTask)
     setTimeout(() => {
-      props.fetchAllTasks(props.wbsId);
-    }, 4000);
+      props.fetchAllTasks(props.wbsId)
+    }, 4000)
 
     if (props.tasks.error === 'none') {
-      toggle();
+      toggle()
     }
-  };
+  }
 
-  useEffect(() => {}, [tasks]);
+  useEffect(() => {}, [tasks])
 
   return (
     <div className="controlBtn">
-      <Modal isOpen={modal} toggle={toggle}>
+      <Modal isOpen={modal} toggle={toggle} size="lg">
         <ModalHeader toggle={toggle}>Edit Task</ModalHeader>
         <ModalBody>
           <ReactTooltip />
@@ -307,7 +307,7 @@ const EditTaskModal = (props) => {
                           >
                             <span className="dot">{elm.name.substring(0, 2)}</span>
                           </a>
-                        );
+                        )
                       }
                       return (
                         <a
@@ -317,7 +317,7 @@ const EditTaskModal = (props) => {
                         >
                           <img className="img-circle" src={elm.profilePic} />
                         </a>
-                      );
+                      )
                     })}
                   </div>
                 </td>
@@ -469,16 +469,18 @@ const EditTaskModal = (props) => {
                     </button>
                   </div>
                   <div>
-                    {links.map((link, i) => (link.length > 1 ? (
-                      <div key={i}>
-                        <a href={link} target="_blank">
-                          {link.replace('http://', '')}
-                        </a>
-                        <span className="remove-link" onClick={() => removeLink(i)}>
-                          x
-                        </span>
-                      </div>
-                    ) : null))}
+                    {links.map((link, i) =>
+                      link.length > 1 ? (
+                        <div key={i}>
+                          <a href={link} target="_blank">
+                            {link.replace('http://', '')}
+                          </a>
+                          <span className="remove-link" onClick={() => removeLink(i)}>
+                            x
+                          </span>
+                        </div>
+                      ) : null,
+                    )}
                   </div>
                 </td>
               </tr>
@@ -492,6 +494,7 @@ const EditTaskModal = (props) => {
                     onChange={e => setWhyInfo(e.target.value)}
                     onKeyPress={e => setWhyInfo(e.target.value)}
                     value={whyInfo}
+                    style={{ width: '100%' }}
                   />
                 </td>
               </tr>
@@ -505,6 +508,7 @@ const EditTaskModal = (props) => {
                     onChange={e => setIntentInfo(e.target.value)}
                     onKeyPress={e => setIntentInfo(e.target.value)}
                     value={intentInfo}
+                    style={{ width: '100%' }}
                   />
                 </td>
               </tr>
@@ -518,6 +522,7 @@ const EditTaskModal = (props) => {
                     onChange={e => setEndstateInfo(e.target.value)}
                     onKeyPress={e => setEndstateInfo(e.target.value)}
                     value={endstateInfo}
+                    style={{ width: '100%' }}
                   />
                 </td>
               </tr>
@@ -539,11 +544,11 @@ const EditTaskModal = (props) => {
         Edit Task
       </Button>
     </div>
-  );
-};
+  )
+}
 
-const mapStateToProps = state => state;
+const mapStateToProps = state => state
 export default connect(mapStateToProps, {
   updateTask,
   fetchAllTasks,
-})(EditTaskModal);
+})(EditTaskModal)

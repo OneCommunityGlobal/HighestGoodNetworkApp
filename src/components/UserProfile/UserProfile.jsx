@@ -505,11 +505,6 @@ class UserProfile extends Component {
       infoModal,
       formValid,
     } = this.state;
-    // debugger;
-    // const { userProfile, isLoading, error, showModal } = this.state;
-    // let { allTeams } = this.props.allTeams.allTeamsData;
-    // let { projects } = this.props.allProjects.projects;
-    // console.log(projects);
 
     const {
       firstName,
@@ -525,9 +520,7 @@ class UserProfile extends Component {
       teams,
     } = userProfile;
 
-    // console.log('user profile:', userProfile.teams);
-
-    if (isLoading) {
+    if (isLoading && !this.props.isAddNewUser) {
       return (
         <Container fluid>
           <Row className="text-center" data-test="loading">
@@ -548,7 +541,6 @@ class UserProfile extends Component {
     const canEdit = isUserAdmin || isUserSelf;
     const weeklyHoursReducer = (acc, val) => acc + (parseInt(val.hours, 10) + parseInt(val.minutes, 10) / 60);
     // (parseInt(a.minutes, 10) + parseInt(b.minutes, 10)) / 60;
-
     return (
       <div>
         {showModal && (
