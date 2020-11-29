@@ -21,6 +21,7 @@ import WBSDetail from './components/Projects/WBS/WBSDetail'
 import WeeklySummariesReport from './components/WeeklySummariesReport'
 import 'react-toastify/dist/ReactToastify.css'
 import { UserRole } from './utils/enums'
+import ForgotPassword from './components/Login/ForgotPassword'
 
 export default (
   <React.Fragment>
@@ -50,7 +51,7 @@ export default (
       <ProtectedRoute path="/project/members/:projectId" component={Members} />
 
       <Route path="/login" component={Login} />
-
+      <Route path="/forgotpassword" component={ForgotPassword} />
       <ProtectedRoute path="/userprofile/:userId" component={UserProfile} />
       <ProtectedRoute path="/userprofileedit/:userId" component={UserProfileEdit} />
       <ProtectedRoute path="/updatepassword/:userId" component={UpdatePassword} />
