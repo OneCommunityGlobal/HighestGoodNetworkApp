@@ -24,7 +24,9 @@ import { getUserProjects } from '../../actions/userProjects';
 import { updateUserProfile } from '../../actions/userProfile';
 import { stopTimer } from '../../actions/timer';
 
-const TimeEntryForm = ({ userId, edit, data, isOpen, toggle, timer, userProfile }) => {
+const TimeEntryForm = ({
+  userId, edit, data, isOpen, toggle, timer, userProfile,
+}) => {
   const fromTimer = !_.isEmpty(timer);
 
   const initialState = {
@@ -59,11 +61,10 @@ const TimeEntryForm = ({ userId, edit, data, isOpen, toggle, timer, userProfile 
   const [openTangibleInfo, setTangibleInfo] = useState(false);
   const tangibleInfoToggle = () => setTangibleInfo(!openTangibleInfo);
 
-  const openModal = () =>
-    setReminder((reminder) => ({
-      ...reminder,
-      notification: !reminder.notification,
-    }));
+  const openModal = () => setReminder(reminder => ({
+    ...reminder,
+    notification: !reminder.notification,
+  }));
 
   const openInfo = () => {
     const str = `This is the One Community time clock! It is used to clock in and out when doing your volunteer work with One Community. Whenever you stop this timer, it will ask you to log your time to a “Project/Task” list that is specific to you. 
@@ -80,7 +81,7 @@ const TimeEntryForm = ({ userId, edit, data, isOpen, toggle, timer, userProfile 
     * Intangible Time: Clicking the Tangible box OFF will mean you are logging “Intangible Time.” This is for time not related to your tasks OR for time you need a manager to change to “Tangible” for you because you were working away from your computer or made a mistake and are trying to manually log time. Intangible time will not be counted towards your committed time for the week or your tasks. “Intangible” time changed by a manager to “Tangible” time WILL be counted towards your committed time for the week and whatever task it is logged towards. For Blue Square purposes, changing Intangible Time to Tangible Time for any reason other than work away from your computer will count and be recorded in the system the same as a time edit. `;
 
     const newstr = str.split('\n').map((item, i) => <p key={i}>{item}</p>);
-    setInfo((info) => ({
+    setInfo(info => ({
       ...info,
       in: !info.in,
       information: newstr,
@@ -88,11 +89,11 @@ const TimeEntryForm = ({ userId, edit, data, isOpen, toggle, timer, userProfile 
   };
 
   const cancelChange = () => {
-    setReminder((reminder) => ({
+    setReminder(reminder => ({
       ...reminder,
       notification: !reminder.notification,
     }));
-    setInputs((inputs) => ({
+    setInputs(inputs => ({
       ...inputs,
       hours: data.hours,
       minutes: data.minutes,
@@ -110,15 +111,16 @@ const TimeEntryForm = ({ userId, edit, data, isOpen, toggle, timer, userProfile 
     setInputs({ ...inputs, ...timer });
   }, [timer]);
 
-  const userProjects = useSelector((state) => state.userProjects);
+  const userProjects = useSelector(state => state.userProjects);
   let projects = [];
   if (!_.isEmpty(userProjects)) {
     projects = userProjects.projects;
   }
-  const projectOptions = projects.map((project) => (
+  const projectOptions = projects.map(project => (
     <option value={project.projectId} key={project.projectId}>
       {' '}
-      {project.projectName}{' '}
+      {project.projectName}
+      {' '}
     </option>
   ));
   projectOptions.unshift(
@@ -158,7 +160,7 @@ const TimeEntryForm = ({ userId, edit, data, isOpen, toggle, timer, userProfile 
 
     if (reminder.num_words < 10) {
       openModal();
-      setReminder((reminder) => ({
+      setReminder(reminder => ({
         ...reminder,
         remind:
           'Please write a more detailed description of your work completed, write at least 1-2 sentences.',
@@ -168,7 +170,7 @@ const TimeEntryForm = ({ userId, edit, data, isOpen, toggle, timer, userProfile 
 
     if (reminder.num_words >= 10 && !reminder.has_link) {
       openModal();
-      setReminder((reminder) => ({
+      setReminder(reminder => ({
         ...reminder,
         remind:
           'Do you have a link to your Google Doc or other place to review this work? You should add it if you do. (Note: Please include http[s]:// in your URL)',
@@ -178,7 +180,7 @@ const TimeEntryForm = ({ userId, edit, data, isOpen, toggle, timer, userProfile 
 
     if (edit && reminder.edit_notice && reminder.edit_count < 4 && edittime) {
       openModal();
-      setReminder((reminder) => ({
+      setReminder(reminder => ({
         ...reminder,
         remind:
           'You are about to edit your time, if you do this your manager will be notified you’ve edited it. The system automatically tracks how many times you’ve edited your time and will issue blue squares if you edit it repeatedly. Please use the timer properly so your time is logged accurately.',
@@ -189,7 +191,7 @@ const TimeEntryForm = ({ userId, edit, data, isOpen, toggle, timer, userProfile 
 
     if (edit && reminder.edit_notice && reminder.edit_count == 4 && edittime) {
       openModal();
-      setReminder((reminder) => ({
+      setReminder(reminder => ({
         ...reminder,
         remind:
           'You’ve edited your time 3 times already as a member of the team, are you sure you want to edit it again? Editing your time more than 5 times in a calendar year will result in you receiving a blue square.',
@@ -200,7 +202,7 @@ const TimeEntryForm = ({ userId, edit, data, isOpen, toggle, timer, userProfile 
 
     if (edit && reminder.edit_notice && reminder.edit_count == 5 && edittime) {
       openModal();
-      setReminder((reminder) => ({
+      setReminder(reminder => ({
         ...reminder,
         remind:
           'Heads up this is your fifth and final time being allowed to edit your time without receiving a blue square. Please use the timer properly from this point forward if you’d like to avoid receiving one.',
@@ -210,7 +212,7 @@ const TimeEntryForm = ({ userId, edit, data, isOpen, toggle, timer, userProfile 
     }
     if (edit && reminder.edit_notice && (reminder.edit_count - 5) % 2 == 1 && edittime) {
       openModal();
-      setReminder((reminder) => ({
+      setReminder(reminder => ({
         ...reminder,
         remind: `Heads up this is your ${reminder.edit_count}th time editing your recorded time. The next time you do this, you will receive a blue square. Please use the timer properly from this point forward to avoid this.`,
         edit_notice: !reminder.edit_notice,
@@ -220,7 +222,7 @@ const TimeEntryForm = ({ userId, edit, data, isOpen, toggle, timer, userProfile 
 
     if (edit && reminder.edit_notice && (reminder.edit_count - 5) % 2 == 0 && edittime) {
       openModal();
-      setReminder((reminder) => ({
+      setReminder(reminder => ({
         ...reminder,
         remind: `Heads up this is your ${reminder.edit_count}th time editing your recorded time and this edit will make you receive a blue square. Please use the timer properly from this point forward to avoid receiving additional blue squares.`,
         edit_notice: !reminder.edit_notice,
@@ -270,15 +272,16 @@ const TimeEntryForm = ({ userId, edit, data, isOpen, toggle, timer, userProfile 
     let deltatime;
     if (edit) {
       deltatime = (
-        hours -
-        parseInt(data.hours, 10) +
-        (parseInt(minutes, 10) - parseInt(data.minutes, 10)) / 60
-      ).toFixed(2);
+        hours
+        - parseInt(data.hours, 10)
+        + (parseInt(minutes, 10) - parseInt(data.minutes, 10)) / 60
+      );
     } else {
-      deltatime = (parseInt(hours, 10) + parseInt(minutes, 10) / 60).toFixed(2);
+      deltatime = (parseInt(hours, 10) + parseInt(minutes, 10) / 60);
+      console.log(deltatime);
     }
 
-    const totalTime = parseInt(userProfile.totalComittedHours, 10) + parseInt(deltatime, 10);
+    const totalTime = (parseFloat(userProfile.totalComittedHours, 10) + deltatime).toFixed(2);
     console.log(totalTime);
     const updatedUserprofile = {
       ...userProfile,
@@ -290,18 +293,18 @@ const TimeEntryForm = ({ userId, edit, data, isOpen, toggle, timer, userProfile 
       if (status === 200) {
         const timerStatus = await dispatch(stopTimer(userId));
         if (timerStatus === 200 || timerStatus === 201) {
-          setInputs((inputs) => initialState);
-          setReminder((reminder) => initialReminder);
+          setInputs(inputs => initialState);
+          setReminder(reminder => initialReminder);
           toggle();
         }
         history.push(`/timelog/${userId}`);
       }
     } else if (!edit) {
-      setInputs((inputs) => initialState);
-      setReminder((reminder) => initialReminder);
+      setInputs(inputs => initialState);
+      setReminder(reminder => initialReminder);
       toggle();
     } else if (!reminder.notice && edittime) {
-      setReminder((reminder) => ({
+      setReminder(reminder => ({
         ...reminder,
         edit_count: reminder.edit_count + 1,
         edit_notice: !reminder.edit_notice,
@@ -316,7 +319,7 @@ const TimeEntryForm = ({ userId, edit, data, isOpen, toggle, timer, userProfile 
 
   const handleInputChange = (event) => {
     event.persist();
-    setInputs((inputs) => ({
+    setInputs(inputs => ({
       ...inputs,
       [event.target.name]: event.target.value,
     }));
@@ -327,8 +330,8 @@ const TimeEntryForm = ({ userId, edit, data, isOpen, toggle, timer, userProfile 
     inputs.notes = content;
     const { wordcount } = editor.plugins;
 
-    setInputs((inputs) => ({ ...inputs, [editor.id]: content }));
-    setReminder((reminder) => ({
+    setInputs(inputs => ({ ...inputs, [editor.id]: content }));
+    setReminder(reminder => ({
       ...reminder,
       num_words: wordcount.body.getWordCount(),
       has_link: inputs.notes.indexOf('http://') > -1 || inputs.notes.indexOf('https://') > -1,
@@ -337,19 +340,19 @@ const TimeEntryForm = ({ userId, edit, data, isOpen, toggle, timer, userProfile 
 
   const handleCheckboxChange = (event) => {
     event.persist();
-    setInputs((inputs) => ({
+    setInputs(inputs => ({
       ...inputs,
       [event.target.name]: event.target.checked,
     }));
   };
 
   const clearForm = (event) => {
-    setInputs((inputs) => initialState);
-    setReminder((reminder) => initialReminder);
-    setErrors((errors) => ({}));
+    setInputs(inputs => initialState);
+    setReminder(reminder => initialReminder);
+    setErrors(errors => ({}));
   };
 
-  const isAdmin = useSelector((state) => state.auth.user.role) === 'Administrator';
+  const isAdmin = useSelector(state => state.auth.user.role) === 'Administrator';
 
   return (
     <Modal isOpen={isOpen} toggle={toggle}>
@@ -551,7 +554,8 @@ const TimeEntryForm = ({ userId, edit, data, isOpen, toggle, timer, userProfile 
         <small className="mr-auto text-secondary">* All the fields are required</small>
         <Button onClick={clearForm} color="danger">
           {' '}
-          Clear Form{' '}
+          Clear Form
+          {' '}
         </Button>
         <Button onClick={handleSubmit} color="primary">
           {edit ? 'Save' : 'Submit'}

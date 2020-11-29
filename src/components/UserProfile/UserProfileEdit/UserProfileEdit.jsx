@@ -402,8 +402,8 @@ class EditProfile extends Component {
 
   updateBlueSquare = (id, dateStamp, summary, kind) => {
     // console.log('Handle Blue Square: ', kind, ' date:', dateStamp, ' summary:', summary)
-    const elem = document.getElementById('warningCard');
-    elem.style.display = 'block';
+    // const elem = document.getElementById('warningCard');
+    // elem.style.display = 'block';
 
     if (kind === 'add') {
       const newBlueSquare = { date: dateStamp, description: summary };
@@ -548,7 +548,7 @@ class EditProfile extends Component {
   };
 
   render() {
-    const { allTeams, fetching } = this.props.state.allTeamsData;
+    // const { allTeams, fetching } = this.props.allTeams;
 
     // console.log('allteams...', allTeams)
 
@@ -556,6 +556,7 @@ class EditProfile extends Component {
       ? this.props.match.params
       : { userId: undefined };
     const { userid: requestorId, role: requestorRole } = this.props.auth.user;
+    // console.log(this.props.allTeams);
 
     const {
       userProfile,

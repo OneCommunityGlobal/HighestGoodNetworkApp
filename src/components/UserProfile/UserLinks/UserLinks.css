@@ -1,37 +1,35 @@
-
-
 .editButton {
   width: auto;
   height: auto;
   display: flex;
 }
 
-.linkAddButton{
+.linkAddButton {
   display: flex;
-  text-decoration:none;
+  text-decoration: none;
   align-items: center;
   justify-content: center;
 
-  background:linear-gradient(to bottom, #007dc1 5%, #0061a7 100%);
+  background: linear-gradient(to bottom, #007dc1 5%, #0061a7 100%);
   background-color: dodgerblue;
-  border-radius:4px;
+  border-radius: 4px;
 
-  cursor:pointer;
-  color:#ffffff;
-  font-family:Arial;
+  cursor: pointer;
+  color: #ffffff;
+  font-family: Arial;
   margin: 5px;
   width: 20px;
   height: 20px;
 }
 
-.linkContainer{
+/* .linkContainer{
   display: flex;
   align-items: center;
   flex-wrap: wrap;
   font-size: 20px;
-}
+} */
 
-.link{
+.link {
   display: flex;
   width: 'auto';
   height: 25px;

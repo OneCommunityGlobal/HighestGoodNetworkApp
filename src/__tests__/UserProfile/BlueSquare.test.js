@@ -31,3 +31,18 @@ describe('blue squre is user admin', () => {
     expect(screen.getByText('+')).toBeInTheDocument();
   });
 });
+describe('blue square is not user admin', () => {
+  const handleBlueSquare = jest.fn();
+  beforeEach(() => {
+    render(
+      <BlueSquare
+        blueSquares={userProfileMock.infringments}
+        handleBlueSquare={handleBlueSquare}
+        isUserAdmin={false}
+      />,
+    );
+  });
+  it('should not render the + button', () => {
+    expect(screen.queryByText('+')).toBeFalsy();
+  });
+});

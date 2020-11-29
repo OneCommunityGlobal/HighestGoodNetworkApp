@@ -39,8 +39,8 @@ const ToggleSwitch = ({ switchType, state, handleUserProfile }) => {
               private
             </div>
           </div>
-        </div>
-      )
+          </div>
+        );
 
     case 'email':
       if (state) {
@@ -74,6 +74,7 @@ const ToggleSwitch = ({ switchType, state, handleUserProfile }) => {
               public
               <input
                 id="emailPubliclyAccessible"
+                data-testid="email-switch"
                 type="checkbox"
                 className={style.toggle}
                 defaultChecked
@@ -115,6 +116,7 @@ const ToggleSwitch = ({ switchType, state, handleUserProfile }) => {
             <div className={style.switchContainer}>
               public
               <input
+                data-testid="phone-switch"
                 id="phonePubliclyAccessible"
                 type="checkbox"
                 className={style.toggle}
