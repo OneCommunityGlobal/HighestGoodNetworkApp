@@ -27,6 +27,7 @@ const ToggleSwitch = ({ switchType, state, handleUserProfile }) => {
           <div className={style.switchContainer}>
             public
             <input
+              data-testid="bluesqaures-switch"
               id="blueSquaresPubliclyAccessible"
               type="checkbox"
               className={style.toggle}
@@ -49,6 +50,7 @@ const ToggleSwitch = ({ switchType, state, handleUserProfile }) => {
               public
               <input
                 id="emailPubliclyAccessible"
+                data-testid="email-switch"
                 type="checkbox"
                 className={style.toggle}
                 onChange={handleUserProfile}
@@ -86,6 +88,7 @@ const ToggleSwitch = ({ switchType, state, handleUserProfile }) => {
             <div className={style.switchContainer}>
               public
               <input
+                data-testid="phone-switch"
                 id="phonePubliclyAccessible"
                 type="checkbox"
                 className={style.toggle}
