@@ -2,13 +2,13 @@ import React from 'react';
 import {
   Alert, Card, Row, Col, Container,
 } from 'reactstrap';
-import MonthlyEffort from '../MonthlyEffort';
 import Leaderboard from '../LeaderBoard';
 import WeeklySummaryModal from '../WeeklySummary/WeeklySummaryModal';
 import Badge from '../Badge';
 import '../../App.css';
+import { connect } from 'react-redux';
 
-const Dashboard = () => (
+const Dashboard = props => (
   <Container fluid>
     <Row>
       <Col sm={{ size: 12 }}>
@@ -39,7 +39,7 @@ const Dashboard = () => (
           <a name='tasksLink'><h3>Tasks go here...</h3></a>
           <div className="py-3 my-3"> </div>
         </div>
-        <Badge />
+        <Badge userId={props.auth.user.userid} />
       </Col>
       <Col lg={{ size: 5 }}>
         <Leaderboard />
@@ -48,4 +48,8 @@ const Dashboard = () => (
   </Container >
 );
 
-export default Dashboard;
+const mapStateToProps = state => ({
+  auth: state.auth,
+})
+
+export default connect(mapStateToProps)(Dashboard);

@@ -4,7 +4,7 @@ import {
 } from 'reactstrap';
 import BadgeHistory from './BadgeHistory';
 
-const OldBadges = () => {
+const OldBadges = (props) => {
   const [isOpen, setOpen] = useState(false);
 
   const toggle = () => setOpen(isOpen => !isOpen);
@@ -24,11 +24,11 @@ const OldBadges = () => {
         <Button className="btn--dark-sea-green float-right" onClick={toggle}>Full View</Button>
           <Modal isOpen={isOpen} toggle={toggle}>
             <ModalHeader toggle={toggle}>Full View of Badge History</ModalHeader>
-            <ModalBody><BadgeHistory /></ModalBody>
+            <ModalBody><BadgeHistory badges={props.badges} /></ModalBody>
           </Modal>
         </CardTitle>
         <div className="old_badges">
-          <BadgeHistory />
+          <BadgeHistory badges={props.badges} />
         </div>
       </CardBody>
     </Card >

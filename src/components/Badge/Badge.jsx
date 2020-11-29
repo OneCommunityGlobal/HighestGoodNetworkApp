@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { connect } from 'react-redux';
 import {
   Card, CardText, CardBody, CardHeader, Button, Modal, ModalBody
 } from 'reactstrap';
@@ -6,21 +7,28 @@ import './Badge.css';
 import NewBadges from './NewBadges';
 import OldBadges from './OldBadges';
 import BadgeReport from './BadgeReport';
+import { getUserProfile } from '../../actions/userProfile';
 
 
-const Badge = () => {
+const Badge = (props) => {
   const [isOpen, setOpen] = useState(false);
 
   const toggle = () => setOpen(isOpen => !isOpen);
+
+  useEffect(() => {
+    const userId = props.userId;
+    props.getUserProfile(userId);
+  })
+
 
   return (
     <Card style={{ backgroundColor: '#fafafa', borderRadius: 0 }}>
       <CardHeader tag="h3">
         Badges
-    </CardHeader>
+      </CardHeader>
       <CardBody>
-        <NewBadges />
-        <OldBadges />
+        <NewBadges badges={props.userProfile.badgeCollection} />
+        <OldBadges badges={props.userProfile.badgeCollection} />
         <CardText
           style={{
             fontWeight: 'bold',
@@ -40,4 +48,9 @@ const Badge = () => {
   );
 };
 
-export default Badge;
+const mapStateToProps = state => ({
+  userProfile: state.userProfile,
+});
+
+
+export default connect(mapStateToProps, { getUserProfile, })(Badge);
