@@ -53,7 +53,7 @@ class TimelogPage extends Component {
   initialState = {
     modal: false,
     activeTab: 0,
-    projectSelected: 'all',
+    projectsSelected: ['all'],
     fromDate: this.startOfWeek(0),
     toDate: this.endOfWeek(0),
     in: false,
@@ -146,8 +146,8 @@ class TimelogPage extends Component {
 
   generateTimeEntries(data) {
     let filteredData = data
-    if (this.state.projectSelected !== 'all') {
-      filteredData = data.filter(entry => entry.projectId === this.state.projectSelected);
+    if (!this.state.projectsSelected.includes('all')) {
+      filteredData = data.filter(entry =>  this.state.projectsSelected.includes(entry.projectId));
     }
     return filteredData.map(entry => (
       <TimeEntry
@@ -305,13 +305,13 @@ class TimelogPage extends Component {
 
                 <TabContent activeTab={this.state.activeTab}>
                   {this.state.activeTab === 3 ? (
-                    <p>
+                    <p className="ml-1">
                       Viewing time Entries from <b>{this.state.fromDate}</b>
                       {' to '}
                       <b>{this.state.toDate}</b>
                     </p>
                   ) : (
-                    <p>
+                    <p className="ml-1">
                       Viewing time Entries from <b>{this.startOfWeek(this.state.activeTab)}</b>
                       {' to '}
                       <b>{this.endOfWeek(this.state.activeTab)}</b>
@@ -350,27 +350,27 @@ class TimelogPage extends Component {
                   )}
                   <Form inline className="mb-2">
                     <FormGroup>
-                      <Label for="projectSelected" className="mr-2">
+                      <Label for="projectSelected" className="mr-2 ml-1 mb-5 align-top">
                         Filter Entries by Project:
                       </Label>
                       <Input
                         type="select"
                         name="projectSelected"
                         id="projectSelected"
-                        value={this.state.projectSelected}
+                        value={this.state.projectsSelected}
                         onChange={e =>
                           this.setState({
-                            projectSelected: e.target.value,
+                            projectsSelected:  Array.from(e.target.selectedOptions, option => option.value),
                           })
                         }
-                      >
+                      multiple>
                         {projectOptions}
                       </Input>
                     </FormGroup>
                   </Form>
                   <EffortBar
                     activeTab={this.state.activeTab}
-                    projectSelected={this.state.projectSelected}
+                    projectsSelected={this.state.projectsSelected}
                   />
                   <TabPane tabId={0}>{currentWeekEntries}</TabPane>
                   <TabPane tabId={1}>{lastWeekEntries}</TabPane>

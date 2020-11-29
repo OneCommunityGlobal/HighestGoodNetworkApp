@@ -5,6 +5,7 @@ import Leaderboard from '../LeaderBoard'
 import WeeklySummaryModal from '../WeeklySummary/WeeklySummaryModal'
 import '../../App.css'
 import TeamMemberTasks from '../TeamMemberTasks/TeamMemberTasks'
+import Timelog from '../Timelog/Timelog'
 
 export const Dashboard = () => (
   <Container fluid>

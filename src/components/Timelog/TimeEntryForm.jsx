@@ -56,7 +56,9 @@ const TimeEntryForm = ({ userId, edit, data, isOpen, toggle, timer, userProfile 
   const history = useHistory();
   const [reminder, setReminder] = useState(initialReminder);
   const [inform, setInfo] = useState(initialInfo);
-  
+  const [openTangibleInfo, setTangibleInfo] = useState(false);
+  const tangibleInfoToggle = () => setTangibleInfo(!openTangibleInfo);
+
   const openModal = () =>
     setReminder((reminder) => ({
       ...reminder,
@@ -435,6 +437,7 @@ const TimeEntryForm = ({ userId, edit, data, isOpen, toggle, timer, userProfile 
               id="projectId"
               value={inputs.projectId}
               onChange={handleInputChange}
+              
             >
               {projectOptions}
             </Input>
@@ -476,7 +479,7 @@ const TimeEntryForm = ({ userId, edit, data, isOpen, toggle, timer, userProfile 
           </FormGroup>
           <FormGroup check>
             <Label check>
-              {isAdmin || !edit  ? (
+              {isAdmin || (!edit && !isDisabled)  ? (
                 <Input
                   type="checkbox"
                   name="isTangible"
@@ -486,7 +489,17 @@ const TimeEntryForm = ({ userId, edit, data, isOpen, toggle, timer, userProfile 
               ) : (
                 <Input type="checkbox" name="isTangible" checked={inputs.isTangible} disabled />
               )}{' '}
-              Tangible
+              Tangible&nbsp;<i
+            className="fa fa-info-circle"
+            data-tip
+            data-for="tangibleTip"
+            aria-hidden="true"
+            // style={{ 'text-align': 'center' }}
+            onClick={tangibleInfoToggle}
+          />
+        <ReactTooltip id="tangibleTip" place="bottom" effect="solid">
+          Click this icon to learn about tangible and intangible time.
+        </ReactTooltip>
             </Label>
           </FormGroup>
         </Form>
@@ -514,6 +527,20 @@ const TimeEntryForm = ({ userId, edit, data, isOpen, toggle, timer, userProfile 
             </Button>
             {isAdmin && (
               <Button onClick={openInfo} color="secondary">
+                Edit
+              </Button>
+            )}
+          </ModalFooter>
+        </Modal>
+        <Modal isOpen={openTangibleInfo} toggle={tangibleInfoToggle}>
+          <ModalHeader>Info</ModalHeader>
+          <ModalBody><p>Intangible time is time logged to items not related to your specific action items OR for time that needs to be manually changed to tangible time by an Admin (e.g. work away from your computer). In the case of the latter, be sure to email your Admin your change request.</p></ModalBody>
+          <ModalFooter>
+            <Button onClick={tangibleInfoToggle} color="primary">
+              Close
+            </Button>
+            {isAdmin && (
+              <Button onClick={tangibleInfoToggle} color="secondary">
                 Edit
               </Button>
             )}

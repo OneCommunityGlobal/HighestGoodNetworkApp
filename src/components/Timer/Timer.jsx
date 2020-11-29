@@ -109,6 +109,7 @@ const Timer = () => {
         toggle={toggle}
         isOpen={modal}
         timer={{ hours, minutes }}
+        data={data}
       />
     </div>
   )
