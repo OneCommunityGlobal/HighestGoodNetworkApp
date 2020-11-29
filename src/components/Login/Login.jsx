@@ -2,7 +2,7 @@ import React from "react";
 import Joi from "joi";
 import Form from "../common/Form";
 import { connect } from "react-redux";
-import { withRouter } from "react-router-dom";
+import { Link, withRouter } from "react-router-dom";
 import { loginUser } from "../../actions/authActions"
 import { clearErrors } from "../../actions/errorsActions"
 
@@ -30,7 +30,7 @@ export class Login extends Form {
   }
 
   componentDidUpdate(prevProps) {
-    
+
     if (prevProps.auth !== this.props.auth) {
       if (this.props.auth.user.new) {
         const url = `/forcePasswordUpdate/${this.props.auth.user.userId}`;
@@ -70,7 +70,11 @@ export class Login extends Form {
             type: "password"
           })}
           {this.renderButton("Submit")}
+          <Link to="forgotpassword">
+            <span style={{ color: 'blue', textDecorationLine: 'underline', marginLeft: '240px', cursor: 'pointer' }} >forgot password?</span>
+          </Link>
         </form>
+
       </div>
     );
   }
