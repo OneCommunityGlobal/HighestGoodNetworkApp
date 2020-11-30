@@ -36,8 +36,14 @@ import {
 import { UserRole } from '../../utils/enums'
 
 export class Header extends React.Component {
-  state = {}
-
+  constructor(props) {
+    super(props);
+    this.toggle = this.toggle.bind(this);
+    this.state = {
+      isOpen: false
+    }
+  }
+  
   componentDidMount() {
     if (this.props.auth.isAuthenticated) {
       // this.props.getUserProfile(this.props.auth.user.userid)
@@ -53,13 +59,17 @@ export class Header extends React.Component {
       this.props.getTimerData(this.props.auth.user.userid)
     }
   }
+  toggle() {
+    this.setState({
+      isOpen: !this.state.isOpen
+    });
+  }
 
   render() {
-    const { isAuthenticated, user, firstName, profilePic } = this.props.auth
-
+    const { isAuthenticated, user, firstName, profilePic } = this.props.auth 
     return (
       <div>
-        <Navbar color="dark" dark expand="md" style={{ marginBottom: '20px' }}>
+        <Navbar color="dark" dark expand="lg" style={{ marginBottom: '20px' }}>
           <NavbarBrand tag={Link} to="/">
             {LOGO}
           </NavbarBrand>

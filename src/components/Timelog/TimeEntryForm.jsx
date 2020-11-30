@@ -36,6 +36,7 @@ const TimeEntryForm = ({
     projectId: '',
     notes: '',
     isTangible: data ? data.isTangible : true,
+    
   };
   const initialReminder = {
     notification: false,
@@ -50,13 +51,15 @@ const TimeEntryForm = ({
     in: false,
     information: '',
   };
-
+  const isDisabled = data ? data.disabled : false;
   const [inputs, setInputs] = useState(edit ? data : initialState);
   const [errors, setErrors] = useState({});
   const dispatch = useDispatch();
   const history = useHistory();
   const [reminder, setReminder] = useState(initialReminder);
   const [inform, setInfo] = useState(initialInfo);
+  const [openTangibleInfo, setTangibleInfo] = useState(false);
+  const tangibleInfoToggle = () => setTangibleInfo(!openTangibleInfo);
 
   const openModal = () => setReminder(reminder => ({
     ...reminder,
@@ -170,7 +173,7 @@ const TimeEntryForm = ({
       setReminder(reminder => ({
         ...reminder,
         remind:
-          'Do you have a link to your Google Doc or other place to review this work? You should add it if you do.',
+          'Do you have a link to your Google Doc or other place to review this work? You should add it if you do. (Note: Please include http[s]:// in your URL)',
       }));
       result.notes = 'Description and reference link are required';
     }
@@ -285,7 +288,7 @@ const TimeEntryForm = ({
       totalComittedHours: totalTime,
     };
     await dispatch(updateUserProfile(userProfile._id, updatedUserprofile));
-    // console.log('kkk')
+
     if (fromTimer) {
       if (status === 200) {
         const timerStatus = await dispatch(stopTimer(userId));
@@ -323,6 +326,8 @@ const TimeEntryForm = ({
   };
 
   const handleEditorChange = (content, editor) => {
+    console.log(content);
+    inputs.notes = content;
     const { wordcount } = editor.plugins;
 
     setInputs(inputs => ({ ...inputs, [editor.id]: content }));
@@ -354,7 +359,7 @@ const TimeEntryForm = ({
       <ModalHeader toggle={toggle}>
         <div>
           {edit ? 'Edit ' : 'Add '}
-          Time Entry
+          Time Entry &nbsp;
           <i
             className="fa fa-info-circle"
             data-tip
@@ -435,6 +440,7 @@ const TimeEntryForm = ({
               id="projectId"
               value={inputs.projectId}
               onChange={handleInputChange}
+              
             >
               {projectOptions}
             </Input>
@@ -476,7 +482,7 @@ const TimeEntryForm = ({
           </FormGroup>
           <FormGroup check>
             <Label check>
-              {isAdmin || !edit ? (
+              {isAdmin || (!edit && !isDisabled)  ? (
                 <Input
                   type="checkbox"
                   name="isTangible"
@@ -485,9 +491,18 @@ const TimeEntryForm = ({
                 />
               ) : (
                 <Input type="checkbox" name="isTangible" checked={inputs.isTangible} disabled />
-              )}
-              {' '}
-              Tangible
+              )}{' '}
+              Tangible&nbsp;<i
+            className="fa fa-info-circle"
+            data-tip
+            data-for="tangibleTip"
+            aria-hidden="true"
+            // style={{ 'text-align': 'center' }}
+            onClick={tangibleInfoToggle}
+          />
+        <ReactTooltip id="tangibleTip" place="bottom" effect="solid">
+          Click this icon to learn about tangible and intangible time.
+        </ReactTooltip>
             </Label>
           </FormGroup>
         </Form>
@@ -515,6 +530,20 @@ const TimeEntryForm = ({
             </Button>
             {isAdmin && (
               <Button onClick={openInfo} color="secondary">
+                Edit
+              </Button>
+            )}
+          </ModalFooter>
+        </Modal>
+        <Modal isOpen={openTangibleInfo} toggle={tangibleInfoToggle}>
+          <ModalHeader>Info</ModalHeader>
+          <ModalBody><p>Intangible time is time logged to items not related to your specific action items OR for time that needs to be manually changed to tangible time by an Admin (e.g. work away from your computer). In the case of the latter, be sure to email your Admin your change request.</p></ModalBody>
+          <ModalFooter>
+            <Button onClick={tangibleInfoToggle} color="primary">
+              Close
+            </Button>
+            {isAdmin && (
+              <Button onClick={tangibleInfoToggle} color="secondary">
                 Edit
               </Button>
             )}

@@ -11,7 +11,7 @@
     "@tinymce/tinymce-react": "^3.6.0",
     "acorn": ">=5.7.4",
     "axios": "^0.19.2",
-    "bootstrap": "^4.5.0",
+    "bootstrap": "^4.5.3",
     "classnames": "^2.2.6",
     "date-fns": "^2.14.0",
     "diff": "^5.0.0",
