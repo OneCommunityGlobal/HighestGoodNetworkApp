@@ -1,0 +1,27 @@
+.btn--dark-sea-green {
+  background-color: #c9d6c6 !important;
+  border-color: #285739 !important;
+  color: #285739 !important;
+}
+.badge_image_sm > img {
+  border-radius: 50%;
+  height: 50px;
+  width: 50px;
+  margin:2px;
+}
+
+.badge_image_lg > img {
+  border-radius: 50%;
+  height: 200px;
+  width: 200px;
+}
+
+.new_badges {
+  overflow-y: scroll;
+  height: 70px;
+}
+
+.old_badges {
+  overflow-y: scroll;
+  height: 220px;
+}

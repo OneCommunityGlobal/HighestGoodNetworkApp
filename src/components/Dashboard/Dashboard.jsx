@@ -1,13 +1,14 @@
-import React from 'react'
-import { Alert, Row, Col, Container } from 'reactstrap'
-// import MonthlyEffort from '../MonthlyEffort'
-import Leaderboard from '../LeaderBoard'
-import WeeklySummaryModal from '../WeeklySummary/WeeklySummaryModal'
-import '../../App.css'
+import React from 'react';
+import { Alert, Row, Col, Container } from 'reactstrap';
+import Leaderboard from '../LeaderBoard';
+import WeeklySummaryModal from '../WeeklySummary/WeeklySummaryModal';
+import Badge from '../Badge';
 import TeamMemberTasks from '../TeamMemberTasks/TeamMemberTasks'
-import Timelog from '../Timelog/Timelog'
+import Timelog from '../Timelog/Timelog';
+import '../../App.css';
+import { connect } from 'react-redux';
 
-export const Dashboard = () => (
+const Dashboard = props => (
   <Container fluid>
     <Row>
       <Col sm={{ size: 12 }}>
@@ -35,15 +36,15 @@ export const Dashboard = () => (
         <div className="my-2">
           <TeamMemberTasks />
         </div>
-        <div className="p-5 my-2 bg--dark-sea-green text-light">
-          <div className="py-2 my-2"> </div>
-          <h3>Badges Section goes here...</h3>
-          <div className="py-2 my-2"> </div>
-        </div>
+        <Badge userId={props.auth.user.userid} />
       </Col>
 
     </Row>
-  </Container>
-)
+  </Container >
+);
 
-export default Dashboard
+const mapStateToProps = state => ({
+  auth: state.auth,
+})
+
+export default connect(mapStateToProps)(Dashboard);
