@@ -1,10 +1,11 @@
 import React from 'react'
-import { Alert, Card, Row, Col, Container } from 'reactstrap'
-import MonthlyEffort from '../MonthlyEffort'
+import { Alert, Row, Col, Container } from 'reactstrap'
+// import MonthlyEffort from '../MonthlyEffort'
 import Leaderboard from '../LeaderBoard'
 import WeeklySummaryModal from '../WeeklySummary/WeeklySummaryModal'
 import '../../App.css'
 import TeamMemberTasks from '../TeamMemberTasks/TeamMemberTasks'
+import Timelog from '../Timelog/Timelog'
 
 export const Dashboard = () => (
   <Container fluid>
@@ -28,10 +29,8 @@ export const Dashboard = () => (
         <Leaderboard />
       </Col>
       <Col lg={{ size: 7 }} className="left-col-dashboard order-sm-1">
-        <div className="p-5 my-2 bg--cadet-blue text-light">
-          <div className="py-5 my-5"> </div>
-          <h3>Timelog goes here...</h3>
-          <div className="py-5 my-5"> </div>
+        <div className="my-2">
+          <Timelog/>
         </div>
         <div className="my-2">
           <TeamMemberTasks />

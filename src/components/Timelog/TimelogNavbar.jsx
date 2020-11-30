@@ -1,9 +1,13 @@
-import React from 'react'
-import { Progress } from 'reactstrap'
+import React, { useState } from 'react';
+import {Link} from 'react-router-dom';
+import { Progress, Navbar, Collapse, NavbarToggler, NavbarBrand,  Nav, NavItem, NavLink } from 'reactstrap'
 import { useSelector } from 'react-redux'
 
 const TimelogNavbar = ({ userId }) => {
   const { firstName, lastName } = useSelector(state => state.userProfile)
+  const [collapsed, setCollapsed] = useState(true);
+
+  const toggleNavbar = () => setCollapsed(!collapsed);
 
   const timeEntries = useSelector(state => state.timeEntries.weeks[0])
   const reducer = (total, entry) => total + parseInt(entry.hours) + parseInt(entry.minutes) / 60
@@ -45,23 +49,15 @@ const TimelogNavbar = ({ userId }) => {
 
   return (
     <div>
-      <nav className="navbar navbar-expand-md navbar-light bg-light mb-3 nav-fill">
-        <li className="navbar-brand">
+      <Navbar className="navbar navbar-expand-sm navbar-light navbar-border bg-light mb-2 col-md-12 nav-fill">
+        <NavbarBrand className="navbar-brand pb-3">
           {firstName} {lastName}
           's Timelog
-        </li>
-        <button
-          className="navbar-toggler"
-          type="button"
-          data-toggle="collapse"
-          data-target="#timelogsnapshot"
-          aria-controls="navbarSupportedContent"
-          aria-expanded="false"
-          aria-label="Toggle navigation"
-        />
-        <div className="collapse navbar-collapse" id="timelogsnapshot">
-          <ul className="navbar-nav w-100">
-            <li className="nav-item navbar-text mr-3 w-25" id="timelogweeklychart">
+        </NavbarBrand>
+        <NavbarToggler onClick={toggleNavbar}/>
+        <Collapse isOpen={!collapsed} className="ml-auto flex-column" id="timelogsnapshot" navbar>
+          <Nav navbar className="navbar-nav w-100">
+            <NavItem className="nav-item navbar-text w-80" id="timelogweeklychart">
               <div>
                 Current Week : {totalEffort.toFixed(2)} / {weeklyComittedHours}
               </div>
@@ -76,33 +72,38 @@ const TimelogNavbar = ({ userId }) => {
                 className={getBarColor(totalEffort)}
                 striped={totalEffort < weeklyComittedHours}
               />
-            </li>
-            <li className="nav-item  navbar-text">
+            </NavItem>
+            <NavItem className="mt-3">
+              <NavLink tag={Link} href={`/userprofile/${userId}`}>View Profile</NavLink>
+            </NavItem>
+            </Nav>
+            {/* <ul className="navbar-nav flex-row ml-auto">
+            <li className="nav-item navbar-text ml-4">
               <span
-                className="fa fa-tasks icon-large"
+                className="fa fa-tasks icon-large align-middle"
                 data-toggle="modal"
                 data-target="#actionItems"
               >
-                <icon className="badge badge-pill badge-warning badge-notify" />
+                <i className="badge badge-pill badge-warning badge-notify align-middle" />
               </span>
             </li>
-            <li className="nav-item navbar-text">
+            <li className="nav-item navbar-text ml-4">
               <i
-                className="fa fa-envelope icon-large"
+                className="fa fa-envelope icon-large align-middle"
                 data-toggle="modal"
                 data-target="#notifications"
               >
-                <icon className="badge badge-pill badge-warning badge-notify">noti</icon>
+                <i className="badge badge-pill badge-warning badge-notify align-middle ml-1">noti</i>
               </i>
             </li>
-            <li className="nav-item navbar-text">
+            <li className="nav-item navbar-text ml-4">
               <a className="nav-link" href={`/userprofile/${userId}`}>
                 View Profile
               </a>
             </li>
-          </ul>
-        </div>
-      </nav>
+          </ul> */}
+        </Collapse>
+        </Navbar>
     </div>
   )
 }
