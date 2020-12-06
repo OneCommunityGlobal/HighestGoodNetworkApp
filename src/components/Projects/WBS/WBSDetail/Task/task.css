@@ -9,3 +9,10 @@
   cursor: pointer;
 }
 
+.disable-div{
+  pointer-events:none;
+}
+
+.margin-left{
+  margin-left: 5px;
+}

@@ -234,11 +234,11 @@ const EditTaskModal = (props) => {
   return (
     <div className="controlBtn">
       <Modal isOpen={modal} toggle={toggle}>
-        <ModalHeader toggle={toggle}>View/Edit</ModalHeader>
+        <ModalHeader toggle={toggle}>{props.userProfile.role === UserRole.Administrator ? 'Edit' : 'View'}</ModalHeader>
         <ModalBody>
           <ReactTooltip />
 
-          <table className="table table-bordered">
+          <table className={`table table-bordered ${props.userProfile.role === UserRole.Administrator ? null : 'disable-div'}`}>
             <tbody>
               <tr>
                 <td scope="col" data-tip="WBS ID">
@@ -580,7 +580,7 @@ const EditTaskModal = (props) => {
           : null}
       </Modal>
       <Button color="primary" size="sm" onClick={toggle}>
-        View/Edit
+        {props.userProfile.role === UserRole.Administrator ? 'Edit' : 'View'}
       </Button>
     </div>
   );

@@ -2,22 +2,28 @@
  * Component: TAK
  * Author: Henry Ng - 21/03/20
  ********************************************************************************/
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { connect } from 'react-redux'
 import { Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap'
 import { Button, Dropdown, DropdownItem, DropdownToggle, DropdownMenu } from 'reactstrap';
 import AddTaskModal from '../AddTask/AddTaskModal';
 import EditTaskModal from "../EditTask/EditTaskModal";
-import { moveTasks, fetchAllTasks, deleteTask } from "../../../../../actions/task.js";
+import { moveTasks, fetchAllTasks, deleteTask, copyTask } from "../../../../../actions/task.js";
 import './tagcolor.css';
 import './task.css';
 import { Editor } from '@tinymce/tinymce-react'
 import { UserRole } from './../../../../../utils/enums';
+import ModalDelete from './../../../../../components/common/Modal'
+import * as Message from './../../../../../languages/en/messages'
 
 const Task = (props) => {
 
+  useEffect(() => {
+    setIsCopied(false);
+  }, [1])
   // modal
   const [modal, setModal] = useState(false)
+  const [modalDelete, setModalDelete] = useState(false)
   const toggleModel = () => setModal(!modal)
 
   const startedDate = new Date(props.startedDatetime);
@@ -26,6 +32,7 @@ const Task = (props) => {
   const [isLoad, setIsLoad] = useState(false);
   const toggle = () => setDropdownOpen(prevState => !prevState);
   const [isOpen, setIsOpen] = useState(false);
+  const [isCopied, setIsCopied] = useState(false);
   //let isOpen = true;
   let passCurrentNum = false;
 
@@ -137,8 +144,12 @@ const Task = (props) => {
 
   }
 
+  const showUpDeleteModal = () => {
+    setModalDelete(true);
+  }
 
   const deleteTask = (taskId, mother) => {
+
     props.deleteTask(taskId, mother);
     props.fetchAllTasks(props.wbsId, -1);
     setTimeout(() => {
@@ -146,6 +157,8 @@ const Task = (props) => {
     }, 2000);
 
   }
+
+
 
   const onMove = (from, to) => {
     const fromNum = from.split('.0').join('');
@@ -156,9 +169,15 @@ const Task = (props) => {
     }, 4000);
   }
 
+  const onCopy = (id) => {
+    setIsCopied(true);
+    props.copyTask(id);
+  }
+
 
   return (
     <React.Fragment>
+
       <tr key={props.key} className={`num_${props.num.split('.').join('')} wbsTask  ${props.isNew ? 'newTask' : ''} parentId1_${props.parentId1} parentId2_${props.parentId2} parentId3_${props.parentId3} mother_${props.mother} lv_${props.level}`} id={props.id}>
         <td className={`tag_color tag_color_${props.num.length > 0 ? props.num.split('.')[0] : props.num} tag_color_lv_${props.level}`}></td>
         <td
@@ -273,17 +292,18 @@ const Task = (props) => {
 
       <tr className='wbsTaskController desktop-view' id={`controller_${props.id}`}>
         <td colSpan={15} className='controlTd'>
-          {props.state.userProfile.role === UserRole.Administrator ?
+          {props.state.auth.user.role === UserRole.Administrator ?
             <AddTaskModal key={`addTask_${props.id}`} parentNum={props.num} taskId={props.id} projectId={props.projectId} wbsId={props.wbsId} parentId1={props.parentId1} parentId2={props.parentId2} parentId3={props.parentId3} mother={props.mother} level={props.level} openChild={(e) => openChild(props.num, props.id)} />
             : null}
           <EditTaskModal key={`editTask_${props.id}`} parentNum={props.num} taskId={props.id} projectId={props.projectId} wbsId={props.wbsId} parentId1={props.parentId1} parentId2={props.parentId2} parentId3={props.parentId3} mother={props.mother} level={props.level} />
-          {props.state.userProfile.role === UserRole.Administrator ?
+
+          {props.state.auth.user.role === UserRole.Administrator ?
             <>
-              <Button color="danger" size="sm" className='controlBtn controlBtn_remove' onClick={() => deleteTask(props.id, props.mother)}>Remove</Button>
+              <Button color="danger" size="sm" className='controlBtn controlBtn_remove' onClick={() => setModalDelete(true)}>Remove</Button>
 
               <Dropdown direction="up" isOpen={dropdownOpen} toggle={toggle} style={{ float: "left" }}>
                 <DropdownToggle caret caret color="primary" size="sm" >
-                  Move to
+                  Move
                 </DropdownToggle>
                 <DropdownMenu >
                   {props.siblings.map((item, i) => {
@@ -297,6 +317,11 @@ const Task = (props) => {
                   })}
                 </DropdownMenu>
               </Dropdown>
+
+              <Button color="secondary" size="sm" className="margin-left" onClick={() => onCopy(props.id)}>
+                {isCopied ? 'Copied' : 'Copy'}
+              </Button>
+
             </>
             : null}
 
@@ -347,11 +372,19 @@ const Task = (props) => {
             </ModalBody>
           </Modal>
 
+          <ModalDelete
+            isOpen={modalDelete}
+            closeModal={() => { setModalDelete(false) }}
+            confirmModal={() => deleteTask(props.id, props.mother)}
+            modalMessage={"Hold up there pally, you sure you want to delete this!?! Deleting this cannot be undone and the process deletes all the tasks within this folder too. If you want to keep those and still delete this folder, you first need to drag the ones you want to keep to another folder. Easy peasy, then you can destroy this folder forever and feel good about it"}
+            modalTitle={Message.CONFIRM_DELETION}
+          />
+
         </td>
       </tr>
     </React.Fragment >
   )
 }
 const mapStateToProps = state => { return { state } }
-export default connect(mapStateToProps, { moveTasks, fetchAllTasks, deleteTask })(Task)
+export default connect(mapStateToProps, { moveTasks, fetchAllTasks, deleteTask, copyTask })(Task)
 

@@ -1,12 +1,12 @@
 /*********************************************************************************
- * Component: PROJECTS  
+ * Component: PROJECTS
  * Author: Henry Ng - 01/27/20
  * This component is used to build the layout of the list of projects
  * Childrens: Overview, ProjectTableHeader, Project ( List )
  * Layout: <Overview>
  *         <ProjectTableHeader>
- *         {  <Project>...  } 
- * 
+ *         {  <Project>...  }
+ *
  ********************************************************************************/
 import React, { Component } from 'react'
 import { fetchAllProjects, postNewProject, deleteProject, modifyProject } from '../../actions/projects'
@@ -39,12 +39,13 @@ export class Projects extends Component {
   }
 
   componentDidMount() {
-    this.props.fetchAllProjects(); // Fetch to get all projects 
+    console.log(this.props)
+    this.props.fetchAllProjects(); // Fetch to get all projects
   }
 
 
   /**
-   * Changes the number of active projects 
+   * Changes the number of active projects
    */
   onClickActive = (projectId, projectName, isActive) => {
     this.props.modifyProject("setActive", projectId, projectName, isActive);
@@ -74,14 +75,14 @@ export class Projects extends Component {
     let { projectId } = this.state.projectTarget;
     // request delete on db
     this.props.deleteProject(projectId);
-    // disable modal 
+    // disable modal
     this.setState({ showModalDelete: false });
   }
 
   setInactiveProject = () => {
     let { projectId, projectName } = this.state.projectTarget;
     this.props.modifyProject("setActive", projectId, projectName, true);
-    // disable modal 
+    // disable modal
     this.setState({ showModalDelete: false });
 
   }
@@ -109,7 +110,7 @@ export class Projects extends Component {
     if (status == 400 && trackModelMsg) {
       showModalMsg = true;
     }
-    // Display project lists 
+    // Display project lists
     let ProjectsList = [];
     if (projects.length > 0) {
       ProjectsList = projects.map((project, index) =>

@@ -142,6 +142,14 @@ export const deleteTask = (taskId, mother) => {
   }
 }
 
+export const copyTask = (taskId) => {
+  return async dispatch => {
+    await dispatch(saveTmpTask(taskId));
+  }
+}
+
+
+
 /**
 * Set a flag that fetching Task
 */
@@ -215,6 +223,14 @@ export const removeTask = (taskId, status) => {
     type: types.DELETE_TASK,
     taskId,
     status,
+  }
+}
+
+
+export const saveTmpTask = (taskId) => {
+  return {
+    type: types.COPY_TASK,
+    taskId
   }
 }
 

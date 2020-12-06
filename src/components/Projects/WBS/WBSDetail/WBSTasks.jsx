@@ -24,6 +24,8 @@ const WBSTasks = (props) => {
   const wbsId = props.match.params.wbsId;
   const projectId = props.match.params.projectId;
   const wbsName = props.match.params.wbsName;
+  const [isShowImport, setIsShowImport] = useState(false);
+
   const [selectedId, setSelectedId] = useState(null);
 
   useEffect(() => {
@@ -31,6 +33,16 @@ const WBSTasks = (props) => {
     props.fetchAllMembers(projectId);
 
   }, [wbsId, projectId]);
+
+  const refresh = () => {
+    setIsShowImport(false);
+    props.fetchAllTasks(wbsId, -1);
+    setTimeout(() => {
+      props.fetchAllTasks(wbsId, 0);
+
+      setTimeout(() => setIsShowImport(true), 1000)
+    }, 1000);
+  }
 
   const selectTaskFunc = (id) => {
     setSelectedId(id);
@@ -90,7 +102,7 @@ const WBSTasks = (props) => {
       }
     }
 
-    console.log(list);
+    //console.log(list);
     //props.updateNumList(wbsId, list);*/
 
   }
@@ -120,7 +132,6 @@ const WBSTasks = (props) => {
   return (
     <React.Fragment>
       <ReactTooltip />
-
       <div className='container-tasks' >
 
         <nav aria-label="breadcrumb">
@@ -137,15 +148,18 @@ const WBSTasks = (props) => {
 
           </ol>
         </nav>
-        {props.state.userProfile.role === UserRole.Administrator ?
+
+        {props.state.auth.user.role === UserRole.Administrator ?
           <AddTaskModal key="task_modal_null" parentNum={null} taskId={null} wbsId={wbsId} projectId={projectId} />
           : null}
 
-        {props.state.tasks.taskItems.length === 0 ?
+        {props.state.tasks.taskItems.length === 0 && isShowImport === true ?
           <ImportTask wbsId={wbsId} projectId={projectId} />
           : null}
+        <Button color="primary" className="btn-success" size="sm" onClick={() => refresh()} >Refresh </Button>
 
         <div className="toggle-all">
+
           <Button color="light" size="sm" onClick={() => toggleGroups(true)} >Open</Button>
           <Button color="dark" size="sm" onClick={() => toggleGroups(false)}>Close</Button>
         </div>

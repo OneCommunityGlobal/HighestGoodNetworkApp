@@ -237,6 +237,52 @@ const AddTaskModal = props => {
     setEndstateInfo('')
   }
 
+  const paste = () => {
+    setTaskName(props.tasks.copiedTask.taskName);
+
+    if (props.tasks.copiedTask.priority === 'Secondary') {
+      document.getElementById("priority").selectedIndex = 1;
+    } else if (props.tasks.copiedTask.priority === 'Tertiary') {
+      document.getElementById("priority").selectedIndex = 2;
+    } else {
+      document.getElementById("priority").selectedIndex = 0;
+    }
+    setPriority(props.tasks.copiedTask.priority);
+
+    setMemberName();
+    setResourceItems(props.tasks.copiedTask.resources);
+    res = [];
+
+    if (props.tasks.copiedTask.isAssigned === true) {
+      document.getElementById("Assigned").selectedIndex = 0;
+    } else {
+      document.getElementById("Assigned").selectedIndex = 1;
+    }
+    setAssigned(props.tasks.copiedTask.isAssigned);
+
+    // Not enough cases here
+    if (props.tasks.copiedTask.status === "Not Started") {
+      document.getElementById("Status").selectedIndex = 0;
+    } else {
+      document.getElementById("Status").selectedIndex = 1;
+    }
+    setStatus(props.tasks.copiedTask.status);
+
+
+    setHoursBest(props.tasks.copiedTask.hoursBest);
+    setHoursWorst(props.tasks.copiedTask.hoursWorst);
+    setHoursMost(props.tasks.copiedTask.hoursMost)
+    setHoursEstimate(props.tasks.copiedTask.estimatedHours);
+
+    setStartedDate(props.tasks.copiedTask.startedDatetime);
+    setDueDate(props.tasks.copiedTask.dueDatetime);
+
+    setLinks(props.tasks.copiedTask.links);
+    setWhyInfo(props.tasks.copiedTask.whyInfo);
+    setIntentInfo(props.tasks.copiedTask.intentInfo);
+    setEndstateInfo(props.tasks.copiedTask.endstateInfo);
+  }
+
   const addNewTask = () => {
     setIsLoading(true);
 
@@ -287,10 +333,15 @@ const AddTaskModal = props => {
     <div className="controlBtn">
       <Modal isOpen={modal} toggle={toggle}>
         <ModalHeader toggle={toggle}>
-          Add New Task{' '}
-          <button type="button" className="btn btn-primary btn-sm" onClick={() => clear()}>
+          Add New Task
+          <button type="button" size="small" className="btn btn-primary btn-sm margin-left" onClick={() => clear()}>
             Reset
           </button>
+
+          <button type="button" size="small" className="btn btn-primary btn-sm margin-left" onClick={() => paste()}>
+            Paste
+          </button>
+
         </ModalHeader>
         <ModalBody>
           <ReactTooltip />
@@ -597,6 +648,7 @@ const AddTaskModal = props => {
                       formatDate={formatDate}
                       placeholder={`${dateFnsFormat(new Date(), FORMAT)}`}
                       onDayChange={(day, mod, input) => changeDateStart(input.state.value)}
+                      value={startedDate}
                     />
                     <div className="warning">
                       {dateWarning ? DUE_DATE_MUST_GREATER_THAN_START_DATE : ''}
@@ -612,6 +664,7 @@ const AddTaskModal = props => {
                     formatDate={formatDate}
                     placeholder={`${dateFnsFormat(new Date(), FORMAT)}`}
                     onDayChange={(day, mod, input) => changeDateEnd(input.state.value)}
+                    value={dueDate}
                   />
                   <div className="warning">
                     {dateWarning ? DUE_DATE_MUST_GREATER_THAN_START_DATE : ''}
