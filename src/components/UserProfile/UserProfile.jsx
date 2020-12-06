@@ -51,7 +51,7 @@ class UserProfile extends Component {
     },
     createdDate: '',
     activeTab: '1',
-  };
+  }
 
   async componentDidMount() {
     if (this.props.match) {
@@ -123,19 +123,31 @@ class UserProfile extends Component {
     const filteredTeam = _userProfile.teams.filter(team => team._id !== deletedTeamId);
     _userProfile.teams = filteredTeam;
 
-    this.setState({
-      userProfile: _userProfile,
-    }, () => { this.saveChanges(); });
+    this.setState(
+      {
+        userProfile: _userProfile,
+      },
+      () => {
+        this.saveChanges();
+      },
+    );
   }
 
   onDeleteProject = (deletedProjectId) => {
     const _userProfile = Object.assign({}, this.state.userProfile);
-    const filteredProject = _userProfile.projects.filter(project => project._id !== deletedProjectId);
+    const filteredProject = _userProfile.projects.filter(
+      project => project._id !== deletedProjectId,
+    );
     _userProfile.projects = filteredProject;
 
-    this.setState({
-      userProfile: _userProfile,
-    }, () => { this.saveChanges(); });
+    this.setState(
+      {
+        userProfile: _userProfile,
+      },
+      () => {
+        this.saveChanges();
+      },
+    );
   }
 
   onAssignTeam = (assignedTeam) => {
@@ -146,9 +158,14 @@ class UserProfile extends Component {
       _userProfile.teams = [assignedTeam];
     }
 
-    this.setState({
-      userProfile: _userProfile,
-    }, () => { this.saveChanges(); });
+    this.setState(
+      {
+        userProfile: _userProfile,
+      },
+      () => {
+        this.saveChanges();
+      },
+    );
   }
 
   onAssignProject = (assignedProject) => {
@@ -159,16 +176,18 @@ class UserProfile extends Component {
       _userProfile.projects = [assignedProject];
     }
 
-    this.setState({
-      userProfile: _userProfile,
-    }, () => { this.saveChanges(); });
+    this.setState(
+      {
+        userProfile: _userProfile,
+      },
+      () => {
+        this.saveChanges();
+      },
+    );
   }
 
   saveChanges = () => {
-    this.props.updateUserProfile(
-      this.props.match.params.userId,
-      this.state.userProfile,
-    );
+    this.props.updateUserProfile(this.props.match.params.userId, this.state.userProfile);
   }
 
   handleBlueSquare = (status = true, type = 'message', blueSquareID = '') => {
@@ -187,7 +206,7 @@ class UserProfile extends Component {
         type,
       });
     }
-  };
+  }
 
   toggleTab = (tab) => {
     if (this.state.activeTab !== tab) {
@@ -195,7 +214,7 @@ class UserProfile extends Component {
         activeTab: tab,
       });
     }
-  };
+  }
 
   formatPhoneNumber = (str) => {
     // Filter only numbers from the input
@@ -226,7 +245,7 @@ class UserProfile extends Component {
     }
     // Unconventional
     return str;
-  };
+  }
 
   render() {
     const {
@@ -362,6 +381,7 @@ class UserProfile extends Component {
                       isUserAdmin={false}
                       blueSquares={infringments}
                       handleBlueSquare={this.handleBlueSquare}
+                      id="bluesquare"
                     />
                   </div>
                 )}
@@ -519,7 +539,6 @@ class UserProfile extends Component {
                     isUserAdmin={isUserAdmin}
                     edit={false}
                   />
-
                 </TabPane>
               </TabContent>
             </Col>
@@ -558,7 +577,6 @@ class UserProfile extends Component {
             isUserAdmin={isUserAdmin} />
 
         </div> */}
-
       </div>
     );
   }
