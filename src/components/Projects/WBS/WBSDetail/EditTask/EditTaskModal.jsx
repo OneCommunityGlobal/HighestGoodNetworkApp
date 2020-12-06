@@ -234,11 +234,11 @@ const EditTaskModal = (props) => {
   return (
     <div className="controlBtn">
       <Modal isOpen={modal} toggle={toggle}>
-        <ModalHeader toggle={toggle}>{props.userProfile.role === UserRole.Administrator ? 'Edit' : 'View'}</ModalHeader>
+        <ModalHeader toggle={toggle}>{props.state.auth.user.role === UserRole.Administrator ? 'Edit' : 'View'}</ModalHeader>
         <ModalBody>
           <ReactTooltip />
 
-          <table className={`table table-bordered ${props.userProfile.role === UserRole.Administrator ? null : 'disable-div'}`}>
+          <table className={`table table-bordered ${props.state.auth.user.role === UserRole.Administrator ? null : 'disable-div'}`}>
             <tbody>
               <tr>
                 <td scope="col" data-tip="WBS ID">
@@ -566,7 +566,7 @@ const EditTaskModal = (props) => {
             </tbody>
           </table>
         </ModalBody>
-        {props.userProfile.role === UserRole.Administrator ?
+        {props.state.auth.user.role === UserRole.Administrator ?
           <ModalFooter>
             {taskName !== '' && startedDate !== '' && dueDate !== '' ? (
               <Button color="primary" onClick={toggle} onClick={updateTask}>
@@ -580,7 +580,7 @@ const EditTaskModal = (props) => {
           : null}
       </Modal>
       <Button color="primary" size="sm" onClick={toggle}>
-        {props.userProfile.role === UserRole.Administrator ? 'Edit' : 'View'}
+        {props.state.auth.user.role === UserRole.Administrator ? 'Edit' : 'View'}
       </Button>
     </div>
   );
