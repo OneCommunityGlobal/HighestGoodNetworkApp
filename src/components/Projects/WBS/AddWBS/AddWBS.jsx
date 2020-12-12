@@ -9,6 +9,7 @@ import { addNewWBS } from './../../../../actions/wbs'
 import { UserRole } from './../../../../utils/enums'
 
 const AddWBS = (props) => {
+  const [role] = useState(props.state ? props.state.auth.user.role : null);
   const [showAddButton, setShowAddButton] = useState(false);
   const [newName, setNewName] = useState('');
 

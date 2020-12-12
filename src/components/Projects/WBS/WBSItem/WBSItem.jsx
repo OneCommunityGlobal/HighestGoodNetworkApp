@@ -7,8 +7,12 @@ import React, { useState } from 'react'
 import { connect } from 'react-redux'
 import ModalDelete from './../../../common/Modal'
 import { deleteWBS } from './../../../../actions/wbs'
+import { UserRole } from './../../../../utils/enums'
 
 const WBSItem = (props) => {
+  console.log(props);
+
+
   const [showModalDelete, setShowModalDelete] = useState(false);
 
   const confirmDelete = () => {
@@ -26,12 +30,13 @@ const WBSItem = (props) => {
             {props.name}
           </a>
         </td>
-
-        <td className='members__assign'>
-          <button className="btn btn-outline-danger btn-sm" type="button" onClick={(e) => setShowModalDelete(true)}>
-            <i className="fa fa-minus" aria-hidden="true"></i>
-          </button>
-        </td>
+        {props.auth.user.role === UserRole.Administrator ?
+          <td className='members__assign'>
+            <button className="btn btn-outline-danger btn-sm" type="button" onClick={(e) => setShowModalDelete(true)}>
+              <i className="fa fa-minus" aria-hidden="true"></i>
+            </button>
+          </td>
+          : null}
 
       </tr>
 
@@ -47,6 +52,6 @@ const WBSItem = (props) => {
     </React.Fragment>
   )
 }
-
-export default connect(null, { deleteWBS })(WBSItem)
+const mapStateToProps = state => state;
+export default connect(mapStateToProps, { deleteWBS })(WBSItem)
 

@@ -3,8 +3,13 @@ import { DELETE } from './../../../languages/en/ui'
 import './../projects.css'
 import { Link } from 'react-router-dom'
 import { NavItem } from 'reactstrap'
+import { UserRole } from './../../../utils/enums'
+import { connect } from 'react-redux';
+
 
 const Project = props => {
+  console.log(props.auth.user.role);
+
   const [originName] = useState(props.name)
   const [name, setName] = useState(props.name)
   const [active, setActive] = useState(props.active)
@@ -54,12 +59,18 @@ const Project = props => {
         </NavItem>
       </td>
 
-      <td><button type="button" className="btn btn-outline-danger"
-        onClick={(e) => props.onClickDelete(
-          props.projectId,
-          props.active,
-          props.name)}>{DELETE}</button></td>
+      {(props.auth.user.role === UserRole.Administrator) ? (
+        <td>
+          <button type="button" className="btn btn-outline-danger"
+            onClick={(e) => props.onClickDelete(
+              props.projectId,
+              props.active,
+              props.name)}>{DELETE}</button>
+        </td>
+      ) : null}
+
     </tr>
   )
 }
-export default Project
+const mapStateToProps = state => state;
+export default connect(mapStateToProps)(Project)

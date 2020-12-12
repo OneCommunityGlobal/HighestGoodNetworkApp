@@ -15,6 +15,8 @@ import { Editor } from '@tinymce/tinymce-react'
 import { UserRole } from './../../../../../utils/enums'
 
 const EditTaskModal = (props) => {
+  const [role] = useState(props.auth ? props.auth.user.role : null);
+
   const tasks = props.tasks.taskItems;
   const { members } = props.projectMembers;
   let foundedMembers = [];
@@ -234,11 +236,11 @@ const EditTaskModal = (props) => {
   return (
     <div className="controlBtn">
       <Modal isOpen={modal} toggle={toggle}>
-        <ModalHeader toggle={toggle}>{props.state.auth.user.role === UserRole.Administrator ? 'Edit' : 'View'}</ModalHeader>
+        <ModalHeader toggle={toggle}>{role === UserRole.Administrator ? 'Edit' : 'View'}</ModalHeader>
         <ModalBody>
           <ReactTooltip />
 
-          <table className={`table table-bordered ${props.state.auth.user.role === UserRole.Administrator ? null : 'disable-div'}`}>
+          <table className={`table table-bordered ${role === UserRole.Administrator ? null : 'disable-div'}`}>
             <tbody>
               <tr>
                 <td scope="col" data-tip="WBS ID">
@@ -566,7 +568,8 @@ const EditTaskModal = (props) => {
             </tbody>
           </table>
         </ModalBody>
-        {props.state.auth.user.role === UserRole.Administrator ?
+
+        {role === UserRole.Administrator ?
           <ModalFooter>
             {taskName !== '' && startedDate !== '' && dueDate !== '' ? (
               <Button color="primary" onClick={toggle} onClick={updateTask}>
@@ -580,7 +583,7 @@ const EditTaskModal = (props) => {
           : null}
       </Modal>
       <Button color="primary" size="sm" onClick={toggle}>
-        {props.state.auth.user.role === UserRole.Administrator ? 'Edit' : 'View'}
+        {role === UserRole.Administrator ? 'Edit' : 'View'}
       </Button>
     </div>
   );

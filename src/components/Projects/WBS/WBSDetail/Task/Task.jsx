@@ -17,6 +17,7 @@ import ModalDelete from './../../../../../components/common/Modal'
 import * as Message from './../../../../../languages/en/messages'
 
 const Task = (props) => {
+  const [role] = useState(props.state ? props.state.auth.user.role : null);
 
   useEffect(() => {
     setIsCopied(false);
@@ -292,12 +293,12 @@ const Task = (props) => {
 
       <tr className='wbsTaskController desktop-view' id={`controller_${props.id}`}>
         <td colSpan={15} className='controlTd'>
-          {props.state.auth.user.role === UserRole.Administrator ?
+          {role === UserRole.Administrator ?
             <AddTaskModal key={`addTask_${props.id}`} parentNum={props.num} taskId={props.id} projectId={props.projectId} wbsId={props.wbsId} parentId1={props.parentId1} parentId2={props.parentId2} parentId3={props.parentId3} mother={props.mother} level={props.level} openChild={(e) => openChild(props.num, props.id)} />
             : null}
           <EditTaskModal key={`editTask_${props.id}`} parentNum={props.num} taskId={props.id} projectId={props.projectId} wbsId={props.wbsId} parentId1={props.parentId1} parentId2={props.parentId2} parentId3={props.parentId3} mother={props.mother} level={props.level} />
 
-          {props.state.auth.user.role === UserRole.Administrator ?
+          {role === UserRole.Administrator ?
             <>
               <Button color="danger" size="sm" className='controlBtn controlBtn_remove' onClick={() => setModalDelete(true)}>Remove</Button>
 

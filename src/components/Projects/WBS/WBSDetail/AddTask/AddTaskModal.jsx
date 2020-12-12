@@ -12,7 +12,7 @@ import { Editor } from '@tinymce/tinymce-react'
 
 const AddTaskModal = props => {
   const tasks = props.tasks.taskItems
-  const { members } = props.projectMembers
+  const [members] = useState(props.projectMembers || props.projectMembers.members);
   let foundedMembers = []
 
   // modal
@@ -97,11 +97,18 @@ const AddTaskModal = props => {
 
   const [foundMembersHTML, setfoundMembersHTML] = useState('')
   const findMembers = () => {
-    foundedMembers = members.filter(user =>
-      (user.firstName + ' ' + user.lastName).toLowerCase().includes(memberName.toLowerCase()),
-    )
+    let memberList = members.members ? props.projectMembers.members : members;
+    console.log('findMembers', memberList);
+    for (let i = 0; i < memberList.length; i++) {
+      console.log('project members', memberList[i]);
+
+      if ((memberList[i].firstName + ' ' + memberList[i].lastName).toLowerCase().includes(memberName.toLowerCase())) {
+        foundedMembers.push(memberList[i]);
+      }
+    }
+
     const html = foundedMembers.map((elm, i) => (
-      <div key={i}>
+      <div key={`found-member-${i}`}>
         <a href={`/userprofile/${elm._id}`} target="_blank">
           <input
             type="text"
@@ -131,14 +138,12 @@ const AddTaskModal = props => {
     ])
   }
 
-  let res = []
   const addResources = (userID, first, last, profilePic) => {
-    res.push({
+    setResourceItems([{
       userID,
       name: `${first} ${last}`,
       profilePic,
-    })
-    setResourceItems([...res])
+    }, ...resourceItems])
   }
 
   // Date picker
@@ -222,7 +227,6 @@ const AddTaskModal = props => {
     setPriority('Primary')
     setMemberName(' ')
     setResourceItems([])
-    res = []
     setAssigned(false)
     setStatus('Started')
     setHoursBest(0)
@@ -251,7 +255,6 @@ const AddTaskModal = props => {
 
     setMemberName();
     setResourceItems(props.tasks.copiedTask.resources);
-    res = [];
 
     if (props.tasks.copiedTask.isAssigned === true) {
       document.getElementById("Assigned").selectedIndex = 0;
@@ -388,7 +391,6 @@ const AddTaskModal = props => {
                       data-tip="Input a name"
                       onChange={e => setMemberName(e.target.value)}
                       onKeyPress={e => setMemberName(e.target.value)}
-                      onKeyPress={findMembers}
                     />
                     <button
                       className="task-resouces-btn"

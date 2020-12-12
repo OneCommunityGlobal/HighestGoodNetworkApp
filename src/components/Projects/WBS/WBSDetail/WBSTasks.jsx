@@ -16,7 +16,7 @@ import ReactTooltip from 'react-tooltip'
 import { UserRole } from './../../../../utils/enums';
 
 const WBSTasks = (props) => {
-
+  const [role] = useState(props.state ? props.state.auth.user.role : null);
   // modal
   const [modal, setModal] = useState(false);
   const toggle = () => setModal(!modal);
