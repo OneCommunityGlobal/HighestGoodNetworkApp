@@ -36,7 +36,7 @@
 }
 
 .bg--dark-green {
-  background-color: #2e9418;
+  background-color: #32a518;
 }
 
 .text--silver {
@@ -68,36 +68,66 @@
 }
 
 .redBackgroup {
+  z-index: 10;
+  position: absolute;
   height: 30px;
   text-align: center;
   vertical-align: middle;
   background: #ff4d4f;
   border-radius: 20px;
   color: #fff;
-  position: relative;
-  top: -30px;
-  left: 35px;
+  top: 55px;
+  left: 60px;
   padding: 3px 6px;
   max-width: 25px;
 }
 
 .blackBackgroup {
+  z-index: 10;
   height: 30px;
   text-align: center;
   vertical-align: middle;
   background: #020202;
   border-radius: 20px;
   color: rgb(235, 238, 48);
-  position: relative;
-  top: -30px;
-  left: 35px;
+  position: absolute;
+  top: 55px;
+  left: 60px;
   padding: 3px 6px;
   max-width: 25px;
 }
 
-.border {
-  border-width: 40px;
+.border-red {
+  border-width: 3px;
   /* border-radius: 10px; */
-  border-color: #ff4d4f;
-  /* border-style: solid; */
+  border-color: #fabec0;
+  border-style: solid;
+}
+
+.border-green {
+  border-width: 3px;
+  /* border-radius: 10px; */
+  border-color: #32a518;
+  border-style: solid;
+}
+
+.frame {
+  display: inline-block;
+  position: relative;
+  height: 85px;
+  width: 85px;
+}
+
+.image_frame {
+  position: absolute;
+  top: 0px;
+  left: 0px;
+}
+
+.badge-list {
+  padding-top: 10px;
+}
+
+.text-list {
+  padding-top: 25px;
 }

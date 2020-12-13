@@ -35,6 +35,8 @@ import MonthlyEffort from '../MonthlyEffort'
 // import TimelogNavbar from '../TimelogNavbar'
 import Leaderboard from '../LeaderBoard'
 import WeeklySummaryModal from '../WeeklySummary/WeeklySummaryModal'
+// import { WeeklySummary } from './WeeklySummary'
+// import { getWeeklySummaries, updateWeeklySummaries } from '../../actions/weeklySummaries'
 import '../../App.css'
 import './board.css'
 import task_icon from './task_icon.png'
@@ -70,6 +72,10 @@ const Dashboard = () => {
       information: newstr,
     }))
   }
+
+  // async componentDidMount() {
+  //   await this.props.getWeeklySummaries(this.props.currentUser.userid);
+  //   const { weeklySummariesCount } = this.props.summaries;}
 
   const getBarColor = hours => {
     if (hours < 5) {
@@ -123,84 +129,141 @@ const Dashboard = () => {
         </Col>
       </Row>
       <Row className="my-2 bg--dark-sea-green text-light">
-        <div className="col-md-2" align="center">
-          <div className="py-2"> </div>
+        <div className="col-md-2 text-list" align="center">
           <font size="3"> Activity for </font>
           <CardTitle tag="h3">
             {firstName} {lastName}
           </CardTitle>
         </div>
 
-        <div className="border col-md-1 bg--white-smoke" align="center">
-          <div className="py-1"> </div>
-          {/* <i className="fa fa-exclamation fa-3x" aria-hidden="true" />  */}
-          <h1 className="text--silver" align="center">
-            !
-          </h1>
-          <font className="text--silver" size="3">
-            HOURS
-          </font>
-          {/* <div className="py-1"> </div> */}
-        </div>
-
-        <div className="col-md-2 bg--white-smoke" align="center">
-          <div className="py-2"> </div>
-          <li className="nav-item navbar-text" id="timelogweeklychart">
-            <div className="text--silver">
-              Current Week : {totalEffort.toFixed(2)} / {weeklyComittedHours}
+        <div className="col-md-3">
+          <Row>
+            {/* <div className="border-red col-sm-4 bg--white-smoke" align="center">
+              <div className="py-1"> </div>
+              <h1 className="text--silver" align="center">
+                !
+              </h1>
+              <font className="text--silver" size="3">
+                HOURS
+              </font>
+              <div className="py-2"> </div>
+            </div> */}
+            <div className="border-green col-sm-4 bg--dark-green" align="center">
+              <div className="py-1"> </div>
+              <h1 align="center">!</h1>
+              <font size="3">HOURS</font>
+              <div className="py-2"> </div>
             </div>
-            <Progress
-              value={getBarValue(totalEffort)}
-              className={getBarColor(totalEffort)}
-              striped={totalEffort < weeklyComittedHours}
-            />
-          </li>
+
+            <div className="col-sm-8 bg--white-smoke text-list" align="center">
+              <li className="nav-item navbar-text" id="timelogweeklychart">
+                <div className="text--silver">
+                  Current Week : {totalEffort.toFixed(2)} / {weeklyComittedHours}
+                </div>
+
+                <Progress
+                  value={getBarValue(totalEffort)}
+                  className={getBarColor(totalEffort)}
+                  striped={totalEffort < weeklyComittedHours}
+                />
+              </li>
+            </div>
+          </Row>
         </div>
 
-        <div className="col-md-1 bg--dark-green" align="center">
-          <div className="py-1"> </div>
-          <h1 align="center">✓</h1>
-          <font size="3">SUMMARY</font>
-          {/* <div className="py-2"> </div> */}
-        </div>
+        <div className="col-md-3">
+          <Row>
+            <div className="border-red col-sm-4 bg--white-smoke" align="center">
+              <div className="py-1"> </div>
+              <h1 className="text--silver" align="center">
+                ✓
+              </h1>
+              <font className="text--silver" size="3">
+                SUMMARY
+              </font>
+              <div className="py-2"> </div>
+            </div>
+            {/* <div className="border-green col-sm-4 bg--dark-green" align="center">
+              <div className="py-1"> </div>
+              <h1 align="center">✓</h1>
+              <font size="3">SUMMARY</font>
+              <div className="py-2"> </div>
+            </div> */}
 
-        <div className="col-md-2 bg--white-smoke" align="center">
-          <div className="py-2"> </div>
-          <font className="text--silver" align="center" size="3">
-            You still need to complete the weekly summary.
-          </font>
-          {/* {isSubmitted && (<font className="text--silver" align="center" size="3">
+            <div className="col-sm-8 bg--white-smoke" align="center">
+              <div className="py-3"> </div>
+              <font className="text--silver" align="center" size="3">
+                You still need to complete the weekly summary.
+              </font>
+              <div className="py-1"> </div>
+            </div>
+          </Row>
+        </div>
+        {/* {isSubmitted && (<font className="text--silver" align="center" size="3">
             You have completed weekly summary.
           </font>)}
           {!isSubmitted && (<font className="text--silver" align="center" size="3">
             You still need to complete the weekly summary.
           </font>)} */}
-        </div>
 
-        <Col className="col-md-4" align="center">
-          {/* <div className="py-1"> </div> */}
-          <img src={task_icon} alt="" width="85px" height="85px" onClick={onTaskClick} />
-          <div className="redBackgroup">
-            <span>99</span>
-          </div>
-          &nbsp;&nbsp;
-          <img src={badges_icon} alt="" width="85px" height="85px" onClick={onBadgeClick} />
-          <div className="redBackgroup">
-            <span>9</span>
-          </div>
-          &nbsp;&nbsp;
-          <Link to="/userprofile/5f421a54552a840017149d32#bluesquare">
-            <img src={bluesquare_icon} alt="" width="85px" height="85px" />
+        <Col className="col-md-4 badge-list" align="center">
+          <div className="frame">
             <div className="redBackgroup">
-              <span>19</span>
+              <span>99</span>
             </div>
-          </Link>
-          &nbsp;&nbsp;
-          <img src={report_icon} alt="" width="85px" height="85px" onClick={openReport} />
-          <div className="blackBackgroup">
-            <i className="fa fa-exclamation" aria-hidden="true" />
+
+            <img
+              className="image_frame"
+              src={task_icon}
+              alt=""
+              width="85px"
+              height="85px"
+              onClick={onTaskClick}
+            />
           </div>
-          {/* <div className="py-1"> </div> */}
+          &nbsp;&nbsp;&nbsp;
+          <div className="frame">
+            <img
+              className="image_frame"
+              src={badges_icon}
+              alt=""
+              width="85px"
+              height="85px"
+              onClick={onBadgeClick}
+            />
+            <div className="redBackgroup">
+              <span>9</span>
+            </div>
+          </div>
+          &nbsp;&nbsp;&nbsp;
+          <div className="frame">
+            <Link to="/userprofile/5f421a54552a840017149d32#bluesquare">
+              <img
+                className="image_frame"
+                src={bluesquare_icon}
+                alt=""
+                width="85px"
+                height="85px"
+              />
+              <div className="redBackgroup">
+                <span>19</span>
+              </div>
+            </Link>
+          </div>
+          &nbsp;&nbsp;&nbsp;
+          <div className="frame">
+            <img
+              className="image_frame"
+              src={report_icon}
+              alt=""
+              width="85px"
+              height="85px"
+              onClick={openReport}
+            />
+            {/* <div className="blackBackgroup">
+              <i className="fa fa-exclamation" aria-hidden="true" />
+            </div> */}
+          </div>
         </Col>
         <Modal isOpen={inform.in} toggle={openReport}>
           <ModalHeader>Bug Report</ModalHeader>
@@ -255,11 +318,3 @@ const Dashboard = () => {
 }
 
 export default Dashboard
-// extends Component {
-//     async componentDidMount() {
-//       await this.props.getWeeklySummaries(this.props.currentUser.userid)
-//       const { weeklySummaries } = this.props.summaries
-
-//       const summary = (weeklySummaries && weeklySummaries[0] && weeklySummaries[0].summary) || ''
-//     }
-//   }
