@@ -262,6 +262,14 @@ class EditProfile extends Component {
           },
         });
         break;
+      case 'collaborationPreference':
+        this.setState({
+          userProfile: {
+            ...userProfile,
+            collaborationPreference: event.target.value,
+          },
+        });
+        break;
       default:
         this.setState({
           ...userProfile,
@@ -876,6 +884,23 @@ class EditProfile extends Component {
                               value={phoneNumber}
                               onChange={this.handleUserProfile}
                               placeholder="Phone"
+                            />
+                          </FormGroup>
+                        </Col>
+                      </Row>
+                      <Row>
+                        <Col md="6">
+                          <Label>Collaboration Preference</Label>
+                        </Col>
+                        <Col md="6">
+                          <FormGroup>
+                            <Input
+                              type="text"
+                              name="collaborationPreference"
+                              id="collaborationPreference"
+                              value={userProfile.collaborationPreference}
+                              onChange={this.handleUserProfile}
+                              placeholder="Skype/Phone/Email"
                             />
                           </FormGroup>
                         </Col>

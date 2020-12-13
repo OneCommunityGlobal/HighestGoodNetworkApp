@@ -37,7 +37,7 @@ const Name = (props) => {
               name="firstName"
               id="firstName"
               value={firstName}
-                // className={styleProfile.profileText}
+              // className={styleProfile.profileText}
               onChange={handleUserProfile}
               placeholder="First Name"
               invalid={!formValid.firstName}
@@ -52,7 +52,7 @@ const Name = (props) => {
               name="lastName"
               id="lastName"
               value={lastName}
-                // className={styleProfile.profileText}
+              // className={styleProfile.profileText}
               onChange={handleUserProfile}
               placeholder="Last Name"
               invalid={!formValid.lastName}
@@ -200,7 +200,7 @@ const Phone = (props) => {
               type="number"
               name="phoneNumber"
               id="phoneNumber"
-                // className={styleProfile.profileText}
+              // className={styleProfile.profileText}
               value={phoneNumber}
               onChange={handleUserProfile}
               placeholder="Phone"
@@ -316,6 +316,23 @@ const BasicInformationTab = (props) => {
           handleUserProfile={handleUserProfile}
           formValid={formValid}
         />
+      </Row>
+      <Row>
+        <Col md="6">
+          <Label>Collaboration Preference</Label>
+        </Col>
+        <Col md="6">
+          <FormGroup>
+            <Input
+              type="text"
+              name="collaborationPreference"
+              id="collaborationPreference"
+              value={userProfile.collaborationPreference}
+              onChange={handleUserProfile}
+              placeholder="Skype/Phone/Email"
+            />
+          </FormGroup>
+        </Col>
       </Row>
 
     </div>
