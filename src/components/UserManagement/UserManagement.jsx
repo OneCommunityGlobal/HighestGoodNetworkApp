@@ -104,7 +104,8 @@ class UserManagement extends React.PureComponent {
         onPause={this.pauseUser} />
       <NewUserPopup
         open={this.state.newUserPopupOpen}
-        onUserPopupClose={this.onUserPopupClose} />
+        onUserPopupClose={this.onUserPopupClose}
+        userCreated={this.userCreated} />
       <DeleteUserPopup
         open={this.state.deletePopupOpen}
         onClose={this.deletePopupClose}
@@ -179,6 +180,16 @@ class UserManagement extends React.PureComponent {
     })
 
     return filteredList;
+  }
+
+  /**
+   * reload user list and close user creation popup
+   */
+  userCreated = () => {
+    this.props.getAllUserProfile();
+    this.setState({
+      newUserPopupOpen: false
+    })
   }
 
   /**

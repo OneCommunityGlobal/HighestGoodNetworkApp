@@ -38,3 +38,16 @@
 .purple .progress-bar {
     background-color: #660099;
 }
+
+.navbar-border {
+    border-radius: 5px;
+    border: 1px solid rgba(0, 0, 0, 0.125);
+}
+
+@media (max-width: 544px) { 
+    .tab-pane{
+        height:300px;
+        overflow-y:scroll;
+        width:100%;
+      }
+}

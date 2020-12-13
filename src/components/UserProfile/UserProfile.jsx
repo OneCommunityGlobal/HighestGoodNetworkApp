@@ -29,10 +29,17 @@ import ProjectsTab from './TeamsAndProjects/ProjectsTab';
 
 import TeamView from './Teamsview';
 import UserTeamProjectContainer from './TeamsAndProjects/UserTeamProjectContainer';
-
+import InfoModal from './InfoModal';
 import { getTimeEntriesForWeek, getTimeEntriesForPeriod } from '../../actions/timeEntries';
 import { getUserProjects } from '../../actions/userProjects';
-
+import BasicInformationTab from './BaiscInformationTab/BasicInformationTab';
+import VolunteeringTimeTab from './VolunteeringTimeTab/VolunteeringTimeTab';
+import EditLinkButton from './UserProfileEdit/LinkModButton';
+import SaveButton from './UserProfileEdit/SaveButton';
+import UserLinkLayout from './UserLinkLayout';
+import BlueSqaureLayout from './BlueSqaureLayout';
+import TabToolTips from './ToolTips/TabToolTips';
+import BasicToolTips from './ToolTips/BasicTabTips';
 // const styleProfile = {};
 class UserProfile extends Component {
   state = {
@@ -51,7 +58,18 @@ class UserProfile extends Component {
     },
     createdDate: '',
     activeTab: '1',
+<<<<<<< HEAD
   }
+=======
+    infoModal: false,
+    formValid: {
+      firstName: true,
+      lastName: true,
+      email: true,
+    },
+    changed: false,
+  };
+>>>>>>> 523d5be89a02b9458b8830a9b8141f573373b74b
 
   async componentDidMount() {
     if (this.props.match) {
@@ -186,12 +204,80 @@ class UserProfile extends Component {
     );
   }
 
+  handleImageUpload = async (e) => {
+    e.preventDefault();
+
+    const file = e.target.files[0];
+
+    const allowedTypesString = 'image/png,image/jpeg, image/jpg';
+    const allowedTypes = allowedTypesString.split(',');
+    let isValid = true;
+    let imageUploadError = '';
+    if (!allowedTypes.includes(file.type)) {
+      imageUploadError = `File type must be ${allowedTypesString}.`;
+      isValid = false;
+
+      return this.setState({
+        type: 'image',
+        imageUploadError,
+        isValid,
+        showModal: true,
+        modalTitle: 'Profile Pic Error',
+        modalMessage: imageUploadError,
+      });
+    }
+    const filesizeKB = file.size / 1024;
+    // console.log(filesizeKB);
+
+    if (filesizeKB > 50) {
+      imageUploadError = `\nThe file you are trying to upload exceeds the maximum size of 50KB. You can either 
+														choose a different file, or use an online file compressor.`;
+      isValid = false;
+
+      return this.setState({
+        type: 'image',
+        imageUploadError,
+        isValid,
+        showModal: true,
+        modalTitle: 'Profile Pic Error',
+        modalMessage: imageUploadError,
+      });
+    }
+
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onloadend = () => {
+      // console.log(reader, file);
+
+      this.setState({
+        imageUploadError: '',
+        userProfile: {
+          ...this.state.userProfile,
+          profilePic: reader.result,
+        },
+      });
+    };
+  };
+
   saveChanges = () => {
     this.props.updateUserProfile(this.props.match.params.userId, this.state.userProfile);
   }
 
   handleBlueSquare = (status = true, type = 'message', blueSquareID = '') => {
-    if (type === 'viewBlueSquare') {
+    if (type === 'addBlueSquare') {
+      this.setState({
+        showModal: status,
+        modalTitle: 'Blue Square',
+        type,
+      });
+    } else if (type === 'modBlueSquare') {
+      this.setState({
+        showModal: status,
+        modalTitle: 'Blue Square',
+        type,
+        id: blueSquareID,
+      });
+    } else if (type === 'viewBlueSquare') {
       this.setState({
         showModal: status,
         modalTitle: 'Blue Square',
@@ -208,6 +294,86 @@ class UserProfile extends Component {
     }
   }
 
+  updateBlueSquare = (id, dateStamp, summary, kind) => {
+    // console.log('Handle Blue Square: ', kind, ' date:', dateStamp, ' summary:', summary)
+    // const elem = document.getElementById('warningCard');
+    // elem.style.display = 'block';
+
+    if (kind === 'add') {
+      const newBlueSquare = { date: dateStamp, description: summary };
+      this.setState(prevState => ({
+        showModal: false,
+        userProfile: {
+          ...this.state.userProfile,
+          infringments: prevState.userProfile.infringments.concat(newBlueSquare),
+        },
+      }));
+    } else if (kind === 'update') {
+      this.setState(() => {
+        const currentBlueSquares = this.state.userProfile.infringments;
+        if (dateStamp != null) {
+          currentBlueSquares.find(blueSquare => blueSquare._id === id).date = dateStamp;
+        }
+        if (summary != null) {
+          currentBlueSquares.find(blueSquare => blueSquare._id === id).description = summary;
+        }
+        return {
+          showModal: false,
+          userProfile: {
+            ...this.state.userProfile,
+            infringments: currentBlueSquares,
+          },
+        };
+      });
+    } else if (kind === 'delete') {
+      this.setState(() => {
+        const currentBlueSquares = this.state.userProfile.infringments.filter((blueSquare) => {
+          if (blueSquare._id !== id) {
+            return blueSquare;
+          }
+        });
+        return {
+          showModal: false,
+          userProfile: {
+            ...this.state.userProfile,
+            infringments: currentBlueSquares,
+          },
+        };
+      });
+    }
+  };
+
+  handleSubmit = async (event) => {
+    const { updateUserProfile, match } = this.props;
+    const { userProfile, formValid } = this.state;
+    const submitResult = await updateUserProfile(match.params.userId, userProfile);
+    // console.log(submitResult);
+
+    // if (submitResult === 200) {
+    //   this.setState({
+    //     showModal: true,
+    //     modalMessage: 'Your Changes were saved successfully',
+    //     modalTitle: 'Success',
+    //     type: 'save',
+    //   });
+    //   const elem = document.getElementById('warningCard');
+    //   // elem.style.display = 'none';
+    // } else {
+    //   this.setState({
+    //     showModal: true,
+    //     modalMessage: 'Please try again.',
+    //     modalTitle: 'Error',
+    //     type: 'save',
+    //   });
+    // }
+  };
+
+  toggleInfoModal = () => {
+    this.setState({
+      infoModal: !this.state.infoModal,
+    });
+  }
+
   toggleTab = (tab) => {
     if (this.state.activeTab !== tab) {
       this.setState({
@@ -216,36 +382,143 @@ class UserProfile extends Component {
     }
   }
 
-  formatPhoneNumber = (str) => {
-    // Filter only numbers from the input
-    const cleaned = `${str}`.replace(/\D/g, '');
-    if (cleaned.length == 10) {
-      // Domestic (USA)
-      return [
-        '( ',
-        cleaned.substring(0, 3),
-        ' ) ',
-        cleaned.substring(3, 6),
-        ' - ',
-        cleaned.substring(6, 10),
-      ].join('');
+  updateLink = (personalLinksUpdate, adminLinksUpdate) => this.setState(() => ({
+    showModal: false,
+    userProfile: {
+      ...this.state.userProfile,
+      personalLinks: personalLinksUpdate,
+      adminLinks: adminLinksUpdate,
+    },
+  }));
+
+  handleUserProfile = (event) => {
+    this.setState({
+      changed: true,
+    });
+    const { userProfile, formValid } = this.state;
+    const patt = new RegExp(/^\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/i);
+    switch (event.target.id) {
+      case 'firstName':
+        this.setState({
+          userProfile: {
+            ...userProfile,
+            firstName: event.target.value.trim(),
+          },
+          formValid: {
+            ...formValid,
+            firstName: !!event.target.value,
+          },
+        });
+        break;
+      case 'lastName':
+        this.setState({
+          userProfile: {
+            ...userProfile,
+            lastName: event.target.value.trim(),
+          },
+          formValid: {
+            ...formValid,
+            lastName: !!event.target.value,
+          },
+        });
+        break;
+      case 'jobTitle':
+        this.setState({
+          userProfile: {
+            ...userProfile,
+            jobTitle: event.target.value,
+          },
+        });
+        break;
+      case 'email':
+        this.setState({
+          userProfile: {
+            ...userProfile,
+            email: event.target.value,
+          },
+          formValid: {
+            ...formValid,
+            email: patt.test(event.target.value),
+          },
+        });
+        break;
+      case 'phoneNumber':
+        this.setState({
+          userProfile: {
+            ...userProfile,
+            phoneNumber: event.target.value.trim(),
+          },
+        });
+        break;
+      case 'emailPubliclyAccessible':
+        this.setState({
+          userProfile: {
+            ...userProfile,
+            privacySettings: {
+              ...userProfile.privacySettings,
+              email: !userProfile.privacySettings?.email,
+            },
+          },
+        });
+        break;
+      case 'phonePubliclyAccessible':
+        this.setState({
+          userProfile: {
+            ...userProfile,
+            privacySettings: {
+              ...userProfile.privacySettings,
+              phoneNumber: !userProfile.privacySettings?.phoneNumber,
+            },
+          },
+        });
+        break;
+      case 'blueSquaresPubliclyAccessible':
+        this.setState({
+          userProfile: {
+            ...userProfile,
+            privacySettings: {
+              ...userProfile.privacySettings,
+              blueSquares: !userProfile.privacySettings?.blueSquares,
+            },
+          },
+        });
+        break;
+      case 'startDate':
+        this.setState({
+          userProfile: {
+            ...userProfile,
+            createdDate: event.target.value,
+          },
+        });
+        break;
+      case 'totalComittedHours':
+        this.setState({
+          userProfile: {
+            ...userProfile,
+            totalComittedHours: event.target.value,
+          },
+        });
+        break;
+      case 'weeklyComittedHours':
+        this.setState({
+          userProfile: {
+            ...userProfile,
+            weeklyComittedHours: event.target.value,
+          },
+        });
+        break;
+      default:
+        this.setState({
+          ...userProfile,
+        });
     }
-    if (cleaned.length == 11) {
-      // International
-      return [
-        '+',
-        cleaned.substring(0, 1),
-        '( ',
-        cleaned.substring(1, 4),
-        ' ) ',
-        cleaned.substring(4, 7),
-        ' - ',
-        cleaned.substring(7, 11),
-      ].join('');
-    }
+<<<<<<< HEAD
     // Unconventional
     return str;
   }
+=======
+  };
+>>>>>>> 523d5be89a02b9458b8830a9b8141f573373b74b
 
   render() {
     const {
@@ -258,12 +531,9 @@ class UserProfile extends Component {
       type,
       modalMessage,
       modalTitle,
+      infoModal,
+      formValid,
     } = this.state;
-    // debugger;
-    // const { userProfile, isLoading, error, showModal } = this.state;
-    // let { allTeams } = this.props.allTeams.allTeamsData;
-    // let { projects } = this.props.allProjects.projects;
-    // console.log(projects);
 
     const {
       firstName,
@@ -279,9 +549,7 @@ class UserProfile extends Component {
       teams,
     } = userProfile;
 
-    // console.log('user profile:', userProfile.teams);
-
-    if (isLoading) {
+    if (isLoading && !this.props.isAddNewUser) {
       return (
         <Container fluid>
           <Row className="text-center" data-test="loading">
@@ -302,7 +570,6 @@ class UserProfile extends Component {
     const canEdit = isUserAdmin || isUserSelf;
     const weeklyHoursReducer = (acc, val) => acc + (parseInt(val.hours, 10) + parseInt(val.minutes, 10) / 60);
     // (parseInt(a.minutes, 10) + parseInt(b.minutes, 10)) / 60;
-
     return (
       <div>
         {showModal && (
@@ -323,10 +590,12 @@ class UserProfile extends Component {
             handleLinkModel={this.handleLinkModel}
           />
         )}
+        <TabToolTips />
+        <BasicToolTips />
+        <InfoModal isOpen={infoModal} toggle={this.toggleInfoModal} />
         <Container className="emp-profile">
           <Row>
             <Col md="4" id="profileContainer">
-              {/* <div className={styleProfile.whoSection}> */}
               <div className="profile-img">
                 <Image
                   src={profilePic || '/defaultprofilepic.png'}
@@ -334,12 +603,33 @@ class UserProfile extends Component {
                   roundedCircle
                   className="profilePicture"
                 />
+                {canEdit ? (
+                  <div className="file btn btn-lg btn-primary">
+                    Change Photo
+                    <Input
+                      type="file"
+                      name="newProfilePic"
+                      id="newProfilePic"
+                      onChange={this.handleImageUpload}
+                      accept="image/png,image/jpeg, image/jpg"
+                    />
+                  </div>
+                ) : null}
               </div>
-              {/* </div> */}
+
             </Col>
             <Col md="8">
               <div className="profile-head">
-                <h5>{`${firstName} ${lastName}`}</h5>
+                <h5 style={{ display: 'inline-block', marginRight: 10 }}>{`${firstName} ${lastName}`}</h5>
+                <i
+                  data-toggle="tooltip"
+                  data-placement="right"
+                  title="Click for more information"
+                  style={{ fontSize: 24, cursor: 'pointer' }}
+                  aria-hidden="true"
+                  className="fa fa-info-circle"
+                  onClick={this.toggleInfoModal}
+                />
                 <h6>{jobTitle}</h6>
                 <p className="proile-rating">
                   From :
@@ -348,7 +638,7 @@ class UserProfile extends Component {
                   {'   '}
                   To:
                   {' '}
-                  <span>Present</span>
+                  <span>N/A</span>
                 </p>
               </div>
               <div className="p-5 my-2 bg--cadet-blue text-light">
@@ -361,19 +651,22 @@ class UserProfile extends Component {
           <Row>
             <Col md="4">
               <div className="profile-work">
-                <p>LINKS</p>
-                <UserLinks
-                  linkSection="user"
-                  links={personalLinks}
-                  handleLinkModel={this.handleLinkModel}
+                <UserLinkLayout
                   isUserAdmin={isUserAdmin}
-                />
-                <UserLinks
-                  linkSection="user"
-                  links={adminLinks}
+                  isUserSelf={isUserSelf}
+                  userProfile={userProfile}
+                  updateLink={this.updateLink}
                   handleLinkModel={this.handleLinkModel}
-                  isUserAdmin={isUserAdmin}
                 />
+                <BlueSqaureLayout
+                  userProfile={userProfile}
+                  handleUserProfile={this.handleUserProfile}
+                  handleSaveError={this.handleSaveError}
+                  handleBlueSquare={this.handleBlueSquare}
+                  isUserAdmin={isUserAdmin}
+                  isUserSelf={isUserSelf}
+                />
+<<<<<<< HEAD
                 {privacySettings.blueSquares && (
                   <div>
                     <p>BLUE SQAURES</p>
@@ -385,6 +678,8 @@ class UserProfile extends Component {
                     />
                   </div>
                 )}
+=======
+>>>>>>> 523d5be89a02b9458b8830a9b8141f573373b74b
               </div>
             </Col>
             <Col md="8">
@@ -396,6 +691,7 @@ class UserProfile extends Component {
                       onClick={() => {
                         this.toggleTab('1');
                       }}
+                      id="nabLink-basic"
                     >
                       Basic Information
                     </NavLink>
@@ -406,6 +702,7 @@ class UserProfile extends Component {
                       onClick={() => {
                         this.toggleTab('2');
                       }}
+                      id="nabLink-time"
                     >
                       Volunteering Times
                     </NavLink>
@@ -416,6 +713,7 @@ class UserProfile extends Component {
                       onClick={() => {
                         this.toggleTab('3');
                       }}
+                      id="nabLink-teams"
                     >
                       Teams
                     </NavLink>
@@ -426,6 +724,7 @@ class UserProfile extends Component {
                       onClick={() => {
                         this.toggleTab('4');
                       }}
+                      id="nabLink-projects"
                     >
                       Projects
                     </NavLink>
@@ -449,76 +748,22 @@ class UserProfile extends Component {
                 style={{ border: 0 }}
               >
                 <TabPane tabId="1">
-                  <Row>
-                    <Col md="6">
-                      <Label>Name</Label>
-                    </Col>
-                    <Col md="6">
-                      <p>{`${firstName} ${lastName}`}</p>
-                    </Col>
-                  </Row>
-                  {privacySettings.email && (
-                    <Row>
-                      <Col md="6">
-                        <Label>Email</Label>
-                      </Col>
-                      <Col md="6">
-                        <p>{email}</p>
-                      </Col>
-                    </Row>
-                  )}
-                  {privacySettings.phoneNumber && (
-                    <Row>
-                      <Col md="6">
-                        <Label>Phone</Label>
-                      </Col>
-                      <Col md="6">
-                        <p>{this.formatPhoneNumber(phoneNumber)}</p>
-                      </Col>
-                    </Row>
-                  )}
+                  <BasicInformationTab
+                    userProfile={userProfile}
+                    isUserAdmin={isUserAdmin}
+                    isUserSelf={isUserSelf}
+                    handleUserProfile={this.handleUserProfile}
+                    formValid={this.state.formValid}
+                  />
                 </TabPane>
                 <TabPane tabId="2">
-                  <Row>
-                    <Col md="6">
-                      <Label>Start Date</Label>
-                    </Col>
-                    <Col md="6">
-                      <p>{moment(userProfile.createdDate).format('YYYY-MM-DD')}</p>
-                    </Col>
-                  </Row>
-                  <Row>
-                    <Col md="6">
-                      <Label>End Date</Label>
-                    </Col>
-                    <Col md="6">
-                      <p>Present</p>
-                    </Col>
-                  </Row>
-                  <Row>
-                    <Col md="6">
-                      <Label>Total Hours This Week</Label>
-                    </Col>
-                    <Col md="6">
-                      <p>{this.props.timeEntries.weeks[0].reduce(weeklyHoursReducer, 0)}</p>
-                    </Col>
-                  </Row>
-                  <Row>
-                    <Col md="6">
-                      <Label>Weekly Commited Hours </Label>
-                    </Col>
-                    <Col md="6">
-                      <p>{userProfile.weeklyComittedHours}</p>
-                    </Col>
-                  </Row>
-                  <Row>
-                    <Col md="6">
-                      <Label>Total Hours </Label>
-                    </Col>
-                    <Col md="6">
-                      <p>{userProfile.totalComittedHours}</p>
-                    </Col>
-                  </Row>
+                  <VolunteeringTimeTab
+                    userProfile={userProfile}
+                    isUserAdmin={isUserAdmin}
+                    isUserSelf={isUserSelf}
+                    handleUserProfile={this.handleUserProfile}
+                    timeEntries={this.props.timeEntries}
+                  />
                 </TabPane>
                 <TabPane tabId="3">
                   <TeamsTab
@@ -527,7 +772,7 @@ class UserProfile extends Component {
                     onAssignTeam={this.onAssignTeam}
                     onDeleteteam={this.onDeleteTeam}
                     isUserAdmin={isUserAdmin}
-                    edit={false}
+                    edit={isUserAdmin}
                   />
                 </TabPane>
                 <TabPane tabId="4">
@@ -537,24 +782,40 @@ class UserProfile extends Component {
                     onAssignProject={this.onAssignProject}
                     onDeleteProject={this.onDeleteProject}
                     isUserAdmin={isUserAdmin}
-                    edit={false}
+                    edit={isUserAdmin}
                   />
                 </TabPane>
               </TabContent>
             </Col>
           </Row>
           <Row>
-            <Col sm="12" md={{ size: 4, offset: 4 }}>
+            <Col sm={{ size: 'auto', offset: 3 }}>
+              <SaveButton
+                handleSubmit={this.handleSubmit}
+                disabled={(!formValid.firstName || !formValid.lastName || !formValid.email) || !this.state.changed}
+                userProfile={userProfile}
+              />
+            </Col>
+            <Col sm={{ size: 'auto', offset: 1 }}>
               {canEdit && (
                 <div className="profileEditButtonContainer">
-                  <Link to={`/userprofileedit/${this.state.userProfile._id}`}>
-                    <Button className="profileEditButton" color="primary" aria-hidden="true">
+                  <Link to={`/updatepassword/${this.state.userProfile._id}`}>
+                    <Button>
                       {' '}
-                      Edit
+                      Update Password
                     </Button>
                   </Link>
                 </div>
               )}
+            </Col>
+            <Col sm={{ size: 'auto', offset: 1 }}>
+              <Link
+                to={`/userprofile/${this.state.userProfile._id}`}
+                className="btn btn-outline-danger"
+                style={{ display: 'flex', margin: 5 }}
+              >
+                Cancel
+              </Link>
             </Col>
           </Row>
         </Container>
