@@ -27,7 +27,7 @@ export const getTimeEntriesForWeek = (userId, offset) => {
 				loggedOut = true;
 			}
         });
-        if (!loggedOut || !res) {
+        if (!loggedOut || !res || !res.data) {
             await dispatch(setTimeEntriesForWeek(res.data, offset));
         }
     };
@@ -43,7 +43,7 @@ export const getTimeEntriesForPeriod = (userId, fromDate, toDate) => {
 				loggedOut = true;
 			}
         });
-        if (!loggedOut) {
+        if (!loggedOut || !res || !res.data) {
             await dispatch(setTimeEntriesForPeriod(res.data));
         }
     };
