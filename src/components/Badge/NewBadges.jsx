@@ -20,7 +20,7 @@ const NewBadges = (props) =>
       </CardTitle>
         <div className="new_badges badge_image_sm">
           {props.badges.map((value, index) =>
-            <BadgeImage badgeData={value.badge} index={index} />
+            <BadgeImage badgeData={value.badge} index={index} key={index} />
           )}
         </div>
       </CardBody>

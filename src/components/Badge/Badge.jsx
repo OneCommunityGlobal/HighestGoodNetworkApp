@@ -15,9 +15,9 @@ const Badge = (props) => {
 
   const toggle = () => setOpen(isOpen => !isOpen);
 
-  useEffect(async () => {
+  useEffect(() => {
     const userId = props.userId;
-    await props.getUserProfile(userId);
+    props.getUserProfile(userId);
   }, [])
 
 

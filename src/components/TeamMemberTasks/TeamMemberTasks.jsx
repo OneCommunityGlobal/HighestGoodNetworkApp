@@ -120,7 +120,7 @@ class TeamMemberTasks extends Component {
           .endOf('week')
           .subtract(0, 'weeks')
         memberTimeEntriesPromises.push(
-          httpService.get(ENDPOINTS.TIME_ENTRIES_PERIOD(member._id, fromDate, toDate)),
+          httpService.get(ENDPOINTS.TIME_ENTRIES_PERIOD(member._id, fromDate, toDate)).catch(err=>{}),
         )
       })
       Promise.all(memberTimeEntriesPromises).then(data => {
@@ -134,7 +134,7 @@ class TeamMemberTasks extends Component {
 
         // fetch all tasks for each member
         uniqueMembers.forEach(member => {
-          teamMemberTasksPromises.push(httpService.get(ENDPOINTS.TASKS_BY_USERID(member._id)))
+          teamMemberTasksPromises.push(httpService.get(ENDPOINTS.TASKS_BY_USERID(member._id)).catch(err=>{if(err.status!=401){console.log(err)}}))
         })
         Promise.all(teamMemberTasksPromises).then(data => {
           // merge assigned tasks into each user obj
@@ -147,25 +147,28 @@ class TeamMemberTasks extends Component {
 
           // fetch full user profile for each team member
           uniqueMembers.forEach(member => {
-            userProfilePromises.push(httpService.get(ENDPOINTS.USER_PROFILE(member._id)))
+            userProfilePromises.push(httpService.get(ENDPOINTS.USER_PROFILE(member._id)).catch(err=>{}))
           })
           Promise.all(userProfilePromises).then(async data => {
-            for (let i = 0; i < uniqueMembers.length; i++) {
-              const user = uniqueMembers[i]
-              const userLeaderBoardData = data.find(member => member.data._id === user._id)
-              let userWeeklyCommittedHours = 0
-              if (userLeaderBoardData) {
-                userWeeklyCommittedHours = userLeaderBoardData.data.weeklyComittedHours
-              }
-              uniqueMembers[i] = {
-                ...uniqueMembers[i],
-                weeklyCommittedHours: userWeeklyCommittedHours,
-              }
-            }
+            try {
 
+            
+              for (let i = 0; i < uniqueMembers.length; i++) {
+                const user = uniqueMembers[i]
+                const userLeaderBoardData = data.find(member => member.data._id === user._id)
+                let userWeeklyCommittedHours = 0
+                if (userLeaderBoardData) {
+                  userWeeklyCommittedHours = userLeaderBoardData.data.weeklyComittedHours
+                }
+                uniqueMembers[i] = {
+                  ...uniqueMembers[i],
+                  weeklyCommittedHours: userWeeklyCommittedHours,
+                }
+              }
+            
             // for each task, must fetch the projectId of its wbs in order to generate appropriate link
             // currently fetches all projects, should consider refactoring if number of projects increases
-            const WBSRes = await httpService.get(ENDPOINTS.WBS_ALL)
+            const WBSRes = await httpService.get(ENDPOINTS.WBS_ALL).catch(err=>{if(err.status=401){loggedOut=true}})
             const allWBS = WBSRes.data
 
             // calculate hours done in current week and add to user obj for ease of access
@@ -201,38 +204,46 @@ class TeamMemberTasks extends Component {
             uniqueMembers.forEach(member => {
               uniqueMemberIds.push(member._id)
             })
-            //
+            let loggedOut=false;
             uniqueMemberIds.forEach(memberId => {
               taskNotificationPromises.push(
-                httpService.get(ENDPOINTS.USER_UNREAD_TASK_NOTIFICATIONS(memberId)),
+                httpService.get(ENDPOINTS.USER_UNREAD_TASK_NOTIFICATIONS(memberId)).catch((err)=>{if(err.status==401){loggedOut=true}}),
               )
             })
-            Promise.all(taskNotificationPromises).then(data => {
-              for (let i = 0; i < uniqueMemberIds.length; i++) {
-                userNotifications.push({
-                  userId: uniqueMemberIds[i],
-                  taskNotifications: data[i].data,
-                })
-                finalData[i] = {
-                  ...finalData[i],
-                  taskNotifications: data[i].data,
+          
+            if(!loggedOut) {
+              Promise.all(taskNotificationPromises).then(data => {
+                for (let i = 0; i < uniqueMemberIds.length; i++) {
+                  userNotifications.push({
+                    userId: uniqueMemberIds[i],
+                    taskNotifications: data[i].data,
+                  })
+                  finalData[i] = {
+                    ...finalData[i],
+                    taskNotifications: data[i].data,
+                  }
                 }
-              }
-
-              // sort each members' tasks by last modified time
-              finalData.forEach(user => {
-                user.tasks.sort((task1, task2) => {
-                  const date1 = new Date(task1.modifiedDatetime).valueOf()
-                  const date2 = new Date(task2.modifiedDatetime).valueOf()
-                  const timeDifference = date2 - date1
-                  return timeDifference
+                // sort each members' tasks by last modified time
+                finalData.forEach(user => {
+                  user.tasks.sort((task1, task2) => {
+                    const date1 = new Date(task1.modifiedDatetime).valueOf()
+                    const date2 = new Date(task2.modifiedDatetime).valueOf()
+                    const timeDifference = date2 - date1
+                    return timeDifference
+                  })
                 })
+
+                console.log('final data ', finalData)
+
+                this.setState({ fetched: true, teams: finalData })
               })
+            }
 
-              console.log('final data ', finalData)
 
-              this.setState({ fetched: true, teams: finalData })
-            })
+          } catch (err) {
+            //catch error on logout
+            console.log(err);
+          }
           })
         })
       })
@@ -295,7 +306,7 @@ class TeamMemberTasks extends Component {
         <div className="container team-member-tasks">
           {fetching || !fetched ? <Loading /> : null}
           <h1>Team Member Tasks</h1>
-          <div class="row">
+          <div className="row">
             <Modal
               isOpen={this.state.taskNotificationModal}
               toggle={this.handleOpenTaskNotificationModal}

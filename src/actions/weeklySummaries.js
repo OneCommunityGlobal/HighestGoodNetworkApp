@@ -39,7 +39,7 @@ export const getWeeklySummaries = (userId) => {
   return async (dispatch) => {
     dispatch(fetchWeeklySummariesBegin());
     try {
-      const response = await axios.get(url);
+      const response = await axios.get(url).catch(err=>{if (err.status!=401){console.log(err.message)}});
       // Only pick the fields related to weekly summaries from the userProfile.
       const { weeklySummariesCount, weeklySummaries, mediaUrl } = response.data;
       dispatch(fetchWeeklySummariesSuccess({ weeklySummariesCount, weeklySummaries, mediaUrl }));
@@ -63,7 +63,7 @@ export const updateWeeklySummaries = (userId, weeklySummariesData) => {
   return async () => {
     try {
       // Get the user's profile from the server.
-      let response = await axios.get(url);
+      let response = await axios.get(url).catch(err=>{if (err.status!=401){console.log(err.message)}});
       const userProfile = await response.data;
 
       // Merge the weekly summaries related changes with the user's profile.
