@@ -20,16 +20,32 @@ export const getTimeEntriesForWeek = (userId, offset) => {
         .subtract(offset, 'weeks');
     const url = ENDPOINTS.TIME_ENTRIES_PERIOD(userId, fromDate, toDate);
     return async (dispatch) => {
-        const res = await axios.get(url);
-        await dispatch(setTimeEntriesForWeek(res.data, offset));
+        let loggedOut = false;
+        const res = await axios.get(url).catch((error)=>{
+			if (error.status==401) {
+				//logout error
+				loggedOut = true;
+			}
+        });
+        if (!loggedOut || !res || !res.data) {
+            await dispatch(setTimeEntriesForWeek(res.data, offset));
+        }
     };
 };
 
 export const getTimeEntriesForPeriod = (userId, fromDate, toDate) => {
     const url = ENDPOINTS.TIME_ENTRIES_PERIOD(userId, fromDate, toDate);
     return async (dispatch) => {
-        const res = await axios.get(url);
-        await dispatch(setTimeEntriesForPeriod(res.data));
+        let loggedOut = false;
+        const res = await axios.get(url).catch((error)=>{
+			if (error.status==401) {
+				//logout error
+				loggedOut = true;
+			}
+        });
+        if (!loggedOut || !res || !res.data) {
+            await dispatch(setTimeEntriesForPeriod(res.data));
+        }
     };
 };
 
