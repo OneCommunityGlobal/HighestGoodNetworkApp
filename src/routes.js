@@ -22,6 +22,7 @@ import WeeklySummariesReport from './components/WeeklySummariesReport'
 import 'react-toastify/dist/ReactToastify.css'
 import { UserRole } from './utils/enums'
 import ForgotPassword from './components/Login/ForgotPassword'
+import BadgeManagement from "./components/Badge/BadgeManagement"
 
 export default (
   <React.Fragment>
@@ -45,6 +46,12 @@ export default (
         path="/usermanagement"
         exact
         component={UserManagement}
+        allowedRoles={[UserRole.Administrator]}
+      />
+      <ProtectedRoute
+        path="/badgemanagement"
+        exact
+        component={BadgeManagement}
         allowedRoles={[UserRole.Administrator]}
       />
       <ProtectedRoute path="/teams" exact component={Teams} />
