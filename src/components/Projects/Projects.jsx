@@ -10,6 +10,7 @@
  ********************************************************************************/
 import React, { Component } from 'react'
 import { fetchAllProjects, postNewProject, deleteProject, modifyProject } from '../../actions/projects'
+import { getPopupById } from '../../actions/popupEditorAction'
 import Overview from './Overview'
 import AddProject from './AddProject'
 import ProjectTableHeader from './ProjectTableHeader'
@@ -60,6 +61,7 @@ export class Projects extends Component {
    * Also update the number of active project
    */
   onClickDelete = (projectId, active, projectName) => {
+    this.props.getPopupById('5fde91165289c805ece88758');// popup id
     this.setState({
       showModalDelete: true,
       projectTarget: {
@@ -172,4 +174,4 @@ export class Projects extends Component {
 }
 
 const mapStateToProps = state => { return { state } }
-export default connect(mapStateToProps, { fetchAllProjects, postNewProject, deleteProject, modifyProject })(Projects)
+export default connect(mapStateToProps, { fetchAllProjects, postNewProject, deleteProject, modifyProject, getPopupById })(Projects)
