@@ -40,7 +40,7 @@
 }
 
 .text--silver {
-  color: #acacac;
+  color: #534e4e;
 }
 
 .media-url {
@@ -130,4 +130,8 @@
 
 .text-list {
   padding-top: 25px;
+}
+
+.bg--bar {
+  background-color: #b6def1;
 }

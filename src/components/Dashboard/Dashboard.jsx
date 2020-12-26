@@ -128,32 +128,39 @@ const Dashboard = () => {
           </Alert>
         </Col>
       </Row>
-      <Row className="my-2 bg--dark-sea-green text-light">
+      <Row className="my-2 bg--bar text-light">
         <div className="col-md-2 text-list" align="center">
-          <font size="3"> Activity for </font>
-          <CardTitle tag="h3">
+          <font className="text--silver" size="3">
+            {' '}
+            Activity for{' '}
+          </font>
+          <CardTitle className="text--silver" tag="h3">
             {firstName} {lastName}
           </CardTitle>
         </div>
 
         <div className="col-md-3">
           <Row>
-            {/* <div className="border-red col-sm-4 bg--white-smoke" align="center">
-              <div className="py-1"> </div>
-              <h1 className="text--silver" align="center">
-                !
-              </h1>
-              <font className="text--silver" size="3">
-                HOURS
-              </font>
-              <div className="py-2"> </div>
-            </div> */}
-            <div className="border-green col-sm-4 bg--dark-green" align="center">
-              <div className="py-1"> </div>
-              <h1 align="center">!</h1>
-              <font size="3">HOURS</font>
-              <div className="py-2"> </div>
-            </div>
+            {totalEffort < weeklyComittedHours && (
+              <div className="border-red col-sm-4 bg--white-smoke" align="center">
+                <div className="py-1"> </div>
+                <h1 className="text--silver" align="center">
+                  !
+                </h1>
+                <font className="text--silver" size="3">
+                  HOURS
+                </font>
+                <div className="py-2"> </div>
+              </div>
+            )}
+            {totalEffort >= weeklyComittedHours && (
+              <div className="border-green col-sm-4 bg--dark-green" align="center">
+                <div className="py-1"> </div>
+                <h1 align="center">✓</h1>
+                <font size="3">HOURS</font>
+                <div className="py-2"> </div>
+              </div>
+            )}
 
             <div className="col-sm-8 bg--white-smoke text-list" align="center">
               <li className="nav-item navbar-text" id="timelogweeklychart">
@@ -176,7 +183,7 @@ const Dashboard = () => {
             <div className="border-red col-sm-4 bg--white-smoke" align="center">
               <div className="py-1"> </div>
               <h1 className="text--silver" align="center">
-                ✓
+                !
               </h1>
               <font className="text--silver" size="3">
                 SUMMARY

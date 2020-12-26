@@ -8935,8 +8935,6 @@
       "resolved": "https://registry.npmjs.org/hex-color-regex/-/hex-color-regex-1.1.0.tgz",
       "integrity": "sha512-l9sfDFsuqtOqKDsQdqrMRk0U85RZc0RtOR9yPI7mRVOa4FsR/BVnZ0shmQRM96Ji99kYZP/7hn1cedc1+ApsTQ=="
     },
-<<<<<<< HEAD
-=======
     "history": {
       "version": "4.10.1",
       "resolved": "https://registry.npmjs.org/history/-/history-4.10.1.tgz",
@@ -8950,7 +8948,6 @@
         "value-equal": "^1.0.1"
       }
     },
->>>>>>> 523d5be89a02b9458b8830a9b8141f573373b74b
     "hmac-drbg": {
       "version": "1.0.1",
       "resolved": "https://registry.npmjs.org/hmac-drbg/-/hmac-drbg-1.0.1.tgz",
