@@ -27,8 +27,8 @@ const Badge = (props) => {
         Badges
       </CardHeader>
       <CardBody>
-        <NewBadges badges={props.userProfile.badgeCollection} />
-        <OldBadges badges={props.userProfile.badgeCollection} />
+        <NewBadges badges={props.userProfile.badgeCollection || []} />
+        <OldBadges badges={props.userProfile.badgeCollection || []} />
         <CardText
           style={{
             fontWeight: 'bold',
@@ -52,5 +52,10 @@ const mapStateToProps = state => ({
   userProfile: state.userProfile,
 });
 
+const mapDispatchToProps = dispatch => {
+  return {
+    getUserProfile: (userId) => dispatch(getUserProfile(userId)),
+  };
+}
 
-export default connect(mapStateToProps, { getUserProfile, })(Badge);
+export default connect(mapStateToProps, mapDispatchToProps)(Badge);

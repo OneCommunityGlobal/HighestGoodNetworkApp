@@ -74,7 +74,7 @@ const TimelogNavbar = ({ userId }) => {
               />
             </NavItem>
             <NavItem className="mt-3">
-              <NavLink tag={Link} href={`/userprofile/${userId}`}>View Profile</NavLink>
+              <NavLink tag={Link} href={`/userprofile/${userId}`} to={`/userprofile/${userId}`}>View Profile</NavLink>
             </NavItem>
             </Nav>
             {/* <ul className="navbar-nav flex-row ml-auto">
