@@ -19,7 +19,7 @@ import badges_icon from './badges_icon.png'
 import bluesquare_icon from './bluesquare_icon.png'
 import report_icon from './report_icon.png'
 
-const DashboardNavBar = () => {
+const DashboardSummaryBar = () => {
   const { firstName, lastName, _id } = useSelector(state => state.userProfile)
 
   const timeEntries = useSelector(state => state.timeEntries.weeks[0])
@@ -84,7 +84,7 @@ const DashboardNavBar = () => {
   }
 
   const onTaskClick = () => {
-    window.location.hash = '#task'
+    window.location.hash = '#tasks'
   }
 
   const onBadgeClick = () => {
@@ -252,4 +252,4 @@ const DashboardNavBar = () => {
   )
 }
 
-export default DashboardNavBar
+export default DashboardSummaryBar
