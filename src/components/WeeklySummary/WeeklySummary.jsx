@@ -222,7 +222,7 @@ export class WeeklySummary extends Component {
       );
     }
 
-    if (this.props.isModal) {
+    if (this.props.isModal || this.props.isPopup) {
       return (
         <DueDateTime dueDate={moment(dueDate)} />
       );
@@ -233,7 +233,7 @@ export class WeeklySummary extends Component {
         <h3>Weekly Summaries</h3>
         <div>Total submitted: {formElements.weeklySummariesCount}</div>
 
-        <Form className="mt-4">
+        <Form className="mt-4" >
           <Nav tabs>
             {Object.values(summariesLabels).map((weekName, i) => {
               let tId = String(i + 1);
@@ -247,7 +247,7 @@ export class WeeklySummary extends Component {
               );
             })}
           </Nav>
-          <TabContent activeTab={activeTab} className="p-4">
+          <TabContent activeTab={activeTab} className="p-4 weeklysummarypane">
             {Object.keys(summariesLabels).map((summaryName, i) => {
               let tId = String(i + 1);
               return (
