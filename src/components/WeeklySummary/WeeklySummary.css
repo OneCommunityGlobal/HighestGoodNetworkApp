@@ -125,8 +125,7 @@
 /* Small devices (landscape phones, 544px and up) */
 @media (max-width: 544px) {  
   .weeklysummarypane {
-    max-height: 400px;
+    max-height: 350px;
     overflow: auto;
-    height: 400px;
   }
 }
