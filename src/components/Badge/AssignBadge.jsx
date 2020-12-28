@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Button, Form, FormGroup, Label, Input, FormText, Row, Col, FormFeedback, Modal, ModalHeader, ModalBody } from 'reactstrap';
 import AssignBadgePopup from './AssignBadgePopup';
 
-const AssignBadge = () => {
+const AssignBadge = (props) => {
 
   const [isOpen, setOpen] = useState(false);
 
@@ -44,7 +44,7 @@ const AssignBadge = () => {
         <Button className="btn--dark-sea-green" onClick={toggle}>Assign Badge</Button>
         <Modal isOpen={isOpen} toggle={toggle}>
           <ModalHeader toggle={toggle}>Assign Badge</ModalHeader>
-          <ModalBody><AssignBadgePopup /></ModalBody>
+          <ModalBody><AssignBadgePopup allBadgeData={props.allBadgeData} /></ModalBody>
         </Modal>
         <FormText color="muted">
           Please select a badge from the badge list.

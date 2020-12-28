@@ -49,6 +49,7 @@ export const ENDPOINTS = {
   TASKNOTIFICATION: `${APIEndpoint}/tasknotification`,
   MARK_TASK_NOTIFICATION_READ: taskId => `${APIEndpoint}/tasknotification/read/${taskId}`,
   USER_UNREAD_TASK_NOTIFICATIONS: userId => `${APIEndpoint}/tasknotification/user/${userId}`,
+  BADGE: userId => `${APIEndpoint}/badge/${userId}`,
 };
 
 export const ApiEndpoint = APIEndpoint;

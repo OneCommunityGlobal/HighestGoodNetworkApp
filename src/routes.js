@@ -49,7 +49,7 @@ export default (
         allowedRoles={[UserRole.Administrator]}
       />
       <ProtectedRoute
-        path="/badgemanagement"
+        path="/badgemanagement/:userId"
         exact
         component={BadgeManagement}
         allowedRoles={[UserRole.Administrator]}

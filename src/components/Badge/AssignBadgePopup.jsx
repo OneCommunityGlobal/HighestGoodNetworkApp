@@ -4,7 +4,7 @@ import {
 } from 'reactstrap';
 
 
-const AssignBadgePopup = () =>
+const AssignBadgePopup = (props) =>
 (
   <div>
     <Table>
@@ -16,21 +16,7 @@ const AssignBadgePopup = () =>
         </tr>
       </thead>
       <tbody>
-        <tr>
-          <td>200px image</td>
-          <td>300 Hours Education</td>
-          <td>checkbox</td>
-        </tr>
-        <tr>
-          <td>200px image</td>
-          <td>100 Hours Streak</td>
-          <td>checkbox</td>
-        </tr>
-        <tr>
-          <td>200px image</td>
-          <td>10 Weeks in A Row</td>
-          <td>checkbox</td>
-        </tr>
+        {props.allBadgeData.map((value) => <tr><td className="badge_image_sm"> <img src={value.imageUrl} /></td><td>{value.badgeName}</td><td>checkbox</td></tr>)}
       </tbody>
     </Table>
     <Button className="btn--dark-sea-green float-right" style={{ margin: 5 }}>Confirm</Button>

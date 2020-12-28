@@ -1,15 +1,23 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { connect } from 'react-redux';
 import { Nav, NavItem, NavLink, TabContent, TabPane } from 'reactstrap';
 import classnames from 'classnames';
 import AssignBadge from './AssignBadge';
 import EditBadge from './EditBadge';
+import { fetchAllBadges } from '../../actions/badgeManagement';
 
-const BadgeManagement = () => {
+const BadgeManagement = (props) => {
   const [activeTab, setActiveTab] = useState('1');
+  const { userId } = props.match.params;
 
   const toggle = tab => {
     if (activeTab !== tab) setActiveTab(tab);
   }
+
+  useEffect(() => {
+    props.fetchAllBadges(userId);
+  }, [])
+
   return (
     <div style={{
       margin: 20
@@ -26,7 +34,7 @@ const BadgeManagement = () => {
       </Nav>
       <TabContent activeTab={activeTab}>
         <TabPane tabId="1">
-          <AssignBadge />
+          <AssignBadge allBadgeData={props.allBadgeData} />
         </TabPane>
         <TabPane tabId="2">
           <EditBadge />
@@ -36,4 +44,14 @@ const BadgeManagement = () => {
   );
 }
 
-export default BadgeManagement;
+const mapStateToProps = (state) => {
+  return { allBadgeData: state.badge.allBadgeData };
+};
+
+const mapDispatchToProps = dispatch => {
+  return {
+    fetchAllBadges: (userId) => dispatch(fetchAllBadges(userId)),
+  };
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(BadgeManagement);
