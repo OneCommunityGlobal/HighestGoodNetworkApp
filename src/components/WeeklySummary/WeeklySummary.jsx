@@ -229,7 +229,7 @@ export class WeeklySummary extends Component {
     }
 
     return (
-      <Container fluid className="bg--white-smoke py-3 mb-5">
+      <Container fluid={this.props.isModal ? true : false} className="bg--white-smoke py-3 mb-5">
         <h3>Weekly Summaries</h3>
         <div>Total submitted: {formElements.weeklySummariesCount}</div>
 
@@ -247,7 +247,7 @@ export class WeeklySummary extends Component {
               );
             })}
           </Nav>
-          <TabContent activeTab={activeTab} className="p-4 weeklysummarypane">
+          <TabContent activeTab={activeTab} className="p-2 weeklysummarypane">
             {Object.keys(summariesLabels).map((summaryName, i) => {
               let tId = String(i + 1);
               return (
@@ -285,7 +285,7 @@ export class WeeklySummary extends Component {
             })}
             <Row>
               <Col>
-                <Label for="mediaUrl" className="mt-3">
+                <Label for="mediaUrl" className="mt-1">
                   Link to your media files (eg. DropBox or Google Doc). (required) <MediaURLTooltip />
                 </Label>
                 <Row form>

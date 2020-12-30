@@ -6,6 +6,7 @@ import WeeklySummary from '../WeeklySummary/WeeklySummary';
 import Badge from '../Badge';
 import TeamMemberTasks from '../TeamMemberTasks/TeamMemberTasks'
 import Timelog from '../Timelog/Timelog';
+import DashboardSummaryBar from './DashboardSummaryBar';
 import '../../App.css';
 import { connect } from 'react-redux';
 
@@ -22,16 +23,19 @@ const Dashboard = props => {
   }
 
   return (
-    <Container fluid>
-      <Row>
-        <Col sm={{ size: 12 }}>
-          <Alert color="info">
-            <b>Reminder</b>: Make sure to purge the cache or "hard" refresh the page in your browser
-            if you don's see the changes you had merged with the "development" branch. This message
-            will be removed before the site goes "live".
-          </Alert>
-        </Col>
-      </Row>
+  <Container fluid>
+    <Row>
+      <Col sm={{ size: 12 }}>
+        <Alert color="info">
+          <b>Reminder</b>: Make sure to purge the cache or "hard" refresh the page in your browser
+          if you don's see the changes you had merged with the "development" branch. This message
+          will be removed before the site goes "live".
+        </Alert>
+      </Col>
+    </Row>
+    
+    <DashboardSummaryBar />
+
       <Row>
         <Col lg={{ size: 7 }}>&nbsp;</Col>
         <Col lg={{ size: 5 }}>
@@ -47,7 +51,7 @@ const Dashboard = props => {
           <Leaderboard />
         </Col>
         <Col lg={{ size: 7 }} className="left-col-dashboard order-sm-1">
-          {popup ? <div className="my-2" ><div className="container row" id="weeklySum"><WeeklySummary/></div></div>: null}
+          {popup ? <div className="my-2" ><div id="weeklySum"><WeeklySummary/></div></div>: null}
           <a name="wsummary"><div className="my-2">
             <Timelog/>
           </div></a>
@@ -58,7 +62,7 @@ const Dashboard = props => {
         </Col>
 
       </Row>
-    </Container >
+    </Container>
   ); 
 }
 

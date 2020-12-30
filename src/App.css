@@ -6,55 +6,47 @@
   visibility: hidden
 } */
 
-
-.newProfilePic
-{
-  visibility:hidden;
+.newProfilePic {
+  visibility: hidden;
   width: 0;
-  height:0;
-  padding-top: 7px;	
+  height: 0;
+  padding-top: 7px;
   padding-right: 2px;
   position: absolute;
   right: 0;
   top: 0;
- 
 }
-.infringement{
-  color: blue
+.infringement {
+  color: blue;
 }
-.profilepic
-{
+.profilepic {
   height: 180px;
   width: 180px;
 }
 
 .accordion-toggle:after {
-
   font-family: 'FontAwesome';
-  content: "\f054";
+  content: '\f054';
   float: right;
 }
 
 .accordion-toggle.collapsed:after {
-/* symbol for down chevron*/
-content: "\f078";
+  /* symbol for down chevron*/
+  content: '\f078';
 }
 
-.dashboardbutton
-{
-background-color: black;
+.dashboardbutton {
+  background-color: black;
   border: black;
 }
 
-
-.hgn-leaderboard
-{
-/*background-color:#FFCCBC */
-background-color: black
+.hgn-leaderboard {
+  /*background-color:#FFCCBC */
+  background-color: black;
 }
 
 .bg-super {
-  background-color:#0000CD !important; /* medium blue #0000CD*/
+  background-color: #0000cd !important; /* medium blue #0000CD*/
 }
 
 .bg-awesome {
@@ -66,5 +58,9 @@ background-color: black
 }
 
 .bg-orange {
-  background-color: #FFA500 !important; /*  brighter orange */
+  background-color: #ffa500 !important; /*  brighter orange */
+}
+
+.bg--dark-sea-green {
+  background-color: #c9d6c6;
 }
