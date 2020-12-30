@@ -5,6 +5,7 @@ import WeeklySummaryModal from '../WeeklySummary/WeeklySummaryModal';
 import Badge from '../Badge';
 import TeamMemberTasks from '../TeamMemberTasks/TeamMemberTasks'
 import Timelog from '../Timelog/Timelog';
+import DashboardSummaryBar from './DashboardSummaryBar';
 import '../../App.css';
 import { connect } from 'react-redux';
 
@@ -19,6 +20,9 @@ const Dashboard = props => (
         </Alert>
       </Col>
     </Row>
+    
+    <DashboardSummaryBar />
+    
     <Row>
       <Col lg={{ size: 7 }}>&nbsp;</Col>
       <Col lg={{ size: 5 }}>
@@ -33,10 +37,10 @@ const Dashboard = props => (
         <div className="my-2">
           <Timelog/>
         </div>
-        <div className="my-2">
+        <div className="my-2" id="tasks">
           <TeamMemberTasks />
         </div>
-        <Badge userId={props.auth.user.userid} />
+        <Badge userId={props.auth.user.userid}/>
       </Col>
 
     </Row>

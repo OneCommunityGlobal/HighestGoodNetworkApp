@@ -1,0 +1,138 @@
+.btn--dark-sea-green {
+  background-color: #c9d6c6 !important;
+  border-color: #225163 !important;
+  color: #225163 !important;
+}
+
+.btn--white-smoke {
+  background-color: #f6f6f3 !important;
+  border-color: #225163 !important;
+  color: #225163 !important;
+}
+
+.btn--dark-sea-green:hover:not([disabled]) {
+  background-color: #225163 !important;
+  border-color: #225163 !important;
+  color: #fff !important;
+}
+
+.btn--white-smoke:hover:not([disabled]) {
+  background-color: #ffffff !important;
+}
+.btn:disabled {
+  cursor: not-allowed;
+}
+
+.bg--white-smoke {
+  background-color: #f6f6f3;
+}
+
+.bg--cadet-blue {
+  background-color: #509999;
+}
+
+.bg--dark-sea-green {
+  background-color: #c9d6c6;
+}
+
+.bg--dark-green {
+  background-color: #32a518;
+}
+
+.text--silver {
+  color: #534e4e;
+}
+
+.media-url {
+  line-height: 2.3;
+}
+
+.due-section {
+  border: solid 2px #225163;
+  color: #2c2c2c;
+  border-radius: 6px;
+  width: 260px;
+}
+
+.due-section__date {
+  background-color: #225163;
+  padding: 14px;
+}
+
+.due-section__time {
+  padding: 7px;
+}
+
+.countdown {
+  margin: 10px auto;
+}
+
+.redBackgroup {
+  z-index: 10;
+  position: absolute;
+  height: 30px;
+  text-align: center;
+  vertical-align: middle;
+  background: #ff4d4f;
+  border-radius: 20px;
+  color: #fff;
+  top: 55px;
+  left: 60px;
+  padding: 3px 6px;
+  max-width: 25px;
+}
+
+.blackBackgroup {
+  z-index: 10;
+  height: 30px;
+  text-align: center;
+  vertical-align: middle;
+  background: #020202;
+  border-radius: 20px;
+  color: rgb(235, 238, 48);
+  position: absolute;
+  top: 55px;
+  left: 60px;
+  padding: 3px 6px;
+  max-width: 25px;
+}
+
+.border-red {
+  border-width: 3px;
+  /* border-radius: 10px; */
+  border-color: #fabec0;
+  border-style: solid;
+}
+
+.border-green {
+  border-width: 3px;
+  /* border-radius: 10px; */
+  border-color: #32a518;
+  border-style: solid;
+}
+
+.frame {
+  display: inline-block;
+  position: relative;
+  height: 85px;
+  width: 85px;
+}
+
+.image_frame {
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  cursor: pointer;
+}
+
+.badge-list {
+  padding-top: 10px;
+}
+
+.text-list {
+  padding-top: 25px;
+}
+
+.bg--bar {
+  background-color: #b6def1;
+}
