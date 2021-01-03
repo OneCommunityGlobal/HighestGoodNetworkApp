@@ -18,11 +18,12 @@ const BadgeManagement = (props) => {
     props.fetchAllBadges(userId);
   }, [])
 
+
   return (
     <div style={{
       margin: 20
     }}>
-      <Nav pills>
+      <Nav pills >
         <NavItem>
           <NavLink className={classnames({ active: activeTab === '1' })}
             onClick={() => { toggle('1'); }}>Badge Assignment</NavLink>
@@ -37,7 +38,7 @@ const BadgeManagement = (props) => {
           <AssignBadge allBadgeData={props.allBadgeData} />
         </TabPane>
         <TabPane tabId="2">
-          <EditBadge />
+          <EditBadge allBadgeData={props.allBadgeData} />
         </TabPane>
       </TabContent>
     </div >

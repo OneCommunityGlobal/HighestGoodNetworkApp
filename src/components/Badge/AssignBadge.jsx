@@ -48,9 +48,9 @@ const AssignBadge = (props) => {
         </Modal>
         <FormText color="muted">
           Please select a badge from the badge list.
-    </FormText>
+        </FormText>
       </FormGroup>
-      <Button>Submit</Button>
+      <Button size="lg">Submit</Button>
 
     </Form >
   );

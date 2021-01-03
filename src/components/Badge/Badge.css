@@ -25,3 +25,8 @@
   overflow-y: scroll;
   height: 220px;
 }
+
+.badgemanagement-actions-cell {
+  display: table-cell;
+  padding-left: 10px;
+}
