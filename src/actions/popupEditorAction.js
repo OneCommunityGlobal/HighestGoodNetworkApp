@@ -54,18 +54,6 @@ export const backupPopupEditor = (popupId, popupContent) => {
   }
 }
 
-export const restorePopup = (popupId) => {
-  return async dispatch => {
-    try {
-      const request = await axios.get(ENDPOINTS.POPUP_EDITOR_BACKUP_BY_ID(popupId));
-      dispatch(restoreContentPopup(popupId, request.data.content));
-    } catch (err) {
-      dispatch(setPopupError());
-    }
-  }
-}
-
-
 
 
 

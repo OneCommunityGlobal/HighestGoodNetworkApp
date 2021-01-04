@@ -155,7 +155,7 @@ export class Projects extends Component {
           closeModal={() => { this.setState({ showModalDelete: false }) }}
           confirmModal={() => this.confirmDelete()}
           setInactiveModal={() => this.setInactiveProject()}
-          modalMessage={this.props.state.popupEditor.currPopup.popupContent.replace("[project_name]", this.state.projectTarget.projectName) || ""}
+          modalMessage={(this.props.state.popupEditor.currPopup.popupContent ? this.props.state.popupEditor.currPopup.popupContent.replace('[project_name]', this.state.projectTarget.projectName) : "") || ""}
           modalTitle={Message.CONFIRM_DELETION}
         />
 
