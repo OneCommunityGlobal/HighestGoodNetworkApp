@@ -35,12 +35,12 @@ export class Projects extends Component {
         projectName: '',
         projectId: -1,
         active: false
-      }
+      },
     };
   }
 
   componentDidMount() {
-    console.log(this.props)
+    this.props.getPopupById('5fde91165289c805ece88758');// popup id
     this.props.fetchAllProjects(); // Fetch to get all projects
   }
 
@@ -61,7 +61,7 @@ export class Projects extends Component {
    * Also update the number of active project
    */
   onClickDelete = (projectId, active, projectName) => {
-    this.props.getPopupById('5fde91165289c805ece88758');// popup id
+
     this.setState({
       showModalDelete: true,
       projectTarget: {
@@ -155,9 +155,7 @@ export class Projects extends Component {
           closeModal={() => { this.setState({ showModalDelete: false }) }}
           confirmModal={() => this.confirmDelete()}
           setInactiveModal={() => this.setInactiveProject()}
-          modalMessage={Message.ARE_YOU_SURE_YOU_WANT_TO + Message.DELETE + " \"" + projectTarget.projectName + "\"? "
-            + Message.THIS_ACTION_CAN_NOT_BE_UNDONE + ". "
-            + Message.SWITCH_THEM_TO_INACTIVE_IF_YOU_LIKE_TO_KEEP_THEM_IN_THE_SYSTEM}
+          modalMessage={this.props.state.popupEditor.currPopup.popupContent.replace("[project_name]", this.state.projectTarget.projectName) || ""}
           modalTitle={Message.CONFIRM_DELETION}
         />
 

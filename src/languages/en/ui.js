@@ -41,3 +41,4 @@ export const ID = 'Id';
 export const TEAM_NAME = 'Team Names';
 export const TOTAL_TEAMS = 'Teams';
 export const ACTIVE_TEAMS = 'Active Teams';
+export const ADMIN = 'Admin';

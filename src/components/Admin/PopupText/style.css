@@ -43,6 +43,7 @@
 .m-footer .id{
   float: left;
   color: gray;
+  padding: 10px;
 }
 
 .m-footer .save{

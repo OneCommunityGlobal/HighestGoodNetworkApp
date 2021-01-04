@@ -45,5 +45,7 @@ export const ENDPOINTS = {
   MOVE_TASKS: wbsId => `${APIEndpoint}/tasks/moveTasks/${wbsId}`,
   WEEKLY_SUMMARIES_REPORT: () => `${APIEndpoint}/reports/weeklysummaries`,
   POPUP_EDITORS: `${APIEndpoint}/popupeditors/`,
-  POPUP_EDITOR_BY_ID: (id) => `${APIEndpoint}/popupeditor/${id}`
+  POPUP_EDITOR_BY_ID: (id) => `${APIEndpoint}/popupeditor/${id}`,
+  POPUP_EDITOR_BACKUP_BY_ID: (id) => `${APIEndpoint}/backup/popupeditor/${id}`,
+
 };

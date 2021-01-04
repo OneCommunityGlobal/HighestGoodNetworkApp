@@ -39,7 +39,29 @@ export const getPopupById = (popupId) => {
     } catch (err) {
       dispatch(setPopupError());
     }
+  }
+}
 
+export const backupPopupEditor = (popupId, popupContent) => {
+  return async dispatch => {
+    try {
+      await axios.post(ENDPOINTS.POPUP_EDITOR_BACKUP_BY_ID(popupId), { 'popupContent': popupContent });
+      const request = await axios.get(ENDPOINTS.POPUP_EDITORS);
+      dispatch(setCurrentPopup(request.data));
+    } catch (err) {
+      dispatch(setPopupError());
+    }
+  }
+}
+
+export const restorePopup = (popupId) => {
+  return async dispatch => {
+    try {
+      const request = await axios.get(ENDPOINTS.POPUP_EDITOR_BACKUP_BY_ID(popupId));
+      dispatch(restoreContentPopup(popupId, request.data.content));
+    } catch (err) {
+      dispatch(setPopupError());
+    }
   }
 }
 
@@ -64,6 +86,7 @@ export const setCurrentPopup = (currPopup) => {
     currPopup
   }
 }
+
 
 export const setPopupError = (err) => {
   return {
