@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import { connect } from 'react-redux';
 import { Editor } from '@tinymce/tinymce-react'
 import { updatePopupEditor, backupPopupEditor } from './../../../actions/popupEditorAction'
+import ModalBackupConfirm from './../../common/Modal'
 import axios from 'axios'
 import { ENDPOINTS } from "./../../../utils/URL";
 import './style.css'
@@ -9,7 +10,8 @@ import './style.css'
 const PopupText = (props) => {
   const [content, setContent] = useState(props.content);
   const [displaySave, setDisplaySave] = useState(true);
-  const [pressed, setPressed] = useState(7);
+  const [pressed, setPressed] = useState(2);
+  const [isPopup, setIsPopup] = useState(false);
 
   const save = (id) => {
     setDisplaySave(false);
@@ -19,10 +21,11 @@ const PopupText = (props) => {
     }, 1000);
   }
 
-  const pressBackup = (id) => {
+  const pressBackup = () => {
     setPressed(pressed - 1);
     if (pressed === 1) {
-      props.backupPopupEditor(id, content);
+      setIsPopup(true);
+
     }
   }
 
@@ -31,11 +34,11 @@ const PopupText = (props) => {
     setContent(request.data.popupContent);
   }
 
-  return <>
+  return <div>
     <div className='m-cover'>
       <div className='m-header'>
         {props.title}
-        <div className='save'>{pressed > 0 ? (`Press ${pressed > 1 ? `${pressed} times` : `${pressed} time`} to backup this data.`) : 'Backup successful'} {pressed > 0 ? <button type="button" className="ml-1 p-1 align-middle btn btn-warning" onClick={() => pressBackup(props.id)}>Backup</button> : null}</div>
+        <div className='save'>{(pressed) >= 0 ? (`Press ${(pressed) > 1 ? `${(pressed)} times` : ``} to backup this data.`) : 'Backup successful '} {pressed > 0 ? <button type="button" className="ml-1 p-1 align-middle btn btn-warning" onClick={() => pressBackup()}>Backup</button> : null}</div>
       </div>
 
       <div className='m-body'>
@@ -66,7 +69,15 @@ const PopupText = (props) => {
         <div className='id'>{props.id}</div>
 
       </div>
+
+      <ModalBackupConfirm
+        isOpen={isPopup}
+        modalMessage={"Are you sure you want to save this data to backup store. This action can not be undo."}
+        modalTitle={"Warning"}
+        closeModal={() => { setIsPopup(false); }}
+        confirmModal={() => { props.backupPopupEditor(props.id, content); setIsPopup(false); setPressed(pressed - 1); }}
+      />
     </div >
-  </>
+  </div>
 }
 export default connect(state => state, { updatePopupEditor, backupPopupEditor })(PopupText)
