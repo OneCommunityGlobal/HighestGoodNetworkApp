@@ -264,6 +264,7 @@ class TimelogPage extends Component {
                         this.changeTab(0)
                       }}
                       href="#"
+                      to="#"
                     >
                       Current Week
                     </NavLink>
@@ -275,6 +276,7 @@ class TimelogPage extends Component {
                         this.changeTab(1)
                       }}
                       href="#"
+                      to="#"
                     >
                       Last Week
                     </NavLink>
@@ -286,6 +288,7 @@ class TimelogPage extends Component {
                         this.changeTab(2)
                       }}
                       href="#"
+                      to="#"
                     >
                       Week Before Last
                     </NavLink>
@@ -297,6 +300,7 @@ class TimelogPage extends Component {
                         this.changeTab(3)
                       }}
                       href="#"
+                      to="#"
                     >
                       Search by Date Range
                     </NavLink>

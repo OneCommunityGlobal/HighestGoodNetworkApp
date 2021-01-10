@@ -116,6 +116,7 @@ const TimeEntryForm = ({
   if (!_.isEmpty(userProjects)) {
     projects = userProjects.projects;
   }
+  
   const projectOptions = projects.map(project => (
     <option value={project.projectId} key={project.projectId}>
       {' '}
@@ -124,7 +125,7 @@ const TimeEntryForm = ({
     </option>
   ));
   projectOptions.unshift(
-    <option value="" key="" disabled>
+    <option value="" key="none" disabled>
       Select Project/Task
     </option>,
   );

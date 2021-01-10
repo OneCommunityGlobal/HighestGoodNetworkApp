@@ -9,5 +9,5 @@ export const Logout = () => {
     dispatch(logoutUser())
     return <Redirect to="/login" auth={false} />
   }
-  return null
+  return null;
 }

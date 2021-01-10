@@ -53,7 +53,7 @@ export const fetchAllManagingTeams = (userId, managingTeams) => {
         .endOf('week')
         .subtract(0, 'weeks')
       memberTimeEntriesPromises.push(
-        httpService.get(ENDPOINTS.TIME_ENTRIES_PERIOD(member._id, fromDate, toDate)),
+        httpService.get(ENDPOINTS.TIME_ENTRIES_PERIOD(member._id, fromDate, toDate)).catch(err=>{}),
       )
     })
 
