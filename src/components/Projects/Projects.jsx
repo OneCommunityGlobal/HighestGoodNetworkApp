@@ -22,6 +22,7 @@ import { NOTICE } from './../../languages/en/ui'
 import './projects.css'
 import { connect } from 'react-redux'
 import Loading from '../common/Loading'
+import { PROJECT_DELETE_POPUP_ID } from "./../../constants/popupId"
 
 export class Projects extends Component {
 
@@ -40,7 +41,7 @@ export class Projects extends Component {
   }
 
   componentDidMount() {
-    this.props.getPopupById('5fde91165289c805ece88758');// popup id
+    this.props.getPopupById(PROJECT_DELETE_POPUP_ID);// popup id
     this.props.fetchAllProjects(); // Fetch to get all projects
   }
 

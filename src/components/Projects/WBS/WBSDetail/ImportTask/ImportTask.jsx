@@ -7,9 +7,10 @@ import React, { useState } from 'react'
 import { connect } from 'react-redux'
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import { importTask, fetchAllTasks } from './../../../../../actions/task';
-import { ENDPOINTS } from './../../../../../utils/URL';
-import axios from 'axios'
 import readXlsxFile from 'read-excel-file';
+import { getPopupById } from './../../../../../actions/popupEditorAction'
+import { TASK_IMPORT_POPUP_ID } from "./../../../../../constants/popupId"
+import parse from 'html-react-parser';
 
 const ImportTask = (props) => {
   let fileReader;
@@ -19,7 +20,6 @@ const ImportTask = (props) => {
   const [modal, setModal] = useState(false);
   const toggle = () => { setModal(!modal); setIsDone(0); props.fetchAllTasks(props.wbsId, 0); };
   const [taskList, setTaskList] = useState([]);
-
 
   const handleFileRead = async (rows) => {
     setIsDone(1);
@@ -56,31 +56,9 @@ const ImportTask = (props) => {
 
       }
 
-      /*
-      if (i >= rows.length - 1) {
-        setImportStatus(1);
-        setTimeout(() => {
-          setImportStatus(2);
-          axios.put(ENDPOINTS.FIX_TASKS(props.wbsId));
-          setTimeout(() => {
-            setImportStatus(3);
-            axios.put(ENDPOINTS.UPDATE_PARENT_TASKS(props.wbsId)).then(() => {
-              setTimeout(() => {
-                setImportStatus(4);
-                props.fetchAllTasks(props.wbsId);
-              }, 10000)
-            })
-          }, 10000);
-        }, 10000);
-      }
-      */
-
     });
 
     setTaskList(tmpList);
-
-
-
   }
 
   const uploadTaskList = () => {
@@ -106,11 +84,7 @@ const ImportTask = (props) => {
     })
   }
 
-  const handleRow = async (row) => {
-    //let rowArr = row.split(',');
 
-    //await addTask(row);
-  }
 
 
   let position = 0;
@@ -185,9 +159,7 @@ const ImportTask = (props) => {
               <tr>
                 <td scope="col" >
                   <p id="instruction">
-                    Before importing a Work Breakdown Structure (WBS) to this software, the following steps must be taken:<br />
-                    1.Check all numbers are sequential.<br />
-                    2.Double check the number listed in the popup matches the number of rows being imported.<br />
+                    {parse(props.popupEditor.currPopup.popupContent) || ""}
                   </p>
                 </td>
               </tr>
@@ -242,7 +214,7 @@ const ImportTask = (props) => {
           <Button color="secondary" onClick={toggle}>{isDone === 4 ? 'Done' : 'Cancel'}</Button>
         </ModalFooter>
       </Modal >
-      <Button color="primary" size="sm" onClick={toggle} >Import Tasks</Button>
+      <Button color="primary" size="sm" onClick={toggle} ><span onClick={() => props.getPopupById(TASK_IMPORT_POPUP_ID)} >Import Tasks</span></Button>
 
 
 
@@ -253,5 +225,5 @@ const ImportTask = (props) => {
 const mapStateToProps = state => {
   return state
 }
-export default connect(mapStateToProps, { importTask, fetchAllTasks })(ImportTask)
+export default connect(mapStateToProps, { importTask, fetchAllTasks, getPopupById })(ImportTask)
 

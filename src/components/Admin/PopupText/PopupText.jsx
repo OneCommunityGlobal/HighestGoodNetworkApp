@@ -15,7 +15,7 @@ const PopupText = (props) => {
 
   const save = (id) => {
     setDisplaySave(false);
-    props.updatePopupEditor(id, content);
+    props.updatePopupEditor(id, content, props.title);
     setTimeout(() => {
       setDisplaySave(true);
     }, 1000);
@@ -75,7 +75,7 @@ const PopupText = (props) => {
         modalMessage={"Are you sure you want to save this data to backup store. This action can not be undo."}
         modalTitle={"Warning"}
         closeModal={() => { setIsPopup(false); }}
-        confirmModal={() => { props.backupPopupEditor(props.id, content); setIsPopup(false); setPressed(pressed - 1); }}
+        confirmModal={() => { props.backupPopupEditor(props.id, content, props.title); setIsPopup(false); setPressed(pressed - 1); }}
       />
     </div >
   </div>

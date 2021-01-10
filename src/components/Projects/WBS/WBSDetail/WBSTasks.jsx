@@ -31,6 +31,7 @@ const WBSTasks = (props) => {
   useEffect(() => {
     props.fetchAllTasks(wbsId, 0);
     props.fetchAllMembers(projectId);
+    setIsShowImport(true);
 
   }, [wbsId, projectId]);
 

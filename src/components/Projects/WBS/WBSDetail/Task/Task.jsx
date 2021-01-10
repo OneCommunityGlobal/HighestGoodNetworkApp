@@ -15,6 +15,8 @@ import { Editor } from '@tinymce/tinymce-react'
 import { UserRole } from './../../../../../utils/enums';
 import ModalDelete from './../../../../../components/common/Modal'
 import * as Message from './../../../../../languages/en/messages'
+import { getPopupById } from './../../../../../actions/popupEditorAction'
+import { TASK_DELETE_POPUP_ID } from "./../../../../../constants/popupId"
 
 const Task = (props) => {
   const [role] = useState(props.state ? props.state.auth.user.role : null);
@@ -60,18 +62,6 @@ const Task = (props) => {
       setIsLoad(true);
     }
 
-    /*const allItems = document.getElementsByClassName(`wbsTask`);
-    for (let i = 0; i < allItems.length; i++) {
-      if (allItems[i].className.indexOf(`num_${num.split('.').join('').replace(/0/g, '')}`) === 0 && allItems[i].id !== id) {
-        if (isOpen) {
-          allItems[i].style.display = 'none';
-        } else {
-          if (allItems[i].className.indexOf(`lv_${level + 1}`) !== -1) {
-            allItems[i].style.display = 'table-row';
-          }
-        }
-      }
-    }*/
     if (isOpen) {
       const allItems = [...document.getElementsByClassName(`parentId1_${props.id}`), ...document.getElementsByClassName(`parentId2_${props.id}`), ...document.getElementsByClassName(`parentId3_${props.id}`)];
       for (let i = 0; i < allItems.length; i++) {
@@ -147,10 +137,10 @@ const Task = (props) => {
 
   const showUpDeleteModal = () => {
     setModalDelete(true);
+    props.getPopupById(TASK_DELETE_POPUP_ID);
   }
 
   const deleteTask = (taskId, mother) => {
-
     props.deleteTask(taskId, mother);
     props.fetchAllTasks(props.wbsId, -1);
     setTimeout(() => {
@@ -300,7 +290,7 @@ const Task = (props) => {
 
           {role === UserRole.Administrator ?
             <>
-              <Button color="danger" size="sm" className='controlBtn controlBtn_remove' onClick={() => setModalDelete(true)}>Remove</Button>
+              <Button color="danger" size="sm" className='controlBtn controlBtn_remove' onClick={() => showUpDeleteModal()}>Remove</Button>
 
               <Dropdown direction="up" isOpen={dropdownOpen} toggle={toggle} style={{ float: "left" }}>
                 <DropdownToggle caret caret color="primary" size="sm" >
@@ -377,7 +367,7 @@ const Task = (props) => {
             isOpen={modalDelete}
             closeModal={() => { setModalDelete(false) }}
             confirmModal={() => deleteTask(props.id, props.mother)}
-            modalMessage={"Hold up there pally, you sure you want to delete this!?! Deleting this cannot be undone and the process deletes all the tasks within this folder too. If you want to keep those and still delete this folder, you first need to drag the ones you want to keep to another folder. Easy peasy, then you can destroy this folder forever and feel good about it"}
+            modalMessage={(props.state.popupEditor.currPopup.popupContent) || ""}
             modalTitle={Message.CONFIRM_DELETION}
           />
 
@@ -387,5 +377,5 @@ const Task = (props) => {
   )
 }
 const mapStateToProps = state => { return { state } }
-export default connect(mapStateToProps, { moveTasks, fetchAllTasks, deleteTask, copyTask })(Task)
+export default connect(mapStateToProps, { moveTasks, fetchAllTasks, deleteTask, copyTask, getPopupById })(Task)
 

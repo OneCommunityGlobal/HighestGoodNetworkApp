@@ -3,23 +3,21 @@
  * Author: Henry Ng - 08/01/20
  * Display member of the members list
  ********************************************************************************/
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { connect } from 'react-redux'
 import ModalDelete from './../../../common/Modal'
 import { deleteWBS } from './../../../../actions/wbs'
 import { UserRole } from './../../../../utils/enums'
-
+import { getPopupById } from './../../../../actions/popupEditorAction'
+import { WBS_DELETE_POPUP_ID } from "./../../../../constants/popupId"
 const WBSItem = (props) => {
-  console.log(props);
-
-
   const [showModalDelete, setShowModalDelete] = useState(false);
 
   const confirmDelete = () => {
+
     props.deleteWBS(props.wbsId);
     setShowModalDelete(false);
   }
-
 
   return (
     <React.Fragment>
@@ -32,7 +30,7 @@ const WBSItem = (props) => {
         </td>
         {props.auth.user.role === UserRole.Administrator ?
           <td className='members__assign'>
-            <button className="btn btn-outline-danger btn-sm" type="button" onClick={(e) => setShowModalDelete(true)}>
+            <button className="btn btn-outline-danger btn-sm" type="button" onClick={(e) => { setShowModalDelete(true); props.getPopupById(WBS_DELETE_POPUP_ID); }}>
               <i className="fa fa-minus" aria-hidden="true"></i>
             </button>
           </td>
@@ -45,7 +43,7 @@ const WBSItem = (props) => {
         isOpen={showModalDelete}
         closeModal={() => setShowModalDelete(false)}
         confirmModal={() => confirmDelete()}
-        modalMessage={`Are you sure you want to delete this ${props.name}`}
+        modalMessage={(props.popupEditor.currPopup.popupContent || "")}
         modalTitle="Confirm Deletion"
       />
 
@@ -53,5 +51,5 @@ const WBSItem = (props) => {
   )
 }
 const mapStateToProps = state => state;
-export default connect(mapStateToProps, { deleteWBS })(WBSItem)
+export default connect(mapStateToProps, { deleteWBS, getPopupById })(WBSItem)
 
