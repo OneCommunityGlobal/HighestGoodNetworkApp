@@ -161,7 +161,7 @@ class AddUserProfile extends Component {
               </Row>
               <Row>
                 <Col md="6">
-                  <Label>Collaboration Preference</Label>
+                  <Label>Video Call Preference</Label>
                 </Col>
                 <Col md="6">
                   <FormGroup>
@@ -171,7 +171,7 @@ class AddUserProfile extends Component {
                       id="collaborationPreference"
                       value={this.state.userProfile.collaborationPreference}
                       onChange={this.handleUserProfile}
-                      placeholder="Skype/Phone/Email"
+                      placeholder="Skype, Zoom, etc."
                     />
                   </FormGroup>
                 </Col>
