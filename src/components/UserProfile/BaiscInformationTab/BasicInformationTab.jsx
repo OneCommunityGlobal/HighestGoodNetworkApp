@@ -319,7 +319,7 @@ const BasicInformationTab = (props) => {
       </Row>
       <Row>
         <Col md="6">
-          <Label>Collaboration Preference</Label>
+          <Label>Video Call Preference</Label>
         </Col>
         <Col md="6">
           <FormGroup>
@@ -329,7 +329,7 @@ const BasicInformationTab = (props) => {
               id="collaborationPreference"
               value={userProfile.collaborationPreference}
               onChange={handleUserProfile}
-              placeholder="Skype/Phone/Email"
+              placeholder="Skype, Zoom, etc."
             />
           </FormGroup>
         </Col>
