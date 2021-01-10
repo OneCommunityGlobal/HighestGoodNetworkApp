@@ -1,17 +1,40 @@
 import React, { useState } from 'react';
-import { Button, Form, FormGroup, Label, Input, FormText, Row, Col, FormFeedback, Modal, ModalHeader, ModalBody } from 'reactstrap';
+import {
+  Button, Form, FormGroup, Label, Input, FormText, Row, Col, FormFeedback, Modal, ModalHeader, ModalBody,
+} from 'reactstrap';
+import { connect } from 'react-redux';
 import AssignBadgePopup from './AssignBadgePopup';
+import { getUserToBeAssigned, assignBadges } from '../../actions/badgeManagement';
 
 const AssignBadge = (props) => {
 
   const [isOpen, setOpen] = useState(false);
+  const [first, setFirst] = useState('');
+  const [last, setLast] = useState('');
 
   const toggle = () => setOpen(isOpen => !isOpen);
 
+  const clickAssign = (e) => {
+    e.preventDefault();
+    assignUser(first, last);
+    toggle();
+  }
+
+  const assignUser = (first, last) => {
+    const userName = first + ' ' + last;
+    props.getUserToBeAssigned(userName);
+  }
+
+  const clickSubmit = () => {
+    assignBadges(props.userId, props.userAssigned, props.selectedBadges);
+  }
+
+
   return (
     <Form style={{
-      margin: 20
-    }}>
+      margin: 20,
+    }}
+    >
       <Row>
         <Col md="2">
           <Label>Name</Label>
@@ -23,8 +46,8 @@ const AssignBadge = (props) => {
               name="firstName"
               id="firstName"
               placeholder="First Name"
+              onChange={(e) => setFirst(e.target.value.trim())}
             />
-            <FormFeedback>First Name Can't be empty.</FormFeedback>
           </FormGroup>
         </Col>
         <Col md="4">
@@ -34,26 +57,36 @@ const AssignBadge = (props) => {
               name="lastName"
               id="lastName"
               placeholder="Last Name"
-
+              onChange={(e) => setLast(e.target.value.trim())}
             />
-            <FormFeedback>Last Name Can't be empty.</FormFeedback>
           </FormGroup>
         </Col>
       </Row>
       <FormGroup>
-        <Button className="btn--dark-sea-green" onClick={toggle}>Assign Badge</Button>
+        <Button className="btn--dark-sea-green" onClick={clickAssign}>Assign Badge</Button>
         <Modal isOpen={isOpen} toggle={toggle}>
           <ModalHeader toggle={toggle}>Assign Badge</ModalHeader>
-          <ModalBody><AssignBadgePopup allBadgeData={props.allBadgeData} /></ModalBody>
+          <ModalBody><AssignBadgePopup allBadgeData={props.allBadgeData} toggle={toggle} /></ModalBody>
         </Modal>
         <FormText color="muted">
           Please select a badge from the badge list.
         </FormText>
       </FormGroup>
-      <Button size="lg">Submit</Button>
+      <Button size="lg" onClick={clickSubmit}>Submit</Button>
 
-    </Form >
+    </Form>
   );
 };
 
-export default AssignBadge;
+const mapStateToProps = state => ({
+  selectedBadges: state.badge.selectedBadges,
+  userAssigned: state.badge.userAssigned
+});
+
+const mapDispatchToProps = dispatch => ({
+  getUserToBeAssigned: (userName) => dispatch(getUserToBeAssigned(userName)),
+  // assignBadges: (requestorId, userAssigned, selectBadges) => dispatch(assignBadges(requestorId, userAssigned, selectBadges))
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(AssignBadge);
+

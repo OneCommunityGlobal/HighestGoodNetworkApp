@@ -30,7 +30,7 @@ import { taskReducer } from './allTasksReducer'
 import { timerReducer } from './timerReducer'
 import { managingTeamsReducer } from './managingTeamsReducer'
 import { teamUsersReducer } from './teamsTeamMembersReducer'
-import { badgeReducer, bagdeRedecer } from './badgeReducer'
+import { badgeReducer } from './badgeReducer'
 
 export default combineReducers({
   auth: authReducer,
