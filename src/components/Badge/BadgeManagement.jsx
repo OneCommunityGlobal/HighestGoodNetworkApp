@@ -48,7 +48,7 @@ const BadgeManagement = (props) => {
       </Nav>
       <TabContent activeTab={activeTab}>
         <TabPane tabId="1">
-          <AssignBadge allBadgeData={props.allBadgeData} userId={userId} />
+          <AssignBadge allBadgeData={props.allBadgeData} />
         </TabPane>
         <TabPane tabId="2">
           <EditBadge allBadgeData={props.allBadgeData} />

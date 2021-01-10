@@ -26,7 +26,7 @@ const AssignBadge = (props) => {
   }
 
   const clickSubmit = () => {
-    assignBadges(props.userId, props.userAssigned, props.selectedBadges);
+    assignBadges(props.userAssigned, props.selectedBadges);
   }
 
 
@@ -85,7 +85,6 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = dispatch => ({
   getUserToBeAssigned: (userName) => dispatch(getUserToBeAssigned(userName)),
-  // assignBadges: (requestorId, userAssigned, selectBadges) => dispatch(assignBadges(requestorId, userAssigned, selectBadges))
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(AssignBadge);

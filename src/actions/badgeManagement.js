@@ -38,7 +38,7 @@ export const getUserToBeAssigned = userAssigned => ({
  * Assigning badge(s) to an existing user
  */
 
-export const assignBadges = async (requestorId, userAssigned, selectedBadges) => {
+export const assignBadges = async (userAssigned, selectedBadges) => {
   const res = await axios.get(ENDPOINTS.USER_PROFILE_BY_NAME(userAssigned));
   const badgeCollection = res.data[0].badgeCollection;
   const UserToBeAssigned = res.data[0]._id;
@@ -58,5 +58,5 @@ export const assignBadges = async (requestorId, userAssigned, selectedBadges) =>
   });
 
   const url = ENDPOINTS.BADGE_ASSIGN(UserToBeAssigned);
-  await axios.put(url, { badgeCollection, requestorId });
+  await axios.put(url, { badgeCollection });
 };
