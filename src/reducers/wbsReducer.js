@@ -24,6 +24,7 @@ export const wbsReducer = (allWBS = allWBSInital, action) => {
       let index = allWBS.WBSItems.findIndex(wbs => wbs._id == action.wbsId);
       console.log(index, action.wbsId)
       return { ...allWBS, WBSItems: [...allWBS.WBSItems.slice(0, index), ...allWBS.WBSItems.slice(index + 1)] }
+    default:
+      return allWBS;
   }
-  return allWBS;
 };

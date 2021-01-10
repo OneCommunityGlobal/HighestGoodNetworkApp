@@ -6,7 +6,6 @@ import moment from 'moment';
 import './Timelog.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEdit } from '@fortawesome/free-regular-svg-icons';
-import { postTimeEntry, editTimeEntry } from '../../actions/timeEntries';
 import TimeEntryForm from './TimeEntryForm';
 import DeleteModal from './DeleteModal';
 

@@ -13,7 +13,6 @@ import FoundUser from './FoundUser'
 import './members.css'
 
 const Members = (props) => {
-    const [init, setInit] = useState(false);
     let [keyword, setKeyword] = useState('');
     const projectId = props.match.params.projectId;
 
@@ -24,7 +23,7 @@ const Members = (props) => {
 
     useEffect(() => {
         props.fetchAllMembers(projectId);
-    }, [projectId]);
+    }, [projectId, props]);
 
     const pressEnter = (event, keyword) => {
         if (event.key === "Enter") {

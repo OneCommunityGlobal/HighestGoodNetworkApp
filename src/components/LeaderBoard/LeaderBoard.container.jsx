@@ -51,12 +51,10 @@ const mapStateToProps = state => {
 	let tenPTotalOrgTime = organization.weeklyComittedHours * 0.1;
 	let orgTangibleColorTime = (organization.totaltime < (tenPTotalOrgTime * 2)) ? 0 : 5;
 
-	if (orgTangibleColorTime == 5) {
+	if (orgTangibleColorTime === 5) {
 		let multipleRemaining = Math.floor((Math.abs((organization.totaltime - (tenPTotalOrgTime * 2))) / tenPTotalOrgTime));
 		orgTangibleColorTime += (multipleRemaining * 10);
 	}
-
-	console.log('Org Tabile Colors', orgTangibleColorTime);
 	
 
 	organization.barcolor = getcolor(orgTangibleColorTime);

@@ -105,7 +105,7 @@ const TimeEntryForm = ({
       await dispatch(getUserProjects(userId));
     };
     fetchProjects(userId);
-  }, [userId]);
+  }, [userId, dispatch]);
 
   useEffect(() => {
     setInputs({ ...inputs, ...timer });
@@ -190,7 +190,7 @@ const TimeEntryForm = ({
       return false;
     }
 
-    if (edit && reminder.edit_notice && reminder.edit_count == 4 && edittime) {
+    if (edit && reminder.edit_notice && reminder.edit_count === 4 && edittime) {
       openModal();
       setReminder(reminder => ({
         ...reminder,
@@ -201,7 +201,7 @@ const TimeEntryForm = ({
       return false;
     }
 
-    if (edit && reminder.edit_notice && reminder.edit_count == 5 && edittime) {
+    if (edit && reminder.edit_notice && reminder.edit_count === 5 && edittime) {
       openModal();
       setReminder(reminder => ({
         ...reminder,
@@ -211,7 +211,7 @@ const TimeEntryForm = ({
       }));
       return false;
     }
-    if (edit && reminder.edit_notice && (reminder.edit_count - 5) % 2 == 1 && edittime) {
+    if (edit && reminder.edit_notice && (reminder.edit_count - 5) % 2 === 1 && edittime) {
       openModal();
       setReminder(reminder => ({
         ...reminder,
@@ -221,7 +221,7 @@ const TimeEntryForm = ({
       return false;
     }
 
-    if (edit && reminder.edit_notice && (reminder.edit_count - 5) % 2 == 0 && edittime) {
+    if (edit && reminder.edit_notice && (reminder.edit_count - 5) % 2 === 0 && edittime) {
       openModal();
       setReminder(reminder => ({
         ...reminder,
@@ -243,7 +243,7 @@ const TimeEntryForm = ({
     const hours = inputs.hours === '' ? '0' : inputs.hours;
     const minutes = inputs.minutes === '' ? '0' : inputs.minutes;
 
-    const edittime = edit && (data.hours != hours || data.minutes != minutes);
+    const edittime = edit && (data.hours !== hours || data.minutes !== minutes);
 
     if (!validateForm(edittime)) {
       return;
@@ -515,7 +515,7 @@ const TimeEntryForm = ({
             <Button onClick={openModal} color="primary">
               Close
             </Button>
-            {edit && (data.hours != inputs.hours || data.minutes != inputs.minutes) && (
+            {edit && (data.hours !== inputs.hours || data.minutes !== inputs.minutes) && (
               <Button onClick={cancelChange} color="secondary">
                 Cancel
               </Button>

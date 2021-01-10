@@ -106,7 +106,7 @@ export class Projects extends Component {
     let showModalMsg = false;
     //console.log("STATUS ", status, "trackModelMsg ", trackModelMsg);
 
-    if (status == 400 && trackModelMsg) {
+    if (status === 400 && trackModelMsg) {
       showModalMsg = true;
     }
     // Display project lists 

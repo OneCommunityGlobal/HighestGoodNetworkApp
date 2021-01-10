@@ -26,7 +26,7 @@ export const fetchAllProjects = () => {
 			//console.log("RES", res);
 			dispatch(setProjects(res.data));
 		}).catch((err) => {
-			if (err.status != 401) {
+			if (err.status !== 401) {
 				console.log("Error", err);
 				dispatch(setProjectsError());
 			}
