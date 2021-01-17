@@ -9,7 +9,7 @@ const LeaderBoard = ({
 }) => {
   useEffect(() => {
     getLeaderboardData(loggedInUser.userid);
-  }, [leaderBoardData.length, getLeaderboardData, loggedInUser.userid]);
+  }, [leaderBoardData, getLeaderboardData, loggedInUser.userid]);
 
   useEffect(() => {
     try {

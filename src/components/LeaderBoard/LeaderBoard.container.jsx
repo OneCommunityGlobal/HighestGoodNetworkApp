@@ -37,16 +37,16 @@ const mapStateToProps = state => {
 			element.barprogress = getprogress(element.totaltangibletime_hrs)
 			element.totaltime = _.round(element.totaltime_hrs, 2)
 
-			organization.totaltime += element.totaltime;
-			organization.tangibletime += element.tangibletime;
-			organization.intangibletime += element.intangibletime;
+			organization.totaltime += _.round(element.totaltime, 2);
+			organization.tangibletime += _.round(element.tangibletime, 2);
+			organization.intangibletime += _.round(element.intangibletime, 2);
 			
 			return element
 		})
 	}
 
 	organization.name = `HGN Totals: ${leaderBoardData.length} Members`
-
+	organization.tangibletime = _.round(organization.tangibletime, 2);
 	//Convert Org Time Color to 10,20,30,40,50,60,70% of totalTime/weeklyCommitted
 	let tenPTotalOrgTime = organization.weeklyComittedHours * 0.1;
 	let orgTangibleColorTime = (organization.totaltime < (tenPTotalOrgTime * 2)) ? 0 : 5;

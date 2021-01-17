@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { getLeaderboardData } from '../../actions/leaderBoardData'
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router';
 import {
@@ -25,7 +26,7 @@ import { updateUserProfile } from '../../actions/userProfile';
 import { stopTimer } from '../../actions/timer';
 
 const TimeEntryForm = ({
-  userId, edit, data, isOpen, toggle, timer, userProfile,
+  userId, edit, data, isOpen, toggle, timer, userProfile
 }) => {
   const fromTimer = !_.isEmpty(timer);
 
@@ -289,7 +290,7 @@ const TimeEntryForm = ({
       totalComittedHours: totalTime,
     };
     await dispatch(updateUserProfile(userProfile._id, updatedUserprofile));
-
+    getLeaderboardData(userProfile._id);
     if (fromTimer) {
       if (status === 200) {
         const timerStatus = await dispatch(stopTimer(userId));
