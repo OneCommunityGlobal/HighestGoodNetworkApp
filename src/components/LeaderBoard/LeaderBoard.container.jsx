@@ -5,7 +5,6 @@ import {getcolor, getprogress} from '../../utils/effortColors'
 import _ from 'lodash'
 const mapStateToProps = state => {
 	//console.log('State=Leaderboard container', state)
-
 	let leaderBoardData = _.get(state, 'leaderBoardData', [])
 
 	//console.log('Leaderboard Unsorted Data', leaderBoardData)
@@ -47,6 +46,8 @@ const mapStateToProps = state => {
 
 	organization.name = `HGN Totals: ${leaderBoardData.length} Members`
 	organization.tangibletime = _.round(organization.tangibletime, 2);
+	organization.totaltime += _.round(organization.totaltime, 2);
+	organization.intangibletime += _.round(organization.intangibletime, 2);
 	//Convert Org Time Color to 10,20,30,40,50,60,70% of totalTime/weeklyCommitted
 	let tenPTotalOrgTime = organization.weeklyComittedHours * 0.1;
 	let orgTangibleColorTime = (organization.totaltime < (tenPTotalOrgTime * 2)) ? 0 : 5;

@@ -26,7 +26,7 @@ import { updateUserProfile } from '../../actions/userProfile';
 import { stopTimer } from '../../actions/timer';
 
 const TimeEntryForm = ({
-  userId, edit, data, isOpen, toggle, timer, userProfile
+  userId, edit, data, isOpen, toggle, timer, userProfile, resetTimer
 }) => {
   const fromTimer = !_.isEmpty(timer);
 
@@ -283,13 +283,13 @@ const TimeEntryForm = ({
       console.log(deltatime);
     }
 
-    const totalTime = (parseFloat(userProfile.totalComittedHours, 10) + deltatime).toFixed(2);
-    console.log(totalTime);
-    const updatedUserprofile = {
-      ...userProfile,
-      totalComittedHours: totalTime,
-    };
-    await dispatch(updateUserProfile(userProfile._id, updatedUserprofile));
+    // const totalTime = (parseFloat(userProfile.totalComittedHours, 10) + deltatime).toFixed(2);
+    // console.log(totalTime);
+    // const updatedUserprofile = {
+    //   ...userProfile,
+    //   totalComittedHours: totalTime,
+    // };
+    //await dispatch(updateUserProfile(userProfile._id, updatedUserprofile));
     getLeaderboardData(userProfile._id);
     if (fromTimer) {
       if (status === 200) {
@@ -298,8 +298,9 @@ const TimeEntryForm = ({
           setInputs(inputs => initialState);
           setReminder(reminder => initialReminder);
           toggle();
+          resetTimer();
         }
-        history.push(`/timelog/${userId}`);
+        //history.push(`/timelog/${userId}`);
       }
     } else if (!edit) {
       setInputs(inputs => initialState);

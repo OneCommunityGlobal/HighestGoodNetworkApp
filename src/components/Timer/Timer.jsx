@@ -12,6 +12,7 @@ const Timer = () => {
     isTangible: window.screenX > 500 ? true : false
   }
   const userId = useSelector(state => state.auth.user.userid)
+  const userProfile = useSelector(state => state.auth.user)
   const pausedAt = useSelector(state => state.timer.seconds)
   const dispatch = useDispatch()
   const alert = {
@@ -110,6 +111,8 @@ const Timer = () => {
         isOpen={modal}
         timer={{ hours, minutes }}
         data={data}
+        userProfile = {userProfile}
+        resetTimer={reset}
       />
     </div>
   )
