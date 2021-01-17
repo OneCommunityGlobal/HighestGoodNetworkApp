@@ -1,34 +1,33 @@
-
-form-control{
+form-control {
   width: 0;
 }
 
-.saveChangesWarning{
-  display: none;
+.saveChangesWarning {
+  display: block;
   position: fixed;
   top: 7vh;
   left: 0;
   width: 100%;
   color: white;
   background-color: red;
-  border: 1px solid #A8A8A8;
+  border: 1px solid #a8a8a8;
   text-align: center;
   z-index: 9;
   opacity: 70%;
 }
 
-.profileEditTitleCenter{
+.profileEditTitleCenter {
   display: flex;
   justify-content: center;
   width: 100%;
   margin: 5px;
   font-weight: bold;
   text-align: center;
-  color: orange;
+  color: lightblue;
 }
 
-.profileEditTitle{
-  color: orange;
+.profileEditTitle {
+  color: lightblue;
   display: flex;
   margin: 5px;
   font-weight: bold;
@@ -44,7 +43,7 @@ form-control{
   margin-right: 5%;
 }
 
-.inputSections{
+.inputSections {
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -53,14 +52,14 @@ form-control{
   width: 300px;
 }
 
-.profileViewButtonContainer{
+.profileViewButtonContainer {
   position: absolute;
   display: flex;
   right: 1%;
   justify-content: flex-end;
 }
 
-.profileViewButton{
+.profileViewButton {
   display: flex;
   padding: 0.25em 0.4em;
   font-size: 16px;
@@ -70,13 +69,12 @@ form-control{
   background-color: dodgerblue;
   color: white;
 
-  &:hover{
+  &:hover {
     text-decoration: none;
   }
-  
 }
 
-.modLinkButton{
+.modLinkButton {
   display: flex;
   width: 25px;
   height: 25px;
@@ -88,8 +86,11 @@ form-control{
   background-color: #6d757d;
   border: none;
 }
+.teamsView {
+  display: flex;
+}
 
-.blueSquareSection{
+.blueSquareSection {
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -99,3 +100,8 @@ form-control{
   margin: 5px;
 }
 
+.tab-pane {
+  .row {
+    padding: 15 px;
+  }
+}

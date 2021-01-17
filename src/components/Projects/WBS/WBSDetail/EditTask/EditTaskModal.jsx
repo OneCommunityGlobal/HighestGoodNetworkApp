@@ -24,75 +24,77 @@ const EditTaskModal = (props) => {
   const thisTask = tasks.filter(task => task._id === props.taskId)[0];
 
   // Date picker
-  const FORMAT = 'MM/dd/yy';
-  const formatDate = (date, format, locale) => dateFnsFormat(date, format, { locale });
+  const FORMAT = 'MM/dd/yy'
+  const formatDate = (date, format, locale) => dateFnsFormat(date, format, { locale })
   const parseDate = (str, format, locale) => {
-    const parsed = dateFnsParse(str, format, new Date(), { locale });
+    const parsed = dateFnsParse(str, format, new Date(), { locale })
     if (DateUtils.isDate(parsed)) {
-      return parsed;
+      return parsed
     }
-    return undefined;
-  };
+    return undefined
+  }
 
   // modal
-  const [modal, setModal] = useState(false);
-  const toggle = () => setModal(!modal);
+  const [modal, setModal] = useState(false)
+  const toggle = () => setModal(!modal)
 
   // task name
-  const [taskName, setTaskName] = useState(thisTask.taskName);
+  const [taskName, setTaskName] = useState(thisTask.taskName)
 
   // priority
-  const [priority, setPriority] = useState(thisTask.priority);
+  const [priority, setPriority] = useState(thisTask.priority)
 
   // members name
-  const [memberName, setMemberName] = useState('');
+  const [memberName, setMemberName] = useState('')
 
   // resources
-  const [resourceItems, setResourceItems] = useState(thisTask.resources);
+  const [resourceItems, setResourceItems] = useState(thisTask.resources)
 
   // assigned
-  const [assigned, setAssigned] = useState(thisTask.assigned);
+  const [assigned, setAssigned] = useState(thisTask.assigned)
 
   // status
-  const [status, setStatus] = useState(thisTask.status);
+  const [status, setStatus] = useState(thisTask.status)
 
   // hour best
-  const [hoursBest, setHoursBest] = useState(thisTask.hoursBest);
+  const [hoursBest, setHoursBest] = useState(thisTask.hoursBest)
 
   // hour worst
-  const [hoursWorst, setHoursWorst] = useState(thisTask.hoursWorst);
+  const [hoursWorst, setHoursWorst] = useState(thisTask.hoursWorst)
 
   // hour most
-  const [hoursMost, setHoursMost] = useState(thisTask.hoursMost);
+  const [hoursMost, setHoursMost] = useState(thisTask.hoursMost)
 
   // hour estimate
-  const [hoursEstimate, setHoursEstimate] = useState(thisTask.estimatedHours);
+  const [hoursEstimate, setHoursEstimate] = useState(thisTask.estimatedHours)
 
   // started date
-  const [startedDate, setStartedDate] = useState(thisTask.startedDatetime);
+  const [startedDate, setStartedDate] = useState(thisTask.startedDatetime)
 
   // due date
-  const [dueDate, setDueDate] = useState(thisTask.dueDatetime);
+  const [dueDate, setDueDate] = useState(thisTask.dueDatetime)
 
   // links
-  const [links, setLinks] = useState(thisTask.links);
+  const [links, setLinks] = useState(thisTask.links)
 
   // Why info (Why is this task important)
-  const [whyInfo, setWhyInfo] = useState(thisTask.whyInfo);
+  const [whyInfo, setWhyInfo] = useState(thisTask.whyInfo)
 
   // Intent info (Design intent)
-  const [intentInfo, setIntentInfo] = useState(thisTask.intentInfo);
+  const [intentInfo, setIntentInfo] = useState(thisTask.intentInfo)
 
   // Endstate info (what it should look like when done)
-  const [endstateInfo, setEndstateInfo] = useState(thisTask.endstateInfo);
+  const [endstateInfo, setEndstateInfo] = useState(thisTask.endstateInfo)
 
   // Warning
-  const [dateWarning, setDateWarning] = useState(false);
-  const [hoursWarning, setHoursWarning] = useState(false);
+  const [dateWarning, setDateWarning] = useState(false)
+  const [hoursWarning, setHoursWarning] = useState(false)
 
-  const [foundMembersHTML, setfoundMembersHTML] = useState('');
+  const [foundMembersHTML, setfoundMembersHTML] = useState('')
   const findMembers = () => {
-    foundedMembers = members.filter(user => `${user.firstName} ${user.lastName}`.toLowerCase().includes(memberName.toLowerCase()));
+    foundedMembers = members.filter(user =>
+      `${user.firstName} ${user.lastName}`.toLowerCase().includes(memberName.toLowerCase()),
+    )
     const html = foundedMembers.map(elm => (
       <div>
         <input
@@ -110,97 +112,97 @@ const EditTaskModal = (props) => {
           <i className="fa fa-plus" aria-hidden="true" />
         </button>
       </div>
-    ));
-    setfoundMembersHTML(html);
-  };
+    ))
+    setfoundMembersHTML(html)
+  }
 
-  const removeResource = (userID) => {
-    const removeIndex = resourceItems.map(item => item.userID).indexOf(userID);
+  const removeResource = userID => {
+    const removeIndex = resourceItems.map(item => item.userID).indexOf(userID)
     setResourceItems([
       ...resourceItems.slice(0, removeIndex),
       ...resourceItems.slice(removeIndex + 1),
-    ]);
-  };
+    ])
+  }
 
-  const res = [...resourceItems];
+  const res = [...resourceItems]
   const addResources = (userID, first, last, profilePic) => {
     res.push({
       userID,
       name: `${first} ${last}`,
       profilePic,
-    });
-    setResourceItems([...res]);
-  };
+    })
+    setResourceItems([...res])
+  }
 
   // Links
-  const [link, setLink] = useState('');
+  const [link, setLink] = useState('')
   const addLink = () => {
-    setLinks([...links, link]);
-  };
+    setLinks([...links, link])
+  }
 
   // Hours estimate
   const calHoursEstimate = (isOn = null) => {
-    let currHoursMost = parseInt(hoursMost);
-    let currHoursWorst = parseInt(hoursWorst);
-    const currHoursBest = parseInt(hoursBest);
+    let currHoursMost = parseInt(hoursMost)
+    let currHoursWorst = parseInt(hoursWorst)
+    const currHoursBest = parseInt(hoursBest)
     if (isOn !== 'hoursMost') {
-      currHoursMost = Math.round((currHoursWorst - currHoursBest) / 2 + currHoursBest);
-      setHoursMost(currHoursMost);
+      currHoursMost = Math.round((currHoursWorst - currHoursBest) / 2 + currHoursBest)
+      setHoursMost(currHoursMost)
       if (isOn !== 'hoursWorst') {
-        currHoursWorst = Math.round(currHoursBest * 2);
-        setHoursWorst(currHoursWorst);
-        currHoursMost = Math.round((currHoursWorst - currHoursBest) / 2 + currHoursBest);
-        setHoursMost(currHoursMost);
+        currHoursWorst = Math.round(currHoursBest * 2)
+        setHoursWorst(currHoursWorst)
+        currHoursMost = Math.round((currHoursWorst - currHoursBest) / 2 + currHoursBest)
+        setHoursMost(currHoursMost)
       }
     }
 
-    setHoursEstimate(parseInt((currHoursMost + currHoursBest + currHoursWorst) / 3));
+    setHoursEstimate(parseInt((currHoursMost + currHoursBest + currHoursWorst) / 3))
 
     if (!(currHoursBest <= currHoursMost && currHoursMost <= currHoursWorst)) {
-      setHoursWarning(true);
+      setHoursWarning(true)
     } else {
-      setHoursWarning(false);
+      setHoursWarning(false)
     }
-  };
-
-  // parent Id
-  let parentId1 = props.parentId1 ? props.parentId1 : null;
-  let parentId2 = props.parentId2 ? props.parentId2 : null;
-  let parentId3 = props.parentId3 ? props.parentId3 : null;
-
-  if (props.parentId1 === null) {
-    parentId1 = props.taskId;
-  } else if (props.parentId2 === null) {
-    parentId2 = props.taskId;
-  } else if (props.parentId3 === null) {
-    parentId3 = props.taskId;
   }
 
-  const changeDateStart = (startDate) => {
-    setStartedDate(startDate);
+  // parent Id
+  let parentId1 = props.parentId1 ? props.parentId1 : null
+  let parentId2 = props.parentId2 ? props.parentId2 : null
+  let parentId3 = props.parentId3 ? props.parentId3 : null
+
+  if (props.parentId1 === null) {
+    parentId1 = props.taskId
+  } else if (props.parentId2 === null) {
+    parentId2 = props.taskId
+  } else if (props.parentId3 === null) {
+    parentId3 = props.taskId
+  }
+
+  const changeDateStart = startDate => {
+    setStartedDate(startDate)
     if (dueDate) {
       if (startDate > dueDate) {
-        setDateWarning(true);
+        setDateWarning(true)
       } else {
-        setDateWarning(false);
+        setDateWarning(false)
       }
     }
-  };
+  }
 
-  const changeDateEnd = (dueDate) => {
-    setDueDate(dueDate);
+  const changeDateEnd = dueDate => {
+    setDueDate(dueDate)
     if (startedDate) {
       if (dueDate < startedDate) {
-        setDateWarning(true);
+        setDateWarning(true)
       } else {
-        setDateWarning(false);
+        setDateWarning(false)
       }
     }
-  };
+  }
 
-  const removeLink = (index) => {
-    setLinks([...links.splice(0, index), ...links.splice(index + 1)]);
-  };
+  const removeLink = index => {
+    setLinks([...links.splice(0, index), ...links.splice(index + 1)])
+  }
 
   const updateTask = () => {
     const updatedTask = {
@@ -219,17 +221,17 @@ const EditTaskModal = (props) => {
       whyInfo,
       intentInfo,
       endstateInfo,
-    };
+    }
 
-    props.updateTask(props.taskId, updatedTask);
+    props.updateTask(props.taskId, updatedTask)
     setTimeout(() => {
-      props.fetchAllTasks(props.wbsId);
-    }, 4000);
+      props.fetchAllTasks(props.wbsId)
+    }, 4000)
 
     if (props.tasks.error === 'none') {
-      toggle();
+      toggle()
     }
-  };
+  }
 
   useEffect(() => { }, [tasks]);
 
@@ -311,7 +313,7 @@ const EditTaskModal = (props) => {
                           >
                             <span className="dot">{elm.name.substring(0, 2)}</span>
                           </a>
-                        );
+                        )
                       }
                       return (
                         <a
@@ -321,7 +323,7 @@ const EditTaskModal = (props) => {
                         >
                           <img className="img-circle" src={elm.profilePic} />
                         </a>
-                      );
+                      )
                     })}
                   </div>
                 </td>
@@ -586,11 +588,11 @@ const EditTaskModal = (props) => {
         {role === UserRole.Administrator ? 'Edit' : 'View'}
       </Button>
     </div>
-  );
-};
+  )
+}
 
-const mapStateToProps = state => state;
+const mapStateToProps = state => state
 export default connect(mapStateToProps, {
   updateTask,
   fetchAllTasks,
-})(EditTaskModal);
+})(EditTaskModal)

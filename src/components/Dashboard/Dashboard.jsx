@@ -1,54 +1,73 @@
-import React from 'react';
-import {
-  Alert, Card, Row, Col, Container,
-} from 'reactstrap';
-import MonthlyEffort from '../MonthlyEffort';
+import React, { useState } from 'react';
+import { Alert, Row, Col, Container } from 'reactstrap';
+import {Link} from "react-router-dom";
 import Leaderboard from '../LeaderBoard';
-import WeeklySummaryModal from '../WeeklySummary/WeeklySummaryModal';
+import WeeklySummary from '../WeeklySummary/WeeklySummary';
+import Badge from '../Badge';
+import TeamMemberTasks from '../TeamMemberTasks/TeamMemberTasks'
+import Timelog from '../Timelog/Timelog';
+import DashboardSummaryBar from './DashboardSummaryBar';
 import '../../App.css';
+import { connect } from 'react-redux';
 
-const Dashboard = () => (
+const Dashboard = props => {
+  const [popup, setPopup] = useState(false);
+  const toggle = () => {
+    setPopup(!popup);
+    setTimeout(()=> {
+      let elem = document.getElementById("weeklySum");
+      if (elem) {
+        elem.scrollIntoView();
+      }
+    }, 150);
+  }
+
+  return (
   <Container fluid>
     <Row>
       <Col sm={{ size: 12 }}>
         <Alert color="info">
-          <b>Reminder</b>
-          : Make sure to purge the cache or "hard" refresh the page in your browser if you don's see the changes you had merged with the "development" branch.
-          This message will be removed before the site goes "live".
+          <b>Reminder</b>: Make sure to purge the cache or "hard" refresh the page in your browser
+          if you don's see the changes you had merged with the "development" branch. This message
+          will be removed before the site goes "live".
         </Alert>
       </Col>
     </Row>
-    <Row>
-      <Col lg={{ size: 7 }}>
-        &nbsp;
-      </Col>
-      <Col lg={{ size: 5 }}>
-        <WeeklySummaryModal />
-      </Col>
-    </Row>
-    <Row>
-      <Col lg={{ size: 7 }} className="left-col-dashboard">
-        <div className="p-5 my-2 bg--cadet-blue text-light">
-          <div className="py-5 my-5"> </div>
-          <h3>Timelog goes here...</h3>
-          <div className="py-5 my-5"> </div>
-        </div>
-        <div className="p-5 my-2 bg--cadet-blue text-light">
-          <div className="py-3 my-3"> </div>
-          <h3>Tasks go here...</h3>
-          <div className="py-3 my-3"> </div>
-        </div>
-        <div className="p-5 my-2 bg--dark-sea-green text-light">
-          <div className="py-2 my-2"> </div>
-          <h3>Badges Section goes here...</h3>
-          <div className="py-2 my-2"> </div>
-        </div>
-      </Col>
-      <Col lg={{ size: 5 }}>
-        <Leaderboard />
-      </Col>
-    </Row>
-  </Container>
-);
+    
+    <DashboardSummaryBar />
 
-export default Dashboard;
+      <Row>
+        <Col lg={{ size: 7 }}>&nbsp;</Col>
+        <Col lg={{ size: 5 }}>
+          <div className="row justify-content-center">
+            <div role="button" className="mt-3 mb-5 text-center" onClick={toggle} onKeyDown={toggle} tabIndex="0">
+              <WeeklySummary isPopup />
+            </div>
+          </div>
+        </Col>
+      </Row>
+      <Row>
+        <Col lg={{ size: 5 }} className="order-sm-12">
+          <Leaderboard />
+        </Col>
+        <Col lg={{ size: 7 }} className="left-col-dashboard order-sm-1">
+          {popup ? <div className="my-2" ><div id="weeklySum"><WeeklySummary/></div></div>: null}
+          <a name="wsummary"><div className="my-2">
+            <Timelog/>
+          </div></a>
+          <div className="my-2">
+            <TeamMemberTasks />
+          </div>
+          <Badge userId={props.auth.user.userid} />
+        </Col>
+
+      </Row>
+    </Container>
+  ); 
+}
+
+const mapStateToProps = state => ({
+  auth: state.auth,
+})
+
+export default connect(mapStateToProps)(Dashboard);

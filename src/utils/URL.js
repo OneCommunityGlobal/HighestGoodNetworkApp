@@ -1,13 +1,12 @@
 /* eslint-disable import/prefer-default-export */
-
-import axios from 'axios';
+import axios from 'axios'
 
 let APIEndpoint = process.env.REACT_APP_APIENDPOINT;
 if (!APIEndpoint) {
   // This is to resolve the issue in azure env variable
-  APIEndpoint = axios.get('../../config.json').then((data) => {
-    APIEndpoint = data.data.restapi;
-  });
+  // APIEndpoint = fetch('/config.json').then((data) => {
+  APIEndpoint = 'https://hgnrestdev.azurewebsites.net';
+  // });
 }
 
 export const ENDPOINTS = {
@@ -18,7 +17,6 @@ export const ENDPOINTS = {
   PROJECTS: `${APIEndpoint}/projects`,
   TEAM: `${APIEndpoint}/team`,
   TEAM_DATA: teamId => `${APIEndpoint}/team/${teamId}`,
-
   TEAM_USERS: teamId => `${APIEndpoint}/team/${teamId}/users`,
   USER_PROJECTS: userId => `${APIEndpoint}/projects/user/${userId}`,
   PROJECT: `${APIEndpoint}/project/`,
@@ -26,9 +24,11 @@ export const ENDPOINTS = {
   UPDATE_PASSWORD: userId => `${APIEndpoint}/userprofile/${userId}/updatePassword`,
   FORCE_PASSWORD: `${APIEndpoint}/forcepassword`,
   LEADER_BOARD: userId => `${APIEndpoint}/dashboard/leaderboard/${userId}`,
-  TIME_ENTRIES_PERIOD: (userId, fromDate, toDate) => `${APIEndpoint}/TimeEntry/user/${userId}/${fromDate}/${toDate}`,
+  TIME_ENTRIES_PERIOD: (userId, fromDate, toDate) =>
+    `${APIEndpoint}/TimeEntry/user/${userId}/${fromDate}/${toDate}`,
   TIME_ENTRY: () => `${APIEndpoint}/TimeEntry`,
   TIME_ENTRY_CHANGE: timeEntryId => `${APIEndpoint}/TimeEntry/${timeEntryId}`,
+  WBS_ALL: `${APIEndpoint}/wbs`,
   TIMER: userId => `${APIEndpoint}/timer/${userId}`,
   WBS: projectId => `${APIEndpoint}/wbs/${projectId}`,
   TASKS: (wbsId, level, mother) => `${APIEndpoint}/tasks/${wbsId}/${level}/${mother ? mother : '0'}`,
@@ -36,7 +36,8 @@ export const ENDPOINTS = {
   TASK_IMPORT: wbsId => `${APIEndpoint}/task/import/${wbsId}`,
   TASK_WBS: wbsId => `${APIEndpoint}/task/wbs/del/${wbsId}`,
   TASKS_UPDATE: `${APIEndpoint}/tasks/update`,
-  TASK_DEL: (taskId, mother) => `${APIEndpoint}/task/del/${taskId}/${mother}`,
+  TASKS_BY_USERID: userId => `${APIEndpoint}/tasks/userProfile/${userId}`,
+  TASK_DEL: taskId => `${APIEndpoint}/task/del/${taskId}`,
   GET_TASK: taskId => `${APIEndpoint}/task/${taskId}`,
   TASK_UPDATE: taskId => `${APIEndpoint}/task/update/${taskId}`,
   GET_USER_BY_NAME: name => `${APIEndpoint}/userprofile/name/${name}`,
@@ -48,4 +49,11 @@ export const ENDPOINTS = {
   POPUP_EDITOR_BY_ID: (id) => `${APIEndpoint}/popupeditor/${id}`,
   POPUP_EDITOR_BACKUP_BY_ID: (id) => `${APIEndpoint}/backup/popupeditor/${id}`,
 
+  TEAM_MEMBERS: teamId => `${APIEndpoint}/team/${teamId}/users`,
+  TEAM_BY_ID: teamId => `${APIEndpoint}/team/${teamId}`,
+  TASKNOTIFICATION: `${APIEndpoint}/tasknotification`,
+  MARK_TASK_NOTIFICATION_READ: taskId => `${APIEndpoint}/tasknotification/read/${taskId}`,
+  USER_UNREAD_TASK_NOTIFICATIONS: userId => `${APIEndpoint}/tasknotification/user/${userId}`,
 };
+
+export const ApiEndpoint = APIEndpoint;

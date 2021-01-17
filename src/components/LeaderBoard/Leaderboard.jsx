@@ -1,196 +1,185 @@
-import React, { Component, useEffect } from 'react'
-
-import _ from 'lodash'
+import React, { useEffect, useState } from 'react'
+import './Leaderboard.css'
+//import _ from 'lodash'
 import { Link } from 'react-router-dom'
-import Loading from '../common/Loading'
+import { Table, Progress, Modal, ModalBody, ModalFooter, ModalHeader, Button } from 'reactstrap'
 
-import getcolor from '../../utils/effortColors'
-import { Table, Badge, Progress } from 'reactstrap'
+const scrolled = false;
 
-const LeaderBoard = ({ getLeaderboardData, leaderBoardData, loggedInUser }) => {
+const LeaderBoard = ({
+  getLeaderboardData, leaderBoardData, loggedInUser, organizationData,
+}) => {
+  useEffect(() => {
+    getLeaderboardData(loggedInUser.userid);
+  }, [leaderBoardData.length]);
 
   useEffect(() => {
-    getLeaderboardData(loggedInUser.userid)
-  }, [leaderBoardData.length])
-  return (
-    <Table>
-      <thead>
-        <tr>
-          <th>Status</th>
-          <th>Name</th>
-          <th>Intangible Time</th>
-          <th>Progress</th>
-          <th>Total Time</th>
-        </tr>
-      </thead>
-      <tbody>
-        {leaderBoardData.map((item, key) => (
-          <tr key={key}>
-            <td>
-              <div
-                style={{
-                  backgroundColor: item.tangiblebarcolor,
-                  width: 15,
-                  height: 15,
-                  borderRadius: 7.5
-                }}></div>
-            </td>
-            <th scope='row'>
-              <Link to={`/userprofile/${item.personId}`}>{item.name}</Link>
-            </th>
-            <td>{item.intangibletime}</td>
-            <td>
-              <Progress
-                value={2 * 5}
-                style={{ backgroundColor: item.tangiblebarcolor }}
-              />
-            </td>
-            <td>{item.totaltime}</td>
-          </tr>
-        ))}
-      </tbody>
-    </Table>
-  )
-}
+    try {
+      if (window.screen.width < 540) {
+        const scrollWindow = document.getElementById('leaderboard');
+        if (scrollWindow) {
+          const elem = document.getElementById(`id${loggedInUser.userid}`); //
 
-class Leaderboard1 extends Component {
-  state = {
-    leaderboardData: [],
-    maxtotal: 0,
-    isLoading: true
-  }
+          if (elem) {
+            const topPos = elem.offsetTop;
+            console.log(topPos);
+            scrollWindow.scrollTo(0, (topPos - 100) < 100 ? 0 : (topPos - 100));
+          }
+        }
+      }
+    } catch {
 
-  // getcolor = effort => {
-  // 	let color = 'purple'
-  // 	if (_.inRange(effort, 0, 5)) color = 'red'
-  // 	if (_.inRange(effort, 5, 10)) color = 'orange'
-  // 	if (_.inRange(effort, 10, 20)) color = 'green'
-  // 	if (_.inRange(effort, 20, 30)) color = 'blue'
-  // 	if (_.inRange(effort, 30, 40)) color = 'indigo'
-  // 	if (_.inRange(effort, 40, 50)) color = 'violet'
-  // 	return color
-  // }
-
-  // async componentDidMount() {
-  // 	await this.props.state.auth.user
-  // 	let user = this.props.state.auth.user
-  // 	this.props.getLeaderboardData(user.userid)
-  // }
-
-  componentDidUpdate() {
-    let data = this.props.state.leaderboardData
-    if (data && this.state.isLoading === true) {
-      let isLoading = false
-      let maxtotal = 0
-      let leaderboardData = []
-      maxtotal = _.maxBy(data, 'totaltime_hrs').totaltime_hrs
-      maxtotal = maxtotal === 0 ? 10 : maxtotal
-      data.forEach(element => {
-        leaderboardData.push({
-          didMeetWeeklyCommitment:
-            element.totaltangibletime_hrs >= element.weeklyComittedHours ? true : false,
-          name: element.name,
-          weeklycommited: _.round(element.weeklyComittedHours, 2),
-          personId: element.personId,
-          tangibletime: _.round(element.totaltangibletime_hrs, 2),
-          intangibletime: _.round(element.totalintangibletime_hrs, 2),
-          tangibletimewidth: _.round((element.totaltangibletime_hrs * 100) / maxtotal, 0),
-          intangibletimewidth: _.round(
-            (element.totalintangibletime_hrs * 100) / maxtotal,
-            0
-          ),
-          tangiblebarcolor: getcolor(element.totaltangibletime_hrs),
-          totaltime: _.round(element.totaltime_hrs, 2)
-        })
-      })
-
-      this.setState({ leaderboardData, maxtotal, isLoading })
     }
-  }
+  }, []);
 
-  render() {
-    let { leaderboardData, maxtotal, isLoading } = this.state
-    let loggedinUser = this.props.state.auth.user.userid
+  const [isOpen, setOpen] = useState(false);
 
-    return (
-      <div className='card hgn_leaderboard bg-dark'>
-        <div className='card-body text-white'>
-          <h5 className='card-title'>LeaderBoard</h5>
-          {isLoading && <Loading />}
-          {!isLoading && (
-            <div>
-              <table className='table table-sm dashboardtable'>
-                <tbody>
-                  {leaderboardData.map(entry => {
-                    return (
-                      <tr
-                        key={entry.personId}
-                        className={
-                          entry.personId === loggedinUser ? 'table-active row' : 'row'
-                        }>
-                        <td className='col-1'>
-                          <i
-                            className='fa fa-circle'
-                            style={Object.assign({
-                              color: (() =>
-                                entry.didMeetWeeklyCommitment ? 'green' : 'red')()
-                            })}
-                            data-toggle='tooltip'
-                            data-placement='left'
-                            title={`Weekly Committed: ${entry.weeklycommited} hours\nTangibleEffort: ${entry.tangibletime} hours `}
-                          />
-                        </td>
-                        <td className='text-left col-3'>
-                          <Link to={`/userprofile/${entry.personId}`}>{entry.name}</Link>
-                        </td>
-                        <td className='text-right text-justify text-nowrap col-2'>
-                          {entry.tangibletime} tan
-												</td>
-                        <td className='col-4 text-center'>
-                          <Link to={`/timelog/${entry.personId}`}>
-                            <div className='progress progress-leaderboard'>
-                              <div
-                                className='progress-bar progress-bar-striped'
-                                role='progressbar'
-                                style={Object.assign({
-                                  width: entry.tangibletimewidth + '%',
-                                  backgroundColor: entry.tangiblebarcolor
-                                })}
-                                aria-valuenow={entry.tangibletime}
-                                aria-valuemin='0 '
-                                aria-valuemax={maxtotal}
-                                data-toggle='tooltip'
-                                data-placement='bottom'
-                                title={`Tangible Effort: ${entry.tangibletime} hours`}
-                              />
-                              <div
-                                className='progress-bar progress-bar-striped bg-info'
-                                role='progressbar'
-                                style={{ width: entry.intangibletimewidth }}
-                                aria-valuenow={entry.intangibletime}
-                                aria-valuemin='0'
-                                aria-valuemax={maxtotal}
-                                data-toggle='tooltip'
-                                data-placement='bottom'
-                                title={`Intangible Effort: ${entry.intangibletime} hours`}
-                              />
-                            </div>
-                          </Link>
-                        </td>
-                        <td className='text-right text-justify text-nowrap col-2'>
-                          {entry.totaltime} tot
-												</td>
-                      </tr>
-                    )
-                  })}
-                </tbody>
-              </table>
-            </div>
-          )}
-        </div>
+  const toggle = () => setOpen(isOpen => !isOpen);
+
+  return (
+    <div>
+      <h3>
+        LeaderBoard&nbsp;&nbsp;
+        <i
+          data-toggle="tooltip"
+          data-placement="right"
+          title="Click to refresh the leaderboard"
+          style={{ fontSize: 24, cursor: 'pointer' }}
+          aria-hidden="true"
+          className="fa fa-refresh"
+          onClick={() => {
+            getLeaderboardData(loggedInUser.userid);
+          }}
+        />
+        &nbsp;&nbsp;
+        <i
+          data-toggle="tooltip"
+          data-placement="right"
+          title="Click for more information"
+          style={{ fontSize: 24, cursor: 'pointer' }}
+          aria-hidden="true"
+          className="fa fa-info-circle"
+          onClick={toggle}
+        />
+      </h3>
+      <span className="leaderboard">
+        <Modal isOpen={isOpen} toggle={toggle}>
+          <ModalHeader toggle={toggle}>Leaderboard Info</ModalHeader>
+          <ModalBody>
+            <p>This is the One Community Leaderboard! It is used to show how much tangible and total time you’ve contributed, whether or not you’ve achieved your total committed hours for the week, and (in the case of teams) where your completed hours for the week rank you compared to other team members. It can also be used to access key areas of this application.</p>
+            <ul>
+              <li>The HGN Totals at the top shows how many volunteers are currently active in the system, how many volunteer hours they are collectively committed to, and how many tangible and total hours they have completed. The color and length of that bar changes based on what percentage of the total committed hours for the week have been completed: >10%: Red, 10-50%: Orange, 50-60% hrs: Green, 60-70%: Blue, 70-80%: Indigo, 80-100%: Violet, and More than 100%: Purple.</li>
+              <li>The red/green dot shows whether or not a person has completed their “tangible” hours commitment for the week. Green = yes (Great job!), Red = no. Clicking this dot will take you to a person’s tasks section on their/your dashboard. </li>
+              <li>The time bar shows how much tangible and total (tangible + intangible) time you’ve completed so far this week. In the case of teams, it also shows you where your completed hours for the week rank you compared to other people on your team. Clicking a person’s time bar will take you to the time log section on their/your dashboard. This bar also changes color based on how many tangible hours you have completed: >5 hrs: Red, 5-10 hrs: Orange, 10-20 hrs: Green, 20-30 hrs: Blue, 30-40 hrs: Indigo, 40-50 hrs: Violet, and 50+ hrs: Purple</li>
+              <li>Clicking a person’s name will lead to their/your profile page.</li>
+            </ul>
+            <p>Hovering over any of these areas will tell you how they function too. </p>
+
+          </ModalBody>
+          <ModalFooter>
+            <Button onClick={toggle} color="secondary" className="float-left">
+              {' '}
+              Ok
+              {' '}
+            </Button>
+          </ModalFooter>
+        </Modal>
+      </span>
+      <div id="leaderboard" className="my-custom-scrollbar table-wrapper-scroll-y">
+        <Table className="leaderboard table-fixed">
+          <thead>
+            <tr>
+              <th>Status</th>
+              <th>Name</th>
+              <th>
+                <span className="d-sm-none">Tan. Time</span>
+                <span className="d-none d-sm-block">Tangible Time</span>
+              </th>
+              <th>Progress</th>
+              <th>
+                <span className="d-sm-none">Tot. Time</span>
+                <span className="d-none d-sm-block">Total Time</span>
+              </th>
+            </tr>
+          </thead>
+          <tbody className="my-custome-scrollbar">
+            <tr>
+              <td>
+                <div
+                  title={`Weekly Committed: ${organizationData.weeklyComittedHours} hours`}
+                  style={{
+                    backgroundColor:
+                    organizationData.totaltime >= organizationData.weeklyComittedHours
+                      ? 'green'
+                      : 'red',
+                    width: 15,
+                    height: 15,
+                    borderRadius: 7.5,
+                  }}
+                />
+              </td>
+              <th scope="row">{organizationData.name}</th>
+              <td>
+                <span title="Tangible time">{organizationData.tangibletime}</span>
+              </td>
+              <td>
+                <Progress
+                  title={`TangibleEffort: ${organizationData.tangibletime} hours`}
+                  value={organizationData.barprogress}
+                  color={organizationData.barcolor}
+                />
+              </td>
+              <td>
+                <span title="Tangible + Intangible time = Total time">
+                  {organizationData.totaltime}
+                  {' '}
+                  of
+                  {' '}
+                  {organizationData.weeklyComittedHours}
+                </span>
+              </td>
+            </tr>
+            {leaderBoardData.map((item, key) => (
+              <tr key={key}>
+                <td>
+                  <a href="#tasksLink">
+                    <div
+                      title={`Weekly Committed: ${item.weeklyComittedHours} hours`}
+                      style={{
+                        backgroundColor: item.totaltime >= item.weeklyComittedHours ? 'green' : 'red',
+                        width: 15,
+                        height: 15,
+                        borderRadius: 7.5,
+                      }}
+                    />
+                  </a>
+                </td>
+                <th scope="row">
+                  <Link to={`/userprofile/${item.personId}`} title="View Profile">
+                    {item.name}
+                  </Link>
+                </th>
+                <td id={`id${item.personId}`}>
+                  <span title="Tangible time">{item.tangibletime}</span>
+                </td>
+                <td>
+                  <Link
+                    to={`/timelog/${item.personId}`}
+                    title={`TangibleEffort: ${item.tangibletime} hours`}
+                  >
+                    <Progress value={item.barprogress} color={item.barcolor} />
+                  </Link>
+                </td>
+                <td>
+                  <span title="Total time">{item.totaltime}</span>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </Table>
       </div>
-    )
-  }
-}
+    </div>
+  );
+};
 
-export default LeaderBoard
+export default LeaderBoard;

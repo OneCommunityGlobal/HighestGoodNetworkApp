@@ -19,15 +19,15 @@ jest.mock('../LeaderBoard', () => () =>
             </div>
     );
 
-jest.mock('../WeeklySummary', () => () => 
+jest.mock('../WeeklySummary/WeeklySummaryModal', () => () => 
             <div data-testid="weeklysummary">
             </div>
     );
 
-jest.mock('../MonthlyEffort', () => () => 
-            <div data-testid="monthlyeffort">
-            </div>
-    );
+// jest.mock('../MonthlyEffort', () => () => 
+//             <div data-testid="monthlyeffort">
+//             </div>
+//     );
 
 import { Dashboard } from './Dashboard.jsx';
 
@@ -48,10 +48,10 @@ describe('Dashboard component tests', () => {
     expect(weeklySummary).toBeTruthy();
   });
 
-  it('should render a monthly effort', async () => {
-    const monthlyEffort = await dashBoardMountedPage.queryByTestId('monthlyeffort');
-    expect(monthlyEffort).toBeTruthy();
-  });
+  // it('should render a monthly effort', async () => {
+  //   const monthlyEffort = await dashBoardMountedPage.queryByTestId('monthlyeffort');
+  //   expect(monthlyEffort).toBeTruthy();
+  // });
 
 
 

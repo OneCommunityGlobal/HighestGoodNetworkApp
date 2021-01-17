@@ -22,6 +22,7 @@ import WeeklySummariesReport from './components/WeeklySummariesReport'
 import Admin from './components/Admin'
 import 'react-toastify/dist/ReactToastify.css'
 import { UserRole } from './utils/enums'
+import ForgotPassword from './components/Login/ForgotPassword'
 
 export default (
   <React.Fragment>
@@ -29,25 +30,38 @@ export default (
     <ToastContainer />
     <Switch>
       <ProtectedRoute path="/dashboard" exact component={Dashboard} />
-      <ProtectedRoute path="/timelog/:userId" exact component={Timelog} />
-      <ProtectedRoute path="/reports" exact component={Reports} />
-      <ProtectedRoute path="/weeklysummariesreport" exact component={WeeklySummariesReport} allowedRoles={[UserRole.Administrator, UserRole.Manager, UserRole.CoreTeam]} />
-      <ProtectedRoute path="/projects" exact component={Projects} />
-      <ProtectedRoute path='/project/wbs/:projectId' component={WBS} />
       <ProtectedRoute path='/wbs/tasks/:wbsId/:projectId/:wbsName' component={WBSDetail} />
-      <ProtectedRoute path="/usermanagement" exact component={UserManagement} allowedRoles={[UserRole.Administrator]} />
-      <ProtectedRoute path='/teams' exact component={Teams} />
       <ProtectedRoute path="/project/members/:projectId" component={Members} />
       <ProtectedRoute path="/admin" component={Admin} />
+      <ProtectedRoute path="/timelog/" exact component={Timelog} />
+      <ProtectedRoute path="/timelog/:userId" exact component={Timelog} />
+      <ProtectedRoute path="/reports" exact component={Reports} />
+      <ProtectedRoute
+        path="/weeklysummariesreport"
+        exact
+        component={WeeklySummariesReport}
+        allowedRoles={[UserRole.Administrator, UserRole.Manager, UserRole.CoreTeam]}
+      />
+      <ProtectedRoute path="/projects" exact component={Projects} />
+      <ProtectedRoute path="/project/wbs/:projectId" component={WBS} />
+      <ProtectedRoute path="/wbs/tasks/:wbsId/:projectId" component={WBSDetail} />
+      <ProtectedRoute
+        path="/usermanagement"
+        exact
+        component={UserManagement}
+        allowedRoles={[UserRole.Administrator]}
+      />
+      <ProtectedRoute path="/teams" exact component={Teams} />
+      <ProtectedRoute path="/project/members/:projectId" component={Members} />
 
       <Route path="/login" component={Login} />
-
-      <ProtectedRoute path='/userprofile/:userId' component={UserProfile} />
-      <ProtectedRoute path='/userprofileedit/:userId' component={UserProfileEdit} />
-      <ProtectedRoute path='/updatepassword/:userId' component={UpdatePassword} />
-      <Route path='/Logout' component={Logout} />
-      <Route path='/forcePasswordUpdate/:userId' component={ForcePasswordUpdate} />
-      <ProtectedRoute path='/' exact component={Dashboard} />
+      <Route path="/forgotpassword" component={ForgotPassword} />
+      <ProtectedRoute path="/userprofile/:userId" component={UserProfile} />
+      <ProtectedRoute path="/userprofileedit/:userId" component={UserProfileEdit} />
+      <ProtectedRoute path="/updatepassword/:userId" component={UpdatePassword} />
+      <Route path="/Logout" component={Logout} />
+      <Route path="/forcePasswordUpdate/:userId" component={ForcePasswordUpdate} />
+      <ProtectedRoute path="/" exact component={Dashboard} />
     </Switch>
   </React.Fragment>
 )

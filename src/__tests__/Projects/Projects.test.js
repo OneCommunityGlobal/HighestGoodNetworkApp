@@ -1,16 +1,16 @@
 
-import { renderWithProvider, renderWithRouterMatch } from './utils.js'
+import { renderWithProvider, renderWithRouterMatch } from '../utils.js'
 import '@testing-library/jest-dom/extend-expect'
 import React from 'react';
-import mockState from './mockAdminState.js'
-import { GET_ERRORS } from '../constants/errors';
+import mockState from '../mockAdminState.js'
+import { GET_ERRORS } from '../../constants/errors';
 import { createMemoryHistory } from 'history';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
-import { ENDPOINTS } from '../utils/URL';
-import * as Message from './../languages/en/messages'
+import { ENDPOINTS } from '../../utils/URL';
+import * as Message from '../../languages/en/messages'
 import { render, fireEvent, waitFor, screen} from "@testing-library/react";
-import routes from './../routes';
+import routes from '../../routes';
 
 const projectsUrl = ENDPOINTS.PROJECTS;
 const projectUrl = ENDPOINTS.PROJECT + '*';
@@ -58,30 +58,17 @@ const server = setupServer(
   rest.get(userProjectsUrl, (req, res, ctx) =>  {
     if (addedProject) {
       addedProject = false;
-      return res(ctx.status(200), ctx.json(
-        [
-          {
-            "isActive": true,
-            "_id": "5ad91ec3590b19002asacd26",
-            "projectName": "HG Fake Project2"
-          }, {
-          "isActive": true,
-          "_id": "5ad91ec3590b19002acfcd26",
-          "projectName": "HG Fake Project"
-        }
-      ]
-    ));
-    } else {
-      return res(ctx.status(200), ctx.json(
-        [
-        {
-          "isActive": true,
-          "_id": "5ad91ec3590b19002acfcd26",
-          "projectName": "HG Fake Project"
-        }
-      ]
-    ));
+      
     }
+    return res(ctx.status(200), ctx.json(
+      [
+      // {
+      //   "isActive": true,
+      //   "_id": "5ad91ec3590b19002acfcd26",
+      //   "projectName": "HG Fake Project"
+      // }
+    ])); 
+    
   }),
   rest.post(projectsUrl, (req, res, ctx) =>  {
     //console.log(req.body);
@@ -89,7 +76,7 @@ const server = setupServer(
       addedProject = true;
       return res(ctx.status(200), ctx.json({}));
     } else {
-      console.log(req.body);
+      //console.log(req.body);
       return res(ctx.status(400), ctx.json({}));
     }
 
