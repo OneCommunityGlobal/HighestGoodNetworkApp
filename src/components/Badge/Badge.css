@@ -16,6 +16,12 @@
   width: 200px;
 }
 
+.badge_image_mini > img {
+  border-radius: 50%;
+  height: 25px;
+  width: 25px;
+}
+
 .new_badges {
   overflow-y: scroll;
   height: 70px;
