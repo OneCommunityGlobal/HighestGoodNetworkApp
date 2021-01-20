@@ -29,7 +29,7 @@ const TimeEntryForm = ({
   userId, edit, data, isOpen, toggle, timer, userProfile, resetTimer
 }) => {
   const fromTimer = !_.isEmpty(timer);
-
+  const [submitDisabled, setSubmitDisabled] = useState(false);
   const initialState = {
     dateOfWork: moment().format('YYYY-MM-DD'),
     hours: 0,
@@ -237,10 +237,15 @@ const TimeEntryForm = ({
   };
 
   const handleSubmit = async (event) => {
+
     if (event) {
       event.preventDefault();
     }
-
+    if (submitDisabled) {
+      return;
+    }
+    setSubmitDisabled(true);
+    setTimeout(function() {setSubmitDisabled(false)}, 1000);
     const hours = inputs.hours === '' ? '0' : inputs.hours;
     const minutes = inputs.minutes === '' ? '0' : inputs.minutes;
 
@@ -560,7 +565,7 @@ const TimeEntryForm = ({
           Clear Form
           {' '}
         </Button>
-        <Button onClick={handleSubmit} color="primary">
+        <Button onClick={handleSubmit} color="primary" disabled={submitDisabled}>
           {edit ? 'Save' : 'Submit'}
         </Button>
       </ModalFooter>

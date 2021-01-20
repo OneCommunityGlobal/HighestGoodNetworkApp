@@ -18,7 +18,7 @@ const mapStateToProps = state => {
 				element.totaltangibletime_hrs >= element.weeklyComittedHours ? true : false
 
 			element.weeklycommited = _.round(element.weeklyComittedHours, 2)
-			organization.weeklyComittedHours += element.weeklyComittedHours;
+			organization.weeklyComittedHours += _.round(element.weeklyComittedHours, 2);
 			element.tangibletime = _.round(element.totaltangibletime_hrs, 2);
 			element.intangibletime = _.round(element.totalintangibletime_hrs, 2)
 
@@ -48,6 +48,7 @@ const mapStateToProps = state => {
 	organization.tangibletime = _.round(organization.tangibletime, 2);
 	organization.totaltime += _.round(organization.totaltime, 2);
 	organization.intangibletime += _.round(organization.intangibletime, 2);
+	organization.weeklyComittedHours += _.round(organization.weeklyComittedHours, 2);
 	//Convert Org Time Color to 10,20,30,40,50,60,70% of totalTime/weeklyCommitted
 	let tenPTotalOrgTime = organization.weeklyComittedHours * 0.1;
 	let orgTangibleColorTime = (organization.totaltime < (tenPTotalOrgTime * 2)) ? 0 : 5;
