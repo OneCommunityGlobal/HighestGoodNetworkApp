@@ -135,67 +135,77 @@ class ReportsPage extends Component {
 
         </div>
 
-        {/*{this.state.showProjects &&*/}
-        {/*<table className="table table-bordered table-responsive-sm">*/}
-        {/*  <thead>*/}
-        {/*  <ProjectTable />*/}
-        {/*  </thead>*/}
-        {/*  <tbody>*/}
-        {/*  {ProjectsList}*/}
-        {/*  </tbody>*/}
-        {/*</table>}*/}
+        {this.state.showProjects &&
+        <table className="table table-bordered table-responsive-sm">
+          <thead>
+          <ProjectTable />
+          </thead>
+          <tbody>
+          {ProjectsList}
+          </tbody>
+        </table>}
 
-        {/*{this.state.showTeams &&*/}
-        {/*  <table className="table table-bordered table-responsive-sm">*/}
-        {/*    <thead>*/}
-        {/*    <tr>*/}
-        {/*      <th scope="col" id="teams__order">#</th>*/}
-        {/*      <th scope="col">{TEAM_NAME}</th>*/}
-        {/*      <th scope="col" id="teams__active">{ACTIVE}</th>*/}
-        {/*    </tr>*/}
-        {/*    </thead>*/}
-        {/*    <tbody>*/}
-        {/*    {teamTable}*/}
-        {/*    </tbody>*/}
-        {/*  </table>*/}
-        {/*}*/}
+        {this.state.showTeams && <div><div>
+          <button style={{margin:'3px'}} exact className="btn btn-secondary btn-bg mt-3">Date</button>
+          <button style={{margin:'3px'}} exact className="btn btn-secondary btn-bg mt-3">Priority Level</button>
+          <button style={{margin:'3px'}} exact className="btn btn-secondary btn-bg mt-3">Status</button>
+          <button style={{margin:'3px'}} exact className="btn btn-secondary btn-bg mt-3">Manager</button>
+          <button style={{margin:'3px'}} exact className="btn btn-secondary btn-bg mt-3">Estimated Hours</button>
+          <button style={{margin:'3px'}} exact className="btn btn-secondary btn-bg mt-3">Ready for Review</button>
+        </div></div>}
+        {this.state.showTeams &&
+          <table className="table table-bordered table-responsive-sm">
 
-        {leaderBoardData.map((item, key) => (
-          <tr key={key}>
-            <td>
-              <a href="#tasksLink">
-                <div
-                  title={`Weekly Committed: ${item.weeklyComittedHours} hours`}
-                  style={{
-                    backgroundColor: item.totaltime >= item.weeklyComittedHours ? 'green' : 'red',
-                    width: 15,
-                    height: 15,
-                    borderRadius: 7.5,
-                  }}
-                />
-              </a>
-            </td>
-            <th scope="row">
-              <Link to={`/userprofile/${item.personId}`} title="View Profile">
-                {item.name}
-              </Link>
-            </th>
-            <td id={`id${item.personId}`}>
-              <span title="Tangible time">{item.tangibletime}</span>
-            </td>
-            <td>
-              <Link
-                to={`/timelog/${item.personId}`}
-                title={`TangibleEffort: ${item.tangibletime} hours`}
-              >
-                <Progress value={item.barprogress} color={item.barcolor} />
-              </Link>
-            </td>
-            <td>
-              <span title="Total time">{item.totaltime}</span>
-            </td>
-          </tr>
-        ))}
+            <thead>
+
+            <tr>
+              <th scope="col" id="teams__order">#</th>
+              <th scope="col">{TEAM_NAME}</th>
+              <th scope="col" id="teams__active">{ACTIVE}</th>
+            </tr>
+            </thead>
+            <tbody>
+            {teamTable}
+            </tbody>
+          </table>
+        }
+
+        {/*{leaderBoardData.map((item, key) => (*/}
+        {/*  <tr key={key}>*/}
+        {/*    <td>*/}
+        {/*      <a href="#tasksLink">*/}
+        {/*        <div*/}
+        {/*          title={`Weekly Committed: ${item.weeklyComittedHours} hours`}*/}
+        {/*          style={{*/}
+        {/*            backgroundColor: item.totaltime >= item.weeklyComittedHours ? 'green' : 'red',*/}
+        {/*            width: 15,*/}
+        {/*            height: 15,*/}
+        {/*            borderRadius: 7.5,*/}
+        {/*          }}*/}
+        {/*        />*/}
+        {/*      </a>*/}
+        {/*    </td>*/}
+        {/*    <th scope="row">*/}
+        {/*      <Link to={`/userprofile/${item.personId}`} title="View Profile">*/}
+        {/*        {item.name}*/}
+        {/*      </Link>*/}
+        {/*    </th>*/}
+        {/*    <td id={`id${item.personId}`}>*/}
+        {/*      <span title="Tangible time">{item.tangibletime}</span>*/}
+        {/*    </td>*/}
+        {/*    <td>*/}
+        {/*      <Link*/}
+        {/*        to={`/timelog/${item.personId}`}*/}
+        {/*        title={`TangibleEffort: ${item.tangibletime} hours`}*/}
+        {/*      >*/}
+        {/*        <Progress value={item.barprogress} color={item.barcolor} />*/}
+        {/*      </Link>*/}
+        {/*    </td>*/}
+        {/*    <td>*/}
+        {/*      <span title="Total time">{item.totaltime}</span>*/}
+        {/*    </td>*/}
+        {/*  </tr>*/}
+        {/*))}*/}
 
       </div>
 
