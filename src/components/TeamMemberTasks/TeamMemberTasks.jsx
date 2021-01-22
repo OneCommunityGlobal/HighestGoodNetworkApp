@@ -168,12 +168,12 @@ class TeamMemberTasks extends Component {
             
             // for each task, must fetch the projectId of its wbs in order to generate appropriate link
             // currently fetches all projects, should consider refactoring if number of projects increases
-            const WBSRes = await httpService.get(ENDPOINTS.WBS_ALL).catch(err=>{if(err.status==401){loggedOut=true}})
+            const WBSRes = await httpService.get(ENDPOINTS.WBS_ALL).catch(err=>{if(err.status===401){loggedOut=true}})
             const allWBS = WBSRes.data
 
             // calculate hours done in current week and add to user obj for ease of access
             for (let i = 0; i < uniqueMembers.length; i++) {
-              let hoursCurrentWeek = 0
+              let hoursCurrentWeek = 0  
               if (uniqueMembers[i].timeEntries.length > 0) {
                 hoursCurrentWeek = uniqueMembers[i].timeEntries.reduce(
                   (acc, current) => Number(current.hours) + acc,
