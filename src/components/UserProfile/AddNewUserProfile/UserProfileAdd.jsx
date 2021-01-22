@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import { StickyContainer } from 'react-sticky';
 import { Container, Row, Col, Input, FormFeedback, FormGroup, Form, Label, Button, TabPane, TabContent, NavItem, NavLink, Nav } from 'reactstrap';
-import Image from 'react-bootstrap/Image';
-import ToggleSwitch from '../UserProfileEdit/ToggleSwitch';
+// import Image from 'react-bootstrap/Image';
+// import ToggleSwitch from '../UserProfileEdit/ToggleSwitch';
 import './UserProfileAdd.scss';
 import { createUser } from '../../../services/userProfileService';
 import { toast } from 'react-toastify';

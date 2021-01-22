@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useReducer } from 'react'
+import React, { useState, useReducer } from 'react'
 import {
   Button,
   Modal,
@@ -12,9 +12,6 @@ import {
   Card,
   Col,
 } from 'reactstrap'
-import { date } from 'joi'
-
-import modalStyle from './UserProfileModal.css'
 
 const ModalExample = props => {
   const {
@@ -46,7 +43,7 @@ const ModalExample = props => {
     }
   }
 
-  const [modal, setModal] = useState(false)
+  //const [modal, setModal] = useState(false)
 
   const [linkName, setLinkName] = useState('')
   const [linkURL, setLinkURL] = useState('')
@@ -59,8 +56,6 @@ const ModalExample = props => {
 
   const [addButton, setAddButton] = useState(true)
   const [summaryFieldView, setSummaryFieldView] = useState(true)
-
-  const toggle = () => setModal(!modal)
 
   // console.log('grabed personal links:', personalLinks)
 
@@ -156,7 +151,7 @@ const ModalExample = props => {
     }
   }
 
-  const buttonDisabled = !(linkName && linkURL)
+  //const buttonDisabled = !(linkName && linkURL)
 
   return (
     <Modal isOpen={isOpen} toggle={closeModal}>

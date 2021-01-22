@@ -3,21 +3,7 @@ import {
   Row,
   Label,
   Input,
-  CardTitle,
   Col,
-  Container,
-  Button,
-  Form,
-  FormFeedback,
-  FormGroup,
-  Badge,
-  Collapse,
-  Alert,
-  Nav,
-  NavItem,
-  NavLink,
-  TabContent,
-  TabPane,
 } from 'reactstrap';
 import moment from 'moment';
 
@@ -79,7 +65,7 @@ const ViewTab = (props) => {
     handleUserProfile,
   } = props;
   const weeklyHoursReducer = (acc, val) => acc + (parseInt(val.hours, 10) + parseInt(val.minutes, 10) / 60);
-  const canEdit = isUserAdmin || isUserSelf;
+  //const canEdit = isUserAdmin || isUserSelf;
 
   return (
     <div data-testid="volunteering-time-tab">

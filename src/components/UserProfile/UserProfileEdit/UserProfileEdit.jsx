@@ -3,16 +3,11 @@ import {
   Row,
   Label,
   Input,
-  CardTitle,
   Col,
   Container,
-  Button,
   Form,
   FormFeedback,
   FormGroup,
-  Badge,
-  Collapse,
-  Alert,
   Nav,
   NavItem,
   NavLink,
@@ -22,23 +17,22 @@ import {
 import moment from 'moment'
 import { StickyContainer, Sticky } from 'react-sticky'
 import Image from 'react-bootstrap/Image'
-import { Link, useHistory, withRouter } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 
 import classnames from 'classnames'
 import Loading from '../../common/Loading'
-import { orange, warningRed } from '../../../constants/colors'
 import BlueSquare from '../BlueSquares'
 import Modal from '../UserProfileModal'
 import UserLinks from '../UserLinks'
 import ToggleSwitch from './ToggleSwitch'
-import EditConfirmModal from '../UserProfileModal/EditConfirmModal'
+//import EditConfirmModal from '../UserProfileModal/EditConfirmModal'
 import SaveButton from './SaveButton'
 // import styleProfile from '../UserProfile.module.scss';
 import '../UserProfile.scss'
 // import styleEdit from './UserProfileEdit.module.scss';
 import './UserProfileEdit.scss'
 import LinkModButton from './LinkModButton'
-import TeamView from '../Teamsview'
+//import TeamView from '../Teamsview'
 import ProjectsTab from '../TeamsAndProjects/ProjectsTab'
 import TeamsTab from '../TeamsAndProjects/TeamsTab'
 

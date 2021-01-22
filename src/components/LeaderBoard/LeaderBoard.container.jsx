@@ -5,7 +5,6 @@ import {getcolor, getprogress} from '../../utils/effortColors'
 import _ from 'lodash'
 const mapStateToProps = state => {
 	//console.log('State=Leaderboard container', state)
-
 	let leaderBoardData = _.get(state, 'leaderBoardData', [])
 
 	//console.log('Leaderboard Unsorted Data', leaderBoardData)
@@ -19,7 +18,7 @@ const mapStateToProps = state => {
 				element.totaltangibletime_hrs >= element.weeklyComittedHours ? true : false
 
 			element.weeklycommited = _.round(element.weeklyComittedHours, 2)
-			organization.weeklyComittedHours += element.weeklyComittedHours;
+			organization.weeklyComittedHours += _.round(element.weeklyComittedHours, 2);
 			element.tangibletime = _.round(element.totaltangibletime_hrs, 2);
 			element.intangibletime = _.round(element.totalintangibletime_hrs, 2)
 
@@ -37,26 +36,27 @@ const mapStateToProps = state => {
 			element.barprogress = getprogress(element.totaltangibletime_hrs)
 			element.totaltime = _.round(element.totaltime_hrs, 2)
 
-			organization.totaltime += element.totaltime;
-			organization.tangibletime += element.tangibletime;
-			organization.intangibletime += element.intangibletime;
+			organization.totaltime += _.round(element.totaltime, 2);
+			organization.tangibletime += _.round(element.tangibletime, 2);
+			organization.intangibletime += _.round(element.intangibletime, 2);
 			
 			return element
 		})
 	}
 
 	organization.name = `HGN Totals: ${leaderBoardData.length} Members`
-
+	organization.tangibletime = _.round(organization.tangibletime, 2);
+	organization.totaltime += _.round(organization.totaltime, 2);
+	organization.intangibletime += _.round(organization.intangibletime, 2);
+	organization.weeklyComittedHours += _.round(organization.weeklyComittedHours, 2);
 	//Convert Org Time Color to 10,20,30,40,50,60,70% of totalTime/weeklyCommitted
 	let tenPTotalOrgTime = organization.weeklyComittedHours * 0.1;
 	let orgTangibleColorTime = (organization.totaltime < (tenPTotalOrgTime * 2)) ? 0 : 5;
 
-	if (orgTangibleColorTime == 5) {
+	if (orgTangibleColorTime === 5) {
 		let multipleRemaining = Math.floor((Math.abs((organization.totaltime - (tenPTotalOrgTime * 2))) / tenPTotalOrgTime));
 		orgTangibleColorTime += (multipleRemaining * 10);
 	}
-
-	console.log('Org Tabile Colors', orgTangibleColorTime);
 	
 
 	organization.barcolor = getcolor(orgTangibleColorTime);

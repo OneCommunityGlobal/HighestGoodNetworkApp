@@ -1,4 +1,3 @@
-import { object } from 'joi';
 import { GET_USER_PROFILE, EDIT_USER_PROFILE } from '../constants/userProfile'
 
 const initialUserProfileState = {
