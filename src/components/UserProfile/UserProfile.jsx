@@ -40,9 +40,11 @@ import UserLinkLayout from './UserLinkLayout'
 import BlueSqaureLayout from './BlueSqaureLayout'
 import TabToolTips from './ToolTips/TabToolTips'
 import BasicToolTips from './ToolTips/BasicTabTips'
+import ResetPasswordPopup from '../UserManagement/ResetPasswordPopup'
 // const styleProfile = {};
 class UserProfile extends Component {
   state = {
+    resetPopupOpen: false,
     isLoading: true,
     error: '',
     userProfile: {},
@@ -553,7 +555,7 @@ class UserProfile extends Component {
     const { userId: targetUserId } = this.props.match
       ? this.props.match.params
       : { userId: undefined }
-
+    debugger;
     const { userid: requestorId, role: requestorRole } = this.props.auth.user
 
     const isUserSelf = targetUserId === requestorId
@@ -584,6 +586,10 @@ class UserProfile extends Component {
         )}
         <TabToolTips />
         <BasicToolTips />
+        <ResetPasswordPopup
+          open={this.state.resetPopupOpen}
+          onClose={this.onResetPopupClose}
+        />
         <InfoModal isOpen={infoModal} toggle={this.toggleInfoModal} />
         <Container className="emp-profile">
           <Row>
@@ -777,13 +783,22 @@ class UserProfile extends Component {
               />
             </Col>
             <Col sm={{ size: 'auto', offset: 1 }}>
-              {canEdit && (
+              {/* {canEdit && (
                 <div className="profileEditButtonContainer">
                   <Link to={`/updatepassword/${this.state.userProfile._id}`}>
                     <Button> Update Password</Button>
                   </Link>
                 </div>
-              )}
+              )} */}
+              {requestorRole === "Administrator" && canEdit ? (
+                <div className="profileEditButtonContainer">
+                  <Button onClick={this.onUpdatePassword} > Update Password</Button>
+                </div>
+              ) : (<div className="profileEditButtonContainer">
+                <Link to={`/updatepassword/${this.state.userProfile._id}`}>
+                  <Button> Update Password</Button>
+                </Link>
+              </div>)}
             </Col>
             <Col sm={{ size: 'auto', offset: 1 }}>
               <Link
@@ -817,6 +832,16 @@ class UserProfile extends Component {
         </div> */}
       </div>
     )
+  }
+  onUpdatePassword = () => {
+    this.setState({
+      resetPopupOpen: true
+    })
+  }
+  onResetPopupClose = () => {
+    this.setState({
+      resetPopupOpen: false
+    })
   }
 }
 

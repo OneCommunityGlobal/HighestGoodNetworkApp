@@ -70,10 +70,11 @@ class Teams extends React.PureComponent {
                     {teamTable}
                   </tbody>
                 </table>
+
               </div>
             </React.Fragment>
           )
-      }
+        }
       </Container>
     );
   }
