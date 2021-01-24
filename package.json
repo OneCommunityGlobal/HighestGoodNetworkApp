@@ -29,6 +29,7 @@
     "pdfmake": "^0.1.65",
     "prop-types": "^15.7.2",
     "react": "^16.13.1",
+    "react-autosuggest": "^10.1.0",
     "react-bootstrap": "^1.0.1",
     "react-day-picker": "^7.4.8",
     "react-dom": "^16.13.1",

@@ -7152,6 +7152,11 @@
         "event-emitter": "~0.3.5"
       }
     },
+    "es6-promise": {
+      "version": "4.2.8",
+      "resolved": "https://registry.npmjs.org/es6-promise/-/es6-promise-4.2.8.tgz",
+      "integrity": "sha512-HJDGx5daxeIvxdBxvG2cb9g4tEvwIk3i8+nhX0yGrYmZUzbkdg8QbDevheDB8gd0//uPj4c1EQua8Q+MViT0/w=="
+    },
     "es6-set": {
       "version": "0.1.5",
       "resolved": "https://registry.npmjs.org/es6-set/-/es6-set-0.1.5.tgz",
@@ -14317,6 +14322,18 @@
         "whatwg-fetch": "^3.0.0"
       }
     },
+    "react-autosuggest": {
+      "version": "10.1.0",
+      "resolved": "https://registry.npmjs.org/react-autosuggest/-/react-autosuggest-10.1.0.tgz",
+      "integrity": "sha512-/azBHmc6z/31s/lBf6irxPf/7eejQdR0IqnZUzjdSibtlS8+Rw/R79pgDAo6Ft5QqCUTyEQ+f0FhL+1olDQ8OA==",
+      "requires": {
+        "es6-promise": "^4.2.8",
+        "prop-types": "^15.7.2",
+        "react-themeable": "^1.1.0",
+        "section-iterator": "^2.0.0",
+        "shallow-equal": "^1.2.1"
+      }
+    },
     "react-bootstrap": {
       "version": "1.0.1",
       "resolved": "https://registry.npmjs.org/react-bootstrap/-/react-bootstrap-1.0.1.tgz",
@@ -14975,6 +14992,21 @@
         "prop-types": "^15.6.2",
         "react-is": "^16.8.6",
         "scheduler": "^0.18.0"
+      }
+    },
+    "react-themeable": {
+      "version": "1.1.0",
+      "resolved": "https://registry.npmjs.org/react-themeable/-/react-themeable-1.1.0.tgz",
+      "integrity": "sha1-fURm3ZsrX6dQWHJ4JenxUro3mg4=",
+      "requires": {
+        "object-assign": "^3.0.0"
+      },
+      "dependencies": {
+        "object-assign": {
+          "version": "3.0.0",
+          "resolved": "https://registry.npmjs.org/object-assign/-/object-assign-3.0.0.tgz",
+          "integrity": "sha1-m+3VygiXlJvKR+f/QIBi1Un1h/I="
+        }
       }
     },
     "react-toastify": {
@@ -15799,6 +15831,11 @@
         }
       }
     },
+    "section-iterator": {
+      "version": "2.0.0",
+      "resolved": "https://registry.npmjs.org/section-iterator/-/section-iterator-2.0.0.tgz",
+      "integrity": "sha1-v0RNev7rlK1Dw5rS+yYVFifMuio="
+    },
     "select-hose": {
       "version": "2.0.0",
       "resolved": "https://registry.npmjs.org/select-hose/-/select-hose-2.0.0.tgz",
@@ -16003,6 +16040,11 @@
       "version": "0.0.1",
       "resolved": "https://registry.npmjs.org/shallow-copy/-/shallow-copy-0.0.1.tgz",
       "integrity": "sha1-QV9CcC1z2BAzApLMXuhurhoRoXA="
+    },
+    "shallow-equal": {
+      "version": "1.2.1",
+      "resolved": "https://registry.npmjs.org/shallow-equal/-/shallow-equal-1.2.1.tgz",
+      "integrity": "sha512-S4vJDjHHMBaiZuT9NPb616CSmLf618jawtv3sufLl6ivK8WocjAo58cXwbRV1cgqxH0Qbv+iUt6m05eqEa2IRA=="
     },
     "shebang-command": {
       "version": "1.2.0",
