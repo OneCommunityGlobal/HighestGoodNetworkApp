@@ -63,17 +63,17 @@ const Task = (props) => {
     isOpen = true;
   }
 
-  const swap = (unit = 1) => {
-    const numArr = props.num.split('.');
-    let numUp = parseInt(numArr[numArr.length - 1]);
-    let newNum = '';
-    for (let i = 0; i < numArr.length - 1; i++) {
-      newNum += numArr[i] + '.';
-    }
+  // const swap = (unit = 1) => {
+  //   const numArr = props.num.split('.');
+  //   let numUp = parseInt(numArr[numArr.length - 1]);
+  //   let newNum = '';
+  //   for (let i = 0; i < numArr.length - 1; i++) {
+  //     newNum += numArr[i] + '.';
+  //   }
 
-    numUp += unit;
+  //   numUp += unit;
 
-  }
+  // }
 
   const allowDrop = (ev) => {
     ev.preventDefault();
@@ -115,8 +115,8 @@ const Task = (props) => {
   }
 
   const onMove = (from, to) => {
-    const fromNum = from.split('.0').join('');
-    const toNum = to.split('.0').join('');
+    // const fromNum = from.split('.0').join('');
+    // const toNum = to.split('.0').join('');
     props.moveTasks(props.wbsId, from, to);
     setTimeout(() => {
       props.fetchAllTasks(props.wbsId);

@@ -35,6 +35,7 @@ import TimeEntryForm from './TimeEntryForm';
 import TimelogNavbar from './TimelogNavbar';
 import TimeEntry from './TimeEntry';
 import EffortBar from './EffortBar';
+import SummaryBar from '../SummaryBar/SummaryBar';
 
 class TimelogPage extends Component {
   constructor(props) {
@@ -65,7 +66,7 @@ class TimelogPage extends Component {
   async componentDidMount() {
     
     const userId = this.props.match && this.props.match.params.userId ? this.props.match.params.userId : this.props.auth.user.userid;
-    console.log(userId);
+    //console.log(userId);
     await this.props.getUserProfile(userId);
     await this.props.getTimeEntriesForWeek(userId, 0);
     await this.props.getTimeEntriesForWeek(userId, 1);
@@ -186,8 +187,11 @@ class TimelogPage extends Component {
     )
 
     return (
+      <div>
+        {!this.props.isDashboard ? <Container fluid><SummaryBar/></Container> : ''}
+      
       <Container>
-        <TimelogNavbar userId={userId} />
+        
         <Row>
           <Col md={12}>
             <Card>
@@ -387,6 +391,7 @@ class TimelogPage extends Component {
           <Col md={4} />
         </Row>
       </Container>
+      </div>
     )
   }
 }

@@ -6,7 +6,7 @@ import WeeklySummary from '../WeeklySummary/WeeklySummary';
 import Badge from '../Badge';
 import TeamMemberTasks from '../TeamMemberTasks/TeamMemberTasks'
 import Timelog from '../Timelog/Timelog';
-import DashboardSummaryBar from './DashboardSummaryBar';
+import SummaryBar from '../SummaryBar/SummaryBar';
 import '../../App.css';
 import { connect } from 'react-redux';
 
@@ -34,7 +34,7 @@ const Dashboard = props => {
       </Col>
     </Row>
     
-    <DashboardSummaryBar />
+    <SummaryBar />
 
       <Row>
         <Col lg={{ size: 7 }}>&nbsp;</Col>
@@ -52,9 +52,9 @@ const Dashboard = props => {
         </Col>
         <Col lg={{ size: 7 }} className="left-col-dashboard order-sm-1">
           {popup ? <div className="my-2" ><div id="weeklySum"><WeeklySummary/></div></div>: null}
-          <a name="wsummary"><div className="my-2">
-            <Timelog/>
-          </div></a>
+          <div className="my-2"><a name="wsummary"></a>
+            <Timelog isDashboard/>
+          </div>
           <div className="my-2">
             <TeamMemberTasks />
           </div>
