@@ -36,7 +36,6 @@ const Task = (props) => {
   const toggle = () => setDropdownOpen(prevState => !prevState);
   const [isOpen, setIsOpen] = useState(false);
   const [isCopied, setIsCopied] = useState(false);
-  //let isOpen = true;
   let passCurrentNum = false;
 
 
@@ -89,40 +88,6 @@ const Task = (props) => {
     setIsOpen(true);
   }
 
-  const swap = (unit = 1) => {
-    const numArr = props.num.split('.');
-    let numUp = parseInt(numArr[numArr.length - 1]);
-    let newNum = '';
-    for (let i = 0; i < numArr.length - 1; i++) {
-      newNum += numArr[i] + '.';
-    }
-
-    numUp += unit;
-
-  }
-
-  const allowDrop = (ev) => {
-    ev.preventDefault();
-    let id = ev.target.id.split('_')[2];
-    let tasks = document.getElementsByClassName('taskDrop');
-    for (let i = 0; i < tasks.length; i++) {
-      //tasks[i].style.display = 'none';
-    }
-    //document.getElementById(`taskDrop_${id}`).style.display = 'table-row';
-  }
-
-  const drag = (ev, from) => {
-    //props.drag(from, props.parentId);
-    //document.getElementById(`taskDrop_${from}`).style.display = 'none';
-    //console.log(from);
-  }
-
-  const drop = (ev, to) => {
-    ev.preventDefault();
-    //console.log(to);
-    //props.drop(to, props.parentId);
-  }
-
 
   let toggleMoreResourcesStatus = true;
   const toggleMoreResources = (id) => {
@@ -173,9 +138,6 @@ const Task = (props) => {
         <td className={`tag_color tag_color_${props.num.length > 0 ? props.num.split('.')[0] : props.num} tag_color_lv_${props.level}`}></td>
         <td
           id={`r_${props.num}_${props.id}`}
-          onDragOver={e => allowDrop(e)}
-          onDrop={(e) => drop(e, props)}
-          draggable="true" onDragStart={e => drag(e, props.id)}
           scope="row"
           className="taskNum" onClick={() => { selectTask(props.id); toggleGroups(props.num, props.id, props.level) }}>
           {props.num.split('.0').join('')}</td>

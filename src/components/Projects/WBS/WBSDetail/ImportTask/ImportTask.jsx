@@ -13,8 +13,6 @@ import { TASK_IMPORT_POPUP_ID } from "./../../../../../constants/popupId"
 import parse from 'html-react-parser';
 
 const ImportTask = (props) => {
-  let fileReader;
-  const [importStatus, setImportStatus] = useState(0);
   const [isDone, setIsDone] = useState(0);
   // modal
   const [modal, setModal] = useState(false);
@@ -73,13 +71,7 @@ const ImportTask = (props) => {
   }
 
   const handleFileChosen = (file) => {
-    /*fileReader = new FileReader();
-    fileReader.onloadend = handleFileRead;
-    fileReader.readAsText(file);*/
-
     readXlsxFile(file).then((rows) => {
-      // `rows` is an array of rows
-      // each row being an array of cells.
       handleFileRead(rows);
     })
   }
@@ -143,9 +135,6 @@ const ImportTask = (props) => {
 
     return newTask;
 
-
-
-    position++;
   }
 
   return (
