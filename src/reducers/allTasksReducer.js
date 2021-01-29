@@ -100,6 +100,8 @@ export const taskReducer = (allTasks = allTasksInital, action) => {
       const copiedIndex = allTasks.taskItems.findIndex(item => item._id === action.taskId);
       console.log(allTasks.taskItems[copiedIndex]);
       return { ...allTasks, copiedTask: allTasks.taskItems[copiedIndex] }
+    default:
+      return allTasks
 
   }
 

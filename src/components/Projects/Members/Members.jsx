@@ -21,23 +21,6 @@ const Members = (props) => {
 
   useEffect(() => {
     props.fetchAllMembers(projectId);
-  }, [projectId, props]);
-
-  const pressEnter = (event, keyword) => {
-    if (event.key === "Enter") {
-      props.findUserProfiles(keyword);
-    }
-  }
-
-  /*if (!init) {
-      props.fetchAllMembers(projectId);
-      setInit(true);
-  }*/
-  console.log(props.state);
-
-
-  useEffect(() => {
-    props.fetchAllMembers(projectId);
   }, [projectId]);
 
   const pressEnter = (event, keyword) => {
