@@ -21,8 +21,7 @@ export const wbsReducer = (allWBS = allWBSInital, action) => {
     case types.ADD_NEW_WBS_ERROR:
       return { ...allWBS, fetched: true, fetching: false, error: action.err }
     case types.DELETE_WBS:
-      let index = allWBS.WBSItems.findIndex(wbs => wbs._id === action.wbsId);
-      console.log(index, action.wbsId)
+      let index = allWBS.WBSItems.findIndex(wbs => wbs._id == action.wbsId);
       return { ...allWBS, WBSItems: [...allWBS.WBSItems.slice(0, index), ...allWBS.WBSItems.slice(index + 1)] }
     default:
       return allWBS;

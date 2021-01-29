@@ -19,6 +19,7 @@ import {
   VIEW_PROFILE,
   UPDATE_PASSWORD,
   LOGOUT,
+  POPUP_MANAGEMENT
 } from '../../languages/en/ui'
 import {
   Collapse,
@@ -137,6 +138,13 @@ export class Header extends React.Component {
                     <DropdownItem tag={Link} to='/teams'>
                       {TEAMS}
                     </DropdownItem>
+                    {(user.role === UserRole.Administrator) ?
+                      <>
+                        <DropdownItem divider />
+                        <DropdownItem tag={Link} to={`/admin/`}>
+                          {POPUP_MANAGEMENT}
+                        </DropdownItem>
+                      </> : null}
                   </DropdownMenu>
                 </UncontrolledDropdown>
                 <NavItem>
@@ -156,6 +164,7 @@ export class Header extends React.Component {
                   </DropdownToggle>
                   <DropdownMenu>
                     <DropdownItem header>Hello {firstName}</DropdownItem>
+
                     <DropdownItem divider />
                     <DropdownItem tag={Link} to={`/userprofile/${user.userid}`}>
                       {VIEW_PROFILE}
