@@ -13,13 +13,13 @@ import {
 } from 'reactstrap'
 import { useSelector } from 'react-redux'
 import { HashLink as Link } from 'react-router-hash-link'
-import './board.css'
+import './SummaryBar.css'
 import task_icon from './task_icon.png'
 import badges_icon from './badges_icon.png'
 import bluesquare_icon from './bluesquare_icon.png'
 import report_icon from './report_icon.png'
 
-const DashboardSummaryBar = () => {
+const SummaryBar = () => {
   const { firstName, lastName, _id } = useSelector(state => state.userProfile)
 
   const timeEntries = useSelector(state => state.timeEntries.weeks[0])
@@ -252,4 +252,4 @@ const DashboardSummaryBar = () => {
   )
 }
 
-export default DashboardSummaryBar
+export default SummaryBar

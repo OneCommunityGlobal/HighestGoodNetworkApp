@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { Badge, Button } from 'reactstrap'
-import { startTimer, pauseTimer, stopTimer } from '../../actions/timer'
+import { startTimer, pauseTimer } from '../../actions/timer'
 import TimeEntryForm from '../Timelog/TimeEntryForm'
 import './Timer.css'
-import { maxTime } from 'date-fns/esm'
+//import { maxTime } from 'date-fns/esm'
 
 const Timer = () => {
   const data = {
@@ -12,6 +12,7 @@ const Timer = () => {
     isTangible: window.screenX > 500 ? true : false
   }
   const userId = useSelector(state => state.auth.user.userid)
+  const userProfile = useSelector(state => state.auth.user)
   const pausedAt = useSelector(state => state.timer.seconds)
   const dispatch = useDispatch()
   const alert = {
@@ -69,7 +70,7 @@ const Timer = () => {
       clearInterval(interval)
     }
     return () => clearInterval(interval)
-  }, [isActive, seconds])
+  }, [isActive])
 
   useEffect(() => {
     setSeconds(pausedAt)
@@ -110,6 +111,8 @@ const Timer = () => {
         isOpen={modal}
         timer={{ hours, minutes }}
         data={data}
+        userProfile = {userProfile}
+        resetTimer={reset}
       />
     </div>
   )

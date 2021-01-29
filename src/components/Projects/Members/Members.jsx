@@ -15,9 +15,19 @@ import './members.css'
 
 const Members = (props) => {
   const [role] = useState(props.state ? props.state.auth.user.role : null);
-  const [init, setInit] = useState(false);
   let [keyword, setKeyword] = useState('');
   const projectId = props.match.params.projectId;
+
+
+  useEffect(() => {
+    props.fetchAllMembers(projectId);
+  }, [projectId, props]);
+
+  const pressEnter = (event, keyword) => {
+    if (event.key === "Enter") {
+      props.findUserProfiles(keyword);
+    }
+  }
 
   /*if (!init) {
       props.fetchAllMembers(projectId);

@@ -117,8 +117,8 @@ const Task = (props) => {
 
 
   const onMove = (from, to) => {
-    const fromNum = from.split('.0').join('');
-    const toNum = to.split('.0').join('');
+    // const fromNum = from.split('.0').join('');
+    // const toNum = to.split('.0').join('');
     props.moveTasks(props.wbsId, from, to);
     setTimeout(() => {
       props.fetchAllTasks(props.wbsId);

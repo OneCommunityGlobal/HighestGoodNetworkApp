@@ -18,7 +18,7 @@ const Badge = (props) => {
   useEffect(() => {
     const userId = props.userId;
     props.getUserProfile(userId);
-  }, [])
+  }, [props])
 
 
   return (

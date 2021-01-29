@@ -125,6 +125,7 @@ class Teams extends React.PureComponent {
       ) {
         return team;
       }
+      return false;
     });
 
     return filteredList;

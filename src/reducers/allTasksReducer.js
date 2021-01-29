@@ -21,6 +21,7 @@ const filterAndSort = (tasks, level) => {
         return 1;
       }
     }
+    return 0;
   });
 }
 
@@ -75,7 +76,7 @@ export const taskReducer = (allTasks = allTasksInital, action) => {
       const index = motherIndex + 1;
       return { ...allTasks, taskItems: [...allTasks.taskItems.slice(0, index), ...sortByNum([action.newTask, ...allTasks.taskItems.slice(index)])], fetched: true, fetching: false, error: "none" }
     case types.DELETE_TASK:
-      let indexStart = allTasks.taskItems.findIndex(task => task._id == action.taskId);
+      let indexStart = allTasks.taskItems.findIndex(task => task._id === action.taskId);
       let indexEnd = indexStart;
       allTasks.taskItems.forEach((task, index) => {
         if (task.parentId3 === action.taskId) {
@@ -101,5 +102,5 @@ export const taskReducer = (allTasks = allTasksInital, action) => {
       return { ...allTasks, copiedTask: allTasks.taskItems[copiedIndex] }
 
   }
-  return allTasks;
+
 };
