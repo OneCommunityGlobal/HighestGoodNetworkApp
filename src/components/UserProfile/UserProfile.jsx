@@ -41,6 +41,7 @@ import BlueSqaureLayout from './BlueSqaureLayout'
 import TabToolTips from './ToolTips/TabToolTips'
 import BasicToolTips from './ToolTips/BasicTabTips'
 import ResetPasswordPopup from '../UserManagement/ResetPasswordPopup'
+import ResetPasswordButton from '../UserManagement/ResetPasswordButton'
 // const styleProfile = {};
 class UserProfile extends Component {
   state = {
@@ -555,7 +556,6 @@ class UserProfile extends Component {
     const { userId: targetUserId } = this.props.match
       ? this.props.match.params
       : { userId: undefined }
-    debugger;
     const { userid: requestorId, role: requestorRole } = this.props.auth.user
 
     const isUserSelf = targetUserId === requestorId
@@ -792,11 +792,11 @@ class UserProfile extends Component {
               )} */}
               {requestorRole === "Administrator" && canEdit ? (
                 <div className="profileEditButtonContainer">
-                  <Button onClick={this.onUpdatePassword} > Update Password</Button>
+                  <ResetPasswordButton user={userProfile} />
                 </div>
               ) : (<div className="profileEditButtonContainer">
                 <Link to={`/updatepassword/${this.state.userProfile._id}`}>
-                  <Button> Update Password</Button>
+                  <Button color="primary"> Update Password</Button>
                 </Link>
               </div>)}
             </Col>
