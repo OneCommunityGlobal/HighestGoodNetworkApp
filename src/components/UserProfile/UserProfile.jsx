@@ -40,7 +40,6 @@ import UserLinkLayout from './UserLinkLayout'
 import BlueSqaureLayout from './BlueSqaureLayout'
 import TabToolTips from './ToolTips/TabToolTips'
 import BasicToolTips from './ToolTips/BasicTabTips'
-import ResetPasswordPopup from '../UserManagement/ResetPasswordPopup'
 import ResetPasswordButton from '../UserManagement/ResetPasswordButton'
 // const styleProfile = {};
 class UserProfile extends Component {
@@ -586,10 +585,6 @@ class UserProfile extends Component {
         )}
         <TabToolTips />
         <BasicToolTips />
-        <ResetPasswordPopup
-          open={this.state.resetPopupOpen}
-          onClose={this.onResetPopupClose}
-        />
         <InfoModal isOpen={infoModal} toggle={this.toggleInfoModal} />
         <Container className="emp-profile">
           <Row>
