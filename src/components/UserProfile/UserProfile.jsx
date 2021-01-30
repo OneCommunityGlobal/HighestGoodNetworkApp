@@ -44,7 +44,6 @@ import ResetPasswordButton from '../UserManagement/ResetPasswordButton'
 // const styleProfile = {};
 class UserProfile extends Component {
   state = {
-    resetPopupOpen: false,
     isLoading: true,
     error: '',
     userProfile: {},
@@ -827,16 +826,6 @@ class UserProfile extends Component {
         </div> */}
       </div>
     )
-  }
-  onUpdatePassword = () => {
-    this.setState({
-      resetPopupOpen: true
-    })
-  }
-  onResetPopupClose = () => {
-    this.setState({
-      resetPopupOpen: false
-    })
   }
 }
 
