@@ -3,6 +3,7 @@ import { shallow, mount } from "enzyme";
 import { Login } from "./Login";
 import { loginUser } from "../../actions/authActions";
 import { clearErrors } from "../../actions/errorsActions";
+import { BrowserRouter } from "react-router-dom";
 
 describe('Login page structure', () => {
   let mountedLogin, props;
@@ -106,7 +107,7 @@ describe('Login behavior', () => {
       "loginUser":  loginUser,
       history: []
     });
-    const wrapper = mount(<Login {...props} />);
+    const wrapper = shallow(<Login {...props} />);
     expect(wrapper.instance().props.history).toEqual(['/']);
   });
 });
