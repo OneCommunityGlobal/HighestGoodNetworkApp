@@ -25,7 +25,7 @@ const ForgotPassword = React.memo(() => {
           history.push('/login');
         }, 1000);
       }).catch((error) => {
-        toast.error(error.response.data.error);
+        toast.error(error?.response?.data?.error);
       });
     }
   };
