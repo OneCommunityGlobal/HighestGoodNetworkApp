@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import {
-  Button, Form, FormGroup, Label, Input, FormText, Row, Col, FormFeedback, Modal, ModalHeader, ModalBody,
+  Button, Form, FormGroup, Label, FormText, Row, Col, Modal, ModalHeader, ModalBody, Alert
 } from 'reactstrap';
 import { connect } from 'react-redux';
 import AssignBadgePopup from './AssignBadgePopup';
-import { getUserToBeAssigned, assignBadges } from '../../actions/badgeManagement';
+import { getUserToBeAssigned, assignBadges, clearSelectedBadges } from '../../actions/badgeManagement';
 import { getAllUserProfile } from '../../actions/userManagement';
 import Autosuggest from 'react-autosuggest';
 
@@ -19,6 +19,7 @@ const AssignBadge = (props) => {
 
   useEffect(() => {
     props.getAllUserProfile();
+    props.clearSelectedBadges();
   }, [])
 
   const activeUsers = props.allUserProfiles.filter(profile => profile.isActive === true);
@@ -89,6 +90,7 @@ const AssignBadge = (props) => {
 
   const clickSubmit = () => {
     assignBadges(props.userAssigned, props.selectedBadges);
+    props.clearSelectedBadges();
   }
 
   const FirstInputProps = {
@@ -107,9 +109,9 @@ const AssignBadge = (props) => {
       margin: 20,
     }}
     >
-      <Row>
+      <Row className="assign-badge-margin-top">
         <Col md="2">
-          <Label>Name</Label>
+          <Label style={{ fontWeight: 'bold' }}>Name</Label>
         </Col>
         <Col md="4">
           <Autosuggest
@@ -121,15 +123,6 @@ const AssignBadge = (props) => {
             renderSuggestion={renderSuggestion}
             inputProps={FirstInputProps}
           />
-          {/* <FormGroup>
-            <Input
-              type="text"
-              name="firstName"
-              id="firstName"
-              placeholder="First Name"
-              onChange={(e) => setFirst(e.target.value.trim())}
-            />
-          </FormGroup> */}
         </Col>
         <Col md="4">
           <Autosuggest
@@ -141,19 +134,10 @@ const AssignBadge = (props) => {
             renderSuggestion={renderSuggestion}
             inputProps={LastInputProps}
           />
-          {/* <FormGroup>
-            <Input
-              type="text"
-              name="lastName"
-              id="lastName"
-              placeholder="Last Name"
-              onChange={(e) => setLast(e.target.value.trim())}
-            />
-          </FormGroup> */}
         </Col>
       </Row>
-      <FormGroup>
-        <Button className="btn--dark-sea-green" onClick={clickAssign}>Assign Badge</Button>
+      <FormGroup className="assign-badge-margin-top">
+        <Button outline color="info" onClick={clickAssign}>Assign Badge</Button>
         <Modal isOpen={isOpen} toggle={toggle}>
           <ModalHeader toggle={toggle}>Assign Badge</ModalHeader>
           <ModalBody><AssignBadgePopup allBadgeData={props.allBadgeData} toggle={toggle} /></ModalBody>
@@ -161,9 +145,9 @@ const AssignBadge = (props) => {
         <FormText color="muted">
           Please select a badge from the badge list.
         </FormText>
+        <Alert color="info" className="assign-badge-margin-top"> {props.selectedBadges.length} bagdes selected</Alert>
       </FormGroup>
-      <Button size="lg" onClick={clickSubmit}>Submit</Button>
-
+      <Button size="lg" color="info" className="assign-badge-margin-top" onClick={clickSubmit}>Submit</Button>
     </Form>
   );
 };
@@ -176,7 +160,8 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = dispatch => ({
   getUserToBeAssigned: (userName) => dispatch(getUserToBeAssigned(userName)),
-  getAllUserProfile: () => dispatch(getAllUserProfile())
+  getAllUserProfile: () => dispatch(getAllUserProfile()),
+  clearSelectedBadges: () => dispatch(clearSelectedBadges())
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(AssignBadge);

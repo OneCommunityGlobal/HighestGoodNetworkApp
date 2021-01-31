@@ -3,6 +3,7 @@ import {
   GET_ALL_BADGE_DATA,
   ADD_SELECT_BADGE,
   REMOVE_SELECT_BADGE,
+  CLEAR_SELECTED_BADGES,
   GET_USER_TO_BE_ASSIGNED
 } from '../constants/badge';
 import { ENDPOINTS } from '../utils/URL';
@@ -26,6 +27,10 @@ export const addSelectBadge = badgeId => ({
 export const removeSelectBadge = badgeId => ({
   type: REMOVE_SELECT_BADGE,
   badgeId,
+});
+
+export const clearSelectedBadges = () => ({
+  type: CLEAR_SELECTED_BADGES,
 });
 
 
