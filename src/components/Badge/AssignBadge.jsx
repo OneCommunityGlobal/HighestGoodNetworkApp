@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import {
-  Button, Form, FormGroup, Label, FormText, Row, Col, Modal, ModalHeader, ModalBody, Alert
+  Button, Form, FormGroup, Label, FormText, Row, Col, Modal, ModalHeader, ModalBody, Alert, Fade
 } from 'reactstrap';
 import { connect } from 'react-redux';
 import AssignBadgePopup from './AssignBadgePopup';
-import { getUserToBeAssigned, assignBadges, clearSelectedBadges } from '../../actions/badgeManagement';
+import { getUserToBeAssigned, assignBadges, clearNameAndSelected, closeAlert } from '../../actions/badgeManagement';
 import { getAllUserProfile } from '../../actions/userManagement';
 import Autosuggest from 'react-autosuggest';
 
@@ -19,7 +19,8 @@ const AssignBadge = (props) => {
 
   useEffect(() => {
     props.getAllUserProfile();
-    props.clearSelectedBadges();
+    props.clearNameAndSelected();
+    props.closeAlert();
   }, [])
 
   const activeUsers = props.allUserProfiles.filter(profile => profile.isActive === true);
@@ -77,6 +78,10 @@ const AssignBadge = (props) => {
 
   const toggle = () => setOpen(isOpen => !isOpen);
 
+  const closeAlert = () => {
+    props.closeAlert();
+  }
+
   const clickAssign = (e) => {
     e.preventDefault();
     assignUser(first, last);
@@ -86,11 +91,12 @@ const AssignBadge = (props) => {
   const assignUser = (first, last) => {
     const userName = first + ' ' + last;
     props.getUserToBeAssigned(userName);
+    console.log('fsfsfs', props.userAssigned)
   }
 
   const clickSubmit = () => {
-    assignBadges(props.userAssigned, props.selectedBadges);
-    props.clearSelectedBadges();
+    props.assignBadges(props.userAssigned, props.selectedBadges);
+    props.clearNameAndSelected();
   }
 
   const FirstInputProps = {
@@ -145,9 +151,12 @@ const AssignBadge = (props) => {
         <FormText color="muted">
           Please select a badge from the badge list.
         </FormText>
-        <Alert color="info" className="assign-badge-margin-top"> {props.selectedBadges.length} bagdes selected</Alert>
+        <Alert color="dark" className="assign-badge-margin-top"> {props.selectedBadges.length} bagdes selected</Alert>
       </FormGroup>
       <Button size="lg" color="info" className="assign-badge-margin-top" onClick={clickSubmit}>Submit</Button>
+      <Alert className="assign-badge-margin-top" color={props.color} isOpen={props.alertVisible} toggle={closeAlert} >
+        {props.message}
+      </Alert>
     </Form>
   );
 };
@@ -155,13 +164,18 @@ const AssignBadge = (props) => {
 const mapStateToProps = state => ({
   selectedBadges: state.badge.selectedBadges,
   userAssigned: state.badge.userAssigned,
+  message: state.badge.message,
+  alertVisible: state.badge.alertVisible,
+  color: state.badge.color,
   allUserProfiles: state.allUserProfiles.userProfiles
 });
 
 const mapDispatchToProps = dispatch => ({
   getUserToBeAssigned: (userName) => dispatch(getUserToBeAssigned(userName)),
   getAllUserProfile: () => dispatch(getAllUserProfile()),
-  clearSelectedBadges: () => dispatch(clearSelectedBadges())
+  clearNameAndSelected: () => dispatch(clearNameAndSelected()),
+  assignBadges: (userAssigned, selectedBadge) => dispatch(assignBadges(userAssigned, selectedBadge)),
+  closeAlert: () => dispatch(closeAlert())
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(AssignBadge);
