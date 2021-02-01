@@ -61,24 +61,21 @@ export const assignBadges = (userAssigned, selectedBadges) => {
 
   return async (dispatch) => {
 
-    if (userAssigned.length === 0) {
-      dispatch(getMessage('Please enter the name.', 'danger'));
-      setTimeout(() => {
-        dispatch(closeAlert());
-      }, 6000);
-      return;
-    }
-
-
     if (selectedBadges.length === 0) {
-      dispatch(getMessage('Please select badges to be assigned.', 'danger'));
+      dispatch(getMessage('No badge has been selected.', 'danger'));
       setTimeout(() => {
         dispatch(closeAlert());
       }, 6000);
       return;
     }
 
-
+    if (userAssigned.length === 0) {
+      dispatch(getMessage('First Name and Last Name can not be empty.', 'danger'));
+      setTimeout(() => {
+        dispatch(closeAlert());
+      }, 6000);
+      return;
+    }
 
     const res = await axios.get(ENDPOINTS.USER_PROFILE_BY_NAME(userAssigned));
     if (res.data.length === 0) {

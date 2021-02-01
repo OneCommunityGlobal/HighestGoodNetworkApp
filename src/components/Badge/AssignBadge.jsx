@@ -89,14 +89,20 @@ const AssignBadge = (props) => {
   }
 
   const assignUser = (first, last) => {
-    const userName = first + ' ' + last;
+    let userName;
+    if (first.length === 0 || last.length === 0) {
+      userName = '';
+    } else {
+      userName = first + ' ' + last;
+    }
     props.getUserToBeAssigned(userName);
-    console.log('fsfsfs', props.userAssigned)
   }
 
   const clickSubmit = () => {
     props.assignBadges(props.userAssigned, props.selectedBadges);
     props.clearNameAndSelected();
+    setFirst('');
+    setLast('');
   }
 
   const FirstInputProps = {
