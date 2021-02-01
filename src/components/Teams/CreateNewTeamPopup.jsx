@@ -10,7 +10,7 @@ const CreateNewTeamPopup = React.memo((props) => {
   const [isValidTeam, onValidation] = useState(true);
   useEffect(() => {
     onNewName(props.teamName);
-  }, [props.open]);
+  }, [props.open, props.teamName]);
   return (
     <Modal isOpen={props.open} toggle={closePopup}>
       <ModalHeader toggle={closePopup}>{(props.isEdit ? 'Update Team Name' : 'Create New Team')}</ModalHeader>

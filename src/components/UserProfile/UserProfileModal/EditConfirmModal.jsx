@@ -1,16 +1,10 @@
-import React, { useState, useEffect, useReducer } from 'react';
+import React from 'react';
 import {
   Button,
   Modal,
   ModalHeader,
   ModalBody,
   ModalFooter,
-  Input,
-  Label,
-  FormGroup,
-  CardBody,
-  Card,
-  Col,
 } from 'reactstrap';
 import { useHistory } from 'react-router-dom';
 import PropTypes from 'prop-types';

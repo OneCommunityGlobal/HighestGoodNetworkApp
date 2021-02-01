@@ -1,11 +1,12 @@
 /*********************************************************************************
- * Component: FOUND USER 
+ * Component: FOUND USER
  * Author: Henry Ng - 02/08/20
  * Display users which were found
  ********************************************************************************/
 import React from 'react'
 import { connect } from 'react-redux'
 import { assignProject } from './../../../../actions/projectMembers'
+import { UserRole } from "./../../../../utils/enums"
 
 const FoundUser = (props) => {
 
@@ -35,13 +36,14 @@ const FoundUser = (props) => {
 
 
 
+
       </tr>
 
 
     </React.Fragment>
   )
 }
-
-export default connect(null, { assignProject })(FoundUser)
+const mapStateToProps = state => { return { state } }
+export default connect(mapStateToProps, { assignProject })(FoundUser)
 
 

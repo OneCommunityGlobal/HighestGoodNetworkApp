@@ -34,7 +34,8 @@ export const projectMembershipReducer = (allMembership = allMembershipInital, ac
     case types.REMOVE_FOUND_USER:
       let indexUser = allMembership.foundUsers.findIndex(user => user._id === action.userId);
       return { ...allMembership, foundUsers: [...allMembership.foundUsers.slice(0, indexUser), ...allMembership.foundUsers.slice(indexUser + 1)] }
-
+    default:
+      return allMembership;
   }
-  return allMembership;
+
 };

@@ -1,5 +1,5 @@
 /*********************************************************************************
- * Action: WBS  
+ * Action: WBS
  * Author: Henry Ng - 03/20/20
  ********************************************************************************/
 import axios from 'axios'
@@ -72,7 +72,7 @@ export const fetchAllWBS = (projectId) => {
 }
 
 /**
-* Set a flag that fetching WBS  
+* Set a flag that fetching WBS
 */
 export const setWBSStart = () => {
   return {
@@ -82,8 +82,8 @@ export const setWBSStart = () => {
 
 
 /**
- * set WBS in store 
- * @param payload : WBS [] 
+ * set WBS in store
+ * @param payload : WBS []
  */
 export const setWBS = (WBSItems) => {
   return {
@@ -93,8 +93,8 @@ export const setWBS = (WBSItems) => {
 }
 
 /**
- * Error when setting project 
- * @param payload : error status code 
+ * Error when setting project
+ * @param payload : error status code
  */
 export const setWBSError = (err) => {
   return {

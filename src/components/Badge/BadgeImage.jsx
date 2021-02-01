@@ -10,7 +10,7 @@ const BadgeImage = (props) => {
 
   return (
     <>
-      <img src={props.badgeData.imageUrl} id={"popover_" + props.index.toString()} />
+      <img src={props.badgeData.imageUrl} id={"popover_" + props.index.toString()} alt=""/>
       <Popover trigger="hover" isOpen={isOpen} toggle={toggle} target={"popover_" + props.index.toString()}>
         <Card className="text-center">
           <CardImg className="badge_image_lg" src={props.badgeData.imageUrl} />

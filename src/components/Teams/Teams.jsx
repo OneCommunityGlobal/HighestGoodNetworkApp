@@ -73,7 +73,7 @@ class Teams extends React.PureComponent {
               </div>
             </React.Fragment>
           )
-      }
+        }
       </Container>
     );
   }
@@ -125,6 +125,7 @@ class Teams extends React.PureComponent {
       ) {
         return team;
       }
+      return false;
     });
 
     return filteredList;

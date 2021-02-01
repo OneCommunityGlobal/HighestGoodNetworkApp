@@ -1,21 +1,27 @@
-import React, { useState, useEffect } from 'react'
-import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap'
-import { connect } from 'react-redux'
-import ReactTooltip from 'react-tooltip'
-import { DUE_DATE_MUST_GREATER_THAN_START_DATE } from '../../../../../languages/en/messages'
-import DayPickerInput from 'react-day-picker/DayPickerInput'
-import { DateUtils } from 'react-day-picker'
-import 'react-day-picker/lib/style.css'
-import dateFnsFormat from 'date-fns/format'
-import dateFnsParse from 'date-fns/parse'
-import { updateTask, fetchAllTasks } from '../../../../../actions/task'
+import React, { useState, useEffect } from 'react';
+import {
+  Button, Modal, ModalHeader, ModalBody, ModalFooter,
+} from 'reactstrap';
+import { connect } from 'react-redux';
+import ReactTooltip from 'react-tooltip';
+import { DUE_DATE_MUST_GREATER_THAN_START_DATE } from '../../../../../languages/en/messages';
+import DayPickerInput from 'react-day-picker/DayPickerInput';
+import { DateUtils } from 'react-day-picker';
+import 'react-day-picker/lib/style.css';
+import dateFnsFormat from 'date-fns/format';
+import dateFnsParse from 'date-fns/parse';
+import { updateTask, fetchAllTasks } from '../../../../../actions/task';
+import { Editor } from '@tinymce/tinymce-react'
+import { UserRole } from './../../../../../utils/enums'
 
-const EditTaskModal = props => {
-  const tasks = props.tasks.taskItems
-  const { members } = props.projectMembers
-  let foundedMembers = []
+const EditTaskModal = (props) => {
+  const [role] = useState(props.auth ? props.auth.user.role : null);
 
-  const thisTask = tasks.filter(task => task._id === props.taskId)[0]
+  const tasks = props.tasks.taskItems;
+  const { members } = props.projectMembers;
+  let foundedMembers = [];
+
+  const thisTask = tasks.filter(task => task._id === props.taskId)[0];
 
   // Date picker
   const FORMAT = 'MM/dd/yy'
@@ -227,16 +233,16 @@ const EditTaskModal = props => {
     }
   }
 
-  useEffect(() => {}, [tasks])
+  useEffect(() => { }, [tasks]);
 
   return (
     <div className="controlBtn">
-      <Modal isOpen={modal} toggle={toggle} size="lg">
-        <ModalHeader toggle={toggle}>Edit Task</ModalHeader>
+      <Modal isOpen={modal} toggle={toggle}>
+        <ModalHeader toggle={toggle}>{role === UserRole.Administrator ? 'Edit' : 'View'}</ModalHeader>
         <ModalBody>
           <ReactTooltip />
 
-          <table className="table table-bordered">
+          <table className={`table table-bordered ${role === UserRole.Administrator ? null : 'disable-div'}`}>
             <tbody>
               <tr>
                 <td scope="col" data-tip="WBS ID">
@@ -414,6 +420,120 @@ const EditTaskModal = props => {
                   />
                 </td>
               </tr>
+
+              <tr>
+                <td scope="col">Links</td>
+                <td scope="col">
+                  <div>
+                    <input
+                      type="text"
+                      aria-label="Search user"
+                      placeholder="Link"
+                      className="task-resouces-input"
+                      data-tip="Add a link"
+                      onChange={e => setLink(e.target.value)}
+                    />
+                    <button
+                      className="task-resouces-btn"
+                      type="button"
+                      data-tip="Add Link"
+                      onClick={addLink}
+                    >
+                      <i className="fa fa-plus" aria-hidden="true" />
+                    </button>
+                  </div>
+                  <div>
+                    {links.map((link, i) => (link.length > 1 ? (
+                      <div key={i} className="task-link">
+                        <a href={link} target="_blank">
+                          {link.slice(-10)}
+                        </a>
+                        <span className="remove-link" onClick={() => removeLink(i)}>
+                          x
+                        </span>
+                      </div>
+                    ) : null))}
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td scope="col" colSpan="2">Why this Task is Important
+                  <Editor
+                    init={{
+                      menubar: false,
+                      plugins:
+                        'advlist autolink autoresize lists link charmap table paste help',
+                      toolbar:
+                        'bold italic  underline numlist   |  removeformat link bullist  outdent indent |\
+                                        styleselect fontsizeselect | table| strikethrough forecolor backcolor |\
+                                        subscript superscript charmap  | help',
+                      branding: false,
+                      min_height: 180,
+                      max_height: 300,
+                      autoresize_bottom_margin: 1,
+                    }}
+                    name="why-info"
+                    className="why-info"
+                    className="form-control"
+                    value={whyInfo}
+                    onEditorChange={content => setWhyInfo(content)}
+
+                  />
+                </td>
+              </tr>
+              <tr>
+                <td scope="col" colSpan="2">Design Intent
+                <Editor
+                    init={{
+                      menubar: false,
+                      plugins:
+                        'advlist autolink autoresize lists link charmap table paste help',
+                      toolbar:
+                        'bold italic  underline numlist   |  removeformat link bullist  outdent indent |\
+                                        styleselect fontsizeselect | table| strikethrough forecolor backcolor |\
+                                        subscript superscript charmap  | help',
+                      branding: false,
+                      min_height: 180,
+                      max_height: 300,
+                      autoresize_bottom_margin: 1,
+                    }}
+                    name="intent-info"
+                    className="intent-info"
+                    className="form-control"
+                    value={intentInfo}
+                    onEditorChange={content => setIntentInfo(content)}
+
+                  />
+
+                </td>
+              </tr>
+              <tr>
+                <td scope="col" colSpan="2">Endstate
+
+                <Editor
+                    init={{
+                      menubar: false,
+                      plugins:
+                        'advlist autolink autoresize lists link charmap table paste help',
+                      toolbar:
+                        'bold italic  underline numlist   |  removeformat link bullist  outdent indent |\
+                                        styleselect fontsizeselect | table| strikethrough forecolor backcolor |\
+                                        subscript superscript charmap  | help',
+                      branding: false,
+                      min_height: 180,
+                      max_height: 300,
+                      autoresize_bottom_margin: 1,
+                    }}
+                    name="endstate-info"
+                    className="endstate-info"
+                    className="form-control"
+                    value={endstateInfo}
+                    onEditorChange={content => setEndstateInfo(content)}
+
+                  />
+
+                </td>
+              </tr>
               <tr>
                 <td scope="col">Start Date</td>
                 <td scope="col">
@@ -447,101 +567,25 @@ const EditTaskModal = props => {
                   </div>
                 </td>
               </tr>
-              <tr>
-                <td scope="col">Links</td>
-                <td scope="col">
-                  <div>
-                    <input
-                      type="text"
-                      aria-label="Search user"
-                      placeholder="Link"
-                      className="task-resouces-input"
-                      data-tip="Add a link"
-                      onChange={e => setLink(e.target.value)}
-                    />
-                    <button
-                      className="task-resouces-btn"
-                      type="button"
-                      data-tip="Add Link"
-                      onClick={addLink}
-                    >
-                      <i className="fa fa-plus" aria-hidden="true" />
-                    </button>
-                  </div>
-                  <div>
-                    {links.map((link, i) =>
-                      link.length > 1 ? (
-                        <div key={i}>
-                          <a href={link} target="_blank">
-                            {link.replace('http://', '')}
-                          </a>
-                          <span className="remove-link" onClick={() => removeLink(i)}>
-                            x
-                          </span>
-                        </div>
-                      ) : null,
-                    )}
-                  </div>
-                </td>
-              </tr>
-              <tr>
-                <td scope="col">Why this Task is Important</td>
-                <td scope="col">
-                  <textarea
-                    rows="4"
-                    name="why-info"
-                    className="why-info"
-                    onChange={e => setWhyInfo(e.target.value)}
-                    onKeyPress={e => setWhyInfo(e.target.value)}
-                    value={whyInfo}
-                    style={{ width: '100%' }}
-                  />
-                </td>
-              </tr>
-              <tr>
-                <td scope="col">Design Intent</td>
-                <td scope="col">
-                  <textarea
-                    rows="4"
-                    name="intent-info"
-                    className="intent-info"
-                    onChange={e => setIntentInfo(e.target.value)}
-                    onKeyPress={e => setIntentInfo(e.target.value)}
-                    value={intentInfo}
-                    style={{ width: '100%' }}
-                  />
-                </td>
-              </tr>
-              <tr>
-                <td scope="col">Endstate</td>
-                <td scope="col">
-                  <textarea
-                    rows="4"
-                    name="endstate-info"
-                    className="endstate-info"
-                    onChange={e => setEndstateInfo(e.target.value)}
-                    onKeyPress={e => setEndstateInfo(e.target.value)}
-                    value={endstateInfo}
-                    style={{ width: '100%' }}
-                  />
-                </td>
-              </tr>
             </tbody>
           </table>
         </ModalBody>
-        <ModalFooter>
-          {taskName !== '' && startedDate !== '' && dueDate !== '' ? (
-            <Button color="primary" onClick={toggle} onClick={updateTask}>
-              Update
-            </Button>
-          ) : null}
-          <Button color="secondary" onClick={toggle}>
-            Cancel
+
+        {role === UserRole.Administrator ?
+          <ModalFooter>
+            {taskName !== '' && startedDate !== '' && dueDate !== '' ? (
+              <Button color="primary" onClick={toggle} onClick={updateTask}>
+                Update
+              </Button>
+            ) : null}
+            <Button color="secondary" onClick={toggle}>
+              Cancel
           </Button>
-        </ModalFooter>
+          </ModalFooter>
+          : null}
       </Modal>
       <Button color="primary" size="sm" onClick={toggle}>
-        Edit Task
+        {role === UserRole.Administrator ? 'Edit' : 'View'}
       </Button>
     </div>
   )

@@ -4,14 +4,12 @@ import './Leaderboard.css'
 import { Link } from 'react-router-dom'
 import { Table, Progress, Modal, ModalBody, ModalFooter, ModalHeader, Button } from 'reactstrap'
 
-const scrolled = false;
-
 const LeaderBoard = ({
   getLeaderboardData, leaderBoardData, loggedInUser, organizationData,
 }) => {
   useEffect(() => {
     getLeaderboardData(loggedInUser.userid);
-  }, [leaderBoardData.length]);
+  }, [leaderBoardData, getLeaderboardData, loggedInUser.userid]);
 
   useEffect(() => {
     try {
