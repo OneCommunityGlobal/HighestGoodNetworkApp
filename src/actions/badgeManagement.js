@@ -4,7 +4,7 @@ import {
   ADD_SELECT_BADGE,
   REMOVE_SELECT_BADGE,
   CLEAR_NAME_AND_SELECTED,
-  GET_USER_TO_BE_ASSIGNED,
+  GET_FIRST_NAME, GET_LAST_NAME,
   GET_MESSAGE,
   CLOSE_ALERT
 } from '../constants/badge';
@@ -42,9 +42,14 @@ export const clearNameAndSelected = () => ({
 });
 
 
-export const getUserToBeAssigned = userAssigned => ({
-  type: GET_USER_TO_BE_ASSIGNED,
-  userAssigned
+export const getFirstName = firstName => ({
+  type: GET_FIRST_NAME,
+  firstName
+})
+
+export const getLastName = lastName => ({
+  type: GET_LAST_NAME,
+  lastName
 })
 
 
@@ -57,29 +62,31 @@ export const getMessage = (message, color) => ({
 export const gotCloseAlert = () => ({ type: CLOSE_ALERT });
 
 
-export const assignBadges = (userAssigned, selectedBadges) => {
+export const assignBadges = (firstName, lastName, selectedBadges) => {
 
   return async (dispatch) => {
 
-    if (selectedBadges.length === 0) {
-      dispatch(getMessage('No badge has been selected.', 'danger'));
+    if (firstName.length === 0 || lastName.length === 0) {
+      dispatch(getMessage('Surprise! The Name Find function does not work without entering first and last name. Nice try though.', 'danger'));
       setTimeout(() => {
         dispatch(closeAlert());
       }, 6000);
       return;
     }
 
-    if (userAssigned.length === 0) {
-      dispatch(getMessage('First Name and Last Name can not be empty.', 'danger'));
+    if (selectedBadges.length === 0) {
+      dispatch(getMessage('Um no, that didn \'t work. Badge Select Function must include actual selection of badges to work. Better luck next time! ', 'danger'));
       setTimeout(() => {
         dispatch(closeAlert());
       }, 6000);
       return;
     }
+
+    const userAssigned = firstName + ' ' + lastName;
 
     const res = await axios.get(ENDPOINTS.USER_PROFILE_BY_NAME(userAssigned));
     if (res.data.length === 0) {
-      dispatch(getMessage('Can not find the user to be assigned.', 'danger'));
+      dispatch(getMessage('Can\'t find that user. Step 1 to getting badges: Be in the system. Not in the system? No badges for you! ', 'danger'));
       setTimeout(() => {
         dispatch(closeAlert());
       }, 6000);
@@ -105,7 +112,7 @@ export const assignBadges = (userAssigned, selectedBadges) => {
     const url = ENDPOINTS.BADGE_ASSIGN(UserToBeAssigned);
     try {
       await axios.put(url, { badgeCollection });
-      dispatch(getMessage('Assign Success!', 'success'));
+      dispatch(getMessage('Awesomesauce! Not only have you increased a person\'s badges, you\'ve also proportionally increased their life happiness!', 'success'));
       setTimeout(() => {
         dispatch(closeAlert());
       }, 6000);

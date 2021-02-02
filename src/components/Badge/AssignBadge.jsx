@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import {
-  Button, Form, FormGroup, Label, FormText, Row, Col, Modal, ModalHeader, ModalBody, Alert, Fade
+  Button, Form, FormGroup, Label, FormText, Row, Col, Modal, ModalHeader, ModalBody, Alert
 } from 'reactstrap';
 import { connect } from 'react-redux';
 import AssignBadgePopup from './AssignBadgePopup';
-import { getUserToBeAssigned, assignBadges, clearNameAndSelected, closeAlert } from '../../actions/badgeManagement';
+import { getFirstName, getLastName, assignBadges, clearNameAndSelected, closeAlert } from '../../actions/badgeManagement';
 import { getAllUserProfile } from '../../actions/userManagement';
 import Autosuggest from 'react-autosuggest';
 
@@ -12,8 +12,6 @@ import Autosuggest from 'react-autosuggest';
 const AssignBadge = (props) => {
 
   const [isOpen, setOpen] = useState(false);
-  const [first, setFirst] = useState('');
-  const [last, setLast] = useState('');
   const [firstSuggestions, setFirstSuggestions] = useState([]);
   const [lastSuggestions, setLastSuggestions] = useState([]);
 
@@ -44,11 +42,11 @@ const AssignBadge = (props) => {
   }
 
   const onFirstChange = (event, { newValue }) => {
-    setFirst(newValue);
+    props.getFirstName(newValue);
   };
 
   const onLastChange = (event, { newValue }) => {
-    setLast(newValue);
+    props.getLastName(newValue);
   };
 
   const onFirstSuggestionsFetchRequested = ({ value }) => {
@@ -60,7 +58,7 @@ const AssignBadge = (props) => {
   };
 
   const onFirstSuggestionSelected = (event, { suggestion }) => {
-    setLast(suggestion.lastName);
+    props.getLastName(suggestion.lastName);
   };
 
   const onLastSuggestionsFetchRequested = ({ value }) => {
@@ -72,7 +70,7 @@ const AssignBadge = (props) => {
   };
 
   const onLastSuggestionSelected = (event, { suggestion }) => {
-    setFirst(suggestion.firstName);
+    props.getFirstName(suggestion.firstName);
   };
 
 
@@ -82,37 +80,20 @@ const AssignBadge = (props) => {
     props.closeAlert();
   }
 
-  const clickAssign = (e) => {
-    e.preventDefault();
-    assignUser(first, last);
-    toggle();
-  }
-
-  const assignUser = (first, last) => {
-    let userName;
-    if (first.length === 0 || last.length === 0) {
-      userName = '';
-    } else {
-      userName = first + ' ' + last;
-    }
-    props.getUserToBeAssigned(userName);
-  }
 
   const clickSubmit = () => {
-    props.assignBadges(props.userAssigned, props.selectedBadges);
+    props.assignBadges(props.firstName, props.lastName, props.selectedBadges);
     props.clearNameAndSelected();
-    setFirst('');
-    setLast('');
   }
 
   const FirstInputProps = {
     placeholder: "first name",
-    value: first,
+    value: props.firstName,
     onChange: onFirstChange
   };
   const LastInputProps = {
     placeholder: "last name",
-    value: last,
+    value: props.lastName,
     onChange: onLastChange
   };
 
@@ -149,7 +130,7 @@ const AssignBadge = (props) => {
         </Col>
       </Row>
       <FormGroup className="assign-badge-margin-top">
-        <Button outline color="info" onClick={clickAssign}>Assign Badge</Button>
+        <Button outline color="info" onClick={toggle}>Assign Badge</Button>
         <Modal isOpen={isOpen} toggle={toggle}>
           <ModalHeader toggle={toggle}>Assign Badge</ModalHeader>
           <ModalBody><AssignBadgePopup allBadgeData={props.allBadgeData} toggle={toggle} /></ModalBody>
@@ -169,7 +150,8 @@ const AssignBadge = (props) => {
 
 const mapStateToProps = state => ({
   selectedBadges: state.badge.selectedBadges,
-  userAssigned: state.badge.userAssigned,
+  firstName: state.badge.firstName,
+  lastName: state.badge.lastName,
   message: state.badge.message,
   alertVisible: state.badge.alertVisible,
   color: state.badge.color,
@@ -177,10 +159,11 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = dispatch => ({
-  getUserToBeAssigned: (userName) => dispatch(getUserToBeAssigned(userName)),
+  getFirstName: (firstName) => dispatch(getFirstName(firstName)),
+  getLastName: (lastName) => dispatch(getLastName(lastName)),
   getAllUserProfile: () => dispatch(getAllUserProfile()),
   clearNameAndSelected: () => dispatch(clearNameAndSelected()),
-  assignBadges: (userAssigned, selectedBadge) => dispatch(assignBadges(userAssigned, selectedBadge)),
+  assignBadges: (fisrtName, lastName, selectedBadge) => dispatch(assignBadges(fisrtName, lastName, selectedBadge)),
   closeAlert: () => dispatch(closeAlert())
 });
 
