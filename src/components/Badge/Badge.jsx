@@ -18,11 +18,11 @@ const Badge = (props) => {
   useEffect(() => {
     const userId = props.userId;
     props.getUserProfile(userId);
-  }, [])
+  }, [props])
 
 
   return (
-    <Card style={{ backgroundColor: '#fafafa', borderRadius: 0 }}>
+    <Card style={{ backgroundColor: '#fafafa', borderRadius: 0 }} id="badgesearned">
       <CardHeader tag="h3">
         Badges
       </CardHeader>

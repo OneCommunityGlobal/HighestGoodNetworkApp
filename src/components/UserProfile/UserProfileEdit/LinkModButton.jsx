@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import PropTypes from 'prop-types';
+//import PropTypes from 'prop-types';
 import EditLinkModal from '../UserProfileModal/EditLinkModal';
 // import styleEdit from './UserProfileEdit.module.scss';
 import './UserProfileEdit.scss';
@@ -7,7 +7,7 @@ import './UserProfileEdit.scss';
 const LinkModButton = (props) => {
   const { updateLink, userProfile, isUserAdmin } = props;
   const [modal, setModal] = useState(false);
-  const handleLinkModel = () => {};
+  //const handleLinkModel = () => {};
   const toggleModal = () => {
     setModal(!modal);
   };

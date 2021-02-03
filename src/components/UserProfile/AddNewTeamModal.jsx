@@ -10,12 +10,10 @@ import {
   FormGroup,
   Label,
   Input,
-  FormText,
 } from 'reactstrap';
-import Teams from './Teamsview';
 
 const AddNewTeamModal = (props) => {
-  const { isOpen, type, toggle, teams, submitHandler } = props;
+  const { isOpen, toggle, teams, submitHandler } = props;
   const [newTeam, setTeam] = useState('');
   const handleSelectionChange = (e) => {
     setTeam(e.target.value);

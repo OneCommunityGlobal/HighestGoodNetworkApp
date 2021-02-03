@@ -1,5 +1,5 @@
 import React from 'react'
-import { ID, TEAM_NAME, ACTIVE, MEMBERS } from '../../languages/en/ui';
+import { TEAM_NAME, ACTIVE, MEMBERS } from '../../languages/en/ui';
 
 
 

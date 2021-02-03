@@ -8,10 +8,11 @@ import { DUE_DATE_MUST_GREATER_THAN_START_DATE } from './../../../../../language
 import DayPickerInput from 'react-day-picker/DayPickerInput'
 import 'react-day-picker/lib/style.css'
 import dateFnsFormat from 'date-fns/format'
+import { Editor } from '@tinymce/tinymce-react'
 
 const AddTaskModal = props => {
   const tasks = props.tasks.taskItems
-  const { members } = props.projectMembers
+  const [members] = useState(props.projectMembers || props.projectMembers.members);
   let foundedMembers = []
 
   // modal
@@ -23,7 +24,7 @@ const AddTaskModal = props => {
   const setToggle = () => {
     try {
       props.openChild()
-    } catch {}
+    } catch { }
     toggle()
   }
 
@@ -96,11 +97,18 @@ const AddTaskModal = props => {
 
   const [foundMembersHTML, setfoundMembersHTML] = useState('')
   const findMembers = () => {
-    foundedMembers = members.filter(user =>
-      (user.firstName + ' ' + user.lastName).toLowerCase().includes(memberName.toLowerCase()),
-    )
+    let memberList = members.members ? props.projectMembers.members : members;
+    console.log('findMembers', memberList);
+    for (let i = 0; i < memberList.length; i++) {
+      console.log('project members', memberList[i]);
+
+      if ((memberList[i].firstName + ' ' + memberList[i].lastName).toLowerCase().includes(memberName.toLowerCase())) {
+        foundedMembers.push(memberList[i]);
+      }
+    }
+
     const html = foundedMembers.map((elm, i) => (
-      <div key={i}>
+      <div key={`found-member-${i}`}>
         <a href={`/userprofile/${elm._id}`} target="_blank">
           <input
             type="text"
@@ -130,14 +138,12 @@ const AddTaskModal = props => {
     ])
   }
 
-  let res = []
   const addResources = (userID, first, last, profilePic) => {
-    res.push({
+    setResourceItems([{
       userID,
       name: `${first} ${last}`,
       profilePic,
-    })
-    setResourceItems([...res])
+    }, ...resourceItems])
   }
 
   // Date picker
@@ -182,15 +188,15 @@ const AddTaskModal = props => {
   }
 
   // parent Id
-  let parentId1 = props.parentId1 ? props.parentId1 : null
-  let parentId2 = props.parentId2 ? props.parentId2 : null
-  let parentId3 = props.parentId3 ? props.parentId3 : null
+  let parentId1 = null;
+  let parentId2 = null;
+  let parentId3 = null;
 
-  if (props.parentId1 === null) {
-    parentId1 = props.taskId
-  } else if (props.parentId2 === null) {
+  if (props.level === 1) {
+    parentId1 = props.taskId;
+  } else if (props.level === 2) {
     parentId2 = props.taskId
-  } else if (props.parentId3 === null) {
+  } else if (props.level === 3) {
     parentId3 = props.taskId
   }
 
@@ -221,7 +227,6 @@ const AddTaskModal = props => {
     setPriority('Primary')
     setMemberName(' ')
     setResourceItems([])
-    res = []
     setAssigned(false)
     setStatus('Started')
     setHoursBest(0)
@@ -236,8 +241,54 @@ const AddTaskModal = props => {
     setEndstateInfo('')
   }
 
+  const paste = () => {
+    setTaskName(props.tasks.copiedTask.taskName);
+
+    if (props.tasks.copiedTask.priority === 'Secondary') {
+      document.getElementById("priority").selectedIndex = 1;
+    } else if (props.tasks.copiedTask.priority === 'Tertiary') {
+      document.getElementById("priority").selectedIndex = 2;
+    } else {
+      document.getElementById("priority").selectedIndex = 0;
+    }
+    setPriority(props.tasks.copiedTask.priority);
+
+    setMemberName();
+    setResourceItems(props.tasks.copiedTask.resources);
+
+    if (props.tasks.copiedTask.isAssigned === true) {
+      document.getElementById("Assigned").selectedIndex = 0;
+    } else {
+      document.getElementById("Assigned").selectedIndex = 1;
+    }
+    setAssigned(props.tasks.copiedTask.isAssigned);
+
+    // Not enough cases here
+    if (props.tasks.copiedTask.status === "Not Started") {
+      document.getElementById("Status").selectedIndex = 0;
+    } else {
+      document.getElementById("Status").selectedIndex = 1;
+    }
+    setStatus(props.tasks.copiedTask.status);
+
+
+    setHoursBest(props.tasks.copiedTask.hoursBest);
+    setHoursWorst(props.tasks.copiedTask.hoursWorst);
+    setHoursMost(props.tasks.copiedTask.hoursMost)
+    setHoursEstimate(props.tasks.copiedTask.estimatedHours);
+
+    setStartedDate(props.tasks.copiedTask.startedDatetime);
+    setDueDate(props.tasks.copiedTask.dueDatetime);
+
+    setLinks(props.tasks.copiedTask.links);
+    setWhyInfo(props.tasks.copiedTask.whyInfo);
+    setIntentInfo(props.tasks.copiedTask.intentInfo);
+    setEndstateInfo(props.tasks.copiedTask.endstateInfo);
+  }
+
   const addNewTask = () => {
-    setIsLoading(true)
+    setIsLoading(true);
+
     const newTask = {
       wbsId: props.wbsId,
       taskName: taskName,
@@ -265,21 +316,19 @@ const AddTaskModal = props => {
       endstateInfo: endstateInfo,
     }
 
-    props.addNewTask(newTask, props.wbsId)
-    clear()
+    props.addNewTask(newTask, props.wbsId);
+
     setTimeout(() => {
-      props.fetchAllTasks(props.wbsId)
-      setTimeout(() => {
-        setIsLoading(false)
-        if (props.tasks.error === 'none') {
-          toggle()
-          getNewNum()
-        }
-      }, 2000)
-    }, 4000)
+      setIsLoading(false)
+      if (props.tasks.error === 'none') {
+        toggle()
+        getNewNum()
+      }
+    }, 1000)
+
   }
 
-  useEffect(() => {}, [tasks])
+  useEffect(() => { }, [tasks])
 
   getNewNum()
 
@@ -287,10 +336,15 @@ const AddTaskModal = props => {
     <div className="controlBtn">
       <Modal isOpen={modal} toggle={toggle}>
         <ModalHeader toggle={toggle}>
-          Add New Task{' '}
-          <button type="button" className="btn btn-primary btn-sm" onClick={() => clear()}>
+          Add New Task
+          <button type="button" size="small" className="btn btn-primary btn-sm margin-left" onClick={() => clear()}>
             Reset
           </button>
+
+          <button type="button" size="small" className="btn btn-primary btn-sm margin-left" onClick={() => paste()}>
+            Paste
+          </button>
+
         </ModalHeader>
         <ModalBody>
           <ReactTooltip />
@@ -337,7 +391,6 @@ const AddTaskModal = props => {
                       data-tip="Input a name"
                       onChange={e => setMemberName(e.target.value)}
                       onKeyPress={e => setMemberName(e.target.value)}
-                      onKeyPress={findMembers}
                     />
                     <button
                       className="task-resouces-btn"
@@ -472,36 +525,7 @@ const AddTaskModal = props => {
                   />
                 </td>
               </tr>
-              <tr>
-                <td scope="col">Start Date</td>
-                <td scope="col">
-                  <div>
-                    <DayPickerInput
-                      format={FORMAT}
-                      formatDate={formatDate}
-                      placeholder={`${dateFnsFormat(new Date(), FORMAT)}`}
-                      onDayChange={(day, mod, input) => changeDateStart(input.state.value)}
-                    />
-                    <div className="warning">
-                      {dateWarning ? DUE_DATE_MUST_GREATER_THAN_START_DATE : ''}
-                    </div>
-                  </div>
-                </td>
-              </tr>
-              <tr>
-                <td scope="col">End Date</td>
-                <td scope="col">
-                  <DayPickerInput
-                    format={FORMAT}
-                    formatDate={formatDate}
-                    placeholder={`${dateFnsFormat(new Date(), FORMAT)}`}
-                    onDayChange={(day, mod, input) => changeDateEnd(input.state.value)}
-                  />
-                  <div className="warning">
-                    {dateWarning ? DUE_DATE_MUST_GREATER_THAN_START_DATE : ''}
-                  </div>
-                </td>
-              </tr>
+
               <tr>
                 <td scope="col">Links</td>
                 <td scope="col">
@@ -540,42 +564,113 @@ const AddTaskModal = props => {
                 </td>
               </tr>
               <tr>
-                <td scope="col">Why this Task is Important</td>
-                <td scope="col">
-                  <textarea
-                    rows="4"
+                <td scope="col" colSpan="2">Why this Task is Important
+                  <Editor
+                    init={{
+                      menubar: false,
+                      plugins:
+                        'advlist autolink autoresize lists link charmap table paste help',
+                      toolbar:
+                        'bold italic  underline numlist   |  removeformat link bullist  outdent indent |\
+                                        styleselect fontsizeselect | table| strikethrough forecolor backcolor |\
+                                        subscript superscript charmap  | help',
+                      branding: false,
+                      min_height: 180,
+                      max_height: 300,
+                      autoresize_bottom_margin: 1,
+                    }}
                     name="why-info"
                     className="why-info"
-                    onChange={e => setWhyInfo(e.target.value)}
-                    onKeyPress={e => setWhyInfo(e.target.value)}
+                    className="form-control"
                     value={whyInfo}
-                  ></textarea>
+                    onEditorChange={content => setWhyInfo(content)}
+
+                  />
                 </td>
               </tr>
               <tr>
-                <td scope="col">Design Intent</td>
-                <td scope="col">
-                  <textarea
-                    rows="4"
+                <td scope="col" colSpan="2">Design Intent
+                <Editor
+                    init={{
+                      menubar: false,
+                      plugins:
+                        'advlist autolink autoresize lists link charmap table paste help',
+                      toolbar:
+                        'bold italic  underline numlist   |  removeformat link bullist  outdent indent |\
+                                        styleselect fontsizeselect | table| strikethrough forecolor backcolor |\
+                                        subscript superscript charmap  | help',
+                      branding: false,
+                      min_height: 180,
+                      max_height: 300,
+                      autoresize_bottom_margin: 1,
+                    }}
                     name="intent-info"
                     className="intent-info"
-                    onChange={e => setIntentInfo(e.target.value)}
-                    onKeyPress={e => setIntentInfo(e.target.value)}
+                    className="form-control"
                     value={intentInfo}
-                  ></textarea>
+                    onEditorChange={content => setIntentInfo(content)}
+
+                  />
+
                 </td>
               </tr>
               <tr>
-                <td scope="col">Endstate</td>
-                <td scope="col">
-                  <textarea
-                    rows="4"
+                <td scope="col" colSpan="2">Endstate
+
+                <Editor
+                    init={{
+                      menubar: false,
+                      plugins:
+                        'advlist autolink autoresize lists link charmap table paste help',
+                      toolbar:
+                        'bold italic  underline numlist   |  removeformat link bullist  outdent indent |\
+                                        styleselect fontsizeselect | table| strikethrough forecolor backcolor |\
+                                        subscript superscript charmap  | help',
+                      branding: false,
+                      min_height: 180,
+                      max_height: 300,
+                      autoresize_bottom_margin: 1,
+                    }}
                     name="endstate-info"
                     className="endstate-info"
-                    onChange={e => setEndstateInfo(e.target.value)}
-                    onKeyPress={e => setEndstateInfo(e.target.value)}
+                    className="form-control"
                     value={endstateInfo}
-                  ></textarea>
+                    onEditorChange={content => setEndstateInfo(content)}
+
+                  />
+
+                </td>
+              </tr>
+              <tr>
+                <td scope="col">Start Date</td>
+                <td scope="col">
+                  <div>
+                    <DayPickerInput
+                      format={FORMAT}
+                      formatDate={formatDate}
+                      placeholder={`${dateFnsFormat(new Date(), FORMAT)}`}
+                      onDayChange={(day, mod, input) => changeDateStart(input.state.value)}
+                      value={startedDate}
+                    />
+                    <div className="warning">
+                      {dateWarning ? DUE_DATE_MUST_GREATER_THAN_START_DATE : ''}
+                    </div>
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td scope="col">End Date</td>
+                <td scope="col">
+                  <DayPickerInput
+                    format={FORMAT}
+                    formatDate={formatDate}
+                    placeholder={`${dateFnsFormat(new Date(), FORMAT)}`}
+                    onDayChange={(day, mod, input) => changeDateEnd(input.state.value)}
+                    value={dueDate}
+                  />
+                  <div className="warning">
+                    {dateWarning ? DUE_DATE_MUST_GREATER_THAN_START_DATE : ''}
+                  </div>
                 </td>
               </tr>
             </tbody>
@@ -586,14 +681,12 @@ const AddTaskModal = props => {
             isLoading ? (
               ' Adding...'
             ) : (
-              <Button color="primary" onClick={toggle} onClick={addNewTask}>
-                Save
-              </Button>
-            )
+                <Button color="primary" onClick={toggle} onClick={addNewTask}>
+                  Save
+                </Button>
+              )
           ) : null}
-          <Button color="secondary" onClick={toggle}>
-            Cancel
-          </Button>
+
         </ModalFooter>
       </Modal>
       <Button color="primary" size="sm" onClick={setToggle}>

@@ -1,4 +1,4 @@
-import { FETCH_TEAMS_START, RECEIVE_TEAMS, FETCH_TEAMS_ERROR } from '../constants/teams';
+import { RECEIVE_TEAMS, FETCH_TEAMS_ERROR } from '../constants/teams';
 import { FETCH_PROJECTS_START } from '../constants/projects';
 
 const managingTeamsInitial = {
@@ -17,7 +17,6 @@ export const managingTeamsReducer = (managingTeams = managingTeamsInitial, actio
   switch (action.type) {
     case FETCH_PROJECTS_START:
       return { ...managingTeams, fetching: true, status: '200' };
-      break;
     case RECEIVE_TEAMS:
       return updateObject(managingTeams, {
         teams: action.payload,
@@ -25,14 +24,10 @@ export const managingTeamsReducer = (managingTeams = managingTeamsInitial, actio
         fetched: true,
         status: '200',
       });
-      break;
     case FETCH_TEAMS_ERROR:
       console.error('managingTeamsReducer Error: ', action.payload);
       return { ...managingTeams, fetching: false, status: action.payload };
-      break;
     default:
       return managingTeams;
-      break;
   }
-  return managingTeams;
 };

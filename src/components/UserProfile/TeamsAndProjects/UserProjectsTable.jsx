@@ -3,7 +3,7 @@ import { Button, Col } from 'reactstrap';
 import './TeamsAndProjects.css';
 
 const UserProjectsTable = React.memo((props) => {
-  const [addProjectPopupOpen, showProjectPopup] = useState(false);
+  //const [addProjectPopupOpen, showProjectPopup] = useState(false);
 
   return (
     <div className="projecttable-container">

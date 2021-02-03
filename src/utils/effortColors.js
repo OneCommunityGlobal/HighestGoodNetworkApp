@@ -12,12 +12,15 @@ export const getcolor = effort => {
 
 export const getprogress = effort => {
 	let progress = 92
-	if (_.inRange(effort, 0, 5)) progress = 5
-	if (_.inRange(effort, 5, 10)) progress = 12
-	if (_.inRange(effort, 10, 20)) progress = 20
-	if (_.inRange(effort, 20, 30)) progress = 45
-	if (_.inRange(effort, 30, 40)) progress = 60
-	if (_.inRange(effort, 40, 50)) progress = 80
+	if (_.inRange(effort, 0, 5)) progress = 5 + Math.round(((5) * ((effort)/5)))
+	else if (_.inRange(effort, 5, 10)) progress = 12  + Math.round(((5) * ((effort-5)/5)))
+	else if (_.inRange(effort, 10, 20)) progress = 20 + Math.round(((20) * ((effort-10)/10)))
+	else if (_.inRange(effort, 20, 30)) progress = 45 + Math.round(((10) * ((effort-20)/10)))
+	else if (_.inRange(effort, 30, 40)) progress = 60 + Math.round(((15) * ((effort-30)/10)))
+	else if (_.inRange(effort, 40, 50)) progress = 80 + Math.round(((10) * ((effort-30)/10)))
+	else if (_.inRange(effort, 60, 70)) progress = 95
+	else if (effort > 70) progress = 98 
+	
 	return progress
 }
 

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { getLeaderboardData } from '../../actions/leaderBoardData'
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router';
 import {
@@ -25,10 +26,10 @@ import { updateUserProfile } from '../../actions/userProfile';
 import { stopTimer } from '../../actions/timer';
 
 const TimeEntryForm = ({
-  userId, edit, data, isOpen, toggle, timer, userProfile,
+  userId, edit, data, isOpen, toggle, timer, userProfile, resetTimer
 }) => {
   const fromTimer = !_.isEmpty(timer);
-
+  const [submitDisabled, setSubmitDisabled] = useState(false);
   const initialState = {
     dateOfWork: moment().format('YYYY-MM-DD'),
     hours: 0,
@@ -105,7 +106,7 @@ const TimeEntryForm = ({
       await dispatch(getUserProjects(userId));
     };
     fetchProjects(userId);
-  }, [userId]);
+  }, [userId, dispatch]);
 
   useEffect(() => {
     setInputs({ ...inputs, ...timer });
@@ -190,7 +191,7 @@ const TimeEntryForm = ({
       return false;
     }
 
-    if (edit && reminder.edit_notice && reminder.edit_count == 4 && edittime) {
+    if (edit && reminder.edit_notice && reminder.edit_count === 4 && edittime) {
       openModal();
       setReminder(reminder => ({
         ...reminder,
@@ -201,7 +202,7 @@ const TimeEntryForm = ({
       return false;
     }
 
-    if (edit && reminder.edit_notice && reminder.edit_count == 5 && edittime) {
+    if (edit && reminder.edit_notice && reminder.edit_count === 5 && edittime) {
       openModal();
       setReminder(reminder => ({
         ...reminder,
@@ -211,7 +212,7 @@ const TimeEntryForm = ({
       }));
       return false;
     }
-    if (edit && reminder.edit_notice && (reminder.edit_count - 5) % 2 == 1 && edittime) {
+    if (edit && reminder.edit_notice && (reminder.edit_count - 5) % 2 === 1 && edittime) {
       openModal();
       setReminder(reminder => ({
         ...reminder,
@@ -221,7 +222,7 @@ const TimeEntryForm = ({
       return false;
     }
 
-    if (edit && reminder.edit_notice && (reminder.edit_count - 5) % 2 == 0 && edittime) {
+    if (edit && reminder.edit_notice && (reminder.edit_count - 5) % 2 === 0 && edittime) {
       openModal();
       setReminder(reminder => ({
         ...reminder,
@@ -236,14 +237,19 @@ const TimeEntryForm = ({
   };
 
   const handleSubmit = async (event) => {
+
     if (event) {
       event.preventDefault();
     }
-
+    if (submitDisabled) {
+      return;
+    }
+    setSubmitDisabled(true);
+    setTimeout(function() {setSubmitDisabled(false)}, 1000);
     const hours = inputs.hours === '' ? '0' : inputs.hours;
     const minutes = inputs.minutes === '' ? '0' : inputs.minutes;
 
-    const edittime = edit && (data.hours != hours || data.minutes != minutes);
+    const edittime = edit && (data.hours !== hours || data.minutes !== minutes);
 
     if (!validateForm(edittime)) {
       return;
@@ -282,14 +288,14 @@ const TimeEntryForm = ({
       console.log(deltatime);
     }
 
-    const totalTime = (parseFloat(userProfile.totalComittedHours, 10) + deltatime).toFixed(2);
-    console.log(totalTime);
-    const updatedUserprofile = {
-      ...userProfile,
-      totalComittedHours: totalTime,
-    };
-    await dispatch(updateUserProfile(userProfile._id, updatedUserprofile));
-
+    // const totalTime = (parseFloat(userProfile.totalComittedHours, 10) + deltatime).toFixed(2);
+    // console.log(totalTime);
+    // const updatedUserprofile = {
+    //   ...userProfile,
+    //   totalComittedHours: totalTime,
+    // };
+    //await dispatch(updateUserProfile(userProfile._id, updatedUserprofile));
+    getLeaderboardData(userProfile._id);
     if (fromTimer) {
       if (status === 200) {
         const timerStatus = await dispatch(stopTimer(userId));
@@ -297,8 +303,9 @@ const TimeEntryForm = ({
           setInputs(inputs => initialState);
           setReminder(reminder => initialReminder);
           toggle();
+          resetTimer();
         }
-        history.push(`/timelog/${userId}`);
+        //history.push(`/timelog/${userId}`);
       }
     } else if (!edit) {
       setInputs(inputs => initialState);
@@ -515,7 +522,7 @@ const TimeEntryForm = ({
             <Button onClick={openModal} color="primary">
               Close
             </Button>
-            {edit && (data.hours != inputs.hours || data.minutes != inputs.minutes) && (
+            {edit && (data.hours !== inputs.hours || data.minutes !== inputs.minutes) && (
               <Button onClick={cancelChange} color="secondary">
                 Cancel
               </Button>
@@ -558,7 +565,7 @@ const TimeEntryForm = ({
           Clear Form
           {' '}
         </Button>
-        <Button onClick={handleSubmit} color="primary">
+        <Button onClick={handleSubmit} color="primary" disabled={submitDisabled}>
           {edit ? 'Save' : 'Submit'}
         </Button>
       </ModalFooter>

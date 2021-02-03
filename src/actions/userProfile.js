@@ -12,7 +12,7 @@ export const getUserProfile = (userId) => {
 	return async (dispatch) => {
 		let loggedOut = false;
 		const res = await axios.get(url).catch((error)=>{
-			if (error.status==401) {
+			if (error.status === 401) {
 				//logout error
 				loggedOut = true;
 			}
