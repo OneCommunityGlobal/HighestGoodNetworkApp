@@ -9,8 +9,7 @@ function useDeepEffect(effectFunc, deps) {
   const prevDeps= useRef(deps);
 
   useEffect(()=>{
-    const isSame = prevDeps.current.every((obj, index) => _.isEqual(obj, deps[index]));
-
+    const isSame = prevDeps.current[0].every((obj, index) => _.isEqual(obj, deps[index]));
     if (isFirst.current || !isSame) {
       effectFunc();
     }
@@ -25,6 +24,7 @@ const LeaderBoard = ({
   getLeaderboardData, leaderBoardData, loggedInUser, organizationData,
 }) => {
   useDeepEffect(() => {
+    console.log(leaderBoardData);
     getLeaderboardData(loggedInUser.userid);
   }, [leaderBoardData]);
 
