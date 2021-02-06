@@ -258,7 +258,7 @@ class AddUserProfile extends Component {
     const { firstName, email, lastName, phoneNumber, role } = that.state.userProfile;
 
     const userData = {
-      password: "Welcome123!",
+      password: "123Welocme!",
       role: role,
       firstName: firstName,
       lastName: lastName,

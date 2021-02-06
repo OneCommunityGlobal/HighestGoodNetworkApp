@@ -73,7 +73,7 @@ class Teams extends React.PureComponent {
               </div>
             </React.Fragment>
           )
-      }
+        }
       </Container>
     );
   }

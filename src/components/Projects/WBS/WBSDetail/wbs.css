@@ -1,3 +1,8 @@
+.container-tasks{
+  margin: 20px;
+  width: calc(100% - 40px);
+}
+
 .container{
   overflow: auto;
 }
@@ -36,10 +41,6 @@
   width: 20px;
 }
 
-.task-name{
-  width: 100%;
-  min-width: 200px;
-}
 
 .task-hour{
   width: 35px;
@@ -63,7 +64,7 @@
   display: none;
 }
 .wbsTask{
-  
+
   line-height: 14px;
 
 }
@@ -89,6 +90,8 @@
 .table td {
   padding: 0.45rem;
 }
+
+
 
 .taskNum{
   cursor: context-menu;
@@ -128,4 +131,23 @@
 }
 .tasks-table{
   overflow-x:scroll;
+  width: 100% !important;
 }
+
+.task-link{
+  font-size: 10px;
+  float: left;
+}
+
+@media only screen and (max-width: 600px) {
+  .desktop-view{
+    display: none;
+  }
+
+  .table td {
+    padding: 5px !important;
+  }
+
+ }
+
+

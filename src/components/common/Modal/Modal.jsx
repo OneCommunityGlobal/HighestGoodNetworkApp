@@ -10,6 +10,7 @@ import {
   InputGroupText,
   Input,
 } from 'reactstrap';
+import parse from 'html-react-parser';
 
 const ModalExample = (props) => {
   const {
@@ -72,8 +73,8 @@ const ModalExample = (props) => {
             </InputGroup>
           </>
         ) : (
-				  modalMessage
-        )}
+            parse(modalMessage)
+          )}
       </ModalBody>
       <ModalFooter>
         <Button color="primary" onClick={closeModal}>
@@ -84,13 +85,13 @@ const ModalExample = (props) => {
         {setInactiveModal != null ? <Button color="warning" onClick={setInactiveModal}>Set inactive</Button> : null}
 
         {type === 'input' && (
-        <Button
-          color="danger"
-          onClick={() => confirmModal(linkName, linkURL, linkType)}
-          disabled={buttonDisabled}
-        >
-          Add
-        </Button>
+          <Button
+            color="danger"
+            onClick={() => confirmModal(linkName, linkURL, linkType)}
+            disabled={buttonDisabled}
+          >
+            Add
+          </Button>
         )}
       </ModalFooter>
     </Modal>

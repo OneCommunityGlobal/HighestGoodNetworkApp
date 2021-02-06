@@ -1,37 +1,40 @@
 /*********************************************************************************
- * Component: MEMBER 
+ * Component: MEMBER
  * Author: Henry Ng - 08/01/20
- * Display member of the members list 
+ * Display member of the members list
  ********************************************************************************/
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { connect } from 'react-redux'
 import ModalDelete from './../../../common/Modal'
 import { deleteWBS } from './../../../../actions/wbs'
-
+import { UserRole } from './../../../../utils/enums'
+import { getPopupById } from './../../../../actions/popupEditorAction'
+import { WBS_DELETE_POPUP_ID } from "./../../../../constants/popupId"
 const WBSItem = (props) => {
   const [showModalDelete, setShowModalDelete] = useState(false);
 
   const confirmDelete = () => {
+
     props.deleteWBS(props.wbsId);
     setShowModalDelete(false);
   }
 
-
   return (
     <React.Fragment>
-      <tr className="members__tr">
+      <tr >
         <th scope="row"><div>{props.index}</div></th>
-        <td className='members__name'>
-          <a href={`/wbs/tasks/${props.wbsId}/${props.projectId}`}>
+        <td className='members__name' >
+          <a href={`/wbs/tasks/${props.wbsId}/${props.projectId}/${props.name}`}>
             {props.name}
           </a>
         </td>
-
-        <td className='members__assign'>
-          <button className="btn btn-outline-danger btn-sm" type="button" onClick={(e) => setShowModalDelete(true)}>
-            <i className="fa fa-minus" aria-hidden="true"></i>
-          </button>
-        </td>
+        {props.auth.user.role === UserRole.Administrator ?
+          <td className='members__assign'>
+            <button className="btn btn-outline-danger btn-sm" type="button" onClick={(e) => { setShowModalDelete(true); props.getPopupById(WBS_DELETE_POPUP_ID); }}>
+              <i className="fa fa-minus" aria-hidden="true"></i>
+            </button>
+          </td>
+          : null}
 
       </tr>
 
@@ -40,13 +43,13 @@ const WBSItem = (props) => {
         isOpen={showModalDelete}
         closeModal={() => setShowModalDelete(false)}
         confirmModal={() => confirmDelete()}
-        modalMessage={`Are you sure you want to delete this ${props.name}`}
+        modalMessage={(props.popupEditor.currPopup.popupContent || "")}
         modalTitle="Confirm Deletion"
       />
 
     </React.Fragment>
   )
 }
-
-export default connect(null, { deleteWBS })(WBSItem)
+const mapStateToProps = state => state;
+export default connect(mapStateToProps, { deleteWBS, getPopupById })(WBSItem)
 
