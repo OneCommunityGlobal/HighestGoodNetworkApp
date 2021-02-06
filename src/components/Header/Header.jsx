@@ -13,6 +13,7 @@ import {
   WEEKLY_SUMMARIES_REPORT,
   OTHER_LINKS,
   USER_MANAGEMENT,
+  BADGE_MANAGEMENT,
   PROJECTS,
   TEAMS,
   WELCOME,
@@ -44,7 +45,7 @@ export class Header extends React.Component {
       isOpen: false
     }
   }
-  
+
   componentDidMount() {
     if (this.props.auth.isAuthenticated) {
       // this.props.getUserProfile(this.props.auth.user.userid)
@@ -67,7 +68,7 @@ export class Header extends React.Component {
   }
 
   render() {
-    const { isAuthenticated, user, firstName, profilePic } = this.props.auth 
+    const { isAuthenticated, user, firstName, profilePic } = this.props.auth
     return (
       <div>
         <Navbar color="dark" dark expand="lg" style={{ marginBottom: '20px' }}>
@@ -132,6 +133,13 @@ export class Header extends React.Component {
                     ) : (
                         <React.Fragment></React.Fragment>
                       )}
+                    {user.role === UserRole.Administrator ? (
+                      <DropdownItem tag={Link} to={`/badgemanagement/${user.userid}`} >
+                        { BADGE_MANAGEMENT}
+                      </DropdownItem>
+                    ) : (
+                        <React.Fragment></React.Fragment>
+                      )}
                     <DropdownItem tag={Link} to="/projects">
                       {PROJECTS}
                     </DropdownItem>
@@ -182,7 +190,7 @@ export class Header extends React.Component {
             </Collapse>
           )}
         </Navbar>
-      </div>
+      </div >
     )
   }
 }
