@@ -14,7 +14,7 @@ const ForgotPassword = React.memo(() => {
 
   const onForgotPassword = () => {
     if (email === '') {
-      setMessage({ success: false, msg: 'Please enter the emai id.' });
+      setMessage({ success: false, msg: 'Please enter the email id.' });
     } else if (firstName === '' || lastName === '') {
       setMessage({ success: false, msg: 'Please enter your full name.' });
     } else {
