@@ -366,6 +366,7 @@ class TimelogPage extends Component {
                         name="projectSelected"
                         id="projectSelected"
                         value={this.state.projectsSelected}
+                        title="Ctrl + Click to select multiple projects to filter."
                         onChange={e =>
                           this.setState({
                             projectsSelected:  Array.from(e.target.selectedOptions, option => option.value),

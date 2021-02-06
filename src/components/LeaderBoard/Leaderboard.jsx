@@ -1,15 +1,32 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useRef } from 'react'
 import './Leaderboard.css'
-//import _ from 'lodash'
+import _ from 'lodash'
 import { Link } from 'react-router-dom'
 import { Table, Progress, Modal, ModalBody, ModalFooter, ModalHeader, Button } from 'reactstrap'
+
+function useDeepEffect(effectFunc, deps) {
+  const isFirst = useRef(true);
+  const prevDeps= useRef(deps);
+
+  useEffect(()=>{
+    const isSame = prevDeps.current.every((obj, index) => _.isEqual(obj, deps[index]));
+
+    if (isFirst.current || !isSame) {
+      effectFunc();
+    }
+
+    isFirst.current = false;
+    prevDeps.current = deps;
+
+  }, deps);
+}
 
 const LeaderBoard = ({
   getLeaderboardData, leaderBoardData, loggedInUser, organizationData,
 }) => {
-  useEffect(() => {
+  useDeepEffect(() => {
     getLeaderboardData(loggedInUser.userid);
-  }, [leaderBoardData, getLeaderboardData, loggedInUser.userid]);
+  }, [leaderBoardData.length]);
 
   useEffect(() => {
     try {

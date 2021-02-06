@@ -29,6 +29,7 @@ export default (
     <ToastContainer />
     <Switch>
       <ProtectedRoute path="/dashboard" exact component={Dashboard} />
+      <ProtectedRoute path="/dashboard/:userId" exact component={Dashboard} />
       <ProtectedRoute path="/timelog/" exact component={Timelog} />
       <ProtectedRoute path="/timelog/:userId" exact component={Timelog} />
       <ProtectedRoute path="/reports" exact component={Reports} />
