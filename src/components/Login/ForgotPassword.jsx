@@ -20,12 +20,12 @@ const ForgotPassword = React.memo(() => {
     } else {
       const forgotPasswordData = { email: email, firstName: firstName, lastName: lastName };
       forgotPassword(forgotPasswordData).then(() => {
-        toast.success('A new password has been sent to your email id. Please login using new password.');
+        toast.success(`Nice! You have successfully passed the 3-question Change My Password Challenge. Check your email for your reward: A NEW PASSWORD!`);
         setTimeout(() => {
           history.push('/login');
         }, 1000);
       }).catch((error) => {
-        toast.error(error?.response?.data?.error);
+        toast.error(`Well bummer, your entries don't match what is in our system. Don't give up though, you can do this!`);
       });
     }
   };
