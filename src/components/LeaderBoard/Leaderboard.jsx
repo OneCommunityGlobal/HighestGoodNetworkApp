@@ -26,7 +26,7 @@ const LeaderBoard = ({
 }) => {
   useDeepEffect(() => {
     getLeaderboardData(loggedInUser.userid);
-  }, [leaderBoardData.length]);
+  }, [leaderBoardData]);
 
   useEffect(() => {
     try {
