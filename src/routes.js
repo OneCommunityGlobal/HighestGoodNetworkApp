@@ -22,6 +22,10 @@ import WeeklySummariesReport from './components/WeeklySummariesReport'
 import 'react-toastify/dist/ReactToastify.css'
 import { UserRole } from './utils/enums'
 import ForgotPassword from './components/Login/ForgotPassword'
+import PeopleReport from './components/Reports/PeopleReport'
+import ProjectReport from './components/Reports/ProjectReport'
+import TeamReport from './components/Reports/TeamReport'
+
 
 export default (
   <React.Fragment>
@@ -32,6 +36,10 @@ export default (
       <ProtectedRoute path="/timelog/" exact component={Timelog} />
       <ProtectedRoute path="/timelog/:userId" exact component={Timelog} />
       <ProtectedRoute path="/reports" exact component={Reports} />
+      <ProtectedRoute path="/peoplereport/:userId" component={PeopleReport} />
+      <ProtectedRoute path="/projectreport/:projectId" component={ProjectReport} />
+      <ProtectedRoute path="/teamreport/:teamId" component={TeamReport} />
+
       <ProtectedRoute
         path="/weeklysummariesreport"
         exact

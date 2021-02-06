@@ -1,6 +1,7 @@
 
 import React from 'react'
 import AllProjects from './AllProjects'
+import { Link } from 'react-router-dom'
 
 const  ProjectTable = (props) => {
   // Display project lists
@@ -11,9 +12,13 @@ const  ProjectTable = (props) => {
         <tr className="projects__tr" id={"tr_" + project._id}>
           <th className='projects__order--input' scope="row"><div>{index + 1}</div></th>
           <td className='projects__name--input'>
-            <input type="text" className="form-control" value={project.projectName}
-                   // onChange={e => setName(e.target.value)}
-            />
+            {/*<input type="text" className="form-control" value={project.projectName}*/}
+            {/*       projects            />*/}
+
+            <Link to={`/projectreport/${project._id}`} projectId={project._id}>
+              {project.projectName}
+            </Link>
+
           </td>
           <td className='projects__active--input' >
             {project.isActive ?

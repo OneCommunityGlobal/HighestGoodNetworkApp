@@ -8,6 +8,8 @@ import PeopleTable from './PeopleTable'
 import ProjectTable from './ProjectTable'
 import { getAllUserProfile } from '../../actions/userManagement';
 import { ACTIVE, TEAM_NAME } from '../../languages/en/ui'
+import CreateNewTeamPopup from '../Teams/CreateNewTeamPopup'
+import moment from 'moment'
 
 
 class ReportsPage extends Component {
@@ -30,7 +32,22 @@ class ReportsPage extends Component {
       wildCardSearchText: '',
       selectedTeamId: 0,
       selectedTeam: '',
-      isActive: '',
+      checkActive: '',
+      formElements: {
+        summary: '',
+        summaryLastWeek: '',
+        summaryBeforeLast: '',
+        mediaUrl: '',
+        weeklySummariesCount: 0,
+        mediaConfirm: false
+      },
+      dueDate: moment().tz('America/Los_Angeles').endOf('week').toISOString(),
+      dueDateLastWeek: moment().tz('America/Los_Angeles').endOf('week').subtract(1, 'week').toISOString(),
+      dueDateBeforeLast: moment().tz('America/Los_Angeles').endOf('week').subtract(2, 'week').toISOString(),
+      activeTab: '1',
+      errors: {},
+      fetchError: null,
+      loading: true,
     }
     this.showProjectTable = this.showProjectTable.bind(this);
     this.showPeopleTable =this.showPeopleTable.bind(this);
@@ -38,9 +55,10 @@ class ReportsPage extends Component {
     this.setActive=this.setActive.bind(this)
     this.setInActive=this.setInActive.bind(this)
     this.setAll=this.setAll.bind(this)
+  }
 
-
-
+  setIsActive = () => {
+    console.log(this.state.checkActive)
   }
 
   componentDidMount() {
@@ -50,8 +68,10 @@ class ReportsPage extends Component {
       showProjects: false,
       showPeople: false,
       showTeams: false,
+      checkActive: ''
     }
     this.props.getAllUserProfile();
+    // this.setInActive()
   }
 
   // setActive(){
@@ -62,20 +82,16 @@ class ReportsPage extends Component {
 
   setActive() {
     this.setState((state) => {
-      // Important: read `state` instead of `this.state` when updating.
-
       return {
-        isActive:'true'
+        checkActive:'true'
       }
     });
   }
 
   setAll() {
     this.setState((state) => {
-      // Important: read `state` instead of `this.state` when updating.
-
       return {
-        isActive:''
+        checkActive:''
       }
     });
   }
@@ -83,7 +99,7 @@ class ReportsPage extends Component {
   setInActive(){
     console.log('here set inactive')
     this.setState(()=>({
-      isActive:false
+      checkActive:'false'
     }))
   }
 
@@ -113,9 +129,25 @@ class ReportsPage extends Component {
 
   render() {
     let { projects} = this.props.state.allProjects;
-    const { allTeams } = this.props.state.allTeamsData;
-    const teamTable = this.teamTableElements(allTeams);
+    let { allTeams } = this.props.state.allTeamsData;
+    // const teamTable = this.teamTableElements(allTeams);
     let { userProfiles } = this.props.state.allUserProfiles;
+
+
+    if (this.state.checkActive ==='true'){
+      projects = projects.filter(project => project.isActive ===true);
+      userProfiles =userProfiles.filter(user => user.isActive ===true);
+
+      allTeams =allTeams.filter(team => team.isActive ===true);
+
+
+    }
+    else if (this.state.checkActive ==='false'){
+      projects = projects.filter(project => project.isActive ===false);
+      userProfiles =userProfiles.filter(user => user.isActive ===false);
+      allTeams =allTeams.filter(team => team.isActive ===false);
+
+    }
 
     // // Display project lists
     // let ProjectsList = [];
@@ -134,7 +166,7 @@ class ReportsPage extends Component {
 
     return (
       <div>
-        <div className="jumbotron">ReportsPage</div>
+        {/*<div className="jumbotron">ReportsPage</div>*/}
         <div>
           <nav className="navbar navbar-expand-md navbar-light bg-light mb-3 nav-fill">
             <li className="navbar-brand">Generate Report:</li>
@@ -166,8 +198,7 @@ class ReportsPage extends Component {
 
         </div>
 
-        {this.state.showPeople && <PeopleTable userProfiles={userProfiles}/>
-        }
+        {this.state.showPeople && <PeopleTable userProfiles={userProfiles}/>}
 
         {this.state.showProjects &&<ProjectTable projects={projects}/>}
 
@@ -179,29 +210,30 @@ class ReportsPage extends Component {
         {/*//   {ProjectsList}*/}
         {/*//   </tbody>*/}
         {/*// </table>}*/}
+        {this.state.showTeams &&<TeamTable allTeams={allTeams}/>}
 
-        {this.state.showTeams && <div><div>
-          <button style={{margin:'3px'}} exact className="btn btn-secondary btn-bg mt-3">Date</button>
-          <button style={{margin:'3px'}} exact className="btn btn-secondary btn-bg mt-3">Priority Level</button>
-          <button style={{margin:'3px'}} exact className="btn btn-secondary btn-bg mt-3">Status</button>
-          <button style={{margin:'3px'}} exact className="btn btn-secondary btn-bg mt-3">Manager</button>
-          <button style={{margin:'3px'}} exact className="btn btn-secondary btn-bg mt-3">Estimated Hours</button>
-          <button style={{margin:'3px'}} exact className="btn btn-secondary btn-bg mt-3">Ready for Review</button>
-        </div></div>}
-        {this.state.showTeams &&
-          <table className="table table-bordered table-responsive-sm">
-            <thead>
-            <tr>
-              <th scope="col" id="teams__order">#</th>
-              <th scope="col">{TEAM_NAME}</th>
-              <th scope="col" id="teams__active">{ACTIVE}</th>
-            </tr>
-            </thead>
-            <tbody>
-            {teamTable}
-            </tbody>
-          </table>
-        }
+        {/*{this.state.showTeams && <div><div>*/}
+        {/*  <button style={{margin:'3px'}} exact className="btn btn-secondary btn-bg mt-3">Date</button>*/}
+        {/*  <button style={{margin:'3px'}} exact className="btn btn-secondary btn-bg mt-3">Priority Level</button>*/}
+        {/*  <button style={{margin:'3px'}} exact className="btn btn-secondary btn-bg mt-3">Status</button>*/}
+        {/*  <button style={{margin:'3px'}} exact className="btn btn-secondary btn-bg mt-3">Manager</button>*/}
+        {/*  <button style={{margin:'3px'}} exact className="btn btn-secondary btn-bg mt-3">Estimated Hours</button>*/}
+        {/*  <button style={{margin:'3px'}} exact className="btn btn-secondary btn-bg mt-3">Ready for Review</button>*/}
+        {/*</div></div>}*/}
+        {/*{this.state.showTeams &&*/}
+        {/*  <table className="table table-bordered table-responsive-sm">*/}
+        {/*    <thead>*/}
+        {/*    <tr>*/}
+        {/*      <th scope="col" id="teams__order">#</th>*/}
+        {/*      <th scope="col">{TEAM_NAME}</th>*/}
+        {/*      <th scope="col" id="teams__active">{ACTIVE}</th>*/}
+        {/*    </tr>*/}
+        {/*    </thead>*/}
+        {/*    <tbody>*/}
+        {/*    {teamTable}*/}
+        {/*    </tbody>*/}
+        {/*  </table>*/}
+        {/*}*/}
       </div>
 
     )

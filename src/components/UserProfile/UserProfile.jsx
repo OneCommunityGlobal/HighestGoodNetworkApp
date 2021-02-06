@@ -1,16 +1,5 @@
 import React, { Component } from 'react'
-import {
-  Row,
-  Input,
-  Col,
-  Container,
-  TabContent,
-  TabPane,
-  Nav,
-  NavItem,
-  NavLink,
-  Button,
-} from 'reactstrap'
+import {Row, Input, Col, Container, TabContent, TabPane, Nav, NavItem, NavLink, Button} from 'reactstrap'
 import Image from 'react-bootstrap/Image'
 import { Link } from 'react-router-dom'
 import classnames from 'classnames'
@@ -224,7 +213,7 @@ class UserProfile extends Component {
     // console.log(filesizeKB);
 
     if (filesizeKB > 50) {
-      imageUploadError = `\nThe file you are trying to upload exceeds the maximum size of 50KB. You can either 
+      imageUploadError = `\nThe file you are trying to upload exceeds the maximum size of 50KB. You can either
 														choose a different file, or use an online file compressor.`
       isValid = false
 
@@ -510,6 +499,7 @@ class UserProfile extends Component {
   }
 
   render() {
+
     const {
       userProfile,
       linkType,
