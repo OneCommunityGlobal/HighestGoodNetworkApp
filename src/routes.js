@@ -31,6 +31,7 @@ export default (
     <ToastContainer />
     <Switch>
       <ProtectedRoute path="/dashboard" exact component={Dashboard} />
+      <ProtectedRoute path="/dashboard/:userId" exact component={Dashboard} />
       <ProtectedRoute path='/wbs/tasks/:wbsId/:projectId/:wbsName' component={WBSDetail} />
       <ProtectedRoute path="/project/members/:projectId" component={Members} />
       <ProtectedRoute path="/admin" component={Admin} />
