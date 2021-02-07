@@ -8,7 +8,7 @@ import {
   FormGroup
 } from 'reactstrap';
 import ToggleSwitch from '../UserProfileEdit/ToggleSwitch';
-
+import moment from 'moment';
 
 const Name = (props) => {
   const {
@@ -25,7 +25,7 @@ const Name = (props) => {
               name="firstName"
               id="firstName"
               value={firstName}
-                // className={styleProfile.profileText}
+              // className={styleProfile.profileText}
               onChange={handleUserProfile}
               placeholder="First Name"
               invalid={!formValid.firstName}
@@ -40,7 +40,7 @@ const Name = (props) => {
               name="lastName"
               id="lastName"
               value={lastName}
-                // className={styleProfile.profileText}
+              // className={styleProfile.profileText}
               onChange={handleUserProfile}
               placeholder="Last Name"
               invalid={!formValid.lastName}
@@ -188,7 +188,7 @@ const Phone = (props) => {
               type="number"
               name="phoneNumber"
               id="phoneNumber"
-                // className={styleProfile.profileText}
+              // className={styleProfile.profileText}
               value={phoneNumber}
               onChange={handleUserProfile}
               placeholder="Phone"
@@ -305,7 +305,15 @@ const BasicInformationTab = (props) => {
           formValid={formValid}
         />
       </Row>
-
+      <Row>
+        <Col md="6">
+          <Label>Status</Label>
+        </Col>
+        <Col md="6">
+          <Label>{userProfile.isActive ? "Active" : (userProfile.reactivationDate ? "Paused until " + moment(userProfile.reactivationDate).format('YYYY-MM-DD') : "Inactive")}</Label>
+          {/* {collaborationPreference} */}
+        </Col>
+      </Row>
     </div>
   );
 };
