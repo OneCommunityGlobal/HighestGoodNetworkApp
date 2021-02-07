@@ -18,7 +18,7 @@ const Badge = (props) => {
   useEffect(() => {
     const userId = props.userId;
     props.getUserProfile(userId);
-  }, [props])
+  }, [])
 
 
   return (
@@ -34,7 +34,6 @@ const Badge = (props) => {
             fontWeight: 'bold',
             fontSize: 18,
             color: '#285739',
-
           }}
         >
           Bravo! You Earned 101 Badges!

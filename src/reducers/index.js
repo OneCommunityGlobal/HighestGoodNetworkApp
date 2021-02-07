@@ -30,7 +30,9 @@ import { taskReducer } from './allTasksReducer'
 import { timerReducer } from './timerReducer'
 import { managingTeamsReducer } from './managingTeamsReducer'
 import { teamUsersReducer } from './teamsTeamMembersReducer'
+import { badgeReducer } from './badgeReducer'
 import { popupEditorReducer } from './popupEditorReducer'
+
 
 export default combineReducers({
   auth: authReducer,
@@ -65,5 +67,6 @@ export default combineReducers({
   errors: errorsReducer,
   timeEntries: timeEntriesReducer,
   timer: timerReducer,
+  badge: badgeReducer,
   popupEditor: popupEditorReducer
 })
