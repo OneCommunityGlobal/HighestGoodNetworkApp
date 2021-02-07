@@ -12,6 +12,7 @@ if (!APIEndpoint) {
 export const ENDPOINTS = {
   USER_PROFILE: userId => `${APIEndpoint}/userprofile/${userId}`,
   USER_PROFILES: `${APIEndpoint}/userprofile/`,
+  USER_PROFILE_BY_NAME: userName => `${APIEndpoint}/userProfile/name/${userName}`,
   USER_TEAM: userId => `${APIEndpoint}/userprofile/teammembers/${userId}`,
   LOGIN: `${APIEndpoint}/login`,
   PROJECTS: `${APIEndpoint}/projects`,
@@ -54,6 +55,8 @@ export const ENDPOINTS = {
   TASKNOTIFICATION: `${APIEndpoint}/tasknotification`,
   MARK_TASK_NOTIFICATION_READ: taskId => `${APIEndpoint}/tasknotification/read/${taskId}`,
   USER_UNREAD_TASK_NOTIFICATIONS: userId => `${APIEndpoint}/tasknotification/user/${userId}`,
+  BADGE: userId => `${APIEndpoint}/badge/${userId}`,
+  BADGE_ASSIGN: userId => `${APIEndpoint}/badge/assign/${userId}`,
 };
 
 export const ApiEndpoint = APIEndpoint;

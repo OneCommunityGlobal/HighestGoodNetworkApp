@@ -14,18 +14,18 @@ const ForgotPassword = React.memo(() => {
 
   const onForgotPassword = () => {
     if (email === '') {
-      setMessage({ success: false, msg: 'Please enter the emai id.' });
+      setMessage({ success: false, msg: 'Please enter the email id.' });
     } else if (firstName === '' || lastName === '') {
       setMessage({ success: false, msg: 'Please enter your full name.' });
     } else {
-      const forgotPasswordData = { emailId: email, firstname: firstName, lastname: lastName };
+      const forgotPasswordData = { email: email, firstName: firstName, lastName: lastName };
       forgotPassword(forgotPasswordData).then(() => {
-        toast.success('A new password has been sent to your email id. Please login using new password.');
+        toast.success(`Nice! You have successfully passed the 3-question Change My Password Challenge. Check your email for your reward: A NEW PASSWORD!`);
         setTimeout(() => {
           history.push('/login');
         }, 1000);
-      }).catch(() => {
-        toast.error('Something went wrong ! Please try again');
+      }).catch((error) => {
+        toast.error(`Well bummer, your entries don't match what is in our system. Don't give up though, you can do this!`);
       });
     }
   };

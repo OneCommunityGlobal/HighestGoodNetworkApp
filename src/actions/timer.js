@@ -22,6 +22,28 @@ export const startTimer = async (userId, seconds)  => {
     const url = ENDPOINTS.TIMER(userId);
 
     try {
+        const resGet = await axios.get(url);
+        if (resGet.status === 200 && resGet.data.isWorking) {
+            return 9;
+        }
+        const res = await axios.put(url, {
+            pausedAt: seconds,
+            isWorking: true
+        });
+        return res.status;
+    } catch(e) {
+        return e.response.status;
+    }
+}
+
+export const updateTimer = async (userId, seconds)  => {
+    const url = ENDPOINTS.TIMER(userId);
+
+    try {
+        const resGet = await axios.get(url);
+        if (resGet.status === 200 && !resGet.data.isWorking) {
+            return 9;
+        }
         const res = await axios.put(url, {
             pausedAt: seconds,
             isWorking: true

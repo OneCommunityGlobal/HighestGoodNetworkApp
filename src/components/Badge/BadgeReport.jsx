@@ -37,7 +37,6 @@ const BadgeReport = () => (
     </Table>
     <Button className="btn--dark-sea-green float-right" style={{ margin: 5 }}>Export to PDF</Button>
     <Button className="btn--dark-sea-green float-right" style={{ margin: 5 }} >Feature on Profile</Button>
-
   </div >
 );
 
