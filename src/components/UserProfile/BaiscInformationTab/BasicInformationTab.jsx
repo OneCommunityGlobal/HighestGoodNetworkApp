@@ -1,23 +1,11 @@
-import React, { Component } from 'react';
+import React from 'react';
 import {
   Row,
   Label,
   Input,
-  CardTitle,
   Col,
-  Container,
-  Button,
-  Form,
   FormFeedback,
-  FormGroup,
-  Badge,
-  Collapse,
-  Alert,
-  Nav,
-  NavItem,
-  NavLink,
-  TabContent,
-  TabPane,
+  FormGroup
 } from 'reactstrap';
 import ToggleSwitch from '../UserProfileEdit/ToggleSwitch';
 
@@ -153,7 +141,7 @@ const Email = (props) => {
 const formatPhoneNumber = (str) => {
   // Filter only numbers from the input
   const cleaned = `${str}`.replace(/\D/g, '');
-  if (cleaned.length == 10) {
+  if (cleaned.length === 10) {
     // Domestic (USA)
     return [
       '( ',
@@ -164,7 +152,7 @@ const formatPhoneNumber = (str) => {
       cleaned.substring(6, 10),
     ].join('');
   }
-  if (cleaned.length == 11) {
+  if (cleaned.length === 11) {
     // International
     return [
       '+',
@@ -182,7 +170,7 @@ const formatPhoneNumber = (str) => {
 };
 const Phone = (props) => {
   const {
-    userProfile, isUserAdmin, isUserSelf, handleUserProfile, formValid,
+    userProfile, isUserAdmin, isUserSelf, handleUserProfile,
   } = props;
   const { phoneNumber, privacySettings } = userProfile;
   if (isUserAdmin || isUserSelf) {

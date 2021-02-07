@@ -13,7 +13,6 @@ const TimelogNavbar = ({ userId }) => {
   const reducer = (total, entry) => total + parseInt(entry.hours) + parseInt(entry.minutes) / 60
   const totalEffort = timeEntries.reduce(reducer, 0)
   const weeklyComittedHours = useSelector(state => state.userProfile.weeklyComittedHours)
-  const progressPercentage = (totalEffort / weeklyComittedHours) * 100
 
   const getBarColor = hours => {
     if (hours < 5) {

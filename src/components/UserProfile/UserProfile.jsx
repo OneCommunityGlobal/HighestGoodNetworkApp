@@ -1,9 +1,7 @@
 import React, { Component } from 'react'
 import {
   Row,
-  Label,
   Input,
-  Badge,
   Col,
   Container,
   TabContent,
@@ -18,8 +16,8 @@ import { Link } from 'react-router-dom'
 import classnames from 'classnames'
 import moment from 'moment'
 import Loading from '../common/Loading'
-import { orange, silverGray, warningRed } from '../../constants/colors'
-import BlueSquare from './BlueSquares'
+// import { orange, silverGray, warningRed } from '../../constants/colors'
+// import BlueSquare from './BlueSquares'
 import Modal from './UserProfileModal'
 import UserLinks from './UserLinks'
 // import styleProfile from './UserProfile.module.scss';
@@ -27,19 +25,20 @@ import './UserProfile.scss'
 import TeamsTab from './TeamsAndProjects/TeamsTab'
 import ProjectsTab from './TeamsAndProjects/ProjectsTab'
 
-import TeamView from './Teamsview'
-import UserTeamProjectContainer from './TeamsAndProjects/UserTeamProjectContainer'
+// import TeamView from './Teamsview'
+// import UserTeamProjectContainer from './TeamsAndProjects/UserTeamProjectContainer'
 import InfoModal from './InfoModal'
-import { getTimeEntriesForWeek, getTimeEntriesForPeriod } from '../../actions/timeEntries'
-import { getUserProjects } from '../../actions/userProjects'
+// import { getTimeEntriesForWeek, getTimeEntriesForPeriod } from '../../actions/timeEntries'
+// import { getUserProjects } from '../../actions/userProjects'
 import BasicInformationTab from './BaiscInformationTab/BasicInformationTab'
 import VolunteeringTimeTab from './VolunteeringTimeTab/VolunteeringTimeTab'
-import EditLinkButton from './UserProfileEdit/LinkModButton'
+// import EditLinkButton from './UserProfileEdit/LinkModButton'
 import SaveButton from './UserProfileEdit/SaveButton'
 import UserLinkLayout from './UserLinkLayout'
 import BlueSqaureLayout from './BlueSqaureLayout'
 import TabToolTips from './ToolTips/TabToolTips'
 import BasicToolTips from './ToolTips/BasicTabTips'
+import ResetPasswordButton from '../UserManagement/ResetPasswordButton'
 // const styleProfile = {};
 class UserProfile extends Component {
   state = {
@@ -529,15 +528,15 @@ class UserProfile extends Component {
     const {
       firstName,
       lastName,
-      email,
+      // email,
       profilePic,
-      phoneNumber,
+      // phoneNumber,
       jobTitle = '',
-      personalLinks,
-      adminLinks,
-      infringments,
-      privacySettings,
-      teams,
+      // personalLinks,
+      // adminLinks,
+      // infringments,
+      // privacySettings,
+      // teams,
     } = userProfile
 
     if (isLoading && !this.props.isAddNewUser) {
@@ -553,7 +552,6 @@ class UserProfile extends Component {
     const { userId: targetUserId } = this.props.match
       ? this.props.match.params
       : { userId: undefined }
-
     const { userid: requestorId, role: requestorRole } = this.props.auth.user
 
     const isUserSelf = targetUserId === requestorId
@@ -777,13 +775,22 @@ class UserProfile extends Component {
               />
             </Col>
             <Col sm={{ size: 'auto', offset: 1 }}>
-              {canEdit && (
+              {/* {canEdit && (
                 <div className="profileEditButtonContainer">
                   <Link to={`/updatepassword/${this.state.userProfile._id}`}>
                     <Button> Update Password</Button>
                   </Link>
                 </div>
-              )}
+              )} */}
+              {requestorRole === "Administrator" && canEdit ? (
+                <div className="profileEditButtonContainer">
+                  <ResetPasswordButton user={userProfile} />
+                </div>
+              ) : (<div className="profileEditButtonContainer">
+                <Link to={`/updatepassword/${this.state.userProfile._id}`}>
+                  <Button color="primary"> Update Password</Button>
+                </Link>
+              </div>)}
             </Col>
             <Col sm={{ size: 'auto', offset: 1 }}>
               <Link

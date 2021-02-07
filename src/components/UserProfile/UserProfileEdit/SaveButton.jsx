@@ -1,6 +1,5 @@
-import React, { Component, useState } from 'react';
+import React, { useState } from 'react';
 import { Button } from 'reactstrap';
-import PropTypes from 'prop-types';
 import EditConfirmModal from '../UserProfileModal/EditConfirmModal';
 
 function SaveButton(props) {

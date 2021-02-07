@@ -12,6 +12,7 @@ if (!APIEndpoint) {
 export const ENDPOINTS = {
   USER_PROFILE: userId => `${APIEndpoint}/userprofile/${userId}`,
   USER_PROFILES: `${APIEndpoint}/userprofile/`,
+  USER_PROFILE_BY_NAME: userName => `${APIEndpoint}/userProfile/name/${userName}`,
   USER_TEAM: userId => `${APIEndpoint}/userprofile/teammembers/${userId}`,
   LOGIN: `${APIEndpoint}/login`,
   PROJECTS: `${APIEndpoint}/projects`,
@@ -31,8 +32,9 @@ export const ENDPOINTS = {
   WBS_ALL: `${APIEndpoint}/wbs`,
   TIMER: userId => `${APIEndpoint}/timer/${userId}`,
   WBS: projectId => `${APIEndpoint}/wbs/${projectId}`,
-  TASKS: wbsId => `${APIEndpoint}/tasks/${wbsId}`,
+  TASKS: (wbsId, level, mother) => `${APIEndpoint}/tasks/${wbsId}/${level}/${mother ? mother : '0'}`,
   TASK: wbsId => `${APIEndpoint}/task/${wbsId}`,
+  TASK_IMPORT: wbsId => `${APIEndpoint}/task/import/${wbsId}`,
   TASK_WBS: wbsId => `${APIEndpoint}/task/wbs/del/${wbsId}`,
   TASKS_UPDATE: `${APIEndpoint}/tasks/update`,
   TASKS_BY_USERID: userId => `${APIEndpoint}/tasks/userProfile/${userId}`,
@@ -44,11 +46,17 @@ export const ENDPOINTS = {
   UPDATE_PARENT_TASKS: wbsId => `${APIEndpoint}/task/updateAllParents/${wbsId}`,
   MOVE_TASKS: wbsId => `${APIEndpoint}/tasks/moveTasks/${wbsId}`,
   WEEKLY_SUMMARIES_REPORT: () => `${APIEndpoint}/reports/weeklysummaries`,
+  POPUP_EDITORS: `${APIEndpoint}/popupeditors/`,
+  POPUP_EDITOR_BY_ID: (id) => `${APIEndpoint}/popupeditor/${id}`,
+  POPUP_EDITOR_BACKUP_BY_ID: (id) => `${APIEndpoint}/backup/popupeditor/${id}`,
+
   TEAM_MEMBERS: teamId => `${APIEndpoint}/team/${teamId}/users`,
   TEAM_BY_ID: teamId => `${APIEndpoint}/team/${teamId}`,
   TASKNOTIFICATION: `${APIEndpoint}/tasknotification`,
   MARK_TASK_NOTIFICATION_READ: taskId => `${APIEndpoint}/tasknotification/read/${taskId}`,
   USER_UNREAD_TASK_NOTIFICATIONS: userId => `${APIEndpoint}/tasknotification/user/${userId}`,
+  BADGE: userId => `${APIEndpoint}/badge/${userId}`,
+  BADGE_ASSIGN: userId => `${APIEndpoint}/badge/assign/${userId}`,
 };
 
 export const ApiEndpoint = APIEndpoint;

@@ -13,13 +13,13 @@ import {
 } from 'reactstrap'
 import { useSelector } from 'react-redux'
 import { HashLink as Link } from 'react-router-hash-link'
-import './board.css'
+import './SummaryBar.css'
 import task_icon from './task_icon.png'
 import badges_icon from './badges_icon.png'
 import bluesquare_icon from './bluesquare_icon.png'
 import report_icon from './report_icon.png'
 
-const DashboardSummaryBar = () => {
+const SummaryBar = () => {
   const { firstName, lastName, _id } = useSelector(state => state.userProfile)
 
   const timeEntries = useSelector(state => state.timeEntries.weeks[0])
@@ -94,11 +94,11 @@ const DashboardSummaryBar = () => {
   return (
     <Row className="my-2 bg--bar text-light">
         <div className="col-md-2 text-list" align="center">
-          <font className="text--silver" size="3">
+          <font className="text--black" size="3">
             {' '}
             Activity for{' '}
           </font>
-          <CardTitle className="text--silver" tag="h3">
+          <CardTitle className="text--black" tag="h3">
             {firstName} {lastName}
           </CardTitle>
         </div>
@@ -108,10 +108,10 @@ const DashboardSummaryBar = () => {
             {totalEffort < weeklyComittedHours && (
               <div className="border-red col-sm-4 bg--white-smoke" align="center">
                 <div className="py-1"> </div>
-                <h1 className="text--silver" align="center">
+                <h1 className="text--black" align="center">
                   !
                 </h1>
-                <font className="text--silver" size="3">
+                <font className="text--black" size="3">
                   HOURS
                 </font>
                 <div className="py-2"> </div>
@@ -128,7 +128,7 @@ const DashboardSummaryBar = () => {
 
             <div className="col-sm-8 bg--white-smoke text-list" align="center">
               <li className="nav-item navbar-text" id="timelogweeklychart">
-                <div className="text--silver">
+                <div className="text--black">
                   Current Week : {totalEffort.toFixed(2)} / {weeklyComittedHours}
                 </div>
 
@@ -146,10 +146,10 @@ const DashboardSummaryBar = () => {
           <Row>
             <div className="border-red col-sm-4 bg--white-smoke" align="center">
               <div className="py-1"> </div>
-              <h1 className="text--silver" align="center">
+              <h1 className="text--black" align="center">
                 !
               </h1>
-              <font className="text--silver" size="3">
+              <font className="text--black" size="3">
                 SUMMARY
               </font>
               <div className="py-2"> </div>
@@ -163,17 +163,17 @@ const DashboardSummaryBar = () => {
 
             <div className="col-sm-8 bg--white-smoke" align="center">
               <div className="py-3"> </div>
-              <font className="text--silver" align="center" size="3">
+              <font className="text--black" align="center" size="3">
                 You still need to complete the weekly summary.
               </font>
               <div className="py-1"> </div>
             </div>
           </Row>
         </div>
-        {/* {isSubmitted && (<font className="text--silver" align="center" size="3">
+        {/* {isSubmitted && (<font className="text--black" align="center" size="3">
             You have completed weekly summary.
           </font>)}
-          {!isSubmitted && (<font className="text--silver" align="center" size="3">
+          {!isSubmitted && (<font className="text--black" align="center" size="3">
             You still need to complete the weekly summary.
           </font>)} */}
 
@@ -252,4 +252,4 @@ const DashboardSummaryBar = () => {
   )
 }
 
-export default DashboardSummaryBar
+export default SummaryBar

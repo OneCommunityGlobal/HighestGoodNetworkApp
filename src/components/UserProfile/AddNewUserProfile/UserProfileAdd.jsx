@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { StickyContainer } from 'react-sticky';
 import { Container, Row, Col, Input, FormFeedback, FormGroup, Form, Label, Button, TabPane, TabContent, NavItem, NavLink, Nav } from 'reactstrap';
-import Image from 'react-bootstrap/Image';
+// import Image from 'react-bootstrap/Image';
 import ToggleSwitch from '../UserProfileEdit/ToggleSwitch';
 import './UserProfileAdd.scss';
 import { createUser } from '../../../services/userProfileService';
@@ -303,8 +303,8 @@ class AddUserProfile extends Component {
     let that = this;
     const { firstName, email, lastName, phoneNumber, role, privacySettings, collaborationPreference, googleDoc } = that.state.userProfile;
 
-    let userData = {
-      password: "Welcome123!",
+    const userData = {
+      password: "123Welocme!",
       role: role,
       firstName: firstName,
       lastName: lastName,
