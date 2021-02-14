@@ -6,7 +6,8 @@ import {
   CLEAR_NAME_AND_SELECTED,
   GET_FIRST_NAME, GET_LAST_NAME,
   GET_MESSAGE,
-  CLOSE_ALERT
+  CLOSE_ALERT,
+  POST_NEW_BADGE,
 } from '../constants/badge';
 import { ENDPOINTS } from '../utils/URL';
 
@@ -16,8 +17,8 @@ const getAllBadges = allBadges => ({
   allBadges,
 });
 
-export const fetchAllBadges = userId => async (dispatch) => {
-  const { data } = await axios.get(ENDPOINTS.BADGE(userId));
+export const fetchAllBadges = () => async (dispatch) => {
+  const { data } = await axios.get(ENDPOINTS.BADGE());
   dispatch(getAllBadges(data));
 };
 
@@ -60,6 +61,11 @@ export const getMessage = (message, color) => ({
 })
 
 export const gotCloseAlert = () => ({ type: CLOSE_ALERT });
+
+export const postNewBadge = newBadge => ({
+  type: POST_NEW_BADGE,
+  newBadge
+})
 
 
 export const assignBadges = (firstName, lastName, selectedBadges) => {
@@ -125,4 +131,14 @@ export const assignBadges = (firstName, lastName, selectedBadges) => {
 
   }
 
+};
+
+export const createNewBadge = (newBadge) => async (dispatch) => {
+  console.log('IS this AN object', newBadge)
+  try {
+    await axios.post(ENDPOINTS.BADGE(), newBadge);
+    dispatch(postNewBadge(newBadge));
+  } catch (e) {
+    console.log(e)
+  }
 };
