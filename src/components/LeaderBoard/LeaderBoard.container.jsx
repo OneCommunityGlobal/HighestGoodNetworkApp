@@ -6,8 +6,8 @@ import _ from 'lodash'
 const mapStateToProps = state => {
 	//console.log('State=Leaderboard container', state)
 	let leaderBoardData = _.get(state, 'leaderBoardData', [])
-
 	//console.log('Leaderboard Unsorted Data', leaderBoardData)
+	
 	let organization = {totaltime: 0, tangibletime: 0, weeklyComittedHours: 0, intangibletime: 0};
 	if (leaderBoardData.length) {
 		let maxtotal = _.maxBy(leaderBoardData, 'totaltime_hrs').totaltime_hrs
@@ -58,7 +58,6 @@ const mapStateToProps = state => {
 		orgTangibleColorTime += (multipleRemaining * 10);
 	}
 	
-
 	organization.barcolor = getcolor(orgTangibleColorTime);
 	organization.barprogress = getprogress(orgTangibleColorTime);
 
@@ -66,7 +65,8 @@ const mapStateToProps = state => {
 		isAuthenticated: _.get(state, 'auth.isAuthenticated', false),
 		leaderBoardData: leaderBoardData,
 		loggedInUser: _.get(state, 'auth.user', {}),
-		organizationData: organization
+		organizationData: organization,
+		timeEntries: _.get(state, 'timeEntries', {})
 	}
 }
 export default connect(mapStateToProps, { getLeaderboardData })(Leaderboard)
