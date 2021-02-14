@@ -103,11 +103,9 @@ const ImportTask = (props) => {
     }
 
 
-
-
     let newTask = {
       'taskName': `${taskName}`,
-      'num': `${num}`,
+      'num': `${num.toString().slice(-1) === '.' ? num.toString().slice(0, -1) : num.toString()}`,
       'level': `${parseInt(level, 10)}`,
       'position': `${position}`,
       'wbsId': `${props.wbsId}`,
@@ -125,6 +123,7 @@ const ImportTask = (props) => {
       'intentInfo': `${rowArr[19]}`,
       'endstateInfo': `${rowArr[20]}`,
       'links': `${rowArr[21]}`,
+      'classification': `${rowArr[22]}`,
       'mother': null,
       'parentId1': null,
       'parentId2': null,
