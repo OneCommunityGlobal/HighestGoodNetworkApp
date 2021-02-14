@@ -314,6 +314,24 @@ const BasicInformationTab = (props) => {
           {/* {collaborationPreference} */}
         </Col>
       </Row>
+      <Row>
+        <Col md="6">
+          <Label>Video Call Preference</Label>
+        </Col>
+        <Col md="6">
+          <FormGroup>
+            <Input
+              type="text"
+              name="collaborationPreference"
+              id="collaborationPreference"
+              value={userProfile.collaborationPreference}
+              onChange={handleUserProfile}
+              placeholder="Skype, Zoom, etc."
+            />
+          </FormGroup>
+        </Col>
+      </Row>
+
     </div>
   );
 };
