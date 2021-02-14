@@ -16,6 +16,12 @@
   width: 200px;
 }
 
+.badge_image_mini > img {
+  border-radius: 50%;
+  height: 25px;
+  width: 25px;
+}
+
 .new_badges {
   overflow-y: scroll;
   height: 70px;
@@ -24,4 +30,13 @@
 .old_badges {
   overflow-y: scroll;
   height: 220px;
+}
+
+.badgemanagement-actions-cell {
+  display: table-cell;
+  padding-left: 10px;
+}
+
+.assign-badge-margin-top {
+  margin-Top: 15px;
 }
