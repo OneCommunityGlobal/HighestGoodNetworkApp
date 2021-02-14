@@ -307,15 +307,6 @@ const BasicInformationTab = (props) => {
       </Row>
       <Row>
         <Col md="6">
-          <Label>Status</Label>
-        </Col>
-        <Col md="6">
-          <Label>{userProfile.isActive ? "Active" : (userProfile.reactivationDate ? "Paused until " + moment(userProfile.reactivationDate).format('YYYY-MM-DD') : "Inactive")}</Label>
-          {/* {collaborationPreference} */}
-        </Col>
-      </Row>
-      <Row>
-        <Col md="6">
           <Label>Video Call Preference</Label>
         </Col>
         <Col md="6">
@@ -331,7 +322,14 @@ const BasicInformationTab = (props) => {
           </FormGroup>
         </Col>
       </Row>
-
+      <Row>
+        <Col md="6">
+          <Label>Status</Label>
+        </Col>
+        <Col md="6">
+          <Label>{userProfile.isActive ? "Active" : (userProfile.reactivationDate ? "Paused until " + moment(userProfile.reactivationDate).format('YYYY-MM-DD') : "Inactive")}</Label>
+        </Col>
+      </Row>
     </div>
   );
 };
