@@ -1,5 +1,5 @@
 import {
-  GET_ALL_BADGE_DATA, ADD_SELECT_BADGE, REMOVE_SELECT_BADGE, CLEAR_NAME_AND_SELECTED, GET_FIRST_NAME, GET_LAST_NAME, GET_MESSAGE, CLOSE_ALERT, POST_NEW_BADGE
+  GET_ALL_BADGE_DATA, ADD_SELECT_BADGE, REMOVE_SELECT_BADGE, CLEAR_NAME_AND_SELECTED, GET_FIRST_NAME, GET_LAST_NAME, GET_MESSAGE, CLOSE_ALERT
 } from '../constants/badge';
 
 const badgeInitial = {
@@ -34,11 +34,6 @@ export const badgeReducer = (state = badgeInitial, action) => {
       return { ...state, message: action.message, alertVisible: true, color: action.color };
     case CLOSE_ALERT:
       return { ...state, alertVisible: false };
-    case POST_NEW_BADGE:
-      const allBadges = state.allBadgeData;
-      allBadges.push(action.newBadge);
-      console.log('AFTER POST', allBadges)
-      return { ...state, allBadgeData: allBadges };
     default:
       return state;
   }

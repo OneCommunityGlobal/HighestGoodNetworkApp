@@ -7,7 +7,6 @@ import {
   GET_FIRST_NAME, GET_LAST_NAME,
   GET_MESSAGE,
   CLOSE_ALERT,
-  POST_NEW_BADGE,
 } from '../constants/badge';
 import { ENDPOINTS } from '../utils/URL';
 
@@ -62,10 +61,6 @@ export const getMessage = (message, color) => ({
 
 export const gotCloseAlert = () => ({ type: CLOSE_ALERT });
 
-export const postNewBadge = newBadge => ({
-  type: POST_NEW_BADGE,
-  newBadge
-})
 
 
 export const assignBadges = (firstName, lastName, selectedBadges) => {
@@ -134,11 +129,24 @@ export const assignBadges = (firstName, lastName, selectedBadges) => {
 };
 
 export const createNewBadge = (newBadge) => async (dispatch) => {
-  console.log('IS this AN object', newBadge)
   try {
     await axios.post(ENDPOINTS.BADGE(), newBadge);
-    dispatch(postNewBadge(newBadge));
+    dispatch(getMessage('Awesomesauce! You have successfully uploaded a new badge to the system!', 'success'));
+    setTimeout(() => {
+      dispatch(closeAlert());
+    }, 6000);
+    dispatch(fetchAllBadges());
   } catch (e) {
-    console.log(e)
+    if (e.response.status === 403 || 400) {
+      dispatch(getMessage(e.response.data.error, 'danger'));
+      setTimeout(() => {
+        dispatch(closeAlert());
+      }, 6000);
+    } else {
+      dispatch(getMessage("Opps, something wrong!", 'danger'));
+      setTimeout(() => {
+        dispatch(closeAlert());
+      }, 6000);
+    }
   }
 };

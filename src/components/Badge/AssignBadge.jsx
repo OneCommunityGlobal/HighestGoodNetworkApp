@@ -138,7 +138,7 @@ const AssignBadge = (props) => {
         <FormText color="muted">
           Please select a badge from the badge list.
         </FormText>
-        <Alert color="dark" className="assign-badge-margin-top"> {props.selectedBadges.length} bagdes selected</Alert>
+        <Alert color="dark" className="assign-badge-margin-top"> {props.selectedBadges ? props.selectedBadges.length : '0'} bagdes selected</Alert>
       </FormGroup>
       <Button size="lg" color="info" className="assign-badge-margin-top" onClick={clickSubmit}>Submit</Button>
       <Alert className="assign-badge-margin-top" color={props.color} isOpen={props.alertVisible} toggle={closeAlert} >
