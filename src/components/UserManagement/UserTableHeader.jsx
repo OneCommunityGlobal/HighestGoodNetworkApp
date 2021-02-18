@@ -20,6 +20,7 @@ const UserTableHeader = React.memo((props) => {
       <th scope="col" id="usermanagement_hrs">{WEEKLY_COMMITTED_HRS}</th>
       <th scope="col" id="usermanagement_pause" id="user_pause"> {PAUSE + ' / ' + RESUME}</th>
       <th scope="col" id="usermanagement_resume_date">{USER_RESUME_DATE}</th>
+      <th scope="col" id="usermanagement_resume_date">End Date</th>
       <th scope="col" id="usermanagement_delete"></th>
     </tr>
   )

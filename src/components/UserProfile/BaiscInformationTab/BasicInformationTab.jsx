@@ -8,7 +8,7 @@ import {
   FormGroup
 } from 'reactstrap';
 import ToggleSwitch from '../UserProfileEdit/ToggleSwitch';
-
+import moment from 'moment';
 
 const Name = (props) => {
   const {
@@ -322,7 +322,14 @@ const BasicInformationTab = (props) => {
           </FormGroup>
         </Col>
       </Row>
-
+      <Row>
+        <Col md="6">
+          <Label>Status</Label>
+        </Col>
+        <Col md="6">
+          <Label>{userProfile.isActive ? "Active" : (userProfile.reactivationDate ? "Paused until " + moment(userProfile.reactivationDate).format('YYYY-MM-DD') : "Inactive")}</Label>
+        </Col>
+      </Row>
     </div>
   );
 };
