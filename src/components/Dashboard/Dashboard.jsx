@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Alert, Row, Col, Container } from 'reactstrap';
 import {Link} from "react-router-dom";
 import Leaderboard from '../LeaderBoard';
@@ -9,10 +9,11 @@ import Timelog from '../Timelog/Timelog';
 import SummaryBar from '../SummaryBar/SummaryBar';
 import '../../App.css';
 import { connect } from 'react-redux';
+import {getUserProfile} from '../../actions/userProfile'
 
 const Dashboard = props => {
   const [popup, setPopup] = useState(false);
-  const userId = props.match && props.match.params.userId && props.auth.user.role === 'Administrator' ? props.match.params.userId : props.auth.user.userid;
+  let userId = props.match && props.match.params.userId && props.auth.user.role === 'Administrator' ? props.match.params.userId : props.auth.user.userid;
   const toggle = () => {
     setPopup(!popup);
     setTimeout(()=> {
@@ -22,6 +23,14 @@ const Dashboard = props => {
       }
     }, 150);
   }
+
+  useEffect(() => {
+    if (props.match.params && props.match.params.userid && userId != props.match.params.userId) {
+      userId = props.match.params.userId;
+      getUserProfile(userId);
+    }
+    
+  }, [props.match]);
 
   return (
   <Container fluid>
@@ -35,7 +44,7 @@ const Dashboard = props => {
       </Col>
     </Row>
     
-    <SummaryBar />
+    <SummaryBar asUser={userId}/>
 
       <Row>
         <Col lg={{ size: 7 }}>&nbsp;</Col>
