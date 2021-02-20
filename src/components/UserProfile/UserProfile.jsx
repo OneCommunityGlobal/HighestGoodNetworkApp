@@ -39,6 +39,7 @@ import BlueSqaureLayout from './BlueSqaureLayout'
 import TabToolTips from './ToolTips/TabToolTips'
 import BasicToolTips from './ToolTips/BasicTabTips'
 import ResetPasswordButton from '../UserManagement/ResetPasswordButton'
+import PauseAndResumeButton from '../UserManagement/PauseAndResumeButton'
 // const styleProfile = {};
 class UserProfile extends Component {
   state = {
@@ -791,6 +792,9 @@ class UserProfile extends Component {
                   <Button color="primary"> Update Password</Button>
                 </Link>
               </div>)}
+            </Col>
+            <Col sm={{ size: 'auto', offset: 1 }}>
+              <PauseAndResumeButton user={userProfile} />
             </Col>
             <Col sm={{ size: 'auto', offset: 1 }}>
               <Link
