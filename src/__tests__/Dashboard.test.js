@@ -1,15 +1,45 @@
-
-import { renderWithProvider, renderWithRouterMatch } from './utils.js'
-import '@testing-library/jest-dom/extend-expect'
 import React from 'react';
+import { renderWithRouterMatch } from './utils.js'
+import { screen, waitFor } from '@testing-library/react';
+import '@testing-library/jest-dom/extend-expect'
 import mockState from './mockAdminState.js'
 import Dashboard from '../components/Dashboard';
+import thunk from 'redux-thunk';
+import configureStore from 'redux-mock-store';
+import { Route } from 'react-router-dom';
+import userEvent from '@testing-library/user-event';
 
-
+const mockStore = configureStore([thunk]);
 describe('Dashboard ', () => {
-    let dashBoardMountedPage = renderWithRouterMatch(<Dashboard />, {initialState: mockState});
-
-    it('should match snapshot', async () =>  { 
-    //  expect(dashBoardMountedPage.asFragment()).toMatchSnapshot();
-   });
+  let store;
+  beforeEach(() => {
+    store = mockStore({
+      auth: mockState.auth,
+      userProfile: mockState.userProfile,
+      timeEntries: mockState.timeEntries,
+      userProjects: mockState.userProjects,
+      weeklySummaries : mockState.weeklySummaries,
+    });
+    store.dispatch = jest.fn();
+    renderWithRouterMatch(
+      <Route path="/dashboard">
+        {props => <Dashboard {...props} />}
+      </Route>,
+      {
+        route: '/dashboard',
+        store,
+      },
+    );
+  });
+  it('should render Dashboard without crashing', async () => {
+  });
+  it('should render Weekly Summaries after pressing summary due date button', async () => {
+    window.HTMLElement.prototype.scrollIntoView = function() {};
+    const button = screen.getByRole('button', {name : /summary due date/i});
+    expect(button).toBeInTheDocument();
+    userEvent.click(button);
+    await waitFor(() => {
+        expect(screen.getByText('Weekly Summaries')).toBeTruthy();
+    });
+  });
 });
