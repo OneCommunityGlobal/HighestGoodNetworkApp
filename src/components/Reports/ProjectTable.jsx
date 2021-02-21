@@ -1,6 +1,5 @@
-
 import React from 'react'
-import AllProjects from './AllProjects'
+import './reports.css'
 import { Link } from 'react-router-dom'
 
 const  ProjectTable = (props) => {
@@ -8,19 +7,14 @@ const  ProjectTable = (props) => {
   let ProjectsList = [];
   if (props.projects.length > 0) {
     ProjectsList = props.projects.map((project, index) =>
-
-        <tr className="projects__tr" id={"tr_" + project._id}>
-          <th className='projects__order--input' scope="row"><div>{index + 1}</div></th>
-          <td className='projects__name--input'>
-            {/*<input type="text" className="form-control" value={project.projectName}*/}
-            {/*       projects            />*/}
-
+        <tr id={"tr_" + project._id}>
+          <th scope="row"><div>{index + 1}</div></th>
+          <td>
             <Link to={`/projectreport/${project._id}`} projectId={project._id}>
               {project.projectName}
             </Link>
-
           </td>
-          <td className='projects__active--input' >
+          <td>
             {project.isActive ?
               <div className="isActive"><i className="fa fa-circle" aria-hidden="true"></i></div> :
               <div className="isNotActive"><i className="fa fa-circle-o" aria-hidden="true"></i></div>}
@@ -30,6 +24,7 @@ const  ProjectTable = (props) => {
   }
 
   return (
+    <table class="center">
     <table className="table table-bordered table-responsive-sm">
       <thead>
     <tr>
@@ -41,6 +36,7 @@ const  ProjectTable = (props) => {
       <tbody>
   {ProjectsList}
   </tbody>
+  </table>
   </table>
   )
 

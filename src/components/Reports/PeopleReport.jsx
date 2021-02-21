@@ -1,20 +1,11 @@
 import React , { Component }from 'react';
 import '../Teams/Team.css';
-import { Link } from 'react-router-dom'
-
+import { Dropdown, DropdownButton } from "react-bootstrap";
 import { connect } from 'react-redux'
-import { getUserTeamMembers } from '../../actions/team'
-import { getTimeEntriesForPeriod, getTimeEntriesForWeek } from '../../actions/timeEntries'
-import { getUserProjects } from '../../actions/userProjects'
-import { getAllUserTeams } from '../../actions/allTeamsAction'
-import { fetchAllProjects } from '../../actions/projects'
 import { getUserProfile} from '../../actions/userProfile';
-import UserProfile from '../UserProfile/UserProfile'
 import _ from 'lodash'
 import { getWeeklySummaries, updateWeeklySummaries } from '../../actions/weeklySummaries'
-import BlueSquare from '../UserProfile/BlueSquares'
 import moment from 'moment'
-import { Input } from 'reactstrap'
 
 
 class PeopleReport extends Component {
@@ -45,7 +36,6 @@ class PeopleReport extends Component {
               phoneNumber: true,
               blueSquares: true,
             },
-
           },
         infringments : this.props.userProfile.infringments
         }
@@ -70,7 +60,7 @@ class PeopleReport extends Component {
       if (props.infringments.length > 0) {
         BlueSquare = props.infringments.map((current, index) => (
             <div >
-              <div>{current.date}</div>
+              <div>{current.date} {current.description}</div>
             </div>
         ))}
       return (
@@ -83,29 +73,32 @@ class PeopleReport extends Component {
     }
     const StartDate = (props) => {
         return (
-
           <h2>Start Date:{moment(props.userProfile.createdDate).format('YYYY-MM-DD')}</h2>
     )
     };
 
       return (
         <table>
+          <DropdownButton id="dropdown-basic-button" title="Time Frame">
+            <Dropdown.Item href="#/action-1">Past Week</Dropdown.Item>
+            <Dropdown.Item href="#/action-2">Past Two Weeks</Dropdown.Item>
+            <Dropdown.Item href="#/action-3">Past Month</Dropdown.Item>
+            <Dropdown.Item href="#/action-4">Past 6 Months</Dropdown.Item>
+            <Dropdown.Item href="#/action-5">Past Year</Dropdown.Item>
+            <Dropdown.Item href="#/action-6">Custom range</Dropdown.Item>
+          </DropdownButton>
           <div>
             <h1
               style={{ display: 'inline-block', marginRight: 10 }}
             >Name: {`${firstName} ${lastName}`}</h1>
             <h2>Weekly Comitted Hours:{weeklyComittedHours}</h2>
             <h2>Total Comitted Hours:{totalComittedHours}</h2>
-
             <StartDate userProfile={userProfile}/>
             <Infringments infringments={infringments}/>
           </div>
         </table>
-
       )
     }
-
-
 }
 
 

@@ -16,14 +16,9 @@ import { ENDPOINTS } from '../utils/URL'
 export const fetchAllProjects = () => {
 
 	const request = axios.get(ENDPOINTS.PROJECTS);
-
-	//console.log(ENDPOINTS.PROJECTS);
-	//console.log(request);
-
 	return async dispatch => {
 		await dispatch(setProjectsStart());
 		request.then(res => {
-			//console.log("RES", res);
 			dispatch(setProjects(res.data));
 		}).catch((err) => {
 			if (err.status !== 401) {

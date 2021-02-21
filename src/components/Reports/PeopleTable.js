@@ -1,7 +1,7 @@
 import React from 'react';
 import '../Teams/Team.css';
 import { Link } from 'react-router-dom'
-import { getWeeklySummaries, updateWeeklySummaries } from '../../actions/weeklySummaries'
+import './reports.css'
 
 
 const PeopleTable=props=>{
@@ -11,14 +11,10 @@ const PeopleTable=props=>{
        <tr className="teams__tr" id={`tr_${person._id}`} key={person._id}>
         <th className="teams__order--input" scope="row"><div>{index + 1}</div></th>
         <td>
-
           <Link to={`/peoplereport/${person._id}`} personId={person._id}>
             {person.firstName} {person.lastName}
           </Link>
         </td>
-
-
-
         <td className="teams__active--input" onClick={(e) => { person.onStatusClick(person.firstName, person._id, person.isActive); }}>
           {person.isActive
             ? <div className="isActive"><i className="fa fa-circle" aria-hidden="true" /></div>
@@ -29,7 +25,8 @@ const PeopleTable=props=>{
   }
 
   return(
-  <table className="table table-bordered table-responsive-sm">
+    <table className="center">
+    <table className="table table-bordered table-responsive-sm" >
     <thead>
     <tr>
       <th scope="col" id="projects__order">#</th>
@@ -41,6 +38,7 @@ const PeopleTable=props=>{
     {PeopleList}
     </tbody>
   </table>
+      </table>
   )
 }
 export default PeopleTable

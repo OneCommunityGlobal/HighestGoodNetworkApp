@@ -25,6 +25,8 @@ import ForgotPassword from './components/Login/ForgotPassword'
 import PeopleReport from './components/Reports/PeopleReport'
 import ProjectReport from './components/Reports/ProjectReport'
 import TeamReport from './components/Reports/TeamReport'
+import TaskReport from './components/Reports/TaskReport'
+
 
 
 export default (
@@ -39,6 +41,9 @@ export default (
       <ProtectedRoute path="/peoplereport/:userId" component={PeopleReport} />
       <ProtectedRoute path="/projectreport/:projectId" component={ProjectReport} />
       <ProtectedRoute path="/teamreport/:teamId" component={TeamReport} />
+      <ProtectedRoute path="/taskreport/:taskId" component={TaskReport} />
+
+
 
       <ProtectedRoute
         path="/weeklysummariesreport"

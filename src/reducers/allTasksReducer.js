@@ -60,7 +60,7 @@ export const taskReducer = (allTasks = allTasksInital, action) => {
       return { ...allTasks, taskItems: [...sortByNum(action.taskItems)], fetched: true, fetching: false, error: "none" }
     case types.ADD_NEW_TASK:
       return { ...allTasks }
-    case types.DELETE_TASK:
+     case types.DELETE_TASK:
       let indexStart = allTasks.taskItems.findIndex(task => task._id === action.taskId);
       let indexEnd = indexStart;
       allTasks.taskItems.forEach((task, index) => {
@@ -85,5 +85,5 @@ export const taskReducer = (allTasks = allTasksInital, action) => {
     default:
       return allTasks;
   }
-  
+
 };

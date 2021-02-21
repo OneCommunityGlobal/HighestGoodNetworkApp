@@ -14,11 +14,11 @@ import { weeklySummariesReportReducer } from './weeklySummariesReportReducer'
 // import { actionItemsReducer } from './actionItemsReducer'
 // import { notificationsReducer } from './notificationsReducer'
 import { allProjectsReducer } from './allProjectsReducer'
-// import { projectByIdReducer } from './projectByIdReducer'
+import { projectByIdReducer } from './projectByIdReducer'
 import { userProjectsReducer } from './userProjectsReducer'
 import { projectMembershipReducer } from './projectMembershipReducer'
 import { allTeamsReducer, allUserTeamsReducer } from './allTeamsReducer'
-// import { teamByIdReducer } from './teamByIdReducer'
+import { teamByIdReducer } from './teamByIdReducer'
 // import { teamMembershipReducer } from './teamMembershipReducer'
 // import { timeEntriesForSpecifiedProjectReducer } from './timeEntriesForSpecifiedProjectReducer'
 // import { allTimeEntriesReducer } from './allTimeEntriesReducer'
@@ -46,14 +46,14 @@ export default combineReducers({
   //	actionItems: actionItemsReducer,
   //	notifications: notificationsReducer,
   allProjects: allProjectsReducer,
-  // project: projectByIdReducer,
+  project: projectByIdReducer,
   userProjects: userProjectsReducer,
   projectMembers: projectMembershipReducer,
   managingTeams: managingTeamsReducer,
   allTeamsData: allUserTeamsReducer,
   teamsTeamMembers: teamUsersReducer,
   // allTeams: allTeamsReducer,
-  // team: teamByIdReducer,
+  team: teamByIdReducer,
   // teamMembers: teamMembershipReducer,
   // allTimeEntries: allTimeEntriesReducer,
   // userTimeEntries: timeEntriesForSpecifiedPeriodReducer,
