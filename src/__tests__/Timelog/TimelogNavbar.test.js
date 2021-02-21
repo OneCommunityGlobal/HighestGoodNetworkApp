@@ -37,15 +37,6 @@ describe('<TimelogNavbar/>', () => {
     const navBarTitle = screen.getByText(/.*'s Timelog/).textContent;
     expect(navBarTitle).toMatch(`${userProfileMock.firstName} ${userProfileMock.lastName}'s Timelog`);
   });
-  it('should render <TimelogNavbar/> with the correct `view profile` link', () => {
-    const viewProfileLink = screen.getByRole('link', { name: /view profile/i });
-    expect(viewProfileLink).toHaveAttribute('href', expect.stringContaining(userId));
-  });
-  it('should render <TimelogNavbar/> with the correct `view profile` link', () => {
-    const viewProfileLink = screen.getByRole('link', { name: /view profile/i });
-    expect(viewProfileLink).toHaveAttribute('href', expect.stringContaining(userId));
-    
-  });
 });
 
 describe('test navigation bar color',()=>{
