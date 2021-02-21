@@ -22,6 +22,7 @@ function sleep(ms) {
 describe('<TimeEntryForm />', () => {
   let store;
   let toggle;
+  let userProfile;
   const data = timeEntryMock.weeks[0][0];
   beforeEach(() => {
     store = mockStore({
@@ -29,6 +30,7 @@ describe('<TimeEntryForm />', () => {
       userProjects: userProjectMock,
       userProfile: userProfileMock,
     });
+    userProfile = jest.fn();
     toggle = jest.fn();
     store.dispatch = jest.fn();
     renderWithProvider(
@@ -37,6 +39,7 @@ describe('<TimeEntryForm />', () => {
         data={data}
         edit={false}
         toggle={toggle}
+        userProfile = {userProfile}
         isOpen
       />,
       {
@@ -57,7 +60,7 @@ describe('<TimeEntryForm />', () => {
     expect(screen.getByLabelText(/date/i)).toBeInTheDocument();
     expect(screen.getAllByRole('spinbutton')).toHaveLength(2);
     expect(screen.getByLabelText('Date')).toBeInTheDocument();
-    expect(screen.getByDisplayValue('Select Project')).toBeInTheDocument();
+    expect(screen.getByDisplayValue('Select Project/Task')).toBeInTheDocument();
     expect(screen.getByLabelText(/notes/i)).toBeInTheDocument();
     userEvent.type(screen.getAllByRole('spinbutton')[0], '1');
     expect(screen.getAllByRole('spinbutton')[0]).toHaveValue(1);

@@ -422,7 +422,7 @@ export const allProjectsMock = {
 };
 
 export const authMock = {
-  isAuthenticated: true,
+  isAdmin: true,
   user: {
     userid: '5edf141c78f1380017b829a6',
     role: 'Administrator',

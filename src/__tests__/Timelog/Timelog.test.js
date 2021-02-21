@@ -1,5 +1,5 @@
 import React from 'react';
-import { screen, render, fireEvent, waitFor } from '@testing-library/react';
+import { screen, fireEvent, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { authMock, userProfileMock, timeEntryMock, userProjectMock } from '../mockStates';
 import { renderWithRouterMatch } from '../utils';
@@ -87,15 +87,17 @@ describe('<Timelog/>', () => {
     expect(actions.getTimeEntriesForPeriod).toHaveBeenCalledWith('5edf141c78f1380017b829a6', '2020-08-01', '2020-08-03');
   });
 
-  it('should render filtered project with <select>', async () => {
+  it('should render filtered project with <select> and show number of heading project base on selection', async () => {
     const projectSelect = screen.getByLabelText(/filter entries by project/i);
-    expect(projectSelect).toHaveValue('all');
-    userEvent.selectOptions(projectSelect, userProjectMock.projects[1].projectId);
+    expect(projectSelect.value).toBe('all');
+    fireEvent.change(projectSelect, {target: { value: userProjectMock.projects[1].projectId },});
     expect(screen.getAllByRole('heading', { name: /mock project \d/i })).toHaveLength(2);
-    userEvent.selectOptions(projectSelect, userProjectMock.projects[0].projectId);
-    expect(screen.queryAllByRole('heading', { name: /mock project \d/i })).toHaveLength(0);
-    userEvent.selectOptions(projectSelect, userProjectMock.projects[3].projectId);
-    expect(screen.queryAllByRole('heading', { name: /mock project \d/i })).toHaveLength(3);
+    console.log(projectSelect.value + " *1**")
+    fireEvent.change(projectSelect, {target: { value: userProjectMock.projects[2].projectId },});
+    expect(screen.getAllByRole('heading', { name: /mock project \d/i })).toHaveLength(1);
+    console.log(projectSelect.value + " *1**")
+    fireEvent.change(projectSelect, {target: { value: userProjectMock.projects[3].projectId },});
+    expect(screen.getAllByRole('heading', { name: /mock project \d/i })).toHaveLength(3);
+    console.log(projectSelect.value + " *1**")
   });
-
-});
+}); 
