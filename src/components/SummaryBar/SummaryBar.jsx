@@ -9,7 +9,7 @@ import {
   ModalHeader,
   ModalBody,
   ModalFooter,
-  Progress,
+  Progress, Form, FormGroup, Label, Input, FormText 
 } from 'reactstrap'
 import { useSelector } from 'react-redux'
 import { HashLink as Link } from 'react-router-hash-link'
@@ -32,18 +32,15 @@ const SummaryBar = () => {
     information: '',
   }
 
-  const [inform, setInfo] = useState(initialInfo)
+  const [report, setBugReport] = useState(initialInfo)
 
   const openReport = () => {
-    const str = `A number notification that shows how many new task notifications there are.
-    Jerry is working on the tasks component so you just need to place the notification and have it function to increase the notifications number with each time an additional task is edited. Jerry will connect this later to his work.
-    Clicking the “Tasks” icon should take the person to the Tasks section on the person's dashboard. `
 
-    const newstr = str.split('\n').map((item, i) => <p key={i}>{item}</p>)
-    setInfo(info => ({
+    const htmlStr = '';  //str.split('\n').map((item, i) => <p key={i}>{item}</p>)
+    setBugReport(info => ({
       ...info,
       in: !info.in,
-      information: newstr,
+      information: htmlStr,
     }))
   }
 
@@ -92,25 +89,25 @@ const SummaryBar = () => {
   }
 
   return (
-    <Row className="my-2 bg--bar text-light">
+    <Row className="my-2 bg--bar text-light no-gutters">
         <div className="col-md-2 text-list" align="center">
-          <font className="text--black" size="3">
+          <font className="text--black  align-middle" size="3">
             {' '}
             Activity for{' '}
           </font>
-          <CardTitle className="text--black" tag="h3">
+          <CardTitle className="text--black align-middle" tag="h3">
             {firstName} {lastName}
           </CardTitle>
         </div>
 
-        <div className="col-md-3">
-          <Row>
+        <div className="col-md-3 no-gutters">
+          <Row className='no-gutters'>
             {totalEffort < weeklyComittedHours && (
-              <div className="border-red col-sm-4 bg--white-smoke" align="center">
+              <div className="border-red col-sm-4 bg--white-smoke no-gutters" align="center">
                 <div className="py-1"> </div>
-                <h1 className="text--black" align="center">
+                <p className="large_text_summary" align="center">
                   !
-                </h1>
+                </p>
                 <font className="text--black" size="3">
                   HOURS
                 </font>
@@ -118,15 +115,15 @@ const SummaryBar = () => {
               </div>
             )}
             {totalEffort >= weeklyComittedHours && (
-              <div className="border-green col-sm-4 bg--dark-green" align="center">
+              <div className="border-green col-sm-4 bg--dark-green no-gutters" align="center">
                 <div className="py-1"> </div>
-                <h1 align="center">✓</h1>
+                <p className="large_text_summary" align="center">✓</p>
                 <font size="3">HOURS</font>
                 <div className="py-2"> </div>
               </div>
             )}
 
-            <div className="col-sm-8 bg--white-smoke text-list" align="center">
+            <div className="col-sm-8 bg--white-smoke text-list no-gutters" align="center">
               <li className="nav-item navbar-text" id="timelogweeklychart">
                 <div className="text--black">
                   Current Week : {totalEffort.toFixed(2)} / {weeklyComittedHours}
@@ -142,9 +139,9 @@ const SummaryBar = () => {
           </Row>
         </div>
 
-        <div className="col-md-3">
-          <Row>
-            <div className="border-red col-sm-4 bg--white-smoke" align="center">
+        <div className="col-md-3 no-gutters">
+          <Row className='no-gutters'>
+            <div className="border-red col-sm-4 bg--white-smoke no-gutters" align="center">
               <div className="py-1"> </div>
               <h1 className="text--black" align="center">
                 !
@@ -178,7 +175,9 @@ const SummaryBar = () => {
           </font>)} */}
 
         <Col className="col-md-4 badge-list" align="center">
-          <div className="frame">
+        <div className="row no-gutters">
+        &nbsp;&nbsp;&nbsp;
+          <div className="frame col">
             <div className="redBackgroup">
               <span>99</span>
             </div>
@@ -187,19 +186,15 @@ const SummaryBar = () => {
               className="image_frame"
               src={task_icon}
               alt=""
-              width="85px"
-              height="85px"
               onClick={onTaskClick}
             />
           </div>
           &nbsp;&nbsp;&nbsp;
-          <div className="frame">
+          <div className="frame col">
             <img
               className="image_frame"
               src={badges_icon}
               alt=""
-              width="85px"
-              height="85px"
               onClick={onBadgeClick}
             />
             <div className="redBackgroup">
@@ -207,14 +202,12 @@ const SummaryBar = () => {
             </div>
           </div>
           &nbsp;&nbsp;&nbsp;
-          <div className="frame">
+          <div className="frame col">
             <Link to={`/userprofile/${_id}#bluesquare`}>
               <img
                 className="image_frame"
                 src={bluesquare_icon}
                 alt=""
-                width="85px"
-                height="85px"
               />
               <div className="redBackgroup">
                 <span>19</span>
@@ -222,23 +215,62 @@ const SummaryBar = () => {
             </Link>
           </div>
           &nbsp;&nbsp;&nbsp;
-          <div className="frame">
+          <div className="frame col">
             <img
               className="image_frame"
               src={report_icon}
               alt=""
-              width="85px"
-              height="85px"
               onClick={openReport}
             />
             {/* <div className="blackBackgroup">
               <i className="fa fa-exclamation" aria-hidden="true" />
             </div> */}
           </div>
+          </div>
         </Col>
-        <Modal isOpen={inform.in} toggle={openReport}>
+        <Modal isOpen={report.in} toggle={openReport}>
           <ModalHeader>Bug Report</ModalHeader>
-          <ModalBody />
+          <ModalBody> 
+            <Form>
+            <FormGroup>
+              <Label for ='title'>[Feature Name] Bug Title </Label>
+              <Input type="textbox" name="title" id="title" placeholder="Provide Concise Sumarry Title..." />
+            </FormGroup>
+            <FormGroup>
+            <Label for ='environment'> Environment (OS/Device/App Version/Connection/Time etc) </Label>
+              <Input type="textarea" name="environment" id="environment" placeholder="Environment Info..." />
+            </FormGroup>
+            <FormGroup>
+            <Label for ='reproduction'>Steps to reproduce (Please Number, Short Sweet to the point) </Label>
+              <Input type="textarea" name="reproduction" id="reproduction" placeholder="1. Click on the UserProfile Button in the Header.." />
+            </FormGroup>
+            <FormGroup>
+            <Label for ='expected'>Expected Result (Short Sweet to the point) </Label>
+              <Input type="textarea" name="expected" id="expected" placeholder="Whad did you expect to happen?..." />
+            </FormGroup>
+            <FormGroup>
+            <Label for ='actual'>Actual Result (Short Sweet to the point) </Label>
+              <Input type="textarea" name="actual" id="actual" placeholder="What actually happened?.." />
+            </FormGroup>
+            <FormGroup>
+            <Label for ='visual'>Visual Proof (screenshots, videos, text) </Label>
+              <Input type="textarea" name="environment" id="environment" placeholder="Links to screenshots etc..." />
+            </FormGroup>
+            <FormGroup>
+            <Label for ='severity'>Severity/Priority (How Bad is the Bug?  </Label>
+              <Input type ="select" name='severity' id='severity'>
+                <option>1. High/Critical </option>
+                <option>2. Medium </option>
+                <option>3. Minor</option>
+              </Input>
+            </FormGroup>
+
+    
+    
+    
+    
+            </Form>
+          </ModalBody>
           <ModalFooter>
             <Button onClick={openReport} color="primary">
               Submit
