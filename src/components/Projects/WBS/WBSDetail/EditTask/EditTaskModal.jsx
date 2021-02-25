@@ -86,6 +86,9 @@ const EditTaskModal = (props) => {
   // Endstate info (what it should look like when done)
   const [endstateInfo, setEndstateInfo] = useState(thisTask.endstateInfo)
 
+  // Classification
+  const [classification, setClassification] = useState(thisTask.classification)
+
   // Warning
   const [dateWarning, setDateWarning] = useState(false)
   const [hoursWarning, setHoursWarning] = useState(false)
@@ -221,6 +224,7 @@ const EditTaskModal = (props) => {
       whyInfo,
       intentInfo,
       endstateInfo,
+      classification
     }
 
     props.updateTask(props.taskId, updatedTask)
@@ -454,6 +458,16 @@ const EditTaskModal = (props) => {
                       </div>
                     ) : null))}
                   </div>
+                </td>
+              </tr>
+              <tr>
+                <td scope="col">Classification</td>
+                <td scope="col">
+                  <input
+                    type="text"
+                    value={classification}
+                    onChange={e => setClassification(e.target.value)}
+                  />
                 </td>
               </tr>
               <tr>
