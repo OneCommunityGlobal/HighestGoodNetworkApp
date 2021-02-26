@@ -763,7 +763,8 @@ class UserProfile extends Component {
             </Col>
           </Row>
           <Row>
-            <Col sm={{ size: 'auto', offset: 3 }}>
+            <Col md="4"></Col>
+            <Col md="8">
               <SaveButton
                 handleSubmit={this.handleSubmit}
                 disabled={
@@ -774,33 +775,18 @@ class UserProfile extends Component {
                 }
                 userProfile={userProfile}
               />
-            </Col>
-            <Col sm={{ size: 'auto', offset: 1 }}>
-              {/* {canEdit && (
-                <div className="profileEditButtonContainer">
-                  <Link to={`/updatepassword/${this.state.userProfile._id}`}>
-                    <Button> Update Password</Button>
-                  </Link>
-                </div>
-              )} */}
               {requestorRole === "Administrator" && canEdit ? (
-                <div className="profileEditButtonContainer">
-                  <ResetPasswordButton user={userProfile} />
-                </div>
+                <ResetPasswordButton user={userProfile} />
               ) : (<div className="profileEditButtonContainer">
                 <Link to={`/updatepassword/${this.state.userProfile._id}`}>
                   <Button color="primary"> Update Password</Button>
                 </Link>
               </div>)}
-            </Col>
-            <Col sm={{ size: 'auto', offset: 1 }}>
-              <PauseAndResumeButton user={userProfile} />
-            </Col>
-            <Col sm={{ size: 'auto', offset: 1 }}>
+              <PauseAndResumeButton user={userProfile} isBigBtn={true} />
               <Link
+                color="primary"
                 to={`/userprofile/${this.state.userProfile._id}`}
                 className="btn btn-outline-danger"
-                style={{ display: 'flex', margin: 5 }}
               >
                 Cancel
               </Link>

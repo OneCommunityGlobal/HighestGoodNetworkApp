@@ -3,14 +3,12 @@ import { useDispatch } from 'react-redux';
 import { DELETE, PAUSE, RESUME } from '../../languages/en/ui';
 import { UserStatus } from '../../utils/enums';
 import ActivationDatePopup from './ActivationDatePopup';
-import { updateUserStatus } from '../../actions/userManagement'
+import { updateUserStatus } from '../../actions/userManagement';
+import { Button } from 'reactstrap';
 
 const PauseAndResumeButton = (props) => {
-  debugger;
-  const [isChanging, onReset] = useState(false);
   const [activationDateOpen, setActivationDateOpen] = useState(false);
-  const [counter, setCounter] = useState(0);
-  const forceUpdate = () => setCounter(counter + 1);
+  const [isActive, setIsActive] = useState(true)
 
   const activationDatePopupClose = () => {
     setActivationDateOpen(false);
@@ -19,7 +17,7 @@ const PauseAndResumeButton = (props) => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    onReset(false);
+    setIsActive(props.user.isActive);
   }, [props.user.isActive]);
 
 
@@ -28,8 +26,8 @@ const PauseAndResumeButton = (props) => {
  */
   const pauseUser = (reActivationDate) => {
     dispatch(updateUserStatus(props.user, UserStatus.InActive, reActivationDate));
+    setIsActive(false);
     setActivationDateOpen(false);
-    forceUpdate();
   }
 
   /**
@@ -38,9 +36,9 @@ const PauseAndResumeButton = (props) => {
   const onPauseResumeClick = (user, status) => {
     if (status === UserStatus.Active) {
       dispatch(updateUserStatus(user, status, Date.now()));
+      setIsActive(status);
     } else {
       setActivationDateOpen(true);
-
     }
   }
 
@@ -52,16 +50,16 @@ const PauseAndResumeButton = (props) => {
         onClose={activationDatePopupClose}
         onPause={pauseUser}
       />
-      <button
-        type="button"
-        className={`btn btn-outline-${props.user.isActive ? 'warning' : 'success'} btn-sm`}
+      <Button
+        outline
+        color="primary"
+        className={`btn btn-outline-${isActive ? 'warning' : 'success'} ${props.isBigBtn ? '' : 'btn-sm'}`}
         onClick={(e) => {
-          onReset(true);
-          onPauseResumeClick(props.user, (props.user.isActive ? UserStatus.InActive : UserStatus.Active));
+          onPauseResumeClick(props.user, (isActive ? UserStatus.InActive : UserStatus.Active));
         }}
       >
-        {isChanging ? '...' : (props.user.isActive ? PAUSE : RESUME)}
-      </button>
+        {isActive ? PAUSE : RESUME}
+      </Button>
     </React.Fragment>
   )
 }

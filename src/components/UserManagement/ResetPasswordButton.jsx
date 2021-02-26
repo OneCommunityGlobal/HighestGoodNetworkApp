@@ -1,6 +1,7 @@
 import React from "react"
 import ResetPasswordPopup from "./ResetPasswordPopup";
 import { resetPassword } from '../../services/userProfileService';
+import { Button } from 'reactstrap';
 
 class ResetPasswordButton extends React.PureComponent {
   constructor(props) {
@@ -16,10 +17,12 @@ class ResetPasswordButton extends React.PureComponent {
         open={this.state.resetPopupOpen}
         onClose={this.resetPopupClose}
         onReset={this.resetPassword} />
-      <button type="button" style={{ minWidth: "115px" }}
+      <Button
+        outline
+        color="primary"
         className={"btn  btn-outline-success" + (this.props.isSmallButton ? " btn-sm" : "")}
-        onClick={this.onResetClick}>{"Reset Password"}</button>
-    </React.Fragment>)
+        style={{ minWidth: "115px" }} onClick={this.onResetClick}>{"Reset Password"}</Button>
+    </React.Fragment >)
   }
 
   onResetClick = () => {
