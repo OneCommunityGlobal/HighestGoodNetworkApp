@@ -8,7 +8,7 @@ import { allUserProfilesReducer } from './allUserProfilesReducer'
 // import { dashboardDataReducer } from './dashboardDataReducer'
 // import { weeklyDashboardDataReducer } from './weeklyDashboardDataReducer'
 // import { monthlyDashboardDataReducer } from './monthlyDashboardDataReducer'
-import { leaderboardDataReducer } from './leaderboardDataReducer'
+import { leaderboardDataReducer, orgDataReducer } from './leaderboardDataReducer'
 import { weeklySummariesReducer } from './weeklySummariesReducer'
 import { weeklySummariesReportReducer } from './weeklySummariesReportReducer'
 // import { actionItemsReducer } from './actionItemsReducer'
@@ -40,6 +40,7 @@ export default combineReducers({
   // userProjectMembers: userProjectMembersReducer,
   // dashboardData: dashboardDataReducer,
   leaderBoardData: leaderboardDataReducer,
+  orgData: orgDataReducer,
   weeklySummaries: weeklySummariesReducer,
   weeklySummariesReport: weeklySummariesReportReducer,
   // weeklyDashboardData: weeklyDashboardDataReducer,

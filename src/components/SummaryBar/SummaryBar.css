@@ -69,17 +69,19 @@
 
 .redBackgroup {
   z-index: 10;
+  bottom: 0;
+  right: 0;
   position: absolute;
   height: 30px;
   text-align: center;
   vertical-align: middle;
   background: #ff4d4f;
-  border-radius: 20px;
+  border-radius: 40px;
   color: #fff;
-  top: 55px;
-  left: 60px;
   padding: 3px 6px;
-  max-width: 25px;
+  max-width: 39px;
+  font-size: 1rem;
+  min-width: 29px;
 }
 
 .blackBackgroup {
@@ -98,63 +100,91 @@
 }
 
 .border-red {
-  border-width: 3px;
+  border-width: 1px;
   /* border-radius: 10px; */
-  border-color: #fabec0;
+  border-color: #ff050d;
+  border-style: solid;
+}
+
+.border-black {
+  border-width: 1px;
+  /* border-radius: 10px; */
+  border-color: #000000;
   border-style: solid;
 }
 
 .border-green {
-  border-width: 3px;
+  border-width: 1px;
   /* border-radius: 10px; */
   border-color: #32a518;
   border-style: solid;
 }
 
-.frame {
+.sum_img {
   position: relative;
-  width: auto;
+  width: 100%;
   max-width: 100px;
   height: auto;
 }
 
 .image_frame {
-  position: absolute;
-  top: 0px;
-  left: 0px;
+  position: relative;
   cursor: pointer;
-  max-width: 100px;
-  width: 100%;
-  height: auto;
+  display: inline-block;
+  padding: 5px;
+  margin-bottom: 5px;
+  min-width: 70px;
 }
 
 .badge-list {
   padding-top: 10px;
+  background-color: #b6def1;
 }
 
 .bg--bar {
   background-color: #b6def1;
+  min-width: 360px;
 }
 
 .large_text_summary {
-  font-size: 2rem;
+  font-size: 2.5rem;
+  font-weight: bold;
 }
 
-/* Small devices (landscape phones, 544px and down) */
-@media (max-width: 1100px) {  
+.med_text_summary {
+  font-size: 1rem;
+}
+
+/* XLarge devices (landscape phones, 544px and down) */
+@media (max-width: 1200px) {  
+  .med_text_summary {
+    font-size: 0.75rem;
+  }
+}
+
+/* Large devices (landscape phones, 544px and down) */
+@media (max-width: 992px) {  
+  .large_text_summary {
+    font-size: 2rem;
+  }
+  .med_text_summary {
+    font-size: 1rem;
+  }
+}
+
+/* Med devices (tablets, 768px and down) */
+@media (max-width: 768px) {  
+
+  .med_text_summary {
+    font-size: 1rem;
+  }
+}
+
+/* Small devices (landscape phones, 576px and down) */
+@media (max-width: 576px) {  
+
   .large_text_summary {
     font-size: 1.5rem;
   }
-}
 
-/* Small devices (landscape phones, 544px and down) */
-@media (max-width: 544px) {  
-  .weeklysummarypane {
-    max-height: 330px;
-    overflow: auto;
-    height: 330px;
-  }
-  .large_text_summary {
-    font-size: 1rem;
-  }
 }

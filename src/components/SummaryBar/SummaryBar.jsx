@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 
 import {
+  Container,
   Row,
   Col,
   CardTitle,
@@ -26,6 +27,32 @@ const SummaryBar = () => {
   const reducer = (total, entry) => total + parseInt(entry.hours) + parseInt(entry.minutes) / 60
   const totalEffort = timeEntries.reduce(reducer, 0)
   const weeklyComittedHours = useSelector(state => state.userProfile.weeklyComittedHours)
+  const infringements = useSelector(state => {
+    if (state.userProfile && state.userProfile.infringments) {
+      return state.userProfile.infringments.length
+    } else {
+      return 0;
+    }
+    
+  })
+
+  const badges = useSelector(state => {
+    if (state.userProfile && state.userProfile.badgeCollection) {
+      return state.userProfile.badgeCollection.length
+    } else {
+      return 0;
+    }
+    
+  })
+
+  const tasks = useSelector(state => {
+    if (state.tasks && state.tasks.taskItems) {
+      return state.tasks.taskItems.length
+    } else {
+      return 0;
+    }
+    
+  })
 
   const initialInfo = {
     in: false,
@@ -89,8 +116,9 @@ const SummaryBar = () => {
   }
 
   return (
-    <Row className="my-2 bg--bar text-light no-gutters">
-        <div className="col-md-2 text-list" align="center">
+    <Container fluid className="bg--bar">
+    <Row className="no-gutters .row-eq-height">
+      <Col className="col-lg-1 col-12 text-list" align="center">
           <font className="text--black  align-middle" size="3">
             {' '}
             Activity for{' '}
@@ -98,14 +126,14 @@ const SummaryBar = () => {
           <CardTitle className="text--black align-middle" tag="h3">
             {firstName} {lastName}
           </CardTitle>
-        </div>
+      </Col>
 
-        <div className="col-md-3 no-gutters">
+        <Col className="col-lg-3 col-12 no-gutters">
           <Row className='no-gutters'>
             {totalEffort < weeklyComittedHours && (
-              <div className="border-red col-sm-4 bg--white-smoke no-gutters" align="center">
+              <div className="border-red col-4 bg--white-smoke" align="center">
                 <div className="py-1"> </div>
-                <p className="large_text_summary" align="center">
+                <p className="large_text_summary text--black" align="center">
                   !
                 </p>
                 <font className="text--black" size="3">
@@ -115,37 +143,38 @@ const SummaryBar = () => {
               </div>
             )}
             {totalEffort >= weeklyComittedHours && (
-              <div className="border-green col-sm-4 bg--dark-green no-gutters" align="center">
+              <div className="border-green col-4 bg--dark-green" align="center">
                 <div className="py-1"> </div>
-                <p className="large_text_summary" align="center">✓</p>
+                <p className="large_text_summary text--black" align="center">✓</p>
                 <font size="3">HOURS</font>
                 <div className="py-2"> </div>
               </div>
             )}
 
-            <div className="col-sm-8 bg--white-smoke text-list no-gutters" align="center">
-              <li className="nav-item navbar-text" id="timelogweeklychart">
-                <div className="text--black">
+            <div className="col-8 border-black bg--white-smoke d-flex justify-content-center align-items-center" align="center">
+              <div className="align-items-center" id="timelogweeklychart">
+                <div className="text--black align-items-center med_text_summary">
                   Current Week : {totalEffort.toFixed(2)} / {weeklyComittedHours}
-                </div>
-
-                <Progress
+                  <Progress
                   value={getBarValue(totalEffort)}
                   className={getBarColor(totalEffort)}
                   striped={totalEffort < weeklyComittedHours}
                 />
-              </li>
+                </div>
+
+
+              </div>
             </div>
           </Row>
-        </div>
+        </Col>
 
-        <div className="col-md-3 no-gutters">
+        <Col className="col-lg-3 col-12 no-gutters">
           <Row className='no-gutters'>
-            <div className="border-red col-sm-4 bg--white-smoke no-gutters" align="center">
+            <div className="border-red col-4 bg--white-smoke no-gutters" align="center">
               <div className="py-1"> </div>
-              <h1 className="text--black" align="center">
+              <p className="large_text_summary text--black" align="center">
                 !
-              </h1>
+              </p>
               <font className="text--black" size="3">
                 SUMMARY
               </font>
@@ -158,15 +187,15 @@ const SummaryBar = () => {
               <div className="py-2"> </div>
             </div> */}
 
-            <div className="col-sm-8 bg--white-smoke" align="center">
+            <div className="col-8 border-black bg--white-smoke" align="center">
               <div className="py-3"> </div>
-              <font className="text--black" align="center" size="3">
+              <font className="text--black med_text_summary align-middle" size="3">
                 You still need to complete the weekly summary.
               </font>
               <div className="py-1"> </div>
             </div>
           </Row>
-        </div>
+        </Col>
         {/* {isSubmitted && (<font className="text--black" align="center" size="3">
             You have completed weekly summary.
           </font>)}
@@ -174,50 +203,59 @@ const SummaryBar = () => {
             You still need to complete the weekly summary.
           </font>)} */}
 
-        <Col className="col-md-4 badge-list" align="center">
-        <div className="row no-gutters">
-        &nbsp;&nbsp;&nbsp;
-          <div className="frame col">
+        <Col className="col-lg-5 col-12 badge-list">
+        <div className="row row-eq-height no-gutters">
+        &nbsp;&nbsp;
+          <div className="col">
+            <div className="image_frame">
             <div className="redBackgroup">
-              <span>99</span>
+              <span>{tasks}</span>
             </div>
 
             <img
-              className="image_frame"
+              className="sum_img"
               src={task_icon}
               alt=""
               onClick={onTaskClick}
-            />
+            ></img>
           </div>
-          &nbsp;&nbsp;&nbsp;
-          <div className="frame col">
+            </div>
+
+          &nbsp;&nbsp;
+          <div className="col">
+          <div className="image_frame">
+            
             <img
-              className="image_frame"
+              className="sum_img"
               src={badges_icon}
               alt=""
               onClick={onBadgeClick}
             />
             <div className="redBackgroup">
-              <span>9</span>
+              <span>{badges}</span>
+            </div>
             </div>
           </div>
-          &nbsp;&nbsp;&nbsp;
-          <div className="frame col">
+          &nbsp;&nbsp;
+          <div className="col">
+          <div className="image_frame">
             <Link to={`/userprofile/${_id}#bluesquare`}>
               <img
-                className="image_frame"
+                className="sum_img"
                 src={bluesquare_icon}
                 alt=""
               />
               <div className="redBackgroup">
-                <span>19</span>
+                <span>{infringements}</span>
               </div>
             </Link>
+            </div>
           </div>
-          &nbsp;&nbsp;&nbsp;
-          <div className="frame col">
+          &nbsp;&nbsp;
+          <div className="col">
+          <div className="image_frame">
             <img
-              className="image_frame"
+              className="sum_img"
               src={report_icon}
               alt=""
               onClick={openReport}
@@ -225,6 +263,7 @@ const SummaryBar = () => {
             {/* <div className="blackBackgroup">
               <i className="fa fa-exclamation" aria-hidden="true" />
             </div> */}
+          </div>
           </div>
           </div>
         </Col>
@@ -281,6 +320,7 @@ const SummaryBar = () => {
           </ModalFooter>
         </Modal>
       </Row>
+      </Container>
   )
 }
 
