@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 
 import {
   Container,
@@ -19,14 +19,25 @@ import task_icon from './task_icon.png'
 import badges_icon from './badges_icon.png'
 import bluesquare_icon from './bluesquare_icon.png'
 import report_icon from './report_icon.png'
+import httpService from '../../services/httpService'
+
+
+let APIEndpoint = process.env.REACT_APP_APIENDPOINT;
+if (!APIEndpoint) {
+  // This is to resolve the issue in azure env variable
+  // APIEndpoint = fetch('/config.json').then((data) => {
+  APIEndpoint = 'https://hgnrestdev.azurewebsites.net';
+  // });
+}
 
 const SummaryBar = () => {
-  const { firstName, lastName, _id } = useSelector(state => state.userProfile)
+  const { firstName, lastName, email, _id } = useSelector(state => state.userProfile)
 
   const timeEntries = useSelector(state => state.timeEntries.weeks[0])
   const reducer = (total, entry) => total + parseInt(entry.hours) + parseInt(entry.minutes) / 60
   const totalEffort = timeEntries.reduce(reducer, 0)
   const weeklyComittedHours = useSelector(state => state.userProfile.weeklyComittedHours)
+
   const infringements = useSelector(state => {
     if (state.userProfile && state.userProfile.infringments) {
       return state.userProfile.infringments.length
@@ -45,7 +56,8 @@ const SummaryBar = () => {
     
   })
 
-  const tasks = useSelector(state => {
+  let tasks = useSelector(state => {
+    console.log(state)
     if (state.tasks && state.tasks.taskItems) {
       return state.tasks.taskItems.length
     } else {
@@ -69,6 +81,23 @@ const SummaryBar = () => {
       in: !info.in,
       information: htmlStr,
     }))
+  }
+
+  const sendBugReport = (event) => {
+    event.preventDefault();
+    let bugReportForm = document.getElementById('bugReportForm');
+    let formData = new FormData(bugReportForm);
+    var data = {};
+    formData.forEach(function(value, key){
+        data[key] = value;
+    });
+
+    data['firstName'] = firstName
+    data['lastName'] = lastName
+    data['email'] = email
+    httpService.post(`${APIEndpoint}/dashboard/bugreport/${_id}`, data).catch((e)=>{
+    }); 
+    openReport();
   }
 
   // async componentDidMount() {
@@ -270,54 +299,54 @@ const SummaryBar = () => {
         <Modal isOpen={report.in} toggle={openReport}>
           <ModalHeader>Bug Report</ModalHeader>
           <ModalBody> 
-            <Form>
+            <Form onSubmit={sendBugReport} id='bugReportForm'>
             <FormGroup>
               <Label for ='title'>[Feature Name] Bug Title </Label>
-              <Input type="textbox" name="title" id="title" placeholder="Provide Concise Sumarry Title..." />
+              <Input type="textbox" name="title" id="title" required placeholder="Provide Concise Sumarry Title..." />
             </FormGroup>
             <FormGroup>
             <Label for ='environment'> Environment (OS/Device/App Version/Connection/Time etc) </Label>
-              <Input type="textarea" name="environment" id="environment" placeholder="Environment Info..." />
+              <Input type="textarea" name="environment" id="environment" required placeholder="Environment Info..." />
             </FormGroup>
             <FormGroup>
             <Label for ='reproduction'>Steps to reproduce (Please Number, Short Sweet to the point) </Label>
-              <Input type="textarea" name="reproduction" id="reproduction" placeholder="1. Click on the UserProfile Button in the Header.." />
+              <Input type="textarea" name="reproduction" id="reproduction" required placeholder="1. Click on the UserProfile Button in the Header.." />
             </FormGroup>
             <FormGroup>
             <Label for ='expected'>Expected Result (Short Sweet to the point) </Label>
-              <Input type="textarea" name="expected" id="expected" placeholder="Whad did you expect to happen?..." />
+              <Input type="textarea" name="expected" id="expected" required placeholder="Whad did you expect to happen?..." />
             </FormGroup>
             <FormGroup>
             <Label for ='actual'>Actual Result (Short Sweet to the point) </Label>
-              <Input type="textarea" name="actual" id="actual" placeholder="What actually happened?.." />
+              <Input type="textarea" name="actual" id="actual" required placeholder="What actually happened?.." />
             </FormGroup>
             <FormGroup>
             <Label for ='visual'>Visual Proof (screenshots, videos, text) </Label>
-              <Input type="textarea" name="environment" id="environment" placeholder="Links to screenshots etc..." />
+              <Input type="textarea" name="visual" id="visual" required placeholder="Links to screenshots etc..." />
             </FormGroup>
             <FormGroup>
             <Label for ='severity'>Severity/Priority (How Bad is the Bug?  </Label>
-              <Input type ="select" name='severity' id='severity'>
+            <Input type ="select" name='severity' id='severity' required>
+                <option hidden disabled defaultValue value> -- select an option -- </option>
                 <option>1. High/Critical </option>
                 <option>2. Medium </option>
                 <option>3. Minor</option>
               </Input>
             </FormGroup>
-
+            <FormGroup>
+            <Button type="submit" color="primary" size="lg">
+              Submit
+            </Button> &nbsp;&nbsp;&nbsp;
+            <Button onClick={openReport} color="danger" size="lg">
+              Close
+            </Button>
+            </FormGroup>
     
     
     
     
             </Form>
           </ModalBody>
-          <ModalFooter>
-            <Button onClick={openReport} color="primary">
-              Submit
-            </Button>
-            <Button onClick={openReport} color="danger">
-              Close
-            </Button>
-          </ModalFooter>
         </Modal>
       </Row>
       </Container>
