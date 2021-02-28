@@ -1,5 +1,5 @@
 /*********************************************************************************
- * Component: WBS  
+ * Component: WBS
  * Author: Henry Ng - 03/05/20
  * Display WBSs of project
  ********************************************************************************/
@@ -56,7 +56,6 @@ const WBS = (props) => {
                 item ? <WBSItem index={i + 1} key={item._id} wbsId={item._id} projectId={projectId} name={item.wbsName} /> : null
 
               )}
-
           </tbody>
         </table>
       </div>

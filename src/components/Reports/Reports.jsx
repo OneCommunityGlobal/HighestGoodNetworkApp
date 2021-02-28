@@ -18,7 +18,7 @@ class ReportsPage extends Component {
       showProjects: false,
       showPeople: false,
       showTeams: false,
-      showTasks: false,
+      // showTasks: false,
       teamNameSearchText: '',
       teamMembersPopupOpen: false,
       deleteTeamPopupOpen: false,
@@ -47,7 +47,7 @@ class ReportsPage extends Component {
     this.showProjectTable = this.showProjectTable.bind(this);
     this.showPeopleTable =this.showPeopleTable.bind(this);
     this.showTeamsTable=this.showTeamsTable.bind(this)
-    this.showTasksTable=this.showTasksTable.bind(this)
+    // this.showTasksTable=this.showTasksTable.bind(this)
 
     this.setActive=this.setActive.bind(this)
     this.setInActive=this.setInActive.bind(this)
