@@ -12,8 +12,8 @@ const DeleteTeamPopup = React.memo((props) => {
       <ModalHeader toggle={closePopup}>Delete</ModalHeader>
       <ModalBody style={{ textAlign: 'center' }}>
         <span>
-          {`Are you sure you want to delete the team with name " ${props.selectedTeamName} "
-          ? This action cannot be undone. Switch this team to "Inactive" if you'd like to keep it in the system.`}
+          {`Are you sure you want to delete the team with name "${props.selectedTeamName}"?
+          This action cannot be undone. Switch this team to "Inactive" if you'd like to keep it in the system.`}
         </span>
 
       </ModalBody>

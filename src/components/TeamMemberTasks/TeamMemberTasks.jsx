@@ -80,7 +80,7 @@ class TeamMemberTasks extends Component {
   }
 
   async componentDidMount() {
-    const userId = this.props.auth.user.userid
+    const userId = this.props.asUser ? this.props.asUser : this.props.auth.user.userid
     await this.props.getUserProfile(userId)
 
     //const { leaderBoardData } = this.props

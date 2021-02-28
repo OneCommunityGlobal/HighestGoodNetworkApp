@@ -79,6 +79,9 @@ const AddTaskModal = props => {
   // Endstate info (what it should look like when done)
   const [endstateInfo, setEndstateInfo] = useState('')
 
+  // Classification
+  const [classification, setClassification] = useState('')
+
   // Warning
   const [dateWarning, setDateWarning] = useState(false)
   const [hoursWarning, setHoursWarning] = useState(false)
@@ -239,6 +242,7 @@ const AddTaskModal = props => {
     setWhyInfo('')
     setIntentInfo('')
     setEndstateInfo('')
+    setClassification('')
   }
 
   const paste = () => {
@@ -314,6 +318,7 @@ const AddTaskModal = props => {
       whyInfo: whyInfo,
       intentInfo: intentInfo,
       endstateInfo: endstateInfo,
+      classification
     }
 
     props.addNewTask(newTask, props.wbsId);
@@ -561,6 +566,16 @@ const AddTaskModal = props => {
                       ) : null,
                     )}
                   </div>
+                </td>
+              </tr>
+              <tr>
+                <td scope="col">Classification</td>
+                <td scope="col">
+                  <input
+                    type="text"
+                    value={classification}
+                    onChange={e => setClassification(e.target.value)}
+                  />
                 </td>
               </tr>
               <tr>

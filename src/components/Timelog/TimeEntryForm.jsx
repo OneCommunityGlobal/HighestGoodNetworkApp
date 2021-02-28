@@ -295,7 +295,7 @@ const TimeEntryForm = ({
     //   totalComittedHours: totalTime,
     // };
     //await dispatch(updateUserProfile(userProfile._id, updatedUserprofile));
-    getLeaderboardData(userProfile._id);
+
     if (fromTimer) {
       if (status === 200) {
         const timerStatus = await dispatch(stopTimer(userId));

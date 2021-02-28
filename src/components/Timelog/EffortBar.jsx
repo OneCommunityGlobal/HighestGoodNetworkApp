@@ -29,7 +29,7 @@ const EffortBar = ({activeTab, projectsSelected}) => {
                 Intangible Effort: {intangibleTime.toFixed(2)} hrs
             </span>
             <span className="bg-success col-md-4 p-1">
-                Total Effort :{totalTime.toFixed(2)} hrs
+                Total Effort: {totalTime.toFixed(2)} hrs
             </span>
         </div>
     )
