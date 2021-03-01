@@ -37,7 +37,7 @@ const CreateNewBadge = (props) => {
         break;
       case 'category':
         if (category === '--- Unspecified ---') {
-          setCategory(null);
+          setCategory('Unspecified');
         } else {
           setCategory(event.target.value);
         }
