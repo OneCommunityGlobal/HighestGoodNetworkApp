@@ -1,11 +1,13 @@
-import { getLeaderboardData } from '../../actions/leaderBoardData'
+import { getLeaderboardData, getOrgData } from '../../actions/leaderBoardData'
 import { connect } from 'react-redux'
 import Leaderboard from './Leaderboard'
 import {getcolor, getprogress} from '../../utils/effortColors'
 import _ from 'lodash'
 const mapStateToProps = state => {
 	//console.log('State=Leaderboard container', state)
+	
 	let leaderBoardData = _.get(state, 'leaderBoardData', [])
+	let orgData = _.get(state, 'orgData', {})
 	//console.log('Leaderboard Unsorted Data', leaderBoardData)
 	
 	let organization = {totaltime: 0, tangibletime: 0, weeklyComittedHours: 0, intangibletime: 0};
@@ -18,7 +20,6 @@ const mapStateToProps = state => {
 				element.totaltangibletime_hrs >= element.weeklyComittedHours ? true : false
 
 			element.weeklycommited = _.round(element.weeklyComittedHours, 2)
-			organization.weeklyComittedHours += _.round(element.weeklyComittedHours, 2);
 			element.tangibletime = _.round(element.totaltangibletime_hrs, 2);
 			element.intangibletime = _.round(element.totalintangibletime_hrs, 2)
 
@@ -43,12 +44,12 @@ const mapStateToProps = state => {
 			return element
 		})
 	}
-
-	organization.name = `HGN Totals: ${leaderBoardData.length} Members`
-	organization.tangibletime = _.round(organization.tangibletime, 2);
-	organization.totaltime += _.round(organization.totaltime, 2);
-	organization.intangibletime += _.round(organization.intangibletime, 2);
-	organization.weeklyComittedHours += _.round(organization.weeklyComittedHours, 2);
+	
+	orgData.name = `HGN Totals: ${orgData.member_count} Members`
+	orgData.tangibletime = _.round(orgData.totaltangibletime_hrs, 2);
+	orgData.totaltime = _.round(orgData.totaltime_hrs, 2);
+	orgData.intangibletime = _.round(orgData.totalintangibletime_hrs, 2);
+	orgData.weeklyComittedHours = _.round(orgData.totalWeeklyComittedHours, 2);
 	//Convert Org Time Color to 10,20,30,40,50,60,70% of totalTime/weeklyCommitted
 	let tenPTotalOrgTime = organization.weeklyComittedHours * 0.1;
 	let orgTangibleColorTime = (organization.totaltime < (tenPTotalOrgTime * 2)) ? 0 : 5;
@@ -65,8 +66,8 @@ const mapStateToProps = state => {
 		isAuthenticated: _.get(state, 'auth.isAuthenticated', false),
 		leaderBoardData: leaderBoardData,
 		loggedInUser: _.get(state, 'auth.user', {}),
-		organizationData: organization,
+		organizationData: orgData,
 		timeEntries: _.get(state, 'timeEntries', {})
 	}
 }
-export default connect(mapStateToProps, { getLeaderboardData })(Leaderboard)
+export default connect(mapStateToProps, { getLeaderboardData, getOrgData })(Leaderboard)
