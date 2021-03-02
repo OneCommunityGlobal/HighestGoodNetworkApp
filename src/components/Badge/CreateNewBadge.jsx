@@ -16,11 +16,9 @@ const CreateNewBadge = (props) => {
   const [projectId, setProjectId] = useState(null);
   const [ranking, setRanking] = useState(0);
 
-
   useEffect(() => {
     props.fetchAllProjects();
   }, []);
-
 
   const enableButton = badgeName.length === 0 || imageUrl.length === 0 || description.length === 0
 
@@ -117,9 +115,6 @@ const CreateNewBadge = (props) => {
         <Input type="number" min={0} name="ranking" id="badgeRanking" value={ranking} onChange={handleChange} placeholder="Please Enter a Number" />
       </FormGroup>
       <Button color="info" onClick={handleSubmit} disabled={enableButton}>Create</Button>
-      <Alert className="assign-badge-margin-top" color={props.color} isOpen={props.alertVisible} toggle={closeAlert} >
-        {props.message}
-      </Alert>
     </Form>
   );
 };

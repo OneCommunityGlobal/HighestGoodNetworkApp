@@ -76,10 +76,6 @@ const AssignBadge = (props) => {
 
   const toggle = () => setOpen(isOpen => !isOpen);
 
-  const closeAlert = () => {
-    props.closeAlert();
-  }
-
 
   const clickSubmit = () => {
     props.assignBadges(props.firstName, props.lastName, props.selectedBadges);
@@ -141,9 +137,6 @@ const AssignBadge = (props) => {
         <Alert color="dark" className="assign-badge-margin-top"> {props.selectedBadges ? props.selectedBadges.length : '0'} bagdes selected</Alert>
       </FormGroup>
       <Button size="lg" color="info" className="assign-badge-margin-top" onClick={clickSubmit}>Submit</Button>
-      <Alert className="assign-badge-margin-top" color={props.color} isOpen={props.alertVisible} toggle={closeAlert} >
-        {props.message}
-      </Alert>
     </Form>
   );
 };
