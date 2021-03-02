@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import {
-  Button, Form, FormGroup, Label, Input, FormText, FormFeedback, Alert
+  Button, Form, FormGroup, Label, Input, FormText, FormFeedback
 } from 'reactstrap';
 import { connect } from 'react-redux';
 import { fetchAllProjects } from '../../actions/projects';

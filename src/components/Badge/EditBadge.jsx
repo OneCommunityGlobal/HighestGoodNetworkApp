@@ -11,7 +11,7 @@ const EditBadge = (props) => {
 
   return (
     <div>
-      <Button className="btn--dark-sea-green" onClick={toggle} style={{ margin: 20 }}> Create New Badge</Button>
+      <Button className="btn--dark-sea-green" onClick={toggle} style={{ margin: 20 }}>Create New Badge</Button>
       <Modal isOpen={isOpen} toggle={toggle}>
         <ModalHeader toggle={toggle}>New Badge</ModalHeader>
         <ModalBody><CreateNewBadge toggle={toggle} /></ModalBody>

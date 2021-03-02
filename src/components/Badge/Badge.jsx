@@ -12,13 +12,20 @@ import { getUserProfile } from '../../actions/userProfile';
 
 const Badge = (props) => {
   const [isOpen, setOpen] = useState(false);
+  const [totalBadge, setTotalBadge] = useState(0);
 
   const toggle = () => setOpen(isOpen => !isOpen);
+
 
   useEffect(() => {
     const userId = props.userId;
     props.getUserProfile(userId);
+    let count = 0;
+    props.userProfile.badgeCollection.forEach(badge => { count += badge.count; });
+    setTotalBadge(count);
   }, [])
+
+
 
 
   return (
@@ -36,11 +43,11 @@ const Badge = (props) => {
             color: '#285739',
           }}
         >
-          Bravo! You Earned 101 Badges!
+          Bravo! You Earned {totalBadge} Badges!
       </CardText>
         <Button className="btn--dark-sea-green float-right" onClick={toggle}>Badge Report</Button>
         <Modal isOpen={isOpen} toggle={toggle}>
-          <ModalBody><BadgeReport /></ModalBody>
+          <ModalBody><BadgeReport badges={props.userProfile.badgeCollection || []} /></ModalBody>
         </Modal>
       </CardBody>
     </Card >
