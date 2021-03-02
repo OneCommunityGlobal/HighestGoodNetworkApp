@@ -1,6 +1,6 @@
 import React from 'react';
 import {
-  Container, Button, Modal, Alert
+  Container, Button, Modal, ModalBody, ModalFooter
 } from 'reactstrap';
 import { connect } from 'react-redux';
 import { deleteBadge, closeAlert } from '../../actions/badgeManagement';
@@ -51,11 +51,12 @@ const EditBadgeTable = (props) => {
             </tr>)}
         </tbody>
       </table>
-      <Modal className="badge-alert-modal" isOpen={props.alertVisible} toggle={closeAlert}>
-        <Alert className="badge-alert-message" color={props.color} isOpen={props.alertVisible} toggle={closeAlert} >
-          {props.message}
-        </Alert>
-
+      <Modal isOpen={props.alertVisible} toggle={closeAlert} >
+        <ModalBody className={"badge-message-background-" + props.color}><p className={"badge-message-text-" + props.color}>{props.message}</p>
+        </ModalBody>
+        <ModalFooter className={"badge-message-background-" + props.color}>
+          <Button color="secondary" size="sm" onClick={closeAlert}>OK</Button>
+        </ModalFooter>
       </Modal>
     </Container >
   );

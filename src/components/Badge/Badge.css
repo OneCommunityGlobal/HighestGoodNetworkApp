@@ -40,3 +40,19 @@
 .assign-badge-margin-top {
   margin-Top: 15px;
 }
+
+.badge-message-background-success {
+  background:#d4edda;
+}
+
+.badge-message-background-danger {
+  background:#f8d7da;
+}
+
+.badge-message-text-success {
+  color:#092b00;
+}
+
+.badge-message-text-danger {
+  color:#a8071a;
+}
