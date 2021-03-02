@@ -21,9 +21,9 @@ const NewBadges = (props) =>
       >
         New Badges Earned
       </CardTitle>
-      <div className="new_badges badge_image_sm">
+      <div className="new_badges">
         {props.badges.filter(value => Date.now() - new Date(value.lastModified).getTime() <= WEEK_DIFF).map((value, index) =>
-          <BadgeImage badgeData={value.badge} index={index} key={index} />
+          <BadgeImage count={value.count} badgeData={value.badge} index={index} key={index} />
         )}
       </div>
     </CardBody>

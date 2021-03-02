@@ -6,9 +6,9 @@ import {
 
 const BadgeHistory = (props) =>
 (
-  <div className="badge_image_sm">
+  <div>
     {props.badges.filter(value => Date.now() - new Date(value.lastModified).getTime() > WEEK_DIFF).map((value, index) =>
-      <BadgeImage badgeData={value.badge} index={index} key={index} />
+      <BadgeImage count={value.count} badgeData={value.badge} index={index} key={index} />
     )}
   </div>
 );

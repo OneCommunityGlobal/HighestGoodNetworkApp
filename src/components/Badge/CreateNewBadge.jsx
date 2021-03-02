@@ -80,7 +80,7 @@ const CreateNewBadge = (props) => {
       </FormGroup>
       <FormGroup>
         <Label for="imageUrl">Image URL</Label>
-        <Input type="url" name="url" id="imageUrl" value={imageUrl} onChange={handleChange} placeholder="Image Url" invalid={imageUrl.length === 0} />
+        <Input type="url" name="url" id="imageUrl" value={imageUrl} onChange={handleChange} placeholder="Image URL" invalid={imageUrl.length === 0} />
         <FormText color="muted">
           For Dropbox URL that ends with "dl=0", please replace with "raw=1".
         </FormText>

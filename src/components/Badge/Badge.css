@@ -3,6 +3,7 @@
   border-color: #285739 !important;
   color: #285739 !important;
 }
+
 .badge_image_sm > img {
   border-radius: 50%;
   height: 50px;
@@ -20,6 +21,16 @@
   border-radius: 50%;
   height: 25px;
   width: 25px;
+}
+.badge_count {
+  border-radius: 50%;
+  width: 10px;
+  height: 10px;
+  padding: 5px; 
+  background:#666;
+  color: #fff;
+  text-align: center;
+  font: 32px Arial, sans-serif;
 }
 
 .new_badges {
@@ -42,11 +53,11 @@
 }
 
 .badge-message-background-success {
-  background:#d4edda;
+  background-color:#d4edda;
 }
 
 .badge-message-background-danger {
-  background:#f8d7da;
+  background-color:#f8d7da;
 }
 
 .badge-message-text-success {

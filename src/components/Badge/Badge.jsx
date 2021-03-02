@@ -16,17 +16,16 @@ const Badge = (props) => {
 
   const toggle = () => setOpen(isOpen => !isOpen);
 
-
   useEffect(() => {
     const userId = props.userId;
-    props.getUserProfile(userId);
-    let count = 0;
-    props.userProfile.badgeCollection.forEach(badge => { count += badge.count; });
-    setTotalBadge(count);
+    props.getUserProfile(userId).then(() => {
+      let count = 0;
+      if (props.userProfile.badgeCollection) {
+        props.userProfile.badgeCollection.forEach(badge => { count += badge.count; });
+        setTotalBadge(count);
+      }
+    });
   }, [])
-
-
-
 
   return (
     <Card style={{ backgroundColor: '#fafafa', borderRadius: 0 }} id="badgesearned">
