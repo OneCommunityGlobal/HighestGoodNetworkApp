@@ -2,8 +2,8 @@ import React from 'react'
 import './reports.css'
 
 const  ProjectMemberTable = (props) => {
-  console.log('here')
-  console.log(props.projectMembers)
+  // console.log('here')
+  // console.log(props.projectMembers)
   let memberList = [];
   if (props.projectMembers.fetched) {
     if (props.projectMembers.members.length > 0) {
@@ -14,6 +14,9 @@ const  ProjectMemberTable = (props) => {
           </th>
           <td>
             {member.firstName}  {member.lastName}
+          </td>
+          <td>
+            {member._id}
           </td>
         </tr>
       );
@@ -26,6 +29,7 @@ const  ProjectMemberTable = (props) => {
         <tr>
           <th scope="col" id="projects__order">#</th>
           <th scope="col">Member_NAME</th>
+          <th scope="col">Member_ID</th>
         </tr>
         </thead>
         <tbody>

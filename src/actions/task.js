@@ -1,5 +1,5 @@
 /*********************************************************************************
- * Action: Tasks  
+ * Action: Tasks
  * Author: Henry Ng - 03/20/20
  ********************************************************************************/
 import axios from 'axios'
@@ -99,9 +99,14 @@ export const fetchAllTasks = (wbsId) => {
     await dispatch(setTasksStart());
     try {
       const request = await axios.get(ENDPOINTS.TASKS(wbsId));
+      // const request = await axios.get(ENDPOINTS.FIX_TASKS(wbsId));
       dispatch(setTasks(request.data));
+      console.log('yueru111')
+      console.log(request.data)
     } catch (err) {
       dispatch(setTasksError(err));
+      console.log('yueru add log here')
+      console.log(err)
     }
   }
 }
@@ -143,7 +148,7 @@ export const deleteTask = (taskId) => {
 }
 
 /**
-* Set a flag that fetching Task  
+* Set a flag that fetching Task
 */
 export const setTasksStart = () => {
   return {
@@ -153,8 +158,8 @@ export const setTasksStart = () => {
 
 
 /**
- * set Task in store 
- * @param payload : Task [] 
+ * set Task in store
+ * @param payload : Task []
  */
 export const setTasks = (taskItems) => {
   return {
@@ -164,8 +169,8 @@ export const setTasks = (taskItems) => {
 }
 
 /**
- * Error when setting project 
- * @param payload : error status code 
+ * Error when setting project
+ * @param payload : error status code
  */
 export const setTasksError = (err) => {
   return {

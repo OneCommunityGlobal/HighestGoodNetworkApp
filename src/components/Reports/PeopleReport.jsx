@@ -2,7 +2,8 @@ import React , { Component }from 'react';
 import '../Teams/Team.css';
 import { Dropdown, DropdownButton } from "react-bootstrap";
 import { connect } from 'react-redux'
-import { getUserProfile} from '../../actions/userProfile';
+import { getUserProfile,getUserTask} from '../../actions/userProfile';
+import {getUserProjects} from '../../actions/userProjects'
 import _ from 'lodash'
 import { getWeeklySummaries, updateWeeklySummaries } from '../../actions/weeklySummaries'
 import moment from 'moment'
@@ -13,9 +14,11 @@ class PeopleReport extends Component {
     super(props);
     this.state = {
       userProfile: {},
+      userTask:[],
+      userProjects:{},
       userId: '',
       isLoading: true,
-      infringments:{}
+      infringments:{},
     }
   }
 
@@ -23,30 +26,36 @@ class PeopleReport extends Component {
   async componentDidMount() {
     if (this.props.match) {
       const { userId } = this.props.match.params.userId
-       this.props.getUserProfile(this.props.match.params.userId)
-       this.props.getWeeklySummaries(this.props.match.params.userId);
-
+      await this.props.getUserProfile(this.props.match.params.userId)
+      await this.props.getUserTask(this.props.match.params.userId)
+      await this.props.getUserProjects(this.props.match.params.userId)
+      await this.props.getWeeklySummaries(this.props.match.params.userId);
       this.setState({
           userId: this.props.match.params.userId,
           isLoading: false,
           userProfile: {
             ...this.props.userProfile,
-            privacySettings: {
-              email: true,
-              phoneNumber: true,
-              blueSquares: true,
-            },
           },
+        userTask :[
+          ...this.props.userTask
+        ],
+        userProjects:{
+            ...this.props.userProjects
+        },
+
         infringments : this.props.userProfile.infringments
-        }
-      )
+        },()=>console.log(this.state.userProjects))
     }
+
   }
+
 
   render() {
     const {
       userProfile,
       infringments,
+      userTask,
+      userProjects
     } = this.state
     const {
       firstName,
@@ -54,6 +63,44 @@ class PeopleReport extends Component {
       weeklyComittedHours,
       totalComittedHours
     } = userProfile
+
+    const UserTask = props => {
+      let userTaskList = []
+      if (props.userTask.length > 0) {
+        userTaskList = props.userTask.map((task, index) => (
+          <div >
+            <div>{task.taskName} </div>
+          </div>
+        ))}
+      return (
+        <div>
+          <h1>User Task</h1>
+          <h1>Total: {props.userTask.length}</h1>
+          { userTaskList }
+        </div>
+      )
+    }
+    const UserProject = props => {
+      console.log('herrrrr')
+      console.log(props.userProjects.projects)
+      // console.log(props.userProjects.projects.length)
+
+      let userProjectList = []
+      // if (props.userProjects.length > 0) {
+      //   userProjectList = props.userProjects.projects.map((project, index) => (
+      //     <div>
+      //       <div>{project.projectName} </div>
+      //     </div>
+      //   ))}
+      return (
+        <div>
+          <h1>User Task</h1>
+          {/*<h1>Total: {props.userProject.length}</h1>*/}
+          { userProjectList }
+        </div>
+      )
+    }
+
 
     const Infringments = props => {
       let BlueSquare = []
@@ -96,6 +143,11 @@ class PeopleReport extends Component {
             <StartDate userProfile={userProfile}/>
             <Infringments infringments={infringments}/>
           </div>
+            <h2>Tasks</h2>
+            <UserTask userTask={userTask}/>
+          <h2>Projects</h2>
+          <UserProject userProjects={userProjects}/>
+
         </table>
       )
     }
@@ -105,6 +157,8 @@ class PeopleReport extends Component {
 const mapStateToProps = state => ({
   auth: state.auth,
   userProfile: state.userProfile,
+  userTask: state.userTask,
+  // userProject:state.userProject,
   infringments: state.userProfile.infringments,
   user: _.get(state, 'user', {}),
   timeEntries: state.timeEntries,
@@ -117,4 +171,6 @@ export default connect(mapStateToProps, {
   getUserProfile,
   getWeeklySummaries,
   updateWeeklySummaries,
+  getUserTask,
+  getUserProjects
 })(PeopleReport);

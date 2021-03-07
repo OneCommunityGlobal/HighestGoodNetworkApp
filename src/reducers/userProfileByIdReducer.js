@@ -1,4 +1,4 @@
-import { GET_USER_PROFILE, EDIT_USER_PROFILE } from '../constants/userProfile'
+import { GET_USER_PROFILE, EDIT_USER_PROFILE,GET_USER_TASK_BY_ID } from '../constants/userProfile'
 
 const initialUserProfileState = {
 	firstName: '',
@@ -30,3 +30,11 @@ export const userProfileByIdReducer = (userProfile = initialUserProfileState, ac
 
 	return userProfile
 }
+
+export const userTaskByIdReducer = (userTask = null, action) => {
+  if (action.type === 'GET_USER_TASK_BY_ID') {
+    return action.payload;
+  }
+
+  return userTask;
+};

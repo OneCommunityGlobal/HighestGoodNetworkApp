@@ -1,5 +1,5 @@
 import { combineReducers } from 'redux'
-import { userProfileByIdReducer } from './userProfileByIdReducer'
+import { userProfileByIdReducer,userTaskByIdReducer } from './userProfileByIdReducer'
 import { authReducer } from './authReducer'
 // import { handleSuccessReducer } from './handleSuccessReducer'
 import { allUserProfilesReducer } from './allUserProfilesReducer'
@@ -34,6 +34,7 @@ import { teamUsersReducer } from './teamsTeamMembersReducer'
 export default combineReducers({
   auth: authReducer,
   userProfile: userProfileByIdReducer,
+  userTask: userTaskByIdReducer,
   allUserProfiles: allUserProfilesReducer,
   // userTeamMembers: userTeamMembersReducer,
   // userProjectMembers: userProjectMembersReducer,

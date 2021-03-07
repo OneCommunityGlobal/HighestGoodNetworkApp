@@ -5,7 +5,7 @@ import { getAllUserTeams } from '../../actions/allTeamsAction';
 import TeamTable from './TeamTable'
 import PeopleTable from './PeopleTable'
 import ProjectTable from './ProjectTable'
-import TaskTable from './TaskTable'
+import TasksTable from './TasksTable'
 import { getAllUserProfile } from '../../actions/userManagement';
 import { fetchAllTasks } from "../../actions/task";
 import moment from 'moment'
@@ -61,12 +61,12 @@ class ReportsPage extends Component {
   componentDidMount() {
     this.props.fetchAllProjects(); // Fetch to get all projects
     this.props.getAllUserTeams();
-    this.props.fetchAllTasks();
+    // this.props.fetchAllTasks();
     this.state = {
       showProjects: false,
       showPeople: false,
       showTeams: false,
-      showTasks : false,
+      // showTasks : false,
       checkActive: ''
     }
     this.props.getAllUserProfile();
@@ -101,7 +101,7 @@ class ReportsPage extends Component {
       showProjects: !prevState.showProjects,
       showPeople: false,
       showTeams: false,
-      showTasks: false
+      // showTasks: false
     }))
   }
 
@@ -110,7 +110,7 @@ class ReportsPage extends Component {
       showProjects: false,
       showPeople: false,
       showTeams: !prevState.showTeams,
-      showTasks: false
+      // showTasks: false
     }))
   }
 
@@ -119,7 +119,7 @@ class ReportsPage extends Component {
       showProjects: false,
       showPeople: !prevState.showPeople,
       showTeams: false,
-      showTasks: false
+      // showTasks: false
     }))
       }
 
@@ -129,7 +129,7 @@ class ReportsPage extends Component {
       showProjects: false,
       showPeople: false,
       showTeams: false,
-      showTasks: !prevState.showTasks,
+      // showTasks: !prevState.showTasks,
 
     }))
   }
@@ -137,7 +137,7 @@ class ReportsPage extends Component {
     let { projects} = this.props.state.allProjects;
     let { allTeams } = this.props.state.allTeamsData;
     let { userProfiles } = this.props.state.allUserProfiles;
-    let { tasks } = this.props.state.tasks;
+    // let { tasks } = this.props.state.tasks;
 
 
 
@@ -145,13 +145,15 @@ class ReportsPage extends Component {
       projects = projects.filter(project => project.isActive ===true);
       userProfiles =userProfiles.filter(user => user.isActive ===true);
       allTeams =allTeams.filter(team => team.isActive ===true);
-      tasks = tasks.filter(task => task.isActive ===true);
+      // tasks = tasks.filter(task => task.isActive ===true);
     }
     else if (this.state.checkActive ==='false'){
       projects = projects.filter(project => project.isActive ===false);
       userProfiles =userProfiles.filter(user => user.isActive ===false);
       allTeams =allTeams.filter(team => team.isActive ===false);
-      tasks = tasks.filter(task => task.isActive ===false);
+      // tasks = tasks.filter(task => task.isActive ===false);
+
+
 
     }
 
@@ -166,7 +168,7 @@ class ReportsPage extends Component {
           <button style={{margin:'3px'}} exact className="btn btn-secondary btn-bg mt-3" onClick={this.showProjectTable}>Project</button>
           <button style={{margin:'3px'}} exact className="btn btn-secondary btn-bg mt-3" onClick={this.showPeopleTable}>Person</button>
           <button style={{margin:'3px'}} exact className="btn btn-secondary btn-bg mt-3" onClick={this.showTeamsTable}>Team</button>
-          <button style={{margin:'3px'}} exact className="btn btn-secondary btn-bg mt-3" onClick={this.showTasksTable}>Task</button>
+          {/*<button style={{margin:'3px'}} exact className="btn btn-secondary btn-bg mt-3" onClick={this.showTasksTable}>Task</button>*/}
 
           <div>
           <a>Select a Filter</a>
@@ -185,7 +187,7 @@ class ReportsPage extends Component {
         {this.state.showPeople && <PeopleTable userProfiles={userProfiles}/>}
         {this.state.showProjects &&<ProjectTable projects={projects}/>}
         {this.state.showTeams &&<TeamTable allTeams={allTeams}/>}
-        {this.state.showTasks &&<TaskTable tasks={tasks}/>}
+        {/*{this.state.showTasks &&<TasksTable tasks={tasks}/>}*/}
       </div>
 
     )

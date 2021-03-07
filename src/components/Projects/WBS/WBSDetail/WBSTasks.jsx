@@ -1,5 +1,5 @@
 /*********************************************************************************
- * Component: TASK 
+ * Component: TASK
  * Author: Henry Ng - 21/03/20 ≢
  ********************************************************************************/
 import React, { useState, useEffect } from 'react'
@@ -48,6 +48,7 @@ const WBSTasks = (props) => {
 
     console.log('drop', drag, taskIdTo);
     const tasks = props.state.tasks.taskItems;
+
 
     let tasksClass = document.getElementsByClassName('taskDrop');
     for (let i = 0; i < tasks.length; i++) {
@@ -115,7 +116,9 @@ const WBSTasks = (props) => {
   }
 
 
-
+  // console.log('bbbb')
+  // console.log(props.fetchAllTasks(wbsId))
+  // console.log(wbsId)
 
   return (
     <React.Fragment>
