@@ -134,8 +134,8 @@ export class Header extends React.Component {
                         <React.Fragment></React.Fragment>
                       )}
                     {user.role === UserRole.Administrator ? (
-                      <DropdownItem tag={Link} to={`/badgemanagement/${user.userid}`} >
-                        { BADGE_MANAGEMENT}
+                      <DropdownItem tag={Link} to="/badgemanagement" >
+                        {BADGE_MANAGEMENT}
                       </DropdownItem>
                     ) : (
                         <React.Fragment></React.Fragment>
