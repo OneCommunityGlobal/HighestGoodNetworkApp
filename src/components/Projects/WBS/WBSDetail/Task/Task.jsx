@@ -136,6 +136,20 @@ const Task = (props) => {
 
       <tr key={props.key} className={`num_${props.num.split('.').join('')} wbsTask  ${props.isNew ? 'newTask' : ''} parentId1_${props.parentId1} parentId2_${props.parentId2} parentId3_${props.parentId3} mother_${props.mother} lv_${props.level}`} id={props.id}>
         <td className={`tag_color tag_color_${props.num.length > 0 ? props.num.split('.')[0] : props.num} tag_color_lv_${props.level}`}></td>
+        <td>
+          <EditTaskModal
+            key={`editTask_${props.id}`}
+            parentNum={props.num}
+            taskId={props.id}
+            projectId={props.projectId}
+            wbsId={props.wbsId}
+            parentId1={props.parentId1}
+            parentId2={props.parentId2}
+            parentId3={props.parentId3}
+            mother={props.mother}
+            level={props.level}
+          />
+        </td>
         <td
           id={`r_${props.num}_${props.id}`}
           scope="row"
