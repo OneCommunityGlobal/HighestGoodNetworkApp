@@ -42,7 +42,6 @@ const LeaderBoard = ({
 
           if (elem) {
             const topPos = elem.offsetTop;
-            console.log(topPos);
             scrollWindow.scrollTo(0, (topPos - 100) < 100 ? 0 : (topPos - 100));
           }
         }

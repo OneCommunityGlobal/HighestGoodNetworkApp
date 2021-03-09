@@ -285,7 +285,7 @@ const TimeEntryForm = ({
       );
     } else {
       deltatime = (parseInt(hours, 10) + parseInt(minutes, 10) / 60);
-      console.log(deltatime);
+      //console.log(deltatime);
     }
 
     // const totalTime = (parseFloat(userProfile.totalComittedHours, 10) + deltatime).toFixed(2);
@@ -300,10 +300,12 @@ const TimeEntryForm = ({
       if (status === 200) {
         const timerStatus = await dispatch(stopTimer(userId));
         if (timerStatus === 200 || timerStatus === 201) {
+          console.log(initialState);
           setInputs(inputs => initialState);
           setReminder(reminder => initialReminder);
-          toggle();
+          clearForm();
           resetTimer();
+          toggle();
         }
         //history.push(`/timelog/${userId}`);
       }
@@ -320,7 +322,7 @@ const TimeEntryForm = ({
       toggle();
     } else if (!edittime) {
       // setReminder(reminder => initialReminder)
-      // console.log('kkkkkkkkk')
+      //console.log('kkkkkkkkk')
       toggle();
     }
   };

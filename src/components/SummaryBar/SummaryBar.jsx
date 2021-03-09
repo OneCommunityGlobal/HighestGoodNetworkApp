@@ -57,7 +57,6 @@ const SummaryBar = () => {
   })
 
   let tasks = useSelector(state => {
-    console.log(state)
     if (state.tasks && state.tasks.taskItems) {
       return state.tasks.taskItems.length
     } else {
@@ -91,10 +90,10 @@ const SummaryBar = () => {
     formData.forEach(function(value, key){
         data[key] = value;
     });
-
     data['firstName'] = firstName
     data['lastName'] = lastName
     data['email'] = email
+    
     httpService.post(`${APIEndpoint}/dashboard/bugreport/${_id}`, data).catch((e)=>{
     }); 
     openReport();
