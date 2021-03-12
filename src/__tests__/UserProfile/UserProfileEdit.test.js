@@ -15,6 +15,9 @@ import * as actions from '../../actions/userProfile';
 
 jest.mock('../../actions/allTeamsAction.js');
 jest.mock('../../actions/userProfile.js');
+jest.mock('../../actions/team.js');
+jest.mock('../../actions/projects.js');
+
 const mockStore = configureMockStore([thunk]);
 describe('user profile page', () => {
   const userId = authMock.user.userid;
@@ -29,12 +32,11 @@ describe('user profile page', () => {
       allProjects: allProjectsMock,
       allTeams: allTeamsMock,
       // state: {
-      //   authMock, userProfileMock, timeEntryMock, userProjectMock, allProjectsMock, allTeamsMock,
+      //   authMoc  k, userProfileMock, timeEntryMock, userProjectMock, allProjectsMock, allTeamsMock,
       // },
     });
     store.dispatch = jest.fn();
     renderWithRouterMatch(
-
       <Route path="/userprofile/:userId">
         {props => <UserProfile {...props} />}
       </Route>,
@@ -44,7 +46,7 @@ describe('user profile page', () => {
       },
     );
   });
-  describe('Sturecture', () => {
+  describe('Structure', () => {
     it('should render a change photo button', () => {
       // console.log(store.getState().allTeams);
       expect(screen.getByText(/change photo/i)).toBeInTheDocument();
@@ -105,11 +107,11 @@ describe('user profile page', () => {
     it('should render `Volunteering Times` Tab', () => {
       expect(screen.getByText('Volunteering Times')).toBeInTheDocument();
     });
-    it('should runder Teams tab', () => {
-      expect(screen.getByText('Teams')).toBeInTheDocument();
+    it('should render Teams tab', () => {
+      expect(screen.getAllByText('Teams')).toHaveLength(2);
     });
     it('should render Projects tab', () => {
-      expect(screen.getByText('Projects')).toBeInTheDocument();
+      expect(screen.getAllByText('Projects')).toHaveLength(2);
     });
     it('should render multiple links', () => {
       expect(screen.getAllByRole('link')).toHaveLength(userProfileMock.personalLinks.length + userProfileMock.adminLinks.length + 1);
@@ -125,27 +127,7 @@ describe('user profile page', () => {
     });
   });
   describe('Behavior', () => {
-    it('should change value while user typing in first name field', async () => {
-      const input = screen.getByPlaceholderText(/first name/i);
-      await userEvent.type(input, 'test', { allAtOnce: false });
-      expect(input).toHaveValue(`${userProfileMock.firstName}test`);
-      expect(screen.getByText(/reminder:.*/i)).toBeInTheDocument();
-    });
-    // it('should change value while user typing in last name field', async () => {
-    //   const input = screen.getByPlaceholderText(/last name/i);
-    //   await userEvent.type(input, 'test', { allAtOnce: false });
-    //   expect(input).toHaveValue(`${userProfileMock.lastName}test`);
-    // });
-    // it('should change value while user typing in the email field', async () => {
-    //   const input = screen.getByPlaceholderText(/email/i);
-    //   await userEvent.type(input, 'test', { allAtOnce: false });
-    //   expect(input).toHaveValue(`${userProfileMock.email}test`);
-    // });
-    // it('should change value while user typing in the phone number field', async () => {
-    //   const input = screen.getByPlaceholderText('Phone');
-    //   await userEvent.type(input, '111', { allAtOnce: false });
-    //   expect(input).toHaveValue(parseInt(`${userProfileMock.phoneNumber}111`, 10));
-    // });
+    
     // it('should popup a modal once the user clicks the blue + button', () => {
     //   userEvent.click(screen.getByText('+'));
     //   expect(screen.getByRole('dialog')).toBeInTheDocument();

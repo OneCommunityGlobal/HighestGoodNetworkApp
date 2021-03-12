@@ -285,7 +285,7 @@ const TimeEntryForm = ({
       );
     } else {
       deltatime = (parseInt(hours, 10) + parseInt(minutes, 10) / 60);
-      console.log(deltatime);
+      //console.log(deltatime);
     }
 
     // const totalTime = (parseFloat(userProfile.totalComittedHours, 10) + deltatime).toFixed(2);
@@ -334,7 +334,7 @@ const TimeEntryForm = ({
   };
 
   const handleEditorChange = (content, editor) => {
-    console.log(content);
+    //console.log(content);
     inputs.notes = content;
     const { wordcount } = editor.plugins;
 
@@ -373,6 +373,7 @@ const TimeEntryForm = ({
             data-tip
             data-for="registerTip"
             aria-hidden="true"
+            title="timeEntryTip"
             // style={{ 'text-align': 'center' }}
             onClick={openInfo}
           />
@@ -505,6 +506,7 @@ const TimeEntryForm = ({
             data-tip
             data-for="tangibleTip"
             aria-hidden="true"
+            title="tangibleTip"
             // style={{ 'text-align': 'center' }}
             onClick={tangibleInfoToggle}
           />
