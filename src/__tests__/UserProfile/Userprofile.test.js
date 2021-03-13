@@ -1,7 +1,7 @@
 import React, { useReducer } from 'react';
 import { Route } from 'react-router-dom';
 import {
-  screen, fireEvent,
+  screen, fireEvent, wait,
 } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import configureMockStore from 'redux-mock-store';
@@ -209,23 +209,32 @@ describe('User profile page', () => {
       expect(screen.getByText(/personal links/i)).toBeInTheDocument();
       userEvent.click(screen.getByRole('button', { name : /update/i })) 
     });
-    /*
-    it('should trigger onAssignTeam when user click on assign team b  utton', async() =>{
+    it('should trigger onAssignTeam when user click on assign team button', async() =>{
+      let beforeAddingNewTeam = userProfileMock.teams.length + userProfileMock.projects.length
       const assignTeamButton = screen.getByRole('button', {name : /assign team/i});
-       userEvent.click(assignTeamButton);
-      //const teamFieldInput = screen.getAllByRole('textbox',{name: ''})[screen.getAllByRole('textbox',{name: ''}).length -1];
-      const teamFieldInput = screen.getByTestId('custom-element');
-       userEvent.type(teamFieldInput,allTeamsMock.allTeams[1]._id);
-       fireEvent.click(screen.getByRole('button', {name :  /confirm/i}));
-      expect(screen.getAllByRole('button', { name: /delete/i })).toHaveLength(userProfileMock.teams.length + userProfileMock.projects.length + 1);
-
+      userEvent.click(assignTeamButton);
+      const teamFieldInput = screen.getAllByRole('textbox',{name: ''})[screen.getAllByRole('textbox',{name: ''}).length - 1];
+      userEvent.click(screen.getByRole('button', {name :  /confirm/i}));
+      expect(screen.getByText('Please choose a valid team which is not already added.')).toBeInTheDocument();
+      fireEvent.change(teamFieldInput, { target: { value: "Marketing Team" } }); 
+      userEvent.click(screen.getByRole('button', {name :  /confirm/i}));
     })
     it('should trigger onAssignProject when user click on assign project button', async() =>{
       const assignProjectButton = screen.getByRole('button', {name : /assign project/i});
-       userEvent.click(assignProjectButton);
+      userEvent.click(assignProjectButton);
       expect(screen.getByText(/add project/i)).toBeInTheDocument();
-      expect(screen.getByRole('button', {name : /confirm/i})).toBeInTheDocument();
+      userEvent.click(screen.getByRole('button', {name :  /confirm/i}));
+      expect(screen.getByText('Please choose a valid project which is not already added.')).toBeInTheDocument();
+      const projectFieldInput = screen.getAllByRole('textbox',{name: ''})[screen.getAllByRole('textbox',{name: ''}).length - 1];
+      userEvent.type(projectFieldInput,"HG Education");
+      userEvent.click(screen.getByRole('button', {name :  /confirm/i}));
     })
-    */
+    it('should trigger handleImageUpload when user click on change photo', async () =>{
+      const imageFile = new File(['New Photo'], 'newProfile.png', { type: 'image/png' });
+      const uploadPhotoBtn = screen.getByText(/Change photo/i);
+      userEvent.upload(uploadPhotoBtn,imageFile);
+      expect(uploadPhotoBtn.files[0]).toStrictEqual(imageFile)
+      expect(uploadPhotoBtn.files).toHaveLength(1)
+    })
   });
 });
