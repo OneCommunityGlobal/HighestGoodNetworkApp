@@ -40,6 +40,7 @@ import TabToolTips from './ToolTips/TabToolTips'
 import BasicToolTips from './ToolTips/BasicTabTips'
 import ResetPasswordButton from '../UserManagement/ResetPasswordButton'
 import PauseAndResumeButton from '../UserManagement/PauseAndResumeButton'
+import { toast } from 'react-toastify';
 // const styleProfile = {};
 class UserProfile extends Component {
   state = {
@@ -256,7 +257,8 @@ class UserProfile extends Component {
   }
 
   saveChanges = () => {
-    this.props.updateUserProfile(this.props.match.params.userId, this.state.userProfile)
+    this.props.updateUserProfile(this.props.match.params.userId, this.state.userProfile);
+    toast.success('Your Changes were saved successfully.')
   }
 
   handleBlueSquare = (status = true, type = 'message', blueSquareID = '') => {
@@ -343,25 +345,6 @@ class UserProfile extends Component {
     const { updateUserProfile, match } = this.props
     const { userProfile, formValid } = this.state
     const submitResult = await updateUserProfile(match.params.userId, userProfile)
-    // console.log(submitResult);
-
-    // if (submitResult === 200) {
-    //   this.setState({
-    //     showModal: true,
-    //     modalMessage: 'Your Changes were saved successfully',
-    //     modalTitle: 'Success',
-    //     type: 'save',
-    //   });
-    //   const elem = document.getElementById('warningCard');
-    //   // elem.style.display = 'none';
-    // } else {
-    //   this.setState({
-    //     showModal: true,
-    //     modalMessage: 'Please try again.',
-    //     modalTitle: 'Error',
-    //     type: 'save',
-    //   });
-    // }
   }
 
   toggleInfoModal = () => {
@@ -765,16 +748,7 @@ class UserProfile extends Component {
           <Row>
             <Col md="4"></Col>
             <Col md="8">
-              <SaveButton
-                handleSubmit={this.handleSubmit}
-                disabled={
-                  !formValid.firstName ||
-                  !formValid.lastName ||
-                  !formValid.email ||
-                  !this.state.changed
-                }
-                userProfile={userProfile}
-              />
+
               {requestorRole === "Administrator" && canEdit ? (
                 <ResetPasswordButton user={userProfile} />
               ) : (<div className="profileEditButtonContainer">
@@ -790,6 +764,16 @@ class UserProfile extends Component {
               >
                 Cancel
               </Link>
+              <SaveButton
+                handleSubmit={this.handleSubmit}
+                disabled={
+                  !formValid.firstName ||
+                  !formValid.lastName ||
+                  !formValid.email ||
+                  !this.state.changed
+                }
+                userProfile={userProfile}
+              />
             </Col>
           </Row>
         </Container>

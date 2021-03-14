@@ -5,6 +5,7 @@ import { UserStatus } from '../../utils/enums';
 import ActivationDatePopup from './ActivationDatePopup';
 import { updateUserStatus } from '../../actions/userManagement';
 import { Button } from 'reactstrap';
+import { toast } from 'react-toastify';
 
 const PauseAndResumeButton = (props) => {
   const [activationDateOpen, setActivationDateOpen] = useState(false);
@@ -37,6 +38,7 @@ const PauseAndResumeButton = (props) => {
     if (status === UserStatus.Active) {
       dispatch(updateUserStatus(user, status, Date.now()));
       setIsActive(status);
+      toast.success('Your Changes were saved successfully.')
     } else {
       setActivationDateOpen(true);
     }

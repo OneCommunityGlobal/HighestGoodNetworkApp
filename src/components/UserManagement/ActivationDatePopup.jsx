@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import { toast } from 'react-toastify';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Input, Alert } from 'reactstrap'
 
 /**
@@ -14,6 +15,7 @@ const ActivationDatePopup = React.memo(props => {
   const pauseUser = () => {
     if (Date.parse(activationDate) > Date.now()) {
       props.onPause(activationDate)
+      toast.success('Your Changes were saved successfully.')
     } else {
       setDateError(true);
     }
