@@ -17,6 +17,7 @@ import ProjectTableHeader from './ProjectTableHeader'
 import Project from './Project'
 import ModalDelete from './../common/Modal'
 import ModalMsg from './../common/Modal'
+import ProjectInfoModal from './ProjectInfoModal'
 import * as Message from './../../languages/en/messages'
 import { NOTICE } from './../../languages/en/ui'
 import './projects.css'
@@ -37,6 +38,7 @@ export class Projects extends Component {
         projectId: -1,
         active: false
       },
+      projectInfoModal: false
     };
   }
 
@@ -95,12 +97,16 @@ export class Projects extends Component {
     this.setState({ trackModelMsg: true });
   }
 
-
+  toggleProjectInfoModal = () => {
+    this.setState({
+      projectInfoModal: !this.state.projectInfoModal,
+    })
+  }
 
 
   render() {
 
-    let { showModalDelete, projectTarget, trackModelMsg } = this.state;
+    let { showModalDelete, projectTarget, trackModelMsg, projectInfoModal } = this.state;
     let { projects, status, fetching, fetched } = this.props.state.allProjects;
 
 
@@ -135,8 +141,19 @@ export class Projects extends Component {
 
     return (
       <React.Fragment>
+        <ProjectInfoModal isOpen={projectInfoModal} toggle={this.toggleProjectInfoModal} />
         <div className='container'>
           {fetching || !fetched ? <Loading /> : null}
+          <h3 style={{ display: 'inline-block', marginRight: 10 }}>Projects</h3>
+          <i
+            data-toggle="tooltip"
+            data-placement="right"
+            title="Click for more information"
+            style={{ fontSize: 24, cursor: 'pointer' }}
+            aria-hidden="true"
+            className="fa fa-info-circle"
+            onClick={this.toggleProjectInfoModal}
+          />
           <Overview numberOfProjects={numberOfProjects} numberOfActive={numberOfActive} />
           <AddProject addNewProject={this.addProject} />
           <table className="table table-bordered table-responsive-sm">

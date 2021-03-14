@@ -23,12 +23,13 @@ function useDeepEffect(effectFunc, deps) {
 }
 
 const LeaderBoard = ({
-  getLeaderboardData, leaderBoardData, loggedInUser, organizationData, timeEntries, asUser
+  getLeaderboardData, getOrgData, leaderBoardData, loggedInUser, organizationData, timeEntries, asUser
 }) => {
   const userId = asUser ? asUser : loggedInUser.userId;
 
   useDeepEffect(() => {
     getLeaderboardData(userId);
+    getOrgData();
   }, [timeEntries]);
 
   useEffect(() => {

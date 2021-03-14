@@ -463,11 +463,16 @@ const EditTaskModal = (props) => {
               <tr>
                 <td scope="col">Classification</td>
                 <td scope="col">
-                  <input
-                    type="text"
-                    value={classification}
-                    onChange={e => setClassification(e.target.value)}
-                  />
+                  <select value={classification} onChange={e => setClassification(e.target.value)}>
+                    <option value="Food">Food</option>
+                    <option value="Energy">Energy</option>
+                    <option value="Housing">Housing</option>
+                    <option value="Education">Education</option>
+                    <option value="Soceity">Society</option>
+                    <option value="Economics">Economics</option>
+                    <option value="Stewardship">Stewardship</option>
+                    <option value="Not Assigned">Not Assigned</option>
+                  </select>
                 </td>
               </tr>
               <tr>
