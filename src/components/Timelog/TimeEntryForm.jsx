@@ -301,11 +301,15 @@ const TimeEntryForm = ({
         const timerStatus = await dispatch(stopTimer(userId));
         if (timerStatus === 200 || timerStatus === 201) {
 
-          setInputs(inputs => initialState);
-          setReminder(reminder => initialReminder);
-          clearForm();
+          // setInputs(inputs => initialState);
+          // setReminder(reminder => initialReminder);
           resetTimer();
-          toggle();
+          clearForm();
+          setTimeout(()=>{
+            toggle();
+          }, 5);
+          
+          
         }
         //history.push(`/timelog/${userId}`);
       }
