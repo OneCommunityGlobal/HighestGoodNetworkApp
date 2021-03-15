@@ -14,7 +14,7 @@ const DeleteBadgePopup = (props) => {
   }
 
   return (
-    <Modal isOpen={props.open} backdrop={true} toggle={closePopup}>
+    <Modal isOpen={props.open} toggle={closePopup}>
       <ModalHeader toggle={closePopup}>Confirm Delete Badge</ModalHeader>
       <ModalBody>
         <div>
