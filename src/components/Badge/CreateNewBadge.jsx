@@ -34,7 +34,7 @@ const CreateNewBadge = (props) => {
         setDescription(event.target.value);
         break;
       case 'category':
-        if (category === '--- Unspecified ---') {
+        if (category.length === 0) {
           setCategory('Unspecified');
         } else {
           setCategory(event.target.value);
@@ -42,7 +42,7 @@ const CreateNewBadge = (props) => {
         break;
       case 'project':
         setProjectName(event.target.value);
-        if (projectName === '--- Unspecified ---') {
+        if (projectName.length === 0) {
           setProjectId(null);
         } else {
           const selectedIndex = event.target.options.selectedIndex;
@@ -92,7 +92,7 @@ const CreateNewBadge = (props) => {
       <FormGroup>
         <Label for="category">Category</Label>
         <Input type="select" name="selectCategory" id="category" value={category} onChange={handleChange}>
-          <option>--- Unspecified ---</option>
+          <option value={''}>{''}</option>
           <option>Food</option>
           <option>Energy</option>
           <option>Housing</option>
@@ -106,7 +106,7 @@ const CreateNewBadge = (props) => {
       <FormGroup>
         <Label for="project">Project</Label>
         <Input type="select" name="selectProject" id="project" value={projectName} onChange={handleChange}>
-          <option>--- Unspecified ---</option>
+          <option value={''}>{''}</option>
           {props.allProjects.map((project) => <option key={project._id} project-id={project._id} >{project.projectName}</option>)}
         </Input>
       </FormGroup>
