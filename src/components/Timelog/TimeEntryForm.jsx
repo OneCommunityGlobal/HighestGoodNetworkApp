@@ -300,7 +300,7 @@ const TimeEntryForm = ({
       if (status === 200) {
         const timerStatus = await dispatch(stopTimer(userId));
         if (timerStatus === 200 || timerStatus === 201) {
-          console.log(initialState);
+
           setInputs(inputs => initialState);
           setReminder(reminder => initialReminder);
           clearForm();
@@ -336,7 +336,7 @@ const TimeEntryForm = ({
   };
 
   const handleEditorChange = (content, editor) => {
-    console.log(content);
+
     inputs.notes = content;
     const { wordcount } = editor.plugins;
 
