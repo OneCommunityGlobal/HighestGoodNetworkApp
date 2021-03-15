@@ -127,7 +127,7 @@ const AssignBadge = (props) => {
       </Row>
       <FormGroup className="assign-badge-margin-top">
         <Button outline color="info" onClick={toggle}>Assign Badge</Button>
-        <Modal isOpen={isOpen} toggle={toggle} backdrop={false}>
+        <Modal isOpen={isOpen} toggle={toggle} backdrop='static'>
           <ModalHeader toggle={toggle}>Assign Badge</ModalHeader>
           <ModalBody><AssignBadgePopup allBadgeData={props.allBadgeData} toggle={toggle} /></ModalBody>
         </Modal>

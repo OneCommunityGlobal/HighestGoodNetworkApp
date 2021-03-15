@@ -19,7 +19,7 @@ const DeleteBadgePopup = (props) => {
       <ModalBody>
         <div>
           <p>Are you sure you want to delete this badge? The delete action cannot be undone!</p>
-          <p>Badge Name: {props.badgeName}</p>
+          <p style={{ color: '#285739', fontWeight: 'bold' }}>Badge Name: {props.badgeName}</p>
           <p>The badge above will be removed from the badge collection of those who have earned this badge, once you delete the badge.</p>
         </div>
       </ModalBody>

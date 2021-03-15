@@ -102,13 +102,14 @@ const EditBadgeTable = (props) => {
                   <Button outline color="info">Edit</Button>{' '}
                 </span>
                 <span className="badgemanagement-actions-cell">
-                  <Button outline color="danger" onClick={() => onDeleteButtonClick(value._id, value.badgeName)}>Delete</Button>
-                  <DeleteBadgePopup open={deletePopup} setDeletePopup={setDeletePopup} deleteBadge={props.deleteBadge} badgeId={deleteId} badgeName={deleteName} />
+                  <Button outline color="danger" onClick={() => onDeleteButtonClick(value._id, value.badgeName)}>Delete
+                  </Button>
                 </span>
               </td>
             </tr>)}
         </tbody>
       </table>
+      <DeleteBadgePopup open={deletePopup} setDeletePopup={setDeletePopup} deleteBadge={props.deleteBadge} badgeId={deleteId} badgeName={deleteName} />
       <Modal isOpen={props.alertVisible} toggle={() => props.closeAlert()} >
         <ModalBody className={"badge-message-background-" + props.color}><p className={"badge-message-text-" + props.color}>{props.message}</p>
         </ModalBody>
