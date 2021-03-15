@@ -9,8 +9,7 @@ const mapStateToProps = state => {
 	let leaderBoardData = _.get(state, 'leaderBoardData', [])
 	let orgData = _.get(state, 'orgData', {})
 	//console.log('Leaderboard Unsorted Data', leaderBoardData)
-	
-	let organization = {totaltime: 0, tangibletime: 0, weeklyComittedHours: 0, intangibletime: 0};
+	//let organization = {totaltime: 0, tangibletime: 0, weeklyComittedHours: 0, intangibletime: 0};
 	if (leaderBoardData.length) {
 		let maxtotal = _.maxBy(leaderBoardData, 'totaltime_hrs').totaltime_hrs
 		maxtotal = maxtotal === 0 ? 10 : maxtotal
@@ -37,9 +36,9 @@ const mapStateToProps = state => {
 			element.barprogress = getprogress(element.totaltangibletime_hrs)
 			element.totaltime = _.round(element.totaltime_hrs, 2)
 
-			organization.totaltime += _.round(element.totaltime, 2);
-			organization.tangibletime += _.round(element.tangibletime, 2);
-			organization.intangibletime += _.round(element.intangibletime, 2);
+			// organization.totaltime += _.round(element.totaltime, 2);
+			// organization.tangibletime += _.round(element.tangibletime, 2);
+			// organization.intangibletime += _.round(element.intangibletime, 2);
 			
 			return element
 		})
@@ -51,16 +50,16 @@ const mapStateToProps = state => {
 	orgData.intangibletime = _.round(orgData.totalintangibletime_hrs, 2);
 	orgData.weeklyComittedHours = _.round(orgData.totalWeeklyComittedHours, 2);
 	//Convert Org Time Color to 10,20,30,40,50,60,70% of totalTime/weeklyCommitted
-	let tenPTotalOrgTime = organization.weeklyComittedHours * 0.1;
-	let orgTangibleColorTime = (organization.totaltime < (tenPTotalOrgTime * 2)) ? 0 : 5;
+	let tenPTotalOrgTime = orgData.weeklyComittedHours * 0.1;
+	let orgTangibleColorTime = (orgData.totaltime < (tenPTotalOrgTime * 2)) ? 0 : 5;
 
 	if (orgTangibleColorTime === 5) {
-		let multipleRemaining = Math.floor((Math.abs((organization.totaltime - (tenPTotalOrgTime * 2))) / tenPTotalOrgTime));
+		let multipleRemaining = Math.floor((Math.abs((orgData.totaltime - (tenPTotalOrgTime * 2))) / tenPTotalOrgTime));
 		orgTangibleColorTime += (multipleRemaining * 10);
 	}
 	
-	organization.barcolor = getcolor(orgTangibleColorTime);
-	organization.barprogress = getprogress(orgTangibleColorTime);
+	orgData.barcolor = getcolor(orgTangibleColorTime);
+	orgData.barprogress = getprogress(orgTangibleColorTime);
 
 	return {
 		isAuthenticated: _.get(state, 'auth.isAuthenticated', false),
