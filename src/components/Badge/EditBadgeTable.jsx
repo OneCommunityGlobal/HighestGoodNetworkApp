@@ -6,6 +6,7 @@ import { connect } from 'react-redux';
 import { deleteBadge, closeAlert } from '../../actions/badgeManagement';
 import BadgeTableHeader from './BadgeTableHeader';
 import BadgeTableFilter from './BadgeTableFilter';
+import DeleteBadgePopup from './DeleteBadgePopup';
 
 
 const EditBadgeTable = (props) => {
@@ -15,6 +16,15 @@ const EditBadgeTable = (props) => {
   const [project, setProject] = useState('');
   const [category, setCategory] = useState('');
   const [order, setOrder] = useState('');
+  const [deleteId, setDeleteId] = useState('')
+  const [deleteName, setDeleteName] = useState('')
+  const [deletePopup, setDeletePopup] = useState(false);
+
+  const onDeleteButtonClick = (badgeId, badgeName) => {
+    setDeletePopup(true);
+    setDeleteId(badgeId);
+    setDeleteName(badgeName);
+  }
 
   const onBadgeNameSearch = (text) => {
     setName(text);
@@ -92,7 +102,8 @@ const EditBadgeTable = (props) => {
                   <Button outline color="info">Edit</Button>{' '}
                 </span>
                 <span className="badgemanagement-actions-cell">
-                  <Button outline color="danger" onClick={() => props.deleteBadge(value._id)}>Delete</Button>
+                  <Button outline color="danger" onClick={() => onDeleteButtonClick(value._id, value.badgeName)} data-backdrop="false">Delete</Button>
+                  <DeleteBadgePopup open={deletePopup} setDeletePopup={setDeletePopup} deleteBadge={props.deleteBadge} badgeId={deleteId} badgeName={deleteName} />
                 </span>
               </td>
             </tr>)}
