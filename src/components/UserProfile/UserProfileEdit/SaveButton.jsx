@@ -27,7 +27,6 @@ function SaveButton(props) {
         // to={`/userprofile/${this.state.userProfile._id}`}
         className="btn btn-outline-primary"
         onClick={handleSave}
-        style={{ display: 'flex', margin: 5 }}
         disabled={disabled}
       >
         Save Changes

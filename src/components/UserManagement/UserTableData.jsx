@@ -47,6 +47,7 @@ const UserTableData = React.memo((props) => {
         >
           {isChanging ? '...' : (props.isActive ? PAUSE : RESUME)}
         </button>
+
       </td>
       <td>
         {(props.user.isActive === false && props.user.reactivationDate)
