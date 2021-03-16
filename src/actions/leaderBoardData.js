@@ -24,7 +24,7 @@ export const getOrgData = () => {
 		//console.log(url)
 		const res = await httpService.get(url)
 
-		//console.log('LeaderBoardData is ', res.data)
+		//console.log('OrgData is ', res.data)
 
 		await dispatch(getOrgDataActionCreator(res.data))
 	}
