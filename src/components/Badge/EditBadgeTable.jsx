@@ -58,10 +58,27 @@ const EditBadgeTable = (props) => {
     let filteredList = allBadges.filter((badge) => {
       if (badge.badgeName.toLowerCase().indexOf(name.toLowerCase()) > -1 && badge.description.toLowerCase().indexOf(description.toLowerCase()) > -1 && (project.length === 0 || (project.length !== 0 && (badge.project && badge.project.projectName.toLowerCase().indexOf(project.toLowerCase()) > -1))) && badge.category.toLowerCase().indexOf(category.toLowerCase()) > -1) { return badge; }
     });
+
     if (order === "Ascending") {
-      filteredList.sort((a, b) => a.ranking - b.ranking);
+      filteredList.sort((a, b) => {
+        if (a.ranking === 0) return 1;
+        if (b.ranking === 0) return -1;
+        if (a.ranking > b.ranking) return 1;
+        if (a.ranking < b.ranking) return -1;
+        if (a.badgeName > b.badgeName) return 1;
+        if (a.badgeName < b.badgeName) return -1;
+      }
+      );
     } else if (order === "Descending") {
-      filteredList.sort((a, b) => b.ranking - a.ranking);
+      filteredList.sort((a, b) => {
+        if (a.ranking === 0) return -1;
+        if (b.ranking === 0) return 1;
+        if (a.ranking > b.ranking) return -1;
+        if (a.ranking < b.ranking) return 1;
+        if (a.badgeName > b.badgeName) return 1;
+        if (a.badgeName < b.badgeName) return -1;
+      }
+      );
     }
     return filteredList;
   }

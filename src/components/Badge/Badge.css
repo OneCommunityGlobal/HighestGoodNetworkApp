@@ -27,11 +27,24 @@
   border-radius: 50%;
   width: 20px;
   height: 20px;
-  background:#666;
+  background:#007bff;
   color: #fff;
   text-align: center;
-  vertical-align: middle;
   font: 15px Arial, sans-serif;
+  position: absolute;
+  right: 2px;
+  bottom: 2px;
+  z-index: 10;
+}
+
+.badge_count_3_digit {
+  border-radius: 50%;
+  width: 20px;
+  height: 15px;
+  background:#007bff;
+  color: #fff;
+  text-align: center;
+  font: 11px Arial, sans-serif;
   position: absolute;
   right: 2px;
   bottom: 2px;
@@ -86,5 +99,9 @@
 }
 
 .assign_badge_search_box {
-margin-bottom: 15px;
+  margin-bottom: 15px;
+}
+
+.badge_info_icon_text {
+  text-align: left;
 }
