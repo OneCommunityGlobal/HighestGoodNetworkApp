@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import {
-  Button, Form, FormGroup, Label, Input, FormText, FormFeedback, Alert
+  Button, Form, FormGroup, Label, Input, FormText, FormFeedback
 } from 'reactstrap';
 import { connect } from 'react-redux';
 import { fetchAllProjects } from '../../actions/projects';
@@ -16,11 +16,9 @@ const CreateNewBadge = (props) => {
   const [projectId, setProjectId] = useState(null);
   const [ranking, setRanking] = useState(0);
 
-
   useEffect(() => {
     props.fetchAllProjects();
   }, []);
-
 
   const enableButton = badgeName.length === 0 || imageUrl.length === 0 || description.length === 0
 
@@ -36,7 +34,7 @@ const CreateNewBadge = (props) => {
         setDescription(event.target.value);
         break;
       case 'category':
-        if (category === '--- Unspecified ---') {
+        if (category.length === 0) {
           setCategory('Unspecified');
         } else {
           setCategory(event.target.value);
@@ -44,7 +42,7 @@ const CreateNewBadge = (props) => {
         break;
       case 'project':
         setProjectName(event.target.value);
-        if (projectName === '--- Unspecified ---') {
+        if (projectName.length === 0) {
           setProjectId(null);
         } else {
           const selectedIndex = event.target.options.selectedIndex;
@@ -82,7 +80,7 @@ const CreateNewBadge = (props) => {
       </FormGroup>
       <FormGroup>
         <Label for="imageUrl">Image URL</Label>
-        <Input type="url" name="url" id="imageUrl" value={imageUrl} onChange={handleChange} placeholder="Image Url" invalid={imageUrl.length === 0} />
+        <Input type="url" name="url" id="imageUrl" value={imageUrl} onChange={handleChange} placeholder="Image URL" invalid={imageUrl.length === 0} />
         <FormText color="muted">
           For Dropbox URL that ends with "dl=0", please replace with "raw=1".
         </FormText>
@@ -94,7 +92,7 @@ const CreateNewBadge = (props) => {
       <FormGroup>
         <Label for="category">Category</Label>
         <Input type="select" name="selectCategory" id="category" value={category} onChange={handleChange}>
-          <option>--- Unspecified ---</option>
+          <option value={''}>{''}</option>
           <option>Food</option>
           <option>Energy</option>
           <option>Housing</option>
@@ -108,7 +106,7 @@ const CreateNewBadge = (props) => {
       <FormGroup>
         <Label for="project">Project</Label>
         <Input type="select" name="selectProject" id="project" value={projectName} onChange={handleChange}>
-          <option>--- Unspecified ---</option>
+          <option value={''}>{''}</option>
           {props.allProjects.map((project) => <option key={project._id} project-id={project._id} >{project.projectName}</option>)}
         </Input>
       </FormGroup>
@@ -117,9 +115,6 @@ const CreateNewBadge = (props) => {
         <Input type="number" min={0} name="ranking" id="badgeRanking" value={ranking} onChange={handleChange} placeholder="Please Enter a Number" />
       </FormGroup>
       <Button color="info" onClick={handleSubmit} disabled={enableButton}>Create</Button>
-      <Alert className="assign-badge-margin-top" color={props.color} isOpen={props.alertVisible} toggle={closeAlert} >
-        {props.message}
-      </Alert>
     </Form>
   );
 };

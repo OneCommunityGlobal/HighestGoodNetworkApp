@@ -9,7 +9,7 @@ class TextSearchBox extends React.PureComponent {
   }
 
   render() {
-    return <input type="text" id={'search_' + this.props.id}
+    return <input type="text" value={this.props.value} id={'search_' + this.props.id}
       style={this.props.style}
       onChange={this.onTextChange}></input>
   }

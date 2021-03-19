@@ -1,9 +1,9 @@
 import React from 'react';
 import {
-  Table, Button
+  Table, Button, CustomInput
 } from 'reactstrap';
 
-const BadgeReport = () => (
+const BadgeReport = (props) => (
   <div>
     <Table>
       <thead>
@@ -15,24 +15,14 @@ const BadgeReport = () => (
         </tr>
       </thead>
       <tbody>
-        <tr>
-          <td>50px image</td>
-          <td>3000 Hours Education</td>
-          <td>This badge belongs to the Education category, and the HGN Software Development project. People who earn this badge have completed 3000 hours of computer science courses. This badge has a ranking of 21.</td>
-          <td>checkbox</td>
-        </tr>
-        <tr>
-          <td>50px image</td>
-          <td>3000 Hours Education</td>
-          <td>This badge belongs to the Education category, and the HGN Software Development project. People who earn this badge have completed 3000 hours of computer science courses. This badge has a ranking of 21.</td>
-          <td>checkbox</td>
-        </tr>
-        <tr>
-          <td>50px image</td>
-          <td>3000 Hours Education</td>
-          <td>This badge belongs to the Education category, and the HGN Software Development project. People who earn this badge have completed 3000 hours of computer science courses. This badge has a ranking of 21.</td>
-          <td>checkbox</td>
-        </tr>
+        {props.badges.map((value, index) =>
+          <tr key={index}>
+            <td className="badge_image_sm"> <img src={value.badge.imageUrl} /></td>
+            <td>{value.badge.badgeName}</td>
+            <td>{value.badge.description}</td>
+            <td><CustomInput type="checkbox" id={value.badge._id} /></td>
+          </tr>
+        )}
       </tbody>
     </Table>
     <Button className="btn--dark-sea-green float-right" style={{ margin: 5 }}>Export to PDF</Button>

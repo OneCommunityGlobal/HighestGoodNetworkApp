@@ -150,3 +150,26 @@ export const createNewBadge = (newBadge) => async (dispatch) => {
     }
   }
 };
+
+export const deleteBadge = (badgeId) => async (dispatch) => {
+  try {
+    const res = await axios.delete(ENDPOINTS.BADGE_BY_ID(badgeId));
+    dispatch(getMessage(res.data.message, 'success'));
+    setTimeout(() => {
+      dispatch(closeAlert());
+    }, 6000);
+    dispatch(fetchAllBadges());
+  } catch (e) {
+    if (e.response.status === 403 || 400) {
+      dispatch(getMessage(e.response.data.error, 'danger'));
+      setTimeout(() => {
+        dispatch(closeAlert());
+      }, 6000);
+    } else {
+      dispatch(getMessage("Opps, something wrong!", 'danger'));
+      setTimeout(() => {
+        dispatch(closeAlert());
+      }, 6000);
+    }
+  }
+};
