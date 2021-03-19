@@ -10,14 +10,13 @@ import { fetchAllBadges } from '../../actions/badgeManagement';
 
 const BadgeManagement = (props) => {
   const [activeTab, setActiveTab] = useState('1');
-  const { userId } = props.match.params;
 
   const toggle = (tab) => {
     if (activeTab !== tab) setActiveTab(tab);
   };
 
   useEffect(() => {
-    props.fetchAllBadges(userId);
+    props.fetchAllBadges();
   }, []);
 
 
@@ -61,7 +60,7 @@ const BadgeManagement = (props) => {
 const mapStateToProps = state => ({ allBadgeData: state.badge.allBadgeData });
 
 const mapDispatchToProps = dispatch => ({
-  fetchAllBadges: userId => dispatch(fetchAllBadges(userId)),
+  fetchAllBadges: () => dispatch(fetchAllBadges()),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(BadgeManagement);

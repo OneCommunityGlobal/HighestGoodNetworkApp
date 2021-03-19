@@ -82,7 +82,7 @@ const ViewTab = (props) => {
           <Label>End Date</Label>
         </Col>
         <Col md="6">
-          <p>N/A</p>
+          <p>{userProfile.endDate ? moment(userProfile.endDate).format('YYYY-MM-DD') : 'N/A'}</p>
         </Col>
       </Row>
       <Row>

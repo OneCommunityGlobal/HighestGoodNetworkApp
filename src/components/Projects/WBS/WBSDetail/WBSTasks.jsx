@@ -169,6 +169,7 @@ const WBSTasks = (props) => {
         <table className="table table-bordered tasks-table">
           <thead>
             <tr>
+              <th scope="col" data-tip="Action" colSpan="2">Action</th>
               <th scope="col" data-tip="WBS ID" colSpan="2">#</th>
               <th scope="col" data-tip="Task Name" className="task-name">Task</th>
               <th scope="col" data-tip="Priority"><i className="fa fa-star" aria-hidden="true"></i></th>
@@ -243,4 +244,3 @@ const WBSTasks = (props) => {
 }
 const mapStateToProps = state => { return { state } }
 export default connect(mapStateToProps, { fetchAllTasks, updateNumList, deleteTask, fetchAllMembers })(WBSTasks)
-

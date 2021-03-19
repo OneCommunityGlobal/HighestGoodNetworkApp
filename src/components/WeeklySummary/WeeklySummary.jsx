@@ -41,7 +41,7 @@ export class WeeklySummary extends Component {
   };
 
   async componentDidMount() {
-    await this.props.getWeeklySummaries(this.props.currentUser.userid);
+    await this.props.getWeeklySummaries(this.props.asUser ? this.props.asUser : this.props.currentUser.userid);
     const { mediaUrl, weeklySummaries, weeklySummariesCount } = this.props.summaries;
 
     const summary = weeklySummaries && weeklySummaries[0] && weeklySummaries[0].summary || '';
@@ -183,7 +183,7 @@ export class WeeklySummary extends Component {
       weeklySummariesCount: this.state.formElements.weeklySummariesCount,
     }
 
-    const saveResult = await this.props.updateWeeklySummaries(this.props.currentUser.userid, modifiedWeeklySummaries);
+    const saveResult = await this.props.updateWeeklySummaries(this.props.asUser ? this.props.asUser : this.props.currentUser.userid, modifiedWeeklySummaries);
 
     if (saveResult === 200) {
       toast.success("✔ The data was saved successfully!", { toastId: toastIdOnSave, pauseOnFocusLoss: false, autoClose: 3000 });

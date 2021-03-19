@@ -49,6 +49,7 @@ class TimelogPage extends Component {
       disabled: this.props.auth.isAdmin ? false : true,
       isTangible: this.props.auth.isAdmin ? true : false
     }
+    this.userProfile = this.props.userProfile;
   }
 
   initialState = {
@@ -65,9 +66,10 @@ class TimelogPage extends Component {
 
   async componentDidMount() {
     
-    const userId = this.props.match && this.props.match.params.userId ? this.props.match.params.userId : this.props.auth.user.userid;
+    const userId = this.props.match && this.props.match.params.userId ? this.props.match.params.userId : this.props.asUser || this.props.auth.user.userid;
     //console.log(userId);
     await this.props.getUserProfile(userId);
+    this.userProfile = this.props.userProfile;
     await this.props.getTimeEntriesForWeek(userId, 0);
     await this.props.getTimeEntriesForWeek(userId, 1);
     await this.props.getTimeEntriesForWeek(userId, 2);
@@ -76,11 +78,15 @@ class TimelogPage extends Component {
   }
 
   async componentDidUpdate(prevProps) {
-    if (prevProps.match && prevProps.match.params.userId !== this.props.match.params.userId) {
+
+    if ((prevProps.match && prevProps.match.params.userId !== this.props.match.params.userId) || prevProps.asUser !== this.props.asUser) {
       this.setState(this.initialState);
 
-      const userId = this.props.match && this.props.match.params.userId ? this.props.match.params.userId : this.props.auth.user.userid;
+      const userId = this.props.match && this.props.match.params.userId ? this.props.match.params.userId : this.props.asUser || this.props.auth.user.userid;
+      
       await this.props.getUserProfile(userId);
+
+      this.userProfile = this.props.userProfile;
       await this.props.getTimeEntriesForWeek(userId, 0);
       await this.props.getTimeEntriesForWeek(userId, 1);
       await this.props.getTimeEntriesForWeek(userId, 2);
@@ -123,7 +129,7 @@ class TimelogPage extends Component {
 
   handleSearch(e) {
     e.preventDefault()
-    const userId = this.props.match && this.props.match.params.userId ? this.props.match.params.userId : this.props.auth.user.userid;
+    const userId = this.props.match && this.props.match.params.userId ? this.props.match.params.userId : this.props.asUser || this.props.auth.user.userid;
     this.props.getTimeEntriesForPeriod(
       userId,
       this.state.fromDate,
@@ -155,7 +161,7 @@ class TimelogPage extends Component {
         data={entry}
         displayYear={false}
         key={entry._id}
-        userProfile={this.props.userProfile}
+        userProfile={this.userProfile}
       />
     ))
   }
@@ -165,10 +171,10 @@ class TimelogPage extends Component {
     const lastWeekEntries = this.generateTimeEntries(this.props.timeEntries.weeks[1])
     const beforeLastEntries = this.generateTimeEntries(this.props.timeEntries.weeks[2])
     const periodEntries = this.generateTimeEntries(this.props.timeEntries.period)
-    const userId = this.props.match && this.props.match.params.userId ? this.props.match.params.userId : this.props.auth.user.userid;
+    const userId = this.props.match && this.props.match.params.userId ? this.props.match.params.userId : this.props.asUser || this.props.auth.user.userid;
     const isAdmin = this.props.auth.user.role === 'Administrator'
     const isOwner = this.props.auth.user.userid === userId; 
-    const fullName = `${this.props.userProfile.firstName} ${this.props.userProfile.lastName}`
+    const fullName = `${this.userProfile.firstName} ${this.userProfile.lastName}`
 
     let projects = []
     if (!_.isEmpty(this.props.userProjects.projects)) {
@@ -251,7 +257,7 @@ class TimelogPage extends Component {
                       edit={false}
                       toggle={this.toggle}
                       isOpen={this.state.modal}
-                      userProfile={this.props.userProfile}
+                      userProfile={this.userProfile}
                     />
                     <ReactTooltip id="registerTip" place="bottom" effect="solid">
                       Click this icon to learn about the timelog.

@@ -3,7 +3,7 @@
  * Author: Henry Ng - 02/03/20
  * Display member of the members list
  ********************************************************************************/
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { connect } from 'react-redux'
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import { importTask, fetchAllTasks } from './../../../../../actions/task';
@@ -13,11 +13,16 @@ import { TASK_IMPORT_POPUP_ID } from "./../../../../../constants/popupId"
 import parse from 'html-react-parser';
 
 const ImportTask = (props) => {
+
   const [isDone, setIsDone] = useState(0);
   // modal
   const [modal, setModal] = useState(false);
   const toggle = () => { setModal(!modal); setIsDone(0); props.fetchAllTasks(props.wbsId, 0); };
   const [taskList, setTaskList] = useState([]);
+
+  useEffect(() => {
+    props.getPopupById(TASK_IMPORT_POPUP_ID);
+  }, [1])
 
   const handleFileRead = async (rows) => {
     setIsDone(1);
@@ -103,11 +108,9 @@ const ImportTask = (props) => {
     }
 
 
-
-
     let newTask = {
       'taskName': `${taskName}`,
-      'num': `${num}`,
+      'num': `${num.toString().slice(-1) === '.' ? num.toString().slice(0, -1) : num.toString()}`,
       'level': `${parseInt(level, 10)}`,
       'position': `${position}`,
       'wbsId': `${props.wbsId}`,
@@ -125,6 +128,7 @@ const ImportTask = (props) => {
       'intentInfo': `${rowArr[19]}`,
       'endstateInfo': `${rowArr[20]}`,
       'links': `${rowArr[21]}`,
+      'classification': `${rowArr[22]}`,
       'mother': null,
       'parentId1': null,
       'parentId2': null,

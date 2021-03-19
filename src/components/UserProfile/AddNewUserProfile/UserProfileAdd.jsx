@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { StickyContainer } from 'react-sticky';
 import { Container, Row, Col, Input, FormFeedback, FormGroup, Form, Label, Button, TabPane, TabContent, NavItem, NavLink, Nav } from 'reactstrap';
 // import Image from 'react-bootstrap/Image';
-// import ToggleSwitch from '../UserProfileEdit/ToggleSwitch';
+import ToggleSwitch from '../UserProfileEdit/ToggleSwitch';
 import './UserProfileAdd.scss';
 import { createUser } from '../../../services/userProfileService';
 import { toast } from 'react-toastify';
@@ -30,7 +30,8 @@ class AddUserProfile extends Component {
       activeTab: "1",
       userProfile: {
         weeklyComittedHours: 10,
-        role: 'Administrator'
+        role: 'Administrator',
+        privacySettings: { blueSquares: true, email: true, phoneNumber: true }
       },
       formValid: {
 
@@ -85,6 +86,12 @@ class AddUserProfile extends Component {
                 </Col>
                 <Col md="6">
                   <FormGroup>
+                    <ToggleSwitch
+                      switchType="email"
+                      state={this.state.userProfile.privacySettings?.email}
+                      handleUserProfile={this.handleUserProfile}
+                    />
+
                     <Input
                       type="email"
                       name="email"
@@ -104,6 +111,11 @@ class AddUserProfile extends Component {
                 </Col>
                 <Col md="6">
                   <FormGroup>
+                    <ToggleSwitch
+                      switchType="phone"
+                      state={this.state.userProfile.privacySettings?.phoneNumber}
+                      handleUserProfile={this.handleUserProfile}
+                    />
                     <Input
                       type="number"
                       name="phoneNumber"
@@ -144,6 +156,40 @@ class AddUserProfile extends Component {
                       <option value="Manager">Manager</option>
                       <option value="Core Team">Core Team</option>
                     </select>
+                  </FormGroup>
+                </Col>
+              </Row>
+              <Row>
+                <Col md="6">
+                  <Label>Video Call Preference</Label>
+                </Col>
+                <Col md="6">
+                  <FormGroup>
+                    <Input
+                      type="text"
+                      name="collaborationPreference"
+                      id="collaborationPreference"
+                      value={this.state.userProfile.collaborationPreference}
+                      onChange={this.handleUserProfile}
+                      placeholder="Skype, Zoom, etc."
+                    />
+                  </FormGroup>
+                </Col>
+              </Row>
+              <Row>
+                <Col md="6">
+                  <Label>Google Doc</Label>
+                </Col>
+                <Col md="6">
+                  <FormGroup>
+                    <Input
+                      type="text"
+                      name="googleDoc"
+                      id="googleDoc"
+                      value={this.state.userProfile.googleDoc}
+                      onChange={this.handleUserProfile}
+                      placeholder="Admin Document"
+                    />
                   </FormGroup>
                 </Col>
               </Row>
@@ -255,7 +301,7 @@ class AddUserProfile extends Component {
 
   createUserProfile = () => {
     let that = this;
-    const { firstName, email, lastName, phoneNumber, role } = that.state.userProfile;
+    const { firstName, email, lastName, phoneNumber, role, privacySettings, collaborationPreference, googleDoc } = that.state.userProfile;
 
     const userData = {
       password: "123Welocme!",
@@ -264,13 +310,19 @@ class AddUserProfile extends Component {
       lastName: lastName,
       jobTitle: "",
       phoneNumber: phoneNumber,
-      bio: "bio",
+      bio: "",
       weeklyComittedHours: that.state.userProfile.weeklyComittedHours,
       personalLinks: [],
       adminLinks: [],
       teams: this.state.teams,
       projects: this.state.projects,
-      email: email
+      email: email,
+      privacySettings: privacySettings,
+      collaborationPreference: collaborationPreference
+    }
+
+    if (googleDoc) {
+      userData.adminLinks.push({ Name: "Google Doc", Link: googleDoc })
     }
 
     createUser(userData).then(res => {
@@ -427,6 +479,44 @@ class AddUserProfile extends Component {
           userProfile: {
             ...userProfile,
             role: event.target.value,
+          },
+        });
+        break;
+      case 'collaborationPreference':
+        this.setState({
+          userProfile: {
+            ...userProfile,
+            collaborationPreference: event.target.value,
+          },
+        });
+        break;
+      case 'googleDoc':
+        this.setState({
+          userProfile: {
+            ...userProfile,
+            googleDoc: event.target.value,
+          },
+        });
+        break;
+      case 'emailPubliclyAccessible':
+        this.setState({
+          userProfile: {
+            ...userProfile,
+            privacySettings: {
+              ...userProfile.privacySettings,
+              email: !userProfile.privacySettings?.email,
+            },
+          },
+        });
+        break;
+      case 'phonePubliclyAccessible':
+        this.setState({
+          userProfile: {
+            ...userProfile,
+            privacySettings: {
+              ...userProfile.privacySettings,
+              phoneNumber: !userProfile.privacySettings?.phoneNumber,
+            },
           },
         });
         break;

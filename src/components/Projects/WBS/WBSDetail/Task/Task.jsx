@@ -136,13 +136,26 @@ const Task = (props) => {
 
       <tr key={props.key} className={`num_${props.num.split('.').join('')} wbsTask  ${props.isNew ? 'newTask' : ''} parentId1_${props.parentId1} parentId2_${props.parentId2} parentId3_${props.parentId3} mother_${props.mother} lv_${props.level}`} id={props.id}>
         <td className={`tag_color tag_color_${props.num.length > 0 ? props.num.split('.')[0] : props.num} tag_color_lv_${props.level}`}></td>
+        <td>
+          <EditTaskModal
+            key={`editTask_${props.id}`}
+            parentNum={props.num}
+            taskId={props.id}
+            projectId={props.projectId}
+            wbsId={props.wbsId}
+            parentId1={props.parentId1}
+            parentId2={props.parentId2}
+            parentId3={props.parentId3}
+            mother={props.mother}
+            level={props.level}
+          />
+        </td>
         <td
           id={`r_${props.num}_${props.id}`}
           scope="row"
           className="taskNum" onClick={() => { selectTask(props.id); toggleGroups(props.num, props.id, props.level) }}>
           {props.num.split('.0').join('')}</td>
         <td className="taskName">
-
           {props.level === 1 ? <div className='level-space-1' data-tip="Level 1"><span onClick={(e) => toggleGroups(props.num, props.id, props.level)} id={`task_name_${props.id}`} className={props.hasChildren ? 'has_children' : ''}>  {props.hasChildren ? <i data-tip="Not Started" className={`fa fa-folder${isOpen ? '-open' : ''}`} aria-hidden="true"></i> : null} {props.name}</span></div> : null}
           {props.level === 2 ? <div className='level-space-2' data-tip="Level 2"><span onClick={(e) => toggleGroups(props.num, props.id, props.level)} id={`task_name_${props.id}`} className={props.hasChildren ? 'has_children' : ''}> {props.hasChildren ? <i data-tip="Not Started" className={`fa fa-folder${isOpen ? '-open' : ''}`} aria-hidden="true"></i> : null}  {props.name}</span></div> : null}
           {props.level === 3 ? <div className='level-space-3' data-tip="Level 3"><span onClick={(e) => toggleGroups(props.num, props.id, props.level)} id={`task_name_${props.id}`} className={props.hasChildren ? 'has_children' : ''}> {props.hasChildren ? <i data-tip="Not Started" className={`fa fa-folder${isOpen ? '-open' : ''}`} aria-hidden="true"></i> : null}  {props.name}</span></div> : null}
@@ -340,4 +353,3 @@ const Task = (props) => {
 }
 const mapStateToProps = state => { return { state } }
 export default connect(mapStateToProps, { moveTasks, fetchAllTasks, deleteTask, copyTask, getPopupById })(Task)
-

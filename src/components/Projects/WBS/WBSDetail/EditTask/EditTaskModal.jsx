@@ -86,6 +86,9 @@ const EditTaskModal = (props) => {
   // Endstate info (what it should look like when done)
   const [endstateInfo, setEndstateInfo] = useState(thisTask.endstateInfo)
 
+  // Classification
+  const [classification, setClassification] = useState(thisTask.classification)
+
   // Warning
   const [dateWarning, setDateWarning] = useState(false)
   const [hoursWarning, setHoursWarning] = useState(false)
@@ -221,6 +224,7 @@ const EditTaskModal = (props) => {
       whyInfo,
       intentInfo,
       endstateInfo,
+      classification
     }
 
     props.updateTask(props.taskId, updatedTask)
@@ -454,6 +458,21 @@ const EditTaskModal = (props) => {
                       </div>
                     ) : null))}
                   </div>
+                </td>
+              </tr>
+              <tr>
+                <td scope="col">Classification</td>
+                <td scope="col">
+                  <select value={classification} onChange={e => setClassification(e.target.value)}>
+                    <option value="Food">Food</option>
+                    <option value="Energy">Energy</option>
+                    <option value="Housing">Housing</option>
+                    <option value="Education">Education</option>
+                    <option value="Soceity">Society</option>
+                    <option value="Economics">Economics</option>
+                    <option value="Stewardship">Stewardship</option>
+                    <option value="Not Assigned">Not Assigned</option>
+                  </select>
                 </td>
               </tr>
               <tr>

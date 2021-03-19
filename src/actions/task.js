@@ -128,12 +128,11 @@ export const updateTask = (taskId, updatedTask) => {
 }
 
 export const deleteTask = (taskId, mother) => {
-  console.log(mother);
   const url = ENDPOINTS.TASK_DEL(taskId, mother);
   return async dispatch => {
     let status = 200;
     try {
-      const res = await axios.delete(url);
+      const res = await axios.post(url);
       status = res.status;
     } catch (err) {
       status = 400;
