@@ -105,7 +105,7 @@ export const fetchAllTasks = (wbsId) => {
       console.log(request.data)
     } catch (err) {
       dispatch(setTasksError(err));
-      console.log('yueru add log here')
+      console.log('yueru add log here err')
       console.log(err)
     }
   }

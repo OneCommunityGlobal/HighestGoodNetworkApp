@@ -4,9 +4,10 @@ import TasksTable from './TasksTable'
 
 const  WbsTable = (props) => {
   let WbsList = [];
+  let WbsTasksID = []
+  let tasksTable=[]
   if (props.wbs.fetched) {
     if (props.wbs.WBSItems.length > 0) {
-      let WbsTasksID = []
       for (var i = 0; i < props.wbs.WBSItems.length; i++) {
         WbsTasksID.push(props.wbs.WBSItems[i]._id);
       }
@@ -22,31 +23,45 @@ const  WbsTable = (props) => {
             {String(item.isActive)}
           </td>
           <td>
-
-            <TasksTable WbsTasksID={WbsTasksID}/>
+            {(item._id)}
           </td>
         </tr>
+
       );
+
+       tasksTable=(
+          <table>
+            <TasksTable WbsTasksID={WbsTasksID}/>
+          </table>
+      )
+
+
+      }
     }
-  }
+
   return (
-    <table class="center">
-      <table className="table table-bordered table-responsive-sm">
-        <thead>
-        <tr>
-          <th scope="col" id="projects__order">#</th>
-          <th scope="col">WBS_NAME</th>
-          <th scope="col" id="projects__active">ACTIVE</th>
-          <th scope="col" id="projects__active">Tasks</th>
-        </tr>
-        </thead>
-        <tbody>
-        {WbsList}
-        </tbody>
+    <div>
+      <table class="center">
+        <table className="table table-bordered table-responsive-sm">
+          <thead>
+          <tr>
+            <th scope="col" id="projects__order">#</th>
+            <th scope="col">WBS_NAME</th>
+            <th scope="col" id="projects__active">ACTIVE</th>
+            <th scope="col" id="projects__active">wbs ID</th>
+          </tr>
+          </thead>
+          <tbody>
+          {WbsList}
+          </tbody>
+        </table>
       </table>
-    </table>
+     {tasksTable}
+    </div>
   )
 
 }
+
+
 
 export default WbsTable;

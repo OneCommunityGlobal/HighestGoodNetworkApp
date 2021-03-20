@@ -2,8 +2,6 @@ import React from 'react'
 import './reports.css'
 
 const  ProjectMemberTable = (props) => {
-  // console.log('here')
-  // console.log(props.projectMembers)
   let memberList = [];
   if (props.projectMembers.fetched) {
     if (props.projectMembers.members.length > 0) {

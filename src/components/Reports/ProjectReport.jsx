@@ -9,6 +9,7 @@ import { fetchAllWBS } from '../../actions/wbs'
 import { fetchAllMembers } from '../../actions/projectMembers'
 import WbsTable from './WbsTable'
 import ProjectMemberTable from './ProjectMemberTable'
+import { fetchAllTasks } from '../../actions/task'
 
 
 class ProjectReport extends Component{
@@ -22,7 +23,9 @@ class ProjectReport extends Component{
       endDate:'',
       showDatePicker:false,
       wbs:{},
-      projectMembers:{}
+      projectMembers:{},
+      tasks:{},
+      wbsID:[],
     }
     this.setStartDate=this.setStartDate.bind(this)
     this.setEndDate=this.setEndDate.bind(this)
@@ -65,6 +68,8 @@ class ProjectReport extends Component{
       this.props.fetchAllWBS(this.props.match.params.projectId)
       this.props.fetchAllMembers(this.props.match.params.projectId)
 
+
+
       this.setState({
         project: {
           ...this.props.project},
@@ -84,7 +89,10 @@ class ProjectReport extends Component{
       project,
       startDate,
       endDate,
+      wbs,
+      showDatePicker,
 
+      projectMembers
     } = this.state
 
     const {
@@ -106,13 +114,23 @@ class ProjectReport extends Component{
         </DropdownButton>
         <div>
           <button style={{margin:'3px'}} exact className="btn btn-secondary btn-bg mt-3">Date</button>
-          <button style={{margin:'3px'}} exact className="btn btn-secondary btn-bg mt-3">Priority Level</button>
-          <button style={{margin:'3px'}} exact className="btn btn-secondary btn-bg mt-3">Status</button>
+          <DropdownButton style={{margin:'3px'}} exact id="dropdown-basic-button" title="Priority Level">
+            <Dropdown.Item href="#/action-1">Primary</Dropdown.Item>
+            <Dropdown.Item href="#/action-2">Secondary</Dropdown.Item>
+            <Dropdown.Item href="#/action-3">Tertiary</Dropdown.Item>
+          </DropdownButton>
+          <DropdownButton style={{margin:'3px'}} exact id="dropdown-basic-button" title="Status">
+            <Dropdown.Item href="#/action-1">Complete</Dropdown.Item>
+            <Dropdown.Item href="#/action-2">Paused</Dropdown.Item>
+            <Dropdown.Item href="#/action-3">Not Started</Dropdown.Item>
+            <Dropdown.Item href="#/action-4">Active</Dropdown.Item>
+            <Dropdown.Item href="#/action-5">Ready for Final Review</Dropdown.Item>
+          </DropdownButton>
           <button style={{margin:'3px'}} exact className="btn btn-secondary btn-bg mt-3">Manager</button>
           <button style={{margin:'3px'}} exact className="btn btn-secondary btn-bg mt-3">Estimated Hours</button>
           <button style={{margin:'3px'}} exact className="btn btn-secondary btn-bg mt-3">Ready for Review</button>
         </div>
-        {this.state.showDatePicker &&
+        {showDatePicker &&
           <div>
             From: <DatePicker selected={startDate} onChange={date => this.setStartDate(date)}/>
             To: <DatePicker selected={endDate} onChange={date => this.setEndDate(date)}/>
@@ -122,19 +140,8 @@ class ProjectReport extends Component{
         <h2>Project Name:{projectName}</h2>
         <h2>Project ID:{_id}</h2>
         <h5>Active:{String(isActive)}</h5>
-        <WbsTable wbs={this.state.wbs}/>
-        <ProjectMemberTable projectMembers={this.state.projectMembers}/>
-
-        {/*<tbody>*/}
-        {/*{*/}
-        {/*  WBSItems.map((item, index) =>*/}
-        {/*    <tr  id={`tr_${item._id}`} key={item._id}>*/}
-        {/*      <th className="teams__order--input" scope="row"><div>{index + 1}</div></th>*/}
-        {/*      <th className="teams__order--input" scope="row"><div>{item.wbsName}</div></th>*/}
-        {/*      <th className="teams__order--input" scope="row"><div>{String(item.isActive)}</div></th>*/}
-        {/*    </tr>*/}
-        {/*  )}*/}
-        {/*</tbody>*/}
+        <WbsTable wbs={wbs}/>
+        <ProjectMemberTable projectMembers={projectMembers}/>
       </div>
     )
   }
@@ -143,9 +150,11 @@ class ProjectReport extends Component{
 const mapStateToProps = state => ({
   project: state.project,
   wbs: state.wbs,
-  projectMembers:state.projectMembers
+  projectMembers:state.projectMembers,
+  tasks: state.tasks
 });
 
 export default connect(mapStateToProps, {
-  getProjectDetail,fetchAllWBS,fetchAllMembers
+  getProjectDetail,fetchAllWBS,fetchAllMembers,  fetchAllTasks,
+
 })(ProjectReport);
