@@ -60,7 +60,6 @@ describe('User profile page', () => {
     it('should render delete buttons', () => {
       expect(screen.getAllByRole('button', { name: /delete/i })).toHaveLength(userProfileMock.teams.length + userProfileMock.projects.length);
     });
-
     it('should render multiple links', () => {
       expect(screen.getAllByRole('link')).toHaveLength(userProfileMock.personalLinks.length + userProfileMock.adminLinks.length + 1);
     });
@@ -102,7 +101,6 @@ describe('User profile page', () => {
       expect(screen.getByRole('button', { name: /reset password/i }));
     });
   });
-
   describe('behavior', () => {
     it('should show User Profile information when the user clicks on the tip button', async () =>{
       userEvent.click(screen.getByTitle(/click for more information/i));
@@ -235,6 +233,62 @@ describe('User profile page', () => {
       userEvent.upload(uploadPhotoBtn,imageFile);
       expect(uploadPhotoBtn.files[0]).toStrictEqual(imageFile)
       expect(uploadPhotoBtn.files).toHaveLength(1)
+    })
+  });
+
+  describe('BlueSquare Handler', () => {
+    it("should trigger addBlueSquare when admin click on + button", async () => {
+      userEvent.click(screen.getByText('+'));
+      expect(screen.getByRole('button', {name : 'Submit'})).toBeInTheDocument();
+    })
+    it("should trigger addBlueSquare when admin click on random blue square", async () => {
+      userEvent.click(screen.getAllByRole('button')[2]);
+      expect(screen.getByText('Summary')).toBeInTheDocument();
+    })
+  });
+});
+
+describe('Non-admin user', () => {
+  const userId = authMock.user.userid;
+  let store;
+  beforeEach(() => {
+    store = mockStore({
+      auth:{
+        isAdmin: false,
+        user: {
+          userid: '5edf141c78f1380017b829a6',
+          role: 'Volunteer',
+          expiryTimestamp: '2020-08-22T22:51:06.544Z',
+          iat: 1597272666,
+        },
+        firstName: authMock.firstName,
+        profilePic: authMock.profilePic,
+      },
+      userProfile: userProfileMock,
+      user: authMock.user,
+      timeEntries: timeEntryMock,
+      userProjects: userProjectMock,
+      allProjects: allProjectsMock,
+      allTeams: allTeamsMock,
+    });
+    store.dispatch = jest.fn();
+    renderWithRouterMatch(
+      <Route path="/userprofile/:userId">
+        {props => <Userprofile {...props} />}
+      </Route>,
+      {
+        route: `/userprofile/${userId}`,
+        store,
+      },
+    );
+  });
+  describe('BlueSquare Handler', () => {
+    it('should not render the + button', () => {
+      expect(screen.queryByText('+')).toBeFalsy();
+    });
+    it("should fire handleBlueSquare to view the blue square once the user click", async () => {
+      userEvent.click(screen.getAllByRole('button')[2]);
+      expect(screen.getByText('Summary')).toBeInTheDocument();
     })
   });
 });
