@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import {
-  Table, Button
+  Table, Button, UncontrolledTooltip
 } from 'reactstrap';
 import AssignTableRow from './AssignTableRow';
 
@@ -32,7 +32,11 @@ const AssignBadgePopup = (props) => {
           <tr>
             <th>Badge</th>
             <th>Name</th>
-            <th />
+            <th><i class="fa fa-info-circle" id="SelectInfo" />
+              <UncontrolledTooltip placement="right" target="SelectInfo" style={{ backgroundColor: '#666', color: '#fff' }}>
+                <p className="badge_info_icon_text">Hmmm, little blank boxes... what could they mean? Yep, you guessed it, check those boxes to select the badges you wish to assign a person. Click the "Confirm" button at the bottom when you've selected all you wish to add.</p>
+                <p className="badge_info_icon_text">Want to assign multiple of the same badge to a person? Repeat the process!!</p>
+              </UncontrolledTooltip></th>
           </tr>
         </thead>
         <tbody>

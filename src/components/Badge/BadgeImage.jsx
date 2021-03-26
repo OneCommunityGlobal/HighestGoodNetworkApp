@@ -14,7 +14,9 @@ const BadgeImage = (props) => {
         <div className="badge_image_sm">
           <img src={props.badgeData.imageUrl} id={"popover_" + props.time + props.index.toString()} alt="" />
         </div>
-        <span className="badge_count">{props.count}</span>
+        {props.count < 100 ?
+          <span className="badge_count">{props.count}</span> :
+          <span className="badge_count_3_digit">{props.count}</span>}
       </div>
       <Popover trigger="hover" isOpen={isOpen} toggle={toggle} target={"popover_" + props.time + props.index.toString()}>
         <Card className="text-center">
