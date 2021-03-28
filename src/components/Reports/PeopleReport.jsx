@@ -81,21 +81,14 @@ class PeopleReport extends Component {
       )
     }
     const UserProject = props => {
-      console.log('herrrrr')
-      console.log(props.userProjects.projects)
-      // console.log(props.userProjects.projects.length)
+      // console.log('herrrrr')
+      // console.log(props.userProjects.projects)
 
       let userProjectList = []
-      // if (props.userProjects.length > 0) {
-      //   userProjectList = props.userProjects.projects.map((project, index) => (
-      //     <div>
-      //       <div>{project.projectName} </div>
-      //     </div>
-      //   ))}
+
       return (
         <div>
           <h1>User Task</h1>
-          {/*<h1>Total: {props.userProject.length}</h1>*/}
           { userProjectList }
         </div>
       )

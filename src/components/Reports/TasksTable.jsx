@@ -3,8 +3,7 @@ import '../Teams/Team.css';
 import { connect } from 'react-redux'
 import { Dropdown, DropdownButton } from 'react-bootstrap'
 import { fetchAllTasks } from '../../actions/task'
-import ImportTask from '../Projects/WBS/WBSDetail/ImportTask/ImportTask'
-import WbsTable from './WbsTable'
+import "react-datepicker/dist/react-datepicker.css";
 import TasksDetail from './TasksDetail'
 
 class TasksTable extends Component{
@@ -14,11 +13,21 @@ class TasksTable extends Component{
     this.state = {
       tasks: {},
       tasks_per_project: {},
-      tasks_filter: {}
+      tasks_filter: {},
+      isAssigned:false,
+      isActive:false,
+      priority:'',
+      status:''
+
     }
     this.setTasks=this.setTasks.bind(this)
+    this.setStatus=this.setStatus.bind(this)
+    this.setPriority=this.setPriority.bind(this)
     this.get_task_by_wbsId=this.get_task_by_wbsId.bind(this)
-
+    this.setActive=this.setActive.bind(this)
+    this.setInActive=this.setInActive.bind(this)
+    this.setAssign=this.setAssign.bind(this)
+    this.setNotAssign=this.setNotAssign.bind(this)
 
   }
   setTasks( get_tasks=[]) {
@@ -28,8 +37,6 @@ class TasksTable extends Component{
       }
     });
   }
-
-
 
   async componentDidMount() {
     this.setState({
@@ -67,27 +74,96 @@ class TasksTable extends Component{
     }
     return get_tasks
   }
+  setActive() {
+    this.setState((state) => {
+      return {
+        isActive:true
+      }
+    });
+  }
+  setPriority(priorityValue) {
+    this.setState((state) => {
+      return {
+        priority:priorityValue
+      }
+    });
+  }
 
+  setStatus(statusValue) {
+    this.setState((state) => {
+      return {
+        status:statusValue
+      }
+    });
+  }
 
+  setInActive(){
+    this.setState(()=>({
+      isActive:false
+    }))
 
-
+  }
+  setAssign() {
+    this.setState((state) => {
+      return {
+        isAssigned:true
+      }
+    });
+  }
+  setNotAssign(){
+    this.setState(()=>({
+      isAssigned:false
+    }))
+  }
 
 
   render() {
     const {
-      tasks,
-      id_List,
-      tasks_filter
+      isAssigned,
+      isActive,
+      priority,
+      status
     } = this.state
-    const {
-      taskItems
-    } = tasks
+
 
     var get_tasks=this.get_task_by_wbsId()
 
     return(
       <tbody>
-      <TasksDetail tasks_filter={get_tasks}/>
+      <div>
+        <DropdownButton id="dropdown-basic-button" title="Assignment Status">
+          <Dropdown.Item  onClick={this.setAssign}>Assign</Dropdown.Item>
+          <Dropdown.Item onClick={this.setNotAssign}>Not Assign</Dropdown.Item>
+        </DropdownButton>
+
+        <input name='radio' type="radio" style={{margin:'5px'}} value="active" onChange={this.setActive}  />
+        Active
+        <input name='radio' type="radio" style={{margin:'5px'}} value="inactive" onChange={this.setInActive } />
+        InActive
+        <DropdownButton style={{margin:'3px'}} exact id="dropdown-basic-button" title="Priority Level">
+          <Dropdown.Item onClick={()=>this.setPriority('Primary')}>Primary</Dropdown.Item>
+          <Dropdown.Item  onClick={()=>this.setPriority('Secondary')}>Secondary</Dropdown.Item>
+          <Dropdown.Item  onClick={()=>this.setPriority('Tertiary') }>Tertiary</Dropdown.Item>
+        </DropdownButton>
+        <DropdownButton style={{margin:'3px'}} exact id="dropdown-basic-button" title="Status">
+          <Dropdown.Item onClick={()=>this.setStatus('Complete')}>Complete</Dropdown.Item>
+          <Dropdown.Item onClick={()=>this.setStatus('Paused')}>Paused</Dropdown.Item>
+          <Dropdown.Item onClick={()=>this.setStatus('Not Started')}>Not Started</Dropdown.Item>
+          <Dropdown.Item onClick={()=>this.setStatus('Active')}>Active</Dropdown.Item>
+          <Dropdown.Item onClick={()=>this.setStatus('Ready for Final Review')}>Ready for Final Review</Dropdown.Item>
+        </DropdownButton>
+        <button style={{margin:'3px'}} exact className="btn btn-secondary btn-bg mt-3">User</button>
+        <button style={{margin:'3px'}} exact className="btn btn-secondary btn-bg mt-3">Estimated Hours</button>
+        <button style={{margin:'3px'}} exact className="btn btn-secondary btn-bg mt-3">Classification</button>
+      </div>
+      <TasksDetail
+        tasks_filter={get_tasks}
+        isAssigned={isAssigned}
+        isActive={isActive}
+        priority={priority}
+        status={status}
+
+      />
       </tbody>
     )
   }
@@ -96,7 +172,13 @@ class TasksTable extends Component{
 const mapStateToProps = state => ({
   tasks: state.tasks,
   id_List:state.id_List,
-  tasks_filter:state.tasks_filter
+  tasks_filter:state.tasks_filter,
+  isAssigned:state.isAssigned,
+  isActive:state.isActive,
+  priority:state.priority,
+  status:state.status
+
+
 });
 
 

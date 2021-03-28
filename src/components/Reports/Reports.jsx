@@ -55,7 +55,7 @@ class ReportsPage extends Component {
   }
 
   setIsActive = () => {
-    console.log(this.state.checkActive)
+   // console.log(this.state.checkActive)
   }
 
   componentDidMount() {
@@ -90,7 +90,7 @@ class ReportsPage extends Component {
   }
 
   setInActive(){
-    console.log('here set inactive')
+    //console.log('here set inactive')
     this.setState(()=>({
       checkActive:'false'
     }))

@@ -104,38 +104,22 @@ class ProjectReport extends Component{
 
     return(
       <div>
-        <DropdownButton id="dropdown-basic-button" title="Time Frame">
-          <Dropdown.Item href="#/action-1">Past Week</Dropdown.Item>
-          <Dropdown.Item href="#/action-2">Past Two Weeks</Dropdown.Item>
-          <Dropdown.Item href="#/action-3">Past Month</Dropdown.Item>
-          <Dropdown.Item href="#/action-4">Past 6 Months</Dropdown.Item>
-          <Dropdown.Item href="#/action-5">Past Year</Dropdown.Item>
-          <Dropdown.Item href="#/action-6" onClick={this.showDatePickerSection}>Custom range</Dropdown.Item>
-        </DropdownButton>
-        <div>
-          <button style={{margin:'3px'}} exact className="btn btn-secondary btn-bg mt-3">Date</button>
-          <DropdownButton style={{margin:'3px'}} exact id="dropdown-basic-button" title="Priority Level">
-            <Dropdown.Item href="#/action-1">Primary</Dropdown.Item>
-            <Dropdown.Item href="#/action-2">Secondary</Dropdown.Item>
-            <Dropdown.Item href="#/action-3">Tertiary</Dropdown.Item>
-          </DropdownButton>
-          <DropdownButton style={{margin:'3px'}} exact id="dropdown-basic-button" title="Status">
-            <Dropdown.Item href="#/action-1">Complete</Dropdown.Item>
-            <Dropdown.Item href="#/action-2">Paused</Dropdown.Item>
-            <Dropdown.Item href="#/action-3">Not Started</Dropdown.Item>
-            <Dropdown.Item href="#/action-4">Active</Dropdown.Item>
-            <Dropdown.Item href="#/action-5">Ready for Final Review</Dropdown.Item>
-          </DropdownButton>
-          <button style={{margin:'3px'}} exact className="btn btn-secondary btn-bg mt-3">Manager</button>
-          <button style={{margin:'3px'}} exact className="btn btn-secondary btn-bg mt-3">Estimated Hours</button>
-          <button style={{margin:'3px'}} exact className="btn btn-secondary btn-bg mt-3">Ready for Review</button>
-        </div>
+      <DropdownButton id="dropdown-basic-button" title="Time Frame">
+        <Dropdown.Item href="#/action-1">Past Week</Dropdown.Item>
+        <Dropdown.Item href="#/action-2">Past Two Weeks</Dropdown.Item>
+        <Dropdown.Item href="#/action-3">Past Month</Dropdown.Item>
+        <Dropdown.Item href="#/action-4">Past 6 Months</Dropdown.Item>
+        <Dropdown.Item href="#/action-5">Past Year</Dropdown.Item>
+        <Dropdown.Item href="#/action-6" onClick={this.showDatePickerSection}>Custom range</Dropdown.Item>
+      </DropdownButton>
+      <div>
         {showDatePicker &&
-          <div>
-            From: <DatePicker selected={startDate} onChange={date => this.setStartDate(date)}/>
-            To: <DatePicker selected={endDate} onChange={date => this.setEndDate(date)}/>
-          </div>
+        <div>
+          From: <DatePicker selected={startDate} onChange={date => this.setStartDate(date)}/>
+          To: <DatePicker selected={endDate} onChange={date => this.setEndDate(date)}/>
+        </div>
         }
+      </div>
 
         <h2>Project Name:{projectName}</h2>
         <h2>Project ID:{_id}</h2>
@@ -143,6 +127,7 @@ class ProjectReport extends Component{
         <WbsTable wbs={wbs}/>
         <ProjectMemberTable projectMembers={projectMembers}/>
       </div>
+
     )
   }
 
