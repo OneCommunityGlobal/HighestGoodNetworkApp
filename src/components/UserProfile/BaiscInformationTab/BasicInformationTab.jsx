@@ -324,6 +324,21 @@ const BasicInformationTab = (props) => {
       </Row>
       <Row>
         <Col md="6">
+          <Label>Role</Label>
+        </Col>
+        <Col md="6">
+          <FormGroup>
+            <select value={userProfile.role} onChange={handleUserProfile} id="role" name="role" className="form-control" disabled={!isUserAdmin}>
+              <option value="Administrator">Administrator</option>
+              <option value="Volunteer">Volunteer</option>
+              <option value="Manager">Manager</option>
+              <option value="Core Team">Core Team</option>
+            </select>
+          </FormGroup>
+        </Col>
+      </Row>
+      <Row>
+        <Col md="6">
           <Label>Status</Label>
         </Col>
         <Col md="6">

@@ -30,7 +30,7 @@ class AddUserProfile extends Component {
       activeTab: "1",
       userProfile: {
         weeklyComittedHours: 10,
-        role: 'Administrator',
+        role: 'Volunteer',
         privacySettings: { blueSquares: true, email: true, phoneNumber: true }
       },
       formValid: {
