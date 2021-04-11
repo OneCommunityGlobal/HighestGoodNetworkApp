@@ -959,7 +959,7 @@ class EditProfile extends Component {
                           className={styleProfile.profileText}
                           value={userProfile.weeklyComittedHours}
                           onChange={this.handleUserProfile}
-                          placeholder="weeklyComittedHours"
+                          placeholder="weeklyCommittedHours"
                           invalid={!isUserAdmin}
                         />
                       </Col>
@@ -976,7 +976,7 @@ class EditProfile extends Component {
                           className={styleProfile.profileText}
                           value={userProfile.totalComittedHours}
                           onChange={this.handleUserProfile}
-                          placeholder="TotalComittedHours"
+                          placeholder="totalCommittedHours"
                           invalid={!isUserAdmin}
                         />
                       </Col>

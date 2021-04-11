@@ -10,7 +10,7 @@ import {
   authMock, userProfileMock, timeEntryMock, userProjectMock, allProjectsMock, allTeamsMock,
 } from '../mockStates';
 import { renderWithRouterMatch } from '../utils';
-import UserProfile from '../../components/UserProfile/UserProfile.container';
+import UserProfileEdit from '../../components/UserProfile/UserProfileEdit/UserProfileEdit.container'
 import * as actions from '../../actions/userProfile';
 
 jest.mock('../../actions/allTeamsAction.js');
@@ -37,11 +37,11 @@ describe('user profile page', () => {
     });
     store.dispatch = jest.fn();
     renderWithRouterMatch(
-      <Route path="/userprofile/:userId">
-        {props => <UserProfile {...props} />}
+      <Route path="/userprofileedit/:userId">
+        {props => <UserProfileEdit {...props} />}
       </Route>,
       {
-        route: `/userprofile/${userId}`,
+        route: `/userprofileedit/${userId}`,
         store,
       },
     );
@@ -89,12 +89,6 @@ describe('user profile page', () => {
     it('should render the correct phone number', () => {
       expect(screen.getByPlaceholderText(/phone/i)).toHaveValue(parseInt(userProfileMock.phoneNumber, 10));
     });
-    it('should render a Weekly commited hours field for admin', () => {
-      expect(screen.getByPlaceholderText(/weeklycomittedhours/i)).toBeInTheDocument();
-    });
-    it('should render a total hours field for admin', () => {
-      expect(screen.getByPlaceholderText(/totalcomittedhours/i)).toBeInTheDocument();
-    });
     it('should render an assign team button', () => {
       expect(screen.getByRole('button', { name: /assign team/i })).toBeInTheDocument();
     });
@@ -127,7 +121,84 @@ describe('user profile page', () => {
     });
   });
   describe('Behavior', () => {
-    
+    it('should fire toggleTab to Basic Information tab when the user clicks on the Basic Information tab link', async () =>{
+      userEvent.click(screen.getByText(/basic information/i));
+    });
+    it('should fire toggleTab to Volunteering Times tab when the user clicks on the Basic Information tab link', async () =>{
+      userEvent.click(screen.getByText(/volunteering times/i));
+    });
+    it('should fire toggleTab to Teams tab when the user clicks on the Teams tab link', async () =>{
+      userEvent.click(screen.getAllByText(/teams/i)[0]);
+    });
+    it('should fire toggleTab to Projects tab when the user clicks on the Projects tab link', async () =>{
+      userEvent.click(screen.getAllByText(/projects/i)[0]);
+    });
+    it('should fire toggleTab to More Tabs tab when the user clicks on the More Tabs tab link', async () =>{
+      userEvent.click(screen.getByText(/more tabs/i));
+    });
+    it("should trigger addBlueSquare when admin click on + button", async () => {
+      userEvent.click(screen.getByText('+'));
+      expect(screen.getByRole('button', {name : 'Submit'})).toBeInTheDocument();
+    })
+    it("should trigger addBlueSquare when admin click on random blue square", async () => {
+      userEvent.click(screen.getAllByRole('button')[2]);
+      expect(screen.getByText('Summary')).toBeInTheDocument();
+    })
+    it('should change value while user typing in first name field', async () => {
+      const firstName = screen.getByPlaceholderText(/first name/i);
+      userEvent.clear(firstName);
+      userEvent.type(firstName,'testFirstName');
+      expect(firstName).toHaveValue('testFirstName');
+    });
+    it('should change value while user typing in last name field', async () => {
+      const lastName = screen.getByPlaceholderText(/last name/i);
+      userEvent.clear(lastName);
+      userEvent.type(lastName,'testLastName');
+      expect(lastName).toHaveValue('testLastName');
+    });
+    it('should change value while user typing in email field', async () => {
+      const email = screen.getByPlaceholderText(/email/i);
+      userEvent.clear(email);
+      userEvent.type(email,'testaccount@hgn.com');
+      expect(email).toHaveValue('testaccount@hgn.com');
+    });
+    it('should change value while user typing in phone field', async () => {
+      const phoneNumber = screen.getByPlaceholderText(/phone/i);
+      userEvent.clear(phoneNumber);
+      userEvent.type(phoneNumber,'5465468798');
+      expect(phoneNumber).toHaveValue(5465468798);
+    });
+    it('should change value while user click on phone switch', async () => {
+      const phoneSwitch = screen.getByTestId('phone-switch');
+      userEvent.click(phoneSwitch);
+      expect(phoneSwitch).toBeChecked();
+    });
+    it('should change value while user click on email switch', async () => {
+      const emailSwitch = screen.getByTestId('email-switch');
+      userEvent.click(emailSwitch);
+      expect(emailSwitch).toBeChecked();
+    });
+    it('should change value while user click on bluesquare switch', async () => {
+      const blueSwitch = screen.getByTestId('blue-switch');
+      userEvent.click(blueSwitch);
+      expect(blueSwitch).toBeChecked();
+    });
+    it('should change value while user typing in Video Call Preference', async () => {
+      const preference = screen.getByPlaceholderText(/Skype, Zoom, etc./i);
+      userEvent.clear(preference);
+      userEvent.type(preference,'Zoom');
+      expect(preference).toHaveValue("Zoom");
+    });
+    it('should change value while user typing in weekly committed field', async () => {
+      const weekCommittedHour = screen.getByPlaceholderText(/weeklyCommittedHours/i);
+      fireEvent.change(weekCommittedHour, { target: { value: "20" } }); 
+      expect(weekCommittedHour).toHaveValue(20);
+    });
+    it('should change value while user typing in total committed field', async () => {
+      const weekCommittedHour = screen.getByPlaceholderText(/totalCommittedHours/i);
+      fireEvent.change(weekCommittedHour, { target: { value: "40" } }); 
+      expect(weekCommittedHour).toHaveValue(40);
+    });
     // it('should popup a modal once the user clicks the blue + button', () => {
     //   userEvent.click(screen.getByText('+'));
     //   expect(screen.getByRole('dialog')).toBeInTheDocument();
