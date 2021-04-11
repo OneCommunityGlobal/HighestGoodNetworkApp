@@ -21,7 +21,7 @@ const UserLinks = ({
         if (item.Link.includes('http')) {
           return (
             <React.Fragment key={item.link}>
-              <a key={item.link} href={item.Link}>
+              <a key={item.link} href={item.Link} target="_blank">
                 {item.Name.toUpperCase()}
               </a>
               <br />
@@ -31,7 +31,7 @@ const UserLinks = ({
         }
         return (
           <React.Fragment key={item.link}>
-            <Link key={item.link} to={item.Link}>
+            <Link key={item.link} to={item.Link} target="_blank">
               {item.Name.toUpperCase()}
             </Link>
             <br />
