@@ -41,6 +41,7 @@ import BasicToolTips from './ToolTips/BasicTabTips'
 import ResetPasswordButton from '../UserManagement/ResetPasswordButton'
 import PauseAndResumeButton from '../UserManagement/PauseAndResumeButton'
 import { toast } from 'react-toastify';
+import Alert from 'reactstrap/lib/Alert'
 // const styleProfile = {};
 class UserProfile extends Component {
   state = {
@@ -248,6 +249,7 @@ class UserProfile extends Component {
 
       this.setState({
         imageUploadError: '',
+        changed: true,
         userProfile: {
           ...this.state.userProfile,
           profilePic: reader.result,
@@ -609,6 +611,7 @@ class UserProfile extends Component {
             </Col>
             <Col md="8">
               <div className="profile-head">
+                {this.state.changed && <Alert color="warning">Please click on "Save changes" to save the changes you have made. </Alert>}
                 <h5
                   style={{ display: 'inline-block', marginRight: 10 }}
                 >{`${firstName} ${lastName}`}</h5>
