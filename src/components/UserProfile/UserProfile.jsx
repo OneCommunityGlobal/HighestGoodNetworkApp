@@ -41,6 +41,7 @@ import BasicToolTips from './ToolTips/BasicTabTips'
 import ResetPasswordButton from '../UserManagement/ResetPasswordButton'
 import PauseAndResumeButton from '../UserManagement/PauseAndResumeButton'
 import { toast } from 'react-toastify';
+import Alert from 'reactstrap/lib/Alert'
 // const styleProfile = {};
 class UserProfile extends Component {
   state = {
@@ -248,6 +249,7 @@ class UserProfile extends Component {
 
       this.setState({
         imageUploadError: '',
+        changed: true,
         userProfile: {
           ...this.state.userProfile,
           profilePic: reader.result,
@@ -410,6 +412,14 @@ class UserProfile extends Component {
           },
         })
         break
+      case 'role':
+        this.setState({
+          userProfile: {
+            ...userProfile,
+            role: event.target.value,
+          },
+        });
+        break;
       case 'email':
         this.setState({
           userProfile: {
@@ -487,6 +497,14 @@ class UserProfile extends Component {
           },
         })
         break
+      case 'collaborationPreference':
+        this.setState({
+          userProfile: {
+            ...userProfile,
+            collaborationPreference: event.target.value,
+          },
+        });
+        break;
       default:
         this.setState({
           ...userProfile,
@@ -593,6 +611,7 @@ class UserProfile extends Component {
             </Col>
             <Col md="8">
               <div className="profile-head">
+                {this.state.changed && <Alert color="warning">Please click on "Save changes" to save the changes you have made. </Alert>}
                 <h5
                   style={{ display: 'inline-block', marginRight: 10 }}
                 >{`${firstName} ${lastName}`}</h5>
@@ -614,7 +633,7 @@ class UserProfile extends Component {
               </div>
               <div className="p-5 my-2 bg--cadet-blue text-light">
                 <div className="py-2 my-2"> </div>
-                <h3>Badges goes here...</h3>
+                <h3>Favorite badges section coming…</h3>
                 <div className="py-2 my-2"> </div>
               </div>
             </Col>

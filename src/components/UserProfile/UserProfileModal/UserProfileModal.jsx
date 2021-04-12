@@ -361,6 +361,8 @@ const ModalExample = props => {
         {type === 'save' && modalMessage}
 
         {type === 'message' && modalMessage}
+
+        {type === 'image' && modalMessage}
       </ModalBody>
 
       <ModalFooter>
@@ -425,10 +427,10 @@ const ModalExample = props => {
             Close
           </Button>
         ) : (
-          <Button color="primary" onClick={closeModal}>
-            Cancel
-          </Button>
-        )}
+            <Button color="primary" onClick={closeModal}>
+              Cancel
+            </Button>
+          )}
       </ModalFooter>
     </Modal>
   )

@@ -30,7 +30,7 @@ class AddUserProfile extends Component {
       activeTab: "1",
       userProfile: {
         weeklyComittedHours: 10,
-        role: 'Administrator',
+        role: 'Volunteer',
         privacySettings: { blueSquares: true, email: true, phoneNumber: true }
       },
       formValid: {
@@ -152,7 +152,7 @@ class AddUserProfile extends Component {
                   <FormGroup>
                     <select value={role} onChange={this.handleUserProfile} id="role" name="role" className="form-control">
                       <option value="Administrator">Administrator</option>
-                      <option value="Volunteer">Volunteer</option>
+                      <option selected value="Volunteer">Volunteer</option>
                       <option value="Manager">Manager</option>
                       <option value="Core Team">Core Team</option>
                     </select>
