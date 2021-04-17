@@ -638,7 +638,7 @@ class TeamMemberTasks extends Component {
                     You or, in the case of managers, you and everyone on your team. Click the name for the related profile
                   </Tooltip>
                   <th width="100px">
-                    <FontAwesomeIcon icon={faClock} id="TooltipBlackClockIcon" title="Weekly Committed Hours" />
+                    <FontAwesomeIcon icon={faClock} id="TooltipBlackClockIcon" />
                     <Tooltip 
                       style={{ background: 'rgba(0,0,0,0.99)', 
                                color: 'white', 
@@ -660,7 +660,6 @@ class TeamMemberTasks extends Component {
                       style={{ color: 'green' }}
                       icon={faClock}
                       id="TooltipGreenClockIcon"
-                      title="Weekly Completed Hours"
                     />
                     <Tooltip 
                       style={{ background: 'rgba(0,0,0,0.99)', 
