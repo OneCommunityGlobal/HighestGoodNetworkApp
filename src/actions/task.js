@@ -93,20 +93,37 @@ export const moveTasks = (wbsId, fromNum, toNum) => {
   }
 }
 
-export const fetchAllTasks = (wbsId) => {
+// export const fetchAllTasks = (wbsId) => {
+//   return async dispatch => {
+//     await axios.put(ENDPOINTS.UPDATE_PARENT_TASKS(wbsId));
+//     await dispatch(setTasksStart());
+//     try {
+//       const request = await axios.get(ENDPOINTS.TASKS(wbsId));
+//       // const request = await axios.get(ENDPOINTS.FIX_TASKS(wbsId));
+//       dispatch(setTasks(request.data));
+//       console.log('yueru111')
+//       console.log(request.data)
+//     } catch (err) {
+//       dispatch(setTasksError(err));
+//       console.log('yueru add log here err')
+//       console.log(err)
+//     }
+//   }
+// }
+export const fetchAllTasks = (wbsId, level = 0, mother = null) => {
+  console.log('yueru fetchAllTasks')
   return async dispatch => {
-    await axios.put(ENDPOINTS.UPDATE_PARENT_TASKS(wbsId));
     await dispatch(setTasksStart());
     try {
-      const request = await axios.get(ENDPOINTS.TASKS(wbsId));
-      // const request = await axios.get(ENDPOINTS.FIX_TASKS(wbsId));
-      dispatch(setTasks(request.data));
-      console.log('yueru111')
-      console.log(request.data)
+      console.log('yueru start')
+      // const request = await axios.get(ENDPOINTS.TASK(wbsId));
+
+      const request = await axios.get(ENDPOINTS.TASKS(wbsId, (level === -1 ? 1 : level + 1), mother));
+      console.log(request.data);
+      dispatch(setTasks(request.data, level, mother));
     } catch (err) {
-      dispatch(setTasksError(err));
       console.log('yueru add log here err')
-      console.log(err)
+      dispatch(setTasksError(err));
     }
   }
 }

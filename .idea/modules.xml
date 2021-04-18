@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/HighestGoodNetworkApp.iml" filepath="$PROJECT_DIR$/.idea/HighestGoodNetworkApp.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/networkApp.iml" filepath="$PROJECT_DIR$/.idea/networkApp.iml" />
     </modules>
   </component>
 </project>

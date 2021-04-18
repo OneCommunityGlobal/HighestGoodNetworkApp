@@ -36,7 +36,7 @@ export const getHeaderData = userId => {
 	const url = ENDPOINTS.USER_PROFILE(userId)
 	return async dispatch => {
 		const res = await axios.get(url)
-		//console.log('userrprofie', res)
+		console.log('userrprofie', res)
 
 		await dispatch(setHeaderData({
       firstName: res.data.firstName,
@@ -50,7 +50,7 @@ export const logoutUser = () => dispatch => {
   httpService.setjwt(false)
   dispatch(setCurrentUser(null))
 };
-  
+
 export const setCurrentUser = decoded => ({
   type: SET_CURRENT_USER,
   payload: decoded

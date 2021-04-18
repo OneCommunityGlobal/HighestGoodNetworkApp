@@ -25,9 +25,9 @@ class TasksTable extends Component{
     this.setPriority=this.setPriority.bind(this)
     this.get_task_by_wbsId=this.get_task_by_wbsId.bind(this)
     this.setActive=this.setActive.bind(this)
-    this.setInActive=this.setInActive.bind(this)
+    // this.setInActive=this.setInActive.bind(this)
     this.setAssign=this.setAssign.bind(this)
-    this.setNotAssign=this.setNotAssign.bind(this)
+    // this.setNotAssign=this.setNotAssign.bind(this)
 
   }
   setTasks( get_tasks=[]) {
@@ -55,9 +55,17 @@ class TasksTable extends Component{
     var get_tasks=[]
     if ( Object.keys(this.props.WbsTasksID).length>0) {
       var i=0
+      console.log('here666')
+
       while( i< Object.keys(this.props.WbsTasksID).length) {
+        console.log(Object.keys(this.props.WbsTasksID).length)
+        console.log('here777')
+        console.log(this.props.tasks)
+        console.log('9999')
         if (this.props.tasks.fetched) {
+          console.log('here8888')
           var result = this.props.tasks.taskItems.filter(task => task.wbsId == this.props.WbsTasksID[i]);
+          console.log(this.props.tasks)
           i+=1
           if ( Object.keys(result).length<Object.keys(this.props.tasks.taskItems).length) {
             get_tasks.push(result)
@@ -74,10 +82,10 @@ class TasksTable extends Component{
     }
     return get_tasks
   }
-  setActive() {
+  setActive(activeValue) {
     this.setState((state) => {
       return {
-        isActive:true
+        isActive:activeValue
       }
     });
   }
@@ -88,7 +96,6 @@ class TasksTable extends Component{
       }
     });
   }
-
   setStatus(statusValue) {
     this.setState((state) => {
       return {
@@ -96,25 +103,24 @@ class TasksTable extends Component{
       }
     });
   }
-
-  setInActive(){
-    this.setState(()=>({
-      isActive:false
-    }))
-
-  }
-  setAssign() {
+  // setInActive(){
+  //   this.setState(()=>({
+  //     isActive:false
+  //   }))
+  //
+  // }
+  setAssign(assignValue) {
     this.setState((state) => {
       return {
-        isAssigned:true
+        isAssigned:assignValue
       }
     });
   }
-  setNotAssign(){
-    this.setState(()=>({
-      isAssigned:false
-    }))
-  }
+  // setNotAssign(){
+  //   this.setState(()=>({
+  //     isAssigned:false
+  //   }))
+  // }
 
 
   render() {
@@ -132,13 +138,13 @@ class TasksTable extends Component{
       <tbody>
       <div>
         <DropdownButton id="dropdown-basic-button" title="Assignment Status">
-          <Dropdown.Item  onClick={this.setAssign}>Assign</Dropdown.Item>
-          <Dropdown.Item onClick={this.setNotAssign}>Not Assign</Dropdown.Item>
+          <Dropdown.Item  onClick={this.setAssign(true)}>Assign</Dropdown.Item>
+          <Dropdown.Item onClick={this.setAssign(false)}>Not Assign</Dropdown.Item>
         </DropdownButton>
 
-        <input name='radio' type="radio" style={{margin:'5px'}} value="active" onChange={this.setActive}  />
+        <input name='radio' type="radio" style={{margin:'5px'}} value="active" onChange={this.setActive(true)}  />
         Active
-        <input name='radio' type="radio" style={{margin:'5px'}} value="inactive" onChange={this.setInActive } />
+        <input name='radio' type="radio" style={{margin:'5px'}} value="inactive" onChange={this.setActive(false) } />
         InActive
         <DropdownButton style={{margin:'3px'}} exact id="dropdown-basic-button" title="Priority Level">
           <Dropdown.Item onClick={()=>this.setPriority('Primary')}>Primary</Dropdown.Item>
@@ -156,14 +162,13 @@ class TasksTable extends Component{
         <button style={{margin:'3px'}} exact className="btn btn-secondary btn-bg mt-3">Estimated Hours</button>
         <button style={{margin:'3px'}} exact className="btn btn-secondary btn-bg mt-3">Classification</button>
       </div>
-      <TasksDetail
-        tasks_filter={get_tasks}
-        isAssigned={isAssigned}
-        isActive={isActive}
-        priority={priority}
-        status={status}
-
-      />
+      {/*<TasksDetail*/}
+      {/*  tasks_filter={get_tasks}*/}
+      {/*  isAssigned={isAssigned}*/}
+      {/*  isActive={isActive}*/}
+      {/*  priority={priority}*/}
+      {/*  status={status}*/}
+      {/*/>*/}
       </tbody>
     )
   }
@@ -177,8 +182,6 @@ const mapStateToProps = state => ({
   isActive:state.isActive,
   priority:state.priority,
   status:state.status
-
-
 });
 
 

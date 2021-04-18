@@ -3,6 +3,8 @@ import './reports.css'
 
 
 const  TasksDetail = (props) => {
+  console.log('here4')
+  console.log(props)
   let tasksList=[]
   let tasks=[]
   tasks = props.tasks_filter[0].filter(item =>  item.isActive ===props.isActive
@@ -66,7 +68,7 @@ const  TasksDetail = (props) => {
         </tr>
         </thead>
         <tbody>
-        {tasksList}
+        {/*{tasksList}*/}
         </tbody>
       </table>
     </table>
