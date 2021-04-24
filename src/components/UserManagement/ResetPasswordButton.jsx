@@ -1,6 +1,8 @@
 import React from "react"
 import ResetPasswordPopup from "./ResetPasswordPopup";
 import { resetPassword } from '../../services/userProfileService';
+import { Button } from 'reactstrap';
+import { toast } from "react-toastify";
 
 class ResetPasswordButton extends React.PureComponent {
   constructor(props) {
@@ -16,10 +18,12 @@ class ResetPasswordButton extends React.PureComponent {
         open={this.state.resetPopupOpen}
         onClose={this.resetPopupClose}
         onReset={this.resetPassword} />
-      <button type="button" style={{ minWidth: "115px" }}
+      <Button
+        outline
+        color="primary"
         className={"btn  btn-outline-success" + (this.props.isSmallButton ? " btn-sm" : "")}
-        onClick={this.onResetClick}>{"Reset Password"}</button>
-    </React.Fragment>)
+        style={{ minWidth: "115px" }} onClick={this.onResetClick}>{"Reset Password"}</Button>
+    </React.Fragment >)
   }
 
   onResetClick = () => {
@@ -37,12 +41,12 @@ class ResetPasswordButton extends React.PureComponent {
   resetPassword = (newPassword, confimrPassword) => {
     let userData = { newpassword: newPassword, confirmnewpassword: confimrPassword };
     resetPassword(this.props.user._id, userData).then(res => {
-      alert("Password reset action has been completed.")
+      toast.success('Password reset action has been completed.')
       this.setState({
         resetPopupOpen: false
       })
     }).catch(error => {
-      alert("Password reset failed ! Please try again with a strong password.");
+      toast.error("Password reset failed ! Please try again with a strong password.");
     })
   }
 

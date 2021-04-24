@@ -27,6 +27,10 @@ import UserLinkLayout from './UserLinkLayout'
 import BlueSqaureLayout from './BlueSqaureLayout'
 import TabToolTips from './ToolTips/TabToolTips'
 import BasicToolTips from './ToolTips/BasicTabTips'
+import ResetPasswordButton from '../UserManagement/ResetPasswordButton'
+import PauseAndResumeButton from '../UserManagement/PauseAndResumeButton'
+import { toast } from 'react-toastify';
+import Alert from 'reactstrap/lib/Alert'
 // const styleProfile = {};
 class UserProfile extends Component {
   state = {
@@ -234,6 +238,7 @@ class UserProfile extends Component {
 
       this.setState({
         imageUploadError: '',
+        changed: true,
         userProfile: {
           ...this.state.userProfile,
           profilePic: reader.result,
@@ -243,7 +248,8 @@ class UserProfile extends Component {
   }
 
   saveChanges = () => {
-    this.props.updateUserProfile(this.props.match.params.userId, this.state.userProfile)
+    this.props.updateUserProfile(this.props.match.params.userId, this.state.userProfile);
+    toast.success('Your Changes were saved successfully.')
   }
 
   handleBlueSquare = (status = true, type = 'message', blueSquareID = '') => {
@@ -330,25 +336,6 @@ class UserProfile extends Component {
     const { updateUserProfile, match } = this.props
     const { userProfile, formValid } = this.state
     const submitResult = await updateUserProfile(match.params.userId, userProfile)
-    // console.log(submitResult);
-
-    // if (submitResult === 200) {
-    //   this.setState({
-    //     showModal: true,
-    //     modalMessage: 'Your Changes were saved successfully',
-    //     modalTitle: 'Success',
-    //     type: 'save',
-    //   });
-    //   const elem = document.getElementById('warningCard');
-    //   // elem.style.display = 'none';
-    // } else {
-    //   this.setState({
-    //     showModal: true,
-    //     modalMessage: 'Please try again.',
-    //     modalTitle: 'Error',
-    //     type: 'save',
-    //   });
-    // }
   }
 
   toggleInfoModal = () => {
@@ -414,6 +401,14 @@ class UserProfile extends Component {
           },
         })
         break
+      case 'role':
+        this.setState({
+          userProfile: {
+            ...userProfile,
+            role: event.target.value,
+          },
+        });
+        break;
       case 'email':
         this.setState({
           userProfile: {
@@ -491,6 +486,14 @@ class UserProfile extends Component {
           },
         })
         break
+      case 'collaborationPreference':
+        this.setState({
+          userProfile: {
+            ...userProfile,
+            collaborationPreference: event.target.value,
+          },
+        });
+        break;
       default:
         this.setState({
           ...userProfile,
@@ -541,7 +544,6 @@ class UserProfile extends Component {
     const { userId: targetUserId } = this.props.match
       ? this.props.match.params
       : { userId: undefined }
-
     const { userid: requestorId, role: requestorRole } = this.props.auth.user
 
     const isUserSelf = targetUserId === requestorId
@@ -599,6 +601,7 @@ class UserProfile extends Component {
             </Col>
             <Col md="8">
               <div className="profile-head">
+                {this.state.changed && <Alert color="warning">Please click on "Save changes" to save the changes you have made. </Alert>}
                 <h5
                   style={{ display: 'inline-block', marginRight: 10 }}
                 >{`${firstName} ${lastName}`}</h5>
@@ -620,7 +623,7 @@ class UserProfile extends Component {
               </div>
               <div className="p-5 my-2 bg--cadet-blue text-light">
                 <div className="py-2 my-2"> </div>
-                <h3>Badges goes here...</h3>
+                <h3>Favorite badges section coming…</h3>
                 <div className="py-2 my-2"> </div>
               </div>
             </Col>
@@ -752,7 +755,24 @@ class UserProfile extends Component {
             </Col>
           </Row>
           <Row>
-            <Col sm={{ size: 'auto', offset: 3 }}>
+            <Col md="4"></Col>
+            <Col md="8">
+
+              {requestorRole === "Administrator" && canEdit ? (
+                <ResetPasswordButton user={userProfile} />
+              ) : (<div className="profileEditButtonContainer">
+                <Link to={`/updatepassword/${this.state.userProfile._id}`}>
+                  <Button color="primary"> Update Password</Button>
+                </Link>
+              </div>)}
+              <PauseAndResumeButton user={userProfile} isBigBtn={true} />
+              <Link
+                color="primary"
+                to={`/userprofile/${this.state.userProfile._id}`}
+                className="btn btn-outline-danger"
+              >
+                Cancel
+              </Link>
               <SaveButton
                 handleSubmit={this.handleSubmit}
                 disabled={
@@ -763,24 +783,6 @@ class UserProfile extends Component {
                 }
                 userProfile={userProfile}
               />
-            </Col>
-            <Col sm={{ size: 'auto', offset: 1 }}>
-              {canEdit && (
-                <div className="profileEditButtonContainer">
-                  <Link to={`/updatepassword/${this.state.userProfile._id}`}>
-                    <Button> Update Password</Button>
-                  </Link>
-                </div>
-              )}
-            </Col>
-            <Col sm={{ size: 'auto', offset: 1 }}>
-              <Link
-                to={`/userprofile/${this.state.userProfile._id}`}
-                className="btn btn-outline-danger"
-                style={{ display: 'flex', margin: 5 }}
-              >
-                Cancel
-              </Link>
             </Col>
           </Row>
         </Container>

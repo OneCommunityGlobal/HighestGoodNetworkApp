@@ -1,26 +1,47 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useRef } from 'react'
 import './Leaderboard.css'
-//import _ from 'lodash'
+import _ from 'lodash'
 import { Link } from 'react-router-dom'
 import { Table, Progress, Modal, ModalBody, ModalFooter, ModalHeader, Button } from 'reactstrap'
 
+function useDeepEffect(effectFunc, deps) {
+  const isFirst = useRef(true);
+  const prevDeps= useRef(deps);
+  useEffect(()=>{
+    const isSame = prevDeps.current.every((obj, index) => {
+      let isItEqual = _.isEqual(obj, deps[index])
+      return isItEqual
+    });
+    if (isFirst.current || !isSame) {
+      effectFunc();
+    }
+
+    isFirst.current = false;
+    prevDeps.current = deps;
+
+  }, deps);
+}
+
 const LeaderBoard = ({
-  getLeaderboardData, leaderBoardData, loggedInUser, organizationData,
+  getLeaderboardData, getOrgData, leaderBoardData, loggedInUser, organizationData, timeEntries, asUser
 }) => {
-  useEffect(() => {
-    getLeaderboardData(loggedInUser.userid);
-  }, [leaderBoardData, getLeaderboardData, loggedInUser.userid]);
+  const userId = asUser ? asUser : loggedInUser.userId;
+
+  useDeepEffect(() => {
+    getLeaderboardData(userId);
+    getOrgData();
+  }, [timeEntries]);
 
   useEffect(() => {
     try {
+
       if (window.screen.width < 540) {
         const scrollWindow = document.getElementById('leaderboard');
         if (scrollWindow) {
-          const elem = document.getElementById(`id${loggedInUser.userid}`); //
+          const elem = document.getElementById(`id${userId}`); //
 
           if (elem) {
             const topPos = elem.offsetTop;
-            console.log(topPos);
             scrollWindow.scrollTo(0, (topPos - 100) < 100 ? 0 : (topPos - 100));
           }
         }
@@ -46,7 +67,7 @@ const LeaderBoard = ({
           aria-hidden="true"
           className="fa fa-refresh"
           onClick={() => {
-            getLeaderboardData(loggedInUser.userid);
+            getLeaderboardData(userId);
           }}
         />
         &nbsp;&nbsp;
@@ -103,6 +124,7 @@ const LeaderBoard = ({
           <tbody className="my-custome-scrollbar">
             <tr>
               <td>
+              <Link to={`/dashboard/`}>
                 <div
                   title={`Weekly Committed: ${organizationData.weeklyComittedHours} hours`}
                   style={{
@@ -115,6 +137,7 @@ const LeaderBoard = ({
                     borderRadius: 7.5,
                   }}
                 />
+                </Link>
               </td>
               <th scope="row">{organizationData.name}</th>
               <td>
@@ -140,7 +163,7 @@ const LeaderBoard = ({
             {leaderBoardData.map((item, key) => (
               <tr key={key}>
                 <td>
-                  <a href="#tasksLink">
+                  <Link to={`/dashboard/${item.personId}`}>
                     <div
                       title={`Weekly Committed: ${item.weeklyComittedHours} hours`}
                       style={{
@@ -150,7 +173,7 @@ const LeaderBoard = ({
                         borderRadius: 7.5,
                       }}
                     />
-                  </a>
+                  </Link>
                 </td>
                 <th scope="row">
                   <Link to={`/userprofile/${item.personId}`} title="View Profile">

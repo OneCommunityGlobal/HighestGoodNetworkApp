@@ -7,14 +7,14 @@ import * as types from '../constants/task'
 import { ENDPOINTS } from '../utils/URL'
 
 export const importTask = (newTask, wbsId) => {
-  const url = ENDPOINTS.TASK(wbsId);
+  const url = ENDPOINTS.TASK_IMPORT(wbsId);
   return async dispatch => {
     let status = 200;
     let _id = null;
     let task = {};
 
     try {
-      const res = await axios.put(url, newTask)
+      const res = await axios.post(url, { list: newTask })
       _id = res.data._id;
       status = res.status;
       task = res.data;
@@ -26,10 +26,10 @@ export const importTask = (newTask, wbsId) => {
 
     newTask._id = _id;
 
-    await dispatch(
+    /*await dispatch(
       postNewTask(task,
         status
-      ));
+      ));*/
 
   }
 
@@ -44,18 +44,16 @@ export const addNewTask = (newTask, wbsId) => {
     let task = {};
 
     try {
-      const res = await axios.post(url, newTask)
+      const res = await axios.post(url, newTask);
       _id = res.data._id;
       status = res.status;
       task = res.data;
 
     } catch (err) {
-      console.log("TRY CATCH ERR", err);
       status = 400;
     }
 
     newTask._id = _id;
-
     await dispatch(
       postNewTask(task,
         status
@@ -93,36 +91,15 @@ export const moveTasks = (wbsId, fromNum, toNum) => {
   }
 }
 
-// export const fetchAllTasks = (wbsId) => {
-//   return async dispatch => {
-//     await axios.put(ENDPOINTS.UPDATE_PARENT_TASKS(wbsId));
-//     await dispatch(setTasksStart());
-//     try {
-//       const request = await axios.get(ENDPOINTS.TASKS(wbsId));
-//       // const request = await axios.get(ENDPOINTS.FIX_TASKS(wbsId));
-//       dispatch(setTasks(request.data));
-//       console.log('yueru111')
-//       console.log(request.data)
-//     } catch (err) {
-//       dispatch(setTasksError(err));
-//       console.log('yueru add log here err')
-//       console.log(err)
-//     }
-//   }
-// }
 export const fetchAllTasks = (wbsId, level = 0, mother = null) => {
-  console.log('yueru fetchAllTasks')
   return async dispatch => {
     await dispatch(setTasksStart());
     try {
-      console.log('yueru start')
-      // const request = await axios.get(ENDPOINTS.TASK(wbsId));
 
       const request = await axios.get(ENDPOINTS.TASKS(wbsId, (level === -1 ? 1 : level + 1), mother));
-      console.log(request.data);
+      //console.log(request.data);
       dispatch(setTasks(request.data, level, mother));
     } catch (err) {
-      console.log('yueru add log here err')
       dispatch(setTasksError(err));
     }
   }
@@ -150,12 +127,12 @@ export const updateTask = (taskId, updatedTask) => {
   }
 }
 
-export const deleteTask = (taskId) => {
-  const url = ENDPOINTS.TASK_DEL(taskId);
+export const deleteTask = (taskId, mother) => {
+  const url = ENDPOINTS.TASK_DEL(taskId, mother);
   return async dispatch => {
     let status = 200;
     try {
-      const res = await axios.delete(url);
+      const res = await axios.post(url);
       status = res.status;
     } catch (err) {
       status = 400;
@@ -163,6 +140,14 @@ export const deleteTask = (taskId) => {
     await dispatch(removeTask(taskId, status));
   }
 }
+
+export const copyTask = (taskId) => {
+  return async dispatch => {
+    await dispatch(saveTmpTask(taskId));
+  }
+}
+
+
 
 /**
 * Set a flag that fetching Task
@@ -178,10 +163,12 @@ export const setTasksStart = () => {
  * set Task in store
  * @param payload : Task []
  */
-export const setTasks = (taskItems) => {
+export const setTasks = (taskItems, level, mother) => {
   return {
     type: types.RECEIVE_TASKS,
-    taskItems
+    taskItems,
+    level,
+    mother
   }
 }
 
@@ -235,6 +222,14 @@ export const removeTask = (taskId, status) => {
     type: types.DELETE_TASK,
     taskId,
     status,
+  }
+}
+
+
+export const saveTmpTask = (taskId) => {
+  return {
+    type: types.COPY_TASK,
+    taskId
   }
 }
 

@@ -5,3 +5,11 @@ export const leaderboardDataReducer = (leaderBoardData = [], action) => {
 
 	return leaderBoardData
 }
+
+export const orgDataReducer = (orgData = {}, action) => {
+	if (action.type === 'GET_ORG_DATA') {
+		return action.payload
+	}
+
+	return orgData
+}

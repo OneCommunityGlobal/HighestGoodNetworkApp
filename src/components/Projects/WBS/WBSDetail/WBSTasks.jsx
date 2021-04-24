@@ -13,22 +13,37 @@ import { Link } from 'react-router-dom'
 import { NavItem, Button } from 'reactstrap'
 import './wbs.css';
 import ReactTooltip from 'react-tooltip'
+import { UserRole } from './../../../../utils/enums';
 
 const WBSTasks = (props) => {
-
+  const [role] = useState(props.state ? props.state.auth.user.role : null);
   // modal
   const [modal, setModal] = useState(false);
   const toggle = () => setModal(!modal);
 
   const wbsId = props.match.params.wbsId;
   const projectId = props.match.params.projectId;
+  const wbsName = props.match.params.wbsName;
+  const [isShowImport, setIsShowImport] = useState(false);
+
   const [selectedId, setSelectedId] = useState(null);
 
   useEffect(() => {
-    props.fetchAllTasks(wbsId);
+    props.fetchAllTasks(wbsId, 0);
     props.fetchAllMembers(projectId);
+    setIsShowImport(true);
 
   }, [wbsId, projectId]);
+
+  const refresh = () => {
+    setIsShowImport(false);
+    props.fetchAllTasks(wbsId, -1);
+    setTimeout(() => {
+      props.fetchAllTasks(wbsId, 0);
+
+      setTimeout(() => setIsShowImport(true), 1000)
+    }, 1000);
+  }
 
   const selectTaskFunc = (id) => {
     setSelectedId(id);
@@ -48,7 +63,6 @@ const WBSTasks = (props) => {
 
     console.log('drop', drag, taskIdTo);
     const tasks = props.state.tasks.taskItems;
-
 
     let tasksClass = document.getElementsByClassName('taskDrop');
     for (let i = 0; i < tasks.length; i++) {
@@ -89,7 +103,7 @@ const WBSTasks = (props) => {
       }
     }
 
-    console.log(list);
+    //console.log(list);
     //props.updateNumList(wbsId, list);*/
 
   }
@@ -116,15 +130,10 @@ const WBSTasks = (props) => {
   }
 
 
-  // console.log('bbbb')
-  // console.log(props.fetchAllTasks(wbsId))
-  // console.log(wbsId)
-
   return (
     <React.Fragment>
       <ReactTooltip />
-
-      <div className='container' >
+      <div className='container-tasks' >
 
         <nav aria-label="breadcrumb">
           <ol className="breadcrumb">
@@ -135,18 +144,23 @@ const WBSTasks = (props) => {
             </NavItem>
 
             <div id="member_project__name">
-              Work breakdown structure
+              {wbsName}
             </div>
 
           </ol>
         </nav>
 
-        <AddTaskModal key="task_modal_null" parentNum={null} taskId={null} wbsId={wbsId} projectId={projectId} />
-        {props.state.tasks.taskItems.length === 0 ?
-          <ImportTask wbsId={wbsId} projectId={projectId} />
+        {props.state.auth.user.role === UserRole.Administrator ?
+          <AddTaskModal key="task_modal_null" parentNum={null} taskId={null} wbsId={wbsId} projectId={projectId} />
           : null}
 
+        {props.state.tasks.taskItems.length === 0 && isShowImport === true ?
+          <ImportTask wbsId={wbsId} projectId={projectId} />
+          : null}
+        <Button color="primary" className="btn-success" size="sm" onClick={() => refresh()} >Refresh </Button>
+
         <div className="toggle-all">
+
           <Button color="light" size="sm" onClick={() => toggleGroups(true)} >Open</Button>
           <Button color="dark" size="sm" onClick={() => toggleGroups(false)}>Close</Button>
         </div>
@@ -155,19 +169,22 @@ const WBSTasks = (props) => {
         <table className="table table-bordered tasks-table">
           <thead>
             <tr>
+              <th scope="col" data-tip="Action" colSpan="2">Action</th>
               <th scope="col" data-tip="WBS ID" colSpan="2">#</th>
-              <th scope="col" data-tip="Task Name">Task</th>
+              <th scope="col" data-tip="Task Name" className="task-name">Task</th>
               <th scope="col" data-tip="Priority"><i className="fa fa-star" aria-hidden="true"></i></th>
-              <th scope="col" data-tip="Resources"><i className="fa fa-users" aria-hidden="true"></i></th>
+              <th className='desktop-view' scope="col" data-tip="Resources"><i className="fa fa-users" aria-hidden="true"></i></th>
               <th scope="col" data-tip="Assigned" ><i className="fa fa-user-circle-o" aria-hidden="true"></i></th>
-              <th scope="col" data-tip="Status" ><i className="fa fa-tasks" aria-hidden="true"></i></th>
-              <th scope="col" data-tip="Hours-Best"><i className="fa fa-hourglass-start" aria-hidden="true"></i></th>
-              <th scope="col" data-tip="Hours-Worst"><i className="fa fa-hourglass" aria-hidden="true"></i></th>
-              <th scope="col" data-tip="Hours-Most"><i className="fa fa-hourglass-half" aria-hidden="true"></i></th>
-              <th scope="col" data-tip="Estimated Hours"><i className="fa fa-clock-o" aria-hidden="true"></i></th>
-              <th scope="col" data-tip="Start Date" ><i className="fa fa-calendar-check-o" aria-hidden="true"></i> Start</th>
-              <th scope="col" data-tip="Due Date"><i className="fa fa-calendar-times-o" aria-hidden="true"></i> End</th>
-              <th scope="col" data-tip="Links" ><i className="fa fa-link" aria-hidden="true"></i></th>
+              <th className='desktop-view' scope="col" data-tip="Status" ><i className="fa fa-tasks" aria-hidden="true"></i></th>
+              <th className='desktop-view' scope="col" data-tip="Hours-Best"><i className="fa fa-hourglass-start" aria-hidden="true"></i></th>
+              <th className='desktop-view' scope="col" data-tip="Hours-Worst"><i className="fa fa-hourglass" aria-hidden="true"></i></th>
+              <th className='desktop-view' scope="col" data-tip="Hours-Most"><i className="fa fa-hourglass-half" aria-hidden="true"></i></th>
+              <th className='desktop-view' scope="col" data-tip="Estimated Hours"><i className="fa fa-clock-o" aria-hidden="true"></i></th>
+              <th className='desktop-view' scope="col" data-tip="Start Date" ><i className="fa fa-calendar-check-o" aria-hidden="true"></i> Start</th>
+              <th className='desktop-view' scope="col" data-tip="Due Date"><i className="fa fa-calendar-times-o" aria-hidden="true"></i> End</th>
+              <th className='desktop-view' scope="col" data-tip="Links" ><i className="fa fa-link" aria-hidden="true"></i></th>
+              <th className='desktop-view' scope="col" data-tip="Details" ><i className="fa fa-question" aria-hidden="true"></i></th>
+
 
             </tr>
           </thead>
@@ -209,9 +226,12 @@ const WBSTasks = (props) => {
                 drop={dropTask}
                 drag={dragTask}
                 deleteTask={deleteTask}
-                hasChildren={task.hasChildren}
+                hasChildren={task.hasChild}
                 siblings={props.state.tasks.taskItems.filter(item => item.mother === task.mother)}
-
+                taskId={task.taskId}
+                whyInfo={task.whyInfo}
+                intentInfo={task.intentInfo}
+                endstateInfo={task.endstateInfo}
               />)}
           </tbody>
         </table>

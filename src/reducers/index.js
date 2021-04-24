@@ -8,7 +8,7 @@ import { allUserProfilesReducer } from './allUserProfilesReducer'
 // import { dashboardDataReducer } from './dashboardDataReducer'
 // import { weeklyDashboardDataReducer } from './weeklyDashboardDataReducer'
 // import { monthlyDashboardDataReducer } from './monthlyDashboardDataReducer'
-import { leaderboardDataReducer } from './leaderboardDataReducer'
+import { leaderboardDataReducer, orgDataReducer } from './leaderboardDataReducer'
 import { weeklySummariesReducer } from './weeklySummariesReducer'
 import { weeklySummariesReportReducer } from './weeklySummariesReportReducer'
 // import { actionItemsReducer } from './actionItemsReducer'
@@ -30,6 +30,9 @@ import { taskReducer } from './allTasksReducer'
 import { timerReducer } from './timerReducer'
 import { managingTeamsReducer } from './managingTeamsReducer'
 import { teamUsersReducer } from './teamsTeamMembersReducer'
+import { badgeReducer } from './badgeReducer'
+import { popupEditorReducer } from './popupEditorReducer'
+
 
 export default combineReducers({
   auth: authReducer,
@@ -40,6 +43,7 @@ export default combineReducers({
   // userProjectMembers: userProjectMembersReducer,
   // dashboardData: dashboardDataReducer,
   leaderBoardData: leaderboardDataReducer,
+  orgData: orgDataReducer,
   weeklySummaries: weeklySummariesReducer,
   weeklySummariesReport: weeklySummariesReportReducer,
   // weeklyDashboardData: weeklyDashboardDataReducer,
@@ -65,4 +69,6 @@ export default combineReducers({
   errors: errorsReducer,
   timeEntries: timeEntriesReducer,
   timer: timerReducer,
-});
+  badge: badgeReducer,
+  popupEditor: popupEditorReducer
+})

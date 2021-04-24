@@ -1,6 +1,7 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 
 import {
+  Container,
   Row,
   Col,
   CardTitle,
@@ -9,7 +10,7 @@ import {
   ModalHeader,
   ModalBody,
   ModalFooter,
-  Progress,
+  Progress, Form, FormGroup, Label, Input, FormText 
 } from 'reactstrap'
 import { useSelector } from 'react-redux'
 import { HashLink as Link } from 'react-router-hash-link'
@@ -18,33 +19,84 @@ import task_icon from './task_icon.png'
 import badges_icon from './badges_icon.png'
 import bluesquare_icon from './bluesquare_icon.png'
 import report_icon from './report_icon.png'
+import httpService from '../../services/httpService'
+
+
+let APIEndpoint = process.env.REACT_APP_APIENDPOINT;
+if (!APIEndpoint) {
+  // This is to resolve the issue in azure env variable
+  // APIEndpoint = fetch('/config.json').then((data) => {
+  APIEndpoint = 'https://hgnrestdev.azurewebsites.net';
+  // });
+}
 
 const SummaryBar = () => {
-  const { firstName, lastName, _id } = useSelector(state => state.userProfile)
+  const { firstName, lastName, email, _id } = useSelector(state => state.userProfile)
 
   const timeEntries = useSelector(state => state.timeEntries.weeks[0])
   const reducer = (total, entry) => total + parseInt(entry.hours) + parseInt(entry.minutes) / 60
   const totalEffort = timeEntries.reduce(reducer, 0)
   const weeklyComittedHours = useSelector(state => state.userProfile.weeklyComittedHours)
 
+  const infringements = useSelector(state => {
+    if (state.userProfile && state.userProfile.infringments) {
+      return state.userProfile.infringments.length
+    } else {
+      return 0;
+    }
+    
+  })
+
+  const badges = useSelector(state => {
+    if (state.userProfile && state.userProfile.badgeCollection) {
+      return state.userProfile.badgeCollection.length
+    } else {
+      return 0;
+    }
+    
+  })
+
+  let tasks = useSelector(state => {
+    if (state.tasks && state.tasks.taskItems) {
+      return state.tasks.taskItems.length
+    } else {
+      return 0;
+    }
+    
+  })
+
   const initialInfo = {
     in: false,
     information: '',
   }
 
-  const [inform, setInfo] = useState(initialInfo)
+  const [report, setBugReport] = useState(initialInfo)
 
   const openReport = () => {
-    const str = `A number notification that shows how many new task notifications there are.
-    Jerry is working on the tasks component so you just need to place the notification and have it function to increase the notifications number with each time an additional task is edited. Jerry will connect this later to his work.
-    Clicking the “Tasks” icon should take the person to the Tasks section on the person's dashboard. `
 
-    const newstr = str.split('\n').map((item, i) => <p key={i}>{item}</p>)
-    setInfo(info => ({
+    const htmlStr = '';  //str.split('\n').map((item, i) => <p key={i}>{item}</p>)
+    setBugReport(info => ({
       ...info,
       in: !info.in,
-      information: newstr,
+      information: htmlStr,
     }))
+  }
+
+  const sendBugReport = (event) => {
+    event.preventDefault();
+    let bugReportForm = document.getElementById('bugReportForm');
+    let formData = new FormData(bugReportForm);
+    var data = {};
+    formData.forEach(function(value, key){
+        data[key] = value;
+    });
+    data['firstName'] = firstName
+    data['lastName'] = lastName
+    data['email'] = email
+    
+    httpService.post(`${APIEndpoint}/dashboard/bugreport/${_id}`, data).catch((e)=>{
+    }); 
+    openReport();
   }
 
   // async componentDidMount() {
@@ -92,64 +144,66 @@ const SummaryBar = () => {
   }
 
   return (
-    <Row className="my-2 bg--bar text-light">
-        <div className="col-md-2 text-list" align="center">
-          <font className="text--silver" size="3">
+    <Container fluid className="bg--bar">
+    <Row className="no-gutters .row-eq-height">
+      <Col className="col-lg-1 col-12 text-list" align="center">
+          <font className="text--black  align-middle" size="3">
             {' '}
             Activity for{' '}
           </font>
-          <CardTitle className="text--silver" tag="h3">
+          <CardTitle className="text--black align-middle" tag="h3">
             {firstName} {lastName}
           </CardTitle>
-        </div>
+      </Col>
 
-        <div className="col-md-3">
-          <Row>
+        <Col className="col-lg-3 col-12 no-gutters">
+          <Row className='no-gutters'>
             {totalEffort < weeklyComittedHours && (
-              <div className="border-red col-sm-4 bg--white-smoke" align="center">
+              <div className="border-red col-4 bg--white-smoke" align="center">
                 <div className="py-1"> </div>
-                <h1 className="text--silver" align="center">
+                <p className="large_text_summary text--black" align="center">
                   !
-                </h1>
-                <font className="text--silver" size="3">
+                </p>
+                <font className="text--black" size="3">
                   HOURS
                 </font>
                 <div className="py-2"> </div>
               </div>
             )}
             {totalEffort >= weeklyComittedHours && (
-              <div className="border-green col-sm-4 bg--dark-green" align="center">
+              <div className="border-green col-4 bg--dark-green" align="center">
                 <div className="py-1"> </div>
-                <h1 align="center">✓</h1>
+                <p className="large_text_summary text--black" align="center">✓</p>
                 <font size="3">HOURS</font>
                 <div className="py-2"> </div>
               </div>
             )}
 
-            <div className="col-sm-8 bg--white-smoke text-list" align="center">
-              <li className="nav-item navbar-text" id="timelogweeklychart">
-                <div className="text--silver">
+            <div className="col-8 border-black bg--white-smoke d-flex justify-content-center align-items-center" align="center">
+              <div className="align-items-center" id="timelogweeklychart">
+                <div className="text--black align-items-center med_text_summary">
                   Current Week : {totalEffort.toFixed(2)} / {weeklyComittedHours}
-                </div>
-
-                <Progress
+                  <Progress
                   value={getBarValue(totalEffort)}
                   className={getBarColor(totalEffort)}
                   striped={totalEffort < weeklyComittedHours}
                 />
-              </li>
+                </div>
+
+
+              </div>
             </div>
           </Row>
-        </div>
+        </Col>
 
-        <div className="col-md-3">
-          <Row>
-            <div className="border-red col-sm-4 bg--white-smoke" align="center">
+        <Col className="col-lg-3 col-12 no-gutters">
+          <Row className='no-gutters'>
+            <div className="border-red col-4 bg--white-smoke no-gutters" align="center">
               <div className="py-1"> </div>
-              <h1 className="text--silver" align="center">
+              <p className="large_text_summary text--black" align="center">
                 !
-              </h1>
-              <font className="text--silver" size="3">
+              </p>
+              <font className="text--black" size="3">
                 SUMMARY
               </font>
               <div className="py-2"> </div>
@@ -161,94 +215,140 @@ const SummaryBar = () => {
               <div className="py-2"> </div>
             </div> */}
 
-            <div className="col-sm-8 bg--white-smoke" align="center">
+            <div className="col-8 border-black bg--white-smoke" align="center">
               <div className="py-3"> </div>
-              <font className="text--silver" align="center" size="3">
+              <font className="text--black med_text_summary align-middle" size="3">
                 You still need to complete the weekly summary.
               </font>
               <div className="py-1"> </div>
             </div>
           </Row>
-        </div>
-        {/* {isSubmitted && (<font className="text--silver" align="center" size="3">
+        </Col>
+        {/* {isSubmitted && (<font className="text--black" align="center" size="3">
             You have completed weekly summary.
           </font>)}
-          {!isSubmitted && (<font className="text--silver" align="center" size="3">
+          {!isSubmitted && (<font className="text--black" align="center" size="3">
             You still need to complete the weekly summary.
           </font>)} */}
 
-        <Col className="col-md-4 badge-list" align="center">
-          <div className="frame">
+        <Col className="col-lg-5 col-12 badge-list">
+        <div className="row row-eq-height no-gutters">
+        &nbsp;&nbsp;
+          <div className="col">
+            <div className="image_frame">
             <div className="redBackgroup">
-              <span>99</span>
+              <span>{tasks}</span>
             </div>
 
             <img
-              className="image_frame"
+              className="sum_img"
               src={task_icon}
               alt=""
-              width="85px"
-              height="85px"
               onClick={onTaskClick}
-            />
+            ></img>
           </div>
-          &nbsp;&nbsp;&nbsp;
-          <div className="frame">
+            </div>
+
+          &nbsp;&nbsp;
+          <div className="col">
+          <div className="image_frame">
+            
             <img
-              className="image_frame"
+              className="sum_img"
               src={badges_icon}
               alt=""
-              width="85px"
-              height="85px"
               onClick={onBadgeClick}
             />
             <div className="redBackgroup">
-              <span>9</span>
+              <span>{badges}</span>
+            </div>
             </div>
           </div>
-          &nbsp;&nbsp;&nbsp;
-          <div className="frame">
+          &nbsp;&nbsp;
+          <div className="col">
+          <div className="image_frame">
             <Link to={`/userprofile/${_id}#bluesquare`}>
               <img
-                className="image_frame"
+                className="sum_img"
                 src={bluesquare_icon}
                 alt=""
-                width="85px"
-                height="85px"
               />
               <div className="redBackgroup">
-                <span>19</span>
+                <span>{infringements}</span>
               </div>
             </Link>
+            </div>
           </div>
-          &nbsp;&nbsp;&nbsp;
-          <div className="frame">
+          &nbsp;&nbsp;
+          <div className="col">
+          <div className="image_frame">
             <img
-              className="image_frame"
+              className="sum_img"
               src={report_icon}
               alt=""
-              width="85px"
-              height="85px"
               onClick={openReport}
             />
             {/* <div className="blackBackgroup">
               <i className="fa fa-exclamation" aria-hidden="true" />
             </div> */}
           </div>
+          </div>
+          </div>
         </Col>
-        <Modal isOpen={inform.in} toggle={openReport}>
+        <Modal isOpen={report.in} toggle={openReport}>
           <ModalHeader>Bug Report</ModalHeader>
-          <ModalBody />
-          <ModalFooter>
-            <Button onClick={openReport} color="primary">
+          <ModalBody> 
+            <Form onSubmit={sendBugReport} id='bugReportForm'>
+            <FormGroup>
+              <Label for ='title'>[Feature Name] Bug Title </Label>
+              <Input type="textbox" name="title" id="title" required placeholder="Provide Concise Sumarry Title..." />
+            </FormGroup>
+            <FormGroup>
+            <Label for ='environment'> Environment (OS/Device/App Version/Connection/Time etc) </Label>
+              <Input type="textarea" name="environment" id="environment" required placeholder="Environment Info..." />
+            </FormGroup>
+            <FormGroup>
+            <Label for ='reproduction'>Steps to reproduce (Please Number, Short Sweet to the point) </Label>
+              <Input type="textarea" name="reproduction" id="reproduction" required placeholder="1. Click on the UserProfile Button in the Header.." />
+            </FormGroup>
+            <FormGroup>
+            <Label for ='expected'>Expected Result (Short Sweet to the point) </Label>
+              <Input type="textarea" name="expected" id="expected" required placeholder="Whad did you expect to happen?..." />
+            </FormGroup>
+            <FormGroup>
+            <Label for ='actual'>Actual Result (Short Sweet to the point) </Label>
+              <Input type="textarea" name="actual" id="actual" required placeholder="What actually happened?.." />
+            </FormGroup>
+            <FormGroup>
+            <Label for ='visual'>Visual Proof (screenshots, videos, text) </Label>
+              <Input type="textarea" name="visual" id="visual" required placeholder="Links to screenshots etc..." />
+            </FormGroup>
+            <FormGroup>
+            <Label for ='severity'>Severity/Priority (How Bad is the Bug?  </Label>
+            <Input type ="select" name='severity' id='severity' required>
+                <option hidden disabled defaultValue value> -- select an option -- </option>
+                <option>1. High/Critical </option>
+                <option>2. Medium </option>
+                <option>3. Minor</option>
+              </Input>
+            </FormGroup>
+            <FormGroup>
+            <Button type="submit" color="primary" size="lg">
               Submit
-            </Button>
-            <Button onClick={openReport} color="danger">
+            </Button> &nbsp;&nbsp;&nbsp;
+            <Button onClick={openReport} color="danger" size="lg">
               Close
             </Button>
-          </ModalFooter>
+            </FormGroup>
+    
+    
+    
+    
+            </Form>
+          </ModalBody>
         </Modal>
       </Row>
+      </Container>
   )
 }
 

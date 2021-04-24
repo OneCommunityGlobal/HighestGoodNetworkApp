@@ -10,6 +10,7 @@ describe('Leaderboard page structure', () => {
     props = mockAdminState;
     props.organizationData = {weeklyCommittedHours: 0, tangibletime: 0,totaltime:0};
     props.getLeaderboardData = jest.fn();
+    props.loggedInUser = jest.fn();
     mountedLeaderboard = shallow(<Leaderboard {...props} />);
   });
 

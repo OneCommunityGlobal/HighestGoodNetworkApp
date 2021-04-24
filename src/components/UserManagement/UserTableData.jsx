@@ -47,10 +47,14 @@ const UserTableData = React.memo((props) => {
         >
           {isChanging ? '...' : (props.isActive ? PAUSE : RESUME)}
         </button>
+
       </td>
       <td>
         {(props.user.isActive === false && props.user.reactivationDate)
           ? (props.user.reactivationDate.toLocaleString().split('T')[0]) : ''}
+      </td>
+      <td>
+        {props.user.endDate ? (props.user.endDate.toLocaleString().split('T')[0]) : 'N/A'}
       </td>
       <td>
         <span className="usermanagement-actions-cell">

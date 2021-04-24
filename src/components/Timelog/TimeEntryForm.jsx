@@ -285,7 +285,7 @@ const TimeEntryForm = ({
       );
     } else {
       deltatime = (parseInt(hours, 10) + parseInt(minutes, 10) / 60);
-      console.log(deltatime);
+      //console.log(deltatime);
     }
 
     // const totalTime = (parseFloat(userProfile.totalComittedHours, 10) + deltatime).toFixed(2);
@@ -295,15 +295,21 @@ const TimeEntryForm = ({
     //   totalComittedHours: totalTime,
     // };
     //await dispatch(updateUserProfile(userProfile._id, updatedUserprofile));
-    getLeaderboardData(userProfile._id);
+
     if (fromTimer) {
       if (status === 200) {
         const timerStatus = await dispatch(stopTimer(userId));
         if (timerStatus === 200 || timerStatus === 201) {
-          setInputs(inputs => initialState);
-          setReminder(reminder => initialReminder);
-          toggle();
+
+          // setInputs(inputs => initialState);
+          // setReminder(reminder => initialReminder);
           resetTimer();
+          clearForm();
+          setTimeout(()=>{
+            toggle();
+          }, 5);
+          
+          
         }
         //history.push(`/timelog/${userId}`);
       }
@@ -320,7 +326,7 @@ const TimeEntryForm = ({
       toggle();
     } else if (!edittime) {
       // setReminder(reminder => initialReminder)
-      // console.log('kkkkkkkkk')
+      //console.log('kkkkkkkkk')
       toggle();
     }
   };
@@ -334,7 +340,7 @@ const TimeEntryForm = ({
   };
 
   const handleEditorChange = (content, editor) => {
-    console.log(content);
+
     inputs.notes = content;
     const { wordcount } = editor.plugins;
 

@@ -15,18 +15,21 @@ import { ENDPOINTS } from '../utils/URL'
  */
 export const fetchAllProjects = () => {
 
-	const request = axios.get(ENDPOINTS.PROJECTS);
-	return async dispatch => {
-		await dispatch(setProjectsStart());
-		request.then(res => {
-			dispatch(setProjects(res.data));
-		}).catch((err) => {
-			if (err.status !== 401) {
-				console.log("Error", err);
-				dispatch(setProjectsError());
-			}
-		})
-	}
+  const request = axios.get(ENDPOINTS.PROJECTS);
+
+  //console.log(ENDPOINTS.PROJECTS);
+  //console.log(request);
+
+  return async dispatch => {
+    await dispatch(setProjectsStart());
+    request.then(res => {
+      //console.log("RES", res);
+      dispatch(setProjects(res.data));
+    }).catch((err) => {
+      console.log("Error", err);
+      dispatch(setProjectsError());
+    })
+  }
 }
 
 /**
@@ -35,33 +38,33 @@ export const fetchAllProjects = () => {
  * @param {isActive}: the active status of new project
  */
 export const postNewProject = (projectName, isActive) => {
-	const url = ENDPOINTS.PROJECTS;
-	//console.log("Call API: ", url);
-	return async dispatch => {
-		let status = 200;
-		let _id = null;
+  const url = ENDPOINTS.PROJECTS;
+  //console.log("Call API: ", url);
+  return async dispatch => {
+    let status = 200;
+    let _id = null;
 
-		try {
-			const res = await axios.post(url, { projectName, isActive })
-			_id = res.data._id;
-			status = res.status;
+    try {
+      const res = await axios.post(url, { projectName, isActive })
+      _id = res.data._id;
+      status = res.status;
 
-		} catch (err) {
-			// console.log("TRY CATCH ERR", err);
-			status = 400;
-		}
+    } catch (err) {
+      console.log("TRY CATCH ERR", err);
+      status = 400;
+    }
 
-		dispatch(
-			addNewProject(
-				{
-					"_id": _id,
-					"projectName": projectName,
-					"isActive": isActive
+    dispatch(
+      addNewProject(
+        {
+          "_id": _id,
+          "projectName": projectName,
+          "isActive": isActive
 
-				},status
-			));
+        }, status
+      ));
 
-	}
+  }
 }
 
 /**
@@ -69,50 +72,50 @@ export const postNewProject = (projectName, isActive) => {
  * @param {projectId}: Id of deleted project
  */
 export const deleteProject = (projectId) => {
-	const url = ENDPOINTS.PROJECT + projectId;
+  const url = ENDPOINTS.PROJECT + projectId;
 
-	//console.log("Delete", projectId);
+  //console.log("Delete", projectId);
 
-	return async dispatch => {
-		let status = 200
+  return async dispatch => {
+    let status = 200
 
-		try {
-			const res = await axios.delete(url)
-			status = res.status
-		} catch (err) {
-			// console.log("CAN'T DELETE", err)
-			status = 400
-		}
+    try {
+      const res = await axios.delete(url)
+      status = res.status
+    } catch (err) {
+      console.log("CAN'T DELETE", err)
+      status = 400
+    }
 
-		dispatch(removeProject(projectId, status))
-	}
+    dispatch(removeProject(projectId, status))
+  }
 }
 
 export const modifyProject = (type, projectId, projectName, isActive) => {
-	const url = ENDPOINTS.PROJECT + projectId;
-	//console.log("set Active", projectId, projectName, isActive);
+  const url = ENDPOINTS.PROJECT + projectId;
+  //console.log("set Active", projectId, projectName, isActive);
 
-	if (type === "setActive") {
-		isActive = !isActive;
-	}
-	return async dispatch => {
-		let status = 200;
+  if (type === "setActive") {
+    isActive = !isActive;
+  }
+  return async dispatch => {
+    let status = 200;
 
-		try {
-			const res = await axios.put(url, {
-				"projectName": projectName,
-				"isActive": isActive
-			})
-			status = res.status;
+    try {
+      const res = await axios.put(url, {
+        "projectName": projectName,
+        "isActive": isActive
+      })
+      status = res.status;
 
-		} catch (err) {
-			// console.log("CAN'T Set active", err);
-			status = 400;
-		}
+    } catch (err) {
+      console.log("CAN'T Set active", err);
+      status = 400;
+    }
 
-		dispatch(updateProject(projectId, projectName, isActive, status));
+    dispatch(updateProject(projectId, projectName, isActive, status));
 
-	}
+  }
 }
 
 /*******************************************
@@ -123,9 +126,9 @@ export const modifyProject = (type, projectId, projectName, isActive) => {
  * Set a flag that fetching projects
  */
 export const setProjectsStart = () => {
-	return {
-		type: types.FETCH_PROJECTS_START
-	}
+  return {
+    type: types.FETCH_PROJECTS_START
+  }
 }
 
 /**
@@ -133,10 +136,10 @@ export const setProjectsStart = () => {
  * @param payload : projects []
  */
 export const setProjects = payload => {
-	return {
-		type: types.RECEIVE_PROJECTS,
-		payload
-	}
+  return {
+    type: types.RECEIVE_PROJECTS,
+    payload
+  }
 }
 
 /**
@@ -144,34 +147,34 @@ export const setProjects = payload => {
  * @param payload : error status code
  */
 export const setProjectsError = payload => {
-	return {
-		type: types.FETCH_PROJECTS_ERROR,
-		payload
-	}
+  return {
+    type: types.FETCH_PROJECTS_ERROR,
+    payload
+  }
 }
 
 export const addNewProject = (payload, status) => {
-	return {
-		type: types.ADD_NEW_PROJECT,
-		payload,
-		status
-	}
+  return {
+    type: types.ADD_NEW_PROJECT,
+    payload,
+    status
+  }
 }
 
 export const removeProject = (projectId, status) => {
-	return {
-		type: types.DELETE_PROJECT,
-		projectId,
-		status
-	}
+  return {
+    type: types.DELETE_PROJECT,
+    projectId,
+    status
+  }
 }
 
 export const updateProject = (projectId, projectName, isActive, status) => {
-	return {
-		type: types.UPDATE_PROJECT,
-		projectId,
-		projectName,
-		isActive,
-		status
-	}
+  return {
+    type: types.UPDATE_PROJECT,
+    projectId,
+    projectName,
+    isActive,
+    status
+  }
 }

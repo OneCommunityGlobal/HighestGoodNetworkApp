@@ -13,12 +13,14 @@ import {
   WEEKLY_SUMMARIES_REPORT,
   OTHER_LINKS,
   USER_MANAGEMENT,
+  BADGE_MANAGEMENT,
   PROJECTS,
   TEAMS,
   WELCOME,
   VIEW_PROFILE,
   UPDATE_PASSWORD,
   LOGOUT,
+  POPUP_MANAGEMENT
 } from '../../languages/en/ui'
 import {
   Collapse,
@@ -43,7 +45,7 @@ export class Header extends React.Component {
       isOpen: false
     }
   }
-  
+
   componentDidMount() {
     if (this.props.auth.isAuthenticated) {
       // this.props.getUserProfile(this.props.auth.user.userid)
@@ -66,7 +68,7 @@ export class Header extends React.Component {
   }
 
   render() {
-    const { isAuthenticated, user, firstName, profilePic } = this.props.auth 
+    const { isAuthenticated, user, firstName, profilePic } = this.props.auth
     return (
       <div>
         <Navbar color="dark" dark expand="lg" style={{ marginBottom: '20px' }}>
@@ -131,12 +133,26 @@ export class Header extends React.Component {
                     ) : (
                         <React.Fragment></React.Fragment>
                       )}
+                    {user.role === UserRole.Administrator ? (
+                      <DropdownItem tag={Link} to="/badgemanagement" >
+                        {BADGE_MANAGEMENT}
+                      </DropdownItem>
+                    ) : (
+                        <React.Fragment></React.Fragment>
+                      )}
                     <DropdownItem tag={Link} to="/projects">
                       {PROJECTS}
                     </DropdownItem>
                     <DropdownItem tag={Link} to='/teams'>
                       {TEAMS}
                     </DropdownItem>
+                    {(user.role === UserRole.Administrator) ?
+                      <>
+                        <DropdownItem divider />
+                        <DropdownItem tag={Link} to={`/admin/`}>
+                          {POPUP_MANAGEMENT}
+                        </DropdownItem>
+                      </> : null}
                   </DropdownMenu>
                 </UncontrolledDropdown>
                 <NavItem>
@@ -156,6 +172,7 @@ export class Header extends React.Component {
                   </DropdownToggle>
                   <DropdownMenu>
                     <DropdownItem header>Hello {firstName}</DropdownItem>
+
                     <DropdownItem divider />
                     <DropdownItem tag={Link} to={`/userprofile/${user.userid}`}>
                       {VIEW_PROFILE}
@@ -173,7 +190,7 @@ export class Header extends React.Component {
             </Collapse>
           )}
         </Navbar>
-      </div>
+      </div >
     )
   }
 }

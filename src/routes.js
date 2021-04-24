@@ -19,6 +19,7 @@ import Members from './components/Projects/Members'
 import WBS from './components/Projects/WBS'
 import WBSDetail from './components/Projects/WBS/WBSDetail'
 import WeeklySummariesReport from './components/WeeklySummariesReport'
+import Admin from './components/Admin'
 import 'react-toastify/dist/ReactToastify.css'
 import { UserRole } from './utils/enums'
 import ForgotPassword from './components/Login/ForgotPassword'
@@ -28,6 +29,7 @@ import TeamReport from './components/Reports/TeamReport'
 import TaskReport from './components/Reports/TaskReport'
 
 
+import BadgeManagement from "./components/Badge/BadgeManagement"
 
 export default (
   <React.Fragment>
@@ -35,6 +37,10 @@ export default (
     <ToastContainer />
     <Switch>
       <ProtectedRoute path="/dashboard" exact component={Dashboard} />
+      <ProtectedRoute path="/dashboard/:userId" exact component={Dashboard} />
+      <ProtectedRoute path='/wbs/tasks/:wbsId/:projectId/:wbsName' component={WBSDetail} />
+      <ProtectedRoute path="/project/members/:projectId" component={Members} />
+      <ProtectedRoute path="/admin" component={Admin} />
       <ProtectedRoute path="/timelog/" exact component={Timelog} />
       <ProtectedRoute path="/timelog/:userId" exact component={Timelog} />
       <ProtectedRoute path="/reports" exact component={Reports} />
@@ -58,6 +64,12 @@ export default (
         path="/usermanagement"
         exact
         component={UserManagement}
+        allowedRoles={[UserRole.Administrator]}
+      />
+      <ProtectedRoute
+        path="/badgemanagement"
+        exact
+        component={BadgeManagement}
         allowedRoles={[UserRole.Administrator]}
       />
       <ProtectedRoute path="/teams" exact component={Teams} />
