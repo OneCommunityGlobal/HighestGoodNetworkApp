@@ -7,16 +7,16 @@ const  WbsTable = (props) => {
   let WbsTasksID = []
   let tasksTable=[]
   if (props.wbs.fetched) {
-    console.log('yueru here')
-    console.log(props.wbs)
+    //console.log('yueru here')
+    //console.log(props.wbs)
     if (props.wbs.WBSItems.length > 0) {
-      console.log('yueru here2')
+      //console.log('yueru here2')
       for (var i = 0; i < props.wbs.WBSItems.length; i++) {
         WbsTasksID.push(props.wbs.WBSItems[i]._id);
       }
-      console.log(WbsTasksID)
+      //console.log(WbsTasksID)
       WbsList = props.wbs.WBSItems.map((item, index) =>
-        <tr id={"tr_" + item._id}>
+        <tr id={"tr_" + item._id}  key={item._id}>
           <th scope="row">
             <div>{index + 1}</div>
           </th>

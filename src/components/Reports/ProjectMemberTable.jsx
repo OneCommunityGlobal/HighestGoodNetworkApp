@@ -6,7 +6,7 @@ const  ProjectMemberTable = (props) => {
   if (props.projectMembers.fetched) {
     if (props.projectMembers.members.length > 0) {
       memberList = props.projectMembers.members.map((member, index) =>
-        <tr id={"tr_" + member._id}>
+        <tr id={"tr_" + member._id} key={member._id}>
           <th scope="row">
             <div>{index + 1}</div>
           </th>

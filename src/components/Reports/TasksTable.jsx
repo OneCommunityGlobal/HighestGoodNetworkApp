@@ -20,7 +20,7 @@ class TasksTable extends Component{
       status:''
 
     }
-    this.setTasks=this.setTasks.bind(this)
+    // this.setTasks=this.setTasks.bind(this)
     this.setStatus=this.setStatus.bind(this)
     this.setPriority=this.setPriority.bind(this)
     this.get_task_by_wbsId=this.get_task_by_wbsId.bind(this)
@@ -30,13 +30,13 @@ class TasksTable extends Component{
     // this.setNotAssign=this.setNotAssign.bind(this)
 
   }
-  setTasks( get_tasks=[]) {
-    this.setState((state) => {
-      return {
-        tasks_filter: get_tasks
-      }
-    });
-  }
+  // setTasks( get_tasks=[]) {
+  //   this.setState((state) => {
+  //     return {
+  //       tasks_filter: get_tasks
+  //     }
+  //   });
+  // }
 
   async componentDidMount() {
     this.setState({
@@ -66,21 +66,34 @@ class TasksTable extends Component{
           console.log('here8888')
           var result = this.props.tasks.taskItems.filter(task => task.wbsId == this.props.WbsTasksID[i]);
           console.log(this.props.tasks)
+          console.log('result111')
+          console.log(result)
+          get_tasks.push(result)
+          //console.log('result111')
           i+=1
-          if ( Object.keys(result).length<Object.keys(this.props.tasks.taskItems).length) {
-            get_tasks.push(result)
-          }
-          else if(Object.keys(result).length==Object.keys(this.props.tasks.taskItems).length && i==Object.keys(this.props.WbsTasksID).length-1){
-            get_tasks[0]=result
-            break
-          }
-          else{
-            break
-          }
+          // if ( Object.keys(result).length<Object.keys(this.props.tasks.taskItems).length) {
+          //   console.log('add here?')
+          //   get_tasks.push(result)
+          //   console.log('get_tasks')
+          //
+          //   console.log(get_tasks)
+          //   console.log('result222222')
+          //
+          //   console.log(result)
+          // }
+          // else if(Object.keys(result).length==Object.keys(this.props.tasks.taskItems).length && i==Object.keys(this.props.WbsTasksID).length-1){
+          //   get_tasks[0]=result
+          //   console.log('add here?222')
+          //   break
+          // }
+          // else{
+          //   break
+          //   console.log('add here333?')
+          // }
         }
       }
     }
-    return get_tasks
+    return get_tasks[1]
   }
   setActive(activeValue) {
     this.setState((state) => {
@@ -133,42 +146,45 @@ class TasksTable extends Component{
 
 
     var get_tasks=this.get_task_by_wbsId()
+    console.log('get_tasks')
+    console.log(get_tasks)
+
 
     return(
       <tbody>
       <div>
-        <DropdownButton id="dropdown-basic-button" title="Assignment Status">
-          <Dropdown.Item  onClick={this.setAssign(true)}>Assign</Dropdown.Item>
-          <Dropdown.Item onClick={this.setAssign(false)}>Not Assign</Dropdown.Item>
-        </DropdownButton>
+        {/*<DropdownButton id="dropdown-basic-button" title="Assignment Status">*/}
+        {/*  <Dropdown.Item  onClick={this.setAssign(true)}>Assign</Dropdown.Item>*/}
+        {/*  <Dropdown.Item onClick={this.setAssign(false)}>Not Assign</Dropdown.Item>*/}
+        {/*</DropdownButton>*/}
 
-        <input name='radio' type="radio" style={{margin:'5px'}} value="active" onChange={this.setActive(true)}  />
-        Active
-        <input name='radio' type="radio" style={{margin:'5px'}} value="inactive" onChange={this.setActive(false) } />
-        InActive
-        <DropdownButton style={{margin:'3px'}} exact id="dropdown-basic-button" title="Priority Level">
-          <Dropdown.Item onClick={()=>this.setPriority('Primary')}>Primary</Dropdown.Item>
-          <Dropdown.Item  onClick={()=>this.setPriority('Secondary')}>Secondary</Dropdown.Item>
-          <Dropdown.Item  onClick={()=>this.setPriority('Tertiary') }>Tertiary</Dropdown.Item>
-        </DropdownButton>
-        <DropdownButton style={{margin:'3px'}} exact id="dropdown-basic-button" title="Status">
-          <Dropdown.Item onClick={()=>this.setStatus('Complete')}>Complete</Dropdown.Item>
-          <Dropdown.Item onClick={()=>this.setStatus('Paused')}>Paused</Dropdown.Item>
-          <Dropdown.Item onClick={()=>this.setStatus('Not Started')}>Not Started</Dropdown.Item>
-          <Dropdown.Item onClick={()=>this.setStatus('Active')}>Active</Dropdown.Item>
-          <Dropdown.Item onClick={()=>this.setStatus('Ready for Final Review')}>Ready for Final Review</Dropdown.Item>
-        </DropdownButton>
+        {/*<input name='radio' type="radio" style={{margin:'5px'}} value="active" onChange={this.setActive(true)}  />*/}
+        {/*Active*/}
+        {/*<input name='radio' type="radio" style={{margin:'5px'}} value="inactive" onChange={this.setActive(false) } />*/}
+        {/*InActive*/}
+        {/*<DropdownButton style={{margin:'3px'}} exact id="dropdown-basic-button" title="Priority Level">*/}
+        {/*  <Dropdown.Item onClick={()=>this.setPriority('Primary')}>Primary</Dropdown.Item>*/}
+        {/*  <Dropdown.Item  onClick={()=>this.setPriority('Secondary')}>Secondary</Dropdown.Item>*/}
+        {/*  <Dropdown.Item  onClick={()=>this.setPriority('Tertiary') }>Tertiary</Dropdown.Item>*/}
+        {/*</DropdownButton>*/}
+        {/*<DropdownButton style={{margin:'3px'}} exact id="dropdown-basic-button" title="Status">*/}
+        {/*  <Dropdown.Item onClick={()=>this.setStatus('Complete')}>Complete</Dropdown.Item>*/}
+        {/*  <Dropdown.Item onClick={()=>this.setStatus('Paused')}>Paused</Dropdown.Item>*/}
+        {/*  <Dropdown.Item onClick={()=>this.setStatus('Not Started')}>Not Started</Dropdown.Item>*/}
+        {/*  <Dropdown.Item onClick={()=>this.setStatus('Active')}>Active</Dropdown.Item>*/}
+        {/*  <Dropdown.Item onClick={()=>this.setStatus('Ready for Final Review')}>Ready for Final Review</Dropdown.Item>*/}
+        {/*</DropdownButton>*/}
         <button style={{margin:'3px'}} exact className="btn btn-secondary btn-bg mt-3">User</button>
         <button style={{margin:'3px'}} exact className="btn btn-secondary btn-bg mt-3">Estimated Hours</button>
         <button style={{margin:'3px'}} exact className="btn btn-secondary btn-bg mt-3">Classification</button>
       </div>
-      {/*<TasksDetail*/}
-      {/*  tasks_filter={get_tasks}*/}
-      {/*  isAssigned={isAssigned}*/}
-      {/*  isActive={isActive}*/}
-      {/*  priority={priority}*/}
-      {/*  status={status}*/}
-      {/*/>*/}
+      <TasksDetail
+        tasks_filter={get_tasks}
+        isAssigned={isAssigned}
+        isActive={isActive}
+        priority={priority}
+        status={status}
+      />
       </tbody>
     )
   }
