@@ -59,7 +59,7 @@ const BlueSqaureLayout = (props) => {
     <div>
       {!privacySettings.blueSquares ? <p>Blue Square Info is Private</p> : (
         <div>
-          <p>BLUE SQAURES</p>
+          <p>BLUE SQUARES</p>
           <BlueSquare
             isUserAdmin={isUserAdmin}
             blueSquares={infringments}

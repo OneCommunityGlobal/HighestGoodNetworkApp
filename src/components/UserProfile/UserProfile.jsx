@@ -347,6 +347,7 @@ class UserProfile extends Component {
     const { updateUserProfile, match } = this.props
     const { userProfile, formValid } = this.state
     const submitResult = await updateUserProfile(match.params.userId, userProfile)
+    this.setState({ changed: false })
   }
 
   toggleInfoModal = () => {
@@ -537,7 +538,7 @@ class UserProfile extends Component {
       // personalLinks,
       // adminLinks,
       // infringments,
-      // privacySettings,
+      privacySettings,
       // teams,
     } = userProfile
 
@@ -583,7 +584,7 @@ class UserProfile extends Component {
           />
         )}
         <TabToolTips />
-        <BasicToolTips />
+        <BasicToolTips isUserAdmin={isUserAdmin} privacySettings={privacySettings} isUserSelf={isUserSelf} />
         <InfoModal isOpen={infoModal} toggle={this.toggleInfoModal} />
         <Container className="emp-profile">
           <Row>
@@ -768,13 +769,9 @@ class UserProfile extends Component {
             <Col md="4"></Col>
             <Col md="8">
 
-              {requestorRole === "Administrator" && canEdit ? (
-                <ResetPasswordButton user={userProfile} />
-              ) : (<div className="profileEditButtonContainer">
-                <Link to={`/updatepassword/${this.state.userProfile._id}`}>
-                  <Button color="primary"> Update Password</Button>
-                </Link>
-              </div>)}
+              {requestorRole === "Administrator" && canEdit && <ResetPasswordButton user={userProfile} />}
+              {isUserSelf && <Link to={`/updatepassword/${this.state.userProfile._id}`}><Button color="primary"> Update Password</Button></Link>}
+
               <PauseAndResumeButton user={userProfile} isBigBtn={true} />
               <Link
                 color="primary"

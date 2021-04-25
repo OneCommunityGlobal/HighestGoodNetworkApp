@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Tooltip } from 'reactstrap';
 
 
-const BasicTabTips = () => {
+const BasicTabTips = ({ isUserAdmin, isUserSelf, privacySettings }) => {
   const [nameOpen, setNameOpen] = useState(false);
   const [emailOpen, setEmailOpen] = useState(false);
   const [phoneOpen, setPhoneOpen] = useState(false);
@@ -17,12 +17,13 @@ const BasicTabTips = () => {
       <Tooltip placement="top" data-testid="tooltip-name" isOpen={nameOpen} target="info-name" toggle={toggleName}>
         First Name and Last Name
       </Tooltip>
-      <Tooltip placement="top" isOpen={emailOpen} target="info-email" toggle={toggleEmail}>
+      {(isUserAdmin || isUserSelf || privacySettings?.email) && <Tooltip placement="top" isOpen={emailOpen} target="info-email" toggle={toggleEmail}>
         Your Email
-      </Tooltip>
-      <Tooltip placement="top" isOpen={phoneOpen} target="info-phone" toggle={togglePhone}>
-        Your Phone Number
-      </Tooltip>
+      </Tooltip>}
+      {(isUserAdmin || isUserSelf || privacySettings?.poneNumber) &&
+        <Tooltip placement="top" isOpen={phoneOpen} target="info-phone" toggle={togglePhone}>
+          Your Phone Number
+      </Tooltip>}
       {/* <Tooltip placement="top" isOpen={phoneOpen} target="info-phone" toggle={togglePhone}>
         Your Phone Number
       </Tooltip> */}
