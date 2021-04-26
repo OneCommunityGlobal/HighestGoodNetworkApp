@@ -76,26 +76,26 @@ export const taskReducer = (allTasks = allTasksInital, action) => {
       const index = motherIndex + 1;
       return { ...allTasks, taskItems: [...allTasks.taskItems.slice(0, index), ...sortByNum([action.newTask, ...allTasks.taskItems.slice(index)])], fetched: true, fetching: false, error: "none" }
     case types.DELETE_TASK:
-      let indexStart = allTasks.taskItems.findIndex(task => task._id === action.taskId);
-      let indexEnd = indexStart;
+      let delIndexStart = allTasks.taskItems.findIndex(task => task._id === action.taskId);
+      let delIndexEnd = delIndexStart;
       allTasks.taskItems.forEach((task, index) => {
         if (task.parentId3 === action.taskId) {
-          indexEnd = index;
+          delIndexEnd = index;
         }
         if (task.parentId2 === action.taskId) {
-          indexEnd = index;
+          delIndexEnd = index;
         }
         if (task.parentId1 === action.taskId) {
-          indexEnd = index;
+          delIndexEnd = index;
         }
       });
-      return { ...allTasks, taskItems: [...allTasks.taskItems.slice(0, indexStart), ...allTasks.taskItems.slice(indexEnd + 1)], fetched: true, fetching: false, error: "none" }
+      return { ...allTasks, taskItems: [...allTasks.taskItems.slice(0, delIndexStart), ...allTasks.taskItems.slice(delIndexEnd + 1)], fetched: true, fetching: false, error: "none" }
     case types.UPDATE_TASK:
-      indexStart = allTasks.taskItems.findIndex(task => task._id == action.taskId);
-      indexEnd = indexStart;
+      let updIndexStart = allTasks.taskItems.findIndex(task => task._id === action.taskId);
+      let updIndexEnd = updIndexStart;
       let updatedTask = allTasks.taskItems.filter(task => task._id === action.taskId)[0];
       updatedTask = { ...updatedTask, ...action.updatedTask };
-      return { ...allTasks, taskItems: [...allTasks.taskItems.slice(0, indexStart), updatedTask, ...allTasks.taskItems.slice(indexEnd + 1)], fetched: true, fetching: false, error: "none" }
+      return { ...allTasks, taskItems: [...allTasks.taskItems.slice(0, updIndexStart), updatedTask, ...allTasks.taskItems.slice(updIndexEnd + 1)], fetched: true, fetching: false, error: "none" }
     case types.COPY_TASK:
       const copiedIndex = allTasks.taskItems.findIndex(item => item._id === action.taskId);
       console.log(allTasks.taskItems[copiedIndex]);
