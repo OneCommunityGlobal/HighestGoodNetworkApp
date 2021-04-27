@@ -30,6 +30,7 @@ export const allUserTeamsReducer = (allTeams = userTeamsInitial, action) => {
         fetched: true,
         status: '200',
       });
+
     case types.ADD_NEW_TEAM:
       return updateObject(allTeams, {
         allTeams: Object.assign([...allTeams.allTeams, action.payload]),
