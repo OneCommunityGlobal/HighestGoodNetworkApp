@@ -34,7 +34,7 @@ const WeeklyCommitedHours = (props) => {
       id="weeklyComittedHours"
       value={props.userProfile.weeklyComittedHours}
       onChange={props.handleUserProfile}
-      placeholder="weeklyComittedHours"
+      placeholder="weeklyCommittedHours"
       invalid={!props.isUserAdmin}
     />
   );
@@ -51,7 +51,7 @@ const TotalCommittedHours = (props) => {
       id="totalComittedHours"
       value={props.userProfile.totalComittedHours}
       onChange={props.handleUserProfile}
-      placeholder="TotalComittedHours"
+      placeholder="totalCommittedHours"
       invalid={!props.isUserAdmin}
     />
   );
@@ -95,7 +95,7 @@ const ViewTab = (props) => {
       </Row>
       <Row>
         <Col md="6">
-          <Label>Weekly Commited Hours </Label>
+          <Label>Weekly Committed Hours </Label>
         </Col>
         <Col md="6">
           <WeeklyCommitedHours isUserAdmin={isUserAdmin} userProfile={userProfile} handleUserProfile={handleUserProfile} />

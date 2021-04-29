@@ -27,10 +27,19 @@ describe('blue squre is user admin', () => {
     userEvent.click(screen.getAllByRole('button')[0]);
     expect(handleBlueSquare).toHaveBeenCalled();
   });
+  it('should fire handleBlueSquare once the user clicks ', () => {
+    userEvent.click(screen.getAllByRole('button')[2]);
+    expect(handleBlueSquare).toHaveBeenCalled();
+  });
   it('should have a + button', () => {
     expect(screen.getByText('+')).toBeInTheDocument();
   });
+  it('should fire handleBlueSquare to add blue square once the admin user click +',() =>{
+    userEvent.click(screen.getByText('+'));
+    expect(handleBlueSquare).toHaveBeenCalled();
+  });
 });
+
 describe('blue square is not user admin', () => {
   const handleBlueSquare = jest.fn();
   beforeEach(() => {
@@ -44,5 +53,9 @@ describe('blue square is not user admin', () => {
   });
   it('should not render the + button', () => {
     expect(screen.queryByText('+')).toBeFalsy();
+  });
+  it('should fire handleBlueSquare to view the blue square once the user click',() =>{
+    userEvent.click(screen.getAllByRole('button')[3]);
+    expect(handleBlueSquare).toHaveBeenCalled();    
   });
 });

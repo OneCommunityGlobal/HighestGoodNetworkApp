@@ -108,7 +108,7 @@ describe('Project WBS behavior', () => {
     await waitFor(() => expect(screen.getByRole('table')).toBeTruthy());
 
     await waitFor(() => expect(screen.getByText('Fake WBS')).toBeTruthy());
-    await waitFor(() => expect(screen.getByText('Fake WBS').closest('a')).toHaveAttribute('href', "/wbs/tasks/5ad91ec3590b19002asacd26/5ad91ec3590b19002asacd26"));
+    await waitFor(() => expect(screen.getByText('Fake WBS').closest('a')).toHaveAttribute('href', "/wbs/tasks/5ad91ec3590b19002asacd26/5ad91ec3590b19002asacd26/Fake WBS"));
 
   });
 

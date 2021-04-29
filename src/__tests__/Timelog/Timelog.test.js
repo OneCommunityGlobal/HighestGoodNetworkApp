@@ -92,12 +92,9 @@ describe('<Timelog/>', () => {
     expect(projectSelect.value).toBe('all');
     fireEvent.change(projectSelect, {target: { value: userProjectMock.projects[1].projectId },});
     expect(screen.getAllByRole('heading', { name: /mock project \d/i })).toHaveLength(2);
-    console.log(projectSelect.value + " *1**")
     fireEvent.change(projectSelect, {target: { value: userProjectMock.projects[2].projectId },});
     expect(screen.getAllByRole('heading', { name: /mock project \d/i })).toHaveLength(1);
-    console.log(projectSelect.value + " *1**")
     fireEvent.change(projectSelect, {target: { value: userProjectMock.projects[3].projectId },});
     expect(screen.getAllByRole('heading', { name: /mock project \d/i })).toHaveLength(3);
-    console.log(projectSelect.value + " *1**")
   });
 }); 

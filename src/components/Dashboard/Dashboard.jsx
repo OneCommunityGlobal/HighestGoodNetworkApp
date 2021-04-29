@@ -11,7 +11,7 @@ import '../../App.css';
 import { connect } from 'react-redux';
 import {getUserProfile} from '../../actions/userProfile'
 
-const Dashboard = props => {
+export const Dashboard = props => {
   const [popup, setPopup] = useState(false);
   let userId = props.match && props.match.params.userId && props.auth.user.role === 'Administrator' ? props.match.params.userId : props.auth.user.userid;
   const toggle = () => {

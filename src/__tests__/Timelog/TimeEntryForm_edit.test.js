@@ -90,7 +90,7 @@ describe('<TimeEntryForm edit/>', () => {
     userEvent.click(screen.getByRole('button', { name: /clear form/i }));
     userEvent.click(screen.getByRole('button', { name: /save/i }));
     expect(screen.getByText(/time should be greater than 0/i)).toBeInTheDocument();
-    expect(screen.getByText(/project is required/i)).toBeInTheDocument();
+    expect(screen.getByText('Project/Task is required')).toBeInTheDocument();
   });
 
   it('should dispatch action when click Save', async () => {

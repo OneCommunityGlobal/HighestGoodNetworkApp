@@ -340,7 +340,6 @@ const TimeEntryForm = ({
   };
 
   const handleEditorChange = (content, editor) => {
-
     inputs.notes = content;
     const { wordcount } = editor.plugins;
 
@@ -379,6 +378,7 @@ const TimeEntryForm = ({
             data-tip
             data-for="registerTip"
             aria-hidden="true"
+            title="timeEntryTip"
             // style={{ 'text-align': 'center' }}
             onClick={openInfo}
           />
@@ -511,6 +511,7 @@ const TimeEntryForm = ({
             data-tip
             data-for="tangibleTip"
             aria-hidden="true"
+            title="tangibleTip"
             // style={{ 'text-align': 'center' }}
             onClick={tangibleInfoToggle}
           />

@@ -41,11 +41,10 @@ describe('<ActivationDatePopup />', () => {
     expect(onPause).toBeCalledWith('2100-08-30');
   });
   it('should popup warning when selected date is earier than today', async () => {
-    const spy = jest.spyOn(window, 'alert').mockImplementation(() => { });
     const date = screen.getByTestId('date-input');
     const button = screen.getByRole('button', { name: /pause the user/i });
     await userEvent.type(date, '2000-08-08', { allAtOnce: false });
     userEvent.click(button);
-    expect(spy).toHaveBeenCalledWith('Please choose a future date');
+    expect(screen.getByText('Please choose a future date.')).toBeInTheDocument();
   });
 });
