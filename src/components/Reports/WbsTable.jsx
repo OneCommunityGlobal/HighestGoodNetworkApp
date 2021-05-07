@@ -23,9 +23,16 @@ const  WbsTable = (props) => {
           <td>
              {item.wbsName}
           </td>
-          <td>
-            {String(item.isActive)}
+          {/*<td>*/}
+          {/*  {String(item.isActive)}*/}
+          {/*</td>*/}
+
+          <td className='projects__active--input'>
+            {item.isActive ?
+              <tasks className="isActive"><i className="fa fa-circle" aria-hidden="true"></i></tasks> :
+              <div className="isNotActive"><i className="fa fa-circle-o" aria-hidden="true"></i></div>}
           </td>
+
           <td>
             {(item._id)}
           </td>

@@ -285,16 +285,10 @@ tasks=test
       props.userTask.map((task, index) => (
         task.resources.map(resource => (
          users.push(resource.name)
-
-         // filter(item => item.classification === props.classification)
-
-
         ))
       ))
 
-
       users=Array.from(new Set(users))
-
       return (
         <DropdownButton style={{margin:'3px'}} exact id="dropdown-basic-button" title="Users">
           {users.map((c, index) => (

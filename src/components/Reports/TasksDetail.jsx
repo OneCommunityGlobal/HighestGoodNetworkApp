@@ -1,10 +1,37 @@
-import React from 'react'
 import './reports.css'
+import React, { useState } from "react";
+import { Button, Dropdown, DropdownButton } from 'react-bootstrap'
+import EditTaskModal from "./../Projects/WBS/WBSDetail/EditTask/EditTaskModal";
 
+
+import Collapse from 'react-bootstrap/Collapse'
+const ShowCollapse = props => {
+  const [open, setOpen] = useState(false);
+return(
+  <div>
+  <Button
+    onClick={() => setOpen(!open)}
+    aria-controls="example-collapse-text"
+    aria-expanded={open}>
+    View
+  </Button>
+
+    {props.resources.map(resource => (
+    <Collapse in={open}>
+          <div id="example-collapse-text" className="new-line" key={resource._id}>
+            <li>{resource.name}</li>
+          </div>
+        </Collapse>
+      ))}
+   </div>
+
+)
+}
 
 const  TasksDetail = (props) => {
-  console.log('here4')
-  console.log(props)
+
+  // console.log('here4')
+  // console.log(props)
   let tasksList=[]
   let tasks=[]
   tasks=props.tasks_filter
@@ -22,6 +49,25 @@ console.log('tasks 9999999')
   console.log(tasks)
   tasksList = tasks.map((task, index) =>
     <tr id={"tr_" + task._id}>
+      <th scope="row">
+        {/*<Button>*/}
+        {/*  Edit*/}
+        {/*</Button>   */}
+        {/*<td>*/}
+          <EditTaskModal
+            key={`editTask_${task._id}`}
+            parentNum={task.num}
+            taskId={task._id}
+            // projectId={task.projectId}
+            wbsId={task.wbsId}
+            parentId1={task.parentId1}
+            parentId2={task.parentId2}
+            parentId3={task.parentId3}
+            mother={task.mother}
+            level={task.level}
+          />
+        {/*</td>*/}
+      </th>
       <th scope="row">
         <div>{index + 1}</div>
       </th>
@@ -56,11 +102,19 @@ console.log('tasks 9999999')
         {task.classification}
       </td>
       <td className='projects__active--input'>
-        {task.resources.map(resource => (
-          <div className="new-line" key={resource._id}>
-            <li>{resource.name}</li>
-          </div>
-        ))}
+
+
+        {task.resources.length<=2 ?
+          task.resources.map(resource => (
+            <div className="new-line" key={resource._id}>
+              <li>{resource.name}</li>
+            </div>
+          ))
+          :
+          <ShowCollapse resources={task.resources}/>
+          // <showCollapse resources={ }/>
+
+        }
       </td>
 
       <td className='projects__active--input'>
@@ -74,6 +128,8 @@ console.log('tasks 9999999')
       <table className="table table-bordered table-responsive-sm">
         <thead>
         <tr>
+          <th scope="col" id="projects__order">Action</th>
+
           <th scope="col" id="projects__order">#</th>
           <th scope="col">Task Name</th>
           <th scope="col" id="projects__active">Priority</th>

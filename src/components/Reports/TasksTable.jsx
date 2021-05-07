@@ -17,7 +17,10 @@ class TasksTable extends Component{
       isAssigned:false,
       isActive:false,
       priority:'',
-      status:''
+      status:'',
+      // allClassification:[],
+      classification:'',
+      users:""
 
     }
     // this.setTasks=this.setTasks.bind(this)
@@ -28,6 +31,10 @@ class TasksTable extends Component{
     // this.setInActive=this.setInActive.bind(this)
     this.setAssign=this.setAssign.bind(this)
     // this.setNotAssign=this.setNotAssign.bind(this)
+    this.setClassfication=this.setClassfication.bind(this)
+
+    this.setUsers=this.setUsers.bind(this)
+
 
   }
   // setTasks( get_tasks=[]) {
@@ -37,6 +44,22 @@ class TasksTable extends Component{
   //     }
   //   });
   // }
+
+  setUsers(userValue) {
+    this.setState((state) => {
+      return {
+        users:userValue
+      }
+    });
+  }
+  setClassfication(classificationValue) {
+    this.setState((state) => {
+      return {
+        classification:classificationValue
+      }
+    });
+  }
+
 
   async componentDidMount() {
     this.setState({
@@ -55,19 +78,19 @@ class TasksTable extends Component{
     var get_tasks=[]
     if ( Object.keys(this.props.WbsTasksID).length>0) {
       var i=0
-      console.log('here666')
+      // console.log('here666')
 
       while( i< Object.keys(this.props.WbsTasksID).length) {
-        console.log(Object.keys(this.props.WbsTasksID).length)
-        console.log('here777')
-        console.log(this.props.tasks)
-        console.log('9999')
+        // console.log(Object.keys(this.props.WbsTasksID).length)
+        // console.log('here777')
+        // console.log(this.props.tasks)
+        // console.log('9999')
         if (this.props.tasks.fetched) {
-          console.log('here8888')
+          // console .log('here8888')
           var result = this.props.tasks.taskItems.filter(task => task.wbsId == this.props.WbsTasksID[i]);
-          console.log(this.props.tasks)
-          console.log('result111')
-          console.log(result)
+          // console.log(this.props.tasks)
+          // console.log('result111')
+          // console.log(result)
           get_tasks.push(result)
           //console.log('result111')
           i+=1
@@ -116,12 +139,9 @@ class TasksTable extends Component{
       }
     });
   }
-  // setInActive(){
-  //   this.setState(()=>({
-  //     isActive:false
-  //   }))
-  //
-  // }
+
+
+
   setAssign(assignValue) {
     this.setState((state) => {
       return {
@@ -129,11 +149,8 @@ class TasksTable extends Component{
       }
     });
   }
-  // setNotAssign(){
-  //   this.setState(()=>({
-  //     isAssigned:false
-  //   }))
-  // }
+
+
 
 
   render() {
@@ -146,37 +163,103 @@ class TasksTable extends Component{
 
 
     var get_tasks=this.get_task_by_wbsId()
-    console.log('get_tasks')
-    console.log(get_tasks)
+    // console.log('get_tasks')
+    // console.log(get_tasks)
 
+    const PriorityOptions = props => {
+
+
+      var allPriorities=[...Array.from(new Set(props.get_tasks.map((item) => item.priority)))]
+
+      return (
+        <DropdownButton style={{margin:'3px'}} exact id="dropdown-basic-button" title="Priority">
+          {allPriorities.map((c, index) => (
+            <Dropdown.Item onClick={()=>this.setPriority(c)}>{c}</Dropdown.Item>
+          ))}
+        </DropdownButton>
+      )
+    };
+
+    const StatusOptions = props => {
+
+
+      var allStatus=[...Array.from(new Set(props.get_tasks.map((item) => item.status)))]
+
+      return (
+        <DropdownButton style={{margin:'3px'}} exact id="dropdown-basic-button" title="Status">
+          {allStatus.map((c, index) => (
+            <Dropdown.Item onClick={()=>this.setStatus(c)}>{c}</Dropdown.Item>
+          ))}
+        </DropdownButton>
+      )
+    };
+
+    const ActiveOptions = props => {
+
+
+      var allOptions=[...Array.from(new Set(props.get_tasks.map((item) => item.isActive.toString())))]
+
+      return (
+        <DropdownButton style={{margin:'3px'}} exact id="dropdown-basic-button" title="Active Options">
+          {allOptions.map((c, index) => (
+            <Dropdown.Item onClick={()=>this.setActive(c)}>{c}</Dropdown.Item>
+          ))}
+        </DropdownButton>
+      )
+    };
+
+    const AssignmentOptions = props => {
+      var allOptions=[...Array.from(new Set(props.get_tasks.map((item) => item.isAssigned.toString())))]
+      return (
+        <DropdownButton style={{margin:'3px'}} exact id="dropdown-basic-button" title="Assignment Options">
+          {allOptions.map((c, index) => (
+            <Dropdown.Item onClick={()=>this.setAssign(c)}>{c}</Dropdown.Item>
+          ))}
+        </DropdownButton>
+      )
+    };
+
+
+    const ClassificationOptions = props => {
+      var allClassification=[...Array.from(new Set(props.get_tasks.map((item) => item.classification)))]
+      return (
+        <DropdownButton style={{margin:'3px'}} exact id="dropdown-basic-button" title="Classification">
+          {allClassification.map((c, index) => (
+            <Dropdown.Item onClick={()=>this.setClassfication(c)}>{c}</Dropdown.Item>
+          ))}
+        </DropdownButton>
+      )
+    };
+
+    const UserOptions = props => {
+
+      let users=[]
+      props.get_tasks.map((task, index) => (
+        task.resources.map(resource => (
+          users.push(resource.name)
+        ))
+      ))
+
+      users=Array.from(new Set(users))
+      return (
+        <DropdownButton style={{margin:'3px'}} exact id="dropdown-basic-button" title="Users">
+          {users.map((c, index) => (
+            <Dropdown.Item onClick={()=>this.setUsers(c)}>{c}</Dropdown.Item>
+          ))}
+        </DropdownButton>
+      )
+    };
 
     return(
       <tbody>
       <div>
-        {/*<DropdownButton id="dropdown-basic-button" title="Assignment Status">*/}
-        {/*  <Dropdown.Item  onClick={this.setAssign(true)}>Assign</Dropdown.Item>*/}
-        {/*  <Dropdown.Item onClick={this.setAssign(false)}>Not Assign</Dropdown.Item>*/}
-        {/*</DropdownButton>*/}
-
-        {/*<input name='radio' type="radio" style={{margin:'5px'}} value="active" onChange={this.setActive(true)}  />*/}
-        {/*Active*/}
-        {/*<input name='radio' type="radio" style={{margin:'5px'}} value="inactive" onChange={this.setActive(false) } />*/}
-        {/*InActive*/}
-        {/*<DropdownButton style={{margin:'3px'}} exact id="dropdown-basic-button" title="Priority Level">*/}
-        {/*  <Dropdown.Item onClick={()=>this.setPriority('Primary')}>Primary</Dropdown.Item>*/}
-        {/*  <Dropdown.Item  onClick={()=>this.setPriority('Secondary')}>Secondary</Dropdown.Item>*/}
-        {/*  <Dropdown.Item  onClick={()=>this.setPriority('Tertiary') }>Tertiary</Dropdown.Item>*/}
-        {/*</DropdownButton>*/}
-        {/*<DropdownButton style={{margin:'3px'}} exact id="dropdown-basic-button" title="Status">*/}
-        {/*  <Dropdown.Item onClick={()=>this.setStatus('Complete')}>Complete</Dropdown.Item>*/}
-        {/*  <Dropdown.Item onClick={()=>this.setStatus('Paused')}>Paused</Dropdown.Item>*/}
-        {/*  <Dropdown.Item onClick={()=>this.setStatus('Not Started')}>Not Started</Dropdown.Item>*/}
-        {/*  <Dropdown.Item onClick={()=>this.setStatus('Active')}>Active</Dropdown.Item>*/}
-        {/*  <Dropdown.Item onClick={()=>this.setStatus('Ready for Final Review')}>Ready for Final Review</Dropdown.Item>*/}
-        {/*</DropdownButton>*/}
-        <button style={{margin:'3px'}} exact className="btn btn-secondary btn-bg mt-3">User</button>
+        <UserOptions get_tasks={ get_tasks}/>
+        <ClassificationOptions get_tasks={get_tasks}/>
+<PriorityOptions get_tasks={get_tasks}/>
+<StatusOptions get_tasks={get_tasks}/>
+        <ActiveOptions get_tasks={get_tasks}/>
+        <AssignmentOptions get_tasks={get_tasks}/>
         <button style={{margin:'3px'}} exact className="btn btn-secondary btn-bg mt-3">Estimated Hours</button>
-        <button style={{margin:'3px'}} exact className="btn btn-secondary btn-bg mt-3">Classification</button>
       </div>
       <TasksDetail
         tasks_filter={get_tasks}
@@ -197,7 +280,10 @@ const mapStateToProps = state => ({
   isAssigned:state.isAssigned,
   isActive:state.isActive,
   priority:state.priority,
-  status:state.status
+  status:state.status,
+  classification:state.classification,
+  users:state.users
+
 });
 
 
