@@ -53,6 +53,10 @@ workflows:
           filters:
             branches:
               only: development
+      - build_beta:
+          filters:
+            branches:
+              only: deploy_beta
       - build_PROD:
           filters:
             branches:
