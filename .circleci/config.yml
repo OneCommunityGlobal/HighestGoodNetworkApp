@@ -56,7 +56,9 @@ workflows:
       - build_beta:
           filters:
             branches:
-              only: deploy_beta
+              only:
+                - development
+                - deploy_beta
       - build_PROD:
           filters:
             branches:
