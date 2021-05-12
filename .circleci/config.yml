@@ -15,6 +15,21 @@ jobs:
           name: Deploy app
           command: ./node_modules/.bin/surge build --domain $SURGE_DOMAIN_DEV
 
+  build_beta:
+    docker:
+      - image: circleci/node:latest
+    steps:
+      - checkout
+      - run:
+          name: Update npm
+          command: "sudo npm install"
+      - run:
+          name: Run react build
+          command: "sudo REACT_APP_APIENDPOINT=$APIENDPOINT_BETA SKIP_PREFLIGHT_CHECK=true npm run build"
+      - run:
+          name: Deploy app
+          command: ./node_modules/.bin/surge build --domain $SURGE_DOMAIN_BETA
+
   build_PROD:
     docker:
       - image: circleci/node:latest
@@ -38,6 +53,12 @@ workflows:
           filters:
             branches:
               only: development
+      - build_beta:
+          filters:
+            branches:
+              only:
+                - development
+                - deploy_beta
       - build_PROD:
           filters:
             branches:
