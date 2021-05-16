@@ -9,6 +9,7 @@ import { getWeeklySummaries, updateWeeklySummaries } from '../../actions/weeklyS
 import moment from 'moment'
 import InputRange from 'react-input-range';
 import "react-input-range/lib/css/index.css"
+import EditTaskModal from '../Projects/WBS/WBSDetail/EditTask/EditTaskModal'
 
 
 
@@ -182,53 +183,72 @@ for (var j=0;j< tasks[i].resources.length;j++){
 tasks=test
         }
 
+if (tasks.length>0) {
+  userTaskList = tasks.map((task, index) => (
+    <tr id={"tr_" + task._id}>
+      <th scope="row">
+        <div>
+          here
+          </div>
+        {/*<EditTaskModal*/}
+        {/*  key={`editTask_${task._id}`}*/}
+        {/*  parentNum={task.num}*/}
+        {/*  taskId={task._id}*/}
+        {/*  wbsId={task.wbsId}*/}
+        {/*  parentId1={task.parentId1}*/}
+        {/*  parentId2={task.parentId2}*/}
+        {/*  parentId3={task.parentId3}*/}
+        {/*  mother={task.mother}*/}
+        {/*  level={task.level}*/}
+        {/*/>*/}
+      </th>
+      <th scope="row">
+        <div>{index + 1}</div>
+      </th>
+      <td>
+        {task.taskName}
+      </td>
+      <td>
+        {task.priority}
+      </td>
+      <td>
+        {task.status}
+      </td>
+      <td className='projects__active--input'>
+        {task.isActive ?
+          <tasks className="isActive"><i className="fa fa-circle" aria-hidden="true"></i></tasks> :
+          <div className="isNotActive"><i className="fa fa-circle-o" aria-hidden="true"></i></div>}
+      </td>
 
-          userTaskList = tasks.map((task, index) => (
-          <tr id={"tr_" + task._id}>
-            <th scope="row">
-              <div>{index + 1}</div>
-            </th>
-            <td>
-              {task.taskName}
-            </td>
-            <td>
-              {task.priority}
-            </td>
-            <td>
-              {task.status}
-            </td>
-            <td>
-              {task.startedDatetime}
-            </td>
-            <td>
-              {task.dueDatetime}
-            </td>
-
-            <td className='projects__active--input' >
-              {task.isActive ?
-                <tasks className="isActive"><i className="fa fa-circle" aria-hidden="true"></i></tasks> :
-                <div className="isNotActive"><i className="fa fa-circle-o" aria-hidden="true"></i></div>}
-            </td>
-
-            <td className='projects__active--input' >
-              {task.isAssigned ?
-                <div className="isActive">Assign</div> :
-                <div className="isNotActive">Not Assign</div>}
-            </td>
-            <td className='projects__active--input' >
-              {task.classification}
-            </td>
-            <td className='projects__active--input' >
-              {task.resources.map(resource => (
-                <div class="new-line" key={resource._id}><li>{resource.name}</li></div>
-              ))}
-            </td>
-
-            <td className='projects__active--input'>
-              {task.estimatedHours.toFixed(2)}
-            </td>
-          </tr>
+      <td className='projects__active--input'>
+        {task.isAssigned ?
+          <div className="isActive">Assign</div> :
+          <div className="isNotActive">Not Assign</div>}
+      </td>
+      <td className='projects__active--input'>
+        {task.classification}
+      </td>
+      <td className='projects__active--input'>
+        {task.resources.map(resource => (
+          <div class="new-line" key={resource._id}>
+            <li>{resource.name}</li>
+          </div>
         ))}
+      </td>
+
+      <td className='projects__active--input'>
+        {task.estimatedHours.toFixed(2)}
+      </td>
+      <td>
+        {task.startedDatetime}
+      </td>
+      <td>
+        {task.dueDatetime}
+      </td>
+    </tr>
+  ))
+}
+}
       return (
         <div>
           <h2>Total: {userTaskList.length}</h2>
@@ -236,17 +256,18 @@ tasks=test
             <table className="table table-bordered table-responsive-sm">
               <thead>
               <tr>
+                <th scope="col" id="projects__order">Action</th>
                 <th scope="col" id="projects__order">#</th>
-                <th scope="col">Task Name</th>
+                <th scope="col">Task</th>
                 <th scope="col" id="projects__active">Priority</th>
                 <th scope="col" id="projects__active">Status</th>
-                <th scope="col" id="projects__active">startedDate</th>
-                <th scope="col" id="projects__active">dueDate</th>
-                <th scope="col" id="projects__active">isActive</th>
-                <th scope="col" id="projects__active">isAssigned</th>
-                <th scope="col" id="projects__active">classification</th>
-                <th scope="col" id="projects__active">resources</th>
+                <th scope="col" id="projects__active">Active</th>
+                <th scope="col" id="projects__active">Assign</th>
+                <th scope="col" id="projects__active">class</th>
+                <th scope="col" id="projects__active">resource</th>
                 <th scope="col" id="projects__active">Estimated Hours</th>
+                <th scope="col" id="projects__active">startdDate</th>
+                <th scope="col" id="projects__active">dueDate</th>
               </tr>
               </thead>
 

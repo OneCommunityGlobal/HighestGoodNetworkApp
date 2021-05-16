@@ -14,51 +14,27 @@ class TasksTable extends Component{
       tasks: {},
       tasks_per_project: {},
       tasks_filter: {},
-      isAssigned:false,
-      isActive:false,
-      priority:'',
       status:'',
-      // allClassification:[],
+      priority:'',
+      isActive:false,
+      isAssigned:false,
+      allClassification:[],
       classification:'',
       users:""
 
     }
-    // this.setTasks=this.setTasks.bind(this)
+
+    this.get_task_by_wbsId=this.get_task_by_wbsId.bind(this)
     this.setStatus=this.setStatus.bind(this)
     this.setPriority=this.setPriority.bind(this)
-    this.get_task_by_wbsId=this.get_task_by_wbsId.bind(this)
     this.setActive=this.setActive.bind(this)
-    // this.setInActive=this.setInActive.bind(this)
     this.setAssign=this.setAssign.bind(this)
-    // this.setNotAssign=this.setNotAssign.bind(this)
     this.setClassfication=this.setClassfication.bind(this)
-
     this.setUsers=this.setUsers.bind(this)
 
+  }
 
-  }
-  // setTasks( get_tasks=[]) {
-  //   this.setState((state) => {
-  //     return {
-  //       tasks_filter: get_tasks
-  //     }
-  //   });
-  // }
 
-  setUsers(userValue) {
-    this.setState((state) => {
-      return {
-        users:userValue
-      }
-    });
-  }
-  setClassfication(classificationValue) {
-    this.setState((state) => {
-      return {
-        classification:classificationValue
-      }
-    });
-  }
 
 
   async componentDidMount() {
@@ -139,9 +115,6 @@ class TasksTable extends Component{
       }
     });
   }
-
-
-
   setAssign(assignValue) {
     this.setState((state) => {
       return {
@@ -150,7 +123,21 @@ class TasksTable extends Component{
     });
   }
 
+  setClassfication(classificationValue) {
+    this.setState((state) => {
+      return {
+        classification:classificationValue
+      }
+    });
+  }
 
+  setUsers(userValue) {
+    this.setState((state) => {
+      return {
+        users:userValue
+      }
+    });
+  }
 
 
   render() {
@@ -158,7 +145,8 @@ class TasksTable extends Component{
       isAssigned,
       isActive,
       priority,
-      status
+      status,
+      classification
     } = this.state
 
 
@@ -267,6 +255,7 @@ class TasksTable extends Component{
         isActive={isActive}
         priority={priority}
         status={status}
+        classification={classification}
       />
       </tbody>
     )

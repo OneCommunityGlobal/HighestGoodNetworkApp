@@ -11,15 +11,14 @@ return(
   <div>
   <Button
     onClick={() => setOpen(!open)}
-    aria-controls="example-collapse-text"
     aria-expanded={open}>
     View
   </Button>
 
     {props.resources.map(resource => (
     <Collapse in={open}>
-          <div id="example-collapse-text" className="new-line" key={resource._id}>
-            <li>{resource.name}</li>
+          <div key={resource._id} white-space="pre-line" white-space="nowrap" className="new-line">
+          {resource.name}
           </div>
         </Collapse>
       ))}
@@ -35,6 +34,22 @@ const  TasksDetail = (props) => {
   let tasksList=[]
   let tasks=[]
   tasks=props.tasks_filter
+  if (props.tasks_filter.length > 0) {
+    tasks = props.tasks_filter.filter(item => item.isActive === props.isActive
+      && item.isAssigned === props.isAssigned);
+    if (!(props.priority === "")) {
+      tasks=props.tasks_filter.filter(item => item.priority == props.priority &&item.isActive === props.isActive
+        && item.isAssigned === props.isAssigned)
+    }
+
+    if (!(props.status === "")) {
+      tasks = props.tasks_filter.filter(item => item.status == props.status)
+    }
+    if  (!(props.classification === "")) {
+      tasks=props.tasks_filter.filter(item => item.classification === props.classification)
+    }
+
+  }
   // tasks = props.tasks_filter.filter(item =>  item.isActive ===props.isActive
   //   && item.isAssigned ===props.isAssigned);
   // if (!(props.priority === "")){
@@ -50,15 +65,10 @@ console.log('tasks 9999999')
   tasksList = tasks.map((task, index) =>
     <tr id={"tr_" + task._id}>
       <th scope="row">
-        {/*<Button>*/}
-        {/*  Edit*/}
-        {/*</Button>   */}
-        {/*<td>*/}
           <EditTaskModal
             key={`editTask_${task._id}`}
             parentNum={task.num}
             taskId={task._id}
-            // projectId={task.projectId}
             wbsId={task.wbsId}
             parentId1={task.parentId1}
             parentId2={task.parentId2}
@@ -66,7 +76,6 @@ console.log('tasks 9999999')
             mother={task.mother}
             level={task.level}
           />
-        {/*</td>*/}
       </th>
       <th scope="row">
         <div>{index + 1}</div>
@@ -81,11 +90,17 @@ console.log('tasks 9999999')
         {task.status}
       </td>
       <td>
-        {task.startedDatetime}
+        {task.resources.length<=2 ?
+          task.resources.map(resource => (
+            //<div  className="new-line" key={resource._id}>
+              <li  key={resource._id}>{resource.name}</li>
+           // </div>
+          ))
+          :
+          <ShowCollapse resources={task.resources}/>
+        }
       </td>
-      <td>
-        {task.dueDatetime}
-      </td>
+
 
       <td className='projects__active--input'>
         {task.isActive ?
@@ -102,23 +117,13 @@ console.log('tasks 9999999')
         {task.classification}
       </td>
       <td className='projects__active--input'>
-
-
-        {task.resources.length<=2 ?
-          task.resources.map(resource => (
-            <div className="new-line" key={resource._id}>
-              <li>{resource.name}</li>
-            </div>
-          ))
-          :
-          <ShowCollapse resources={task.resources}/>
-          // <showCollapse resources={ }/>
-
-        }
-      </td>
-
-      <td className='projects__active--input'>
         {task.estimatedHours.toFixed(2)}
+      </td>
+      <td>
+        {task.startedDatetime}
+      </td>
+      <td>
+        {task.dueDatetime}
       </td>
     </tr>
   )
@@ -129,18 +134,17 @@ console.log('tasks 9999999')
         <thead>
         <tr>
           <th scope="col" id="projects__order">Action</th>
-
           <th scope="col" id="projects__order">#</th>
-          <th scope="col">Task Name</th>
+          <th scope="col">Task</th>
           <th scope="col" id="projects__active">Priority</th>
           <th scope="col" id="projects__active">Status</th>
-          <th scope="col" id="projects__active">startedDate</th>
-          <th scope="col" id="projects__active">dueDate</th>
-          <th scope="col" id="projects__active">isActive</th>
-          <th scope="col" id="projects__active">isAssigned</th>
-          <th scope="col" id="projects__active">classification</th>
           <th scope="col" id="projects__active">resources</th>
+          <th scope="col" id="projects__active">Active</th>
+          <th scope="col" id="projects__active">Assign</th>
+          <th scope="col" id="projects__active">class</th>
           <th scope="col" id="projects__active">Estimated Hours</th>
+          <th scope="col" id="projects__active">startDate</th>
+          <th scope="col" id="projects__active">dueDate</th>
         </tr>
         </thead>
         <tbody>
