@@ -37,7 +37,7 @@ const TimeEntryForm = ({
     projectId: '',
     notes: '',
     isTangible: data ? data.isTangible : true,
-    
+
   };
   const initialReminder = {
     notification: false,
@@ -112,12 +112,9 @@ const TimeEntryForm = ({
     setInputs({ ...inputs, ...timer });
   }, [timer]);
 
-  const userProjects = useSelector(state => state.userProjects);
-  let projects = [];
-  if (!_.isEmpty(userProjects)) {
-    projects = userProjects.projects;
-  }
-  
+  const userprofile = useSelector(state => state.userProfile);
+  const projects = (userprofile && userprofile.projects) ? userprofile.projects : [];
+
   const projectOptions = projects.map(project => (
     <option value={project.projectId} key={project.projectId}>
       {' '}
@@ -245,7 +242,7 @@ const TimeEntryForm = ({
       return;
     }
     setSubmitDisabled(true);
-    setTimeout(function() {setSubmitDisabled(false)}, 1000);
+    setTimeout(function () { setSubmitDisabled(false) }, 1000);
     const hours = inputs.hours === '' ? '0' : inputs.hours;
     const minutes = inputs.minutes === '' ? '0' : inputs.minutes;
 
@@ -305,11 +302,11 @@ const TimeEntryForm = ({
           // setReminder(reminder => initialReminder);
           resetTimer();
           clearForm();
-          setTimeout(()=>{
+          setTimeout(() => {
             toggle();
           }, 5);
-          
-          
+
+
         }
         //history.push(`/timelog/${userId}`);
       }
@@ -400,14 +397,14 @@ const TimeEntryForm = ({
                 onChange={handleInputChange}
               />
             ) : (
-              <Input
-                type="date"
-                name="dateOfWork"
-                id="dateOfWork"
-                value={inputs.dateOfWork}
-                disabled
-              />
-            )}
+                <Input
+                  type="date"
+                  name="dateOfWork"
+                  id="dateOfWork"
+                  value={inputs.dateOfWork}
+                  disabled
+                />
+              )}
             {'dateOfWork' in errors && (
               <div className="text-danger">
                 <small>{errors.dateOfWork}</small>
@@ -454,7 +451,7 @@ const TimeEntryForm = ({
               id="projectId"
               value={inputs.projectId}
               onChange={handleInputChange}
-              
+
             >
               {projectOptions}
             </Input>
@@ -496,7 +493,7 @@ const TimeEntryForm = ({
           </FormGroup>
           <FormGroup check>
             <Label check>
-              {isAdmin || (!edit && !isDisabled)  ? (
+              {isAdmin || (!edit && !isDisabled) ? (
                 <Input
                   type="checkbox"
                   name="isTangible"
@@ -504,19 +501,19 @@ const TimeEntryForm = ({
                   onChange={handleCheckboxChange}
                 />
               ) : (
-                <Input type="checkbox" name="isTangible" checked={inputs.isTangible} disabled />
-              )}{' '}
+                  <Input type="checkbox" name="isTangible" checked={inputs.isTangible} disabled />
+                )}{' '}
               Tangible&nbsp;<i
-            className="fa fa-info-circle"
-            data-tip
-            data-for="tangibleTip"
-            aria-hidden="true"
-            title="tangibleTip"
-            // style={{ 'text-align': 'center' }}
-            onClick={tangibleInfoToggle}
-          />
-        <ReactTooltip id="tangibleTip" place="bottom" effect="solid">
-          Click this icon to learn about tangible and intangible time.
+                className="fa fa-info-circle"
+                data-tip
+                data-for="tangibleTip"
+                aria-hidden="true"
+                title="tangibleTip"
+                // style={{ 'text-align': 'center' }}
+                onClick={tangibleInfoToggle}
+              />
+              <ReactTooltip id="tangibleTip" place="bottom" effect="solid">
+                Click this icon to learn about tangible and intangible time.
         </ReactTooltip>
             </Label>
           </FormGroup>
