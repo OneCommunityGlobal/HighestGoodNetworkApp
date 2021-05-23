@@ -12,7 +12,7 @@ return(
   <Button
     onClick={() => setOpen(!open)}
     aria-expanded={open}>
-    View
+
   </Button>
 
     {props.resources.map(resource => (
@@ -35,18 +35,59 @@ const  TasksDetail = (props) => {
   let tasks=[]
   tasks=props.tasks_filter
   if (props.tasks_filter.length > 0) {
-    tasks = props.tasks_filter.filter(item => item.isActive === props.isActive
-      && item.isAssigned === props.isAssigned);
+
+    if (!(props.isActive === "" )) {
+      tasks = tasks.filter(item => item.isActive === props.isActive
+        );
+    }
+    if (!(props.isAssigned ==="")) {
+      tasks = tasks.filter(item => item.isAssigned === props.isAssigned);
+    }
+
+    // if (!(props.isAssigned === "")) {
+    //   tasks=props.tasks_filter.filter(item => item.priority == props.priority &&item.isActive === props.isActive
+    //     && item.isAssigned === props.isAssigned)
+    // }
+
     if (!(props.priority === "")) {
-      tasks=props.tasks_filter.filter(item => item.priority == props.priority &&item.isActive === props.isActive
-        && item.isAssigned === props.isAssigned)
+      tasks=tasks.filter(item => item.priority == props.priority)
+    }
+    if(props.priority ==="No filter"){
+      tasks=props.tasks_filter.filter(item => item.isActive === props.isActive)
+    }
+    if(props.status ==="No filter"){
+      tasks=props.tasks_filter.filter(item => item.isActive === props.isActive)
+    }
+    if(props.classification ==="No filter"){
+      tasks=props.tasks_filter.filter(item => item.isActive === props.isActive)
+    }
+    if(props.users ==="No filter"){
+      tasks=props.tasks_filter.filter(item => item.isActive === props.isActive)
+    }
+    if(props.isAssigned ==="No filter"){
+      tasks=props.tasks_filter.filter(item => item.isActive === props.isActive)
+    }
+    if(props.users ==="No filter"){
+      tasks=props.tasks_filter.filter(item => item.isActive === props.isActive)
     }
 
     if (!(props.status === "")) {
-      tasks = props.tasks_filter.filter(item => item.status == props.status)
+      tasks = tasks.filter(item => item.status == props.status)
     }
     if  (!(props.classification === "")) {
-      tasks=props.tasks_filter.filter(item => item.classification === props.classification)
+      tasks=tasks.filter(item => item.classification === props.classification)
+    }
+
+    if  (!(props.users === "")) {
+      let test=[]
+      for(var i = 0; i < tasks.length; i++) {
+        for (var j=0;j< tasks[i].resources.length;j++){
+          if (tasks[i].resources[j].name===props.users){
+            test.push(tasks[i])
+          }
+        }
+      }
+      tasks=test
     }
 
   }
@@ -129,6 +170,9 @@ console.log('tasks 9999999')
   )
 
   return (
+    <div>
+      <h2>Total: {tasksList.length}</h2>
+
     <table class="center">
       <table className="table table-bordered table-responsive-sm">
         <thead>
@@ -152,6 +196,7 @@ console.log('tasks 9999999')
         </tbody>
       </table>
     </table>
+      </div>
   )
 
 }

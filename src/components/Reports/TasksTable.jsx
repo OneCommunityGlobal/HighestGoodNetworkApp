@@ -16,8 +16,8 @@ class TasksTable extends Component{
       tasks_filter: {},
       status:'',
       priority:'',
-      isActive:false,
-      isAssigned:false,
+      isActive:"",
+      isAssigned:"",
       allClassification:[],
       classification:'',
       users:""
@@ -31,6 +31,8 @@ class TasksTable extends Component{
     this.setAssign=this.setAssign.bind(this)
     this.setClassfication=this.setClassfication.bind(this)
     this.setUsers=this.setUsers.bind(this)
+    this.setFilter=this.setFilter.bind(this)
+
 
   }
 
@@ -94,6 +96,21 @@ class TasksTable extends Component{
     }
     return get_tasks[1]
   }
+
+  setFilter(filterValue) {
+    this.setState((state) => {
+      return {
+        isAssigned:"",
+        isActive:"",
+        priority:'',
+        status:'',
+        allClassification:[],
+        classification:'',
+        users:""
+      }
+    });
+  }
+
   setActive(activeValue) {
     this.setState((state) => {
       return {
@@ -146,7 +163,8 @@ class TasksTable extends Component{
       isActive,
       priority,
       status,
-      classification
+      classification,
+      users
     } = this.state
 
 
@@ -158,11 +176,13 @@ class TasksTable extends Component{
 
 
       var allPriorities=[...Array.from(new Set(props.get_tasks.map((item) => item.priority)))]
-
+      allPriorities.push("No filter")
       return (
         <DropdownButton style={{margin:'3px'}} exact id="dropdown-basic-button" title="Priority">
           {allPriorities.map((c, index) => (
+
             <Dropdown.Item onClick={()=>this.setPriority(c)}>{c}</Dropdown.Item>
+
           ))}
         </DropdownButton>
       )
@@ -172,7 +192,7 @@ class TasksTable extends Component{
 
 
       var allStatus=[...Array.from(new Set(props.get_tasks.map((item) => item.status)))]
-
+      allStatus.push("No filter")
       return (
         <DropdownButton style={{margin:'3px'}} exact id="dropdown-basic-button" title="Status">
           {allStatus.map((c, index) => (
@@ -186,6 +206,7 @@ class TasksTable extends Component{
 
 
       var allOptions=[...Array.from(new Set(props.get_tasks.map((item) => item.isActive.toString())))]
+      allOptions.push("No filter")
 
       return (
         <DropdownButton style={{margin:'3px'}} exact id="dropdown-basic-button" title="Active Options">
@@ -198,6 +219,7 @@ class TasksTable extends Component{
 
     const AssignmentOptions = props => {
       var allOptions=[...Array.from(new Set(props.get_tasks.map((item) => item.isAssigned.toString())))]
+      allOptions.push("No filter")
       return (
         <DropdownButton style={{margin:'3px'}} exact id="dropdown-basic-button" title="Assignment Options">
           {allOptions.map((c, index) => (
@@ -210,6 +232,7 @@ class TasksTable extends Component{
 
     const ClassificationOptions = props => {
       var allClassification=[...Array.from(new Set(props.get_tasks.map((item) => item.classification)))]
+      allClassification.push("No filter")
       return (
         <DropdownButton style={{margin:'3px'}} exact id="dropdown-basic-button" title="Classification">
           {allClassification.map((c, index) => (
@@ -222,6 +245,7 @@ class TasksTable extends Component{
     const UserOptions = props => {
 
       let users=[]
+      users.push("No filter")
       props.get_tasks.map((task, index) => (
         task.resources.map(resource => (
           users.push(resource.name)
@@ -229,6 +253,7 @@ class TasksTable extends Component{
       ))
 
       users=Array.from(new Set(users))
+
       return (
         <DropdownButton style={{margin:'3px'}} exact id="dropdown-basic-button" title="Users">
           {users.map((c, index) => (
@@ -241,14 +266,26 @@ class TasksTable extends Component{
     return(
       <tbody>
       <div>
+        <button style={{margin:'3px'}} exact className="btn btn-secondary btn-bg mt-3" onClick={()=>this.setFilter()}>Clear All</button>
         <UserOptions get_tasks={ get_tasks}/>
         <ClassificationOptions get_tasks={get_tasks}/>
 <PriorityOptions get_tasks={get_tasks}/>
 <StatusOptions get_tasks={get_tasks}/>
-        <ActiveOptions get_tasks={get_tasks}/>
+        <input name='radio' type="radio" style={{margin:'5px'}} value="active" onChange={()=>this.setActive(true)}  />
+        Active
+        <input name='radio' type="radio" style={{margin:'5px'}} value="inactive" onChange={()=>this.setActive(false) } />
+        InActive
+        {/*<ActiveOptions get_tasks={get_tasks}/>*/}
         <AssignmentOptions get_tasks={get_tasks}/>
         <button style={{margin:'3px'}} exact className="btn btn-secondary btn-bg mt-3">Estimated Hours</button>
       </div>
+      <h2>Selected filters</h2>
+      <div>isAssigned:{isAssigned}</div>
+      <div>isActive:{isActive.toString()}</div>
+      <div>priority:{priority}</div>
+      <div>status:{status}</div>
+      <div>classification:{classification}</div>
+      {/*<div>users:{users}</div>*/}
       <TasksDetail
         tasks_filter={get_tasks}
         isAssigned={isAssigned}
@@ -256,6 +293,7 @@ class TasksTable extends Component{
         priority={priority}
         status={status}
         classification={classification}
+        users={users}
       />
       </tbody>
     )

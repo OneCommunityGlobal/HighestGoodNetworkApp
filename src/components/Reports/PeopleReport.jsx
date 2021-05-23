@@ -9,7 +9,10 @@ import { getWeeklySummaries, updateWeeklySummaries } from '../../actions/weeklyS
 import moment from 'moment'
 import InputRange from 'react-input-range';
 import "react-input-range/lib/css/index.css"
-import EditTaskModal from '../Projects/WBS/WBSDetail/EditTask/EditTaskModal'
+// import EditTaskModal from '../Projects/WBS/WBSDetail/EditTask/EditTaskModal'
+import EditTaskModal from "./../Projects/WBS/WBSDetail/EditTask/EditTaskModal";
+import EditPeopleReportTaskModal from './EditPeopleReportTaskModal'
+
 
 
 
@@ -41,6 +44,7 @@ class PeopleReport extends Component {
     this.setFilter=this.setFilter.bind(this)
     this.setClassfication=this.setClassfication.bind(this)
     this.setUsers=this.setUsers.bind(this)
+
 
   }
 
@@ -108,7 +112,13 @@ class PeopleReport extends Component {
   setFilter(filterValue) {
     this.setState((state) => {
       return {
-        hasFilter:filterValue
+        isAssigned:false,
+        isActive:false,
+        priority:'',
+        status:'',
+        allClassification:[],
+        classification:'',
+        users:""
       }
     });
   }
@@ -184,13 +194,16 @@ tasks=test
         }
 
 if (tasks.length>0) {
+  console.log('yueru edit button')
+  console.log(tasks)
+
   userTaskList = tasks.map((task, index) => (
     <tr id={"tr_" + task._id}>
       <th scope="row">
         <div>
           here
           </div>
-        {/*<EditTaskModal*/}
+        {/*<EditPeopleReportTaskModal*/}
         {/*  key={`editTask_${task._id}`}*/}
         {/*  parentNum={task.num}*/}
         {/*  taskId={task._id}*/}
@@ -252,6 +265,13 @@ if (tasks.length>0) {
       return (
         <div>
           <h2>Total: {userTaskList.length}</h2>
+          <h2>Selected filters</h2>
+          <div>isAssigned:{isAssigned}</div>
+          <div>isActive:{isActive.toString()}</div>
+          <div>priority:{priority}</div>
+          <div>status:{status}</div>
+          <div>classification:{classification}</div>
+          <div>users:{users}</div>
           <table className="center">
             <table className="table table-bordered table-responsive-sm">
               <thead>
@@ -296,6 +316,7 @@ if (tasks.length>0) {
         {props.allClassification.map((c, index) => (
             <Dropdown.Item onClick={()=>this.setClassfication(c)}>{c}</Dropdown.Item>
           ))}
+
         </DropdownButton>
       )
     };
@@ -355,6 +376,19 @@ if (tasks.length>0) {
           <h2>Start Date:{moment(props.userProfile.createdDate).format('YYYY-MM-DD')}</h2>
     )
     };
+    const ActiveOptions = props => {
+
+
+      var allOptions=[...Array.from(new Set(props.get_tasks.map((item) => item.isActive.toString())))]
+
+      return (
+        <DropdownButton style={{margin:'3px'}} exact id="dropdown-basic-button" title="Active Options">
+          {allOptions.map((c, index) => (
+            <Dropdown.Item onClick={()=>this.setActive(c)}>{c}</Dropdown.Item>
+          ))}
+        </DropdownButton>
+      )
+    };
 
       return (
         <table>
@@ -377,7 +411,7 @@ if (tasks.length>0) {
           </div>
             <h2>Tasks</h2>
           <div>
-            <button style={{margin:'3px'}} exact className="btn btn-secondary btn-bg mt-3" onClick={()=>this.setFilter(false)}>No Filter</button>
+            <button style={{margin:'3px'}} exact className="btn btn-secondary btn-bg mt-3" onClick={()=>this.setFilter()}>No Filter</button>
 
             <DropdownButton id="dropdown-basic-button" title="Assignment Status">
               <Dropdown.Item  onClick={()=>this.setAssign(true)}>Assign</Dropdown.Item>
@@ -412,6 +446,7 @@ if (tasks.length>0) {
             {/*<button style={{margin:'3px'}} exact className="btn btn-secondary btn-bg mt-3">Classification</button>*/}
 
             <ClassificationOptions allClassification={allClassification}/>
+
             <UserOptions userTask={userTask}/>
 
             {/*<DropdownButton style={{margin:'3px'}} exact id="dropdown-basic-button" title="Classification">*/}
