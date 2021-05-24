@@ -52,7 +52,9 @@ workflows:
       - build_dev:
           filters:
             branches:
-              only: development
+              only:
+                - development
+                - fixing_bugs
       - build_beta:
           filters:
             branches:
