@@ -12,6 +12,19 @@ function SaveButton(props) {
     handleSubmit();
     toggleModal();
   };
+
+  const messages = {
+    saved: [
+      "Your update has been posted",
+      "Another one!",
+      "Saved by the bell",
+      "One more for the history books",
+      "Way to go Champion, your update has been saved! Before you close this window, take a moment to bask in your own awesomeness. Think you don’t deserve it? Think again! Many people forget to save their changes, you, however, are not one of them. Well done!"
+    ]
+  };
+
+  const randomMsg = (msgs) => msgs[Math.floor(Math.random() * msgs.length)];
+
   return (
     <React.Fragment>
       <EditConfirmModal
@@ -19,7 +32,7 @@ function SaveButton(props) {
         closeModal={toggleModal}
         userProfile={userProfile}
         modalTitle="Success!"
-        modalMessage="Your update has been posted"
+        modalMessage={randomMsg(messages.saved)}
       />
       <Button
         outline
