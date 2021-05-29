@@ -114,9 +114,8 @@ const TimeEntryForm = ({
 
   const userprofile = useSelector(state => state.userProfile);
   const projects = (userprofile && userprofile.projects) ? userprofile.projects : [];
-
   const projectOptions = projects.map(project => (
-    <option value={project.projectId} key={project.projectId}>
+    <option value={project._id} key={project._id}>
       {' '}
       {project.projectName}
       {' '}
