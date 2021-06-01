@@ -26,7 +26,7 @@
     "lodash": "^4.17.20",
     "moment": "^2.25.3",
     "moment-timezone": "^0.5.31",
-    "node-sass": "^4.14.1",
+    "node-sass": "^6.0.0",
     "pdfmake": "^0.1.65",
     "prop-types": "^15.7.2",
     "react": "^16.13.1",
