@@ -5,9 +5,9 @@ jobs:
       - image: circleci/node:latest
     steps:
       - checkout
-#      - run:
-#          name: Update npm
-#          command: "sudo npm install"
+      - run:
+          name: npm install
+          command: "sudo npm install"
       - run:
           name: Run react build
           command: "sudo REACT_APP_APIENDPOINT=$APIENDPOINT_DEV REACT_APP_SENTRY_URL=$SENTRY_URL_DEV npm run build"
@@ -20,9 +20,9 @@ jobs:
       - image: circleci/node:latest
     steps:
       - checkout
-#      - run:
-#          name: Update npm
-#          command: "sudo npm install"
+      - run:
+          name: npm install
+          command: "sudo npm install"
       - run:
           name: Run react build
           command: "sudo REACT_APP_APIENDPOINT=$APIENDPOINT_BETA SKIP_PREFLIGHT_CHECK=true npm run build"
@@ -36,7 +36,7 @@ jobs:
     steps:
       - checkout
       - run:
-          name: Update npm
+          name: npm install
           command: "sudo npm install"
       - run:
           name: Run react build
