@@ -26,7 +26,6 @@
     "lodash": "^4.17.20",
     "moment": "^2.25.3",
     "moment-timezone": "^0.5.31",
-    "node-sass": "^6.0.0",
     "pdfmake": "^0.1.65",
     "prop-types": "^15.7.2",
     "react": "^16.13.1",
@@ -89,11 +88,10 @@
     "jest-environment-jsdom-sixteen": "^1.0.3",
     "msw": "^0.19.5",
     "node-fetch": "^2.6.1",
+    "node-sass": "^4.14.1",
     "prettier": "^1.19.1",
     "redux-mock-store": "^1.5.4",
-    "sass-loader": "^11.1.1",
     "sinon": "^7.3.2",
-    "surge": "^0.21.6",
-    "webpack": "^5.0.0"
+    "surge": "^0.21.6"
   }
 }
