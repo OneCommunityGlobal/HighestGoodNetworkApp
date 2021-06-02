@@ -342,6 +342,8 @@ class UserProfile extends Component {
         }
       })
     }
+
+    this.saveChanges();
   }
 
   handleSubmit = async event => {
