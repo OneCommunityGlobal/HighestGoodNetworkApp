@@ -10,7 +10,7 @@ import {
   ModalHeader,
   ModalBody,
   ModalFooter,
-  Progress, Form, FormGroup, Label, Input, FormText 
+  Progress, Form, FormGroup, Label, Input, FormText
 } from 'reactstrap'
 import { useSelector } from 'react-redux'
 import { HashLink as Link } from 'react-router-hash-link'
@@ -34,7 +34,7 @@ const SummaryBar = () => {
   const { firstName, lastName, email, _id } = useSelector(state => state.userProfile)
 
   const timeEntries = useSelector(state => state.timeEntries.weeks[0])
-  const reducer = (total, entry) => total + parseInt(entry.hours) + parseInt(entry.minutes) / 60
+  const reducer = (total, entry) => total + entry.isTangible ? parseInt(entry.hours) + parseInt(entry.minutes) / 60 : 0
   const totalEffort = timeEntries.reduce(reducer, 0)
   const weeklyComittedHours = useSelector(state => state.userProfile.weeklyComittedHours)
 
@@ -44,7 +44,7 @@ const SummaryBar = () => {
     } else {
       return 0;
     }
-    
+
   })
 
   const badges = useSelector(state => {
@@ -53,7 +53,7 @@ const SummaryBar = () => {
     } else {
       return 0;
     }
-    
+
   })
 
   let tasks = useSelector(state => {
@@ -62,7 +62,7 @@ const SummaryBar = () => {
     } else {
       return 0;
     }
-    
+
   })
 
   const initialInfo = {
@@ -93,9 +93,9 @@ const SummaryBar = () => {
     data['firstName'] = firstName
     data['lastName'] = lastName
     data['email'] = email
-    
+
     httpService.post(`${APIEndpoint}/dashboard/bugreport/${_id}`, data).catch((e)=>{
-    }); 
+    });
     openReport();
   }
 
@@ -252,7 +252,7 @@ const SummaryBar = () => {
           &nbsp;&nbsp;
           <div className="col">
           <div className="image_frame">
-            
+
             <img
               className="sum_img"
               src={badges_icon}
@@ -297,7 +297,7 @@ const SummaryBar = () => {
         </Col>
         <Modal isOpen={report.in} toggle={openReport}>
           <ModalHeader>Bug Report</ModalHeader>
-          <ModalBody> 
+          <ModalBody>
             <Form onSubmit={sendBugReport} id='bugReportForm'>
             <FormGroup>
               <Label for ='title'>[Feature Name] Bug Title </Label>
@@ -340,10 +340,10 @@ const SummaryBar = () => {
               Close
             </Button>
             </FormGroup>
-    
-    
-    
-    
+
+
+
+
             </Form>
           </ModalBody>
         </Modal>
