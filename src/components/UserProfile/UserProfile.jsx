@@ -308,7 +308,7 @@ class UserProfile extends Component {
           ...this.state.userProfile,
           infringments: prevState.userProfile.infringments.concat(newBlueSquare),
         },
-      }))
+      }), this.saveChanges)
     } else if (kind === 'update') {
       this.setState(() => {
         const currentBlueSquares = this.state.userProfile.infringments
@@ -325,7 +325,7 @@ class UserProfile extends Component {
             infringments: currentBlueSquares,
           },
         }
-      })
+      }, this.saveChanges)
     } else if (kind === 'delete') {
       this.setState(() => {
         const currentBlueSquares = this.state.userProfile.infringments.filter(blueSquare => {
@@ -340,10 +340,8 @@ class UserProfile extends Component {
             infringments: currentBlueSquares,
           },
         }
-      })
+      }, this.saveChanges)
     }
-
-    this.saveChanges();
   }
 
   handleSubmit = async event => {
