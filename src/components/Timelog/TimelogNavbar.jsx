@@ -10,7 +10,7 @@ const TimelogNavbar = ({ userId }) => {
   const toggleNavbar = () => setCollapsed(!collapsed);
 
   const timeEntries = useSelector(state => state.timeEntries.weeks[0])
-  const reducer = (total, entry) => total + entry.isTangible ? parseInt(entry.hours) + parseInt(entry.minutes) / 60 : 0
+  const reducer = (total, entry) => total + (entry.isTangible ? parseInt(entry.hours) + parseInt(entry.minutes) / 60 : 0)
   const totalEffort = timeEntries.reduce(reducer, 0)
   const weeklyComittedHours = useSelector(state => state.userProfile.weeklyComittedHours)
 
