@@ -36,7 +36,7 @@ const TimeEntryForm = ({
     minutes: 0,
     projectId: '',
     notes: '',
-    isTangible: data ? data.isTangible : true,
+    isTangible: true,
 
   };
   const initialReminder = {
@@ -321,14 +321,35 @@ const TimeEntryForm = ({
       }));
       toggle();
     } else if (!edittime) {
-      // setReminder(reminder => initialReminder)
-      //console.log('kkkkkkkkk')
+
       toggle();
     }
   };
 
   const handleInputChange = (event) => {
     event.persist();
+    setInputs(inputs => ({
+      ...inputs,
+      [event.target.name]: event.target.value,
+    }));
+  };
+
+  const handleHHInputChange = (event) => {
+    event.persist();
+    if (event.target.value < 0 || event.target.value > 40) {
+      return
+    }
+    setInputs(inputs => ({
+      ...inputs,
+      [event.target.name]: event.target.value,
+    }));
+  };
+
+  const handleMMInputChange = (event) => {
+    event.persist();
+    if (event.target.value < 0 || event.target.value > 59) {
+      return
+    }
     setInputs(inputs => ({
       ...inputs,
       [event.target.name]: event.target.value,
@@ -418,9 +439,11 @@ const TimeEntryForm = ({
                   type="number"
                   name="hours"
                   id="hours"
+                  min={0}
+                  max={40}
                   placeholder="Hours"
                   value={inputs.hours}
-                  onChange={handleInputChange}
+                  onChange={handleHHInputChange}
                   disabled={fromTimer}
                 />
               </Col>
@@ -429,9 +452,11 @@ const TimeEntryForm = ({
                   type="number"
                   name="minutes"
                   id="minutes"
+                  min={0}
+                  max={59}
                   placeholder="Minutes"
                   value={inputs.minutes}
-                  onChange={handleInputChange}
+                  onChange={handleMMInputChange}
                   disabled={fromTimer}
                 />
               </Col>
