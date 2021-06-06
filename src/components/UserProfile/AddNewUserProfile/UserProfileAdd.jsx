@@ -18,6 +18,9 @@ import {
   addTeamMember,
 } from '../../../actions/allTeamsAction';
 
+import PhoneInput from 'react-phone-input-2'
+import 'react-phone-input-2/lib/style.css'
+
 import classnames from 'classnames';
 
 class AddUserProfile extends Component {
@@ -116,13 +119,10 @@ class AddUserProfile extends Component {
                       state={this.state.userProfile.privacySettings?.phoneNumber}
                       handleUserProfile={this.handleUserProfile}
                     />
-                    <Input
-                      type="number"
-                      name="phoneNumber"
-                      id="phoneNumber"
+                    <PhoneInput
+                      country={'us'}
                       value={phoneNumber}
-                      onChange={this.handleUserProfile}
-                      placeholder="Phone"
+                      onChange={phone => this.phoneChange(phone)}
                     />
                   </FormGroup>
                 </Col>
@@ -395,6 +395,16 @@ class AddUserProfile extends Component {
       });
     }
   };
+
+  phoneChange = (phone) => {
+    const { userProfile } = this.state;
+    this.setState({
+      userProfile: {
+        ...userProfile,
+        phoneNumber: phone,
+      },
+    });
+  }
 
   handleUserProfile = (event) => {
     this.setState({

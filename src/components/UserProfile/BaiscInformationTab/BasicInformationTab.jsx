@@ -10,6 +10,9 @@ import {
 import ToggleSwitch from '../UserProfileEdit/ToggleSwitch';
 import moment from 'moment';
 
+import PhoneInput from 'react-phone-input-2'
+import 'react-phone-input-2/lib/style.css'
+
 const Name = (props) => {
   const {
     userProfile, isUserAdmin, isUserSelf, handleUserProfile, formValid,
@@ -183,16 +186,12 @@ const Phone = (props) => {
               state={privacySettings?.phoneNumber}
               handleUserProfile={handleUserProfile}
             />
-
-            <Input
-              type="number"
-              name="phoneNumber"
-              id="phoneNumber"
-              // className={styleProfile.profileText}
-              value={phoneNumber}
-              onChange={handleUserProfile}
-              placeholder="Phone"
+            <PhoneInput
+              country={'us'}
+              value={phoneNumber[0]}
+              onChange={(phone) => { handleUserProfile({ target: { value: phone, name: "phoneNumber", id: "phoneNumber" } }) }}
             />
+
           </FormGroup>
         </Col>
       </React.Fragment>
