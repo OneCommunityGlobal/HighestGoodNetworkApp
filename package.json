@@ -36,6 +36,7 @@
     "react-dom": "^16.13.1",
     "react-html-parser": "^2.0.2",
     "react-image": "^2.4.0",
+    "react-phone-input-2": "^2.14.0",
     "react-redux": "^7.2.0",
     "react-router-bootstrap": "^0.25.0",
     "react-router-dom": "^5.2.0",
