@@ -54,7 +54,7 @@ const Timer = () => {
 
   const handlePause = async () => {
     await dispatch(getTimerData(userId));
-    const status = await dispatch(pauseTimer(userId, seconds))
+    const status = await pauseTimer(userId, seconds)
     if (status === 200 || status === 201) { setIsActive(false) }
   }
 
