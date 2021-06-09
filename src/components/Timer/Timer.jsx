@@ -23,9 +23,10 @@ const Timer = () => {
 
   const toggle = () => setModal(modal => !modal)
 
-  const reset = () => {
+  const reset = async () => {
     setSeconds(0)
-    setIsActive(false)
+    const status = await pauseTimer(userId, seconds)
+    if (status === 200 || status === 201) { setIsActive(false) }
   }
 
   const handleStart = async () => {
