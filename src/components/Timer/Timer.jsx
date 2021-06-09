@@ -40,7 +40,7 @@ const Timer = () => {
     let maxtime = null
 
     if (seconds === 0 && alert.va) {
-      setInterval(handleStop, 36000900)
+      maxtime = setInterval(handleStop, 36000900)
       alert.va = !alert.va
     } else {
       clearInterval(maxtime)
@@ -65,16 +65,24 @@ const Timer = () => {
   }
 
   useEffect(() => {
-    let interval = null
+    let intervalSec = null;
+    let intervalMin = null;
+
     if (isActive) {
-      interval = setInterval(() => {
+
+      intervalSec = setInterval(() => {
         setSeconds(seconds => seconds + 1)
-      }, 1000)
+      }, 1000);
+
+      intervalMin = setInterval(handleUpdate, 60000);
+
     } else if (!isActive && seconds !== 0) {
-      clearInterval(interval)
+      clearInterval(intervalSec);
+      clearInterval(intervalMin);
     }
     return () => {
-      clearInterval(interval)
+      clearInterval(intervalSec);
+      clearInterval(intervalMin);
     }
   }, [isActive])
 
@@ -85,12 +93,6 @@ const Timer = () => {
   const hours = Math.floor(seconds / 3600)
   const minutes = Math.floor((seconds % 3600) / 60)
   const secondsRemainder = seconds % 60
-
-  useEffect(()=>{
-    if (minutes !== 0) {
-      handleUpdate()
-    }
-  }, [minutes])
 
   return (
     <div className="timer mr-4 my-auto">
