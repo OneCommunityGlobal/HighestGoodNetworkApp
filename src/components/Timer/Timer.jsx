@@ -25,7 +25,7 @@ const Timer = () => {
 
   const reset = async () => {
     setSeconds(0)
-    const status = await pauseTimer(userId, seconds)
+    const status = await pauseTimer(userId, 0)
     if (status === 200 || status === 201) { setIsActive(false) }
   }
 
