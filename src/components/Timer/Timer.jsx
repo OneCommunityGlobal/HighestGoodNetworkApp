@@ -56,12 +56,12 @@ const Timer = () => {
   const handlePause = async () => {
     await dispatch(getTimerData(userId));
     const status = await pauseTimer(userId, seconds)
-    if (status === 200 || status === 201) { setIsActive(false) }
+    if (status === 200 || status === 201) { setIsActive(false); return true }
+    return false
   }
 
   const handleStop = async () => {
-    await handlePause();
-    if (!isActive){ toggle() }
+    if (await handlePause()){ toggle() }
   }
 
   useEffect(() => {
