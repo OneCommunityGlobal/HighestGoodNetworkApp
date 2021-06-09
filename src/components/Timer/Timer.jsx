@@ -60,8 +60,8 @@ const Timer = () => {
     return false
   }
 
-  const handleStop = async () => {
-    if (await handlePause()){ toggle() }
+  const handleStop = () => {
+    if (handlePause()){ toggle() }
   }
 
   useEffect(() => {
