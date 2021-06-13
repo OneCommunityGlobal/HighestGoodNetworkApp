@@ -18,6 +18,7 @@ const AddProjectPopup = React.memo((props) => {
       onValidation(false);
     }
   };
+
   const selectProject = (project) => {
     onSelectProject(project);
     onValidation(true);
@@ -34,7 +35,8 @@ const AddProjectPopup = React.memo((props) => {
         <div className="input-group-prepend" style={{ marginBottom: '10px' }}>
           <AddProjectsAutoComplete
             projectsData={props.projects}
-            onDropDownSelect={selectProject} />
+            onDropDownSelect={selectProject}
+            selectedProject={selectedProject} />
           <Button color='primary' style={{ marginLeft: '5px' }} onClick={onAssignProject} >Confirm</Button>
         </div>
         <div>

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Dropdown, Input,
 } from 'reactstrap';
@@ -7,6 +7,10 @@ import './TeamsAndProjects.css'
 const AddProjectsAutoComplete = React.memo((props) => {
   const [searchText, onInputChange] = useState('');
   const [isOpen, toggle] = useState(false);
+
+  useEffect(() => {
+    if (!props.selectedProject) onInputChange('')
+  }, [props.selectedProject])
 
   return (
     <Dropdown

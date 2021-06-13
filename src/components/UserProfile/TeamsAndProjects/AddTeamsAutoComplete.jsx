@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Dropdown, Input,
 } from 'reactstrap';
@@ -8,6 +8,10 @@ const AddTeamsAutoComplete = React.memo((props) => {
 
   const [searchText, onInputChange] = useState('');
   const [isOpen, toggle] = useState(false);
+
+  useEffect(() => {
+    if (!props.selectedTeam) onInputChange('')
+  }, [props.selectedTeam])
 
   return (
 
