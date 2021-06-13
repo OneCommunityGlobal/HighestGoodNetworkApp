@@ -414,97 +414,29 @@ class AddUserProfile extends Component {
     const patt = new RegExp(/^\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/i);
     switch (event.target.id) {
       case 'firstName':
-        this.setState({
-          userProfile: {
-            ...userProfile,
-            firstName: event.target.value.trim(),
-          },
-          formValid: {
-            ...formValid,
-            firstName: !!event.target.value,
-          },
-        });
-        break;
       case 'lastName':
-        this.setState({
-          userProfile: {
-            ...userProfile,
-            lastName: event.target.value.trim(),
-          },
-          formValid: {
-            ...formValid,
-            lastName: !!event.target.value,
-          },
-        });
-        break;
-      case 'jobTitle':
-        this.setState({
-          userProfile: {
-            ...userProfile,
-            jobTitle: event.target.value,
-          },
-        });
-        break;
       case 'email':
         this.setState({
           userProfile: {
             ...userProfile,
-            email: event.target.value,
+            [event.target.id]: event.target.value.trim(),
           },
           formValid: {
             ...formValid,
-            email: patt.test(event.target.value),
+            [event.target.id]: !!event.target.value,
           },
         });
         break;
+      case 'jobTitle':
       case 'phoneNumber':
-        this.setState({
-          userProfile: {
-            ...userProfile,
-            phoneNumber: event.target.value.trim(),
-          },
-        });
-        break;
-      case 'emailPubliclyAccessible':
-        this.setState({
-          userProfile: {
-            ...userProfile,
-            privacySettings: {
-              ...userProfile.privacySettings,
-              email: !userProfile.privacySettings?.email,
-            },
-          },
-        });
-        break;
       case 'weeklyComittedHours':
-        this.setState({
-          userProfile: {
-            ...userProfile,
-            weeklyComittedHours: event.target.value,
-          },
-        });
-        break;
-      case 'role':
-        this.setState({
-          userProfile: {
-            ...userProfile,
-            role: event.target.value,
-          },
-        });
-        break;
       case 'collaborationPreference':
-        this.setState({
-          userProfile: {
-            ...userProfile,
-            collaborationPreference: event.target.value,
-          },
-        });
-        break;
+      case 'role':
       case 'googleDoc':
         this.setState({
           userProfile: {
             ...userProfile,
-            googleDoc: event.target.value,
+            [event.target.id]: event.target.value,
           },
         });
         break;

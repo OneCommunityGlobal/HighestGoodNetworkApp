@@ -23,7 +23,7 @@
     "joi": "^14.0.6",
     "js-levenshtein": "^1.1.6",
     "jwt-decode": "^2.2.0",
-    "lodash": "^4.17.20",
+    "lodash": "^4.17.21",
     "moment": "^2.25.3",
     "moment-timezone": "^0.5.31",
     "node-sass": "^4.14.1",
