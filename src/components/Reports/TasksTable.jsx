@@ -175,8 +175,8 @@ class TasksTable extends Component{
     const PriorityOptions = props => {
 
 
-      var allPriorities=[...Array.from(new Set(props.get_tasks.map((item) => item.priority)))]
-      allPriorities.push("No filter")
+      var allPriorities=[...Array.from(new Set(props.get_tasks.map((item) => item.priority))).sort()]
+      allPriorities.unshift("Filter Off")
       return (
         <DropdownButton style={{margin:'3px'}} exact id="dropdown-basic-button" title="Priority">
           {allPriorities.map((c, index) => (
@@ -191,8 +191,9 @@ class TasksTable extends Component{
     const StatusOptions = props => {
 
 
-      var allStatus=[...Array.from(new Set(props.get_tasks.map((item) => item.status)))]
-      allStatus.push("No filter")
+      var allStatus=[...Array.from(new Set(props.get_tasks.map((item) => item.status))).sort()]
+
+      allStatus.unshift("Filter Off")
       return (
         <DropdownButton style={{margin:'3px'}} exact id="dropdown-basic-button" title="Status">
           {allStatus.map((c, index) => (
@@ -205,8 +206,8 @@ class TasksTable extends Component{
     const ActiveOptions = props => {
 
 
-      var allOptions=[...Array.from(new Set(props.get_tasks.map((item) => item.isActive.toString())))]
-      allOptions.push("No filter")
+      var allOptions=[...Array.from(new Set(props.get_tasks.map((item) => item.isActive.toString()))).sort()]
+      allOptions.unshift("Filter Off")
 
       return (
         <DropdownButton style={{margin:'3px'}} exact id="dropdown-basic-button" title="Active Options">
@@ -218,8 +219,8 @@ class TasksTable extends Component{
     };
 
     const AssignmentOptions = props => {
-      var allOptions=[...Array.from(new Set(props.get_tasks.map((item) => item.isAssigned.toString())))]
-      allOptions.push("No filter")
+      var allOptions=[...Array.from(new Set(props.get_tasks.map((item) => item.isAssigned.toString()))).sort()]
+      allOptions.unshift("Filter Off")
       return (
         <DropdownButton style={{margin:'3px'}} exact id="dropdown-basic-button" title="Assignment Options">
           {allOptions.map((c, index) => (
@@ -231,8 +232,8 @@ class TasksTable extends Component{
 
 
     const ClassificationOptions = props => {
-      var allClassification=[...Array.from(new Set(props.get_tasks.map((item) => item.classification)))]
-      allClassification.push("No filter")
+      var allClassification=[...Array.from(new Set(props.get_tasks.map((item) => item.classification))).sort()]
+      allClassification.unshift("Filter Off")
       return (
         <DropdownButton style={{margin:'3px'}} exact id="dropdown-basic-button" title="Classification">
           {allClassification.map((c, index) => (
@@ -245,14 +246,15 @@ class TasksTable extends Component{
     const UserOptions = props => {
 
       let users=[]
-      users.push("No filter")
+
       props.get_tasks.map((task, index) => (
         task.resources.map(resource => (
           users.push(resource.name)
         ))
       ))
 
-      users=Array.from(new Set(users))
+      users=Array.from(new Set(users)).sort()
+      users.unshift("Filter Off")
 
       return (
         <DropdownButton style={{margin:'3px'}} exact id="dropdown-basic-button" title="Users">
@@ -266,7 +268,7 @@ class TasksTable extends Component{
     return(
       <tbody>
       <div>
-        <button style={{margin:'3px'}} exact className="btn btn-secondary btn-bg mt-3" onClick={()=>this.setFilter()}>Clear All</button>
+        <button style={{margin:'3px'}} exact className="btn btn-secondary btn-bg mt-3" onClick={()=>this.setFilter()}>Filter Off</button>
         <UserOptions get_tasks={ get_tasks}/>
         <ClassificationOptions get_tasks={get_tasks}/>
 <PriorityOptions get_tasks={get_tasks}/>

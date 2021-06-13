@@ -2,6 +2,9 @@ import './reports.css'
 import React, { useState } from "react";
 import { Button, Dropdown, DropdownButton } from 'react-bootstrap'
 import EditTaskModal from "./../Projects/WBS/WBSDetail/EditTask/EditTaskModal";
+import ReactTable from "react-table";
+import "react-table/react-table.css";
+
 
 
 import Collapse from 'react-bootstrap/Collapse'
@@ -12,7 +15,7 @@ return(
   <Button
     onClick={() => setOpen(!open)}
     aria-expanded={open}>
-
+    {props.resources[0].name}
   </Button>
 
     {props.resources.map(resource => (
@@ -134,7 +137,7 @@ console.log('tasks 9999999')
         {task.resources.length<=2 ?
           task.resources.map(resource => (
             //<div  className="new-line" key={resource._id}>
-              <li  key={resource._id}>{resource.name}</li>
+              <div key={resource._id}>{resource.name}</div>
            // </div>
           ))
           :
@@ -173,29 +176,31 @@ console.log('tasks 9999999')
     <div>
       <h2>Total: {tasksList.length}</h2>
 
-    <table class="center">
+    {/*<table class="center">*/}
+      <div className="table-responsive-sm">
+
       <table className="table table-bordered table-responsive-sm">
         <thead>
         <tr>
           <th scope="col" id="projects__order">Action</th>
           <th scope="col" id="projects__order">#</th>
-          <th scope="col">Task</th>
+          <th scope="col" id="projects__active">Task</th>
           <th scope="col" id="projects__active">Priority</th>
           <th scope="col" id="projects__active">Status</th>
-          <th scope="col" id="projects__active">resources</th>
+          <th scope="col" >Resources</th>
           <th scope="col" id="projects__active">Active</th>
           <th scope="col" id="projects__active">Assign</th>
-          <th scope="col" id="projects__active">class</th>
+          <th scope="col" id="projects__active">Class</th>
           <th scope="col" id="projects__active">Estimated Hours</th>
-          <th scope="col" id="projects__active">startDate</th>
-          <th scope="col" id="projects__active">dueDate</th>
+          <th scope="col" id="projects__active">Start Date</th>
+          <th scope="col" id="projects__active">End Date</th>
         </tr>
         </thead>
         <tbody>
         {tasksList}
         </tbody>
       </table>
-    </table>
+     </div>
       </div>
   )
 

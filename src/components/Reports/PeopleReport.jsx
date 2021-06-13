@@ -283,11 +283,11 @@ if (tasks.length>0) {
                 <th scope="col" id="projects__active">Status</th>
                 <th scope="col" id="projects__active">Active</th>
                 <th scope="col" id="projects__active">Assign</th>
-                <th scope="col" id="projects__active">class</th>
-                <th scope="col" id="projects__active">resource</th>
+                <th scope="col" id="projects__active">Class</th>
+                <th scope="col" id="projects__active">Resource</th>
                 <th scope="col" id="projects__active">Estimated Hours</th>
-                <th scope="col" id="projects__active">startdDate</th>
-                <th scope="col" id="projects__active">dueDate</th>
+                <th scope="col" id="projects__active">Start Date</th>
+                <th scope="col" id="projects__active">End Date</th>
               </tr>
               </thead>
 
@@ -411,7 +411,7 @@ if (tasks.length>0) {
           </div>
             <h2>Tasks</h2>
           <div>
-            <button style={{margin:'3px'}} exact className="btn btn-secondary btn-bg mt-3" onClick={()=>this.setFilter()}>No Filter</button>
+            <button style={{margin:'3px'}} exact className="btn btn-secondary btn-bg mt-3" onClick={()=>this.setFilter()}>Filter Off</button>
 
             <DropdownButton id="dropdown-basic-button" title="Assignment Status">
               <Dropdown.Item  onClick={()=>this.setAssign(true)}>Assign</Dropdown.Item>
