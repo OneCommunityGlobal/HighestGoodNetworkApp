@@ -92,7 +92,10 @@ const Timer = () => {
     const fetchSeconds = async () => {
       try {
         const res = await axios.get(ENDPOINTS.TIMER(userId));
-        if (res.status === 200) { setSeconds(res.data.seconds) }
+        if (res.status === 200) {
+          setSeconds(res.data.seconds);
+          setIsActive(res.data.isWorking);
+        }
         else { setSeconds(pausedAt) }
       } catch { setSeconds(pausedAt) }
     }
