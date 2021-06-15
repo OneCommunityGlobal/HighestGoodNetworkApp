@@ -67,6 +67,21 @@ const Timer = () => {
   }
 
   useEffect(() => {
+    const fetchSeconds = async () => {
+      try {
+        const res = await axios.get(ENDPOINTS.TIMER(userId));
+        if (res.status === 200) {
+          setSeconds(res.data.seconds);
+          setIsActive(res.data.isWorking);
+        }
+        else { setSeconds(pausedAt) }
+      } catch { setSeconds(pausedAt) }
+    }
+
+    fetchSeconds();
+  }, [pausedAt])
+
+  useEffect(() => {
     let intervalSec = null;
     let intervalMin = null;
 
@@ -87,21 +102,6 @@ const Timer = () => {
       clearInterval(intervalMin);
     }
   }, [isActive])
-
-  useEffect(() => {
-    const fetchSeconds = async () => {
-      try {
-        const res = await axios.get(ENDPOINTS.TIMER(userId));
-        if (res.status === 200) {
-          setSeconds(res.data.seconds);
-          setIsActive(res.data.isWorking);
-        }
-        else { setSeconds(pausedAt) }
-      } catch { setSeconds(pausedAt) }
-    }
-
-    fetchSeconds();
-  }, [pausedAt])
 
   const hours = Math.floor(seconds / 3600)
   const minutes = Math.floor((seconds % 3600) / 60)
