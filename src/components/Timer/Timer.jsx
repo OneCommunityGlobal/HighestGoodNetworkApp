@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { Badge, Button } from 'reactstrap'
-import { startTimer, pauseTimer, updateTimer, getTimerData } from '../../actions/timer'
+import {startTimer, pauseTimer, updateTimer, getTimerData} from '../../actions/timer'
 import TimeEntryForm from '../Timelog/TimeEntryForm'
 import './Timer.css'
+import axios from "axios";
+import {ENDPOINTS} from "../../utils/URL";
 
 const Timer = () => {
   const data = {
@@ -87,7 +89,15 @@ const Timer = () => {
   }, [isActive])
 
   useEffect(() => {
-    setSeconds(pausedAt)
+    const fetchSeconds = async () => {
+      try {
+        const res = await axios.get(ENDPOINTS.TIMER(userId));
+        if (res.status === 200) { setSeconds(res.data.seconds) }
+        else { setSeconds(pausedAt) }
+      } catch { setSeconds(pausedAt) }
+    }
+
+    fetchSeconds();
   }, [pausedAt])
 
   const hours = Math.floor(seconds / 3600)
