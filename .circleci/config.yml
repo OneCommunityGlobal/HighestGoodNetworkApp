@@ -63,6 +63,7 @@ workflows:
                 - development
                 - deploy_beta
                 - fixing_bugs
+                - timer_fix
       - build_PROD:
           filters:
             branches:
