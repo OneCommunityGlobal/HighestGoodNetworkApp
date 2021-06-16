@@ -13,6 +13,7 @@ const AddTeamPopup = React.memo((props) => {
   const onAssignTeam = () => {
     if (selectedTeam && !props.userTeamsById.some((x) => x._id === selectedTeam._id)) {
       props.onSelectAssignTeam(selectedTeam)
+      onSelectTeam(undefined)
     } else {
       onValidation(false);
     }
@@ -34,12 +35,13 @@ const AddTeamPopup = React.memo((props) => {
           <AddTeamsAutoComplete
             teamsData={props.teamsData}
             onDropDownSelect={selectTeam}
+            selectedTeam={selectedTeam}
           />
           <Button color='primary' style={{ marginLeft: '5px' }} onClick={onAssignTeam}>Confirm</Button>
 
         </div>
         <div>
-          {(isValidTeam === false) ? (<Alert color="danger">Please choose a valid team which is not already added.</Alert>) : <></>}
+          {(isValidTeam === false) ? (<Alert color="danger">Great idea, but they already have that one! Pick another!</Alert>) : <></>}
         </div>
 
       </ModalBody>
