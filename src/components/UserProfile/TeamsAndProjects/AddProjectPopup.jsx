@@ -40,7 +40,8 @@ const AddProjectPopup = React.memo((props) => {
           <Button color='primary' style={{ marginLeft: '5px' }} onClick={onAssignProject} >Confirm</Button>
         </div>
         <div>
-          {(isValidProject === false) ? (<Alert color="danger">Great idea, but they already have that one! Pick another!</Alert>) : <></>}
+          {!isValidProject && selectedProject && <Alert color="danger">Great idea, but they already have that one! Pick another!</Alert>}
+          {!isValidProject && !selectedProject && <Alert color="danger">Hey, You need to pick a project first!</Alert>}
         </div>
 
       </ModalBody>
