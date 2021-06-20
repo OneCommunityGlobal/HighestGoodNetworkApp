@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Alert, Row, Col, Container } from 'reactstrap';
-import {Link} from "react-router-dom";
+import { Link } from "react-router-dom";
 import Leaderboard from '../LeaderBoard';
 import WeeklySummary from '../WeeklySummary/WeeklySummary';
 import Badge from '../Badge';
@@ -9,14 +9,14 @@ import Timelog from '../Timelog/Timelog';
 import SummaryBar from '../SummaryBar/SummaryBar';
 import '../../App.css';
 import { connect } from 'react-redux';
-import {getUserProfile} from '../../actions/userProfile'
+import { getUserProfile } from '../../actions/userProfile'
 
 export const Dashboard = props => {
   const [popup, setPopup] = useState(false);
   let userId = props.match && props.match.params.userId && props.auth.user.role === 'Administrator' ? props.match.params.userId : props.auth.user.userid;
   const toggle = () => {
     setPopup(!popup);
-    setTimeout(()=> {
+    setTimeout(() => {
       let elem = document.getElementById("weeklySum");
       if (elem) {
         elem.scrollIntoView();
@@ -29,22 +29,22 @@ export const Dashboard = props => {
       userId = props.match.params.userId;
       getUserProfile(userId);
     }
-    
+
   }, [props.match]);
 
   return (
-  <Container fluid>
-    <Row>
-      <Col sm={{ size: 12 }}>
-        <Alert color="info">
-          <b>Reminder</b>: Make sure to purge the cache or "hard" refresh the page in your browser
+    <Container fluid>
+      <Row>
+        <Col sm={{ size: 12 }}>
+          <Alert color="info">
+            <b>Reminder</b>: Make sure to purge the cache or "hard" refresh the page in your browser
           if you don's see the changes you had merged with the "development" branch. This message
           will be removed before the site goes "live".
         </Alert>
-      </Col>
-    </Row>
-    
-    <SummaryBar asUser={userId}/>
+        </Col>
+      </Row>
+
+      <SummaryBar asUser={userId} />
 
       <Row>
         <Col lg={{ size: 7 }}>&nbsp;</Col>
@@ -61,19 +61,19 @@ export const Dashboard = props => {
           <Leaderboard asUser={userId} />
         </Col>
         <Col lg={{ size: 7 }} className="left-col-dashboard order-sm-1">
-          {popup ? <div className="my-2" ><div id="weeklySum"><WeeklySummary asUser={userId}/></div></div>: null}
+          {popup ? <div className="my-2" ><div id="weeklySum"><WeeklySummary asUser={userId} /></div></div> : null}
           <div className="my-2"><a name="wsummary"></a>
-            <Timelog isDashboard asUser={userId}/>
+            <Timelog isDashboard asUser={userId} />
           </div>
           <div className="my-2">
-            <TeamMemberTasks asUser={userId}/>
+            <TeamMemberTasks asUser={userId} />
           </div>
           <Badge userId={userId} />
         </Col>
 
       </Row>
     </Container>
-  ); 
+  );
 }
 
 const mapStateToProps = state => ({

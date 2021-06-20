@@ -490,7 +490,7 @@ const TimeEntryForm = ({
             <Editor
               init={{
                 menubar: false,
-                placeholder: 'Description and reference link',
+                placeholder: 'Description (10-word minimum) and reference link',
                 plugins:
                   'advlist autolink autoresize lists link charmap table paste help wordcount',
                 toolbar:
@@ -538,7 +538,7 @@ const TimeEntryForm = ({
               />
               <ReactTooltip id="tangibleTip" place="bottom" effect="solid">
                 Click this icon to learn about tangible and intangible time.
-        </ReactTooltip>
+              </ReactTooltip>
             </Label>
           </FormGroup>
         </Form>
