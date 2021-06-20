@@ -15,7 +15,13 @@ const middleware = [thunk];
 const url = ENDPOINTS.LOGIN;
 const timerUrl = ENDPOINTS.TIMER(mockState.auth.user.userid);
 const userProjectsUrl = ENDPOINTS.USER_PROJECTS(mockState.auth.user.userid);
-const endpoint = process.env.REACT_APP_APIENDPOINT;
+let endpoint = process.env.REACT_APP_APIENDPOINT;
+if (!endpoint) {
+  // This is to resolve the issue in azure env variable
+  // APIEndpoint = fetch('/config.json').then((data) => {
+  endpoint = 'https://hgnrestdev.azurewebsites.net';
+  // });
+}
 window.confirm = jest.fn(()=>(true));
 
 const server = setupServer(
