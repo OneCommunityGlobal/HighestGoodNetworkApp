@@ -19,7 +19,7 @@ const ProjectsTab = (props) => {
   const onSelectAssignProject = (project) => {
     onAssignProject(project);
     setRenderedOn(Date.now());
-    setaddProjectPopupOpen(false);
+    //setaddProjectPopupOpen(false);
   };
 
   const onAddProjectPopupShow = () => {

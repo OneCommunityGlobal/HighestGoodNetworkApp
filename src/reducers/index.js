@@ -1,5 +1,5 @@
 import { combineReducers } from 'redux'
-import { userProfileByIdReducer } from './userProfileByIdReducer'
+import { userProfileByIdReducer,userTaskByIdReducer } from './userProfileByIdReducer'
 import { authReducer } from './authReducer'
 // import { handleSuccessReducer } from './handleSuccessReducer'
 import { allUserProfilesReducer } from './allUserProfilesReducer'
@@ -14,11 +14,11 @@ import { weeklySummariesReportReducer } from './weeklySummariesReportReducer'
 // import { actionItemsReducer } from './actionItemsReducer'
 // import { notificationsReducer } from './notificationsReducer'
 import { allProjectsReducer } from './allProjectsReducer'
-// import { projectByIdReducer } from './projectByIdReducer'
+import { projectByIdReducer } from './projectByIdReducer'
 import { userProjectsReducer } from './userProjectsReducer'
 import { projectMembershipReducer } from './projectMembershipReducer'
 import { allTeamsReducer, allUserTeamsReducer } from './allTeamsReducer'
-// import { teamByIdReducer } from './teamByIdReducer'
+import { teamByIdReducer } from './teamByIdReducer'
 // import { teamMembershipReducer } from './teamMembershipReducer'
 // import { timeEntriesForSpecifiedProjectReducer } from './timeEntriesForSpecifiedProjectReducer'
 // import { allTimeEntriesReducer } from './allTimeEntriesReducer'
@@ -37,6 +37,7 @@ import { popupEditorReducer } from './popupEditorReducer'
 export default combineReducers({
   auth: authReducer,
   userProfile: userProfileByIdReducer,
+  userTask: userTaskByIdReducer,
   allUserProfiles: allUserProfilesReducer,
   // userTeamMembers: userTeamMembersReducer,
   // userProjectMembers: userProjectMembersReducer,
@@ -50,14 +51,14 @@ export default combineReducers({
   //	actionItems: actionItemsReducer,
   //	notifications: notificationsReducer,
   allProjects: allProjectsReducer,
-  // project: projectByIdReducer,
+  project: projectByIdReducer,
   userProjects: userProjectsReducer,
   projectMembers: projectMembershipReducer,
   managingTeams: managingTeamsReducer,
   allTeamsData: allUserTeamsReducer,
   teamsTeamMembers: teamUsersReducer,
   // allTeams: allTeamsReducer,
-  // team: teamByIdReducer,
+  team: teamByIdReducer,
   // teamMembers: teamMembershipReducer,
   // allTimeEntries: allTimeEntriesReducer,
   // userTimeEntries: timeEntriesForSpecifiedPeriodReducer,

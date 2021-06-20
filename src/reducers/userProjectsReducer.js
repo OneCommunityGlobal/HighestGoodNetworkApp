@@ -13,7 +13,6 @@ export const userProjectsReducer = (state = initialState, action) => {
         projects: action.payload
       };
     default:
-      //console.log("userProjects Initial State:", state);
       return state;
   }
 };

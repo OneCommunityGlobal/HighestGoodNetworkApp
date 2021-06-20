@@ -13,10 +13,12 @@ const AddProjectPopup = React.memo((props) => {
   const onAssignProject = () => {
     if (selectedProject && !props.userProjectsById.some((x) => x._id === selectedProject._id)) {
       props.onSelectAssignProject(selectedProject)
+      onSelectProject(undefined)
     } else {
       onValidation(false);
     }
   };
+
   const selectProject = (project) => {
     onSelectProject(project);
     onValidation(true);
@@ -33,11 +35,12 @@ const AddProjectPopup = React.memo((props) => {
         <div className="input-group-prepend" style={{ marginBottom: '10px' }}>
           <AddProjectsAutoComplete
             projectsData={props.projects}
-            onDropDownSelect={selectProject} />
+            onDropDownSelect={selectProject}
+            selectedProject={selectedProject} />
           <Button color='primary' style={{ marginLeft: '5px' }} onClick={onAssignProject} >Confirm</Button>
         </div>
         <div>
-          {(isValidProject === false) ? (<Alert color="danger">Please choose a valid project which is not already added.</Alert>) : <></>}
+          {(isValidProject === false) ? (<Alert color="danger">Great idea, but they already have that one! Pick another!</Alert>) : <></>}
         </div>
 
       </ModalBody>

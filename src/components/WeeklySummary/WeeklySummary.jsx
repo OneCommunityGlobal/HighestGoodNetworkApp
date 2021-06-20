@@ -21,7 +21,6 @@ import classnames from 'classnames';
 
 // Need this export here in order for automated testing to work.
 export class WeeklySummary extends Component {
-
   state = {
     formElements: {
       summary: '',
@@ -43,7 +42,6 @@ export class WeeklySummary extends Component {
   async componentDidMount() {
     await this.props.getWeeklySummaries(this.props.asUser ? this.props.asUser : this.props.currentUser.userid);
     const { mediaUrl, weeklySummaries, weeklySummariesCount } = this.props.summaries;
-
     const summary = weeklySummaries && weeklySummaries[0] && weeklySummaries[0].summary || '';
     const summaryLastWeek = weeklySummaries && weeklySummaries[1] && weeklySummaries[1].summary || '';
     const summaryBeforeLast = weeklySummaries && weeklySummaries[2] && weeklySummaries[2].summary || '';
