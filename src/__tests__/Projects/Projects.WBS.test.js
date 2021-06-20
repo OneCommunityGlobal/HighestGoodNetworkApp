@@ -130,7 +130,7 @@ describe('Project WBS behavior', () => {
   });
 
   it('should add a new WBS', async () => {
-    //TEST is failing in circleci    
+    
     // let rt = '/project/wbs/5ad91ec3590b19002asacd26'
     // const hist = createMemoryHistory({ initialEntries: [rt] });
     // projectWBSMountedPage = renderWithRouterMatch(routes , {initialState: mockState, route: rt, history: hist});
