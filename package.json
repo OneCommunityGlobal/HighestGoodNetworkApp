@@ -16,6 +16,7 @@
     "date-fns": "^2.14.0",
     "diff": "^5.0.0",
     "font-awesome": "^4.7.0",
+    "history": "^4.10.1",
     "html-react-parser": "^1.0.0",
     "html-to-pdfmake": "^2.0.6",
     "jest-mock-axios": "^4.2.1",
