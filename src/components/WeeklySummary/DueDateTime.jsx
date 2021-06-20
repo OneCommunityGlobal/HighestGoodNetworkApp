@@ -10,7 +10,7 @@ function DueDateTime({ dueDate }) {
   const displayTime = moment(dueDate).tz('America/Los_Angeles').add(1, 'second');
   return (
     <div className="my-4 my-md-1">
-      <div className="mb-1">Summary Due Date (click to add)</div>
+      <div className="mb-1">Weekly Summary Due Date (click to add)</div>
       <div className="mx-auto due-section">
         <div className="text-white due-section__date">
           <FontAwesomeIcon icon={faCalendarCheck} className="mr-1" />
