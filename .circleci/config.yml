@@ -40,7 +40,7 @@ jobs:
           command: "sudo npm install"
       - run:
           name: Run react build
-          command: "sudo REACT_APP_APIENDPOINT=$APIENDPOINT_PROD REACT_APP_SENTRY_URL=$SENTRY_URL_PROD npm run build"
+          command: "sudo REACT_APP_APIENDPOINT=$APIENDPOINT_PROD REACT_APP_SENTRY_URL=$SENTRY_URL_PROD SKIP_PREFLIGHT_CHECK=true npm run build"
       - run:
           name: Deploy app
           command: ./node_modules/.bin/surge build --domain $SURGE_DOMAIN_PROD
