@@ -304,7 +304,7 @@ class AddUserProfile extends Component {
     const { firstName, email, lastName, phoneNumber, role, privacySettings, collaborationPreference, googleDoc } = that.state.userProfile;
 
     const userData = {
-      password: "123Welocme!",
+      password: "123Welcome!",
       role: role,
       firstName: firstName,
       lastName: lastName,
@@ -359,7 +359,7 @@ class AddUserProfile extends Component {
     // console.log(filesizeKB);
 
     if (filesizeKB > 50) {
-      imageUploadError = `\n The file you are trying to upload exceeds the maximum size of 50KB. You can either 
+      imageUploadError = `\n The file you are trying to upload exceeds the maximum size of 50KB. You can either
 														choose a different file, or use an online file compressor.`;
       isValid = false;
 

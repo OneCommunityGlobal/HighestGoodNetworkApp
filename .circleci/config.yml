@@ -2,11 +2,11 @@ version: 2
 jobs:
   build_dev:
     docker:
-      - image: circleci/node:latest
+      - image: cimg/node:14.17.0
     steps:
       - checkout
       - run:
-          name: Update npm
+          name: npm install
           command: "sudo npm install"
       - run:
           name: Run react build
@@ -17,11 +17,11 @@ jobs:
 
   build_beta:
     docker:
-      - image: circleci/node:latest
+      - image: cimg/node:14.17.0
     steps:
       - checkout
       - run:
-          name: Update npm
+          name: npm install
           command: "sudo npm install"
       - run:
           name: Run react build
@@ -32,11 +32,11 @@ jobs:
 
   build_PROD:
     docker:
-      - image: circleci/node:latest
+      - image: cimg/node:14.17.0
     steps:
       - checkout
       - run:
-          name: Update npm
+          name: npm install
           command: "sudo npm install"
       - run:
           name: Run react build
@@ -52,13 +52,16 @@ workflows:
       - build_dev:
           filters:
             branches:
-              only: development
+              only:
+                - development
+                - fixing_bugs
       - build_beta:
           filters:
             branches:
               only:
                 - development
                 - deploy_beta
+                - fixing_bugs
       - build_PROD:
           filters:
             branches:

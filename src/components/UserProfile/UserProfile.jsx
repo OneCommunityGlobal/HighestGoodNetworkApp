@@ -67,6 +67,7 @@ class UserProfile extends Component {
       email: true,
     },
     changed: false,
+    showSaveWarning: true,
   }
 
   async componentDidMount() {
@@ -228,7 +229,7 @@ class UserProfile extends Component {
     // console.log(filesizeKB);
 
     if (filesizeKB > 50) {
-      imageUploadError = `\nThe file you are trying to upload exceeds the maximum size of 50KB. You can either 
+      imageUploadError = `\nThe file you are trying to upload exceeds the maximum size of 50KB. You can either
 														choose a different file, or use an online file compressor.`
       isValid = false
 
@@ -260,7 +261,7 @@ class UserProfile extends Component {
 
   saveChanges = () => {
     this.props.updateUserProfile(this.props.match.params.userId, this.state.userProfile);
-    toast.success('Your Changes were saved successfully.')
+    this.setState({changed: false});
   }
 
   handleBlueSquare = (status = true, type = 'message', blueSquareID = '') => {
@@ -347,11 +348,13 @@ class UserProfile extends Component {
     const { updateUserProfile, match } = this.props
     const { userProfile, formValid } = this.state
     const submitResult = await updateUserProfile(match.params.userId, userProfile)
+    this.setState({ showSaveWarning: false })
   }
 
   toggleInfoModal = () => {
     this.setState({
       infoModal: !this.state.infoModal,
+      showSaveWarning: false
     })
   }
 
@@ -611,7 +614,7 @@ class UserProfile extends Component {
             </Col>
             <Col md="8">
               <div className="profile-head">
-                {this.state.changed && <Alert color="warning">Please click on "Save changes" to save the changes you have made. </Alert>}
+                {this.state.changed && this.state.showSaveWarning && <Alert color="warning">Please click on "Save changes" to save the changes you have made. </Alert>}
                 <h5
                   style={{ display: 'inline-block', marginRight: 10 }}
                 >{`${firstName} ${lastName}`}</h5>
