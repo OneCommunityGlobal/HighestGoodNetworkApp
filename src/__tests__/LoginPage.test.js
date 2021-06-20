@@ -20,7 +20,7 @@ import { loginUser } from '../actions/authActions';
 const url = ENDPOINTS.LOGIN;
 const timerUrl = ENDPOINTS.TIMER(mockState.auth.user.userid);
 const userProjectsUrl = ENDPOINTS.USER_PROJECTS(mockState.auth.user.userid);
-
+const endpoint = process.env.REACT_APP_APIENDPOINT;
 const server = setupServer(
   rest.post(url, (req, res, ctx) => {
     if (req.body.email === 'validEmail@gmail.com' && req.body.password === 'validPass') {
@@ -30,8 +30,8 @@ const server = setupServer(
     }
     return res(ctx.status(403), ctx.json({ message: 'Invalid email and/ or password.' }));
   }),
-  rest.get('http://localhost:4500/api/userprofile/*', (req, res, ctx) => res(ctx.status(200), ctx.json({}))),
-  rest.get('http://localhost:4500/api/dashboard/*', (req, res, ctx) => res(ctx.status(200), ctx.json([
+  rest.get(endpoint + '/userprofile/*', (req, res, ctx) => res(ctx.status(200), ctx.json({}))),
+  rest.get(endpoint + '/api/dashboard/*', (req, res, ctx) => res(ctx.status(200), ctx.json([
     {
       personId: '5edf141c78f1380017b829a6',
       name: 'Dev Admin',

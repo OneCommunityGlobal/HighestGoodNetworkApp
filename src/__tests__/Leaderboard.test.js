@@ -14,6 +14,7 @@ const timerUrl = ENDPOINTS.TIMER(mockState.auth.user.userid);
 const userProjectsUrl = ENDPOINTS.USER_PROJECTS(mockState.auth.user.userid);
 let requestedLeaderBoard = false;
 let refreshed = false;
+const endpoint = process.env.REACT_APP_APIENDPOINT;
 
 const server = setupServer( 
   rest.get(url, (req, res, ctx) =>  {
@@ -59,7 +60,7 @@ const server = setupServer(
       }
 
   }),
-  rest.get('http://localhost:4500/api/userprofile/*', (req, res, ctx) =>  {
+  rest.get(endpoint + 'userprofile/*', (req, res, ctx) =>  {
     return res(ctx.status(200), ctx.json({}), )  
   }),
   rest.get(userProjectsUrl, (req, res, ctx) =>  {
