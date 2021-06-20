@@ -28,17 +28,7 @@ const  TeamTable = (props) => {
 
   return (
     <table class="center">
-    {/*<div>*/}
-    {/*  <button style={{margin:'3px'}} exact className="btn btn-secondary btn-bg mt-3">Date</button>*/}
-    {/*  <button style={{margin:'3px'}} exact className="btn btn-secondary btn-bg mt-3">Priority Level</button>*/}
-    {/*  <button style={{margin:'3px'}} exact className="btn btn-secondary btn-bg mt-3">Status</button>*/}
-    {/*  <button style={{margin:'3px'}} exact className="btn btn-secondary btn-bg mt-3">Manager</button>*/}
-    {/*  <button style={{margin:'3px'}} exact className="btn btn-secondary btn-bg mt-3">Estimated Hours</button>*/}
-    {/*  <button style={{margin:'3px'}} exact className="btn btn-secondary btn-bg mt-3">Ready for Review</button>*/}
-    {/*</div>*/}
-
     <table className="table table-bordered table-responsive-sm">
-
       <thead>
       <tr>
         <th scope="col" id="projects__order">#</th>

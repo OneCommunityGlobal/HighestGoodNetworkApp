@@ -18,7 +18,6 @@ class ReportsPage extends Component {
       showProjects: false,
       showPeople: false,
       showTeams: false,
-      // showTasks: false,
       teamNameSearchText: '',
       teamMembersPopupOpen: false,
       deleteTeamPopupOpen: false,
@@ -47,31 +46,22 @@ class ReportsPage extends Component {
     this.showProjectTable = this.showProjectTable.bind(this);
     this.showPeopleTable =this.showPeopleTable.bind(this);
     this.showTeamsTable=this.showTeamsTable.bind(this)
-    // this.showTasksTable=this.showTasksTable.bind(this)
-
     this.setActive=this.setActive.bind(this)
     this.setInActive=this.setInActive.bind(this)
     this.setAll=this.setAll.bind(this)
   }
 
-  setIsActive = () => {
-   // console.log(this.state.checkActive)
-  }
-
   componentDidMount() {
     this.props.fetchAllProjects(); // Fetch to get all projects
     this.props.getAllUserTeams();
-    // this.props.fetchAllTasks();
     this.state = {
       showProjects: false,
       showPeople: false,
       showTeams: false,
-      // showTasks : false,
       checkActive: ''
     }
     this.props.getAllUserProfile();
   }
-
 
   setActive() {
     this.setState((state) => {
@@ -90,7 +80,7 @@ class ReportsPage extends Component {
   }
 
   setInActive(){
-    //console.log('here set inactive')
+
     this.setState(()=>({
       checkActive:'false'
     }))
@@ -110,7 +100,6 @@ class ReportsPage extends Component {
       showProjects: false,
       showPeople: false,
       showTeams: !prevState.showTeams,
-      // showTasks: false
     }))
   }
 
@@ -119,7 +108,6 @@ class ReportsPage extends Component {
       showProjects: false,
       showPeople: !prevState.showPeople,
       showTeams: false,
-      // showTasks: false
     }))
       }
 
@@ -129,15 +117,12 @@ class ReportsPage extends Component {
       showProjects: false,
       showPeople: false,
       showTeams: false,
-      // showTasks: !prevState.showTasks,
-
     }))
   }
   render() {
     let { projects} = this.props.state.allProjects;
     let { allTeams } = this.props.state.allTeamsData;
     let { userProfiles } = this.props.state.allUserProfiles;
-    // let { tasks } = this.props.state.tasks;
 
 
 
@@ -145,16 +130,11 @@ class ReportsPage extends Component {
       projects = projects.filter(project => project.isActive ===true);
       userProfiles =userProfiles.filter(user => user.isActive ===true);
       allTeams =allTeams.filter(team => team.isActive ===true);
-      // tasks = tasks.filter(task => task.isActive ===true);
     }
     else if (this.state.checkActive ==='false'){
       projects = projects.filter(project => project.isActive ===false);
       userProfiles =userProfiles.filter(user => user.isActive ===false);
       allTeams =allTeams.filter(team => team.isActive ===false);
-      // tasks = tasks.filter(task => task.isActive ===false);
-
-
-
     }
 
 
@@ -168,11 +148,8 @@ class ReportsPage extends Component {
           <button style={{margin:'3px'}} exact className="btn btn-secondary btn-bg mt-3" onClick={this.showProjectTable}>Project</button>
           <button style={{margin:'3px'}} exact className="btn btn-secondary btn-bg mt-3" onClick={this.showPeopleTable}>Person</button>
           <button style={{margin:'3px'}} exact className="btn btn-secondary btn-bg mt-3" onClick={this.showTeamsTable}>Team</button>
-          {/*<button style={{margin:'3px'}} exact className="btn btn-secondary btn-bg mt-3" onClick={this.showTasksTable}>Task</button>*/}
-
           <div>
           <a>Select a Filter</a>
-
             <input name='radio' type="radio" style={{margin:'5px'}} value="active" onChange={this.setActive}  />
             Active
             <input name='radio' type="radio" style={{margin:'5px'}} value="inactive" onChange={this.setInActive } />
@@ -187,7 +164,6 @@ class ReportsPage extends Component {
         {this.state.showPeople && <PeopleTable userProfiles={userProfiles}/>}
         {this.state.showProjects &&<ProjectTable projects={projects}/>}
         {this.state.showTeams &&<TeamTable allTeams={allTeams}/>}
-        {/*{this.state.showTasks &&<TasksTable tasks={tasks}/>}*/}
       </div>
 
     )

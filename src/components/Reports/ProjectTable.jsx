@@ -3,7 +3,6 @@ import './reports.css'
 import { Link } from 'react-router-dom'
 
 const  ProjectTable = (props) => {
-  // Display project lists
   let ProjectsList = [];
   if (props.projects.length > 0) {
     ProjectsList = props.projects.map((project, index) =>
@@ -39,7 +38,6 @@ const  ProjectTable = (props) => {
   </table>
   </table>
   )
-
 }
 
 export default ProjectTable;

@@ -67,9 +67,6 @@ class ProjectReport extends Component{
       this.props.getProjectDetail(this.props.match.params.projectId)
       this.props.fetchAllWBS(this.props.match.params.projectId)
       this.props.fetchAllMembers(this.props.match.params.projectId)
-
-
-
       this.setState({
         project: {
           ...this.props.project},
@@ -91,7 +88,6 @@ class ProjectReport extends Component{
       endDate,
       wbs,
       showDatePicker,
-
       projectMembers
     } = this.state
 

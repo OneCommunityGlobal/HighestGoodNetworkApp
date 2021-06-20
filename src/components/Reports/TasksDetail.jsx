@@ -2,12 +2,9 @@ import './reports.css'
 import React, { useState } from "react";
 import { Button, Dropdown, DropdownButton } from 'react-bootstrap'
 import EditTaskModal from "./../Projects/WBS/WBSDetail/EditTask/EditTaskModal";
-import ReactTable from "react-table";
 import "react-table/react-table.css";
-
-
-
 import Collapse from 'react-bootstrap/Collapse'
+
 const ShowCollapse = props => {
   const [open, setOpen] = useState(false);
 return(
@@ -15,10 +12,13 @@ return(
   <Button
     onClick={() => setOpen(!open)}
     aria-expanded={open}>
-    {props.resources[0].name}
-  </Button>
 
-    {props.resources.map(resource => (
+  </Button>
+    <div>
+      {props.resources[0].name}
+      </div>
+
+    {props.resources.slice(1).map(resource => (
     <Collapse in={open}>
           <div key={resource._id} white-space="pre-line" white-space="nowrap" className="new-line">
           {resource.name}
@@ -29,16 +29,11 @@ return(
 
 )
 }
-
 const  TasksDetail = (props) => {
-
-  // console.log('here4')
-  // console.log(props)
   let tasksList=[]
   let tasks=[]
   tasks=props.tasks_filter
   if (props.tasks_filter.length > 0) {
-
     if (!(props.isActive === "" )) {
       tasks = tasks.filter(item => item.isActive === props.isActive
         );
@@ -46,11 +41,6 @@ const  TasksDetail = (props) => {
     if (!(props.isAssigned ==="")) {
       tasks = tasks.filter(item => item.isAssigned === props.isAssigned);
     }
-
-    // if (!(props.isAssigned === "")) {
-    //   tasks=props.tasks_filter.filter(item => item.priority == props.priority &&item.isActive === props.isActive
-    //     && item.isAssigned === props.isAssigned)
-    // }
 
     if (!(props.priority === "")) {
       tasks=tasks.filter(item => item.priority == props.priority)
@@ -94,18 +84,7 @@ const  TasksDetail = (props) => {
     }
 
   }
-  // tasks = props.tasks_filter.filter(item =>  item.isActive ===props.isActive
-  //   && item.isAssigned ===props.isAssigned);
-  // if (!(props.priority === "")){
-  //   tasks=tasks.filter(item=>item.priority ==props.priority)
-  // }
-  //
-  // if (!(props.status === "")){
-  //   tasks=tasks.filter(item=>item.status ==props.status)
-  // }
 
-console.log('tasks 9999999')
-  console.log(tasks)
   tasksList = tasks.map((task, index) =>
     <tr id={"tr_" + task._id}>
       <th scope="row">
@@ -136,9 +115,7 @@ console.log('tasks 9999999')
       <td>
         {task.resources.length<=2 ?
           task.resources.map(resource => (
-            //<div  className="new-line" key={resource._id}>
               <div key={resource._id}>{resource.name}</div>
-           // </div>
           ))
           :
           <ShowCollapse resources={task.resources}/>
@@ -175,10 +152,7 @@ console.log('tasks 9999999')
   return (
     <div>
       <h2>Total: {tasksList.length}</h2>
-
-    {/*<table class="center">*/}
       <div className="table-responsive-sm">
-
       <table className="table table-bordered table-responsive-sm">
         <thead>
         <tr>

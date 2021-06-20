@@ -21,7 +21,6 @@ class TasksTable extends Component{
       allClassification:[],
       classification:'',
       users:""
-
     }
 
     this.get_task_by_wbsId=this.get_task_by_wbsId.bind(this)
@@ -32,12 +31,7 @@ class TasksTable extends Component{
     this.setClassfication=this.setClassfication.bind(this)
     this.setUsers=this.setUsers.bind(this)
     this.setFilter=this.setFilter.bind(this)
-
-
   }
-
-
-
 
   async componentDidMount() {
     this.setState({
@@ -56,41 +50,11 @@ class TasksTable extends Component{
     var get_tasks=[]
     if ( Object.keys(this.props.WbsTasksID).length>0) {
       var i=0
-      // console.log('here666')
-
       while( i< Object.keys(this.props.WbsTasksID).length) {
-        // console.log(Object.keys(this.props.WbsTasksID).length)
-        // console.log('here777')
-        // console.log(this.props.tasks)
-        // console.log('9999')
         if (this.props.tasks.fetched) {
-          // console .log('here8888')
           var result = this.props.tasks.taskItems.filter(task => task.wbsId == this.props.WbsTasksID[i]);
-          // console.log(this.props.tasks)
-          // console.log('result111')
-          // console.log(result)
           get_tasks.push(result)
-          //console.log('result111')
           i+=1
-          // if ( Object.keys(result).length<Object.keys(this.props.tasks.taskItems).length) {
-          //   console.log('add here?')
-          //   get_tasks.push(result)
-          //   console.log('get_tasks')
-          //
-          //   console.log(get_tasks)
-          //   console.log('result222222')
-          //
-          //   console.log(result)
-          // }
-          // else if(Object.keys(result).length==Object.keys(this.props.tasks.taskItems).length && i==Object.keys(this.props.WbsTasksID).length-1){
-          //   get_tasks[0]=result
-          //   console.log('add here?222')
-          //   break
-          // }
-          // else{
-          //   break
-          //   console.log('add here333?')
-          // }
         }
       }
     }
@@ -169,12 +133,7 @@ class TasksTable extends Component{
 
 
     var get_tasks=this.get_task_by_wbsId()
-    // console.log('get_tasks')
-    // console.log(get_tasks)
-
     const PriorityOptions = props => {
-
-
       var allPriorities=[...Array.from(new Set(props.get_tasks.map((item) => item.priority))).sort()]
       allPriorities.unshift("Filter Off")
       return (
@@ -189,10 +148,7 @@ class TasksTable extends Component{
     };
 
     const StatusOptions = props => {
-
-
       var allStatus=[...Array.from(new Set(props.get_tasks.map((item) => item.status))).sort()]
-
       allStatus.unshift("Filter Off")
       return (
         <DropdownButton style={{margin:'3px'}} exact id="dropdown-basic-button" title="Status">
@@ -204,11 +160,8 @@ class TasksTable extends Component{
     };
 
     const ActiveOptions = props => {
-
-
       var allOptions=[...Array.from(new Set(props.get_tasks.map((item) => item.isActive.toString()))).sort()]
       allOptions.unshift("Filter Off")
-
       return (
         <DropdownButton style={{margin:'3px'}} exact id="dropdown-basic-button" title="Active Options">
           {allOptions.map((c, index) => (
@@ -244,9 +197,7 @@ class TasksTable extends Component{
     };
 
     const UserOptions = props => {
-
       let users=[]
-
       props.get_tasks.map((task, index) => (
         task.resources.map(resource => (
           users.push(resource.name)
@@ -255,7 +206,6 @@ class TasksTable extends Component{
 
       users=Array.from(new Set(users)).sort()
       users.unshift("Filter Off")
-
       return (
         <DropdownButton style={{margin:'3px'}} exact id="dropdown-basic-button" title="Users">
           {users.map((c, index) => (
@@ -277,7 +227,6 @@ class TasksTable extends Component{
         Active
         <input name='radio' type="radio" style={{margin:'5px'}} value="inactive" onChange={()=>this.setActive(false) } />
         InActive
-        {/*<ActiveOptions get_tasks={get_tasks}/>*/}
         <AssignmentOptions get_tasks={get_tasks}/>
         <button style={{margin:'3px'}} exact className="btn btn-secondary btn-bg mt-3">Estimated Hours</button>
       </div>
@@ -287,7 +236,6 @@ class TasksTable extends Component{
       <div>priority:{priority}</div>
       <div>status:{status}</div>
       <div>classification:{classification}</div>
-      {/*<div>users:{users}</div>*/}
       <TasksDetail
         tasks_filter={get_tasks}
         isAssigned={isAssigned}

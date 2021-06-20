@@ -42,4 +42,3 @@ const PeopleTable=props=>{
   )
 }
 export default PeopleTable
-// export default  PeopleTableFinal

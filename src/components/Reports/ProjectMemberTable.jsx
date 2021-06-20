@@ -36,7 +36,6 @@ const  ProjectMemberTable = (props) => {
       </table>
     </table>
   )
-
 }
 
 export default ProjectMemberTable;

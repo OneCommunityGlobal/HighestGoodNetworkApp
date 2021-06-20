@@ -7,14 +7,10 @@ const  WbsTable = (props) => {
   let WbsTasksID = []
   let tasksTable=[]
   if (props.wbs.fetched) {
-    //console.log('yueru here')
-    //console.log(props.wbs)
     if (props.wbs.WBSItems.length > 0) {
-      //console.log('yueru here2')
       for (var i = 0; i < props.wbs.WBSItems.length; i++) {
         WbsTasksID.push(props.wbs.WBSItems[i]._id);
       }
-      //console.log(WbsTasksID)
       WbsList = props.wbs.WBSItems.map((item, index) =>
         <tr id={"tr_" + item._id}  key={item._id}>
           <th scope="row">
@@ -23,16 +19,11 @@ const  WbsTable = (props) => {
           <td>
              {item.wbsName}
           </td>
-          {/*<td>*/}
-          {/*  {String(item.isActive)}*/}
-          {/*</td>*/}
-
           <td className='projects__active--input'>
             {item.isActive ?
               <tasks className="isActive"><i className="fa fa-circle" aria-hidden="true"></i></tasks> :
               <div className="isNotActive"><i className="fa fa-circle-o" aria-hidden="true"></i></div>}
           </td>
-
           <td>
             {(item._id)}
           </td>
@@ -68,7 +59,5 @@ const  WbsTable = (props) => {
   )
 
 }
-
-
 
 export default WbsTable;

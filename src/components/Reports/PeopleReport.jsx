@@ -1,6 +1,6 @@
-import React , { Component }from 'react';
+import React, { Component, useState } from 'react'
 import '../Teams/Team.css';
-import { Dropdown, DropdownButton } from "react-bootstrap";
+import { Button, Dropdown, DropdownButton } from 'react-bootstrap'
 import { connect } from 'react-redux'
 import { getUserProfile,getUserTask} from '../../actions/userProfile';
 import {getUserProjects} from '../../actions/userProjects'
@@ -12,9 +12,7 @@ import "react-input-range/lib/css/index.css"
 // import EditTaskModal from '../Projects/WBS/WBSDetail/EditTask/EditTaskModal'
 import EditTaskModal from "./../Projects/WBS/WBSDetail/EditTask/EditTaskModal";
 import EditPeopleReportTaskModal from './EditPeopleReportTaskModal'
-
-
-
+import Collapse from 'react-bootstrap/Collapse'
 
 class PeopleReport extends Component {
   constructor(props) {
@@ -36,7 +34,6 @@ class PeopleReport extends Component {
       classification:'',
       users:""
     }
-
     this.setStatus=this.setStatus.bind(this)
     this.setPriority=this.setPriority.bind(this)
     this.setActive=this.setActive.bind(this)
@@ -44,10 +41,7 @@ class PeopleReport extends Component {
     this.setFilter=this.setFilter.bind(this)
     this.setClassfication=this.setClassfication.bind(this)
     this.setUsers=this.setUsers.bind(this)
-
-
   }
-
 
   async componentDidMount() {
     if (this.props.match) {
@@ -62,22 +56,19 @@ class PeopleReport extends Component {
           userProfile: {
             ...this.props.userProfile,
           },
-        userTask :[
-          ...this.props.userTask
-        ],
-        userProjects:{
-            ...this.props.userProjects
-        },
-        allClassification:
-          [...Array.from(new Set(this.props.userTask.map((item) => item.classification)))],
-
-
-        infringments : this.props.userProfile.infringments
-        },()=>
-        console.log(this.state.userProjects)
+          userTask :[
+            ...this.props.userTask
+          ],
+          userProjects:{
+              ...this.props.userProjects
+          },
+          allClassification:
+            [...Array.from(new Set(this.props.userTask.map((item) => item.classification)))],
+          infringments : this.props.userProfile.infringments
+          },()=>
+          console.log(this.state.userProjects)
       )
     }
-
   }
 
   setActive(activeValue) {
@@ -139,7 +130,6 @@ class PeopleReport extends Component {
     });
   }
 
-
   render() {
     const {
       userProfile,
@@ -161,6 +151,29 @@ class PeopleReport extends Component {
       weeklyComittedHours,
       totalComittedHours
     } = userProfile
+    const ShowCollapse = props => {
+      const [open, setOpen] = useState(false);
+      return(
+        <div>
+          <Button
+            onClick={() => setOpen(!open)}
+            aria-expanded={open}>
+          </Button>
+          <div>
+            {props.resources[0].name}
+          </div>
+
+          {props.resources.slice(1).map(resource => (
+            <Collapse in={open}>
+              <div key={resource._id} white-space="pre-line" white-space="nowrap" className="new-line">
+                {resource.name}
+              </div>
+            </Collapse>
+          ))}
+        </div>
+
+      )
+    }
 
     const UserTask = props => {
       let userTaskList = []
@@ -194,9 +207,6 @@ tasks=test
         }
 
 if (tasks.length>0) {
-  console.log('yueru edit button')
-  console.log(tasks)
-
   userTaskList = tasks.map((task, index) => (
     <tr id={"tr_" + task._id}>
       <th scope="row">
@@ -227,6 +237,15 @@ if (tasks.length>0) {
       <td>
         {task.status}
       </td>
+      <td>
+        {task.resources.length<=2 ?
+          task.resources.map(resource => (
+            <div key={resource._id}>{resource.name}</div>
+          ))
+          :
+          <ShowCollapse resources={task.resources}/>
+        }
+      </td>
       <td className='projects__active--input'>
         {task.isActive ?
           <tasks className="isActive"><i className="fa fa-circle" aria-hidden="true"></i></tasks> :
@@ -241,14 +260,6 @@ if (tasks.length>0) {
       <td className='projects__active--input'>
         {task.classification}
       </td>
-      <td className='projects__active--input'>
-        {task.resources.map(resource => (
-          <div class="new-line" key={resource._id}>
-            <li>{resource.name}</li>
-          </div>
-        ))}
-      </td>
-
       <td className='projects__active--input'>
         {task.estimatedHours.toFixed(2)}
       </td>
@@ -278,21 +289,19 @@ if (tasks.length>0) {
               <tr>
                 <th scope="col" id="projects__order">Action</th>
                 <th scope="col" id="projects__order">#</th>
-                <th scope="col">Task</th>
+                <th scope="col" id="projects__active">Task</th>
                 <th scope="col" id="projects__active">Priority</th>
                 <th scope="col" id="projects__active">Status</th>
+                <th scope="col" >Resources</th>
                 <th scope="col" id="projects__active">Active</th>
                 <th scope="col" id="projects__active">Assign</th>
                 <th scope="col" id="projects__active">Class</th>
-                <th scope="col" id="projects__active">Resource</th>
                 <th scope="col" id="projects__active">Estimated Hours</th>
                 <th scope="col" id="projects__active">Start Date</th>
                 <th scope="col" id="projects__active">End Date</th>
               </tr>
               </thead>
-
               <tbody>
-
               { userTaskList}
               </tbody>
             </table>
@@ -321,8 +330,19 @@ if (tasks.length>0) {
       )
     };
 
-    const UserOptions = props => {
+    const StatusOptions = props => {
+      var allStatus=[...Array.from(new Set(props.get_tasks.map((item) => item.status))).sort()]
+      allStatus.unshift("Filter Off")
+      return (
+        <DropdownButton style={{margin:'3px'}} exact id="dropdown-basic-button" title="Status">
+          {allStatus.map((c, index) => (
+            <Dropdown.Item onClick={()=>this.setStatus(c)}>{c}</Dropdown.Item>
+          ))}
+        </DropdownButton>
+      )
+    };
 
+    const UserOptions = props => {
       let users=[]
       props.userTask.map((task, index) => (
         task.resources.map(resource => (
@@ -330,7 +350,8 @@ if (tasks.length>0) {
         ))
       ))
 
-      users=Array.from(new Set(users))
+      users=Array.from(new Set(users)).sort()
+      users.unshift("Filter Off")
       return (
         <DropdownButton style={{margin:'3px'}} exact id="dropdown-basic-button" title="Users">
           {users.map((c, index) => (
@@ -377,10 +398,7 @@ if (tasks.length>0) {
     )
     };
     const ActiveOptions = props => {
-
-
       var allOptions=[...Array.from(new Set(props.get_tasks.map((item) => item.isActive.toString())))]
-
       return (
         <DropdownButton style={{margin:'3px'}} exact id="dropdown-basic-button" title="Active Options">
           {allOptions.map((c, index) => (
@@ -390,7 +408,31 @@ if (tasks.length>0) {
       )
     };
 
+    const AssignmentOptions = props => {
+      var allOptions=[...Array.from(new Set(props.get_tasks.map((item) => item.isAssigned.toString()))).sort()]
+      allOptions.unshift("Filter Off")
       return (
+        <DropdownButton style={{margin:'3px'}} exact id="dropdown-basic-button" title="Assignment Options">
+          {allOptions.map((c, index) => (
+            <Dropdown.Item onClick={()=>this.setAssign(c)}>{c}</Dropdown.Item>
+          ))}
+        </DropdownButton>
+      )
+    };
+
+    const PriorityOptions = props => {
+      var allPriorities=[...Array.from(new Set(props.get_tasks.map((item) => item.priority))).sort()]
+      allPriorities.unshift("Filter Off")
+      return (
+        <DropdownButton style={{margin:'3px'}} exact id="dropdown-basic-button" title="Priority">
+          {allPriorities.map((c, index) => (
+            <Dropdown.Item onClick={()=>this.setPriority(c)}>{c}</Dropdown.Item>
+          ))}
+        </DropdownButton>
+      )
+    };
+
+    return (
         <table>
           <DropdownButton id="dropdown-basic-button" title="Time Frame">
             <Dropdown.Item href="#/action-1">Past Week</Dropdown.Item>
@@ -412,50 +454,16 @@ if (tasks.length>0) {
             <h2>Tasks</h2>
           <div>
             <button style={{margin:'3px'}} exact className="btn btn-secondary btn-bg mt-3" onClick={()=>this.setFilter()}>Filter Off</button>
-
-            <DropdownButton id="dropdown-basic-button" title="Assignment Status">
-              <Dropdown.Item  onClick={()=>this.setAssign(true)}>Assign</Dropdown.Item>
-              <Dropdown.Item onClick={()=>this.setAssign(false)}>Not Assign</Dropdown.Item>
-            </DropdownButton>
-
+            <AssignmentOptions get_tasks={userTask}/>
             <input name='radio' type="radio" style={{margin:'5px'}} value="active" onChange={()=>this.setActive(true)}  />
             Active
             <input name='radio' type="radio" style={{margin:'5px'}} value="inactive" onChange={()=>this.setActive(false) } />
             InActive
-            <DropdownButton style={{margin:'3px'}} exact id="dropdown-basic-button" title="Priority Level">
-              <Dropdown.Item onClick={()=>this.setPriority('Primary')}>Primary</Dropdown.Item>
-              <Dropdown.Item  onClick={()=>this.setPriority('Secondary')}>Secondary</Dropdown.Item>
-              <Dropdown.Item  onClick={()=>this.setPriority('Tertiary') }>Tertiary</Dropdown.Item>
-            </DropdownButton>
-            <DropdownButton style={{margin:'3px'}} exact id="dropdown-basic-button" title="Status">
-              <Dropdown.Item onClick={()=>this.setStatus('Complete')}>Complete</Dropdown.Item>
-              <Dropdown.Item onClick={()=>this.setStatus('Paused')}>Paused</Dropdown.Item>
-              <Dropdown.Item onClick={()=>this.setStatus('Not Started')}>Not Started</Dropdown.Item>
-              <Dropdown.Item onClick={()=>this.setStatus('Active')}>Active</Dropdown.Item>
-              <Dropdown.Item onClick={()=>this.setStatus('Ready for Final Review')}>Ready for Final Review</Dropdown.Item>
-            </DropdownButton>
-            {/*<button style={{margin:'3px'}} exact className="btn btn-secondary btn-bg mt-3">User</button>*/}
+            <PriorityOptions get_tasks={userTask}/>
+            <StatusOptions get_tasks={userTask}/>
             <button style={{margin:'3px'}} exact className="btn btn-secondary btn-bg mt-3">Estimated Hours</button>
-            {/*<InputRange*/}
-            {/*  maxValue={20}*/}
-            {/*  minValue={0}*/}
-            {/*  // value={this.state.value}*/}
-            {/*  // onChange={value => this.setState({ value })}*/}
-            {/*/>*/}
-
-            {/*<button style={{margin:'3px'}} exact className="btn btn-secondary btn-bg mt-3">Classification</button>*/}
-
             <ClassificationOptions allClassification={allClassification}/>
-
             <UserOptions userTask={userTask}/>
-
-            {/*<DropdownButton style={{margin:'3px'}} exact id="dropdown-basic-button" title="Classification">*/}
-            {/*  */}
-            {/*/!*{allClassification.map((state) => {*!/*/}
-            {/*/!*  return <Dropdown.Item value={state}>{state}*!/*/}
-            {/*/!*  </Dropdown.Item>;*!/*/}
-            {/*/!*})}*!/*/}
-            {/*</DropdownButton>*/}
           </div>
 
             <UserTask userTask={userTask}
@@ -463,13 +471,10 @@ if (tasks.length>0) {
                       isActive={isActive}
                       priority={priority}
                       status={status}
-                      // hasFilter={hasFilter}
                       classification={classification}
-                       users={users}
-            />
+                       users={users}/>
           <h2>Projects</h2>
           <UserProject userProjects={userProjects}/>
-
         </table>
       )
     }
@@ -480,7 +485,6 @@ const mapStateToProps = state => ({
   auth: state.auth,
   userProfile: state.userProfile,
   userTask: state.userTask,
-  // userProject:state.userProject,
   infringments: state.userProfile.infringments,
   user: _.get(state, 'user', {}),
   timeEntries: state.timeEntries,
