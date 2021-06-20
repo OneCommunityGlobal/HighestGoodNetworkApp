@@ -3,6 +3,9 @@ import _ from 'lodash'
 import httpService from '../services/httpService'
 import { FETCH_TEAMS_START, RECEIVE_TEAMS, FETCH_TEAMS_ERROR } from '../constants/teams'
 import { ENDPOINTS } from '../utils/URL'
+import axios from 'axios'
+import { GET_TEAM_BY_ID } from '../constants/team'
+import { GET_USER_PROFILE, getUserProfile as getUserProfileActionCreator } from '../constants/userProfile'
 
 export function getUserTeamMembers1(userId) {
   const request = httpService.get(ENDPOINTS.USER_TEAM(userId))
@@ -104,3 +107,27 @@ const setTeamsError = payload => ({
   type: FETCH_TEAMS_ERROR,
   payload,
 })
+
+export const getTeamDetail = (teamId) => {
+  const url = ENDPOINTS.TEAM_BY_ID(teamId);
+  return async (dispatch) => {
+    let loggedOut = false;
+    const res = await axios.get(url).catch((error)=>{
+      if (error.status === 401) {
+        //logout error
+        loggedOut = true;
+      }
+    });
+   // console.log('getTeamDetail:', res)
+    if (!loggedOut) {
+      await dispatch(setTeamDetail(res.data));
+    }
+  };
+};
+
+
+export const setTeamDetail = data => ({
+  type: GET_TEAM_BY_ID,
+  payload: data
+})
+

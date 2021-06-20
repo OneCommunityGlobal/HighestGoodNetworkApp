@@ -1,12 +1,12 @@
 /*********************************************************************************
- * Action: MEMBER MEMBERSHIP  
+ * Action: MEMBER MEMBERSHIP
  * Author: Henry Ng - 02/03/20
  ********************************************************************************/
 import axios from 'axios'
 import * as types from './../constants/projectMembership'
 import { ENDPOINTS } from '../utils/URL'
 /*******************************************
- * ACTION CREATORS 
+ * ACTION CREATORS
  *******************************************/
 
 export const getAllUserProfiles = () => {
@@ -69,15 +69,10 @@ export const findUserProfiles = (keyword) => {
 }
 
 /**
- * Call API to get all members 
+ * Call API to get all members
  */
 export const fetchAllMembers = (projectId) => {
-
   const request = axios.get(ENDPOINTS.PROJECT_MEMBER(projectId));
-
-  //console.log(ENDPOINTS.PROJECT_MEMBER());
-  //console.log(request);
-
   return async dispatch => {
     await dispatch(setMemberStart());
     await dispatch(foundUsers([]));
@@ -92,7 +87,7 @@ export const fetchAllMembers = (projectId) => {
 }
 
 /**
- * Call API to assign/ unassign project 
+ * Call API to assign/ unassign project
  */
 export const assignProject = (projectId, userId, operation, firstName, lastName) => {
 
@@ -127,11 +122,11 @@ export const assignProject = (projectId, userId, operation, firstName, lastName)
 
 
 /*******************************************
- * PLAIN OBJ ACTIONS 
+ * PLAIN OBJ ACTIONS
  *******************************************/
 
 /**
-* Set a flag that fetching Members  
+* Set a flag that fetching Members
 */
 export const setMemberStart = () => {
   return {
@@ -141,8 +136,8 @@ export const setMemberStart = () => {
 
 
 /**
- * set Members in store 
- * @param payload : Members [] 
+ * set Members in store
+ * @param payload : Members []
  */
 export const setMembers = (members) => {
   return {
@@ -152,8 +147,8 @@ export const setMembers = (members) => {
 }
 
 /**
- * Error when setting project 
- * @param payload : error status code 
+ * Error when setting project
+ * @param payload : error status code
  */
 export const setMembersError = (err) => {
   return {
@@ -165,7 +160,7 @@ export const setMembersError = (err) => {
 
 
 /**
-* Set a flag that finding Members  
+* Set a flag that finding Members
 */
 export const findUsersStart = () => {
   // console.log("find user start");
@@ -177,8 +172,8 @@ export const findUsersStart = () => {
 
 
 /**
- * set Users in store 
- * @param payload : Users [] 
+ * set Users in store
+ * @param payload : Users []
  */
 export const foundUsers = (users) => {
   // console.log("foundUsers");
@@ -189,8 +184,8 @@ export const foundUsers = (users) => {
 }
 
 /**
- * Error when setting project 
- * @param payload : error status code 
+ * Error when setting project
+ * @param payload : error status code
  */
 export const findUsersError = (err) => {
   return {
@@ -217,7 +212,7 @@ export const assignNewMember = (member) => {
 
 /**
  * remove a member from project
- * @param userId : _id 
+ * @param userId : _id
  */
 export const deleteMember = (userId) => {
   return {
@@ -239,7 +234,7 @@ export const removeFoundUser = (userId) => {
 
 /**
  * Error when add new member
- * @param payload : error status code 
+ * @param payload : error status code
  */
 export const addNewMemberError = (err) => {
   return {

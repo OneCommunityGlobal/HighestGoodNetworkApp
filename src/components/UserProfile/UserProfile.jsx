@@ -1,16 +1,5 @@
 import React, { Component } from 'react'
-import {
-  Row,
-  Input,
-  Col,
-  Container,
-  TabContent,
-  TabPane,
-  Nav,
-  NavItem,
-  NavLink,
-  Button,
-} from 'reactstrap'
+import {Row, Input, Col, Container, TabContent, TabPane, Nav, NavItem, NavLink, Button} from 'reactstrap'
 import Image from 'react-bootstrap/Image'
 import { Link } from 'react-router-dom'
 import classnames from 'classnames'
@@ -516,6 +505,7 @@ class UserProfile extends Component {
   }
 
   render() {
+
     const {
       userProfile,
       linkType,

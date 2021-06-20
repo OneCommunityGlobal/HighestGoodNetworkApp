@@ -5,7 +5,6 @@
 import axios from 'axios'
 import * as types from './../constants/projects'
 import { ENDPOINTS } from '../utils/URL'
-import { getUserProfile } from '../actions/userProfile'
 
 /*******************************************
  * ACTION CREATORS
@@ -15,16 +14,10 @@ import { getUserProfile } from '../actions/userProfile'
  * Call API to get all projects
  */
 export const fetchAllProjects = () => {
-
   const request = axios.get(ENDPOINTS.PROJECTS);
-
-  //console.log(ENDPOINTS.PROJECTS);
-  //console.log(request);
-
   return async dispatch => {
     await dispatch(setProjectsStart());
     request.then(res => {
-      //console.log("RES", res);
       dispatch(setProjects(res.data));
     }).catch((err) => {
       console.log("Error", err);

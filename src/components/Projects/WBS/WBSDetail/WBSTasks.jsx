@@ -244,3 +244,4 @@ const WBSTasks = (props) => {
 }
 const mapStateToProps = state => { return { state } }
 export default connect(mapStateToProps, { fetchAllTasks, updateNumList, deleteTask, fetchAllMembers })(WBSTasks)
+
