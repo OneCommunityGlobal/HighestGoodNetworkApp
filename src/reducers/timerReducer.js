@@ -9,7 +9,7 @@ import {
 export const timerReducer = (state = initialState, action) => {
   switch (action.type) {
     case SET_TIMER: 
-      return { seconds: action.payload }
+      return action.payload
     // case GET_TIME_ENTRIES_PERIOD:
     //   return {
     //     ...state,

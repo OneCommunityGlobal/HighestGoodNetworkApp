@@ -8,12 +8,12 @@ export const getTimerData = userId => {
         try {
             const res = await axios.get(url);
             if (res.status === 200) {
-                dispatch(setTimer(res.data.seconds));
+                dispatch(setTimer({isWorking: res.data.isWorking, seconds: res.data.seconds}));
             } else {
-                dispatch(setTimer(0));
+                dispatch(setTimer({isWorking: false, seconds: 0}));
             }
         } catch(e) {
-            dispatch(setTimer(0));
+            dispatch(setTimer({isWorking: false, seconds: 0}));
         }
 	}
 }
@@ -70,7 +70,7 @@ export const stopTimer = (userId) => {
                 pausedAt: 0,
                 isWorking: false
             });
-            dispatch(setTimer(0));
+            dispatch(setTimer({isWorking: false, seconds: 0}));
             return res.status;
         } catch(e) {
             return e.response.status;

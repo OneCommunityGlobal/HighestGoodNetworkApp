@@ -14,15 +14,19 @@ const Timer = () => {
   }
   const userId = useSelector(state => state.auth.user.userid)
   const userProfile = useSelector(state => state.auth.user)
-  const pausedAt = useSelector(state => state.timer.seconds)
+  const pausedAt = useSelector(state => state.timer?.seconds)
+  const isWorking = useSelector(state => state.timer?.isWorking)
   const dispatch = useDispatch()
   const alert = {
     va: true,
   }
-  const [seconds, setSeconds] = useState(pausedAt)
+  const [seconds, setSeconds] = useState(isNaN(pausedAt) ? 0 : pausedAt)
   const [isActive, setIsActive] = useState(false)
   const [modal, setModal] = useState(false)
-
+  let intervalSec = null;
+  let intervalMin = null;
+  let intervalThreeMin = null;
+  
   const toggle = () => setModal(modal => !modal)
 
   const reset = async () => {
@@ -30,7 +34,7 @@ const Timer = () => {
     const status = await pauseTimer(userId, 0)
     if (status === 200 || status === 201) { setIsActive(false) }
   }
-
+  console.log(pausedAt)
   const handleStart = async () => {
     await dispatch(getTimerData(userId));
 
@@ -50,9 +54,14 @@ const Timer = () => {
   }
 
   const handleUpdate = async () => {
-    const status = await updateTimer(userId)
-    if (status === 9) { setIsActive(false); }
-    await dispatch(getTimerData(userId));
+    try {
+      const status = await updateTimer(userId)
+      if (status === 9) { setIsActive(false); }
+      await dispatch(getTimerData(userId));
+    } catch (e) {
+
+    }
+
   }
 
   const handlePause = async () => {
@@ -71,22 +80,32 @@ const Timer = () => {
       try {
         const res = await axios.get(ENDPOINTS.TIMER(userId));
         if (res.status === 200) {
-          setSeconds(res.data.seconds);
+          setSeconds(res.data?.seconds || 0);
           setIsActive(res.data.isWorking);
         }
-        else { setSeconds(pausedAt) }
-      } catch { setSeconds(pausedAt) }
+        else { setSeconds(isNaN(pausedAt) ? 0 : pausedAt) }
+      } catch { setSeconds(isNaN(pausedAt) ? 0 : pausedAt) }
     }
 
     fetchSeconds();
   }, [pausedAt])
 
   useEffect(() => {
-    let intervalSec = null;
-    let intervalMin = null;
+      try {
+        setIsActive(isWorking);
+      } catch {
+
+       }
+
+  }, [isWorking]);
+
+  useEffect(() => {
+
 
     if (isActive) {
-
+      if (intervalThreeMin) {
+        clearInterval(intervalThreeMin);
+      }
       intervalSec = setInterval(() => {
         setSeconds(seconds => seconds + 1)
       }, 1000);
@@ -96,10 +115,26 @@ const Timer = () => {
     } else if (!isActive && seconds !== 0) {
       clearInterval(intervalSec);
       clearInterval(intervalMin);
+      if (intervalThreeMin) {
+        clearInterval(intervalThreeMin);
+      }
+      //handles restarting timer if you restart it in another tab
+      intervalThreeMin = setInterval(handleUpdate, 1800000);
+    } else {
+      clearInterval(intervalSec);
+      clearInterval(intervalMin);
+      if (intervalThreeMin) {
+        clearInterval(intervalThreeMin);
+      }
+      //handles restarting timer if you restart it in another tab
+      intervalThreeMin = setInterval(handleUpdate, 1800000);
     }
     return () => {
       clearInterval(intervalSec);
       clearInterval(intervalMin);
+      if (intervalThreeMin) {
+        clearInterval(intervalThreeMin);
+      }
     }
   }, [isActive])
 
