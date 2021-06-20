@@ -1,78 +1,46 @@
 import React, { useState, useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { Badge, Button, Modal, ModalHeader, ModalBody } from 'reactstrap'
-import { startTimer, pauseTimer, updateTimer, getTimerData } from '../../actions/timer'
+import { Badge, Button } from 'reactstrap'
+import {startTimer, pauseTimer, updateTimer, getTimerData} from '../../actions/timer'
 import TimeEntryForm from '../Timelog/TimeEntryForm'
 import './Timer.css'
-//import { maxTime } from 'date-fns/esm'
+import axios from "axios";
+import {ENDPOINTS} from "../../utils/URL";
 
 const Timer = () => {
   const data = {
-    disabled: window.screenX > 500 ? false : true,
-    isTangible: window.screenX > 500 ? true : false
+    disabled: window.screenX <= 500,
+    isTangible: window.screenX > 500
   }
-  const [popoverOneOpen, setPopoverOneOpen] = useState(false);
-
-  const togglePopOne = () => setPopoverOneOpen(!popoverOneOpen);
-
-  const [popoverTwoOpen, setPopoverTwoOpen] = useState(false);
-
-  const togglePopTwo = () => setPopoverTwoOpen(!popoverTwoOpen);
-
   const userId = useSelector(state => state.auth.user.userid)
   const userProfile = useSelector(state => state.auth.user)
-  const pausedAt = useSelector(state => state.timer.seconds)
+  const pausedAt = useSelector(state => state.timer?.seconds)
+  const isWorking = useSelector(state => state.timer?.isWorking)
   const dispatch = useDispatch()
   const alert = {
     va: true,
   }
-  const [seconds, setSeconds] = useState(pausedAt)
+  const [seconds, setSeconds] = useState(isNaN(pausedAt) ? 0 : pausedAt)
   const [isActive, setIsActive] = useState(false)
   const [modal, setModal] = useState(false)
-
+  let intervalSec = null;
+  let intervalMin = null;
+  let intervalThreeMin = null;
+  
   const toggle = () => setModal(modal => !modal)
 
-  const reset = () => {
+  const reset = async () => {
     setSeconds(0)
-    setIsActive(false)
+    const status = await pauseTimer(userId, 0)
+    if (status === 200 || status === 201) { setIsActive(false) }
   }
-
-  const handlePause = async event => {
-    const status = await dispatch(pauseTimer(userId, seconds))
-    if (status === 200 || status === 201) {
-      setIsActive(false)
-    }
-  }
-
-  const handleUpdate = async event => {
-    const status = await updateTimer(userId, seconds)
-    if (status === 9) {
-      setIsActive(false);
-      togglePopOne();
-      await dispatch(getTimerData(userId));
-    }
-  }
-
-  const handleStop = async event => {
-    const status = await dispatch(pauseTimer(userId, seconds))
-    if (status === 200 || status === 201) {
-      setIsActive(false)
-      toggle()
-    }
-  }
-
-  const handleStart = async event => {
+  console.log(pausedAt)
+  const handleStart = async () => {
     await dispatch(getTimerData(userId));
 
     const status = await startTimer(userId, seconds)
-    if (status === 200 || status === 201) {
+    if ([9, 200, 2001].includes(status)) {
       setIsActive(true)
-    }
-
-    if (status === 9) {
-      setIsActive(true);
-      togglePopTwo()
-      dispatch(getTimerData(userId));
     }
 
     let maxtime = null
@@ -85,34 +53,94 @@ const Timer = () => {
     }
   }
 
-  useEffect(() => {
-    let interval = null
-    if (isActive) {
-      interval = setInterval(() => {
-        setSeconds(seconds => seconds + 1)
-      }, 1000)
-    } else if (!isActive && seconds !== 0) {
-      clearInterval(interval)
+  const handleUpdate = async () => {
+    try {
+      const status = await updateTimer(userId)
+      if (status === 9) { setIsActive(false); }
+      await dispatch(getTimerData(userId));
+    } catch (e) {
+
     }
-    return () => {
-      clearInterval(interval)
-    }
-  }, [isActive])
+
+  }
+
+  const handlePause = async () => {
+    await dispatch(getTimerData(userId));
+    const status = await pauseTimer(userId, seconds)
+    if (status === 200 || status === 201) { setIsActive(false); return true }
+    return false
+  }
+
+  const handleStop = () => {
+    if (handlePause()){ toggle() }
+  }
 
   useEffect(() => {
-    setSeconds(pausedAt)
+    const fetchSeconds = async () => {
+      try {
+        const res = await axios.get(ENDPOINTS.TIMER(userId));
+        if (res.status === 200) {
+          setSeconds(res.data?.seconds || 0);
+          setIsActive(res.data.isWorking);
+        }
+        else { setSeconds(isNaN(pausedAt) ? 0 : pausedAt) }
+      } catch { setSeconds(isNaN(pausedAt) ? 0 : pausedAt) }
+    }
+
+    fetchSeconds();
   }, [pausedAt])
+
+  useEffect(() => {
+      try {
+        setIsActive(isWorking);
+      } catch {
+
+       }
+
+  }, [isWorking]);
+
+  useEffect(() => {
+
+
+    if (isActive) {
+      if (intervalThreeMin) {
+        clearInterval(intervalThreeMin);
+      }
+      intervalSec = setInterval(() => {
+        setSeconds(seconds => seconds + 1)
+      }, 1000);
+
+      intervalMin = setInterval(handleUpdate, 60000);
+
+    } else if (!isActive && seconds !== 0) {
+      clearInterval(intervalSec);
+      clearInterval(intervalMin);
+      if (intervalThreeMin) {
+        clearInterval(intervalThreeMin);
+      }
+      //handles restarting timer if you restart it in another tab
+      intervalThreeMin = setInterval(handleUpdate, 1800000);
+    } else {
+      clearInterval(intervalSec);
+      clearInterval(intervalMin);
+      if (intervalThreeMin) {
+        clearInterval(intervalThreeMin);
+      }
+      //handles restarting timer if you restart it in another tab
+      intervalThreeMin = setInterval(handleUpdate, 1800000);
+    }
+    return () => {
+      clearInterval(intervalSec);
+      clearInterval(intervalMin);
+      if (intervalThreeMin) {
+        clearInterval(intervalThreeMin);
+      }
+    }
+  }, [isActive])
 
   const hours = Math.floor(seconds / 3600)
   const minutes = Math.floor((seconds % 3600) / 60)
   const secondsRemainder = seconds % 60
-
-  useEffect(()=>{
-    if (minutes !== 0) {
-      handleUpdate()
-    }
-  }, [minutes])
-  // const [seconds, setSeconds] = useState(pausedAt)
 
   return (
     <div className="timer mr-4 my-auto">
@@ -130,10 +158,6 @@ const Timer = () => {
       >
         {isActive ? 'Pause' : 'Start'}
       </Button>
-      <Modal isOpen={popoverTwoOpen} toggle={togglePopTwo}>
-        <ModalHeader>Two Timers</ModalHeader>
-        <ModalBody>You have a timer going on another browser/page this timer will start where the other left off. Note: You may also get this message if the other browser crashed.</ModalBody>
-      </Modal>
       <Button
         onClick={seconds !== 0 ? handleStop : null}
         color="danger"

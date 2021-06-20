@@ -43,7 +43,7 @@ const Badge = (props) => {
               color: '#285739',
             }}
           >
-            Bravo! You Earned {totalBadge} Badges! <i class="fa fa-info-circle" id="CountInfo" />
+            Bravo! You Earned {totalBadge} Badges! <i className="fa fa-info-circle" id="CountInfo" />
           </CardText>
           <Button className="btn--dark-sea-green float-right" onClick={toggle}>Badge Report</Button>
           <Modal isOpen={isOpen} toggle={toggle}>

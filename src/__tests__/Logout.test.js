@@ -15,13 +15,20 @@ const middleware = [thunk];
 const url = ENDPOINTS.LOGIN;
 const timerUrl = ENDPOINTS.TIMER(mockState.auth.user.userid);
 const userProjectsUrl = ENDPOINTS.USER_PROJECTS(mockState.auth.user.userid);
+let endpoint = process.env.REACT_APP_APIENDPOINT;
+if (!endpoint) {
+  // This is to resolve the issue in azure env variable
+  // APIEndpoint = fetch('/config.json').then((data) => {
+  endpoint = 'https://hgnrestdev.azurewebsites.net';
+  // });
+}
 window.confirm = jest.fn(()=>(true));
 
 const server = setupServer(
-  rest.get('http://localhost:4500/api/userprofile/*', (req, res, ctx) =>  {
+  rest.get(endpoint + '/userprofile/*', (req, res, ctx) =>  {
       return res(ctx.status(200), ctx.json({}), )  
   }),
-  rest.get('http://localhost:4500/api/dashboard/*', (req, res, ctx) =>  {
+  rest.get(endpoint + '/api/dashboard/*', (req, res, ctx) =>  {
     return res(ctx.status(200), ctx.json({leaderBoardData: [
       {
         "personId": "5edf141c78f1380017b829a6",

@@ -54,14 +54,11 @@ workflows:
             branches:
               only:
                 - development
-                - fixing_bugs
       - build_beta:
           filters:
             branches:
               only:
                 - development
-                - deploy_beta
-                - fixing_bugs
       - build_PROD:
           filters:
             branches:

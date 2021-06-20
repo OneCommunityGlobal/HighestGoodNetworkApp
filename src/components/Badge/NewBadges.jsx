@@ -37,7 +37,7 @@ const NewBadges = (props) => {
               marginBottom: 15
             }}
           >
-            New Badges Earned <i class="fa fa-info-circle" id="NewBadgeInfo" />
+            New Badges Earned <i className="fa fa-info-circle" id="NewBadgeInfo" />
           </CardTitle>
           <div className="new_badges">
             {filteredBadges.map((value, index) =>

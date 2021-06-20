@@ -3,7 +3,7 @@ import { screen, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import thunk from 'redux-thunk';
 import configureStore from 'redux-mock-store';
-import { timeEntryMock } from '../mockStates';
+import { timeEntryMock, userProfileMock } from '../mockStates';
 import { renderWithProvider } from '../utils';
 import DeleteModal from '../../components/Timelog/DeleteModal';
 import * as actions from '../../actions/timeEntries';
@@ -14,7 +14,10 @@ describe('<DeleteModal />', () => {
   beforeEach(() => {
     store = mockStore();
     store.dispatch = jest.fn();
-    renderWithProvider(<DeleteModal timeEntry={timeEntryMock.weeks[0][0]} />,
+    renderWithProvider(<DeleteModal
+        timeEntry={timeEntryMock.weeks[0][0]}
+        userProfile={userProfileMock}
+      />,
       { store });
   });
   it('should generate Modal after click', () => {
@@ -44,7 +47,7 @@ describe('<DeleteModal />', () => {
     expect(yesButton).toBeInTheDocument();
     userEvent.click(yesButton);
     expect(store.dispatch).toHaveBeenCalled();
-    expect(store.dispatch).toHaveBeenCalledTimes(1);
+    expect(store.dispatch).toHaveBeenCalledTimes(2);
     expect(actions.deleteTimeEntry).toBeCalled();
     expect(actions.deleteTimeEntry).toBeCalledTimes(1);
     expect(actions.deleteTimeEntry).toBeCalledWith(timeEntryMock.weeks[0][0]);

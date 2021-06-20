@@ -8,12 +8,12 @@ export const getTimerData = userId => {
         try {
             const res = await axios.get(url);
             if (res.status === 200) {
-                dispatch(setTimer(res.data.pausedAt));
+                dispatch(setTimer({isWorking: res.data.isWorking, seconds: res.data.seconds}));
             } else {
-                dispatch(setTimer(0));
+                dispatch(setTimer({isWorking: false, seconds: 0}));
             }
         } catch(e) {
-            dispatch(setTimer(0));
+            dispatch(setTimer({isWorking: false, seconds: 0}));
         }
 	}
 }
@@ -36,38 +36,28 @@ export const startTimer = async (userId, seconds)  => {
     }
 }
 
-export const updateTimer = async (userId, seconds)  => {
+export const updateTimer = async (userId)  => {
     const url = ENDPOINTS.TIMER(userId);
 
     try {
-        const resGet = await axios.get(url);
-        if (resGet.status === 200 && !resGet.data.isWorking) {
-            return 9;
-        }
-        const res = await axios.put(url, {
-            pausedAt: seconds,
-            isWorking: true
-        });
-        return res.status;
+        const res = await axios.get(url);
+        return res.status === 200 && !res.data.isWorking ? 9 : res.status;
     } catch(e) {
         return e.response.status;
     }
 }
 
-export const pauseTimer = (userId, seconds) => {
+export const pauseTimer = async (userId, seconds) => {
     const url = ENDPOINTS.TIMER(userId);
 
-    return async dispatch => {
-        try {
-            const res = await axios.put(url, {
-                pausedAt: seconds,
-                isWorking: false
-            });
-            dispatch(setTimer(seconds));
-            return res.status;
-        } catch(e) {
-            return e.response.status;
-        }
+    try {
+        const res = await axios.put(url, {
+            pausedAt: seconds,
+            isWorking: false
+        });
+        return res.status;
+    } catch(e) {
+        return e.response.status;
     }
 }
 
@@ -80,7 +70,7 @@ export const stopTimer = (userId) => {
                 pausedAt: 0,
                 isWorking: false
             });
-            dispatch(setTimer(0));
+            dispatch(setTimer({isWorking: false, seconds: 0}));
             return res.status;
         } catch(e) {
             return e.response.status;
