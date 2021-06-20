@@ -37,6 +37,8 @@ const SummaryBar = () => {
   const reducer = (total, entry) => total + parseInt(entry.hours) + parseInt(entry.minutes) / 60
   const totalEffort = timeEntries.reduce(reducer, 0)
   const weeklyComittedHours = useSelector(state => state.userProfile.weeklyComittedHours)
+  const weeklySummary = useSelector(state => state.userProfile?.weeklySummaries[0]?.summary)
+
 
   const infringements = useSelector(state => {
     if (state.userProfile && state.userProfile.infringments) {
@@ -198,7 +200,8 @@ const SummaryBar = () => {
 
         <Col className="col-lg-3 col-12 no-gutters">
           <Row className='no-gutters'>
-            <div className="border-red col-4 bg--white-smoke no-gutters" align="center">
+          {!weeklySummary ?
+              <div className="border-red col-4 bg--white-smoke no-gutters" align="center">
               <div className="py-1"> </div>
               <p className="large_text_summary text--black" align="center">
                 !
@@ -208,6 +211,16 @@ const SummaryBar = () => {
               </font>
               <div className="py-2"> </div>
             </div>
+            :
+            <div className="border-green col-4 bg--dark-green" align="center">
+            <div className="py-1"> </div>
+            <p className="large_text_summary text--black" align="center">✓</p>
+            <font className="text--black" size="3">
+                SUMMARY
+              </font>
+            <div className="py-2"> </div>
+          </div>}
+
             {/* <div className="border-green col-sm-4 bg--dark-green" align="center">
               <div className="py-1"> </div>
               <h1 align="center">✓</h1>
