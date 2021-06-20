@@ -36,8 +36,8 @@ const TimeEntryForm = ({
     minutes: 0,
     projectId: '',
     notes: '',
-    isTangible: data ? data.isTangible : true,
-    
+    isTangible: true,
+
   };
   const initialReminder = {
     notification: false,
@@ -112,14 +112,10 @@ const TimeEntryForm = ({
     setInputs({ ...inputs, ...timer });
   }, [timer]);
 
-  const userProjects = useSelector(state => state.userProjects);
-  let projects = [];
-  if (!_.isEmpty(userProjects)) {
-    projects = userProjects.projects;
-  }
-  
+  const userprofile = useSelector(state => state.userProfile);
+  const projects = (userprofile && userprofile.projects) ? userprofile.projects : [];
   const projectOptions = projects.map(project => (
-    <option value={project.projectId} key={project.projectId}>
+    <option value={project._id} key={project._id}>
       {' '}
       {project.projectName}
       {' '}
@@ -245,7 +241,7 @@ const TimeEntryForm = ({
       return;
     }
     setSubmitDisabled(true);
-    setTimeout(function() {setSubmitDisabled(false)}, 1000);
+    setTimeout(function () { setSubmitDisabled(false) }, 1000);
     const hours = inputs.hours === '' ? '0' : inputs.hours;
     const minutes = inputs.minutes === '' ? '0' : inputs.minutes;
 
@@ -305,11 +301,11 @@ const TimeEntryForm = ({
           // setReminder(reminder => initialReminder);
           resetTimer();
           clearForm();
-          setTimeout(()=>{
+          setTimeout(() => {
             toggle();
           }, 5);
-          
-          
+
+
         }
         //history.push(`/timelog/${userId}`);
       }
@@ -325,8 +321,7 @@ const TimeEntryForm = ({
       }));
       toggle();
     } else if (!edittime) {
-      // setReminder(reminder => initialReminder)
-      //console.log('kkkkkkkkk')
+
       toggle();
     }
   };
@@ -339,8 +334,29 @@ const TimeEntryForm = ({
     }));
   };
 
-  const handleEditorChange = (content, editor) => {
+  const handleHHInputChange = (event) => {
+    event.persist();
+    if (event.target.value < 0 || event.target.value > 40) {
+      return
+    }
+    setInputs(inputs => ({
+      ...inputs,
+      [event.target.name]: event.target.value,
+    }));
+  };
 
+  const handleMMInputChange = (event) => {
+    event.persist();
+    if (event.target.value < 0 || event.target.value > 59) {
+      return
+    }
+    setInputs(inputs => ({
+      ...inputs,
+      [event.target.name]: event.target.value,
+    }));
+  };
+
+  const handleEditorChange = (content, editor) => {
     inputs.notes = content;
     const { wordcount } = editor.plugins;
 
@@ -379,6 +395,7 @@ const TimeEntryForm = ({
             data-tip
             data-for="registerTip"
             aria-hidden="true"
+            title="timeEntryTip"
             // style={{ 'text-align': 'center' }}
             onClick={openInfo}
           />
@@ -400,14 +417,14 @@ const TimeEntryForm = ({
                 onChange={handleInputChange}
               />
             ) : (
-              <Input
-                type="date"
-                name="dateOfWork"
-                id="dateOfWork"
-                value={inputs.dateOfWork}
-                disabled
-              />
-            )}
+                <Input
+                  type="date"
+                  name="dateOfWork"
+                  id="dateOfWork"
+                  value={inputs.dateOfWork}
+                  disabled
+                />
+              )}
             {'dateOfWork' in errors && (
               <div className="text-danger">
                 <small>{errors.dateOfWork}</small>
@@ -422,9 +439,11 @@ const TimeEntryForm = ({
                   type="number"
                   name="hours"
                   id="hours"
+                  min={0}
+                  max={40}
                   placeholder="Hours"
                   value={inputs.hours}
-                  onChange={handleInputChange}
+                  onChange={handleHHInputChange}
                   disabled={fromTimer}
                 />
               </Col>
@@ -433,9 +452,11 @@ const TimeEntryForm = ({
                   type="number"
                   name="minutes"
                   id="minutes"
+                  min={0}
+                  max={59}
                   placeholder="Minutes"
                   value={inputs.minutes}
-                  onChange={handleInputChange}
+                  onChange={handleMMInputChange}
                   disabled={fromTimer}
                 />
               </Col>
@@ -454,7 +475,7 @@ const TimeEntryForm = ({
               id="projectId"
               value={inputs.projectId}
               onChange={handleInputChange}
-              
+
             >
               {projectOptions}
             </Input>
@@ -496,7 +517,7 @@ const TimeEntryForm = ({
           </FormGroup>
           <FormGroup check>
             <Label check>
-              {isAdmin || (!edit && !isDisabled)  ? (
+              {isAdmin || (!edit && !isDisabled) ? (
                 <Input
                   type="checkbox"
                   name="isTangible"
@@ -504,18 +525,19 @@ const TimeEntryForm = ({
                   onChange={handleCheckboxChange}
                 />
               ) : (
-                <Input type="checkbox" name="isTangible" checked={inputs.isTangible} disabled />
-              )}{' '}
+                  <Input type="checkbox" name="isTangible" checked={inputs.isTangible} disabled />
+                )}{' '}
               Tangible&nbsp;<i
-            className="fa fa-info-circle"
-            data-tip
-            data-for="tangibleTip"
-            aria-hidden="true"
-            // style={{ 'text-align': 'center' }}
-            onClick={tangibleInfoToggle}
-          />
-        <ReactTooltip id="tangibleTip" place="bottom" effect="solid">
-          Click this icon to learn about tangible and intangible time.
+                className="fa fa-info-circle"
+                data-tip
+                data-for="tangibleTip"
+                aria-hidden="true"
+                title="tangibleTip"
+                // style={{ 'text-align': 'center' }}
+                onClick={tangibleInfoToggle}
+              />
+              <ReactTooltip id="tangibleTip" place="bottom" effect="solid">
+                Click this icon to learn about tangible and intangible time.
         </ReactTooltip>
             </Label>
           </FormGroup>

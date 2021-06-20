@@ -18,6 +18,9 @@ import {
   addTeamMember,
 } from '../../../actions/allTeamsAction';
 
+import PhoneInput from 'react-phone-input-2'
+import 'react-phone-input-2/lib/style.css'
+
 import classnames from 'classnames';
 
 class AddUserProfile extends Component {
@@ -116,13 +119,10 @@ class AddUserProfile extends Component {
                       state={this.state.userProfile.privacySettings?.phoneNumber}
                       handleUserProfile={this.handleUserProfile}
                     />
-                    <Input
-                      type="number"
-                      name="phoneNumber"
-                      id="phoneNumber"
+                    <PhoneInput
+                      country={'us'}
                       value={phoneNumber}
-                      onChange={this.handleUserProfile}
-                      placeholder="Phone"
+                      onChange={phone => this.phoneChange(phone)}
                     />
                   </FormGroup>
                 </Col>
@@ -304,7 +304,7 @@ class AddUserProfile extends Component {
     const { firstName, email, lastName, phoneNumber, role, privacySettings, collaborationPreference, googleDoc } = that.state.userProfile;
 
     const userData = {
-      password: "123Welocme!",
+      password: "123Welcome!",
       role: role,
       firstName: firstName,
       lastName: lastName,
@@ -359,7 +359,7 @@ class AddUserProfile extends Component {
     // console.log(filesizeKB);
 
     if (filesizeKB > 50) {
-      imageUploadError = `\n The file you are trying to upload exceeds the maximum size of 50KB. You can either 
+      imageUploadError = `\n The file you are trying to upload exceeds the maximum size of 50KB. You can either
 														choose a different file, or use an online file compressor.`;
       isValid = false;
 
@@ -396,6 +396,16 @@ class AddUserProfile extends Component {
     }
   };
 
+  phoneChange = (phone) => {
+    const { userProfile } = this.state;
+    this.setState({
+      userProfile: {
+        ...userProfile,
+        phoneNumber: phone,
+      },
+    });
+  }
+
   handleUserProfile = (event) => {
     this.setState({
       showWarning: true,
@@ -404,97 +414,29 @@ class AddUserProfile extends Component {
     const patt = new RegExp(/^\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/i);
     switch (event.target.id) {
       case 'firstName':
-        this.setState({
-          userProfile: {
-            ...userProfile,
-            firstName: event.target.value.trim(),
-          },
-          formValid: {
-            ...formValid,
-            firstName: !!event.target.value,
-          },
-        });
-        break;
       case 'lastName':
-        this.setState({
-          userProfile: {
-            ...userProfile,
-            lastName: event.target.value.trim(),
-          },
-          formValid: {
-            ...formValid,
-            lastName: !!event.target.value,
-          },
-        });
-        break;
-      case 'jobTitle':
-        this.setState({
-          userProfile: {
-            ...userProfile,
-            jobTitle: event.target.value,
-          },
-        });
-        break;
       case 'email':
         this.setState({
           userProfile: {
             ...userProfile,
-            email: event.target.value,
+            [event.target.id]: event.target.value.trim(),
           },
           formValid: {
             ...formValid,
-            email: patt.test(event.target.value),
+            [event.target.id]: !!event.target.value,
           },
         });
         break;
+      case 'jobTitle':
       case 'phoneNumber':
-        this.setState({
-          userProfile: {
-            ...userProfile,
-            phoneNumber: event.target.value.trim(),
-          },
-        });
-        break;
-      case 'emailPubliclyAccessible':
-        this.setState({
-          userProfile: {
-            ...userProfile,
-            privacySettings: {
-              ...userProfile.privacySettings,
-              email: !userProfile.privacySettings?.email,
-            },
-          },
-        });
-        break;
       case 'weeklyComittedHours':
-        this.setState({
-          userProfile: {
-            ...userProfile,
-            weeklyComittedHours: event.target.value,
-          },
-        });
-        break;
-      case 'role':
-        this.setState({
-          userProfile: {
-            ...userProfile,
-            role: event.target.value,
-          },
-        });
-        break;
       case 'collaborationPreference':
-        this.setState({
-          userProfile: {
-            ...userProfile,
-            collaborationPreference: event.target.value,
-          },
-        });
-        break;
+      case 'role':
       case 'googleDoc':
         this.setState({
           userProfile: {
             ...userProfile,
-            googleDoc: event.target.value,
+            [event.target.id]: event.target.value,
           },
         });
         break;

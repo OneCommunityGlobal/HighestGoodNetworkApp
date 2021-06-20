@@ -24,7 +24,6 @@ const TeamsTab = (props) => {
   const onSelectAssignTeam = (team) => {
     onAssignTeam(team);
     setRenderedOn(Date.now());
-    setaddTeamPopupOpen(false);
   };
 
   return (

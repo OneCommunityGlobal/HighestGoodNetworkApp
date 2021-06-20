@@ -41,16 +41,16 @@ describe('volunteering times tab user is admin', () => {
       expect(screen.getByText(`${time}`)).toBeInTheDocument();
     });
     it('should render a weekly committed hours field', () => {
-      expect(screen.getByPlaceholderText(/weeklycomittedhours/i)).toBeInTheDocument();
+      expect(screen.getByPlaceholderText(/weeklyCommittedHours/i)).toBeInTheDocument();
     });
     it('should render a weekly committed hours field with correct value', () => {
-      expect(screen.getByPlaceholderText(/weeklycomittedhours/i)).toHaveValue(userProfileMock.weeklyComittedHours);
+      expect(screen.getByPlaceholderText(/weeklyCommittedHours/i)).toHaveValue(userProfileMock.weeklyComittedHours);
     });
     it('should render a total hours field', () => {
-      expect(screen.getByPlaceholderText(/totalcomittedhours/i)).toBeInTheDocument();
+      expect(screen.getByPlaceholderText(/totalCommittedHours/i)).toBeInTheDocument();
     });
     it('should render a total hours field with a correct value', () => {
-      expect(screen.getByPlaceholderText(/totalcomittedhours/i)).toHaveValue(userProfileMock.totalComittedHours);
+      expect(screen.getByPlaceholderText(/totalCommittedHours/i)).toHaveValue(userProfileMock.totalComittedHours);
     });
   });
   describe('behavior', () => {
@@ -59,11 +59,11 @@ describe('volunteering times tab user is admin', () => {
     //   expect(handleUserProfile).toHaveBeenCalled();
     // });
     it('should trigger handleUserProfile once the user type in weelkly committed hours field', async () => {
-      await userEvent.type(screen.getByPlaceholderText(/weeklycomittedhours/i), '1111', { allAtOnce: false });
+      await userEvent.type(screen.getByPlaceholderText(/weeklyCommittedHours/i), '1111', { allAtOnce: false });
       expect(handleUserProfile).toHaveBeenCalled();
     });
     it('should trigger handleUserProfile once the user type in total committed hours field', async () => {
-      await userEvent.type(screen.getByPlaceholderText(/totalcomittedhours/i), '1111', { allAtOnce: false });
+      await userEvent.type(screen.getByPlaceholderText(/totalCommittedHours/i), '1111', { allAtOnce: false });
       expect(handleUserProfile).toHaveBeenCalled();
     });
   });
