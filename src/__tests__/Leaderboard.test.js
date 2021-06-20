@@ -1,5 +1,5 @@
 import React from 'react';
-import Leaderboard from '../components/Leaderboard';
+// import Leaderboard from '../components/Leaderboard';
 import { renderWithProvider, renderWithRouterMatch } from './utils.js'
 import '@testing-library/jest-dom/extend-expect'
 import mockState from './mockAdminState.js'
