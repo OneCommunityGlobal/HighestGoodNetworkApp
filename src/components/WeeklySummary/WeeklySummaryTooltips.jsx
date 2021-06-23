@@ -11,8 +11,7 @@ const WeeklySummaryContentTooltip = ({ tabId }) => {
     <>
       <span id="summaryContentTooltip"><FontAwesomeIcon icon={faInfoCircle} data-testid={`summary-content-tooltip-${tabId}`} /></span>
       <Tooltip placement="top" isOpen={tooltipOpen} innerClassName="summaryContentTooltip" target="summaryContentTooltip" toggle={toggle}>
-        Use this section to save your weekly work summary. It will be auto-submitted at the end of the week for review.
-        The system will auto-assign a blue square if a summary hasn’t been provided.
+        Weekly summaries are due by Saturday night at midnight Pacific Time.  The countdown timer on the Dashboard is counting down the time to each week’s closing. To avoid receiving a blue square, everything must be submitted before it hits zero.
       </Tooltip>
     </>
   );

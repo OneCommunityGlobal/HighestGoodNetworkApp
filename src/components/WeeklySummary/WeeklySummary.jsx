@@ -259,7 +259,7 @@ export class WeeklySummary extends Component {
                         <Editor
                           init={{
                             menubar: false,
-                            placeholder: 'Weekly summary content...',
+                            placeholder: 'Weekly summary content… Remember to be detailed (50-word minimum) and write it in 3rd person. E.g. “This week John….',
                             plugins:
                               'advlist autolink autoresize lists link charmap table paste help wordcount',
                             toolbar:

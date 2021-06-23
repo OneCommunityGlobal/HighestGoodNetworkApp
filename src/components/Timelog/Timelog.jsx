@@ -65,7 +65,6 @@ class TimelogPage extends Component {
   state = this.initialState;
 
   async componentDidMount() {
-    
     const userId = this.props.match && this.props.match.params.userId ? this.props.match.params.userId : this.props.asUser || this.props.auth.user.userid;
     //console.log(userId);
     await this.props.getUserProfile(userId);
@@ -83,7 +82,7 @@ class TimelogPage extends Component {
       this.setState(this.initialState);
 
       const userId = this.props.match && this.props.match.params.userId ? this.props.match.params.userId : this.props.asUser || this.props.auth.user.userid;
-      
+
       await this.props.getUserProfile(userId);
 
       this.userProfile = this.props.userProfile;
@@ -154,7 +153,7 @@ class TimelogPage extends Component {
   generateTimeEntries(data) {
     let filteredData = data
     if (!this.state.projectsSelected.includes('all')) {
-      filteredData = data.filter(entry =>  this.state.projectsSelected.includes(entry.projectId));
+      filteredData = data.filter(entry => this.state.projectsSelected.includes(entry.projectId));
     }
     return filteredData.map(entry => (
       <TimeEntry
@@ -173,8 +172,9 @@ class TimelogPage extends Component {
     const periodEntries = this.generateTimeEntries(this.props.timeEntries.period)
     const userId = this.props.match && this.props.match.params.userId ? this.props.match.params.userId : this.props.asUser || this.props.auth.user.userid;
     const isAdmin = this.props.auth.user.role === 'Administrator'
-    const isOwner = this.props.auth.user.userid === userId; 
+    const isOwner = this.props.auth.user.userid === userId;
     const fullName = `${this.userProfile.firstName} ${this.userProfile.lastName}`
+    const tangibleInfoToggle = () => setTangibleInfo(!openTangibleInfo);
 
     let projects = []
     if (!_.isEmpty(this.props.userProjects.projects)) {
@@ -221,9 +221,18 @@ class TimelogPage extends Component {
                       <div className="float-right">
                         <div>
                           <Button color="success" onClick={this.toggle}>
-                            Add Time Entry
-                          </Button>
-                        </div>
+                              {'Add Time Entry '}<i
+                                className="fa fa-info-circle"
+                                data-tip
+                                data-for="timeEntryTip"
+                                aria-hidden="true"
+                                title=""
+                              />
+                            </Button>
+                            <ReactTooltip id="timeEntryTip" place="bottom" effect="solid">
+                              Make sure to add your tangible time here.
+                            </ReactTooltip>
+                            </div>
                       </div>
                     ) : (
                       isAdmin && (

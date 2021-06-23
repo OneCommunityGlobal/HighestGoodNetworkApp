@@ -41,7 +41,8 @@ const AddTeamPopup = React.memo((props) => {
 
         </div>
         <div>
-          {(isValidTeam === false) ? (<Alert color="danger">Great idea, but they already have that one! Pick another!</Alert>) : <></>}
+          {!isValidTeam && selectedTeam && <Alert color="danger">Great idea, but they already have that one! Pick another!</Alert>}
+          {!isValidTeam && !selectedTeam && <Alert color="danger">Hey, You need to pick a team first!</Alert>}
         </div>
 
       </ModalBody>
