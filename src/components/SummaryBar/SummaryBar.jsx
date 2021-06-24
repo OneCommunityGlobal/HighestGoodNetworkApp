@@ -35,7 +35,7 @@ const SummaryBar = () => {
 
   const timeEntries = useSelector(state => {
     let timeEntries = state?.timeEntries?.weeks
-    if (timeEntries && timeEntries[0]) {
+    if (timeEntries && Array.isArray(timeEntries) && timeEntries[0]) {
       return timeEntries[0]
     } else {
       return null
@@ -56,7 +56,7 @@ const SummaryBar = () => {
   const weeklyComittedHours = useSelector(state => state.userProfile.weeklyComittedHours)
   const weeklySummary = useSelector(state => {
     let summaries = state.userProfile?.weeklySummaries;
-    if (summaries && summaries[0] && summaries[0].summary) {
+    if (summaries &&  Array.isArray(summaries) && summaries[0] && summaries[0].summary) {
       return summaries[0].summary;
     } else {
       return "";
