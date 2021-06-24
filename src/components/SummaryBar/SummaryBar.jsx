@@ -33,11 +33,34 @@ if (!APIEndpoint) {
 const SummaryBar = () => {
   const { firstName, lastName, email, _id } = useSelector(state => state.userProfile)
 
-  const timeEntries = useSelector(state => state.timeEntries.weeks[0])
-  const reducer = (total, entry) => total + parseInt(entry.hours) + parseInt(entry.minutes) / 60
-  const totalEffort = timeEntries.reduce(reducer, 0)
+  const timeEntries = useSelector(state => {
+    let timeEntries = state?.timeEntries?.weeks
+    if (timeEntries) {
+      return timeEntries[0]
+    } else {
+      return []
+    }
+  })
+
+
+  const calculateTotalTime = (data, isTangible) => {
+      const filteredData = data.filter(entry => 
+          entry.isTangible === isTangible )
+
+      const reducer = (total, entry) => total + parseInt(entry.hours) + parseInt(entry.minutes) / 60
+      return filteredData.reduce(reducer, 0);
+  }
+
+  
   const weeklyComittedHours = useSelector(state => state.userProfile.weeklyComittedHours)
-  const weeklySummary = useSelector(state => state.userProfile?.weeklySummaries[0]?.summary)
+  const weeklySummary = useSelector(state => {
+    let summaries = state.userProfile?.weeklySummaries;
+    if (summaries &&  Array.isArray(summaries) && summaries[0] && summaries[0].summary) {
+      return summaries[0].summary;
+    } else {
+      return "";
+    }
+  })
 
 
   const infringements = useSelector(state => {
@@ -144,6 +167,8 @@ const SummaryBar = () => {
   const onBadgeClick = () => {
     window.location.hash = '#badgesearned'
   }
+  
+  let totalEffort = calculateTotalTime(timeEntries, true);
 
   return (
     <Container fluid className="bg--bar">

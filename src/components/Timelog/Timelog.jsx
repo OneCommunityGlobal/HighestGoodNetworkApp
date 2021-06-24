@@ -174,7 +174,6 @@ class TimelogPage extends Component {
     const isAdmin = this.props.auth.user.role === 'Administrator'
     const isOwner = this.props.auth.user.userid === userId;
     const fullName = `${this.userProfile.firstName} ${this.userProfile.lastName}`
-    const tangibleInfoToggle = () => setTangibleInfo(!openTangibleInfo);
 
     let projects = []
     if (!_.isEmpty(this.props.userProjects.projects)) {
