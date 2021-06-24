@@ -35,10 +35,10 @@ const SummaryBar = () => {
 
   const timeEntries = useSelector(state => {
     let timeEntries = state?.timeEntries?.weeks
-    if (timeEntries && Array.isArray(timeEntries) && timeEntries[0]) {
+    if (timeEntries) {
       return timeEntries[0]
     } else {
-      return null
+      return []
     }
   })
 
@@ -51,8 +51,7 @@ const SummaryBar = () => {
       return filteredData.reduce(reducer, 0);
   }
 
-  const totalEffort = calculateTotalTime(timeEntries, true);
-
+  
   const weeklyComittedHours = useSelector(state => state.userProfile.weeklyComittedHours)
   const weeklySummary = useSelector(state => {
     let summaries = state.userProfile?.weeklySummaries;
@@ -168,6 +167,8 @@ const SummaryBar = () => {
   const onBadgeClick = () => {
     window.location.hash = '#badgesearned'
   }
+  
+  let totalEffort = calculateTotalTime(timeEntries, true);
 
   return (
     <Container fluid className="bg--bar">
