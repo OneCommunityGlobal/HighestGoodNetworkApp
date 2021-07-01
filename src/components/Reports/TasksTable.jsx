@@ -5,6 +5,8 @@ import { Dropdown, DropdownButton } from 'react-bootstrap'
 import { fetchAllTasks } from '../../actions/task'
 import "react-datepicker/dist/react-datepicker.css";
 import TasksDetail from './TasksDetail'
+import MultiSelect from "react-multi-select-component";
+
 
 class TasksTable extends Component{
   constructor(props) {
@@ -15,12 +17,16 @@ class TasksTable extends Component{
       tasks_per_project: {},
       tasks_filter: {},
       status:'',
+      statusList:[],
       priority:'',
+      priorityList:[],
       isActive:"",
       isAssigned:"",
       allClassification:[],
       classification:'',
-      users:""
+      users:"",
+      userList:[],
+      classificationList:[]
     }
 
     this.get_task_by_wbsId=this.get_task_by_wbsId.bind(this)
@@ -83,18 +89,50 @@ class TasksTable extends Component{
     });
   }
   setPriority(priorityValue) {
-    this.setState((state) => {
-      return {
-        priority:priorityValue
-      }
-    });
+    if (priorityValue!='Filter Off') {
+      this.setState((state) => {
+        return {
+          priority: priorityValue,
+          priorityList: this.state.priorityList.concat(priorityValue)
+
+        }
+      });
+    }
+    else{
+      this.setState((state) => {
+        return {
+          priority: priorityValue,
+          priorityList: []
+        }
+      });
+
+    }
+
   }
   setStatus(statusValue) {
-    this.setState((state) => {
-      return {
-        status:statusValue
-      }
-    });
+    if (statusValue!='Filter Off') {
+      this.setState((state) => {
+        return {
+          status: statusValue,
+          statusList: this.state.statusList.concat(statusValue)
+
+        }
+      });
+    }
+    else{
+      this.setState((state) => {
+        return {
+          status: statusValue,
+          statusList: []
+        }
+      });
+
+    }
+    // this.setState((state) => {
+    //   return {
+    //     status:statusValue
+    //   }
+    // });
   }
   setAssign(assignValue) {
     this.setState((state) => {
@@ -105,19 +143,51 @@ class TasksTable extends Component{
   }
 
   setClassfication(classificationValue) {
-    this.setState((state) => {
-      return {
-        classification:classificationValue
-      }
-    });
+    if (classificationValue!='Filter Off') {
+      this.setState((state) => {
+        return {
+          classification: classificationValue,
+          classificationList: this.state.classificationList.concat(classificationValue)
+
+        }
+      });
+    }
+    else{
+      this.setState((state) => {
+        return {
+          classification: classificationValue,
+          classificationList: []
+        }
+      });
+
+    }
   }
 
   setUsers(userValue) {
-    this.setState((state) => {
-      return {
-        users:userValue
-      }
-    });
+    if (userValue!='Filter Off') {
+      this.setState((state) => {
+        return {
+          users: userValue,
+          userList: this.state.userList.concat(userValue)
+
+        }
+      });
+    }
+    else{
+      this.setState((state) => {
+        return {
+          users: userValue,
+          userList: []
+        }
+      });
+
+    }
+
+    // this.setState((state) => {
+    //   return {
+    //     users:userValue
+    //   }
+    // });
   }
 
 
@@ -128,7 +198,11 @@ class TasksTable extends Component{
       priority,
       status,
       classification,
-      users
+      users,
+      classificationList,
+      priorityList,
+      statusList,
+      userList
     } = this.state
 
 
@@ -137,11 +211,17 @@ class TasksTable extends Component{
       var allPriorities=[...Array.from(new Set(props.get_tasks.map((item) => item.priority))).sort()]
       allPriorities.unshift("Filter Off")
       return (
+
+        // <MultiSelect
+        //   options={allPriorities}
+        //   // value={selected}
+        //   // onChange={setSelected}
+        //   // labelledBy="Select"
+        // />
+
         <DropdownButton style={{margin:'3px'}} exact id="dropdown-basic-button" title="Priority">
           {allPriorities.map((c, index) => (
-
             <Dropdown.Item onClick={()=>this.setPriority(c)}>{c}</Dropdown.Item>
-
           ))}
         </DropdownButton>
       )
@@ -233,17 +313,28 @@ class TasksTable extends Component{
       <h2>Selected filters</h2>
       <div>isAssigned:{isAssigned}</div>
       <div>isActive:{isActive.toString()}</div>
-      <div>priority:{priority}</div>
-      <div>status:{status}</div>
-      <div>classification:{classification}</div>
+      <div>priority:{priorityList}</div>
+      <div>status:{statusList}</div>
+      <div>users:{userList}</div>
+
+
+      <div>classification:
+        {classificationList.map(classification => (
+         <li>{classification}</li>
+        ))}
+      </div>
       <TasksDetail
         tasks_filter={get_tasks}
         isAssigned={isAssigned}
         isActive={isActive}
         priority={priority}
         status={status}
+        statusList={statusList}
         classification={classification}
         users={users}
+      classificationList={classificationList}
+      priorityList={priorityList}
+        userList={userList}
       />
       </tbody>
     )
@@ -259,7 +350,11 @@ const mapStateToProps = state => ({
   priority:state.priority,
   status:state.status,
   classification:state.classification,
-  users:state.users
+  users:state.users,
+  classificationList:state.classificationList,
+  priorityList:state.priorityList,
+  statusList:state.statusList,
+  userList:state.userList
 
 });
 
