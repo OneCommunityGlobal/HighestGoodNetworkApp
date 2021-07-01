@@ -55,7 +55,7 @@ export class Projects extends Component {
     this.props.modifyProject("setActive", projectId, projectName, isActive);
   }
 
-  onUpdateProjectName = (projectId, projectName, isActive) => {
+  onUpdateProjectName = (projectId, projectName, category, isActive) => {
     this.props.modifyProject("updateName", projectId, projectName, isActive);
   }
 
@@ -92,8 +92,8 @@ export class Projects extends Component {
 
   }
 
-  addProject = (name) => {
-    this.props.postNewProject(name, true);
+  addProject = (name, category) => {
+    this.props.postNewProject(name, category, true);
     this.setState({ trackModelMsg: true });
   }
 
@@ -128,6 +128,7 @@ export class Projects extends Component {
           index={index}
           projectId={project._id}
           name={project.projectName}
+          category={project.category || "Unspecified"}
           active={project.isActive}
           onClickActive={this.onClickActive}
           onUpdateProjectName={this.onUpdateProjectName}

@@ -14,7 +14,15 @@ thead{
     width: 10px;
 }
 
+#projects__category{
+    width: 15px;
+}
+
 #projects__members{
+    width: 15px;
+}
+
+#projects__inv{
     width: 15px;
 }
 

@@ -31,7 +31,7 @@ export const fetchAllProjects = () => {
  * @param {projectName}: name of new project
  * @param {isActive}: the active status of new project
  */
-export const postNewProject = (projectName, isActive) => {
+export const postNewProject = (projectName, projectCategory, isActive) => {
   const url = ENDPOINTS.PROJECTS;
   //console.log("Call API: ", url);
   return async dispatch => {
@@ -39,7 +39,7 @@ export const postNewProject = (projectName, isActive) => {
     let _id = null;
 
     try {
-      const res = await axios.post(url, { projectName, isActive })
+      const res = await axios.post(url, { projectName, projectCategory, isActive })
       _id = res.data._id;
       status = res.status;
 
@@ -53,6 +53,7 @@ export const postNewProject = (projectName, isActive) => {
         {
           "_id": _id,
           "projectName": projectName,
+          "category": projectCategory,
           "isActive": isActive
 
         }, status
@@ -85,7 +86,7 @@ export const deleteProject = (projectId) => {
   }
 }
 
-export const modifyProject = (type, projectId, projectName, isActive) => {
+export const modifyProject = (type, projectId, projectName, category, isActive) => {
   const url = ENDPOINTS.PROJECT + projectId;
   //console.log("set Active", projectId, projectName, isActive);
 
@@ -107,7 +108,7 @@ export const modifyProject = (type, projectId, projectName, isActive) => {
       status = 400;
     }
 
-    dispatch(updateProject(projectId, projectName, isActive, status));
+    dispatch(updateProject(projectId, projectName, category, isActive, status));
 
   }
 }
@@ -168,6 +169,7 @@ export const updateProject = (projectId, projectName, isActive, status) => {
     type: types.UPDATE_PROJECT,
     projectId,
     projectName,
+    category,
     isActive,
     status
   }
