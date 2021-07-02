@@ -1,6 +1,6 @@
 import React, { Component, useState } from 'react'
 import '../Teams/Team.css';
-import { Button, Dropdown, DropdownButton } from 'react-bootstrap'
+import { Button, Dropdown, DropdownButton,ToggleButton,ToggleButtonGroup } from 'react-bootstrap'
 import { connect } from 'react-redux'
 import { getUserProfile,getUserTask} from '../../actions/userProfile';
 import {getUserProjects} from '../../actions/userProjects'
@@ -13,6 +13,7 @@ import "react-input-range/lib/css/index.css"
 import EditTaskModal from "./../Projects/WBS/WBSDetail/EditTask/EditTaskModal";
 import EditPeopleReportTaskModal from './EditPeopleReportTaskModal'
 import Collapse from 'react-bootstrap/Collapse'
+import TasksDetail from './TasksDetail'
 
 class PeopleReport extends Component {
   constructor(props) {
@@ -32,7 +33,10 @@ class PeopleReport extends Component {
       hasFilter:true,
       allClassification:[],
       classification:'',
-      users:""
+      users:"",
+      classificationList:[],
+      priorityList:[],
+      statusList:[],
     }
     this.setStatus=this.setStatus.bind(this)
     this.setPriority=this.setPriority.bind(this)
@@ -79,18 +83,44 @@ class PeopleReport extends Component {
     });
   }
   setPriority(priorityValue) {
-    this.setState((state) => {
-      return {
-        priority:priorityValue
-      }
-    });
+    if (priorityValue!='Filter Off') {
+      this.setState((state) => {
+        return {
+          priority: priorityValue,
+          priorityList: this.state.priorityList.concat(priorityValue)
+
+        }
+      });
+    }
+    else{
+      this.setState((state) => {
+        return {
+          priority: priorityValue,
+          priorityList: []
+        }
+      });
+
+    }
   }
   setStatus(statusValue) {
-    this.setState((state) => {
-      return {
-        status:statusValue
-      }
-    });
+    if (statusValue!='Filter Off') {
+      this.setState((state) => {
+        return {
+          status: statusValue,
+          statusList: this.state.statusList.concat(statusValue)
+
+        }
+      });
+    }
+    else{
+      this.setState((state) => {
+        return {
+          status: statusValue,
+          statusList: []
+        }
+      });
+
+    }
   }
   setAssign(assignValue) {
     this.setState((state) => {
@@ -115,11 +145,24 @@ class PeopleReport extends Component {
   }
 
   setClassfication(classificationValue) {
-    this.setState((state) => {
-      return {
-        classification:classificationValue
-      }
-    });
+    if (classificationValue!='Filter Off') {
+      this.setState((state) => {
+        return {
+          classification: classificationValue,
+          classificationList: this.state.classificationList.concat(classificationValue)
+
+        }
+      });
+    }
+    else{
+      this.setState((state) => {
+        return {
+          classification: classificationValue,
+          classificationList: []
+        }
+      });
+
+    }
   }
 
   setUsers(userValue) {
@@ -143,6 +186,9 @@ class PeopleReport extends Component {
       hasFilter,
       allClassification,
       classification,
+      classificationList,
+      priorityList,
+      statusList,
       users
     } = this.state
     const {
@@ -151,6 +197,7 @@ class PeopleReport extends Component {
       weeklyComittedHours,
       totalComittedHours
     } = userProfile
+
     const ShowCollapse = props => {
       const [open, setOpen] = useState(false);
       return(
@@ -158,6 +205,7 @@ class PeopleReport extends Component {
           <Button
             onClick={() => setOpen(!open)}
             aria-expanded={open}>
+            {props.resources.length}     >
           </Button>
           <div>
             {props.resources[0].name}
@@ -175,23 +223,105 @@ class PeopleReport extends Component {
       )
     }
 
+    // const ShowCollapse = props => {
+    //   const [open, setOpen] = useState(false);
+    //   return(
+    //     <div>
+    //       <Button
+    //         onClick={() => setOpen(!open)}
+    //         aria-expanded={open}>
+    //       </Button>
+    //       <div>
+    //         {props.resources[0].name}
+    //       </div>
+    //
+    //       {props.resources.slice(1).map(resource => (
+    //         <Collapse in={open}>
+    //           <div key={resource._id} white-space="pre-line" white-space="nowrap" className="new-line">
+    //             {resource.name}
+    //           </div>
+    //         </Collapse>
+    //       ))}
+    //     </div>
+    //
+    //   )
+    // }
+
     const UserTask = props => {
       let userTaskList = []
       if (props.userTask.length > 0) {
         let tasks=props.userTask
           tasks = props.userTask.filter(item => item.isActive === props.isActive
             && item.isAssigned === props.isAssigned);
-          if (!(props.priority === "")) {
-            tasks=props.userTask.filter(item => item.priority == props.priority &&item.isActive === props.isActive
-              && item.isAssigned === props.isAssigned)
-          }
+          // if (!(props.priority === "")) {
+          //   tasks=props.userTask.filter(item => item.priority == props.priority &&item.isActive === props.isActive
+          //     && item.isAssigned === props.isAssigned)
+          // }
 
-          if  (!(props.status === "")) {
-            tasks=props.userTask.filter(item => item.status == props.status &&item.isActive === props.isActive
-              && item.isAssigned === props.isAssigned)
+          // if  (!(props.status === "")) {
+          //   tasks=props.userTask.filter(item => item.status == props.status &&item.isActive === props.isActive
+          //     && item.isAssigned === props.isAssigned)
+          // }
+        // if  (!(props.classification === "")) {
+        //   tasks=tasks.filter(item => item.classification === props.classification)
+        // }
+        if (props.priorityList.length>0){
+          var i=0
+          var get_tasks=[]
+          while( i< props.priorityList.length) {
+            if (props.priorityList[i] !='Filter Off') {
+              for (var j = 0; j < tasks.length; j++) {
+                if (tasks[j].priority === props.priorityList[i]) {
+                  get_tasks.push(tasks[j])
+                }
+              }
+              i += 1
+            }
+            else{
+              get_tasks=props.tasks_filter
+              break
+            }
           }
-        if  (!(props.classification === "")) {
-          tasks=tasks.filter(item => item.classification === props.classification)
+          tasks=get_tasks
+        }
+
+        if (props.classificationList.length>0){
+          var i=0
+          var get_tasks=[]
+          while( i< props.classificationList.length) {
+            if (props.classificationList[i] !='Filter Off') {
+              for (var j = 0; j < tasks.length; j++) {
+                if (tasks[j].classification === props.classificationList[i]) {
+                  get_tasks.push(tasks[j])
+                }
+              }
+              i += 1
+            }
+            else{
+              get_tasks=props.tasks_filter
+              break
+            }
+          }
+          tasks=get_tasks
+        }
+        if (props.statusList.length>0){
+          var i=0
+          var get_tasks=[]
+          while( i< props.statusList.length) {
+            if (props.statusList[i] !='Filter Off') {
+              for (var j = 0; j < tasks.length; j++) {
+                if (tasks[j].status === props.statusList[i]) {
+                  get_tasks.push(tasks[j])
+                }
+              }
+              i += 1
+            }
+            else{
+              get_tasks=props.tasks_filter
+              break
+            }
+          }
+          tasks=get_tasks
         }
 
         if  (!(props.users === "")) {
@@ -237,6 +367,17 @@ if (tasks.length>0) {
       <td>
         {task.status}
       </td>
+      {/*<td>*/}
+      {/*  {task.resources.length<=2 ?*/}
+      {/*    task.resources.map(resource => (*/}
+      {/*      <div key={resource._id}>{resource.name}</div>*/}
+      {/*    ))*/}
+      {/*    :*/}
+      {/*    <ShowCollapse resources={task.resources}/>*/}
+      {/*  }*/}
+      {/*</td>*/}
+
+
       <td>
         {task.resources.length<=2 ?
           task.resources.map(resource => (
@@ -246,6 +387,7 @@ if (tasks.length>0) {
           <ShowCollapse resources={task.resources}/>
         }
       </td>
+
       <td className='projects__active--input'>
         {task.isActive ?
           <tasks className="isActive"><i className="fa fa-circle" aria-hidden="true"></i></tasks> :
@@ -254,8 +396,8 @@ if (tasks.length>0) {
 
       <td className='projects__active--input'>
         {task.isAssigned ?
-          <div className="isActive">Assign</div> :
-          <div className="isNotActive">Not Assign</div>}
+          <div>Assign</div> :
+          <div>Not Assign</div>}
       </td>
       <td className='projects__active--input'>
         {task.classification}
@@ -277,12 +419,67 @@ if (tasks.length>0) {
         <div>
           <h2>Total: {userTaskList.length}</h2>
           <h2>Selected filters</h2>
-          <div>isAssigned:{isAssigned}</div>
-          <div>isActive:{isActive.toString()}</div>
-          <div>priority:{priority}</div>
-          <div>status:{status}</div>
-          <div>classification:{classification}</div>
-          <div>users:{users}</div>
+
+          <h5>Assignment Options:
+            <ToggleButtonGroup type="checkbox" variant="info">
+              {/*<ToggleButton variant="info">{isAssigned}</ToggleButton>*/}
+
+              {isAssigned ?
+                <ToggleButton variant="info">Assign</ToggleButton>
+                :
+                <ToggleButton variant="info">Not Assign</ToggleButton>
+              }
+
+            </ToggleButtonGroup>
+          </h5>
+          <h5>Active Options:
+            <ToggleButtonGroup type="checkbox" variant="info">
+
+              {isActive ?
+                <ToggleButton variant="info">Active</ToggleButton>
+                :
+                <ToggleButton variant="info">InActive</ToggleButton>
+              }
+            </ToggleButtonGroup>
+          </h5>
+
+          {/*<div>isAssigned:{isAssigned}</div>*/}
+          {/*<div>isActive:{isActive.toString()}</div>*/}
+<h5>Priority Options:
+          <ToggleButtonGroup type="checkbox" variant="info">
+            {priorityList.map((c, index) => (
+              <ToggleButton variant="info">{c}</ToggleButton>
+            ))}
+          </ToggleButtonGroup>
+  </h5>
+
+          <h5>Status Options:
+            <ToggleButtonGroup type="checkbox" variant="info">
+              {statusList.map((c, index) => (
+                <ToggleButton variant="info">{c}</ToggleButton>
+              ))}
+            </ToggleButtonGroup>
+          </h5>
+
+          <h5>Classification Options:
+            <ToggleButtonGroup type="checkbox" variant="info">
+              {classificationList.map((c, index) => (
+                <ToggleButton variant="info">{c}</ToggleButton>
+              ))}
+            </ToggleButtonGroup>
+          </h5>
+
+          <h5>User Options:
+            <ToggleButtonGroup type="checkbox" variant="info">
+                <ToggleButton variant="info">{users}</ToggleButton>
+            </ToggleButtonGroup>
+          </h5>
+
+
+
+          {/*<div>status:{statusList}</div>*/}
+          {/*<div>classification:{classificationList}</div>*/}
+          {/*<div>users:{users}</div>*/}
           <table className="center">
             <table className="table table-bordered table-responsive-sm">
               <thead>
@@ -408,17 +605,17 @@ if (tasks.length>0) {
       )
     };
 
-    const AssignmentOptions = props => {
-      var allOptions=[...Array.from(new Set(props.get_tasks.map((item) => item.isAssigned.toString()))).sort()]
-      allOptions.unshift("Filter Off")
-      return (
-        <DropdownButton style={{margin:'3px'}} exact id="dropdown-basic-button" title="Assignment Options">
-          {allOptions.map((c, index) => (
-            <Dropdown.Item onClick={()=>this.setAssign(c)}>{c}</Dropdown.Item>
-          ))}
-        </DropdownButton>
-      )
-    };
+    // const AssignmentOptions = props => {
+    //   var allOptions=[...Array.from(new Set(props.get_tasks.map((item) => item.isAssigned.toString()))).sort()]
+    //   allOptions.unshift("Filter Off")
+    //   return (
+    //     <DropdownButton style={{margin:'3px'}} exact id="dropdown-basic-button" title="Assignment Options">
+    //       {allOptions.map((c, index) => (
+    //         <Dropdown.Item onClick={()=>this.setAssign(c)}>{c}</Dropdown.Item>
+    //       ))}
+    //     </DropdownButton>
+    //   )
+    // };
 
     const PriorityOptions = props => {
       var allPriorities=[...Array.from(new Set(props.get_tasks.map((item) => item.priority))).sort()]
@@ -454,11 +651,20 @@ if (tasks.length>0) {
             <h2>Tasks</h2>
           <div>
             <button style={{margin:'3px'}} exact className="btn btn-secondary btn-bg mt-3" onClick={()=>this.setFilter()}>Filter Off</button>
-            <AssignmentOptions get_tasks={userTask}/>
+            {/*<AssignmentOptions get_tasks={userTask}/>*/}
+
+<div>
+            <input name='radio' type="radio" style={{margin:'5px'}} value="active" onChange={()=>this.setAssign(true)}  />
+            Assign
+            <input name='radio' type="radio" style={{margin:'5px'}} value="inactive" onChange={()=>this.setAssign(false) } />
+            Not Assign
+</div>
+            <div>
             <input name='radio' type="radio" style={{margin:'5px'}} value="active" onChange={()=>this.setActive(true)}  />
             Active
             <input name='radio' type="radio" style={{margin:'5px'}} value="inactive" onChange={()=>this.setActive(false) } />
             InActive
+              </div>
             <PriorityOptions get_tasks={userTask}/>
             <StatusOptions get_tasks={userTask}/>
             <button style={{margin:'3px'}} exact className="btn btn-secondary btn-bg mt-3">Estimated Hours</button>
@@ -472,7 +678,11 @@ if (tasks.length>0) {
                       priority={priority}
                       status={status}
                       classification={classification}
-                       users={users}/>
+                       users={users}
+                      classificationList={classificationList}
+                      priorityList={priorityList}
+                      statusList={statusList}
+            />
           <h2>Projects</h2>
           <UserProject userProjects={userProjects}/>
         </table>
@@ -498,7 +708,10 @@ const mapStateToProps = state => ({
   hasFilter: state.hasFilter,
   allClassification:state.allClassification,
   classification:state.classification,
-  users:state.users
+  users:state.users,
+  classificationList:state.classificationList,
+  priorityList:state.priorityList,
+  statusList:state.statusList,
 });
 
 export default connect(mapStateToProps, {

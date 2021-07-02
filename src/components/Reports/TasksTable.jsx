@@ -17,16 +17,16 @@ class TasksTable extends Component{
       tasks_per_project: {},
       tasks_filter: {},
       status:'',
-      statusList:[],
       priority:'',
-      priorityList:[],
       isActive:"",
       isAssigned:"",
       allClassification:[],
       classification:'',
       users:"",
       userList:[],
-      classificationList:[]
+      classificationList:[],
+      priorityList:[],
+      statusList:[],
     }
 
     this.get_task_by_wbsId=this.get_task_by_wbsId.bind(this)
@@ -128,11 +128,7 @@ class TasksTable extends Component{
       });
 
     }
-    // this.setState((state) => {
-    //   return {
-    //     status:statusValue
-    //   }
-    // });
+
   }
   setAssign(assignValue) {
     this.setState((state) => {
@@ -329,11 +325,12 @@ class TasksTable extends Component{
         isActive={isActive}
         priority={priority}
         status={status}
-        statusList={statusList}
+
         classification={classification}
         users={users}
       classificationList={classificationList}
       priorityList={priorityList}
+        statusList={statusList}
         userList={userList}
       />
       </tbody>

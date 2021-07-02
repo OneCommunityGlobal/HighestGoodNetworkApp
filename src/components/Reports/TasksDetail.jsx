@@ -12,7 +12,7 @@ return(
   <Button
     onClick={() => setOpen(!open)}
     aria-expanded={open}>
-    {props.resources.length}
+    {props.resources.length}     >
   </Button>
     <div>
       {props.resources[0].name}
@@ -111,16 +111,16 @@ break
       tasks=get_tasks
     }
 
-      if(props.classification ==="No filter"){
+      if(props.classification ==="Filter Off"){
       tasks=props.tasks_filter.filter(item => item.isActive === props.isActive)
     }
-    if(props.users ==="No filter"){
+    if(props.users ==="Filter Off"){
       tasks=props.tasks_filter.filter(item => item.isActive === props.isActive)
     }
-    if(props.isAssigned ==="No filter"){
+    if(props.isAssigned ==="Filter Off"){
       tasks=props.tasks_filter.filter(item => item.isActive === props.isActive)
     }
-    if(props.users ==="No filter"){
+    if(props.users ==="Filter Off"){
       tasks=props.tasks_filter.filter(item => item.isActive === props.isActive)
     }
 
@@ -197,8 +197,8 @@ break
 
       <td className='projects__active--input'>
         {task.isAssigned ?
-          <div className="isActive">Assign</div> :
-          <div className="isNotActive">Not Assign</div>}
+          <div>Assign</div> :
+          <div>Not Assign</div>}
       </td>
       <td className='projects__active--input'>
         {task.classification}
