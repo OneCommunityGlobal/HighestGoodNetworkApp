@@ -23,14 +23,21 @@ To clone the code, navigate to the source directory where you want to maintain t
 Step2: Run yarn install or yarn from root directory.
 
 Step3: Start the app:
+
+Option 1:
 To start the app, you need to set up the api endpoint as a process.env variable. Setup tokenKey as same as in HGNRest server. RestApi needs to be followed by '/api'. For example if HGNRest server is hosted at http://localhost:4500, the RestApi is http://localhost:4500/api . You can just run
 ```
 REACT_APP_APIENDPOINT=<put apiendpoint here> npm start
 ```
-For windows user, you can run
+For a windows user, you can run
 ```
-set REACT_APP_APIENDPOINT=<put apiendpoint here>&& npm start
+set REACT_APP_APIENDPOINT=<put apiendpoint here> && npm start
 ```
+Option 2:
+You can also create a .env file in the base directory with the following or ask a team member on slack to recieve a copy of this file for both the frontend and backend:
+REACT_APP_APIENDPOINT="<put apiendpoint here>"
+SKIP_PREFLIGHT_CHECK=true
+
 
 You may have to run it as super user (i.e. sudo) depending upon the permission setup on your machine.
 The application, by default, starts on port 3000. If 3000 is busy, then the start process will suggest another port and you can choose that. The url, by default, will be http://localhost:3000. You will need to login and those credentials will be provided to you as a part of your user setup process.
