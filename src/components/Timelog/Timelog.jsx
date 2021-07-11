@@ -193,34 +193,34 @@ class TimelogPage extends Component {
 
     return (
       <div>
-        {!this.props.isDashboard ? <Container fluid><SummaryBar/></Container> : ''}
-      
-      <Container>
-        
-        <Row>
-          <Col md={12}>
-            <Card>
-              <CardHeader>
-                <Row>
-                  <Col md={11}>
-                    <CardTitle tag="h4">Time Entries &nbsp;
+        {!this.props.isDashboard ? <Container fluid><SummaryBar /></Container> : ''}
+
+        <Container>
+
+          <Row>
+            <Col md={12}>
+              <Card>
+                <CardHeader>
+                  <Row>
+                    <Col md={11}>
+                      <CardTitle tag="h4">Time Entries &nbsp;
                             <i
-                              className="fa fa-info-circle"
-                              data-tip
-                              data-for="registerTip"
-                              aria-hidden="true"
-                              onClick={this.openInfo}
-                            /></CardTitle>
-                    <CardSubtitle tag="h6" className="text-muted">
-                      Viewing time entries logged in the last 3 weeks 
+                          className="fa fa-info-circle"
+                          data-tip
+                          data-for="registerTip"
+                          aria-hidden="true"
+                          onClick={this.openInfo}
+                        /></CardTitle>
+                      <CardSubtitle tag="h6" className="text-muted">
+                        Viewing time entries logged in the last 3 weeks
                     </CardSubtitle>
-                  </Col>
-                  <Col md={11}>
-                    {isOwner ? (
-                      <div className="float-right">
-                        <div>
-                          <Button color="success" onClick={this.toggle}>
-                              {'Add Time Entry '}<i
+                    </Col>
+                    <Col md={11}>
+                      {isOwner ? (
+                        <div className="float-right">
+                          <div>
+                            <Button color="success" onClick={this.toggle}>
+                              {'Add Intangible Time Entry '}<i
                                 className="fa fa-info-circle"
                                 data-tip
                                 data-for="timeEntryTip"
@@ -229,183 +229,184 @@ class TimelogPage extends Component {
                               />
                             </Button>
                             <ReactTooltip id="timeEntryTip" place="bottom" effect="solid">
-                              Make sure to add your tangible time here.
+                              Clicking this button only allows for “Intangible Time” to be added to your time log. You can manually log Intangible Time but it doesn’t count towards your weekly time commitment.
                             </ReactTooltip>
-                            </div>
-                      </div>
-                    ) : (
-                      isAdmin && (
-                        <div className="float-right">
-                          <div>
-                            <Button color="warning" onClick={this.toggle}>
-                              Add Time Entry {!isOwner && `for ${fullName}`}
-                            </Button>
                           </div>
-
                         </div>
-                      )
-                    )}
-                    <Modal isOpen={this.state.in} toggle={this.openInfo}>
-                      <ModalHeader>Info</ModalHeader>
-                      <ModalBody>{this.state.information}</ModalBody>
-                      <ModalFooter>
-                        <Button onClick={this.openInfo} color="primary">
-                          Close
-                        </Button>
-                        {isAdmin && (
-                          <Button onClick={this.openInfo} color="secondary">
-                            Edit
-                          </Button>
-                        )}
-                      </ModalFooter>
-                    </Modal>
-                    <TimeEntryForm
-                      userId={userId}
-                      data={this.data}
-                      edit={false}
-                      toggle={this.toggle}
-                      isOpen={this.state.modal}
-                      userProfile={this.userProfile}
-                    />
-                    <ReactTooltip id="registerTip" place="bottom" effect="solid">
-                      Click this icon to learn about the timelog.
-                    </ReactTooltip>
-                  </Col>
-                </Row>
-              </CardHeader>
-              <CardBody>
-                <Nav tabs className="mb-1">
-                  <NavItem>
-                    <NavLink
-                      className={classnames({ active: this.state.activeTab === 0 })}
-                      onClick={() => {
-                        this.changeTab(0)
-                      }}
-                      href="#"
-                      to="#"
-                    >
-                      Current Week
-                    </NavLink>
-                  </NavItem>
-                  <NavItem>
-                    <NavLink
-                      className={classnames({ active: this.state.activeTab === 1 })}
-                      onClick={() => {
-                        this.changeTab(1)
-                      }}
-                      href="#"
-                      to="#"
-                    >
-                      Last Week
-                    </NavLink>
-                  </NavItem>
-                  <NavItem>
-                    <NavLink
-                      className={classnames({ active: this.state.activeTab === 2 })}
-                      onClick={() => {
-                        this.changeTab(2)
-                      }}
-                      href="#"
-                      to="#"
-                    >
-                      Week Before Last
-                    </NavLink>
-                  </NavItem>
-                  <NavItem>
-                    <NavLink
-                      className={classnames({ active: this.state.activeTab === 3 })}
-                      onClick={() => {
-                        this.changeTab(3)
-                      }}
-                      href="#"
-                      to="#"
-                    >
-                      Search by Date Range
-                    </NavLink>
-                  </NavItem>
-                </Nav>
+                      ) : (
+                          isAdmin && (
+                            <div className="float-right">
+                              <div>
+                                <Button color="warning" onClick={this.toggle}>
+                                  Add Time Entry {!isOwner && `for ${fullName}`}
+                                </Button>
+                              </div>
 
-                <TabContent activeTab={this.state.activeTab}>
-                  {this.state.activeTab === 3 ? (
-                    <p className="ml-1">
-                      Viewing time Entries from <b>{this.state.fromDate}</b>
-                      {' to '}
-                      <b>{this.state.toDate}</b>
-                    </p>
-                  ) : (
-                    <p className="ml-1">
-                      Viewing time Entries from <b>{this.startOfWeek(this.state.activeTab)}</b>
-                      {' to '}
-                      <b>{this.endOfWeek(this.state.activeTab)}</b>
-                    </p>
-                  )}
-                  {this.state.activeTab === 3 && (
-                    <Form inline className="mb-2">
-                      <FormGroup className="mr-2">
-                        <Label for="fromDate" className="mr-2">
-                          From
+                            </div>
+                          )
+                        )}
+                      <Modal isOpen={this.state.in} toggle={this.openInfo}>
+                        <ModalHeader>Info</ModalHeader>
+                        <ModalBody>{this.state.information}</ModalBody>
+                        <ModalFooter>
+                          <Button onClick={this.openInfo} color="primary">
+                            Close
+                        </Button>
+                          {isAdmin && (
+                            <Button onClick={this.openInfo} color="secondary">
+                              Edit
+                            </Button>
+                          )}
+                        </ModalFooter>
+                      </Modal>
+                      <TimeEntryForm
+                        userId={userId}
+                        data={this.data}
+                        edit={false}
+                        toggle={this.toggle}
+                        isOpen={this.state.modal}
+                        userProfile={this.userProfile}
+                        isInTangible={true}
+                      />
+                      <ReactTooltip id="registerTip" place="bottom" effect="solid">
+                        Click this icon to learn about the timelog.
+                    </ReactTooltip>
+                    </Col>
+                  </Row>
+                </CardHeader>
+                <CardBody>
+                  <Nav tabs className="mb-1">
+                    <NavItem>
+                      <NavLink
+                        className={classnames({ active: this.state.activeTab === 0 })}
+                        onClick={() => {
+                          this.changeTab(0)
+                        }}
+                        href="#"
+                        to="#"
+                      >
+                        Current Week
+                    </NavLink>
+                    </NavItem>
+                    <NavItem>
+                      <NavLink
+                        className={classnames({ active: this.state.activeTab === 1 })}
+                        onClick={() => {
+                          this.changeTab(1)
+                        }}
+                        href="#"
+                        to="#"
+                      >
+                        Last Week
+                    </NavLink>
+                    </NavItem>
+                    <NavItem>
+                      <NavLink
+                        className={classnames({ active: this.state.activeTab === 2 })}
+                        onClick={() => {
+                          this.changeTab(2)
+                        }}
+                        href="#"
+                        to="#"
+                      >
+                        Week Before Last
+                    </NavLink>
+                    </NavItem>
+                    <NavItem>
+                      <NavLink
+                        className={classnames({ active: this.state.activeTab === 3 })}
+                        onClick={() => {
+                          this.changeTab(3)
+                        }}
+                        href="#"
+                        to="#"
+                      >
+                        Search by Date Range
+                    </NavLink>
+                    </NavItem>
+                  </Nav>
+
+                  <TabContent activeTab={this.state.activeTab}>
+                    {this.state.activeTab === 3 ? (
+                      <p className="ml-1">
+                        Viewing time Entries from <b>{this.state.fromDate}</b>
+                        {' to '}
+                        <b>{this.state.toDate}</b>
+                      </p>
+                    ) : (
+                        <p className="ml-1">
+                          Viewing time Entries from <b>{this.startOfWeek(this.state.activeTab)}</b>
+                          {' to '}
+                          <b>{this.endOfWeek(this.state.activeTab)}</b>
+                        </p>
+                      )}
+                    {this.state.activeTab === 3 && (
+                      <Form inline className="mb-2">
+                        <FormGroup className="mr-2">
+                          <Label for="fromDate" className="mr-2">
+                            From
                         </Label>
-                        <Input
-                          type="date"
-                          name="fromDate"
-                          id="fromDate"
-                          value={this.state.fromDate}
-                          onChange={this.handleInputChange}
-                        />
-                      </FormGroup>
-                      <FormGroup>
-                        <Label for="toDate" className="mr-2">
-                          To
+                          <Input
+                            type="date"
+                            name="fromDate"
+                            id="fromDate"
+                            value={this.state.fromDate}
+                            onChange={this.handleInputChange}
+                          />
+                        </FormGroup>
+                        <FormGroup>
+                          <Label for="toDate" className="mr-2">
+                            To
                         </Label>
-                        <Input
-                          type="date"
-                          name="toDate"
-                          id="toDate"
-                          value={this.state.toDate}
-                          onChange={this.handleInputChange}
-                        />
-                      </FormGroup>
-                      <Button color="primary" onClick={this.handleSearch} className="ml-2">
-                        Search
+                          <Input
+                            type="date"
+                            name="toDate"
+                            id="toDate"
+                            value={this.state.toDate}
+                            onChange={this.handleInputChange}
+                          />
+                        </FormGroup>
+                        <Button color="primary" onClick={this.handleSearch} className="ml-2">
+                          Search
                       </Button>
-                    </Form>
-                  )}
-                  <Form inline className="mb-2">
-                    <FormGroup>
-                      <Label for="projectSelected" className="mr-2 ml-1 mb-5 align-top">
-                        Filter Entries by Project:
+                      </Form>
+                    )}
+                    <Form inline className="mb-2">
+                      <FormGroup>
+                        <Label for="projectSelected" className="mr-2 ml-1 mb-5 align-top">
+                          Filter Entries by Project:
                       </Label>
-                      <Input
-                        type="select"
-                        name="projectSelected"
-                        id="projectSelected"
-                        value={this.state.projectsSelected}
-                        title="Ctrl + Click to select multiple projects to filter."
-                        onChange={e =>
-                          this.setState({
-                            projectsSelected:  Array.from(e.target.selectedOptions, option => option.value),
-                          })
-                        }
-                      multiple>
-                        {projectOptions}
-                      </Input>
-                    </FormGroup>
-                  </Form>
-                  <EffortBar
-                    activeTab={this.state.activeTab}
-                    projectsSelected={this.state.projectsSelected}
-                  />
-                  <TabPane tabId={0}>{currentWeekEntries}</TabPane>
-                  <TabPane tabId={1}>{lastWeekEntries}</TabPane>
-                  <TabPane tabId={2}>{beforeLastEntries}</TabPane>
-                  <TabPane tabId={3}>{periodEntries}</TabPane>
-                </TabContent>
-              </CardBody>
-            </Card>
-          </Col>
-          <Col md={4} />
-        </Row>
-      </Container>
+                        <Input
+                          type="select"
+                          name="projectSelected"
+                          id="projectSelected"
+                          value={this.state.projectsSelected}
+                          title="Ctrl + Click to select multiple projects to filter."
+                          onChange={e =>
+                            this.setState({
+                              projectsSelected: Array.from(e.target.selectedOptions, option => option.value),
+                            })
+                          }
+                          multiple>
+                          {projectOptions}
+                        </Input>
+                      </FormGroup>
+                    </Form>
+                    <EffortBar
+                      activeTab={this.state.activeTab}
+                      projectsSelected={this.state.projectsSelected}
+                    />
+                    <TabPane tabId={0}>{currentWeekEntries}</TabPane>
+                    <TabPane tabId={1}>{lastWeekEntries}</TabPane>
+                    <TabPane tabId={2}>{beforeLastEntries}</TabPane>
+                    <TabPane tabId={3}>{periodEntries}</TabPane>
+                  </TabContent>
+                </CardBody>
+              </Card>
+            </Col>
+            <Col md={4} />
+          </Row>
+        </Container>
       </div>
     )
   }
