@@ -38,7 +38,7 @@ function SaveButton(props) {
         outline
         color="primary"
         // to={`/userprofile/${this.state.userProfile._id}`}
-        className="btn btn-outline-primary"
+        className="btn btn-outline-primary mr-1"
         onClick={handleSave}
         disabled={disabled}
       >

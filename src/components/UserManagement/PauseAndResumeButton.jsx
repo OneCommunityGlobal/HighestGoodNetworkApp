@@ -55,7 +55,7 @@ const PauseAndResumeButton = (props) => {
       <Button
         outline
         color="primary"
-        className={`btn btn-outline-${isActive ? 'warning' : 'success'} ${props.isBigBtn ? '' : 'btn-sm'}`}
+        className={`btn btn-outline-${isActive ? 'warning' : 'success'} ${props.isBigBtn ? '' : 'btn-sm'}  mr-1`}
         onClick={(e) => {
           onPauseResumeClick(props.user, (isActive ? UserStatus.InActive : UserStatus.Active));
         }}
