@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import {Row, Input, Col, Container, TabContent, TabPane, Nav, NavItem, NavLink, Button} from 'reactstrap'
+import { Row, Input, Col, Container, TabContent, TabPane, Nav, NavItem, NavLink, Button } from 'reactstrap'
 import Image from 'react-bootstrap/Image'
 import { Link } from 'react-router-dom'
 import classnames from 'classnames'
@@ -250,7 +250,7 @@ class UserProfile extends Component {
 
   saveChanges = () => {
     this.props.updateUserProfile(this.props.match.params.userId, this.state.userProfile);
-    this.setState({changed: false});
+    this.setState({ changed: false });
   }
 
   handleBlueSquare = (status = true, type = 'message', blueSquareID = '') => {
@@ -761,13 +761,12 @@ class UserProfile extends Component {
             <Col md="4"></Col>
             <Col md="8">
 
-              {requestorRole === "Administrator" && canEdit ? (
-                <ResetPasswordButton user={userProfile} />
-              ) : (<div className="profileEditButtonContainer">
+              {requestorRole === "Administrator" && canEdit && !isUserSelf && <ResetPasswordButton user={userProfile} />}
+              {isUserSelf && <div className="profileEditButtonContainer">
                 <Link to={`/updatepassword/${this.state.userProfile._id}`}>
                   <Button color="primary"> Update Password</Button>
                 </Link>
-              </div>)}
+              </div>}
               <PauseAndResumeButton user={userProfile} isBigBtn={true} />
               <Link
                 color="primary"
