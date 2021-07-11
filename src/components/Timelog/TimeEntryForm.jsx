@@ -62,6 +62,10 @@ const TimeEntryForm = ({
   const [openTangibleInfo, setTangibleInfo] = useState(false);
   const tangibleInfoToggle = (e) => { e.preventDefault(); setTangibleInfo(!openTangibleInfo) };
 
+  useEffect(() => {
+    setInputs({ ...inputs, notes: '', projectId: '' })
+  }, [isOpen])
+
   const openModal = () => setReminder(reminder => ({
     ...reminder,
     notification: !reminder.notification,
