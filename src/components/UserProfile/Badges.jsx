@@ -13,7 +13,7 @@ const Badges = (props) => {
   const [totalBadge, setTotalBadge] = useState(0);
   const toggle = () => {
     if (isOpen) {
-      props.getUserProfile(props.userId).then(() => {
+      props.getUserProfile(props.userId)?.then(() => {
         let count = 0;
         if (props.userProfile.badgeCollection) {
           props.userProfile.badgeCollection.forEach(badge => { count += badge.count; });
@@ -26,7 +26,7 @@ const Badges = (props) => {
 
   useEffect(()=>{
 
-    props.getUserProfile(props.userId).then(() => {
+    props.getUserProfile(props.userId)?.then(() => {
       let count = 0;
       if (props.userProfile.badgeCollection) {
         props.userProfile.badgeCollection.forEach(badge => { count += badge.count; });
