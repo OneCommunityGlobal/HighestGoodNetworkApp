@@ -26,7 +26,7 @@ import { updateUserProfile } from '../../actions/userProfile';
 import { stopTimer } from '../../actions/timer';
 
 const TimeEntryForm = ({
-  userId, edit, data, isOpen, toggle, timer, userProfile, resetTimer
+  userId, edit, data, isOpen, toggle, timer, userProfile, resetTimer, isInTangible = false
 }) => {
   const fromTimer = !_.isEmpty(timer);
   const [submitDisabled, setSubmitDisabled] = useState(false);
@@ -36,7 +36,7 @@ const TimeEntryForm = ({
     minutes: 0,
     projectId: '',
     notes: '',
-    isTangible: true,
+    isTangible: isInTangible ? false : true,
 
   };
   const initialReminder = {
@@ -60,7 +60,11 @@ const TimeEntryForm = ({
   const [reminder, setReminder] = useState(initialReminder);
   const [inform, setInfo] = useState(initialInfo);
   const [openTangibleInfo, setTangibleInfo] = useState(false);
-  const tangibleInfoToggle = () => setTangibleInfo(!openTangibleInfo);
+  const tangibleInfoToggle = (e) => { e.preventDefault(); setTangibleInfo(!openTangibleInfo) };
+
+  useEffect(() => {
+    setInputs({ ...inputs, notes: '', projectId: '' })
+  }, [isOpen])
 
   const openModal = () => setReminder(reminder => ({
     ...reminder,
@@ -517,7 +521,7 @@ const TimeEntryForm = ({
           </FormGroup>
           <FormGroup check>
             <Label check>
-              {isAdmin || (!edit && !isDisabled) ? (
+              {isAdmin ? (
                 <Input
                   type="checkbox"
                   name="isTangible"
