@@ -13,7 +13,9 @@ import { getUserProfile } from '../../actions/userProfile'
 
 export const Dashboard = props => {
   const [popup, setPopup] = useState(false);
+  let isAdmin = props.auth.user.role === 'Administrator';
   let userId = props.match && props.match.params.userId && props.auth.user.role === 'Administrator' ? props.match.params.userId : props.auth.user.userid;
+
   const toggle = () => {
     setPopup(!popup);
     setTimeout(() => {
@@ -31,15 +33,18 @@ export const Dashboard = props => {
     }
 
   }, [props.match]);
+  let getUrl = window.location;
+  let baseUrl = getUrl .protocol + "//" + getUrl.host + "/" + getUrl.pathname.split('/')[1];
 
   return (
     <Container fluid>
       <Row>
         <Col sm={{ size: 12 }}>
           <Alert color="info">
-            <b>Reminder</b>: Make sure to purge the cache or "hard" refresh the page in your browser
-          if you don's see the changes you had merged with the "development" branch. This message
-          will be removed before the site goes "live".
+            <b>Reminder</b>: You are using the Beta version of this app. Anytime you encounter a problem and/or need to update your 
+            current version with the latest bug fixes: 1) Navigate to <a href={baseUrl}>{baseUrl}</a> 2) Right-click anywhere on the 
+            app and choose “inspect” 3) Right-click the refresh icon by the URL and choose “Empty Cache and Hard Reload” 4) If necessary go under 
+            your browser settings and “Clear Browsing Data” for “Cookies and other site data” and “Cached images and files”
         </Alert>
         </Col>
       </Row>
@@ -68,7 +73,7 @@ export const Dashboard = props => {
           <div className="my-2">
             <TeamMemberTasks asUser={userId} />
           </div>
-          <Badge userId={userId} />
+          <Badge userId={userId} isAdmin={isAdmin} />
         </Col>
 
       </Row>

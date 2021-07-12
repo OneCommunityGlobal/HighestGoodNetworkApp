@@ -31,6 +31,7 @@ import ResetPasswordButton from '../UserManagement/ResetPasswordButton'
 import PauseAndResumeButton from '../UserManagement/PauseAndResumeButton'
 import { toast } from 'react-toastify';
 import Alert from 'reactstrap/lib/Alert'
+import Badges from './Badges';
 // const styleProfile = {};
 class UserProfile extends Component {
   state = {
@@ -88,6 +89,7 @@ class UserProfile extends Component {
   }
 
   async componentDidUpdate(prevProps, prevState) {
+    
     if (this.props.match !== prevProps.match) {
       // console.log('component on needs to update');
 
@@ -551,6 +553,7 @@ class UserProfile extends Component {
 
     const isUserSelf = targetUserId === requestorId
     const isUserAdmin = requestorRole === 'Administrator'
+    
     const canEdit = isUserAdmin || isUserSelf
     const weeklyHoursReducer = (acc, val) =>
       acc + (parseInt(val.hours, 10) + parseInt(val.minutes, 10) / 60)
@@ -624,11 +627,7 @@ class UserProfile extends Component {
                   To: <span>N/A</span>
                 </p>
               </div>
-              <div className="p-5 my-2 bg--cadet-blue text-light">
-                <div className="py-2 my-2"> </div>
-                <h3>Favorite badges section coming…</h3>
-                <div className="py-2 my-2"> </div>
-              </div>
+                  <Badges userId={this.state.userProfile._id} isAdmin={isUserAdmin} badges={this.props.userProfile.badgeCollection}/>
             </Col>
           </Row>
           <Row>
@@ -762,21 +761,21 @@ class UserProfile extends Component {
             <Col md="8">
 
               {requestorRole === "Administrator" && canEdit ? (
-                <ResetPasswordButton user={userProfile} />
+                <ResetPasswordButton className="mr-1" user={userProfile} />
               ) : (<div className="profileEditButtonContainer">
                 <Link to={`/updatepassword/${this.state.userProfile._id}`}>
-                  <Button color="primary"> Update Password</Button>
+                  <Button className="mr-1" color="primary"> Update Password</Button>
                 </Link>
               </div>)}
-              <PauseAndResumeButton user={userProfile} isBigBtn={true} />
+              <PauseAndResumeButton className="mr-1" user={userProfile} isBigBtn={true} />
               <Link
                 color="primary"
                 to={`/userprofile/${this.state.userProfile._id}`}
-                className="btn btn-outline-danger"
+                className="btn btn-outline-danger mr-1"
               >
                 Cancel
               </Link>
-              <SaveButton
+              <SaveButton className="mr-1"
                 handleSubmit={this.handleSubmit}
                 disabled={
                   !formValid.firstName ||

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
 import {
-  Card, CardText, CardBody, CardHeader, Button, Modal, ModalBody, UncontrolledTooltip
+  Card, CardText, CardBody, CardHeader, Button, Modal, ModalBody, UncontrolledTooltip, ModalHeader
 } from 'reactstrap';
 import './Badge.css';
 import NewBadges from './NewBadges';
@@ -14,7 +14,19 @@ const Badge = (props) => {
   const [isOpen, setOpen] = useState(false);
   const [totalBadge, setTotalBadge] = useState(0);
 
-  const toggle = () => setOpen(isOpen => !isOpen);
+  const toggle = () => {
+    if (isOpen) {
+      const userId = props.userId;
+      props.getUserProfile(userId).then(() => {
+        let count = 0;
+        if (props.userProfile.badgeCollection) {
+          props.userProfile.badgeCollection.forEach(badge => { count += badge.count; });
+          setTotalBadge(Math.round(count));
+        }
+      });
+    }
+    setOpen(isOpen => !isOpen)
+  };
 
   useEffect(() => {
     const userId = props.userId;
@@ -22,7 +34,7 @@ const Badge = (props) => {
       let count = 0;
       if (props.userProfile.badgeCollection) {
         props.userProfile.badgeCollection.forEach(badge => { count += badge.count; });
-        setTotalBadge(count);
+        setTotalBadge(Math.round(count));
       }
     });
   }, [])
@@ -46,8 +58,9 @@ const Badge = (props) => {
             Bravo! You Earned {totalBadge} Badges! <i className="fa fa-info-circle" id="CountInfo" />
           </CardText>
           <Button className="btn--dark-sea-green float-right" onClick={toggle}>Badge Report</Button>
-          <Modal isOpen={isOpen} toggle={toggle}>
-            <ModalBody><BadgeReport badges={props.userProfile.badgeCollection || []} /></ModalBody>
+          <Modal size={"lg"} isOpen={isOpen} toggle={toggle}>
+          <ModalHeader toggle={toggle}>Full View of Badge History</ModalHeader>
+            <ModalBody><BadgeReport badges={props.userProfile.badgeCollection || []} userId={props.userId} isAdmin={props.isAdmin} close={toggle}/></ModalBody>
           </Modal>
         </CardBody>
       </Card >
