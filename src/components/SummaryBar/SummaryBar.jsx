@@ -339,7 +339,7 @@ const SummaryBar = () => {
             <Form onSubmit={sendBugReport} id='bugReportForm'>
             <FormGroup>
               <Label for ='title'>[Feature Name] Bug Title </Label>
-              <Input type="textbox" name="title" id="title" required placeholder="Provide Concise Sumarry Title..." />
+              <Input type="textbox" name="title" id="title" required placeholder="Provide Concise Sumary Title..." />
             </FormGroup>
             <FormGroup>
             <Label for ='environment'> Environment (OS/Device/App Version/Connection/Time etc) </Label>
@@ -347,11 +347,11 @@ const SummaryBar = () => {
             </FormGroup>
             <FormGroup>
             <Label for ='reproduction'>Steps to reproduce (Please Number, Short Sweet to the point) </Label>
-              <Input type="textarea" name="reproduction" id="reproduction" required placeholder="1. Click on the UserProfile Button in the Header.." />
+              <Input type="textarea" name="reproduction" id="reproduction" required placeholder="1. Click on the UserProfile Button in the Header..." />
             </FormGroup>
             <FormGroup>
             <Label for ='expected'>Expected Result (Short Sweet to the point) </Label>
-              <Input type="textarea" name="expected" id="expected" required placeholder="Whad did you expect to happen?..." />
+              <Input type="textarea" name="expected" id="expected" required placeholder="What did you expect to happen?..." />
             </FormGroup>
             <FormGroup>
             <Label for ='actual'>Actual Result (Short Sweet to the point) </Label>
@@ -362,7 +362,7 @@ const SummaryBar = () => {
               <Input type="textarea" name="visual" id="visual" required placeholder="Links to screenshots etc..." />
             </FormGroup>
             <FormGroup>
-            <Label for ='severity'>Severity/Priority (How Bad is the Bug?  </Label>
+            <Label for ='severity'>Severity/Priority (How Bad is the Bug?) </Label>
             <Input type ="select" name='severity' id='severity' required>
                 <option hidden disabled defaultValue value> -- select an option -- </option>
                 <option>1. High/Critical </option>
