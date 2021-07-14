@@ -65,7 +65,7 @@ const BadgeReport = (props) => {
   }
 
   const deletedBadge = (badge, index) => {
-    if (window.confirm("Are you sure you want to delete this badge? Note, this won't be fully deleted until you click the save button below.")) {
+    if (window.confirm("Are you sure you want to delete this badge? Note even if you click ok, this won't be fully deleted until you click the save button below.")) {
       let newBadges = sortBadges.slice();
       newBadges.splice(index, 1);
       setSortBadges(newBadges);
@@ -122,7 +122,7 @@ const BadgeReport = (props) => {
               {props.isAdmin ?       
               <td><button type="button" className="btn btn-outline-danger"
                 onClick={(e) => deletedBadge(value, index)}>Delete</button></td> : []}
-              <td><Input type="checkbox" id={value.badge._id} checked={value.featured} onChange={(e)=>{featuredChange(value, index, e)}}/></td>
+              <td style={{textAlign: 'center'}}><Input type="checkbox" id={value.badge._id} checked={value.featured} onChange={(e)=>{featuredChange(value, index, e)}}/></td>
             </tr>
           )}
         </tbody>

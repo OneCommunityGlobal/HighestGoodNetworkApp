@@ -27,7 +27,7 @@ const  TeamTable = (props) => {
   }
 
   return (
-    <table class="center">
+    <table className="center">
     <table className="table table-bordered table-responsive-sm">
       <thead>
       <tr>

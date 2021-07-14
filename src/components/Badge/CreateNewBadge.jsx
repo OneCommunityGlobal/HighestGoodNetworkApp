@@ -97,7 +97,7 @@ const CreateNewBadge = (props) => {
       </FormGroup>
       <FormGroup>
         <Label for="category">Category  </Label>
-        <i class="fa fa-info-circle" id="CategoryInfo" style={{ marginLeft: '5px' }} />
+        <i className="fa fa-info-circle" id="CategoryInfo" style={{ marginLeft: '5px' }} />
         <UncontrolledTooltip placement="right" target="CategoryInfo" style={{ backgroundColor: '#666', color: '#fff' }} >
           <p className="badge_info_icon_text">Choosing a category is optional but generally the best thing to do. If no category is chosen, the category will automatically be marked as "unspecified", the least cool option of all.</p>
         </UncontrolledTooltip>
@@ -126,7 +126,7 @@ const CreateNewBadge = (props) => {
       </FormGroup>
       <FormGroup>
         <Label for="badgeRanking">Ranking </Label>
-        <i class="fa fa-info-circle" id="RankingInfo" style={{ marginLeft: '5px' }} />
+        <i className="fa fa-info-circle" id="RankingInfo" style={{ marginLeft: '5px' }} />
         <UncontrolledTooltip placement="right" target="RankingInfo" style={{ backgroundColor: '#666', color: '#fff' }}>
           <p className="badge_info_icon_text">Ranking number MUST be non-negative and whole number. Seriously, how could anything be ranked -1.1? Also, the default value is "0", which would be the lowest rank, 1 though is the highest rank. Confused yet?</p>
           <p className="badge_info_icon_text">Good news is, everything else is really simple! The lower the number (other than zero) the higher the badge ranking and the higher a badge will show up on a person's dashboard. Want to see a badge at the top of someone's list, make it #1!</p>

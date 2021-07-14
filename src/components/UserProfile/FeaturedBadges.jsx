@@ -3,7 +3,6 @@ import BadgeImage from './BadgeImage';
 
 const FeaturedBadges = (props) => {
   let [filteredBadges, setFilteredBadges] = useState([]);
-  console.log(props.badges);
   const filterBadges = (allBadges) => {
     let filteredList = allBadges || [];
 
@@ -20,7 +19,6 @@ const FeaturedBadges = (props) => {
     return filteredList.slice(0, 5);
   }
   useEffect(()=>{
-    console.log(props.badges);
     setFilteredBadges(filterBadges(props.badges));
   }, [props.badges])
  

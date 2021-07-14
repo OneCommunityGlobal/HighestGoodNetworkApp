@@ -20,7 +20,14 @@ const Badge = (props) => {
       props.getUserProfile(userId).then(() => {
         let count = 0;
         if (props.userProfile.badgeCollection) {
-          props.userProfile.badgeCollection.forEach(badge => { count += badge.count; });
+          props.userProfile.badgeCollection.forEach(badge => { 
+            console.log(badge);
+            if (badge?.badge?.badgeName === "Personal Max" || badge?.badge?.type === "Personal Max") {
+              count +=1;
+            } else {
+              count += badge.count; 
+            } 
+          });
           setTotalBadge(Math.round(count));
         }
       });
@@ -33,7 +40,14 @@ const Badge = (props) => {
     props.getUserProfile(userId).then(() => {
       let count = 0;
       if (props.userProfile.badgeCollection) {
-        props.userProfile.badgeCollection.forEach(badge => { count += badge.count; });
+        props.userProfile.badgeCollection.forEach(badge => { 
+          console.log(badge)
+          if (badge?.badge?.badgeName === "Personal Max" || badge?.badge?.type === "Personal Max") {
+            count +=1;
+          } else {
+            count += badge.count; 
+          } 
+        });
         setTotalBadge(Math.round(count));
       }
     });
