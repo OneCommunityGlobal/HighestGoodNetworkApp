@@ -109,7 +109,7 @@ const Badges = (props) => {
 
 const mapStateToProps = state => ({
   userProfile: state.userProfile,
-  allBadgeData: state.badge.allBadgeData
+  allBadgeData: state?.badge?.allBadgeData
 });
 
 const mapDispatchToProps = dispatch => {
