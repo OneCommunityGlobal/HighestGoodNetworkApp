@@ -54,7 +54,7 @@
 .new_badges {
   display: flex;
   flex-wrap: wrap;
-  overflow-y: scroll;
+  overflow-y: auto;
   height: 70px;
 }
 

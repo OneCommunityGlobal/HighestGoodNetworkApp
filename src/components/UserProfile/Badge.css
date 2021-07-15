@@ -15,7 +15,7 @@
   border-radius: 50%;
   height: 115px;
   width: 115px;
-  margin:10px;
+  margin: 6px;
 }
 
 .badge_image_lg > img {
@@ -79,7 +79,7 @@
 
 .badge_md_image_container {
   position: relative;
-  height: 125px;
+  height: 117px;
 }
 
 .badgemanagement-actions-cell {

@@ -7,16 +7,24 @@ import './Badge.css';
 import { getUserProfile } from '../../actions/userProfile';
 import FeaturedBadges from './FeaturedBadges';
 import BadgeReport from '../Badge/BadgeReport';
+import AssignBadgePopup from './AssignBadgePopup';
 
 const Badges = (props) => {
   const [isOpen, setOpen] = useState(false);
+  const [assignisOpen, assignsetOpen] = useState(false);
   const [totalBadge, setTotalBadge] = useState(0);
   const toggle = () => {
     if (isOpen) {
       props.getUserProfile(props.userId)?.then(() => {
         let count = 0;
         if (props.userProfile.badgeCollection) {
-          props.userProfile.badgeCollection.forEach(badge => { count += badge.count; });
+          props.userProfile.badgeCollection.forEach(badge => { 
+            if (badge?.badge?.badgeName === "Personal Max" || badge?.badge?.type === "Personal Max") {
+              count +=1;
+            } else {
+              count += badge.count; 
+            } 
+          });
           setTotalBadge(Math.round(count));
         }
       });
@@ -24,12 +32,22 @@ const Badges = (props) => {
     setOpen(isOpen => !isOpen)
   };
 
+  const assigntoggle = () => {
+    assignsetOpen(assignisOpen => !assignisOpen)
+  };
+
   useEffect(()=>{
 
     props.getUserProfile(props.userId)?.then(() => {
       let count = 0;
       if (props.userProfile.badgeCollection) {
-        props.userProfile.badgeCollection.forEach(badge => { count += badge.count; });
+        props.userProfile.badgeCollection.forEach(badge => { 
+          if (badge?.badge?.badgeName === "Personal Max" || badge?.badge?.type === "Personal Max") {
+            count +=1;
+          } else {
+            count += badge.count; 
+          } 
+        });
         setTotalBadge(Math.round(count));
       }
     });
@@ -53,6 +71,14 @@ const Badges = (props) => {
           <ModalHeader toggle={toggle}>Full View of Badge History</ModalHeader>
           <ModalBody><BadgeReport badges={props.badges} userId={props.userId} isAdmin={props.isAdmin} close={toggle}/></ModalBody>
         </Modal>
+
+        {props.isAdmin ? <>
+        <Button className="btn--dark-sea-green float-right mr-2" onClick={assigntoggle}>Assign Badges</Button>
+        <Modal size="lg" isOpen={assignisOpen} toggle={assigntoggle}>
+          <ModalHeader toggle={assigntoggle}>Assign Badges</ModalHeader>
+          <ModalBody><AssignBadgePopup allBadgeData={props.allBadgeData} userId={props.userId} isAdmin={props.isAdmin} close={assigntoggle}/></ModalBody>
+        </Modal> </> : 
+        []}
       </CardTitle>
         <FeaturedBadges badges={props.badges} />
         <CardText
@@ -72,11 +98,16 @@ const Badges = (props) => {
     <p className="badge_info_icon_text">No badges in this area? Uh, in that cases, everything said above is a bit premature. Sorry about that... Everyone must start somewhere, and in your case, that somewhere is with the big empty, desolate, bare and barren badge box below (BEDBABBBB). If we had a BEDBABBBB badge, you'd earn it, but we don't, so this area is blank.</p>
     <p className="badge_info_icon_text">No worries though, we're sure there are other areas of your life where you are a Champion already. Stick with us long enough and this will be another one.</p>
   </UncontrolledTooltip>
+  <UncontrolledTooltip placement="auto" target="CountInfo" style={{ backgroundColor: '#666', color: '#fff' }}>
+        <p className="badge_info_icon_text">This is the total number of badges you have earned. (Way to go Champion!) It increases if you earn the same badge multiple times too!</p>
+        <p className="badge_info_icon_text">There are many things in life to be proud of. Some are even worth bragging about. If your number here is large, it definitely falls into the later category.</p>
+  </UncontrolledTooltip>
 </>
 )};
 
 const mapStateToProps = state => ({
   userProfile: state.userProfile,
+  allBadgeData: state?.badge?.allBadgeData
 });
 
 const mapDispatchToProps = dispatch => {

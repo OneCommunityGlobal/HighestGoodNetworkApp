@@ -41,20 +41,25 @@ const Project = props => {
           onBlur={updateProject} />
       </td>
       <td className='projects__category--input'>
-        <select value={category} onChange={(e) => {
-            setCategory(e.target.value)
-            updateProject();
-          }}>
-          <option default value="Unspecified">Select Category</option>
-          <option value="Food">Food</option>
-          <option value="Energy">Energy</option>
-          <option value="Housing">Housing</option>
-          <option value="Education">Education</option>
-          <option value="Society">Society</option>
-          <option value="Economics">Economics</option>
-          <option value="Stewardship">Stewardship</option>
-          <option value="Other">Other</option>
-        </select>
+        {(props.auth.user.role === UserRole.Administrator) ? (
+                  <select value={category} onChange={(e) => {
+                    setCategory(e.target.value)
+                    updateProject();
+                  }}>
+                  <option default value="Unspecified">Select Category</option>
+                  <option value="Food">Food</option>
+                  <option value="Energy">Energy</option>
+                  <option value="Housing">Housing</option>
+                  <option value="Education">Education</option>
+                  <option value="Society">Society</option>
+                  <option value="Economics">Economics</option>
+                  <option value="Stewardship">Stewardship</option>
+                  <option value="Other">Other</option>
+                </select>
+          ) :
+          category
+          }
+
       </td>
       <td className='projects__active--input' onClick={updateActive}>
         {props.active ?

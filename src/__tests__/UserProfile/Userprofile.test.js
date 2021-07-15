@@ -248,7 +248,7 @@ describe('User profile page', () => {
       expect(screen.getByRole('button', {name : 'Submit'})).toBeInTheDocument();
     })
     it("should trigger addBlueSquare when admin click on random blue square", async () => {
-      userEvent.click(screen.getAllByRole('button')[2]);
+      userEvent.click(screen.getAllByRole('button')[3]);
       expect(screen.getByText('Summary')).toBeInTheDocument();
     })
   });
@@ -293,7 +293,7 @@ describe('Non-admin user', () => {
       expect(screen.queryByText('+')).toBeFalsy();
     });
     it("should fire handleBlueSquare to view the blue square once the user click", async () => {
-      userEvent.click(screen.getAllByRole('button')[2]);
+      userEvent.click(screen.getAllByRole('button')[3]);
       expect(screen.getByText('Summary')).toBeInTheDocument();
     })
   });

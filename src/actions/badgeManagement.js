@@ -148,8 +148,13 @@ export const assignBadgesByUserID = (userId, selectedBadges) => {
       }, 6000);
       return;
     }
-    const badgeCollection = res.data[0].badgeCollection;
-    const UserToBeAssigned = res.data[0]._id;
+    const badgeCollection = res.data.badgeCollection;
+    const UserToBeAssigned = res.data._id;
+
+    for(let i = 0; i<badgeCollection.length; i++) {
+      badgeCollection[i].badge = badgeCollection[i].badge._id;
+    }
+    console.log(badgeCollection);
 
     selectedBadges.forEach((badgeId) => {
       let included = false;
