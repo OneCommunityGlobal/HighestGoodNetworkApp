@@ -66,9 +66,7 @@ const Badges = (props) => {
         }}
       >
         Featured Badges <i className="fa fa-info-circle" id="FeaturedBadgeInfo" />
-
-
-        <Button className="btn--dark-sea-green float-right" onClick={toggle}>Choose Favorites</Button>
+        <Button className="btn--dark-sea-green float-right" onClick={toggle}>Select Featured</Button>
         <Modal size="lg" isOpen={isOpen} toggle={toggle}>
           <ModalHeader toggle={toggle}>Full View of Badge History</ModalHeader>
           <ModalBody><BadgeReport badges={props.badges} userId={props.userId} isAdmin={props.isAdmin} close={toggle}/></ModalBody>

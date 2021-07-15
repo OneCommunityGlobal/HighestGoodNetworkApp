@@ -224,12 +224,26 @@ class TimelogPage extends Component {
                                 className="fa fa-info-circle"
                                 data-tip
                                 data-for="timeEntryTip"
+                                data-delay-hide='1000'
                                 aria-hidden="true"
                                 title=""
                               />
                             </Button>
                             <ReactTooltip id="timeEntryTip" place="bottom" effect="solid">
-                              Clicking this button only allows for “Intangible Time” to be added to your time log. You can manually log Intangible Time but it doesn’t count towards your weekly time commitment.
+                              Clicking this button only allows for “Intangible Time” to be added to your time log. <u>You can manually log Intangible Time but it doesn’t <br/>
+                              count towards your weekly time commitment.</u><br/><br/>
+                              
+                              “Tangible Time” is the default for logging time using the timer at the top of the app. It represents all work done on assigned action items <br/>
+                              and is what counts towards a person’s weekly volunteer time commitment. The only way for a volunteer to log Tangible Time is by using the clock<br/>
+                               in/out timer. <br/><br/>
+
+                              Intangible Time is almost always used only by the management team. It is used for weekly Monday night management team calls, monthly management<br/>
+                               team reviews and Welcome Team Calls, and non-action-item related research, classes, and other learning, meetings, etc. that benefit or relate to <br/>
+                               the project but aren’t related to a specific action item on the <a href="https://www.tinyurl.com/oc-os-wbs">One Community Work Breakdown Structure.</a><br/><br/>
+
+                              Intangible Time may also be logged by a volunteer when in the field or for other reasons when the timer wasn’t able to be used. In these cases, the <br/>
+                              volunteer will use this button to log time as “intangible time” and then request that an Admin manually change the log from Intangible to Tangible.<br/><br/>
+
                             </ReactTooltip>
                           </div>
                         </div>
