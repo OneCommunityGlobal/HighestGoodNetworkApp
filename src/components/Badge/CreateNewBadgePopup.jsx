@@ -6,7 +6,7 @@ import { connect } from 'react-redux';
 import { fetchAllProjects } from '../../actions/projects';
 import { createNewBadge, closeAlert } from '../../actions/badgeManagement';
 
-const CreateNewBadge = (props) => {
+const CreateNewBadgePopup = (props) => {
 
   const [badgeName, setBadgeName] = useState('');
   const [imageUrl, setImageUrl] = useState('');
@@ -40,15 +40,17 @@ const CreateNewBadge = (props) => {
         setDescription(event.target.value);
         break;
       case 'category':
-        if (category.length === 0) {
+        const selectedCategoryValue = event.target.value;
+        if (selectedCategoryValue.length === 0) {
           setCategory('Unspecified');
         } else {
-          setCategory(event.target.value);
+          setCategory(selectedCategoryValue);
         }
         break;
       case 'project':
-        setProjectName(event.target.value);
-        if (projectName.length === 0) {
+        const selectedProjectName = event.target.value;
+        setProjectName(selectedProjectName);
+        if (selectedProjectName.length === 0) {
           setProjectId(null);
         } else {
           const selectedIndex = event.target.options.selectedIndex;
@@ -152,4 +154,4 @@ const mapDispatchToProps = dispatch => ({
   closeAlert: () => dispatch(closeAlert())
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(CreateNewBadge);
+export default connect(mapStateToProps, mapDispatchToProps)(CreateNewBadgePopup);
