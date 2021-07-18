@@ -11,6 +11,7 @@ const CreateNewBadgePopup = (props) => {
   const [badgeName, setBadgeName] = useState('');
   const [imageUrl, setImageUrl] = useState('');
   const [description, setDescription] = useState('');
+  const [type, setType] = useState('Custom');
   const [category, setCategory] = useState('Unspecified');
   const [projectName, setProjectName] = useState('');
   const [projectId, setProjectId] = useState(null);
@@ -58,6 +59,13 @@ const CreateNewBadgePopup = (props) => {
           setProjectId(projectId);
         }
         break;
+      case 'type':
+          const selectedType = event.target.value;
+          setType(selectedType);
+          if (selectedType.length === 0) {
+            setType("Unassigned");
+          }
+          break;
       case 'badgeRanking':
         setRanking(Number(event.target.value));
         break;
@@ -98,23 +106,64 @@ const CreateNewBadgePopup = (props) => {
         <Input type="textarea" name="text" id="badgeDescription" value={description} onChange={handleChange} invalid={description.length === 0} />
       </FormGroup>
       <FormGroup>
-        <Label for="category">Category  </Label>
+        <Label for="category">Type  </Label>
         <i className="fa fa-info-circle" id="CategoryInfo" style={{ marginLeft: '5px' }} />
-        <UncontrolledTooltip placement="right" target="CategoryInfo" style={{ backgroundColor: '#666', color: '#fff' }} >
-          <p className="badge_info_icon_text">Choosing a category is optional but generally the best thing to do. If no category is chosen, the category will automatically be marked as "unspecified", the least cool option of all.</p>
+        <UncontrolledTooltip placement="right" target="TypeInfo" style={{ backgroundColor: '#666', color: '#fff' }} >
+          <p className="badge_info_icon_text">Choosing a type is optional but generally the best thing to do. If no type is chosen, the type will automatically be marked as "Custom", the least cool option of all as no autoassignment will happen.</p>
         </UncontrolledTooltip>
-        <Input type="select" name="selectCategory" id="category" value={category} onChange={handleChange}>
+        <Input type="select" name="selectType" id="category" value={type} onChange={handleChange}>
           <option value={''}>{''}</option>
-          <option>Food</option>
-          <option>Energy</option>
-          <option>Housing</option>
-          <option>Education</option>
-          <option>Society</option>
-          <option>Economics</option>
-          <option>Stewardship</option>
-          <option>Other</option>
+          <option>No Infringement Streak</option>
+          <option>Minimum Hours Multiple</option>
+          <option>Personal Max</option>
+          <option>Most Hrs in Week</option>
+          <option>X Hours for X Week Streak</option>
+          <option>Lead a team of X+</option>
+          <option>Total Hrs in Category</option>
+          <option>Custom</option>
         </Input>
       </FormGroup>
+      {type == 'Total Hrs in Category' ? 
+              <FormGroup>
+              <Label for="category">Hours  </Label>
+              <i className="fa fa-info-circle" id="CategoryInfo" style={{ marginLeft: '5px' }} />
+              <UncontrolledTooltip placement="right" target="CategoryInfo" style={{ backgroundColor: '#666', color: '#fff' }} >
+                <p className="badge_info_icon_text">Choosing a the amount of Hours necessary for .</p>
+              </UncontrolledTooltip>
+              <Input type="select" name="selectCategory" id="category" value={category} onChange={handleChange}>
+                <option value={''}>{''}</option>
+                <option>Food</option>
+                <option>Energy</option>
+                <option>Housing</option>
+                <option>Education</option>
+                <option>Society</option>
+                <option>Economics</option>
+                <option>Stewardship</option>
+                <option>Other</option>
+              </Input>
+            </FormGroup>
+      : ""}
+      {type == 'Total Hrs in Category' ? 
+              <FormGroup>
+              <Label for="category">Category  </Label>
+              <i className="fa fa-info-circle" id="CategoryInfo" style={{ marginLeft: '5px' }} />
+              <UncontrolledTooltip placement="right" target="CategoryInfo" style={{ backgroundColor: '#666', color: '#fff' }} >
+                <p className="badge_info_icon_text">Choosing a category is necessary if type is Total Hrs in Category in order to autoassign the badge. If no category is chosen, the category will automatically be marked as "unspecified", the least cool option of all.</p>
+              </UncontrolledTooltip>
+              <Input type="select" name="selectCategory" id="category" value={category} onChange={handleChange}>
+                <option value={''}>{''}</option>
+                <option>Food</option>
+                <option>Energy</option>
+                <option>Housing</option>
+                <option>Education</option>
+                <option>Society</option>
+                <option>Economics</option>
+                <option>Stewardship</option>
+                <option>Other</option>
+              </Input>
+            </FormGroup>
+      : ""}
+
       <FormGroup>
         <Label for="project">Project</Label>
         <i class="fa fa-info-circle" id="ProjectInfo" style={{ marginLeft: '5px' }} />

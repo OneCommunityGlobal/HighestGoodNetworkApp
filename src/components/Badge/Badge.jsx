@@ -74,7 +74,8 @@ const Badge = (props) => {
           <Button className="btn--dark-sea-green float-right" onClick={toggle}>Badge Report</Button>
           <Modal size={"lg"} isOpen={isOpen} toggle={toggle}>
           <ModalHeader toggle={toggle}>Full View of Badge History</ModalHeader>
-            <ModalBody><BadgeReport badges={props.userProfile.badgeCollection || []} userId={props.userId} isAdmin={props.isAdmin} close={toggle}/></ModalBody>
+            <ModalBody><BadgeReport badges={props.userProfile.badgeCollection || []} userId={props.userId} 
+            firstName={props.userProfile.firstName} lastName={props.userProfile.lastName} isAdmin={props.isAdmin} close={toggle}/></ModalBody>
           </Modal>
         </CardBody>
       </Card >
