@@ -40,6 +40,11 @@ const NewBadges = (props) => {
             New Badges Earned <i className="fa fa-info-circle" id="NewBadgeInfo" />
           </CardTitle>
           <div className="new_badges">
+            {
+              filteredBadges.length == 0 ?
+              <strong style={{opacity: 0.7}}>Get yourself a herd of new badges! New badges are earned at the close of each epic week. Newest badges are placed here at the top for a week after you earn them so everyone can bask in the awesomeness of your achievement(s)!</strong>
+              : ""
+            }
             {filteredBadges.map((value, index) =>
               <BadgeImage time="new" count={value.count} badgeData={value.badge} index={index} key={index} />
             )}

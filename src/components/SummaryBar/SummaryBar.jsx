@@ -256,7 +256,7 @@ const SummaryBar = () => {
             <div className="col-8 border-black bg--white-smoke" align="center">
               <div className="py-3"> </div>
               <font className="text--black med_text_summary align-middle" size="3">
-                You still need to complete the weekly summary.
+                {!weeklySummary ? 'You still need to complete the weekly summary.' : "You have submitted your weekly summary."}
               </font>
               <div className="py-1"> </div>
             </div>
