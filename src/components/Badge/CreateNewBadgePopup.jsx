@@ -63,7 +63,7 @@ const CreateNewBadgePopup = (props) => {
           const selectedType = event.target.value;
           setType(selectedType);
           if (selectedType.length === 0) {
-            setType("Unassigned");
+            setType("Custom");
           }
           break;
       case 'badgeRanking':
@@ -83,6 +83,9 @@ const CreateNewBadgePopup = (props) => {
       project: projectId,
       ranking: ranking,
       description: description,
+      multipe: multiple,
+      totalHrs: hours,
+      months: months
     }
     props.createNewBadge(newBadge);
   }
@@ -106,13 +109,13 @@ const CreateNewBadgePopup = (props) => {
         <Input type="textarea" name="text" id="badgeDescription" value={description} onChange={handleChange} invalid={description.length === 0} />
       </FormGroup>
       <FormGroup>
-        <Label for="category">Type  </Label>
+        <Label for="type">Type  </Label>
         <i className="fa fa-info-circle" id="CategoryInfo" style={{ marginLeft: '5px' }} />
         <UncontrolledTooltip placement="right" target="TypeInfo" style={{ backgroundColor: '#666', color: '#fff' }} >
           <p className="badge_info_icon_text">Choosing a type is optional but generally the best thing to do. If no type is chosen, the type will automatically be marked as "Custom", the least cool option of all as no autoassignment will happen.</p>
         </UncontrolledTooltip>
-        <Input type="select" name="selectType" id="category" value={type} onChange={handleChange}>
-          <option value={''}>{''}</option>
+        <Input type="select" name="selectType" id="type" value={type} onChange={handleChange}>
+          <option value={'Custom'}>{'Custom'}</option>
           <option>No Infringement Streak</option>
           <option>Minimum Hours Multiple</option>
           <option>Personal Max</option>
@@ -120,10 +123,9 @@ const CreateNewBadgePopup = (props) => {
           <option>X Hours for X Week Streak</option>
           <option>Lead a team of X+</option>
           <option>Total Hrs in Category</option>
-          <option>Custom</option>
         </Input>
       </FormGroup>
-      {type == 'Total Hrs in Category' ? 
+      {type == 'Total Hrs in Category' || type== "X Hours for X Week Streak" ? 
               <FormGroup>
               <Label for="category">Hours  </Label>
               <i className="fa fa-info-circle" id="CategoryInfo" style={{ marginLeft: '5px' }} />
