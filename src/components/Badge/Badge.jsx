@@ -12,6 +12,7 @@ import { getUserProfile } from '../../actions/userProfile';
 
 const Badge = (props) => {
   const [isOpen, setOpen] = useState(false);
+  const [isOpenTypes, setOpenTypes] = useState(false);
   const [totalBadge, setTotalBadge] = useState(0);
 
   const toggle = () => {
@@ -33,6 +34,10 @@ const Badge = (props) => {
       });
     }
     setOpen(isOpen => !isOpen)
+  };
+
+  const toggleTypes = () => {
+    setOpenTypes(isOpenTypes => !isOpenTypes)
   };
 
   useEffect(() => {
@@ -57,7 +62,7 @@ const Badge = (props) => {
     <>
       <Card style={{ backgroundColor: '#fafafa', borderRadius: 0 }} id="badgesearned">
         <CardHeader tag="h3">
-          Badges
+          Badges <i className="fa fa-info-circle" id="BadgeInfo" onClick={toggleTypes} />
       </CardHeader>
         <CardBody>
           <NewBadges badges={props.userProfile.badgeCollection || []} />
@@ -83,6 +88,21 @@ const Badge = (props) => {
         <p className="badge_info_icon_text">This is the total number of badges you have earned. (Way to go Champion!) It increases if you earn the same badge multiple times too!</p>
         <p className="badge_info_icon_text">There are many things in life to be proud of. Some are even worth bragging about. If your number here is large, it definitely falls into the later category.</p>
       </UncontrolledTooltip>
+      <UncontrolledTooltip autohide={false} placement="auto" target="BadgeInfo" style={{ backgroundColor: '#666', color: '#fff'}}>
+        <p className="badge_info_icon_text">There are several types of badges you can earn for hitting different milestones click this icon to learn more about the different types of badges.</p>
+      </UncontrolledTooltip>
+      <Modal isOpen={isOpenTypes} toggle={toggleTypes}>
+        <ModalHeader  toggle={toggleTypes}>Badge Types</ModalHeader>
+        <ModalBody>
+        <p className="badge_info_icon_text">No Infringement Streak: Not recieving any infringement for a certain number of months. </p>
+        <p className="badge_info_icon_text">Hours in Category: As you submit hours to a project of a certain category such as  'Food', 'Energy', etc you can earn badges for hitting certain levels of hours worked in each category.</p>
+        <p className="badge_info_icon_text">Hour Multiple: If you earn a multiple of your weekly comitted hours you can earn a corresponding badge for that!</p>
+        <p className="badge_info_icon_text">Personal Max: This badge will be earned after your first week with the count(little red number) being the amount of hours you put in that week and updated everytime you beat it.</p>
+        <p className="badge_info_icon_text">Most Hours This Week: This badge will be earned if you put in the most HRs of the entire organization in a certain week.</p>
+        <p className="badge_info_icon_text">X Hours for X Week Streak: This badge will be earned if you put in X Number of Hours for X Weeks in a row. In the case of the one week badges the count will increase on the corresponding highest hour value badge each week.  For other badges 2 weeks, 3 weeks etc.  Once you earn a higher hour badge for that streak it will replace the ones below it.</p>
+        <p className="badge_info_icon_text">Lead a team of X+: For Managers they can earn badges for the size of the team that they lead whether it is a 5, 10, 20..etc person team.</p>
+        </ModalBody>
+      </Modal>
     </>
   );
 };
