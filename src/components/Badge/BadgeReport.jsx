@@ -66,7 +66,7 @@ const BadgeReport = (props) => {
           </tbody>
       </table>
       ${(i+1) % 4 == 0 && (i+1)!==badges.length? `</br></br></br>
-      <h3>Badge Report (Page ${1 + Math.ceil((i+1)/4)} of ${Math.floor(badges.length/4)})</h3>
+      <h3>Badge Report (Page ${1 + Math.ceil((i+1)/4)} of ${Math.ceil(badges.length/4)})</h3>
     <div style="margin-bottom: 20px; color: orange;"><h4>For ${props.firstName} ${props.lastName}</h4></div>
     <div style="color:#DEE2E6; margin:10px 0px 20px 0px; text-align:center;">_______________________________________________________________________________________________</div>
       ` : ''}`;
