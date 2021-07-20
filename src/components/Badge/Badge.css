@@ -109,3 +109,11 @@
 .widett {
   width: 500px;
 }
+
+#badgeEdit .form-group i {
+  margin-left: 5px;
+}
+
+.badgeTooltip .tooltip-inner {
+  background-color: #666;
+}
