@@ -47,6 +47,7 @@ const BadgeTableFilter = (props) => {
           value={props.types}
         />
       </td>
+      <td id="badge_details"></td>
       <td id="badge_ranking">
         <DropDownSearchBox id={"badge_ranking_sort"}
           items={orders}
