@@ -46,7 +46,8 @@ const EditBadgePopup = (props) => {
     setMultiple(props.badgeValues ? props.badgeValues.multiple : 0);
     setTeamPeople(props.badgeValues ? props.badgeValues.people : 0);
     setRanking(props.badgeValues ? props.badgeValues.ranking : 0);
-  }, []);
+    console.log(props.badgeValues);
+  }, [props.badgeValues]);
 
   useEffect(() => {
     displayTypeRelatedFields(type);
@@ -163,7 +164,9 @@ const EditBadgePopup = (props) => {
       multiple: multiple,
       people: teamPeople
     }
-    props.updateBadge(badgeId, badgeData);
+    props.updateBadge(badgeId, badgeData).then(()=>{
+      closePopup();
+    });
   }
 
   return (

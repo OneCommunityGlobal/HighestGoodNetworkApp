@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import {
-  Container, Button, Modal, ModalBody, ModalFooter
+  Container, Button, Modal, ModalBody, ModalFooter, Card, CardTitle, CardBody, CardImg, CardText, UncontrolledPopover,
 } from 'reactstrap';
 import { connect } from 'react-redux';
 import { deleteBadge, closeAlert } from '../../actions/badgeManagement';
@@ -34,8 +34,9 @@ const BadgeDevelopmentTable = (props) => {
   const [editPopup, setEditPopup] = useState(false);
 
   const onEditButtonClick = (badgeValues) => {
-    setEditPopup(true);
     setEditBadgeValues(badgeValues);
+    setEditPopup(true);
+    
   }
 
   const onDeleteButtonClick = (badgeId, badgeName) => {
@@ -120,7 +121,23 @@ const BadgeDevelopmentTable = (props) => {
         <tbody>
           {filteredBadges.map((value) =>
             <tr key={value._id} >
-              <td className="badge_image_sm"> <img src={value.imageUrl} /></td>
+              <td className="badge_image_sm"> <img src={value.imageUrl} id={"popover_" + value._id}/>
+              <UncontrolledPopover trigger="hover" target={"popover_" + value._id}>
+                <Card className="text-center">
+                  <CardImg className="badge_image_lg" src={value?.imageUrl} />
+                  <CardBody>
+                    <CardTitle
+                      style={{
+                        fontWeight: 'bold',
+                        fontSize: 18,
+                        color: '#285739',
+                        marginBottom: 15
+                      }}>{value?.badgeName}</CardTitle>
+                    <CardText>{value?.description}</CardText>
+                  </CardBody>
+                </Card>
+              </UncontrolledPopover>
+              </td>
               <td>{value.badgeName}</td>
               <td>{value.description || ''}</td>
               <td>{value.type || ''}</td>
