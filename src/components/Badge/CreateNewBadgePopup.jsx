@@ -134,11 +134,11 @@ const CreateNewBadgePopup = (props) => {
       ranking: ranking,
       type: type,
       category: category,
-      hours: hours,
+      totalHrs: hours,
       weeks: weeks,
       months: months,
       multiple: multiple,
-      teamPeople: teamPeople
+      people: teamPeople
     }
     props.createNewBadge(newBadge);
   }
