@@ -168,7 +168,7 @@ const EditBadgePopup = (props) => {
 
   return (
     <Modal isOpen={props.open} toggle={closePopup}>
-      <ModalHeader toggle={closePopup}>Confirm Delete Badge</ModalHeader>
+      <ModalHeader toggle={closePopup}>Edit Badge</ModalHeader>
       <ModalBody>
         <Form>
           <FormGroup>
