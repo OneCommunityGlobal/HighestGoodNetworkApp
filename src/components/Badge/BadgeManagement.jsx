@@ -5,7 +5,7 @@ import {
 } from 'reactstrap';
 import classnames from 'classnames';
 import AssignBadge from './AssignBadge';
-import EditBadge from './EditBadge';
+import BadgeDevelopment from './BadgeDevelopment';
 import { fetchAllBadges } from '../../actions/badgeManagement';
 
 const BadgeManagement = (props) => {
@@ -50,7 +50,7 @@ const BadgeManagement = (props) => {
           <AssignBadge allBadgeData={props.allBadgeData} />
         </TabPane>
         <TabPane tabId="2">
-          <EditBadge allBadgeData={props.allBadgeData} />
+          <BadgeDevelopment allBadgeData={props.allBadgeData} />
         </TabPane>
       </TabContent>
     </div>

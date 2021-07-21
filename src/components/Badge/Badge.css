@@ -105,3 +105,15 @@
 .badge_info_icon_text {
   text-align: left;
 }
+
+.widett {
+  width: 500px;
+}
+
+#badgeEdit .form-group i {
+  margin-left: 5px;
+}
+
+.badgeTooltip .tooltip-inner {
+  background-color: #666;
+}

@@ -6,19 +6,37 @@ import { connect } from 'react-redux';
 import { deleteBadge, closeAlert } from '../../actions/badgeManagement';
 import BadgeTableHeader from './BadgeTableHeader';
 import BadgeTableFilter from './BadgeTableFilter';
+import EditBadgePopup from './EditBadgePopup';
 import DeleteBadgePopup from './DeleteBadgePopup';
 
 
-const EditBadgeTable = (props) => {
+const BadgeDevelopmentTable = (props) => {
 
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [project, setProject] = useState('');
-  const [category, setCategory] = useState('');
+  const [type, setType] = useState('');
   const [order, setOrder] = useState('');
   const [deleteId, setDeleteId] = useState('')
   const [deleteName, setDeleteName] = useState('')
   const [deletePopup, setDeletePopup] = useState(false);
+
+  const [editBadgeValues, setEditBadgeValues] = useState('');
+  const [editBadgeId, setEditBadgeId] = useState('');
+  const [editBadgeName, setEditBadgeName] = useState('');
+  const [editImageUrl, setEditImageUrl] = useState('');
+  const [editDescription, setEditDescription] = useState('');
+  const [editType, setEditType] = useState('');
+  const [editCategory, setEditCategory] = useState('');
+  const [editProjectName, setEditProjectName] = useState('');
+  const [editProjectId, setEditProjectId] = useState('');
+  const [editRanking, setEditRanking] = useState('');
+  const [editPopup, setEditPopup] = useState(false);
+
+  const onEditButtonClick = (badgeValues) => {
+    setEditPopup(true);
+    setEditBadgeValues(badgeValues);
+  }
 
   const onDeleteButtonClick = (badgeId, badgeName) => {
     setDeletePopup(true);
@@ -34,12 +52,8 @@ const EditBadgeTable = (props) => {
     setDescription(text);
   };
 
-  const onBadgeProjectSearch = (text) => {
-    setProject(text);
-  }
-
-  const onBadgeCategorySearch = (text) => {
-    setCategory(text);
+  const onBadgeTypeSearch = (text) => {
+    setType(text);
   }
 
   const onBadgeRankingSort = (order) => {
@@ -49,14 +63,13 @@ const EditBadgeTable = (props) => {
   const resetFilters = () => {
     setName('');
     setDescription('');
-    setProject('');
-    setCategory('');
+    setType('');
     setOrder('');
   }
 
   const filterBadges = (allBadges) => {
     let filteredList = allBadges.filter((badge) => {
-      if (badge.badgeName.toLowerCase().indexOf(name.toLowerCase()) > -1 && badge.description.toLowerCase().indexOf(description.toLowerCase()) > -1 && (project.length === 0 || (project.length !== 0 && (badge.project && badge.project.projectName.toLowerCase().indexOf(project.toLowerCase()) > -1))) && badge.category.toLowerCase().indexOf(category.toLowerCase()) > -1) { return badge; }
+      if (badge.badgeName.toLowerCase().indexOf(name.toLowerCase()) > -1 && badge.description.toLowerCase().indexOf(description.toLowerCase()) > -1 && (!type.toLowerCase() || badge?.Type?.toLowerCase().indexOf(type.toLowerCase()) > -1)) { return badge; }
     });
 
     if (order === "Ascending") {
@@ -93,14 +106,13 @@ const EditBadgeTable = (props) => {
           <BadgeTableFilter
             onBadgeNameSearch={onBadgeNameSearch}
             onBadgeDescriptionSearch={onBadgeDescriptionSearch}
-            onBadgeProjectSearch={onBadgeProjectSearch}
-            onBadgeCategorySearch={onBadgeCategorySearch}
+            onBadgeTypeSearch={onBadgeTypeSearch}
             onBadgeRankingSort={onBadgeRankingSort}
             resetFilters={resetFilters}
             name={name}
             description={description}
             project={project}
-            category={category}
+            type={type}
             order={order}
 
           />
@@ -111,12 +123,11 @@ const EditBadgeTable = (props) => {
               <td className="badge_image_sm"> <img src={value.imageUrl} /></td>
               <td>{value.badgeName}</td>
               <td>{value.description || ''}</td>
-              <td>{value.category || ''}</td>
-              <td>{value.project ? value.project.projectName : ''}</td >
+              <td>{value.type || ''}</td>
               <td>{value.ranking || 0}</td>
               <td>
                 <span className="badgemanagement-actions-cell">
-                  <Button outline color="info">Edit</Button>{' '}
+                  <Button outline color="info" onClick={() => onEditButtonClick(value)}>Edit</Button>{' '}
                 </span>
                 <span className="badgemanagement-actions-cell">
                   <Button outline color="danger" onClick={() => onDeleteButtonClick(value._id, value.badgeName)}>Delete
@@ -126,6 +137,7 @@ const EditBadgeTable = (props) => {
             </tr>)}
         </tbody>
       </table>
+      <EditBadgePopup open={editPopup} setEditPopup={setEditPopup} badgeValues={editBadgeValues} />
       <DeleteBadgePopup open={deletePopup} setDeletePopup={setDeletePopup} deleteBadge={props.deleteBadge} badgeId={deleteId} badgeName={deleteName} />
       <Modal isOpen={props.alertVisible} toggle={() => props.closeAlert()} >
         <ModalBody className={"badge-message-background-" + props.color}><p className={"badge-message-text-" + props.color}>{props.message}</p>
@@ -150,4 +162,4 @@ const mapDispatchToProps = dispatch => ({
   closeAlert: () => dispatch(closeAlert())
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(EditBadgeTable);
+export default connect(mapStateToProps, mapDispatchToProps)(BadgeDevelopmentTable);

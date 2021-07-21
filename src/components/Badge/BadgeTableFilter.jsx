@@ -7,7 +7,7 @@ import {
 
 
 const BadgeTableFilter = (props) => {
-  const badgeCategory = ["Economics", "Education", "Energy", "Food", "Society", "Stewardship", "Other", "Unspecified"];
+  const badgeTypes = ['No Infringement Streak', 'Minimum Hours Multiple', 'Personal Max', 'Most Hrs in Week', 'X Hours for X Week Streak', 'Lead a team of X+', 'Total Hrs in Category', 'Custom'];
   const onBadgeNameSearch = (text) => {
     props.onBadgeNameSearch(text);
   }
@@ -18,12 +18,8 @@ const BadgeTableFilter = (props) => {
     props.onBadgeDescriptionSearch(text);
   }
 
-  const onBadgeProjectSearch = (text) => {
-    props.onBadgeProjectSearch(text);
-  }
-
-  const onBadgeCategorySearch = (text) => {
-    props.onBadgeCategorySearch(text);
+  const onBadgeTypeSearch = (text) => {
+    props.onBadgeTypeSearch(text);
   }
   const onBadgeRankingSort = (order) => {
     props.onBadgeRankingSort(order);
@@ -44,17 +40,11 @@ const BadgeTableFilter = (props) => {
           value={props.description}
         />
       </td>
-      <td id="badge_category">
-        <DropDownSearchBox id={"badge_category_search"}
-          items={badgeCategory}
-          searchCallback={onBadgeCategorySearch}
-          value={props.category}
-        />
-      </td>
-      <td id="badge_projcet">
-        <TextSearchBox id={"badge_project_search"}
-          searchCallback={onBadgeProjectSearch}
-          value={props.project}
+      <td id="badge_type">
+        <DropDownSearchBox id={"badge_types_search"}
+          items={badgeTypes}
+          searchCallback={onBadgeTypeSearch}
+          value={props.types}
         />
       </td>
       <td id="badge_ranking">
