@@ -5,8 +5,9 @@ import {
 import { connect } from 'react-redux';
 import './Badge.css';
 import { createNewBadge, closeAlert } from '../../actions/badgeManagement';
+import { badgeTypes } from './BadgeTypes';
 
-
+console.log(badgeTypes);
 const CreateNewBadgePopup = (props) => {
 
   const [badgeName, setBadgeName] = useState('');
@@ -14,24 +15,24 @@ const CreateNewBadgePopup = (props) => {
   const [description, setDescription] = useState('');
   const [ranking, setRanking] = useState(0);
 
+  // Type related
   const [type, setType] = useState('Custom');
   const [showCategory, setShowCategory] = useState(false);
   const [category, setCategory] = useState('Unspecified');
-  const [showHours, setShowHours] = useState(false);
-  const [hours, setHours] = useState(0);
+  const [showTotalHrs, setShowTotalHrs] = useState(false);
+  const [totalHrs, setTotalHrs] = useState(0);
   const [showWeeks, setShowWeeks] = useState(false);
   const [weeks, setWeeks] = useState(0);
   const [showMonths, setShowMonths] = useState(false);
   const [months, setMonths] = useState(0);
   const [showMultiple, setShowMultiple] = useState(false);
   const [multiple, setMultiple] = useState(0);
-  const [showTeamPeople, setShowTeamPeople] = useState(false);
-  const [teamPeople, setTeamPeople] = useState(0);
+  const [showPeople, setShowPeople] = useState(false);
+  const [people, setPeople] = useState(0);
 
   useEffect(() => {
     displayTypeRelatedFields(type);
   }, []);
-
 
   const validRanking = (ranking) => {
     const pattern = /^[0-9]*$/;
@@ -42,15 +43,14 @@ const CreateNewBadgePopup = (props) => {
 
   const resetTypeFieldDisplay = () => {
     setShowCategory(false);
-    setShowHours(false);
+    setShowTotalHrs(false);
     setShowWeeks(false);
     setShowMonths(false);
     setShowMultiple(false);
-    setShowTeamPeople(false);
+    setShowPeople(false);
   }
 
   const displayTypeRelatedFields = (targetType) => {
-    console.log(targetType);
     resetTypeFieldDisplay();
     switch (targetType) {
       case 'No Infringement Streak':
@@ -60,19 +60,23 @@ const CreateNewBadgePopup = (props) => {
         setShowMultiple(true);
         break;
       case 'X Hours for X Week Streak':
-        setShowHours(true);
+        setShowTotalHrs(true);
         setShowWeeks(true);
         break;
       case 'Lead a team of X+':
-        setShowTeamPeople(true);
+        setShowPeople(true);
         break;
       case 'Total Hrs in Category':
-        setShowHours(true);
+        setShowTotalHrs(true);
         setShowCategory(true);
         break;
       default:
         return;
     }
+  }
+
+  const closePopup = () => {
+    props.toggle();
   }
 
   const handleChange = (event) => {
@@ -105,8 +109,8 @@ const CreateNewBadgePopup = (props) => {
       case 'badgeRanking':
         setRanking(Number(event.target.value));
         break;
-      case 'badgeHours':
-        setHours(Number(event.target.value));
+      case 'badgeTotalHrs':
+        setTotalHrs(Number(event.target.value));
         break;
       case 'badgeWeeks':
         setWeeks(Number(event.target.value));
@@ -117,8 +121,8 @@ const CreateNewBadgePopup = (props) => {
       case 'badgeMultiple':
         setMultiple(Number(event.target.value));
         break;
-      case 'badgeTeamPeople':
-        setTeamPeople(Number(event.target.value));
+      case 'badgePeople':
+        setPeople(Number(event.target.value));
         break;
       default:
         return;
@@ -127,6 +131,7 @@ const CreateNewBadgePopup = (props) => {
 
 
   const handleSubmit = () => {
+    console.log(totalHrs);
     const newBadge = {
       badgeName: badgeName,
       imageUrl: imageUrl,
@@ -134,13 +139,15 @@ const CreateNewBadgePopup = (props) => {
       ranking: ranking,
       type: type,
       category: category,
-      totalHrs: hours,
+      totalHrs: totalHrs,
       weeks: weeks,
       months: months,
       multiple: multiple,
-      people: teamPeople
+      people: people
     }
-    props.createNewBadge(newBadge);
+    props.createNewBadge(newBadge).then(() => {
+      closePopup();
+    });
   }
 
   return (
@@ -170,13 +177,7 @@ const CreateNewBadgePopup = (props) => {
         </UncontrolledTooltip>
         <Input type="select" name="selectType" id="badgeType" value={type} onChange={handleChange}>
           <option value={'Custom'}>{'Custom'}</option>
-          <option>No Infringement Streak</option>
-          <option>Minimum Hours Multiple</option>
-          <option>Personal Max</option>
-          <option>Most Hrs in Week</option>
-          <option>X Hours for X Week Streak</option>
-          <option>Lead a team of X+</option>
-          <option>Total Hrs in Category</option>
+          {badgeTypes.map((element) => (<option>{element}</option>))}
         </Input>
       </FormGroup>
 
@@ -201,14 +202,14 @@ const CreateNewBadgePopup = (props) => {
         </FormGroup>
         : ""}
 
-      {showHours ?
+      {showTotalHrs ?
         <FormGroup>
-          <Label for="badgeHours">Hours</Label>
-          <i className="fa fa-info-circle" id="HoursInfo" />
-          <UncontrolledTooltip placement="right" target="HoursInfo" className="badgeTooltip">
+          <Label for="badgeTotalHrs">Hours</Label>
+          <i className="fa fa-info-circle" id="TotalHrsInfo" />
+          <UncontrolledTooltip placement="right" target="TotalHrsInfo" className="badgeTooltip">
             <p className="badge_info_icon_text">Choosing a the amount of Hours necessary for .</p>
           </UncontrolledTooltip>
-          <Input type="number" min="0" name="hours" id="badgeHours" value={hours} onChange={handleChange} placeholder="Please Enter a Number" />
+          <Input type="number" min="1" name="totalHrs" id="badgeTotalHrs" value={totalHrs} onChange={handleChange} placeholder="Please Enter a Number" />
         </FormGroup>
         : ""}
 
@@ -219,7 +220,7 @@ const CreateNewBadgePopup = (props) => {
           <UncontrolledTooltip placement="right" target="WeeksInfo" className="badgeTooltip">
             <p className="badge_info_icon_text">Choosing a the amount of Weeks necessary for .</p>
           </UncontrolledTooltip>
-          <Input type="number" min="0" name="weeks" id="badgeWeeks" value={weeks} onChange={handleChange} placeholder="Please Enter a Number" />
+          <Input type="number" min="1" name="weeks" id="badgeWeeks" value={weeks} onChange={handleChange} placeholder="Please Enter a Number" />
         </FormGroup>
         : ""}
 
@@ -230,7 +231,7 @@ const CreateNewBadgePopup = (props) => {
           <UncontrolledTooltip placement="right" target="MonthsInfo" className="badgeTooltip">
             <p className="badge_info_icon_text">Choosing a the amount of Months necessary for .</p>
           </UncontrolledTooltip>
-          <Input type="number" min="0" name="months" id="badgeMonths" value={months} onChange={handleChange} placeholder="Please Enter a Number" />
+          <Input type="number" min="1" name="months" id="badgeMonths" value={months} onChange={handleChange} placeholder="Please Enter a Number" />
         </FormGroup>
         : ""}
 
@@ -241,18 +242,18 @@ const CreateNewBadgePopup = (props) => {
           <UncontrolledTooltip placement="right" target="MultipleInfo" className="badgeTooltip">
             <p className="badge_info_icon_text">Choosing a the amount of Multiple necessary for .</p>
           </UncontrolledTooltip>
-          <Input type="number" min="0" name="multiple" id="badgeMultiple" value={multiple} onChange={handleChange} placeholder="Please Enter a Number" />
+          <Input type="number" min="1" name="multiple" id="badgeMultiple" value={multiple} onChange={handleChange} placeholder="Please Enter a Number" />
         </FormGroup>
         : ""}
 
-      {showTeamPeople ?
+      {showPeople ?
         <FormGroup>
-          <Label for="badgeTeamPeople">TeamPeople</Label>
-          <i className="fa fa-info-circle" id="TeamPeopleInfo" />
-          <UncontrolledTooltip placement="right" target="TeamPeopleInfo" className="badgeTooltip">
-            <p className="badge_info_icon_text">Choosing a the amount of TeamPeople necessary for .</p>
+          <Label for="badgePeople">People</Label>
+          <i className="fa fa-info-circle" id="PeopleInfo" />
+          <UncontrolledTooltip placement="right" target="PeopleInfo" className="badgeTooltip">
+            <p className="badge_info_icon_text">Choosing a the amount of People necessary for .</p>
           </UncontrolledTooltip>
-          <Input type="number" min="0" name="teamPeople" id="badgeTeamPeople" value={teamPeople} onChange={handleChange} placeholder="Please Enter a Number" />
+          <Input type="number" min="1" name="people" id="badgePeople" value={people} onChange={handleChange} placeholder="Please Enter a Number" />
         </FormGroup>
         : ""}
 
