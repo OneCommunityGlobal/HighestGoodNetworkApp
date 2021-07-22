@@ -177,7 +177,7 @@ const CreateNewBadgePopup = (props) => {
         </UncontrolledTooltip>
         <Input type="select" name="selectType" id="badgeType" value={type} onChange={handleChange}>
           <option value={'Custom'}>{'Custom'}</option>
-          {badgeTypes.map((element) => (<option>{element}</option>))}
+          {badgeTypes.map((element, i) => (<option key={i}>{element}</option>))}
         </Input>
       </FormGroup>
 

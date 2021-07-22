@@ -99,7 +99,11 @@ const BadgeDevelopmentTable = (props) => {
 
   const filterBadges = (allBadges) => {
     let filteredList = allBadges.filter((badge) => {
-      if (badge.badgeName.toLowerCase().indexOf(name.toLowerCase()) > -1 && badge.description.toLowerCase().indexOf(description.toLowerCase()) > -1 && (!type.toLowerCase() || badge?.Type?.toLowerCase().indexOf(type.toLowerCase()) > -1)) { return badge; }
+      if (badge.badgeName.toLowerCase().indexOf(name.toLowerCase()) > -1 &&
+        badge.description.toLowerCase().indexOf(description.toLowerCase()) > -1 &&
+        (!type.toLowerCase() || badge?.type?.toLowerCase().indexOf(type.toLowerCase()) > -1)) {
+        return badge;
+      }
     });
 
     if (order === "Ascending") {

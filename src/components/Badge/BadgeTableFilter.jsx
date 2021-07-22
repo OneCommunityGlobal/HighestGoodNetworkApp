@@ -44,7 +44,7 @@ const BadgeTableFilter = (props) => {
         <DropDownSearchBox id={"badge_types_search"}
           items={badgeTypes}
           searchCallback={onBadgeTypeSearch}
-          value={props.types}
+          value={props.type}
         />
       </td>
       <td id="badge_details"></td>
