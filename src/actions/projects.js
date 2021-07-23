@@ -88,7 +88,7 @@ export const deleteProject = (projectId) => {
 
 export const modifyProject = (type, projectId, projectName, category, isActive) => {
   const url = ENDPOINTS.PROJECT + projectId;
-  //console.log("set Active", projectId, projectName, isActive);
+  console.log("project info", type, projectId, projectName, isActive, category);
 
   if (type === "setActive") {
     isActive = !isActive;
@@ -99,10 +99,11 @@ export const modifyProject = (type, projectId, projectName, category, isActive) 
     try {
       const res = await axios.put(url, {
         "projectName": projectName,
+        "category": category,
         "isActive": isActive
       })
       status = res.status;
-
+      console.log(status);
     } catch (err) {
       console.log("CAN'T Set active", err);
       status = 400;
@@ -164,7 +165,7 @@ export const removeProject = (projectId, status) => {
   }
 }
 
-export const updateProject = (projectId, projectName, isActive, status) => {
+export const updateProject = (projectId, projectName, category, isActive, status) => {
   return {
     type: types.UPDATE_PROJECT,
     projectId,

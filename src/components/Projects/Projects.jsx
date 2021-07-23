@@ -51,12 +51,13 @@ export class Projects extends Component {
   /**
    * Changes the number of active projects
    */
-  onClickActive = (projectId, projectName, isActive) => {
-    this.props.modifyProject("setActive", projectId, projectName, isActive);
+  onClickActive = (projectId, projectName, category, isActive) => {
+    this.props.modifyProject("setActive", projectId, projectName, category, isActive);
   }
 
   onUpdateProjectName = (projectId, projectName, category, isActive) => {
-    this.props.modifyProject("updateName", projectId, projectName, isActive);
+    console.log("updateName", projectId, projectName, category, isActive);
+    this.props.modifyProject("updateName", projectId, projectName, category, isActive);
   }
 
   /**
