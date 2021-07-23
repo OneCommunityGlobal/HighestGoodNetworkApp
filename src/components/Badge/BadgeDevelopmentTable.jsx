@@ -29,33 +29,33 @@ const BadgeDevelopmentTable = (props) => {
       switch (badegValue.type) {
         case 'No Infringement Streak':
           if (badegValue.months) {
-            returnText = `NO BLUE SQUARE FOR ${badegValue.months} MONTHS`;
+            returnText = `No blue squares for ${badegValue.months} months`;
           }
           break;
         case 'Minimum Hours Multiple':
           if (badegValue.multiple) {
-            returnText = `${badegValue.multiple}X MINIMUM HOURS`;
+            returnText = `${badegValue.multiple}X Minimum Hours`;
           }
           break;
         case 'Personal Max':
-          returnText = "NEW MAX - PERSONAL RECORD";
+          returnText = "New Max - Personal Record";
           break;
         case 'Most Hrs in Week':
-          returnText = "MOST HOURS IN A WEEK";
+          returnText = "Most Hours In A Week";
           break;
         case 'X Hours for X Week Streak':
           if (badegValue.totalHrs && badegValue.weeks) {
-            returnText = `${badegValue.totalHrs} HRS ${badegValue.weeks}-WEEK STREAK`;
+            returnText = `${badegValue.totalHrs} Hours ${badegValue.weeks}-Week Streak`;
           }
           break;
         case 'Lead a team of X+':
           if (badegValue.people) {
-            returnText = `LEAD A TEAM OF ${badegValue.people}+`;
+            returnText = `Lead A Team Of ${badegValue.people}+`;
           }
           break;
         case 'Total Hrs in Category':
           if (badegValue.totalHrs && badegValue.category) {
-            returnText = `${badegValue.totalHrs} HOURS TOTAL IN ${badegValue.category} CATEGORY`;
+            returnText = `${badegValue.totalHrs} Hours Total In ${badegValue.category} Category`;
           }
           break;
       }
