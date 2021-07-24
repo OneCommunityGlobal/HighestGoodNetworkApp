@@ -3,6 +3,7 @@ import {
   Table, Button, UncontrolledTooltip
 } from 'reactstrap';
 import { connect } from 'react-redux';
+import { getUserProfile } from '../../actions/userProfile';
 import AssignTableRow from '../Badge/AssignTableRow';
 import { assignBadgesByUserID, clearNameAndSelected, closeAlert } from '../../actions/badgeManagement';
 
@@ -16,6 +17,7 @@ const AssignBadgePopup = (props) => {
   const assignBadges = async () => {
     await props.assignBadgesByUserID(props.userId, props.selectedBadges);
     await props.clearNameAndSelected();
+    await props.getUserProfile(props.userId);
     props.close();
   }
 

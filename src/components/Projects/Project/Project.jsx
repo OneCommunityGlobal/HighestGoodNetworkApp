@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { DELETE } from './../../../languages/en/ui'
 import './../projects.css'
 import { Link } from 'react-router-dom'
@@ -15,12 +15,19 @@ const Project = props => {
   const [name, setName] = useState(props.name)
   const [category, setCategory] = useState(props.category)
   const [active, setActive] = useState(props.active)
-
+  const [firstLoad, setFirstLoad] = useState(true)
   const updateActive = () => {
 
-    props.onClickActive(props.projectId, name, active)
+    props.onClickActive(props.projectId, name, category, active)
     setActive(!active);
   }
+
+  useEffect(()=> {
+    if (!firstLoad) {
+      updateProject();
+    } 
+    setFirstLoad(false);
+  }, [category])
 
 
   const updateProject = () => {
@@ -43,8 +50,7 @@ const Project = props => {
       <td className='projects__category--input'>
         {(props.auth.user.role === UserRole.Administrator) ? (
                   <select value={category} onChange={(e) => {
-                    setCategory(e.target.value)
-                    updateProject();
+                    setCategory(e.target.value);
                   }}>
                   <option default value="Unspecified">Select Category</option>
                   <option value="Food">Food</option>
