@@ -332,9 +332,9 @@ const TimeEntryForm = ({
         edit_count: reminder.edit_count + 1,
         edit_notice: !reminder.edit_notice,
       }));
-      setClose(true);
+      toggle();
     } else if (!edittime) {
-      setClose(true);
+      toggle();
     }
   };
 
