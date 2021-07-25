@@ -53,8 +53,9 @@ const TimeEntryForm = ({
     information: '',
   };
   const isDisabled = data ? data.disabled : false;
-  const [inputs, setInputs] = useState(edit ? data : initialState);
+  let [inputs, setInputs] = useState(edit ? data : initialState);
   const [errors, setErrors] = useState({});
+  let [close, setClose] = useState(false);
   const dispatch = useDispatch();
   const history = useHistory();
   const [reminder, setReminder] = useState(initialReminder);
@@ -62,9 +63,25 @@ const TimeEntryForm = ({
   const [openTangibleInfo, setTangibleInfo] = useState(false);
   const tangibleInfoToggle = (e) => { e.preventDefault(); setTangibleInfo(!openTangibleInfo) };
 
+
+
   useEffect(() => {
-    setInputs({ ...inputs, notes: '', projectId: '' })
-  }, [isOpen])
+    //this to make sure that the form is cleared before closing
+    if (close && inputs.projectId == '') {
+      //double make sure close is set to false to stop form from reclosing on open
+      close = false;
+      setClose((close)=>{
+        setTimeout(function myfunc() {
+          toggle();
+        }, 100);
+        return false
+      });
+    }
+  }, [close, inputs])
+
+  useEffect(() => {
+    
+  }, [inputs])
 
   const openModal = () => setReminder(reminder => ({
     ...reminder,
@@ -245,7 +262,7 @@ const TimeEntryForm = ({
       return;
     }
     setSubmitDisabled(true);
-    setTimeout(function () { setSubmitDisabled(false) }, 1000);
+    setTimeout(function () { setSubmitDisabled(false) }, 2000);
     const hours = inputs.hours === '' ? '0' : inputs.hours;
     const minutes = inputs.minutes === '' ? '0' : inputs.minutes;
 
@@ -295,38 +312,29 @@ const TimeEntryForm = ({
     //   totalComittedHours: totalTime,
     // };
     //await dispatch(updateUserProfile(userProfile._id, updatedUserprofile));
-
+    
     if (fromTimer) {
       if (status === 200) {
         const timerStatus = await dispatch(stopTimer(userId));
         if (timerStatus === 200 || timerStatus === 201) {
 
-          // setInputs(inputs => initialState);
-          // setReminder(reminder => initialReminder);
           resetTimer();
-          clearForm();
-          setTimeout(() => {
-            toggle();
-          }, 5);
-
+          clearForm(true);
 
         }
         //history.push(`/timelog/${userId}`);
       }
     } else if (!edit) {
-      setInputs(inputs => initialState);
-      setReminder(reminder => initialReminder);
-      toggle();
+      clearForm(true);
     } else if (!reminder.notice && edittime) {
       setReminder(reminder => ({
         ...reminder,
         edit_count: reminder.edit_count + 1,
         edit_notice: !reminder.edit_notice,
       }));
-      toggle();
+      setClose(true);
     } else if (!edittime) {
-
-      toggle();
+      setClose(true);
     }
   };
 
@@ -380,10 +388,15 @@ const TimeEntryForm = ({
     }));
   };
 
-  const clearForm = (event) => {
-    setInputs(inputs => initialState);
-    setReminder(reminder => initialReminder);
-    setErrors(errors => ({}));
+  const clearForm = (closed) => {
+    if (closed) {
+      //make sure form clears before close
+      inputs = {...initialState};
+      setClose(true);
+    }
+    setInputs({...initialState});
+    setReminder({...initialReminder});
+    setErrors({});
   };
 
   const isAdmin = useSelector(state => state.auth.user.role) === 'Administrator';

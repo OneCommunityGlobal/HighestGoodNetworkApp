@@ -129,7 +129,7 @@ const LeaderBoard = ({
                   title={`Weekly Committed: ${organizationData.weeklyComittedHours} hours`}
                   style={{
                     backgroundColor:
-                    organizationData.totaltime >= organizationData.weeklyComittedHours
+                    organizationData.tangibletime >= organizationData.weeklyComittedHours
                       ? 'green'
                       : 'red',
                     width: 15,
