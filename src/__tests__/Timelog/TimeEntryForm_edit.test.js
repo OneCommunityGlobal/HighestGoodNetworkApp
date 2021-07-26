@@ -87,10 +87,12 @@ describe('<TimeEntryForm edit/>', () => {
     userEvent.click(tengible);
     expect(tengible).not.toBeChecked();
   });
-  it('should generate warnings if some of the required fields are left blank', () => {
+  it('should generate warnings if some of the required fields are left blank', async () => {
     userEvent.click(screen.getByRole('button', { name: /clear form/i }));
     userEvent.click(screen.getByRole('button', { name: /save/i }));
-    expect(screen.getByText(/time should be greater than 0/i)).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByText(/time should be greater than 0/i)).toBeInTheDocument();
+    });
     expect(screen.getByText('Project/Task is required')).toBeInTheDocument();
   });
 

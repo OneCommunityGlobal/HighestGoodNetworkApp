@@ -41,10 +41,10 @@ const TimeEntryForm = ({
   };
   const initialReminder = {
     notification: false,
-    has_link: data && data.notes ?  true : false,
+    has_link: data && data.notes && data.notes.includes('http') ?  true : false,
     remind: '',
-    num_words: data && data.notes ? 10 : 0,
-    edit_count: data && data.editCount ? data.editCount : 0,
+    num_words: data && data.notes && data.notes.split(' ').length > 10 ? 10 : 0,
+    edit_count: data ? data.editCount : 0,
     edit_notice: true,
   };
 
