@@ -1,7 +1,7 @@
 import React from "react";
 import { Editor } from '@tinymce/tinymce-react';
 
-const TinyMCEEditor = ({ label,name, error,className, ...rest  }) => {
+const TinyMCEEditor = ({ label,name, error,className, value, ...rest  }) => {
 
   const config={
     plugins: 'autolink link image lists print preview',
@@ -16,7 +16,7 @@ const TinyMCEEditor = ({ label,name, error,className, ...rest  }) => {
        {...rest}
         id={name}
         name = {name}
-        config = {config}        
+        config = {config}   
         className={`form-control`}
       />    
 
