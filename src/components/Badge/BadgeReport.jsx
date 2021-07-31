@@ -60,7 +60,7 @@ const BadgeReport = (props) => {
               <td style="width:500px">
                 <div><b>Name:</b> <span class="name">${badges[i].badge.badgeName}</span></div>
                 <div><b>Count:</b> ${badges[i].count}</div>
-                <div><b>Description:</b>${badges[i].badge.description}</div>
+                <div><b>Description:</b> ${badges[i].badge.description}</div>
               </td>
             </tr>
           </tbody>
