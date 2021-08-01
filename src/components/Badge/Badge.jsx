@@ -92,7 +92,7 @@ const Badge = (props) => {
         <p className="badge_info_icon_text">There are several types of badges you can earn for hitting different milestones click this icon to learn more about the different types of badges.</p>
       </UncontrolledTooltip>
       <Modal isOpen={isOpenTypes} toggle={toggleTypes}>
-        <ModalHeader  toggle={toggleTypes}>Badge Types</ModalHeader>
+        <ModalHeader  toggle={toggleTypes}>Badge Types and Assignment</ModalHeader>
         <ModalBody>
         <p className="badge_info_icon_text">No Infringement Streak: Not recieving any infringement for a certain number of months. </p>
         <p className="badge_info_icon_text">Hours in Category: As you submit hours to a project of a certain category such as  'Food', 'Energy', etc you can earn badges for hitting certain levels of hours worked in each category.</p>
@@ -101,6 +101,7 @@ const Badge = (props) => {
         <p className="badge_info_icon_text">Most Hours This Week: This badge will be earned if you put in the most HRs of the entire organization in a certain week.</p>
         <p className="badge_info_icon_text">X Hours for X Week Streak: This badge will be earned if you put in X Number of Hours for X Weeks in a row. In the case of the one week badges the count will increase on the corresponding highest hour value badge each week.  For other badges 2 weeks, 3 weeks etc.  Once you earn a higher hour badge for that streak it will replace the ones below it.</p>
         <p className="badge_info_icon_text">Lead a team of X+: For Managers they can earn badges for the size of the team that they lead whether it is a 5, 10, 20..etc person team.</p>
+        <p className="badge_info_icon_text">Auto Assignment of the previous types of Badges happens at the end of each week (Saturday Midnight PST) as your time is processed, so make sure that your time has been inputted properly by that time in order to get credit.</p>
         </ModalBody>
       </Modal>
     </>
