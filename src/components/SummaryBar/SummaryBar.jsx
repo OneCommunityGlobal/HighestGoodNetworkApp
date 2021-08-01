@@ -175,12 +175,11 @@ const SummaryBar = () => {
             Activity for{' '}
           </font>
           <CardTitle className="text--black align-middle" tag="h3">
-            <div className="d-none d-lg-block .d-xl-block">
-              {firstName}
-              <br />
+            <div>
+              {firstName + ' '}
+              <br className="name-linebreak" />
               {lastName}
             </div>
-            <div className="d-lg-none d-xl-none">{`${firstName} ${lastName}`}</div>
           </CardTitle>
         </Col>
 
@@ -263,15 +262,17 @@ const SummaryBar = () => {
               <font size="3">SUMMARY</font>
               <div className="py-2"> </div>
             </div> */}
-
-            <div className="col-8 border-black bg--white-smoke" align="center">
-              <div className="py-3"> </div>
-              <font className="text--black med_text_summary align-middle" size="3">
-                {!weeklySummary
-                  ? 'You still need to complete the weekly summary.'
-                  : 'You have submitted your weekly summary.'}
-              </font>
-              <div className="py-1"> </div>
+            <div
+              className="col-8 border-black bg--white-smoke d-flex align-items-center"
+              align="center"
+            >
+              <div className="m-auto p-2">
+                <font className="text--black med_text_summary align-middle" size="3">
+                  {!weeklySummary
+                    ? 'You still need to complete the weekly summary.'
+                    : 'You have submitted your weekly summary.'}
+                </font>
+              </div>
             </div>
           </Row>
         </Col>
