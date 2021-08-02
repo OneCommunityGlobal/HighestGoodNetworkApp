@@ -7,7 +7,7 @@ import moment from 'moment'
 import Loading from '../common/Loading'
 // import { orange, silverGray, warningRed } from '../../constants/colors'
 // import BlueSquare from './BlueSquares'
-import Modal from './UserProfileModal'
+import UserProfileModal from './UserProfileModal'
 import UserLinks from './UserLinks'
 // import styleProfile from './UserProfile.module.scss';
 import './UserProfile.scss'
@@ -256,6 +256,7 @@ class UserProfile extends Component {
   }
 
   handleBlueSquare = (status = true, type = 'message', blueSquareID = '') => {
+
     if (type === 'addBlueSquare') {
       this.setState({
         showModal: status,
@@ -561,7 +562,7 @@ class UserProfile extends Component {
     return (
       <div>
         {showModal && (
-          <Modal
+          <UserProfileModal
             isOpen={showModal}
             closeModal={() => {
               this.setState({ showModal: false })
@@ -576,6 +577,7 @@ class UserProfile extends Component {
             id={id}
             isUserAdmin={isUserAdmin}
             handleLinkModel={this.handleLinkModel}
+            handleSubmit={this.handleSubmit}
           />
         )}
         <TabToolTips />
