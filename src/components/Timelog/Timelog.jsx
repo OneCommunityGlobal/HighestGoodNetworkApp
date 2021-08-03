@@ -32,12 +32,12 @@ import { getTimeEntriesForWeek, getTimeEntriesForPeriod } from '../../actions/ti
 import { getUserProfile } from '../../actions/userProfile';
 import { getUserProjects } from '../../actions/userProjects';
 import TimeEntryForm from './TimeEntryForm';
-import TimelogNavbar from './TimelogNavbar';
 import TimeEntry from './TimeEntry';
 import EffortBar from './EffortBar';
 import SummaryBar from '../SummaryBar/SummaryBar';
 
-class TimelogPage extends Component {
+class Timelog extends Component {
+
   constructor(props) {
     super(props);
     this.toggle = this.toggle.bind(this);
@@ -66,7 +66,6 @@ class TimelogPage extends Component {
 
   async componentDidMount() {
     const userId = this.props.match && this.props.match.params.userId ? this.props.match.params.userId : this.props.asUser || this.props.auth.user.userid;
-    //console.log(userId);
     await this.props.getUserProfile(userId);
     this.userProfile = this.props.userProfile;
     await this.props.getTimeEntriesForWeek(userId, 0);
@@ -438,4 +437,4 @@ export default connect(mapStateToProps, {
   getTimeEntriesForPeriod,
   getUserProjects,
   getUserProfile,
-})(TimelogPage)
+})(Timelog)
