@@ -5,7 +5,7 @@ import {
 import userEvent from '@testing-library/user-event';
 import thunk from 'redux-thunk';
 import configureStore from 'redux-mock-store';
-import moment from 'moment';
+import moment from 'moment-timezone';
 import {
   authMock, userProfileMock, timeEntryMock, userProjectMock,
 } from '../mockStates';
@@ -39,12 +39,12 @@ describe('<TimeEntryForm />', () => {
         userId={data.personId}
         edit={false}
         data={data}
-          isOpen
+        isOpen
         toggle={toggle}
         timer
         userProfile={userProfile}
         resetTimer
-        
+
       />,
       {
         store,
@@ -89,8 +89,8 @@ describe('<TimeEntryForm />', () => {
   });
   it('should render the tangible tip info and the content', () => {
     const tips = screen.getByTitle('tangibleTip');
-    userEvent.click(tips,1);
-    expect(screen.getByText(/Intangible time is time logged*/i)).toBeInTheDocument();  
+    userEvent.click(tips, 1);
+    expect(screen.getByText(/Intangible time is time logged*/i)).toBeInTheDocument();
   });
   it('should render the correct tangible checkbox', () => {
     const checkbox = screen.getByRole('checkbox');
@@ -115,7 +115,7 @@ describe('<TimeEntryForm />', () => {
     expect(minutes).toHaveValue(0);
     userEvent.click(screen.getByRole('button', { name: /submit/i }));
     expect(screen.getByText('Time should be greater than 0')).toBeInTheDocument();
-    
+
   });
   it('should populate errors if project field is empty or invalid', async () => {
     const projectField = screen.getByDisplayValue(/select project/i);
@@ -149,7 +149,7 @@ describe('<TimeEntryFormEdit />', () => {
         timer
         userProfile={userProfile}
         resetTimer
-        
+
       />,
       {
         store,
@@ -177,10 +177,10 @@ describe('<TimeEntryFormEdit />', () => {
     expect(minutes).toBeInTheDocument();
     expect(projectField).toBeInTheDocument();
     expect(noteField).toBeInTheDocument();
-    fireEvent.change(hours,{ target : { value: '6' }});
+    fireEvent.change(hours, { target: { value: '6' } });
     await sleep(10);
     //userEvent.selectOptions(projectField,userProjectMock.projects[1].projectId)
-    fireEvent.change(noteField,{ target : { value: 'Edit Note. This should work normally. Does this thing work? \n https://www.google.com/' }});
+    fireEvent.change(noteField, { target: { value: 'Edit Note. This should work normally. Does this thing work? \n https://www.google.com/' } });
     expect(hours).toHaveValue(6);
     //expect(projectField).toHaveValue(userProjectMock.projects[1].projectId);
     fireEvent.click(screen.getByRole('button', { name: /save/i }));

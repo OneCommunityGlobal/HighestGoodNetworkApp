@@ -15,7 +15,7 @@ import {
   ModalBody,
   ModalFooter,
 } from 'reactstrap';
-import moment from 'moment';
+import moment from 'moment-timezone';
 import _ from 'lodash';
 import { Editor } from '@tinymce/tinymce-react';
 // import ReactHtmlParser from 'react-html-parser'
