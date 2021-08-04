@@ -31,7 +31,7 @@ const TimeEntryForm = ({
   const fromTimer = !_.isEmpty(timer);
   const [submitDisabled, setSubmitDisabled] = useState(false);
   const initialState = {
-    dateOfWork: moment().format('YYYY-MM-DD'),
+    dateOfWork: moment().tz('America/Los_Angeles').format('YYYY-MM-DD'),
     hours: 0,
     minutes: 0,
     projectId: '',
@@ -41,7 +41,7 @@ const TimeEntryForm = ({
   };
   const initialReminder = {
     notification: false,
-    has_link: data && data.notes && data.notes.includes('http') ?  true : false,
+    has_link: data && data.notes && data.notes.includes('http') ? true : false,
     remind: '',
     num_words: data && data.notes && data.notes.split(' ').length > 10 ? 10 : 0,
     edit_count: data ? data.editCount : 0,
@@ -70,7 +70,7 @@ const TimeEntryForm = ({
     if (close && inputs.projectId == '') {
       //double make sure close is set to false to stop form from reclosing on open
       close = false;
-      setClose((close)=>{
+      setClose((close) => {
         setTimeout(function myfunc() {
           toggle();
         }, 100);
@@ -80,7 +80,7 @@ const TimeEntryForm = ({
   }, [close, inputs])
 
   useEffect(() => {
-    
+
   }, [inputs])
 
   const openModal = () => setReminder(reminder => ({
@@ -154,7 +154,7 @@ const TimeEntryForm = ({
     if (inputs.dateOfWork === '') {
       result.dateOfWork = 'Date is required';
     } else {
-      const date = moment(inputs.dateOfWork);
+      const date = moment(inputs.dateOfWork).tz('America/Los_Angeles');
       if (!date.isValid()) {
         result.dateOfWork = 'Invalid date';
       }
@@ -312,7 +312,7 @@ const TimeEntryForm = ({
     //   totalComittedHours: totalTime,
     // };
     //await dispatch(updateUserProfile(userProfile._id, updatedUserprofile));
-    
+
     if (fromTimer) {
       if (status === 200) {
         const timerStatus = await dispatch(stopTimer(userId));
@@ -391,11 +391,11 @@ const TimeEntryForm = ({
   const clearForm = (closed) => {
     if (closed) {
       //make sure form clears before close
-      inputs = {...initialState};
+      inputs = { ...initialState };
       setClose(true);
     }
-    setInputs({...initialState});
-    setReminder({...initialReminder});
+    setInputs({ ...initialState });
+    setReminder({ ...initialReminder });
     setErrors({});
   };
 
@@ -434,14 +434,14 @@ const TimeEntryForm = ({
                 onChange={handleInputChange}
               />
             ) : (
-                <Input
-                  type="date"
-                  name="dateOfWork"
-                  id="dateOfWork"
-                  value={inputs.dateOfWork}
-                  disabled
-                />
-              )}
+              <Input
+                type="date"
+                name="dateOfWork"
+                id="dateOfWork"
+                value={inputs.dateOfWork}
+                disabled
+              />
+            )}
             {'dateOfWork' in errors && (
               <div className="text-danger">
                 <small>{errors.dateOfWork}</small>
@@ -542,8 +542,8 @@ const TimeEntryForm = ({
                   onChange={handleCheckboxChange}
                 />
               ) : (
-                  <Input type="checkbox" name="isTangible" checked={inputs.isTangible} disabled />
-                )}{' '}
+                <Input type="checkbox" name="isTangible" checked={inputs.isTangible} disabled />
+              )}{' '}
               Tangible&nbsp;<i
                 className="fa fa-info-circle"
                 data-tip
