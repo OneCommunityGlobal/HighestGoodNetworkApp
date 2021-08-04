@@ -392,7 +392,7 @@ const TimeEntryForm = ({
     if (closed) {
       //make sure form clears before close
       inputs = { ...initialState };
-      act(setClose(true));
+      setClose(true);
     }
     setInputs({ ...initialState });
     setReminder({ ...initialReminder });
