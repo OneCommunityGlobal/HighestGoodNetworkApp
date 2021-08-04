@@ -25,11 +25,11 @@ import { getUserProjects } from '../../actions/userProjects';
 import { updateUserProfile } from '../../actions/userProfile';
 import { stopTimer } from '../../actions/timer';
 
-const TimeEntryForm = ({
-  userId, edit, data, isOpen, toggle, timer, userProfile, resetTimer, isInTangible = false
-}) => {
+const TimeEntryForm = ({ userId, edit, data, isOpen, toggle, timer, userProfile, resetTimer, isInTangible = false }) => {
+
   const fromTimer = !_.isEmpty(timer);
   const [submitDisabled, setSubmitDisabled] = useState(false);
+
   const initialState = {
     dateOfWork: moment().format('YYYY-MM-DD'),
     hours: 0,
@@ -39,6 +39,7 @@ const TimeEntryForm = ({
     isTangible: isInTangible ? false : true,
 
   };
+
   const initialReminder = {
     notification: false,
     has_link: data && data.notes && data.notes.includes('http') ? true : false,
@@ -135,6 +136,7 @@ const TimeEntryForm = ({
 
   const userprofile = useSelector(state => state.userProfile);
   const projects = (userprofile && userprofile.projects) ? userprofile.projects : [];
+
   const projectOptions = projects.map(project => (
     <option value={project._id} key={project._id}>
       {' '}
@@ -142,13 +144,33 @@ const TimeEntryForm = ({
       {' '}
     </option>
   ));
+
+
   projectOptions.unshift(
     <option value="" key="none" disabled>
       Select Project/Task
     </option>,
   );
 
+  const getEditMessage = (editCount) => {
+    if (editCount < 4) {
+      return 'You are about to edit your time, if you do this your manager will be notified you’ve edited it. '
+        + 'The system automatically tracks how many times you’ve edited your time and will issue blue squares if you edit it repeatedly. '
+        + 'Please use the timer properly so your time is logged accurately.';
+    } else if (editCount === 4) {
+      return 'You’ve edited your time 3 times already as a member of the team, are you sure you want to edit it again? '
+        + 'Editing your time more than 5 times in a calendar year will result in you receiving a blue square.';
+    } else if (editCount === 5) {
+      return 'Heads up this is your fifth and final time being allowed to edit your time without receiving a blue square. '
+        + 'Please use the timer properly from this point forward if you’d like to avoid receiving one.';
+    } else if ((editCount - 5) % 2 === 1) {
+      return `Heads up this is your ${reminder.edit_count}th time editing your recorded time. `
+        + 'The next time you do this, you will receive a blue square. Please use the timer properly from this point forward to avoid this.';
+    }
+  }
+
   const validateForm = (edittime) => {
+
     const result = {};
 
     if (inputs.dateOfWork === '') {
@@ -197,53 +219,11 @@ const TimeEntryForm = ({
       result.notes = 'Description and reference link are required';
     }
 
-    if (edit && reminder.edit_notice && reminder.edit_count < 4 && edittime) {
+    if (!isAdmin && edit && reminder.edit_notice && edittime) {
       openModal();
       setReminder(reminder => ({
         ...reminder,
-        remind:
-          'You are about to edit your time, if you do this your manager will be notified you’ve edited it. The system automatically tracks how many times you’ve edited your time and will issue blue squares if you edit it repeatedly. Please use the timer properly so your time is logged accurately.',
-        edit_notice: !reminder.edit_notice,
-      }));
-      return false;
-    }
-
-    if (edit && reminder.edit_notice && reminder.edit_count === 4 && edittime) {
-      openModal();
-      setReminder(reminder => ({
-        ...reminder,
-        remind:
-          'You’ve edited your time 3 times already as a member of the team, are you sure you want to edit it again? Editing your time more than 5 times in a calendar year will result in you receiving a blue square.',
-        edit_notice: !reminder.edit_notice,
-      }));
-      return false;
-    }
-
-    if (edit && reminder.edit_notice && reminder.edit_count === 5 && edittime) {
-      openModal();
-      setReminder(reminder => ({
-        ...reminder,
-        remind:
-          'Heads up this is your fifth and final time being allowed to edit your time without receiving a blue square. Please use the timer properly from this point forward if you’d like to avoid receiving one.',
-        edit_notice: !reminder.edit_notice,
-      }));
-      return false;
-    }
-    if (edit && reminder.edit_notice && (reminder.edit_count - 5) % 2 === 1 && edittime) {
-      openModal();
-      setReminder(reminder => ({
-        ...reminder,
-        remind: `Heads up this is your ${reminder.edit_count}th time editing your recorded time. The next time you do this, you will receive a blue square. Please use the timer properly from this point forward to avoid this.`,
-        edit_notice: !reminder.edit_notice,
-      }));
-      return false;
-    }
-
-    if (edit && reminder.edit_notice && (reminder.edit_count - 5) % 2 === 0 && edittime) {
-      openModal();
-      setReminder(reminder => ({
-        ...reminder,
-        remind: `Heads up this is your ${reminder.edit_count}th time editing your recorded time and this edit will make you receive a blue square. Please use the timer properly from this point forward to avoid receiving additional blue squares.`,
+        remind: getEditMessage(reminder.edit_count),
         edit_notice: !reminder.edit_notice,
       }));
       return false;
@@ -251,6 +231,7 @@ const TimeEntryForm = ({
 
     setErrors(result);
     return _.isEmpty(result);
+
   };
 
   const handleSubmit = async (event) => {
@@ -281,7 +262,7 @@ const TimeEntryForm = ({
 
     let status;
     if (edit) {
-      if (edittime) {
+      if (edittime && !isAdmin) {
         timeEntry.editCount = reminder.edit_count + 1;
       }
       timeEntry.hours = hours;
