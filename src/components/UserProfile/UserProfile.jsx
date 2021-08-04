@@ -4,24 +4,16 @@ import Image from 'react-bootstrap/Image'
 import { Link } from 'react-router-dom'
 import classnames from 'classnames'
 import moment from 'moment'
+import Alert from 'reactstrap/lib/Alert'
+
 import Loading from '../common/Loading'
-// import { orange, silverGray, warningRed } from '../../constants/colors'
-// import BlueSquare from './BlueSquares'
 import Modal from './UserProfileModal'
-import UserLinks from './UserLinks'
-// import styleProfile from './UserProfile.module.scss';
 import './UserProfile.scss'
 import TeamsTab from './TeamsAndProjects/TeamsTab'
 import ProjectsTab from './TeamsAndProjects/ProjectsTab'
-
-// import TeamView from './Teamsview'
-// import UserTeamProjectContainer from './TeamsAndProjects/UserTeamProjectContainer'
 import InfoModal from './InfoModal'
-// import { getTimeEntriesForWeek, getTimeEntriesForPeriod } from '../../actions/timeEntries'
-// import { getUserProjects } from '../../actions/userProjects'
 import BasicInformationTab from './BaiscInformationTab/BasicInformationTab'
 import VolunteeringTimeTab from './VolunteeringTimeTab/VolunteeringTimeTab'
-// import EditLinkButton from './UserProfileEdit/LinkModButton'
 import SaveButton from './UserProfileEdit/SaveButton'
 import UserLinkLayout from './UserLinkLayout'
 import BlueSqaureLayout from './BlueSqaureLayout'
@@ -29,11 +21,10 @@ import TabToolTips from './ToolTips/TabToolTips'
 import BasicToolTips from './ToolTips/BasicTabTips'
 import ResetPasswordButton from '../UserManagement/ResetPasswordButton'
 import PauseAndResumeButton from '../UserManagement/PauseAndResumeButton'
-import { toast } from 'react-toastify';
-import Alert from 'reactstrap/lib/Alert'
 import Badges from './Badges';
-// const styleProfile = {};
+
 class UserProfile extends Component {
+
   state = {
     isLoading: true,
     error: '',
@@ -89,7 +80,7 @@ class UserProfile extends Component {
   }
 
   async componentDidUpdate(prevProps, prevState) {
-    
+
     if (this.props.match !== prevProps.match) {
       // console.log('component on needs to update');
 
@@ -553,7 +544,7 @@ class UserProfile extends Component {
 
     const isUserSelf = targetUserId === requestorId
     const isUserAdmin = requestorRole === 'Administrator'
-    
+
     const canEdit = isUserAdmin || isUserSelf
     const weeklyHoursReducer = (acc, val) =>
       acc + (parseInt(val.hours, 10) + parseInt(val.minutes, 10) / 60)
@@ -603,14 +594,15 @@ class UserProfile extends Component {
                     />
                   </div>
                 ) : null}
+
               </div>
             </Col>
             <Col md="8">
               <div className="profile-head">
                 {this.state.changed && this.state.showSaveWarning && <Alert color="warning">Please click on "Save changes" to save the changes you have made. </Alert>}
-                <h5
-                  style={{ display: 'inline-block', marginRight: 10 }}
-                >{`${firstName} ${lastName}`}</h5>
+                <h5 style={{ display: 'inline-block', marginRight: 10 }}>
+                  {`${firstName} ${lastName}`}
+                </h5>
                 <i
                   data-toggle="tooltip"
                   data-placement="right"
@@ -620,6 +612,17 @@ class UserProfile extends Component {
                   className="fa fa-info-circle"
                   onClick={this.toggleInfoModal}
                 />
+                {' '}
+                {isUserAdmin &&
+                  <i
+                    data-toggle="tooltip"
+                    class="fa fa-clock-o"
+                    aria-hidden="true"
+                    style={{ fontSize: 24, cursor: 'pointer' }}
+                    title="Click to see user's timelog"
+                    onClick={() => this.props.history.push(`/timelog/${targetUserId}`)}
+                  />
+                }
                 <h6>{jobTitle}</h6>
                 <p className="proile-rating">
                   From : <span>{moment(userProfile.createdDate).format('YYYY-MM-DD')}</span>
@@ -627,7 +630,7 @@ class UserProfile extends Component {
                   To: <span>N/A</span>
                 </p>
               </div>
-                  <Badges userId={this.state.userProfile._id} isAdmin={isUserAdmin} badges={this.props.userProfile.badgeCollection}/>
+              <Badges userId={this.state.userProfile._id} isAdmin={isUserAdmin} badges={this.props.userProfile.badgeCollection} />
             </Col>
           </Row>
           <Row>
@@ -648,6 +651,7 @@ class UserProfile extends Component {
                   isUserAdmin={isUserAdmin}
                   isUserSelf={isUserSelf}
                 />
+
               </div>
             </Col>
             <Col md="8">
