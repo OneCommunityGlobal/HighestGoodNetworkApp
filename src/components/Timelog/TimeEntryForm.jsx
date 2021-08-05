@@ -36,8 +36,7 @@ const TimeEntryForm = ({ userId, edit, data, isOpen, toggle, timer, userProfile,
     minutes: 0,
     projectId: '',
     notes: '',
-    isTangible: isInTangible ? false : true,
-
+    isTangible: !isInTangible,
   };
 
   const initialReminder = {
@@ -219,7 +218,7 @@ const TimeEntryForm = ({ userId, edit, data, isOpen, toggle, timer, userProfile,
       result.notes = 'Description and reference link are required';
     }
 
-    if (!isAdmin && edit && reminder.edit_notice && edittime) {
+    if (!isAdmin && inputs.isTangible && edit && reminder.edit_notice && edittime) {
       openModal();
       setReminder(reminder => ({
         ...reminder,
@@ -262,7 +261,7 @@ const TimeEntryForm = ({ userId, edit, data, isOpen, toggle, timer, userProfile,
 
     let status;
     if (edit) {
-      if (edittime && !isAdmin) {
+      if (edittime && !isAdmin && inputs.isTangible) {
         timeEntry.editCount = reminder.edit_count + 1;
       }
       timeEntry.hours = hours;
