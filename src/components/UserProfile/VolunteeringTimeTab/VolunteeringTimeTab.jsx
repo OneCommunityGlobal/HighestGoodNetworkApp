@@ -41,21 +41,23 @@ const WeeklyCommitedHours = (props) => {
 };
 
 const TotalCommittedHours = (props) => {
+
   if (!props.isUserAdmin) {
-    return <p>{props.userProfile.totalComittedHours}</p>;
+    return <p>{props.userProfile.totalTangibleHrs}</p>;
   }
   return (
     <Input
       type="number"
-      name="totalComittedHours"
-      id="totalComittedHours"
-      value={props.userProfile.totalComittedHours}
+      name="totalTangibleHours"
+      id="totalTangibleHours"
+      value={props.userProfile.totalTangibleHrs}
       onChange={props.handleUserProfile}
       placeholder="Total Committed Hours"
       invalid={!props.isUserAdmin}
     />
   );
 };
+
 const ViewTab = (props) => {
   const {
     userProfile,
@@ -103,7 +105,7 @@ const ViewTab = (props) => {
       </Row>
       <Row>
         <Col md="6">
-          <Label>Total Hours </Label>
+          <Label>Total Tangible Hours </Label>
         </Col>
 
         <Col md="6">
