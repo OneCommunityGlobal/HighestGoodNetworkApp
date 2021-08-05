@@ -67,7 +67,8 @@
   margin: 10px auto;
 }
 
-.summary-toggle {
+.summary-toggle:hover {
+  text-decoration: underline;
   cursor: pointer;
 }
 
