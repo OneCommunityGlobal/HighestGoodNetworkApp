@@ -35,7 +35,7 @@ if (!APIEndpoint) {
   // });
 }
 
-const SummaryBar = () => {
+const SummaryBar = props => {
   const { firstName, lastName, email, _id } = useSelector(state => state.userProfile)
 
   const timeEntries = useSelector(state => {
@@ -230,29 +230,29 @@ const SummaryBar = () => {
           <Row className="no-gutters">
             {!weeklySummary ? (
               <div className="border-red col-4 bg--white-smoke no-gutters" align="center">
-                <Link to="/weeklysummariesreport">
-                  <div className="py-1"> </div>
-                  <p className="large_text_summary text--black text-danger" align="center">
-                    !
-                  </p>
-                  <font className="text--black" size="3">
-                    SUMMARY
-                  </font>
-                  <div className="py-2"> </div>
-                </Link>
+                <div className="py-1"> </div>
+                <p
+                  className="summary-toggle large_text_summary text--black text-danger"
+                  align="center"
+                  onClick={props.toggleSubmitForm}
+                >
+                  !
+                </p>
+                <font className="text--black" size="3">
+                  SUMMARY
+                </font>
+                <div className="py-2"> </div>
               </div>
             ) : (
               <div className="border-green col-4 bg--dark-green" align="center">
-                <Link to="/weeklysummariesreport">
-                  <div className="py-1"> </div>
-                  <p className="large_text_summary text--black" align="center">
-                    ✓
-                  </p>
-                  <font className="text--black" size="3">
-                    SUMMARY
-                  </font>
-                  <div className="py-2"> </div>
-                </Link>
+                <div className="py-1"> </div>
+                <p className="large_text_summary text--black" align="center">
+                  ✓
+                </p>
+                <font className="text--black" size="3">
+                  SUMMARY
+                </font>
+                <div className="py-2"> </div>
               </div>
             )}
 
@@ -268,9 +268,13 @@ const SummaryBar = () => {
             >
               <div className="m-auto p-2">
                 <font className="text--black med_text_summary align-middle" size="3">
-                  {!weeklySummary
-                    ? 'You still need to complete the weekly summary.'
-                    : 'You have submitted your weekly summary.'}
+                  {!weeklySummary ? (
+                    <span className="summary-toggle" onClick={props.toggleSubmitForm}>
+                      You still need to complete the weekly summary. Click here to submit it.
+                    </span>
+                  ) : (
+                    'You have submitted your weekly summary.'
+                  )}
                 </font>
               </div>
             </div>

@@ -67,6 +67,10 @@
   margin: 10px auto;
 }
 
+.summary-toggle {
+  cursor: pointer;
+}
+
 .redBackgroup {
   z-index: 10;
   bottom: 0;
