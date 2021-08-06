@@ -24,7 +24,7 @@ const TimeEntry = ({ data, displayYear, userProfile }) => {
 
   const dispatch = useDispatch();
 
-  const toggleTangability = () => {
+  const toggleTangibility = () => {
     
     const newData = {...data,
       isTangible: !data.isTangible,
@@ -56,7 +56,7 @@ const TimeEntry = ({ data, displayYear, userProfile }) => {
           <div className="text-muted">Project/Task:</div>
           <h6> {data.projectName} </h6>
           <span className="text-muted">Tangible:&nbsp;</span>
-          <input type="checkbox" name="isTangible" checked={data.isTangible} readOnly={!isAdmin} onChange={() => toggleTangability(data)}/>
+          <input type="checkbox" name="isTangible" checked={data.isTangible} disabled={!isAdmin} onChange={() => toggleTangibility(data)}/>
         </Col>
         <Col md={5} className="pl-2 pr-0">
           <div className="text-muted">Notes:</div>
