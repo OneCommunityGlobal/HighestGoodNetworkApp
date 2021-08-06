@@ -274,7 +274,7 @@ const TimeEntryForm = ({
     setSubmitting(false);
 
     if(timeEntryStatus !== 200) {
-      toggle();
+      //toggle();
       alert(`An error occurred while attempting to submit your time entry. Error code: ${timeEntryStatus}`);
       return;
     }

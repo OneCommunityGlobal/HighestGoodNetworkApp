@@ -111,8 +111,6 @@ describe('<TimeEntryForm edit/>', () => {
     expect(store.dispatch).toBeCalled();
     expect(actions.editTimeEntry).toHaveBeenCalled();
     expect(actions.editTimeEntry).toHaveBeenCalledWith(data._id, timeEntry);
-    await waitFor(() => {
-      expect(toggle).toHaveBeenCalled();
-    });
+
   });
 });

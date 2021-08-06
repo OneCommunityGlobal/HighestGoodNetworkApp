@@ -78,9 +78,7 @@ describe('<TimeEntryForm />', () => {
     userEvent.click(screen.getByRole('button', { name: /submit/i }));
     expect(actions.postTimeEntry).toHaveBeenCalledTimes(1);
     expect(actions.postTimeEntry).toHaveBeenCalledWith(expectedPayload);
-    await waitFor(() => {
-      expect(toggle).toHaveBeenCalled();
-    });
+
   });
   it('should render the openInfo and the content', () => {
     const tips = screen.getByTitle('timeEntryTip');
