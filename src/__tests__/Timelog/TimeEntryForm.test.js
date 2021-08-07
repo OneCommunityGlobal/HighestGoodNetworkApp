@@ -169,7 +169,7 @@ describe('<TimeEntryFormEdit />', () => {
     const minutes = screen.getAllByRole('spinbutton')[1];
     const projectField = screen.getByRole('combobox');
     const noteField = screen.getByLabelText(/notes/i);
-    expect(screen.getByText(/edit time entry/i)).toBeInTheDocument();
+    expect(screen.getByTestId('timeEntryFormModal')).toBeInTheDocument();
     expect(dateField).toBeInTheDocument();
     expect(hours).toBeInTheDocument();
     expect(minutes).toBeInTheDocument();

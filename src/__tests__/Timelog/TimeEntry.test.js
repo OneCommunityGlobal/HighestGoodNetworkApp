@@ -90,6 +90,6 @@ describe('<TimeEntry />', () => {
     expect(icons.length).toBe(2);
     userEvent.click(icons[0]);
     expect(screen.getByRole('document')).toHaveClass('modal-dialog');
-    expect(screen.getByText(/edit time entry/i)).toBeInTheDocument();
+    expect(screen.getByTestId('timeEntryFormModal')).toBeInTheDocument();
   });
 });

@@ -376,10 +376,10 @@ const TimeEntryForm = props => {
         cancelChange={cancelChange}
       />
 
-      <Modal isOpen={isOpen} toggle={toggle}>
+      <Modal isOpen={isOpen} toggle={toggle} data-testid="timeEntryFormModal">
         <ModalHeader toggle={toggle}>
           <div>
-            {edit ? 'Edit ' : 'Add '} {inputs.isTangible ? 'Tangible' : <span style={{textDecoration: 'underline'}}>Intangible</span>} Time Entry &nbsp;
+            {edit ? 'Edit ' : 'Add '} {inputs.isTangible ? 'Tangible' : <span style={{textDecoration: 'underline'}}>Intangible</span>} Time Entry
             <i
               className="fa fa-info-circle"
               data-tip
