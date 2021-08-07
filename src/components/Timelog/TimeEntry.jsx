@@ -12,7 +12,7 @@ import { useDispatch } from 'react-redux';
 import { editTimeEntry, postTimeEntry } from '../../actions/timeEntries';
 
 const GREEN = '#0A6428';
-const BLUE = '#0058FF';
+const BLUE = '#00FFFF';
 
 const TimeEntry = ({ data, displayYear, userProfile }) => {
   const [modal, setModal] = useState(false);
