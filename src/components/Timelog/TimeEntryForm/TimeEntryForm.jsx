@@ -24,9 +24,6 @@ import AboutModal from './AboutModal'
 import TangibleInfoModal from './TangibleInfoModal'
 import ReminderModal from './ReminderModal'
 
-const GREEN = '#24a44c'
-const BLUE = '#00a2b6'
-
 /**
  *
  * @param {*} props
@@ -364,7 +361,10 @@ const TimeEntryForm = props => {
         setVisible={setTangibleInfoModalVisibleModalVisible}
       />
 
-      <AboutModal visible={isInfoModalVisible} setVisible={setInfoModalVisible} />
+      <AboutModal
+        visible={isInfoModalVisible}
+        setVisible={setInfoModalVisible} 
+      />
 
       <ReminderModal
         inputs={inputs}
@@ -377,9 +377,9 @@ const TimeEntryForm = props => {
       />
 
       <Modal isOpen={isOpen} toggle={toggle}>
-        <ModalHeader toggle={toggle} style={{ backgroundColor: inputs.isTangible ? GREEN : BLUE }}>
+        <ModalHeader toggle={toggle}>
           <div>
-            {edit ? 'Edit ' : 'Add '} Time Entry &nbsp;
+            {edit ? 'Edit ' : 'Add '} {inputs.isTangible ? 'Tangible' : <span style={{textDecoration: 'underline'}}>Intangible</span>} Time Entry &nbsp;
             <i
               className="fa fa-info-circle"
               data-tip
@@ -393,7 +393,7 @@ const TimeEntryForm = props => {
             Click this icon to learn about this time entry form
           </ReactTooltip>
         </ModalHeader>
-        <ModalBody style={{ backgroundColor: inputs.isTangible ? GREEN : BLUE }}>
+        <ModalBody>
           <Form>
             <FormGroup>
               <Label for="dateOfWork">Date</Label>
@@ -529,7 +529,7 @@ const TimeEntryForm = props => {
             </FormGroup>
           </Form>
         </ModalBody>
-        <ModalFooter style={{ backgroundColor: inputs.isTangible ? GREEN : BLUE }}>
+        <ModalFooter>
           <small className="mr-auto">* All the fields are required</small>
           <Button onClick={clearForm} color="danger">
             {' '}
