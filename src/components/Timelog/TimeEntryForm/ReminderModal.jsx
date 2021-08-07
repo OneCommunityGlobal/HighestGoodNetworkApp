@@ -8,6 +8,7 @@ import { Modal, ModalHeader, ModalBody, ModalFooter, Button } from 'reactstrap'
  * @param {*} props.reminder 
  * @param {*} props.edit 
  * @param {*} props.inputs
+ * @param {Func} cancelChange
  */
 const ReminderModal = (props) => {
   return (
@@ -20,7 +21,7 @@ const ReminderModal = (props) => {
         </Button>
         {props.edit &&
           (props.data.hours !== props.inputs.hours || props.data.minutes !== props.inputs.minutes) && (
-            <Button onClick={cancelChange} color="secondary">
+            <Button onClick={props.cancelChange} color="secondary">
               Cancel
             </Button>
           )}

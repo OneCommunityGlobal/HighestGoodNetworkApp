@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Card, Row, Col } from 'reactstrap';
 import { useSelector } from 'react-redux';
 import ReactHtmlParser from 'react-html-parser';
-import moment from 'moment';
+import moment from 'moment-timezone';
 import './Timelog.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEdit } from '@fortawesome/free-regular-svg-icons';
@@ -62,6 +62,9 @@ const TimeEntry = ({ data, displayYear, userProfile }) => {
           <div className="text-muted">Notes:</div>
           {ReactHtmlParser(data.notes)}
           <div className="buttons">
+            {/**{(isAdmin || (isOwner && isSameDay)) && ( */}
+            {/** Change to commented code once back-end automatically issues
+             * blue squares for too many edits and once we're out of the beta environment*/}
             {(isAdmin || (!data.isTangible && isOwner && isSameDay)) && (
               <span>
                 <FontAwesomeIcon

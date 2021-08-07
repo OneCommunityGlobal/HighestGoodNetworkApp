@@ -2,14 +2,14 @@ import React, { useState, useEffect } from 'react';
 import ResetPasswordButton from './ResetPasswordButton';
 import { DELETE, PAUSE, RESUME } from '../../languages/en/ui';
 import { UserStatus } from '../../utils/enums';
-import { Link } from 'react-router-dom'
+import { useHistory } from 'react-router-dom';
 
 /**
  * The body row of the user table
  */
 const UserTableData = React.memo((props) => {
   const [isChanging, onReset] = useState(false);
-  
+  const history = useHistory();
 
   /**
    * reset the changing state upon rerender with new isActive status
@@ -34,14 +34,14 @@ const UserTableData = React.memo((props) => {
         />
       </td>
       <td>
-        <Link to={`/userprofile/${props.user._id}`}>
+        <a href={`/userprofile/${props.user._id}`} onClick={(e) => {e.preventDefault(); history.push('/userprofile/' + props.user._id)}}>
           {props.user.firstName}
-        </Link>
+        </a>
       </td>
       <td>
-        <Link to={`/userprofile/${props.user._id}`}>
+        <a href={`/userprofile/${props.user._id}`} onClick={(e) => {e.preventDefault(); history.push('/userprofile/' + props.user._id)}}>
           {props.user.lastName}
-        </Link>
+        </a>
       </td>
       <td>{props.user.role}</td>
       <td>{props.user.email}</td>

@@ -60,7 +60,7 @@ const TimeEntryForm = props => {
     information: '',
   }
 
-  const [submitDisabled, setSubmitDisabled] = useState(false)
+  const [isSubmitting, setSubmitting] = useState(false)
   const [inputs, setInputs] = useState(edit ? data : initialFormValues)
   const [errors, setErrors] = useState({})
   const [close, setClose] = useState(false)
@@ -81,7 +81,7 @@ const TimeEntryForm = props => {
     //this to make sure that the form is cleared before closing
     if (close && inputs.projectId == '') {
       //double make sure close is set to false to stop form from reclosing on open
-      close = false
+      setClose(false)
       setClose(close => {
         setTimeout(function myfunc() {
           toggle()
@@ -134,7 +134,32 @@ const TimeEntryForm = props => {
     </option>,
   )
 
-  const validateForm = edittime => {
+  const getEditMessage = editCount => {
+    if (editCount < 4) {
+      return (
+        'You are about to edit your time, if you do this your manager will be notified you’ve edited it. ' +
+        'The system automatically tracks how many times you’ve edited your time and will issue blue squares if you edit it repeatedly. ' +
+        'Please use the timer properly so your time is logged accurately.'
+      )
+    } else if (editCount === 4) {
+      return (
+        'You’ve edited your time 3 times already as a member of the team, are you sure you want to edit it again? ' +
+        'Editing your time more than 5 times in a calendar year will result in you receiving a blue square.'
+      )
+    } else if (editCount === 5) {
+      return (
+        'Heads up this is your fifth and final time being allowed to edit your time without receiving a blue square. ' +
+        'Please use the timer properly from this point forward if you’d like to avoid receiving one.'
+      )
+    } else if ((editCount - 5) % 2 === 1) {
+      return (
+        `Heads up this is your ${reminder.editCount}th time editing your recorded time. ` +
+        'The next time you do this, you will receive a blue square. Please use the timer properly from this point forward to avoid this.'
+      )
+    }
+  }
+
+  const validateForm = isTimeModified => {
     const result = {}
 
     if (inputs.dateOfWork === '') {
@@ -183,53 +208,11 @@ const TimeEntryForm = props => {
       result.notes = 'Description and reference link are required'
     }
 
-    if (edit && reminder.editNotice && reminder.editCount < 4 && edittime) {
+    if (!isAdmin && data.isTangible && isTimeModified && reminder.editNotice) {
       openModal()
       setReminder(reminder => ({
         ...reminder,
-        remind:
-          'You are about to edit your time, if you do this your manager will be notified you’ve edited it. The system automatically tracks how many times you’ve edited your time and will issue blue squares if you edit it repeatedly. Please use the timer properly so your time is logged accurately.',
-        editNotice: !reminder.editNotice,
-      }))
-      return false
-    }
-
-    if (edit && reminder.editNotice && reminder.editCount === 4 && edittime) {
-      openModal()
-      setReminder(reminder => ({
-        ...reminder,
-        remind:
-          'You’ve edited your time 3 times already as a member of the team, are you sure you want to edit it again? Editing your time more than 5 times in a calendar year will result in you receiving a blue square.',
-        editNotice: !reminder.editNotice,
-      }))
-      return false
-    }
-
-    if (edit && reminder.editNotice && reminder.editCount === 5 && edittime) {
-      openModal()
-      setReminder(reminder => ({
-        ...reminder,
-        remind:
-          'Heads up this is your fifth and final time being allowed to edit your time without receiving a blue square. Please use the timer properly from this point forward if you’d like to avoid receiving one.',
-        editNotice: !reminder.editNotice,
-      }))
-      return false
-    }
-    if (edit && reminder.editNotice && (reminder.editCount - 5) % 2 === 1 && edittime) {
-      openModal()
-      setReminder(reminder => ({
-        ...reminder,
-        remind: `Heads up this is your ${reminder.editCount}th time editing your recorded time. The next time you do this, you will receive a blue square. Please use the timer properly from this point forward to avoid this.`,
-        editNotice: !reminder.editNotice,
-      }))
-      return false
-    }
-
-    if (edit && reminder.editNotice && (reminder.editCount - 5) % 2 === 0 && edittime) {
-      openModal()
-      setReminder(reminder => ({
-        ...reminder,
-        remind: `Heads up this is your ${reminder.editCount}th time editing your recorded time and this edit will make you receive a blue square. Please use the timer properly from this point forward to avoid receiving additional blue squares.`,
+        remind: getEditMessage(reminder.editCount),
         editNotice: !reminder.editNotice,
       }))
       return false
@@ -240,73 +223,78 @@ const TimeEntryForm = props => {
   }
 
   const handleSubmit = async event => {
-    if (event) {
-      event.preventDefault()
+    //Validation and variable initialization
+    if (event) event.preventDefault()
+    if (isSubmitting) return
+
+    const hours = inputs.hours || 0
+    const minutes = inputs.minutes || 0
+    const isTimeModified = edit && (data.hours !== hours || data.minutes !== minutes)
+
+    if (!validateForm(isTimeModified)) return
+
+    //Construct the timeEntry object
+    const timeEntry = {
+      personId: userId,
+      dateOfWork: inputs.dateOfWork,
+      projectId: inputs.projectId,
+      notes: inputs.notes,
+      isTangible: inputs.isTangible.toString(),
+      editCount:
+        (!isAdmin && isTimeModified && data.isTangible)
+          ? reminder.editCount + 1
+          : reminder.editCount,
     }
-    if (submitDisabled) {
-      return
-    }
-    setSubmitDisabled(true)
-    setTimeout(function() {
-      setSubmitDisabled(false)
-    }, 2000)
-    const hours = inputs.hours === '' ? '0' : inputs.hours
-    const minutes = inputs.minutes === '' ? '0' : inputs.minutes
 
-    const edittime = edit && (data.hours !== hours || data.minutes !== minutes)
-
-    if (!validateForm(edittime)) {
-      return
-    }
-    const timeEntry = {}
-    timeEntry.personId = userId
-    timeEntry.dateOfWork = inputs.dateOfWork
-
-    timeEntry.projectId = inputs.projectId
-    timeEntry.notes = inputs.notes
-    timeEntry.isTangible = inputs.isTangible.toString()
-
-    let status
     if (edit) {
-      if (edittime) {
-        timeEntry.editCount = reminder.editCount + 1
-      }
       timeEntry.hours = hours
       timeEntry.minutes = minutes
-      if (!edittime || !reminder.notice) {
-        status = await dispatch(editTimeEntry(data._id, timeEntry))
-      }
     } else {
       timeEntry.timeSpent = `${hours}:${minutes}:00`
-      status = await dispatch(postTimeEntry(timeEntry))
     }
 
-    // const totalTime = (parseFloat(userProfile.totalComittedHours, 10) + deltatime).toFixed(2);
-    // console.log(totalTime);
-    // const updatedUserprofile = {
-    //   ...userProfile,
-    //   totalComittedHours: totalTime,
-    // };
-    //await dispatch(updateUserProfile(userProfile._id, updatedUserprofile));
+    //Send the time entry to the server
+
+    setSubmitting(true)
+
+    let timeEntryStatus
+
+    if (edit) {
+      if (!reminder.notice) {
+        timeEntryStatus = await dispatch(editTimeEntry(data._id, timeEntry))
+      }
+    } else {
+      timeEntryStatus = await dispatch(postTimeEntry(timeEntry))
+    }
+
+    setSubmitting(false)
+
+    if (timeEntryStatus !== 200) {
+      toggle()
+      alert(
+        `An error occurred while attempting to submit your time entry. Error code: ${timeEntryStatus}`,
+      )
+      return
+    }
 
     if (fromTimer) {
-      if (status === 200) {
-        const timerStatus = await dispatch(stopTimer(userId))
-        if (timerStatus === 200 || timerStatus === 201) {
-          resetTimer()
-          clearForm(true)
-        }
-      }
-    } else if (!edit) {
+      const timerStatus = await dispatch(stopTimer(userId))
       clearForm(true)
-    } else if (!reminder.notice && edittime) {
+      if (timerStatus === 200 || timerStatus === 201) {
+        resetTimer()
+      } else {
+        alert(
+          'Your time entry was successfully recorded, but an error occurred while asking the server to reset your timer. There is no need to submit your hours a second time, and doing so will result in a duplicate time entry.',
+        )
+      }
+    } else if (!reminder.notice) {
       setReminder(reminder => ({
         ...reminder,
-        editCount: reminder.editCount + 1,
+        editCount: timeEntry.editCount,
         editNotice: !reminder.editNotice,
       }))
       toggle()
-    } else if (!edittime) {
+    } else if (!isTimeModified) {
       toggle()
     }
   }
@@ -372,6 +360,8 @@ const TimeEntryForm = props => {
     setErrors({})
   }
 
+  console.log(data.isTangible == inputs.isTangible)
+
   return (
     <>
       <TangibleInfoModal
@@ -388,6 +378,7 @@ const TimeEntryForm = props => {
         reminder={reminder}
         visible={reminder.notification}
         setVisible={visible => setReminder({ ...reminder, notification: visible })}
+        cancelChange={cancelChange}
       />
 
       <Modal isOpen={isOpen} toggle={toggle}>
@@ -519,16 +510,13 @@ const TimeEntryForm = props => {
             </FormGroup>
             <FormGroup check>
               <Label check>
-                {isAdmin ? (
-                  <Input
-                    type="checkbox"
-                    name="isTangible"
-                    checked={inputs.isTangible}
-                    onChange={handleCheckboxChange}
-                  />
-                ) : (
-                  <Input type="checkbox" name="isTangible" checked={inputs.isTangible} disabled />
-                )}{' '}
+                <Input
+                  type="checkbox"
+                  name="isTangible"
+                  checked={inputs.isTangible}
+                  onChange={handleCheckboxChange}
+                  disabled={!isAdmin}
+                />
                 Tangible&nbsp;
                 <i
                   className="fa fa-info-circle"
@@ -552,7 +540,7 @@ const TimeEntryForm = props => {
             {' '}
             Clear Form{' '}
           </Button>
-          <Button onClick={handleSubmit} color="primary" disabled={submitDisabled}>
+          <Button color="primary" disabled={isSubmitting} onClick={handleSubmit}>
             {edit ? 'Save' : 'Submit'}
           </Button>
         </ModalFooter>
