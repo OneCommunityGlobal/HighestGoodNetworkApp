@@ -55,11 +55,6 @@ const TimeEntryForm = props => {
     editNotice: true,
   }
 
-  const initialInfo = {
-    in: false,
-    information: '',
-  }
-
   const [isSubmitting, setSubmitting] = useState(false)
   const [inputs, setInputs] = useState(edit ? data : initialFormValues)
   const [errors, setErrors] = useState({})
