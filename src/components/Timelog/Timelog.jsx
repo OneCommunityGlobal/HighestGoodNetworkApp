@@ -1,33 +1,19 @@
-import React, { Component } from 'react'
+import React, { Component } from 'react';
+
 import {
-  Container,
-  Row,
-  Col,
-  Card,
-  CardTitle,
-  CardSubtitle,
-  CardHeader,
-  CardBody,
-  Nav,
-  NavItem,
-  NavLink,
-  TabContent,
-  TabPane,
-  Form,
-  FormGroup,
-  Label,
-  Input,
-  Button,
-  Modal,
-  ModalHeader,
-  ModalBody,
-  ModalFooter,
+  Container, Row, Col,
+  Card, CardTitle, CardSubtitle, CardHeader,
+  CardBody, Nav, NavItem, NavLink, TabContent,
+  TabPane, Form, FormGroup, Label, Input, Button,
+  Modal, ModalHeader, ModalBody, ModalFooter,
 } from 'reactstrap';
+
 import classnames from 'classnames';
 import { connect } from 'react-redux';
 import moment from 'moment';
 import _ from 'lodash';
 import ReactTooltip from 'react-tooltip';
+
 import { getTimeEntriesForWeek, getTimeEntriesForPeriod } from '../../actions/timeEntries';
 import { getUserProfile } from '../../actions/userProfile';
 import { getUserProjects } from '../../actions/userProjects';
@@ -136,7 +122,9 @@ class Timelog extends Component {
   }
 
   startOfWeek(offset) {
+
     return moment()
+      .tz('America/Los_Angeles')
       .startOf('week')
       .subtract(offset, 'weeks')
       .format('YYYY-MM-DD')
@@ -144,9 +132,11 @@ class Timelog extends Component {
 
   endOfWeek(offset) {
     return moment()
+      .tz('America/Los_Angeles')
       .endOf('week')
       .subtract(offset, 'weeks')
       .format('YYYY-MM-DD')
+
   }
 
   generateTimeEntries(data) {
@@ -154,6 +144,7 @@ class Timelog extends Component {
     if (!this.state.projectsSelected.includes('all')) {
       filteredData = data.filter(entry => this.state.projectsSelected.includes(entry.projectId));
     }
+
     return filteredData.map(entry => (
       <TimeEntry
         data={entry}
@@ -203,7 +194,7 @@ class Timelog extends Component {
                   <Row>
                     <Col md={11}>
                       <CardTitle tag="h4">Time Entries &nbsp;
-                            <i
+                        <i
                           className="fa fa-info-circle"
                           data-tip
                           data-for="registerTip"
@@ -212,7 +203,7 @@ class Timelog extends Component {
                         /></CardTitle>
                       <CardSubtitle tag="h6" className="text-muted">
                         Viewing time entries logged in the last 3 weeks
-                    </CardSubtitle>
+                      </CardSubtitle>
                     </Col>
                     <Col md={11}>
                       {isOwner ? (
@@ -229,42 +220,42 @@ class Timelog extends Component {
                               />
                             </Button>
                             <ReactTooltip id="timeEntryTip" place="bottom" effect="solid">
-                              Clicking this button only allows for “Intangible Time” to be added to your time log. <u>You can manually log Intangible Time but it doesn’t <br/>
-                              count towards your weekly time commitment.</u><br/><br/>
-                              
-                              “Tangible Time” is the default for logging time using the timer at the top of the app. It represents all work done on assigned action items <br/>
-                              and is what counts towards a person’s weekly volunteer time commitment. The only way for a volunteer to log Tangible Time is by using the clock<br/>
-                               in/out timer. <br/><br/>
+                              Clicking this button only allows for “Intangible Time” to be added to your time log. <u>You can manually log Intangible Time but it doesn’t <br />
+                                count towards your weekly time commitment.</u><br /><br />
 
-                              Intangible Time is almost always used only by the management team. It is used for weekly Monday night management team calls, monthly management<br/>
-                               team reviews and Welcome Team Calls, and non-action-item related research, classes, and other learning, meetings, etc. that benefit or relate to <br/>
-                               the project but aren’t related to a specific action item on the <a href="https://www.tinyurl.com/oc-os-wbs">One Community Work Breakdown Structure.</a><br/><br/>
+                              “Tangible Time” is the default for logging time using the timer at the top of the app. It represents all work done on assigned action items <br />
+                              and is what counts towards a person’s weekly volunteer time commitment. The only way for a volunteer to log Tangible Time is by using the clock<br />
+                              in/out timer. <br /><br />
 
-                              Intangible Time may also be logged by a volunteer when in the field or for other reasons when the timer wasn’t able to be used. In these cases, the <br/>
-                              volunteer will use this button to log time as “intangible time” and then request that an Admin manually change the log from Intangible to Tangible.<br/><br/>
+                              Intangible Time is almost always used only by the management team. It is used for weekly Monday night management team calls, monthly management<br />
+                              team reviews and Welcome Team Calls, and non-action-item related research, classes, and other learning, meetings, etc. that benefit or relate to <br />
+                              the project but aren’t related to a specific action item on the <a href="https://www.tinyurl.com/oc-os-wbs">One Community Work Breakdown Structure.</a><br /><br />
+
+                              Intangible Time may also be logged by a volunteer when in the field or for other reasons when the timer wasn’t able to be used. In these cases, the <br />
+                              volunteer will use this button to log time as “intangible time” and then request that an Admin manually change the log from Intangible to Tangible.<br /><br />
 
                             </ReactTooltip>
                           </div>
                         </div>
                       ) : (
-                          isAdmin && (
-                            <div className="float-right">
-                              <div>
-                                <Button color="warning" onClick={this.toggle}>
-                                  Add Time Entry {!isOwner && `for ${fullName}`}
-                                </Button>
-                              </div>
-
+                        isAdmin && (
+                          <div className="float-right">
+                            <div>
+                              <Button color="warning" onClick={this.toggle}>
+                                Add Time Entry {!isOwner && `for ${fullName}`}
+                              </Button>
                             </div>
-                          )
-                        )}
+
+                          </div>
+                        )
+                      )}
                       <Modal isOpen={this.state.in} toggle={this.openInfo}>
                         <ModalHeader>Info</ModalHeader>
                         <ModalBody>{this.state.information}</ModalBody>
                         <ModalFooter>
                           <Button onClick={this.openInfo} color="primary">
                             Close
-                        </Button>
+                          </Button>
                           {isAdmin && (
                             <Button onClick={this.openInfo} color="secondary">
                               Edit
@@ -283,7 +274,7 @@ class Timelog extends Component {
                       />
                       <ReactTooltip id="registerTip" place="bottom" effect="solid">
                         Click this icon to learn about the timelog.
-                    </ReactTooltip>
+                      </ReactTooltip>
                     </Col>
                   </Row>
                 </CardHeader>
@@ -299,7 +290,7 @@ class Timelog extends Component {
                         to="#"
                       >
                         Current Week
-                    </NavLink>
+                      </NavLink>
                     </NavItem>
                     <NavItem>
                       <NavLink
@@ -311,7 +302,7 @@ class Timelog extends Component {
                         to="#"
                       >
                         Last Week
-                    </NavLink>
+                      </NavLink>
                     </NavItem>
                     <NavItem>
                       <NavLink
@@ -323,7 +314,7 @@ class Timelog extends Component {
                         to="#"
                       >
                         Week Before Last
-                    </NavLink>
+                      </NavLink>
                     </NavItem>
                     <NavItem>
                       <NavLink
@@ -335,30 +326,28 @@ class Timelog extends Component {
                         to="#"
                       >
                         Search by Date Range
-                    </NavLink>
+                      </NavLink>
                     </NavItem>
                   </Nav>
 
                   <TabContent activeTab={this.state.activeTab}>
                     {this.state.activeTab === 3 ? (
                       <p className="ml-1">
-                        Viewing time Entries from <b>{this.state.fromDate}</b>
-                        {' to '}
-                        <b>{this.state.toDate}</b>
+                        Viewing time Entries from <b>{this.state.fromDate}</b> to <b>{this.state.toDate}</b>
                       </p>
                     ) : (
-                        <p className="ml-1">
-                          Viewing time Entries from <b>{this.startOfWeek(this.state.activeTab)}</b>
-                          {' to '}
-                          <b>{this.endOfWeek(this.state.activeTab)}</b>
-                        </p>
-                      )}
+                      <p className="ml-1">
+                        Viewing time Entries from <b>{this.startOfWeek(this.state.activeTab)}</b>
+                        {' to '}
+                        <b>{this.endOfWeek(this.state.activeTab)}</b>
+                      </p>
+                    )}
                     {this.state.activeTab === 3 && (
                       <Form inline className="mb-2">
                         <FormGroup className="mr-2">
                           <Label for="fromDate" className="mr-2">
                             From
-                        </Label>
+                          </Label>
                           <Input
                             type="date"
                             name="fromDate"
@@ -370,7 +359,7 @@ class Timelog extends Component {
                         <FormGroup>
                           <Label for="toDate" className="mr-2">
                             To
-                        </Label>
+                          </Label>
                           <Input
                             type="date"
                             name="toDate"
@@ -381,14 +370,14 @@ class Timelog extends Component {
                         </FormGroup>
                         <Button color="primary" onClick={this.handleSearch} className="ml-2">
                           Search
-                      </Button>
+                        </Button>
                       </Form>
                     )}
                     <Form inline className="mb-2">
                       <FormGroup>
                         <Label for="projectSelected" className="mr-2 ml-1 mb-5 align-top">
                           Filter Entries by Project:
-                      </Label>
+                        </Label>
                         <Input
                           type="select"
                           name="projectSelected"

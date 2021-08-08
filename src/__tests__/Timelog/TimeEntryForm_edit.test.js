@@ -5,7 +5,7 @@ import {
 import userEvent from '@testing-library/user-event';
 import thunk from 'redux-thunk';
 import configureStore from 'redux-mock-store';
-import moment from 'moment';
+import moment from 'moment-timezone';
 import {
   authMock, userProfileMock, timeEntryMock, userProjectMock,
 } from '../mockStates';
@@ -72,7 +72,7 @@ describe('<TimeEntryForm edit/>', () => {
     userEvent.click(screen.getByRole('button', { name: /clear form/i }));
     expect(screen.getAllByRole('spinbutton')[0]).toHaveValue(0);
     expect(screen.getAllByRole('spinbutton')[1]).toHaveValue(0);
-    expect(screen.getByLabelText('Date')).toHaveValue(moment().format('YYYY-MM-DD'));
+    expect(screen.getByLabelText('Date')).toHaveValue(moment().tz('America/Los_Angeles').format('YYYY-MM-DD'));
     expect(screen.getByRole('combobox')).toHaveValue('');
   });
 
