@@ -33,7 +33,7 @@ import ProjectsTab from '../TeamsAndProjects/ProjectsTab'
 import TeamsTab from '../TeamsAndProjects/TeamsTab'
 
 const styleProfile = {}
-class EditProfile extends Component {
+class UserProfileEdit extends Component {
   state = {
     showWarning: false,
     isLoading: true,
@@ -1031,4 +1031,4 @@ class EditProfile extends Component {
   }
 }
 
-export default EditProfile
+export default UserProfileEdit
