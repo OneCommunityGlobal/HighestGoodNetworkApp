@@ -169,7 +169,7 @@ const SummaryBar = props => {
   return (
     <Container fluid className="bg--bar">
       <Row className="no-gutters .row-eq-height">
-        <Col className="col-lg-1 col-12 text-list" align="center">
+        <Col className="col-lg-1 col-12 text-list" align="center" style={{display: 'flex', flexDirection: 'column', justifyContent: 'center'}}>
           <font className="text--black  align-middle" size="3">
             {' '}
             Activity for{' '}

@@ -11,6 +11,8 @@ import DeleteModal from './DeleteModal';
 import { useDispatch } from 'react-redux';
 import { editTimeEntry, postTimeEntry } from '../../actions/timeEntries';
 
+const GREEN = '#0A6428';
+const BLUE = '#00FFFF';
 
 const TimeEntry = ({ data, displayYear, userProfile }) => {
   const [modal, setModal] = useState(false);
@@ -35,7 +37,7 @@ const TimeEntry = ({ data, displayYear, userProfile }) => {
   }
 
   return (
-    <Card className="mb-1 p-2">
+    <Card className="mb-1 p-2" style={{backgroundColor: data.isTangible ? GREEN : BLUE}}>
       <Row className="mx-0">
         <Col md={3} className="date-block px-0">
           <div className="date-div">
