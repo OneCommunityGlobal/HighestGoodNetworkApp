@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { Badge, Button } from 'reactstrap'
-import {startTimer, pauseTimer, updateTimer, getTimerData} from '../../actions/timer'
+import { startTimer, pauseTimer, updateTimer, getTimerData } from '../../actions/timer'
 import TimeEntryForm from '../Timelog/TimeEntryForm'
 import './Timer.css'
 import axios from "axios";
-import {ENDPOINTS} from "../../utils/URL";
+import { ENDPOINTS } from "../../utils/URL";
 
 const Timer = () => {
   const data = {
@@ -26,7 +26,7 @@ const Timer = () => {
   let intervalSec = null;
   let intervalMin = null;
   let intervalThreeMin = null;
-  
+
   const toggle = () => setModal(modal => !modal)
 
   const reset = async () => {
@@ -72,7 +72,7 @@ const Timer = () => {
   }
 
   const handleStop = () => {
-    if (handlePause()){ toggle() }
+    toggle();
   }
 
   useEffect(() => {
@@ -91,11 +91,11 @@ const Timer = () => {
   }, [pausedAt])
 
   useEffect(() => {
-      try {
-        setIsActive(isWorking);
-      } catch {
+    try {
+      setIsActive(isWorking);
+    } catch {
 
-       }
+    }
 
   }, [isWorking]);
 
@@ -172,7 +172,7 @@ const Timer = () => {
         isOpen={modal}
         timer={{ hours, minutes }}
         data={data}
-        userProfile = {userProfile}
+        userProfile={userProfile}
         resetTimer={reset}
       />
     </div>
