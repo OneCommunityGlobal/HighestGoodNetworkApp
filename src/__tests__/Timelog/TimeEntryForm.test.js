@@ -54,7 +54,7 @@ describe('<TimeEntryForm />', () => {
   it('should dispatch the right action with the right payload after add new time entry', async () => {
     const expectedPayload = {
       personId: data.personId,
-      dateOfWork: moment().tz('America/Los_Angeles').format('YYYY-MM-DD'),
+      dateOfWork: moment().format('YYYY-MM-DD'),
       notes: '',
       isTangible: 'true',
       projectId: userProjectMock.projects[0].projectId,

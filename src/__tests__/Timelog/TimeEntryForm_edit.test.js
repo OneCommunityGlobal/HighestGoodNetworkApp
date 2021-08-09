@@ -72,7 +72,7 @@ describe('<TimeEntryForm edit/>', () => {
     userEvent.click(screen.getByRole('button', { name: /clear form/i }));
     expect(screen.getAllByRole('spinbutton')[0]).toHaveValue(0);
     expect(screen.getAllByRole('spinbutton')[1]).toHaveValue(0);
-    expect(screen.getByLabelText('Date')).toHaveValue(moment().tz('America/Los_Angeles').format('YYYY-MM-DD'));
+    expect(screen.getByLabelText('Date')).toHaveValue(moment().format('YYYY-MM-DD'));
     expect(screen.getByRole('combobox')).toHaveValue('');
   });
 
