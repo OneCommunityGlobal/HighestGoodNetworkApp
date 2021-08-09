@@ -1,19 +1,22 @@
 import './reports.css'
 import React, { useState } from "react";
-import { Button, Dropdown, DropdownButton } from 'react-bootstrap'
+import { Button,  Dropdown, DropdownButton } from 'react-bootstrap'
 import EditTaskModal from "./../Projects/WBS/WBSDetail/EditTask/EditTaskModal";
 import "react-table/react-table.css";
 import Collapse from 'react-bootstrap/Collapse'
 
 const ShowCollapse = props => {
   const [open, setOpen] = useState(false);
+ // const [title, setTitle] = useState(false);
 return(
   <div>
+
   <Button
     onClick={() => setOpen(!open)}
     aria-expanded={open}>
-    {props.resources.length}     >
+    {props.resources.length}     ➤
   </Button>
+
     <div>
       {props.resources[0].name}
       </div>

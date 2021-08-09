@@ -1,11 +1,10 @@
 import React , { Component }from 'react';
 import '../Teams/Team.css';
 import { connect } from 'react-redux'
-import { Dropdown, DropdownButton } from 'react-bootstrap'
+import { Dropdown, DropdownButton, ToggleButton, ToggleButtonGroup } from 'react-bootstrap'
 import { fetchAllTasks } from '../../actions/task'
 import "react-datepicker/dist/react-datepicker.css";
 import TasksDetail from './TasksDetail'
-import MultiSelect from "react-multi-select-component";
 
 
 class TasksTable extends Component{
@@ -203,6 +202,9 @@ class TasksTable extends Component{
 
 
     var get_tasks=this.get_task_by_wbsId()
+    console.log('yueru get_tasks',get_tasks)
+
+
     const PriorityOptions = props => {
       var allPriorities=[...Array.from(new Set(props.get_tasks.map((item) => item.priority))).sort()]
       allPriorities.unshift("Filter Off")
@@ -306,12 +308,65 @@ class TasksTable extends Component{
         <AssignmentOptions get_tasks={get_tasks}/>
         <button style={{margin:'3px'}} exact className="btn btn-secondary btn-bg mt-3">Estimated Hours</button>
       </div>
+      <h2>Total: {get_tasks.length}</h2>
       <h2>Selected filters</h2>
-      <div>isAssigned:{isAssigned}</div>
-      <div>isActive:{isActive.toString()}</div>
-      <div>priority:{priorityList}</div>
-      <div>status:{statusList}</div>
-      <div>users:{userList}</div>
+
+      <h5>Assignment Options:
+        <ToggleButtonGroup type="checkbox" variant="info">
+          {/*<ToggleButton variant="info">{isAssigned}</ToggleButton>*/}
+          {isAssigned ?
+            <ToggleButton variant="info">Assign</ToggleButton>
+            :
+            <ToggleButton variant="info">Not Assign</ToggleButton>
+          }
+
+        </ToggleButtonGroup>
+      </h5>
+      <h5>Active Options:
+        <ToggleButtonGroup type="checkbox" variant="info">
+          {isActive ?
+            <ToggleButton variant="info">Active</ToggleButton>
+            :
+            <ToggleButton variant="info">InActive</ToggleButton>
+          }
+        </ToggleButtonGroup>
+      </h5>
+
+      <h5>Priority Options:
+        <ToggleButtonGroup type="checkbox" variant="info">
+          {priorityList.map((c, index) => (
+            <ToggleButton variant="info">{c}</ToggleButton>
+          ))}
+        </ToggleButtonGroup>
+      </h5>
+
+      <h5>Status Options:
+        <ToggleButtonGroup type="checkbox" variant="info">
+          {statusList.map((c, index) => (
+            <ToggleButton variant="info">{c}</ToggleButton>
+          ))}
+        </ToggleButtonGroup>
+      </h5>
+
+      <h5>Classification Options:
+        <ToggleButtonGroup type="checkbox" variant="info">
+          {classificationList.map((c, index) => (
+            <ToggleButton variant="info">{c}</ToggleButton>
+          ))}
+        </ToggleButtonGroup>
+      </h5>
+
+      <h5>User Options:
+        <ToggleButtonGroup type="checkbox" variant="info">
+          <ToggleButton variant="info">{users}</ToggleButton>
+        </ToggleButtonGroup>
+      </h5>
+      {/*<h2>Selected filters</h2>*/}
+      {/*<div>isAssigned:{isAssigned}</div>*/}
+      {/*<div>isActive:{isActive.toString()}</div>*/}
+      {/*<div>priority:{priorityList}</div>*/}
+      {/*<div>status:{statusList}</div>*/}
+      {/*<div>users:{userList}</div>*/}
 
 
       <div>classification:

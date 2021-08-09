@@ -7,13 +7,13 @@ import {getUserProjects} from '../../actions/userProjects'
 import _ from 'lodash'
 import { getWeeklySummaries, updateWeeklySummaries } from '../../actions/weeklySummaries'
 import moment from 'moment'
-import InputRange from 'react-input-range';
 import "react-input-range/lib/css/index.css"
-// import EditTaskModal from '../Projects/WBS/WBSDetail/EditTask/EditTaskModal'
-import EditTaskModal from "./../Projects/WBS/WBSDetail/EditTask/EditTaskModal";
-import EditPeopleReportTaskModal from './EditPeopleReportTaskModal'
 import Collapse from 'react-bootstrap/Collapse'
-import TasksDetail from './TasksDetail'
+import HeatMap from '@uiw/react-heat-map';
+import Tooltip from '@uiw/react-tooltip';
+
+
+
 
 class PeopleReport extends Component {
   constructor(props) {
@@ -26,8 +26,8 @@ class PeopleReport extends Component {
       userId: '',
       isLoading: true,
       infringments:{},
-      isAssigned:false,
-      isActive:false,
+      isAssigned:"",
+      isActive:"",
       priority:'',
       status:'',
       hasFilter:true,
@@ -73,6 +73,9 @@ class PeopleReport extends Component {
           console.log(this.state.userProjects)
       )
     }
+
+    console.log('yueru test user profile here')
+    console.log(this.state.userProfile)
   }
 
   setActive(activeValue) {
@@ -195,8 +198,14 @@ class PeopleReport extends Component {
       firstName,
       lastName,
       weeklyComittedHours,
-      totalComittedHours
+      totalComittedHours,
+      totalTangibleHrs
     } = userProfile
+
+    var totalTangibleHrsRound = 0
+    if (totalTangibleHrs) {
+       totalTangibleHrsRound = totalTangibleHrs.toFixed(2);
+    }
 
     const ShowCollapse = props => {
       const [open, setOpen] = useState(false);
@@ -205,7 +214,7 @@ class PeopleReport extends Component {
           <Button
             onClick={() => setOpen(!open)}
             aria-expanded={open}>
-            {props.resources.length}     >
+            {props.resources.length}     ➤
           </Button>
           <div>
             {props.resources[0].name}
@@ -223,37 +232,58 @@ class PeopleReport extends Component {
       )
     }
 
-    // const ShowCollapse = props => {
-    //   const [open, setOpen] = useState(false);
-    //   return(
-    //     <div>
-    //       <Button
-    //         onClick={() => setOpen(!open)}
-    //         aria-expanded={open}>
-    //       </Button>
-    //       <div>
-    //         {props.resources[0].name}
-    //       </div>
-    //
-    //       {props.resources.slice(1).map(resource => (
-    //         <Collapse in={open}>
-    //           <div key={resource._id} white-space="pre-line" white-space="nowrap" className="new-line">
-    //             {resource.name}
-    //           </div>
-    //         </Collapse>
-    //       ))}
-    //     </div>
-    //
-    //   )
-    // }
+    const ShowTasksCollapse = props => {
+      const [open, setOpen] = useState(false);
+      return(
+        <div>
+              <table className="center">
+                <table className="table table-bordered table-responsive-sm">
+                  <thead>
+                  <tr>
+                    <th scope="col">
+                      <Button variant="light"
+                        onClick={() => setOpen(!open)}
+                        aria-expanded={open}>⬇</Button>
+                    </th>
+                    <th scope="col" id="projects__active">Task</th>
+                    <th scope="col" id="projects__active">Priority</th>
+                    <th scope="col" id="projects__active">Status</th>
+                    <th scope="col" >Resources</th>
+                    <th scope="col" id="projects__active">Active</th>
+                    <th scope="col" id="projects__active">Assign</th>
+                    <th scope="col" id="projects__active">Class</th>
+                    <th scope="col" id="projects__active">Estimated Hours</th>
+                    <th scope="col">Start Date</th>
+                    <th scope="col">End Date</th>
+                  </tr>
+                  </thead>
+                  <Collapse in={open}>
+                  <tbody>
+                  { props.userTaskList}
+                  </tbody>
+                  </Collapse>
+                </table>
+              </table>
+        </div>
 
-    const UserTask = props => {
+      )
+    }
+
+
+    const UserTask = (props) => {
       let userTaskList = []
+      // let tasksList=[]
+      let tasks=[]
+
+      tasks=props.userTask
       if (props.userTask.length > 0) {
-        let tasks=props.userTask
-          tasks = props.userTask.filter(item => item.isActive === props.isActive
-            && item.isAssigned === props.isAssigned);
-          // if (!(props.priority === "")) {
+
+          // tasks = props.userTask.filter(item => item.isActive === props.isActive
+          //   && item.isAssigned === props.isAssigned);
+        // tasks=props.tasks_filter
+
+
+        // if (!(props.priority === "")) {
           //   tasks=props.userTask.filter(item => item.priority == props.priority &&item.isActive === props.isActive
           //     && item.isAssigned === props.isAssigned)
           // }
@@ -265,6 +295,14 @@ class PeopleReport extends Component {
         // if  (!(props.classification === "")) {
         //   tasks=tasks.filter(item => item.classification === props.classification)
         // }
+          if (!(props.isActive === "" )) {
+            tasks = props.userTask.filter(item => item.isActive === props.isActive
+            );
+          }
+          if (!(props.isAssigned ==="")) {
+            tasks = props.userTask.filter(item => item.isAssigned === props.isAssigned);
+          }
+
         if (props.priorityList.length>0){
           var i=0
           var get_tasks=[]
@@ -337,24 +375,10 @@ tasks=test
         }
 
 if (tasks.length>0) {
+  console.log('yueru tasks7777')
+  console.log(tasks)
   userTaskList = tasks.map((task, index) => (
     <tr id={"tr_" + task._id}>
-      <th scope="row">
-        <div>
-          here
-          </div>
-        {/*<EditPeopleReportTaskModal*/}
-        {/*  key={`editTask_${task._id}`}*/}
-        {/*  parentNum={task.num}*/}
-        {/*  taskId={task._id}*/}
-        {/*  wbsId={task.wbsId}*/}
-        {/*  parentId1={task.parentId1}*/}
-        {/*  parentId2={task.parentId2}*/}
-        {/*  parentId3={task.parentId3}*/}
-        {/*  mother={task.mother}*/}
-        {/*  level={task.level}*/}
-        {/*/>*/}
-      </th>
       <th scope="row">
         <div>{index + 1}</div>
       </th>
@@ -367,17 +391,6 @@ if (tasks.length>0) {
       <td>
         {task.status}
       </td>
-      {/*<td>*/}
-      {/*  {task.resources.length<=2 ?*/}
-      {/*    task.resources.map(resource => (*/}
-      {/*      <div key={resource._id}>{resource.name}</div>*/}
-      {/*    ))*/}
-      {/*    :*/}
-      {/*    <ShowCollapse resources={task.resources}/>*/}
-      {/*  }*/}
-      {/*</td>*/}
-
-
       <td>
         {task.resources.length<=2 ?
           task.resources.map(resource => (
@@ -417,13 +430,12 @@ if (tasks.length>0) {
 }
       return (
         <div>
-          <h2>Total: {userTaskList.length}</h2>
-          <h2>Selected filters</h2>
-
-          <h5>Assignment Options:
+          <div>Total: {userTaskList.length}</div>
+          <div>Selected filters:</div>
+          <div className="row">
+          <div class="block">Assignment:
             <ToggleButtonGroup type="checkbox" variant="info">
               {/*<ToggleButton variant="info">{isAssigned}</ToggleButton>*/}
-
               {isAssigned ?
                 <ToggleButton variant="info">Assign</ToggleButton>
                 :
@@ -431,78 +443,50 @@ if (tasks.length>0) {
               }
 
             </ToggleButtonGroup>
-          </h5>
-          <h5>Active Options:
+          </div>
+          <div class="block">Active:
             <ToggleButtonGroup type="checkbox" variant="info">
-
               {isActive ?
                 <ToggleButton variant="info">Active</ToggleButton>
                 :
                 <ToggleButton variant="info">InActive</ToggleButton>
               }
             </ToggleButtonGroup>
-          </h5>
+          </div>
 
-          {/*<div>isAssigned:{isAssigned}</div>*/}
-          {/*<div>isActive:{isActive.toString()}</div>*/}
-<h5>Priority Options:
+<div class="block">Priority:
           <ToggleButtonGroup type="checkbox" variant="info">
             {priorityList.map((c, index) => (
               <ToggleButton variant="info">{c}</ToggleButton>
             ))}
           </ToggleButtonGroup>
-  </h5>
+  </div>
 
-          <h5>Status Options:
+          <div class="block">Status:
             <ToggleButtonGroup type="checkbox" variant="info">
               {statusList.map((c, index) => (
                 <ToggleButton variant="info">{c}</ToggleButton>
               ))}
             </ToggleButtonGroup>
-          </h5>
+          </div>
 
-          <h5>Classification Options:
+          <div class="block">Classification:
             <ToggleButtonGroup type="checkbox" variant="info">
               {classificationList.map((c, index) => (
                 <ToggleButton variant="info">{c}</ToggleButton>
               ))}
             </ToggleButtonGroup>
-          </h5>
+          </div>
 
-          <h5>User Options:
+          <div class="block">User:
             <ToggleButtonGroup type="checkbox" variant="info">
                 <ToggleButton variant="info">{users}</ToggleButton>
             </ToggleButtonGroup>
-          </h5>
+          </div>
 
+          <ShowTasksCollapse userTaskList={userTaskList}/>
 
-
-          {/*<div>status:{statusList}</div>*/}
-          {/*<div>classification:{classificationList}</div>*/}
-          {/*<div>users:{users}</div>*/}
-          <table className="center">
-            <table className="table table-bordered table-responsive-sm">
-              <thead>
-              <tr>
-                <th scope="col" id="projects__order">Action</th>
-                <th scope="col" id="projects__order">#</th>
-                <th scope="col" id="projects__active">Task</th>
-                <th scope="col" id="projects__active">Priority</th>
-                <th scope="col" id="projects__active">Status</th>
-                <th scope="col" >Resources</th>
-                <th scope="col" id="projects__active">Active</th>
-                <th scope="col" id="projects__active">Assign</th>
-                <th scope="col" id="projects__active">Class</th>
-                <th scope="col" id="projects__active">Estimated Hours</th>
-                <th scope="col" id="projects__active">Start Date</th>
-                <th scope="col" id="projects__active">End Date</th>
-              </tr>
-              </thead>
-              <tbody>
-              { userTaskList}
-              </tbody>
-            </table>
-          </table>
+</div>
         </div>
       )
     }
@@ -510,7 +494,7 @@ if (tasks.length>0) {
       let userProjectList = []
       return (
         <div>
-          <h1>User Task</h1>
+          {/*<h1>User Task</h1>*/}
           { userProjectList }
         </div>
       )
@@ -557,13 +541,93 @@ if (tasks.length>0) {
         </DropdownButton>
       )
     };
+    const ShowInfringmentsCollapse = props => {
+      const [open, setOpen] = useState(false);
+      return(
+        <div>
+          <table className="center">
+            <table className="table table-bordered table-responsive-sm">
+              <thead>
+              <tr>
+                <th scope="col" id="projects__order">
+                  <Button variant="light"
+                    onClick={() => setOpen(!open)}
+                    aria-expanded={open}>
+                    ⬇
+                  </Button>
+                </th>
+
+                <th scope="col" id="projects__order">Date</th>
+                <th scope="col">Description</th>
+              </tr>
+              </thead>
+              <Collapse in={open}>
+              <tbody>
+              { props.BlueSquare }
+              </tbody>
+                </Collapse>
+            </table>
+          </table>
+
+        </div>
+
+      )
+    }
+
 
 
     const Infringments = props => {
       let BlueSquare = []
-      if (props.infringments.length > 0) {
+      let dict= {}
+
+      const value=[]
+      const value1=[]
+      const [selected, setSelected] = useState('')
+      console.log('props.infringment')
+      console.log(props.infringments)
+      console.log(props.infringments.length)
+
+      for (var i = 0; i < props.infringments.length; i++) {
+        if (props.infringments[i].date in dict){
+          dict[props.infringments[i].date].count+=1
+          dict[props.infringments[i].date].des.push(props.infringments[i].description)
+          // dict[props.infringments[i].date].des.push(props.infringments[i].description)
+
+        }else{
+          dict[props.infringments[i].date]={count:1,des:[props.infringments[i].description]}
+
+          console.log('55555')
+          // console.log(props.infringments[i])
+          // console.log(props.infringments[i].date)
+          // console.log(props.infringments[i].description)
+          // dict[props.infringments[i].date].(props.infringments[i].description)
+          // dict[props.infringments[i].date].des.push(props.infringments[i].description)
+
+        }
+      }
+
+      for (var key in dict) {
+        // value.push({date:key.toString(),count:dict[key]['count'],description:dict[key]['des']})
+        value.push({date:key.toString(),des:dict[key].des,count:dict[key].count})
+        // value.push({date:key.toString(),count:dict[key].count})
+
+        value1.push({date:{date1:key.toString(),des:dict[key].des},count:dict[key]})
+
+      }
+
+      console.log('yueru valueeeeee')
+      console.log(value)
+      const startdate=Object.keys(dict)[0]
+      var startdateStr=""
+      if (startdate){
+         startdateStr=startdate.toString()
+
+      }
+        if (props.infringments.length > 0) {
         BlueSquare = props.infringments.map((current, index) => (
           <tr className="teams__tr">
+            <td>{index+1}
+              </td>
           <td>
             {current.date}
           </td>
@@ -573,25 +637,51 @@ if (tasks.length>0) {
           </tr>
         ))}
       return (
+        <div>
+        <h2>Blue Square: {infringments.length}</h2>
+      <div>
+        <HeatMap value={value}
+                 startDate={new Date(startdateStr)}
+                 width={600}
+                 rectSize={14}
+                 rectRender={(props, data) => {
+                   if (!data.count) return <rect {...props} />;
+                   return (
+                     // <Tooltip key={props.key} placement="top" content={data.date}>
 
-        <table className="center">
-          <table className="table table-bordered table-responsive-sm">
-            <thead>
-            <tr>
-              <th scope="col" id="projects__order">Date</th>
-              <th scope="col">description</th>
-            </tr>
-            </thead>
-            <tbody>
-            { BlueSquare }
-            </tbody>
-          </table>
-        </table>
+                     <Tooltip key={props.key} placement="top"  trigger="click" content={`Count: ${data.count || 0}, Date:${data.date},Description:${data.des}`}>
+                       {/*<div>herrrr</div>*/}
+                       {/*<Button type="primary">右边文字提示(right)</Button>*/}
+                       <rect {...props} />
+                     </Tooltip>
+                   );
+                 }}
+        />
+
+      </div>
+          <ShowInfringmentsCollapse BlueSquare={BlueSquare}/>
+
+        {/*<table className="center">*/}
+
+        {/*  <table className="table table-bordered table-responsive-sm">*/}
+        {/*    <thead>*/}
+        {/*    <tr>*/}
+        {/*      <th scope="col" id="projects__order">#</th>*/}
+        {/*      <th scope="col" id="projects__order">Date</th>*/}
+        {/*      <th scope="col">Description</th>*/}
+        {/*    </tr>*/}
+        {/*    </thead>*/}
+        {/*    <tbody>*/}
+        {/*    { BlueSquare }*/}
+        {/*    </tbody>*/}
+        {/*  </table>*/}
+        {/*</table>*/}
+          </div>
       )
     }
     const StartDate = (props) => {
         return (
-          <h2>Start Date:{moment(props.userProfile.createdDate).format('YYYY-MM-DD')}</h2>
+            <div>Start Date:{moment(props.userProfile.createdDate).format('YYYY-MM-DD')}</div>
     )
     };
     const ActiveOptions = props => {
@@ -605,17 +695,7 @@ if (tasks.length>0) {
       )
     };
 
-    // const AssignmentOptions = props => {
-    //   var allOptions=[...Array.from(new Set(props.get_tasks.map((item) => item.isAssigned.toString()))).sort()]
-    //   allOptions.unshift("Filter Off")
-    //   return (
-    //     <DropdownButton style={{margin:'3px'}} exact id="dropdown-basic-button" title="Assignment Options">
-    //       {allOptions.map((c, index) => (
-    //         <Dropdown.Item onClick={()=>this.setAssign(c)}>{c}</Dropdown.Item>
-    //       ))}
-    //     </DropdownButton>
-    //   )
-    // };
+
 
     const PriorityOptions = props => {
       var allPriorities=[...Array.from(new Set(props.get_tasks.map((item) => item.priority))).sort()]
@@ -630,46 +710,73 @@ if (tasks.length>0) {
     };
 
     return (
+      <div className='container'>
         <table>
-          <DropdownButton id="dropdown-basic-button" title="Time Frame">
-            <Dropdown.Item href="#/action-1">Past Week</Dropdown.Item>
-            <Dropdown.Item href="#/action-2">Past Two Weeks</Dropdown.Item>
-            <Dropdown.Item href="#/action-3">Past Month</Dropdown.Item>
-            <Dropdown.Item href="#/action-4">Past 6 Months</Dropdown.Item>
-            <Dropdown.Item href="#/action-5">Past Year</Dropdown.Item>
-            <Dropdown.Item href="#/action-6">Custom range</Dropdown.Item>
-          </DropdownButton>
-          <div>
-            <h1
-              style={{ display: 'inline-block', marginRight: 10 }}
-            >Name: {`${firstName} ${lastName}`}</h1>
-            <h2>Weekly Comitted Hours:{weeklyComittedHours}</h2>
-            <h2>Total Comitted Hours:{totalComittedHours}</h2>
-            <StartDate userProfile={userProfile}/>
-            <Infringments infringments={infringments}/>
-          </div>
-            <h2>Tasks</h2>
-          <div>
-            <button style={{margin:'3px'}} exact className="btn btn-secondary btn-bg mt-3" onClick={()=>this.setFilter()}>Filter Off</button>
-            {/*<AssignmentOptions get_tasks={userTask}/>*/}
+          <h1 className="center"
+            style={{ display: 'inline-block', marginRight: 10 }}
+          > {`${firstName} ${lastName}`}</h1>
+          <div >Weekly Comitted Hours: {weeklyComittedHours}</div>
+          <div>Total Comitted Hours:{totalComittedHours}</div>
+          <div>Total Tangible Hours:{totalTangibleHrsRound}</div>
 
+          <StartDate userProfile={userProfile}/>
+
+          <div class="row">
+
+
+
+
+
+
+          </div>
+
+          <div class="row">
+            <div>
+              <div><button style={{margin:'3px'}} exact className="btn btn-secondary btn-bg mt-3" onClick={()=>this.setFilter()}>Filters Off</button>
+              </div>
 <div>
             <input name='radio' type="radio" style={{margin:'5px'}} value="active" onChange={()=>this.setAssign(true)}  />
-            Assign
+            Assigned
             <input name='radio' type="radio" style={{margin:'5px'}} value="inactive" onChange={()=>this.setAssign(false) } />
-            Not Assign
+            Not Assigned
 </div>
             <div>
             <input name='radio' type="radio" style={{margin:'5px'}} value="active" onChange={()=>this.setActive(true)}  />
             Active
             <input name='radio' type="radio" style={{margin:'5px'}} value="inactive" onChange={()=>this.setActive(false) } />
-            InActive
+            Inactive
               </div>
-            <PriorityOptions get_tasks={userTask}/>
-            <StatusOptions get_tasks={userTask}/>
-            <button style={{margin:'3px'}} exact className="btn btn-secondary btn-bg mt-3">Estimated Hours</button>
-            <ClassificationOptions allClassification={allClassification}/>
+              </div>
+            <div className="row">
+<div>
+
+  {/*<DropdownButton style={{margin:'3px'}} exact id="dropdown-basic-button" title="Priority" title="Time Frame">*/}
+  {/*  <Dropdown.Item href="#/action-1">Past Week</Dropdown.Item>*/}
+  {/*  <Dropdown.Item href="#/action-2">Past Two Weeks</Dropdown.Item>*/}
+  {/*  <Dropdown.Item href="#/action-3">Past Month</Dropdown.Item>*/}
+  {/*  <Dropdown.Item href="#/action-4">Past 6 Months</Dropdown.Item>*/}
+  {/*  <Dropdown.Item href="#/action-5">Past Year</Dropdown.Item>*/}
+  {/*  <Dropdown.Item href="#/action-6">Custom range</Dropdown.Item>*/}
+  {/*</DropdownButton>*/}
+  </div>
+              <div > <PriorityOptions get_tasks={userTask}/>
+              </div>
+              <div >
+              <StatusOptions get_tasks={userTask}/>
+              </div>
+              {/*<div className="block">*/}
+
+              {/*  <button style={{margin:'3px'}} exact className="btn btn-primary btn-bg mt-3" >Estimated Hours</button>*/}
+
+              {/*  /!*<button  exact className="btn btn-secondary btn-bg mt-3">Estimated Hours</button>*!/*/}
+              {/*</div>*/}
+              <div >
+                <ClassificationOptions allClassification={allClassification}/>
+              </div>
+              <div >
             <UserOptions userTask={userTask}/>
+              </div>
+            </div>
           </div>
 
             <UserTask userTask={userTask}
@@ -683,9 +790,13 @@ if (tasks.length>0) {
                       priorityList={priorityList}
                       statusList={statusList}
             />
-          <h2>Projects</h2>
+          {/*<h2>Projects</h2>*/}
           <UserProject userProjects={userProjects}/>
+          <Infringments infringments={infringments}/>
+
         </table>
+
+      </div>
       )
     }
 }

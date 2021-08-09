@@ -5,10 +5,11 @@ import { getAllUserTeams } from '../../actions/allTeamsAction';
 import TeamTable from './TeamTable'
 import PeopleTable from './PeopleTable'
 import ProjectTable from './ProjectTable'
-import TasksTable from './TasksTable'
 import { getAllUserProfile } from '../../actions/userManagement';
 import { fetchAllTasks } from "../../actions/task";
 import moment from 'moment'
+import { Container } from 'reactstrap'
+
 
 
 class ReportsPage extends Component {
@@ -139,77 +140,89 @@ class ReportsPage extends Component {
 
 
     return (
-      <div>
-        <div>
-          <nav className="navbar navbar-expand-md navbar-light bg-light mb-3 nav-fill">
-            <li className="navbar-brand">Generate Report:</li>
-          </nav>
-          <a>Select a Category</a>
-          <button style={{margin:'3px'}} exact className="btn btn-secondary btn-bg mt-3" onClick={this.showProjectTable}>Project</button>
-          <button style={{margin:'3px'}} exact className="btn btn-secondary btn-bg mt-3" onClick={this.showPeopleTable}>Person</button>
-          <button style={{margin:'3px'}} exact className="btn btn-secondary btn-bg mt-3" onClick={this.showTeamsTable}>Team</button>
+      <Container fluid className="bg--white py-3 mb-5">
+
+        <div className='container'>
+
+          <h3 className="mt-3 mb-5">Reports Page</h3>
           <div>
-          <a>Select a Filter</a>
-            <input name='radio' type="radio" style={{margin:'5px'}} value="active" onChange={this.setActive}  />
+          <a>Select a Category</a>
+            </div>
+
+          <button style={{margin:'5px'}} exact className="btn btn-info btn-bg mt-3" onClick={this.showProjectTable}><i className="fa fa-folder" aria-hidden="true"></i>  Projects  {projects.length}</button>
+          <button style={{margin:'5px'}} exact className="btn btn-info btn-bg mt-3" onClick={this.showPeopleTable}><i className="fa fa-user" aria-hidden="true"></i>  People  {userProfiles.length}</button>
+          <button style={{margin:'5px'}} exact className="btn btn-info btn-bg mt-3" onClick={this.showTeamsTable}><i className="fa fa-users" aria-hidden="true"></i>  Teams  {allTeams.length}</button>
+          <div>
+            <div>
+          <a >Select a Filter</a>
+              </div>
+            <div>
+
+
+              <input name='radio' type="radio" style={{margin:'8px'}} value="active" onChange={this.setActive}  />
             Active
-            <input name='radio' type="radio" style={{margin:'5px'}} value="inactive" onChange={this.setInActive } />
-            InActive
-            <input name='radio' type="radio" style={{margin:'5px'}} value="all" onChange={this.setAll }defaultChecked />
+            <input name='radio' type="radio" style={{margin:'8px'}} value="inactive" onChange={this.setInActive } />
+            Inactive
+            <input name='radio' type="radio" style={{margin:'8px'}} value="all" onChange={this.setAll }defaultChecked />
             All
-          <button style={{margin:'5px'}} type="submit" className="btn btn-primary btn-bg mt-3">
-            Submit
-          </button>
+              </div>
+            <div>
+          {/*<button style={{margin:'5px'}} type="submit" className="btn btn-primary btn-bg mt-3">*/}
+          {/*  Submit*/}
+          {/*</button>*/}
+            </div>
             </div>
         </div>
         {this.state.showPeople && <PeopleTable userProfiles={userProfiles}/>}
         {this.state.showProjects &&<ProjectTable projects={projects}/>}
         {this.state.showTeams &&<TeamTable allTeams={allTeams}/>}
-      </div>
+      {/*</div>*/}
+        </Container>
 
     )
   }
 
-  teamTableElements = (allTeams) => {
-    if (allTeams && allTeams.length > 0) {
-      const teamSearchData = this.filteredTeamList(allTeams);
-      /*
-      * Builiding the table body for teams returns
-       * the rows for currently selected page .
-       * Applying the Default sort in the order of created date as well
-       */
-      return teamSearchData.sort((a, b) => {
-        if (a.createdDatetime > b.createdDatetime) return -1;
-        if (a.createdDatetime < b.createdDatetime) return 1;
-        return 0;
-      }).map((team, index) => (
-        <TeamTable
-          key={team._id}
-          index={index}
-          name={team.teamName}
-          teamId={team._id}
-          active={team.isActive}
-          team={team}
-        />
-      ));
-    }
-  }
-  filteredTeamList = (allTeams) => {
-    const filteredList = allTeams.filter((team) => {
-      // Applying the search filters before creating each team table data element
-      if ((team.teamName
-        && team.teamName.toLowerCase().indexOf(this.state.teamNameSearchText.toLowerCase()) > -1
-        && this.state.wildCardSearchText === '')
-        // the wild card search, the search text can be match with any item
-        || (this.state.wildCardSearchText !== ''
-          && (team.teamName.toLowerCase().indexOf(this.state.wildCardSearchText.toLowerCase()) > -1
-          ))
-      ) {
-        return team;
-      }
-    });
-
-    return filteredList;
-  }
+  // teamTableElements = (allTeams) => {
+  //   if (allTeams && allTeams.length > 0) {
+  //     const teamSearchData = this.filteredTeamList(allTeams);
+  //     /*
+  //     * Builiding the table body for teams returns
+  //      * the rows for currently selected page .
+  //      * Applying the Default sort in the order of created date as well
+  //      */
+  //     return teamSearchData.sort((a, b) => {
+  //       if (a.createdDatetime > b.createdDatetime) return -1;
+  //       if (a.createdDatetime < b.createdDatetime) return 1;
+  //       return 0;
+  //     }).map((team, index) => (
+  //       <TeamTable
+  //         key={team._id}
+  //         index={index}
+  //         name={team.teamName}
+  //         teamId={team._id}
+  //         active={team.isActive}
+  //         team={team}
+  //       />
+  //     ));
+  //   }
+  // }
+  // filteredTeamList = (allTeams) => {
+  //   const filteredList = allTeams.filter((team) => {
+  //     // Applying the search filters before creating each team table data element
+  //     if ((team.teamName
+  //       && team.teamName.toLowerCase().indexOf(this.state.teamNameSearchText.toLowerCase()) > -1
+  //       && this.state.wildCardSearchText === '')
+  //       // the wild card search, the search text can be match with any item
+  //       || (this.state.wildCardSearchText !== ''
+  //         && (team.teamName.toLowerCase().indexOf(this.state.wildCardSearchText.toLowerCase()) > -1
+  //         ))
+  //     ) {
+  //       return team;
+  //     }
+  //   });
+  //
+  //   return filteredList;
+  // }
 
 
 }

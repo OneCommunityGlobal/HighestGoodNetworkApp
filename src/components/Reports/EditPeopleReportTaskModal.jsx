@@ -13,15 +13,43 @@ import { Editor } from '@tinymce/tinymce-react'
 import { UserRole } from '../../utils/enums'
 
 const EditPeopleReportTaskModal = (props) => {
-console.log('yueru EditPeopleReportTaskModal')
-  console.log(props)
+  console.log('EditPeopleReportTaskModal yueru')
   const [role] = useState(props.auth ? props.auth.user.role : null);
 
-  const tasks = props.tasks;
+  // const tasks = props.userTask;
+  const tasks = props.tasks.taskItems;
+  console.log('props',props)
+  console.log('props.userTask',props.userTask)
+  console.log('props.tasks.taskItems', props.tasks.taskItems)
+  // console.log('props.tasks.taskItems',props.tasks.taskItems)
+
   const { members } = props.projectMembers;
   let foundedMembers = [];
+  console.log('props.taskId',props.taskId)
 
-  const thisTask = tasks.filter(task => task._id === props.taskId)[0];
+  // const thisTask = tasks.filter(task => task._id === props.taskId);
+  // console.log('thisTask',thisTask)
+
+
+  const thisTask = tasks.filter(task => task._id === props.taskId);
+  console.log('thisTask',thisTask)
+
+  //
+  // let test=[]
+  // for(var i = 0; i < props.userTask.length; i++) {
+  //   if (props.userTask[i]._id===props.taskId){
+  //     console.log('props.taskId',props.taskId)
+  //     console.log('tasks find',props.userTask[i])
+  //   }
+  //   else{
+  //     console.log('props.taskId',props.taskId)
+  //     console.log('not find',props.userTask[i]._id)
+  //     console.log('not find',props.userTask[i]._id)
+  //   }
+  //
+  // }
+
+
 
   // Date picker
   const FORMAT = 'MM/dd/yy'
