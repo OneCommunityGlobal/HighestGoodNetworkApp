@@ -332,8 +332,8 @@ class UserProfile extends Component {
   }
 
   handleSubmit = async event => {
-    const { updateUserProfile, match } = this.props
-    const { userProfile, formValid } = this.state
+    const { updateUserProfile, match } = this.props;
+    const { userProfile, formValid } = this.state;
     const submitResult = await updateUserProfile(match.params.userId, userProfile)
     this.setState({ showSaveWarning: false })
   }
@@ -471,11 +471,11 @@ class UserProfile extends Component {
           },
         })
         break
-      case 'totalComittedHours':
+      case 'totalTangibleHours':
         this.setState({
           userProfile: {
             ...userProfile,
-            totalComittedHours: event.target.value,
+            totalTangibleHrs: event.target.value,
           },
         })
         break
