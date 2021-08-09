@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Card, Row, Col } from 'reactstrap';
 import { useSelector } from 'react-redux';
 import ReactHtmlParser from 'react-html-parser';
-import moment from 'moment';
+import moment from 'moment-timezone';
 import './Timelog.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEdit } from '@fortawesome/free-regular-svg-icons';
@@ -23,7 +23,7 @@ const TimeEntry = ({ data, displayYear, userProfile }) => {
 
   const dispatch = useDispatch();
 
-  const toggleTangability = () => {
+  const toggleTangibility = () => {
     
     const newData = {...data,
       isTangible: !data.isTangible,
@@ -55,12 +55,15 @@ const TimeEntry = ({ data, displayYear, userProfile }) => {
           <div className="text-muted">Project/Task:</div>
           <h6> {data.projectName} </h6>
           <span className="text-muted">Tangible:&nbsp;</span>
-          <input type="checkbox" name="isTangible" checked={data.isTangible} readOnly={!isAdmin} onChange={() => toggleTangability(data)}/>
+          <input type="checkbox" name="isTangible" checked={data.isTangible} disabled={!isAdmin} onChange={() => toggleTangibility(data)}/>
         </Col>
         <Col md={5} className="pl-2 pr-0">
           <div className="text-muted">Notes:</div>
           {ReactHtmlParser(data.notes)}
           <div className="buttons">
+            {/**{(isAdmin || (isOwner && isSameDay)) && ( */}
+            {/** Change to commented code once back-end automatically issues
+             * blue squares for too many edits and once we're out of the beta environment*/}
             {(isAdmin || (!data.isTangible && isOwner && isSameDay)) && (
               <span>
                 <FontAwesomeIcon

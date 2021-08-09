@@ -54,7 +54,7 @@ describe('<TimeEntryForm />', () => {
   it('should dispatch the right action with the right payload after add new time entry', async () => {
     const expectedPayload = {
       personId: data.personId,
-      dateOfWork: moment().tz('America/Los_Angeles').format('YYYY-MM-DD'),
+      dateOfWork: moment().format('YYYY-MM-DD'),
       notes: '',
       isTangible: 'true',
       projectId: userProjectMock.projects[0].projectId,
@@ -78,9 +78,7 @@ describe('<TimeEntryForm />', () => {
     userEvent.click(screen.getByRole('button', { name: /submit/i }));
     expect(actions.postTimeEntry).toHaveBeenCalledTimes(1);
     expect(actions.postTimeEntry).toHaveBeenCalledWith(expectedPayload);
-    await waitFor(() => {
-      expect(toggle).toHaveBeenCalled();
-    });
+
   });
   it('should render the openInfo and the content', () => {
     const tips = screen.getByTitle('timeEntryTip');
@@ -171,7 +169,7 @@ describe('<TimeEntryFormEdit />', () => {
     const minutes = screen.getAllByRole('spinbutton')[1];
     const projectField = screen.getByRole('combobox');
     const noteField = screen.getByLabelText(/notes/i);
-    expect(screen.getByText(/edit time entry/i)).toBeInTheDocument();
+    expect(screen.getByTestId('timeEntryFormModal')).toBeInTheDocument();
     expect(dateField).toBeInTheDocument();
     expect(hours).toBeInTheDocument();
     expect(minutes).toBeInTheDocument();
