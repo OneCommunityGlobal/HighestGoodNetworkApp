@@ -74,7 +74,11 @@ export class WeeklySummariesReport extends Component {
 
     return (
       <Container fluid className="bg--white-smoke py-3 mb-5">
-        <h3 className="mt-3 mb-5">Weekly Summaries Reports page</h3>
+        <Row>
+          <Col lg={{ size: 10, offset: 1 }}>
+            <h3 className="mt-3 mb-5">Weekly Summaries Reports page</h3>
+          </Col>
+        </Row>
         <Row>
           <Col lg={{ size: 10, offset: 1 }}>
             <Nav tabs>

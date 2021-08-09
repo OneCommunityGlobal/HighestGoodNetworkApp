@@ -12,20 +12,30 @@ import { ENDPOINTS } from '../utils/URL';
  * number === 2 week before last
 */
 export const getTimeEntriesForWeek = (userId, offset) => {
+
+    //TODO: Environment variable for server timezone
+
     const fromDate = moment()
+        .tz('America/Los_Angeles')
         .startOf('week')
-        .subtract(offset, 'weeks');
-        const toDate = moment()
+        .subtract(offset, 'weeks')
+        .format('YYYY-MM-DD')
+
+    const toDate = moment()
+        .tz('America/Los_Angeles')
         .endOf('week')
-        .subtract(offset, 'weeks');
+        .subtract(offset, 'weeks')
+        .format('YYYY-MM-DD')
+
+
     const url = ENDPOINTS.TIME_ENTRIES_PERIOD(userId, fromDate, toDate);
     return async (dispatch) => {
         let loggedOut = false;
-        const res = await axios.get(url).catch((error)=>{
-			if (error.status===401) {
-				//logout error
-				loggedOut = true;
-			}
+        const res = await axios.get(url).catch((error) => {
+            if (error.status === 401) {
+                //logout error
+                loggedOut = true;
+            }
         });
         if (!loggedOut || !res || !res.data) {
             await dispatch(setTimeEntriesForWeek(res.data, offset));
@@ -37,11 +47,11 @@ export const getTimeEntriesForPeriod = (userId, fromDate, toDate) => {
     const url = ENDPOINTS.TIME_ENTRIES_PERIOD(userId, fromDate, toDate);
     return async (dispatch) => {
         let loggedOut = false;
-        const res = await axios.get(url).catch((error)=>{
-			if (error.status === 401) {
-				//logout error
-				loggedOut = true;
-			}
+        const res = await axios.get(url).catch((error) => {
+            if (error.status === 401) {
+                //logout error
+                loggedOut = true;
+            }
         });
         if (!loggedOut || !res || !res.data) {
             await dispatch(setTimeEntriesForPeriod(res.data));

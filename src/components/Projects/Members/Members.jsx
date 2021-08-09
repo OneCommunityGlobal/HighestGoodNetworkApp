@@ -15,19 +15,12 @@ import './members.css'
 
 const Members = (props) => {
   const [role] = useState(props.state ? props.state.auth.user.role : null);
-  let [keyword, setKeyword] = useState('');
   const projectId = props.match.params.projectId;
 
 
   useEffect(() => {
     props.fetchAllMembers(projectId);
   }, [projectId]);
-
-  const pressEnter = (event, keyword) => {
-    if (event.key === "Enter") {
-      props.findUserProfiles(keyword);
-    }
-  }
 
   const assignAll = () => {
     const allUsers = props.state.projectMembers.foundUsers.filter(user => user.assigned === false);
@@ -62,14 +55,12 @@ const Members = (props) => {
             </div>
 
             <input type="text" className="form-control" aria-label="Search user" placeholder="Name"
-              onChange={(e) => setKeyword(e.target.value)}
-              onKeyPress={(e) => pressEnter(e, keyword)}
+              onChange={(e) => {
+                props.findUserProfiles(e.target.value);
+              }}
             />
             <div className="input-group-append">
-              <button className="btn btn-outline-primary" type="button"
-                onClick={(e) => props.findUserProfiles(keyword)}>
-                <i className="fa fa-search" aria-hidden="true"></i>
-              </button>
+
               <button className="btn btn-outline-primary" type="button"
                 onClick={(e) => props.getAllUserProfiles()}>
                 All
