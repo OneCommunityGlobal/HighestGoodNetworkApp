@@ -5,7 +5,7 @@ import {
 import userEvent from '@testing-library/user-event';
 import thunk from 'redux-thunk';
 import configureStore from 'redux-mock-store';
-import moment from 'moment';
+import moment from 'moment-timezone';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import {

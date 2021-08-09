@@ -13,7 +13,7 @@ import {
   Col,
 } from 'reactstrap'
 
-const ModalExample = props => {
+const UserProfileModal = props => {
   const {
     isOpen,
     closeModal,
@@ -25,9 +25,8 @@ const ModalExample = props => {
     userProfile,
     id,
     isUserAdmin,
+    handleSubmit
   } = props
-
-  // console.log('user:', userProfile);
 
   let blueSquare = [
     {
@@ -372,7 +371,10 @@ const ModalExample = props => {
             id="addBlueSquare"
             disabled={addButton}
             onClick={() => {
-              updateBlueSquare('', dateStamp, summary, 'add')
+              updateBlueSquare('', dateStamp, summary, 'add');
+              setTimeout(() => {
+                handleSubmit();
+              }, 0);
             }}
           >
             Submit
@@ -381,12 +383,24 @@ const ModalExample = props => {
 
         {type === 'modBlueSquare' && (
           <>
-            <Button color="info" onClick={() => updateBlueSquare(id, dateStamp, summary, 'update')}>
+            <Button color="info" onClick={() => {
+              updateBlueSquare(id, dateStamp, summary, 'update');
+              setTimeout(() => {
+                handleSubmit();
+              }, 0);
+            }}>
+
               Update
             </Button>
             <Button
               color="danger"
-              onClick={() => updateBlueSquare(id, dateStamp, summary, 'delete')}
+              onClick={() => {
+                updateBlueSquare(id, dateStamp, summary, 'delete');
+                setTimeout(() => {
+                  handleSubmit();
+                }, 0);
+              }}
+
             >
               Delete
             </Button>
@@ -427,13 +441,13 @@ const ModalExample = props => {
             Close
           </Button>
         ) : (
-            <Button color="primary" onClick={closeModal}>
-              Cancel
-            </Button>
-          )}
+          <Button color="primary" onClick={closeModal}>
+            Cancel
+          </Button>
+        )}
       </ModalFooter>
     </Modal>
   )
 }
 
-export default ModalExample
+export default UserProfileModal
