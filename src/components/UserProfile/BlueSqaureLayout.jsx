@@ -26,11 +26,19 @@ import './UserProfile.scss';
 import './UserProfileEdit/UserProfileEdit.scss';
 
 const BlueSqaureLayout = (props) => {
+
   const {
-    userProfile, handleUserProfile, handleSaveError, handleBlueSquare, isUserAdmin, isUserSelf,
+    userProfile,
+    handleUserProfile,
+    handleBlueSquare,
+    isUserAdmin,
+    isUserSelf,
   } = props;
+
   const { privacySettings, infringments } = userProfile;
+
   const canEdit = isUserAdmin || isUserSelf;
+  
   if (canEdit) {
     return (
       <div data-testid="blueSqaure-field">
@@ -50,7 +58,6 @@ const BlueSqaureLayout = (props) => {
           isUserAdmin={isUserAdmin}
           blueSquares={infringments}
           handleBlueSquare={handleBlueSquare}
-          handleSaveError={handleSaveError}
         />
       </div>
     );
