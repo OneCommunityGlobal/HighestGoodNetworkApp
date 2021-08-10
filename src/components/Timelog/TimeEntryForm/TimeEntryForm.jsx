@@ -505,12 +505,13 @@ const TimeEntryForm = props => {
             </FormGroup>
             <FormGroup check>
               <Label check>
+                
                 <Input
                   type="checkbox"
                   name="isTangible"
                   checked={inputs.isTangible}
                   onChange={handleCheckboxChange}
-                  disabled={!isAdmin}
+                  disabled={!isAdmin && !data.isTangible}
                 />
                 Tangible&nbsp;
                 <i
