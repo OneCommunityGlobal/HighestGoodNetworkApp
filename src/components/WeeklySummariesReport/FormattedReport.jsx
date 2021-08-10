@@ -14,6 +14,12 @@ const FormattedReport = ({ summaries, weekIndex }) => {
     }
   });
 
+  //Necessary because our version of node is outdated
+  //and doesn't have String.prototype.replaceAll
+  let emailString = [...(new Set(emails))].toString();
+  while(emailString.includes(',')) emailString = emailString.replace(',', '\n');
+  while(emailString.includes(',')) emailString = emailString.replace('\n', ', ');
+
   const alphabetize = summaries => {
     return summaries.sort((a, b) =>
       `${a.firstName} ${a.lastName}`.localeCompare(`${b.firstName} ${b.lastname}`),
@@ -86,7 +92,7 @@ const FormattedReport = ({ summaries, weekIndex }) => {
         </div>
       ))}
       <h4>Emails</h4>
-      <p>{[...(new Set(emails))].toString()}</p>
+      <p>{emailString}</p>
     </>
   )
 }
