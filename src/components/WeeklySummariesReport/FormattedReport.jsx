@@ -38,12 +38,12 @@ const FormattedReport = ({ summaries, weekIndex }) => {
         <>
           <b>Weekly Summary</b> (for the week ending on{' '}
           <b>
-            {moment(summary.weeklySummaries[weekIndex].dueDate)
+            {moment(summary.weeklySummaries[weekIndex]?.dueDate)
               .tz('America/Los_Angeles')
               .format('YYYY-MMM-DD')}
           </b>
           ):
-          <div style={{ padding: '10px 20px 0' }}>{summary.weeklySummaries[weekIndex].summary}</div>
+          <div style={{ padding: '10px 20px 0' }}>{summary?.weeklySummaries[weekIndex]?.summary}</div>
         </>
       )
     } else {
@@ -86,8 +86,7 @@ const FormattedReport = ({ summaries, weekIndex }) => {
         </div>
       ))}
       <h4>Emails</h4>
-      {[...(new Set(emails))].toString().replaceAll(',', ', ')}
-
+      <p>{[...(new Set(emails))].toString()}</p>
     </>
   )
 }
