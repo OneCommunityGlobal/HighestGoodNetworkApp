@@ -8,6 +8,14 @@ import {
 // import BasicInformationTab from '../../components/UserProfile/BaiscInformationTab';
 import VolunteeringTimeTab from '../../components/UserProfile/VolunteeringTimeTab/VolunteeringTimeTab';
 
+const hoursByCategory = {
+  housing: 0,
+  food: 0,
+  education: 0,
+  society: 0,
+  energy: 0
+};
+
 const weeklyHoursReducer = (acc, val) => acc + (parseInt(val.hours, 10) + parseInt(val.minutes, 10) / 60);
 describe('volunteering times tab user is admin', () => {
   const handleUserProfile = jest.fn();
@@ -19,6 +27,7 @@ describe('volunteering times tab user is admin', () => {
         isUserAdmin
         isUserSelf
         handleUserProfile={handleUserProfile}
+        hoursByCategory={hoursByCategory}
       />,
     );
   });
@@ -82,6 +91,7 @@ describe('volunteering times tab user as not admin', () => {
         isUserAdmin={false}
         isUserSelf
         handleUserProfile={handleUserProfile}
+        hoursByCategory={hoursByCategory}
       />,
     );
   });
