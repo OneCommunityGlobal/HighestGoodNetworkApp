@@ -1,45 +1,100 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import moment from 'moment';
-import 'moment-timezone';
-import ReactHtmlParser from 'react-html-parser';
+import React from 'react'
+import PropTypes from 'prop-types'
+import moment from 'moment'
+import 'moment-timezone'
+import ReactHtmlParser from 'react-html-parser'
 
 const FormattedReport = ({ summaries, weekIndex }) => {
-  let wsReport = '';
-  const weeklySummaryNotProvidedMessage = '<div><b>Weekly Summary:</b> Not provided!</div>';
-  summaries.forEach((eachSummary) => {
-    const {
-      firstName, lastName, weeklySummaries, mediaUrl, weeklySummariesCount,
-    } = eachSummary;
 
-    const mediaUrlLink = mediaUrl ? `<a href=${mediaUrl} target="_blank" rel="noopener noreferrer">Open link to media files</a>` : 'Not provided!';
-    const totalValidWeeklySummaries = weeklySummariesCount || 'No valid submissions yet!';
-    let weeklySummaryMessage = weeklySummaryNotProvidedMessage;
-    if (Array.isArray(weeklySummaries) && weeklySummaries.length && weeklySummaries[weekIndex]) {
-      const { dueDate, summary } = weeklySummaries[weekIndex];
-      if (summary) {
-        weeklySummaryMessage = `<b>Weekly Summary</b> (for the week ending on <b>${moment(dueDate).tz('America/Los_Angeles').format('YYYY-MMM-DD')}</b>):<br />
-                                <div style="padding: 10px 20px 0;">${summary}</div>`;
-      }
+  const emails = [];
+
+  summaries.forEach((summary) => {
+    if(summary.email !== undefined && summary.email !== null) {
+      emails.push(summary.email);
     }
-
-    wsReport += `\n
-    <div style="padding: 20px 0; margin-top: 5px; border-bottom: 1px solid #DEE2E6;">
-      <b>Name:</b> ${firstName} ${lastName}<br />
-      <b>Media URL:</b> ${mediaUrlLink}<br />
-      <b>Total Valid Weekly Summaries:</b> ${totalValidWeeklySummaries}<br />
-      ${weeklySummaryMessage}
-    </div>`;
   });
 
+  const alphabetize = summaries => {
+    return summaries.sort((a, b) =>
+      `${a.firstName} ${a.lastName}`.localeCompare(`${b.firstName} ${b.lastname}`),
+    )
+  }
+
+  const getMediaUrlLink = summary => {
+    if (summary.mediaUrl) {
+      return (
+        <a href={summary.mediaUrl} target="_blank" rel="noopener noreferrer">
+          Open link to media files
+        </a>
+      )
+    } else {
+      return 'Not provided!'
+    }
+  }
+
+  const getWeeklySummaryMessage = summary => {
+    if (summary) {
+      return (
+        <>
+          <b>Weekly Summary</b> (for the week ending on{' '}
+          <b>
+            {moment(summary.weeklySummaries[weekIndex].dueDate)
+              .tz('America/Los_Angeles')
+              .format('YYYY-MMM-DD')}
+          </b>
+          ):
+          <div style={{ padding: '10px 20px 0' }}>{summary.weeklySummaries[weekIndex].summary}</div>
+        </>
+      )
+    } else {
+      return (
+        <p>
+          <b>Weekly Summary:</b> Not provided!
+        </p>
+      )
+    }
+  }
+
+  const getTotalValidWeeklySummaries = summary => {
+    return (
+      <p style={summary.weeklySummariesCount === 8 ? {color: 'red'} : {}}>
+        <b>Total Valid Weekly Summaries:</b>{' '}
+         {summary.weeklySummariesCount || 'No valid submissions yet!'} 
+      </p>
+    )
+  }
+
   return (
-    <div>{ReactHtmlParser(wsReport)}</div>
-  );
-};
+    <>
+      {alphabetize(summaries).map((summary, index) => (
+        <div
+          style={{ padding: '20px 0', marginTop: '5px', borderBottom: '1px solid #DEE2E6' }}
+          key={'summary-' + index}
+        >
+          <p>
+            <b>Name:</b> {summary.firstName} {summary.lastName}
+          </p>
+          <p>
+            {' '}
+            <b>Media URL:</b> {getMediaUrlLink(summary)}
+          </p>
+          {getTotalValidWeeklySummaries(summary)}
+          <p>
+            <b>Committed weekly hours:</b> {summary.weeklyComittedHours}
+          </p>
+          {getWeeklySummaryMessage(summary)}
+        </div>
+      ))}
+      <h4>Emails</h4>
+      {[...(new Set(emails))].toString().replaceAll(',', ', ')}
+
+    </>
+  )
+}
 
 FormattedReport.propTypes = {
   summaries: PropTypes.arrayOf(PropTypes.object).isRequired,
   weekIndex: PropTypes.string.isRequired,
-};
+}
 
-export default FormattedReport;
+export default FormattedReport
