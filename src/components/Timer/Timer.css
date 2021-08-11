@@ -8,6 +8,7 @@
     font-variant-numeric: tabular-nums;
 }
 
+/**
 @media (max-width: 1150px) { 
     .timer button {
         width: 2.25rem;
@@ -20,3 +21,4 @@
         font-variant-numeric: tabular-nums;
     }
 }
+*/
