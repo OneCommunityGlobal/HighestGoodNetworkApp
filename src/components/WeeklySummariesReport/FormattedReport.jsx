@@ -49,7 +49,7 @@ const FormattedReport = ({ summaries, weekIndex }) => {
               .format('YYYY-MMM-DD')}
           </b>
           ):
-          <div style={{ padding: '10px 20px 0' }}>{summary?.weeklySummaries[weekIndex]?.summary}</div>
+          <div style={{ padding: '10px 20px 0' }}>{summary?.weeklySummaries[weekIndex]?.summary || <span style={{color: 'red'}}>Not provided!</span> }</div>
         </>
       )
     } else {
