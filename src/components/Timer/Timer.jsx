@@ -34,7 +34,6 @@ const Timer = () => {
     const status = await pauseTimer(userId, 0)
     if (status === 200 || status === 201) { setIsActive(false) }
   }
-  console.log(pausedAt)
   const handleStart = async () => {
     await dispatch(getTimerData(userId));
 
