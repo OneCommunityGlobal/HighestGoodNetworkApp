@@ -18,7 +18,7 @@ const FormattedReport = ({ summaries, weekIndex }) => {
   //and doesn't have String.prototype.replaceAll
   let emailString = [...(new Set(emails))].toString();
   while(emailString.includes(',')) emailString = emailString.replace(',', '\n');
-  while(emailString.includes(',')) emailString = emailString.replace('\n', ', ');
+  while(emailString.includes('\n')) emailString = emailString.replace('\n', ', ');
 
   const alphabetize = summaries => {
     return summaries.sort((a, b) =>
