@@ -5,6 +5,8 @@ import {
   authMock, userProfileMock, timeEntryMock, userProjectMock,
 } from '../mockStates';
 
+import { renderWithProvider } from '__tests__/utils';
+
 import BasicInformationTab from '../../components/UserProfile/BaiscInformationTab/BasicInformationTab';
 // import EditForm from '../../components/UserProfile/BaiscInformationTab/EditForm';
 // import ViewForm from '../../components/UserProfile/BaiscInformationTab/ViewTab';
@@ -18,7 +20,7 @@ describe('Edit form', () => {
     lastName: true,
   };
   beforeEach(() => {
-    render(
+    renderWithProvider(
       <BasicInformationTab
         userProfile={userProfileMock}
         isUserAdmin
