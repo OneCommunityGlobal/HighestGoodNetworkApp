@@ -42,7 +42,7 @@ const FormattedReport = ({ summaries, weekIndex }) => {
     if (summary) {
       return (
         <>
-          <b>Weekly Summary</b> (for the week ending on{' '}
+          <b>Weekly Summary</b> (for the week ending on
           <b>
             {moment(summary.weeklySummaries[weekIndex]?.dueDate)
               .tz('America/Los_Angeles')

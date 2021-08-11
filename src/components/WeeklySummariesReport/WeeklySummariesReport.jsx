@@ -48,6 +48,7 @@ export class WeeklySummariesReport extends Component {
   }
 
   render() {
+
     const { error, loading, summaries, activeTab } = this.state;
 
     if (error) {
@@ -114,33 +115,33 @@ export class WeeklySummariesReport extends Component {
               <TabPane tabId="1">
                 <Row>
                   <Col sm="12" md="8" className="mb-2">From <b>{this.getWeekDates(0).fromDate}</b> to <b>{this.getWeekDates(0).toDate}</b></Col>
-                  <Col sm="12" md="4"><GeneratePdfReport summaries={summaries} weekIndex="0" weekDates={this.getWeekDates(0)} /></Col>
+                  <Col sm="12" md="4"><GeneratePdfReport summaries={summaries} weekIndex={0} weekDates={this.getWeekDates(0)} /></Col>
                 </Row>
                 <Row>
                   <Col>
-                    <FormattedReport summaries={summaries} weekIndex="0" />
+                    <FormattedReport summaries={summaries} weekIndex={0} />
                   </Col>
                 </Row>
               </TabPane>
               <TabPane tabId="2">
                 <Row>
                   <Col sm="12" md="8" className="mb-2">From <b>{this.getWeekDates(1).fromDate}</b> to <b>{this.getWeekDates(1).toDate}</b></Col>
-                  <Col sm="12" md="4"><GeneratePdfReport summaries={summaries} weekIndex="1" weekDates={this.getWeekDates(1)} /></Col>
+                  <Col sm="12" md="4"><GeneratePdfReport summaries={summaries} weekIndex={1} weekDates={this.getWeekDates(1)} /></Col>
                 </Row>
                 <Row>
                   <Col>
-                    <FormattedReport summaries={summaries} weekIndex="1" />
+                    <FormattedReport summaries={summaries} weekIndex={1} />
                   </Col>
                 </Row>
               </TabPane>
               <TabPane tabId="3">
                 <Row>
                   <Col sm="12" md="8" className="mb-2">From <b>{this.getWeekDates(2).fromDate}</b> to <b>{this.getWeekDates(2).toDate}</b></Col>
-                  <Col sm="12" md="4"><GeneratePdfReport summaries={summaries} weekIndex="2" weekDates={this.getWeekDates(2)} /></Col>
+                  <Col sm="12" md="4"><GeneratePdfReport summaries={summaries} weekIndex={2} weekDates={this.getWeekDates(2)} /></Col>
                 </Row>
                 <Row>
                   <Col>
-                    <FormattedReport summaries={summaries} weekIndex="2" />
+                    <FormattedReport summaries={summaries} weekIndex={2} />
                   </Col>
                 </Row>
               </TabPane>
