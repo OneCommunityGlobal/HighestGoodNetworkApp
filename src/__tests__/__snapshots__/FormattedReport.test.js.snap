@@ -89,7 +89,13 @@ exports[`FormattedReport Component Snapshot with mocked data 1`] = `
     ):
     <div
       style="padding: 10px 20px 0px;"
-    />
+    >
+      <span
+        style="color: red;"
+      >
+        Not provided!
+      </span>
+    </div>
   </div>
   <div
     style="padding: 20px 0px; margin-top: 5px; border-bottom: 1px solid #DEE2E6;"
@@ -129,7 +135,13 @@ exports[`FormattedReport Component Snapshot with mocked data 1`] = `
     ):
     <div
       style="padding: 10px 20px 0px;"
-    />
+    >
+      <span
+        style="color: red;"
+      >
+        Not provided!
+      </span>
+    </div>
   </div>
   <h4>
     Emails
