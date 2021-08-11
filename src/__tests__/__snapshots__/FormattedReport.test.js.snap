@@ -40,7 +40,7 @@ exports[`FormattedReport Component Snapshot with mocked data 1`] = `
     <b>
       Weekly Summary
     </b>
-     (for the week ending on 
+     (for the week ending on
     <b>
       2020-Jun-27
     </b>
@@ -82,7 +82,7 @@ exports[`FormattedReport Component Snapshot with mocked data 1`] = `
     <b>
       Weekly Summary
     </b>
-     (for the week ending on 
+     (for the week ending on
     <b>
       2020-Jun-27
     </b>
@@ -122,9 +122,9 @@ exports[`FormattedReport Component Snapshot with mocked data 1`] = `
     <b>
       Weekly Summary
     </b>
-     (for the week ending on 
+     (for the week ending on
     <b>
-      2021-Aug-10
+      2021-Aug-11
     </b>
     ):
     <div
