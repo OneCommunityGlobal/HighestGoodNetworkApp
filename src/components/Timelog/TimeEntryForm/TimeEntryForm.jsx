@@ -89,7 +89,7 @@ const TimeEntryForm = props => {
   useEffect(() => {
     axios.get(`${ApiEndpoint}/userprofile/${userId}`)
     .then((res) => {
-      setProjects(res.data.projects)
+      setProjects(res?.data?.projects || [])
     })
     .catch((err) => {
       
