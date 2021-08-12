@@ -776,7 +776,7 @@ class UserProfile extends Component {
                   <Button className="mr-1" color="primary"> Update Password</Button>
                 </Link>
               </div>}
-              <PauseAndResumeButton className="mr-1" user={userProfile} isBigBtn={true} />
+              <PauseAndResumeButton className="mr-1" userProfile={userProfile} isBigBtn={true} />
               <Link
                 color="primary"
                 to={`/userprofile/${this.state.userProfile._id}`}

@@ -1,12 +1,18 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { DELETE, PAUSE, RESUME } from '../../languages/en/ui';
+import { PAUSE, RESUME } from '../../languages/en/ui';
 import { UserStatus } from '../../utils/enums';
 import ActivationDatePopup from './ActivationDatePopup';
 import { updateUserStatus } from '../../actions/userManagement';
 import { Button } from 'reactstrap';
 import { toast } from 'react-toastify';
 
+/**
+ * @param {*} props
+ * @param {Boolean} props.isBigBtn
+ * @param {*} props.userProfile
+ * @returns 
+ */
 const PauseAndResumeButton = (props) => {
   const [activationDateOpen, setActivationDateOpen] = useState(false);
   const [isActive, setIsActive] = useState(true)
@@ -18,15 +24,15 @@ const PauseAndResumeButton = (props) => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    setIsActive(props.user.isActive);
-  }, [props.user.isActive]);
+    setIsActive(props.userProfile.isActive);
+  }, [props.userProfile.isActive]);
 
 
   /**
  * Call back on Pause confirmation button click to trigger the action to update user status
  */
   const pauseUser = (reActivationDate) => {
-    dispatch(updateUserStatus(props.user, UserStatus.InActive, reActivationDate));
+    dispatch(updateUserStatus(props.userProfile, UserStatus.InActive, reActivationDate));
     setIsActive(false);
     setActivationDateOpen(false);
   }
@@ -57,7 +63,7 @@ const PauseAndResumeButton = (props) => {
         color="primary"
         className={`btn btn-outline-${isActive ? 'warning' : 'success'} ${props.isBigBtn ? '' : 'btn-sm'}  mr-1`}
         onClick={(e) => {
-          onPauseResumeClick(props.user, (isActive ? UserStatus.InActive : UserStatus.Active));
+          onPauseResumeClick(props.userProfile, (isActive ? UserStatus.InActive : UserStatus.Active));
         }}
       >
         {isActive ? PAUSE : RESUME}

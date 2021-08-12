@@ -13,6 +13,8 @@ import moment from 'moment';
 import PhoneInput from 'react-phone-input-2'
 import 'react-phone-input-2/lib/style.css'
 
+import PauseAndResumeButton from 'components/UserManagement/PauseAndResumeButton';
+
 const Name = (props) => {
   const {
     userProfile, isUserAdmin, isUserSelf, handleUserProfile, formValid,
@@ -336,12 +338,14 @@ const BasicInformationTab = (props) => {
           </FormGroup>
         </Col>
       </Row>
-      <Row>
+      <Row style={{marginBottom: '10px'}}>
         <Col md="6">
           <Label>Status</Label>
         </Col>
         <Col md="6">
-          <Label>{userProfile.isActive ? "Active" : (userProfile.reactivationDate ? "Paused until " + moment(userProfile.reactivationDate).format('YYYY-MM-DD') : "Inactive")}</Label>
+        <Label>{userProfile.isActive ? "Active" : (userProfile.reactivationDate ? "Paused until " + moment(userProfile.reactivationDate).format('YYYY-MM-DD') : "Inactive")}</Label>
+        &nbsp;
+        {props.isUserAdmin && <PauseAndResumeButton isBigBtn={true} userProfile={userProfile} />}
         </Col>
       </Row>
     </div>
