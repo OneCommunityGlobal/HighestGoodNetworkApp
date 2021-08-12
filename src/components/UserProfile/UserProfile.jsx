@@ -37,22 +37,19 @@ import Badges from './Badges'
 import axios from 'axios'
 
 const UserProfile = props => {
-
   const initialHoursByCategory = {
     housing: 0,
     food: 0,
     education: 0,
     society: 0,
-    energy: 0
-  };
+    energy: 0,
+  }
 
   const initialFormValid = {
     firstName: true,
     lastName: true,
     email: true,
   }
-
-
 
   const [isLoading, setLoading] = useState(true)
   const [userProfile, setUserProfile] = useState(props.userProfile)
@@ -61,110 +58,68 @@ const UserProfile = props => {
   const [infoModal, setInfoModal] = useState(false)
   const [formValid, setFormValid] = useState(initialFormValid)
   const [changed, setChanged] = useState(false)
+  const [blueSquareChanged, setBlueSquareChanged] = useState(false)
   const [showSaveWarning, setShowSaveWarning] = useState(true)
   const [type, setType] = useState('')
   const [showModal, setShowModal] = useState(false)
   const [modalTitle, setModalTitle] = useState('')
   const [modalMessage, setModalMessgae] = useState('')
-  const [previousProps, setPreviousProps] = useState(props)
-  const [hoursByCategory, setHoursByCategory] = useState(initialHoursByCategory);
-  const mounted = useRef()
-
-  useEffect(() => {
-    if (userProfile._id !== undefined && userProfile._id !== null) {
-      handleSubmit()
-    }
-  }, [userProfile.infringments])
-
-  useEffect(() => {
-    if (!mounted.current) {
-      componentDidUpdate()
-      mounted.current = true
-    }
-  })
+  const [hoursByCategory, setHoursByCategory] = useState(initialHoursByCategory)
 
   useEffect(() => {
     componentDidMount()
     calculateHoursByCategory()
   }, [])
 
-  const calculateHoursByCategory = async () => {
-    try {
-      const startDate = '1900-01-01';
-      const endDate = '3000-01-01'
-      const response = await axios.get(`${process.env.REACT_APP_APIENDPOINT}/TimeEntry/user/${props.match.params.userId}/${startDate}/${endDate}`);
-      const timeEntries = response.data;
-
-      const newHoursByCategory = {...hoursByCategory};
-
-      timeEntries.forEach((entry) => {
-        Object.keys(newHoursByCategory).forEach((category) => {
-          if(entry.isTangible && entry.projectName.toLowerCase().includes(category.toLowerCase())) {
-            newHoursByCategory[category] += parseFloat(entry.hours)
-          }
-        });
-      });
-
-      setHoursByCategory(newHoursByCategory);
-
-    } catch (err) {
-
+  useEffect(() => {
+    if (props.userProfile._id !== userProfile._id) {
+      setUserProfile(props.userProfile)
     }
+  }, [props.userProfile])
 
-  }
+  useEffect(() => {
+    if (blueSquareChanged) {
+      setBlueSquareChanged(false)
+      handleSubmit()
+    }
+  }, [blueSquareChanged])
 
   const componentDidMount = async () => {
-    if (props.match) {
-      const { userId } = props.match.params
-      await props.getUserProfile(userId)
-      await props.getUserTeamMembers(userId)
-      if (!props.userProfile.privacySettings) {
-        setLoading(false)
-        setUserProfile({
-          ...props.userProfile,
-          privacySettings: {
-            email: true,
-            phoneNumber: true,
-            blueSquares: true,
-          },
-        })
-      } else {
-        setLoading(false)
-      }
-    }
-    props.getAllUserTeams()
-    props.fetchAllProjects()
+    if (!props.match) return
+
+    const { userId } = props.match.params
+
+    await props.getUserProfile(userId)
+    await props.getUserTeamMembers(userId)
+    await props.getAllUserTeams(userId)
+    await props.fetchAllProjects(userId)
+    setLoading(false)
   }
 
-  const componentDidUpdate = async () => {
-    setPreviousProps(props)
+  const calculateHoursByCategory = async () => {
+    try {
+      const startDate = '1900-01-01'
+      const endDate = '3000-01-01'
+      const response = await axios.get(
+        `${process.env.REACT_APP_APIENDPOINT}/TimeEntry/user/${props.match.params.userId}/${startDate}/${endDate}`,
+      )
+      const timeEntries = response.data
 
-    if (props.match !== previousProps.match) {
-      const { userId } = props.match.params
-      await props.getUserProfile(userId)
+      const newHoursByCategory = { ...hoursByCategory }
 
-      if (props.userProfile === '404') {
-        setLoading(false)
-      } else {
-        await props.getUserTeamMembers(userId)
-        if (props.userProfile.firstName.length) {
-          if (!props.userProfile.privacySettings) {
-            setLoading(false)
-            setUserProfile({
-              ...props.userProfile,
-              privacySettings: {
-                email: true,
-                phoneNumber: true,
-                blueSquares: true,
-              },
-            })
-          } else {
-            setLoading(false)
-            setUserProfile(props.userProfile)
+      timeEntries.forEach(entry => {
+        Object.keys(newHoursByCategory).forEach(category => {
+          if (
+            entry.isTangible &&
+            entry.projectName.toLowerCase().includes(category.toLowerCase())
+          ) {
+            newHoursByCategory[category] += parseFloat(entry.hours)
           }
-        }
-      }
-    }
+        })
+      })
+
+      setHoursByCategory(newHoursByCategory)
+    } catch (err) {}
   }
 
   const onDeleteTeam = deletedTeamId => {
@@ -307,12 +262,18 @@ const UserProfile = props => {
       setUserProfile({ ...userProfile, infringments: newInfringements })
       setShowModal(false)
     }
+    setBlueSquareChanged(true)
   }
 
   const handleSubmit = async () => {
     const { updateUserProfile, match } = props
-    await updateUserProfile(match.params.userId, userProfile)
-    setShowSaveWarning(false)
+    try {
+      await updateUserProfile(match.params.userId, userProfile)
+      setShowSaveWarning(false)
+    } catch (err) {
+      alert('An error occurred while attempting to save this profile.')
+    }
+
   }
 
   const toggleInfoModal = () => {
