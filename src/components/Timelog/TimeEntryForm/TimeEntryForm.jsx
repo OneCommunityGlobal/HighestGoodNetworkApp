@@ -23,6 +23,8 @@ import { stopTimer } from '../../../actions/timer'
 import AboutModal from './AboutModal'
 import TangibleInfoModal from './TangibleInfoModal'
 import ReminderModal from './ReminderModal'
+import axios from 'axios'
+import { ApiEndpoint } from '../../../utils/URL'
 
 /**
  *
@@ -59,6 +61,7 @@ const TimeEntryForm = props => {
   const [reminder, setReminder] = useState(initialReminder)
   const [isTangibleInfoModalVisible, setTangibleInfoModalVisibleModalVisible] = useState(false)
   const [isInfoModalVisible, setInfoModalVisible] = useState(false)
+  const [projects, setProjects] = useState([]);
 
   const fromTimer = !_.isEmpty(timer)
   const isAdmin = useSelector(state => state.auth.user.role) === 'Administrator'
@@ -82,6 +85,16 @@ const TimeEntryForm = props => {
       })
     }
   }, [close, inputs])
+
+  useEffect(() => {
+    axios.get(`${ApiEndpoint}/userprofile/${userId}`)
+    .then((res) => {
+      setProjects(res?.data?.projects || [])
+    })
+    .catch((err) => {
+      
+    })
+  }, []);
 
   const openModal = () =>
     setReminder(reminder => ({
@@ -112,8 +125,6 @@ const TimeEntryForm = props => {
     setInputs({ ...inputs, ...timer })
   }, [timer])
 
-  const userprofile = useSelector(state => state.userProfile)
-  const projects = userprofile && userprofile.projects ? userprofile.projects : []
   const projectOptions = projects.map(project => (
     <option value={project._id} key={project._id}>
       {' '}
@@ -505,12 +516,13 @@ const TimeEntryForm = props => {
             </FormGroup>
             <FormGroup check>
               <Label check>
+                
                 <Input
                   type="checkbox"
                   name="isTangible"
                   checked={inputs.isTangible}
                   onChange={handleCheckboxChange}
-                  disabled={!isAdmin}
+                  disabled={!isAdmin && !data.isTangible}
                 />
                 Tangible&nbsp;
                 <i

@@ -10,7 +10,10 @@ import { ENDPOINTS } from "../../utils/URL";
 const Timer = () => {
   const data = {
     disabled: window.screenX <= 500,
-    isTangible: window.screenX > 500
+    isTangible: true
+    //isTangible: window.screenX > 500
+    //How does the screen position of the element influence tangability?
+    //This has been changed as part of a hotfix.
   }
   const userId = useSelector(state => state.auth.user.userid)
   const userProfile = useSelector(state => state.auth.user)
@@ -34,7 +37,6 @@ const Timer = () => {
     const status = await pauseTimer(userId, 0)
     if (status === 200 || status === 201) { setIsActive(false) }
   }
-  console.log(pausedAt)
   const handleStart = async () => {
     await dispatch(getTimerData(userId));
 

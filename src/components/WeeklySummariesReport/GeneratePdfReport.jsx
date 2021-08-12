@@ -56,7 +56,6 @@ const GeneratePdfReport = ({ summaries, weekIndex, weekDates }) => {
 
     wsReport += [...(new Set(emails))] //elimiates duplicate entries if they're somehow present
     .toString()
-    .slice(1, emails.toString().length - 1)
     .replaceAll(',', ', ');
     
 
