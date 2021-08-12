@@ -197,7 +197,7 @@ const CreateNewBadgePopup = (props) => {
             <option>Society</option>
             <option>Economics</option>
             <option>Stewardship</option>
-            <option>Other</option>
+            <option>Unassigned</option>
           </Input>
         </FormGroup>
         : ""}
