@@ -24,8 +24,8 @@ const PauseAndResumeButton = (props) => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    setIsActive(props.userProfile.isActive);
-  }, [props.userProfile.isActive]);
+    if(props.userProfile?.isActive !== undefined) setIsActive(props.userProfile.isActive);
+  }, [props.userProfile?.isActive]);
 
 
   /**
