@@ -2,15 +2,17 @@
 
 exports[`FormattedReport Component Snapshot with mocked data 1`] = `
 <DocumentFragment>
-  <div>
-    <div
-      style="padding: 20px 0px; margin-top: 5px; border-bottom: 1px solid #dee2e6;"
-    >
+  <div
+    style="padding: 20px 0px; margin-top: 5px; border-bottom: 1px solid #DEE2E6;"
+  >
+    <p>
       <b>
         Name:
       </b>
        A B
-      <br />
+    </p>
+    <p>
+       
       <b>
         Media URL:
       </b>
@@ -22,77 +24,128 @@ exports[`FormattedReport Component Snapshot with mocked data 1`] = `
       >
         Open link to media files
       </a>
-      <br />
+    </p>
+    <p>
       <b>
         Total Valid Weekly Summaries:
       </b>
        3
-      <br />
+    </p>
+    <p>
       <b>
-        Weekly Summary
+        Committed weekly hours:
       </b>
-       (for the week ending on 
-      <b>
-        2020-Jun-27
-      </b>
-      ):
-      <br />
-      <div
-        style="padding: 10px 20px 0px;"
-      >
-        Week 2 summary
-      </div>
-    </div>
+       
+    </p>
+    <b>
+      Weekly Summary
+    </b>
+     (for the week ending on
+    <b>
+      2020-Jun-27
+    </b>
+    ):
     <div
-      style="padding: 20px 0px; margin-top: 5px; border-bottom: 1px solid #dee2e6;"
+      style="padding: 10px 20px 0px;"
     >
+      Week 2 summary
+    </div>
+  </div>
+  <div
+    style="padding: 20px 0px; margin-top: 5px; border-bottom: 1px solid #DEE2E6;"
+  >
+    <p>
       <b>
         Name:
       </b>
        C D
-      <br />
+    </p>
+    <p>
+       
       <b>
         Media URL:
       </b>
        Not provided!
-      <br />
+    </p>
+    <p>
       <b>
         Total Valid Weekly Summaries:
       </b>
        1
-      <br />
-      <div>
-        <b>
-          Weekly Summary:
-        </b>
-         Not provided!
-      </div>
-    </div>
+    </p>
+    <p>
+      <b>
+        Committed weekly hours:
+      </b>
+       
+    </p>
+    <b>
+      Weekly Summary
+    </b>
+     (for the week ending on
+    <b>
+      2020-Jun-27
+    </b>
+    ):
     <div
-      style="padding: 20px 0px; margin-top: 5px; border-bottom: 1px solid #dee2e6;"
+      style="padding: 10px 20px 0px;"
     >
+      <span
+        style="color: red;"
+      >
+        Not provided!
+      </span>
+    </div>
+  </div>
+  <div
+    style="padding: 20px 0px; margin-top: 5px; border-bottom: 1px solid #DEE2E6;"
+  >
+    <p>
       <b>
         Name:
       </b>
        E F
-      <br />
+    </p>
+    <p>
+       
       <b>
         Media URL:
       </b>
        Not provided!
-      <br />
+    </p>
+    <p>
       <b>
         Total Valid Weekly Summaries:
       </b>
        No valid submissions yet!
-      <br />
-      <div>
-        <b>
-          Weekly Summary:
-        </b>
-         Not provided!
-      </div>
+    </p>
+    <p>
+      <b>
+        Committed weekly hours:
+      </b>
+       
+    </p>
+    <b>
+      Weekly Summary
+    </b>
+     (for the week ending on
+    <b>
+      2021-Aug-11
+    </b>
+    ):
+    <div
+      style="padding: 10px 20px 0px;"
+    >
+      <span
+        style="color: red;"
+      >
+        Not provided!
+      </span>
     </div>
   </div>
+  <h4>
+    Emails
+  </h4>
+  <p />
 </DocumentFragment>
 `;
