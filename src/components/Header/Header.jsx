@@ -72,16 +72,17 @@ export class Header extends React.Component {
     return (
       <div>
         <Navbar color="dark" dark expand="lg" style={{ marginBottom: '20px' }}>
-          <NavbarBrand tag={Link} to="/">
+          {/**
+           * <NavbarBrand tag={Link} to="/" className="d-none d-md-block">
             {LOGO}
           </NavbarBrand>
+           */}
+          {isAuthenticated && <Timer />}
           <NavbarToggler onClick={this.toggle} />
           {isAuthenticated && (
             <Collapse isOpen={this.state.isOpen} navbar>
               <Nav className="ml-auto" navbar>
-                <NavItem>
-                  <Timer />
-                </NavItem>
+ 
                 <NavItem>
                   <NavLink tag={Link} to="/dashboard">
                     {DASHBOARD}

@@ -72,7 +72,7 @@ describe('Header structure', () => {
 
     it('should be rendered with the correct UI text items and profile information', async () => {
         mountedHeader = renderWithRouterMatch(routes , {initialState: mockState, route: rt, history: hist});
-        const textItems = [LOGO, DASHBOARD, TIMELOG, REPORTS, WEEKLY_SUMMARIES_REPORT, OTHER_LINKS,
+        const textItems = [/**LOGO, */DASHBOARD, TIMELOG, REPORTS, WEEKLY_SUMMARIES_REPORT, OTHER_LINKS,
         USER_MANAGEMENT, PROJECTS, TEAMS, VIEW_PROFILE, UPDATE_PASSWORD, LOGOUT];
 
         for (let i=0; i<textItems.length; i++) {
@@ -93,7 +93,7 @@ describe('Header structure', () => {
     it('should be rendered with the correct links', async () => {
         mountedHeader = renderWithRouterMatch(routes , {initialState: mockState, route: rt, history: hist});
 
-        const linkItems = [[LOGO, '/'], [DASHBOARD, '/dashboard'], [TIMELOG, `/timelog/${mockState.auth.user.userid}`], 
+        const linkItems = [/*[LOGO, '/'], */[DASHBOARD, '/dashboard'], [TIMELOG, `/timelog/${mockState.auth.user.userid}`], 
         [REPORTS,'/reports'], [WEEKLY_SUMMARIES_REPORT, '/weeklysummariesreport'], [USER_MANAGEMENT, '/usermanagement'], 
         [PROJECTS, '/projects'], [TEAMS,'/teams'], [VIEW_PROFILE, `/userprofile/${mockState.auth.user.userid}`], 
         [UPDATE_PASSWORD,`/updatepassword/${mockState.auth.user.userid}`], [LOGOUT,'/logout']];
