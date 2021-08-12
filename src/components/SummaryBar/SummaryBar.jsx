@@ -167,22 +167,26 @@ const SummaryBar = props => {
   let totalEffort = calculateTotalTime(timeEntries, true)
 
   return (
-    <Container fluid className="bg--bar">
-      <Row className="no-gutters .row-eq-height">
-        <Col className="col-lg-1 col-12 text-list" align="center" style={{display: 'flex', flexDirection: 'column', justifyContent: 'center'}}>
-          <font className="text--black  align-middle" size="3">
-            {' '}
-            Activity for{' '}
-          </font>
-          <CardTitle className="text--black align-middle" tag="h3">
-            <div>
-              {firstName + ' '}
-              <br className="name-linebreak" />
-              {lastName}
-            </div>
-          </CardTitle>
+    <Container fluid className="px-lg-0 bg--bar">
+      <Row className="no-gutters row-eq-height">
+        <Col
+          className="d-flex justify-content-center align-items-center col-lg-2 col-12 text-list"
+          align="center"
+        >
+          <div>
+            <font className="text--black  align-middle" size="3">
+              {' '}
+              Activity for{' '}
+            </font>
+            <CardTitle className="text--black align-middle" tag="h3">
+              <div>
+                {firstName + ' '}
+                {/* <br className="name-linebreak" /> */}
+                {lastName}
+              </div>
+            </CardTitle>
+          </div>
         </Col>
-
         <Col className="col-lg-3 col-12 no-gutters">
           <Row className="no-gutters">
             {totalEffort < weeklyComittedHours && (
@@ -287,46 +291,38 @@ const SummaryBar = props => {
             You still need to complete the weekly summary.
           </font>)} */}
 
-        <Col className="col-lg-5 col-12 badge-list">
-          <div className="row row-eq-height no-gutters">
+        <Col className="m-auto mt-2 col-lg-4 col-12 badge-list">
+          <div className="d-flex justify-content-around no-gutters">
             &nbsp;&nbsp;
-            <div className="col">
-              <div className="image_frame">
-                <div className="redBackgroup">
-                  <span>{tasks}</span>
-                </div>
+            <div className="image_frame">
+              <div className="redBackgroup">
+                <span>{tasks}</span>
+              </div>
 
-                <img className="sum_img" src={task_icon} alt="" onClick={onTaskClick}></img>
+              <img className="sum_img" src={task_icon} alt="" onClick={onTaskClick}></img>
+            </div>
+            &nbsp;&nbsp;
+            <div className="image_frame">
+              <img className="sum_img" src={badges_icon} alt="" onClick={onBadgeClick} />
+              <div className="redBackgroup">
+                <span>{badges}</span>
               </div>
             </div>
             &nbsp;&nbsp;
-            <div className="col">
-              <div className="image_frame">
-                <img className="sum_img" src={badges_icon} alt="" onClick={onBadgeClick} />
+            <div className="image_frame">
+              <Link to={`/userprofile/${_id}#bluesquare`}>
+                <img className="sum_img" src={bluesquare_icon} alt="" />
                 <div className="redBackgroup">
-                  <span>{badges}</span>
+                  <span>{infringements}</span>
                 </div>
-              </div>
+              </Link>
             </div>
             &nbsp;&nbsp;
-            <div className="col">
-              <div className="image_frame">
-                <Link to={`/userprofile/${_id}#bluesquare`}>
-                  <img className="sum_img" src={bluesquare_icon} alt="" />
-                  <div className="redBackgroup">
-                    <span>{infringements}</span>
-                  </div>
-                </Link>
-              </div>
-            </div>
-            &nbsp;&nbsp;
-            <div className="col">
-              <div className="image_frame">
-                <img className="sum_img" src={report_icon} alt="" onClick={openReport} />
-                {/* <div className="blackBackgroup">
+            <div className="image_frame">
+              <img className="sum_img" src={report_icon} alt="" onClick={openReport} />
+              {/* <div className="blackBackgroup">
               <i className="fa fa-exclamation" aria-hidden="true" />
             </div> */}
-              </div>
             </div>
           </div>
         </Col>
