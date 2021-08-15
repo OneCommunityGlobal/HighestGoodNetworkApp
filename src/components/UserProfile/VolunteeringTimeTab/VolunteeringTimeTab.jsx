@@ -60,7 +60,6 @@ const TotalCommittedHours = (props) => {
 };
 
 const WeeklySummaryReqd = (props) => {
-  console.log(props.userProfile)
   if (!props.isUserAdmin) {
     return <p>{props.userProfile.weeklySummaryNotReq ? "Not Required" : "Required"}</p>;
   }
@@ -86,7 +85,12 @@ const WeeklySummaryReqd = (props) => {
 
 const TotalCategoryHours = (props) => {
   let catHrs = props.userProfile.categoryTangibleHrs;
+  if (!catHrs) {
+    props.handleUserProfile({target: {id: `total${props.category}CategoryHours`, value: 0}});
+    return(<></>);
+  } 
   let [index, setIndex] = useState( function () {
+
     for (let i = 0; i <catHrs.length; i++) {
       if (catHrs[i].category === props.category) {
         return i;
@@ -101,7 +105,7 @@ const TotalCategoryHours = (props) => {
 
     catHrs = props.userProfile.categoryTangibleHrs;
 
-    for (let i = 0; i <catHrs.length; i++) {
+    for (let i = 0; i <catHrs?.length; i++) {
       if (catHrs[i].category === props.category) {
         index=i;
         setIndex(i);
@@ -113,15 +117,12 @@ const TotalCategoryHours = (props) => {
     setIsFirstTime(false);
   }, [props.userProfile] )
 
-  if (!catHrs) {
-    return(<></>);
-  } 
   if (index == -1) {
     return(<></>);
   }
 
   if (!props.isUserAdmin) {
-    return <p>{props.userProfile.categoryTangibleHrs[index].hrs}</p>;
+    return <p>{catHrs && catHrs[index] ? catHrs[index]?.hrs || 0 : 0}</p>;
   }
 
   return (
@@ -129,7 +130,7 @@ const TotalCategoryHours = (props) => {
       type="number"
       name={`total${props.category}CategoryHours`}
       id={`${props.category}CategoryHours`}
-      value={props.userProfile.categoryTangibleHrs[index].hrs}
+      value={props?.userProfile?.categoryTangibleHrs[index]?.hrs}
       onChange={props.handleUserProfile}
       placeholder={`Total ${props.category} Tangible Hours`}
       invalid={!props.isUserAdmin}

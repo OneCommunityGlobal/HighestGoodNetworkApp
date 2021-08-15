@@ -496,7 +496,6 @@ class UserProfile extends Component {
         });
         break;
       case 'weeklySummaryNotReqd':
-        console.log(event.target.checked)
         this.setState({
           userProfile: {
           ...userProfile,
@@ -504,8 +503,8 @@ class UserProfile extends Component {
         },});
         break;
       default:
-        if (event.target.value.includes("CategoryHours")) {
-          let cat = event.target.value.slice(0, -13)
+        if (event.target.id && event.target.id.includes("CategoryHours")) {
+          let cat = event.target.id.slice(0, -13)
           let categoryHours = this.state.userProfile.categoryTangibleHrs;
           let index = -1;
           //Create category if categoryHours doesn't exist
@@ -513,10 +512,10 @@ class UserProfile extends Component {
             this.setState({
               userProfile: {
                 ...userProfile,
-                categoryTangibleHrs: {category: cat, hrs: event.target.value}
+                categoryTangibleHrs: [{category: cat, hrs: event.target.value}]
               },
             })
-            break
+            return;
           }
   
           //Find index and change value
@@ -531,12 +530,14 @@ class UserProfile extends Component {
           if (index == -1) {
             categoryHours.push({category: cat, hrs: event.target.value})
           }
-          this.setState({
-            userProfile: {
-              ...userProfile,
-              categoryTangibleHrs: categoryHours,
-            },
-          })
+          if (categoryHours) {
+            this.setState({
+              userProfile: {
+                ...userProfile,
+                categoryTangibleHrs: categoryHours,
+              },
+            })
+          }
         } else {
           this.setState({
             ...userProfile,
