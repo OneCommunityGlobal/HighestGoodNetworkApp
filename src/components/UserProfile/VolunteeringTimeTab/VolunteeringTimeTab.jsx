@@ -2,6 +2,7 @@ import React from 'react'
 import { Row, Label, Input, Col } from 'reactstrap'
 import moment from 'moment'
 import { capitalize } from 'lodash'
+import style from '../UserProfileEdit/ToggleSwitch/ToggleSwitch.module.scss'
 
 const StartDate = props => {
   if (!props.isUserAdmin) {
@@ -56,6 +57,27 @@ const TotalCommittedHours = props => {
     />
   )
 }
+
+const WeeklySummaryReqd = (props) => {
+  if (!props.isUserAdmin) {
+    return <p>{props.userProfile.weeklySummaryNotReq ? "Not Required" : "Required"}</p>;
+  }
+  return (
+
+      <div className={style.switchContainer}>
+        Required
+        <input
+          id="weeklySummaryNotReqd"
+          data-testid="weeklySummary-switch"
+          type="checkbox"
+          className={style.toggle}
+          onChange={props.handleUserProfile}
+          checked={props.userProfile.weeklySummaryNotReq}
+        />
+        Not Required
+      </div>
+  );
+};
 
 /**
  * 
