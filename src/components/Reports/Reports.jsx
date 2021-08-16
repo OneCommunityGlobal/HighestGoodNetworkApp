@@ -9,7 +9,8 @@ import { getAllUserProfile } from '../../actions/userManagement';
 import { fetchAllTasks } from "../../actions/task";
 import moment from 'moment'
 import { Container } from 'reactstrap'
-
+import { CREATE_NEW_TEAM, SEARCH } from '../../languages/en/ui'
+import ReportTableSearchPanel from './ReportTableSearchPanel';
 
 
 class ReportsPage extends Component {
@@ -63,6 +64,80 @@ class ReportsPage extends Component {
     }
     this.props.getAllUserProfile();
   }
+  /**
+   * callback for search
+   */
+  onWildCardSearch = (searchText) => {
+    this.setState({
+      wildCardSearchText: searchText,
+
+    });
+  }
+
+  filteredProjectList = (projects) => {
+    const filteredList = projects.filter((project) => {
+      // Applying the search filters before creating each team table data element
+      if ((project.projectName
+        && project.projectName.toLowerCase().indexOf(this.state.teamNameSearchText.toLowerCase()) > -1
+        && this.state.wildCardSearchText === '')
+        // the wild card search, the search text can be match with any item
+        || (this.state.wildCardSearchText !== ''
+          && (project.projectName.toLowerCase().indexOf(this.state.wildCardSearchText.toLowerCase()) > -1
+          ))
+      ) {
+        return project;
+      }
+      return false;
+    });
+
+    return filteredList;
+  }
+
+
+  filteredTeamList = (allTeams) => {
+    const filteredList = allTeams.filter((team) => {
+      // Applying the search filters before creating each team table data element
+      if ((team.teamName
+        && team.teamName.toLowerCase().indexOf(this.state.teamNameSearchText.toLowerCase()) > -1
+        && this.state.wildCardSearchText === '')
+        // the wild card search, the search text can be match with any item
+        || (this.state.wildCardSearchText !== ''
+          && (team.teamName.toLowerCase().indexOf(this.state.wildCardSearchText.toLowerCase()) > -1
+          ))
+      ) {
+        return team;
+      }
+      return false;
+    });
+
+    return filteredList;
+  }
+
+  filteredPeopleList = (userProfiles) => {
+    const filteredList = userProfiles.filter((userProfile) => {
+      // Applying the search filters before creating each team table data element
+      if ((userProfile.firstName
+        && userProfile.firstName.toLowerCase().indexOf(this.state.teamNameSearchText.toLowerCase()) > -1
+        && this.state.wildCardSearchText === '')
+        // the wild card search, the search text can be match with any item
+        || (this.state.wildCardSearchText !== ''
+          && (userProfile.firstName.toLowerCase().indexOf(this.state.wildCardSearchText.toLowerCase()) > -1
+          )
+        )
+        || (this.state.wildCardSearchText !== '' &&
+        userProfile.lastName
+        && (userProfile.lastName.toLowerCase().indexOf(this.state.wildCardSearchText.toLowerCase()) > -1
+          )
+        )
+
+      ) {
+        return userProfile;
+      }
+      return false;
+    });
+
+    return filteredList;
+  }
 
   setActive() {
     this.setState((state) => {
@@ -81,7 +156,6 @@ class ReportsPage extends Component {
   }
 
   setInActive(){
-
     this.setState(()=>({
       checkActive:'false'
     }))
@@ -125,6 +199,11 @@ class ReportsPage extends Component {
     let { allTeams } = this.props.state.allTeamsData;
     let { userProfiles } = this.props.state.allUserProfiles;
 
+    const teamSearchData = this.filteredTeamList(allTeams);
+    const peopleSearchData = this.filteredPeopleList(userProfiles);
+    const projectSearchData = this.filteredProjectList(projects)
+
+
 
 
     if (this.state.checkActive ==='true'){
@@ -167,15 +246,22 @@ class ReportsPage extends Component {
             All
               </div>
             <div>
+
+              <ReportTableSearchPanel
+                onSearch={this.onWildCardSearch}
+                onCreateNewTeamClick={this.onCreateNewTeamShow}
+              />
+
+
           {/*<button style={{margin:'5px'}} type="submit" className="btn btn-primary btn-bg mt-3">*/}
           {/*  Submit*/}
           {/*</button>*/}
             </div>
             </div>
         </div>
-        {this.state.showPeople && <PeopleTable userProfiles={userProfiles}/>}
-        {this.state.showProjects &&<ProjectTable projects={projects}/>}
-        {this.state.showTeams &&<TeamTable allTeams={allTeams}/>}
+        {this.state.showPeople && <PeopleTable userProfiles={peopleSearchData}/>}
+        {this.state.showProjects &&<ProjectTable projects={projectSearchData}/>}
+        {this.state.showTeams &&<TeamTable allTeams={teamSearchData}/>}
       {/*</div>*/}
         </Container>
 

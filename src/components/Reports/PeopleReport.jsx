@@ -11,6 +11,8 @@ import "react-input-range/lib/css/index.css"
 import Collapse from 'react-bootstrap/Collapse'
 import HeatMap from '@uiw/react-heat-map';
 import Tooltip from '@uiw/react-tooltip';
+// import Moment from 'react-moment';
+
 
 
 
@@ -640,29 +642,28 @@ if (tasks.length>0) {
         <div>
         <h2>Blue Square: {infringments.length}</h2>
       <div>
-        <HeatMap value={value}
-                 startDate={new Date(startdateStr)}
-                 width={600}
-                 rectSize={14}
-                 rectRender={(props, data) => {
-                   if (!data.count) return <rect {...props} />;
-                   return (
-                     // <Tooltip key={props.key} placement="top" content={data.date}>
+        {/*<HeatMap value={value}*/}
+        {/*         startDate={new Date(startdateStr)}*/}
+        {/*         width={600}*/}
+        {/*         rectSize={14}*/}
+        {/*         rectRender={(props, data) => {*/}
+        {/*           if (!data.count) return <rect {...props} />;*/}
+        {/*           return (*/}
+        {/*             // <Tooltip key={props.key} placement="top" content={data.date}>*/}
 
-                     <Tooltip key={props.key} placement="top"  trigger="click" content={`Count: ${data.count || 0}, Date:${data.date},Description:${data.des}`}>
-                       {/*<div>herrrr</div>*/}
-                       {/*<Button type="primary">右边文字提示(right)</Button>*/}
-                       <rect {...props} />
-                     </Tooltip>
-                   );
-                 }}
-        />
+        {/*             <Tooltip key={props.key} placement="top"  trigger="click" content={`Count: ${data.count || 0}, Date:${data.date},Description:${data.des}`}>*/}
+        {/*               /!*<div>herrrr</div>*!/*/}
+        {/*               /!*<Button type="primary">右边文字提示(right)</Button>*!/*/}
+        {/*               <rect {...props} />*/}
+        {/*             </Tooltip>*/}
+        {/*           );*/}
+        {/*         }}*/}
+        {/*/>*/}
 
       </div>
           <ShowInfringmentsCollapse BlueSquare={BlueSquare}/>
 
         {/*<table className="center">*/}
-
         {/*  <table className="table table-bordered table-responsive-sm">*/}
         {/*    <thead>*/}
         {/*    <tr>*/}
@@ -680,10 +681,16 @@ if (tasks.length>0) {
       )
     }
     const StartDate = (props) => {
+      console.log('yueru check created date')
+      console.log(props.userProfile.createdDate)
+      // console.log((props.userProfile.createdDate).format('YYYY-MM-DD'))
         return (
             <div>Start Date:{moment(props.userProfile.createdDate).format('YYYY-MM-DD')}</div>
+
+      // <div><Moment format="DD/MM/YYYY">{props.userProfile.createdDate}</Moment></div>
     )
     };
+
     const ActiveOptions = props => {
       var allOptions=[...Array.from(new Set(props.get_tasks.map((item) => item.isActive.toString())))]
       return (
@@ -718,17 +725,10 @@ if (tasks.length>0) {
           <div >Weekly Comitted Hours: {weeklyComittedHours}</div>
           <div>Total Comitted Hours:{totalComittedHours}</div>
           <div>Total Tangible Hours:{totalTangibleHrsRound}</div>
-
           <StartDate userProfile={userProfile}/>
-
           <div class="row">
-
-
-
-
-
-
           </div>
+
 
           <div class="row">
             <div>
