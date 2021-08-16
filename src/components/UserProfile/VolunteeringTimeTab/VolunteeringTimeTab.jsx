@@ -59,7 +59,16 @@ const TotalCommittedHours = props => {
 
 /**
  * 
- * @param {*} props.hoursByCategory fields: housing, food, education, society, energy
+ * @param {Integer} props.hoursByCategory.housing
+ * @param {Integer} props.hoursByCategory.food
+ * @param {Integer} props.hoursByCategory.education
+ * @param {Integer} props.hoursByCategory.society
+ * @param {Integer} props.hoursByCategory.energy
+ * @param {*} props.userProfile
+ * @param {*} props.timeEntries
+ * @param {*} props.isUserAdmin
+ * @param {*} props.isUserSelf
+ * @param {Function} handleUserProfile
  * 
  * @returns 
  */
@@ -104,6 +113,14 @@ const ViewTab = props => {
       
       <Row>
         <Col md="6">
+          <Label>Weekly Summary Required </Label>
+        </Col>
+        <Col md="6">
+          <WeeklySummaryReqd isUserAdmin={isUserAdmin} userProfile={userProfile} handleUserProfile={handleUserProfile} />
+        </Col>
+      </Row>
+      <Row>
+        <Col md="6">
           <Label>Weekly Committed Hours </Label>
         </Col>
         <Col md="6">
@@ -139,6 +156,7 @@ const ViewTab = props => {
           
         </>
       ))}
+
     </div>
   )
 }

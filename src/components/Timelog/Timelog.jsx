@@ -1,88 +1,129 @@
-import React, { Component } from 'react';
+import React, { Component } from 'react'
 
 import {
-  Container, Row, Col,
-  Card, CardTitle, CardSubtitle, CardHeader,
-  CardBody, Nav, NavItem, NavLink, TabContent,
-  TabPane, Form, FormGroup, Label, Input, Button,
-  Modal, ModalHeader, ModalBody, ModalFooter,
-} from 'reactstrap';
+  Container,
+  Row,
+  Col,
+  Card,
+  CardTitle,
+  CardSubtitle,
+  CardHeader,
+  CardBody,
+  Nav,
+  NavItem,
+  NavLink,
+  TabContent,
+  TabPane,
+  Form,
+  FormGroup,
+  Label,
+  Input,
+  Button,
+  Modal,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+} from 'reactstrap'
 
-import classnames from 'classnames';
-import { connect } from 'react-redux';
-import moment from 'moment';
-import _ from 'lodash';
-import ReactTooltip from 'react-tooltip';
+import classnames from 'classnames'
+import { connect } from 'react-redux'
+import moment from 'moment'
+import _ from 'lodash'
+import ReactTooltip from 'react-tooltip'
 
-import { getTimeEntriesForWeek, getTimeEntriesForPeriod } from '../../actions/timeEntries';
-import { getUserProfile } from '../../actions/userProfile';
-import { getUserProjects } from '../../actions/userProjects';
-import TimeEntryForm from './TimeEntryForm';
-import TimeEntry from './TimeEntry';
-import EffortBar from './EffortBar';
-import SummaryBar from '../SummaryBar/SummaryBar';
+import { getTimeEntriesForWeek, getTimeEntriesForPeriod } from '../../actions/timeEntries'
+import { getUserProfile } from '../../actions/userProfile'
+import { getUserProjects } from '../../actions/userProjects'
+import TimeEntryForm from './TimeEntryForm'
+import TimeEntry from './TimeEntry'
+import EffortBar from './EffortBar'
+import SummaryBar from '../SummaryBar/SummaryBar'
+import WeeklySummary from '../WeeklySummary/WeeklySummary'
 
 class Timelog extends Component {
-
   constructor(props) {
-    super(props);
-    this.toggle = this.toggle.bind(this);
-    this.changeTab = this.changeTab.bind(this);
-    this.handleInputChange = this.handleInputChange.bind(this);
-    this.handleSearch = this.handleSearch.bind(this);
-    this.openInfo = this.openInfo.bind(this);
+    super(props)
+    this.toggle = this.toggle.bind(this)
+    this.showSummary = this.showSummary.bind(this)
+    this.changeTab = this.changeTab.bind(this)
+    this.handleInputChange = this.handleInputChange.bind(this)
+    this.handleSearch = this.handleSearch.bind(this)
+    this.openInfo = this.openInfo.bind(this)
     this.data = {
       disabled: this.props.auth.isAdmin ? false : true,
-      isTangible: this.props.auth.isAdmin ? true : false
+      isTangible: this.props.auth.isAdmin ? true : false,
     }
-    this.userProfile = this.props.userProfile;
+    this.userProfile = this.props.userProfile
   }
 
   initialState = {
     modal: false,
+    summary: false,
     activeTab: 0,
     projectsSelected: ['all'],
     fromDate: this.startOfWeek(0),
     toDate: this.endOfWeek(0),
     in: false,
     information: '',
-  };
+  }
 
-  state = this.initialState;
+  state = this.initialState
 
   async componentDidMount() {
-    const userId = this.props.match && this.props.match.params.userId ? this.props.match.params.userId : this.props.asUser || this.props.auth.user.userid;
-    await this.props.getUserProfile(userId);
-    this.userProfile = this.props.userProfile;
-    await this.props.getTimeEntriesForWeek(userId, 0);
-    await this.props.getTimeEntriesForWeek(userId, 1);
-    await this.props.getTimeEntriesForWeek(userId, 2);
-    await this.props.getTimeEntriesForPeriod(userId, this.state.fromDate, this.state.toDate);
-    await this.props.getUserProjects(userId);
+    const userId =
+      this.props.match && this.props.match.params.userId
+        ? this.props.match.params.userId
+        : this.props.asUser || this.props.auth.user.userid
+    await this.props.getUserProfile(userId)
+    this.userProfile = this.props.userProfile
+    await this.props.getTimeEntriesForWeek(userId, 0)
+    await this.props.getTimeEntriesForWeek(userId, 1)
+    await this.props.getTimeEntriesForWeek(userId, 2)
+    await this.props.getTimeEntriesForPeriod(userId, this.state.fromDate, this.state.toDate)
+    await this.props.getUserProjects(userId)
   }
 
   async componentDidUpdate(prevProps) {
+    if (
+      (prevProps.match && prevProps.match.params.userId !== this.props.match.params.userId) ||
+      prevProps.asUser !== this.props.asUser
+    ) {
+      this.setState(this.initialState)
 
-    if ((prevProps.match && prevProps.match.params.userId !== this.props.match.params.userId) || prevProps.asUser !== this.props.asUser) {
-      this.setState(this.initialState);
+      const userId =
+        this.props.match && this.props.match.params.userId
+          ? this.props.match.params.userId
+          : this.props.asUser || this.props.auth.user.userid
 
-      const userId = this.props.match && this.props.match.params.userId ? this.props.match.params.userId : this.props.asUser || this.props.auth.user.userid;
+      await this.props.getUserProfile(userId)
 
-      await this.props.getUserProfile(userId);
-
-      this.userProfile = this.props.userProfile;
-      await this.props.getTimeEntriesForWeek(userId, 0);
-      await this.props.getTimeEntriesForWeek(userId, 1);
-      await this.props.getTimeEntriesForWeek(userId, 2);
-      await this.props.getTimeEntriesForPeriod(userId, this.state.fromDate, this.state.toDate);
-      await this.props.getUserProjects(userId);
+      this.userProfile = this.props.userProfile
+      await this.props.getTimeEntriesForWeek(userId, 0)
+      await this.props.getTimeEntriesForWeek(userId, 1)
+      await this.props.getTimeEntriesForWeek(userId, 2)
+      await this.props.getTimeEntriesForPeriod(userId, this.state.fromDate, this.state.toDate)
+      await this.props.getUserProjects(userId)
     }
   }
 
   toggle() {
     this.setState({
       modal: !this.state.modal,
-    });
+    })
+  }
+
+  showSummary(isOwner) {
+    if (isOwner) {
+      this.setState({
+        summary: !this.state.summary,
+      })
+      setTimeout(() => {
+        let elem = document.getElementById('weeklySum')
+        if (elem) {
+          elem.scrollIntoView()
+        }
+      }, 150)
+    }
   }
 
   openInfo() {
@@ -108,21 +149,19 @@ class Timelog extends Component {
   }
 
   handleInputChange(e) {
-    this.setState({ [e.target.name]: e.target.value });
+    this.setState({ [e.target.name]: e.target.value })
   }
 
   handleSearch(e) {
     e.preventDefault()
-    const userId = this.props.match && this.props.match.params.userId ? this.props.match.params.userId : this.props.asUser || this.props.auth.user.userid;
-    this.props.getTimeEntriesForPeriod(
-      userId,
-      this.state.fromDate,
-      this.state.toDate,
-    );
+    const userId =
+      this.props.match && this.props.match.params.userId
+        ? this.props.match.params.userId
+        : this.props.asUser || this.props.auth.user.userid
+    this.props.getTimeEntriesForPeriod(userId, this.state.fromDate, this.state.toDate)
   }
 
   startOfWeek(offset) {
-
     return moment()
       .tz('America/Los_Angeles')
       .startOf('week')
@@ -136,22 +175,16 @@ class Timelog extends Component {
       .endOf('week')
       .subtract(offset, 'weeks')
       .format('YYYY-MM-DD')
-
   }
 
   generateTimeEntries(data) {
     let filteredData = data
     if (!this.state.projectsSelected.includes('all')) {
-      filteredData = data.filter(entry => this.state.projectsSelected.includes(entry.projectId));
+      filteredData = data.filter(entry => this.state.projectsSelected.includes(entry.projectId))
     }
 
     return filteredData.map(entry => (
-      <TimeEntry
-        data={entry}
-        displayYear={false}
-        key={entry._id}
-        userProfile={this.userProfile}
-      />
+      <TimeEntry data={entry} displayYear={false} key={entry._id} userProfile={this.userProfile} />
     ))
   }
 
@@ -160,9 +193,12 @@ class Timelog extends Component {
     const lastWeekEntries = this.generateTimeEntries(this.props.timeEntries.weeks[1])
     const beforeLastEntries = this.generateTimeEntries(this.props.timeEntries.weeks[2])
     const periodEntries = this.generateTimeEntries(this.props.timeEntries.period)
-    const userId = this.props.match && this.props.match.params.userId ? this.props.match.params.userId : this.props.asUser || this.props.auth.user.userid;
+    const userId =
+      this.props.match && this.props.match.params.userId
+        ? this.props.match.params.userId
+        : this.props.asUser || this.props.auth.user.userid
     const isAdmin = this.props.auth.user.role === 'Administrator'
-    const isOwner = this.props.auth.user.userid === userId;
+    const isOwner = this.props.auth.user.userid === userId
     const fullName = `${this.userProfile.firstName} ${this.userProfile.lastName}`
 
     let projects = []
@@ -183,24 +219,38 @@ class Timelog extends Component {
 
     return (
       <div>
-        {!this.props.isDashboard ? <Container fluid><SummaryBar /></Container> : ''}
+        {!this.props.isDashboard ? (
+          <Container fluid>
+            <SummaryBar toggleSubmitForm={() => this.showSummary(isOwner)} />
+          </Container>
+        ) : (
+          ''
+        )}
 
         <Container>
-
+          {this.state.summary ? (
+            <div className="my-2">
+              <div id="weeklySum">
+                <WeeklySummary asUser={userId} />
+              </div>
+            </div>
+          ) : null}
           <Row>
             <Col md={12}>
               <Card>
                 <CardHeader>
                   <Row>
                     <Col md={11}>
-                      <CardTitle tag="h4">Time Entries &nbsp;
+                      <CardTitle tag="h4">
+                        Time Entries &nbsp;
                         <i
                           className="fa fa-info-circle"
                           data-tip
                           data-for="registerTip"
                           aria-hidden="true"
                           onClick={this.openInfo}
-                        /></CardTitle>
+                        />
+                      </CardTitle>
                       <CardSubtitle tag="h6" className="text-muted">
                         Viewing time entries logged in the last 3 weeks
                       </CardSubtitle>
@@ -210,30 +260,55 @@ class Timelog extends Component {
                         <div className="float-right">
                           <div>
                             <Button color="success" onClick={this.toggle}>
-                              {'Add Intangible Time Entry '}<i
+                              {'Add Intangible Time Entry '}
+                              <i
                                 className="fa fa-info-circle"
                                 data-tip
                                 data-for="timeEntryTip"
-                                data-delay-hide='1000'
+                                data-delay-hide="1000"
                                 aria-hidden="true"
                                 title=""
                               />
                             </Button>
                             <ReactTooltip id="timeEntryTip" place="bottom" effect="solid">
-                              Clicking this button only allows for “Intangible Time” to be added to your time log. <u>You can manually log Intangible Time but it doesn’t <br />
-                                count towards your weekly time commitment.</u><br /><br />
-
-                              “Tangible Time” is the default for logging time using the timer at the top of the app. It represents all work done on assigned action items <br />
-                              and is what counts towards a person’s weekly volunteer time commitment. The only way for a volunteer to log Tangible Time is by using the clock<br />
-                              in/out timer. <br /><br />
-
-                              Intangible Time is almost always used only by the management team. It is used for weekly Monday night management team calls, monthly management<br />
-                              team reviews and Welcome Team Calls, and non-action-item related research, classes, and other learning, meetings, etc. that benefit or relate to <br />
-                              the project but aren’t related to a specific action item on the <a href="https://www.tinyurl.com/oc-os-wbs">One Community Work Breakdown Structure.</a><br /><br />
-
-                              Intangible Time may also be logged by a volunteer when in the field or for other reasons when the timer wasn’t able to be used. In these cases, the <br />
-                              volunteer will use this button to log time as “intangible time” and then request that an Admin manually change the log from Intangible to Tangible.<br /><br />
-
+                              Clicking this button only allows for “Intangible Time” to be added to
+                              your time log.{' '}
+                              <u>
+                                You can manually log Intangible Time but it doesn’t <br />
+                                count towards your weekly time commitment.
+                              </u>
+                              <br />
+                              <br />
+                              “Tangible Time” is the default for logging time using the timer at the
+                              top of the app. It represents all work done on assigned action items{' '}
+                              <br />
+                              and is what counts towards a person’s weekly volunteer time
+                              commitment. The only way for a volunteer to log Tangible Time is by
+                              using the clock
+                              <br />
+                              in/out timer. <br />
+                              <br />
+                              Intangible Time is almost always used only by the management team. It
+                              is used for weekly Monday night management team calls, monthly
+                              management
+                              <br />
+                              team reviews and Welcome Team Calls, and non-action-item related
+                              research, classes, and other learning, meetings, etc. that benefit or
+                              relate to <br />
+                              the project but aren’t related to a specific action item on the{' '}
+                              <a href="https://www.tinyurl.com/oc-os-wbs">
+                                One Community Work Breakdown Structure.
+                              </a>
+                              <br />
+                              <br />
+                              Intangible Time may also be logged by a volunteer when in the field or
+                              for other reasons when the timer wasn’t able to be used. In these
+                              cases, the <br />
+                              volunteer will use this button to log time as “intangible time” and
+                              then request that an Admin manually change the log from Intangible to
+                              Tangible.
+                              <br />
+                              <br />
                             </ReactTooltip>
                           </div>
                         </div>
@@ -245,7 +320,6 @@ class Timelog extends Component {
                                 Add Time Entry {!isOwner && `for ${fullName}`}
                               </Button>
                             </div>
-
                           </div>
                         )
                       )}
@@ -333,7 +407,8 @@ class Timelog extends Component {
                   <TabContent activeTab={this.state.activeTab}>
                     {this.state.activeTab === 3 ? (
                       <p className="ml-1">
-                        Viewing time Entries from <b>{this.state.fromDate}</b> to <b>{this.state.toDate}</b>
+                        Viewing time Entries from <b>{this.state.fromDate}</b> to{' '}
+                        <b>{this.state.toDate}</b>
                       </p>
                     ) : (
                       <p className="ml-1">
@@ -386,10 +461,14 @@ class Timelog extends Component {
                           title="Ctrl + Click to select multiple projects to filter."
                           onChange={e =>
                             this.setState({
-                              projectsSelected: Array.from(e.target.selectedOptions, option => option.value),
+                              projectsSelected: Array.from(
+                                e.target.selectedOptions,
+                                option => option.value,
+                              ),
                             })
                           }
-                          multiple>
+                          multiple
+                        >
                           {projectOptions}
                         </Input>
                       </FormGroup>
