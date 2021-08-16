@@ -50,7 +50,6 @@ const TimeEntryForm = props => {
     hasLink: data && data.notes && data.notes.includes('http') ? true : false,
     remind: '',
     wordCount: data && data.notes && data.notes.split(' ').length > 10 ? 10 : 0,
-    editCount: data ? data.editCount : 0,
     editNotice: true,
   }
 
@@ -215,7 +214,8 @@ const TimeEntryForm = props => {
       openModal()
       setReminder(reminder => ({
         ...reminder,
-        remind: getEditMessage(reminder.editCount),
+        //TODO: Cameron
+        remind: getEditMessage(0),
         editNotice: !reminder.editNotice,
       }))
       return false
@@ -242,11 +242,7 @@ const TimeEntryForm = props => {
       dateOfWork: inputs.dateOfWork,
       projectId: inputs.projectId,
       notes: inputs.notes,
-      isTangible: inputs.isTangible.toString(),
-      editCount:
-        (!isAdmin && isTimeModified && data.isTangible)
-          ? reminder.editCount + 1
-          : reminder.editCount,
+      isTangible: inputs.isTangible.toString()
     }
 
     if (edit) {
@@ -293,7 +289,6 @@ const TimeEntryForm = props => {
     } else if (!reminder.notice) {
       setReminder(reminder => ({
         ...reminder,
-        editCount: timeEntry.editCount,
         editNotice: !reminder.editNotice,
       }))
       toggle()
