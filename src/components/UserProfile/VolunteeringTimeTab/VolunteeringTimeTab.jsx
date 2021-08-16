@@ -25,6 +25,7 @@ const StartDate = (props) => {
   );
 };
 const WeeklyCommitedHours = (props) => {
+
   if (!props.isUserAdmin) {
     return <p>{props.userProfile.weeklyComittedHours}</p>;
   }
@@ -51,7 +52,7 @@ const TotalCommittedHours = (props) => {
       type="number"
       name="totalTangibleHours"
       id="totalTangibleHours"
-      value={props.userProfile.totalTangibleHrs}
+      value={props.userProfile.totalTangibleHrs?.toFixed(2)}
       onChange={props.handleUserProfile}
       placeholder="Total Tangible Time Logged"
       invalid={!props.isUserAdmin}
@@ -130,7 +131,7 @@ const TotalCategoryHours = (props) => {
       type="number"
       name={`total${props.category}CategoryHours`}
       id={`${props.category}CategoryHours`}
-      value={props?.userProfile?.categoryTangibleHrs[index]?.hrs}
+      value={props?.userProfile?.categoryTangibleHrs[index]?.hrs?.toFixed(2)}
       onChange={props.handleUserProfile}
       placeholder={`Total ${props.category} Tangible Hours`}
       invalid={!props.isUserAdmin}
@@ -266,7 +267,7 @@ const ViewTab = (props) => {
       </Row>
       <Row>
         <Col md="6">
-          <Label>Total Other Category Hours </Label>
+          <Label>Total Unassigned Category Hours </Label>
         </Col>
 
         <Col md="6">
