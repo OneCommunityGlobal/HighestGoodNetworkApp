@@ -356,7 +356,6 @@ const TimeEntryForm = props => {
     if (closed) {
       //make sure form clears before close
       setInputs({ ...initialFormValues })
-      setClose(true)
     }
     setInputs({ ...initialFormValues })
     setReminder({ ...initialReminder })

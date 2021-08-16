@@ -53,7 +53,7 @@ const TotalCommittedHours = (props) => {
       id="totalTangibleHours"
       value={props.userProfile.totalTangibleHrs}
       onChange={props.handleUserProfile}
-      placeholder="Total Committed Hours"
+      placeholder="Total Tangible Time Logged"
       invalid={!props.isUserAdmin}
     />
   );
