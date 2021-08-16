@@ -267,7 +267,7 @@ const ViewTab = (props) => {
       </Row>
       <Row>
         <Col md="6">
-          <Label>Total Other Category Hours </Label>
+          <Label>Total Unassigned Category Hours </Label>
         </Col>
 
         <Col md="6">
