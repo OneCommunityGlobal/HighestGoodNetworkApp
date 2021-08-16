@@ -495,10 +495,54 @@ class UserProfile extends Component {
           },
         });
         break;
-      default:
+      case 'weeklySummaryNotReqd':
         this.setState({
+          userProfile: {
           ...userProfile,
-        })
+          weeklySummaryNotReq: event.target.checked,
+        },});
+        break;
+      default:
+        if (event.target.id && event.target.id.includes("CategoryHours")) {
+          let cat = event.target.id.slice(0, -13)
+          let categoryHours = this.state.userProfile.categoryTangibleHrs;
+          let index = -1;
+          //Create category if categoryHours doesn't exist
+          if (!categoryHours) {
+            this.setState({
+              userProfile: {
+                ...userProfile,
+                categoryTangibleHrs: [{category: cat, hrs: event.target.value}]
+              },
+            })
+            return;
+          }
+  
+          //Find index and change value
+          for (let i = 0; i<categoryHours.length; i++) {
+            if (categoryHours[i].category == cat) {
+              index = i
+              categoryHours[i].hrs = event.target.value
+            }
+          }
+  
+          //if none found push in object for that category
+          if (index == -1) {
+            categoryHours.push({category: cat, hrs: event.target.value})
+          }
+          if (categoryHours) {
+            this.setState({
+              userProfile: {
+                ...userProfile,
+                categoryTangibleHrs: categoryHours,
+              },
+            })
+          }
+        } else {
+          this.setState({
+            ...userProfile,
+          })
+        }
     }
   }
 
