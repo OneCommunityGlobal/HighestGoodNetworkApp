@@ -68,6 +68,7 @@ export class Header extends React.Component {
   }
 
   render() {
+
     const { isAuthenticated, user, firstName, profilePic } = this.props.auth
     return (
       <div>
@@ -159,7 +160,7 @@ export class Header extends React.Component {
                 <NavItem>
                   <NavLink tag={Link} to={`/userprofile/${user.userid}`}>
                     <img
-                      src={`${profilePic}`}
+                      src={`${profilePic || 'https://www.pngfind.com/pngs/m/676-6764065_default-profile-picture-transparent-hd-png-download.png'}`}
                       alt=""
                       height="35"
                       width="40"
