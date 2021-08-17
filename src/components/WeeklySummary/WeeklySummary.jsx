@@ -18,9 +18,11 @@ import Joi from 'joi';
 import { toast } from "react-toastify";
 import { WeeklySummaryContentTooltip, MediaURLTooltip } from './WeeklySummaryTooltips';
 import classnames from 'classnames';
+import { getUserProfile } from 'actions/userProfile';
 
 // Need this export here in order for automated testing to work.
 export class WeeklySummary extends Component {
+
   state = {
     formElements: {
       summary: '',
@@ -181,16 +183,23 @@ export class WeeklySummary extends Component {
       weeklySummariesCount: this.state.formElements.weeklySummariesCount,
     }
 
-    const saveResult = await this.props.updateWeeklySummaries(this.props.asUser ? this.props.asUser : this.props.currentUser.userid, modifiedWeeklySummaries);
+
+    const updateWeeklySummaries = this.props.updateWeeklySummaries(this.props.asUser || this.props.currentUser.userid, modifiedWeeklySummaries);
+    let saveResult;
+    if(updateWeeklySummaries) {
+      saveResult = await updateWeeklySummaries();
+    }
 
     if (saveResult === 200) {
       toast.success("✔ The data was saved successfully!", { toastId: toastIdOnSave, pauseOnFocusLoss: false, autoClose: 3000 });
+      this.props.getUserProfile(this.props.currentUser.userid);
     } else {
       toast.error("✘ The data could not be saved!", { toastId: toastIdOnSave, pauseOnFocusLoss: false, autoClose: 3000 });
     }
   };
 
   render() {
+
     const { formElements, dueDate, activeTab, errors, loading, fetchError, dueDateLastWeek, dueDateBeforeLast } = this.state;
     const summariesLabels = {
       'summary': 'This Week',
@@ -259,7 +268,7 @@ export class WeeklySummary extends Component {
                         <Editor
                           init={{
                             menubar: false,
-                            placeholder: 'Weekly summary content… Remember to be detailed (50-word minimum) and write it in 3rd person. E.g. “This week John…"',
+                            placeholder: 'Weekly summary content... Remember to be detailed (50-word minimum) and write it in 3rd person. E.g. “This week John…"',
                             plugins:
                               'advlist autolink autoresize lists link charmap table paste help wordcount',
                             toolbar:
@@ -349,7 +358,7 @@ WeeklySummary.propTypes = {
   getWeeklySummaries: PropTypes.func.isRequired,
   loading: PropTypes.bool.isRequired,
   summaries: PropTypes.object.isRequired,
-  updateWeeklySummaries: PropTypes.func.isRequired
+  updateWeeklySummaries: PropTypes.func.isRequired,
 }
 
 const mapStateToProps = ({ auth, weeklySummaries }) => ({
@@ -359,4 +368,12 @@ const mapStateToProps = ({ auth, weeklySummaries }) => ({
   fetchError: weeklySummaries.fetchError,
 });
 
-export default connect(mapStateToProps, { getWeeklySummaries, updateWeeklySummaries })(WeeklySummary);
+const mapDispatchToProps = (dispatch) => {
+  return {
+    getUserProfile: (userId) => dispatch(getUserProfile(userId)),
+    getWeeklySummaries: getWeeklySummaries,
+    updateWeeklySummaries: updateWeeklySummaries,
+  }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(WeeklySummary);
