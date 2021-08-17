@@ -20,6 +20,7 @@ const StartDate = props => {
     />
   )
 }
+
 const WeeklyCommitedHours = props => {
   if (!props.isUserAdmin) {
     return <p>{props.userProfile.weeklyComittedHours}</p>
@@ -46,11 +47,7 @@ const TotalCommittedHours = props => {
       type="number"
       name="totalTangibleHours"
       id="totalTangibleHours"
-      value={
-        props.userProfile.totalTangibleHrs.toFixed !== undefined
-          ? props.userProfile.totalTangibleHrs.toFixed(2)
-          : props.userProfile.totalTangibleHrs
-      }
+      value={props.userProfile.totalTangibleHrs}
       onChange={props.handleUserProfile}
       placeholder="Total Tangible Time Logged"
       invalid={!props.isUserAdmin}
@@ -58,29 +55,28 @@ const TotalCommittedHours = props => {
   )
 }
 
-const WeeklySummaryReqd = (props) => {
+const WeeklySummaryReqd = props => {
   if (!props.isUserAdmin) {
-    return <p>{props.userProfile.weeklySummaryNotReq ? "Not Required" : "Required"}</p>;
+    return <p>{props.userProfile.weeklySummaryNotReq ? 'Not Required' : 'Required'}</p>
   }
   return (
-
-      <div className={style.switchContainer}>
-        Required
-        <input
-          id="weeklySummaryNotReqd"
-          data-testid="weeklySummary-switch"
-          type="checkbox"
-          className={style.toggle}
-          onChange={props.handleUserProfile}
-          checked={props.userProfile.weeklySummaryNotReq}
-        />
-        Not Required
-      </div>
-  );
-};
+    <div className={style.switchContainer}>
+      Required
+      <input
+        id="weeklySummaryNotReqd"
+        data-testid="weeklySummary-switch"
+        type="checkbox"
+        className={style.toggle}
+        onChange={props.handleUserProfile}
+        checked={props.userProfile.weeklySummaryNotReq}
+      />
+      Not Required
+    </div>
+  )
+}
 
 /**
- * 
+ *
  * @param {Integer} props.hoursByCategory.housing
  * @param {Integer} props.hoursByCategory.food
  * @param {Integer} props.hoursByCategory.education
@@ -91,14 +87,13 @@ const WeeklySummaryReqd = (props) => {
  * @param {*} props.isUserAdmin
  * @param {*} props.isUserSelf
  * @param {Function} handleUserProfile
- * 
- * @returns 
+ *
+ * @returns
  */
 const ViewTab = props => {
   const { userProfile, timeEntries, isUserAdmin, isUserSelf, handleUserProfile } = props
   const weeklyHoursReducer = (acc, val) =>
     acc + (parseInt(val.hours, 10) + parseInt(val.minutes, 10) / 60)
-  //const canEdit = isUserAdmin || isUserSelf;
 
   return (
     <div data-testid="volunteering-time-tab">
@@ -114,7 +109,7 @@ const ViewTab = props => {
           />
         </Col>
       </Row>
-      
+
       <Row>
         <Col md="6">
           <Label>End Date</Label>
@@ -123,7 +118,7 @@ const ViewTab = props => {
           <p>{userProfile.endDate ? moment(userProfile.endDate).format('YYYY-MM-DD') : 'N/A'}</p>
         </Col>
       </Row>
-      
+
       <Row>
         <Col md="6">
           <Label>Total Hours This Week</Label>
@@ -132,13 +127,17 @@ const ViewTab = props => {
           <p>{timeEntries.weeks[0].reduce(weeklyHoursReducer, 0).toFixed(2)}</p>
         </Col>
       </Row>
-      
+
       <Row>
         <Col md="6">
           <Label>Weekly Summary Required </Label>
         </Col>
         <Col md="6">
-          <WeeklySummaryReqd isUserAdmin={isUserAdmin} userProfile={userProfile} handleUserProfile={handleUserProfile} />
+          <WeeklySummaryReqd
+            isUserAdmin={isUserAdmin}
+            userProfile={userProfile}
+            handleUserProfile={handleUserProfile}
+          />
         </Col>
       </Row>
       <Row>
@@ -153,7 +152,7 @@ const ViewTab = props => {
           />
         </Col>
       </Row>
-      
+
       <Row>
         <Col md="6">
           <Label>Total Tangible Hours </Label>
@@ -166,7 +165,7 @@ const ViewTab = props => {
           />
         </Col>
       </Row>
-      
+
       {Object.keys(props.hoursByCategory).map(key => (
         <>
           <Row key={'hours-by-category-' + key}>
@@ -175,10 +174,8 @@ const ViewTab = props => {
             </Col>
             <Col md="6">{props.hoursByCategory[key]}</Col>
           </Row>
-          
         </>
       ))}
-
     </div>
   )
 }

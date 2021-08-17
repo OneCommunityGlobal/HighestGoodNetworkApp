@@ -52,7 +52,10 @@ const UserProfile = props => {
   }
 
   const [isLoading, setLoading] = useState(true)
-  const [userProfile, setUserProfile] = useState(props.userProfile)
+  const [userProfile, setUserProfile] = useState({
+    ...props.userProfile,
+    totalTangibleHrs: parseFloat(props.userProfile.totalTangibleHrs).toFixed(2),
+  })
   const [id, setId] = useState('')
   const [activeTab, setActiveTab] = useState('1')
   const [infoModal, setInfoModal] = useState(false)
@@ -273,7 +276,6 @@ const UserProfile = props => {
     } catch (err) {
       alert('An error occurred while attempting to save this profile.')
     }
-
   }
 
   const toggleInfoModal = () => {
