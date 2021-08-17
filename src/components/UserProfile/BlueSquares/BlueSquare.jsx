@@ -38,7 +38,7 @@ const BlueSquare = ({blueSquares, handleBlueSquare, isUserAdmin}) => {
           className="blueSquareButton"
           color="primary"
         >
-          <span>+</span>
+          +
         </div>
       )}
       <br />
