@@ -353,11 +353,9 @@ const TimeEntryForm = props => {
   }
 
   const clearForm = closed => {
-    if (closed) {
-      //make sure form clears before close
-      setInputs({ ...initialFormValues })
-    }
-    setInputs({ ...initialFormValues })
+    if (closed === true ) toggle();
+    const newInputs = {...initialFormValues, hours: inputs.hours, minutes: inputs.minutes}
+    setInputs(newInputs)
     setReminder({ ...initialReminder })
     setErrors({})
   }
