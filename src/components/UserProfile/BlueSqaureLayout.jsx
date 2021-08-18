@@ -1,24 +1,4 @@
 import React from 'react';
-// import {
-//   Row,
-//   Label,
-//   Input,
-//   CardTitle,
-//   Col,
-//   Container,
-//   Button,
-//   Form,
-//   FormFeedback,
-//   FormGroup,
-//   Badge,
-//   Collapse,
-//   Alert,
-//   Nav,
-//   NavItem,
-//   NavLink,
-//   TabContent,
-//   TabPane,
-// } from 'reactstrap';
 import BlueSquare from './BlueSquares';
 import ToggleSwitch from './UserProfileEdit/ToggleSwitch';
 import './UserProfile.scss';

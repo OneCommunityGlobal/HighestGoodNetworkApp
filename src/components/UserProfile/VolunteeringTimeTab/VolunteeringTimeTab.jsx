@@ -1,15 +1,12 @@
-import React from 'react';
-import {
-  Row,
-  Label,
-  Input,
-  Col,
-} from 'reactstrap';
-import moment from 'moment';
+import React from 'react'
+import { Row, Label, Input, Col } from 'reactstrap'
+import moment from 'moment'
+import { capitalize } from 'lodash'
+import style from '../UserProfileEdit/ToggleSwitch/ToggleSwitch.module.scss'
 
-const StartDate = (props) => {
+const StartDate = props => {
   if (!props.isUserAdmin) {
-    return <p>{moment(props.userProfile.createdDate).format('YYYY-MM-DD')}</p>;
+    return <p>{moment(props.userProfile.createdDate).format('YYYY-MM-DD')}</p>
   }
   return (
     <Input
@@ -21,11 +18,12 @@ const StartDate = (props) => {
       placeholder="Start Date"
       invalid={!props.isUserAdmin}
     />
-  );
-};
-const WeeklyCommitedHours = (props) => {
+  )
+}
+
+const WeeklyCommitedHours = props => {
   if (!props.isUserAdmin) {
-    return <p>{props.userProfile.weeklyComittedHours}</p>;
+    return <p>{props.userProfile.weeklyComittedHours}</p>
   }
   return (
     <Input
@@ -37,13 +35,12 @@ const WeeklyCommitedHours = (props) => {
       placeholder="weeklyCommittedHours"
       invalid={!props.isUserAdmin}
     />
-  );
-};
+  )
+}
 
-const TotalCommittedHours = (props) => {
-
+const TotalCommittedHours = props => {
   if (!props.isUserAdmin) {
-    return <p>{props.userProfile.totalTangibleHrs}</p>;
+    return <p>{props.userProfile.totalTangibleHrs}</p>
   }
   return (
     <Input
@@ -52,22 +49,51 @@ const TotalCommittedHours = (props) => {
       id="totalTangibleHours"
       value={props.userProfile.totalTangibleHrs}
       onChange={props.handleUserProfile}
-      placeholder="Total Committed Hours"
+      placeholder="Total Tangible Time Logged"
       invalid={!props.isUserAdmin}
     />
-  );
-};
+  )
+}
 
-const ViewTab = (props) => {
-  const {
-    userProfile,
-    timeEntries,
-    isUserAdmin,
-    isUserSelf,
-    handleUserProfile,
-  } = props;
-  const weeklyHoursReducer = (acc, val) => acc + (parseInt(val.hours, 10) + parseInt(val.minutes, 10) / 60);
-  //const canEdit = isUserAdmin || isUserSelf;
+const WeeklySummaryReqd = props => {
+  if (!props.isUserAdmin) {
+    return <p>{props.userProfile.weeklySummaryNotReq ? 'Not Required' : 'Required'}</p>
+  }
+  return (
+    <div className={style.switchContainer}>
+      Required
+      <input
+        id="weeklySummaryNotReqd"
+        data-testid="weeklySummary-switch"
+        type="checkbox"
+        className={style.toggle}
+        onChange={props.handleUserProfile}
+        checked={props.userProfile.weeklySummaryNotReq}
+      />
+      Not Required
+    </div>
+  )
+}
+
+/**
+ *
+ * @param {Integer} props.hoursByCategory.housing
+ * @param {Integer} props.hoursByCategory.food
+ * @param {Integer} props.hoursByCategory.education
+ * @param {Integer} props.hoursByCategory.society
+ * @param {Integer} props.hoursByCategory.energy
+ * @param {*} props.userProfile
+ * @param {*} props.timeEntries
+ * @param {*} props.isUserAdmin
+ * @param {*} props.isUserSelf
+ * @param {Function} handleUserProfile
+ *
+ * @returns
+ */
+const ViewTab = props => {
+  const { userProfile, timeEntries, isUserAdmin, isUserSelf, handleUserProfile } = props
+  const weeklyHoursReducer = (acc, val) =>
+    acc + (parseInt(val.hours, 10) + parseInt(val.minutes, 10) / 60)
 
   return (
     <div data-testid="volunteering-time-tab">
@@ -76,9 +102,14 @@ const ViewTab = (props) => {
           <Label>Start Date</Label>
         </Col>
         <Col md="6">
-          <StartDate isUserAdmin={isUserAdmin} userProfile={userProfile} handleUserProfile={handleUserProfile} />
+          <StartDate
+            isUserAdmin={isUserAdmin}
+            userProfile={userProfile}
+            handleUserProfile={handleUserProfile}
+          />
         </Col>
       </Row>
+
       <Row>
         <Col md="6">
           <Label>End Date</Label>
@@ -87,6 +118,7 @@ const ViewTab = (props) => {
           <p>{userProfile.endDate ? moment(userProfile.endDate).format('YYYY-MM-DD') : 'N/A'}</p>
         </Col>
       </Row>
+
       <Row>
         <Col md="6">
           <Label>Total Hours This Week</Label>
@@ -95,25 +127,57 @@ const ViewTab = (props) => {
           <p>{timeEntries.weeks[0].reduce(weeklyHoursReducer, 0).toFixed(2)}</p>
         </Col>
       </Row>
+
+      <Row>
+        <Col md="6">
+          <Label>Weekly Summary Required </Label>
+        </Col>
+        <Col md="6">
+          <WeeklySummaryReqd
+            isUserAdmin={isUserAdmin}
+            userProfile={userProfile}
+            handleUserProfile={handleUserProfile}
+          />
+        </Col>
+      </Row>
       <Row>
         <Col md="6">
           <Label>Weekly Committed Hours </Label>
         </Col>
         <Col md="6">
-          <WeeklyCommitedHours isUserAdmin={isUserAdmin} userProfile={userProfile} handleUserProfile={handleUserProfile} />
+          <WeeklyCommitedHours
+            isUserAdmin={isUserAdmin}
+            userProfile={userProfile}
+            handleUserProfile={handleUserProfile}
+          />
         </Col>
       </Row>
+
       <Row>
         <Col md="6">
           <Label>Total Tangible Hours </Label>
         </Col>
-
         <Col md="6">
-          <TotalCommittedHours isUserAdmin={isUserAdmin} userProfile={userProfile} handleUserProfile={handleUserProfile} />
+          <TotalCommittedHours
+            isUserAdmin={isUserAdmin}
+            userProfile={userProfile}
+            handleUserProfile={handleUserProfile}
+          />
         </Col>
       </Row>
-    </div>
-  );
-};
 
-export default ViewTab;
+      {Object.keys(props.hoursByCategory).map(key => (
+        <>
+          <Row key={'hours-by-category-' + key}>
+            <Col md="6">
+              <Label>Total Tangible {capitalize(key)} Hours </Label>
+            </Col>
+            <Col md="6">{props.hoursByCategory[key]}</Col>
+          </Row>
+        </>
+      ))}
+    </div>
+  )
+}
+
+export default ViewTab

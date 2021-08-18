@@ -236,7 +236,7 @@ const SummaryBar = props => {
               <div className="border-red col-4 bg--white-smoke no-gutters" align="center">
                 <div className="py-1"> </div>
                 <p
-                  className="summary-toggle large_text_summary text--black text-danger"
+                  className={'summary-toggle large_text_summary text--black text-danger'}
                   align="center"
                   onClick={props.toggleSubmitForm}
                 >
