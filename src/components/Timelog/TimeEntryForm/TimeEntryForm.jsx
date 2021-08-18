@@ -19,6 +19,7 @@ import { Editor } from '@tinymce/tinymce-react'
 import ReactTooltip from 'react-tooltip'
 import { postTimeEntry, editTimeEntry } from '../../../actions/timeEntries'
 import { getUserProjects } from '../../../actions/userProjects'
+import { getUserProfile } from 'actions/userProfile';
 import { stopTimer } from '../../../actions/timer'
 import AboutModal from './AboutModal'
 import TangibleInfoModal from './TangibleInfoModal'
@@ -64,6 +65,8 @@ const TimeEntryForm = props => {
 
   const fromTimer = !_.isEmpty(timer)
   const isAdmin = useSelector(state => state.auth.user.role) === 'Administrator'
+  const userProfile = useSelector(state => state.userProfile);
+
   const dispatch = useDispatch()
 
   const tangibleInfoToggle = e => {
@@ -136,29 +139,16 @@ const TimeEntryForm = props => {
     </option>,
   )
 
-  const getEditMessage = editCount => {
-    if (editCount < 4) {
-      return (
-        'You are about to edit your time, if you do this your manager will be notified you’ve edited it. ' +
-        'The system automatically tracks how many times you’ve edited your time and will issue blue squares if you edit it repeatedly. ' +
-        'Please use the timer properly so your time is logged accurately.'
-      )
-    } else if (editCount === 4) {
-      return (
-        'You’ve edited your time 3 times already as a member of the team, are you sure you want to edit it again? ' +
-        'Editing your time more than 5 times in a calendar year will result in you receiving a blue square.'
-      )
-    } else if (editCount === 5) {
-      return (
-        'Heads up this is your fifth and final time being allowed to edit your time without receiving a blue square. ' +
-        'Please use the timer properly from this point forward if you’d like to avoid receiving one.'
-      )
-    } else if ((editCount - 5) % 2 === 1) {
-      return (
-        `Heads up this is your ${reminder.editCount}th time editing your recorded time. ` +
-        'The next time you do this, you will receive a blue square. Please use the timer properly from this point forward to avoid this.'
-      )
-    }
+  const getEditMessage = () => {
+    let editCount = 0;
+    userProfile.timeEntryEditHistory.forEach((item) => {
+      if(moment().diff(item.date, 'days') <= 365) {
+        editCount += 1;
+      }
+    });
+    return `If you edit your time entries 6 times or more within the span of a year,
+    you will be issued a blue square and will recieve an additional blue square for each edit beyond the 6th.
+    Currently, you have edited your time entries ${editCount} times within the last 365 days. Do you wish to continue?`
   }
 
   const validateForm = isTimeModified => {
@@ -214,8 +204,7 @@ const TimeEntryForm = props => {
       openModal()
       setReminder(reminder => ({
         ...reminder,
-        //TODO: Cameron
-        remind: getEditMessage(0),
+        remind: getEditMessage(),
         editNotice: !reminder.editNotice,
       }))
       return false
@@ -295,6 +284,9 @@ const TimeEntryForm = props => {
     } else if (!isTimeModified) {
       toggle()
     }
+
+    dispatch(getUserProfile(userId));
+
   }
 
   const handleInputChange = event => {
