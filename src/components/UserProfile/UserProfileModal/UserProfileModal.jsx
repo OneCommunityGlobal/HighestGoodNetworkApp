@@ -49,8 +49,8 @@ const UserProfileModal = props => {
   const [adminLinkName, setAdminLinkName] = useState('')
   const [adminLinkURL, setAdminLinkURL] = useState('')
 
-  const [dateStamp, setDateStamp] = useState(id != null ? blueSquare[0].date : '')
-  const [summary, setSummary] = useState(id != null ? blueSquare[0].description : '')
+  const [dateStamp, setDateStamp] = useState(blueSquare[0]?.date || '')
+  const [summary, setSummary] = useState(blueSquare[0]?.description || '')
 
   const [addButton, setAddButton] = useState(true)
   const [summaryFieldView, setSummaryFieldView] = useState(true)
@@ -148,8 +148,6 @@ const UserProfileModal = props => {
       setAddButton(true)
     }
   }
-
-  //const buttonDisabled = !(linkName && linkURL)
 
   return (
     <Modal isOpen={isOpen} toggle={closeModal}>

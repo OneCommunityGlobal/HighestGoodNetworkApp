@@ -6,25 +6,25 @@ const BlueSquare = ({blueSquares, handleBlueSquare, isUserAdmin}) => {
   return (
     <div className="blueSquareContainer">
       <div className="blueSquares">
-        {blueSquares.map((current, index) => (
+        {blueSquares.map((blueSquare, index) => (
           <div
             key={index}
             role="button"
             id="wrapper"
             className="blueSquareButton"
             onClick={() => {
-              if (!current._id) {
+              if (!blueSquare._id) {
                 handleBlueSquare(isUserAdmin, 'message', 'none')
               } else if (isUserAdmin) {
-                handleBlueSquare(isUserAdmin, 'modBlueSquare', current._id)
+                handleBlueSquare(isUserAdmin, 'modBlueSquare', blueSquare._id)
               } else {
-                handleBlueSquare(!isUserAdmin, 'viewBlueSquare', current._id)
+                handleBlueSquare(!isUserAdmin, 'viewBlueSquare', blueSquare._id)
               }
             }}
           >
             <div className="report" data-testid="report">
-              <div className="title">{current.date}</div>
-              <div className="summary">{current.description}</div>
+              <div className="title">{blueSquare.date}</div>
+              <div className="summary">{blueSquare.description}</div>
             </div>
           </div>
         ))}
