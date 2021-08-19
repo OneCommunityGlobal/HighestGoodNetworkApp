@@ -146,7 +146,7 @@ const Timer = () => {
   const secondsRemainder = seconds % 60
 
   return (
-    <div className="timer">
+    <div style={{ zIndex: 2 }} className="timer">
       <Button onClick={reset} color="secondary" className="mr-1 p-1 mt-1 align-middle">
         Clear
       </Button>
