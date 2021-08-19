@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react'
+import PropTypes from 'prop-types'
 import { useDispatch, useSelector } from 'react-redux'
 import {
   Form,
@@ -28,11 +29,18 @@ import axios from 'axios'
 import { ApiEndpoint } from '../../../utils/URL'
 
 /**
- *
- * @param {*} props
- * @param {*} props.userId
- * @param {*} props.data Fields: 'disabled' and 'isTangible'
- * @returns {TimeEntryForm}
+ * Modal used to submit and edit tangible and intangible time entries. 
+ * 
+ * @param {boolean} props.edit If true, the time entry already exists and is being modified
+ * @param {string} props.userId 
+ * @param {function} props.toggle Toggles the visability of this modal
+ * @param {boolean} props.isOpen Whether or not this modal is visible
+ * @param {*} props.timer 
+ * @param {boolean} props.data.disabled
+ * @param {boolean} props.data.isTangible
+ * @param {*} props.userProfile 
+ * @param {function} props.resetTimer 
+ * @returns 
  */
 const TimeEntryForm = props => {
   const { userId, edit, data, isOpen, toggle, timer, resetTimer } = props
@@ -242,7 +250,6 @@ const TimeEntryForm = props => {
     }
 
     //Send the time entry to the server
-
     setSubmitting(true)
 
     let timeEntryStatus
@@ -254,7 +261,6 @@ const TimeEntryForm = props => {
     } else {
       timeEntryStatus = await dispatch(postTimeEntry(timeEntry))
     }
-
     setSubmitting(false)
 
     if (timeEntryStatus !== 200) {
@@ -265,9 +271,9 @@ const TimeEntryForm = props => {
       return
     }
 
+    //Clear the form and clean up.
     if (fromTimer) {
       const timerStatus = await dispatch(stopTimer(userId))
-      clearForm(true)
       if (timerStatus === 200 || timerStatus === 201) {
         resetTimer()
       } else {
@@ -280,12 +286,13 @@ const TimeEntryForm = props => {
         ...reminder,
         editNotice: !reminder.editNotice,
       }))
-      toggle()
-    } else if (!isTimeModified) {
-      toggle()
     }
 
-    dispatch(getUserProfile(userId));
+    if(isOpen) toggle();
+    if(fromTimer) clearForm()
+    setReminder(initialReminder);
+
+    await getUserProfile(userId)(dispatch);
 
   }
 
@@ -339,15 +346,16 @@ const TimeEntryForm = props => {
     }))
   }
 
+  /**
+   * Resets the project/task and notes fields of the form without resetting hours and minutes.
+   * @param {*} closed If true, the form closes after being cleared.
+   */
   const clearForm = closed => {
-    if (closed) {
-      //make sure form clears before close
-      setInputs({ ...initialFormValues })
-      setClose(true)
-    }
-    setInputs({ ...initialFormValues })
+    const newInputs = {...inputs, notes: '', projectId: '', dateOfWork: moment().format('YYYY-MM-DD')}
+    setInputs(newInputs)
     setReminder({ ...initialReminder })
     setErrors({})
+    if (closed === true && isOpen) toggle();
   }
 
   console.log(data.isTangible == inputs.isTangible)
@@ -518,7 +526,6 @@ const TimeEntryForm = props => {
                   data-for="tangibleTip"
                   aria-hidden="true"
                   title="tangibleTip"
-                  // style={{ 'text-align': 'center' }}
                   onClick={tangibleInfoToggle}
                 />
                 <ReactTooltip id="tangibleTip" place="bottom" effect="solid">
@@ -541,6 +548,17 @@ const TimeEntryForm = props => {
       </Modal>
     </>
   )
+}
+
+TimeEntryForm.propTypes = {
+  edit: PropTypes.bool.isRequired,
+  userId: PropTypes.string.isRequired,
+  toggle: PropTypes.func.isRequired,
+  isOpen: PropTypes.bool.isRequired,
+  timer: PropTypes.any.isRequired,
+  data: PropTypes.any.isRequired,
+  userProfile: PropTypes.any.isRequired,
+  resetTimer: PropTypes.func.isRequired,
 }
 
 export default TimeEntryForm

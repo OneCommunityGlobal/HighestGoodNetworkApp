@@ -801,8 +801,9 @@ class UserProfileEdit extends Component {
                         onClick={() => {
                           this.toggleTab('6')
                         }}
+                        data-testid="edit-history-tab"
                       >
-                        More Tabs
+                        Edit History
                       </NavLink>
                     </NavItem>
                   </Nav>

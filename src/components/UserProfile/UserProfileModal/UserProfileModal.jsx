@@ -18,14 +18,13 @@ const UserProfileModal = props => {
     isOpen,
     closeModal,
     updateLink,
-    updateBlueSquare,
+    modifyBlueSquares,
     modalTitle,
     modalMessage,
     type,
     userProfile,
     id,
-    isUserAdmin,
-    handleSubmit
+    isUserAdmin
   } = props
 
   let blueSquare = [
@@ -371,10 +370,7 @@ const UserProfileModal = props => {
             id="addBlueSquare"
             disabled={addButton}
             onClick={() => {
-              updateBlueSquare('', dateStamp, summary, 'add');
-              setTimeout(() => {
-                handleSubmit();
-              }, 0);
+              modifyBlueSquares('', dateStamp, summary, 'add');
             }}
           >
             Submit
@@ -384,10 +380,7 @@ const UserProfileModal = props => {
         {type === 'modBlueSquare' && (
           <>
             <Button color="info" onClick={() => {
-              updateBlueSquare(id, dateStamp, summary, 'update');
-              setTimeout(() => {
-                handleSubmit();
-              }, 0);
+              modifyBlueSquares(id, dateStamp, summary, 'update');
             }}>
 
               Update
@@ -395,10 +388,7 @@ const UserProfileModal = props => {
             <Button
               color="danger"
               onClick={() => {
-                updateBlueSquare(id, dateStamp, summary, 'delete');
-                setTimeout(() => {
-                  handleSubmit();
-                }, 0);
+                modifyBlueSquares(id, dateStamp, summary, 'delete');
               }}
 
             >

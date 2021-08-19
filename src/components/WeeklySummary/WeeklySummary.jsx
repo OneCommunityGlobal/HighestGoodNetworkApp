@@ -354,7 +354,7 @@ WeeklySummary.propTypes = {
 
 const mapStateToProps = ({ auth, weeklySummaries }) => ({
   currentUser: auth.user,
-  summaries: weeklySummaries.summaries,
+  summaries: weeklySummaries?.summaries,
   loading: weeklySummaries.loading,
   fetchError: weeklySummaries.fetchError,
 });
