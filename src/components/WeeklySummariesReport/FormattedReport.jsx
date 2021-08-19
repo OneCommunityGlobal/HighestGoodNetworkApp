@@ -39,26 +39,30 @@ const FormattedReport = ({ summaries, weekIndex }) => {
   }
 
   const getWeeklySummaryMessage = summary => {
-    if (summary) {
-      return (
-        <>
-          <b>Weekly Summary</b> (for the week ending on
-          <b>
-            {moment(summary.weeklySummaries[weekIndex]?.dueDate)
-              .tz('America/Los_Angeles')
-              .format('YYYY-MMM-DD')}
-          </b>
-          ):
-          <div style={{ padding: '10px 20px 0' }}>{summary?.weeklySummaries[weekIndex]?.summary || <span style={{color: 'red'}}>Not provided!</span> }</div>
-        </>
-      )
-    } else {
-      return (
-        <p>
-          <b>Weekly Summary:</b> Not provided!
-        </p>
-      )
-    }
+
+    if(!summary) return (<p><b>Weekly Summary:</b> Not provided!</p>)
+
+    const summaryText = summary?.weeklySummaries[weekIndex]?.summary;
+
+        return (
+          <>
+            <p>
+              <b>Weekly Summary</b> ({moment(summary.weeklySummaries[weekIndex]?.dueDate).tz('America/Los_Angeles').format('YYYY-MMM-DD')}):
+            </p> 
+
+            {summaryText && ReactHtmlParser(summaryText)}
+
+            {
+            summary.weeklySummaryNotReq === true && !summaryText && 
+            <p style={{color: 'magenta'}}>Not required for this user</p>
+            }
+
+            {!summaryText && !summary.weeklySummaryNotReq && <span style={{color: 'red'}}>Not provided!</span>}
+            
+          </>
+        )
+    
+
   }
 
   const getTotalValidWeeklySummaries = summary => {
