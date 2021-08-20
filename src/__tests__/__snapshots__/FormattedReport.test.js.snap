@@ -37,19 +37,13 @@ exports[`FormattedReport Component Snapshot with mocked data 1`] = `
       </b>
        
     </p>
-    <b>
-      Weekly Summary
-    </b>
-     (for the week ending on
-    <b>
-      2020-Jun-27
-    </b>
-    ):
-    <div
-      style="padding: 10px 20px 0px;"
-    >
-      Week 2 summary
-    </div>
+    <p>
+      <b>
+        Weekly Summary
+      </b>
+       (2020-Jun-27):
+    </p>
+    Week 2 summary
   </div>
   <div
     style="padding: 20px 0px; margin-top: 5px; border-bottom: 1px solid #DEE2E6;"
@@ -79,23 +73,17 @@ exports[`FormattedReport Component Snapshot with mocked data 1`] = `
       </b>
        
     </p>
-    <b>
-      Weekly Summary
-    </b>
-     (for the week ending on
-    <b>
-      2020-Jun-27
-    </b>
-    ):
-    <div
-      style="padding: 10px 20px 0px;"
+    <p>
+      <b>
+        Weekly Summary
+      </b>
+       (2020-Jun-27):
+    </p>
+    <span
+      style="color: red;"
     >
-      <span
-        style="color: red;"
-      >
-        Not provided!
-      </span>
-    </div>
+      Not provided!
+    </span>
   </div>
   <div
     style="padding: 20px 0px; margin-top: 5px; border-bottom: 1px solid #DEE2E6;"
@@ -125,23 +113,17 @@ exports[`FormattedReport Component Snapshot with mocked data 1`] = `
       </b>
        
     </p>
-    <b>
-      Weekly Summary
-    </b>
-     (for the week ending on
-    <b>
-      2021-Aug-19
-    </b>
-    ):
-    <div
-      style="padding: 10px 20px 0px;"
+    <p>
+      <b>
+        Weekly Summary
+      </b>
+       (2021-Aug-19):
+    </p>
+    <span
+      style="color: red;"
     >
-      <span
-        style="color: red;"
-      >
-        Not provided!
-      </span>
-    </div>
+      Not provided!
+    </span>
   </div>
   <h4>
     Emails

@@ -16,12 +16,12 @@ const ReminderModal = (props) => {
       <ModalHeader>Reminder</ModalHeader>
       <ModalBody>{props.reminder.remind}</ModalBody>
       <ModalFooter>
-        <Button onClick={() => props.setVisible(false)} color="primary">
-          Close
+        <Button onClick={() => props.setVisible(false)} color="danger">
+          Continue
         </Button>
         {props.edit &&
           (props.data.hours !== props.inputs.hours || props.data.minutes !== props.inputs.minutes) && (
-            <Button onClick={props.cancelChange} color="secondary">
+            <Button onClick={props.cancelChange} color="primary">
               Cancel
             </Button>
           )}

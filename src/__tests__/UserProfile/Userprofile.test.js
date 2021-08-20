@@ -119,8 +119,8 @@ describe('User profile page', () => {
     it('should fire toggleTab to Projects tab when the user clicks on the Projects tab link', async () =>{
       userEvent.click(screen.getAllByText(/projects/i)[0]);
     });
-    it('should fire toggleTab to More Tabs tab when the user clicks on the More Tabs tab link', async () =>{
-      userEvent.click(screen.getByText(/more tabs/i));
+    it('should fire toggleTab to Edit History tab when the user clicks on the Edit History tab link', async () =>{
+      userEvent.click(screen.getByTestId('edit-history-tab'));
     });
     it('should change value while user typing in first name field', async () => {
       const firstName = screen.getByPlaceholderText(/first name/i);
