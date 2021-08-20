@@ -36,8 +36,11 @@ import Badges from './Badges'
 import TimeEntryEditHistory from './TimeEntryEditHistory.jsx';
 
 import axios from 'axios'
+import { getUserProfile } from 'actions/userProfile'
+import { useDispatch } from 'react-redux'
 
 const UserProfile = props => {
+
   const initialHoursByCategory = {
     housing: 0,
     food: 0,
@@ -67,19 +70,35 @@ const UserProfile = props => {
   const [type, setType] = useState('')
   const [showModal, setShowModal] = useState(false)
   const [modalTitle, setModalTitle] = useState('')
-  const [modalMessage, setModalMessgae] = useState('')
+  const [modalMessage, setModalMessage] = useState('')
   const [hoursByCategory, setHoursByCategory] = useState(initialHoursByCategory)
+  const [shouldRefresh, setShouldRefresh] = useState(false);
+
+  const dispatch = useDispatch();
 
   useEffect(() => {
     componentDidMount()
     calculateHoursByCategory()
   }, [])
 
+  // The following useEffect callback is a convoluted workaround that's required given
+  // how the userProfile object is stored inside the global store. Sometimes, the global userProfile object
+  // doesn't match the user profile currently being viewed for some reason, meaning that when it's
+  // passed down as a prop, it doesn't always match. 
+
+  // Another factor making this necessary is that some changes to the
+  // user profile object are not submitted immediately and are instead stored
+  // in memory before finally being submittied. This means that the userProfile hook
+  // Can't simply be replaced with props.userProfile as changes would be erased before
+  // they could be submitted.
+
+  //Because of this, we only use setUserProfile when the ID is different or when shouldRefresh is true. 
   useEffect(() => {
-    if (props.userProfile._id !== userProfile._id) {
+    if (props.userProfile._id !== userProfile._id || shouldRefresh === true) {
       setUserProfile(props.userProfile)
+      setShouldRefresh(false);
     }
-  }, [props.userProfile])
+  }, [props.userProfile, shouldRefresh])
 
   useEffect(() => {
     if (blueSquareChanged) {
@@ -200,7 +219,7 @@ const UserProfile = props => {
       setIsValid(false)
       setShowModal(true)
       setModalTitle('Profile Pic Error')
-      setModalMessgae(errorMessage)
+      setModalMessage(errorMessage)
 
       return
     }
@@ -214,20 +233,18 @@ const UserProfile = props => {
   }
 
   const handleBlueSquare = (status = true, type = 'message', blueSquareID = '') => {
+
     setType(type)
     setShowModal(status)
 
     if (type === 'addBlueSquare') {
       setModalTitle('Blue Square')
-    } else if (type === 'modBlueSquare') {
-      setModalTitle('Blue Square')
-      setId(blueSquareID)
-    } else if (type === 'viewBlueSquare') {
+    } else if (type === 'viewBlueSquare' || type === 'modBlueSquare') {
       setModalTitle('Blue Square')
       setId(blueSquareID)
     } else if (blueSquareID === 'none') {
       setModalTitle('Save & Refresh')
-      setModalMessgae('')
+      setModalMessage('')
     }
   }
 
@@ -239,6 +256,7 @@ const UserProfile = props => {
    * @param {String} operation 'add' | 'update' | 'delete'
    */
   const modifyBlueSquares = (id, dateStamp, summary, operation) => {
+
     if (operation === 'add') {
       const newBlueSquare = { date: dateStamp, description: summary }
       setShowModal(false)
@@ -246,6 +264,7 @@ const UserProfile = props => {
         ...userProfile,
         infringments: userProfile.infringments.concat(newBlueSquare),
       })
+      setModalTitle('Blue Square')
     } else if (operation === 'update') {
       const currentBlueSquares = [...userProfile.infringments]
       if (dateStamp != null) {
@@ -273,10 +292,12 @@ const UserProfile = props => {
     const { updateUserProfile, match } = props
     try {
       await updateUserProfile(match.params.userId, userProfile)
+      await getUserProfile(match.params.userId)(dispatch)
       setShowSaveWarning(false)
     } catch (err) {
       alert('An error occurred while attempting to save this profile.')
     }
+    setShouldRefresh(true);
   }
 
   const toggleInfoModal = () => {
