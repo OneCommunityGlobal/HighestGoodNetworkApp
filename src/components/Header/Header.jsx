@@ -1,10 +1,10 @@
-import React from 'react'
+import React from "react";
 // import { getUserProfile } from '../../actions/userProfile'
-import { getHeaderData } from '../../actions/authActions'
-import { getTimerData } from '../../actions/timer'
-import { Link } from 'react-router-dom'
-import { connect } from 'react-redux'
-import Timer from '../Timer/Timer'
+import { getHeaderData } from "../../actions/authActions";
+import { getTimerData } from "../../actions/timer";
+import { Link } from "react-router-dom";
+import { connect } from "react-redux";
+import Timer from "../Timer/Timer";
 import {
   LOGO,
   DASHBOARD,
@@ -21,7 +21,7 @@ import {
   UPDATE_PASSWORD,
   LOGOUT,
   POPUP_MANAGEMENT
-} from '../../languages/en/ui'
+} from "../../languages/en/ui";
 import {
   Collapse,
   Navbar,
@@ -33,9 +33,10 @@ import {
   UncontrolledDropdown,
   DropdownToggle,
   DropdownMenu,
-  DropdownItem,
-} from 'reactstrap'
-import { UserRole } from '../../utils/enums'
+  DropdownItem
+} from "reactstrap";
+import { UserRole } from "../../utils/enums";
+import "./Header.css";
 
 export class Header extends React.Component {
   constructor(props) {
@@ -43,22 +44,21 @@ export class Header extends React.Component {
     this.toggle = this.toggle.bind(this);
     this.state = {
       isOpen: false
-    }
+    };
   }
 
   componentDidMount() {
     if (this.props.auth.isAuthenticated) {
       // this.props.getUserProfile(this.props.auth.user.userid)
-      this.props.getHeaderData(this.props.auth.user.userid)
-      this.props.getTimerData(this.props.auth.user.userid)
+      this.props.getHeaderData(this.props.auth.user.userid);
+      this.props.getTimerData(this.props.auth.user.userid);
     }
   }
-
   componentDidUpdate(prevProps) {
     if (!prevProps.auth.isAuthenticated && this.props.auth.isAuthenticated) {
       // this.props.getUserProfile(this.props.auth.user.userid)
-      this.props.getHeaderData(this.props.auth.user.userid)
-      this.props.getTimerData(this.props.auth.user.userid)
+      this.props.getHeaderData(this.props.auth.user.userid);
+      this.props.getTimerData(this.props.auth.user.userid);
     }
   }
   toggle() {
@@ -68,11 +68,10 @@ export class Header extends React.Component {
   }
 
   render() {
-
-    const { isAuthenticated, user, firstName, profilePic } = this.props.auth
+    const { isAuthenticated, user, firstName, profilePic } = this.props.auth;
     return (
       <div>
-        <Navbar color="dark" dark expand="lg" style={{ marginBottom: '20px' }}>
+        <Navbar className="py-3 mb-3" color="dark" dark expand="lg">
           {/**
            * <NavbarBrand tag={Link} to="/" className="d-none d-md-block">
             {LOGO}
@@ -83,7 +82,6 @@ export class Header extends React.Component {
           {isAuthenticated && (
             <Collapse isOpen={this.state.isOpen} navbar>
               <Nav className="ml-auto" navbar>
- 
                 <NavItem>
                   <NavLink tag={Link} to="/dashboard">
                     {DASHBOARD}
@@ -103,14 +101,14 @@ export class Header extends React.Component {
                       {REPORTS}
                     </DropdownItem>
                     {user.role === UserRole.Administrator ||
-                      user.role === UserRole.Manager ||
-                      user.role === UserRole.CoreTeam ? (
-                        <DropdownItem tag={Link} to="/weeklysummariesreport">
-                          {WEEKLY_SUMMARIES_REPORT}
-                        </DropdownItem>
-                      ) : (
-                        <React.Fragment></React.Fragment>
-                      )}
+                    user.role === UserRole.Manager ||
+                    user.role === UserRole.CoreTeam ? (
+                      <DropdownItem tag={Link} to="/weeklysummariesreport">
+                        {WEEKLY_SUMMARIES_REPORT}
+                      </DropdownItem>
+                    ) : (
+                      <React.Fragment></React.Fragment>
+                    )}
                   </DropdownMenu>
                 </UncontrolledDropdown>
                 <NavItem>
@@ -133,34 +131,36 @@ export class Header extends React.Component {
                         {USER_MANAGEMENT}
                       </DropdownItem>
                     ) : (
-                        <React.Fragment></React.Fragment>
-                      )}
+                      <React.Fragment></React.Fragment>
+                    )}
                     {user.role === UserRole.Administrator ? (
-                      <DropdownItem tag={Link} to="/badgemanagement" >
+                      <DropdownItem tag={Link} to="/badgemanagement">
                         {BADGE_MANAGEMENT}
                       </DropdownItem>
                     ) : (
-                        <React.Fragment></React.Fragment>
-                      )}
+                      <React.Fragment></React.Fragment>
+                    )}
                     <DropdownItem tag={Link} to="/projects">
                       {PROJECTS}
                     </DropdownItem>
-                    <DropdownItem tag={Link} to='/teams'>
+                    <DropdownItem tag={Link} to="/teams">
                       {TEAMS}
                     </DropdownItem>
-                    {(user.role === UserRole.Administrator) ?
+                    {user.role === UserRole.Administrator ? (
                       <>
                         <DropdownItem divider />
                         <DropdownItem tag={Link} to={`/admin/`}>
                           {POPUP_MANAGEMENT}
                         </DropdownItem>
-                      </> : null}
+                      </>
+                    ) : null}
                   </DropdownMenu>
                 </UncontrolledDropdown>
                 <NavItem>
                   <NavLink tag={Link} to={`/userprofile/${user.userid}`}>
                     <img
-                      src={`${profilePic || 'https://www.pngfind.com/pngs/m/676-6764065_default-profile-picture-transparent-hd-png-download.png'}`}
+                      src={`${profilePic ||
+                        "https://www.pngfind.com/pngs/m/676-6764065_default-profile-picture-transparent-hd-png-download.png"}`}
                       alt=""
                       height="35"
                       width="40"
@@ -174,12 +174,14 @@ export class Header extends React.Component {
                   </DropdownToggle>
                   <DropdownMenu>
                     <DropdownItem header>Hello {firstName}</DropdownItem>
-
                     <DropdownItem divider />
                     <DropdownItem tag={Link} to={`/userprofile/${user.userid}`}>
                       {VIEW_PROFILE}
                     </DropdownItem>
-                    <DropdownItem tag={Link} to={`/updatepassword/${user.userid}`}>
+                    <DropdownItem
+                      tag={Link}
+                      to={`/updatepassword/${user.userid}`}
+                    >
                       {UPDATE_PASSWORD}
                     </DropdownItem>
                     <DropdownItem divider />
@@ -192,17 +194,15 @@ export class Header extends React.Component {
             </Collapse>
           )}
         </Navbar>
-      </div >
-    )
+      </div>
+    );
   }
 }
-
 const mapStateToProps = state => ({
   auth: state.auth,
-  userProfile: state.userProfile,
-})
-
+  userProfile: state.userProfile
+});
 export default connect(mapStateToProps, {
   getHeaderData,
-  getTimerData,
-})(Header)
+  getTimerData
+})(Header);
