@@ -18,6 +18,7 @@ const GeneratePdfReport = ({ summaries, weekIndex, weekDates }) => {
     <div style="margin-bottom: 20px; color: orange;">From <b>${weekDates.fromDate}</b> to <b>${weekDates.toDate}</b></div>`;
     
     const weeklySummaryNotProvidedMessage = '<div><b>Weekly Summary:</b> <span style="color: red;">Not provided!</span></div>';
+    const weeklySummaryNotRequiredMessage = '<div><b>Weekly Summary:</b> <span style="color: magenta;">Not required for this user</span></div>';
 
     summaries.sort((a, b) => (`${a.firstName} ${a.lastName}`).localeCompare(`${b.firstName} ${b.lastname}`));
 
@@ -27,19 +28,21 @@ const GeneratePdfReport = ({ summaries, weekIndex, weekDates }) => {
         emails.push(eachSummary.email);
       }
 
-      const {
-        firstName, lastName, weeklySummaries,
-        mediaUrl, weeklySummariesCount, weeklyComittedHours
-      } = eachSummary;
+      const { firstName, lastName, weeklySummaries, mediaUrl, weeklySummariesCount, weeklyComittedHours } = eachSummary;
   
       const mediaUrlLink = mediaUrl ? `<a href=${mediaUrl}>Open link to media files</a>` : '<span style="color: red;">Not provided!</span>';
+
       const totalValidWeeklySummaries = weeklySummariesCount || 'No valid submissions yet!';
+
       let weeklySummaryMessage = weeklySummaryNotProvidedMessage;
-      if (Array.isArray(weeklySummaries) && weeklySummaries.length && weeklySummaries[weekIndex]) {
+
+      if (Array.isArray(weeklySummaries) && weeklySummaries[weekIndex]) {
         const { dueDate, summary } = weeklySummaries[weekIndex];
         if (summary) {
           weeklySummaryMessage = `<div><b>Weekly Summary</b> (for the week ending on <b>${moment(dueDate).tz('America/Los_Angeles').format('YYYY-MMM-DD')}</b>):</div>
                                   <div data-pdfmake="{&quot;margin&quot;:[20,0,20,0]}">${summary}</div>`;
+        } else if (eachSummary.weeklySummaryNotReq === true) {
+          weeklySummaryMessage = weeklySummaryNotRequiredMessage;
         }
       }
   

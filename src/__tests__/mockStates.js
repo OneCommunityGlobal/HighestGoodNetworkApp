@@ -437,6 +437,7 @@ export const timerMock = {
   seconds: 0,
 };
 export const userProfileMock = {
+  timeEntryEditHistory: [],
   isActive: true,
   totalTangibleHrs: 15,
   phoneNumber: [

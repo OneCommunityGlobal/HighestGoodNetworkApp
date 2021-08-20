@@ -42,9 +42,6 @@ const TimeEntry = ({ data, displayYear, userProfile }) => {
               <h4>{dateOfWork.format('MMM D')}</h4>
               {displayYear && <h5>{dateOfWork.format('YYYY')}</h5>}
               <h5 className="text-info">{dateOfWork.format('dddd')}</h5>
-              {/* {data.editCount > 5 && (
-                <FontAwesomeIcon icon={faSquare} className="mr-1 text-primary" />
-              )} */}
             </div>
           </div>
         </Col>
@@ -61,10 +58,7 @@ const TimeEntry = ({ data, displayYear, userProfile }) => {
           <div className="text-muted">Notes:</div>
           {ReactHtmlParser(data.notes)}
           <div className="buttons">
-            {/**{(isAdmin || (isOwner && isSameDay)) && ( */}
-            {/** Change to commented code once back-end automatically issues
-             * blue squares for too many edits and once we're out of the beta environment*/}
-            {(isAdmin || (!data.isTangible && isOwner && isSameDay)) && (
+            {(isAdmin || (isOwner && isSameDay)) && (
               <span>
                 <FontAwesomeIcon
                   icon={faEdit}
