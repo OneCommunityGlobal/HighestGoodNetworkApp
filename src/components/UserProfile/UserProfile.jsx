@@ -374,6 +374,11 @@ const UserProfile = props => {
           collaborationPreference: event.target.value,
         })
         break
+      case 'weeklySummaryNotReqd':
+        setUserProfile({
+          ...userProfile,
+          weeklySummaryNotReq: !userProfile.weeklySummaryNotReq
+        });
     }
   }
 
