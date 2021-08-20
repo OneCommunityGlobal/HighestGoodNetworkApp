@@ -133,8 +133,8 @@ describe('user profile page', () => {
     it('should fire toggleTab to Projects tab when the user clicks on the Projects tab link', async () =>{
       userEvent.click(screen.getAllByText(/projects/i)[0]);
     });
-    it('should fire toggleTab to More Tabs tab when the user clicks on the More Tabs tab link', async () =>{
-      userEvent.click(screen.getByText(/more tabs/i));
+    it('should fire toggleTab to Edit History Tabs tab when the user clicks on the Edit History tab link', async () =>{
+      userEvent.click(screen.getByTestId('edit-history-tab'));
     });
     it("should trigger addBlueSquare when admin click on + button", async () => {
       userEvent.click(screen.getByText('+'));

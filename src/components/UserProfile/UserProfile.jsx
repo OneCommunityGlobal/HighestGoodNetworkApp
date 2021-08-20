@@ -33,6 +33,7 @@ import BasicToolTips from './ToolTips/BasicTabTips'
 import ResetPasswordButton from '../UserManagement/ResetPasswordButton'
 import PauseAndResumeButton from '../UserManagement/PauseAndResumeButton'
 import Badges from './Badges'
+import TimeEntryEditHistory from './TimeEntryEditHistory.jsx';
 
 import axios from 'axios'
 
@@ -550,11 +551,13 @@ const UserProfile = props => {
                 <NavItem>
                   <NavLink
                     className={classnames({ active: activeTab === '5' }, 'nav-link')}
-                    onClick={() => {
+                    onClick={(e) => {
+                      e.preventDefault();
                       toggleTab('5')
                     }}
+                    data-testid="edit-history-tab"
                   >
-                    More Tabs
+                    Edit History
                   </NavLink>
                 </NavItem>
               </Nav>
@@ -602,6 +605,15 @@ const UserProfile = props => {
                   onDeleteProject={onDeleteProject}
                   isUserAdmin={isUserAdmin}
                   edit={isUserAdmin}
+                />
+              </TabPane>
+              <TabPane tabId="5">
+                <TimeEntryEditHistory
+                userProfile={userProfile}
+                isAdmin={isUserAdmin}
+                updateUserProfile={props.updateUserProfile}
+                getUserProfile={props.getUserProfile}
+                setUserProfile={setUserProfile}
                 />
               </TabPane>
             </TabContent>
