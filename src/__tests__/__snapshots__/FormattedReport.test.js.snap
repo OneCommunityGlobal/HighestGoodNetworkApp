@@ -39,6 +39,12 @@ exports[`FormattedReport Component Snapshot with mocked data 1`] = `
     </p>
     <p>
       <b>
+        Hours submitted:
+      </b>
+       0.00
+    </p>
+    <p>
+      <b>
         Weekly Summary
       </b>
        (2020-Jun-27):
@@ -72,6 +78,12 @@ exports[`FormattedReport Component Snapshot with mocked data 1`] = `
         Committed weekly hours:
       </b>
        
+    </p>
+    <p>
+      <b>
+        Hours submitted:
+      </b>
+       0.00
     </p>
     <p>
       <b>
@@ -115,9 +127,15 @@ exports[`FormattedReport Component Snapshot with mocked data 1`] = `
     </p>
     <p>
       <b>
+        Hours submitted:
+      </b>
+       0.00
+    </p>
+    <p>
+      <b>
         Weekly Summary
       </b>
-       (2021-Aug-19):
+       (2021-Aug-20):
     </p>
     <span
       style="color: red;"

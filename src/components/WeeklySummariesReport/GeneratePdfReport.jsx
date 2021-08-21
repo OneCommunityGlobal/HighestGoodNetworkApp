@@ -24,11 +24,13 @@ const GeneratePdfReport = ({ summaries, weekIndex, weekDates }) => {
 
     summaries.forEach((eachSummary) => {
 
+      const { firstName, lastName, weeklySummaries, mediaUrl, weeklySummariesCount, weeklyComittedHours, totalSeconds } = eachSummary;
+
+      const hoursLogged = totalSeconds / 3600;
+
       if(eachSummary.email !== undefined && eachSummary.email !== null) {
         emails.push(eachSummary.email);
       }
-
-      const { firstName, lastName, weeklySummaries, mediaUrl, weeklySummariesCount, weeklyComittedHours } = eachSummary;
   
       const mediaUrlLink = mediaUrl ? `<a href=${mediaUrl}>Open link to media files</a>` : '<span style="color: red;">Not provided!</span>';
 
@@ -50,7 +52,12 @@ const GeneratePdfReport = ({ summaries, weekIndex, weekDates }) => {
       <div><b>Name:</b> <span class="name">${firstName} ${lastName}</span></div>
       <div><b>Media URL:</b> ${mediaUrlLink}</div>
       <div style="${totalValidWeeklySummaries === 8 ? 'text-decoration: underline; color: red;' : ''}"><b>Total valid weekly summaries:</b> ${totalValidWeeklySummaries}</div>
-      <div><b>Committed weekly hours:</b> ${weeklyComittedHours}</div>
+      ${
+        hoursLogged >= weeklyComittedHours ? 
+        `<div><b>Hours logged:</b> ${hoursLogged} / ${weeklyComittedHours} </div>`
+        :
+        `<div style="color: red;"><b>Hours logged:</b> ${hoursLogged} / ${weeklyComittedHours}</div>`
+      }
       ${weeklySummaryMessage}
       <div style="color:#DEE2E6; margin:10px 0px 20px 0px; text-align:center;">_______________________________________________________________________________________________</div>`;
     });
