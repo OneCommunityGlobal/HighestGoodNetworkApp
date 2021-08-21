@@ -33,18 +33,6 @@ exports[`FormattedReport Component Snapshot with mocked data 1`] = `
     </p>
     <p>
       <b>
-        Committed weekly hours:
-      </b>
-       
-    </p>
-    <p>
-      <b>
-        Hours submitted:
-      </b>
-       0.00
-    </p>
-    <p>
-      <b>
         Weekly Summary
       </b>
        (2020-Jun-27):
@@ -72,18 +60,6 @@ exports[`FormattedReport Component Snapshot with mocked data 1`] = `
         Total Valid Weekly Summaries:
       </b>
        1
-    </p>
-    <p>
-      <b>
-        Committed weekly hours:
-      </b>
-       
-    </p>
-    <p>
-      <b>
-        Hours submitted:
-      </b>
-       0.00
     </p>
     <p>
       <b>
@@ -118,18 +94,6 @@ exports[`FormattedReport Component Snapshot with mocked data 1`] = `
         Total Valid Weekly Summaries:
       </b>
        No valid submissions yet!
-    </p>
-    <p>
-      <b>
-        Committed weekly hours:
-      </b>
-       
-    </p>
-    <p>
-      <b>
-        Hours submitted:
-      </b>
-       0.00
     </p>
     <p>
       <b>
