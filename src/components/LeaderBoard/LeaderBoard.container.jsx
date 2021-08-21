@@ -34,7 +34,7 @@ const mapStateToProps = state => {
 
   orgData.name = `HGN Totals: ${leaderBoardData.length} Members`
   orgData.tangibletime = _.round(orgData.totaltangibletime_hrs, 2)
-  orgData.totaltime = _.round(orgData.totaltangibletime_hrs, 2)
+  orgData.totaltime = _.round(orgData.totaltime_hrs, 2)
   orgData.intangibletime = _.round(orgData.totalintangibletime_hrs, 2)
   orgData.weeklyComittedHours = _.round(orgData.totalWeeklyComittedHours, 2)
   
