@@ -1,10 +1,11 @@
 import React , { Component }from 'react';
 import '../Teams/Team.css';
 import { connect } from 'react-redux'
-import { Dropdown, DropdownButton } from 'react-bootstrap'
+import { Dropdown, DropdownButton, ToggleButton, ToggleButtonGroup } from 'react-bootstrap'
 import { fetchAllTasks } from '../../actions/task'
 import "react-datepicker/dist/react-datepicker.css";
 import TasksDetail from './TasksDetail'
+
 
 class TasksTable extends Component{
   constructor(props) {
@@ -20,7 +21,11 @@ class TasksTable extends Component{
       isAssigned:"",
       allClassification:[],
       classification:'',
-      users:""
+      users:"",
+      userList:[],
+      classificationList:[],
+      priorityList:[],
+      statusList:[],
     }
 
     this.get_task_by_wbsId=this.get_task_by_wbsId.bind(this)
@@ -83,18 +88,46 @@ class TasksTable extends Component{
     });
   }
   setPriority(priorityValue) {
-    this.setState((state) => {
-      return {
-        priority:priorityValue
-      }
-    });
+    if (priorityValue!='Filter Off') {
+      this.setState((state) => {
+        return {
+          priority: priorityValue,
+          priorityList: this.state.priorityList.concat(priorityValue)
+
+        }
+      });
+    }
+    else{
+      this.setState((state) => {
+        return {
+          priority: priorityValue,
+          priorityList: []
+        }
+      });
+
+    }
+
   }
   setStatus(statusValue) {
-    this.setState((state) => {
-      return {
-        status:statusValue
-      }
-    });
+    if (statusValue!='Filter Off') {
+      this.setState((state) => {
+        return {
+          status: statusValue,
+          statusList: this.state.statusList.concat(statusValue)
+
+        }
+      });
+    }
+    else{
+      this.setState((state) => {
+        return {
+          status: statusValue,
+          statusList: []
+        }
+      });
+
+    }
+
   }
   setAssign(assignValue) {
     this.setState((state) => {
@@ -105,19 +138,46 @@ class TasksTable extends Component{
   }
 
   setClassfication(classificationValue) {
-    this.setState((state) => {
-      return {
-        classification:classificationValue
-      }
-    });
+    if (classificationValue!='Filter Off') {
+      this.setState((state) => {
+        return {
+          classification: classificationValue,
+          classificationList: this.state.classificationList.concat(classificationValue)
+
+        }
+      });
+    }
+    else{
+      this.setState((state) => {
+        return {
+          classification: classificationValue,
+          classificationList: []
+        }
+      });
+
+    }
   }
 
   setUsers(userValue) {
-    this.setState((state) => {
-      return {
-        users:userValue
-      }
-    });
+    if (userValue!='Filter Off') {
+      this.setState((state) => {
+        return {
+          users: userValue,
+          userList: this.state.userList.concat(userValue)
+
+        }
+      });
+    }
+    else{
+      this.setState((state) => {
+        return {
+          users: userValue,
+          userList: []
+        }
+      });
+
+    }
+
   }
 
 
@@ -128,7 +188,11 @@ class TasksTable extends Component{
       priority,
       status,
       classification,
-      users
+      users,
+      classificationList,
+      priorityList,
+      statusList,
+      userList
     } = this.state
 
 
@@ -139,9 +203,7 @@ class TasksTable extends Component{
       return (
         <DropdownButton style={{margin:'3px'}} exact id="dropdown-basic-button" title="Priority">
           {allPriorities.map((c, index) => (
-
             <Dropdown.Item onClick={()=>this.setPriority(c)}>{c}</Dropdown.Item>
-
           ))}
         </DropdownButton>
       )
@@ -216,13 +278,15 @@ class TasksTable extends Component{
     };
 
     return(
-      <tbody>
+      <div className='container'>
+        <table>
+
       <div>
         <button style={{margin:'3px'}} exact className="btn btn-secondary btn-bg mt-3" onClick={()=>this.setFilter()}>Filter Off</button>
         <UserOptions get_tasks={ get_tasks}/>
         <ClassificationOptions get_tasks={get_tasks}/>
-<PriorityOptions get_tasks={get_tasks}/>
-<StatusOptions get_tasks={get_tasks}/>
+        <PriorityOptions get_tasks={get_tasks}/>
+        <StatusOptions get_tasks={get_tasks}/>
         <input name='radio' type="radio" style={{margin:'5px'}} value="active" onChange={()=>this.setActive(true)}  />
         Active
         <input name='radio' type="radio" style={{margin:'5px'}} value="inactive" onChange={()=>this.setActive(false) } />
@@ -230,22 +294,80 @@ class TasksTable extends Component{
         <AssignmentOptions get_tasks={get_tasks}/>
         <button style={{margin:'3px'}} exact className="btn btn-secondary btn-bg mt-3">Estimated Hours</button>
       </div>
-      <h2>Selected filters</h2>
-      <div>isAssigned:{isAssigned}</div>
-      <div>isActive:{isActive.toString()}</div>
-      <div>priority:{priority}</div>
-      <div>status:{status}</div>
-      <div>classification:{classification}</div>
+
+      <div>Selected filters:</div>
+      <div className="row">
+
+        <div className="block">Assignment:
+          <ToggleButtonGroup type="checkbox" variant="info">
+            {isAssigned ?
+              <ToggleButton variant="info">Assign</ToggleButton>
+              :
+              <ToggleButton variant="info">Not Assign</ToggleButton>
+            }
+
+          </ToggleButtonGroup>
+        </div>
+
+      <div className="block">Active:
+        <ToggleButtonGroup type="checkbox" variant="info">
+          {isActive ?
+            <ToggleButton variant="info">Active</ToggleButton>
+            :
+            <ToggleButton variant="info">InActive</ToggleButton>
+          }
+        </ToggleButtonGroup>
+      </div>
+
+      <div className="block">Priority:
+        <ToggleButtonGroup type="checkbox" variant="info">
+          {priorityList.map((c, index) => (
+            <ToggleButton variant="info">{c}</ToggleButton>
+          ))}
+        </ToggleButtonGroup>
+      </div>
+
+
+      <div className="block">Status:
+        <ToggleButtonGroup type="checkbox" variant="info">
+          {statusList.map((c, index) => (
+            <ToggleButton variant="info">{c}</ToggleButton>
+          ))}
+        </ToggleButtonGroup>
+      </div>
+
+
+      <div className="block">Classification:
+        <ToggleButtonGroup type="checkbox" variant="info">
+          {classificationList.map((c, index) => (
+            <ToggleButton variant="info">{c}</ToggleButton>
+          ))}
+        </ToggleButtonGroup>
+      </div>
+
+      <div className="block">User:
+        <ToggleButtonGroup type="checkbox" variant="info">
+          <ToggleButton variant="info">{users}</ToggleButton>
+        </ToggleButtonGroup>
+      </div>
+
+      </div>
       <TasksDetail
         tasks_filter={get_tasks}
         isAssigned={isAssigned}
         isActive={isActive}
         priority={priority}
         status={status}
+
         classification={classification}
         users={users}
+      classificationList={classificationList}
+      priorityList={priorityList}
+        statusList={statusList}
+        userList={userList}
       />
-      </tbody>
+          </table>
+    </div>
     )
   }
 
@@ -259,7 +381,11 @@ const mapStateToProps = state => ({
   priority:state.priority,
   status:state.status,
   classification:state.classification,
-  users:state.users
+  users:state.users,
+  classificationList:state.classificationList,
+  priorityList:state.priorityList,
+  statusList:state.statusList,
+  userList:state.userList
 
 });
 

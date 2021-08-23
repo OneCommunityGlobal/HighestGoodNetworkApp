@@ -1,6 +1,6 @@
 import './reports.css'
 import React, { useState } from "react";
-import { Button, Dropdown, DropdownButton } from 'react-bootstrap'
+import { Button,  Dropdown, DropdownButton } from 'react-bootstrap'
 import EditTaskModal from "./../Projects/WBS/WBSDetail/EditTask/EditTaskModal";
 import "react-table/react-table.css";
 import Collapse from 'react-bootstrap/Collapse'
@@ -9,11 +9,13 @@ const ShowCollapse = props => {
   const [open, setOpen] = useState(false);
 return(
   <div>
+
   <Button
     onClick={() => setOpen(!open)}
     aria-expanded={open}>
-
+    {props.resources.length}     ➤
   </Button>
+
     <div>
       {props.resources[0].name}
       </div>
@@ -42,42 +44,93 @@ const  TasksDetail = (props) => {
       tasks = tasks.filter(item => item.isAssigned === props.isAssigned);
     }
 
-    if (!(props.priority === "")) {
-      tasks=tasks.filter(item => item.priority == props.priority)
-    }
     if(props.priority ==="No filter"){
       tasks=props.tasks_filter.filter(item => item.isActive === props.isActive)
     }
     if(props.status ==="No filter"){
       tasks=props.tasks_filter.filter(item => item.isActive === props.isActive)
     }
-    if(props.classification ==="No filter"){
-      tasks=props.tasks_filter.filter(item => item.isActive === props.isActive)
-    }
-    if(props.users ==="No filter"){
-      tasks=props.tasks_filter.filter(item => item.isActive === props.isActive)
-    }
-    if(props.isAssigned ==="No filter"){
-      tasks=props.tasks_filter.filter(item => item.isActive === props.isActive)
-    }
-    if(props.users ==="No filter"){
-      tasks=props.tasks_filter.filter(item => item.isActive === props.isActive)
+
+    if (props.priorityList.length>0){
+      var i=0
+      var get_tasks=[]
+      while( i< props.priorityList.length) {
+        if (props.priorityList[i] !='Filter Off') {
+          for (var j = 0; j < tasks.length; j++) {
+            if (tasks[j].priority === props.priorityList[i]) {
+              get_tasks.push(tasks[j])
+            }
+          }
+          i += 1
+        }
+        else{
+          get_tasks=props.tasks_filter
+          break
+        }
+      }
+      tasks=get_tasks
     }
 
-    if (!(props.status === "")) {
-      tasks = tasks.filter(item => item.status == props.status)
+    if (props.classificationList.length>0){
+      var i=0
+      var get_tasks=[]
+      while( i< props.classificationList.length) {
+        if (props.classificationList[i] !='Filter Off') {
+          for (var j = 0; j < tasks.length; j++) {
+            if (tasks[j].classification === props.classificationList[i]) {
+              get_tasks.push(tasks[j])
+            }
+          }
+          i += 1
+        }
+        else{
+          get_tasks=props.tasks_filter
+break
+        }
+      }
+      tasks=get_tasks
     }
-    if  (!(props.classification === "")) {
-      tasks=tasks.filter(item => item.classification === props.classification)
+    if (props.statusList.length>0){
+      var i=0
+      var get_tasks=[]
+      while( i< props.statusList.length) {
+        if (props.statusList[i] !='Filter Off') {
+          for (var j = 0; j < tasks.length; j++) {
+            if (tasks[j].status === props.statusList[i]) {
+              get_tasks.push(tasks[j])
+            }
+          }
+          i += 1
+        }
+        else{
+          get_tasks=props.tasks_filter
+          break
+        }
+      }
+      tasks=get_tasks
+    }
+
+      if(props.classification ==="Filter Off"){
+      tasks=props.tasks_filter.filter(item => item.isActive === props.isActive)
+    }
+    if(props.users ==="Filter Off"){
+      tasks=props.tasks_filter.filter(item => item.isActive === props.isActive)
+    }
+    if(props.isAssigned ==="Filter Off"){
+      tasks=props.tasks_filter.filter(item => item.isActive === props.isActive)
+    }
+    if(props.users ==="Filter Off"){
+      tasks=props.tasks_filter.filter(item => item.isActive === props.isActive)
     }
 
     if  (!(props.users === "")) {
+
       let test=[]
       for(var i = 0; i < tasks.length; i++) {
         for (var j=0;j< tasks[i].resources.length;j++){
-          if (tasks[i].resources[j].name===props.users){
-            test.push(tasks[i])
-          }
+            if (tasks[i].resources[j].name === props.users) {
+              test.push(tasks[i])
+            }
         }
       }
       tasks=test
@@ -131,8 +184,8 @@ const  TasksDetail = (props) => {
 
       <td className='projects__active--input'>
         {task.isAssigned ?
-          <div className="isActive">Assign</div> :
-          <div className="isNotActive">Not Assign</div>}
+          <div>Assign</div> :
+          <div>Not Assign</div>}
       </td>
       <td className='projects__active--input'>
         {task.classification}

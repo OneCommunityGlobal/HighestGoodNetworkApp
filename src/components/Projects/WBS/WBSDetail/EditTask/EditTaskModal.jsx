@@ -15,6 +15,7 @@ import { Editor } from '@tinymce/tinymce-react'
 import { UserRole } from './../../../../../utils/enums'
 
 const EditTaskModal = (props) => {
+
   const [role] = useState(props.auth ? props.auth.user.role : null);
 
   const tasks = props.tasks.taskItems;
@@ -22,6 +23,8 @@ const EditTaskModal = (props) => {
   let foundedMembers = [];
 
   const thisTask = tasks.filter(task => task._id === props.taskId)[0];
+
+
 
   // Date picker
   const FORMAT = 'MM/dd/yy'
