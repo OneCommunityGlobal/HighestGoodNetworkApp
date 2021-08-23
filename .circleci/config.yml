@@ -25,7 +25,7 @@ jobs:
           command: "sudo npm install"
       - run:
           name: Run react build
-          command: "sudo REACT_APP_APIENDPOINT=$APIENDPOINT_BETA SKIP_PREFLIGHT_CHECK=true npm run build && sudo mv build/index.html build/200.html"
+          command: "sudo REACT_APP_APIENDPOINT=$APIENDPOINT_BETA SKIP_PREFLIGHT_CHECK=true npm run build && sudo mv build/index.html build/200.html && sudo echo highestgood.com > build/CNAME"
       - run:
           name: Deploy app
           command: ./node_modules/.bin/surge build --domain $SURGE_DOMAIN_BETA
