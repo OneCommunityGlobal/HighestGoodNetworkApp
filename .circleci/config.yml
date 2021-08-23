@@ -58,7 +58,7 @@ workflows:
           filters:
             branches:
               only:
-                - development
+                - main
       - build_PROD:
           filters:
             branches:
