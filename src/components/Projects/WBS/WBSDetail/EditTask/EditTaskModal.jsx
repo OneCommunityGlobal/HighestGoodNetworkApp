@@ -15,7 +15,6 @@ import { Editor } from '@tinymce/tinymce-react'
 import { UserRole } from './../../../../../utils/enums'
 
 const EditTaskModal = (props) => {
-  console.log('EditTaskModal yueru')
 
   const [role] = useState(props.auth ? props.auth.user.role : null);
 

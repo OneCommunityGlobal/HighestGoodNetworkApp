@@ -103,18 +103,14 @@ class ProjectReport extends Component{
       <Container fluid className="bg--white py-3 mb-5">
       <div className='container'>
         <h3 className='projects__active--input'>
-
-        {/*<td >*/}
           {isActive ?
             <div className="isActive">
               <i className="fa fa-circle" aria-hidden="true"></i> <h3 className="mt-3 mb-5"></h3>
             </div> :
             <div className="isNotActive"><i className="fa fa-circle-o" aria-hidden="true"></i> <h3 className="mt-3 mb-5"> </h3></div>}
-        {/*</td>*/}
           {projectName}
         </h3>
 
-        {/*<i className="fa fa-circle" aria-hidden="true"></i>*/}
 
       <DropdownButton id="dropdown-basic-button" title="Time Frame">
         <Dropdown.Item href="#/action-1">Past Week</Dropdown.Item>
@@ -132,9 +128,6 @@ class ProjectReport extends Component{
         </div>
         }
       </div>
-        {/*<h2>Project Name:{projectName}</h2>*/}
-        {/*<h2>Project ID:{_id}</h2>*/}
-
         <WbsTable wbs={wbs}/>
         <ProjectMemberTable projectMembers={projectMembers}/>
       </div>

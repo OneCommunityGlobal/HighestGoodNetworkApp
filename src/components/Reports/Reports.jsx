@@ -9,7 +9,6 @@ import { getAllUserProfile } from '../../actions/userManagement';
 import { fetchAllTasks } from "../../actions/task";
 import moment from 'moment'
 import { Container } from 'reactstrap'
-import { CREATE_NEW_TEAM, SEARCH } from '../../languages/en/ui'
 import ReportTableSearchPanel from './ReportTableSearchPanel';
 
 
@@ -166,7 +165,6 @@ class ReportsPage extends Component {
       showProjects: !prevState.showProjects,
       showPeople: false,
       showTeams: false,
-      // showTasks: false
     }))
   }
 
@@ -253,63 +251,17 @@ class ReportsPage extends Component {
               />
 
 
-          {/*<button style={{margin:'5px'}} type="submit" className="btn btn-primary btn-bg mt-3">*/}
-          {/*  Submit*/}
-          {/*</button>*/}
+
             </div>
             </div>
         </div>
         {this.state.showPeople && <PeopleTable userProfiles={peopleSearchData}/>}
         {this.state.showProjects &&<ProjectTable projects={projectSearchData}/>}
         {this.state.showTeams &&<TeamTable allTeams={teamSearchData}/>}
-      {/*</div>*/}
         </Container>
 
     )
   }
-
-  // teamTableElements = (allTeams) => {
-  //   if (allTeams && allTeams.length > 0) {
-  //     const teamSearchData = this.filteredTeamList(allTeams);
-  //     /*
-  //     * Builiding the table body for teams returns
-  //      * the rows for currently selected page .
-  //      * Applying the Default sort in the order of created date as well
-  //      */
-  //     return teamSearchData.sort((a, b) => {
-  //       if (a.createdDatetime > b.createdDatetime) return -1;
-  //       if (a.createdDatetime < b.createdDatetime) return 1;
-  //       return 0;
-  //     }).map((team, index) => (
-  //       <TeamTable
-  //         key={team._id}
-  //         index={index}
-  //         name={team.teamName}
-  //         teamId={team._id}
-  //         active={team.isActive}
-  //         team={team}
-  //       />
-  //     ));
-  //   }
-  // }
-  // filteredTeamList = (allTeams) => {
-  //   const filteredList = allTeams.filter((team) => {
-  //     // Applying the search filters before creating each team table data element
-  //     if ((team.teamName
-  //       && team.teamName.toLowerCase().indexOf(this.state.teamNameSearchText.toLowerCase()) > -1
-  //       && this.state.wildCardSearchText === '')
-  //       // the wild card search, the search text can be match with any item
-  //       || (this.state.wildCardSearchText !== ''
-  //         && (team.teamName.toLowerCase().indexOf(this.state.wildCardSearchText.toLowerCase()) > -1
-  //         ))
-  //     ) {
-  //       return team;
-  //     }
-  //   });
-  //
-  //   return filteredList;
-  // }
-
 
 }
 //export default ReportsPage

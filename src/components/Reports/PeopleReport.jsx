@@ -9,13 +9,6 @@ import { getWeeklySummaries, updateWeeklySummaries } from '../../actions/weeklyS
 import moment from 'moment'
 import "react-input-range/lib/css/index.css"
 import Collapse from 'react-bootstrap/Collapse'
-import HeatMap from '@uiw/react-heat-map';
-import Tooltip from '@uiw/react-tooltip';
-// import Moment from 'react-moment';
-
-
-
-
 
 class PeopleReport extends Component {
   constructor(props) {
@@ -75,9 +68,6 @@ class PeopleReport extends Component {
           console.log(this.state.userProjects)
       )
     }
-
-    console.log('yueru test user profile here')
-    console.log(this.state.userProfile)
   }
 
   setActive(activeValue) {
@@ -188,7 +178,6 @@ class PeopleReport extends Component {
       isActive,
       priority,
       status,
-      hasFilter,
       allClassification,
       classification,
       classificationList,
@@ -274,29 +263,10 @@ class PeopleReport extends Component {
 
     const UserTask = (props) => {
       let userTaskList = []
-      // let tasksList=[]
       let tasks=[]
 
       tasks=props.userTask
       if (props.userTask.length > 0) {
-
-          // tasks = props.userTask.filter(item => item.isActive === props.isActive
-          //   && item.isAssigned === props.isAssigned);
-        // tasks=props.tasks_filter
-
-
-        // if (!(props.priority === "")) {
-          //   tasks=props.userTask.filter(item => item.priority == props.priority &&item.isActive === props.isActive
-          //     && item.isAssigned === props.isAssigned)
-          // }
-
-          // if  (!(props.status === "")) {
-          //   tasks=props.userTask.filter(item => item.status == props.status &&item.isActive === props.isActive
-          //     && item.isAssigned === props.isAssigned)
-          // }
-        // if  (!(props.classification === "")) {
-        //   tasks=tasks.filter(item => item.classification === props.classification)
-        // }
           if (!(props.isActive === "" )) {
             tasks = props.userTask.filter(item => item.isActive === props.isActive
             );
@@ -377,8 +347,7 @@ tasks=test
         }
 
 if (tasks.length>0) {
-  console.log('yueru tasks7777')
-  console.log(tasks)
+
   userTaskList = tasks.map((task, index) => (
     <tr id={"tr_" + task._id}>
       <th scope="row">
@@ -437,7 +406,6 @@ if (tasks.length>0) {
           <div className="row">
           <div class="block">Assignment:
             <ToggleButtonGroup type="checkbox" variant="info">
-              {/*<ToggleButton variant="info">{isAssigned}</ToggleButton>*/}
               {isAssigned ?
                 <ToggleButton variant="info">Assign</ToggleButton>
                 :
@@ -456,7 +424,7 @@ if (tasks.length>0) {
             </ToggleButtonGroup>
           </div>
 
-<div class="block">Priority:
+         <div class="block">Priority:
           <ToggleButtonGroup type="checkbox" variant="info">
             {priorityList.map((c, index) => (
               <ToggleButton variant="info">{c}</ToggleButton>
@@ -488,7 +456,7 @@ if (tasks.length>0) {
 
           <ShowTasksCollapse userTaskList={userTaskList}/>
 
-</div>
+        </div>
         </div>
       )
     }
@@ -496,7 +464,6 @@ if (tasks.length>0) {
       let userProjectList = []
       return (
         <div>
-          {/*<h1>User Task</h1>*/}
           { userProjectList }
         </div>
       )
@@ -585,40 +552,22 @@ if (tasks.length>0) {
       const value=[]
       const value1=[]
       const [selected, setSelected] = useState('')
-      console.log('props.infringment')
-      console.log(props.infringments)
-      console.log(props.infringments.length)
-
       for (var i = 0; i < props.infringments.length; i++) {
         if (props.infringments[i].date in dict){
           dict[props.infringments[i].date].count+=1
           dict[props.infringments[i].date].des.push(props.infringments[i].description)
-          // dict[props.infringments[i].date].des.push(props.infringments[i].description)
-
         }else{
           dict[props.infringments[i].date]={count:1,des:[props.infringments[i].description]}
-
-          console.log('55555')
-          // console.log(props.infringments[i])
-          // console.log(props.infringments[i].date)
-          // console.log(props.infringments[i].description)
-          // dict[props.infringments[i].date].(props.infringments[i].description)
-          // dict[props.infringments[i].date].des.push(props.infringments[i].description)
-
         }
       }
 
       for (var key in dict) {
-        // value.push({date:key.toString(),count:dict[key]['count'],description:dict[key]['des']})
         value.push({date:key.toString(),des:dict[key].des,count:dict[key].count})
-        // value.push({date:key.toString(),count:dict[key].count})
-
         value1.push({date:{date1:key.toString(),des:dict[key].des},count:dict[key]})
 
       }
 
-      console.log('yueru valueeeeee')
-      console.log(value)
+
       const startdate=Object.keys(dict)[0]
       var startdateStr=""
       if (startdate){
@@ -642,52 +591,14 @@ if (tasks.length>0) {
         <div>
         <h2>Blue Square: {infringments.length}</h2>
       <div>
-        {/*<HeatMap value={value}*/}
-        {/*         startDate={new Date(startdateStr)}*/}
-        {/*         width={600}*/}
-        {/*         rectSize={14}*/}
-        {/*         rectRender={(props, data) => {*/}
-        {/*           if (!data.count) return <rect {...props} />;*/}
-        {/*           return (*/}
-        {/*             // <Tooltip key={props.key} placement="top" content={data.date}>*/}
-
-        {/*             <Tooltip key={props.key} placement="top"  trigger="click" content={`Count: ${data.count || 0}, Date:${data.date},Description:${data.des}`}>*/}
-        {/*               /!*<div>herrrr</div>*!/*/}
-        {/*               /!*<Button type="primary">右边文字提示(right)</Button>*!/*/}
-        {/*               <rect {...props} />*/}
-        {/*             </Tooltip>*/}
-        {/*           );*/}
-        {/*         }}*/}
-        {/*/>*/}
-
       </div>
           <ShowInfringmentsCollapse BlueSquare={BlueSquare}/>
-
-        {/*<table className="center">*/}
-        {/*  <table className="table table-bordered table-responsive-sm">*/}
-        {/*    <thead>*/}
-        {/*    <tr>*/}
-        {/*      <th scope="col" id="projects__order">#</th>*/}
-        {/*      <th scope="col" id="projects__order">Date</th>*/}
-        {/*      <th scope="col">Description</th>*/}
-        {/*    </tr>*/}
-        {/*    </thead>*/}
-        {/*    <tbody>*/}
-        {/*    { BlueSquare }*/}
-        {/*    </tbody>*/}
-        {/*  </table>*/}
-        {/*</table>*/}
           </div>
       )
     }
     const StartDate = (props) => {
-      console.log('yueru check created date')
-      console.log(props.userProfile.createdDate)
-      // console.log((props.userProfile.createdDate).format('YYYY-MM-DD'))
         return (
             <div>Start Date:{moment(props.userProfile.createdDate).format('YYYY-MM-DD')}</div>
-
-      // <div><Moment format="DD/MM/YYYY">{props.userProfile.createdDate}</Moment></div>
     )
     };
 
@@ -739,7 +650,7 @@ if (tasks.length>0) {
             Assigned
             <input name='radio' type="radio" style={{margin:'5px'}} value="inactive" onChange={()=>this.setAssign(false) } />
             Not Assigned
-</div>
+            </div>
             <div>
             <input name='radio' type="radio" style={{margin:'5px'}} value="active" onChange={()=>this.setActive(true)}  />
             Active
@@ -750,26 +661,12 @@ if (tasks.length>0) {
             <div className="row">
 <div>
 
-  {/*<DropdownButton style={{margin:'3px'}} exact id="dropdown-basic-button" title="Priority" title="Time Frame">*/}
-  {/*  <Dropdown.Item href="#/action-1">Past Week</Dropdown.Item>*/}
-  {/*  <Dropdown.Item href="#/action-2">Past Two Weeks</Dropdown.Item>*/}
-  {/*  <Dropdown.Item href="#/action-3">Past Month</Dropdown.Item>*/}
-  {/*  <Dropdown.Item href="#/action-4">Past 6 Months</Dropdown.Item>*/}
-  {/*  <Dropdown.Item href="#/action-5">Past Year</Dropdown.Item>*/}
-  {/*  <Dropdown.Item href="#/action-6">Custom range</Dropdown.Item>*/}
-  {/*</DropdownButton>*/}
   </div>
               <div > <PriorityOptions get_tasks={userTask}/>
               </div>
               <div >
               <StatusOptions get_tasks={userTask}/>
               </div>
-              {/*<div className="block">*/}
-
-              {/*  <button style={{margin:'3px'}} exact className="btn btn-primary btn-bg mt-3" >Estimated Hours</button>*/}
-
-              {/*  /!*<button  exact className="btn btn-secondary btn-bg mt-3">Estimated Hours</button>*!/*/}
-              {/*</div>*/}
               <div >
                 <ClassificationOptions allClassification={allClassification}/>
               </div>
@@ -790,7 +687,6 @@ if (tasks.length>0) {
                       priorityList={priorityList}
                       statusList={statusList}
             />
-          {/*<h2>Projects</h2>*/}
           <UserProject userProjects={userProjects}/>
           <Infringments infringments={infringments}/>
 

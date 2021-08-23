@@ -7,7 +7,6 @@ import Collapse from 'react-bootstrap/Collapse'
 
 const ShowCollapse = props => {
   const [open, setOpen] = useState(false);
- // const [title, setTitle] = useState(false);
 return(
   <div>
 
@@ -45,9 +44,6 @@ const  TasksDetail = (props) => {
       tasks = tasks.filter(item => item.isAssigned === props.isAssigned);
     }
 
-    // if (!(props.priority === "")) {
-    //   tasks=tasks.filter(item => item.priority == props.priority)
-    // }
     if(props.priority ==="No filter"){
       tasks=props.tasks_filter.filter(item => item.isActive === props.isActive)
     }
@@ -127,26 +123,14 @@ break
       tasks=props.tasks_filter.filter(item => item.isActive === props.isActive)
     }
 
-    // if (!(props.status === "")) {
-    //   tasks = tasks.filter(item => item.status == props.status)
-    // }
-    // if  (!(props.classification === "")) {
-    //   tasks=tasks.filter(item => item.classification === props.classification)
-    // }
-
     if  (!(props.users === "")) {
-      console.log('props.users',props.users)
-        // console.log('props.userList',props.userList)
-      // let m=0
+
       let test=[]
       for(var i = 0; i < tasks.length; i++) {
         for (var j=0;j< tasks[i].resources.length;j++){
-          // while( m< props.statusList.length) {
             if (tasks[i].resources[j].name === props.users) {
               test.push(tasks[i])
             }
-          // }
-          // m+=1
         }
       }
       tasks=test

@@ -178,11 +178,6 @@ class TasksTable extends Component{
 
     }
 
-    // this.setState((state) => {
-    //   return {
-    //     users:userValue
-    //   }
-    // });
   }
 
 
@@ -202,21 +197,10 @@ class TasksTable extends Component{
 
 
     var get_tasks=this.get_task_by_wbsId()
-    console.log('yueru get_tasks',get_tasks)
-
-
     const PriorityOptions = props => {
       var allPriorities=[...Array.from(new Set(props.get_tasks.map((item) => item.priority))).sort()]
       allPriorities.unshift("Filter Off")
       return (
-
-        // <MultiSelect
-        //   options={allPriorities}
-        //   // value={selected}
-        //   // onChange={setSelected}
-        //   // labelledBy="Select"
-        // />
-
         <DropdownButton style={{margin:'3px'}} exact id="dropdown-basic-button" title="Priority">
           {allPriorities.map((c, index) => (
             <Dropdown.Item onClick={()=>this.setPriority(c)}>{c}</Dropdown.Item>
@@ -294,13 +278,15 @@ class TasksTable extends Component{
     };
 
     return(
-      <tbody>
+      <div className='container'>
+        <table>
+
       <div>
         <button style={{margin:'3px'}} exact className="btn btn-secondary btn-bg mt-3" onClick={()=>this.setFilter()}>Filter Off</button>
         <UserOptions get_tasks={ get_tasks}/>
         <ClassificationOptions get_tasks={get_tasks}/>
-<PriorityOptions get_tasks={get_tasks}/>
-<StatusOptions get_tasks={get_tasks}/>
+        <PriorityOptions get_tasks={get_tasks}/>
+        <StatusOptions get_tasks={get_tasks}/>
         <input name='radio' type="radio" style={{margin:'5px'}} value="active" onChange={()=>this.setActive(true)}  />
         Active
         <input name='radio' type="radio" style={{margin:'5px'}} value="inactive" onChange={()=>this.setActive(false) } />
@@ -308,21 +294,22 @@ class TasksTable extends Component{
         <AssignmentOptions get_tasks={get_tasks}/>
         <button style={{margin:'3px'}} exact className="btn btn-secondary btn-bg mt-3">Estimated Hours</button>
       </div>
-      <h2>Total: {get_tasks.length}</h2>
-      <h2>Selected filters</h2>
 
-      <h5>Assignment Options:
-        <ToggleButtonGroup type="checkbox" variant="info">
-          {/*<ToggleButton variant="info">{isAssigned}</ToggleButton>*/}
-          {isAssigned ?
-            <ToggleButton variant="info">Assign</ToggleButton>
-            :
-            <ToggleButton variant="info">Not Assign</ToggleButton>
-          }
+      <div>Selected filters:</div>
+      <div className="row">
 
-        </ToggleButtonGroup>
-      </h5>
-      <h5>Active Options:
+        <div className="block">Assignment:
+          <ToggleButtonGroup type="checkbox" variant="info">
+            {isAssigned ?
+              <ToggleButton variant="info">Assign</ToggleButton>
+              :
+              <ToggleButton variant="info">Not Assign</ToggleButton>
+            }
+
+          </ToggleButtonGroup>
+        </div>
+
+      <div className="block">Active:
         <ToggleButtonGroup type="checkbox" variant="info">
           {isActive ?
             <ToggleButton variant="info">Active</ToggleButton>
@@ -330,49 +317,40 @@ class TasksTable extends Component{
             <ToggleButton variant="info">InActive</ToggleButton>
           }
         </ToggleButtonGroup>
-      </h5>
+      </div>
 
-      <h5>Priority Options:
+      <div className="block">Priority:
         <ToggleButtonGroup type="checkbox" variant="info">
           {priorityList.map((c, index) => (
             <ToggleButton variant="info">{c}</ToggleButton>
           ))}
         </ToggleButtonGroup>
-      </h5>
+      </div>
 
-      <h5>Status Options:
+
+      <div className="block">Status:
         <ToggleButtonGroup type="checkbox" variant="info">
           {statusList.map((c, index) => (
             <ToggleButton variant="info">{c}</ToggleButton>
           ))}
         </ToggleButtonGroup>
-      </h5>
+      </div>
 
-      <h5>Classification Options:
+
+      <div className="block">Classification:
         <ToggleButtonGroup type="checkbox" variant="info">
           {classificationList.map((c, index) => (
             <ToggleButton variant="info">{c}</ToggleButton>
           ))}
         </ToggleButtonGroup>
-      </h5>
+      </div>
 
-      <h5>User Options:
+      <div className="block">User:
         <ToggleButtonGroup type="checkbox" variant="info">
           <ToggleButton variant="info">{users}</ToggleButton>
         </ToggleButtonGroup>
-      </h5>
-      {/*<h2>Selected filters</h2>*/}
-      {/*<div>isAssigned:{isAssigned}</div>*/}
-      {/*<div>isActive:{isActive.toString()}</div>*/}
-      {/*<div>priority:{priorityList}</div>*/}
-      {/*<div>status:{statusList}</div>*/}
-      {/*<div>users:{userList}</div>*/}
+      </div>
 
-
-      <div>classification:
-        {classificationList.map(classification => (
-         <li>{classification}</li>
-        ))}
       </div>
       <TasksDetail
         tasks_filter={get_tasks}
@@ -388,7 +366,8 @@ class TasksTable extends Component{
         statusList={statusList}
         userList={userList}
       />
-      </tbody>
+          </table>
+    </div>
     )
   }
 
