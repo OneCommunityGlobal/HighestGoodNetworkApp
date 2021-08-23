@@ -21,22 +21,9 @@ const EditTaskModal = (props) => {
   const tasks = props.tasks.taskItems;
   const { members } = props.projectMembers;
   let foundedMembers = [];
-  console.log('props.taskId',props.taskId)
-  for(var i = 0; i < tasks.length; i++) {
-    if (tasks[i]._id===props.taskId){
-      console.log('props.taskId',props.taskId)
-      console.log('tasks find',tasks[i])
-    }
-    else{
-      console.log('props.taskId',props.taskId)
-      console.log('not find',tasks[i]._id)
-      console.log('not find',tasks[i]._id)
-    }
-
-  }
 
   const thisTask = tasks.filter(task => task._id === props.taskId)[0];
-  console.log('thisTask',thisTask)
+
 
 
   // Date picker
