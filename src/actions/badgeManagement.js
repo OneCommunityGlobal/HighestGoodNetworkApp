@@ -192,15 +192,6 @@ export const changeBadgesByUserID = (userId, badgeCollection) => {
   console.log(userId, badgeCollection);
   return async (dispatch) => {
 
-    if (badgeCollection.length === 0) {
-      dispatch(getMessage('Um no, that didn \'t work. Badge Select Function must include actual selection of badges to work. Better luck next time! ', 'danger'));
-      setTimeout(() => {
-        dispatch(closeAlert());
-      }, 6000);
-      return;
-    }
-
-
     
 
     const url = ENDPOINTS.BADGE_ASSIGN(userId);
