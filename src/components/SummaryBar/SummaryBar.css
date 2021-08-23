@@ -67,6 +67,11 @@
   margin: 10px auto;
 }
 
+.summary-toggle:hover {
+  text-decoration: underline;
+  cursor: pointer;
+}
+
 .redBackgroup {
   z-index: 10;
   bottom: 0;
@@ -156,14 +161,17 @@
 }
 
 /* XLarge devices (landscape phones, 544px and down) */
-@media (max-width: 1200px) {  
+@media (max-width: 1200px) {
   .med_text_summary {
     font-size: 0.75rem;
+  }
+  .name-linebreak {
+    display: none;
   }
 }
 
 /* Large devices (landscape phones, 544px and down) */
-@media (max-width: 992px) {  
+@media (max-width: 992px) {
   .large_text_summary {
     font-size: 2rem;
   }
@@ -173,18 +181,15 @@
 }
 
 /* Med devices (tablets, 768px and down) */
-@media (max-width: 768px) {  
-
+@media (max-width: 768px) {
   .med_text_summary {
     font-size: 1rem;
   }
 }
 
 /* Small devices (landscape phones, 576px and down) */
-@media (max-width: 576px) {  
-
+@media (max-width: 576px) {
   .large_text_summary {
     font-size: 1.5rem;
   }
-
 }

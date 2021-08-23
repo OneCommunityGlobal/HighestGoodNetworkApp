@@ -9,9 +9,9 @@ const BadgeTableHeader = () =>
     <th>Badge</th>
     <th>Name</th>
     <th>Description</th>
-    <th>Category</th>
-    <th>Project</th>
-    <th>Ranking  <i class="fa fa-info-circle" id="SortRankingInfo" style={{ marginLeft: '5px' }} />
+    <th>Type</th>
+    <th>Details</th>
+    <th>Ranking  <i className="fa fa-info-circle" id="SortRankingInfo" style={{ marginLeft: '5px' }} />
       <UncontrolledTooltip placement="right" target="SortRankingInfo" style={{ backgroundColor: '#666', color: '#fff' }} >
         <p className="badge_info_icon_text"> Sort the number by ascending or descending order. The lower the number (other than zero) the higher the badge ranking.</p>
         <p className="badge_info_icon_text"> Note that 0 is treated as the largest number (thus the lowest ranking). When no number is specified for the ranking field, the default value is 0. </p>

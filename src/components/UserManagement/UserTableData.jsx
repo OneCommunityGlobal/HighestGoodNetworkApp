@@ -2,12 +2,14 @@ import React, { useState, useEffect } from 'react';
 import ResetPasswordButton from './ResetPasswordButton';
 import { DELETE, PAUSE, RESUME } from '../../languages/en/ui';
 import { UserStatus } from '../../utils/enums';
+import { useHistory } from 'react-router-dom';
 
 /**
  * The body row of the user table
  */
 const UserTableData = React.memo((props) => {
   const [isChanging, onReset] = useState(false);
+  const history = useHistory();
 
   /**
    * reset the changing state upon rerender with new isActive status
@@ -31,8 +33,16 @@ const UserTableData = React.memo((props) => {
           onActiveInactiveClick={onActiveInactiveClick}
         />
       </td>
-      <td><UserHyperLink text={props.user.firstName} userId={props.user._id} key="firstName" /></td>
-      <td><UserHyperLink text={props.user.lastName} userId={props.user._id} key="lastName" /></td>
+      <td>
+        <a href={`/userprofile/${props.user._id}`} onClick={(e) => {e.preventDefault(); history.push('/userprofile/' + props.user._id)}}>
+          {props.user.firstName}
+        </a>
+      </td>
+      <td>
+        <a href={`/userprofile/${props.user._id}`} onClick={(e) => {e.preventDefault(); history.push('/userprofile/' + props.user._id)}}>
+          {props.user.lastName}
+        </a>
+      </td>
       <td>{props.user.role}</td>
       <td>{props.user.email}</td>
       <td>{props.user.weeklyComittedHours}</td>
@@ -92,10 +102,5 @@ const ActiveCell = React.memo(props => (
     <i className="fa fa-circle" aria-hidden="true" />
   </div>
 ));
-
-/**
- * User prfoile hyper link component
- */
-const UserHyperLink = React.memo(props => <a href={`/userprofile/${props.userId}`}>{props.text}</a>);
 
 export default UserTableData;

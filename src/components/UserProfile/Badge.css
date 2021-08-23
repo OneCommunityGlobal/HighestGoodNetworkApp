@@ -1,0 +1,116 @@
+.btn--dark-sea-green {
+  background-color: #c9d6c6 !important;
+  border-color: #285739 !important;
+  color: #285739 !important;
+}
+
+.badge_image_sm > img {
+  border-radius: 50%;
+  height: 50px;
+  width: 50px;
+  margin:5px;
+}
+
+.badge_image_md > img {
+  border-radius: 50%;
+  height: 115px;
+  width: 115px;
+  margin: 2px;
+}
+
+.badge_image_lg > img {
+  border-radius: 50%;
+  height: 200px;
+  width: 200px;
+}
+
+.badge_image_mini > img {
+  border-radius: 50%;
+  height: 25px;
+  width: 25px;
+}
+
+.badge_featured_count {
+  padding-top: 3px;
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  background:#007bff;
+  color: #fff;
+  text-align: center;
+  font: 18px Arial, sans-serif;
+  position: absolute;
+  right: 12px;
+  bottom: 12px;
+  z-index: 10;
+}
+
+.badge_featured_count_3_digit {
+  padding-top: 3px;
+  border-radius: 50%;
+  width: 40px;
+  height: 30px;
+  background:#007bff;
+  color: #fff;
+  text-align: center;
+  font: 16px Arial, sans-serif;
+  position: absolute;
+  right: 12px;
+  bottom: 12px;
+  z-index: 10;
+}
+
+.new_badges {
+  display: flex;
+  flex-wrap: wrap;
+  overflow-y: scroll;
+  height: 70px;
+}
+
+.old_badges {
+  height:220px;
+}
+
+.badge_featured_container {
+  display: flex;
+  flex-wrap: wrap;
+  overflow-y: none;
+}
+
+.badge_md_image_container {
+  position: relative;
+  height: 117px;
+}
+
+.badgemanagement-actions-cell {
+  display: table-cell;
+  padding-left: 10px;
+}
+
+.assign-badge-margin-top {
+  margin-Top: 15px;
+}
+
+.badge-message-background-success {
+  background-color:#d4edda;
+}
+
+.badge-message-background-danger {
+  background-color:#f8d7da;
+}
+
+.badge-message-text-success {
+  color:#092b00;
+}
+
+.badge-message-text-danger {
+  color:#a8071a;
+}
+
+.assign_badge_search_box {
+  margin-bottom: 15px;
+}
+
+.badge_info_icon_text {
+  text-align: left;
+}

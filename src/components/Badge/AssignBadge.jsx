@@ -99,15 +99,15 @@ const AssignBadge = (props) => {
     }}
     >
       <Row className="assign-badge-margin-top">
-        <Col md="2">
-          <Label style={{ fontWeight: 'bold' }}>Name</Label>
-          <i class="fa fa-info-circle" id="NameInfo" style={{ marginLeft: '5px' }} />
+        <Col md="4" lg="3" xl="2">
+          <Label style={{ fontWeight: 'bold' }}>Search by Name</Label>
+          <i className="fa fa-info-circle" id="NameInfo" style={{ marginLeft: '5px' }} />
           <UncontrolledTooltip placement="right" target="NameInfo" style={{ backgroundColor: '#666', color: '#fff' }}>
             <p className="badge_info_icon_text">Really, you're not sure what "name" means? Start typing a first or last name and a list of the active members (matching what you type) will be auto generated. Then you........ CHOOSE ONE!</p>
             <p className="badge_info_icon_text">Yep, that's it. Next you click "Assign Badge" and.... choose one or multiple badges! Click "confirm" then "submit" and those badges will show up as part of that person's earned badges. You can even assign a person multiple of the same badge(s) by repeating this process and choosing the same badge as many times as you want them to earn it.</p>
           </UncontrolledTooltip>
         </Col>
-        <Col md="4">
+        <Col md="4" lg="3" xl="2">
           <Autosuggest
             suggestions={firstSuggestions}
             onSuggestionsFetchRequested={onFirstSuggestionsFetchRequested}
@@ -118,7 +118,7 @@ const AssignBadge = (props) => {
             inputProps={FirstInputProps}
           />
         </Col>
-        <Col md="4">
+        <Col md="4" lg="3" xl="2">
           <Autosuggest
             suggestions={lastSuggestions}
             onSuggestionsFetchRequested={onLastSuggestionsFetchRequested}

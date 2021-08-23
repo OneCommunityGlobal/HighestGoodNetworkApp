@@ -2,12 +2,14 @@ import React, { useState } from 'react';
 import { Card, Row, Col } from 'reactstrap';
 import { useSelector } from 'react-redux';
 import ReactHtmlParser from 'react-html-parser';
-import moment from 'moment';
+import moment from 'moment-timezone';
 import './Timelog.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEdit } from '@fortawesome/free-regular-svg-icons';
 import TimeEntryForm from './TimeEntryForm';
 import DeleteModal from './DeleteModal';
+import { useDispatch } from 'react-redux';
+import { editTimeEntry, postTimeEntry } from '../../actions/timeEntries';
 
 const TimeEntry = ({ data, displayYear, userProfile }) => {
   const [modal, setModal] = useState(false);
@@ -19,8 +21,20 @@ const TimeEntry = ({ data, displayYear, userProfile }) => {
   const isSameDay = moment().isSame(data.dateOfWork, 'day');
   const isAdmin = user.role === 'Administrator';
 
+  const dispatch = useDispatch();
+
+  const toggleTangibility = () => {
+    
+    const newData = {...data,
+      isTangible: !data.isTangible,
+      timeSpent: `${data.hours}:${data.minutes}:00`
+    };
+
+    dispatch(editTimeEntry(data._id, newData));
+  }
+
   return (
-    <Card className="mb-1 p-2">
+    <Card className="mb-1 p-2" style={{backgroundColor: data.isTangible ? '#CCFFCC' : '#CCFFFF'}}>
       <Row className="mx-0">
         <Col md={3} className="date-block px-0">
           <div className="date-div">
@@ -28,9 +42,6 @@ const TimeEntry = ({ data, displayYear, userProfile }) => {
               <h4>{dateOfWork.format('MMM D')}</h4>
               {displayYear && <h5>{dateOfWork.format('YYYY')}</h5>}
               <h5 className="text-info">{dateOfWork.format('dddd')}</h5>
-              {/* {data.editCount > 5 && (
-                <FontAwesomeIcon icon={faSquare} className="mr-1 text-primary" />
-              )} */}
             </div>
           </div>
         </Col>
@@ -40,14 +51,14 @@ const TimeEntry = ({ data, displayYear, userProfile }) => {
           </h4>
           <div className="text-muted">Project/Task:</div>
           <h6> {data.projectName} </h6>
-          <span className="text-muted">Tangible: </span>{' '}
-          <input type="checkbox" name="isTangible" checked={data.isTangible} readOnly />
+          <span className="text-muted">Tangible:&nbsp;</span>
+          <input type="checkbox" name="isTangible" checked={data.isTangible} disabled={!isAdmin} onChange={() => toggleTangibility(data)}/>
         </Col>
         <Col md={5} className="pl-2 pr-0">
           <div className="text-muted">Notes:</div>
           {ReactHtmlParser(data.notes)}
           <div className="buttons">
-            {(isAdmin || (!data.isTangible && isOwner && isSameDay)) && (
+            {(isAdmin || (isOwner && isSameDay)) && (
               <span>
                 <FontAwesomeIcon
                   icon={faEdit}

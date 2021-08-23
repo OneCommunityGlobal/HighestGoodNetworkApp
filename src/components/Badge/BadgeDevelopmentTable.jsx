@@ -1,24 +1,72 @@
 import React, { useState } from 'react';
 import {
-  Container, Button, Modal, ModalBody, ModalFooter
+  Container, Button, Modal, ModalBody, ModalFooter, Card, CardTitle, CardBody, CardImg, CardText, UncontrolledPopover,
 } from 'reactstrap';
 import { connect } from 'react-redux';
 import { deleteBadge, closeAlert } from '../../actions/badgeManagement';
 import BadgeTableHeader from './BadgeTableHeader';
 import BadgeTableFilter from './BadgeTableFilter';
+import EditBadgePopup from './EditBadgePopup';
 import DeleteBadgePopup from './DeleteBadgePopup';
 
 
-const EditBadgeTable = (props) => {
+const BadgeDevelopmentTable = (props) => {
 
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
-  const [project, setProject] = useState('');
-  const [category, setCategory] = useState('');
+  const [type, setType] = useState('');
   const [order, setOrder] = useState('');
   const [deleteId, setDeleteId] = useState('')
   const [deleteName, setDeleteName] = useState('')
   const [deletePopup, setDeletePopup] = useState(false);
+
+  const [editBadgeValues, setEditBadgeValues] = useState('');
+  const [editPopup, setEditPopup] = useState(false);
+
+  const detailsText = (badegValue) => {
+    let returnText = "";
+    if (badegValue.type) {
+      switch (badegValue.type) {
+        case 'No Infringement Streak':
+          if (badegValue.months) {
+            returnText = `No blue squares for ${badegValue.months} months`;
+          }
+          break;
+        case 'Minimum Hours Multiple':
+          if (badegValue.multiple) {
+            returnText = `${badegValue.multiple}X Minimum Hours`;
+          }
+          break;
+        case 'Personal Max':
+          returnText = "New Max - Personal Record";
+          break;
+        case 'Most Hrs in Week':
+          returnText = "Most Hours In A Week";
+          break;
+        case 'X Hours for X Week Streak':
+          if (badegValue.totalHrs && badegValue.weeks) {
+            returnText = `${badegValue.totalHrs} Hours ${badegValue.weeks}-Week Streak`;
+          }
+          break;
+        case 'Lead a team of X+':
+          if (badegValue.people) {
+            returnText = `Lead A Team Of ${badegValue.people}+`;
+          }
+          break;
+        case 'Total Hrs in Category':
+          if (badegValue.totalHrs && badegValue.category) {
+            returnText = `${badegValue.totalHrs} Hours Total In ${badegValue.category} Category`;
+          }
+          break;
+      }
+    }
+    return returnText;
+  }
+
+  const onEditButtonClick = (badgeValues) => {
+    setEditBadgeValues(badgeValues);
+    setEditPopup(true);
+  }
 
   const onDeleteButtonClick = (badgeId, badgeName) => {
     setDeletePopup(true);
@@ -34,12 +82,8 @@ const EditBadgeTable = (props) => {
     setDescription(text);
   };
 
-  const onBadgeProjectSearch = (text) => {
-    setProject(text);
-  }
-
-  const onBadgeCategorySearch = (text) => {
-    setCategory(text);
+  const onBadgeTypeSearch = (text) => {
+    setType(text);
   }
 
   const onBadgeRankingSort = (order) => {
@@ -49,14 +93,17 @@ const EditBadgeTable = (props) => {
   const resetFilters = () => {
     setName('');
     setDescription('');
-    setProject('');
-    setCategory('');
+    setType('');
     setOrder('');
   }
 
   const filterBadges = (allBadges) => {
     let filteredList = allBadges.filter((badge) => {
-      if (badge.badgeName.toLowerCase().indexOf(name.toLowerCase()) > -1 && badge.description.toLowerCase().indexOf(description.toLowerCase()) > -1 && (project.length === 0 || (project.length !== 0 && (badge.project && badge.project.projectName.toLowerCase().indexOf(project.toLowerCase()) > -1))) && badge.category.toLowerCase().indexOf(category.toLowerCase()) > -1) { return badge; }
+      if (badge.badgeName.toLowerCase().indexOf(name.toLowerCase()) > -1 &&
+        badge.description.toLowerCase().indexOf(description.toLowerCase()) > -1 &&
+        (!type.toLowerCase() || badge?.type?.toLowerCase().indexOf(type.toLowerCase()) > -1)) {
+        return badge;
+      }
     });
 
     if (order === "Ascending") {
@@ -93,14 +140,12 @@ const EditBadgeTable = (props) => {
           <BadgeTableFilter
             onBadgeNameSearch={onBadgeNameSearch}
             onBadgeDescriptionSearch={onBadgeDescriptionSearch}
-            onBadgeProjectSearch={onBadgeProjectSearch}
-            onBadgeCategorySearch={onBadgeCategorySearch}
+            onBadgeTypeSearch={onBadgeTypeSearch}
             onBadgeRankingSort={onBadgeRankingSort}
             resetFilters={resetFilters}
             name={name}
             description={description}
-            project={project}
-            category={category}
+            type={type}
             order={order}
 
           />
@@ -108,15 +153,31 @@ const EditBadgeTable = (props) => {
         <tbody>
           {filteredBadges.map((value) =>
             <tr key={value._id} >
-              <td className="badge_image_sm"> <img src={value.imageUrl} /></td>
+              <td className="badge_image_sm"> <img src={value.imageUrl} id={"popover_" + value._id} />
+                <UncontrolledPopover trigger="hover" target={"popover_" + value._id}>
+                  <Card className="text-center">
+                    <CardImg className="badge_image_lg" src={value?.imageUrl} />
+                    <CardBody>
+                      <CardTitle
+                        style={{
+                          fontWeight: 'bold',
+                          fontSize: 18,
+                          color: '#285739',
+                          marginBottom: 15
+                        }}>{value?.badgeName}</CardTitle>
+                      <CardText>{value?.description}</CardText>
+                    </CardBody>
+                  </Card>
+                </UncontrolledPopover>
+              </td>
               <td>{value.badgeName}</td>
               <td>{value.description || ''}</td>
-              <td>{value.category || ''}</td>
-              <td>{value.project ? value.project.projectName : ''}</td >
+              <td>{value.type || ''}</td>
+              <td>{detailsText(value)}</td>
               <td>{value.ranking || 0}</td>
               <td>
                 <span className="badgemanagement-actions-cell">
-                  <Button outline color="info">Edit</Button>{' '}
+                  <Button outline color="info" onClick={() => onEditButtonClick(value)}>Edit</Button>{' '}
                 </span>
                 <span className="badgemanagement-actions-cell">
                   <Button outline color="danger" onClick={() => onDeleteButtonClick(value._id, value.badgeName)}>Delete
@@ -126,6 +187,7 @@ const EditBadgeTable = (props) => {
             </tr>)}
         </tbody>
       </table>
+      <EditBadgePopup open={editPopup} setEditPopup={setEditPopup} badgeValues={editBadgeValues} />
       <DeleteBadgePopup open={deletePopup} setDeletePopup={setDeletePopup} deleteBadge={props.deleteBadge} badgeId={deleteId} badgeName={deleteName} />
       <Modal isOpen={props.alertVisible} toggle={() => props.closeAlert()} >
         <ModalBody className={"badge-message-background-" + props.color}><p className={"badge-message-text-" + props.color}>{props.message}</p>
@@ -150,4 +212,4 @@ const mapDispatchToProps = dispatch => ({
   closeAlert: () => dispatch(closeAlert())
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(EditBadgeTable);
+export default connect(mapStateToProps, mapDispatchToProps)(BadgeDevelopmentTable);

@@ -26,6 +26,7 @@ import ForgotPassword from './components/Login/ForgotPassword'
 import PeopleReport from './components/Reports/PeopleReport'
 import ProjectReport from './components/Reports/ProjectReport'
 import TeamReport from './components/Reports/TeamReport'
+import Inventory from './components/Inventory'
 
 
 import BadgeManagement from "./components/Badge/BadgeManagement"
@@ -47,7 +48,8 @@ export default (
       <ProtectedRoute path="/projectreport/:projectId" component={ProjectReport} />
       <ProtectedRoute path="/teamreport/:teamId" component={TeamReport} />
 
-
+      <ProtectedRoute path="/inventory/:projectId" component={Inventory} allowedRoles={[UserRole.Administrator, UserRole.Manager, UserRole.CoreTeam]}/>
+      <ProtectedRoute path="/inventory/:projectId/wbs/:wbsId" component={Inventory} allowedRoles={[UserRole.Administrator, UserRole.Manager, UserRole.CoreTeam]}/>
 
       <ProtectedRoute
         path="/weeklysummariesreport"

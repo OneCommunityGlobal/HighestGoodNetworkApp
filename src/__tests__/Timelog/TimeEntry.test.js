@@ -5,7 +5,7 @@ import {
 import userEvent from '@testing-library/user-event';
 import thunk from 'redux-thunk';
 import configureStore from 'redux-mock-store';
-import moment from 'moment';
+import moment from 'moment-timezone';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import {
@@ -90,6 +90,6 @@ describe('<TimeEntry />', () => {
     expect(icons.length).toBe(2);
     userEvent.click(icons[0]);
     expect(screen.getByRole('document')).toHaveClass('modal-dialog');
-    expect(screen.getByText(/edit time entry/i)).toBeInTheDocument();
+    expect(screen.getByTestId('timeEntryFormModal')).toBeInTheDocument();
   });
 });

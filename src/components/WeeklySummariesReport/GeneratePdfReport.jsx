@@ -3,66 +3,90 @@ import React from 'react';
 import pdfMake from 'pdfmake/build/pdfmake';
 import pdfFonts from 'pdfmake/build/vfs_fonts';
 import htmlToPdfmake from 'html-to-pdfmake';
-import moment from 'moment';
-import 'moment-timezone';
+import moment from 'moment-timezone';
 import { Button } from 'reactstrap';
 
 pdfMake.vfs = pdfFonts.pdfMake.vfs;
 
-
 const GeneratePdfReport = ({ summaries, weekIndex, weekDates }) => {
-  const FormatReportForPdf = () => {
-    let wsReport = `<h3>Weekly Summaries Report</h3>
-    <div style="margin-bottom: 20px; color: orange;">From <b>${weekDates.fromDate}</b> to <b>${weekDates.toDate}</b></div>`;
-    const weeklySummaryNotProvidedMessage = '<div><b>Weekly Summary:</b> Not provided!</div>';
-    summaries.forEach((eachSummary) => {
-      const {
-        firstName, lastName, weeklySummaries, mediaUrl, weeklySummariesCount,
-      } = eachSummary;
 
-      const mediaUrlLink = mediaUrl ? `<a href=${mediaUrl}>Open link to media files</a>` : 'Not provided!';
+  const generateFormattedReport = () => {
+
+    const emails = [];
+
+    let wsReport = `<h1>Weekly Summaries Report</h1>
+    <div style="margin-bottom: 20px; color: orange;">From <b>${weekDates.fromDate}</b> to <b>${weekDates.toDate}</b></div>`;
+    
+    const weeklySummaryNotProvidedMessage = '<div><b>Weekly Summary:</b> <span style="color: red;">Not provided!</span></div>';
+    const weeklySummaryNotRequiredMessage = '<div><b>Weekly Summary:</b> <span style="color: magenta;">Not required for this user</span></div>';
+
+    summaries.sort((a, b) => (`${a.firstName} ${a.lastName}`).localeCompare(`${b.firstName} ${b.lastname}`));
+
+    summaries.forEach((eachSummary) => {
+
+      if(eachSummary.email !== undefined && eachSummary.email !== null) {
+        emails.push(eachSummary.email);
+      }
+
+      const { firstName, lastName, weeklySummaries, mediaUrl, weeklySummariesCount, weeklyComittedHours } = eachSummary;
+  
+      const mediaUrlLink = mediaUrl ? `<a href=${mediaUrl}>Open link to media files</a>` : '<span style="color: red;">Not provided!</span>';
+
       const totalValidWeeklySummaries = weeklySummariesCount || 'No valid submissions yet!';
+
       let weeklySummaryMessage = weeklySummaryNotProvidedMessage;
-      if (Array.isArray(weeklySummaries) && weeklySummaries.length && weeklySummaries[weekIndex]) {
+
+      if (Array.isArray(weeklySummaries) && weeklySummaries[weekIndex]) {
         const { dueDate, summary } = weeklySummaries[weekIndex];
         if (summary) {
           weeklySummaryMessage = `<div><b>Weekly Summary</b> (for the week ending on <b>${moment(dueDate).tz('America/Los_Angeles').format('YYYY-MMM-DD')}</b>):</div>
                                   <div data-pdfmake="{&quot;margin&quot;:[20,0,20,0]}">${summary}</div>`;
+        } else if (eachSummary.weeklySummaryNotReq === true) {
+          weeklySummaryMessage = weeklySummaryNotRequiredMessage;
         }
       }
-
+  
       wsReport += `\n
       <div><b>Name:</b> <span class="name">${firstName} ${lastName}</span></div>
       <div><b>Media URL:</b> ${mediaUrlLink}</div>
-      <div><b>Total Valid Weekly Summaries:</b> ${totalValidWeeklySummaries}</div>
+      <div style="${totalValidWeeklySummaries === 8 ? 'text-decoration: underline; color: red;' : ''}"><b>Total valid weekly summaries:</b> ${totalValidWeeklySummaries}</div>
+      <div><b>Committed weekly hours:</b> ${weeklyComittedHours}</div>
       ${weeklySummaryMessage}
       <div style="color:#DEE2E6; margin:10px 0px 20px 0px; text-align:center;">_______________________________________________________________________________________________</div>`;
     });
 
+    wsReport += '<h2>Emails</h2>'
+
+    wsReport += [...(new Set(emails))] //elimiates duplicate entries if they're somehow present
+    .toString()
+    .replaceAll(',', ', ');
+    
+
     return wsReport;
   };
-
-  const formattedReport = FormatReportForPdf();
-  const html = htmlToPdfmake(formattedReport);
-
-  const docDefinition = {
-    content: [
-      html,
-    ],
-    styles: {
-      'html-div': { margin: [0, 4, 0, 4] },
-      name: {
-        background: 'yellow',
+  
+  const generateAndDownloadPdf = () => {
+  
+    const html = htmlToPdfmake(generateFormattedReport());
+  
+    const docDefinition = {
+      content: [
+        html,
+      ],
+      styles: {
+        'html-div': { margin: [0, 4, 0, 4] },
+        name: {
+          background: 'yellow',
+        },
       },
-    },
-  };
-
-  const pdfDocGenerator = () => {
+    };
+  
     pdfMake.createPdf(docDefinition).download(`WeeklySummary-${weekDates.fromDate}-to-${weekDates.toDate}`);
+  
   };
 
   return (
-    <Button className="px-5 btn--dark-sea-green float-right" onClick={pdfDocGenerator}>Open PDF</Button>
+    <Button className="px-5 btn--dark-sea-green float-right" onClick={generateAndDownloadPdf}>Open PDF</Button>
   );
 };
 

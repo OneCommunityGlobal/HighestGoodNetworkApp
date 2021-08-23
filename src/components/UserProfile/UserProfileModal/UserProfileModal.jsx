@@ -13,21 +13,19 @@ import {
   Col,
 } from 'reactstrap'
 
-const ModalExample = props => {
+const UserProfileModal = props => {
   const {
     isOpen,
     closeModal,
     updateLink,
-    updateBlueSquare,
+    modifyBlueSquares,
     modalTitle,
     modalMessage,
     type,
     userProfile,
     id,
-    isUserAdmin,
+    isUserAdmin
   } = props
-
-  // console.log('user:', userProfile);
 
   let blueSquare = [
     {
@@ -51,8 +49,8 @@ const ModalExample = props => {
   const [adminLinkName, setAdminLinkName] = useState('')
   const [adminLinkURL, setAdminLinkURL] = useState('')
 
-  const [dateStamp, setDateStamp] = useState(id != null ? blueSquare[0].date : '')
-  const [summary, setSummary] = useState(id != null ? blueSquare[0].description : '')
+  const [dateStamp, setDateStamp] = useState(blueSquare[0]?.date || '')
+  const [summary, setSummary] = useState(blueSquare[0]?.description || '')
 
   const [addButton, setAddButton] = useState(true)
   const [summaryFieldView, setSummaryFieldView] = useState(true)
@@ -150,8 +148,6 @@ const ModalExample = props => {
       setAddButton(true)
     }
   }
-
-  //const buttonDisabled = !(linkName && linkURL)
 
   return (
     <Modal isOpen={isOpen} toggle={closeModal}>
@@ -372,7 +368,7 @@ const ModalExample = props => {
             id="addBlueSquare"
             disabled={addButton}
             onClick={() => {
-              updateBlueSquare('', dateStamp, summary, 'add')
+              modifyBlueSquares('', dateStamp, summary, 'add');
             }}
           >
             Submit
@@ -381,12 +377,18 @@ const ModalExample = props => {
 
         {type === 'modBlueSquare' && (
           <>
-            <Button color="info" onClick={() => updateBlueSquare(id, dateStamp, summary, 'update')}>
+            <Button color="info" onClick={() => {
+              modifyBlueSquares(id, dateStamp, summary, 'update');
+            }}>
+
               Update
             </Button>
             <Button
               color="danger"
-              onClick={() => updateBlueSquare(id, dateStamp, summary, 'delete')}
+              onClick={() => {
+                modifyBlueSquares(id, dateStamp, summary, 'delete');
+              }}
+
             >
               Delete
             </Button>
@@ -427,13 +429,13 @@ const ModalExample = props => {
             Close
           </Button>
         ) : (
-            <Button color="primary" onClick={closeModal}>
-              Cancel
-            </Button>
-          )}
+          <Button color="primary" onClick={closeModal}>
+            Cancel
+          </Button>
+        )}
       </ModalFooter>
     </Modal>
   )
 }
 
-export default ModalExample
+export default UserProfileModal

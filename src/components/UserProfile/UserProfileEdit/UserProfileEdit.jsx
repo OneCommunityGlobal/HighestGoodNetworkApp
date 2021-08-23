@@ -22,22 +22,18 @@ import { Link } from 'react-router-dom'
 import classnames from 'classnames'
 import Loading from '../../common/Loading'
 import BlueSquare from '../BlueSquares'
-import Modal from '../UserProfileModal'
+import UserProfileModal from '../UserProfileModal'
 import UserLinks from '../UserLinks'
 import ToggleSwitch from './ToggleSwitch'
-//import EditConfirmModal from '../UserProfileModal/EditConfirmModal'
 import SaveButton from './SaveButton'
-// import styleProfile from '../UserProfile.module.scss';
 import '../UserProfile.scss'
-// import styleEdit from './UserProfileEdit.module.scss';
 import './UserProfileEdit.scss'
 import LinkModButton from './LinkModButton'
-//import TeamView from '../Teamsview'
 import ProjectsTab from '../TeamsAndProjects/ProjectsTab'
 import TeamsTab from '../TeamsAndProjects/TeamsTab'
 
 const styleProfile = {}
-class EditProfile extends Component {
+class UserProfileEdit extends Component {
   state = {
     showWarning: false,
     isLoading: true,
@@ -391,12 +387,14 @@ class EditProfile extends Component {
   }
 
   handleBlueSquare = (status = true, type = 'message', blueSquareID = '') => {
+
     if (type === 'addBlueSquare') {
       this.setState({
         showModal: status,
         modalTitle: 'Blue Square',
         type,
-      })
+      });
+
     } else if (type === 'modBlueSquare') {
       this.setState({
         showModal: status,
@@ -419,12 +417,10 @@ class EditProfile extends Component {
         type,
       })
     }
+
   }
 
   updateBlueSquare = (id, dateStamp, summary, kind) => {
-    // console.log('Handle Blue Square: ', kind, ' date:', dateStamp, ' summary:', summary)
-    // const elem = document.getElementById('warningCard');
-    // elem.style.display = 'block';
 
     if (kind === 'add') {
       const newBlueSquare = { date: dateStamp, description: summary }
@@ -434,7 +430,7 @@ class EditProfile extends Component {
           ...this.state.userProfile,
           infringments: prevState.userProfile.infringments.concat(newBlueSquare),
         },
-      }))
+      }));
     } else if (kind === 'update') {
       this.setState(() => {
         const currentBlueSquares = this.state.userProfile.infringments
@@ -660,8 +656,8 @@ class EditProfile extends Component {
 
     return (
       <div>
-        {showModal && (
-          <Modal
+        {showModal &&
+          <UserProfileModal
             isOpen={showModal}
             closeModal={() => {
               this.setState({ showModal: false })
@@ -676,8 +672,9 @@ class EditProfile extends Component {
             id={id}
             isUserAdmin={isUserAdmin}
             handleLinkModel={this.handleLinkModel}
+            handleSubmit={this.handleSubmit}
           />
-        )}
+        }
 
         <StickyContainer>
           {renderWarningCard()}
@@ -752,7 +749,6 @@ class EditProfile extends Component {
                     isUserAdmin={isUserAdmin}
                     blueSquares={infringments}
                     handleBlueSquare={this.handleBlueSquare}
-                    handleSaveError={this.handleSaveError}
                   />
                 </div>
               </Col>
@@ -805,8 +801,9 @@ class EditProfile extends Component {
                         onClick={() => {
                           this.toggleTab('6')
                         }}
+                        data-testid="edit-history-tab"
                       >
-                        More Tabs
+                        Edit History
                       </NavLink>
                     </NavItem>
                   </Nav>
@@ -1035,4 +1032,4 @@ class EditProfile extends Component {
   }
 }
 
-export default EditProfile
+export default UserProfileEdit

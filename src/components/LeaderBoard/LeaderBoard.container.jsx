@@ -1,11 +1,11 @@
 import { getLeaderboardData, getOrgData } from '../../actions/leaderBoardData'
 import { connect } from 'react-redux'
 import Leaderboard from './Leaderboard'
-import {getcolor, getprogress} from '../../utils/effortColors'
+import { getcolor, getprogress } from '../../utils/effortColors'
 import _ from 'lodash'
 const mapStateToProps = state => {
 	//console.log('State=Leaderboard container', state)
-	
+
 	let leaderBoardData = _.get(state, 'leaderBoardData', [])
 	let orgData = _.get(state, 'orgData', {})
 	//console.log('Leaderboard Unsorted Data', leaderBoardData)
@@ -39,12 +39,12 @@ const mapStateToProps = state => {
 			// organization.totaltime += _.round(element.totaltime, 2);
 			// organization.tangibletime += _.round(element.tangibletime, 2);
 			// organization.intangibletime += _.round(element.intangibletime, 2);
-			
+
 			return element
 		})
 	}
-	
-	orgData.name = `HGN Totals: ${orgData.member_count} Members`
+
+	orgData.name = `HGN Totals: ${leaderBoardData.length} Members`
 	orgData.tangibletime = _.round(orgData.totaltangibletime_hrs, 2);
 	orgData.totaltime = _.round(orgData.totaltime_hrs, 2);
 	orgData.intangibletime = _.round(orgData.totalintangibletime_hrs, 2);
@@ -57,7 +57,7 @@ const mapStateToProps = state => {
 		let multipleRemaining = Math.floor((Math.abs((orgData.totaltime - (tenPTotalOrgTime * 2))) / tenPTotalOrgTime));
 		orgTangibleColorTime += (multipleRemaining * 10);
 	}
-	
+
 	orgData.barcolor = getcolor(orgTangibleColorTime);
 	orgData.barprogress = getprogress(orgTangibleColorTime);
 

@@ -5,7 +5,7 @@
  ********************************************************************************/
 import React from 'react'
 import './../projects.css'
-import {PROJECT_NAME, ACTIVE, MEMBERS, WBS} from './../../../languages/en/ui'
+import {PROJECT_NAME, ACTIVE, MEMBERS, WBS, PROJECT_CATEGORY, INVENTORY, DELETE} from './../../../languages/en/ui'
 
 const  ProjectTableHeader = () => {
 
@@ -13,10 +13,12 @@ const  ProjectTableHeader = () => {
     <tr>
             <th scope="col" id="projects__order">#</th>
             <th scope="col">{PROJECT_NAME}</th>
+            <th scope="col" id="projects__category">{PROJECT_CATEGORY}</th>
             <th scope="col" id="projects__active">{ACTIVE}</th>
+            <th scope="col" id="projects__inv">{INVENTORY}</th>
             <th scope="col" id="projects__members">{MEMBERS}</th>
             <th scope="col" id="projects__wbs">{WBS}</th>
-            <th scope="col" id="projects__delete"></th>
+            <th scope="col" id="projects__delete">{DELETE}</th>
 
      </tr>
     )

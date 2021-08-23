@@ -51,12 +51,13 @@ export class Projects extends Component {
   /**
    * Changes the number of active projects
    */
-  onClickActive = (projectId, projectName, isActive) => {
-    this.props.modifyProject("setActive", projectId, projectName, isActive);
+  onClickActive = (projectId, projectName, category, isActive) => {
+    this.props.modifyProject("setActive", projectId, projectName, category, isActive);
   }
 
-  onUpdateProjectName = (projectId, projectName, isActive) => {
-    this.props.modifyProject("updateName", projectId, projectName, isActive);
+  onUpdateProjectName = (projectId, projectName, category, isActive) => {
+    console.log("updateName", projectId, projectName, category, isActive);
+    this.props.modifyProject("updateName", projectId, projectName, category, isActive);
   }
 
   /**
@@ -92,8 +93,8 @@ export class Projects extends Component {
 
   }
 
-  addProject = (name) => {
-    this.props.postNewProject(name, true);
+  addProject = (name, category) => {
+    this.props.postNewProject(name, category, true);
     this.setState({ trackModelMsg: true });
   }
 
@@ -128,6 +129,7 @@ export class Projects extends Component {
           index={index}
           projectId={project._id}
           name={project.projectName}
+          category={project.category || "Unspecified"}
           active={project.isActive}
           onClickActive={this.onClickActive}
           onUpdateProjectName={this.onUpdateProjectName}

@@ -1,24 +1,4 @@
 import React from 'react';
-// import {
-//   Row,
-//   Label,
-//   Input,
-//   CardTitle,
-//   Col,
-//   Container,
-//   Button,
-//   Form,
-//   FormFeedback,
-//   FormGroup,
-//   Badge,
-//   Collapse,
-//   Alert,
-//   Nav,
-//   NavItem,
-//   NavLink,
-//   TabContent,
-//   TabPane,
-// } from 'reactstrap';
 import BlueSquare from './BlueSquares';
 import ToggleSwitch from './UserProfileEdit/ToggleSwitch';
 import './UserProfile.scss';
@@ -26,11 +6,19 @@ import './UserProfile.scss';
 import './UserProfileEdit/UserProfileEdit.scss';
 
 const BlueSqaureLayout = (props) => {
+
   const {
-    userProfile, handleUserProfile, handleSaveError, handleBlueSquare, isUserAdmin, isUserSelf,
+    userProfile,
+    handleUserProfile,
+    handleBlueSquare,
+    isUserAdmin,
+    isUserSelf,
   } = props;
+
   const { privacySettings, infringments } = userProfile;
+
   const canEdit = isUserAdmin || isUserSelf;
+  
   if (canEdit) {
     return (
       <div data-testid="blueSqaure-field">
@@ -50,7 +38,6 @@ const BlueSqaureLayout = (props) => {
           isUserAdmin={isUserAdmin}
           blueSquares={infringments}
           handleBlueSquare={handleBlueSquare}
-          handleSaveError={handleSaveError}
         />
       </div>
     );
