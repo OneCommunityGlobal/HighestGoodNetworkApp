@@ -76,25 +76,39 @@ const FormattedReport = ({ summaries, weekIndex }) => {
 
   return (
     <>
-      {alphabetize(summaries).map((summary, index) => (
-        <div
-          style={{ padding: '20px 0', marginTop: '5px', borderBottom: '1px solid #DEE2E6' }}
-          key={'summary-' + index}
-        >
-          <p>
-            <b>Name:</b> {summary.firstName} {summary.lastName}
-          </p>
-          <p>
-            {' '}
-            <b>Media URL:</b> {getMediaUrlLink(summary)}
-          </p>
-          {getTotalValidWeeklySummaries(summary)}
-          <p>
-            <b>Committed weekly hours:</b> {summary.weeklyComittedHours}
-          </p>
-          {getWeeklySummaryMessage(summary)}
-        </div>
-      ))}
+      {alphabetize(summaries).map((summary, index) => {
+
+        const hoursLogged = (summary.totalSeconds / 3600 || 0);
+
+        return (
+          <div
+            style={{ padding: '20px 0', marginTop: '5px', borderBottom: '1px solid #DEE2E6' }}
+            key={'summary-' + index}
+          >
+            <p>
+              <b>Name:</b> {summary.firstName} {summary.lastName}
+            </p>
+            <p>
+              {' '}
+              <b>Media URL:</b> {getMediaUrlLink(summary)}
+            </p>
+            {getTotalValidWeeklySummaries(summary)}
+            {
+              hoursLogged >= summary.weeklyComittedHours &&
+              <p>
+                <b>Hours logged:</b> {hoursLogged.toFixed(2)} / {summary.weeklyComittedHours}
+              </p>
+            }
+            {
+              hoursLogged < summary.weeklyComittedHours &&
+              <p style={{color: 'red'}}>
+                <b>Hours logged:</b> {hoursLogged.toFixed(2)} / {summary.weeklyComittedHours}
+              </p>
+            }
+            {getWeeklySummaryMessage(summary)}
+          </div>
+        )
+      })}
       <h4>Emails</h4>
       <p>{emailString}</p>
     </>
