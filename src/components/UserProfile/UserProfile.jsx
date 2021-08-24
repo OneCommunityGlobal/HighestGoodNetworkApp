@@ -101,6 +101,11 @@ const UserProfile = props => {
   }, [props.userProfile, shouldRefresh])
 
   useEffect(() => {
+    props.getUserProfile(props.match.params.userId)
+    setChanged(false);
+  }, [props.match.params.userId])
+
+  useEffect(() => {
     if (blueSquareChanged) {
       setBlueSquareChanged(false)
       handleSubmit()
@@ -192,7 +197,7 @@ const UserProfile = props => {
   const handleImageUpload = async evt => {
     if (evt) evt.preventDefault()
 
-    const file = e.target.files[0]
+    const file = evt.target.files[0]
     const filesizeKB = file.size / 1024
 
     const allowedTypes = ['image/png', 'image/jpeg', 'image/jpg']
@@ -457,11 +462,13 @@ const UserProfile = props => {
                 <div className="file btn btn-lg btn-primary">
                   Change Photo
                   <Input
+                  style={{width: '100%', height: '100%', zIndex: '2'}}
                     type="file"
                     name="newProfilePic"
                     id="newProfilePic"
                     onChange={handleImageUpload}
                     accept="image/png,image/jpeg, image/jpg"
+
                   />
                 </div>
               ) : null}
