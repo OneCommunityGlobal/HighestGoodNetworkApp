@@ -21,25 +21,13 @@ jobs:
     steps:
       - checkout
       - run:
-          name: Set Environment variables
-          command: export REACT_APP_APIENDPOINT=$APIENDPOINT_BETA SKIP_PREFLIGHT_CHECK=true
+          name: npm install
+          command: "sudo npm install"
       - run:
-          name: Install NodeJS dependencies
-          command: npm install
+          name: Run react build
+          command: "sudo REACT_APP_APIENDPOINT=$APIENDPOINT_BETA SKIP_PREFLIGHT_CHECK=true npm run build && sudo mv build/index.html build/200.html"
       - run:
-          name: Build the React client
-          command: npm run build
-      - run:
-          name: Replace build/200.html with build/index.html
-          command: mv build/index.html build/200.html
-      - run:
-          name: Create CNAME file
-          command: touch build/CNAME
-      - run:
-          name: Configure CNAME file
-          command: echo "highestgood.com" > build/CNAME
-      - run:
-          name: Deploy appbuild_beta
+          name: Deploy app
           command: ./node_modules/.bin/surge build --domain $SURGE_DOMAIN_BETA
 
   build_PROD:
