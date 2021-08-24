@@ -1,3 +1,7 @@
+.timer {
+  margin: auto;
+}
+
 .timer button {
   min-width: 3.75rem;
   box-shadow: none !important;

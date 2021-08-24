@@ -42,7 +42,7 @@ export class WeeklySummary extends Component {
   };
 
   async componentDidMount() {
-    await this.props.getWeeklySummaries(this.props.asUser ? this.props.asUser : this.props.currentUser.userid);
+    await this.props.getWeeklySummaries(this.props.asUser || this.props.currentUser.userid);
     const { mediaUrl, weeklySummaries, weeklySummariesCount } = this.props.summaries;
     const summary = weeklySummaries && weeklySummaries[0] && weeklySummaries[0].summary || '';
     const summaryLastWeek = weeklySummaries && weeklySummaries[1] && weeklySummaries[1].summary || '';
@@ -183,7 +183,6 @@ export class WeeklySummary extends Component {
       weeklySummariesCount: this.state.formElements.weeklySummariesCount,
     }
 
-
     const updateWeeklySummaries = this.props.updateWeeklySummaries(this.props.asUser || this.props.currentUser.userid, modifiedWeeklySummaries);
     let saveResult;
     if(updateWeeklySummaries) {
@@ -193,9 +192,13 @@ export class WeeklySummary extends Component {
     if (saveResult === 200) {
       toast.success("✔ The data was saved successfully!", { toastId: toastIdOnSave, pauseOnFocusLoss: false, autoClose: 3000 });
       this.props.getUserProfile(this.props.currentUser.userid);
+      this.props.getWeeklySummaries(this.props.asUser || this.props.currentUser.userid);
     } else {
       toast.error("✘ The data could not be saved!", { toastId: toastIdOnSave, pauseOnFocusLoss: false, autoClose: 3000 });
     }
+
+    
+
   };
 
   render() {
@@ -362,17 +365,18 @@ WeeklySummary.propTypes = {
 }
 
 const mapStateToProps = ({ auth, weeklySummaries }) => ({
-  currentUser: auth.user,
-  summaries: weeklySummaries?.summaries,
-  loading: weeklySummaries.loading,
-  fetchError: weeklySummaries.fetchError,
-});
+    currentUser: auth.user,
+    summaries: weeklySummaries?.summaries,
+    loading: weeklySummaries.loading,
+    fetchError: weeklySummaries.fetchError,
+  });
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    getUserProfile: (userId) => dispatch(getUserProfile(userId)),
     getWeeklySummaries: getWeeklySummaries,
     updateWeeklySummaries: updateWeeklySummaries,
+    getWeeklySummaries: (userId) => getWeeklySummaries(userId)(dispatch),
+    getUserProfile: (userId) => getUserProfile(userId)(dispatch)
   }
 }
 
