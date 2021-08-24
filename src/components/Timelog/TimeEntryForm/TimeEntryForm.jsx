@@ -14,7 +14,7 @@ import {
   ModalBody,
   ModalFooter,
 } from 'reactstrap'
-import moment from 'moment'
+import moment from 'moment-timezone'
 import _ from 'lodash'
 import { Editor } from '@tinymce/tinymce-react'
 import ReactTooltip from 'react-tooltip'
@@ -291,6 +291,8 @@ const TimeEntryForm = props => {
     if(isOpen) toggle();
     if(fromTimer) clearForm()
     setReminder(initialReminder);
+
+    setInputs(initialFormValues)
 
     await getUserProfile(userId)(dispatch);
 
