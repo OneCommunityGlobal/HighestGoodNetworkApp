@@ -1,17 +1,13 @@
 import React, { Component, useState } from 'react'
 import '../Teams/Team.css';
-import { Button, Dropdown, DropdownButton } from 'react-bootstrap'
+import { Button, Dropdown, DropdownButton,ToggleButton,ToggleButtonGroup } from 'react-bootstrap'
 import { connect } from 'react-redux'
 import { getUserProfile,getUserTask} from '../../actions/userProfile';
 import {getUserProjects} from '../../actions/userProjects'
 import _ from 'lodash'
 import { getWeeklySummaries, updateWeeklySummaries } from '../../actions/weeklySummaries'
 import moment from 'moment'
-import InputRange from 'react-input-range';
 import "react-input-range/lib/css/index.css"
-// import EditTaskModal from '../Projects/WBS/WBSDetail/EditTask/EditTaskModal'
-import EditTaskModal from "./../Projects/WBS/WBSDetail/EditTask/EditTaskModal";
-import EditPeopleReportTaskModal from './EditPeopleReportTaskModal'
 import Collapse from 'react-bootstrap/Collapse'
 
 class PeopleReport extends Component {
@@ -25,14 +21,17 @@ class PeopleReport extends Component {
       userId: '',
       isLoading: true,
       infringments:{},
-      isAssigned:false,
-      isActive:false,
+      isAssigned:"",
+      isActive:"",
       priority:'',
       status:'',
       hasFilter:true,
       allClassification:[],
       classification:'',
-      users:""
+      users:"",
+      classificationList:[],
+      priorityList:[],
+      statusList:[],
     }
     this.setStatus=this.setStatus.bind(this)
     this.setPriority=this.setPriority.bind(this)
@@ -79,18 +78,44 @@ class PeopleReport extends Component {
     });
   }
   setPriority(priorityValue) {
-    this.setState((state) => {
-      return {
-        priority:priorityValue
-      }
-    });
+    if (priorityValue!='Filter Off') {
+      this.setState((state) => {
+        return {
+          priority: priorityValue,
+          priorityList: this.state.priorityList.concat(priorityValue)
+
+        }
+      });
+    }
+    else{
+      this.setState((state) => {
+        return {
+          priority: priorityValue,
+          priorityList: []
+        }
+      });
+
+    }
   }
   setStatus(statusValue) {
-    this.setState((state) => {
-      return {
-        status:statusValue
-      }
-    });
+    if (statusValue!='Filter Off') {
+      this.setState((state) => {
+        return {
+          status: statusValue,
+          statusList: this.state.statusList.concat(statusValue)
+
+        }
+      });
+    }
+    else{
+      this.setState((state) => {
+        return {
+          status: statusValue,
+          statusList: []
+        }
+      });
+
+    }
   }
   setAssign(assignValue) {
     this.setState((state) => {
@@ -115,11 +140,24 @@ class PeopleReport extends Component {
   }
 
   setClassfication(classificationValue) {
-    this.setState((state) => {
-      return {
-        classification:classificationValue
-      }
-    });
+    if (classificationValue!='Filter Off') {
+      this.setState((state) => {
+        return {
+          classification: classificationValue,
+          classificationList: this.state.classificationList.concat(classificationValue)
+
+        }
+      });
+    }
+    else{
+      this.setState((state) => {
+        return {
+          classification: classificationValue,
+          classificationList: []
+        }
+      });
+
+    }
   }
 
   setUsers(userValue) {
@@ -140,17 +178,26 @@ class PeopleReport extends Component {
       isActive,
       priority,
       status,
-      hasFilter,
       allClassification,
       classification,
+      classificationList,
+      priorityList,
+      statusList,
       users
     } = this.state
     const {
       firstName,
       lastName,
       weeklyComittedHours,
-      totalComittedHours
+      totalComittedHours,
+      totalTangibleHrs
     } = userProfile
+
+    var totalTangibleHrsRound = 0
+    if (totalTangibleHrs) {
+       totalTangibleHrsRound = totalTangibleHrs.toFixed(2);
+    }
+
     const ShowCollapse = props => {
       const [open, setOpen] = useState(false);
       return(
@@ -158,6 +205,7 @@ class PeopleReport extends Component {
           <Button
             onClick={() => setOpen(!open)}
             aria-expanded={open}>
+            {props.resources.length}     ➤
           </Button>
           <div>
             {props.resources[0].name}
@@ -175,23 +223,115 @@ class PeopleReport extends Component {
       )
     }
 
-    const UserTask = props => {
+    const ShowTasksCollapse = props => {
+      const [open, setOpen] = useState(false);
+      return(
+        <div>
+              <table className="center">
+                <table className="table table-bordered table-responsive-sm">
+                  <thead>
+                  <tr>
+                    <th scope="col">
+                      <Button variant="light"
+                        onClick={() => setOpen(!open)}
+                        aria-expanded={open}>⬇</Button>
+                    </th>
+                    <th scope="col" id="projects__active">Task</th>
+                    <th scope="col" id="projects__active">Priority</th>
+                    <th scope="col" id="projects__active">Status</th>
+                    <th scope="col" >Resources</th>
+                    <th scope="col" id="projects__active">Active</th>
+                    <th scope="col" id="projects__active">Assign</th>
+                    <th scope="col" id="projects__active">Class</th>
+                    <th scope="col" id="projects__active">Estimated Hours</th>
+                    <th scope="col">Start Date</th>
+                    <th scope="col">End Date</th>
+                  </tr>
+                  </thead>
+                  <Collapse in={open}>
+                  <tbody>
+                  { props.userTaskList}
+                  </tbody>
+                  </Collapse>
+                </table>
+              </table>
+        </div>
+
+      )
+    }
+
+
+    const UserTask = (props) => {
       let userTaskList = []
+      let tasks=[]
+
+      tasks=props.userTask
       if (props.userTask.length > 0) {
-        let tasks=props.userTask
-          tasks = props.userTask.filter(item => item.isActive === props.isActive
-            && item.isAssigned === props.isAssigned);
-          if (!(props.priority === "")) {
-            tasks=props.userTask.filter(item => item.priority == props.priority &&item.isActive === props.isActive
-              && item.isAssigned === props.isAssigned)
+          if (!(props.isActive === "" )) {
+            tasks = props.userTask.filter(item => item.isActive === props.isActive
+            );
+          }
+          if (!(props.isAssigned ==="")) {
+            tasks = props.userTask.filter(item => item.isAssigned === props.isAssigned);
           }
 
-          if  (!(props.status === "")) {
-            tasks=props.userTask.filter(item => item.status == props.status &&item.isActive === props.isActive
-              && item.isAssigned === props.isAssigned)
+        if (props.priorityList.length>0){
+          var i=0
+          var get_tasks=[]
+          while( i< props.priorityList.length) {
+            if (props.priorityList[i] !='Filter Off') {
+              for (var j = 0; j < tasks.length; j++) {
+                if (tasks[j].priority === props.priorityList[i]) {
+                  get_tasks.push(tasks[j])
+                }
+              }
+              i += 1
+            }
+            else{
+              get_tasks=props.tasks_filter
+              break
+            }
           }
-        if  (!(props.classification === "")) {
-          tasks=tasks.filter(item => item.classification === props.classification)
+          tasks=get_tasks
+        }
+
+        if (props.classificationList.length>0){
+          var i=0
+          var get_tasks=[]
+          while( i< props.classificationList.length) {
+            if (props.classificationList[i] !='Filter Off') {
+              for (var j = 0; j < tasks.length; j++) {
+                if (tasks[j].classification === props.classificationList[i]) {
+                  get_tasks.push(tasks[j])
+                }
+              }
+              i += 1
+            }
+            else{
+              get_tasks=props.tasks_filter
+              break
+            }
+          }
+          tasks=get_tasks
+        }
+        if (props.statusList.length>0){
+          var i=0
+          var get_tasks=[]
+          while( i< props.statusList.length) {
+            if (props.statusList[i] !='Filter Off') {
+              for (var j = 0; j < tasks.length; j++) {
+                if (tasks[j].status === props.statusList[i]) {
+                  get_tasks.push(tasks[j])
+                }
+              }
+              i += 1
+            }
+            else{
+              get_tasks=props.tasks_filter
+              break
+            }
+          }
+          tasks=get_tasks
         }
 
         if  (!(props.users === "")) {
@@ -207,24 +347,9 @@ tasks=test
         }
 
 if (tasks.length>0) {
+
   userTaskList = tasks.map((task, index) => (
     <tr id={"tr_" + task._id}>
-      <th scope="row">
-        <div>
-          here
-          </div>
-        {/*<EditPeopleReportTaskModal*/}
-        {/*  key={`editTask_${task._id}`}*/}
-        {/*  parentNum={task.num}*/}
-        {/*  taskId={task._id}*/}
-        {/*  wbsId={task.wbsId}*/}
-        {/*  parentId1={task.parentId1}*/}
-        {/*  parentId2={task.parentId2}*/}
-        {/*  parentId3={task.parentId3}*/}
-        {/*  mother={task.mother}*/}
-        {/*  level={task.level}*/}
-        {/*/>*/}
-      </th>
       <th scope="row">
         <div>{index + 1}</div>
       </th>
@@ -246,6 +371,7 @@ if (tasks.length>0) {
           <ShowCollapse resources={task.resources}/>
         }
       </td>
+
       <td className='projects__active--input'>
         {task.isActive ?
           <tasks className="isActive"><i className="fa fa-circle" aria-hidden="true"></i></tasks> :
@@ -254,8 +380,8 @@ if (tasks.length>0) {
 
       <td className='projects__active--input'>
         {task.isAssigned ?
-          <div className="isActive">Assign</div> :
-          <div className="isNotActive">Not Assign</div>}
+          <div>Assign</div> :
+          <div>Not Assign</div>}
       </td>
       <td className='projects__active--input'>
         {task.classification}
@@ -275,37 +401,62 @@ if (tasks.length>0) {
 }
       return (
         <div>
-          <h2>Total: {userTaskList.length}</h2>
-          <h2>Selected filters</h2>
-          <div>isAssigned:{isAssigned}</div>
-          <div>isActive:{isActive.toString()}</div>
-          <div>priority:{priority}</div>
-          <div>status:{status}</div>
-          <div>classification:{classification}</div>
-          <div>users:{users}</div>
-          <table className="center">
-            <table className="table table-bordered table-responsive-sm">
-              <thead>
-              <tr>
-                <th scope="col" id="projects__order">Action</th>
-                <th scope="col" id="projects__order">#</th>
-                <th scope="col" id="projects__active">Task</th>
-                <th scope="col" id="projects__active">Priority</th>
-                <th scope="col" id="projects__active">Status</th>
-                <th scope="col" >Resources</th>
-                <th scope="col" id="projects__active">Active</th>
-                <th scope="col" id="projects__active">Assign</th>
-                <th scope="col" id="projects__active">Class</th>
-                <th scope="col" id="projects__active">Estimated Hours</th>
-                <th scope="col" id="projects__active">Start Date</th>
-                <th scope="col" id="projects__active">End Date</th>
-              </tr>
-              </thead>
-              <tbody>
-              { userTaskList}
-              </tbody>
-            </table>
-          </table>
+          <div>Total: {userTaskList.length}</div>
+          <div>Selected filters:</div>
+          <div className="row">
+          <div class="block">Assignment:
+            <ToggleButtonGroup type="checkbox" variant="info">
+              {isAssigned ?
+                <ToggleButton variant="info">Assign</ToggleButton>
+                :
+                <ToggleButton variant="info">Not Assign</ToggleButton>
+              }
+
+            </ToggleButtonGroup>
+          </div>
+          <div class="block">Active:
+            <ToggleButtonGroup type="checkbox" variant="info">
+              {isActive ?
+                <ToggleButton variant="info">Active</ToggleButton>
+                :
+                <ToggleButton variant="info">InActive</ToggleButton>
+              }
+            </ToggleButtonGroup>
+          </div>
+
+         <div class="block">Priority:
+          <ToggleButtonGroup type="checkbox" variant="info">
+            {priorityList.map((c, index) => (
+              <ToggleButton variant="info">{c}</ToggleButton>
+            ))}
+          </ToggleButtonGroup>
+  </div>
+
+          <div class="block">Status:
+            <ToggleButtonGroup type="checkbox" variant="info">
+              {statusList.map((c, index) => (
+                <ToggleButton variant="info">{c}</ToggleButton>
+              ))}
+            </ToggleButtonGroup>
+          </div>
+
+          <div class="block">Classification:
+            <ToggleButtonGroup type="checkbox" variant="info">
+              {classificationList.map((c, index) => (
+                <ToggleButton variant="info">{c}</ToggleButton>
+              ))}
+            </ToggleButtonGroup>
+          </div>
+
+          <div class="block">User:
+            <ToggleButtonGroup type="checkbox" variant="info">
+                <ToggleButton variant="info">{users}</ToggleButton>
+            </ToggleButtonGroup>
+          </div>
+
+          <ShowTasksCollapse userTaskList={userTaskList}/>
+
+        </div>
         </div>
       )
     }
@@ -313,7 +464,6 @@ if (tasks.length>0) {
       let userProjectList = []
       return (
         <div>
-          <h1>User Task</h1>
           { userProjectList }
         </div>
       )
@@ -360,13 +510,75 @@ if (tasks.length>0) {
         </DropdownButton>
       )
     };
+    const ShowInfringmentsCollapse = props => {
+      const [open, setOpen] = useState(false);
+      return(
+        <div>
+          <table className="center">
+            <table className="table table-bordered table-responsive-sm">
+              <thead>
+              <tr>
+                <th scope="col" id="projects__order">
+                  <Button variant="light"
+                    onClick={() => setOpen(!open)}
+                    aria-expanded={open}>
+                    ⬇
+                  </Button>
+                </th>
+
+                <th scope="col" id="projects__order">Date</th>
+                <th scope="col">Description</th>
+              </tr>
+              </thead>
+              <Collapse in={open}>
+              <tbody>
+              { props.BlueSquare }
+              </tbody>
+                </Collapse>
+            </table>
+          </table>
+
+        </div>
+
+      )
+    }
+
 
 
     const Infringments = props => {
       let BlueSquare = []
-      if (props.infringments.length > 0) {
+      let dict= {}
+
+      const value=[]
+      const value1=[]
+      const [selected, setSelected] = useState('')
+      for (var i = 0; i < props.infringments.length; i++) {
+        if (props.infringments[i].date in dict){
+          dict[props.infringments[i].date].count+=1
+          dict[props.infringments[i].date].des.push(props.infringments[i].description)
+        }else{
+          dict[props.infringments[i].date]={count:1,des:[props.infringments[i].description]}
+        }
+      }
+
+      for (var key in dict) {
+        value.push({date:key.toString(),des:dict[key].des,count:dict[key].count})
+        value1.push({date:{date1:key.toString(),des:dict[key].des},count:dict[key]})
+
+      }
+
+
+      const startdate=Object.keys(dict)[0]
+      var startdateStr=""
+      if (startdate){
+         startdateStr=startdate.toString()
+
+      }
+        if (props.infringments.length > 0) {
         BlueSquare = props.infringments.map((current, index) => (
           <tr className="teams__tr">
+            <td>{index+1}
+              </td>
           <td>
             {current.date}
           </td>
@@ -376,27 +588,20 @@ if (tasks.length>0) {
           </tr>
         ))}
       return (
-
-        <table className="center">
-          <table className="table table-bordered table-responsive-sm">
-            <thead>
-            <tr>
-              <th scope="col" id="projects__order">Date</th>
-              <th scope="col">description</th>
-            </tr>
-            </thead>
-            <tbody>
-            { BlueSquare }
-            </tbody>
-          </table>
-        </table>
+        <div>
+        <h2>Blue Square: {infringments.length}</h2>
+      <div>
+      </div>
+          <ShowInfringmentsCollapse BlueSquare={BlueSquare}/>
+          </div>
       )
     }
     const StartDate = (props) => {
         return (
-          <h2>Start Date:{moment(props.userProfile.createdDate).format('YYYY-MM-DD')}</h2>
+            <div>Start Date:{moment(props.userProfile.createdDate).format('YYYY-MM-DD')}</div>
     )
     };
+
     const ActiveOptions = props => {
       var allOptions=[...Array.from(new Set(props.get_tasks.map((item) => item.isActive.toString())))]
       return (
@@ -408,17 +613,7 @@ if (tasks.length>0) {
       )
     };
 
-    const AssignmentOptions = props => {
-      var allOptions=[...Array.from(new Set(props.get_tasks.map((item) => item.isAssigned.toString()))).sort()]
-      allOptions.unshift("Filter Off")
-      return (
-        <DropdownButton style={{margin:'3px'}} exact id="dropdown-basic-button" title="Assignment Options">
-          {allOptions.map((c, index) => (
-            <Dropdown.Item onClick={()=>this.setAssign(c)}>{c}</Dropdown.Item>
-          ))}
-        </DropdownButton>
-      )
-    };
+
 
     const PriorityOptions = props => {
       var allPriorities=[...Array.from(new Set(props.get_tasks.map((item) => item.priority))).sort()]
@@ -433,37 +628,52 @@ if (tasks.length>0) {
     };
 
     return (
+      <div className='container'>
         <table>
-          <DropdownButton id="dropdown-basic-button" title="Time Frame">
-            <Dropdown.Item href="#/action-1">Past Week</Dropdown.Item>
-            <Dropdown.Item href="#/action-2">Past Two Weeks</Dropdown.Item>
-            <Dropdown.Item href="#/action-3">Past Month</Dropdown.Item>
-            <Dropdown.Item href="#/action-4">Past 6 Months</Dropdown.Item>
-            <Dropdown.Item href="#/action-5">Past Year</Dropdown.Item>
-            <Dropdown.Item href="#/action-6">Custom range</Dropdown.Item>
-          </DropdownButton>
-          <div>
-            <h1
-              style={{ display: 'inline-block', marginRight: 10 }}
-            >Name: {`${firstName} ${lastName}`}</h1>
-            <h2>Weekly Comitted Hours:{weeklyComittedHours}</h2>
-            <h2>Total Comitted Hours:{totalComittedHours}</h2>
-            <StartDate userProfile={userProfile}/>
-            <Infringments infringments={infringments}/>
+          <h1 className="center"
+            style={{ display: 'inline-block', marginRight: 10 }}
+          > {`${firstName} ${lastName}`}</h1>
+          <div >Weekly Comitted Hours: {weeklyComittedHours}</div>
+          <div>Total Comitted Hours:{totalComittedHours}</div>
+          <div>Total Tangible Hours:{totalTangibleHrsRound}</div>
+          <StartDate userProfile={userProfile}/>
+          <div class="row">
           </div>
-            <h2>Tasks</h2>
-          <div>
-            <button style={{margin:'3px'}} exact className="btn btn-secondary btn-bg mt-3" onClick={()=>this.setFilter()}>Filter Off</button>
-            <AssignmentOptions get_tasks={userTask}/>
+
+
+          <div class="row">
+            <div>
+              <div><button style={{margin:'3px'}} exact className="btn btn-secondary btn-bg mt-3" onClick={()=>this.setFilter()}>Filters Off</button>
+              </div>
+<div>
+            <input name='radio' type="radio" style={{margin:'5px'}} value="active" onChange={()=>this.setAssign(true)}  />
+            Assigned
+            <input name='radio' type="radio" style={{margin:'5px'}} value="inactive" onChange={()=>this.setAssign(false) } />
+            Not Assigned
+            </div>
+            <div>
             <input name='radio' type="radio" style={{margin:'5px'}} value="active" onChange={()=>this.setActive(true)}  />
             Active
             <input name='radio' type="radio" style={{margin:'5px'}} value="inactive" onChange={()=>this.setActive(false) } />
-            InActive
-            <PriorityOptions get_tasks={userTask}/>
-            <StatusOptions get_tasks={userTask}/>
-            <button style={{margin:'3px'}} exact className="btn btn-secondary btn-bg mt-3">Estimated Hours</button>
-            <ClassificationOptions allClassification={allClassification}/>
+            Inactive
+              </div>
+              </div>
+            <div className="row">
+<div>
+
+  </div>
+              <div > <PriorityOptions get_tasks={userTask}/>
+              </div>
+              <div >
+              <StatusOptions get_tasks={userTask}/>
+              </div>
+              <div >
+                <ClassificationOptions allClassification={allClassification}/>
+              </div>
+              <div >
             <UserOptions userTask={userTask}/>
+              </div>
+            </div>
           </div>
 
             <UserTask userTask={userTask}
@@ -472,10 +682,17 @@ if (tasks.length>0) {
                       priority={priority}
                       status={status}
                       classification={classification}
-                       users={users}/>
-          <h2>Projects</h2>
+                       users={users}
+                      classificationList={classificationList}
+                      priorityList={priorityList}
+                      statusList={statusList}
+            />
           <UserProject userProjects={userProjects}/>
+          <Infringments infringments={infringments}/>
+
         </table>
+
+      </div>
       )
     }
 }
@@ -498,7 +715,10 @@ const mapStateToProps = state => ({
   hasFilter: state.hasFilter,
   allClassification:state.allClassification,
   classification:state.classification,
-  users:state.users
+  users:state.users,
+  classificationList:state.classificationList,
+  priorityList:state.priorityList,
+  statusList:state.statusList,
 });
 
 export default connect(mapStateToProps, {
