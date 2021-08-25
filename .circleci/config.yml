@@ -8,7 +8,7 @@ jobs:
       - checkout
       - run:
           name: Set environment variables (Does this do anything given Surge is a CDN?)
-          command: export REACT_APP_APIENDPOINT=$APIENDPOINT_DEV SKIP_PREFLIGHT_CHECK=true
+          command: export REACT_APP_APIENDPOINT=$APIENDPOINT_DEV REACT_APP_SENTRY_URL=$SENTRY_URL_DEV SKIP_PREFLIGHT_CHECK=true
       - run:
           name: Install NodeJS dependencies
           command: npm install
@@ -21,27 +21,6 @@ jobs:
       - run:
           name: Deploy compiled app to surge.sh on $SURGE_DOMAIN_DEV
           command: ./node_modules/.bin/surge --domain $SURGE_DOMAIN_DEV --project ./build
-
-  build_development_test:
-    docker:
-      - image: cimg/node:14.17.0
-    steps:
-      - checkout
-      - run:
-          name: Set environment variables (Does this do anything given Surge is a CDN?)
-          command: export REACT_APP_APIENDPOINT=$APIENDPOINT_DEV SKIP_PREFLIGHT_CHECK=true
-      - run:
-          name: Install NodeJS dependencies
-          command: npm install
-      - run:
-          name: Build the React client
-          command: npm run build
-      - run:
-          name: Create 200.html for (required for Surge)
-          command: cp build/index.html build/200.html
-      - run:
-          name: Deploy compiled app to surge.sh on highest-good-test.surge.sh
-          command: ./node_modules/.bin/surge --domain highest-good-test.surge.sh --project ./build
 
   build_beta:
     docker:
@@ -79,10 +58,4 @@ workflows:
             branches:
               only:
                 - main
-        
-      - build_development_test:
-          filters:
-            branches:
-              only:
-                - development_test
 
