@@ -1,27 +1,13 @@
 version: 2
 jobs:
-  build_dev:
-    docker:
-      - image: cimg/node:14.17.0
-    steps:
-      - checkout
-      - run:
-          name: npm install
-          command: "sudo npm install"
-      - run:
-          name: Run react build
-          command: "sudo REACT_APP_APIENDPOINT=$APIENDPOINT_DEV REACT_APP_SENTRY_URL=$SENTRY_URL_DEV SKIP_PREFLIGHT_CHECK=true npm run build && sudo mv build/index.html build/200.html"
-      - run:
-          name: Deploy app
-          command: ./node_modules/.bin/surge build --domain $SURGE_DOMAIN_DEV
 
-  build_beta:
+  build_development:
     docker:
       - image: cimg/node:14.17.0
     steps:
       - checkout
       - run:
-          name: Set Environment variables
+          name: Set environment variables (Does this do anything given Surge is a CDN?)
           command: export REACT_APP_APIENDPOINT=$APIENDPOINT_BETA SKIP_PREFLIGHT_CHECK=true
       - run:
           name: Install NodeJS dependencies
@@ -30,49 +16,49 @@ jobs:
           name: Build the React client
           command: npm run build
       - run:
-          name: Replace build/200.html with build/index.html
-          command: mv build/index.html build/200.html
+          name: Create 200.html for (required for Surge)
+          command: cp build/index.html build/200.html
       - run:
-          name: Create CNAME file
-          command: touch build/CNAME
-      - run:
-          name: Configure CNAME file
-          command: echo "highestgood.com" > build/CNAME
-      - run:
-          name: Deploy appbuild_beta
-          command: ./node_modules/.bin/surge build --domain $SURGE_DOMAIN_BETA
+          name: Deploy compiled app to surge.sh on $SURGE_DOMAIN_DEV
+          command: ./node_modules/.bin/surge --domain $SURGE_DOMAIN_DEV --project ./build
 
-  build_PROD:
+  build_production:
     docker:
       - image: cimg/node:14.17.0
     steps:
       - checkout
       - run:
-          name: npm install
-          command: "sudo npm install"
+          name: Set environment variables (Does this do anything given Surge is a CDN?)
+          command: export REACT_APP_APIENDPOINT=$APIENDPOINT_PROD REACT_APP_SENTRY_URL=$SENTRY_URL_PROD SKIP_PREFLIGHT_CHECK=true
       - run:
-          name: Run react build
-          command: "sudo REACT_APP_APIENDPOINT=$APIENDPOINT_PROD REACT_APP_SENTRY_URL=$SENTRY_URL_PROD SKIP_PREFLIGHT_CHECK=true npm run build && sudo mv build/index.html build/200.html"
+          name: Install NodeJS dependencies
+          command: npm install
       - run:
-          name: Deploy app
-          command: ./node_modules/.bin/surge build --domain $SURGE_DOMAIN_PROD
-
+          name: Build the React client
+          command: npm run build
+      - run:
+          name: Create 200.html for (required for Surge)
+          command: cp build/index.html build/200.html
+      - run:
+          name: Deploy compiled app to surge.sh on $SURGE_DOMAIN_PROD
+          command: ./node_modules/.bin/surge --domain $SURGE_DOMAIN_PROD --project ./build
+      - run:
+          name: Deploy compiled app to surge.sh on highestgood.com
+          command: ./node_modules/.bin/surge --domain highestgood.com --project ./build
+          
 workflows:
   version: 2
   build-deploy:
-    jobs:
-      - build_dev:
+
+      - build_development:
           filters:
             branches:
               only:
                 - development
-      - build_beta:
+
+      - build_production:
           filters:
             branches:
               only:
                 - main
-      - build_PROD:
-          filters:
-            branches:
-              only: master
 
