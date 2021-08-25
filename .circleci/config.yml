@@ -8,7 +8,7 @@ jobs:
       - checkout
       - run:
           name: Set environment variables (Does this do anything given Surge is a CDN?)
-          command: export REACT_APP_APIENDPOINT=$APIENDPOINT_BETA SKIP_PREFLIGHT_CHECK=true
+          command: export REACT_APP_APIENDPOINT=$APIENDPOINT_DEV SKIP_PREFLIGHT_CHECK=true
       - run:
           name: Install NodeJS dependencies
           command: npm install
@@ -22,14 +22,14 @@ jobs:
           name: Deploy compiled app to surge.sh on $SURGE_DOMAIN_DEV
           command: ./node_modules/.bin/surge --domain $SURGE_DOMAIN_DEV --project ./build
 
-  build_production:
+  build_beta:
     docker:
       - image: cimg/node:14.17.0
     steps:
       - checkout
       - run:
           name: Set environment variables (Does this do anything given Surge is a CDN?)
-          command: export REACT_APP_APIENDPOINT=$APIENDPOINT_PROD REACT_APP_SENTRY_URL=$SENTRY_URL_PROD SKIP_PREFLIGHT_CHECK=true
+          command: export REACT_APP_APIENDPOINT=$APIENDPOINT_BETA REACT_APP_SENTRY_URL=$SENTRY_URL_BETA SKIP_PREFLIGHT_CHECK=true
       - run:
           name: Install NodeJS dependencies
           command: npm install
@@ -40,11 +40,8 @@ jobs:
           name: Create 200.html for (required for Surge)
           command: cp build/index.html build/200.html
       - run:
-          name: Deploy compiled app to surge.sh on $SURGE_DOMAIN_PROD
-          command: ./node_modules/.bin/surge --domain $SURGE_DOMAIN_PROD --project ./build
-      - run:
-          name: Deploy compiled app to surge.sh on highestgood.com
-          command: ./node_modules/.bin/surge --domain highestgood.com --project ./build
+          name: Deploy compiled app to surge.sh on $SURGE_DOMAIN_BETA
+          command: ./node_modules/.bin/surge --domain $SURGE_DOMAIN_BETA --project ./build
           
 workflows:
   version: 2
@@ -56,7 +53,7 @@ workflows:
               only:
                 - development
 
-      - build_production:
+      - build_beta:
           filters:
             branches:
               only:
