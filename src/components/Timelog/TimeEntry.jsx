@@ -18,7 +18,8 @@ const TimeEntry = ({ data, displayYear, userProfile }) => {
   const dateOfWork = moment(data.dateOfWork);
   const { user } = useSelector((state) => state.auth);
   const isOwner = data.personId === user.userid;
-  const isSameDay = moment().isSame(data.dateOfWork, 'day');
+
+  const isSameDay = moment().tz('America/Los_Angeles').format('YYYY-MM-DD') === data.dateOfWork
   const isAdmin = user.role === 'Administrator';
 
   const dispatch = useDispatch();
