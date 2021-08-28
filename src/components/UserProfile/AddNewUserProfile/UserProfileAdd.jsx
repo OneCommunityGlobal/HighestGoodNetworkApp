@@ -377,11 +377,13 @@ class AddUserProfile extends Component {
 
     createUser(userData)
       .then(res => {
-        toast.success('User profile created.')
-        this.props.userCreated()
+        
+          toast.success('User profile created.')
+          this.props.userCreated()
+
       })
       .catch(err => {
-        toast.error(err.response.data.message)
+        toast.error(err.response?.data?.error || 'An unknown error occurred while attempting to create this user.')
       })
   }
 
