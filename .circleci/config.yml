@@ -84,14 +84,11 @@ jobs:
           name: Install yarn
           command: apt-get install yarn -y
       - run:
-          name: Set environment variables
-          command: export REACT_APP_APIENDPOINT=$APIENDPOINT_DEV REACT_APP_SENTRY_URL=$SENTRY_URL_DEV SKIP_PREFLIGHT_CHECK=true
-      - run:
           name: Install HighestGoodNetworkApp's NodeJS dependencies
           command: npm install
       - run:
           name: Build the React client
-          command: npm run build
+          command: export REACT_APP_APIENDPOINT=$APIENDPOINT_DEV REACT_APP_SENTRY_URL=$SENTRY_URL_DEV SKIP_PREFLIGHT_CHECK=true && npm run build
       - run:
           name: Create ZIP archive of build directory
           command: zip -r build.zip build
