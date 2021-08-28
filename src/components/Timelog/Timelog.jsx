@@ -70,10 +70,9 @@ class Timelog extends Component {
   state = this.initialState
 
   async componentDidMount() {
-    const userId =
-      this.props.match && this.props.match.params.userId
-        ? this.props.match.params.userId
-        : this.props.asUser || this.props.auth.user.userid
+
+
+    const userId = this.props?.match?.params?.userId || this.props.auth.user.userid
     await this.props.getUserProfile(userId)
     this.userProfile = this.props.userProfile
     await this.props.getTimeEntriesForWeek(userId, 0)
@@ -84,25 +83,28 @@ class Timelog extends Component {
   }
 
   async componentDidUpdate(prevProps) {
-    if (
-      (prevProps.match && prevProps.match.params.userId !== this.props.match.params.userId) ||
-      prevProps.asUser !== this.props.asUser
-    ) {
+
+    //Don't run function on first render
+    if(!this.props.match) return;
+
+    if ((prevProps.match?.params?.userId !== this.props.match.params.userId) || prevProps.asUser !== this.props.asUser) {
+      
       this.setState(this.initialState)
 
-      const userId =
-        this.props.match && this.props.match.params.userId
-          ? this.props.match.params.userId
-          : this.props.asUser || this.props.auth.user.userid
+      const userId = this.props.match?.params?.userId || this.props.asUser || this.props.auth.user.userid
 
       await this.props.getUserProfile(userId)
 
       this.userProfile = this.props.userProfile
-      await this.props.getTimeEntriesForWeek(userId, 0)
-      await this.props.getTimeEntriesForWeek(userId, 1)
-      await this.props.getTimeEntriesForWeek(userId, 2)
-      await this.props.getTimeEntriesForPeriod(userId, this.state.fromDate, this.state.toDate)
-      await this.props.getUserProjects(userId)
+
+      await Promise.all([
+        this.props.getTimeEntriesForWeek(userId, 0),
+        this.props.getTimeEntriesForWeek(userId, 1),
+        this.props.getTimeEntriesForWeek(userId, 2),
+        this.props.getTimeEntriesForPeriod(userId, this.state.fromDate, this.state.toDate),
+        this.props.getUserProjects(userId)
+      ]);
+
     }
   }
 
@@ -450,7 +452,7 @@ class Timelog extends Component {
                     )}
                     <Form inline className="mb-2">
                       <FormGroup>
-                        <Label for="projectSelected" className="mr-2 ml-1 mb-5 align-top">
+                        <Label for="projectSelected" className="mr-1 ml-1 mb-1 align-top">
                           Filter Entries by Project:
                         </Label>
                         <Input
