@@ -1,18 +1,17 @@
 
-import { renderWithProvider, renderWithRouterMatch } from './utils.js';
+import { renderWithRouterMatch } from './utils.js';
 import '@testing-library/jest-dom/extend-expect';
 import React from 'react';
 import { createMemoryHistory } from 'history';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import {
-  render, fireEvent, waitFor, screen,
+  fireEvent, waitFor, screen,
 } from '@testing-library/react';
-import { ENDPOINTS } from '../utils/URL';
+import { ApiEndpoint, ENDPOINTS } from '../utils/URL';
 import { GET_ERRORS } from '../constants/errors';
 import mockState from './mockAdminState.js';
 import routes from '../routes';
-import { Login } from '../components/Login/Login';
 import { clearErrors } from '../actions/errorsActions';
 
 import { loginUser } from '../actions/authActions';
@@ -20,13 +19,7 @@ import { loginUser } from '../actions/authActions';
 const url = ENDPOINTS.LOGIN;
 const timerUrl = ENDPOINTS.TIMER(mockState.auth.user.userid);
 const userProjectsUrl = ENDPOINTS.USER_PROJECTS(mockState.auth.user.userid);
-let endpoint = process.env.REACT_APP_APIENDPOINT;
-if (!endpoint) {
-  // This is to resolve the issue in azure env variable
-  // APIEndpoint = fetch('/config.json').then((data) => {
-  endpoint = 'https://hgnrestdev.azurewebsites.net';
-  // });
-}
+
 const server = setupServer(
   rest.post(url, (req, res, ctx) => {
     if (req.body.email === 'validEmail@gmail.com' && req.body.password === 'validPass') {
@@ -36,8 +29,8 @@ const server = setupServer(
     }
     return res(ctx.status(403), ctx.json({ message: 'Invalid email and/ or password.' }));
   }),
-  rest.get(endpoint + '/userprofile/*', (req, res, ctx) => res(ctx.status(200), ctx.json({}))),
-  rest.get(endpoint + '/api/dashboard/*', (req, res, ctx) => res(ctx.status(200), ctx.json([
+  rest.get(ApiEndpoint + '/userprofile/*', (req, res, ctx) => res(ctx.status(200), ctx.json({}))),
+  rest.get(ApiEndpoint + '/api/dashboard/*', (req, res, ctx) => res(ctx.status(200), ctx.json([
     {
       personId: '5edf141c78f1380017b829a6',
       name: 'Dev Admin',

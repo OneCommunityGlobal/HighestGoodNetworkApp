@@ -27,13 +27,7 @@ import report_icon from './report_icon.png'
 import httpService from '../../services/httpService'
 import { faWindowMinimize } from '@fortawesome/free-regular-svg-icons'
 
-let APIEndpoint = process.env.REACT_APP_APIENDPOINT
-if (!APIEndpoint) {
-  // This is to resolve the issue in azure env variable
-  // APIEndpoint = fetch('/config.json').then((data) => {
-  APIEndpoint = 'https://hgnrestdev.azurewebsites.net'
-  // });
-}
+import { ApiEndpoint } from 'utils/URL'
 
 const SummaryBar = props => {
   const { firstName, lastName, email, _id } = useSelector(state => state.userProfile)
@@ -116,7 +110,7 @@ const SummaryBar = props => {
     data['lastName'] = lastName
     data['email'] = email
 
-    httpService.post(`${APIEndpoint}/dashboard/bugreport/${_id}`, data).catch(e => {})
+    httpService.post(`${ApiEndpoint}/dashboard/bugreport/${_id}`, data).catch(e => {})
     openReport()
   }
 
