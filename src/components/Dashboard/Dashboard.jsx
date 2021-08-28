@@ -40,18 +40,6 @@ export const Dashboard = props => {
 
   return (
     <Container fluid>
-      <Row>
-        <Col sm={{ size: 12 }}>
-          <Alert color="info">
-            <b>Reminder</b>: You are using the Beta version of this app. Anytime you encounter a
-            problem and/or need to update your current version with the latest bug fixes: 1)
-            Navigate to <a href={baseUrl}>{baseUrl}</a> 2) Right-click anywhere on the app and
-            choose “inspect” 3) Right-click the refresh icon by the URL and choose “Empty Cache and
-            Hard Reload” 4) If necessary go under your browser settings and “Clear Browsing Data”
-            for “Cookies and other site data” and “Cached images and files”
-          </Alert>
-        </Col>
-      </Row>
 
       <SummaryBar asUser={userId} toggleSubmitForm={toggle} />
 
