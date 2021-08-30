@@ -16,7 +16,7 @@ import {
   NavLink,
   Nav,
 } from 'reactstrap'
-// import Image from 'react-bootstrap/Image';
+
 import ToggleSwitch from '../UserProfileEdit/ToggleSwitch'
 import './UserProfileAdd.scss'
 import { createUser } from '../../../services/userProfileService'
@@ -37,6 +37,8 @@ import PhoneInput from 'react-phone-input-2'
 import 'react-phone-input-2/lib/style.css'
 
 import classnames from 'classnames'
+import timeZoneMap from 'constants/timeZones'
+import TimeZoneDropDown from '../TimeZoneDropDown'
 
 class AddUserProfile extends Component {
   constructor(props) {
@@ -53,6 +55,7 @@ class AddUserProfile extends Component {
         jobTitle: '',
       },
       formValid: {},
+      timeZoneFilter: '',
     }
   }
 
@@ -233,6 +236,30 @@ class AddUserProfile extends Component {
                     </FormGroup>
                   </Col>
                 </Row>
+                <Row>
+                  <Col>
+                    <Label>Time Zone</Label>
+                  </Col>
+                  <Col>
+                    <FormGroup>
+                      <TimeZoneDropDown
+                      filter={this.state.timeZoneFilter}
+                      onChange={this.handleUserProfile}
+                      selected={'America/Los_Angeles'}
+                      />
+                    </FormGroup>
+                  </Col>
+                </Row>
+                <Row>
+                  <Col>
+                    <Label>Search For Time Zone</Label>
+                  </Col>
+                  <Col>
+                    <Input
+                      onChange={(e) => this.setState({...this.state, timeZoneFilter: e.target.value})}
+                    />
+                  </Col>
+                </Row>
               </Form>
             </Col>
           </Row>
@@ -351,6 +378,7 @@ class AddUserProfile extends Component {
       collaborationPreference,
       googleDoc,
       jobTitle,
+      timeZone
     } = that.state.userProfile
 
     const userData = {
@@ -369,6 +397,7 @@ class AddUserProfile extends Component {
       email: email,
       privacySettings: privacySettings,
       collaborationPreference: collaborationPreference,
+      timeZone
     }
 
     if (googleDoc) {
@@ -377,13 +406,14 @@ class AddUserProfile extends Component {
 
     createUser(userData)
       .then(res => {
-        
-          toast.success('User profile created.')
-          this.props.userCreated()
-
+        toast.success('User profile created.')
+        this.props.userCreated()
       })
       .catch(err => {
-        toast.error(err.response?.data?.error || 'An unknown error occurred while attempting to create this user.')
+        toast.error(
+          err.response?.data?.error ||
+            'An unknown error occurred while attempting to create this user.',
+        )
       })
   }
 
@@ -470,6 +500,7 @@ class AddUserProfile extends Component {
       case 'firstName':
       case 'lastName':
       case 'email':
+      case 'timeZone':
         this.setState({
           userProfile: {
             ...userProfile,
