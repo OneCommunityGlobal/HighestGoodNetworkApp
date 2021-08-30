@@ -437,6 +437,13 @@ export const timerMock = {
   seconds: 0,
 };
 export const userProfileMock = {
+  hoursByCategory: {
+    housing: 0,
+    food: 0,
+    education: 0,
+    society: 0,
+    energy: 0,
+  },
   timeEntryEditHistory: [],
   isActive: true,
   totalTangibleHrs: 15,

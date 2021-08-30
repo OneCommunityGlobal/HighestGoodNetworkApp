@@ -33,22 +33,13 @@ import BasicToolTips from './ToolTips/BasicTabTips'
 import ResetPasswordButton from '../UserManagement/ResetPasswordButton'
 import PauseAndResumeButton from '../UserManagement/PauseAndResumeButton'
 import Badges from './Badges'
-import TimeEntryEditHistory from './TimeEntryEditHistory.jsx';
+import TimeEntryEditHistory from './TimeEntryEditHistory.jsx'
 
 import axios from 'axios'
 import { getUserProfile } from 'actions/userProfile'
 import { useDispatch } from 'react-redux'
 
 const UserProfile = props => {
-
-  const initialHoursByCategory = {
-    housing: 0,
-    food: 0,
-    education: 0,
-    society: 0,
-    energy: 0,
-  }
-
   const initialFormValid = {
     firstName: true,
     lastName: true,
@@ -71,20 +62,18 @@ const UserProfile = props => {
   const [showModal, setShowModal] = useState(false)
   const [modalTitle, setModalTitle] = useState('')
   const [modalMessage, setModalMessage] = useState('')
-  const [hoursByCategory, setHoursByCategory] = useState(initialHoursByCategory)
-  const [shouldRefresh, setShouldRefresh] = useState(false);
+  const [shouldRefresh, setShouldRefresh] = useState(false)
 
-  const dispatch = useDispatch();
+  const dispatch = useDispatch()
 
   useEffect(() => {
     componentDidMount()
-    calculateHoursByCategory()
   }, [])
 
   // The following useEffect callback is a convoluted workaround that's required given
   // how the userProfile object is stored inside the global store. Sometimes, the global userProfile object
   // doesn't match the user profile currently being viewed for some reason, meaning that when it's
-  // passed down as a prop, it doesn't always match. 
+  // passed down as a prop, it doesn't always match.
 
   // Another factor making this necessary is that some changes to the
   // user profile object are not submitted immediately and are instead stored
@@ -92,17 +81,17 @@ const UserProfile = props => {
   // Can't simply be replaced with props.userProfile as changes would be erased before
   // they could be submitted.
 
-  //Because of this, we only use setUserProfile when the ID is different or when shouldRefresh is true. 
+  //Because of this, we only use setUserProfile when the ID is different or when shouldRefresh is true.
   useEffect(() => {
     if (props.userProfile._id !== userProfile._id || shouldRefresh === true) {
       setUserProfile(props.userProfile)
-      setShouldRefresh(false);
+      setShouldRefresh(false)
     }
   }, [props.userProfile, shouldRefresh])
 
   useEffect(() => {
     props.getUserProfile(props.match.params.userId)
-    setChanged(false);
+    setChanged(false)
   }, [props.match.params.userId])
 
   useEffect(() => {
@@ -122,32 +111,6 @@ const UserProfile = props => {
     await props.getAllUserTeams(userId)
     await props.fetchAllProjects(userId)
     setLoading(false)
-  }
-
-  const calculateHoursByCategory = async () => {
-    try {
-      const startDate = '1900-01-01'
-      const endDate = '3000-01-01'
-      const response = await axios.get(
-        `${process.env.REACT_APP_APIENDPOINT}/TimeEntry/user/${props.match.params.userId}/${startDate}/${endDate}`,
-      )
-      const timeEntries = response.data
-
-      const newHoursByCategory = { ...hoursByCategory }
-
-      timeEntries.forEach(entry => {
-        Object.keys(newHoursByCategory).forEach(category => {
-          if (
-            entry.isTangible &&
-            entry.projectName.toLowerCase().includes(category.toLowerCase())
-          ) {
-            newHoursByCategory[category] += parseFloat(entry.hours)
-          }
-        })
-      })
-
-      setHoursByCategory(newHoursByCategory)
-    } catch (err) {}
   }
 
   const onDeleteTeam = deletedTeamId => {
@@ -238,7 +201,6 @@ const UserProfile = props => {
   }
 
   const handleBlueSquare = (status = true, type = 'message', blueSquareID = '') => {
-
     setType(type)
     setShowModal(status)
 
@@ -261,7 +223,6 @@ const UserProfile = props => {
    * @param {String} operation 'add' | 'update' | 'delete'
    */
   const modifyBlueSquares = (id, dateStamp, summary, operation) => {
-
     if (operation === 'add') {
       const newBlueSquare = { date: dateStamp, description: summary }
       setShowModal(false)
@@ -302,7 +263,7 @@ const UserProfile = props => {
     } catch (err) {
       alert('An error occurred while attempting to save this profile.')
     }
-    setShouldRefresh(true);
+    setShouldRefresh(true)
   }
 
   const toggleInfoModal = () => {
@@ -404,8 +365,63 @@ const UserProfile = props => {
       case 'weeklySummaryNotReqd':
         setUserProfile({
           ...userProfile,
-          weeklySummaryNotReq: !userProfile.weeklySummaryNotReq
-        });
+          weeklySummaryNotReq: !userProfile.weeklySummaryNotReq,
+        })
+        break
+      case 'housingHours':
+        setUserProfile({
+          ...userProfile,
+          hoursByCategory: {
+            ...userProfile.hoursByCategory,
+            housing: event.target.value,
+          },
+        })
+        break
+      case 'foodHours':
+        setUserProfile({
+          ...userProfile,
+          hoursByCategory: {
+            ...userProfile.hoursByCategory,
+            food: event.target.value,
+          },
+        })
+        break
+      case 'educationHours':
+        setUserProfile({
+          ...userProfile,
+          hoursByCategory: {
+            ...userProfile.hoursByCategory,
+            education: event.target.value,
+          },
+        })
+        break
+      case 'societyHours':
+        setUserProfile({
+          ...userProfile,
+          hoursByCategory: {
+            ...userProfile.hoursByCategory,
+            society: event.target.value,
+          },
+        })
+        break
+      case 'energyHours':
+        setUserProfile({
+          ...userProfile,
+          hoursByCategory: {
+            ...userProfile.hoursByCategory,
+            energy: event.target.value,
+          },
+        })
+        break
+      case 'unassignedHours':
+        setUserProfile({
+          ...userProfile,
+          hoursByCategory: {
+            ...userProfile.hoursByCategory,
+            unassigned: event.target.value,
+          },
+        })
+        break
     }
   }
 
@@ -462,13 +478,12 @@ const UserProfile = props => {
                 <div className="file btn btn-lg btn-primary">
                   Change Photo
                   <Input
-                  style={{width: '100%', height: '100%', zIndex: '2'}}
+                    style={{ width: '100%', height: '100%', zIndex: '2' }}
                     type="file"
                     name="newProfilePic"
                     id="newProfilePic"
                     onChange={handleImageUpload}
                     accept="image/png,image/jpeg, image/jpg"
-
                   />
                 </div>
               ) : null}
@@ -579,8 +594,8 @@ const UserProfile = props => {
                 <NavItem>
                   <NavLink
                     className={classnames({ active: activeTab === '5' }, 'nav-link')}
-                    onClick={(e) => {
-                      e.preventDefault();
+                    onClick={e => {
+                      e.preventDefault()
                       toggleTab('5')
                     }}
                     data-testid="edit-history-tab"
@@ -611,8 +626,6 @@ const UserProfile = props => {
                   isUserAdmin={isUserAdmin}
                   isUserSelf={isUserSelf}
                   handleUserProfile={handleUserProfile}
-                  timeEntries={props.timeEntries}
-                  hoursByCategory={hoursByCategory}
                 />
               </TabPane>
               <TabPane tabId="3">
@@ -637,11 +650,11 @@ const UserProfile = props => {
               </TabPane>
               <TabPane tabId="5">
                 <TimeEntryEditHistory
-                userProfile={userProfile}
-                isAdmin={isUserAdmin}
-                updateUserProfile={props.updateUserProfile}
-                getUserProfile={props.getUserProfile}
-                setUserProfile={setUserProfile}
+                  userProfile={userProfile}
+                  isAdmin={isUserAdmin}
+                  updateUserProfile={props.updateUserProfile}
+                  getUserProfile={props.getUserProfile}
+                  setUserProfile={setUserProfile}
                 />
               </TabPane>
             </TabContent>
