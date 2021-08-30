@@ -50,6 +50,14 @@ const UserProfile = props => {
   const [userProfile, setUserProfile] = useState({
     ...props.userProfile,
     totalTangibleHrs: parseFloat(props.userProfile.totalTangibleHrs).toFixed(2),
+    hoursByCategory: {
+      housing: parseFloat(props.userProfile.hoursByCategory.housing).toFixed(2),
+      food: parseFloat(props.userProfile.hoursByCategory.food).toFixed(2),
+      education: parseFloat(props.userProfile.hoursByCategory.education).toFixed(2),
+      energy: parseFloat(props.userProfile.hoursByCategory.energy).toFixed(2),
+      unassigned: parseFloat(props.userProfile.hoursByCategory.unassigned).toFixed(2),
+
+    }
   })
   const [id, setId] = useState('')
   const [activeTab, setActiveTab] = useState('1')
