@@ -41,10 +41,10 @@ describe('volunteering times tab user is admin', () => {
     //  expect(screen.getByText(`${time}`)).toBeInTheDocument();
     //});
     it('should render a weekly committed hours field', () => {
-      expect(screen.getByPlaceholderText(/weeklyCommittedHours/i)).toBeInTheDocument();
+      expect(screen.getByTestId('weeklyCommittedHours')).toBeInTheDocument();
     });
     it('should render a weekly committed hours field with correct value', () => {
-      expect(screen.getByPlaceholderText(/weeklyCommittedHours/i)).toHaveValue(userProfileMock.weeklyComittedHours);
+      expect(screen.getByTestId('weeklyCommittedHours')).toHaveValue(userProfileMock.weeklyComittedHours);
     });
     it('should render a total hours field', () => {
       //TEST IS FAILING NEED TO FIX
@@ -61,7 +61,7 @@ describe('volunteering times tab user is admin', () => {
     //   expect(handleUserProfile).toHaveBeenCalled();
     // });
     it('should trigger handleUserProfile once the user type in weelkly committed hours field', async () => {
-      await userEvent.type(screen.getByPlaceholderText(/weeklyCommittedHours/i), '1111', { allAtOnce: false });
+      await userEvent.type(screen.getByTestId('weeklyCommittedHours'), '1111', { allAtOnce: false });
       expect(handleUserProfile).toHaveBeenCalled();
     });
     it('should trigger handleUserProfile once the user type in total committed hours field', async () => {

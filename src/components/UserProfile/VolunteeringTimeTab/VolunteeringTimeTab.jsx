@@ -33,6 +33,7 @@ const WeeklyCommitedHours = props => {
       type="number"
       name="weeklyComittedHours"
       id="weeklyComittedHours"
+      data-testid='weeklyCommittedHours'
       value={props.userProfile.weeklyComittedHours}
       onChange={props.handleUserProfile}
       placeholder="Weekly Committed Hours"
@@ -203,6 +204,7 @@ const ViewTab = props => {
                   id={`${key}Hours`}
                   value={props.userProfile.hoursByCategory[key]}
                   onChange={props.handleUserProfile}
+                  placeholder={`Total Tangible ${capitalize(key)} Hours`}
                 />
               ) : (
                 <p>{props.userProfile.hoursByCategory[key]}</p>
