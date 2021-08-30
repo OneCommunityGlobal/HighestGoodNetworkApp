@@ -35,7 +35,7 @@ const WeeklyCommitedHours = props => {
       id="weeklyComittedHours"
       value={props.userProfile.weeklyComittedHours}
       onChange={props.handleUserProfile}
-      placeholder="weeklyCommittedHours"
+      placeholder="Weekly Committed Hours"
       invalid={!props.isUserAdmin}
     />
   )
