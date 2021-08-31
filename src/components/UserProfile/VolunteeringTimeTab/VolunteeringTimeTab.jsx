@@ -112,7 +112,7 @@ const ViewTab = props => {
         console.log(err)
         alert('err')
       })
-  })
+  }, [])
 
   return (
     <div data-testid="volunteering-time-tab">
