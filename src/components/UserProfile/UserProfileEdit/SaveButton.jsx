@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useEffect } from 'react';
 import { Button } from 'reactstrap';
 import EditConfirmModal from '../UserProfileModal/EditConfirmModal';
 
@@ -37,8 +38,13 @@ const SaveButton = props => {
 
   const closeModal = () => {
     setModal(false);
-    setRandomMessage(getRandomMessage());
   }
+
+  useEffect(() => {
+    if(modal === true) {
+      setRandomMessage(getRandomMessage());
+    }
+  }, [modal])
 
   return (
     <React.Fragment>
