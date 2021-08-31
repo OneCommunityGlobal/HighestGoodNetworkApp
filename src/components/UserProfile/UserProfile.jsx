@@ -31,7 +31,6 @@ import BlueSqaureLayout from './BlueSqaureLayout'
 import TabToolTips from './ToolTips/TabToolTips'
 import BasicToolTips from './ToolTips/BasicTabTips'
 import ResetPasswordButton from '../UserManagement/ResetPasswordButton'
-import PauseAndResumeButton from '../UserManagement/PauseAndResumeButton'
 import Badges from './Badges'
 import TimeEntryEditHistory from './TimeEntryEditHistory.jsx'
 
@@ -628,11 +627,12 @@ const UserProfile = props => {
               <TabPane tabId="1">
                 <BasicInformationTab
                   userProfile={userProfile}
+                  getUserProfile={props.getUserProfile}
                   isUserAdmin={isUserAdmin}
                   isUserSelf={isUserSelf}
                   handleUserProfile={handleUserProfile}
                   formValid={formValid}
-                  setChanged={setChanged}
+                  setShouldRefresh={setShouldRefresh}
                 />
               </TabPane>
               <TabPane tabId="2">
@@ -691,7 +691,6 @@ const UserProfile = props => {
                 </Link>
               </div>
             )}
-            <PauseAndResumeButton className="mr-1" user={userProfile} isBigBtn={true} />
             <Link
               color="primary"
               to={`/userprofile/${userProfile._id}`}
