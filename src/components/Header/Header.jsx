@@ -159,8 +159,7 @@ export class Header extends React.Component {
                 <NavItem>
                   <NavLink tag={Link} to={`/userprofile/${user.userid}`}>
                     <img
-                      src={`${profilePic ||
-                        "https://www.pngfind.com/pngs/m/676-6764065_default-profile-picture-transparent-hd-png-download.png"}`}
+                      src={`${profilePic || '/pfp-default-header.png'}`}
                       alt=""
                       height="35"
                       width="40"
