@@ -430,6 +430,12 @@ const UserProfile = props => {
           },
         })
         break
+      case 'timeZone':
+        setUserProfile({
+          ...userProfile,
+          timeZone: event.target.value
+        })
+      break
     }
   }
 
@@ -626,6 +632,7 @@ const UserProfile = props => {
                   isUserSelf={isUserSelf}
                   handleUserProfile={handleUserProfile}
                   formValid={formValid}
+                  setChanged={setChanged}
                 />
               </TabPane>
               <TabPane tabId="2">
