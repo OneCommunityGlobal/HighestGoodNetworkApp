@@ -632,11 +632,7 @@ const UserProfile = props => {
                   isUserSelf={isUserSelf}
                   handleUserProfile={handleUserProfile}
                   formValid={formValid}
-<<<<<<< HEAD
                   setShouldRefresh={setShouldRefresh}
-=======
-                  setChanged={setChanged}
->>>>>>> development
                 />
               </TabPane>
               <TabPane tabId="2">

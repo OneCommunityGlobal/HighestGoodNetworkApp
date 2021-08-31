@@ -358,10 +358,10 @@ const BasicInformationTab = props => {
         <Col md="6">
         <Label>{userProfile.isActive ? "Active" : (userProfile.reactivationDate ? "Paused until " + moment(userProfile.reactivationDate).format('YYYY-MM-DD') : "Inactive")}</Label>
         &nbsp;
-        {props.isUserAdmin && <PauseAndResumeButton isBigBtn={true} userProfile={userProfile} onClick={setTimeout(() => {
-        props.setShouldRefresh(true)
-        props.getUserProfile(props.userProfile._id)
-  
+        {
+          props.isUserAdmin && <PauseAndResumeButton isBigBtn={true} userProfile={userProfile} onClick={setTimeout(() => {
+          props.setShouldRefresh(true)
+          props.getUserProfile(props.userProfile._id)
         }, 2000)}/>}
         </Col>
       </Row>
