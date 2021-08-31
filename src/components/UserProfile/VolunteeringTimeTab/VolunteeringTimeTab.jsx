@@ -109,10 +109,9 @@ const ViewTab = props => {
         setTotalTangibleHoursThisWeek(parseFloat(output).toFixed(2))
       })
       .catch(err => {
-        console.log(err)
-        alert('err')
+
       })
-  })
+  }, [])
 
   return (
     <div data-testid="volunteering-time-tab">
