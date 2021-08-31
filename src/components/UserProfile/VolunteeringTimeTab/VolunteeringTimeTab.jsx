@@ -1,8 +1,11 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { Row, Label, Input, Col } from 'reactstrap'
-import moment from 'moment'
+import moment from 'moment-timezone'
 import { capitalize } from 'lodash'
 import style from '../UserProfileEdit/ToggleSwitch/ToggleSwitch.module.scss'
+import { ENDPOINTS } from 'utils/URL'
+import axios from 'axios'
+import { useEffect } from 'react'
 
 const StartDate = props => {
   if (!props.isUserAdmin) {
@@ -30,9 +33,10 @@ const WeeklyCommitedHours = props => {
       type="number"
       name="weeklyComittedHours"
       id="weeklyComittedHours"
+      data-testid='weeklyCommittedHours'
       value={props.userProfile.weeklyComittedHours}
       onChange={props.handleUserProfile}
-      placeholder="weeklyCommittedHours"
+      placeholder="Weekly Committed Hours"
       invalid={!props.isUserAdmin}
     />
   )
@@ -77,13 +81,7 @@ const WeeklySummaryReqd = props => {
 
 /**
  *
- * @param {Integer} props.hoursByCategory.housing
- * @param {Integer} props.hoursByCategory.food
- * @param {Integer} props.hoursByCategory.education
- * @param {Integer} props.hoursByCategory.society
- * @param {Integer} props.hoursByCategory.energy
  * @param {*} props.userProfile
- * @param {*} props.timeEntries
  * @param {*} props.isUserAdmin
  * @param {*} props.isUserSelf
  * @param {Function} handleUserProfile
@@ -91,9 +89,30 @@ const WeeklySummaryReqd = props => {
  * @returns
  */
 const ViewTab = props => {
-  const { userProfile, timeEntries, isUserAdmin, isUserSelf, handleUserProfile } = props
-  const weeklyHoursReducer = (acc, val) =>
-    acc + (parseInt(val.hours, 10) + parseInt(val.minutes, 10) / 60)
+  const { userProfile, isUserAdmin, handleUserProfile } = props
+
+  const [totalTangibleHoursThisWeek, setTotalTangibleHoursThisWeek] = useState('Loading...')
+  useEffect(() => {
+    const startOfWeek = moment().tz('America/Los_Angeles').startOf('week').format('YYYY-MM-DD')
+    const endOfWeek = moment().tz('America/Los_Angeles').endOf('week').format('YYYY-MM-DD')
+    axios
+      .get(ENDPOINTS.TIME_ENTRIES_PERIOD(userProfile._id, startOfWeek, endOfWeek))
+      .then(res => {
+        let output = 0
+        for (let i = 0; i < res.data.length; i++) {
+          const timeEntry = res.data[i]
+          if (timeEntry.isTangible === true) {
+            output += timeEntry.hours + timeEntry.minutes / 60
+          }
+        }
+
+        setTotalTangibleHoursThisWeek(parseFloat(output).toFixed(2))
+      })
+      .catch(err => {
+        console.log(err)
+        alert('err')
+      })
+  })
 
   return (
     <div data-testid="volunteering-time-tab">
@@ -121,10 +140,10 @@ const ViewTab = props => {
 
       <Row>
         <Col md="6">
-          <Label>Total Hours This Week</Label>
+          <Label>Total Tangible Hours This Week</Label>
         </Col>
         <Col md="6">
-          <p>{timeEntries.weeks[0].reduce(weeklyHoursReducer, 0).toFixed(2)}</p>
+          <p>{totalTangibleHoursThisWeek}</p>
         </Col>
       </Row>
 
@@ -166,13 +185,31 @@ const ViewTab = props => {
         </Col>
       </Row>
 
-      {Object.keys(props.hoursByCategory).map(key => (
+      {Object.keys(props.userProfile.hoursByCategory).map(key => (
         <>
           <Row key={'hours-by-category-' + key}>
             <Col md="6">
-              <Label>Total Tangible {capitalize(key)} Hours </Label>
+              <Label>
+                {key !== 'unassigned' ? (
+                  <>Total Tangible {capitalize(key)} Hours</>
+                ) : (
+                  <>Total Unassigned Category Hours</>
+                )}{' '}
+              </Label>
             </Col>
-            <Col md="6">{props.hoursByCategory[key]}</Col>
+            <Col md="6">
+              {props.isUserAdmin ? (
+                <Input
+                  type="number"
+                  id={`${key}Hours`}
+                  value={props.userProfile.hoursByCategory[key]}
+                  onChange={props.handleUserProfile}
+                  placeholder={`Total Tangible ${capitalize(key)} Hours`}
+                />
+              ) : (
+                <p>{props.userProfile.hoursByCategory[key]}</p>
+              )}
+            </Col>
           </Row>
         </>
       ))}

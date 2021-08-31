@@ -179,7 +179,7 @@ describe('User profile page', () => {
       expect(startDate).toHaveValue('2020-03-06');
     });
     it('should change value while user typing in weekly committed field', async () => {
-      const weekCommittedHour = screen.getByPlaceholderText(/weeklyCommittedHours/i);
+      const weekCommittedHour = screen.getByTestId('weeklyCommittedHours');
       fireEvent.change(weekCommittedHour, { target: { value: "20" } }); 
       expect(weekCommittedHour).toHaveValue(20);
     });
@@ -200,7 +200,7 @@ describe('User profile page', () => {
       expect(screen.getAllByRole('button', { name: /delete/i })).toHaveLength(userProfileMock.teams.length + userProfileMock.projects.length - 1);
     })
     it('should fire handleSubmit when the user clicks on the Save Changes button after changing some value', async () =>{
-      fireEvent.change(screen.getByPlaceholderText(/weeklyCommittedHours/i), { target: { value: "40" } }); 
+      fireEvent.change(screen.getByTestId('weeklyCommittedHours'), { target: { value: "40" } }); 
       userEvent.click(screen.getByRole('button', { name: /save changes/i}));
       expect(actions.updateUserProfile).toHaveBeenCalled();
     });
