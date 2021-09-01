@@ -67,7 +67,7 @@ const FormattedReport = ({ summaries, weekIndex }) => {
 
   const getTotalValidWeeklySummaries = summary => {
     return (
-      <p style={summary.weeklySummariesCount === 8 ? {color: 'red'} : {}}>
+      <p style={summary.weeklySummariesCount === 8 ? {color: 'blue'} : {}}>
         <b>Total Valid Weekly Summaries:</b>{' '}
          {summary.weeklySummariesCount || 'No valid submissions yet!'} 
       </p>
