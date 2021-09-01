@@ -19,7 +19,6 @@ const mapStateToProps = state => ({
   auth: state.auth,
   userProfile: state.userProfile,
   user: _.get(state, 'user', {}),
-  timeEntries: state.timeEntries,
   userProjects: state.userProjects,
   allProjects: _.get(state, 'allProjects'),
   allTeams: state,

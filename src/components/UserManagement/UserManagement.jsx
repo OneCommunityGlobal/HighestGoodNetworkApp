@@ -101,21 +101,25 @@ class UserManagement extends React.PureComponent {
       <ActivationDatePopup
         open={this.state.activationDateOpen}
         onClose={this.activationDatePopupClose}
-        onPause={this.pauseUser} />
+        onPause={this.pauseUser}
+      />
       <NewUserPopup
         open={this.state.newUserPopupOpen}
         onUserPopupClose={this.onUserPopupClose}
-        userCreated={this.userCreated} />
+        userCreated={this.userCreated}
+      />
       <DeleteUserPopup
         open={this.state.deletePopupOpen}
         onClose={this.deletePopupClose}
-        onDelete={this.onDeleteUser} />
+        onDelete={this.onDeleteUser}
+      />
       <ActiveInactiveConfirmationPopup
         isActive={this.state.selectedUser ? this.state.selectedUser.isActive : false}
         fullName={this.state.selectedUser ? (this.state.selectedUser.firstName + " " + this.state.selectedUser.lastName) : ""}
         open={this.state.activeInactivePopupOpen}
         setActiveInactive={this.setActiveInactive}
-        onClose={this.activeInactivePopupClose} />
+        onClose={this.activeInactivePopupClose}
+      />
     </React.Fragment>
   }
 

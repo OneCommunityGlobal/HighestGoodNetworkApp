@@ -32,7 +32,7 @@ const PauseAndResumeButton = (props) => {
  * Call back on Pause confirmation button click to trigger the action to update user status
  */
   const pauseUser = (reActivationDate) => {
-    dispatch(updateUserStatus(props.userProfile, UserStatus.InActive, reActivationDate));
+    updateUserStatus(props.userProfile, UserStatus.InActive, reActivationDate)(dispatch);
     setIsActive(false);
     setActivationDateOpen(false);
   }
@@ -42,7 +42,7 @@ const PauseAndResumeButton = (props) => {
   */
   const onPauseResumeClick = (user, status) => {
     if (status === UserStatus.Active) {
-      dispatch(updateUserStatus(user, status, Date.now()));
+      updateUserStatus(user, status, Date.now())(dispatch);
       setIsActive(status);
       toast.success('Your Changes were saved successfully.')
     } else {

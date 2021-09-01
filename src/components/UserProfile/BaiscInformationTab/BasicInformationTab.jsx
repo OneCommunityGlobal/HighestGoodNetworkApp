@@ -1,25 +1,18 @@
-import React from 'react';
-import {
-  Row,
-  Label,
-  Input,
-  Col,
-  FormFeedback,
-  FormGroup
-} from 'reactstrap';
-import ToggleSwitch from '../UserProfileEdit/ToggleSwitch';
-import moment from 'moment';
+import React, { useState } from 'react'
+import { Row, Label, Input, Col, FormFeedback, FormGroup } from 'reactstrap'
+import ToggleSwitch from '../UserProfileEdit/ToggleSwitch'
+import moment from 'moment'
 
 import PhoneInput from 'react-phone-input-2'
 import 'react-phone-input-2/lib/style.css'
 
-import PauseAndResumeButton from 'components/UserManagement/PauseAndResumeButton';
+import PauseAndResumeButton from 'components/UserManagement/PauseAndResumeButton'
 
-const Name = (props) => {
-  const {
-    userProfile, isUserAdmin, isUserSelf, handleUserProfile, formValid,
-  } = props;
-  const { firstName, lastName } = userProfile;
+import TimeZoneDropDown from '../TimeZoneDropDown'
+
+const Name = props => {
+  const { userProfile, isUserAdmin, isUserSelf, handleUserProfile, formValid } = props
+  const { firstName, lastName } = userProfile
   if (isUserAdmin || isUserSelf) {
     return (
       <React.Fragment>
@@ -54,30 +47,26 @@ const Name = (props) => {
           </FormGroup>
         </Col>
       </React.Fragment>
-
-    );
+    )
   }
 
   return (
     <React.Fragment>
-      <Col md="6">
+      <Col>
         <p>{`${firstName} ${lastName}`}</p>
       </Col>
     </React.Fragment>
-  );
-};
+  )
+}
 
-
-const Title = (props) => {
-  const {
-    userProfile, isUserAdmin, isUserSelf, handleUserProfile, formValid,
-  } = props;
-  const { jobTitle } = userProfile;
+const Title = props => {
+  const { userProfile, isUserAdmin, isUserSelf, handleUserProfile, formValid } = props
+  const { jobTitle } = userProfile
 
   if (isUserAdmin || isUserSelf) {
     return (
       <React.Fragment>
-        <Col md="6">
+        <Col>
           <FormGroup>
             <Input
               type="text"
@@ -90,27 +79,25 @@ const Title = (props) => {
           </FormGroup>
         </Col>
       </React.Fragment>
-    );
+    )
   }
   return (
     <React.Fragment>
-      <Col md="6">
+      <Col>
         <p>{`${jobTitle}`}</p>
       </Col>
     </React.Fragment>
-  );
-};
+  )
+}
 
-const Email = (props) => {
-  const {
-    userProfile, isUserAdmin, isUserSelf, handleUserProfile, formValid,
-  } = props;
-  const { email, privacySettings } = userProfile;
+const Email = props => {
+  const { userProfile, isUserAdmin, isUserSelf, handleUserProfile, formValid } = props
+  const { email, privacySettings } = userProfile
 
   if (isUserAdmin || isUserSelf) {
     return (
       <React.Fragment>
-        <Col md="6">
+        <Col>
           <FormGroup>
             <ToggleSwitch
               switchType="email"
@@ -131,21 +118,21 @@ const Email = (props) => {
           </FormGroup>
         </Col>
       </React.Fragment>
-    );
+    )
   }
   return (
     <React.Fragment>
       {privacySettings.email && (
-        <Col md="6">
+        <Col>
           <p>{email}</p>
         </Col>
       )}
     </React.Fragment>
-  );
-};
-const formatPhoneNumber = (str) => {
+  )
+}
+const formatPhoneNumber = str => {
   // Filter only numbers from the input
-  const cleaned = `${str}`.replace(/\D/g, '');
+  const cleaned = `${str}`.replace(/\D/g, '')
   if (cleaned.length === 10) {
     // Domestic (USA)
     return [
@@ -155,7 +142,7 @@ const formatPhoneNumber = (str) => {
       cleaned.substring(3, 6),
       ' - ',
       cleaned.substring(6, 10),
-    ].join('');
+    ].join('')
   }
   if (cleaned.length === 11) {
     // International
@@ -168,20 +155,18 @@ const formatPhoneNumber = (str) => {
       cleaned.substring(4, 7),
       ' - ',
       cleaned.substring(7, 11),
-    ].join('');
+    ].join('')
   }
   // Unconventional
-  return str;
-};
-const Phone = (props) => {
-  const {
-    userProfile, isUserAdmin, isUserSelf, handleUserProfile,
-  } = props;
-  const { phoneNumber, privacySettings } = userProfile;
+  return str
+}
+const Phone = props => {
+  const { userProfile, isUserAdmin, isUserSelf, handleUserProfile } = props
+  const { phoneNumber, privacySettings } = userProfile
   if (isUserAdmin || isUserSelf) {
     return (
       <React.Fragment>
-        <Col md="6">
+        <Col>
           <FormGroup>
             <ToggleSwitch
               switchType="phone"
@@ -191,39 +176,37 @@ const Phone = (props) => {
             <PhoneInput
               country={'us'}
               value={phoneNumber[0]}
-              onChange={(phone) => { handleUserProfile({ target: { value: phone, name: "phoneNumber", id: "phoneNumber" } }) }}
+              onChange={phone => {
+                handleUserProfile({
+                  target: { value: phone, name: 'phoneNumber', id: 'phoneNumber' },
+                })
+              }}
             />
-
           </FormGroup>
         </Col>
       </React.Fragment>
-    );
+    )
   }
   return (
     <React.Fragment>
       {privacySettings.phoneNumber && (
-        <Col md="6">
+        <Col>
           <p>{formatPhoneNumber(phoneNumber)}</p>
         </Col>
       )}
     </React.Fragment>
-  );
-};
+  )
+}
 
+const BasicInformationTab = props => {
+  const { userProfile, isUserAdmin, isUserSelf, handleUserProfile, formValid } = props
 
-const BasicInformationTab = (props) => {
-  const {
-    userProfile,
-    isUserAdmin,
-    isUserSelf,
-    handleUserProfile,
-    formValid,
-  } = props;
+  const [timeZoneFilter, setTimeZoneFilter] = useState('')
 
   return (
     <div data-testid="basic-info-tab">
       <Row>
-        <Col md="6">
+        <Col>
           <Label>Name</Label>
           <i
             data-toggle="tooltip"
@@ -244,7 +227,7 @@ const BasicInformationTab = (props) => {
         />
       </Row>
       <Row>
-        <Col md="6">
+        <Col>
           <Label>Title</Label>
           <i
             data-toggle="tooltip"
@@ -265,7 +248,7 @@ const BasicInformationTab = (props) => {
         />
       </Row>
       <Row>
-        <Col md="6">
+        <Col>
           <Label>Email</Label>
           <i
             data-toggle="tooltip"
@@ -286,7 +269,7 @@ const BasicInformationTab = (props) => {
         />
       </Row>
       <Row>
-        <Col md="6">
+        <Col>
           <Label>Phone</Label>
           <i
             data-toggle="tooltip"
@@ -307,10 +290,10 @@ const BasicInformationTab = (props) => {
         />
       </Row>
       <Row>
-        <Col md="6">
+        <Col>
           <Label>Video Call Preference</Label>
         </Col>
-        <Col md="6">
+        <Col>
           <FormGroup>
             <Input
               type="text"
@@ -324,12 +307,19 @@ const BasicInformationTab = (props) => {
         </Col>
       </Row>
       <Row>
-        <Col md="6">
+        <Col>
           <Label>Role</Label>
         </Col>
-        <Col md="6">
+        <Col>
           <FormGroup>
-            <select value={userProfile.role} onChange={handleUserProfile} id="role" name="role" className="form-control" disabled={!isUserAdmin}>
+            <select
+              value={userProfile.role}
+              onChange={handleUserProfile}
+              id="role"
+              name="role"
+              className="form-control"
+              disabled={!isUserAdmin}
+            >
               <option value="Administrator">Administrator</option>
               <option value="Volunteer">Volunteer</option>
               <option value="Manager">Manager</option>
@@ -338,17 +328,41 @@ const BasicInformationTab = (props) => {
           </FormGroup>
         </Col>
       </Row>
-      <Row style={{marginBottom: '10px'}}>
-        <Col md="6">
+      <Row style={{ marginBottom: '10px' }}>
+        <Col>
+          <Label>Time Zone</Label>
+        </Col>
+        <Col>
+          {!props.isUserAdmin && <p>{userProfile.timeZone}</p>}
+          {props.isUserAdmin && (
+            <TimeZoneDropDown
+              filter={timeZoneFilter}
+              onChange={handleUserProfile}
+              selected={userProfile.timeZone}
+            />
+          )}
+        </Col>
+      </Row>
+      <Row style={{ marginBottom: '10px' }}>
+        <Col>
+          <Label>Search For Time Zone</Label>
+        </Col>
+        <Col>
+          <Input type="text" onChange={e => setTimeZoneFilter(e.target.value)} />
+        </Col>
+      </Row>
+      <Row style={{ marginBottom: '10px' }}>
+        <Col>
           <Label>Status</Label>
         </Col>
         <Col md="6">
         <Label>{userProfile.isActive ? "Active" : (userProfile.reactivationDate ? "Paused until " + moment(userProfile.reactivationDate).format('YYYY-MM-DD') : "Inactive")}</Label>
         &nbsp;
-        {props.isUserAdmin && <PauseAndResumeButton isBigBtn={true} userProfile={userProfile} />}
+        {
+          props.isUserAdmin && <PauseAndResumeButton isBigBtn={true} userProfile={userProfile}/>}
         </Col>
       </Row>
     </div>
-  );
-};
-export default BasicInformationTab;
+  )
+}
+export default BasicInformationTab

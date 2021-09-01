@@ -14,13 +14,7 @@ const timerUrl = ENDPOINTS.TIMER(mockState.auth.user.userid);
 const userProjectsUrl = ENDPOINTS.USER_PROJECTS(mockState.auth.user.userid);
 let requestedLeaderBoard = false;
 let refreshed = false;
-let endpoint = process.env.REACT_APP_APIENDPOINT;
-if (!endpoint) {
-  // This is to resolve the issue in azure env variable
-  // APIEndpoint = fetch('/config.json').then((data) => {
-  endpoint = 'https://hgnrestdev.azurewebsites.net';
-  // });
-}
+import { ApiEndpoint } from '../utils/URL';
 
 const server = setupServer( 
   rest.get(url, (req, res, ctx) =>  {
@@ -66,7 +60,7 @@ const server = setupServer(
       }
 
   }),
-  rest.get(endpoint + 'userprofile/*', (req, res, ctx) =>  {
+  rest.get(ApiEndpoint + '/userprofile/*', (req, res, ctx) =>  {
     return res(ctx.status(200), ctx.json({}), )  
   }),
   rest.get(userProjectsUrl, (req, res, ctx) =>  {

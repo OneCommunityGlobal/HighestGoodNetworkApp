@@ -154,9 +154,10 @@ const TimeEntryForm = props => {
         editCount += 1;
       }
     });
-    return `If you edit your time entries 6 times or more within the span of a year,
-    you will be issued a blue square and will recieve an additional blue square for each edit beyond the 6th.
-    Currently, you have edited your time entries ${editCount} times within the last 365 days. Do you wish to continue?`
+    return `If you edit your time entries 5 times or more within the span of a year, you will be issued a blue square on the 5th time.
+    You will receive an additional blue square for each edit beyond the 5th.
+    Currently, you have edited your time entries ${editCount} times within the last 365 days.
+    Do you wish to continue?`
   }
 
   const validateForm = isTimeModified => {
@@ -292,7 +293,7 @@ const TimeEntryForm = props => {
     if(fromTimer) clearForm()
     setReminder(initialReminder);
 
-    setInputs(initialFormValues)
+    if(!props.edit) setInputs(initialFormValues)
 
     await getUserProfile(userId)(dispatch);
 
