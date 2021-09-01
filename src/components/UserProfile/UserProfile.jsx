@@ -482,7 +482,7 @@ const UserProfile = props => {
           <Col md="4" id="profileContainer">
             <div className="profile-img">
               <Image
-                src={profilePic || '/defaultprofilepic.png'}
+                src={profilePic || '/pfp-default.png'}
                 alt="Profile Picture"
                 roundedCircle
                 className="profilePicture"
