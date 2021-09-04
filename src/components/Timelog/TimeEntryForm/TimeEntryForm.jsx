@@ -113,10 +113,7 @@ const TimeEntryForm = props => {
     }))
 
   const cancelChange = () => {
-    setReminder(reminder => ({
-      ...reminder,
-      notification: !reminder.notification,
-    }))
+    setReminder(initialReminder)
     setInputs(inputs => ({
       ...inputs,
       hours: data.hours,
@@ -224,6 +221,7 @@ const TimeEntryForm = props => {
   }
 
   const handleSubmit = async event => {
+
     //Validation and variable initialization
     if (event) event.preventDefault()
     if (isSubmitting) return
@@ -544,7 +542,7 @@ const TimeEntryForm = props => {
             {' '}
             Clear Form{' '}
           </Button>
-          <Button color="primary" disabled={isSubmitting} onClick={handleSubmit}>
+          <Button color="primary" disabled={isSubmitting || (data.hours === inputs.hours && data.minutes === inputs.minutes && data.notes === inputs.notes)} onClick={handleSubmit}>
             {edit ? 'Save' : 'Submit'}
           </Button>
         </ModalFooter>

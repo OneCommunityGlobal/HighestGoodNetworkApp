@@ -78,7 +78,7 @@ const FormattedReport = ({ summaries, weekIndex }) => {
     <>
       {alphabetize(summaries).map((summary, index) => {
 
-        const hoursLogged = (summary.totalSeconds / 3600 || 0);
+        const hoursLogged = ((summary.totalSeconds[weekIndex] || 0) / 3600);
 
         return (
           <div

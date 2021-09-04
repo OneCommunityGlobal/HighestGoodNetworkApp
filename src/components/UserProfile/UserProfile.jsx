@@ -34,9 +34,10 @@ import ResetPasswordButton from '../UserManagement/ResetPasswordButton'
 import Badges from './Badges'
 import TimeEntryEditHistory from './TimeEntryEditHistory.jsx'
 
-import axios from 'axios'
 import { getUserProfile } from 'actions/userProfile'
 import { useDispatch } from 'react-redux'
+
+import ActiveCell from 'components/UserManagement/ActiveCell'
 
 const UserProfile = props => {
   const initialFormValid = {
@@ -512,6 +513,21 @@ const UserProfile = props => {
               <h5 style={{ display: 'inline-block', marginRight: 10 }}>
                 {`${firstName} ${lastName}`}
               </h5>
+              {
+                isUserAdmin && (
+                  <>
+                    <ActiveCell
+                      isActive={userProfile.isActive}
+                      user={userProfile}
+                      onClick={() => {
+                        setChanged(true);
+                        setUserProfile({...userProfile, isActive: !userProfile.isActive})
+                      }}
+                    />
+                    &nbsp;
+                  </>
+                )
+              }
               <i
                 data-toggle="tooltip"
                 data-placement="right"
