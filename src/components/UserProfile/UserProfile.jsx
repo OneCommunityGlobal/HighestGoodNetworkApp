@@ -555,10 +555,9 @@ const UserProfile = props => {
               <TabPane tabId="5">
                 <TimeEntryEditHistory
                   userProfile={userProfile}
-                  isAdmin={isUserAdmin}
-                  updateUserProfile={props.updateUserProfile}
-                 
                   setUserProfile={setUserProfile}
+                  setChanged={setChanged}
+                  isAdmin={isUserAdmin}
                 />
               </TabPane>
             </TabContent>
