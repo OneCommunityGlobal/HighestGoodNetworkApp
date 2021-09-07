@@ -13,9 +13,11 @@ import {
 import PropTypes from 'prop-types';
 
 const EditLinkModal = (props) => {
+
   const {
-    isOpen, closeModal, updateLink, userProfile, isUserAdmin,
+    isOpen, closeModal, updateLink, userProfile, isUserAdmin, setChanged
   } = props;
+
   const [linkName, setLinkName] = useState('');
   const [linkURL, setLinkURL] = useState('');
 
@@ -24,8 +26,11 @@ const EditLinkModal = (props) => {
 
   const [personalLinks, dispatchPersonalLinks] = useReducer(
     (personalLinks, { type, value, passedIndex }) => {
+      setChanged(true);
       switch (type) {
         case 'add':
+          setLinkName('')
+          setLinkURL('')
           return [...personalLinks, value];
         case 'remove':
           return personalLinks.filter((_, index) => index !== passedIndex);
@@ -52,8 +57,11 @@ const EditLinkModal = (props) => {
 
   const [adminLinks, dispatchAdminLinks] = useReducer(
     (adminLinks, { type, value, passedIndex }) => {
+      setChanged(true)
       switch (type) {
         case 'add':
+          setAdminLinkName('')
+          setAdminLinkURL('')
           return [...adminLinks, value];
         case 'remove':
           return adminLinks.filter((_, index) => index !== passedIndex);

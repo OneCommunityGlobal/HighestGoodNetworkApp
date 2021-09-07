@@ -67,10 +67,6 @@ const UserProfile = props => {
   const [modalMessage, setModalMessage] = useState('')
   const [shouldRefresh, setShouldRefresh] = useState(false)
 
-  const dispatch = useDispatch()
-
-
-
   /* useEffect functions */
   useEffect(() => {
     loadUserProfile()
@@ -428,9 +424,9 @@ const UserProfile = props => {
               </p>
             </div>
             <Badges
-              userId={userProfile._id}
               isAdmin={isUserAdmin}
-              badges={props.userProfile.badgeCollection}
+              userProfile={userProfile}
+              setUserProfile={setUserProfile}
             />
           </Col>
         </Row>
@@ -441,6 +437,7 @@ const UserProfile = props => {
                 isUserAdmin={isUserAdmin}
                 isUserSelf={isUserSelf}
                 userProfile={userProfile}
+                setChanged={setChanged}
                 updateLink={updateLink}
                 handleLinkModel={props.handleLinkModel}
               />

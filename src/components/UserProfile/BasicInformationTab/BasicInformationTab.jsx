@@ -376,7 +376,6 @@ const BasicInformationTab = props => {
                 setUserProfile({...userProfile, timeZone: e.target.value})
                 setChanged(true);
               }}
-              
               selected={userProfile.timeZone}
             />
           )}

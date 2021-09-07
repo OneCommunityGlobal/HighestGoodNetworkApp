@@ -244,10 +244,7 @@ class AddUserProfile extends Component {
                     <FormGroup>
                       <TimeZoneDropDown
                       filter={this.state.timeZoneFilter}
-                      onChange={(e) => {
-                        this.handleUserProfile(e);
-                        console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@');
-                      }}
+                      onChange={this.handleUserProfile}
                       selected={'America/Los_Angeles'}
                       />
                     </FormGroup>

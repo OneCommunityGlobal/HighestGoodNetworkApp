@@ -1,6 +1,4 @@
 /* eslint-disable import/prefer-default-export */
-import axios from 'axios'
-
 let APIEndpoint = process.env.REACT_APP_APIENDPOINT || 'https://hgn-rest-beta.azurewebsites.net/api';
 
 export const ENDPOINTS = {

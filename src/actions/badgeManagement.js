@@ -149,12 +149,10 @@ export const assignBadgesByUserID = (userId, selectedBadges) => {
       return;
     }
     const badgeCollection = res.data.badgeCollection;
-    const UserToBeAssigned = res.data._id;
 
-    for(let i = 0; i<badgeCollection.length; i++) {
+    for(let i = 0; i < badgeCollection.length; i++) {
       badgeCollection[i].badge = badgeCollection[i].badge._id;
     }
-    console.log(badgeCollection);
 
     selectedBadges.forEach((badgeId) => {
       let included = false;
@@ -170,7 +168,9 @@ export const assignBadgesByUserID = (userId, selectedBadges) => {
       }
     });
 
-    const url = ENDPOINTS.BADGE_ASSIGN(UserToBeAssigned);
+    const userToBeAssignedBadge = res.data._id;
+    const url = ENDPOINTS.BADGE_ASSIGN(userToBeAssignedBadge);
+
     try {
       await axios.put(url, { badgeCollection, newBadges: selectedBadges.length });
       dispatch(getMessage('Awesomesauce! Not only have you increased a person\'s badges, you\'ve also proportionally increased their life happiness!', 'success'));
@@ -189,7 +189,6 @@ export const assignBadgesByUserID = (userId, selectedBadges) => {
 };
 
 export const changeBadgesByUserID = (userId, badgeCollection) => {
-  console.log(userId, badgeCollection);
   return async (dispatch) => {
 
     
