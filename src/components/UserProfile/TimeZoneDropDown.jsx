@@ -26,6 +26,7 @@ const TimeZoneDropDown = props => {
         name={props.name || 'timeZone'}
         className="form form-control"
         onChange={props.onChange}
+        defaultValue={props.selected}
     >
       {Object.keys(timeZoneMap).map(timeZoneName => {
         if (
@@ -36,7 +37,7 @@ const TimeZoneDropDown = props => {
             .includes(props.filter.toLocaleLowerCase())
         ) {
           return (
-            <option value={timeZoneName} key={`timeZone-${timeZoneName}`} selected={timeZoneName === props.selected}>
+            <option value={timeZoneName} key={`timeZone-${timeZoneName}`}>
               {`${timeZoneName} (UTC${timeZoneMap[timeZoneName].utcOffset})`}
             </option>
           )

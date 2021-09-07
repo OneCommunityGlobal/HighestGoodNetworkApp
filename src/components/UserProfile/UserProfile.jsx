@@ -23,7 +23,7 @@ import './UserProfile.scss'
 import TeamsTab from './TeamsAndProjects/TeamsTab'
 import ProjectsTab from './TeamsAndProjects/ProjectsTab'
 import InfoModal from './InfoModal'
-import BasicInformationTab from './BaiscInformationTab/BasicInformationTab'
+import BasicInformationTab from './BasicInformationTab/BasicInformationTab'
 import VolunteeringTimeTab from './VolunteeringTimeTab/VolunteeringTimeTab'
 import SaveButton from './UserProfileEdit/SaveButton'
 import UserLinkLayout from './UserLinkLayout'
@@ -34,30 +34,26 @@ import ResetPasswordButton from '../UserManagement/ResetPasswordButton'
 import Badges from './Badges'
 import TimeEntryEditHistory from './TimeEntryEditHistory.jsx'
 
-import axios from 'axios'
-import { getUserProfile } from 'actions/userProfile'
 import { useDispatch } from 'react-redux'
 
+import axios from 'axios'
+import { ENDPOINTS } from 'utils/URL'
+
 const UserProfile = props => {
+
+  /* Constant values */
   const initialFormValid = {
     firstName: true,
     lastName: true,
     email: true,
   }
 
-  const [isLoading, setLoading] = useState(true)
-  const [userProfile, setUserProfile] = useState({
-    ...props.userProfile,
-    totalTangibleHrs: parseFloat(props.userProfile.totalTangibleHrs).toFixed(2),
-    hoursByCategory: {
-      housing: parseFloat(props.userProfile.hoursByCategory.housing).toFixed(2),
-      food: parseFloat(props.userProfile.hoursByCategory.food).toFixed(2),
-      education: parseFloat(props.userProfile.hoursByCategory.education).toFixed(2),
-      energy: parseFloat(props.userProfile.hoursByCategory.energy).toFixed(2),
-      unassigned: parseFloat(props.userProfile.hoursByCategory.unassigned).toFixed(2),
 
-    }
-  })
+
+  /* Hooks */
+  const [showLoading, setShowLoading] = useState(true)
+  const [userProfile, setUserProfile] = useState(undefined);
+  const [originalUserProfile, setOriginalUserProfile] = useState(undefined)
   const [id, setId] = useState('')
   const [activeTab, setActiveTab] = useState('1')
   const [infoModal, setInfoModal] = useState(false)
@@ -73,51 +69,48 @@ const UserProfile = props => {
 
   const dispatch = useDispatch()
 
+
+
+  /* useEffect functions */
   useEffect(() => {
-    componentDidMount()
+    loadUserProfile()
   }, [])
 
-  // The following useEffect callback is a convoluted workaround that's required given
-  // how the userProfile object is stored inside the global store. Sometimes, the global userProfile object
-  // doesn't match the user profile currently being viewed for some reason, meaning that when it's
-  // passed down as a prop, it doesn't always match.
-
-  // Another factor making this necessary is that some changes to the
-  // user profile object are not submitted immediately and are instead stored
-  // in memory before finally being submittied. This means that the userProfile hook
-  // Can't simply be replaced with props.userProfile as changes would be erased before
-  // they could be submitted.
-
-  //Because of this, we only use setUserProfile when the ID is different or when shouldRefresh is true.
   useEffect(() => {
-    if (props.userProfile._id !== userProfile._id || shouldRefresh === true) {
-      setUserProfile(props.userProfile)
-      setShouldRefresh(false)
-    }
-  }, [props.userProfile, shouldRefresh])
+    if(!shouldRefresh) return
+    setShouldRefresh(false)
+    loadUserProfile()
+  }, [shouldRefresh])
 
   useEffect(() => {
-    props.getUserProfile(props.match.params.userId)
-    setChanged(false)
-  }, [props.match.params.userId])
+    setShowLoading(true)
+    loadUserProfile();
+    setChanged(false);
+  }, [props?.match?.params?.userId])
 
   useEffect(() => {
-    if (blueSquareChanged) {
-      setBlueSquareChanged(false)
-      handleSubmit()
-    }
+    if (!blueSquareChanged) return
+    setBlueSquareChanged(false)
+    handleSubmit()
   }, [blueSquareChanged])
 
-  const componentDidMount = async () => {
-    if (!props.match) return
+  const loadUserProfile = async () => {
 
-    const { userId } = props.match.params
+    const userId = props?.match?.params?.userId 
+    if(!userId) return;
 
-    await props.getUserProfile(userId)
-    await props.getUserTeamMembers(userId)
-    await props.getAllUserTeams(userId)
-    await props.fetchAllProjects(userId)
-    setLoading(false)
+    try {
+      const response = await axios.get(ENDPOINTS.USER_PROFILE(userId));
+      const newUserProfile = response.data;
+      setUserProfile(newUserProfile);
+      setOriginalUserProfile(newUserProfile)
+      setShowLoading(false);
+    } catch (err) {
+      setShowLoading(false)
+      alert('EXCEPTION')
+      //TODO: Proper error handling
+    }
+
   }
 
   const onDeleteTeam = deletedTeamId => {
@@ -262,15 +255,17 @@ const UserProfile = props => {
   }
 
   const handleSubmit = async () => {
-    const { updateUserProfile, match } = props
+
     try {
-      await updateUserProfile(match.params.userId, userProfile)
-      await getUserProfile(match.params.userId)(dispatch)
+      await props.updateUserProfile(props.match.params.userId, userProfile)
+      await loadUserProfile();
       setShowSaveWarning(false)
     } catch (err) {
+      console.log(err);
       alert('An error occurred while attempting to save this profile.')
     }
     setShouldRefresh(true)
+
   }
 
   const toggleInfoModal = () => {
@@ -291,33 +286,16 @@ const UserProfile = props => {
     })
   }
 
+  /**
+   * 
+   * UserProfile.jsx and its subsomponents are being refactored to avoid the use of this monolithic function.
+   * Please pass userProfile, setUserProfile, and setChanged as props to subcomponents and modify state that way.
+   * This function is being kept here until the refactoring is complete. 
+   */
   const handleUserProfile = event => {
     setChanged(true)
 
-    const emailPattern = new RegExp(/^\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/i)
-
     switch (event.target.id) {
-      case 'firstName':
-        setUserProfile({ ...userProfile, firstName: event.target.value.trim() })
-        setFormValid({ ...formValid, firstName: !!event.target.value })
-        break
-      case 'lastName':
-        setUserProfile({ ...userProfile, lastName: event.target.value.trim() })
-        setFormValid({ ...formValid, lastName: !!event.target.value })
-        break
-      case 'jobTitle':
-        setUserProfile({ ...userProfile, jobTitle: event.target.value })
-        break
-      case 'role':
-        setUserProfile({ ...userProfile, role: event.target.value })
-        break
-      case 'email':
-        setUserProfile({ ...userProfile, email: event.target.value })
-        setFormValid({ ...formValid, email: emailPattern.test(event.target.value) })
-        break
-      case 'phoneNumber':
-        setUserProfile({ ...userProfile, phoneNumber: [event.target.value.trim()] })
-        break
       case 'emailPubliclyAccessible':
         setUserProfile({
           ...userProfile,
@@ -345,100 +323,11 @@ const UserProfile = props => {
           },
         })
         break
-      case 'startDate':
-        setUserProfile({
-          ...userProfile,
-          createdDate: event.target.value,
-        })
-        break
-      case 'totalTangibleHours':
-        setUserProfile({
-          ...userProfile,
-          totalTangibleHrs: event.target.value,
-        })
-        break
-      case 'weeklyComittedHours':
-        setUserProfile({
-          ...userProfile,
-          weeklyComittedHours: event.target.value,
-        })
-        break
-      case 'collaborationPreference':
-        setUserProfile({
-          ...userProfile,
-          collaborationPreference: event.target.value,
-        })
-        break
-      case 'weeklySummaryNotReqd':
-        setUserProfile({
-          ...userProfile,
-          weeklySummaryNotReq: !userProfile.weeklySummaryNotReq,
-        })
-        break
-      case 'housingHours':
-        setUserProfile({
-          ...userProfile,
-          hoursByCategory: {
-            ...userProfile.hoursByCategory,
-            housing: event.target.value,
-          },
-        })
-        break
-      case 'foodHours':
-        setUserProfile({
-          ...userProfile,
-          hoursByCategory: {
-            ...userProfile.hoursByCategory,
-            food: event.target.value,
-          },
-        })
-        break
-      case 'educationHours':
-        setUserProfile({
-          ...userProfile,
-          hoursByCategory: {
-            ...userProfile.hoursByCategory,
-            education: event.target.value,
-          },
-        })
-        break
-      case 'societyHours':
-        setUserProfile({
-          ...userProfile,
-          hoursByCategory: {
-            ...userProfile.hoursByCategory,
-            society: event.target.value,
-          },
-        })
-        break
-      case 'energyHours':
-        setUserProfile({
-          ...userProfile,
-          hoursByCategory: {
-            ...userProfile.hoursByCategory,
-            energy: event.target.value,
-          },
-        })
-        break
-      case 'unassignedHours':
-        setUserProfile({
-          ...userProfile,
-          hoursByCategory: {
-            ...userProfile.hoursByCategory,
-            unassigned: event.target.value,
-          },
-        })
-        break
-      case 'timeZone':
-        setUserProfile({
-          ...userProfile,
-          timeZone: event.target.value
-        })
-      break
+
     }
   }
 
-  if (isLoading && !props.isAddNewUser) {
+  if ((showLoading && !props.isAddNewUser) || userProfile === undefined) {
     return (
       <Container fluid>
         <Row className="text-center" data-test="loading">
@@ -627,20 +516,23 @@ const UserProfile = props => {
               <TabPane tabId="1">
                 <BasicInformationTab
                   userProfile={userProfile}
-                  getUserProfile={props.getUserProfile}
-                  isUserAdmin={isUserAdmin}
-                  isUserSelf={isUserSelf}
+                  setUserProfile={setUserProfile}
+                  setChanged={setChanged}
                   handleUserProfile={handleUserProfile}
                   formValid={formValid}
+                  setFormValid={setFormValid}
+                  isUserAdmin={isUserAdmin}
+                  isUserSelf={isUserSelf}
                   setShouldRefresh={setShouldRefresh}
                 />
               </TabPane>
               <TabPane tabId="2">
                 <VolunteeringTimeTab
                   userProfile={userProfile}
+                  setUserProfile={setUserProfile}
+                  setChanged={setChanged}
                   isUserAdmin={isUserAdmin}
                   isUserSelf={isUserSelf}
-                  handleUserProfile={handleUserProfile}
                 />
               </TabPane>
               <TabPane tabId="3">
@@ -668,7 +560,7 @@ const UserProfile = props => {
                   userProfile={userProfile}
                   isAdmin={isUserAdmin}
                   updateUserProfile={props.updateUserProfile}
-                  getUserProfile={props.getUserProfile}
+                 
                   setUserProfile={setUserProfile}
                 />
               </TabPane>
@@ -691,13 +583,15 @@ const UserProfile = props => {
                 </Link>
               </div>
             )}
-            <Link
-              color="primary"
-              to={`/userprofile/${userProfile._id}`}
+            <span
+              onClick={() => {
+                setUserProfile(originalUserProfile)
+                setChanged(false)
+              }}
               className="btn btn-outline-danger mr-1"
             >
               Cancel
-            </Link>
+            </span>
             <SaveButton
               className="mr-1"
               handleSubmit={handleSubmit}

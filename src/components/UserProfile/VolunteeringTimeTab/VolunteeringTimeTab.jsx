@@ -17,7 +17,10 @@ const StartDate = props => {
       name="StartDate"
       id="startDate"
       value={moment(props.userProfile.createdDate).format('YYYY-MM-DD')}
-      onChange={props.handleUserProfile}
+      onChange={(e) => {
+        props.setChanged(true);
+        props.setUserProfile({...props.userProfile, createdDate: e.target.value})
+      }}
       placeholder="Start Date"
       invalid={!props.isUserAdmin}
     />
@@ -35,7 +38,10 @@ const WeeklyCommitedHours = props => {
       id="weeklyComittedHours"
       data-testid='weeklyCommittedHours'
       value={props.userProfile.weeklyComittedHours}
-      onChange={props.handleUserProfile}
+      onChange={(e) => {
+        props.setUserProfile({...props.userProfile, weeklyComittedHours: e.target.value})
+        props.setChanged(true)
+      }}
       placeholder="Weekly Committed Hours"
       invalid={!props.isUserAdmin}
     />
@@ -52,7 +58,10 @@ const TotalCommittedHours = props => {
       name="totalTangibleHours"
       id="totalTangibleHours"
       value={props.userProfile.totalTangibleHrs}
-      onChange={props.handleUserProfile}
+      onChange={(e) => {
+        props.setUserProfile({...props.userProfile, totalTangibleHrs: e.target.value})
+        props.setChanged(true)
+      }}
       placeholder="Total Tangible Time Logged"
       invalid={!props.isUserAdmin}
     />
@@ -71,7 +80,10 @@ const WeeklySummaryReqd = props => {
         data-testid="weeklySummary-switch"
         type="checkbox"
         className={style.toggle}
-        onChange={props.handleUserProfile}
+        onChange={(e) => {
+          props.setUserProfile({...props.userProfile, weeklySummaryNotReq: !props.userProfile.weeklySummaryNotReq})
+          props.setChanged(true)
+        }}
         checked={props.userProfile.weeklySummaryNotReq}
       />
       Not Required
@@ -89,7 +101,7 @@ const WeeklySummaryReqd = props => {
  * @returns
  */
 const ViewTab = props => {
-  const { userProfile, isUserAdmin, handleUserProfile } = props
+  const { userProfile, setUserProfile, setChanged, isUserAdmin, handleUserProfile } = props
 
   const [totalTangibleHoursThisWeek, setTotalTangibleHoursThisWeek] = useState('Loading...')
   useEffect(() => {
@@ -123,7 +135,8 @@ const ViewTab = props => {
           <StartDate
             isUserAdmin={isUserAdmin}
             userProfile={userProfile}
-            handleUserProfile={handleUserProfile}
+            setUserProfile={setUserProfile}
+            setChanged={setChanged}
           />
         </Col>
       </Row>
@@ -154,7 +167,8 @@ const ViewTab = props => {
           <WeeklySummaryReqd
             isUserAdmin={isUserAdmin}
             userProfile={userProfile}
-            handleUserProfile={handleUserProfile}
+            setUserProfile={setUserProfile}
+            setChanged={setChanged}
           />
         </Col>
       </Row>
@@ -166,7 +180,8 @@ const ViewTab = props => {
           <WeeklyCommitedHours
             isUserAdmin={isUserAdmin}
             userProfile={userProfile}
-            handleUserProfile={handleUserProfile}
+            setUserProfile={setUserProfile}
+            setChanged={setChanged}
           />
         </Col>
       </Row>
@@ -179,7 +194,8 @@ const ViewTab = props => {
           <TotalCommittedHours
             isUserAdmin={isUserAdmin}
             userProfile={userProfile}
-            handleUserProfile={handleUserProfile}
+            setUserProfile={setUserProfile}
+            setChanged={setChanged}
           />
         </Col>
       </Row>
@@ -202,7 +218,12 @@ const ViewTab = props => {
                   type="number"
                   id={`${key}Hours`}
                   value={props.userProfile.hoursByCategory[key]}
-                  onChange={props.handleUserProfile}
+                  onChange={(e) => {
+                    setUserProfile({...props.userProfile, hoursByCategory: {
+                      ...props.userProfile.hoursByCategory,
+                      [key]: e.target.value
+                    }})
+                  }}
                   placeholder={`Total Tangible ${capitalize(key)} Hours`}
                 />
               ) : (

@@ -93,7 +93,7 @@ const EditLinkModal = (props) => {
                       <div className="customTitle">Name</div>
                       <div className="customTitle">Link URL</div>
                     </div>
-                    {adminLinks.map((link, index) => (
+                    {adminLinks?.map((link, index) => (
                       <div key={index} style={{ display: 'flex', margin: '5px' }}>
                         <input
                           className="customInput"
