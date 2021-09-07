@@ -8,7 +8,7 @@ import {
 } from '../constants/userManagement'
 import { ENDPOINTS } from '../utils/URL'
 import { UserStatus } from '../utils/enums'
-import moment from 'moment'
+import moment from 'moment-timezone'
 
 /**
  * fetching all user profiles
