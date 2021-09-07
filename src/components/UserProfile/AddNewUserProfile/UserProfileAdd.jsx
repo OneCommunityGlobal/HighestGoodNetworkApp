@@ -274,7 +274,7 @@ class AddUserProfile extends Component {
                         this.toggleTab('1')
                       }}
                     >
-                      Team
+                      Project
                     </NavLink>
                   </NavItem>
                   <NavItem>
@@ -284,7 +284,7 @@ class AddUserProfile extends Component {
                         this.toggleTab('2')
                       }}
                     >
-                      Project
+                      Team
                     </NavLink>
                   </NavItem>
                 </Nav>
@@ -296,21 +296,21 @@ class AddUserProfile extends Component {
                 style={{ border: 0 }}
               >
                 <TabPane tabId="1">
-                  <TeamsTab
-                    userTeams={this.state.teams}
-                    teamsData={this.props ? this.props.allTeams.allTeamsData : []}
-                    onAssignTeam={this.onAssignTeam}
-                    onDeleteteam={this.onDeleteTeam}
-                    isUserAdmin={true}
-                    edit
-                  />
-                </TabPane>
-                <TabPane tabId="2">
                   <ProjectsTab
                     userProjects={this.state.projects}
                     projectsData={this.props ? this.props.allProjects.projects : []}
                     onAssignProject={this.onAssignProject}
                     onDeleteProject={this.onDeleteProject}
+                    isUserAdmin={true}
+                    edit
+                  />
+                </TabPane>
+                <TabPane tabId="2">
+                  <TeamsTab
+                    userTeams={this.state.teams}
+                    teamsData={this.props ? this.props.allTeams.allTeamsData : []}
+                    onAssignTeam={this.onAssignTeam}
+                    onDeleteteam={this.onDeleteTeam}
                     isUserAdmin={true}
                     edit
                   />

@@ -33,11 +33,9 @@ import BasicToolTips from './ToolTips/BasicTabTips'
 import ResetPasswordButton from '../UserManagement/ResetPasswordButton'
 import Badges from './Badges'
 import TimeEntryEditHistory from './TimeEntryEditHistory.jsx'
-
-import { useDispatch } from 'react-redux'
-
-import axios from 'axios'
 import { ENDPOINTS } from 'utils/URL'
+import ActiveCell from 'components/UserManagement/ActiveCell'
+import axios from 'axios'
 
 const UserProfile = props => {
 
@@ -103,8 +101,7 @@ const UserProfile = props => {
       setShowLoading(false);
     } catch (err) {
       setShowLoading(false)
-      alert('EXCEPTION')
-      //TODO: Proper error handling
+    
     }
 
   }
@@ -397,6 +394,21 @@ const UserProfile = props => {
               <h5 style={{ display: 'inline-block', marginRight: 10 }}>
                 {`${firstName} ${lastName}`}
               </h5>
+              {
+                isUserAdmin && (
+                  <>
+                    <ActiveCell
+                      isActive={userProfile.isActive}
+                      user={userProfile}
+                      onClick={() => {
+                        setChanged(true);
+                        setUserProfile({...userProfile, isActive: !userProfile.isActive})
+                      }}
+                    />
+                    &nbsp;
+                  </>
+                )
+              }
               <i
                 data-toggle="tooltip"
                 data-placement="right"

@@ -27,13 +27,13 @@ import PeopleReport from './components/Reports/PeopleReport'
 import ProjectReport from './components/Reports/ProjectReport'
 import TeamReport from './components/Reports/TeamReport'
 import Inventory from './components/Inventory'
-
-
 import BadgeManagement from "./components/Badge/BadgeManagement"
+import AutoUpdate from 'components/AutoUpdate'
 
 export default (
   <React.Fragment>
     <Header />
+    <AutoUpdate />
     <ToastContainer />
     <Switch>
       <ProtectedRoute path="/dashboard" exact component={Dashboard} />

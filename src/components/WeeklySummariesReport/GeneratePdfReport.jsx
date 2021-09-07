@@ -26,7 +26,7 @@ const GeneratePdfReport = ({ summaries, weekIndex, weekDates }) => {
 
       const { firstName, lastName, weeklySummaries, mediaUrl, weeklySummariesCount, weeklyComittedHours, totalSeconds } = eachSummary;
 
-      const hoursLogged = totalSeconds / 3600;
+      const hoursLogged = (totalSeconds[weekIndex] || 0) / 3600;
 
       if(eachSummary.email !== undefined && eachSummary.email !== null) {
         emails.push(eachSummary.email);

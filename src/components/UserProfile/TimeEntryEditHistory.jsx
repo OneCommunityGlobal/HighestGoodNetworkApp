@@ -52,7 +52,7 @@ const TimeEntryEditHistory = props => {
           {editHistory.map(item => {
             return (
               <tr key={`edit-history-${item._id}`}>
-                <td>{moment(item.date).format('YYYY-MM-DD HH:MM:SS')}</td>
+                <td>{moment(item.date).tz('America/Los_Angeles').format('YYYY-MM-DD HH:MM:SS')}</td>
                 <td>{secondsToHms(item.initialSeconds)}</td>
                 <td>{secondsToHms(item.newSeconds)}</td>
                 {props.isAdmin === true && (
