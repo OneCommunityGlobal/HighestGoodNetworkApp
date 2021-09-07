@@ -8,6 +8,7 @@ import {
 } from '../constants/userManagement'
 import { ENDPOINTS } from '../utils/URL'
 import { UserStatus } from '../utils/enums'
+import moment from 'moment'
 
 /**
  * fetching all user profiles
@@ -34,6 +35,14 @@ export const updateUserStatus = (user, status, reactivationDate) => {
   userProfile.isActive = (status === UserStatus.Active);
   userProfile.reactivationDate = reactivationDate;
   const patchData = { status: status, reactivationDate: reactivationDate };
+  if (status === UserStatus.InActive) {
+    patchData.endDate = moment().tz(userProfile.timeZone);
+    userProfile.endDate = moment().tz(userProfile.timeZone)
+  }else {
+    patchData.endDate = undefined;
+    userProfile.endDate = undefined;
+  }
+
   const updateProfilePromise = axios.patch(ENDPOINTS.USER_PROFILE(user._id), patchData)
   return async dispatch => {
     updateProfilePromise.then(res => {
