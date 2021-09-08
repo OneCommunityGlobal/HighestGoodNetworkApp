@@ -7,6 +7,7 @@
 const ActiveCell = props => {
   return (
     <span
+      style={{ fontSize: '1.5rem' }}
       className={props.isActive ? 'isActive' : 'isNotActive'}
       id={props.index === undefined ? undefined : `active_cell_${props.index}`}
       title="Click here to change the user status"
