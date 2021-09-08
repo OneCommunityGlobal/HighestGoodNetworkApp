@@ -352,6 +352,12 @@ const UserProfile = props => {
           createdDate: event.target.value,
         })
         break
+      case 'endDate':
+        setUserProfile({
+          ...userProfile,
+          endDate: event.target.value,
+        })
+        break
       case 'totalTangibleHours':
         setUserProfile({
           ...userProfile,
