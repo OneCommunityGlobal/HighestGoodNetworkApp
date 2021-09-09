@@ -1,51 +1,21 @@
 import React, { useState, useEffect } from "react";
-import routes from '../routes'
-import logger from "../services/logService";
-
-import httpService from "../services/httpService";
-import jwtDecode from 'jwt-decode';
-import { setCurrentUser, logoutUser } from "../actions/authActions"
-import moment from 'moment-timezone'
-
-import { Provider } from 'react-redux';
 import { BrowserRouter as Router } from 'react-router-dom';
+import { Provider } from 'react-redux';
+import axios from 'axios'
+import moment from 'moment-timezone'
+import jwtDecode from 'jwt-decode';
+
+import routes from '../routes'
+import httpService from "../services/httpService";
+import { setCurrentUser, logoutUser } from "../actions/authActions"
 import configureStore from '../store';
 import { PersistGate } from 'redux-persist/integration/react';
 import Loading from './common/Loading'
-
-import { tokenKey } from "../config.json";
-import "../App.css";
 import { ENDPOINTS } from "utils/URL";
-import axios from 'axios'
+
+import "../App.css";
 
 const { persistor, store } = configureStore();
-
-const SECOND = 1
-const HOUR = 60 * SECOND
-const DAY = 24 * HOUR
-
-const TOKEN_LIFETIME_BUFFER = 2 * DAY;
-
-/***********/
-if (localStorage.getItem(tokenKey)) {
-
-  const decoded = jwtDecode(localStorage.getItem(tokenKey));
-
-  const currentTime = Date.now() / 1000;
-  const expiryTime = new Date(decoded.expiryTimestamp).getTime() / 1000;
-
-  if (expiryTime - TOKEN_LIFETIME_BUFFER < currentTime) {
-
-    store.dispatch(logoutUser());
-  }
-  else {
-    httpService.setjwt(localStorage.getItem(tokenKey));
-    store.dispatch(setCurrentUser(decoded));
-  }
-}
-/***********/
-
-
 
 const App = () => {
 
@@ -66,6 +36,8 @@ const App = () => {
     const refreshTokenExpirationDate = moment(new Date(refreshToken.expirationDate))
     const now = moment();
 
+    // If the token has expired or is going to expire within 15 minutes,
+    // log the user out.
     if(now.diff(refreshTokenExpirationDate, 'minutes') > -15) {
       store.dispatch(logoutUser());
       setInitialized(true);

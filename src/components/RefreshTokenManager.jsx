@@ -4,7 +4,6 @@ import httpService from "services/httpService";
 import { ENDPOINTS } from "utils/URL";
 
 const SECOND = 1000;
-const MINUTE = SECOND * 60;
 
 const useRefreshToken = async () => {
 
