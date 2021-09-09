@@ -11,9 +11,12 @@ const TeamMembersPopup = React.memo((props) => {
   const closePopup = () => { props.onClose(); };
   const [selectedUser, onSelectUser] = useState(undefined);
   const [isValidUser, onValidation] = useState(true);
+  const [searchText, setSearchText] = useState('');
+
   const onAddUser = () => {
     if (selectedUser && !props.members.teamMembers.some((x) => x._id === selectedUser._id)) {
       props.onAddUser(selectedUser);
+      setSearchText('')
     } else {
       onValidation(false);
     }
@@ -38,6 +41,8 @@ const TeamMembersPopup = React.memo((props) => {
             <MembersAutoComplete
               userProfileData={props.usersdata}
               onAddUser={selectUser}
+              searchText={searchText}
+              setSearchText={setSearchText}
             />
             <Button
               color="primary"
