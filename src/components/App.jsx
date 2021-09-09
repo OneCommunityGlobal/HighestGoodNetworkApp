@@ -1,10 +1,11 @@
-import React, { Component } from "react";
+import React, { useState, useEffect } from "react";
 import routes from '../routes'
 import logger from "../services/logService";
 
 import httpService from "../services/httpService";
 import jwtDecode from 'jwt-decode';
 import { setCurrentUser, logoutUser } from "../actions/authActions"
+import moment from 'moment-timezone'
 
 import { Provider } from 'react-redux';
 import { BrowserRouter as Router } from 'react-router-dom';
@@ -12,66 +13,96 @@ import configureStore from '../store';
 import { PersistGate } from 'redux-persist/integration/react';
 import Loading from './common/Loading'
 
-import config from "../config.json";
+import { tokenKey } from "../config.json";
 import "../App.css";
+import { ENDPOINTS } from "utils/URL";
+import axios from 'axios'
 
 const { persistor, store } = configureStore();
-const tokenKey = config.tokenKey;
-// Require re-login 2 days before the token expires on server side
-// Avoid failure due to token expiration when user is working
-const TOKEN_LIFETIME_BUFFER = 86400 * 2;
 
-// Check for token
+const SECOND = 1
+const HOUR = 60 * SECOND
+const DAY = 24 * HOUR
+
+const TOKEN_LIFETIME_BUFFER = 2 * DAY;
+
+/***********/
 if (localStorage.getItem(tokenKey)) {
-  // Decode token and get user info and exp
+
   const decoded = jwtDecode(localStorage.getItem(tokenKey));
-  // Check for expired token
+
   const currentTime = Date.now() / 1000;
   const expiryTime = new Date(decoded.expiryTimestamp).getTime() / 1000;
-  //console.log(currentTime, expiryTime);
+
   if (expiryTime - TOKEN_LIFETIME_BUFFER < currentTime) {
-    // Logout user
+
     store.dispatch(logoutUser());
   }
   else {
-    // Set auth token header auth
     httpService.setjwt(localStorage.getItem(tokenKey));
-    // Set user and isAuthenticated
     store.dispatch(setCurrentUser(decoded));
   }
 }
+/***********/
 
-class App extends Component {
-  state = {};
 
-  // confirmAlert(e) {
-  //   e.preventDefault();
-  //   return e.returnValue = "Are you sure you want to leave?\nPlease don't forget to log your time!";
-  // }
 
-  // componentDidMount() {
-  //   window.addEventListener('beforeunload', this.confirmAlert);
-  // }
-  
-  // componentWillUnmount() {
-  //   window.removeEventListener('beforeunload', this.confirmAlert);
-  // }
+const App = () => {
 
-  componentDidCatch(error, errorInfo) {
-    logger.logError(error);
+  const [initialized, setInitialized] = useState(false);
+
+  const initialize = () => {
+
+    const plainTextRefreshToken = localStorage.getItem('refreshToken');
+
+    if(!plainTextRefreshToken) {
+      store.dispatch(logoutUser());
+      setInitialized(true);
+      return;
+    }
+
+    const refreshToken = JSON.parse(plainTextRefreshToken);
+
+    const refreshTokenExpirationDate = moment(new Date(refreshToken.expirationDate))
+    const now = moment();
+
+    if(now.diff(refreshTokenExpirationDate, 'minutes') > -15) {
+      store.dispatch(logoutUser());
+      setInitialized(true);
+      return;
+    } 
+
+    axios.post(ENDPOINTS.REFRESH_TOKEN(), {
+      refreshToken: refreshToken.token
+    })
+    .then((res) => {
+      const decoded = jwtDecode(res.data.token);
+      httpService.setjwt(res.data.token);
+      store.dispatch(setCurrentUser(decoded));
+      localStorage.setItem('refreshToken', JSON.stringify(res.data.refreshToken))
+      setInitialized(true);
+    })
+    .catch((err) => {
+      console.log(err);
+      alert('There was an error signing into the Highest Good Network app. Please try again. If the problem persists, contact technical support.')
+    })
+
   }
 
-  render() {
-    return (
-      <Provider store={store}>
-        <PersistGate loading={<Loading/>} persistor={persistor}>
-          <Router>
-            { routes }
-          </Router>
-        </PersistGate>
-      </Provider>
-    );
-  }
+  useEffect(initialize, []);
+
+  if(!initialized) return <Loading/>
+
+  return (
+    <Provider store={store}>
+      <PersistGate loading={<Loading/>} persistor={persistor}>
+        <Router>
+          { routes }
+        </Router>
+      </PersistGate>
+    </Provider>
+  );
+
 }
 
 export default App;
