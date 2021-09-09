@@ -30,7 +30,7 @@ const onLoop = async () => {
   
     const accessTokenExpirationDate = new Date(payload.exp * SECOND);
     const currentDate = new Date();
-    const isAccessTokenExpired = true || (accessTokenExpirationDate.valueOf() - currentDate.valueOf() <= 60 * SECOND);
+    const isAccessTokenExpired = (accessTokenExpirationDate.valueOf() - currentDate.valueOf() <= 60 * SECOND);
   
     if(isAccessTokenExpired) {
       try {
