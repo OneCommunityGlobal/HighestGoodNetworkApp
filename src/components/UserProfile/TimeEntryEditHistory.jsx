@@ -13,7 +13,7 @@ import { useDispatch } from 'react-redux'
  * @returns
  */
 const TimeEntryEditHistory = props => {
-  const editHistory = props.userProfile.timeEntryEditHistory
+  const editHistory = [...props.userProfile.timeEntryEditHistory].reverse()
   const dispatch = useDispatch()
 
   const secondsToHms = (seconds) => {
@@ -60,7 +60,7 @@ const TimeEntryEditHistory = props => {
           {editHistory.map(item => {
             return (
               <tr key={`edit-history-${item._id}`}>
-                <td>{moment(item.date).tz('America/Los_Angeles').format('YYYY-MM-DD HH:MM:SS')}</td>
+                <td>{moment(item.date).tz('America/Los_Angeles').format('YYYY-MM-DD hh:mm:ss')}</td>
                 <td>{secondsToHms(item.initialSeconds)}</td>
                 <td>{secondsToHms(item.newSeconds)}</td>
                 {props.isAdmin === true && (
