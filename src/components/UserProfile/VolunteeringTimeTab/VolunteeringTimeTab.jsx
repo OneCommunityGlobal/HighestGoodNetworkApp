@@ -27,6 +27,23 @@ const StartDate = props => {
   )
 }
 
+const EndDate = props => {
+  if (!props.isUserAdmin) {
+    return <p>{props.userProfile.endDate ? moment(props.userProfile.endDate).format('YYYY-MM-DD') : 'N/A'}</p>
+  }
+  return (
+    <Input
+      type="date"
+      name="EndDate"
+      id="endDate"
+      value={props.userProfile.endDate ? moment(props.userProfile.endDate).format('YYYY-MM-DD') : ''}
+      onChange={props.handleUserProfile}
+      placeholder="End Date"
+      invalid={!props.isUserAdmin}
+    />
+  )
+}
+
 const WeeklyCommitedHours = props => {
   if (!props.isUserAdmin) {
     return <p>{props.userProfile.weeklyComittedHours}</p>
@@ -146,7 +163,11 @@ const ViewTab = props => {
           <Label>End Date</Label>
         </Col>
         <Col md="6">
-          <p>{userProfile.endDate ? moment(userProfile.endDate).format('YYYY-MM-DD') : 'N/A'}</p>
+          <EndDate
+            isUserAdmin={isUserAdmin}
+            userProfile={userProfile}
+            handleUserProfile={handleUserProfile}
+          />
         </Col>
       </Row>
 

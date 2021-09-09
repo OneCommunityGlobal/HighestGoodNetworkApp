@@ -42,9 +42,9 @@ const TimeEntryEditHistory = props => {
       <Table variant="">
         <thead>
           <tr>
-            <th>Date / Time (Pacific Time)</th>
-            <th>Initial Time (HH:MM:SS)</th>
-            <th>New Time (HH:MM:SS)</th>
+            <th>Date / Time<br/>(Pacific Time)</th>
+            <th>Initial Time<br/>(HH:MM:SS)</th>
+            <th>New Time<br/>(HH:MM:SS)</th>
             {props.isAdmin === true && <th></th>}
           </tr>
         </thead>

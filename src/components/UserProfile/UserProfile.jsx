@@ -394,6 +394,15 @@ const UserProfile = props => {
               <h5 style={{ display: 'inline-block', marginRight: 10 }}>
                 {`${firstName} ${lastName}`}
               </h5>
+              <i
+                data-toggle="tooltip"
+                data-placement="right"
+                title="Click for more information"
+                style={{ fontSize: 24, cursor: 'pointer' }}
+                aria-hidden="true"
+                className="fa fa-info-circle"
+                onClick={toggleInfoModal}
+              />{' '}
               {
                 isUserAdmin && (
                   <>
@@ -409,15 +418,6 @@ const UserProfile = props => {
                   </>
                 )
               }
-              <i
-                data-toggle="tooltip"
-                data-placement="right"
-                title="Click for more information"
-                style={{ fontSize: 24, cursor: 'pointer' }}
-                aria-hidden="true"
-                className="fa fa-info-circle"
-                onClick={toggleInfoModal}
-              />{' '}
               {isUserAdmin && (
                 <i
                   data-toggle="tooltip"
