@@ -1,7 +1,9 @@
 import axios from "axios"
 import { useEffect, useState } from "react"
+import { useDispatch } from "react-redux";
 import httpService from "services/httpService";
 import { ENDPOINTS } from "utils/URL";
+import { logoutUser } from "actions/authActions";
 
 const SECOND = 1000;
 
@@ -17,7 +19,7 @@ const useRefreshToken = async () => {
 
 }
 
-const onLoop = async () => {
+const onLoop = async (dispatch) => {
         
     const base64AccessToken = localStorage.getItem('token');
     if(!base64AccessToken) return;
@@ -35,7 +37,9 @@ const onLoop = async () => {
       try {
         await useRefreshToken();
       } catch (err) {
-        console.log(err);
+        alert('An error occurred that forced us to log you out. If the problem persists, please contact technical support.')
+        logoutUser()(dispatch)
+        return;
       }
     }
   
@@ -47,7 +51,8 @@ const onLoop = async () => {
  */
 const RefreshTokenManager = () => {
 
-    const [loopInterval, setLoopInterval] = useState(setInterval(onLoop, 15 * SECOND))
+    const [loopInterval, setLoopInterval] = useState(setInterval(() => onLoop(dispatch), 15 * SECOND))
+    const dispatch = useDispatch();
 
     useEffect(() => {
         return () => {
