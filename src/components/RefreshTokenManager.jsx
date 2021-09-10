@@ -4,6 +4,7 @@ import { useDispatch } from "react-redux";
 import httpService from "services/httpService";
 import { ENDPOINTS } from "utils/URL";
 import { logoutUser } from "actions/authActions";
+import { tokenKey } from 'config.json'
 
 const SECOND = 1000;
 
@@ -13,7 +14,7 @@ const useRefreshToken = async () => {
         refreshToken: JSON.parse(localStorage.getItem('refreshToken')).token
     })
 
-    localStorage.setItem('token', res.data.token);
+    localStorage.setItem(tokenKey, res.data.token);
     localStorage.setItem('refreshToken', JSON.stringify(res.data.refreshToken))
     httpService.setjwt(res.data.token)
 
@@ -21,7 +22,7 @@ const useRefreshToken = async () => {
 
 const onLoop = async (dispatch) => {
         
-    const base64AccessToken = localStorage.getItem('token');
+    const base64AccessToken = localStorage.getItem(tokenKey);
     if(!base64AccessToken) return;
   
     const splits = base64AccessToken.split('.');

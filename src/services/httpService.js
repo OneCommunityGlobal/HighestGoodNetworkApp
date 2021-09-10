@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import logService from './logService';
+import { tokenKey } from 'config.json'
 
 /**
  * Sets the 
@@ -22,6 +23,13 @@ axios.interceptors.response.use(null, (error) => {
     toast.error('Unexpected error');
   }
   return Promise.reject(error);
+});
+
+axios.interceptors.request.use((config) => {
+  const jwt = localStorage.getItem(tokenKey)
+  if(!jwt) return config;
+  setjwt(jwt)
+  return config;
 });
 
 export default {
