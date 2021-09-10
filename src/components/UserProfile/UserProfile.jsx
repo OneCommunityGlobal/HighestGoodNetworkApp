@@ -27,7 +27,7 @@ import BasicInformationTab from './BaiscInformationTab/BasicInformationTab'
 import VolunteeringTimeTab from './VolunteeringTimeTab/VolunteeringTimeTab'
 import SaveButton from './UserProfileEdit/SaveButton'
 import UserLinkLayout from './UserLinkLayout'
-import BlueSqaureLayout from './BlueSqaureLayout'
+import BlueSquareLayout from './BlueSquareLayout'
 import TabToolTips from './ToolTips/TabToolTips'
 import BasicToolTips from './ToolTips/BasicTabTips'
 import ResetPasswordButton from '../UserManagement/ResetPasswordButton'
@@ -577,8 +577,10 @@ const UserProfile = props => {
                 updateLink={updateLink}
                 handleLinkModel={props.handleLinkModel}
               />
-              <BlueSqaureLayout
+              <BlueSquareLayout
                 userProfile={userProfile}
+                setUserProfile={setUserProfile}
+                setChanged={setChanged}
                 handleUserProfile={handleUserProfile}
                 handleSaveError={props.handleSaveError}
                 handleBlueSquare={handleBlueSquare}
@@ -649,6 +651,8 @@ const UserProfile = props => {
               <TabPane tabId="1">
                 <BasicInformationTab
                   userProfile={userProfile}
+                  setUserProfile={setUserProfile}
+                  setChanged={setChanged}
                   getUserProfile={props.getUserProfile}
                   isUserAdmin={isUserAdmin}
                   isUserSelf={isUserSelf}

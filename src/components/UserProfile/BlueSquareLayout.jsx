@@ -5,14 +5,15 @@ import './UserProfile.scss';
 // import styleEdit from './UserProfileEdit.module.scss';
 import './UserProfileEdit/UserProfileEdit.scss';
 
-const BlueSqaureLayout = (props) => {
+const BlueSquareLayout = (props) => {
 
   const {
     userProfile,
-    handleUserProfile,
+    setUserProfile,
     handleBlueSquare,
     isUserAdmin,
     isUserSelf,
+    setChanged
   } = props;
 
   const { privacySettings, infringments } = userProfile;
@@ -26,10 +27,18 @@ const BlueSqaureLayout = (props) => {
           <div style={{ display: 'inline-block' }}>BLUE SQUARES</div>
           {canEdit ? (
             <ToggleSwitch
-              style={{ display: 'inline-block' }}
-              switchType="bluesquares"
               state={privacySettings?.blueSquares}
-              handleUserProfile={handleUserProfile}
+              setState={state => {
+                setUserProfile({...userProfile, 
+                  privacySettings: {
+                    ...userProfile.privacySettings,
+                    blueSquares: state
+                  }
+                })
+                setChanged(true);
+              }}
+              onLabel="Public"
+              offLabel="Private"
             />
           ) : null}
         </div>
@@ -58,4 +67,4 @@ const BlueSqaureLayout = (props) => {
   );
 };
 
-export default BlueSqaureLayout;
+export default BlueSquareLayout;

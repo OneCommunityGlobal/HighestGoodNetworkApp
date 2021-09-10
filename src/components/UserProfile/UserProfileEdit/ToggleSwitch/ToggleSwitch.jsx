@@ -1,142 +1,35 @@
 import React from 'react'
 import style from './ToggleSwitch.module.scss'
 
-const ToggleSwitch = ({ switchType, state, handleUserProfile }) => {
-  switch (switchType) {
-    case 'bluesquares':
-      if (state) {
-        return (
-          <div className="blueSqare">
-            <div className={style.switchSection}>
-              {/* <div> Blue Squares: </div> */}
-              <div className={style.switchContainer}>
-                public
-                <input
-                  data-testid="blue-switch"
-                  id="blueSquaresPubliclyAccessible"
-                  type="checkbox"
-                  className={style.toggle}
-                  onChange={handleUserProfile}
-                />
-                private
-              </div>
-            </div>
-          </div>
-        )
-      }
-      return (
-        <div className="blueSqare">
-          <div className={style.switchSection}>
-            {/* <div> Blue Squares: </div> */}
-            <div className={style.switchContainer}>
-              public
-              <input
-                data-testid="blue-switch"
-                id="blueSquaresPubliclyAccessible"
-                type="checkbox"
-                className={style.toggle}
-                defaultChecked
-                onChange={handleUserProfile}
-              />
-              private
-            </div>
-          </div>
-          </div>
-        );
+/**
+ * 
+ * @param {boolean} props.state Value of the toggle switch 
+ * @param {func} props.setState function that assigns a value to state
+ * @param {string} props.onLabel Label to the right side of the switch indicating the value of the toggle when turned on
+ * @param {string} props.onLabel Label to the left side of the switch indicating the value of the toggle when turned off
+ * @returns 
+ */
+const ToggleSwitch = (props) => {
 
-    case 'email':
-      if (state) {
-        return (
-          <div className="blueSqare">
-            <div className={style.switchSection}>
-              <div className="icon">
-                <i className="fa fa-envelope-o" aria-hidden="true" />
-              </div>
-              <div className={style.switchContainer}>
-                public
-                <input
-                  id="emailPubliclyAccessible"
-                  data-testid="email-switch"
-                  type="checkbox"
-                  className={style.toggle}
-                  onChange={handleUserProfile}
-                />
-                private
-              </div>
-            </div>
-          </div>
-        )
-      }
-      return (
-        <div className="blueSqare">
-          <div className={style.switchSection}>
-            <div className="icon">
-              <i className="fa fa-envelope-o" aria-hidden="true" />
-            </div>
-            <div className={style.switchContainer}>
-              public
-              <input
-                id="emailPubliclyAccessible"
-                data-testid="email-switch"
-                type="checkbox"
-                className={style.toggle}
-                defaultChecked
-                onChange={handleUserProfile}
-              />
-              private
-            </div>
-          </div>
-        </div>
-      )
-    case 'phone':
-      if (state) {
-        return (
-          <div className="blueSqare">
-            <div className={style.switchSection}>
-              <div className="icon">
-                <i className="fa fa-phone" aria-hidden="true" />
-              </div>
-              <div className={style.switchContainer}>
-                public
-                <input
-                  data-testid="phone-switch"
-                  id="phonePubliclyAccessible"
-                  //data-testid="custom-element"
-                  type="checkbox"
-                  className={style.toggle}
-                  onChange={handleUserProfile}
-                />
-                private
-              </div>
-            </div>
-          </div>
-        )
-      }
-      return (
-        <div className="blueSqare">
-          <div className={style.switchSection}>
-            <div className="icon">
-              <i className="fa fa-phone" aria-hidden="true" />
-            </div>
-            <div className={style.switchContainer}>
-              public
-              <input
-                data-testid="phone-switch"
-                id="phonePubliclyAccessible"
-                type="checkbox"
-                className={style.toggle}
-                defaultChecked
-                onChange={handleUserProfile}
-              />
-              private
-            </div>
-          </div>
-        </div>
-      )
-    default:
-      break
-  }
-  return <div>ERROR: Toggle Switch.</div>
+  const { state, setState } = props
+  const onLabel = props.onLabel;
+  const offLabel = props.offLabel;
+
+  return (
+    <div className={style.switchSection}>
+      <div className={style.switchContainer}>
+        {onLabel}
+        <input
+          type="checkbox"
+          className={style.toggle}
+          onChange={() => setState(!state)}
+          checked={state}
+        />
+        {offLabel}
+      </div>
+    </div>
+  )
+
 }
 
 export default ToggleSwitch

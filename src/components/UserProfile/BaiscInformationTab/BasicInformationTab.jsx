@@ -91,7 +91,7 @@ const Title = props => {
 }
 
 const Email = props => {
-  const { userProfile, isUserAdmin, isUserSelf, handleUserProfile, formValid } = props
+  const { userProfile, setUserProfile, setChanged, isUserAdmin, isUserSelf, handleUserProfile, formValid } = props
   const { email, privacySettings } = userProfile
 
   if (isUserAdmin || isUserSelf) {
@@ -100,9 +100,19 @@ const Email = props => {
         <Col>
           <FormGroup>
             <ToggleSwitch
-              switchType="email"
               state={privacySettings?.email}
-              handleUserProfile={handleUserProfile}
+              setState={state => {
+                setUserProfile({
+                  ...userProfile,
+                  privacySettings: {
+                    ...userProfile.privacySettings,
+                    email: state
+                  }
+                })
+                setChanged(true)
+              }}
+              onLabel="Public"
+              offLabel="Private"
             />
 
             <Input
@@ -161,7 +171,7 @@ const formatPhoneNumber = str => {
   return str
 }
 const Phone = props => {
-  const { userProfile, isUserAdmin, isUserSelf, handleUserProfile } = props
+  const { userProfile, setUserProfile, setChanged, isUserAdmin, isUserSelf, handleUserProfile } = props
   const { phoneNumber, privacySettings } = userProfile
   if (isUserAdmin || isUserSelf) {
     return (
@@ -169,9 +179,17 @@ const Phone = props => {
         <Col>
           <FormGroup>
             <ToggleSwitch
-              switchType="phone"
               state={privacySettings?.phoneNumber}
-              handleUserProfile={handleUserProfile}
+              setState={state => {
+                setUserProfile({...userProfile,
+                privacySettings: {
+                  ...userProfile.privacySettings,
+                  phoneNumber: state
+                }})
+                setChanged(true)
+              }}
+              onLabel="Public"
+              offLabel="Private"
             />
             <PhoneInput
               country={'us'}
@@ -199,7 +217,7 @@ const Phone = props => {
 }
 
 const BasicInformationTab = props => {
-  const { userProfile, isUserAdmin, isUserSelf, handleUserProfile, formValid } = props
+  const { userProfile, setUserProfile, setChanged, isUserAdmin, isUserSelf, handleUserProfile, formValid } = props
 
   const [timeZoneFilter, setTimeZoneFilter] = useState('')
 
@@ -262,6 +280,8 @@ const BasicInformationTab = props => {
         </Col>
         <Email
           userProfile={userProfile}
+          setUserProfile={setUserProfile}
+          setChanged={setChanged}
           isUserAdmin={isUserAdmin}
           isUserSelf={isUserSelf}
           handleUserProfile={handleUserProfile}
@@ -283,6 +303,8 @@ const BasicInformationTab = props => {
         </Col>
         <Phone
           userProfile={userProfile}
+          setUserProfile={setUserProfile}
+          setChanged={setChanged}
           isUserAdmin={isUserAdmin}
           isUserSelf={isUserSelf}
           handleUserProfile={handleUserProfile}
