@@ -18,6 +18,7 @@
     "date-fns": "^2.14.0",
     "diff": "^5.0.0",
     "font-awesome": "^4.7.0",
+    "formik": "^2.2.9",
     "history": "^4.10.1",
     "html-react-parser": "^1.0.0",
     "html-to-pdfmake": "^2.0.6",
@@ -56,7 +57,8 @@
     "redux": "^4.0.5",
     "redux-persist": "^5.10.0",
     "redux-thunk": "^2.3.0",
-    "websocket-extensions": ">=0.1.4"
+    "websocket-extensions": ">=0.1.4",
+    "yup": "^0.32.9"
   },
   "scripts": {
     "prestart": "npm run test",
