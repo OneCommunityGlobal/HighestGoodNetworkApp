@@ -55,7 +55,6 @@ const App = () => {
       setInitialized(true);
     })
     .catch((err) => {
-      console.log(err);
       alert('There was an error signing into the Highest Good Network app. Please try again. If the problem persists, contact technical support.')
     })
 

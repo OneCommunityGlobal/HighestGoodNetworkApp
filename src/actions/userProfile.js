@@ -18,7 +18,6 @@ export const getUserProfile = (userId) => {
       const res = await axios.get(ENDPOINTS.USER_PROFILE(userId))
       await dispatch(getUserProfileActionCreator(res.data))
     } catch (err) {
-      console.log("ERR")
     }
 
   };
