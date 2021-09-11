@@ -26,18 +26,20 @@ const TimeZoneDropDown = props => {
         name={props.name || 'timeZone'}
         className="form form-control"
         onChange={props.onChange}
+        defaultValue={props.selected}
     >
       {Object.keys(timeZoneMap).map(timeZoneName => {
+        const timeZoneString = `${timeZoneName} (UTC${timeZoneMap[timeZoneName].utcOffset})`;
         if (
           !props.filter ||
-          timeZoneName
+          timeZoneString
             .toLocaleLowerCase()
             .replaceAll('_', ' ')
             .includes(props.filter.toLocaleLowerCase())
         ) {
           return (
-            <option value={timeZoneName} key={`timeZone-${timeZoneName}`} selected={timeZoneName === props.selected}>
-              {`${timeZoneName} (UTC${timeZoneMap[timeZoneName].utcOffset})`}
+            <option value={timeZoneName} key={`timeZone-${timeZoneName}`}>
+              {timeZoneString}
             </option>
           )
         }

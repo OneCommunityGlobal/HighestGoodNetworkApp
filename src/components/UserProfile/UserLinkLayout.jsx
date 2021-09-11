@@ -1,28 +1,34 @@
 import React from 'react';
 import UserLinks from './UserLinks';
-import EditLinkButton from './UserProfileEdit/LinkModButton';
+import LinkModButton from './UserProfileEdit/LinkModButton';
 
 const UserLinkLayout = (props) => {
+
   const {
     isUserAdmin,
     isUserSelf,
     userProfile,
     updateLink,
     handleLinkModel,
+    setChanged
   } = props;
+
   const {
     adminLinks,
     personalLinks,
   } = userProfile;
+
   const canEdit = isUserAdmin || isUserSelf;
+
   return (
     <div data-testid="user-link">
       <p style={{ display: 'inline-block', marginRight: 10 }}>LINKS </p>
       {canEdit ? (
-        <EditLinkButton
+        <LinkModButton
           userProfile={userProfile}
           updateLink={updateLink}
           isUserAdmin={isUserAdmin}
+          setChanged={setChanged}
         />
       ) : null}
       <UserLinks
@@ -39,6 +45,7 @@ const UserLinkLayout = (props) => {
       />
     </div>
   );
+
 };
 
 export default UserLinkLayout;

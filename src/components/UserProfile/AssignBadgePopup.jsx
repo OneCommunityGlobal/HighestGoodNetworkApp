@@ -3,9 +3,10 @@ import {
   Table, Button, UncontrolledTooltip
 } from 'reactstrap';
 import { connect } from 'react-redux';
-import { getUserProfile } from '../../actions/userProfile';
 import AssignTableRow from '../Badge/AssignTableRow';
 import { assignBadgesByUserID, clearNameAndSelected, closeAlert } from '../../actions/badgeManagement';
+import { ENDPOINTS } from 'utils/URL';
+import axios from 'axios'
 
 const AssignBadgePopup = (props) => {
   const [searchedName, setSearchedName] = useState('');
@@ -15,9 +16,17 @@ const AssignBadgePopup = (props) => {
   }
 
   const assignBadges = async () => {
-    await props.assignBadgesByUserID(props.userId, props.selectedBadges);
-    await props.clearNameAndSelected();
-    await props.getUserProfile(props.userId);
+    try {
+      await props.assignBadgesByUserID(props.userProfile._id, props.selectedBadges);
+      const response = await axios.get(ENDPOINTS.USER_PROFILE(props.userProfile._id))
+      props.setUserProfile({
+        ...props.userProfile,
+        badgeCollection: response.data.badgeCollection
+      })
+
+    } catch (e) {
+      //TODO: Proper error handling. 
+    }
     props.close();
   }
 
@@ -55,23 +64,19 @@ const AssignBadgePopup = (props) => {
           )}
         </tbody>
       </Table>
-      <Button className="btn--dark-sea-green float-right" style={{ margin: 5 }} onClick={()=>{
-        assignBadges();
-      }}>Confirm</Button>
+      <Button className="btn--dark-sea-green float-right" style={{ margin: 5 }} onClick={assignBadges}>Confirm</Button>
     </div>
   );
 
 }
 
 const mapStateToProps = state => ({
-  userProfile: state.userProfile,
   selectedBadges: state.badge.selectedBadges,
 });
 
 const mapDispatchToProps = dispatch => {
   return {
-    getUserProfile: (userId) => dispatch(getUserProfile(userId)),
-    assignBadgesByUserID: (userId, selectedBadge) => dispatch(assignBadgesByUserID(userId, selectedBadge)),
+    assignBadgesByUserID: (userId, selectedBadge) => assignBadgesByUserID(userId, selectedBadge)(dispatch),
     clearNameAndSelected: () => dispatch(clearNameAndSelected()),
   };
 }
