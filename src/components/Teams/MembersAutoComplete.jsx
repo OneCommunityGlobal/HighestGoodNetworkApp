@@ -4,7 +4,7 @@ import {
 } from 'reactstrap';
 
 const MemberAutoComplete = (props) => {
-  const [searchText, onInputChange] = useState('');
+
   const [isOpen, toggle] = useState(false);
 
   return (
@@ -15,14 +15,14 @@ const MemberAutoComplete = (props) => {
     >
       <Input
         type="text"
-        value={searchText}
+        value={props.searchText}
         onChange={(e) => {
-          onInputChange(e.target.value);
+          props.setSearchText(e.target.value);
           toggle(true);
         }}
       />
 
-      {(searchText !== '' && props.userProfileData && props.userProfileData.userProfiles.length > 0)
+      {(props.searchText !== '' && props.userProfileData && props.userProfileData.userProfiles.length > 0)
         ? (
           <div
             tabIndex="-1"
@@ -32,15 +32,15 @@ const MemberAutoComplete = (props) => {
             style={{ marginTop: '0px', width: '100%' }}
           >
             {props.userProfileData.userProfiles.filter((user) => {
-              if (user.firstName.toLowerCase().indexOf(searchText.toLowerCase()) > -1
-                || user.lastName.toLowerCase().indexOf(searchText.toLowerCase()) > -1) {
+              if (user.firstName.toLowerCase().indexOf(props.searchText.toLowerCase()) > -1
+                || user.lastName.toLowerCase().indexOf(props.searchText.toLowerCase()) > -1) {
                 return user;
               }
             }).slice(0, 10).map((item) => (
               <div
                 className="user-auto-cpmplete"
                 onClick={() => {
-                  onInputChange(`${item.firstName} ${item.lastName}`);
+                  props.setSearchText(`${item.firstName} ${item.lastName}`);
                   toggle(false);
                   props.onAddUser(item);
                 }}
