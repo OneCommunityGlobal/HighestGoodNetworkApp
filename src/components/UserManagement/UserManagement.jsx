@@ -245,7 +245,7 @@ class UserManagement extends React.PureComponent {
    * Callback to trigger the status change on confirmation ok click.
    */
   setActiveInactive = (isActive) => {
-    this.props.updateUserStatus(this.state.selectedUser, (isActive ? UserStatus.Active : UserStatus.Inactive), undefined);
+    this.props.updateUserStatus(this.state.selectedUser, (isActive ? UserStatus.Active : UserStatus.InActive), undefined);
     this.setState({
       activeInactivePopupOpen: false,
       selectedUser: undefined

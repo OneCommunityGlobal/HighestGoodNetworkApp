@@ -11,6 +11,7 @@ const BlueSquare = ({blueSquares, handleBlueSquare, isUserAdmin}) => {
             key={index}
             role="button"
             id="wrapper"
+            data-testid="blueSquare"
             className="blueSquareButton"
             onClick={() => {
               if (!blueSquare._id) {
@@ -37,6 +38,7 @@ const BlueSquare = ({blueSquares, handleBlueSquare, isUserAdmin}) => {
           }}
           className="blueSquareButton"
           color="primary"
+          data-testid="addBlueSquare"
         >
           +
         </div>

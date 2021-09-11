@@ -1,6 +1,4 @@
 /* eslint-disable import/prefer-default-export */
-import axios from 'axios'
-
 let APIEndpoint = process.env.REACT_APP_APIENDPOINT || 'https://hgn-rest-beta.azurewebsites.net/api';
 
 export const ENDPOINTS = {
@@ -55,6 +53,7 @@ export const ENDPOINTS = {
   BADGE: () => `${APIEndpoint}/badge`,
   BADGE_ASSIGN: userId => `${APIEndpoint}/badge/assign/${userId}`,
   BADGE_BY_ID: badgeId => `${APIEndpoint}/badge/${badgeId}`,
+  REFRESH_TOKEN: () => `${APIEndpoint}/refreshToken`
 };
 
 export const ApiEndpoint = APIEndpoint;

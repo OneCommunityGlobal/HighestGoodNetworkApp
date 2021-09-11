@@ -37,7 +37,6 @@ import PhoneInput from 'react-phone-input-2'
 import 'react-phone-input-2/lib/style.css'
 
 import classnames from 'classnames'
-import timeZoneMap from 'constants/timeZones'
 import TimeZoneDropDown from '../TimeZoneDropDown'
 
 class AddUserProfile extends Component {
@@ -187,13 +186,14 @@ class AddUserProfile extends Component {
                     <FormGroup>
                       <select
                         value={role}
+                        defaultValue='Volunteer'
                         onChange={this.handleUserProfile}
                         id="role"
                         name="role"
                         className="form-control"
                       >
                         <option value="Administrator">Administrator</option>
-                        <option selected value="Volunteer">
+                        <option value="Volunteer">
                           Volunteer
                         </option>
                         <option value="Manager">Manager</option>
