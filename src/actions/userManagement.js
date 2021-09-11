@@ -8,7 +8,6 @@ import {
 } from '../constants/userManagement'
 import { ENDPOINTS } from '../utils/URL'
 import { UserStatus } from '../utils/enums'
-import moment from 'moment-timezone'
 
 /**
  * fetching all user profiles
@@ -36,8 +35,8 @@ export const updateUserStatus = (user, status, reactivationDate) => {
   userProfile.reactivationDate = reactivationDate;
   const patchData = { status: status, reactivationDate: reactivationDate };
   if (status === UserStatus.InActive) {
-    patchData.endDate = moment().tz(userProfile.timeZone);
-    userProfile.endDate = moment().tz(userProfile.timeZone)
+    patchData.endDate = Date.now();
+    userProfile.endDate = Date.now();
   }else {
     patchData.endDate = undefined;
     userProfile.endDate = undefined;
