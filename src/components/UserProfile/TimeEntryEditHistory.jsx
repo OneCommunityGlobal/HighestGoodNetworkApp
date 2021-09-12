@@ -1,20 +1,18 @@
 import moment from 'moment'
 import React from 'react'
 import { Table, Button } from 'react-bootstrap'
-import { useDispatch } from 'react-redux'
 
 /**
  * Shows the dates and times a user has edited their time entries. Admins are given the ability to delete these edits.
  * @param {*} props.userProfile
- * @param {boolean} props.isAdmin True if trhe suer viewing this component is signed in as an admin.
- * @param {function} props.setChanged
- * @param {function} props.updateUserProfile
  * @param {function} props.setUserProfile
+ * @param {function} props.setChanged
+ * @param {boolean} props.isAdmin True if trhe suer viewing this component is signed in as an admin.
  * @returns
  */
 const TimeEntryEditHistory = props => {
-  const editHistory = props.userProfile.timeEntryEditHistory
-  const dispatch = useDispatch()
+
+  const editHistory = [...props.userProfile.timeEntryEditHistory].reverse()
 
   const secondsToHms = (seconds) => {
     let h = new String(Math.floor(seconds / 3600));
@@ -34,14 +32,9 @@ const TimeEntryEditHistory = props => {
       item => item._id !== id,
     )
 
-    try {
-      const result = await props.updateUserProfile(props.userProfile._id, newUserProfile)
-      if (result === 200 || result === 201) {
-          props.setUserProfile(newUserProfile);
-      }
-    } catch (err) {
+    props.setUserProfile(newUserProfile);
+    props.setChanged(true)
 
-    }
   }
 
   return (
@@ -60,7 +53,7 @@ const TimeEntryEditHistory = props => {
           {editHistory.map(item => {
             return (
               <tr key={`edit-history-${item._id}`}>
-                <td>{moment(item.date).tz('America/Los_Angeles').format('YYYY-MM-DD HH:MM:SS')}</td>
+                <td>{moment(item.date).tz('America/Los_Angeles').format('YYYY-MM-DD hh:mm:ss')}</td>
                 <td>{secondsToHms(item.initialSeconds)}</td>
                 <td>{secondsToHms(item.newSeconds)}</td>
                 {props.isAdmin === true && (
