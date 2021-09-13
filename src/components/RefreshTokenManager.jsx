@@ -51,9 +51,9 @@ const onLoop = async (dispatch) => {
  * @returns 
  */
 const RefreshTokenManager = () => {
-
-    const [loopInterval, setLoopInterval] = useState(setInterval(() => onLoop(dispatch), 15 * SECOND))
+    
     const dispatch = useDispatch();
+    const [loopInterval, setLoopInterval] = useState(setInterval(() => onLoop(dispatch), 15 * SECOND))
 
     useEffect(() => {
         return () => {
