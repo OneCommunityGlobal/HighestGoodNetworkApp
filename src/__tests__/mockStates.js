@@ -982,5 +982,6 @@ export const allUserProfilesMock = {
 
 describe('Stop Error', () => {
   it('should not error out due to no tests (mockStates.js)', () => {
+    return new Promise((resolve) => resolve(true));
   });
 });
