@@ -11,11 +11,13 @@ import PauseAndResumeButton from 'components/UserManagement/PauseAndResumeButton
 import TimeZoneDropDown from '../TimeZoneDropDown'
 
 const Name = props => {
-  const { userProfile, isUserAdmin, isUserSelf, handleUserProfile, formValid } = props
+  const { userProfile, setUserProfile, setChanged, isUserAdmin, isUserSelf, formValid, setFormValid } = props
+
   const { firstName, lastName } = userProfile
+
   if (isUserAdmin || isUserSelf) {
     return (
-      <React.Fragment>
+      <>
         <Col md="3">
           <FormGroup>
             <Input
@@ -24,11 +26,15 @@ const Name = props => {
               id="firstName"
               value={firstName}
               // className={styleProfile.profileText}
-              onChange={handleUserProfile}
+              onChange={(e) => {
+                setUserProfile({...userProfile, firstName: e.target.value.trim()});
+                setFormValid({...formValid, firstName: !!e.target.value})
+                setChanged(true);
+              }}
               placeholder="First Name"
               invalid={!formValid.firstName}
             />
-            <FormFeedback>First Name Can't be null</FormFeedback>
+            <FormFeedback>First Name Can't be empty</FormFeedback>
           </FormGroup>
         </Col>
         <Col md="3">
@@ -39,33 +45,37 @@ const Name = props => {
               id="lastName"
               value={lastName}
               // className={styleProfile.profileText}
-              onChange={handleUserProfile}
+              onChange={(e) => {
+                setUserProfile({...userProfile, lastName: e.target.value.trim()});
+                setFormValid({...formValid, lastName: !!e.target.value})
+                setChanged(true)
+              }}
               placeholder="Last Name"
               invalid={!formValid.lastName}
             />
-            <FormFeedback>Last Name Can't be Null</FormFeedback>
+            <FormFeedback>Last Name Can't be empty</FormFeedback>
           </FormGroup>
         </Col>
-      </React.Fragment>
+      </>
     )
   }
 
   return (
-    <React.Fragment>
+    <>
       <Col>
         <p>{`${firstName} ${lastName}`}</p>
       </Col>
-    </React.Fragment>
+    </>
   )
 }
 
 const Title = props => {
-  const { userProfile, isUserAdmin, isUserSelf, handleUserProfile, formValid } = props
+  const { userProfile, setChanged, setUserProfile, isUserAdmin, isUserSelf } = props
   const { jobTitle } = userProfile
 
   if (isUserAdmin || isUserSelf) {
     return (
-      <React.Fragment>
+      <>
         <Col>
           <FormGroup>
             <Input
@@ -73,30 +83,35 @@ const Title = props => {
               name="title"
               id="jobTitle"
               value={jobTitle}
-              onChange={handleUserProfile}
+              onChange={(e) => {
+                setUserProfile({...userProfile, jobTitle: e.target.value})
+                setChanged(true)
+              }}
               placeholder="Job Title"
             />
           </FormGroup>
         </Col>
-      </React.Fragment>
+      </>
     )
   }
   return (
-    <React.Fragment>
+    <>
       <Col>
         <p>{`${jobTitle}`}</p>
       </Col>
-    </React.Fragment>
+    </>
   )
 }
 
 const Email = props => {
-  const { userProfile, setUserProfile, setChanged, isUserAdmin, isUserSelf, handleUserProfile, formValid } = props
+  const { userProfile, setUserProfile, setChanged, isUserAdmin, isUserSelf, formValid, setFormValid } = props
   const { email, privacySettings } = userProfile
+
+  const emailPattern = new RegExp(/^\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/i)
 
   if (isUserAdmin || isUserSelf) {
     return (
-      <React.Fragment>
+      <>
         <Col>
           <FormGroup>
             <ToggleSwitch
@@ -120,24 +135,28 @@ const Email = props => {
               name="email"
               id="email"
               value={email}
-              onChange={handleUserProfile}
+              onChange={(e) => {
+                setUserProfile({ ...userProfile, email: e.target.value })
+                setFormValid({ ...formValid, email: emailPattern.test(e.target.value) })
+                setChanged(true)
+              }}
               placeholder="Email"
               invalid={!formValid.email}
             />
             <FormFeedback>Email is not Valid</FormFeedback>
           </FormGroup>
         </Col>
-      </React.Fragment>
+      </>
     )
   }
   return (
-    <React.Fragment>
+    <>
       {privacySettings.email && (
         <Col>
           <p>{email}</p>
         </Col>
       )}
-    </React.Fragment>
+    </>
   )
 }
 const formatPhoneNumber = str => {
@@ -171,11 +190,13 @@ const formatPhoneNumber = str => {
   return str
 }
 const Phone = props => {
-  const { userProfile, setUserProfile, setChanged, isUserAdmin, isUserSelf, handleUserProfile } = props
+
+  const { userProfile, setUserProfile, handleUserProfile, setChanged, isUserAdmin, isUserSelf } = props
+
   const { phoneNumber, privacySettings } = userProfile
   if (isUserAdmin || isUserSelf) {
     return (
-      <React.Fragment>
+      <>
         <Col>
           <FormGroup>
             <ToggleSwitch
@@ -194,30 +215,31 @@ const Phone = props => {
             <PhoneInput
               country={'us'}
               value={phoneNumber[0]}
-              onChange={phone => {
-                handleUserProfile({
-                  target: { value: phone, name: 'phoneNumber', id: 'phoneNumber' },
-                })
+              onChange={(phoneNumber) => {
+                setUserProfile({...userProfile, phoneNumber: phoneNumber.trim()})
+                setChanged(true)
               }}
             />
           </FormGroup>
         </Col>
-      </React.Fragment>
+      </>
     )
   }
   return (
-    <React.Fragment>
+    <>
       {privacySettings.phoneNumber && (
         <Col>
           <p>{formatPhoneNumber(phoneNumber)}</p>
         </Col>
       )}
-    </React.Fragment>
+    </>
   )
 }
 
 const BasicInformationTab = props => {
-  const { userProfile, setUserProfile, setChanged, isUserAdmin, isUserSelf, handleUserProfile, formValid } = props
+
+  const { userProfile, setUserProfile, setChanged, isUserAdmin, isUserSelf, handleUserProfile, formValid, setFormValid} = props
+
 
   const [timeZoneFilter, setTimeZoneFilter] = useState('')
 
@@ -238,10 +260,13 @@ const BasicInformationTab = props => {
         </Col>
         <Name
           userProfile={userProfile}
+          setUserProfile={setUserProfile}
+          setFormValid={setFormValid}
           isUserAdmin={isUserAdmin}
           isUserSelf={isUserSelf}
           handleUserProfile={handleUserProfile}
           formValid={formValid}
+          setChanged={setChanged}
         />
       </Row>
       <Row>
@@ -259,6 +284,8 @@ const BasicInformationTab = props => {
         </Col>
         <Title
           userProfile={userProfile}
+          setUserProfile={setUserProfile}
+          setChanged={setChanged}
           isUserAdmin={isUserAdmin}
           isUserSelf={isUserSelf}
           handleUserProfile={handleUserProfile}
@@ -286,6 +313,7 @@ const BasicInformationTab = props => {
           isUserSelf={isUserSelf}
           handleUserProfile={handleUserProfile}
           formValid={formValid}
+          setFormValid={setFormValid}
         />
       </Row>
       <Row>
@@ -303,8 +331,7 @@ const BasicInformationTab = props => {
         </Col>
         <Phone
           userProfile={userProfile}
-          setUserProfile={setUserProfile}
-          setChanged={setChanged}
+          setUserProfile={setUserProfile} setChanged={setChanged}
           isUserAdmin={isUserAdmin}
           isUserSelf={isUserSelf}
           handleUserProfile={handleUserProfile}
@@ -322,7 +349,10 @@ const BasicInformationTab = props => {
               name="collaborationPreference"
               id="collaborationPreference"
               value={userProfile.collaborationPreference}
-              onChange={handleUserProfile}
+              onChange={(e) => {
+                setUserProfile({...userProfile, collaborationPreference: e.target.value})
+                setChanged(true);
+              }}
               placeholder="Skype, Zoom, etc."
             />
           </FormGroup>
@@ -336,7 +366,10 @@ const BasicInformationTab = props => {
           <FormGroup>
             <select
               value={userProfile.role}
-              onChange={handleUserProfile}
+              onChange={(e) => {
+                setUserProfile({...userProfile, role: e.target.value})
+                setChanged(true)
+              }}
               id="role"
               name="role"
               className="form-control"
@@ -359,7 +392,10 @@ const BasicInformationTab = props => {
           {props.isUserAdmin && (
             <TimeZoneDropDown
               filter={timeZoneFilter}
-              onChange={handleUserProfile}
+              onChange={(e) => {
+                setUserProfile({...userProfile, timeZone: e.target.value})
+                setChanged(true);
+              }}
               selected={userProfile.timeZone}
             />
           )}

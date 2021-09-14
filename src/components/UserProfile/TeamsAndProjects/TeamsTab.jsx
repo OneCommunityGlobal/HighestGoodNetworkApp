@@ -5,7 +5,7 @@ import UserTeamsTable from './UserTeamsTable';
 
 const TeamsTab = (props) => {
   const {
-    teamsData, userTeams, isUserAdmin, onDeleteteam, onAssignTeam, edit,
+    allTeams, userTeams, isUserAdmin, onDeleteTeam, onAssignTeam, edit,
   } = props;
   const [addTeamPopupOpen, setaddTeamPopupOpen] = useState(false);
   const [renderedOn, setRenderedOn] = useState(0);
@@ -18,7 +18,7 @@ const TeamsTab = (props) => {
     setaddTeamPopupOpen(false);
   };
   const onSelectDeleteTeam = (teamId) => {
-    onDeleteteam(teamId);
+    onDeleteTeam(teamId)
   };
 
   const onSelectAssignTeam = (team) => {
@@ -31,7 +31,7 @@ const TeamsTab = (props) => {
       <AddTeamPopup
         open={addTeamPopupOpen}
         onClose={onAddTeamPopupClose}
-        teamsData={teamsData}
+        allTeams={allTeams}
         userTeamsById={userTeams}
         onSelectAssignTeam={onSelectAssignTeam}
       />

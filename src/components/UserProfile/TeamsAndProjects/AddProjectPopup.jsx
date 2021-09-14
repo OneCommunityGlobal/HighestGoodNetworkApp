@@ -34,7 +34,7 @@ const AddProjectPopup = React.memo((props) => {
       <ModalBody style={{ textAlign: 'center' }}>
         <div className="input-group-prepend" style={{ marginBottom: '10px' }}>
           <AddProjectsAutoComplete
-            projectsData={props.projects}
+            allProjects={props.projects}
             onDropDownSelect={selectProject}
             selectedProject={selectedProject} />
           <Button color='primary' style={{ marginLeft: '5px' }} onClick={onAssignProject} >Confirm</Button>

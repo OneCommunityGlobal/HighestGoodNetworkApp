@@ -27,7 +27,7 @@ const AddProjectsAutoComplete = React.memo((props) => {
         }}
       />
 
-      {(searchText !== '' && props.projectsData && props.projectsData.length > 0)
+      {(searchText !== '' && props.allProjects.length > 0)
         ? (
           <div
             tabIndex="-1"
@@ -36,7 +36,7 @@ const AddProjectsAutoComplete = React.memo((props) => {
             className={`dropdown-menu${isOpen ? ' show' : ''}`}
             style={{ marginTop: '0px', width: '100%' }}
           >
-            {props.projectsData.filter((project) => {
+            {props.allProjects.filter((project) => {
               if (project.projectName.toLowerCase().indexOf(searchText.toLowerCase()) > -1
               ) {
                 return project;

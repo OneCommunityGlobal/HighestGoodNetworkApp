@@ -18,6 +18,19 @@ const Phone = props => {
         </Col>
         <Col md="6">
           <FormGroup>
+            <PhoneInput
+              country={'us'}
+              onChange={(value, country, e, formattedValue) => {
+                formik.handleChange(e)
+              }}
+              onBlur={formik.handleBlur}
+              value={formik.values.phoneNumber}
+              inputProps={{
+                id: 'phoneNumber',
+                name: 'phoneNumber',
+                className: `form-control ${className}`,
+              }}
+            />
             <ToggleSwitch
               switchType="phone"
               state={formik.values.privacySettings.phoneNumber}
@@ -32,19 +45,6 @@ const Phone = props => {
               }}
               onLabel="Public"
               offLabel="Private"
-            />
-            <PhoneInput
-              country={'us'}
-              onChange={(value, country, e, formattedValue) => {
-                formik.handleChange(e)
-              }}
-              onBlur={formik.handleBlur}
-              value={formik.values.phoneNumber}
-              inputProps={{
-                id: 'phoneNumber',
-                name: 'phoneNumber',
-                className: `form-control ${className}`,
-              }}
             />
             {formik.errors.phoneNumber && (
               <div style={{ color: '#dc3545', fontSize: '80%' }}>{formik.errors.phoneNumber}</div>

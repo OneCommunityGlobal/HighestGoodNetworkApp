@@ -1,4 +1,9 @@
-import React from 'react';
+//Unused component?
+
+export default props => <></>
+
+/**
+ * import React from 'react';
 import { Container } from 'reactstrap';
 import AddProjectPopup from './AddProjectPopup';
 import AddTeamPopup from './AddTeamPopup';
@@ -22,7 +27,7 @@ class UserTeamProjectContainer extends React.PureComponent {
         <AddTeamPopup
           open={this.state.addTeamPopupOpen}
           onClose={this.onAddTeamPopupClose}
-          teamsData={this.props.teamsData}
+          allTeams={this.props.teamsData.allTeams}
           userTeamsById={this.props.userTeams}
           onSelectAssignTeam={this.onSelectAssignTeam}
         />
@@ -61,7 +66,7 @@ class UserTeamProjectContainer extends React.PureComponent {
   }
 
   onSelectDeleteTeam = (teamId) => {
-    this.props.onDeleteteam(teamId);
+    this.props.onDeleteTeam(teamId);
   }
 
   onSelectDeleteProject = (projectId) => {
@@ -110,3 +115,5 @@ class UserTeamProjectContainer extends React.PureComponent {
   }
 }
 export default UserTeamProjectContainer;
+
+ */

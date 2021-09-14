@@ -4,54 +4,20 @@ import {
 } from 'reactstrap';
 import { connect } from 'react-redux';
 import './Badge.css';
-import { getUserProfile } from '../../actions/userProfile';
 import FeaturedBadges from './FeaturedBadges';
 import BadgeReport from '../Badge/BadgeReport';
 import AssignBadgePopup from './AssignBadgePopup';
 
 const Badges = (props) => {
+  
   const [isOpen, setOpen] = useState(false);
-  const [assignisOpen, assignsetOpen] = useState(false);
-  const [totalBadge, setTotalBadge] = useState(0);
-  const toggle = () => {
-    if (isOpen) {
-      props.getUserProfile(props.userId)?.then(() => {
-        let count = 0;
-        if (props.userProfile.badgeCollection) {
-          props.userProfile.badgeCollection.forEach(badge => { 
-            if (badge?.badge?.badgeName === "Personal Max" || badge?.badge?.type === "Personal Max") {
-              count +=1;
-            } else {
-              count += badge.count; 
-            } 
-          });
-          setTotalBadge(Math.round(count));
-        }
-      });
-    }
-    setOpen(isOpen => !isOpen)
+  const [isAssignOpen, setAssignOpen] = useState(false);
+
+  const toggle = () => setOpen(!isOpen)
+
+  const assignToggle = () => {
+    setAssignOpen(isAssignOpen => !isAssignOpen)
   };
-
-  const assigntoggle = () => {
-    assignsetOpen(assignisOpen => !assignisOpen)
-  };
-
-  useEffect(()=>{
-
-    props.getUserProfile(props.userId)?.then(() => {
-      let count = 0;
-      if (props.userProfile.badgeCollection) {
-        props.userProfile.badgeCollection.forEach(badge => { 
-          if (badge?.badge?.badgeName === "Personal Max" || badge?.badge?.type === "Personal Max") {
-            count +=1;
-          } else {
-            count += badge.count; 
-          } 
-        });
-        setTotalBadge(Math.round(count));
-      }
-    });
-  },[])
 
   return(
   <>
@@ -69,18 +35,33 @@ const Badges = (props) => {
         <Button className="btn--dark-sea-green float-right" onClick={toggle}>Select Featured</Button>
         <Modal size="lg" isOpen={isOpen} toggle={toggle}>
           <ModalHeader toggle={toggle}>Full View of Badge History</ModalHeader>
-          <ModalBody><BadgeReport badges={props.badges} userId={props.userId} isAdmin={props.isAdmin} firstName={props.userProfile.firstName} lastName={props.userProfile.lastName} close={toggle}/></ModalBody>
+          <ModalBody><BadgeReport badges={props.userProfile.badgeCollection} userId={props.userId} isAdmin={props.isAdmin} firstName={props.userProfile.firstName} lastName={props.userProfile.lastName} close={toggle}/></ModalBody>
         </Modal>
 
-        {props.isAdmin ? <>
-        <Button className="btn--dark-sea-green float-right mr-2" onClick={assigntoggle}>Assign Badges</Button>
-        <Modal size="lg" isOpen={assignisOpen} toggle={assigntoggle}>
-          <ModalHeader toggle={assigntoggle}>Assign Badges</ModalHeader>
-          <ModalBody><AssignBadgePopup allBadgeData={props.allBadgeData} userId={props.userId} isAdmin={props.isAdmin} close={assigntoggle}/></ModalBody>
-        </Modal> </> : 
-        []}
+        {props.isAdmin &&
+        <>
+          <Button className="btn--dark-sea-green float-right mr-2" onClick={assignToggle}>
+            Assign Badges
+          </Button>
+          <Modal size="lg" isOpen={isAssignOpen} toggle={assignToggle}>
+            <ModalHeader toggle={assignToggle}>
+              Assign Badges
+            </ModalHeader>
+            <ModalBody>
+              <AssignBadgePopup
+                allBadgeData={props.allBadgeData}
+                userProfile={props.userProfile}
+                setUserProfile={props.setUserProfile}
+                isAdmin={props.isAdmin}
+                close={assignToggle}
+              />
+            </ModalBody>
+          </Modal>
+        </> 
+        }
+
       </CardTitle>
-        <FeaturedBadges badges={props.badges} />
+        <FeaturedBadges badges={props.userProfile.badgeCollection} />
         <CardText
             style={{
               fontWeight: 'bold',
@@ -88,7 +69,7 @@ const Badges = (props) => {
               color: '#285739',
             }}
           >
-            Bravo! You Earned {totalBadge} Badges! <i className="fa fa-info-circle" id="CountInfo" />
+            Bravo! You've earned {props.userProfile.badgeCollection.length} badges! <i className="fa fa-info-circle" id="CountInfo" />
           </CardText>
     </CardBody>
   </Card >
@@ -106,14 +87,7 @@ const Badges = (props) => {
 )};
 
 const mapStateToProps = state => ({
-  userProfile: state.userProfile,
   allBadgeData: state?.badge?.allBadgeData
 });
 
-const mapDispatchToProps = dispatch => {
-  return {
-    getUserProfile: (userId) => dispatch(getUserProfile(userId)),
-  };
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(Badges);
+export default connect(mapStateToProps)(Badges);

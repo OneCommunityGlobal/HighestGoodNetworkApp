@@ -982,9 +982,9 @@ class UserProfileEdit extends Component {
                   <TabPane tabId="3">
                     <TeamsTab
                       userTeams={this.state ? this.state.userProfile.teams : []}
-                      teamsData={this.props ? this.props.allTeams.allTeamsData : []}
+                      allTeams={this.props.allTeams?.allTeamsData?.allTeams || []}
                       onAssignTeam={this.onAssignTeam}
-                      onDeleteteam={this.onDeleteTeam}
+                      onDeleteTeam={this.onDeleteTeam}
                       isUserAdmin={isUserAdmin}
                       edit
                     />
@@ -992,7 +992,7 @@ class UserProfileEdit extends Component {
                   <TabPane tabId="4">
                     <ProjectsTab
                       userProjects={this.state ? this.state.userProfile.projects : []}
-                      projectsData={this.props ? this.props.allProjects.projects : []}
+                      allProjects={this.props ? this.props.allProjects.projects : []}
                       onAssignProject={this.onAssignProject}
                       onDeleteProject={this.onDeleteProject}
                       isUserAdmin={isUserAdmin}

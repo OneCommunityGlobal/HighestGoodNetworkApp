@@ -7,6 +7,7 @@ import style from './ToggleSwitch.module.scss'
  * @param {func} props.setState function that assigns a value to state
  * @param {string} props.onLabel Label to the right side of the switch indicating the value of the toggle when turned on
  * @param {string} props.onLabel Label to the left side of the switch indicating the value of the toggle when turned off
+ * @param {string} [props.dataTestId=blue-switch] Used for Jest
  * @returns 
  */
 const ToggleSwitch = (props) => {
@@ -24,6 +25,7 @@ const ToggleSwitch = (props) => {
           className={style.toggle}
           onChange={() => setState(!state)}
           checked={state}
+          data-testid={props.dataTestId || 'blue-switch'}
         />
         {offLabel}
       </div>

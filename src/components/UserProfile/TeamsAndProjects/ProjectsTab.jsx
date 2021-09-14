@@ -6,7 +6,7 @@ import UserProjectsTable from './UserProjectsTable';
 
 const ProjectsTab = (props) => {
   const {
-    projectsData, userProjects, isUserAdmin, onDeleteProject, onAssignProject, edit,
+    allProjects, userProjects, isUserAdmin, onDeleteProject, onAssignProject, edit,
   } = props;
   const [addProjectPopupOpen, setaddProjectPopupOpen] = useState(false);
   const [renderedOn, setRenderedOn] = useState(0);
@@ -38,7 +38,7 @@ const ProjectsTab = (props) => {
         open={addProjectPopupOpen}
         onClose={onAddProjectPopupClose}
         userProjectsById={userProjects}
-        projects={projectsData}
+        projects={allProjects}
         onSelectAssignProject={onSelectAssignProject}
       />
       <UserProjectsTable

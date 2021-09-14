@@ -1,2 +1,2 @@
-import UserProfileAdd from './UserProfileAdd.container';
-export default UserProfileAdd;
+import AddNewUserProfile from './AddNewUserProfile.jsx';
+export default AddNewUserProfile;

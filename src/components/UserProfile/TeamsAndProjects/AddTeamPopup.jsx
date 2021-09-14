@@ -33,7 +33,7 @@ const AddTeamPopup = React.memo((props) => {
       <ModalBody style={{ textAlign: 'center', }}>
         <div className="input-group-prepend" style={{ marginBottom: '10px' }}>
           <AddTeamsAutoComplete
-            teamsData={props.teamsData}
+            allTeams={props.allTeams}
             onDropDownSelect={selectTeam}
             selectedTeam={selectedTeam}
           />

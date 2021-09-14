@@ -29,7 +29,7 @@ const AddTeamsAutoComplete = React.memo((props) => {
         }}
       />
 
-      {(searchText !== '' && props.teamsData && props.teamsData.allTeams.length > 0)
+      {(searchText !== '' && props.allTeams.length > 0)
         ? (
           <div
             tabIndex="-1"
@@ -38,7 +38,7 @@ const AddTeamsAutoComplete = React.memo((props) => {
             className={`dropdown-menu${isOpen ? ' show' : ''}`}
             style={{ marginTop: '0px', width: '100%' }}
           >
-            {props.teamsData.allTeams.filter((team) => {
+            {props.allTeams.filter((team) => {
               if (team.teamName.toLowerCase().indexOf(searchText.toLowerCase()) > -1) {
                 return team;
               }
