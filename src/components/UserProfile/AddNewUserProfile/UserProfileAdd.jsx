@@ -185,7 +185,10 @@ const mapStateToProps = state => ({
   state,
 })
 
-export default connect(mapStateToProps, {
+export default UserProfileAdd
+
+/**
+ * export default connect(mapStateToProps, {
   getUserProfile,
   clearUserProfile,
   updateUserProfile,
@@ -194,3 +197,4 @@ export default connect(mapStateToProps, {
   deleteTeamMember,
   addTeamMember,
 })(UserProfileAdd)
+ */

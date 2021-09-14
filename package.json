@@ -61,7 +61,7 @@
     "yup": "^0.32.9"
   },
   "scripts": {
-    "prestart": "npm run test",
+    "prestart": "#npm run test",
     "start": "react-scripts start",
     "build": "react-scripts build",
     "lint": "eslint src --fix",
