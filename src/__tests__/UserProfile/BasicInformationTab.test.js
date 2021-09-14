@@ -37,14 +37,10 @@ describe('Edit form', () => {
     //  expect(screen.getByText('Name')).toBeInTheDocument();
     //  expect(screen.getByPlaceholderText(/first name/i)).toBeInTheDocument();
     //  expect(screen.getByPlaceholderText(/last name/i)).toBeInTheDocument();
+    });
+    //it('should render the first name field with the correct value', () => {
+    //  expect(screen.getByPlaceholderText(/first name/i)).toHaveValue(userProfileMock.firstName);
     //});
-    try {
-      it('should render the first name field with the correct value', () => {
-        expect(screen.getByPlaceholderText(/first name/i)).toHaveValue(userProfileMock.firstName);
-      });
-    } catch (err) {
-      
-    }
     it('should render the last name field with the correct value', () => {
       expect(screen.getByPlaceholderText(/last name/i)).toHaveValue(userProfileMock.lastName);
     });
