@@ -12,13 +12,15 @@ import { ENDPOINTS } from '../utils/URL';
 
 export const getUserProfile = (userId) => {
 
-  return async (dispatch) => {
+  return (dispatch) => {
 
-    try {
-      const res = await axios.get(ENDPOINTS.USER_PROFILE(userId))
-      await dispatch(getUserProfileActionCreator(res.data))
-    } catch (err) {
-    }
+    axios.get(ENDPOINTS.USER_PROFILE(userId))
+    .then((res) => {
+      dispatch(getUserProfileActionCreator(res.data))
+    })
+    .catch((err) => {
+
+    })
 
   };
 
