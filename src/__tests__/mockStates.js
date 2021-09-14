@@ -980,7 +980,7 @@ export const allUserProfilesMock = {
   ],
 };
 
-//describe('Stop Error', () => {
-//  it('should not error out due to no tests (mockStates.js)', () => {
-//  });
-//});
+describe('Stop Error', () => {
+  it('should not error out due to no tests (mockStates.js)', () => {
+  });
+});

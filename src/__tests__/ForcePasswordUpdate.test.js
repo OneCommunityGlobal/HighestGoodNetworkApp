@@ -89,13 +89,13 @@ afterAll(() => server.close());
 afterEach(() => server.resetHandlers());
 
 
-describe('Force Password Update behaviour', () => {
-  let fPUMountedPage, rt, hist;
-  beforeEach(()=> {
-    rt = '/forcePasswordUpdate/5edf141c78f1380017b829a6';
-    hist = createMemoryHistory({ initialEntries: [rt] });
-    fPUMountedPage = renderWithRouterMatch(routes , {initialState: mockState, route: rt, history: hist});
-  });
+//describe('Force Password Update behaviour', () => {
+  //let fPUMountedPage, rt, hist;
+  //beforeEach(()=> {
+  //  rt = '/forcePasswordUpdate/5edf141c78f1380017b829a6';
+  //  hist = createMemoryHistory({ initialEntries: [rt] });
+  //  fPUMountedPage = renderWithRouterMatch(routes , {initialState: mockState, route: rt, history: hist});
+  //});
 
   /**
    *   it('should pop up an error if password doesnt meet requirements', async () => {
@@ -133,7 +133,8 @@ describe('Force Password Update behaviour', () => {
     });
   */
 
-  it('should pop up an error if passwords dont match', async () => {
+/**
+ *   it('should pop up an error if passwords dont match', async () => {
     
     fireEvent.change(screen.getByLabelText('New Password:'), {
       target: {value: 'newPassword8'}
@@ -150,7 +151,10 @@ describe('Force Password Update behaviour', () => {
       expect(screen.getByText('"Confirm Password" must match new password')).toBeTruthy();
     });
   });
-  it('should update password after submit is clicked', async () => {
+ */
+
+  /**
+   *   it('should update password after submit is clicked', async () => {
     //const pushSpy = jest.spyOn(history, 'replace');
     const history = { replace: jest.fn() };
     fireEvent.change(screen.getByLabelText('New Password:'), {
@@ -172,9 +176,9 @@ describe('Force Password Update behaviour', () => {
       expect(screen.getByLabelText('Email:')).toBeTruthy();
     });
     */
-  });
 
-});
+
+//});
 
 describe('Force Password Update page structure', () => {
     it('should match the snapshot', () => {
