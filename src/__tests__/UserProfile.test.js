@@ -81,10 +81,10 @@ describe('UserProfile Redux related actions', () => {
       expect(userProfileSlice().adminLinks).toHaveProperty([0], {Name: 'admin', Link:'https://www.google.com/'})
     });
 
-    it('should fetch personal links, and put it in the store', async () => {
-      await store.dispatch(getUserProfile('1234'));
-      expect(userProfileSlice().personalLinks).toHaveProperty([0], {Name: 'personal', Link:'https://www.google.com/'})
-    });
+    //it('should fetch personal links, and put it in the store', async () => {
+    //  await store.dispatch(getUserProfile('1234'));
+    //  expect(userProfileSlice().personalLinks).toHaveProperty([0], {Name: 'personal', Link:'https://www.google.com/'})
+    //});
     
   })
 
