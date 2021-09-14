@@ -14,7 +14,7 @@ export const getUserProfile = (userId) => {
 
   return (dispatch) => {
 
-    axios.get(ENDPOINTS.USER_PROFILE(userId))
+    return axios.get(ENDPOINTS.USER_PROFILE(userId))
     .then((res) => {
       dispatch(getUserProfileActionCreator(res.data))
     })
