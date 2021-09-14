@@ -25,6 +25,9 @@ function sleep(ms) {
 }
 
 const server = setupServer(
+    rest.get('/hash.txt', (req, res, ctx) => {
+      return ctx.status(200);
+    }),
     //request for a forced password update.
     rest.patch(url, (req, res, ctx) =>  {
       passwordUpdated = true;
