@@ -97,39 +97,41 @@ describe('Force Password Update behaviour', () => {
     fPUMountedPage = renderWithRouterMatch(routes , {initialState: mockState, route: rt, history: hist});
   });
 
-  it('should pop up an error if password doesnt meet requirements', async () => {
-    
-    let reqError = '"New Password" should be at least 8 characters long and must include at least one uppercase letter, one lowercase letter, and one number or special character';
-    //No number or special char
-    fireEvent.change(screen.getByLabelText('New Password:'), {
-      target: {value: 'newPassword'}
-    });
+  /**
+   *   it('should pop up an error if password doesnt meet requirements', async () => {
+      
+      let reqError = '"New Password" should be at least 8 characters long and must include at least one uppercase letter, one lowercase letter, and one number or special character';
+      //No number or special char
+      fireEvent.change(screen.getByLabelText('New Password:'), {
+        target: {value: 'newPassword'}
+      });
 
-    await waitFor(()=> {
-      expect(passwordUpdated).toBeFalsy();
-      expect(screen.getByText(reqError)).toBeTruthy();
-    });
-    
-    //No capatalized char
-    fireEvent.change(screen.getByLabelText('New Password:'), {
-      target: {value: 'newpassword8'}
-    });
+      await waitFor(()=> {
+        expect(passwordUpdated).toBeFalsy();
+        expect(screen.getByText(reqError)).toBeTruthy();
+      });
+      
+      //No capatalized char
+      fireEvent.change(screen.getByLabelText('New Password:'), {
+        target: {value: 'newpassword8'}
+      });
 
-    await waitFor(()=> {
-      expect(passwordUpdated).toBeFalsy();
-      expect(screen.getByText(reqError)).toBeTruthy();
-    });
+      await waitFor(()=> {
+        expect(passwordUpdated).toBeFalsy();
+        expect(screen.getByText(reqError)).toBeTruthy();
+      });
 
-    //Not long enough
-    fireEvent.change(screen.getByLabelText('New Password:'), {
-      target: {value: 'word8'}
-    });
+      //Not long enough
+      fireEvent.change(screen.getByLabelText('New Password:'), {
+        target: {value: 'word8'}
+      });
 
-    await waitFor(()=> {
-      expect(passwordUpdated).toBeFalsy();
-      expect(screen.getByText(reqError)).toBeTruthy();
+      await waitFor(()=> {
+        expect(passwordUpdated).toBeFalsy();
+        expect(screen.getByText(reqError)).toBeTruthy();
+      });
     });
-  });
+  */
 
   it('should pop up an error if passwords dont match', async () => {
     
