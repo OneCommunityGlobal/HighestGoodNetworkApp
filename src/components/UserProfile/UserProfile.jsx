@@ -432,7 +432,7 @@ const UserProfile = props => {
               <p className="proile-rating">
                 From : <span>{moment(userProfile.createdDate).format('YYYY-MM-DD')}</span>
                 {'   '}
-                To: <span>{moment(userProfile.endDate).format('YYYY-MM-DD')}</span>
+                To: <span>{userProfile.endDate ? moment(userProfile.endDate).format('YYYY-MM-DD') : 'N/A'}</span>
               </p>
             </div>
             <Badges
