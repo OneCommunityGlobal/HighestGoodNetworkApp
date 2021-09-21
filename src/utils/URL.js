@@ -53,7 +53,6 @@ export const ENDPOINTS = {
   BADGE: () => `${APIEndpoint}/badge`,
   BADGE_ASSIGN: userId => `${APIEndpoint}/badge/assign/${userId}`,
   BADGE_BY_ID: badgeId => `${APIEndpoint}/badge/${badgeId}`,
-  REFRESH_TOKEN: () => `${APIEndpoint}/refreshToken`
 };
 
 export const ApiEndpoint = APIEndpoint;
