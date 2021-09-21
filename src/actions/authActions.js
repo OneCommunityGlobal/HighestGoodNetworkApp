@@ -16,7 +16,6 @@ export const loginUser = credentials => dispatch => {
         dispatch(setCurrentUser({ new: true, userId: res.data.userId }))
       } else {
         localStorage.setItem(tokenKey, res.data.token)
-        localStorage.setItem('refreshToken', JSON.stringify(res.data.refreshToken))
         httpService.setjwt(res.data.token)
         const decoded = jwtDecode(res.data.token)
         dispatch(setCurrentUser(decoded))
@@ -48,7 +47,6 @@ export const getHeaderData = userId => {
 
 export const logoutUser = () => dispatch => {
   localStorage.removeItem(tokenKey)
-  localStorage.removeItem('refreshToken')
   httpService.setjwt(false)
   dispatch(setCurrentUser(null))
 };

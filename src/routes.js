@@ -29,12 +29,10 @@ import TeamReport from './components/Reports/TeamReport'
 import Inventory from './components/Inventory'
 import BadgeManagement from "./components/Badge/BadgeManagement"
 import AutoUpdate from 'components/AutoUpdate'
-import RefreshTokenManager from 'components/RefreshTokenManager'
 
 export default (
   <React.Fragment>
     <Header />
-    <RefreshTokenManager/>
     <AutoUpdate />
     <ToastContainer />
     <Switch>
