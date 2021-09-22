@@ -71,7 +71,7 @@ const UserProfile = props => {
   }, [])
 
   useEffect(() => {
-    if(!shouldRefresh) return
+    if (!shouldRefresh) return
     setShouldRefresh(false)
     loadUserProfile()
   }, [shouldRefresh])
@@ -90,8 +90,8 @@ const UserProfile = props => {
 
   const loadUserProfile = async () => {
 
-    const userId = props?.match?.params?.userId 
-    if(!userId) return;
+    const userId = props?.match?.params?.userId
+    if (!userId) return;
 
     try {
       const response = await axios.get(ENDPOINTS.USER_PROFILE(userId));
@@ -101,7 +101,7 @@ const UserProfile = props => {
       setShowLoading(false);
     } catch (err) {
       setShowLoading(false)
-    
+
     }
 
   }
@@ -411,7 +411,7 @@ const UserProfile = props => {
                       user={userProfile}
                       onClick={() => {
                         setChanged(true);
-                        setUserProfile({...userProfile, isActive: !userProfile.isActive})
+                        setUserProfile({ ...userProfile, isActive: !userProfile.isActive })
                       }}
                     />
                     &nbsp;
@@ -432,7 +432,7 @@ const UserProfile = props => {
               <p className="proile-rating">
                 From : <span>{moment(userProfile.createdDate).format('YYYY-MM-DD')}</span>
                 {'   '}
-                To: <span>N/A</span>
+                To: <span>{userProfile.endDate ? moment(userProfile.endDate).format('YYYY-MM-DD') : 'N/A'}</span>
               </p>
             </div>
             <Badges
