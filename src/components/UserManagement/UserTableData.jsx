@@ -4,6 +4,7 @@ import { DELETE, PAUSE, RESUME } from '../../languages/en/ui';
 import { UserStatus } from '../../utils/enums';
 import { useHistory } from 'react-router-dom';
 import ActiveCell from './ActiveCell';
+import moment from 'moment-timezone';
 
 /**
  * The body row of the user table
@@ -30,12 +31,12 @@ const UserTableData = React.memo((props) => {
         />
       </td>
       <td>
-        <a href={`/userprofile/${props.user._id}`} onClick={(e) => {e.preventDefault(); history.push('/userprofile/' + props.user._id)}}>
+        <a href={`/userprofile/${props.user._id}`} onClick={(e) => { e.preventDefault(); history.push('/userprofile/' + props.user._id) }}>
           {props.user.firstName}
         </a>
       </td>
       <td>
-        <a href={`/userprofile/${props.user._id}`} onClick={(e) => {e.preventDefault(); history.push('/userprofile/' + props.user._id)}}>
+        <a href={`/userprofile/${props.user._id}`} onClick={(e) => { e.preventDefault(); history.push('/userprofile/' + props.user._id) }}>
           {props.user.lastName}
         </a>
       </td>
@@ -60,7 +61,7 @@ const UserTableData = React.memo((props) => {
           ? (props.user.reactivationDate.toLocaleString().split('T')[0]) : ''}
       </td>
       <td>
-        {props.user.endDate ? (props.user.endDate.toLocaleString().split('T')[0]) : 'N/A'}
+        {props.user.endDate ? (moment(props.user.endDate).format('YYYY-MM-DD')) : 'N/A'}
       </td>
       <td>
         <span className="usermanagement-actions-cell">
