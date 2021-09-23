@@ -1,4 +1,4 @@
-import React, { StyleSheet } from 'react'
+import React from 'react'
 import { useSelector } from 'react-redux'
 
 const EffortBar = ({activeTab, projectsSelected}) => {
