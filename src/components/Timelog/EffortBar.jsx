@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { StyleSheet } from 'react'
 import { useSelector } from 'react-redux'
 
 const EffortBar = ({activeTab, projectsSelected}) => {
@@ -21,7 +21,7 @@ const EffortBar = ({activeTab, projectsSelected}) => {
     const totalTime = tangibleTime + intangibleTime;
        
     return (
-        <div className="m-2 row text-white text-center">
+        <div style = {{width: "96%", alignSelf: "center"}} className="m-2 row text-white text-center">
             <span className="bg-primary col-md-4 p-1 ">
                 Tangible Effort: {tangibleTime.toFixed(2)} hrs
             </span>
