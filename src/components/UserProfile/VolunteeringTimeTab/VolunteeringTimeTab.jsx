@@ -29,14 +29,14 @@ const StartDate = props => {
 
 const EndDate = props => {
   if (!props.isUserAdmin) {
-    return <p>{props.userProfile.endDate ? moment(props.userProfile.endDate).format('YYYY-MM-DD') : 'N/A'}</p>
+    return <p>{props.userProfile.endDate ? props.userProfile.endDate.toLocaleString().split('T')[0] : 'N/A'}</p>
   }
   return (
     <Input
       type="date"
       name="EndDate"
       id="endDate"
-      value={props.userProfile.endDate ? moment(props.userProfile.endDate).format('YYYY-MM-DD') : ''}
+      value={props.userProfile.endDate ? props.userProfile.endDate.toLocaleString().split('T')[0] : ''}
       onChange={(e) => {
         props.setChanged(true);
         props.setUserProfile({ ...props.userProfile, endDate: e.target.value })
