@@ -225,8 +225,8 @@ const ViewTab = props => {
       </Row>
 
       {Object.keys(props.userProfile.hoursByCategory).map(key => (
-        <>
-          <Row key={'hours-by-category-' + key}>
+        <React.Fragment key={'hours-by-category-' + key}>
+          <Row>
             <Col md="6">
               <Label>
                 {key !== 'unassigned' ? (
@@ -257,7 +257,7 @@ const ViewTab = props => {
               )}
             </Col>
           </Row>
-        </>
+        </React.Fragment>
       ))}
     </div>
   )
