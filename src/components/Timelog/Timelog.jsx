@@ -32,13 +32,15 @@ import _ from 'lodash'
 import ReactTooltip from 'react-tooltip'
 
 import { getTimeEntriesForWeek, getTimeEntriesForPeriod } from '../../actions/timeEntries'
-import { getUserProfile } from '../../actions/userProfile'
+import { getUserProfile, updateUserProfile } from '../../actions/userProfile'
 import { getUserProjects } from '../../actions/userProjects'
 import TimeEntryForm from './TimeEntryForm'
 import TimeEntry from './TimeEntry'
 import EffortBar from './EffortBar'
 import SummaryBar from '../SummaryBar/SummaryBar'
 import WeeklySummary from '../WeeklySummary/WeeklySummary'
+import ActiveCell from 'components/UserManagement/ActiveCell'
+import { ProfileNavDot } from 'components/UserManagement/ProfileNavDot'
 
 class Timelog extends Component {
   constructor(props) {
@@ -252,6 +254,19 @@ class Timelog extends Component {
                           aria-hidden="true"
                           onClick={this.openInfo}
                         />
+                        {/* <ActiveCell 
+                          isActive = {this.props.userProfile.isActive}
+                          user = {this.props.userProfile}
+                          onClick = {() => {
+                            const userId = this.props.match?.params?.userId || this.props.asUser || this.props.auth.user.userid
+                            this.props.updateUserProfile(userId, {
+                              ...this.props.userProfile,
+                              isActive: !this.props.userProfile.isActive,
+                              endDate: !this.props.userProfile.isActive === false ? moment(new Date()).format('YYYY-MM-DD') : undefined
+                            })
+                          }}
+                        /> */}
+                        <ProfileNavDot userId = {this.props.match?.params?.userId || this.props.asUser || this.props.auth.user.userid} />
                       </CardTitle>
                       <CardSubtitle tag="h6" className="text-muted">
                         Viewing time entries logged in the last 3 weeks
@@ -507,4 +522,5 @@ export default connect(mapStateToProps, {
   getTimeEntriesForPeriod,
   getUserProjects,
   getUserProfile,
+  updateUserProfile
 })(Timelog)
