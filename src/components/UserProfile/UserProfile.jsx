@@ -254,7 +254,6 @@ const UserProfile = props => {
       await loadUserProfile();
       setShowSaveWarning(false)
     } catch (err) {
-      console.log(err);
       alert('An error occurred while attempting to save this profile.')
     }
     setShouldRefresh(true)
@@ -411,7 +410,7 @@ const UserProfile = props => {
                       user={userProfile}
                       onClick={() => {
                         setChanged(true);
-                        setUserProfile({ ...userProfile, isActive: !userProfile.isActive })
+                        setUserProfile({ ...userProfile, isActive: !userProfile.isActive, endDate: !userProfile.isActive === false ? moment(new Date()).format('YYYY-MM-DD') : undefined })
                       }}
                     />
                     &nbsp;
@@ -421,7 +420,7 @@ const UserProfile = props => {
               {isUserAdmin && (
                 <i
                   data-toggle="tooltip"
-                  class="fa fa-clock-o"
+                  className="fa fa-clock-o"
                   aria-hidden="true"
                   style={{ fontSize: 24, cursor: 'pointer' }}
                   title="Click to see user's timelog"
@@ -432,7 +431,7 @@ const UserProfile = props => {
               <p className="proile-rating">
                 From : <span>{moment(userProfile.createdDate).format('YYYY-MM-DD')}</span>
                 {'   '}
-                To: <span>{userProfile.endDate ? moment(userProfile.endDate).format('YYYY-MM-DD') : 'N/A'}</span>
+                To: <span>{userProfile.endDate ? userProfile.endDate.toLocaleString().split('T')[0] : 'N/A'}</span>
               </p>
             </div>
             <Badges
