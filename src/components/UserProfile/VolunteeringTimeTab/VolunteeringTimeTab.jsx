@@ -29,14 +29,14 @@ const StartDate = props => {
 
 const EndDate = props => {
   if (!props.isUserAdmin) {
-    return <p>{props.userProfile.endDate ? moment(props.userProfile.endDate).format('YYYY-MM-DD') : 'N/A'}</p>
+    return <p>{props.userProfile.endDate ? props.userProfile.endDate.toLocaleString().split('T')[0] : 'N/A'}</p>
   }
   return (
     <Input
       type="date"
       name="EndDate"
       id="endDate"
-      value={props.userProfile.endDate ? moment(props.userProfile.endDate).format('YYYY-MM-DD') : ''}
+      value={props.userProfile.endDate ? props.userProfile.endDate.toLocaleString().split('T')[0] : ''}
       onChange={(e) => {
         props.setChanged(true);
         props.setUserProfile({ ...props.userProfile, endDate: e.target.value })
@@ -225,8 +225,8 @@ const ViewTab = props => {
       </Row>
 
       {Object.keys(props.userProfile.hoursByCategory).map(key => (
-        <>
-          <Row key={'hours-by-category-' + key}>
+        <React.Fragment key={'hours-by-category-' + key}>
+          <Row>
             <Col md="6">
               <Label>
                 {key !== 'unassigned' ? (
@@ -257,7 +257,7 @@ const ViewTab = props => {
               )}
             </Col>
           </Row>
-        </>
+        </React.Fragment>
       ))}
     </div>
   )
