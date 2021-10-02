@@ -41,9 +41,9 @@ describe('Edit form', () => {
     //it('should render the first name field with the correct value', () => {
     //  expect(screen.getByPlaceholderText(/first name/i)).toHaveValue(userProfileMock.firstName);
     //});
-    it('should render the last name field with the correct value', () => {
-      expect(screen.getByPlaceholderText(/last name/i)).toHaveValue(userProfileMock.lastName);
-    });
+    // it('should render the last name field with the correct value', () => {
+    //   expect(screen.getByPlaceholderText(/last name/i)).toHaveValue(userProfileMock.lastName);
+    // });
     it('should render a title field', () => {
       expect(screen.getByPlaceholderText(/job title/i)).toBeInTheDocument();
     });
