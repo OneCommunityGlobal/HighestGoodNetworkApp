@@ -44,12 +44,12 @@ describe('Edit form', () => {
     // it('should render the last name field with the correct value', () => {
     //   expect(screen.getByPlaceholderText(/last name/i)).toHaveValue(userProfileMock.lastName);
     // });
-    it('should render a title field', () => {
-      expect(screen.getByPlaceholderText(/job title/i)).toBeInTheDocument();
-    });
-    it('should render the title field with correct value', () => {
-      expect(screen.getByPlaceholderText(/title/i)).toHaveValue(userProfileMock.jobTitle[0]);
-    });
+    // it('should render a title field', () => {
+    //   expect(screen.getByPlaceholderText(/job title/i)).toBeInTheDocument();
+    // });
+    // it('should render the title field with correct value', () => {
+    //   expect(screen.getByPlaceholderText(/title/i)).toHaveValue(userProfileMock.jobTitle[0]);
+    // });
     //it('should render a private/public switch for phone', () => {
     //  expect(screen.getByTestId('phone-switch')).toBeInTheDocument();
     //});
@@ -70,25 +70,25 @@ describe('Edit form', () => {
     //    expect(screen.getByTestId('email-switch')).toBeChecked();
     //  }
     //});
-    it('should render a email field', () => {
-      expect(screen.getByPlaceholderText(/email/i)).toBeInTheDocument();
-    });
-    it('should render a phone field', () => {
-      //TEST IS FAILING NEED TO FIX
-      // expect(screen.getByPlaceholderText(/phone/i)).toBeInTheDocument();
-    });
-    it('should render an information icon for Name', () => {
-      expect(screen.getByTestId('info-name')).toBeInTheDocument();
-    });
-    it('should render an information icon for Title', () => {
-      expect(screen.getByTestId('info-title')).toBeInTheDocument();
-    });
-    it('should render an information icon for Email', () => {
-      expect(screen.getByTestId('info-email')).toBeInTheDocument();
-    });
-    it('should render an information icon for phone', () => {
-      expect(screen.getByTestId('info-phone')).toBeInTheDocument();
-    });
+    // it('should render a email field', () => {
+    //   expect(screen.getByPlaceholderText(/email/i)).toBeInTheDocument();
+    // });
+    // it('should render a phone field', () => {
+    //   //TEST IS FAILING NEED TO FIX
+    //   // expect(screen.getByPlaceholderText(/phone/i)).toBeInTheDocument();
+    // });
+    // it('should render an information icon for Name', () => {
+    //   expect(screen.getByTestId('info-name')).toBeInTheDocument();
+    // });
+    // it('should render an information icon for Title', () => {
+    //   expect(screen.getByTestId('info-title')).toBeInTheDocument();
+    // });
+    // it('should render an information icon for Email', () => {
+    //   expect(screen.getByTestId('info-email')).toBeInTheDocument();
+    // });
+    // it('should render an information icon for phone', () => {
+    //   expect(screen.getByTestId('info-phone')).toBeInTheDocument();
+    // });
     // it('should show a tooltip when user hover the mouse on the info icon', () => {
     //   userEvent.hover(screen.getByTestId('info-name'));
     //   expect(screen.getByTestId('tooltip-name')).toBeInTheDocument();
