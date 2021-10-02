@@ -8,6 +8,7 @@ import {
 } from '../constants/userManagement'
 import { ENDPOINTS } from '../utils/URL'
 import { UserStatus } from '../utils/enums'
+import moment from 'moment'
 
 /**
  * fetching all user profiles
@@ -35,8 +36,8 @@ export const updateUserStatus = (user, status, reactivationDate) => {
   userProfile.reactivationDate = reactivationDate;
   const patchData = { status: status, reactivationDate: reactivationDate };
   if (status === UserStatus.InActive) {
-    patchData.endDate = Date.now();
-    userProfile.endDate = Date.now();
+    patchData.endDate = moment(new Date()).format('YYYY-MM-DD')
+    userProfile.endDate = moment(new Date()).format('YYYY-MM-DD')
   }else {
     patchData.endDate = undefined;
     userProfile.endDate = undefined;

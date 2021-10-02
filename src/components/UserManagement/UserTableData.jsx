@@ -30,12 +30,12 @@ const UserTableData = React.memo((props) => {
         />
       </td>
       <td>
-        <a href={`/userprofile/${props.user._id}`} onClick={(e) => {e.preventDefault(); history.push('/userprofile/' + props.user._id)}}>
+        <a href={`/userprofile/${props.user._id}`} onClick={(e) => { e.preventDefault(); history.push('/userprofile/' + props.user._id) }}>
           {props.user.firstName}
         </a>
       </td>
       <td>
-        <a href={`/userprofile/${props.user._id}`} onClick={(e) => {e.preventDefault(); history.push('/userprofile/' + props.user._id)}}>
+        <a href={`/userprofile/${props.user._id}`} onClick={(e) => { e.preventDefault(); history.push('/userprofile/' + props.user._id) }}>
           {props.user.lastName}
         </a>
       </td>

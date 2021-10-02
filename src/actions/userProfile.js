@@ -11,19 +11,20 @@ import { ENDPOINTS } from '../utils/URL';
 
 
 export const getUserProfile = (userId) => {
-
-  return (dispatch) => {
-
-    return axios.get(ENDPOINTS.USER_PROFILE(userId))
-    .then((res) => {
-      dispatch(getUserProfileActionCreator(res.data))
-    })
-    .catch((err) => {
-
-    })
-
+  const url = ENDPOINTS.USER_PROFILE(userId);
+  return async (dispatch) => {
+    let loggedOut = false;
+    const res = await axios.get(url).catch((error)=>{
+      if (error.status === 401) {
+        //logout error
+        loggedOut = true;
+      }
+    });
+    // console.log('GET user profile: response:', res)
+    if (!loggedOut) {
+      await dispatch(getUserProfileActionCreator(res.data));
+    }
   };
-
 };
 
 

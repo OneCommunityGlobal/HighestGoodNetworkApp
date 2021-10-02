@@ -19,7 +19,7 @@ const StartDate = props => {
       value={moment(props.userProfile.createdDate).format('YYYY-MM-DD')}
       onChange={(e) => {
         props.setChanged(true);
-        props.setUserProfile({...props.userProfile, createdDate: e.target.value})
+        props.setUserProfile({ ...props.userProfile, createdDate: e.target.value })
       }}
       placeholder="Start Date"
       invalid={!props.isUserAdmin}
@@ -29,15 +29,18 @@ const StartDate = props => {
 
 const EndDate = props => {
   if (!props.isUserAdmin) {
-    return <p>{props.userProfile.endDate ? moment(props.userProfile.endDate).format('YYYY-MM-DD') : 'N/A'}</p>
+    return <p>{props.userProfile.endDate ? props.userProfile.endDate.toLocaleString().split('T')[0] : 'N/A'}</p>
   }
   return (
     <Input
       type="date"
       name="EndDate"
       id="endDate"
-      value={props.userProfile.endDate ? moment(props.userProfile.endDate).format('YYYY-MM-DD') : ''}
-      onChange={props.handleUserProfile}
+      value={props.userProfile.endDate ? props.userProfile.endDate.toLocaleString().split('T')[0] : ''}
+      onChange={(e) => {
+        props.setChanged(true);
+        props.setUserProfile({ ...props.userProfile, endDate: e.target.value })
+      }}
       placeholder="End Date"
       invalid={!props.isUserAdmin}
     />
@@ -56,7 +59,7 @@ const WeeklyCommitedHours = props => {
       data-testid='weeklyCommittedHours'
       value={props.userProfile.weeklyComittedHours}
       onChange={(e) => {
-        props.setUserProfile({...props.userProfile, weeklyComittedHours: e.target.value})
+        props.setUserProfile({ ...props.userProfile, weeklyComittedHours: e.target.value })
         props.setChanged(true)
       }}
       placeholder="Weekly Committed Hours"
@@ -76,7 +79,7 @@ const TotalCommittedHours = props => {
       id="totalTangibleHours"
       value={props.userProfile.totalTangibleHrs}
       onChange={(e) => {
-        props.setUserProfile({...props.userProfile, totalTangibleHrs: e.target.value})
+        props.setUserProfile({ ...props.userProfile, totalTangibleHrs: e.target.value })
         props.setChanged(true)
       }}
       placeholder="Total Tangible Time Logged"
@@ -98,7 +101,7 @@ const WeeklySummaryReqd = props => {
         type="checkbox"
         className={style.toggle}
         onChange={(e) => {
-          props.setUserProfile({...props.userProfile, weeklySummaryNotReq: !props.userProfile.weeklySummaryNotReq})
+          props.setUserProfile({ ...props.userProfile, weeklySummaryNotReq: !props.userProfile.weeklySummaryNotReq })
           props.setChanged(true)
         }}
         checked={props.userProfile.weeklySummaryNotReq}
@@ -166,8 +169,8 @@ const ViewTab = props => {
           <EndDate
             isUserAdmin={isUserAdmin}
             userProfile={userProfile}
-            handleUserProfile={handleUserProfile}
-          />
+            setUserProfile={setUserProfile}
+            setChanged={setChanged} />
         </Col>
       </Row>
 
@@ -222,8 +225,8 @@ const ViewTab = props => {
       </Row>
 
       {Object.keys(props.userProfile.hoursByCategory).map(key => (
-        <>
-          <Row key={'hours-by-category-' + key}>
+        <React.Fragment key={'hours-by-category-' + key}>
+          <Row>
             <Col md="6">
               <Label>
                 {key !== 'unassigned' ? (
@@ -240,10 +243,12 @@ const ViewTab = props => {
                   id={`${key}Hours`}
                   value={props.userProfile.hoursByCategory[key]}
                   onChange={(e) => {
-                    setUserProfile({...props.userProfile, hoursByCategory: {
-                      ...props.userProfile.hoursByCategory,
-                      [key]: e.target.value
-                    }})
+                    setUserProfile({
+                      ...props.userProfile, hoursByCategory: {
+                        ...props.userProfile.hoursByCategory,
+                        [key]: e.target.value
+                      }
+                    })
                   }}
                   placeholder={`Total Tangible ${capitalize(key)} Hours`}
                 />
@@ -252,7 +257,7 @@ const ViewTab = props => {
               )}
             </Col>
           </Row>
-        </>
+        </React.Fragment>
       ))}
     </div>
   )
