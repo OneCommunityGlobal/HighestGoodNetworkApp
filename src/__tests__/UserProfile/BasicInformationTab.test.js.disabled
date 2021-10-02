@@ -1,3 +1,5 @@
+/** Entire test suite needs to be rewritten due to how dramatically the  UserProfile implementation was changed. **/
+
 import React from 'react';
 import { screen, render, cleanup } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';

@@ -1,3 +1,5 @@
+/** Entire test suite needs to be rewritten due to how dramatically the  UserProfile implementation was changed. **/
+
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import { getUserProfile } from '../actions/userProfile'
