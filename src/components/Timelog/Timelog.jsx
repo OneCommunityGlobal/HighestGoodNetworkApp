@@ -254,7 +254,7 @@ class Timelog extends Component {
                           aria-hidden="true"
                           onClick={this.openInfo}
                         />
-                        {/* <ActiveCell 
+                        <ActiveCell 
                           isActive = {this.props.userProfile.isActive}
                           user = {this.props.userProfile}
                           onClick = {() => {
@@ -265,7 +265,7 @@ class Timelog extends Component {
                               endDate: !this.props.userProfile.isActive === false ? moment(new Date()).format('YYYY-MM-DD') : undefined
                             })
                           }}
-                        /> */}
+                        />
                         <ProfileNavDot userId = {this.props.match?.params?.userId || this.props.asUser || this.props.auth.user.userid} />
                       </CardTitle>
                       <CardSubtitle tag="h6" className="text-muted">
