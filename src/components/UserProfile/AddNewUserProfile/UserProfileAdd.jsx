@@ -381,6 +381,12 @@ class AddUserProfile extends Component {
       timeZone
     } = that.state.userProfile
 
+    const initalUserProject = that.props.allProjects.projects.filter((project) => {
+      if (project.projectName === 'Orientation and Initial Setup'){
+        return project;
+      }
+    });
+
     const userData = {
       password: '123Welcome!',
       role: role,
@@ -393,7 +399,7 @@ class AddUserProfile extends Component {
       personalLinks: [],
       adminLinks: [],
       teams: this.state.teams,
-      projects: this.state.projects,
+      projects: [...this.state.projects, ...initalUserProject],
       email: email,
       privacySettings: privacySettings,
       collaborationPreference: collaborationPreference,
