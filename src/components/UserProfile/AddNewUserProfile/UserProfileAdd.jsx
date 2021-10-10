@@ -420,10 +420,43 @@ class AddUserProfile extends Component {
 
     createUser(userData)
       .then(res => {
+        if(res.data.warning){
+          toast.warn(res.data.warning);
+        }
+        else {
           toast.success('User profile created.')
+        }
         this.props.userCreated()
       })
       .catch(err => {
+        if(err.response?.data?.type){
+          switch (err.response.data.type) {
+            case 'email':
+              this.setState({
+                formValid: {
+                  ...that.state.formValid,
+                  email: false,
+                },
+                formErrors: {
+                  ...that.state.formErrors,
+                  email: 'Email already exists'
+                },
+              });
+              break;
+            case 'phoneNumber':
+              this.setState({
+                formValid: {
+                  ...that.state.formValid,
+                  phoneNumber: false,
+                },
+                formErrors: {
+                  ...that.state.formErrors,
+                  phoneNumber: 'Phone number already exists'
+                },
+              });
+              break;
+          }
+        }
         toast.error(
           err.response?.data?.error ||
             'An unknown error occurred while attempting to create this user.',
