@@ -19,7 +19,7 @@ import {
 
 import ToggleSwitch from '../UserProfileEdit/ToggleSwitch'
 import './UserProfileAdd.scss'
-import { createUser } from '../../../services/userProfileService'
+import { createUser, resetPassword } from '../../../services/userProfileService'
 import { toast } from 'react-toastify'
 import TeamsTab from '../TeamsAndProjects/TeamsTab'
 import ProjectsTab from '../TeamsAndProjects/ProjectsTab'
@@ -53,18 +53,24 @@ class AddUserProfile extends Component {
       projects: [...initalUserProject],
       activeTab: '1',
       userProfile: {
+        firstName: '',
+        lastName: '',
+        email: '',
+        phoneNumber: null,
         weeklyComittedHours: 10,
         role: 'Volunteer',
         privacySettings: { blueSquares: true, email: true, phoneNumber: true },
         jobTitle: '',
+        googleDoc: '',
       },
       formValid: {},
+      formErrors: {},
       timeZoneFilter: '',
     }
   }
 
   render() {
-    const { firstName, email, lastName, phoneNumber, role, jobTitle } = this.state
+    const { firstName, email, lastName, phoneNumber, role, jobTitle } = this.state.userProfile;
     return (
       <StickyContainer>
         <Container className="emp-profile">
@@ -72,7 +78,7 @@ class AddUserProfile extends Component {
             <Col md="12">
               <Form>
                 <Row>
-                  <Col md="6">
+                  <Col md={{size: 2, offset:2}} className="text-md-right my-2">
                     <Label>Name</Label>
                   </Col>
                   <Col md="3">
@@ -84,9 +90,9 @@ class AddUserProfile extends Component {
                         value={firstName}
                         onChange={this.handleUserProfile}
                         placeholder="First Name"
-                        invalid={!this.state.formValid.firstName}
+                        invalid={this.state.formValid.firstName === undefined ? false : !this.state.formValid.firstName}
                       />
-                      <FormFeedback>First Name Can't be empty.</FormFeedback>
+                      <FormFeedback>{this.state.formErrors.firstName}</FormFeedback>
                     </FormGroup>
                   </Col>
                   <Col md="3">
@@ -98,17 +104,17 @@ class AddUserProfile extends Component {
                         value={lastName}
                         onChange={this.handleUserProfile}
                         placeholder="Last Name"
-                        invalid={!this.state.formValid.lastName}
+                        invalid={this.state.formValid.lastName === undefined ? false : !this.state.formValid.lastName}
                       />
-                      <FormFeedback>Last Name Can't be empty.</FormFeedback>
+                      <FormFeedback>{this.state.formErrors.lastName}</FormFeedback>
                     </FormGroup>
                   </Col>
                 </Row>
                 <Row>
-                  <Col>
+                  <Col  md={{size: 3, offset:1}} className="text-md-right my-2">
                     <Label>Job Title</Label>
                   </Col>
-                  <Col>
+                  <Col  md={{size: 6}}>
                     <FormGroup>
                       <Input
                         type="text"
@@ -118,21 +124,15 @@ class AddUserProfile extends Component {
                         onChange={this.handleUserProfile}
                         placeholder="Job Title"
                       />
-                      <FormFeedback>First Name Can't be empty.</FormFeedback>
                     </FormGroup>
                   </Col>
                 </Row>
                 <Row>
-                  <Col md="6">
+                  <Col md={{size: 2, offset:2}} className="text-md-right my-2">
                     <Label>Email</Label>
                   </Col>
                   <Col md="6">
                     <FormGroup>
-                      <ToggleSwitch
-                        switchType="email"
-                        state={this.state.userProfile.privacySettings?.email}
-                        handleUserProfile={this.handleUserProfile}
-                      />
 
                       <Input
                         type="email"
@@ -141,33 +141,40 @@ class AddUserProfile extends Component {
                         value={email}
                         onChange={this.handleUserProfile}
                         placeholder="Email"
-                        invalid={!this.state.formValid.email}
+                        invalid={this.state.formValid.email === undefined ? false : !this.state.formValid.email}
                       />
-                      <FormFeedback>Email is not Valid</FormFeedback>
+                      <FormFeedback>{this.state.formErrors.email}</FormFeedback>
+
+                      <ToggleSwitch
+                        switchType="email"
+                        state={this.state.userProfile.privacySettings?.email}
+                        handleUserProfile={this.handleUserProfile}
+                      />
                     </FormGroup>
                   </Col>
                 </Row>
                 <Row>
-                  <Col md="6">
+                  <Col md={{size: 2, offset:2}} className="text-md-right my-2">
                     <Label>Phone</Label>
                   </Col>
                   <Col md="6">
                     <FormGroup>
-                      <ToggleSwitch
-                        switchType="phone"
-                        state={this.state.userProfile.privacySettings?.phoneNumber}
-                        handleUserProfile={this.handleUserProfile}
-                      />
                       <PhoneInput
                         country={'us'}
                         value={phoneNumber}
                         onChange={phone => this.phoneChange(phone)}
                       />
+                      <p style={{color: 'red', paddingTop:'0.3rem'}}>{this.state.formErrors.phoneNumber}</p>
+                      <ToggleSwitch
+                        switchType="phone"
+                        state={this.state.userProfile.privacySettings?.phoneNumber}
+                        handleUserProfile={this.handleUserProfile}
+                      />
                     </FormGroup>
                   </Col>
                 </Row>
                 <Row>
-                  <Col md="6">
+                  <Col md={{size: 4}} className="text-md-right my-2">
                     <Label>Weekly Comitted Hours</Label>
                   </Col>
                   <Col md="6">
@@ -184,31 +191,31 @@ class AddUserProfile extends Component {
                   </Col>
                 </Row>
                 <Row>
-                  <Col md="6">
+                  <Col md={{size: 2, offset:2}} className="text-md-right my-2">
                     <Label>Role</Label>
                   </Col>
                   <Col md="6">
                     <FormGroup>
-                      <select
-                        value={role}
+                      <Input
+                        type="select"
+                        name="role"
+                        id="role"
                         defaultValue='Volunteer'
                         onChange={this.handleUserProfile}
-                        id="role"
-                        name="role"
-                        className="form-control"
-                      >
+                        >
                         <option value="Administrator">Administrator</option>
                         <option value="Volunteer">
                           Volunteer
                         </option>
                         <option value="Manager">Manager</option>
                         <option value="Core Team">Core Team</option>
-                      </select>
+                      {/* </select> */}
+                      </Input>
                     </FormGroup>
                   </Col>
                 </Row>
                 <Row>
-                  <Col md="6">
+                  <Col md={{size: 4}} className="text-md-right my-2">
                     <Label>Video Call Preference</Label>
                   </Col>
                   <Col md="6">
@@ -225,7 +232,7 @@ class AddUserProfile extends Component {
                   </Col>
                 </Row>
                 <Row>
-                  <Col md="6">
+                  <Col md={{size: 3, offset:1}} className="text-md-right my-2">
                     <Label>Google Doc</Label>
                   </Col>
                   <Col md="6">
@@ -242,10 +249,10 @@ class AddUserProfile extends Component {
                   </Col>
                 </Row>
                 <Row>
-                  <Col>
+                  <Col md={{size: 3, offset:1}} className="text-md-right my-2">
                     <Label>Time Zone</Label>
                   </Col>
-                  <Col>
+                  <Col md="6">
                     <FormGroup>
                       <TimeZoneDropDown
                       filter={this.state.timeZoneFilter}
@@ -256,10 +263,10 @@ class AddUserProfile extends Component {
                   </Col>
                 </Row>
                 <Row>
-                  <Col>
+                  <Col md={{size: 4, offset:0}} className="text-md-right my-2">
                     <Label>Search For Time Zone</Label>
                   </Col>
-                  <Col>
+                  <Col md="6">
                     <Input
                       onChange={(e) => this.setState({...this.state, timeZoneFilter: e.target.value})}
                     />
@@ -324,11 +331,13 @@ class AddUserProfile extends Component {
             </Col>
           </Row>
           <Row>
-            <Col></Col>
-            <Col>
-              <Button color="primary" onClick={this.createUserProfile}>
+            {/* <Col></Col> */}
+            <Col md="12">
+              <div className="w-50 pt-4 mx-auto">
+              <Button color="primary" block size="lg" onClick={this.createUserProfile}>
                 Create
               </Button>
+              </div>
             </Col>
           </Row>
         </Container>
@@ -411,7 +420,7 @@ class AddUserProfile extends Component {
 
     createUser(userData)
       .then(res => {
-        toast.success('User profile created.')
+          toast.success('User profile created.')
         this.props.userCreated()
       })
       .catch(err => {
@@ -445,7 +454,6 @@ class AddUserProfile extends Component {
       })
     }
     const filesizeKB = file.size / 1024
-    // console.log(filesizeKB);
 
     if (filesizeKB > 50) {
       imageUploadError = `\n The file you are trying to upload exceeds the maximum size of 50KB. You can either
@@ -465,7 +473,6 @@ class AddUserProfile extends Component {
     const reader = new FileReader()
     reader.readAsDataURL(file)
     reader.onloadend = () => {
-      // console.log(reader, file);
 
       this.setState({
         imageUploadError: '',
@@ -486,12 +493,20 @@ class AddUserProfile extends Component {
   }
 
   phoneChange = phone => {
-    const { userProfile } = this.state
+    const { userProfile, formValid, formErrors } = this.state
     this.setState({
       userProfile: {
         ...userProfile,
         phoneNumber: phone,
       },
+      formValid: {
+        ...formValid,
+        phoneNumber: phone.length>10,
+      },
+      formErrors: {
+        ...formErrors,
+        phoneNumber: phone.length>10? '' : 'Please enter valid phone number', 
+      }
     })
   }
 
@@ -499,13 +514,80 @@ class AddUserProfile extends Component {
     this.setState({
       showWarning: true,
     })
-    const { userProfile, formValid } = this.state
-    const patt = new RegExp(/^\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/i)
+    const { userProfile, formValid, formErrors } = this.state
+    const patt = new RegExp(/^([\w.%+-]+)@([\w-]+\.)+([\w]{2,})$/i)
+    
     switch (event.target.id) {
       case 'firstName':
+        this.setState({
+          userProfile: {
+            ...userProfile,
+            [event.target.id]: event.target.value.trim(),
+          },
+          formValid: {
+            ...formValid,
+            [event.target.id]: event.target.value.length > 0,
+          },
+          formErrors: {
+            ...formErrors,
+            firstName: event.target.value.length > 0? '' : 'First name can not be empty',
+          },
+        });
+        break;
       case 'lastName':
+        this.setState({
+          userProfile: {
+            ...userProfile,
+            [event.target.id]: event.target.value.trim(),
+          },
+          formValid: {
+            ...formValid,
+            [event.target.id]: event.target.value.length > 0,
+          },
+          formErrors: {
+            ...formErrors,
+            lastName: event.target.value.length > 0? '' : 'Last name can not be empty',
+          },
+        });
+        break;
       case 'email':
+        this.setState({
+          userProfile: {
+            ...userProfile,
+            [event.target.id]: event.target.value.trim(),
+          },
+          formValid: {
+            ...formValid,
+            [event.target.id]: event.target.value.match(patt),
+          },
+          formErrors: {
+            ...formErrors,
+            email: event.target.value.match(patt)? '' : 'Email is not valid',
+          }
+        });
+        break;
       case 'timeZone':
+        this.setState({
+          userProfile: {
+            ...userProfile,
+            [event.target.id]: event.target.value.trim(),
+          },
+          formValid: {
+            ...formValid,
+            [event.target.id]: !!event.target.value,
+          },
+        });
+        break;
+      case 'jobTitle':
+        this.setState({
+          ...this.state,
+          userProfile: {
+            ...this.state.userProfile,
+            jobTitle: event.target.value,
+          },
+        });
+        break;
+      case 'weeklyComittedHours':
         this.setState({
           userProfile: {
             ...userProfile,
@@ -517,18 +599,30 @@ class AddUserProfile extends Component {
           },
         })
         break
-      case 'jobTitle':
+      case 'collaborationPreference':
         this.setState({
-          ...this.state,
           userProfile: {
-            ...this.state.userProfile,
-            jobTitle: event.target.value,
+            ...userProfile,
+            [event.target.id]: event.target.value.trim(),
+          },
+          formValid: {
+            ...formValid,
+            [event.target.id]: !!event.target.value,
+          },
+        });
+        break;
+      case 'role':
+        this.setState({
+          userProfile: {
+            ...userProfile,
+            [event.target.id]: event.target.value.trim(),
+          },
+          formValid: {
+            ...formValid,
+            [event.target.id]: !!event.target.value,
           },
         })
-      case 'phoneNumber':
-      case 'weeklyComittedHours':
-      case 'collaborationPreference':
-      case 'role':
+        break
       case 'googleDoc':
         this.setState({
           userProfile: {
