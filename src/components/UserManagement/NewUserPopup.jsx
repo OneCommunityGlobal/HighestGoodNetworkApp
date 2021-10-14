@@ -21,7 +21,7 @@ const NewUserPopup = React.memo((props) => {
 
   return (
     <Modal isOpen={props.open} toggle={closePopup} className={"modal-dialog modal-lg"}>
-      <ModalHeader toggle={closePopup}>New User</ModalHeader>
+      <ModalHeader toggle={closePopup} cssModule={{'modal-title': 'w-100 text-center my-auto pl-2'}}>Create New User</ModalHeader>
       <ModalBody>
         <AddNewUserProfile isAddNewUser={true} history={history} userCreated={userCreated} />
       </ModalBody>
