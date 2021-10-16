@@ -380,6 +380,18 @@ class AddUserProfile extends Component {
     })
   }
 
+  onCreateNewUser = () => {
+    let {allProjects} = this.props.fetchAllProjects();
+    
+    const initialUserProject = this.props.allProjects.projects.filter((project) => {
+      if (project.projectName === 'Orientation and Initial Setup'){
+        return project;
+      }
+    });
+
+    this.setState({projects: initialUserProject});
+  }
+
   createUserProfile = () => {
     let that = this
     const {
