@@ -1,15 +1,15 @@
 import React from 'react'
 import { useSelector } from 'react-redux'
 
-const EffortBar = ({activeTab, projectsSelected}) => {
-    const data = useSelector(state => 
-        activeTab === 3 ? 
-        state.timeEntries.period : 
-        state.timeEntries.weeks[activeTab]);
+const EffortBar = ({ activeTab, projectsSelected }) => {
+    const data = useSelector(state =>
+        activeTab === 3 ?
+            state.timeEntries.period :
+            state.timeEntries.weeks[activeTab]);
 
     const calculateTotalTime = (data, isTangible) => {
-        const filteredData = data.filter(entry => 
-            entry.isTangible === isTangible && 
+        const filteredData = data.filter(entry =>
+            entry.isTangible === isTangible &&
             (projectsSelected.includes("all") || projectsSelected.includes(entry.projectId)))
 
         const reducer = (total, entry) => total + parseInt(entry.hours) + parseInt(entry.minutes) / 60
@@ -19,9 +19,9 @@ const EffortBar = ({activeTab, projectsSelected}) => {
     const tangibleTime = calculateTotalTime(data, true);
     const intangibleTime = calculateTotalTime(data, false);
     const totalTime = tangibleTime + intangibleTime;
-       
+
     return (
-        <div style = {{width: "96%"}} className="m-auto row text-white text-center align-self-center">
+        <div className="m-auto row text-white text-center align-self-center">
             <span className="bg-primary col-md-4 p-1 ">
                 Tangible Effort: {tangibleTime.toFixed(2)} hrs
             </span>
@@ -33,7 +33,7 @@ const EffortBar = ({activeTab, projectsSelected}) => {
             </span>
         </div>
     )
-    
+
 }
 
 export default EffortBar
