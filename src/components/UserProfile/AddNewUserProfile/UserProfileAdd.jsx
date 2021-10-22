@@ -42,15 +42,10 @@ import TimeZoneDropDown from '../TimeZoneDropDown'
 class AddUserProfile extends Component {
   constructor(props) {
     super(props)
-    const initalUserProject = props.allProjects.projects.filter((project) => {
-      if (project.projectName === 'Orientation and Initial Setup'){
-        return project;
-      }
-    });
     this.state = {
       weeklyComittedHours: 10,
       teams: [],
-      projects: [...initalUserProject],
+      projects: [],
       activeTab: '1',
       userProfile: {
         firstName: '',
@@ -67,6 +62,10 @@ class AddUserProfile extends Component {
       formErrors: {},
       timeZoneFilter: '',
     }
+  }
+
+  componentDidMount() {
+    this.onCreateNewUser();
   }
 
   render() {
@@ -381,13 +380,9 @@ class AddUserProfile extends Component {
   }
 
   onCreateNewUser = () => {
-    let {allProjects} = this.props.fetchAllProjects();
+    this.props.fetchAllProjects();
     
-    const initialUserProject = this.props.allProjects.projects.filter((project) => {
-      if (project.projectName === 'Orientation and Initial Setup'){
-        return project;
-      }
-    });
+    const initialUserProject = this.props.allProjects.projects.filter(({projectName}) => projectName === 'Orientation and Initial Setup');
 
     this.setState({projects: initialUserProject});
   }
