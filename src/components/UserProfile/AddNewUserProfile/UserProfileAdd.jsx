@@ -33,6 +33,8 @@ import {
   addTeamMember,
 } from '../../../actions/allTeamsAction'
 
+import { fetchAllProjects } from 'actions/projects';
+
 import PhoneInput from 'react-phone-input-2'
 import 'react-phone-input-2/lib/style.css'
 
@@ -717,4 +719,5 @@ export default connect(mapStateToProps, {
   updateTeam,
   deleteTeamMember,
   addTeamMember,
+  fetchAllProjects,
 })(AddUserProfile)
