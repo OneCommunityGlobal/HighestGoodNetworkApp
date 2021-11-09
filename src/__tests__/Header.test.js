@@ -82,7 +82,7 @@ describe('Header structure', () => {
         }
 
         await waitFor(()=> {
-            expect(screen.getAllByText(WELCOME +' fakeFirstName')).toBeTruthy();
+            expect(screen.getAllByText(WELCOME + ',' +' fakeFirstName')).toBeTruthy();
         });
 
         await waitFor(()=> {

@@ -64,6 +64,7 @@ const UserProfile = props => {
   const [modalTitle, setModalTitle] = useState('')
   const [modalMessage, setModalMessage] = useState('')
   const [shouldRefresh, setShouldRefresh] = useState(false)
+  //const [isValid, setIsValid] = useState(true)
 
   /* useEffect functions */
   useEffect(() => {
@@ -150,21 +151,22 @@ const UserProfile = props => {
     setChanged(true)
   }
 
-  const handleImageUpload = async evt => {
-    if (evt) evt.preventDefault()
+   const handleImageUpload = async evt => { 
+    if (evt) evt.preventDefault() 
+    const file = evt.target.files[0]   
+    if (typeof(file) != "undefined"){
 
-    const file = evt.target.files[0]
     const filesizeKB = file.size / 1024
-
     const allowedTypes = ['image/png', 'image/jpeg', 'image/jpg']
     const allowedTypesString = `File type not permitted. Allowed types are ${allowedTypes
       .toString()
       .replaceAll(',', ', ')}`
+     
 
     //Input validation: file type
     if (!allowedTypes.includes(file.type)) {
-      setType('image')
-      setIsValid(false)
+      setType('image')      
+      //setIsValid(false)
       setShowModal(true)
       setModalTitle('Profile Pic Error')
       setModalMessage(allowedTypesString)
@@ -177,13 +179,14 @@ const UserProfile = props => {
 														choose a different file, or use an online file compressor.`
 
       setType('image')
-      setIsValid(false)
+      //setIsValid(false)
       setShowModal(true)
       setModalTitle('Profile Pic Error')
       setModalMessage(errorMessage)
 
       return
     }
+ 
 
     const fileReader = new FileReader()
     fileReader.readAsDataURL(file)
@@ -191,6 +194,7 @@ const UserProfile = props => {
       setChanged(true)
       setUserProfile({ ...userProfile, profilePic: fileReader.result })
     }
+    } 
   }
 
   const handleBlueSquare = (status = true, type = 'message', blueSquareID = '') => {
@@ -353,6 +357,7 @@ const UserProfile = props => {
           id={id}
           isUserAdmin={isUserAdmin}
           handleLinkModel={props.handleLinkModel}
+          //setIsValid={setIsValid(true)}
         />
       )}
       <TabToolTips />
@@ -376,8 +381,10 @@ const UserProfile = props => {
                     type="file"
                     name="newProfilePic"
                     id="newProfilePic"
+                   // onChange={this.handleImageUpload}
                     onChange={handleImageUpload}
                     accept="image/png,image/jpeg, image/jpg"
+                    
                   />
                 </div>
               ) : null}

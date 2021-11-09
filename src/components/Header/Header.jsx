@@ -169,7 +169,7 @@ export class Header extends React.Component {
                 </NavItem>
                 <UncontrolledDropdown nav>
                   <DropdownToggle nav caret>
-                    {WELCOME} {firstName}
+                    {WELCOME}, {firstName}
                   </DropdownToggle>
                   <DropdownMenu>
                     <DropdownItem header>Hello {firstName}</DropdownItem>
