@@ -48,7 +48,7 @@ class AddUserProfile extends Component {
       }
     });
     this.state = {
-      weeklyComittedHours: 10,
+      weeklyCommittedHours: 10,
       teams: [],
       projects: [...initalUserProject],
       activeTab: '1',
@@ -57,7 +57,7 @@ class AddUserProfile extends Component {
         lastName: '',
         email: '',
         phoneNumber: null,
-        weeklyComittedHours: 10,
+        weeklyCommittedHours: 10,
         role: 'Volunteer',
         privacySettings: { blueSquares: true, email: true, phoneNumber: true },
         jobTitle: '',
@@ -82,13 +82,14 @@ class AddUserProfile extends Component {
                     <Label>Name</Label>
                   </Col>
                   <Col md="3">
-                    <FormGroup>
+                    <FormGroup> 
                       <Input
                         type="text"
                         name="firstName"
                         id="firstName"
                         value={firstName}
                         onChange={this.handleUserProfile}
+                        onFocus = {this.handleUserProfile}
                         placeholder="First Name"
                         invalid={this.state.formValid.firstName === undefined ? false : !this.state.formValid.firstName}
                       />
@@ -103,6 +104,7 @@ class AddUserProfile extends Component {
                         id="lastName"
                         value={lastName}
                         onChange={this.handleUserProfile}
+                        onFocus = {this.handleUserProfile}
                         placeholder="Last Name"
                         invalid={this.state.formValid.lastName === undefined ? false : !this.state.formValid.lastName}
                       />
@@ -140,9 +142,11 @@ class AddUserProfile extends Component {
                         id="email"
                         value={email}
                         onChange={this.handleUserProfile}
+                        onFocus = {this.handleUserProfile}
                         placeholder="Email"
                         invalid={this.state.formValid.email === undefined ? false : !this.state.formValid.email}
                       />
+                      <RequiredFieldMessage id = "emailRequired" />
                       <FormFeedback>{this.state.formErrors.email}</FormFeedback>
 
                       <ToggleSwitch
@@ -175,18 +179,21 @@ class AddUserProfile extends Component {
                 </Row>
                 <Row>
                   <Col md={{size: 4}} className="text-md-right my-2">
-                    <Label>Weekly Comitted Hours</Label>
+                    <Label>Weekly Committed Hours</Label>
                   </Col>
                   <Col md="6">
                     <FormGroup>
                       <Input
                         type="number"
-                        name="weeklyComittedHours"
-                        id="weeklyComittedHours"
-                        value={this.state.userProfile.weeklyComittedHours}
+                        name="weeklyCommittedHours"
+                        id="weeklyCommittedHours"
+                        value={this.state.userProfile.weeklyCommittedHours}
                         onChange={this.handleUserProfile}
-                        placeholder="Weekly Comitted Hours"
+                        onFocus = {this.handleUserProfile}
+                        placeholder="Weekly Committed Hours"
+                        invalid={this.state.formValid.weeklyCommittedHours === undefined ? false : !this.state.formValid.weeklyCommittedHours}
                       />
+                      <FormFeedback>{this.state.formErrors.weeklyCommittedHours}</FormFeedback>
                     </FormGroup>
                   </Col>
                 </Row>
@@ -403,7 +410,7 @@ class AddUserProfile extends Component {
       jobTitle: jobTitle,
       phoneNumber: phoneNumber,
       bio: '',
-      weeklyComittedHours: that.state.userProfile.weeklyComittedHours,
+      weeklyCommittedHours: that.state.userProfile.weeklyCommittedHours,
       personalLinks: [],
       adminLinks: [],
       teams: this.state.teams,
@@ -620,7 +627,7 @@ class AddUserProfile extends Component {
           },
         });
         break;
-      case 'weeklyComittedHours':
+      case 'weeklyCommittedHours':
         this.setState({
           userProfile: {
             ...userProfile,
@@ -629,6 +636,10 @@ class AddUserProfile extends Component {
           formValid: {
             ...formValid,
             [event.target.id]: !!event.target.value,
+          },
+          formErrors: {
+            ...formErrors,
+            weeklyCommittedHours: !!event.target.value ? '' : 'Committed hours can not be empty',
           },
         })
         break
