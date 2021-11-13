@@ -135,7 +135,6 @@ class AddUserProfile extends Component {
                   </Col>
                   <Col md="6">
                     <FormGroup>
-
                       <Input
                         type="email"
                         name="email"
@@ -146,9 +145,7 @@ class AddUserProfile extends Component {
                         placeholder="Email"
                         invalid={this.state.formValid.email === undefined ? false : !this.state.formValid.email}
                       />
-                      <RequiredFieldMessage id = "emailRequired" />
-                      <FormFeedback>{this.state.formErrors.email}</FormFeedback>
-
+                      <FormFeedback>{this.state.formErrors.email}</FormFeedback>\
                       <ToggleSwitch
                         switchType="email"
                         state={this.state.userProfile.privacySettings?.email}
