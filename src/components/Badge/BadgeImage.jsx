@@ -15,7 +15,7 @@ const BadgeImage = (props) => {
           <img src={props?.badgeData?.imageUrl} id={"popover_" + props.time + props.index.toString()} alt="" />
         </div>
         {props.count < 100 ?
-          <span className="badge_count">{Math.round(props.count)}</span> :
+          <span className= { props.badgeData.type == "Personal Max" ? "badge_count_personalmax" : "badge_count"}>{Math.round(props.count)}</span> :
           <span className="badge_count_3_digit">{Math.round(props.count)}</span>}
       </div>
       <Popover trigger="hover" isOpen={isOpen} toggle={toggle} target={"popover_" + props.time + props.index.toString()}>
