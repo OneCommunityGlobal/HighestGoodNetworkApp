@@ -60,7 +60,7 @@ const LeaderBoard = ({
   return (
     <div>
       <h3>
-        LeaderBoard&nbsp;&nbsp;
+        Leaderboard&nbsp;&nbsp;
         <i
           data-toggle="tooltip"
           data-placement="right"
