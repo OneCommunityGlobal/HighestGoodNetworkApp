@@ -184,8 +184,8 @@ const LeaderBoard = ({
             </tr>
             {leaderBoardData.map((item, key) => (
               <tr key={key}>
-                <td className="align-middle">
-                  <Link to={`/dashboard/${item.personId}`}>
+                <td className="align-middle" onClick={() => { if (window.confirm(`Are you sure you wish to view this ${item.name} dashboard ?`)) {window.open(`/dashboard/${item.personId}`, "Popup","toolbar=no, location=no, statusbar=no, menubar=no, scrollbars=1, resizable=0, width=580, height=600, top=30")}} }> 
+                  {/* <Link to={`/dashboard/${item.personId}`}> */}
                     <div
                       title={`Weekly Committed: ${item.weeklyComittedHours} hours`}
                       style={{
@@ -198,7 +198,7 @@ const LeaderBoard = ({
                         verticalAlign: 'middle',
                       }}
                     />
-                  </Link>
+                  {/* </Link> */}
                 </td>
                 <th scope="row">
                   <Link to={`/userprofile/${item.personId}`} title="View Profile">
