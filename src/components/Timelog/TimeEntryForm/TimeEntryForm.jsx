@@ -542,7 +542,8 @@ const TimeEntryForm = props => {
             {' '}
             Clear Form{' '}
           </Button>
-          <Button color="primary" disabled={isSubmitting || (data.hours === inputs.hours && data.minutes === inputs.minutes && data.notes === inputs.notes)} onClick={handleSubmit}>
+          {/* <Button color="primary" disabled={isSubmitting || (data.hours === inputs.hours && data.minutes === inputs.minutes && data.notes === inputs.notes)} onClick={handleSubmit}> */}
+          <Button color="primary"  onClick={handleSubmit}>
             {edit ? 'Save' : 'Submit'}
           </Button>
         </ModalFooter>
