@@ -33,6 +33,8 @@ import {
   addTeamMember,
 } from '../../../actions/allTeamsAction'
 
+import { fetchAllProjects } from 'actions/projects';
+
 import PhoneInput from 'react-phone-input-2'
 import 'react-phone-input-2/lib/style.css'
 
@@ -42,15 +44,10 @@ import TimeZoneDropDown from '../TimeZoneDropDown'
 class AddUserProfile extends Component {
   constructor(props) {
     super(props)
-    const initalUserProject = props.allProjects.projects.filter((project) => {
-      if (project.projectName === 'Orientation and Initial Setup'){
-        return project;
-      }
-    });
     this.state = {
       weeklyCommittedHours: 10,
       teams: [],
-      projects: [...initalUserProject],
+      projects: [],
       activeTab: '1',
       userProfile: {
         firstName: '',
@@ -67,6 +64,10 @@ class AddUserProfile extends Component {
       formErrors: {},
       timeZoneFilter: '',
     }
+  }
+
+  componentDidMount() {
+    this.onCreateNewUser();
   }
 
   render() {
@@ -382,6 +383,14 @@ class AddUserProfile extends Component {
     this.setState({
       projects: projects,
     })
+  }
+
+  onCreateNewUser = () => {
+    this.props.fetchAllProjects();
+    
+    const initialUserProject = this.props.allProjects.projects.filter(({projectName}) => projectName === 'Orientation and Initial Setup');
+
+    this.setState({projects: initialUserProject});
   }
 
   createUserProfile = () => {
@@ -718,4 +727,5 @@ export default connect(mapStateToProps, {
   updateTeam,
   deleteTeamMember,
   addTeamMember,
+  fetchAllProjects,
 })(AddUserProfile)
