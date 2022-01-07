@@ -218,6 +218,9 @@ const BadgeReport = (props) => {
     await props.getUserProfile(props.userId);
     //close the modal
     props.close();
+        //Reload the view profile page with updated bages
+        window.location.reload();
+
   }
 
   return (
