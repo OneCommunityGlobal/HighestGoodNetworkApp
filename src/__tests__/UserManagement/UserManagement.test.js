@@ -8,9 +8,12 @@ import { renderWithProvider, renderWithRouterMatch } from '../utils';
 import UserManagement from '../../components/UserManagement/UserManagement';
 import * as actions from '../../actions/userManagement';
 
+
 const mockStore = configureMockStore([thunk]);
 
 jest.mock('../../actions/userManagement.js');
+jest.mock('../../actions/projects.js');
+
 describe('user management', () => {
   let store;
   const userID = '5f31dcb9a1a909eadee0eecb';
@@ -114,7 +117,7 @@ describe('user management', () => {
       expect(screen.queryByRole('button', { name: /pause/i })).toBeFalsy();
     });
     it('should perform wildcard search while the user typing in the search box', async () => {
-      await userEvent.type(screen.getByPlaceholderText(/search text/i), 'gmail.com', { allAtOnce: false });
+      await userEvent.type(screen.getByPlaceholderText(/Search Text/i), 'gmail.com', { allAtOnce: false });
       expect(screen.queryByText(/.*hgn.net.*/)).toBeFalsy();
     });
   });
