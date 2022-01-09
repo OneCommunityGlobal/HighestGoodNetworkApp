@@ -1,6 +1,7 @@
 import React, { Component, useState } from 'react'
 import '../Teams/Team.css';
-import { Button, Dropdown, DropdownButton,ToggleButton,ToggleButtonGroup } from 'react-bootstrap'
+import { Row, Col, Button, ToggleButton,ToggleButtonGroup, Dropdown, DropdownButton } from 'react-bootstrap'
+//import { Label, Input, Form } from 'reactstrap'
 import { connect } from 'react-redux'
 import { getUserProfile,getUserTask} from '../../actions/userProfile';
 import {getUserProjects} from '../../actions/userProjects'
@@ -9,6 +10,8 @@ import { getWeeklySummaries, updateWeeklySummaries } from '../../actions/weeklyS
 import moment from 'moment'
 import "react-input-range/lib/css/index.css"
 import Collapse from 'react-bootstrap/Collapse'
+import * as d3 from 'd3'
+import { DropdownItem, FormGroup, Label, Input, Form} from 'reactstrap';
 
 class PeopleReport extends Component {
   constructor(props) {
@@ -32,6 +35,8 @@ class PeopleReport extends Component {
       classificationList:[],
       priorityList:[],
       statusList:[],
+      fromDate: '',
+      toDate: '',
     }
     this.setStatus=this.setStatus.bind(this)
     this.setPriority=this.setPriority.bind(this)
@@ -40,6 +45,7 @@ class PeopleReport extends Component {
     this.setFilter=this.setFilter.bind(this)
     this.setClassfication=this.setClassfication.bind(this)
     this.setUsers=this.setUsers.bind(this)
+    this.setDate=this.setDate.bind(this)
   }
 
   async componentDidMount() {
@@ -68,6 +74,10 @@ class PeopleReport extends Component {
           console.log(this.state.userProjects)
       )
     }
+  }
+
+  setDate(e) {
+    this.setState({ [e.target.name]: e.target.value })
   }
 
   setActive(activeValue) {
@@ -131,10 +141,14 @@ class PeopleReport extends Component {
         isAssigned:false,
         isActive:false,
         priority:'',
+        priorityList: [],
         status:'',
-        allClassification:[],
+        statusList:[],
+        classificationList:[],
         classification:'',
-        users:""
+        users:"",
+        fromDate: "",
+        toDate: ""
       }
     });
   }
@@ -183,7 +197,9 @@ class PeopleReport extends Component {
       classificationList,
       priorityList,
       statusList,
-      users
+      users,
+      fromDate,
+      toDate,
     } = this.state
     const {
       firstName,
@@ -400,64 +416,105 @@ if (tasks.length>0) {
 }
 }
       return (
-        <div>
-          <div>Total: {userTaskList.length}</div>
-          <div>Selected filters:</div>
-          <div className="row">
-          <div class="block">Assignment:
-            <ToggleButtonGroup type="checkbox" variant="info">
-              {isAssigned ?
-                <ToggleButton variant="info">Assign</ToggleButton>
-                :
-                <ToggleButton variant="info">Not Assign</ToggleButton>
-              }
+        <>
+        <Row>
+          <Col>
+            <h2>Total: {userTaskList.length}</h2>
+            <div>Selected filters:</div>
+          </Col>
+              <div className="row">
+                <Col>
+                  <Col>
+                    Assignment:
+                  </Col>
+                  <Col>
+                    <ToggleButtonGroup type="checkbox" variant="info">
+                        {isAssigned ?
+                          <ToggleButton variant="info">Assign</ToggleButton>
+                          :
+                          <ToggleButton variant="info">Not Assign</ToggleButton>
+                        }
+                      </ToggleButtonGroup>
+                  </Col>
+                </Col>
+                <Col class="block">
+                  <Col>
+                    Active:
+                  </Col>
+                  <Col>
+                    <ToggleButtonGroup type="checkbox" variant="info">
+                      {isActive ?
+                        <ToggleButton variant="info">Active</ToggleButton>
+                        :
+                        <ToggleButton variant="info">InActive</ToggleButton>
+                      }
+                    </ToggleButtonGroup>
+                  </Col>
+                </Col>
 
-            </ToggleButtonGroup>
-          </div>
-          <div class="block">Active:
-            <ToggleButtonGroup type="checkbox" variant="info">
-              {isActive ?
-                <ToggleButton variant="info">Active</ToggleButton>
-                :
-                <ToggleButton variant="info">InActive</ToggleButton>
-              }
-            </ToggleButtonGroup>
-          </div>
+                {priorityList.length > 0 ? 
+                    <Col class="block">
+                        <Col>
+                          Priority:
+                        </Col>
+                        <Col>
+                          <ToggleButtonGroup type="checkbox" variant="info">
+                          {priorityList.map((c, index) => (
+                              <ToggleButton variant="info">{c}</ToggleButton>
+                          ))}
+                          </ToggleButtonGroup>
+                        </Col>
+                    </Col>
+                  : <></>}
+                  
+                {statusList.length > 0 ?
+                  <Col class="block">
+                    <Col>
+                      Status:
+                    </Col>
+                    <Col>
+                      <ToggleButtonGroup type="checkbox" variant="info">
+                        {statusList.map((c, index) => (
+                          <ToggleButton variant="info">{c}</ToggleButton>
+                        ))}
+                      </ToggleButtonGroup>
+                    </Col>
+                  </Col>
+                : <></>}
 
-         <div class="block">Priority:
-          <ToggleButtonGroup type="checkbox" variant="info">
-            {priorityList.map((c, index) => (
-              <ToggleButton variant="info">{c}</ToggleButton>
-            ))}
-          </ToggleButtonGroup>
-  </div>
-
-          <div class="block">Status:
-            <ToggleButtonGroup type="checkbox" variant="info">
-              {statusList.map((c, index) => (
-                <ToggleButton variant="info">{c}</ToggleButton>
-              ))}
-            </ToggleButtonGroup>
-          </div>
-
-          <div class="block">Classification:
-            <ToggleButtonGroup type="checkbox" variant="info">
-              {classificationList.map((c, index) => (
-                <ToggleButton variant="info">{c}</ToggleButton>
-              ))}
-            </ToggleButtonGroup>
-          </div>
-
-          <div class="block">User:
-            <ToggleButtonGroup type="checkbox" variant="info">
-                <ToggleButton variant="info">{users}</ToggleButton>
-            </ToggleButtonGroup>
-          </div>
-
-          <ShowTasksCollapse userTaskList={userTaskList}/>
-
-        </div>
-        </div>
+                {classificationList.length > 0 ? 
+                  <Col class="block">
+                    <Col>
+                      Classification:
+                    </Col>
+                    <Col>
+                      <ToggleButtonGroup type="checkbox" variant="info">
+                        {classificationList.map((c, index) => (
+                          <ToggleButton variant="info">{c}</ToggleButton>
+                        ))}
+                      </ToggleButtonGroup>
+                    </Col>
+                  </Col>
+                : <></>}
+                
+                {users.length > 0 ?  
+                  <Col class="block">
+                  <Col>
+                    User:
+                  </Col>
+                  <Col>
+                    <ToggleButtonGroup type="checkbox" variant="info">
+                        <ToggleButton variant="info">{users}</ToggleButton>
+                    </ToggleButtonGroup>
+                  </Col>
+                  </Col>
+                : <></>}
+            </div>
+        </Row>
+          <Row>
+             <ShowTasksCollapse userTaskList={userTaskList}/> {/*give margin zero on left & right to prevent cutting the edge */}
+          </Row>
+      </>
       )
     }
     const UserProject = props => {
@@ -543,15 +600,108 @@ if (tasks.length>0) {
       )
     }
 
+    const InfrigmentsPlot = props => {
+      var show = false
+      console.log('inPlot',props)
+
+      const displayGraph = () => {
+        show = !show
+        if(!show){
+          d3.selectAll('#bsplot > *').remove()
+        }
+        else{
+          const margin = {top: 10, right: 30, bottom: 30, left: 60},
+          width = 1000 - margin.left - margin.right,
+          height = 400 - margin.top - margin.bottom;
+
+          const svg = d3.select("#bsplot")
+          .append("svg")
+          .attr("width", width + margin.left + margin.right)
+          .attr("height", height + margin.top + margin.bottom)
+          .append("g")
+          .attr("transform",`translate(${margin.left},${margin.top})`);
+
+          const x = d3.scaleTime()
+          .domain(d3.extent(props.bsCount, d => d.date))
+          .range([ 0, width ]);
+          svg.append("g")
+          .attr("transform", `translate(0, ${height})`)
+          .call(d3.axisBottom(x));
+
+          const y = d3.scaleLinear()
+          .domain( [0, props.maxSquareCount + 2])
+          .range([ height, 0 ]);
+          svg.append("g")
+          .call(d3.axisLeft(y));
+
+          svg.append("path")
+          .datum(props.bsCount)
+          .attr("fill", "none")
+          .attr("stroke", "black")
+          .attr("stroke-width", 1.5)
+          .attr("d", d3.line()
+            .x(d => x(d.date))
+            .y(d => y(d.count)))
+            
+          const Tooltip = d3.select("#bsplot")
+          .append("div")
+          .style("opacity", 0)
+          .attr("class", "tooltip")
+          .style("background-color", "white")
+          .style("border", "solid")
+          .style("border-width", "2px")
+          .style("border-radius", "5px")
+          .style("padding", "5px")
+          
+          const mouseover = function(event,d) {
+            Tooltip
+              .style("opacity", 1)
+          }
+          const mousemove = function(event,d) {
+            Tooltip
+              .html("Exact date: " + d3.timeFormat("%A, %B %e, %Y")(d.date) + "<br>" + "Count: " + d.count)
+              .style("left", `${event.x+10}px`)
+              .style("top", `${event.y}px`)
+          }
+          const mouseleave = function(event,d) {
+            Tooltip
+              .style("opacity", 0)
+          }
+
+          svg
+          .append("g")
+          .selectAll("dot")
+          .data(props.bsCount)
+          .join("circle")
+            .attr("class", "myCircle")
+            .attr("cx", d => x(d.date))
+            .attr("cy", d => y(d.count))
+            .attr("r", 3)
+            .attr("stroke", "#69b3a2")
+            .attr("stroke-width", 3)
+            .attr("fill", "white")
+            .on("mouseover", mouseover)
+            .on("mousemove", mousemove)
+            .on("mouseleave", mouseleave)
+          }
+      }
+
+      return(
+        <div>
+          <Button onClick={() => displayGraph()} aria-expanded={show}>Plot Graph</Button>
+          <div id="bsplot"></div>
+        </div>
+      )
+    }
+
 
 
     const Infringments = props => {
       let BlueSquare = []
       let dict= {}
-
+      
       const value=[]
-      const value1=[]
-      const [selected, setSelected] = useState('')
+      var maxSquareCount = 0
       for (var i = 0; i < props.infringments.length; i++) {
         if (props.infringments[i].date in dict){
           dict[props.infringments[i].date].count+=1
@@ -561,12 +711,27 @@ if (tasks.length>0) {
         }
       }
 
-      for (var key in dict) {
-        value.push({date:key.toString(),des:dict[key].des,count:dict[key].count})
-        value1.push({date:{date1:key.toString(),des:dict[key].des},count:dict[key]})
-
+      if ((props.fromDate == '') || (props.toDate == '')){
+        for (var key in dict) {
+            value.push({date: d3.timeParse("%Y-%m-%d")(key.toString()),des:dict[key].des,count:dict[key].count})
+            if(dict[key].count > maxSquareCount){
+              // console.log()
+              maxSquareCount = dict[key].count 
+            }
+        }
       }
-
+      else{
+        for (var key in dict) {
+          if((Date.parse(props.fromDate) <= Date.parse(key.toString())) & (Date.parse(key.toString()) <= Date.parse(props.toDate))){
+            value.push({date: d3.timeParse("%Y-%m-%d")(key.toString()),des:dict[key].des,count:dict[key].count})
+            if(dict[key].count > maxSquareCount){
+              maxSquareCount = dict[key].count 
+            }
+          }
+        }
+      }
+      
+      //console.log('square count',dict,value, maxSquareCount)
 
       const startdate=Object.keys(dict)[0]
       var startdateStr=""
@@ -593,6 +758,7 @@ if (tasks.length>0) {
       <div>
       </div>
           <ShowInfringmentsCollapse BlueSquare={BlueSquare}/>
+          <InfrigmentsPlot bsCount={value} maxSquareCount={maxSquareCount} />
           </div>
       )
     }
@@ -627,7 +793,45 @@ if (tasks.length>0) {
       )
     };
 
+    
+
+    const DateRangeSelect = () => {
+      return(
+        <div>
+          <span />
+                <Form inline className="mb-2">
+                  <FormGroup className="mr-2">
+                  <Label for="fromDate" className="mr-2">
+                      From
+                  </Label>
+                  <Input
+                    type="date"
+                    name="fromDate"
+                    id="fromDate"
+                    value={this.state.fromDate}
+                    onChange={this.setDate}
+                  />
+                  </FormGroup>
+                  <span />
+                  <FormGroup className="mr-2">
+                  <Label for="toDate" className="mr-2">
+                    To
+                  </Label>
+                  <Input
+                    type="date"
+                    name="toDate"
+                    id="toDate"
+                    value={this.state.toDate}
+                    onChange={this.setDate}
+                  />
+                  </FormGroup>
+              </Form>
+        </div>
+      )
+    }
+
     return (
+      
       <div className='container'>
         <table>
           <h1 className="center"
@@ -637,41 +841,38 @@ if (tasks.length>0) {
           <div>Total Comitted Hours:{totalComittedHours}</div>
           <div>Total Tangible Hours:{totalTangibleHrsRound}</div>
           <StartDate userProfile={userProfile}/>
-          <div class="row">
-          </div>
-
-
-          <div class="row">
+          <div class="row" style={{justifyContent:'flex-start'}}>
             <div>
               <div><button style={{margin:'3px'}} exact className="btn btn-secondary btn-bg mt-3" onClick={()=>this.setFilter()}>Filters Off</button>
               </div>
-<div>
-            <input name='radio' type="radio" style={{margin:'5px'}} value="active" onChange={()=>this.setAssign(true)}  />
-            Assigned
-            <input name='radio' type="radio" style={{margin:'5px'}} value="inactive" onChange={()=>this.setAssign(false) } />
-            Not Assigned
-            </div>
             <div>
-            <input name='radio' type="radio" style={{margin:'5px'}} value="active" onChange={()=>this.setActive(true)}  />
-            Active
-            <input name='radio' type="radio" style={{margin:'5px'}} value="inactive" onChange={()=>this.setActive(false) } />
-            Inactive
+              <input name='radio' type="radio" style={{margin:'5px'}} value="active" onChange={()=>this.setAssign(true)}  />
+              Assigned
+              <input name='radio' type="radio" style={{margin:'5px'}} value="inactive" onChange={()=>this.setAssign(false) } />
+              Not Assigned
+              </div>
+              <div>
+              <input name='radio' type="radio" style={{margin:'5px'}} value="active" onChange={()=>this.setActive(true)}  />
+              Active
+              <input name='radio' type="radio" style={{margin:'5px'}} value="inactive" onChange={()=>this.setActive(false) } />
+              Inactive
               </div>
               </div>
-            <div className="row">
-<div>
-
-  </div>
-              <div > <PriorityOptions get_tasks={userTask}/>
+            <div className="row" style={{justifyContent:'space-evenly', margin:'3px'}}>
+              <div> 
+                <PriorityOptions get_tasks={userTask}/>
               </div>
-              <div >
-              <StatusOptions get_tasks={userTask}/>
+              <div>
+                <StatusOptions get_tasks={userTask}/>
               </div>
-              <div >
+              <div>
                 <ClassificationOptions allClassification={allClassification}/>
               </div>
-              <div >
-            <UserOptions userTask={userTask}/>
+              <div>
+                <UserOptions userTask={userTask}/>
+              </div>
+              <div>
+                <DateRangeSelect />
               </div>
             </div>
           </div>
@@ -688,11 +889,12 @@ if (tasks.length>0) {
                       statusList={statusList}
             />
           <UserProject userProjects={userProjects}/>
-          <Infringments infringments={infringments}/>
+          <Infringments infringments={infringments} fromDate={fromDate} toDate={toDate}/>
 
         </table>
 
       </div>
+      
       )
     }
 }
