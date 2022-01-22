@@ -86,14 +86,14 @@ class AddUserProfile extends Component {
                     <FormGroup> 
                       <Input
                         type="text"
-                        name="firstName"
+                        name="first Name"
                         id="firstName"
                         value={firstName}
                         onChange={this.handleUserProfile}
                         onFocus = {this.handleUserProfile}
                         placeholder="First Name"
                         invalid={this.state.formValid.firstName === undefined ? false : !this.state.formValid.firstName}
-                      />
+                      />                    
                       <FormFeedback>{this.state.formErrors.firstName}</FormFeedback>
                     </FormGroup>
                   </Col>
@@ -146,7 +146,7 @@ class AddUserProfile extends Component {
                         placeholder="Email"
                         invalid={this.state.formValid.email === undefined ? false : !this.state.formValid.email}
                       />
-                      <FormFeedback>{this.state.formErrors.email}</FormFeedback>\
+                      <FormFeedback>{this.state.formErrors.email}</FormFeedback>
                       <ToggleSwitch
                         switchType="email"
                         state={this.state.userProfile.privacySettings?.email}
@@ -568,7 +568,8 @@ class AddUserProfile extends Component {
         this.setState({
           userProfile: {
             ...userProfile,
-            [event.target.id]: event.target.value.trim(),
+            [event.target.id]: event.target.value,
+            // [event.target.id]: event.target.value.trim(),   removed trim to allow space in name field
           },
           formValid: {
             ...formValid,
@@ -584,7 +585,7 @@ class AddUserProfile extends Component {
         this.setState({
           userProfile: {
             ...userProfile,
-            [event.target.id]: event.target.value.trim(),
+            [event.target.id]: event.target.value,
           },
           formValid: {
             ...formValid,
