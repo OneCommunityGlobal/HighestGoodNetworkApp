@@ -26,8 +26,6 @@ import bluesquare_icon from './bluesquare_icon.png'
 import report_icon from './report_icon.png'
 import httpService from '../../services/httpService'
 import { faWindowMinimize } from '@fortawesome/free-regular-svg-icons'
-import { getUserProfile } from '../../actions/userProfile'
-//'../../actions/userProfile'
 
 import { ApiEndpoint } from 'utils/URL'
 
