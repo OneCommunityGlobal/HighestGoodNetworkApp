@@ -7,6 +7,7 @@ import Badge from '../Badge'
 import TeamMemberTasks from '../TeamMemberTasks/TeamMemberTasks'
 import Timelog from '../Timelog/Timelog'
 import SummaryBar from '../SummaryBar/SummaryBar'
+import PopUpBar from '../PopUpBar'
 import '../../App.css'
 import { connect } from 'react-redux'
 import { getUserProfile } from '../../actions/userProfile'
@@ -41,7 +42,7 @@ export const Dashboard = props => {
 
   return (
     <Container fluid>
-
+      <PopUpBar />
       <SummaryBar asUser={userId} toggleSubmitForm={toggle} isAdmin={isAdmin}/>
 
       <Row>

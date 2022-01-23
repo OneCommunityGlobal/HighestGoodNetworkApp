@@ -37,6 +37,8 @@ const LeaderBoard = ({
     getOrgData()
   }, [timeEntries])
 
+  console.log({" organizationData ": organizationData})
+
   useEffect(() => {
     try {
       if (window.screen.width < 540) {
