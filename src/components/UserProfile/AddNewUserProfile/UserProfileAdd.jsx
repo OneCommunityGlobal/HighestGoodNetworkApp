@@ -41,6 +41,7 @@ import 'react-phone-input-2/lib/style.css'
 import classnames from 'classnames'
 import TimeZoneDropDown from '../TimeZoneDropDown'
 
+var patt = '';
 class AddUserProfile extends Component {
   constructor(props) {
     super(props)
@@ -53,25 +54,31 @@ class AddUserProfile extends Component {
         firstName: '',
         lastName: '',
         email: '',
-        phoneNumber: null,
+        phoneNumber: null,     
         weeklyCommittedHours: 10,
         role: 'Volunteer',
         privacySettings: { blueSquares: true, email: true, phoneNumber: true },
         jobTitle: '',
         googleDoc: '',
+        show:true,
       },
+    
       formValid: {},
       formErrors: {},
       timeZoneFilter: '',
+      
     }
   }
 
-  componentDidMount() {
+  componentDidMount() {   
+    this.state.showphone = true;
     this.onCreateNewUser();
+  
   }
 
   render() {
     const { firstName, email, lastName, phoneNumber, role, jobTitle } = this.state.userProfile;
+     patt = new RegExp(/^([\w.%+-]+)@([\w-]+\.)+([\w]{2,})$/i);
     return (
       <StickyContainer>
         <Container className="emp-profile">
@@ -89,12 +96,12 @@ class AddUserProfile extends Component {
                         name="firstName"
                         id="firstName"
                         value={firstName}
-                        onChange={this.handleUserProfile}
-                        onFocus = {this.handleUserProfile}
+                        onChange={this.handleUserProfile}                      
                         placeholder="First Name"
-                        invalid={this.state.formValid.firstName === undefined ? false : !this.state.formValid.firstName}
+                        invalid={firstName.length === 0}                     
                       />
-                      <FormFeedback>{this.state.formErrors.firstName}</FormFeedback>
+                      <FormFeedback> First Name required </FormFeedback>
+                    
                     </FormGroup>
                   </Col>
                   <Col md="3">
@@ -104,12 +111,13 @@ class AddUserProfile extends Component {
                         name="lastName"
                         id="lastName"
                         value={lastName}
-                        onChange={this.handleUserProfile}
-                        onFocus = {this.handleUserProfile}
+                        onChange={this.handleUserProfile}                   
                         placeholder="Last Name"
-                        invalid={this.state.formValid.lastName === undefined ? false : !this.state.formValid.lastName}
+                        invalid = {lastName.length === 0 }
+                      
                       />
-                      <FormFeedback>{this.state.formErrors.lastName}</FormFeedback>
+                      
+                      <FormFeedback>Last Name required</FormFeedback>
                     </FormGroup>
                   </Col>
                 </Row>
@@ -142,11 +150,12 @@ class AddUserProfile extends Component {
                         id="email"
                         value={email}
                         onChange={this.handleUserProfile}
-                        onFocus = {this.handleUserProfile}
+                       // onFocus={this.handleEmail}
                         placeholder="Email"
-                        invalid={this.state.formValid.email === undefined ? false : !this.state.formValid.email}
+                        invalid = {email.length === 0  }                      
                       />
-                      <FormFeedback>{this.state.formErrors.email}</FormFeedback>\
+                      <FormFeedback>Email required</FormFeedback>
+                    
                       <ToggleSwitch
                         switchType="email"
                         state={this.state.userProfile.privacySettings?.email}
@@ -163,11 +172,18 @@ class AddUserProfile extends Component {
                     <FormGroup>
                       <PhoneInput
                         country={'us'}
-                        value={phoneNumber}
-                        onChange={phone => this.phoneChange(phone)}
-                      />
+                        value={phoneNumber}                        
+                        onChange={phone => this.phoneChange(phone)} 
+                      
+                      /> 
+                          <div style={{color: 'red', paddingTop:'0.3rem'}} >
+                         { this.state.showphone ?  <span> Phone Number is required</span>   : null }
+             
+             
+                
+              </div>  
                       <p style={{color: 'red', paddingTop:'0.3rem'}}>{this.state.formErrors.phoneNumber}</p>
-                      <ToggleSwitch
+                     <ToggleSwitch
                         switchType="phone"
                         state={this.state.userProfile.privacySettings?.phoneNumber}
                         handleUserProfile={this.handleUserProfile}
@@ -386,14 +402,13 @@ class AddUserProfile extends Component {
   }
 
   onCreateNewUser = () => {
-    this.props.fetchAllProjects();
-    
+    this.props.fetchAllProjects();    
     const initialUserProject = this.props.allProjects.projects.filter(({projectName}) => projectName === 'Orientation and Initial Setup');
 
     this.setState({projects: initialUserProject});
   }
 
-  createUserProfile = () => {
+  createUserProfile = () => { 
     let that = this
     const {
       firstName,
@@ -429,15 +444,26 @@ class AddUserProfile extends Component {
 
     if (googleDoc) {
       userData.adminLinks.push({ Name: 'Google Doc', Link: googleDoc })
+    } 
+if(this.state.userProfile.phoneNumber !== null)
+{
+      if ( firstName !== '' && lastName !== '' && this.state.userProfile.phoneNumber.length>10)
+    { 
+      this.setState({showphone : false}); 
+      
+    if ( !email.match(patt))
+     {     
+       toast.error('Email is not valid,Please include @ followed by .com format')          
     }
-
-    createUser(userData)
+    else
+    {        
+       createUser(userData)
       .then(res => {
         if(res.data.warning){
           toast.warn(res.data.warning);
         }
         else {
-          toast.success('User profile created.')
+          toast.success('User profile created.')         
         }
         this.props.userCreated()
       })
@@ -448,24 +474,26 @@ class AddUserProfile extends Component {
               this.setState({
                 formValid: {
                   ...that.state.formValid,
-                  email: false,
+                  email: false, 
                 },
                 formErrors: {
                   ...that.state.formErrors,
                   email: 'Email already exists'
                 },
               });
-              break;
+              break;             
             case 'phoneNumber':
               this.setState({
                 formValid: {
                   ...that.state.formValid,
-                  phoneNumber: false,
+                  phoneNumber: false, 
+                  showphone: false,               
                 },
                 formErrors: {
                   ...that.state.formErrors,
                   phoneNumber: 'Phone number already exists'
                 },
+                
               });
               break;
           }
@@ -474,8 +502,17 @@ class AddUserProfile extends Component {
           err.response?.data?.error ||
             'An unknown error occurred while attempting to create this user.',
         )
-      })
+      })     
+    }
+  }  
+  else{
+    toast.error('Please fill all the required fields');
   }
+}
+}
+
+    
+  
 
   handleImageUpload = async e => {
     e.preventDefault()
@@ -544,24 +581,27 @@ class AddUserProfile extends Component {
       userProfile: {
         ...userProfile,
         phoneNumber: phone,
+        showphone: false,
       },
       formValid: {
         ...formValid,
         phoneNumber: phone.length>10,
+        showphone:false,
+        
       },
       formErrors: {
         ...formErrors,
-        phoneNumber: phone.length>10? '' : 'Please enter valid phone number', 
+        phoneNumber: phone.length>10? '' : 'Please enter valid phone number',       
+       
       }
+     
     })
-  }
-
+}
   handleUserProfile = event => {
     this.setState({
       showWarning: true,
     })
     const { userProfile, formValid, formErrors } = this.state
-    const patt = new RegExp(/^([\w.%+-]+)@([\w-]+\.)+([\w]{2,})$/i)
     
     switch (event.target.id) {
       case 'firstName':
@@ -576,7 +616,7 @@ class AddUserProfile extends Component {
           },
           formErrors: {
             ...formErrors,
-            firstName: event.target.value.length > 0? '' : 'First name can not be empty',
+            firstName: event.target.value.length > 0? '' : 'First Name required',
           },
         });
         break;
@@ -592,7 +632,7 @@ class AddUserProfile extends Component {
           },
           formErrors: {
             ...formErrors,
-            lastName: event.target.value.length > 0? '' : 'Last name can not be empty',
+            lastName: event.target.value.length > 0? '' : 'Last Name required can not be empty',
           },
         });
         break;
