@@ -222,6 +222,8 @@ class Timelog extends Component {
       </option>,
     )
 
+    console.log(this.props)
+
     return (
       <div>
         {!this.props.isDashboard ? (

@@ -14,10 +14,11 @@ import { getUserProfile } from '../../actions/userProfile'
 export const Dashboard = props => {
   const [popup, setPopup] = useState(false)
   let isAdmin = props.auth.user.role === 'Administrator'
-  let userId =
-    props.match && props.match.params.userId && props.auth.user.role === 'Administrator'
-      ? props.match.params.userId
-      : props.auth.user.userid
+  let userId = props.match.params.userId ? props.match.params.userId : props.auth.user.userid
+  let currentUser = props.auth.user.userid;
+    // props.match && props.match.params.userId && props.auth.user.role === 'Administrator'
+    //   ? props.match.params.userId
+    //   : props.auth.user.userid
 
   const toggle = () => {
     setPopup(!popup)
@@ -41,7 +42,7 @@ export const Dashboard = props => {
   return (
     <Container fluid>
 
-      <SummaryBar asUser={userId} toggleSubmitForm={toggle} />
+      <SummaryBar asUser={userId} toggleSubmitForm={toggle} isAdmin={isAdmin}/>
 
       <Row>
         <Col lg={{ size: 7 }}>&nbsp;</Col>
