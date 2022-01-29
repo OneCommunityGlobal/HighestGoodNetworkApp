@@ -61,7 +61,17 @@ export const getMessage = (message, color) => ({
 
 export const gotCloseAlert = () => ({ type: CLOSE_ALERT });
 
-
+export const validateBadges = (firstName,lastName) => {
+  return async (dispatch) =>{
+    if (firstName.length === 0 || lastName.length === 0) {
+      dispatch(getMessage('The Name Find function does not work without entering first and last name. Nice try though.', 'danger'));
+      setTimeout(() => {
+        dispatch(closeAlert());
+      }, 6000);
+      return;
+    }
+  }
+}
 
 export const assignBadges = (firstName, lastName, selectedBadges) => {
 
