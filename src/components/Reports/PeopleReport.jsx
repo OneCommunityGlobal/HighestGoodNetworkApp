@@ -12,11 +12,12 @@ import "react-input-range/lib/css/index.css"
 import Collapse from 'react-bootstrap/Collapse'
 import * as d3 from 'd3'
 import { DropdownItem, FormGroup, Label, Input, Form} from 'reactstrap';
+import { getTimeEntriesForPeriod } from '../../actions/timeEntries'
 
 class PeopleReport extends Component {
   constructor(props) {
     super(props);
-    this.props=props
+    //this.props=props
     this.state = {
       userProfile: {},
       userTask:[],
@@ -35,8 +36,9 @@ class PeopleReport extends Component {
       classificationList:[],
       priorityList:[],
       statusList:[],
-      fromDate: '',
-      toDate: '',
+      fromDate: "2016-01-01",
+      toDate: this.endOfWeek(0),
+      timeEntries: {},
     }
     this.setStatus=this.setStatus.bind(this)
     this.setPriority=this.setPriority.bind(this)
@@ -55,6 +57,7 @@ class PeopleReport extends Component {
       await this.props.getUserTask(this.props.match.params.userId)
       await this.props.getUserProjects(this.props.match.params.userId)
       await this.props.getWeeklySummaries(this.props.match.params.userId);
+      await this.props.getTimeEntriesForPeriod(this.props.match.params.userId, this.state.fromDate, this.state.toDate)
       this.setState({
           userId: this.props.match.params.userId,
           isLoading: false,
@@ -69,8 +72,10 @@ class PeopleReport extends Component {
           },
           allClassification:
             [...Array.from(new Set(this.props.userTask.map((item) => item.classification)))],
-          infringments : this.props.userProfile.infringments
-          },()=>
+          infringments : this.props.userProfile.infringments,
+          timeEntries : {
+            ...this.props.timeEntries,},
+        },()=>
           console.log(this.state.userProjects)
       )
     }
@@ -78,6 +83,22 @@ class PeopleReport extends Component {
 
   setDate(e) {
     this.setState({ [e.target.name]: e.target.value })
+  }
+
+  startOfWeek(offset) {
+    return moment()
+      .tz('America/Los_Angeles')
+      .startOf('week')
+      .subtract(offset, 'weeks')
+      .format('YYYY-MM-DD')
+  }
+
+  endOfWeek(offset) {
+    return moment()
+      .tz('America/Los_Angeles')
+      .endOf('week')
+      .subtract(offset, 'weeks')
+      .format('YYYY-MM-DD')
   }
 
   setActive(activeValue) {
@@ -200,6 +221,7 @@ class PeopleReport extends Component {
       users,
       fromDate,
       toDate,
+      timeEntries
     } = this.state
     const {
       firstName,
@@ -602,7 +624,7 @@ if (tasks.length>0) {
 
     const InfrigmentsPlot = props => {
       var show = false
-      console.log('inPlot',props)
+      //console.log('inPlot',props)
 
       const displayGraph = () => {
         show = !show
@@ -660,8 +682,8 @@ if (tasks.length>0) {
           const mousemove = function(event,d) {
             Tooltip
               .html("Exact date: " + d3.timeFormat("%A, %B %e, %Y")(d.date) + "<br>" + "Count: " + d.count)
-              .style("left", `${event.x+10}px`)
-              .style("top", `${event.y}px`)
+              .style("left", `${event.pageX+10}px`)
+              .style("top", `${event.pageY}px`)
           }
           const mouseleave = function(event,d) {
             Tooltip
@@ -688,8 +710,171 @@ if (tasks.length>0) {
 
       return(
         <div>
-          <Button onClick={() => displayGraph()} aria-expanded={show}>Plot Graph</Button>
+          <Button onClick={() => displayGraph()} aria-expanded={show}>Plot Infringments Graph</Button>
           <div id="bsplot"></div>
+        </div>
+      )
+    }
+
+    const TimeLoggedPlot = props => {
+      var show = false
+      //console.log('inPlot',props)
+
+      const displayGraph = () => {
+        show = !show
+        if(!show){
+          d3.selectAll('#tlplot > *').remove()
+        }
+        else{
+          const margin = {top: 10, right: 30, bottom: 30, left: 60},
+          width = 1000 - margin.left - margin.right,
+          height = 400 - margin.top - margin.bottom;
+
+          const svg = d3.select("#tlplot")
+          .append("svg")
+          .attr("width", width + margin.left + margin.right)
+          .attr("height", height + margin.top + margin.bottom)
+          .append("g")
+          .attr("transform",`translate(${margin.left},${margin.top})`);
+
+          const x = d3.scaleTime()
+          .domain(d3.extent(props.logs, d => d.date))
+          .range([ 0, width ]);
+          svg.append("g")
+          .attr("transform", `translate(0, ${height})`)
+          .call(d3.axisBottom(x));
+
+          const y = d3.scaleLinear()
+          .domain( [0, props.maxHoursCount + 2])
+          .range([ height, 0 ]);
+          svg.append("g")
+          .call(d3.axisLeft(y));
+
+          svg.append("path")
+          .datum(props.logs)
+          .attr("fill", "none")
+          .attr("stroke", "black")
+          .attr("stroke-width", 1.5)
+          .attr("d", d3.line()
+            .x(d => x(d.date))
+            .y(d => y(d.count)))
+            
+          const Tooltip = d3.select("#tlplot")
+          .append("div")
+          .style("opacity", 0)
+          .attr("class", "tooltip")
+          .style("background-color", "white")
+          .style("border", "solid")
+          .style("border-width", "2px")
+          .style("border-radius", "5px")
+          .style("padding", "5px")
+          
+          const mouseover = function(event,d) {
+            Tooltip
+              .style("opacity", 1)
+          }
+          const mousemove = function(event,d) {
+            Tooltip
+              .html("Exact date: " + d3.timeFormat("%A, %B %e, %Y")(d.date) + "<br>" + "Count: " + d.count)
+              .style("left", `${event.pageX+10}px`)
+              .style("top", `${event.pageY}px`)
+          }
+          const mouseleave = function(event,d) {
+            Tooltip
+              .style("opacity", 0)
+          }
+
+          svg
+          .append("g")
+          .selectAll("dot")
+          .data(props.logs)
+          .join("circle")
+            .attr("class", "myCircle")
+            .attr("cx", d => x(d.date))
+            .attr("cy", d => y(d.count))
+            .attr("r", 3)
+            .attr("stroke", "#69b3a2")
+            .attr("stroke-width", 3)
+            .attr("fill", "white")
+            .on("mouseover", mouseover)
+            .on("mousemove", mousemove)
+            .on("mouseleave", mouseleave)
+          }
+      }
+
+      return(
+        <div>
+          <Button onClick={() => displayGraph()} aria-expanded={show}>Plot Entries Graph</Button>
+          <div id="tlplot"></div>
+        </div>
+      )
+    }
+
+    const CombinedPlot = props => {
+      var show = false
+      var nested = d3.group(props.data, d=>d.type)
+      console.log('filtered:',nested,'unfiltered',props.data)
+      var color = d3.scaleOrdinal(d3.schemeCategory10)
+
+      const displayGraph = () => {
+        show = !show
+        if(show){
+          d3.selectAll('#combplot > *').remove()
+        }
+        else{
+          const margin = {top: 10, right: 30, bottom: 30, left: 60},
+            width = 1000 - margin.left - margin.right,
+            height = 400 - margin.top - margin.bottom;
+
+          const svg = d3.select("#combplot")
+          .append("svg")
+          .attr("width", width + margin.left + margin.right)
+          .attr("height", height + margin.top + margin.bottom)
+          .append("g")
+          .attr("transform",`translate(${margin.left},${margin.top})`);
+
+          const x = d3.scaleTime()
+          .domain(d3.extent(props.data, d => d.date))
+          .range([ 0, width ]);
+          svg.append("g")
+          .attr("transform", `translate(0, ${height})`)
+          .call(d3.axisBottom(x));
+
+          const y = d3.scaleLinear()
+          .domain( [0, props.maxHoursCount + 2])
+          .range([ height, 0 ]);
+          svg.append("g")
+          .call(d3.axisLeft(y));
+
+          var dataline = d3.line()
+            .x(function(d) { return x(d.date); })
+            .y(function(d) { return y(d.count); });
+
+          svg.selectAll("path.line")
+          .data(nested)
+            .enter().append('path')
+            .attr("class", "line")
+            .style("stroke", function(d) { // Add the colours dynamically
+                return color(d[0]);
+            })
+            // .attr("id", function(d) {
+            //     return 'tag'+d.key.replace(/\s+/g, ''); // assign ID
+            // })
+            .attr("stroke-width", 2)
+            .attr("fill","none")
+            .attr("d", (d) => {
+              console.log(d[1])
+              dataline(d[1])
+            });
+        }
+      }
+
+
+      return(
+        <div>
+          Comb Plot
+        <Button onClick={() => displayGraph()} aria-expanded={show}>Plot combined Graph</Button>
+        <div id="combplot"></div>
         </div>
       )
     }
@@ -699,10 +884,14 @@ if (tasks.length>0) {
     const Infringments = props => {
       let BlueSquare = []
       let dict= {}
-      
+      let timeEntriesDict = {}      
       const value=[]
+      var timeEntryvalues = []
       var maxSquareCount = 0
-      for (var i = 0; i < props.infringments.length; i++) {
+      var maxHoursCount = 0
+
+      //aggregate infringments
+      for (let i = 0; i < props.infringments.length; i++) {
         if (props.infringments[i].date in dict){
           dict[props.infringments[i].date].count+=1
           dict[props.infringments[i].date].des.push(props.infringments[i].description)
@@ -711,27 +900,66 @@ if (tasks.length>0) {
         }
       }
 
+      //aggregate time entries
+      if (props.timeEntries.period){
+        for (let i = 0; i < props.timeEntries.period.length; i++ ){
+          let convertedHours = parseInt(props.timeEntries.period[i].hours) + (props.timeEntries.period[i].minutes === '0' ? 0 : parseInt(props.timeEntries.period[i].minutes)/60)
+          if(props.timeEntries.period[i].dateOfWork in timeEntriesDict){
+            timeEntriesDict[props.timeEntries.period[i].dateOfWork].time += convertedHours
+            //timeEntriesDict[props.timeEntries.period[i].dateOfWork].isTangible.push([props.timeEntries.period[i],isTangible, convertedHours])
+            timeEntriesDict[props.timeEntries.period[i].dateOfWork].des.push(props.timeEntries.period[i].notes)
+
+          }
+          else{
+            timeEntriesDict[props.timeEntries.period[i].dateOfWork] = {time: convertedHours,
+                                                                        isTangible: [[props.timeEntries.period[i].isTangible, convertedHours]],
+                                                                        des: [props.timeEntries.period[i].notes]
+                                                                            }
+          }
+        }
+      }
+
+      //filter time entries and infrigments by date
       if ((props.fromDate == '') || (props.toDate == '')){
         for (var key in dict) {
-            value.push({date: d3.timeParse("%Y-%m-%d")(key.toString()),des:dict[key].des,count:dict[key].count})
+            value.push({date: d3.timeParse("%Y-%m-%d")(key.toString()),des:dict[key].des,count:dict[key].count,type: 'Infrigment'})
             if(dict[key].count > maxSquareCount){
-              // console.log()
               maxSquareCount = dict[key].count 
+            }
+        }
+        for(var key in timeEntriesDict){
+            timeEntryvalues.push({date: d3.timeParse("%Y-%m-%d")(key.toString()),count: timeEntriesDict[key].time ,des:timeEntriesDict[key].des, isTangible: timeEntriesDict[key].isTangible, type: 'Entry'})
+            if(timeEntriesDict[key].time > maxHoursCount){
+              maxHoursCount = timeEntriesDict[key].time
             }
         }
       }
       else{
         for (var key in dict) {
           if((Date.parse(props.fromDate) <= Date.parse(key.toString())) & (Date.parse(key.toString()) <= Date.parse(props.toDate))){
-            value.push({date: d3.timeParse("%Y-%m-%d")(key.toString()),des:dict[key].des,count:dict[key].count})
+            value.push({date: d3.timeParse("%Y-%m-%d")(key.toString()),des:dict[key].des,count:dict[key].count,type: 'Infrigment'})
             if(dict[key].count > maxSquareCount){
               maxSquareCount = dict[key].count 
             }
           }
         }
+        for(var key in timeEntriesDict){
+          if((Date.parse(props.fromDate) <= Date.parse(key.toString())) & (Date.parse(key.toString()) <= Date.parse(props.toDate))){
+            timeEntryvalues.push({date: d3.timeParse("%Y-%m-%d")(key.toString()),count: timeEntriesDict[key].time ,des:timeEntriesDict[key].des, isTangible: timeEntriesDict[key].isTangible,type: 'Entry'})
+            if(timeEntriesDict[key].time > maxHoursCount){
+              maxHoursCount = timeEntriesDict[key].time
+            }
+          }
       }
+      }
+
+      timeEntryvalues.sort(function(a,b){
+        return new Date(b.date) - new Date(a.date)
+      })
       
-      //console.log('square count',dict,value, maxSquareCount)
+      var allData = timeEntryvalues.concat(value)
+
+      console.log('Plot data:',value, maxSquareCount,"times:", timeEntryvalues)
 
       const startdate=Object.keys(dict)[0]
       var startdateStr=""
@@ -759,6 +987,8 @@ if (tasks.length>0) {
       </div>
           <ShowInfringmentsCollapse BlueSquare={BlueSquare}/>
           <InfrigmentsPlot bsCount={value} maxSquareCount={maxSquareCount} />
+          <TimeLoggedPlot logs={timeEntryvalues} maxHoursCount={maxHoursCount}/>
+          <CombinedPlot data={allData} maxSquareCount={maxSquareCount} maxHoursCount={maxHoursCount} />
           </div>
       )
     }
@@ -889,7 +1119,7 @@ if (tasks.length>0) {
                       statusList={statusList}
             />
           <UserProject userProjects={userProjects}/>
-          <Infringments infringments={infringments} fromDate={fromDate} toDate={toDate}/>
+          <Infringments infringments={infringments} fromDate={fromDate} toDate={toDate} timeEntries={timeEntries}/>
 
         </table>
 
@@ -928,5 +1158,6 @@ export default connect(mapStateToProps, {
   getWeeklySummaries,
   updateWeeklySummaries,
   getUserTask,
-  getUserProjects
+  getUserProjects,
+  getTimeEntriesForPeriod
 })(PeopleReport);
