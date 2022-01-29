@@ -75,8 +75,6 @@ const AssignBadge = (props) => {
 
   const toggle = () =>{
     const {firstName,lastName,selectedBadges} = props;
-    console.log({" firstName ": firstName},{" lastName ": lastName})
-    console.log({" isOpen ": isOpen})
     if(isOpen){
       props.assignBadges(firstName, lastName, selectedBadges);
       setOpen(isOpen => !isOpen)
@@ -85,7 +83,6 @@ const AssignBadge = (props) => {
       if(firstName && lastName){
         setOpen(isOpen => !isOpen)
       }else{
-        console.log(">>>>>>>>>>>>>>>>>>>>> ",firstName.length,lastName.length)
         props.validateBadges(firstName,lastName)
       }
     }
