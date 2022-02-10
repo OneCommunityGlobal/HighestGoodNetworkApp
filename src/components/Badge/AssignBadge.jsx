@@ -88,11 +88,6 @@ const AssignBadge = (props) => {
     }
   };
 
-  // const clickSubmit = () => {
-  //   props.assignBadges(props.firstName, props.lastName, props.selectedBadges);
-  //   props.clearNameAndSelected();
-  // }
-
   const FirstInputProps = {
     placeholder: "first name",
     value: props.firstName,
