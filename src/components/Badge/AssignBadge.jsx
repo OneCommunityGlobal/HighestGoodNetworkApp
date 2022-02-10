@@ -4,10 +4,9 @@ import {
 } from 'reactstrap';
 import { connect } from 'react-redux';
 import AssignBadgePopup from './AssignBadgePopup';
-import { getFirstName, getLastName, assignBadges, clearNameAndSelected, closeAlert } from '../../actions/badgeManagement';
+import { getFirstName, getLastName, assignBadges, clearNameAndSelected, closeAlert,validateBadges } from '../../actions/badgeManagement';
 import { getAllUserProfile } from '../../actions/userManagement';
 import Autosuggest from 'react-autosuggest';
-
 
 const AssignBadge = (props) => {
 
@@ -74,13 +73,20 @@ const AssignBadge = (props) => {
   };
 
 
-  const toggle = () => setOpen(isOpen => !isOpen);
-
-
-  const clickSubmit = () => {
-    props.assignBadges(props.firstName, props.lastName, props.selectedBadges);
-    props.clearNameAndSelected();
-  }
+  const toggle = () =>{
+    const {firstName,lastName,selectedBadges} = props;
+    if(isOpen){
+      props.assignBadges(firstName, lastName, selectedBadges);
+      setOpen(isOpen => !isOpen)
+      props.clearNameAndSelected();
+    }else{
+      if(firstName && lastName){
+        setOpen(isOpen => !isOpen)
+      }else{
+        props.validateBadges(firstName,lastName)
+      }
+    }
+  };
 
   const FirstInputProps = {
     placeholder: "first name",
@@ -141,7 +147,7 @@ const AssignBadge = (props) => {
         </FormText>
         <Alert color="dark" className="assign-badge-margin-top"> {props.selectedBadges ? props.selectedBadges.length : '0'} bagdes selected</Alert>
       </FormGroup>
-      <Button size="lg" color="info" className="assign-badge-margin-top" onClick={clickSubmit}>Submit</Button>
+      {/* <Button size="lg" color="info" className="assign-badge-margin-top" onClick={clickSubmit}>Submit</Button> */}
     </Form>
   );
 };
@@ -162,6 +168,7 @@ const mapDispatchToProps = dispatch => ({
   getAllUserProfile: () => dispatch(getAllUserProfile()),
   clearNameAndSelected: () => dispatch(clearNameAndSelected()),
   assignBadges: (fisrtName, lastName, selectedBadge) => dispatch(assignBadges(fisrtName, lastName, selectedBadge)),
+  validateBadges:(firstName,lastName) => dispatch(validateBadges(firstName, lastName)),
   closeAlert: () => dispatch(closeAlert())
 });
 
