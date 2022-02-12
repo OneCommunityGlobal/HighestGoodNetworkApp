@@ -223,8 +223,8 @@ const ViewTab = props => {
           />
         </Col>
       </Row>
-
-      {Object.keys(props.userProfile.hoursByCategory).map(key => (
+   
+      {props?.userProfile?.hoursByCategory ? Object.keys(props.userProfile.hoursByCategory).map(key => (
         <React.Fragment key={'hours-by-category-' + key}>
           <Row>
             <Col md="6">
@@ -258,7 +258,7 @@ const ViewTab = props => {
             </Col>
           </Row>
         </React.Fragment>
-      ))}
+      )): []}
     </div>
   )
 }
