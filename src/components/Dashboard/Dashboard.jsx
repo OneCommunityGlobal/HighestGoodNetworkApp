@@ -16,10 +16,6 @@ export const Dashboard = props => {
   const [popup, setPopup] = useState(false)
   let isAdmin = props.auth.user.role === 'Administrator'
   let userId = props.match.params.userId ? props.match.params.userId : props.auth.user.userid
-  let currentUser = props.auth.user.userid;
-    // props.match && props.match.params.userId && props.auth.user.role === 'Administrator'
-    //   ? props.match.params.userId
-    //   : props.auth.user.userid
 
   const toggle = () => {
     setPopup(!popup)

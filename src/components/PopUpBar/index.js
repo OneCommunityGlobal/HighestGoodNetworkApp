@@ -7,8 +7,5 @@ const mapStateToProps = (state) =>({
     userProfile: state.userProfile
 })
 
-const mapDispatchToProps=(dispatch)=>({
 
-})
-
-export default connect(mapStateToProps,mapDispatchToProps)(PopUpBar)
+export default connect(mapStateToProps)(PopUpBar)
