@@ -1,0 +1,18 @@
+.visualizationDiv {
+  display: inline-flex;
+  margin-bottom: 10px;
+}
+
+.visualizationDiv > * {
+  margin-left: 10px;
+}
+
+#inf td,
+#inf th {
+  border: 1px solid #ddd;
+  padding: 8px;
+}
+
+#inf tr:nth-child(even) {
+  background-color: #f2f2f2;
+}
