@@ -201,7 +201,7 @@ const BadgeReport = (props) => {
   }
 
   const deletedBadge = (badge, index) => {
-    if (window.confirm("Are you sure you want to delete this badge? Note even if you click ok, this won't be fully deleted until you click the save button below.")) {
+    if (window.confirm("Woah, easy tiger! Are you sure you want to delete this badge ? ")) {
       let newBadges = sortBadges.slice();
       newBadges.splice(index, 1);
       setSortBadges(newBadges);
