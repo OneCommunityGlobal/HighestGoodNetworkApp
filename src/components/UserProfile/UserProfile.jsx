@@ -98,7 +98,7 @@ const UserProfile = props => {
       const response = await axios.get(ENDPOINTS.USER_PROFILE(userId));
       const newUserProfile = response.data;
       setUserProfile(newUserProfile);
-      setOriginalUserProfile(newUserProfile)
+      setOriginalUserProfile(newUserProfile);
       setShowLoading(false);
     } catch (err) {
       setShowLoading(false)
