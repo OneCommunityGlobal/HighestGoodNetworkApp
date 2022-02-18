@@ -76,7 +76,6 @@ class AddUserProfile extends Component {
   render() {
     const { firstName, email, lastName, phoneNumber, role, jobTitle } = this.state.userProfile
     patt = new RegExp(/^([\w.%+-]+)@([\w-]+\.)+([\w]{2,})$/i)
-    const formErrors = this.state.formErrors
     const phoneNumberValid =
       this.state.userProfile.phoneNumber === null || this.state.userProfile.phoneNumber.length === 0
     return (
@@ -100,10 +99,12 @@ class AddUserProfile extends Component {
                         placeholder="First Name"
                         invalid={
                           this.state.formSubmitted &&
-                          (firstName.length === 0 || formErrors.firstName)
+                          (firstName.length === 0 || this.state.formErrors.firstName)
                         }
                       />
-                      <FormFeedback>{formErrors.firstName || 'First Name required'}</FormFeedback>
+                      <FormFeedback>
+                        {this.state.formErrors.firstName || 'First Name required'}
+                      </FormFeedback>
                     </FormGroup>
                   </Col>
                   <Col md="3">
@@ -116,10 +117,13 @@ class AddUserProfile extends Component {
                         onChange={this.handleUserProfile}
                         placeholder="Last Name"
                         invalid={
-                          this.state.formSubmitted && (lastName.length === 0 || formErrors.lastName)
+                          this.state.formSubmitted &&
+                          (lastName.length === 0 || this.state.formErrors.lastName)
                         }
                       />
-                      <FormFeedback>{formErrors.lastName || 'Last Name required'}</FormFeedback>
+                      <FormFeedback>
+                        {this.state.formErrors.lastName || 'Last Name required'}
+                      </FormFeedback>
                     </FormGroup>
                   </Col>
                 </Row>
@@ -154,11 +158,12 @@ class AddUserProfile extends Component {
                         onChange={this.handleUserProfile}
                         placeholder="Email"
                         invalid={
-                          this.state.formSubmitted && (formErrors.email || email.length === 0)
+                          this.state.formSubmitted &&
+                          (this.state.formErrors.email || email.length === 0)
                         }
                       />
                       <FormFeedback>
-                        {email.length !== 0 ? formErrors.email : 'Email required'}
+                        {email.length !== 0 ? this.state.formErrors.email : 'Email required'}
                       </FormFeedback>
                       <ToggleSwitch
                         switchType="email"
@@ -220,7 +225,7 @@ class AddUserProfile extends Component {
                             : !this.state.formValid.weeklyCommittedHours
                         }
                       />
-                      <FormFeedback>{formErrors.weeklyCommittedHours}</FormFeedback>
+                      <FormFeedback>{this.state.formErrors.weeklyCommittedHours}</FormFeedback>
                     </FormGroup>
                   </Col>
                 </Row>
@@ -426,6 +431,7 @@ class AddUserProfile extends Component {
 
   createUserProfile = () => {
     this.setState({ formSubmitted: true })
+
     let that = this
     const {
       firstName,
