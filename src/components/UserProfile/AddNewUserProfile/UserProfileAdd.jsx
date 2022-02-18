@@ -75,6 +75,7 @@ class AddUserProfile extends Component {
   render() {
     const { firstName, email, lastName, phoneNumber, role, jobTitle } = this.state.userProfile
     patt = new RegExp(/^([\w.%+-]+)@([\w-]+\.)+([\w]{2,})$/i)
+    const formErrors = this.state.formErrors
     return (
       <StickyContainer>
         <Container className="emp-profile">
@@ -94,9 +95,9 @@ class AddUserProfile extends Component {
                         value={firstName}
                         onChange={this.handleUserProfile}
                         placeholder="First Name"
-                        invalid={firstName.length === 0}
+                        invalid={firstName.length === 0 || formErrors.firstName}
                       />
-                      <FormFeedback> First Name required </FormFeedback>
+                      <FormFeedback>{formErrors.firstName || 'First Name required'}</FormFeedback>
                     </FormGroup>
                   </Col>
                   <Col md="3">
@@ -108,9 +109,9 @@ class AddUserProfile extends Component {
                         value={lastName}
                         onChange={this.handleUserProfile}
                         placeholder="Last Name"
-                        invalid={lastName.length === 0}
+                        invalid={lastName.length === 0 || formErrors.lastName}
                       />
-                      <FormFeedback>Last Name required</FormFeedback>
+                      <FormFeedback>{formErrors.lastName || 'Last Name required'}</FormFeedback>
                     </FormGroup>
                   </Col>
                 </Row>
@@ -144,9 +145,11 @@ class AddUserProfile extends Component {
                         value={email}
                         onChange={this.handleUserProfile}
                         placeholder="Email"
-                        invalid={email.length === 0}
+                        invalid={formErrors.email || email.length === 0}
                       />
-                      <FormFeedback>Email required</FormFeedback>
+                      <FormFeedback>
+                        {email.length !== 0 ? formErrors.email : 'Email required'}
+                      </FormFeedback>
                       <ToggleSwitch
                         switchType="email"
                         state={this.state.userProfile.privacySettings?.email}
@@ -166,8 +169,15 @@ class AddUserProfile extends Component {
                         value={phoneNumber}
                         onChange={phone => this.phoneChange(phone)}
                       />
-                      <div className="required-user-field">Phone Number is required</div>
-                      {/*<div style={{ color: 'red', paddingTop: '0.3rem' }}>
+                      {(this.state.userProfile.phoneNumber === null ||
+                        this.state.userProfile.phoneNumber.length === 0) && (
+                        <div className="required-user-field">Phone Number is required</div>
+                      )}
+
+                      {/*
+                        --DELETE BEFORE FINAL COMMIT--
+                        old code.  2 different error fields for some reason.
+                      <div style={{ color: 'red', paddingTop: '0.3rem' }}>
                         {this.state.showphone ? <span> Phone Number is required</span> : null}
                       </div>
                        <p style={{ color: 'red', paddingTop: '0.3rem' }}>
@@ -201,7 +211,7 @@ class AddUserProfile extends Component {
                             : !this.state.formValid.weeklyCommittedHours
                         }
                       />
-                      <FormFeedback>{this.state.formErrors.weeklyCommittedHours}</FormFeedback>
+                      <FormFeedback>{formErrors.weeklyCommittedHours}</FormFeedback>
                     </FormGroup>
                   </Col>
                 </Row>
