@@ -76,7 +76,7 @@ class AddUserProfile extends Component {
   render() {
     const { firstName, email, lastName, phoneNumber, role, jobTitle } = this.state.userProfile
     patt = new RegExp(/^([\w.%+-]+)@([\w-]+\.)+([\w]{2,})$/i)
-    const phoneNumberValid =
+    const phoneNumberEntered =
       this.state.userProfile.phoneNumber === null || this.state.userProfile.phoneNumber.length === 0
     return (
       <StickyContainer>
@@ -184,8 +184,10 @@ class AddUserProfile extends Component {
                         value={phoneNumber}
                         onChange={phone => this.phoneChange(phone)}
                       />
-                      {this.state.formSubmitted && phoneNumberValid && (
-                        <div className="required-user-field">Phone Number is required</div>
+                      {this.state.formSubmitted && phoneNumberEntered && (
+                        <div className="required-user-field">
+                          {this.state.formErrors.phoneNumber || 'Please enter valid phone number'}
+                        </div>
                       )}
 
                       {/*
