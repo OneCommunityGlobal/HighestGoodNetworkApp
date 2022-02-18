@@ -64,6 +64,7 @@ class AddUserProfile extends Component {
       formValid: {},
       formErrors: {},
       timeZoneFilter: '',
+      formSubmitted: false,
     }
   }
 
@@ -76,6 +77,8 @@ class AddUserProfile extends Component {
     const { firstName, email, lastName, phoneNumber, role, jobTitle } = this.state.userProfile
     patt = new RegExp(/^([\w.%+-]+)@([\w-]+\.)+([\w]{2,})$/i)
     const formErrors = this.state.formErrors
+    const phoneNumberValid =
+      this.state.userProfile.phoneNumber === null || this.state.userProfile.phoneNumber.length === 0
     return (
       <StickyContainer>
         <Container className="emp-profile">
@@ -95,7 +98,10 @@ class AddUserProfile extends Component {
                         value={firstName}
                         onChange={this.handleUserProfile}
                         placeholder="First Name"
-                        invalid={firstName.length === 0 || formErrors.firstName}
+                        invalid={
+                          this.state.formSubmitted &&
+                          (firstName.length === 0 || formErrors.firstName)
+                        }
                       />
                       <FormFeedback>{formErrors.firstName || 'First Name required'}</FormFeedback>
                     </FormGroup>
@@ -109,7 +115,9 @@ class AddUserProfile extends Component {
                         value={lastName}
                         onChange={this.handleUserProfile}
                         placeholder="Last Name"
-                        invalid={lastName.length === 0 || formErrors.lastName}
+                        invalid={
+                          this.state.formSubmitted && (lastName.length === 0 || formErrors.lastName)
+                        }
                       />
                       <FormFeedback>{formErrors.lastName || 'Last Name required'}</FormFeedback>
                     </FormGroup>
@@ -145,7 +153,9 @@ class AddUserProfile extends Component {
                         value={email}
                         onChange={this.handleUserProfile}
                         placeholder="Email"
-                        invalid={formErrors.email || email.length === 0}
+                        invalid={
+                          this.state.formSubmitted && (formErrors.email || email.length === 0)
+                        }
                       />
                       <FormFeedback>
                         {email.length !== 0 ? formErrors.email : 'Email required'}
@@ -169,8 +179,7 @@ class AddUserProfile extends Component {
                         value={phoneNumber}
                         onChange={phone => this.phoneChange(phone)}
                       />
-                      {(this.state.userProfile.phoneNumber === null ||
-                        this.state.userProfile.phoneNumber.length === 0) && (
+                      {this.state.formSubmitted && phoneNumberValid && (
                         <div className="required-user-field">Phone Number is required</div>
                       )}
 
@@ -416,6 +425,7 @@ class AddUserProfile extends Component {
   }
 
   createUserProfile = () => {
+    this.setState({ formSubmitted: true })
     let that = this
     const {
       firstName,
