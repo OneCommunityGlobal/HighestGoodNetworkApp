@@ -33,14 +33,14 @@ import {
   addTeamMember,
 } from '../../../actions/allTeamsAction'
 
-import { fetchAllProjects } from 'actions/projects';
+import { fetchAllProjects } from 'actions/projects'
 
 import PhoneInput from 'react-phone-input-2'
 import 'react-phone-input-2/lib/style.css'
 
 import classnames from 'classnames'
 import TimeZoneDropDown from '../TimeZoneDropDown'
-var patt = '';
+var patt = ''
 class AddUserProfile extends Component {
   constructor(props) {
     super(props)
@@ -59,7 +59,7 @@ class AddUserProfile extends Component {
         privacySettings: { blueSquares: true, email: true, phoneNumber: true },
         jobTitle: '',
         googleDoc: '',
-        showphone:true,
+        showphone: true,
       },
       formValid: {},
       formErrors: {},
@@ -68,13 +68,13 @@ class AddUserProfile extends Component {
   }
 
   componentDidMount() {
-    this.state.showphone = true;
-    this.onCreateNewUser();
+    this.state.showphone = true
+    this.onCreateNewUser()
   }
 
   render() {
-    const { firstName, email, lastName, phoneNumber, role, jobTitle } = this.state.userProfile;
-    patt = new RegExp(/^([\w.%+-]+)@([\w-]+\.)+([\w]{2,})$/i);
+    const { firstName, email, lastName, phoneNumber, role, jobTitle } = this.state.userProfile
+    patt = new RegExp(/^([\w.%+-]+)@([\w-]+\.)+([\w]{2,})$/i)
     return (
       <StickyContainer>
         <Container className="emp-profile">
@@ -82,22 +82,22 @@ class AddUserProfile extends Component {
             <Col md="12">
               <Form>
                 <Row>
-                  <Col md={{size: 2, offset:2}} className="text-md-right my-2">
+                  <Col md={{ size: 2, offset: 2 }} className="text-md-right my-2">
                     <Label>Name</Label>
                   </Col>
                   <Col md="3">
-                    <FormGroup> 
+                    <FormGroup>
                       <Input
                         type="text"
                         name="firstName"
                         id="firstName"
                         value={firstName}
-                        onChange={this.handleUserProfile}                       
+                        onChange={this.handleUserProfile}
                         placeholder="First Name"
-                        invalid={firstName.length === 0} 
-                      />                    
-                      <FormFeedback> First Name required </FormFeedback> 
-                                       </FormGroup>
+                        invalid={firstName.length === 0}
+                      />
+                      <FormFeedback> First Name required </FormFeedback>
+                    </FormGroup>
                   </Col>
                   <Col md="3">
                     <FormGroup>
@@ -106,20 +106,19 @@ class AddUserProfile extends Component {
                         name="lastName"
                         id="lastName"
                         value={lastName}
-                        onChange={this.handleUserProfile}                        
+                        onChange={this.handleUserProfile}
                         placeholder="Last Name"
-                        invalid = {lastName.length === 0 }
-                       
+                        invalid={lastName.length === 0}
                       />
-                    <FormFeedback>Last Name required</FormFeedback>
+                      <FormFeedback>Last Name required</FormFeedback>
                     </FormGroup>
                   </Col>
                 </Row>
                 <Row>
-                  <Col  md={{size: 3, offset:1}} className="text-md-right my-2">
+                  <Col md={{ size: 3, offset: 1 }} className="text-md-right my-2">
                     <Label>Job Title</Label>
                   </Col>
-                  <Col  md={{size: 6}}>
+                  <Col md={{ size: 6 }}>
                     <FormGroup>
                       <Input
                         type="text"
@@ -133,7 +132,7 @@ class AddUserProfile extends Component {
                   </Col>
                 </Row>
                 <Row>
-                  <Col md={{size: 2, offset:2}} className="text-md-right my-2">
+                  <Col md={{ size: 2, offset: 2 }} className="text-md-right my-2">
                     <Label>Email</Label>
                   </Col>
                   <Col md="6">
@@ -143,9 +142,9 @@ class AddUserProfile extends Component {
                         name="email"
                         id="email"
                         value={email}
-                        onChange={this.handleUserProfile} 
-                             placeholder="Email"
-                             invalid = {email.length === 0  }     
+                        onChange={this.handleUserProfile}
+                        placeholder="Email"
+                        invalid={email.length === 0}
                       />
                       <FormFeedback>Email required</FormFeedback>
                       <ToggleSwitch
@@ -157,7 +156,7 @@ class AddUserProfile extends Component {
                   </Col>
                 </Row>
                 <Row>
-                  <Col md={{size: 2, offset:2}} className="text-md-right my-2">
+                  <Col md={{ size: 2, offset: 2 }} className="text-md-right my-2">
                     <Label>Phone</Label>
                   </Col>
                   <Col md="6">
@@ -167,12 +166,13 @@ class AddUserProfile extends Component {
                         value={phoneNumber}
                         onChange={phone => this.phoneChange(phone)}
                       />
-                        <div style={{color: 'red', paddingTop:'0.3rem'}} >
-                         { this.state.showphone ?  <span> Phone Number is required</span>   : null }
-                        
-                
-              </div>  
-                      <p style={{color: 'red', paddingTop:'0.3rem'}}>{this.state.formErrors.phoneNumber}</p>
+                      <div className="required-user-field">Phone Number is required</div>
+                      {/*<div style={{ color: 'red', paddingTop: '0.3rem' }}>
+                        {this.state.showphone ? <span> Phone Number is required</span> : null}
+                      </div>
+                       <p style={{ color: 'red', paddingTop: '0.3rem' }}>
+                        {this.state.formErrors.phoneNumber}
+                      </p> */}
                       <ToggleSwitch
                         switchType="phone"
                         state={this.state.userProfile.privacySettings?.phoneNumber}
@@ -182,7 +182,7 @@ class AddUserProfile extends Component {
                   </Col>
                 </Row>
                 <Row>
-                  <Col md={{size: 4}} className="text-md-right my-2">
+                  <Col md={{ size: 4 }} className="text-md-right my-2">
                     <Label>Weekly Committed Hours</Label>
                   </Col>
                   <Col md="6">
@@ -193,16 +193,20 @@ class AddUserProfile extends Component {
                         id="weeklyCommittedHours"
                         value={this.state.userProfile.weeklyCommittedHours}
                         onChange={this.handleUserProfile}
-                        onFocus = {this.handleUserProfile}
+                        onFocus={this.handleUserProfile}
                         placeholder="Weekly Committed Hours"
-                        invalid={this.state.formValid.weeklyCommittedHours === undefined ? false : !this.state.formValid.weeklyCommittedHours}
+                        invalid={
+                          this.state.formValid.weeklyCommittedHours === undefined
+                            ? false
+                            : !this.state.formValid.weeklyCommittedHours
+                        }
                       />
                       <FormFeedback>{this.state.formErrors.weeklyCommittedHours}</FormFeedback>
                     </FormGroup>
                   </Col>
                 </Row>
                 <Row>
-                  <Col md={{size: 2, offset:2}} className="text-md-right my-2">
+                  <Col md={{ size: 2, offset: 2 }} className="text-md-right my-2">
                     <Label>Role</Label>
                   </Col>
                   <Col md="6">
@@ -211,22 +215,20 @@ class AddUserProfile extends Component {
                         type="select"
                         name="role"
                         id="role"
-                        defaultValue='Volunteer'
+                        defaultValue="Volunteer"
                         onChange={this.handleUserProfile}
-                        >
+                      >
                         <option value="Administrator">Administrator</option>
-                        <option value="Volunteer">
-                          Volunteer
-                        </option>
+                        <option value="Volunteer">Volunteer</option>
                         <option value="Manager">Manager</option>
                         <option value="Core Team">Core Team</option>
-                      {/* </select> */}
+                        {/* </select> */}
                       </Input>
                     </FormGroup>
                   </Col>
                 </Row>
                 <Row>
-                  <Col md={{size: 4}} className="text-md-right my-2">
+                  <Col md={{ size: 4 }} className="text-md-right my-2">
                     <Label>Video Call Preference</Label>
                   </Col>
                   <Col md="6">
@@ -243,7 +245,7 @@ class AddUserProfile extends Component {
                   </Col>
                 </Row>
                 <Row>
-                  <Col md={{size: 3, offset:1}} className="text-md-right my-2">
+                  <Col md={{ size: 3, offset: 1 }} className="text-md-right my-2">
                     <Label>Google Doc</Label>
                   </Col>
                   <Col md="6">
@@ -260,26 +262,28 @@ class AddUserProfile extends Component {
                   </Col>
                 </Row>
                 <Row>
-                  <Col md={{size: 3, offset:1}} className="text-md-right my-2">
+                  <Col md={{ size: 3, offset: 1 }} className="text-md-right my-2">
                     <Label>Time Zone</Label>
                   </Col>
                   <Col md="6">
                     <FormGroup>
                       <TimeZoneDropDown
-                      filter={this.state.timeZoneFilter}
-                      onChange={this.handleUserProfile}
-                      selected={'America/Los_Angeles'}
+                        filter={this.state.timeZoneFilter}
+                        onChange={this.handleUserProfile}
+                        selected={'America/Los_Angeles'}
                       />
                     </FormGroup>
                   </Col>
                 </Row>
                 <Row>
-                  <Col md={{size: 4, offset:0}} className="text-md-right my-2">
+                  <Col md={{ size: 4, offset: 0 }} className="text-md-right my-2">
                     <Label>Search For Time Zone</Label>
                   </Col>
                   <Col md="6">
                     <Input
-                      onChange={(e) => this.setState({...this.state, timeZoneFilter: e.target.value})}
+                      onChange={e =>
+                        this.setState({ ...this.state, timeZoneFilter: e.target.value })
+                      }
                     />
                   </Col>
                 </Row>
@@ -345,9 +349,9 @@ class AddUserProfile extends Component {
             {/* <Col></Col> */}
             <Col md="12">
               <div className="w-50 pt-4 mx-auto">
-              <Button color="primary" block size="lg" onClick={this.createUserProfile}>
-                Create
-              </Button>
+                <Button color="primary" block size="lg" onClick={this.createUserProfile}>
+                  Create
+                </Button>
               </div>
             </Col>
           </Row>
@@ -392,11 +396,13 @@ class AddUserProfile extends Component {
   }
 
   onCreateNewUser = () => {
-    this.props.fetchAllProjects();
-    
-    const initialUserProject = this.props.allProjects.projects.filter(({projectName}) => projectName === 'Orientation and Initial Setup');
+    this.props.fetchAllProjects()
 
-    this.setState({projects: initialUserProject});
+    const initialUserProject = this.props.allProjects.projects.filter(
+      ({ projectName }) => projectName === 'Orientation and Initial Setup',
+    )
+
+    this.setState({ projects: initialUserProject })
   }
 
   createUserProfile = () => {
@@ -411,7 +417,7 @@ class AddUserProfile extends Component {
       collaborationPreference,
       googleDoc,
       jobTitle,
-      timeZone
+      timeZone,
     } = that.state.userProfile
 
     const userData = {
@@ -430,80 +436,70 @@ class AddUserProfile extends Component {
       email: email,
       privacySettings: privacySettings,
       collaborationPreference: collaborationPreference,
-      timeZone
+      timeZone,
     }
 
     if (googleDoc) {
       userData.adminLinks.push({ Name: 'Google Doc', Link: googleDoc })
     }
-    if(this.state.userProfile.phoneNumber !== null)
-{
-      if ( firstName !== '' && lastName !== '' && this.state.userProfile.phoneNumber.length>10)
-    { 
-      this.setState({showphone : false}); 
-      
-    if ( !email.match(patt))
-     {     
-       toast.error('Email is not valid,Please include @ followed by .com format')          
+    if (this.state.userProfile.phoneNumber !== null) {
+      if (firstName !== '' && lastName !== '' && this.state.userProfile.phoneNumber.length > 10) {
+        this.setState({ showphone: false })
+
+        if (!email.match(patt)) {
+          toast.error('Email is not valid,Please include @ followed by .com format')
+        } else {
+          createUser(userData)
+            .then(res => {
+              if (res.data.warning) {
+                toast.warn(res.data.warning)
+              } else {
+                toast.success('User profile created.')
+              }
+              this.props.userCreated()
+            })
+            .catch(err => {
+              if (err.response?.data?.type) {
+                switch (err.response.data.type) {
+                  case 'email':
+                    this.setState({
+                      formValid: {
+                        ...that.state.formValid,
+                        email: false,
+                      },
+                      formErrors: {
+                        ...that.state.formErrors,
+                        email: 'Email already exists',
+                      },
+                    })
+                    break
+                  case 'phoneNumber':
+                    this.setState({
+                      formValid: {
+                        ...that.state.formValid,
+                        phoneNumber: false,
+                        showphone: false,
+                      },
+                      formErrors: {
+                        ...that.state.formErrors,
+                        phoneNumber: 'Phone number already exists',
+                      },
+                    })
+                    break
+                }
+              }
+              toast.error(
+                err.response?.data?.error ||
+                  'An unknown error occurred while attempting to create this user.',
+              )
+            })
+        }
+      } else {
+        toast.error('Please fill all the required fields')
+      }
     }
-    else
-    {        
-       createUser(userData)
-      .then(res => {
-        if(res.data.warning){
-          toast.warn(res.data.warning);
-        }
-        else {
-          toast.success('User profile created.')         
-        }
-        this.props.userCreated()
-      })
-      .catch(err => {
-        if(err.response?.data?.type){
-          switch (err.response.data.type) {
-            case 'email':
-              this.setState({
-                formValid: {
-                  ...that.state.formValid,
-                  email: false, 
-                },
-                formErrors: {
-                  ...that.state.formErrors,
-                  email: 'Email already exists'
-                },
-              });
-              break;             
-            case 'phoneNumber':
-              this.setState({
-                formValid: {
-                  ...that.state.formValid,
-                  phoneNumber: false, 
-                  showphone: false,               
-                },
-                formErrors: {
-                  ...that.state.formErrors,
-                  phoneNumber: 'Phone number already exists'
-                },
-                
-              });
-              break;
-          }
-        }
-        toast.error(
-          err.response?.data?.error ||
-            'An unknown error occurred while attempting to create this user.',
-        )
-      })     
-    }
-  }  
-  else{
-    toast.error('Please fill all the required fields');
   }
-}
-}
 
-
-  
   handleImageUpload = async e => {
     e.preventDefault()
 
@@ -546,7 +542,6 @@ class AddUserProfile extends Component {
     const reader = new FileReader()
     reader.readAsDataURL(file)
     reader.onloadend = () => {
-
       this.setState({
         imageUploadError: '',
         userProfile: {
@@ -575,13 +570,13 @@ class AddUserProfile extends Component {
       },
       formValid: {
         ...formValid,
-        phoneNumber: phone.length>10,
+        phoneNumber: phone.length > 10,
         showphone: false,
       },
       formErrors: {
         ...formErrors,
-        phoneNumber: phone.length>10? '' : 'Please enter valid phone number', 
-      }
+        phoneNumber: phone.length > 10 ? '' : 'Please enter valid phone number',
+      },
     })
   }
 
@@ -591,7 +586,7 @@ class AddUserProfile extends Component {
     })
     const { userProfile, formValid, formErrors } = this.state
     const patt = new RegExp(/^([\w.%+-]+)@([\w-]+\.)+([\w]{2,})$/i)
-    
+
     switch (event.target.id) {
       case 'firstName':
         this.setState({
@@ -606,10 +601,10 @@ class AddUserProfile extends Component {
           },
           formErrors: {
             ...formErrors,
-            firstName: event.target.value.length > 0? '' : 'First Name required',
+            firstName: event.target.value.length > 0 ? '' : 'First Name required',
           },
-        });
-        break;
+        })
+        break
       case 'lastName':
         this.setState({
           userProfile: {
@@ -622,10 +617,10 @@ class AddUserProfile extends Component {
           },
           formErrors: {
             ...formErrors,
-            lastName: event.target.value.length > 0? '' : 'Last Name required',
+            lastName: event.target.value.length > 0 ? '' : 'Last Name required',
           },
-        });
-        break;
+        })
+        break
       case 'email':
         this.setState({
           userProfile: {
@@ -638,10 +633,10 @@ class AddUserProfile extends Component {
           },
           formErrors: {
             ...formErrors,
-            email: event.target.value.match(patt)? '' : 'Email is not valid',
-          }
-        });
-        break;
+            email: event.target.value.match(patt) ? '' : 'Email is not valid',
+          },
+        })
+        break
       case 'timeZone':
         this.setState({
           userProfile: {
@@ -652,8 +647,8 @@ class AddUserProfile extends Component {
             ...formValid,
             [event.target.id]: !!event.target.value,
           },
-        });
-        break;
+        })
+        break
       case 'jobTitle':
         this.setState({
           ...this.state,
@@ -661,8 +656,8 @@ class AddUserProfile extends Component {
             ...this.state.userProfile,
             jobTitle: event.target.value,
           },
-        });
-        break;
+        })
+        break
       case 'weeklyCommittedHours':
         this.setState({
           userProfile: {
@@ -689,8 +684,8 @@ class AddUserProfile extends Component {
             ...formValid,
             [event.target.id]: !!event.target.value,
           },
-        });
-        break;
+        })
+        break
       case 'role':
         this.setState({
           userProfile: {
