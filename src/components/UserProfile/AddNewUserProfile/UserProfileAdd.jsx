@@ -525,6 +525,8 @@ class AddUserProfile extends Component {
       } else {
         toast.error('Please fill all the required fields')
       }
+    } else {
+      toast.error('Please fill all the required fields')
     }
   }
 
