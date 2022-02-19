@@ -432,8 +432,6 @@ class AddUserProfile extends Component {
   }
 
   createUserProfile = () => {
-    this.setState({ formSubmitted: true })
-
     let that = this
     const {
       firstName,
@@ -466,6 +464,8 @@ class AddUserProfile extends Component {
       collaborationPreference: collaborationPreference,
       timeZone,
     }
+
+    this.setState({ formSubmitted: true })
 
     if (googleDoc) {
       userData.adminLinks.push({ Name: 'Google Doc', Link: googleDoc })
