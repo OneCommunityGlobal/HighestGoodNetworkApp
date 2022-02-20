@@ -40,7 +40,7 @@ import 'react-phone-input-2/lib/style.css'
 
 import classnames from 'classnames'
 import TimeZoneDropDown from '../TimeZoneDropDown'
-var patt = ''
+const patt = RegExp(/^([\w.%+-]+)@([\w-]+\.)+([\w]{2,})$/i)
 class AddUserProfile extends Component {
   constructor(props) {
     super(props)
@@ -75,7 +75,6 @@ class AddUserProfile extends Component {
 
   render() {
     const { firstName, email, lastName, phoneNumber, role, jobTitle } = this.state.userProfile
-    patt = new RegExp(/^([\w.%+-]+)@([\w-]+\.)+([\w]{2,})$/i)
     const phoneNumberEntered =
       this.state.userProfile.phoneNumber === null || this.state.userProfile.phoneNumber.length === 0
     return (
@@ -189,16 +188,6 @@ class AddUserProfile extends Component {
                           {this.state.formErrors.phoneNumber || 'Please enter valid phone number'}
                         </div>
                       )}
-
-                      {/*
-                        --DELETE BEFORE FINAL COMMIT--
-                        old code.  2 different error fields for some reason.
-                      <div style={{ color: 'red', paddingTop: '0.3rem' }}>
-                        {this.state.showphone ? <span> Phone Number is required</span> : null}
-                      </div>
-                       <p style={{ color: 'red', paddingTop: '0.3rem' }}>
-                        {this.state.formErrors.phoneNumber}
-                      </p> */}
                       <ToggleSwitch
                         switchType="phone"
                         state={this.state.userProfile.privacySettings?.phoneNumber}
@@ -622,11 +611,7 @@ class AddUserProfile extends Component {
   }
 
   handleUserProfile = event => {
-    this.setState({
-      showWarning: true,
-    })
     const { userProfile, formValid, formErrors } = this.state
-    const patt = new RegExp(/^([\w.%+-]+)@([\w-]+\.)+([\w]{2,})$/i)
 
     switch (event.target.id) {
       case 'firstName':
