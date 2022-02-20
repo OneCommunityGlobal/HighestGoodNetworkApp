@@ -431,6 +431,17 @@ class AddUserProfile extends Component {
     this.setState({ projects: initialUserProject })
   }
 
+  inputsHavelength = () => {
+    const firstLength = this.state.userProfile.firstName !== ''
+    const lastLength = this.state.userProfile.lastName !== ''
+    const phonelength = this.state.userProfile.phoneNumber.length > 10
+    if (firstLength && lastLength && phonelength) {
+      return true
+    } else {
+      return false
+    }
+  }
+
   createUserProfile = () => {
     let that = this
     const {
@@ -470,8 +481,8 @@ class AddUserProfile extends Component {
     if (googleDoc) {
       userData.adminLinks.push({ Name: 'Google Doc', Link: googleDoc })
     }
-    if (this.state.userProfile.phoneNumber !== null) {
-      if (firstName !== '' && lastName !== '' && this.state.userProfile.phoneNumber.length > 10) {
+    if (phoneNumber !== null) {
+      if (this.inputsHavelength()) {
         this.setState({ showphone: false })
 
         if (!email.match(patt)) {
