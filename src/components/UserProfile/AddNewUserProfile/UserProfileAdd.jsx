@@ -410,13 +410,18 @@ class AddUserProfile extends Component {
     this.setState({ projects: initialUserProject })
   }
 
-  inputsHavelength = () => {
+  fieldsAreValid = () => {
     const firstLength = this.state.userProfile.firstName !== ''
     const lastLength = this.state.userProfile.lastName !== ''
-    const phonelength = this.state.userProfile.phoneNumber.length > 10
-    if (firstLength && lastLength && phonelength) {
+    const phone = this.state.userProfile.phoneNumber
+
+    if (phone === null) {
+      toast.error('Phone Number is required')
+      return false
+    } else if (firstLength && lastLength && phone.length > 10) {
       return true
     } else {
+      toast.error('Please fill all the required fields')
       return false
     }
   }
@@ -460,63 +465,56 @@ class AddUserProfile extends Component {
     if (googleDoc) {
       userData.adminLinks.push({ Name: 'Google Doc', Link: googleDoc })
     }
-    if (phoneNumber !== null) {
-      if (this.inputsHavelength()) {
-        this.setState({ showphone: false })
-
-        if (!email.match(patt)) {
-          toast.error('Email is not valid,Please include @ followed by .com format')
-        } else {
-          createUser(userData)
-            .then(res => {
-              if (res.data.warning) {
-                toast.warn(res.data.warning)
-              } else {
-                toast.success('User profile created.')
-              }
-              this.props.userCreated()
-            })
-            .catch(err => {
-              if (err.response?.data?.type) {
-                switch (err.response.data.type) {
-                  case 'email':
-                    this.setState({
-                      formValid: {
-                        ...that.state.formValid,
-                        email: false,
-                      },
-                      formErrors: {
-                        ...that.state.formErrors,
-                        email: 'Email already exists',
-                      },
-                    })
-                    break
-                  case 'phoneNumber':
-                    this.setState({
-                      formValid: {
-                        ...that.state.formValid,
-                        phoneNumber: false,
-                        showphone: false,
-                      },
-                      formErrors: {
-                        ...that.state.formErrors,
-                        phoneNumber: 'Phone number already exists',
-                      },
-                    })
-                    break
-                }
-              }
-              toast.error(
-                err.response?.data?.error ||
-                  'An unknown error occurred while attempting to create this user.',
-              )
-            })
-        }
+    if (this.fieldsAreValid()) {
+      this.setState({ showphone: false })
+      if (!email.match(patt)) {
+        toast.error('Email is not valid,Please include @ followed by .com format')
       } else {
-        toast.error('Please fill all the required fields')
+        createUser(userData)
+          .then(res => {
+            if (res.data.warning) {
+              toast.warn(res.data.warning)
+            } else {
+              toast.success('User profile created.')
+            }
+            this.props.userCreated()
+          })
+          .catch(err => {
+            if (err.response?.data?.type) {
+              switch (err.response.data.type) {
+                case 'email':
+                  this.setState({
+                    formValid: {
+                      ...that.state.formValid,
+                      email: false,
+                    },
+                    formErrors: {
+                      ...that.state.formErrors,
+                      email: 'Email already exists',
+                    },
+                  })
+                  break
+                case 'phoneNumber':
+                  this.setState({
+                    formValid: {
+                      ...that.state.formValid,
+                      phoneNumber: false,
+                      showphone: false,
+                    },
+                    formErrors: {
+                      ...that.state.formErrors,
+                      phoneNumber: 'Phone number already exists',
+                    },
+                  })
+                  break
+              }
+            }
+            toast.error(
+              err.response?.data?.error ||
+                'An unknown error occurred while attempting to create this user.',
+            )
+          })
       }
-    } else {
-      toast.error('Please fill all the required fields')
     }
   }
 
