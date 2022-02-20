@@ -62,7 +62,12 @@ class AddUserProfile extends Component {
         showphone: true,
       },
       formValid: {},
-      formErrors: {},
+      formErrors: {
+        firstName: 'First Name is required',
+        lastName: 'Last Name is required',
+        email: 'Email is required',
+        phoneNumber: 'Phone Number is required',
+      },
       timeZoneFilter: '',
       formSubmitted: false,
     }
@@ -96,14 +101,9 @@ class AddUserProfile extends Component {
                         value={firstName}
                         onChange={this.handleUserProfile}
                         placeholder="First Name"
-                        invalid={
-                          this.state.formSubmitted &&
-                          (firstName.length === 0 || this.state.formErrors.firstName)
-                        }
+                        invalid={this.state.formSubmitted && this.state.formErrors.firstName}
                       />
-                      <FormFeedback>
-                        {this.state.formErrors.firstName || 'First Name required'}
-                      </FormFeedback>
+                      <FormFeedback>{this.state.formErrors.firstName}</FormFeedback>
                     </FormGroup>
                   </Col>
                   <Col md="3">
@@ -115,14 +115,9 @@ class AddUserProfile extends Component {
                         value={lastName}
                         onChange={this.handleUserProfile}
                         placeholder="Last Name"
-                        invalid={
-                          this.state.formSubmitted &&
-                          (lastName.length === 0 || this.state.formErrors.lastName)
-                        }
+                        invalid={this.state.formSubmitted && this.state.formErrors.lastName}
                       />
-                      <FormFeedback>
-                        {this.state.formErrors.lastName || 'Last Name required'}
-                      </FormFeedback>
+                      <FormFeedback>{this.state.formErrors.lastName}</FormFeedback>
                     </FormGroup>
                   </Col>
                 </Row>
@@ -156,14 +151,9 @@ class AddUserProfile extends Component {
                         value={email}
                         onChange={this.handleUserProfile}
                         placeholder="Email"
-                        invalid={
-                          this.state.formSubmitted &&
-                          (this.state.formErrors.email || email.length === 0)
-                        }
+                        invalid={this.state.formSubmitted && this.state.formErrors.email}
                       />
-                      <FormFeedback>
-                        {email.length !== 0 ? this.state.formErrors.email : 'Email required'}
-                      </FormFeedback>
+                      <FormFeedback>{this.state.formErrors.email}</FormFeedback>
                       <ToggleSwitch
                         switchType="email"
                         state={this.state.userProfile.privacySettings?.email}
@@ -185,7 +175,7 @@ class AddUserProfile extends Component {
                       />
                       {this.state.formSubmitted && phoneNumberEntered && (
                         <div className="required-user-field">
-                          {this.state.formErrors.phoneNumber || 'Please enter valid phone number'}
+                          {this.state.formErrors.phoneNumber}
                         </div>
                       )}
                       <ToggleSwitch
