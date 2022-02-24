@@ -18,6 +18,7 @@ import moment from 'moment'
 import 'moment-timezone'
 import { connect } from 'react-redux'
 import { getUserProfile } from '../../actions/userProfile'
+import { toast } from 'react-toastify'
 
 pdfMake.vfs = pdfFonts.pdfMake.vfs
 const BadgeReport = props => {
@@ -194,7 +195,7 @@ const BadgeReport = props => {
       })
     } else {
       e.target.checked = false
-      window.alert('Unfortunately, you may only select five badges to be featured.')
+      toast.error('Unfortunately, you may only select five badges to be featured.')
     }
     setSortBadges(newBadges)
   }
