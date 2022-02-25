@@ -7,7 +7,6 @@ import './Badge.css';
 import { createNewBadge, closeAlert } from '../../actions/badgeManagement';
 import { badgeTypes } from './BadgeTypes';
 
-console.log(badgeTypes);
 const CreateNewBadgePopup = (props) => {
 
   const [badgeName, setBadgeName] = useState('');
