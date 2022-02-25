@@ -28,6 +28,7 @@ const BadgeReport = props => {
   let [sortBadges, setSortBadges] = useState(props.badges.slice() || [])
   let [numFeatured, setNumFeatured] = useState(0)
   let [showModal, setShowModal] = useState(false)
+  let [badgeToDelete, setBadgeToDelete] = useState(null)
 
   async function imageToUri(url, callback) {
     const canvas = document.createElement('canvas')
@@ -204,16 +205,17 @@ const BadgeReport = props => {
     setSortBadges(newBadges)
   }
 
-  const deletedBadge = (badge, index) => {
-    if (
-      window.confirm(
-        `Woah, easy tiger! Are you sure you want to delete this badge? \n \nNote: Even if you click "OK", this won't be fully deleted until you click the "Save Changes" button below.`,
-      )
-    ) {
-      let newBadges = sortBadges.slice()
-      newBadges.splice(index, 1)
-      setSortBadges(newBadges)
-    }
+  const handleDeleteBadge = index => {
+    setShowModal(true)
+    setBadgeToDelete(index)
+  }
+
+  const deleteBadge = () => {
+    let newBadges = sortBadges.slice()
+    newBadges.splice(badgeToDelete, 1)
+    setSortBadges(newBadges)
+    setShowModal(false)
+    setBadgeToDelete(null)
   }
 
   const saveChanges = async () => {
@@ -295,7 +297,7 @@ const BadgeReport = props => {
                     <button
                       type="button"
                       className="btn btn-outline-danger"
-                      onClick={e => deletedBadge(value, index)}
+                      onClick={e => handleDeleteBadge(index)}
                     >
                       Delete
                     </button>
@@ -351,7 +353,7 @@ const BadgeReport = props => {
         </ModalBody>
         <ModalFooter>
           <Button onClick={() => setShowModal(false)}>Cancel</Button>
-          <Button color="danger" onClick={() => setShowModal(false)}>
+          <Button color="danger" onClick={() => deleteBadge()}>
             Yes, Delete
           </Button>
         </ModalFooter>
