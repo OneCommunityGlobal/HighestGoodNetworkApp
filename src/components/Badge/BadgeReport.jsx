@@ -10,6 +10,9 @@ import {
   CardImg,
   CardText,
   UncontrolledPopover,
+  Modal,
+  ModalBody,
+  ModalFooter,
 } from 'reactstrap'
 import pdfMake from 'pdfmake/build/pdfmake'
 import pdfFonts from 'pdfmake/build/vfs_fonts'
@@ -24,6 +27,7 @@ pdfMake.vfs = pdfFonts.pdfMake.vfs
 const BadgeReport = props => {
   let [sortBadges, setSortBadges] = useState(props.badges.slice() || [])
   let [numFeatured, setNumFeatured] = useState(0)
+  let [showModal, setShowModal] = useState(false)
 
   async function imageToUri(url, callback) {
     const canvas = document.createElement('canvas')
@@ -336,6 +340,22 @@ const BadgeReport = props => {
       >
         Export Selected/Featured Badges to PDF
       </Button>
+      <Modal isOpen={showModal}>
+        <ModalBody>
+          <p>Woah, easy tiger! Are you sure you want to delete this badge?</p>
+          <br />
+          <p>
+            Note: Even if you click "Yes, Delete", this won't be fully deleted until you click the
+            "Save Changes" button below.
+          </p>
+        </ModalBody>
+        <ModalFooter>
+          <Button onClick={() => setShowModal(false)}>Cancel</Button>
+          <Button color="danger" onClick={() => setShowModal(false)}>
+            Yes, Delete
+          </Button>
+        </ModalFooter>
+      </Modal>
     </div>
   )
 }
