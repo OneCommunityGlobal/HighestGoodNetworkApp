@@ -210,6 +210,11 @@ const BadgeReport = props => {
     setBadgeToDelete(index)
   }
 
+  const handleCancel = () => {
+    setShowModal(false)
+    setBadgeToDelete(null)
+  }
+
   const deleteBadge = () => {
     let newBadges = sortBadges.slice()
     newBadges.splice(badgeToDelete, 1)
@@ -352,7 +357,7 @@ const BadgeReport = props => {
           </p>
         </ModalBody>
         <ModalFooter>
-          <Button onClick={() => setShowModal(false)}>Cancel</Button>
+          <Button onClick={() => handleCancel()}>Cancel</Button>
           <Button color="danger" onClick={() => deleteBadge()}>
             Yes, Delete
           </Button>
