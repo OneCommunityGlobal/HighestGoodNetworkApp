@@ -1,10 +1,16 @@
 .visualizationDiv {
-  display: inline-flex;
+  display: flex;
   margin-bottom: 10px;
+  flex-direction: column;
 }
 
-.visualizationDiv > * {
-  margin-left: 10px;
+.visualizationDiv > div {
+  margin-top: 10px;
+}
+
+.detailsModal > a {
+  text-decoration: underline;
+  color: blue;
 }
 
 #inf td,

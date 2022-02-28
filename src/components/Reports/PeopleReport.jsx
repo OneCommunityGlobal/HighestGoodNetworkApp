@@ -16,6 +16,7 @@ import { DropdownItem, FormGroup, Label, Input, Form, Modal, ModalHeader, ModalB
 import { getTimeEntriesForPeriod } from '../../actions/timeEntries'
 import InfringmentsViz from './InfringmentsViz'
 import TimeEntriesViz from './TimeEntriesViz'
+import TimeEntriesPie from './TimeEntriesPie'
 
 class PeopleReport extends Component {
   constructor(props) {
@@ -798,6 +799,7 @@ if (tasks.length>0) {
           <div className='visualizationDiv'>
             <InfringmentsViz infringments={infringments} fromDate={fromDate} toDate={toDate} />
             <TimeEntriesViz timeEntries={timeEntries} fromDate={fromDate} toDate={toDate} />
+            <TimeEntriesPie timeEntries={timeEntries} />
           </div>
 
         </table>
