@@ -4,4 +4,4 @@ export const actionItemsReducer = (actionItems = null, action) => {
   }
 
   return actionItems;
-};
+}

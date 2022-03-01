@@ -4,4 +4,4 @@ export const allTimeEntriesReducer = (allTimeEntries = null, action) => {
   }
 
   return allTimeEntries;
-};
+}

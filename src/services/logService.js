@@ -18,5 +18,4 @@ export default {
   init,
   logError,
   logInfo,
-
 };

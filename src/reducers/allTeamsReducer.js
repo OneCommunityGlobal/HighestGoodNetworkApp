@@ -24,7 +24,6 @@ export const allUserTeamsReducer = (allTeams = userTeamsInitial, action) => {
 
     case types.RECEIVE_ALL_USER_TEAMS:
       return updateObject(allTeams, {
-
         allTeams: action.payload,
         fetching: false,
         fetched: true,
@@ -42,9 +41,11 @@ export const allUserTeamsReducer = (allTeams = userTeamsInitial, action) => {
     case types.USER_TEAMS_UPDATE:
       const index = allTeams.allTeams.findIndex(team => team._id === action.team._id);
       return updateObject(allTeams, {
-        allTeams: Object.assign([...allTeams.allTeams.slice(0, index),
-        action.team,
-        ...allTeams.allTeams.slice(index + 1)]),
+        allTeams: Object.assign([
+          ...allTeams.allTeams.slice(0, index),
+          action.team,
+          ...allTeams.allTeams.slice(index + 1),
+        ]),
         fetching: false,
         fetched: true,
         status: '200',

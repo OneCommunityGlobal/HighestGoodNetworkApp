@@ -1,5 +1,12 @@
 import {
-  GET_ALL_BADGE_DATA, ADD_SELECT_BADGE, REMOVE_SELECT_BADGE, CLEAR_NAME_AND_SELECTED, GET_FIRST_NAME, GET_LAST_NAME, GET_MESSAGE, CLOSE_ALERT
+  GET_ALL_BADGE_DATA,
+  ADD_SELECT_BADGE,
+  REMOVE_SELECT_BADGE,
+  CLEAR_NAME_AND_SELECTED,
+  GET_FIRST_NAME,
+  GET_LAST_NAME,
+  GET_MESSAGE,
+  CLOSE_ALERT,
 } from '../constants/badge';
 
 const badgeInitial = {
@@ -9,7 +16,7 @@ const badgeInitial = {
   lastName: '',
   message: '',
   color: null,
-  alertVisible: false
+  alertVisible: false,
 };
 
 export const badgeReducer = (state = badgeInitial, action) => {
@@ -38,5 +45,3 @@ export const badgeReducer = (state = badgeInitial, action) => {
       return state;
   }
 };
-
-
