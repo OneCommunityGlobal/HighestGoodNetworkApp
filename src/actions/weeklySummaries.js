@@ -51,7 +51,6 @@ export const getWeeklySummaries = (userId) => {
   };
 };
 
-
 /**
  * Update the userProfile with the latest weekly summaries data.
  *
@@ -69,7 +68,10 @@ export const updateWeeklySummaries = (userId, weeklySummariesData) => {
       // Merge the weekly summaries related changes with the user's profile.
       const { mediaUrl, weeklySummaries, weeklySummariesCount } = weeklySummariesData;
       const userProfileUpdated = {
-        ...userProfile, mediaUrl, weeklySummaries, weeklySummariesCount,
+        ...userProfile,
+        mediaUrl,
+        weeklySummaries,
+        weeklySummariesCount,
       };
 
       // Update the user's profile on the server.

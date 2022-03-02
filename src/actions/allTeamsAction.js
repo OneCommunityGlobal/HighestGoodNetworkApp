@@ -108,12 +108,14 @@ export const teamMemberAddAction = member => ({
 export const getAllUserTeams = () => {
   const userTeamsPromise = axios.get(ENDPOINTS.TEAM);
   return async (dispatch) => {
-    userTeamsPromise.then((res) => {
-      dispatch(teamMembersFectchACtion(res.data));
-      // console.log("getAllUserTeams: res:", res.data)
-    }).catch(() => {
-      dispatch(teamMembersFectchACtion(undefined));
-    });
+    userTeamsPromise
+      .then((res) => {
+        dispatch(teamMembersFectchACtion(res.data));
+        // console.log("getAllUserTeams: res:", res.data)
+      })
+      .catch(() => {
+        dispatch(teamMembersFectchACtion(undefined));
+      });
   };
 };
 
@@ -164,11 +166,13 @@ export const getTeamMembers = (teamId) => {
   const teamMembersPromise = axios.get(ENDPOINTS.TEAM_USERS(teamId));
   return async (dispatch) => {
     await dispatch(teamUsersFetchAction());
-    teamMembersPromise.then((res) => {
-      dispatch(teamUsersFetchCompleteAction(res.data));
-    }).catch(() => {
-      dispatch(teamUsersFetchErrorAction());
-    });
+    teamMembersPromise
+      .then((res) => {
+        dispatch(teamUsersFetchCompleteAction(res.data));
+      })
+      .catch(() => {
+        dispatch(teamUsersFetchErrorAction());
+      });
   };
 };
 

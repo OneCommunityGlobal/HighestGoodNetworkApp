@@ -7,5 +7,3 @@ export const GET_LAST_NAME = 'GET_LAST_NAME';
 export const GET_MESSAGE = 'GET_MESSAGE';
 export const CLOSE_ALERT = 'CLOSE_ALERT';
 export const WEEK_DIFF = 7 * 24 * 60 * 60 * 1000;
-
-
