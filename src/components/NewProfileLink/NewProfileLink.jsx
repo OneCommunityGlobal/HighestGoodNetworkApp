@@ -6,13 +6,13 @@
 // import ShowSaveWarning from "../common/ShowSaveWarning"
 
 // class NewProfileLink extends Form {
-   
+
 //     constructor(props)
 //     {
 //         super(props);
 //         this.state.modal = false;
 //         this.toggle = this.toggle.bind(this);
-//         this.state.data = 
+//         this.state.data =
 //         {
 //             Name : "",
 //             Link : ""
@@ -30,7 +30,6 @@
 //         Link : Joi.string().trim().uri().required()
 //     }
 
-
 //     onCancel = ()=>
 //     {
 //         this.resetForm();
@@ -44,7 +43,7 @@
 //         this.resetForm()
 //     }
 
-//     render() { 
+//     render() {
 //         let {label} = this.props;
 //         return (
 //            <React.Fragment>
@@ -54,11 +53,11 @@
 //       <ModalHeader toggle={this.toggle}>New {label} Link</ModalHeader>
 //       <form onSubmit={e => this.handleSubmit(e)}>
 //       <ModalBody>
-//       {this.isStateChanged() && <ShowSaveWarning/>}      
+//       {this.isStateChanged() && <ShowSaveWarning/>}
 //       {this.renderInput({name: "Name", label: "Name:", className : "col-md-12",  type: "text" ,value : this.state.data.Name  })}
-//       {this.renderInput({name: "Link", label: "Link:", className : "col-md-12", type: "url", value : this.state.data.Link })}       
+//       {this.renderInput({name: "Link", label: "Link:", className : "col-md-12", type: "url", value : this.state.data.Link })}
 //       </ModalBody>
-//       <ModalFooter>            
+//       <ModalFooter>
 //      {this.renderButton("Done")}
 //     <Button color="secondary" onClick={this.onCancel}>Cancel</Button>
 //       </ModalFooter>
@@ -69,5 +68,5 @@
 //          );
 //     }
 // }
- 
+
 // export default NewProfileLink;

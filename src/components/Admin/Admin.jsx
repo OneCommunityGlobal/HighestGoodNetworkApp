@@ -4,7 +4,7 @@ import PopupText from './PopupText';
 import { fetchAllPopupEditor } from '../../actions/popupEditorAction';
 import './style.css';
 
-const Admin = props => {
+const Admin = (props) => {
   useEffect(() => {
     console.log(props);
     props.fetchAllPopupEditor();

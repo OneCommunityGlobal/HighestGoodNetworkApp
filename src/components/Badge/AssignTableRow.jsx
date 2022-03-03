@@ -6,11 +6,9 @@ import { connect } from 'react-redux';
 import { addSelectBadge, removeSelectBadge } from '../../actions/badgeManagement';
 
 const AssignTableRow = (props) => {
-
   const [isOpen, setOpen] = useState(false);
 
   const toggle = () => setOpen(isOpen => !isOpen);
-
 
   const handleCheckBoxChange = (e) => {
     if (e.target.checked) {
@@ -20,9 +18,8 @@ const AssignTableRow = (props) => {
     }
   };
 
-
   return (
-    <tr >
+    <tr>
       <td className="badge_image_mini">
         {' '}
         <img src={props.badge.imageUrl} id={"popover_" + props.index.toString()} />
@@ -39,7 +36,7 @@ const AssignTableRow = (props) => {
       <td>{props.badge.badgeName}</td>
       <td><CustomInput type="checkbox" onChange={handleCheckBoxChange} id={props.badge._id} /></td>
     </tr>
-  )
+  );
 };
 
 

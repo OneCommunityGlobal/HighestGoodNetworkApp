@@ -1,60 +1,57 @@
-import React, { Component } from "react";
-import Joi from "joi";
-import _ from "lodash";
-import Input from "../Input";
-import Dropdown from "../Dropdown";
-import Radio from "../Radio/"
-import Image from "../Image"
-import FileUpload from "../FileUpload"
-import { Link } from 'react-router-dom'
-import TinyMCEEditor from '../TinyceEditor/tinymceEditor'
-import CheckboxCollection from '../CheckboxCollection'
+import React, { Component } from 'react';
+import Joi from 'joi';
+import _ from 'lodash';
+import Input from '../Input';
+import Dropdown from '../Dropdown';
+import Radio from '../Radio/';
+import Image from '../Image';
+import FileUpload from '../FileUpload';
+import { Link } from 'react-router-dom';
+import TinyMCEEditor from '../TinyceEditor/tinymceEditor';
+import CheckboxCollection from '../CheckboxCollection';
 
 class Form extends Component {
   state = {
     data: {},
-    errors: {}
-  };
+    errors: {},
+  }
 
-  resetForm = () => this.setState(_.cloneDeep(this.initialState));
+  resetForm = () => this.setState(_.cloneDeep(this.initialState))
 
   handleInput = ({ currentTarget: input }) => {
-    this.handleState(input.name, input.value)
-  };
+    this.handleState(input.name, input.value);
+  }
   handleRichTextEditor = ({ target }) => {
-    let { id } = target
-    this.handleState(id, target.getContent())
-
+    let { id } = target;
+    this.handleState(id, target.getContent());
   }
 
   handleCollection = (collection, item, action, index = null) => {
-
     let data = this.state.data[collection] || [];
     switch (action) {
-      case "create":
+      case 'create':
         data.push(item);
         break;
-      case "edit":
+      case 'edit':
         data[index] = item;
         break;
-      case "delete":
-        data.splice(index, 1)
+      case 'delete':
+        data.splice(index, 1);
         break;
       default:
         break;
     }
     this.handleState(collection, data);
-
   }
 
-  handleFileUpload = (e, readAsType = "data") => {
+  handleFileUpload = (e, readAsType = 'data') => {
     const file = e.target.files[0];
     const reader = new FileReader();
     let name = e.target.name;
     if (file) {
       switch (readAsType) {
-        case "data":
-          reader.readAsDataURL(file)
+        case 'data':
+          reader.readAsDataURL(file);
           break;
         default:
           break;
@@ -78,7 +75,6 @@ class Form extends Component {
   isStateChanged = () => !_.isEqual(this.state.data, this.initialState.data)
 
   validateProperty = (name, value) => {
-
     const obj = { [name]: value };
     const schema = { [name]: this.schema[name] };
     let refs = schema[name]._refs;
@@ -86,29 +82,28 @@ class Form extends Component {
       refs.forEach(ref => {
         schema[ref] = this.schema[ref];
         obj[ref] = this.state.data[ref];
-
       });
     }
     const { error } = Joi.validate(obj, schema);
     if (!error) return null;
     return error.details[0].message;
-  };
+  }
 
   validateForm = () => {
     let errors = {};
     const options = { abortEarly: false };
     const { error } = Joi.validate(this.state.data, this.schema, options);
     if (!error) return null;
-    error.details.forEach(element => {
+    error.details.forEach((element) => {
       errors[element.path[0]] = element.message;
     });
 
-    const messages = _.groupBy(error.details, "path[0]");
-    Object.keys(messages).forEach(key => {
-      errors[key] = messages[key].map(item => item.message).join(". ");
+    const messages = _.groupBy(error.details, 'path[0]');
+    Object.keys(messages).forEach((key) => {
+      errors[key] = messages[key].map(item => item.message).join('. ');
     });
     return errors;
-  };
+  }
   handleSubmit = e => {
     e.preventDefault();
     e.stopPropagation();
@@ -116,7 +111,7 @@ class Form extends Component {
     this.setState({ errors: errors || {} });
     if (errors) return;
     this.doSubmit();
-  };
+  }
 
   renderButton(label) {
     return (
@@ -127,7 +122,7 @@ class Form extends Component {
   }
 
   renderRichTextEditor({ name, ...rest }) {
-    const { data, errors } = { ...this.state }
+    const { data, errors } = { ...this.state };
     return (
       <TinyMCEEditor
         name={name}
@@ -136,13 +131,11 @@ class Form extends Component {
         error={errors[name]}
         {...rest}
       />
-    )
-
+    );
   }
 
   renderDropDown({ name, label, options, ...rest }) {
-
-    const { data, errors } = { ...this.state }
+    const { data, errors } = { ...this.state };
     return (
       <Dropdown
         name={name}
@@ -153,10 +146,10 @@ class Form extends Component {
         error={errors[name]}
         {...rest}
       />
-    )
+    );
   }
 
-  renderInput({ name, label, type = "text", ...rest }) {
+  renderInput({ name, label, type = 'text', ...rest }) {
     let { data, errors } = { ...this.state };
     return (
       <Input
@@ -167,11 +160,10 @@ class Form extends Component {
         label={label}
         error={errors[name]}
         {...rest}
-
       />
     );
   }
-  renderRadio({ name, label, type = "text", ...rest }) {
+  renderRadio({ name, label, type = 'text', ...rest }) {
     let { data, errors } = { ...this.state };
     return (
       <Radio
@@ -180,7 +172,6 @@ class Form extends Component {
         onChange={e => this.handleInput(e)}
         error={errors[name]}
         {...rest}
-
       />
     );
   }
@@ -191,12 +182,11 @@ class Form extends Component {
     return (
       <FileUpload name={name} onUpload={this.handleFileUpload} {...rest} error={errors[name]} />
     );
-
   }
 
   renderCheckboxCollection({ collectionName, ...rest }) {
     let { errors } = { ...this.state };
-    return (<CheckboxCollection error={errors[collectionName]} {...rest} />)
+    return <CheckboxCollection error={errors[collectionName]} {...rest} />
   }
 
   renderImage({ name, label, ...rest }) {
@@ -209,13 +199,16 @@ class Form extends Component {
         label={label}
         error={errors[name]}
         {...rest}
-
       />
     );
   }
 
   renderLink({ label, to, className }) {
-    return <Link to={to} className={className}>{label}</Link>
+    return (
+      <Link to={to} className={className}>
+        {label}
+      </Link>
+    );
   }
 }
 
