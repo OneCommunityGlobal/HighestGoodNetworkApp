@@ -2,7 +2,12 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { Container } from 'reactstrap';
 import {
-  getAllUserTeams, postNewTeam, deleteTeam, updateTeam, getTeamMembers, deleteTeamMember,
+  getAllUserTeams,
+  postNewTeam,
+  deleteTeam,
+  updateTeam,
+  getTeamMembers,
+  deleteTeamMember,
   addTeamMember,
 } from '../../actions/allTeamsAction';
 import { getAllUserProfile } from '../../actions/userManagement';
@@ -40,7 +45,7 @@ class Teams extends React.PureComponent {
   }
 
   render() {
-    debugger;
+    debugger
     const { allTeams, fetching } = this.props.state.allTeamsData;
     const teamTable = this.teamTableElements(allTeams);
     const numberOfTeams = allTeams.length;
@@ -48,80 +53,78 @@ class Teams extends React.PureComponent {
 
     return (
       <Container fluid>
-        {fetching
-          ? <Loading />
-          : (
-            <React.Fragment>
-              <div className="container">
-                {this.teampopupElements()}
-                <TeamOverview
-                  numberOfTeams={numberOfTeams}
-                  numberOfActiveTeams={numberOfActiveTeams}
-                />
-                <TeamTableSearchPanel
-                  onSearch={this.onWildCardSearch}
-                  onCreateNewTeamClick={this.onCreateNewTeamShow}
-                />
-                <table className="table table-bordered table-responsive-sm">
-                  <thead>
-                    <TeamTableHeader />
-                  </thead>
-                  <tbody>
-                    {teamTable}
-                  </tbody>
-                </table>
-              </div>
-            </React.Fragment>
-          )
-        }
+        {fetching ? (
+          <Loading />
+        ) : (
+          <React.Fragment>
+            <div className="container">
+              {this.teampopupElements()}
+              <TeamOverview
+                numberOfTeams={numberOfTeams}
+                numberOfActiveTeams={numberOfActiveTeams}
+              />
+              <TeamTableSearchPanel
+                onSearch={this.onWildCardSearch}
+                onCreateNewTeamClick={this.onCreateNewTeamShow}
+              />
+              <table className="table table-bordered table-responsive-sm">
+                <thead>
+                  <TeamTableHeader />
+                </thead>
+                <tbody>{teamTable}</tbody>
+              </table>
+            </div>
+          </React.Fragment>
+        )}
       </Container>
     );
   }
 
-
   /**
-    * Creates the table body elements after applying the search filter and return it.
-    */
+   * Creates the table body elements after applying the search filter and return it.
+   */
   teamTableElements = (allTeams) => {
     if (allTeams && allTeams.length > 0) {
       const teamSearchData = this.filteredTeamList(allTeams);
       /*
-      * Builiding the table body for teams returns
+       * Builiding the table body for teams returns
        * the rows for currently selected page .
        * Applying the Default sort in the order of created date as well
        */
-      return teamSearchData.sort((a, b) => {
-        if (a.createdDatetime > b.createdDatetime) return -1;
-        if (a.createdDatetime < b.createdDatetime) return 1;
-        return 0;
-      }).map((team, index) => (
-        <Team
-          key={team._id}
-          index={index}
-          name={team.teamName}
-          teamId={team._id}
-          active={team.isActive}
-          onMembersClick={this.onTeamMembersPopupShow}
-          onDeleteClick={this.onDeleteTeamPopupShow}
-          onStatusClick={this.onTeamStatusShow}
-          onEditTeam={this.onEidtTeam}
-          onClickActive={this.onClickActive}
-          team={team}
-        />
-      ));
+      return teamSearchData
+        .sort((a, b) => {
+          if (a.createdDatetime > b.createdDatetime) return -1;
+          if (a.createdDatetime < b.createdDatetime) return 1;
+          return 0;
+        })
+        .map((team, index) => (
+          <Team
+            key={team._id}
+            index={index}
+            name={team.teamName}
+            teamId={team._id}
+            active={team.isActive}
+            onMembersClick={this.onTeamMembersPopupShow}
+            onDeleteClick={this.onDeleteTeamPopupShow}
+            onStatusClick={this.onTeamStatusShow}
+            onEditTeam={this.onEidtTeam}
+            onClickActive={this.onClickActive}
+            team={team}
+          />
+        ));
     }
   }
 
   filteredTeamList = (allTeams) => {
     const filteredList = allTeams.filter((team) => {
       // Applying the search filters before creating each team table data element
-      if ((team.teamName
-        && team.teamName.toLowerCase().indexOf(this.state.teamNameSearchText.toLowerCase()) > -1
-        && this.state.wildCardSearchText === '')
+      if (
+        (team.teamName &&
+          team.teamName.toLowerCase().indexOf(this.state.teamNameSearchText.toLowerCase()) > -1 &&
+          this.state.wildCardSearchText === '') ||
         // the wild card search, the search text can be match with any item
-        || (this.state.wildCardSearchText !== ''
-          && (team.teamName.toLowerCase().indexOf(this.state.wildCardSearchText.toLowerCase()) > -1
-          ))
+        (this.state.wildCardSearchText !== '' &&
+          team.teamName.toLowerCase().indexOf(this.state.wildCardSearchText.toLowerCase()) > -1)
       ) {
         return team;
       }
@@ -138,10 +141,9 @@ class Teams extends React.PureComponent {
    */
 
   teampopupElements = () => {
-    const members = (this.props.state ? this.props.state.teamsTeamMembers : []);
+    const members = this.props.state ? this.props.state.teamsTeamMembers : [];
     return (
       <React.Fragment>
-
         <TeamMembersPopup
           open={this.state.teamMembersPopupOpen}
           onClose={this.onTeamMembersPopupClose}
@@ -179,7 +181,6 @@ class Teams extends React.PureComponent {
           selectedStatus={this.state.isActive}
           onConfirmClick={this.onConfirmClick}
         />
-
       </React.Fragment>
     );
   }
@@ -189,8 +190,8 @@ class Teams extends React.PureComponent {
   }
 
   /**
-    * call back to show team members popup
-    */
+   * call back to show team members popup
+   */
   onTeamMembersPopupShow = (teamId, teamName) => {
     this.props.getTeamMembers(teamId);
     this.setState({
@@ -212,8 +213,8 @@ class Teams extends React.PureComponent {
   }
 
   /**
-    * call back to show delete team popup
-    */
+   * call back to show delete team popup
+   */
   onDeleteTeamPopupShow = (deletedname, teamId, status) => {
     this.setState({
       deleteTeamPopupOpen: true,
@@ -235,17 +236,17 @@ class Teams extends React.PureComponent {
   }
 
   /**
-    * call back to show create new team popup
-    */
+   * call back to show create new team popup
+   */
   onCreateNewTeamShow = () => {
     this.setState({
       createNewTeamPopupOpen: true,
-    });
+    })
   }
 
   /**
-     * To hide the create new team popup upon close button click
-     */
+   * To hide the create new team popup upon close button click
+   */
   onCreateNewTeamClose = () => {
     this.setState({
       selectedTeamId: undefined,
@@ -266,21 +267,20 @@ class Teams extends React.PureComponent {
   }
 
   /**
-     * call back to show team status popup
-     */
+   * call back to show team status popup
+   */
   onTeamStatusShow = (teamName, teamId, isActive) => {
     this.setState({
       teamStatusPopupOpen: true,
       selectedTeam: teamName,
       selectedTeamId: teamId,
       isActive,
-
     });
   }
 
   /**
-      * To hide the team status popup upon close button click
-      */
+   * To hide the team status popup upon close button click
+   */
   onTeamStatusClose = () => {
     this.setState({
       selectedTeamId: undefined,
@@ -293,16 +293,15 @@ class Teams extends React.PureComponent {
   /**
    * callback for search
    */
-  onWildCardSearch = (searchText) => {
+  onWildCardSearch = searchText => {
     this.setState({
       wildCardSearchText: searchText,
-
     });
   }
 
   /**
-  * callback for adding new team
-  */
+   * callback for adding new team
+   */
   addNewTeam = (name, isEdit) => {
     if (isEdit) {
       this.props.updateTeam(name, this.state.selectedTeamId, this.state.isActive);
@@ -319,10 +318,10 @@ class Teams extends React.PureComponent {
     });
   }
   /**
-     * callback for deleting a team
-     */
+   * callback for deleting a team
+   */
 
-  onDeleteUser = (deletedId) => {
+  onDeleteUser = deletedId => {
     this.props.deleteTeam(deletedId, 'delete');
     alert('Team deleted successfully');
     this.setState({
@@ -331,8 +330,8 @@ class Teams extends React.PureComponent {
   }
 
   /**
-      * callback for changing the status of a team
-      */
+   * callback for changing the status of a team
+   */
   onConfirmClick = (teamName, teamId, isActive) => {
     this.props.updateTeam(teamName, teamId, isActive);
     this.setState({
@@ -343,11 +342,13 @@ class Teams extends React.PureComponent {
   }
 
   /**
-    * callback for deleting a member in a team
-    */
+   * callback for deleting a member in a team
+   */
   onDeleteTeamMember = (deletedUserId) => {
     this.props.deleteTeamMember(this.state.selectedTeamId, deletedUserId);
-    alert('Team member successfully deleted! Ryunosuke Satoro famously said, “Individually we are one drop, together we are an ocean.” Through the action you just took, this ocean is now one drop smaller.');
+    alert(
+      'Team member successfully deleted! Ryunosuke Satoro famously said, “Individually we are one drop, together we are an ocean.” Through the action you just took, this ocean is now one drop smaller.',
+    );
   }
 }
 const mapStateToProps = state => ({ state });

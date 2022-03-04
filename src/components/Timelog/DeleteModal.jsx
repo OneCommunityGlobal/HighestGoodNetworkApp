@@ -10,7 +10,7 @@ const DeleteModal = ({ timeEntry, userProfile }) => {
   const [isOpen, setOpen] = useState(false);
   const dispatch = useDispatch();
 
-  const toggle = () => setOpen((isOpen) => !isOpen);
+  const toggle = () => setOpen(isOpen => !isOpen);
 
   const deleteEntry = async (event) => {
     if (event) {

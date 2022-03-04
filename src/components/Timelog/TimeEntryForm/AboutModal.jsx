@@ -1,12 +1,12 @@
-import { Modal, ModalHeader, ModalBody, ModalFooter, Button } from 'reactstrap'
+import { Modal, ModalHeader, ModalBody, ModalFooter, Button } from 'reactstrap';
 
 /**
  * Modal displaying information about how time entry works
- * @param {*} props 
- * @param {Boolean} props.visible 
+ * @param {*} props
+ * @param {Boolean} props.visible
  * @param {Func} props.setVisible
  */
-const AboutModal = props => {
+const AboutModal = (props) => {
   return (
     <Modal isOpen={props.visible}>
       <ModalHeader>Info</ModalHeader>
@@ -71,7 +71,7 @@ const AboutModal = props => {
         </Button>
       </ModalFooter>
     </Modal>
-  )
-}
+  );
+};
 
-export default AboutModal
+export default AboutModal;

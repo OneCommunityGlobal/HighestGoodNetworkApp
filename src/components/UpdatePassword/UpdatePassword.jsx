@@ -1,12 +1,12 @@
-import React from 'react'
-import { connect } from 'react-redux'
-import { withRouter } from 'react-router-dom'
-import Form from '../common/Form'
-import Joi from 'joi'
-import { toast } from 'react-toastify'
-import { updatePassword } from '../../actions/updatePassword'
-import { logoutUser } from '../../actions/authActions'
-import { clearErrors } from '../../actions/errorsActions'
+import React from 'react';
+import { connect } from 'react-redux';
+import { withRouter } from 'react-router-dom';
+import Form from '../common/Form';
+import Joi from 'joi';
+import { toast } from 'react-toastify';
+import { updatePassword } from '../../actions/updatePassword';
+import { logoutUser } from '../../actions/authActions';
+import { clearErrors } from '../../actions/errorsActions';
 
 class UpdatePassword extends Form {
   state = {
@@ -20,12 +20,12 @@ class UpdatePassword extends Form {
 
   componentDidUpdate(prevProps) {
     if (prevProps.errors.error !== this.props.errors.error) {
-      this.setState({ errors: this.props.errors })
+      this.setState({ errors: this.props.errors });
     }
   }
 
   componentWillUnmount() {
-    this.props.clearErrors()
+    this.props.clearErrors();
   }
 
   schema = {
@@ -60,11 +60,11 @@ class UpdatePassword extends Form {
   doSubmit = async () => {
     const { currentpassword, newpassword, confirmnewpassword } = {
       ...this.state.data,
-    }
-    let userId = this.props.match.params.userId
-    let data = { currentpassword, newpassword, confirmnewpassword }
+    };
+    let userId = this.props.match.params.userId;
+    let data = { currentpassword, newpassword, confirmnewpassword };
 
-    const status = await this.props.updatePassword(userId, data)
+    const status = await this.props.updatePassword(userId, data);
     if (status === 200) {
       toast.success(
         'Your password has been updated. You will be logged out and directed to login page where you can login with your new password.',
@@ -74,11 +74,11 @@ class UpdatePassword extends Form {
             this.props.history.replace('/login')
           },
         },
-      )
+      );
     } else if (status === 400) {
-      let { errors } = this.state
-      errors['currentpassword'] = this.props.errors.error
-      this.setState({ errors })
+      let { errors } = this.state;
+      errors['currentpassword'] = this.props.errors.error;
+      this.setState({ errors });
     } else {
       toast.error('Something went wrong. Please contact your administrator.')
     }
@@ -109,13 +109,13 @@ class UpdatePassword extends Form {
           {this.renderButton('Submit')}
         </form>
       </div>
-    )
+    );
   }
 }
 
 const mapStateToProps = state => ({
   errors: state.errors,
-})
+});
 
 export default withRouter(
   connect(mapStateToProps, {
@@ -123,4 +123,4 @@ export default withRouter(
     updatePassword,
     clearErrors,
   })(UpdatePassword),
-)
+);

@@ -1,9 +1,9 @@
-import React from 'react'
-import { Link } from 'react-router-dom'
-import './reports.css'
+import React from 'react';
+import { Link } from 'react-router-dom';
+import './reports.css';
 
 
-const  TeamTable = (props) => {
+const TeamTable = (props) => {
   // Display project lists
   let TeamsList = [];
   if (props.allTeams.length > 0) {
@@ -41,8 +41,7 @@ const  TeamTable = (props) => {
       </tbody>
     </table>
     </table>
-  )
-
-}
+  );
+};
 
 export default TeamTable;
