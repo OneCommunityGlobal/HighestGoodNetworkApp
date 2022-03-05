@@ -51,7 +51,6 @@ const BadgeReport = props => {
   }
 
   const FormatReportForPdf = (badges, callback) => {
-    console.log(badges)
     let bgReport = []
     bgReport[0] = `<h3>Badge Report (Page 1 of ${Math.ceil(badges.length / 4)})</h3>
     <div style="margin-bottom: 20px; color: orange;"><h4>For ${props.firstName} ${
