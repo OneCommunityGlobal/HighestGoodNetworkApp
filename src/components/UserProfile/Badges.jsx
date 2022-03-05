@@ -28,8 +28,9 @@ const Badges = props => {
   }
 
   useEffect(() => {
-    props.clearSelected()
-    console.log('clearSelected called')
+    if (!isOpen && !isAssignOpen) {
+      props.clearSelected()
+    }
   }, [isOpen, isAssignOpen])
 
   return (
