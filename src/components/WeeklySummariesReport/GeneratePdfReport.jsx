@@ -68,7 +68,6 @@ const GeneratePdfReport = ({ summaries, weekIndex, weekDates }) => {
     .toString()
     .replaceAll(',', ', ');
     
-
     return wsReport;
   };
   

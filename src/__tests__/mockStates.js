@@ -980,6 +980,12 @@ export const allUserProfilesMock = {
   ],
 };
 
+export const timeZoneAPIMock = { 
+  fetching: false,
+  fetched: true,
+  userAPIKey: '4ef937173ce546ad8ad6133c3d93321d',
+}
+
 describe('Stop Error', () => {
   it('should not error out due to no tests (mockStates.js)', () => {
   });
