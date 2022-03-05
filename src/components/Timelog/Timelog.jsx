@@ -74,8 +74,6 @@ class Timelog extends Component {
   state = this.initialState
 
   async componentDidMount() {
-
-
     const userId = this.props?.match?.params?.userId || this.props.auth.user.userid
     await this.props.getUserProfile(userId)
     this.userProfile = this.props.userProfile
@@ -206,7 +204,7 @@ class Timelog extends Component {
         : this.props.asUser || this.props.auth.user.userid
     const isAdmin = this.props.auth.user.role === 'Administrator'
     const isOwner = this.props.auth.user.userid === userId
-    const fullName = `${this.userProfile.firstName} ${this.userProfile.lastName}`
+    const fullName = `${this.props.userProfile.firstName} ${this.props.userProfile.lastName}`
 
     let projects = []
     if (!_.isEmpty(this.props.userProjects.projects)) {
