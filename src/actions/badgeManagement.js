@@ -41,9 +41,7 @@ export const removeSelectBadge = badgeId => ({
 export const clearNameAndSelected = () => ({
   type: CLEAR_NAME_AND_SELECTED,
 })
-//
-//  new reducer
-//
+
 export const clearSelected = () => ({
   type: CLEAR_SELECTED,
 })

@@ -34,9 +34,6 @@ export const badgeReducer = (state = badgeInitial, action) => {
       return { ...state, selectedBadges: toRemove }
     case CLEAR_NAME_AND_SELECTED:
       return { ...state, selectedBadges: [], firstName: '', lastName: '' }
-    //
-    // New reducer to clear only selected badges
-    //
     case CLEAR_SELECTED:
       return { ...state, selectedBadges: [] }
     case GET_FIRST_NAME:
