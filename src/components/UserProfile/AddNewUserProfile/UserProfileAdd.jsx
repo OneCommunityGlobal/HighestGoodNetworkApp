@@ -40,6 +40,8 @@ import 'react-phone-input-2/lib/style.css'
 
 import classnames from 'classnames'
 import TimeZoneDropDown from '../TimeZoneDropDown'
+import { getUserTimeZone } from 'services/timezoneApiService'
+
 const patt = RegExp(/^([\w.%+-]+)@([\w-]+\.)+([\w]{2,})$/i)
 class AddUserProfile extends Component {
   constructor(props) {
@@ -267,6 +269,32 @@ class AddUserProfile extends Component {
                   </Col>
                 </Row>
                 <Row>
+                  <Col md={{ size: 4, offset: 0 }} className="text-md-right my-2">
+                    <Label>Location</Label>
+                  </Col>
+                  <Col md="6">
+                    <Row>
+                      <Col md="6">
+                        <Input
+                          onChange={e => this.setState({ ...this.state, location: e.target.value })}
+                        />
+                      </Col>
+                      <Col md="6">
+                        <div className="w-100 pt-1 mb-2 mx-auto">
+                          <Button
+                            color="secondary"
+                            block
+                            size="sm"
+                            onClick={this.onClickGetTimeZone}
+                          >
+                            Get Time Zone
+                          </Button>
+                        </div>
+                      </Col>
+                    </Row>
+                  </Col>
+                </Row>
+                <Row>
                   <Col md={{ size: 3, offset: 1 }} className="text-md-right my-2">
                     <Label>Time Zone</Label>
                   </Col>
@@ -278,18 +306,6 @@ class AddUserProfile extends Component {
                         selected={'America/Los_Angeles'}
                       />
                     </FormGroup>
-                  </Col>
-                </Row>
-                <Row>
-                  <Col md={{ size: 4, offset: 0 }} className="text-md-right my-2">
-                    <Label>Search For Time Zone</Label>
-                  </Col>
-                  <Col md="6">
-                    <Input
-                      onChange={e =>
-                        this.setState({ ...this.state, timeZoneFilter: e.target.value })
-                      }
-                    />
                   </Col>
                 </Row>
               </Form>
@@ -410,6 +426,32 @@ class AddUserProfile extends Component {
     this.setState({ projects: initialUserProject })
   }
 
+  // Function to call TimeZoneService with location and key
+  onClickGetTimeZone = () => {
+    const location = this.state.location
+    const key = this.props.timeZoneKey
+    if (!location) {
+      alert('Please enter valid location')
+      return
+    }
+    if (key) {
+      getUserTimeZone(location, key)
+        .then(response => {
+          if (
+            response.data.status.code === 200 &&
+            response.data.results &&
+            response.data.results.length
+          ) {
+            let timezone = response.data.results[0].annotations.timezone.name
+            this.setState({ ...this.state, timeZoneFilter: timezone })
+          } else {
+            alert('Invalid location or ' + response.data.status.message)
+          }
+        })
+        .catch(err => console.log(err))
+    }
+  }
+
   fieldsAreValid = () => {
     const firstLength = this.state.userProfile.firstName !== ''
     const lastLength = this.state.userProfile.lastName !== ''
@@ -449,7 +491,7 @@ class AddUserProfile extends Component {
       jobTitle: jobTitle,
       phoneNumber: phoneNumber,
       bio: '',
-      weeklyCommittedHours: that.state.userProfile.weeklyCommittedHours,
+      weeklyComittedHours: that.state.userProfile.weeklyCommittedHours,
       personalLinks: [],
       adminLinks: [],
       teams: this.state.teams,
@@ -755,6 +797,7 @@ const mapStateToProps = state => ({
   userProjects: state.userProjects,
   allProjects: _.get(state, 'allProjects'),
   allTeams: state,
+  timeZoneKey: state.timeZoneAPI.userAPIKey,
   state,
 })
 

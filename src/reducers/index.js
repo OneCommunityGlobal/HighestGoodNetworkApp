@@ -32,6 +32,7 @@ import { managingTeamsReducer } from './managingTeamsReducer'
 import { teamUsersReducer } from './teamsTeamMembersReducer'
 import { badgeReducer } from './badgeReducer'
 import { popupEditorReducer } from './popupEditorReducer'
+import { timeZoneAPIReducer } from './timezoneApiReducer'
 
 
 export default combineReducers({
@@ -70,5 +71,6 @@ export default combineReducers({
   timeEntries: timeEntriesReducer,
   timer: timerReducer,
   badge: badgeReducer,
-  popupEditor: popupEditorReducer
+  popupEditor: popupEditorReducer,
+  timeZoneAPI: timeZoneAPIReducer,
 })
