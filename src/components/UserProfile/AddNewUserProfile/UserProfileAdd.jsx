@@ -269,26 +269,31 @@ class AddUserProfile extends Component {
                   </Col>
                 </Row>
                 <Row>
-                   <Col md={{size: 4, offset:0}} className="text-md-right my-2">
-                     <Label>Location</Label>
-                   </Col>
-                   <Col md="6">
-                     <Row>
-                       <Col md="6">
-                         <Input
-                           onChange={(e) => this.setState({...this.state, location: e.target.value})}
-                         />
-                       </Col>
-                       <Col md="6">
-                         <div className="w-100 pt-1 mb-2 mx-auto">
-                           <Button color="secondary" block size="sm" onClick={this.onClickGetTimeZone}>
-                           Get Time Zone
-                           </Button>
-                         </div>
-                       </Col>
-                     </Row>
-                   </Col>
-                 </Row>
+                  <Col md={{ size: 4, offset: 0 }} className="text-md-right my-2">
+                    <Label>Location</Label>
+                  </Col>
+                  <Col md="6">
+                    <Row>
+                      <Col md="6">
+                        <Input
+                          onChange={e => this.setState({ ...this.state, location: e.target.value })}
+                        />
+                      </Col>
+                      <Col md="6">
+                        <div className="w-100 pt-1 mb-2 mx-auto">
+                          <Button
+                            color="secondary"
+                            block
+                            size="sm"
+                            onClick={this.onClickGetTimeZone}
+                          >
+                            Get Time Zone
+                          </Button>
+                        </div>
+                      </Col>
+                    </Row>
+                  </Col>
+                </Row>
                 <Row>
                   <Col md={{ size: 3, offset: 1 }} className="text-md-right my-2">
                     <Label>Time Zone</Label>
@@ -421,25 +426,29 @@ class AddUserProfile extends Component {
     this.setState({ projects: initialUserProject })
   }
 
-  // Function to call TimeZoneService with location and key 
+  // Function to call TimeZoneService with location and key
   onClickGetTimeZone = () => {
-    const location = this.state.location;
-    const key = this.props.timeZoneKey;
-    if(!location){
-      alert('Please enter valid location');
-      return;
+    const location = this.state.location
+    const key = this.props.timeZoneKey
+    if (!location) {
+      alert('Please enter valid location')
+      return
     }
-    if(key) {
-      getUserTimeZone(location,key).then((response)=>{
-        if(response.data.status.code === 200 && response.data.results && response.data.results.length){
-          let timezone = response.data.results[0].annotations.timezone.name;
-          this.setState({...this.state, timeZoneFilter: timezone});
-        }
-        else {
-          alert('Invalid location or '+response.data.status.message);
-        }
-      })
-      .catch(err => console.log(err));
+    if (key) {
+      getUserTimeZone(location, key)
+        .then(response => {
+          if (
+            response.data.status.code === 200 &&
+            response.data.results &&
+            response.data.results.length
+          ) {
+            let timezone = response.data.results[0].annotations.timezone.name
+            this.setState({ ...this.state, timeZoneFilter: timezone })
+          } else {
+            alert('Invalid location or ' + response.data.status.message)
+          }
+        })
+        .catch(err => console.log(err))
     }
   }
 
@@ -482,7 +491,7 @@ class AddUserProfile extends Component {
       jobTitle: jobTitle,
       phoneNumber: phoneNumber,
       bio: '',
-      weeklyCommittedHours: that.state.userProfile.weeklyCommittedHours,
+      weeklyComittedHours: that.state.userProfile.weeklyCommittedHours,
       personalLinks: [],
       adminLinks: [],
       teams: this.state.teams,
