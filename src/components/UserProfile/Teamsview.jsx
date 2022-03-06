@@ -101,7 +101,7 @@ const Teams = React.memo((props) => {
           </tr>
         </thead>
         <tbody>
-          {props.teamsdata.map((team) => (
+          {props.teamsdata.map(team => (
             <Teamtabledata
               key={team._id}
               teammembers={team}

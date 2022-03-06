@@ -1,9 +1,8 @@
 import React from 'react';
-//import { CardText, Badge, Tooltip } from 'reactstrap';
+// import { CardText, Badge, Tooltip } from 'reactstrap';
 import { Link } from 'react-router-dom';
-//import styles from './UserLinks.css';
+// import styles from './UserLinks.css';
 // import styleProfile from '../UserProfile.module.scss';
-
 
 const UserLinks = ({
   // eslint-disable-next-line react/prop-types
@@ -26,7 +25,6 @@ const UserLinks = ({
               </a>
               <br />
             </React.Fragment>
-
           );
         }
         return (
@@ -36,7 +34,6 @@ const UserLinks = ({
             </Link>
             <br />
           </React.Fragment>
-
         );
       })}
     </div>

@@ -1,13 +1,10 @@
 import React, { useState } from 'react';
-//import { Row, Col } from 'reactstrap';
+// import { Row, Col } from 'reactstrap';
 import AddProjectPopup from './AddProjectPopup';
 import UserProjectsTable from './UserProjectsTable';
 
-
 const ProjectsTab = (props) => {
-  const {
-    projectsData, userProjects, isUserAdmin, onDeleteProject, onAssignProject, edit,
-  } = props;
+  const { projectsData, userProjects, isUserAdmin, onDeleteProject, onAssignProject, edit } = props;
   const [addProjectPopupOpen, setaddProjectPopupOpen] = useState(false);
   const [renderedOn, setRenderedOn] = useState(0);
 
@@ -15,22 +12,19 @@ const ProjectsTab = (props) => {
     onDeleteProject(projectId);
   };
 
-
   const onSelectAssignProject = (project) => {
     onAssignProject(project);
     setRenderedOn(Date.now());
-    //setaddProjectPopupOpen(false);
+    // setaddProjectPopupOpen(false);
   };
 
   const onAddProjectPopupShow = () => {
     setaddProjectPopupOpen(true);
   };
 
-
   const onAddProjectPopupClose = () => {
     setaddProjectPopupOpen(false);
   };
-
 
   return (
     <React.Fragment>

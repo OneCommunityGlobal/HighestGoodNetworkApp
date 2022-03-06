@@ -30,5 +30,4 @@ export default connect(mapStateToProps, {
   updateTeam,
   deleteTeamMember,
   addTeamMember,
-
 })(UserProfileEdit);

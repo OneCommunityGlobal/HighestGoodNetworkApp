@@ -5,7 +5,6 @@ import AddTeamPopup from './AddTeamPopup';
 import UserProjectsTable from './UserProjectsTable';
 import UserTeamsTable from './UserTeamsTable';
 
-
 class UserTeamProjectContainer extends React.PureComponent {
   constructor(props) {
     super(props);
@@ -89,7 +88,6 @@ class UserTeamProjectContainer extends React.PureComponent {
       addProjectPopupOpen: true,
     });
   }
-
 
   onAddProjectPopupClose = () => {
     this.setState({

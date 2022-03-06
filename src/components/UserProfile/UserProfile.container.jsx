@@ -1,6 +1,6 @@
 import { connect } from 'react-redux';
 import _ from 'lodash';
-import { updateUserProfile, clearUserProfile} from 'actions/userProfile';
+import { updateUserProfile, clearUserProfile } from 'actions/userProfile';
 
 import { getTimeEntriesForWeek, getTimeEntriesForPeriod } from '../../actions/timeEntries';
 import { getUserProjects } from '../../actions/userProjects';
@@ -21,6 +21,4 @@ export default connect(mapStateToProps, {
   getTimeEntriesForWeek,
   getTimeEntriesForPeriod,
   getUserProjects,
-
-
 })(UserProfile);

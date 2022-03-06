@@ -1,19 +1,27 @@
-import React, { useState } from 'react'
-import { Row, Label, Input, Col, FormFeedback, FormGroup } from 'reactstrap'
-import ToggleSwitch from '../UserProfileEdit/ToggleSwitch'
-import moment from 'moment'
+import React, { useState } from 'react';
+import { Row, Label, Input, Col, FormFeedback, FormGroup } from 'reactstrap';
+import ToggleSwitch from '../UserProfileEdit/ToggleSwitch';
+import moment from 'moment';
 
-import PhoneInput from 'react-phone-input-2'
-import 'react-phone-input-2/lib/style.css'
+import PhoneInput from 'react-phone-input-2';
+import 'react-phone-input-2/lib/style.css';
 
-import PauseAndResumeButton from 'components/UserManagement/PauseAndResumeButton'
+import PauseAndResumeButton from 'components/UserManagement/PauseAndResumeButton';
 
-import TimeZoneDropDown from '../TimeZoneDropDown'
+import TimeZoneDropDown from '../TimeZoneDropDown';
 
-const Name = props => {
-  const { userProfile, setUserProfile, setChanged, isUserAdmin, isUserSelf, formValid, setFormValid } = props
+const Name = (props) => {
+  const {
+    userProfile,
+    setUserProfile,
+    setChanged,
+    isUserAdmin,
+    isUserSelf,
+    formValid,
+    setFormValid,
+  } = props;
 
-  const { firstName, lastName } = userProfile
+  const { firstName, lastName } = userProfile;
 
   if (isUserAdmin || isUserSelf) {
     return (
@@ -27,8 +35,8 @@ const Name = props => {
               value={firstName}
               // className={styleProfile.profileText}
               onChange={(e) => {
-                setUserProfile({...userProfile, firstName: e.target.value.trim()});
-                setFormValid({...formValid, firstName: !!e.target.value})
+                setUserProfile({ ...userProfile, firstName: e.target.value.trim() });
+                setFormValid({ ...formValid, firstName: !!e.target.value });
                 setChanged(true);
               }}
               placeholder="First Name"
@@ -46,9 +54,9 @@ const Name = props => {
               value={lastName}
               // className={styleProfile.profileText}
               onChange={(e) => {
-                setUserProfile({...userProfile, lastName: e.target.value.trim()});
-                setFormValid({...formValid, lastName: !!e.target.value})
-                setChanged(true)
+                setUserProfile({ ...userProfile, lastName: e.target.value.trim() });
+                setFormValid({ ...formValid, lastName: !!e.target.value });
+                setChanged(true);
               }}
               placeholder="Last Name"
               invalid={!formValid.lastName}
@@ -57,7 +65,7 @@ const Name = props => {
           </FormGroup>
         </Col>
       </>
-    )
+    );
   }
 
   return (
@@ -66,12 +74,12 @@ const Name = props => {
         <p>{`${firstName} ${lastName}`}</p>
       </Col>
     </>
-  )
-}
+  );
+};
 
-const Title = props => {
-  const { userProfile, setChanged, setUserProfile, isUserAdmin, isUserSelf } = props
-  const { jobTitle } = userProfile
+const Title = (props) => {
+  const { userProfile, setChanged, setUserProfile, isUserAdmin, isUserSelf } = props;
+  const { jobTitle } = userProfile;
 
   if (isUserAdmin || isUserSelf) {
     return (
@@ -84,15 +92,15 @@ const Title = props => {
               id="jobTitle"
               value={jobTitle}
               onChange={(e) => {
-                setUserProfile({...userProfile, jobTitle: e.target.value})
-                setChanged(true)
+                setUserProfile({ ...userProfile, jobTitle: e.target.value });
+                setChanged(true);
               }}
               placeholder="Job Title"
             />
           </FormGroup>
         </Col>
       </>
-    )
+    );
   }
   return (
     <>
@@ -100,14 +108,22 @@ const Title = props => {
         <p>{`${jobTitle}`}</p>
       </Col>
     </>
-  )
-}
+  );
+};
 
-const Email = props => {
-  const { userProfile, setUserProfile, setChanged, isUserAdmin, isUserSelf, formValid, setFormValid } = props
-  const { email, privacySettings } = userProfile
+const Email = (props) => {
+  const {
+    userProfile,
+    setUserProfile,
+    setChanged,
+    isUserAdmin,
+    isUserSelf,
+    formValid,
+    setFormValid,
+  } = props;
+  const { email, privacySettings } = userProfile;
 
-  const emailPattern = new RegExp(/^\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/i)
+  const emailPattern = new RegExp(/^\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/i);
 
   if (isUserAdmin || isUserSelf) {
     return (
@@ -126,9 +142,9 @@ const Email = props => {
               id="email"
               value={email}
               onChange={(e) => {
-                setUserProfile({ ...userProfile, email: e.target.value })
-                setFormValid({ ...formValid, email: emailPattern.test(e.target.value) })
-                setChanged(true)
+                setUserProfile({ ...userProfile, email: e.target.value });
+                setFormValid({ ...formValid, email: emailPattern.test(e.target.value) });
+                setChanged(true);
               }}
               placeholder="Email"
               invalid={!formValid.email}
@@ -137,7 +153,7 @@ const Email = props => {
           </FormGroup>
         </Col>
       </>
-    )
+    );
   }
   return (
     <>
@@ -147,11 +163,11 @@ const Email = props => {
         </Col>
       )}
     </>
-  )
-}
-const formatPhoneNumber = str => {
+  );
+};
+const formatPhoneNumber = (str) => {
   // Filter only numbers from the input
-  const cleaned = `${str}`.replace(/\D/g, '')
+  const cleaned = `${str}`.replace(/\D/g, '');
   if (cleaned.length === 10) {
     // Domestic (USA)
     return [
@@ -161,7 +177,7 @@ const formatPhoneNumber = str => {
       cleaned.substring(3, 6),
       ' - ',
       cleaned.substring(6, 10),
-    ].join('')
+    ].join('');
   }
   if (cleaned.length === 11) {
     // International
@@ -174,14 +190,21 @@ const formatPhoneNumber = str => {
       cleaned.substring(4, 7),
       ' - ',
       cleaned.substring(7, 11),
-    ].join('')
+    ].join('');
   }
   // Unconventional
-  return str
-}
-const Phone = props => {
-  const { userProfile, setUserProfile, handleUserProfile, setChanged, isUserAdmin, isUserSelf } = props
-  const { phoneNumber, privacySettings } = userProfile
+  return str;
+};
+const Phone = (props) => {
+  const {
+    userProfile,
+    setUserProfile,
+    handleUserProfile,
+    setChanged,
+    isUserAdmin,
+    isUserSelf,
+  } = props;
+  const { phoneNumber, privacySettings } = userProfile;
   if (isUserAdmin || isUserSelf) {
     return (
       <>
@@ -195,15 +218,15 @@ const Phone = props => {
             <PhoneInput
               country={'us'}
               value={phoneNumber[0]}
-              onChange={(phoneNumber) => {
-                setUserProfile({...userProfile, phoneNumber: phoneNumber.trim()})
+              onChange={phoneNumber => {
+                setUserProfile({ ...userProfile, phoneNumber: phoneNumber.trim() })
                 setChanged(true)
               }}
             />
           </FormGroup>
         </Col>
       </>
-    )
+    );
   }
   return (
     <>
@@ -213,13 +236,22 @@ const Phone = props => {
         </Col>
       )}
     </>
-  )
-}
+  );
+};
 
-const BasicInformationTab = props => {
-  const { userProfile, setUserProfile, setChanged, isUserAdmin, isUserSelf, handleUserProfile, formValid, setFormValid} = props
+const BasicInformationTab = (props) => {
+  const {
+    userProfile,
+    setUserProfile,
+    setChanged,
+    isUserAdmin,
+    isUserSelf,
+    handleUserProfile,
+    formValid,
+    setFormValid,
+  } = props;
 
-  const [timeZoneFilter, setTimeZoneFilter] = useState('')
+  const [timeZoneFilter, setTimeZoneFilter] = useState('');
 
   return (
     <div data-testid="basic-info-tab">
@@ -310,7 +342,6 @@ const BasicInformationTab = props => {
         <Phone
           userProfile={userProfile}
           setUserProfile={setUserProfile}
-
           setChanged={setChanged}
           isUserAdmin={isUserAdmin}
           isUserSelf={isUserSelf}
@@ -329,9 +360,9 @@ const BasicInformationTab = props => {
               name="collaborationPreference"
               id="collaborationPreference"
               value={userProfile.collaborationPreference}
-              onChange={(e) => {
-                setUserProfile({...userProfile, collaborationPreference: e.target.value})
-                setChanged(true);
+              onChange={e => {
+                setUserProfile({ ...userProfile, collaborationPreference: e.target.value })
+                setChanged(true)
               }}
               placeholder="Skype, Zoom, etc."
             />
@@ -346,8 +377,8 @@ const BasicInformationTab = props => {
           <FormGroup>
             <select
               value={userProfile.role}
-              onChange={(e) => {
-                setUserProfile({...userProfile, role: e.target.value})
+              onChange={e => {
+                setUserProfile({ ...userProfile, role: e.target.value })
                 setChanged(true)
               }}
               id="role"
@@ -373,7 +404,7 @@ const BasicInformationTab = props => {
             <TimeZoneDropDown
               filter={timeZoneFilter}
               onChange={(e) => {
-                setUserProfile({...userProfile, timeZone: e.target.value})
+                setUserProfile({ ...userProfile, timeZone: e.target.value });
                 setChanged(true);
               }}
               selected={userProfile.timeZone}
@@ -394,13 +425,18 @@ const BasicInformationTab = props => {
           <Label>Status</Label>
         </Col>
         <Col md="6">
-        <Label>{userProfile.isActive ? "Active" : (userProfile.reactivationDate ? "Paused until " + moment(userProfile.reactivationDate).format('YYYY-MM-DD') : "Inactive")}</Label>
-        &nbsp;
-        {
-          props.isUserAdmin && <PauseAndResumeButton isBigBtn={true} userProfile={userProfile}/>}
+          <Label>
+            {userProfile.isActive
+              ? 'Active'
+              : userProfile.reactivationDate
+              ? 'Paused until ' + moment(userProfile.reactivationDate).format('YYYY-MM-DD')
+              : 'Inactive'}
+          </Label>
+          &nbsp;
+          {props.isUserAdmin && <PauseAndResumeButton isBigBtn={true} userProfile={userProfile} />}
         </Col>
       </Row>
     </div>
-  )
-}
-export default BasicInformationTab
+  );
+};
+export default BasicInformationTab;

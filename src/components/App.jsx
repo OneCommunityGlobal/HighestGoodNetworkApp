@@ -28,7 +28,7 @@ if (localStorage.getItem(tokenKey)) {
   // Check for expired token
   const currentTime = Date.now() / 1000;
   const expiryTime = new Date(decoded.expiryTimestamp).getTime() / 1000;
-  //console.log(currentTime, expiryTime);
+  // console.log(currentTime, expiryTime);
   if (expiryTime - TOKEN_LIFETIME_BUFFER < currentTime) {
     // Logout user
     store.dispatch(logoutUser());

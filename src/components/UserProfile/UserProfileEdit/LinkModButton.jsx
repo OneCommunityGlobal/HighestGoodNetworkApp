@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-//import PropTypes from 'prop-types';
+// import PropTypes from 'prop-types';
 import EditLinkModal from '../UserProfileModal/EditLinkModal';
 // import styleEdit from './UserProfileEdit.module.scss';
 import './UserProfileEdit.scss';
@@ -7,7 +7,7 @@ import './UserProfileEdit.scss';
 const LinkModButton = (props) => {
   const { updateLink, userProfile, isUserAdmin, setChanged } = props;
   const [modal, setModal] = useState(false);
-  //const handleLinkModel = () => {};
+  // const handleLinkModel = () => {};
   const toggleModal = () => {
     setModal(!modal);
   };
@@ -23,7 +23,10 @@ const LinkModButton = (props) => {
       />
       <span
         style={{
-          textDecoration: 'underline', color: 'grey', fontSize: '11pt', fontWeight: 600,
+          textDecoration: 'underline',
+          color: 'grey',
+          fontSize: '11pt',
+          fontWeight: 600,
         }}
         data-testid="edit-link"
         role="button"
