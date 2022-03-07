@@ -13,6 +13,11 @@ module.exports = {
 
 	// An array of file extensions your modules use
 	moduleFileExtensions: ['js', 'json', 'jsx'],
+	
+	// Bundle mapper for d3 import
+	moduleNameMapper: {
+    'd3': '<rootDir>/node_modules/d3/dist/d3.min.js',
+	},
 
 	// The paths to modules that run some code to configure or set up the testing environment before each test
 	setupFiles: ['<rootDir>src/setupTests.js'],
