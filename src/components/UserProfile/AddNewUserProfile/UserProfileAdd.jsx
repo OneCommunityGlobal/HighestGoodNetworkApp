@@ -70,6 +70,7 @@ class AddUserProfile extends Component {
         email: 'Email is required',
         phoneNumber: 'Phone Number is required',
       },
+      location: '',
       timeZoneFilter: '',
       formSubmitted: false,
     }
