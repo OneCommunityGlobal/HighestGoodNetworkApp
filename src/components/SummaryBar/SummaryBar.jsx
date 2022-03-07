@@ -30,8 +30,13 @@ import { faWindowMinimize } from '@fortawesome/free-regular-svg-icons'
 import { ApiEndpoint } from 'utils/URL'
 
 const SummaryBar = props => {
+  const {asUser,isAdmin} = props;
   const { firstName, lastName, email, _id } = useSelector(state => state.userProfile)
+  const authenticateUser = useSelector(state=> state.auth.user)
+  const authenticateUserId = authenticateUser ?  authenticateUser.userid : ''
+  const matchUser = asUser == authenticateUserId ? true : false;
 
+  
   const timeEntries = useSelector(state => {
     let timeEntries = state?.timeEntries?.weeks
     if (timeEntries) {
@@ -229,13 +234,13 @@ const SummaryBar = props => {
             {!weeklySummary ? (
               <div className="border-red col-4 bg--white-smoke no-gutters" align="center">
                 <div className="py-1"> </div>
-                <p
-                  className={'summary-toggle large_text_summary text--black text-danger'}
-                  align="center"
-                  onClick={props.toggleSubmitForm}
-                >
-                  !
-                </p>
+
+                { matchUser || isAdmin ?
+                  <p className={'summary-toggle large_text_summary text--black text-danger'} align="center" onClick={props.toggleSubmitForm}>!</p>
+                  :
+                  <p className={'summary-toggle large_text_summary text--black text-danger'} align="center">!</p>
+                }
+
                 <font className="text--black" size="3">
                   SUMMARY
                 </font>

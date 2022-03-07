@@ -9,6 +9,8 @@ import {
   addTeamMember,
 } from '../../../actions/allTeamsAction';
 
+import { fetchAllProjects } from 'actions/projects';
+
 import AddUserProfile from './UserProfileAdd';
 
 const mapStateToProps = state => ({
@@ -30,5 +32,5 @@ export default connect(mapStateToProps, {
   updateTeam,
   deleteTeamMember,
   addTeamMember,
-
+  fetchAllProjects,
 })(AddUserProfile);

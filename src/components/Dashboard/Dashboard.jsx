@@ -7,17 +7,16 @@ import Badge from '../Badge'
 import TeamMemberTasks from '../TeamMemberTasks/TeamMemberTasks'
 import Timelog from '../Timelog/Timelog'
 import SummaryBar from '../SummaryBar/SummaryBar'
+import PopUpBar from '../PopUpBar'
 import '../../App.css'
 import { connect } from 'react-redux'
 import { getUserProfile } from '../../actions/userProfile'
+import { getTimeZoneAPIKey } from '../../actions/timezoneAPIActions'
 
 export const Dashboard = props => {
   const [popup, setPopup] = useState(false)
   let isAdmin = props.auth.user.role === 'Administrator'
-  let userId =
-    props.match && props.match.params.userId && props.auth.user.role === 'Administrator'
-      ? props.match.params.userId
-      : props.auth.user.userid
+  let userId = props.match.params.userId ? props.match.params.userId : props.auth.user.userid
 
   const toggle = () => {
     setPopup(!popup)
@@ -28,6 +27,10 @@ export const Dashboard = props => {
       }
     }, 150)
   }
+
+  useEffect(()=>{
+    props.getTimeZoneAPIKey();
+  },[]);
 
   useEffect(() => {
     if (props.match.params && props.match.params.userid && userId != props.match.params.userId) {
@@ -40,8 +43,8 @@ export const Dashboard = props => {
 
   return (
     <Container fluid>
-
-      <SummaryBar asUser={userId} toggleSubmitForm={toggle} />
+      <PopUpBar />
+      <SummaryBar asUser={userId} toggleSubmitForm={toggle} isAdmin={isAdmin}/>
 
       <Row>
         <Col lg={{ size: 7 }}>&nbsp;</Col>
@@ -89,4 +92,6 @@ const mapStateToProps = state => ({
   auth: state.auth,
 })
 
-export default connect(mapStateToProps)(Dashboard)
+export default connect(mapStateToProps, {
+  getTimeZoneAPIKey,
+})(Dashboard)

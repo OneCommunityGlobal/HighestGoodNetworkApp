@@ -1,47 +1,58 @@
-import React, {useState, useEffect} from 'react';
-import { changeBadgesByUserID } from '../../actions/badgeManagement';
+import React, { useState, useEffect } from 'react'
+import { changeBadgesByUserID } from '../../actions/badgeManagement'
 import {
-  Table, Button, Input,  Card, CardTitle, CardBody, CardImg, CardText, UncontrolledPopover
-} from 'reactstrap';
-import pdfMake from 'pdfmake/build/pdfmake';
-import pdfFonts from 'pdfmake/build/vfs_fonts';
-import htmlToPdfmake from 'html-to-pdfmake';
-import moment from 'moment';
-import 'moment-timezone';
-import { connect } from 'react-redux';
-import { getUserProfile } from '../../actions/userProfile';
+  Table,
+  Button,
+  Input,
+  Card,
+  CardTitle,
+  CardBody,
+  CardImg,
+  CardText,
+  UncontrolledPopover,
+} from 'reactstrap'
+import pdfMake from 'pdfmake/build/pdfmake'
+import pdfFonts from 'pdfmake/build/vfs_fonts'
+import htmlToPdfmake from 'html-to-pdfmake'
+import moment from 'moment'
+import 'moment-timezone'
+import { connect } from 'react-redux'
+import { getUserProfile } from '../../actions/userProfile'
+import { toast } from 'react-toastify'
 
-pdfMake.vfs = pdfFonts.pdfMake.vfs;
-const BadgeReport = (props) => {
-  let [sortBadges, setSortBadges] = useState(props.badges.slice() || []);
-  let [numFeatured, setNumFeatured] = useState(0);
+pdfMake.vfs = pdfFonts.pdfMake.vfs
+const BadgeReport = props => {
+  let [sortBadges, setSortBadges] = useState(props.badges.slice() || [])
+  let [numFeatured, setNumFeatured] = useState(0)
 
   async function imageToUri(url, callback) {
-    const canvas = document.createElement('canvas');
-    const ctx = canvas.getContext('2d');
+    const canvas = document.createElement('canvas')
+    const ctx = canvas.getContext('2d')
 
-    let base_image = new Image();
-    base_image.crossOrigin="anonymous";
-    base_image.src = url.replace("dropbox.com", "dl.dropboxusercontent.com");
-    base_image.src = base_image.src.replace("www.dropbox.com", "dl.dropboxusercontent.com");
+    let base_image = new Image()
+    base_image.crossOrigin = 'anonymous'
+    base_image.src = url.replace('dropbox.com', 'dl.dropboxusercontent.com')
+    base_image.src = base_image.src.replace('www.dropbox.com', 'dl.dropboxusercontent.com')
     base_image.onload = function() {
-        canvas.width = base_image.width;
-        canvas.height = base_image.height;
+      canvas.width = base_image.width
+      canvas.height = base_image.height
 
-        ctx.drawImage(base_image, 0, 0);
-        let uri = canvas.toDataURL('image/png')
-        callback(uri);
+      ctx.drawImage(base_image, 0, 0)
+      let uri = canvas.toDataURL('image/png')
+      callback(uri)
 
-        canvas.remove();
+      canvas.remove()
     }
-}
+  }
 
   const FormatReportForPdf = (badges, callback) => {
-    console.log(badges);
-    let bgReport = [];
-    bgReport[0] = `<h3>Badge Report (Page 1 of ${Math.ceil(badges.length/4)})</h3>
-    <div style="margin-bottom: 20px; color: orange;"><h4>For ${props.firstName} ${props.lastName}</h4></div>
-    <div style="color:#DEE2E6; margin:10px 0px 20px 0px; text-align:center;">_______________________________________________________________________________________________</div>`;
+    console.log(badges)
+    let bgReport = []
+    bgReport[0] = `<h3>Badge Report (Page 1 of ${Math.ceil(badges.length / 4)})</h3>
+    <div style="margin-bottom: 20px; color: orange;"><h4>For ${props.firstName} ${
+      props.lastName
+    }</h4></div>
+    <div style="color:#DEE2E6; margin:10px 0px 20px 0px; text-align:center;">_______________________________________________________________________________________________</div>`
     for (let i = 0; i < badges.length; i++) {
       imageToUri(badges[i].badge.imageUrl, function(uri) {
         bgReport[i + 1] = `
@@ -65,38 +76,37 @@ const BadgeReport = (props) => {
             </tr>
           </tbody>
       </table>
-      ${(i+1) % 4 == 0 && (i+1)!==badges.length? `</br></br></br>
-      <h3>Badge Report (Page ${1 + Math.ceil((i+1)/4)} of ${Math.ceil(badges.length/4)})</h3>
-    <div style="margin-bottom: 20px; color: orange;"><h4>For ${props.firstName} ${props.lastName}</h4></div>
+      ${
+        (i + 1) % 4 == 0 && i + 1 !== badges.length
+          ? `</br></br></br>
+      <h3>Badge Report (Page ${1 + Math.ceil((i + 1) / 4)} of ${Math.ceil(badges.length / 4)})</h3>
+    <div style="margin-bottom: 20px; color: orange;"><h4>For ${props.firstName} ${
+              props.lastName
+            }</h4></div>
     <div style="color:#DEE2E6; margin:10px 0px 20px 0px; text-align:center;">_______________________________________________________________________________________________</div>
-      ` : ''}`;
+      `
+          : ''
+      }`
         if (i == badges.length - 1) {
-          setTimeout(()=>{
-            callback(bgReport.join('\n'));
+          setTimeout(() => {
+            callback(bgReport.join('\n'))
           }, 100)
-          
         }
-      });
+      })
     }
-    
-  };
-
-
-  
+  }
 
   const pdfDocGenerator = async () => {
-    let CurrentDate = moment().format("MM-DD-YYYY-HH-mm-ss")
-    let badges = sortBadges.slice();
-    FormatReportForPdf(badges, (formattedReport)=> {
+    let CurrentDate = moment().format('MM-DD-YYYY-HH-mm-ss')
+    let badges = sortBadges.slice()
+    FormatReportForPdf(badges, formattedReport => {
       const html = htmlToPdfmake(formattedReport, {
-        tableAutoSize:true
-      });
+        tableAutoSize: true,
+      })
       let docDefinition = {
-        content: [
-          html,
-        ],
+        content: [html],
         pageBreakBefore: function(currentNode) {
-          return currentNode.style && currentNode.style.indexOf('pdf-pagebreak-before') > -1;
+          return currentNode.style && currentNode.style.indexOf('pdf-pagebreak-before') > -1
         },
         styles: {
           'html-div': { margin: [0, 4, 0, 4] },
@@ -104,31 +114,28 @@ const BadgeReport = (props) => {
             background: 'white',
           },
         },
-      };
-      pdfMake.createPdf(docDefinition).download(`Badge-Report-${CurrentDate}`);
-    });
-
-  };
+      }
+      pdfMake.createPdf(docDefinition).download(`Badge-Report-${CurrentDate}`)
+    })
+  }
 
   const pdfFeaturedDocGenerator = async () => {
-    let CurrentDate = moment().format("MM-DD-YYYY-HH-mm-ss")
-    let badges = sortBadges.slice();
-    badges = badges.filter((badge)=>{
+    let CurrentDate = moment().format('MM-DD-YYYY-HH-mm-ss')
+    let badges = sortBadges.slice()
+    badges = badges.filter(badge => {
       if (badge.featured) {
-        return true;
+        return true
       } else {
-        return false;
+        return false
       }
-    });
+    })
 
-    FormatReportForPdf(badges, (formattedReport)=> {
-      const html = htmlToPdfmake(formattedReport, {tableAutoSize: true});
+    FormatReportForPdf(badges, formattedReport => {
+      const html = htmlToPdfmake(formattedReport, { tableAutoSize: true })
       let docDefinition = {
-        content: [
-          html,
-        ],
+        content: [html],
         pageBreakBefore: function(currentNode) {
-          return currentNode.style && currentNode.style.indexOf('pdf-pagebreak-before') > -1;
+          return currentNode.style && currentNode.style.indexOf('pdf-pagebreak-before') > -1
         },
         styles: {
           'html-div': { margin: [0, 4, 0, 4] },
@@ -136,88 +143,87 @@ const BadgeReport = (props) => {
             background: 'white',
           },
         },
-      };
-      pdfMake.createPdf(docDefinition).download(`Featured-Badge-Report-${CurrentDate}`);
-    });
-  };
+      }
+      pdfMake.createPdf(docDefinition).download(`Featured-Badge-Report-${CurrentDate}`)
+    })
+  }
 
-  useEffect(()=>{
-
-    setSortBadges(props.badges.slice() || []);
-    let newBadges = sortBadges.slice();
+  useEffect(() => {
+    setSortBadges(props.badges.slice() || [])
+    let newBadges = sortBadges.slice()
     newBadges.sort((a, b) => {
-      if (a.badge.ranking === 0) return 1;
-      if (b.badge.ranking === 0) return -1;
-      if (a.badge.ranking > b.badge.ranking) return 1;
-      if (a.badge.ranking < b.badge.ranking) return -1;
-      if (a.badge.badgeName > b.badge.badgeName) return 1;
-      if (a.badge.badgeName < b.badge.badgeName) return -1;
-      return 0;
-    });
-    setNumFeatured(0);
-    newBadges.forEach((badge, index)=> {
+      if (a.badge.ranking === 0) return 1
+      if (b.badge.ranking === 0) return -1
+      if (a.badge.ranking > b.badge.ranking) return 1
+      if (a.badge.ranking < b.badge.ranking) return -1
+      if (a.badge.badgeName > b.badge.badgeName) return 1
+      if (a.badge.badgeName < b.badge.badgeName) return -1
+      return 0
+    })
+    setNumFeatured(0)
+    newBadges.forEach((badge, index) => {
       if (badge.featured) {
-        setNumFeatured(++numFeatured);
+        setNumFeatured(++numFeatured)
       }
 
-      if (typeof (newBadges[index]) === "string") {
+      if (typeof newBadges[index] === 'string') {
         newBadges[index].lastModified = new Date(newBadges[index].lastModified)
       }
-      
     })
-    console.log(numFeatured);
-    setSortBadges(newBadges);
-  },[props.badges]);
+    console.log(numFeatured)
+    setSortBadges(newBadges)
+  }, [props.badges])
 
- 
-
-
-  
   const countChange = (badge, index, newValue) => {
-    let newBadges = sortBadges.slice();
-    newBadges[index].count = newValue;
-    setSortBadges(newBadges);
+    let newBadges = sortBadges.slice()
+    newBadges[index].count = newValue
+    setSortBadges(newBadges)
   }
 
   const featuredChange = (badge, index, e) => {
-    console.log(numFeatured);
+    console.log(numFeatured)
 
-    let newBadges = sortBadges.slice();
+    let newBadges = sortBadges.slice()
     if ((e.target.checked && numFeatured < 5) || !e.target.checked) {
-      let count = 0;
-      setNumFeatured(count);
-      newBadges[index].featured = e.target.checked;
-      newBadges.forEach((badge, index)=> {
+      let count = 0
+      setNumFeatured(count)
+      newBadges[index].featured = e.target.checked
+      newBadges.forEach((badge, index) => {
         if (badge.featured) {
-          setNumFeatured(++count);
+          setNumFeatured(++count)
         }
-        
       })
     } else {
-      e.target.checked = false;
-      window.alert("Unfortunately, you may only select five badges to be featured.")
+      e.target.checked = false
+      toast.error('Unfortunately, you may only select five badges to be featured.')
     }
-    setSortBadges(newBadges);
+    setSortBadges(newBadges)
   }
 
   const deletedBadge = (badge, index) => {
-    if (window.confirm("Are you sure you want to delete this badge? Note even if you click ok, this won't be fully deleted until you click the save button below.")) {
-      let newBadges = sortBadges.slice();
-      newBadges.splice(index, 1);
-      setSortBadges(newBadges);
+    if (
+      window.confirm(
+        `Woah, easy tiger! Are you sure you want to delete this badge? \n \nNote: Even if you click "OK", this won't be fully deleted until you click the "Save Changes" button below.`,
+      )
+    ) {
+      let newBadges = sortBadges.slice()
+      newBadges.splice(index, 1)
+      setSortBadges(newBadges)
     }
   }
 
   const saveChanges = async () => {
-    let newBadgeCollection = sortBadges.slice();
+    let newBadgeCollection = sortBadges.slice()
     for (let i = 0; i < newBadgeCollection.length; i++) {
-      newBadgeCollection[i].badge = newBadgeCollection[i].badge._id;
+      newBadgeCollection[i].badge = newBadgeCollection[i].badge._id
     }
-    console.log(newBadgeCollection);
-    await props.changeBadgesByUserID(props.userId, newBadgeCollection);
-    await props.getUserProfile(props.userId);
+    console.log(newBadgeCollection)
+    await props.changeBadgesByUserID(props.userId, newBadgeCollection)
+    await props.getUserProfile(props.userId)
     //close the modal
-    props.close();
+    props.close()
+    //Reload the view profile page with updated bages
+    window.location.reload()
   }
 
   return (
@@ -225,58 +231,118 @@ const BadgeReport = (props) => {
       <Table>
         <thead>
           <tr>
-            <th style={{width: '93px'}}>Badge</th>
+            <th style={{ width: '93px' }}>Badge</th>
             <th>Name</th>
-            <th style={{width: '110px'}}>Modified</th>
-            <th style={{width: '90px'}}>Count</th>
+            <th style={{ width: '110px' }}>Modified</th>
+            <th style={{ width: '90px' }}>Count</th>
             {props.isAdmin ? <th>Delete</th> : []}
-            <th style={{width: '70px'}}>Featured</th>
+            <th style={{ width: '70px' }}>Featured</th>
           </tr>
         </thead>
         <tbody>
-          {sortBadges && sortBadges.map((value, index) =>
-            <tr key={index}>
-              <td className="badge_image_sm"> <img src={value.badge.imageUrl} id={"popover_" + index.toString()}/></td>
-              <UncontrolledPopover trigger="hover" target={"popover_" + index.toString()}>
-                <Card className="text-center">
-                  <CardImg className="badge_image_lg" src={value?.badge?.imageUrl} />
-                  <CardBody>
-                    <CardTitle
-                      style={{
-                        fontWeight: 'bold',
-                        fontSize: 18,
-                        color: '#285739',
-                        marginBottom: 15
-                      }}>{value.badge?.badgeName}</CardTitle>
-                    <CardText>{value.badge?.description}</CardText>
-                  </CardBody>
-                </Card>
-              </UncontrolledPopover>
-              <td>{value.badge.badgeName}</td>
-              <td>{typeof value.lastModified == "string" ? value.lastModified.substring(0,10) : value.lastModified.toLocaleString().substring(0,10)}</td>
-              <td>{props.isAdmin ? <Input type="number" value={Math.round(value.count)} min={0} step={1} onChange={(e)=>{countChange(value, index, e.target.value)}}></Input> : Math.round(value.count)}</td>
-              {props.isAdmin ?       
-              <td><button type="button" className="btn btn-outline-danger"
-                onClick={(e) => deletedBadge(value, index)}>Delete</button></td> : []}
-              <td style={{textAlign: 'center'}}><Input type="checkbox" id={value.badge._id} checked={value.featured} onChange={(e)=>{featuredChange(value, index, e)}}/></td>
-            </tr>
-          )}
+          {sortBadges &&
+            sortBadges.map((value, index) => (
+              <tr key={index}>
+                <td className="badge_image_sm">
+                  {' '}
+                  <img src={value.badge.imageUrl} id={'popover_' + index.toString()} />
+                </td>
+                <UncontrolledPopover trigger="hover" target={'popover_' + index.toString()}>
+                  <Card className="text-center">
+                    <CardImg className="badge_image_lg" src={value?.badge?.imageUrl} />
+                    <CardBody>
+                      <CardTitle
+                        style={{
+                          fontWeight: 'bold',
+                          fontSize: 18,
+                          color: '#285739',
+                          marginBottom: 15,
+                        }}
+                      >
+                        {value.badge?.badgeName}
+                      </CardTitle>
+                      <CardText>{value.badge?.description}</CardText>
+                    </CardBody>
+                  </Card>
+                </UncontrolledPopover>
+                <td>{value.badge.badgeName}</td>
+                <td>
+                  {typeof value.lastModified == 'string'
+                    ? value.lastModified.substring(0, 10)
+                    : value.lastModified.toLocaleString().substring(0, 10)}
+                </td>
+                <td>
+                  {props.isAdmin ? (
+                    <Input
+                      type="number"
+                      value={Math.round(value.count)}
+                      min={0}
+                      step={1}
+                      onChange={e => {
+                        countChange(value, index, e.target.value)
+                      }}
+                    ></Input>
+                  ) : (
+                    Math.round(value.count)
+                  )}
+                </td>
+                {props.isAdmin ? (
+                  <td>
+                    <button
+                      type="button"
+                      className="btn btn-outline-danger"
+                      onClick={e => deletedBadge(value, index)}
+                    >
+                      Delete
+                    </button>
+                  </td>
+                ) : (
+                  []
+                )}
+                <td style={{ textAlign: 'center' }}>
+                  <Input
+                    type="checkbox"
+                    id={value.badge._id}
+                    checked={value.featured}
+                    onChange={e => {
+                      featuredChange(value, index, e)
+                    }}
+                  />
+                </td>
+              </tr>
+            ))}
         </tbody>
       </Table>
-      <Button className="btn--dark-sea-green float-right" style={{ margin: 5 }} 
-      onClick={(e)=>{
-        saveChanges();
-      }}>Save Changes</Button>
-      <Button className="btn--dark-sea-green float-right" style={{ margin: 5 }} onClick={pdfDocGenerator}>Export All Badges to PDF</Button>
-      <Button className="btn--dark-sea-green float-right" style={{ margin: 5 }} onClick={pdfFeaturedDocGenerator}>Export Selected/Featured Badges to PDF</Button>
-      
-    </div >
-  );
-};
+      <Button
+        className="btn--dark-sea-green float-right"
+        style={{ margin: 5 }}
+        onClick={e => {
+          saveChanges()
+        }}
+      >
+        Save Changes
+      </Button>
+      <Button
+        className="btn--dark-sea-green float-right"
+        style={{ margin: 5 }}
+        onClick={pdfDocGenerator}
+      >
+        Export All Badges to PDF
+      </Button>
+      <Button
+        className="btn--dark-sea-green float-right"
+        style={{ margin: 5 }}
+        onClick={pdfFeaturedDocGenerator}
+      >
+        Export Selected/Featured Badges to PDF
+      </Button>
+    </div>
+  )
+}
 
 const mapDispatchToProps = dispatch => ({
   changeBadgesByUserID: (userId, badges) => dispatch(changeBadgesByUserID(userId, badges)),
-  getUserProfile: (userId) => dispatch(getUserProfile(userId)),
-});
+  getUserProfile: userId => dispatch(getUserProfile(userId)),
+})
 
-export default connect(null, mapDispatchToProps)(BadgeReport);
+export default connect(null, mapDispatchToProps)(BadgeReport)
