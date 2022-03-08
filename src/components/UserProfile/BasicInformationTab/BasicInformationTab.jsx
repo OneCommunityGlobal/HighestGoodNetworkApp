@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Row, Label, Input, Col, FormFeedback, FormGroup } from 'reactstrap'
+import { Row, Label, Input, Col, FormFeedback, FormGroup, Button } from 'reactstrap'
 import ToggleSwitch from '../UserProfileEdit/ToggleSwitch'
 import moment from 'moment'
 
@@ -9,6 +9,8 @@ import 'react-phone-input-2/lib/style.css'
 import PauseAndResumeButton from 'components/UserManagement/PauseAndResumeButton'
 
 import TimeZoneDropDown from '../TimeZoneDropDown'
+import { useSelector } from 'react-redux';
+import { getUserTimeZone } from 'services/timezoneApiService'
 
 const Name = props => {
   const { userProfile, setUserProfile, setChanged, isUserAdmin, isUserSelf, formValid, setFormValid } = props
@@ -220,7 +222,31 @@ const BasicInformationTab = props => {
   const { userProfile, setUserProfile, setChanged, isUserAdmin, isUserSelf, handleUserProfile, formValid, setFormValid} = props
 
   const [timeZoneFilter, setTimeZoneFilter] = useState('')
+  const [location, setLocation] = useState('')
+  const key =  useSelector(state => state.timeZoneAPI.userAPIKey)
 
+  const onClickGetTimeZone = () => {
+    if (!location) {
+      alert('Please enter valid location')
+      return
+    }
+    if (key) {
+      getUserTimeZone(location, key)
+        .then(response => {
+          if (
+            response.data.status.code === 200 &&
+            response.data.results &&
+            response.data.results.length
+          ) {
+            let timezone = response.data.results[0].annotations.timezone.name
+            setTimeZoneFilter(timezone)
+          } else {
+            alert('Invalid location or ' + response.data.status.message)
+          }
+        })
+        .catch(err => console.log(err))
+    }
+  }
   return (
     <div data-testid="basic-info-tab">
       <Row>
@@ -363,6 +389,34 @@ const BasicInformationTab = props => {
           </FormGroup>
         </Col>
       </Row>
+      {props.isUserAdmin && (
+        <Row>
+          <Col md={{ size: 6, offset: 0 }} className="text-md-left my-2">
+            <Label>Location</Label>
+          </Col>
+          <Col md="6">
+            <Row>
+              <Col md="6">
+                <Input
+                    onChange={e => setLocation(e.target.value)}
+                />
+              </Col>
+              <Col md="6">
+                <div className="w-100 pt-1 mb-2 mx-auto">
+                    <Button
+                    color="secondary"
+                    block
+                    size="sm"
+                    onClick={onClickGetTimeZone}
+                    >
+                      Get Time Zone
+                    </Button>
+                </div>
+              </Col>
+            </Row>
+          </Col>
+        </Row>
+      )}
       <Row style={{ marginBottom: '10px' }}>
         <Col>
           <Label>Time Zone</Label>
