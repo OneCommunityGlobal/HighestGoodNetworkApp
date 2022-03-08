@@ -10,6 +10,9 @@ import {
   CardImg,
   CardText,
   UncontrolledPopover,
+  Modal,
+  ModalBody,
+  ModalFooter,
 } from 'reactstrap'
 import pdfMake from 'pdfmake/build/pdfmake'
 import pdfFonts from 'pdfmake/build/vfs_fonts'
@@ -24,6 +27,8 @@ pdfMake.vfs = pdfFonts.pdfMake.vfs
 const BadgeReport = props => {
   let [sortBadges, setSortBadges] = useState(props.badges.slice() || [])
   let [numFeatured, setNumFeatured] = useState(0)
+  let [showModal, setShowModal] = useState(false)
+  let [badgeToDelete, setBadgeToDelete] = useState(null)
 
   async function imageToUri(url, callback) {
     const canvas = document.createElement('canvas')
@@ -46,7 +51,6 @@ const BadgeReport = props => {
   }
 
   const FormatReportForPdf = (badges, callback) => {
-    console.log(badges)
     let bgReport = []
     bgReport[0] = `<h3>Badge Report (Page 1 of ${Math.ceil(badges.length / 4)})</h3>
     <div style="margin-bottom: 20px; color: orange;"><h4>For ${props.firstName} ${
@@ -200,16 +204,22 @@ const BadgeReport = props => {
     setSortBadges(newBadges)
   }
 
-  const deletedBadge = (badge, index) => {
-    if (
-      window.confirm(
-        `Woah, easy tiger! Are you sure you want to delete this badge? \n \nNote: Even if you click "OK", this won't be fully deleted until you click the "Save Changes" button below.`,
-      )
-    ) {
-      let newBadges = sortBadges.slice()
-      newBadges.splice(index, 1)
-      setSortBadges(newBadges)
-    }
+  const handleDeleteBadge = index => {
+    setShowModal(true)
+    setBadgeToDelete(index)
+  }
+
+  const handleCancel = () => {
+    setShowModal(false)
+    setBadgeToDelete(null)
+  }
+
+  const deleteBadge = () => {
+    let newBadges = sortBadges.slice()
+    newBadges.splice(badgeToDelete, 1)
+    setSortBadges(newBadges)
+    setShowModal(false)
+    setBadgeToDelete(null)
   }
 
   const saveChanges = async () => {
@@ -291,7 +301,7 @@ const BadgeReport = props => {
                     <button
                       type="button"
                       className="btn btn-outline-danger"
-                      onClick={e => deletedBadge(value, index)}
+                      onClick={e => handleDeleteBadge(index)}
                     >
                       Delete
                     </button>
@@ -336,6 +346,22 @@ const BadgeReport = props => {
       >
         Export Selected/Featured Badges to PDF
       </Button>
+      <Modal isOpen={showModal}>
+        <ModalBody>
+          <p>Woah, easy tiger! Are you sure you want to delete this badge?</p>
+          <br />
+          <p>
+            Note: Even if you click "Yes, Delete", this won't be fully deleted until you click the
+            "Save Changes" button below.
+          </p>
+        </ModalBody>
+        <ModalFooter>
+          <Button onClick={() => handleCancel()}>Cancel</Button>
+          <Button color="danger" onClick={() => deleteBadge()}>
+            Yes, Delete
+          </Button>
+        </ModalFooter>
+      </Modal>
     </div>
   )
 }
