@@ -204,7 +204,8 @@ const mapDispatchToProps = dispatch => ({
   getLastName: lastName => dispatch(getLastName(lastName)),
   getAllUserProfile: () => dispatch(getAllUserProfile()),
   clearNameAndSelected: () => dispatch(clearNameAndSelected()),
-  assignBadges: (fisrtName, lastName, selectedBadge) => dispatch(assignBadges(fisrtName, lastName, selectedBadge)),
+  assignBadges: (fisrtName, lastName, selectedBadge) =>
+    dispatch(assignBadges(fisrtName, lastName, selectedBadge)),
   validateBadges: (firstName, lastName) => dispatch(validateBadges(firstName, lastName)),
   closeAlert: () => dispatch(closeAlert()),
 });
