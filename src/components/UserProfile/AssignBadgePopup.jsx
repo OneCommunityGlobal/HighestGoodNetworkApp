@@ -10,8 +10,8 @@ import {
 import { ENDPOINTS } from 'utils/URL';
 import axios from 'axios';
 
-const AssignBadgePopup = (props) => {
-  const [searchedName, setSearchedName] = useState('');
+const AssignBadgePopup = props => {
+  const [searchedName, setSearchedName] = useState('')
 
   const onSearch = (text) => {
     setSearchedName(text);
@@ -40,7 +40,7 @@ const AssignBadgePopup = (props) => {
     return filteredList;
   };
 
-  let filteredBadges = filterBadges(props.allBadgeData);
+  let filteredBadges = filterBadges(props.allBadgeData)
 
   return (
     <div>
@@ -95,14 +95,14 @@ const AssignBadgePopup = (props) => {
 
 const mapStateToProps = state => ({
   selectedBadges: state.badge.selectedBadges,
-});
+})
 
 const mapDispatchToProps = (dispatch) => {
   return {
     assignBadgesByUserID: (userId, selectedBadge) =>
       assignBadgesByUserID(userId, selectedBadge)(dispatch),
-    clearNameAndSelected: () => dispatch(clearNameAndSelected()),
+    clearNameAndSelected: () => dispatch(clearNameAndSelected())
   };
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(AssignBadgePopup);
+export default connect(mapStateToProps, mapDispatchToProps)(AssignBadgePopup)

@@ -454,6 +454,32 @@ class AddUserProfile extends Component {
     }
   };
 
+  // Function to call TimeZoneService with location and key
+  onClickGetTimeZone = () => {
+    const location = this.state.location
+    const key = this.props.timeZoneKey
+    if (!location) {
+      alert('Please enter valid location')
+      return
+    }
+    if (key) {
+      getUserTimeZone(location, key)
+        .then(response => {
+          if (
+            response.data.status.code === 200 &&
+            response.data.results &&
+            response.data.results.length
+          ) {
+            let timezone = response.data.results[0].annotations.timezone.name
+            this.setState({ ...this.state, timeZoneFilter: timezone })
+          } else {
+            alert('Invalid location or ' + response.data.status.message)
+          }
+        })
+        .catch(err => console.log(err))
+    }
+  }
+
   fieldsAreValid = () => {
     const firstLength = this.state.userProfile.firstName !== '';
     const lastLength = this.state.userProfile.lastName !== '';

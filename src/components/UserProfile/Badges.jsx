@@ -89,6 +89,53 @@ const Badges = (props) => {
               fontWeight: 'bold',
               fontSize: 18,
               color: '#285739',
+              marginBottom: 15,
+            }}
+          >
+            Featured Badges <i className="fa fa-info-circle" id="FeaturedBadgeInfo" />
+            <Button className="btn--dark-sea-green float-right" onClick={toggle}>
+              Select Featured
+            </Button>
+            <Modal size="lg" isOpen={isOpen} toggle={toggle}>
+              <ModalHeader toggle={toggle}>Full View of Badge History</ModalHeader>
+              {/* <ModalBody><BadgeReport badges={props.userProfile.badgeCollection} userId={props.userId} isAdmin={props.isAdmin} firstName={props.userProfile.firstName} lastName={props.userProfile.lastName} close={toggle}/></ModalBody> */}
+              <ModalBody>
+                <BadgeReport
+                  badges={props.userProfile.badgeCollection}
+                  userId={props.userProfile._id}
+                  isAdmin={props.isAdmin}
+                  firstName={props.userProfile.firstName}
+                  lastName={props.userProfile.lastName}
+                  close={toggle}
+                />
+              </ModalBody>
+            </Modal>
+            {props.isAdmin && (
+              <>
+                <Button className="btn--dark-sea-green float-right mr-2" onClick={assignToggle}>
+                  Assign Badges
+                </Button>
+                <Modal size="lg" isOpen={isAssignOpen} toggle={assignToggle}>
+                  <ModalHeader toggle={assignToggle}>Assign Badges</ModalHeader>
+                  <ModalBody>
+                    <AssignBadgePopup
+                      allBadgeData={props.allBadgeData}
+                      userProfile={props.userProfile}
+                      setUserProfile={props.setUserProfile}
+                      isAdmin={props.isAdmin}
+                      close={assignToggle}
+                    />
+                  </ModalBody>
+                </Modal>
+              </>
+            )}
+          </CardTitle>
+          <FeaturedBadges badges={props.userProfile.badgeCollection} />
+          <CardText
+            style={{
+              fontWeight: 'bold',
+              fontSize: 18,
+              color: '#285739',
             }}
           >
             Bravo! You've earned {props.userProfile.badgeCollection.length} badges!{' '}

@@ -32,6 +32,10 @@ export const Dashboard = (props) => {
     props.getTimeZoneAPIKey();
   }, []);
 
+  useEffect(()=>{
+    props.getTimeZoneAPIKey();
+  },[]);
+
   useEffect(() => {
     if (props.match.params && props.match.params.userid && userId != props.match.params.userId) {
       userId = props.match.params.userId;

@@ -10,9 +10,9 @@ const AssignTableRow = (props) => {
 
   const handleCheckBoxChange = (e) => {
     if (e.target.checked) {
-      props.addSelectBadge(e.target.id);
+      props.addSelectBadge(e.target.id)
     } else {
-      props.removeSelectBadge(e.target.id);
+      props.removeSelectBadge(e.target.id)
     }
   };
 

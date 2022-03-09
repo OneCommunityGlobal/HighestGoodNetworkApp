@@ -3,7 +3,7 @@ import { screen, render, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
-import { allUserProfilesMock, allProjectsMock } from '../mockStates';
+import { allUserProfilesMock, allProjectsMock, timeZoneAPIMock } from '../mockStates';
 import { renderWithProvider, renderWithRouterMatch } from '../utils';
 import UserManagement from '../../components/UserManagement/UserManagement';
 import * as actions from '../../actions/userManagement';
@@ -21,6 +21,7 @@ describe('user management', () => {
     store = mockStore({
       allUserProfiles: allUserProfilesMock,
       allProjects: allProjectsMock,
+      timeZoneAPI: timeZoneAPIMock,
     });
     store.dispatch = jest.fn();
     renderWithProvider(

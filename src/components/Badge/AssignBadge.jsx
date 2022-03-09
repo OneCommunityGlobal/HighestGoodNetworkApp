@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react'
 import {
   Button,
   Form,
@@ -37,7 +37,7 @@ const AssignBadge = (props) => {
     props.closeAlert();
   }, []);
 
-  const activeUsers = props.allUserProfiles.filter(profile => profile.isActive === true);
+  const activeUsers = props.allUserProfiles.filter(profile => profile.isActive === true)
 
   const escapeRegexCharacters = str => str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
@@ -47,11 +47,11 @@ const AssignBadge = (props) => {
     return activeUsers.filter(user => regex.test(user.firstName) || regex.test(user.lastName));
   };
 
-  const getSuggestionFirst = suggestion => suggestion.firstName;
+  const getSuggestionFirst = suggestion => suggestion.firstName
 
-  const getSuggestionLast = suggestion => suggestion.lastName;
+  const getSuggestionLast = suggestion => suggestion.lastName
 
-  const renderSuggestion = (suggestion) => {
+  const renderSuggestion = suggestion => {
     return (
       <div>
         {suggestion.firstName} {suggestion.lastName}
@@ -60,32 +60,32 @@ const AssignBadge = (props) => {
   };
 
   const onFirstChange = (event, { newValue }) => {
-    props.getFirstName(newValue);
-  };
+    props.getFirstName(newValue)
+  }
 
   const onLastChange = (event, { newValue }) => {
-    props.getLastName(newValue);
-  };
+    props.getLastName(newValue)
+  }
 
   const onFirstSuggestionsFetchRequested = ({ value }) => {
-    setFirstSuggestions(getSuggestions(value));
-  };
+    setFirstSuggestions(getSuggestions(value))
+  }
 
   const onFirstSuggestionsClearRequested = () => {
-    setFirstSuggestions([]);
-  };
+    setFirstSuggestions([])
+  }
 
   const onFirstSuggestionSelected = (event, { suggestion }) => {
-    props.getLastName(suggestion.lastName);
-  };
+    props.getLastName(suggestion.lastName)
+  }
 
   const onLastSuggestionsFetchRequested = ({ value }) => {
-    setLastSuggestions(getSuggestions(value));
-  };
+    setLastSuggestions(getSuggestions(value))
+  }
 
   const onLastSuggestionsClearRequested = () => {
-    setLastSuggestions([]);
-  };
+    setLastSuggestions([])
+  }
 
   const onLastSuggestionSelected = (event, { suggestion }) => {
     props.getFirstName(suggestion.firstName);
@@ -104,7 +104,7 @@ const AssignBadge = (props) => {
         props.validateBadges(firstName, lastName);
       }
     }
-  };
+  }
 
   const FirstInputProps = {
     placeholder: 'first name',
@@ -186,8 +186,8 @@ const AssignBadge = (props) => {
       </FormGroup>
       {/* <Button size="lg" color="info" className="assign-badge-margin-top" onClick={clickSubmit}>Submit</Button> */}
     </Form>
-  );
-};
+  )
+}
 
 const mapStateToProps = state => ({
   selectedBadges: state.badge.selectedBadges,
