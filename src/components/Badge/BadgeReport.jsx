@@ -10,6 +10,9 @@ import {
   CardImg,
   CardText,
   UncontrolledPopover,
+  Modal,
+  ModalBody,
+  ModalFooter,
 } from 'reactstrap';
 import pdfMake from 'pdfmake/build/pdfmake';
 import pdfFonts from 'pdfmake/build/vfs_fonts';
@@ -21,24 +24,26 @@ import { getUserProfile } from '../../actions/userProfile';
 import { toast } from 'react-toastify';
 
 pdfMake.vfs = pdfFonts.pdfMake.vfs;
-const BadgeReport = props => {
+const BadgeReport = (props) => {
   let [sortBadges, setSortBadges] = useState(props.badges.slice() || []);
   let [numFeatured, setNumFeatured] = useState(0);
+  let [showModal, setShowModal] = useState(false);
+  let [badgeToDelete, setBadgeToDelete] = useState(null);
 
   async function imageToUri(url, callback) {
     const canvas = document.createElement('canvas');
     const ctx = canvas.getContext('2d');
 
-    let base_image = new Image();
-    base_image.crossOrigin = 'anonymous';
-    base_image.src = url.replace('dropbox.com', 'dl.dropboxusercontent.com');
-    base_image.src = base_image.src.replace('www.dropbox.com', 'dl.dropboxusercontent.com');
-    base_image.onload = function () {
-      canvas.width = base_image.width;
-      canvas.height = base_image.height;
+    let baseImage = new Image();
+    baseImage.crossOrigin = 'anonymous';
+    baseImage.src = url.replace('dropbox.com', 'dl.dropboxusercontent.com');
+    baseImage.src = baseImage.src.replace('www.dropbox.com', 'dl.dropboxusercontent.com');
+    baseImage.onload = function() {
+      canvas.width = baseImage.width;
+      canvas.height = baseImage.height;
 
-      ctx.drawImage(base_image, 0, 0);
-      let uri = canvas.toDataURL('image/png');
+      ctx.drawImage(baseImage, 0, 0);
+      const uri = canvas.toDataURL('image/png');
       callback(uri);
 
       canvas.remove();
@@ -46,13 +51,12 @@ const BadgeReport = props => {
   }
 
   const FormatReportForPdf = (badges, callback) => {
-    console.log(badges);
     let bgReport = [];
     bgReport[0] = `<h3>Badge Report (Page 1 of ${Math.ceil(badges.length / 4)})</h3>
     <div style="margin-bottom: 20px; color: orange;"><h4>For ${props.firstName} ${
       props.lastName
     }</h4></div>
-    <div style="color:#DEE2E6; margin:10px 0px 20px 0px; text-align:center;">_______________________________________________________________________________________________</div>`
+    <div style="color:#DEE2E6; margin:10px 0px 20px 0px; text-align:center;">_______________________________________________________________________________________________</div>`;
     for (let i = 0; i < badges.length; i++) {
       imageToUri(badges[i].badge.imageUrl, function(uri) {
         bgReport[i + 1] = `
@@ -86,13 +90,13 @@ const BadgeReport = props => {
     <div style="color:#DEE2E6; margin:10px 0px 20px 0px; text-align:center;">_______________________________________________________________________________________________</div>
       `
           : ''
-      }`
+      }`;
         if (i == badges.length - 1) {
           setTimeout(() => {
-            callback(bgReport.join('\n'))
-          }, 100)
+            callback(bgReport.join('\n'));
+          }, 100);
         }
-      })
+      });
     }
   };
 
@@ -106,7 +110,7 @@ const BadgeReport = props => {
       let docDefinition = {
         content: [html],
         pageBreakBefore: function(currentNode) {
-          return currentNode.style && currentNode.style.indexOf('pdf-pagebreak-before') > -1
+          return currentNode.style && currentNode.style.indexOf('pdf-pagebreak-before') > -1;
         },
         styles: {
           'html-div': { margin: [0, 4, 0, 4] },
@@ -115,14 +119,14 @@ const BadgeReport = props => {
           },
         },
       };
-      pdfMake.createPdf(docDefinition).download(`Badge-Report-${CurrentDate}`)
+      pdfMake.createPdf(docDefinition).download(`Badge-Report-${CurrentDate}`);
     });
   };
 
   const pdfFeaturedDocGenerator = async () => {
     let CurrentDate = moment().format('MM-DD-YYYY-HH-mm-ss');
     let badges = sortBadges.slice();
-    badges = badges.filter((badge) => {
+    badges = badges.filter(badge => {
       if (badge.featured) {
         return true;
       } else {
@@ -131,11 +135,11 @@ const BadgeReport = props => {
     });
 
     FormatReportForPdf(badges, formattedReport => {
-      const html = htmlToPdfmake(formattedReport, { tableAutoSize: true })
+      const html = htmlToPdfmake(formattedReport, { tableAutoSize: true });
       let docDefinition = {
         content: [html],
         pageBreakBefore: function(currentNode) {
-          return currentNode.style && currentNode.style.indexOf('pdf-pagebreak-before') > -1
+          return currentNode.style && currentNode.style.indexOf('pdf-pagebreak-before') > -1;
         },
         styles: {
           'html-div': { margin: [0, 4, 0, 4] },
@@ -167,7 +171,7 @@ const BadgeReport = props => {
       }
 
       if (typeof newBadges[index] === 'string') {
-        newBadges[index].lastModified = new Date(newBadges[index].lastModified)
+        newBadges[index].lastModified = new Date(newBadges[index].lastModified);
       }
     });
     console.log(numFeatured);
@@ -200,16 +204,22 @@ const BadgeReport = props => {
     setSortBadges(newBadges);
   };
 
-  const deletedBadge = (badge, index) => {
-    if (
-      window.confirm(
-        `Woah, easy tiger! Are you sure you want to delete this badge? \n \nNote: Even if you click "OK", this won't be fully deleted until you click the "Save Changes" button below.`,
-      )
-    ) {
-      let newBadges = sortBadges.slice();
-      newBadges.splice(index, 1);
-      setSortBadges(newBadges);
-    }
+  const handleDeleteBadge = (index) => {
+    setShowModal(true);
+    setBadgeToDelete(index);
+  };
+
+  const handleCancel = () => {
+    setShowModal(false);
+    setBadgeToDelete(null);
+  };
+
+  const deleteBadge = () => {
+    let newBadges = sortBadges.slice();
+    newBadges.splice(badgeToDelete, 1);
+    setSortBadges(newBadges);
+    setShowModal(false);
+    setBadgeToDelete(null);
   };
 
   const saveChanges = async () => {
@@ -220,9 +230,9 @@ const BadgeReport = props => {
     console.log(newBadgeCollection);
     await props.changeBadgesByUserID(props.userId, newBadgeCollection);
     await props.getUserProfile(props.userId);
-    //close the modal
+    // close the modal
     props.close();
-    //Reload the view profile page with updated bages
+    // Reload the view profile page with updated bages
     window.location.reload();
   };
 
@@ -279,7 +289,7 @@ const BadgeReport = props => {
                       min={0}
                       step={1}
                       onChange={e => {
-                        countChange(value, index, e.target.value)
+                        countChange(value, index, e.target.value);
                       }}
                     ></Input>
                   ) : (
@@ -291,7 +301,7 @@ const BadgeReport = props => {
                     <button
                       type="button"
                       className="btn btn-outline-danger"
-                      onClick={e => deletedBadge(value, index)}
+                      onClick={e => handleDeleteBadge(index)}
                     >
                       Delete
                     </button>
@@ -304,8 +314,8 @@ const BadgeReport = props => {
                     type="checkbox"
                     id={value.badge._id}
                     checked={value.featured}
-                    onChange={e => {
-                      featuredChange(value, index, e)
+                    onChange={(e) => {
+                      featuredChange(value, index, e);
                     }}
                   />
                 </td>
@@ -316,7 +326,7 @@ const BadgeReport = props => {
       <Button
         className="btn--dark-sea-green float-right"
         style={{ margin: 5 }}
-        onClick={e => {
+        onClick={(e) => {
           saveChanges();
         }}
       >
@@ -336,6 +346,22 @@ const BadgeReport = props => {
       >
         Export Selected/Featured Badges to PDF
       </Button>
+      <Modal isOpen={showModal}>
+        <ModalBody>
+          <p>Woah, easy tiger! Are you sure you want to delete this badge?</p>
+          <br />
+          <p>
+            Note: Even if you click "Yes, Delete", this won't be fully deleted until you click the
+            "Save Changes" button below.
+          </p>
+        </ModalBody>
+        <ModalFooter>
+          <Button onClick={() => handleCancel()}>Cancel</Button>
+          <Button color="danger" onClick={() => deleteBadge()}>
+            Yes, Delete
+          </Button>
+        </ModalFooter>
+      </Modal>
     </div>
   );
 };
