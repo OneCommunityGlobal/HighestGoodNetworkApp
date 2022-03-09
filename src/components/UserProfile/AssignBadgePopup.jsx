@@ -13,7 +13,7 @@ import axios from 'axios';
 const AssignBadgePopup = (props) => {
   const [searchedName, setSearchedName] = useState('');
 
-  const onSearch = text => {
+  const onSearch = (text) => {
     setSearchedName(text);
   };
 

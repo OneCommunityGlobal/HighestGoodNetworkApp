@@ -15,6 +15,7 @@ import './Badge.css';
 import FeaturedBadges from './FeaturedBadges';
 import BadgeReport from '../Badge/BadgeReport';
 import AssignBadgePopup from './AssignBadgePopup';
+import { clearSelected } from 'actions/badgeManagement';
 
 const Badges = (props) => {
   const [isOpen, setOpen] = useState(false);
@@ -25,6 +26,12 @@ const Badges = (props) => {
   const assignToggle = () => {
     setAssignOpen(isAssignOpen => !isAssignOpen);
   };
+
+  useEffect(() => {
+    if (!isOpen && !isAssignOpen) {
+      props.clearSelected();
+    }
+  }, [isOpen, isAssignOpen]);
 
   return (
     <>
@@ -131,8 +138,12 @@ const Badges = (props) => {
   );
 };
 
+const mapDispatchToProps = dispatch => ({
+  clearSelected: () => dispatch(clearSelected()),
+});
+
 const mapStateToProps = state => ({
   allBadgeData: state?.badge?.allBadgeData,
 });
 
-export default connect(mapStateToProps)(Badges);
+export default connect(mapStateToProps, mapDispatchToProps)(Badges);

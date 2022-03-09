@@ -11,6 +11,7 @@ import PopUpBar from '../PopUpBar';
 import '../../App.css';
 import { connect } from 'react-redux';
 import { getUserProfile } from '../../actions/userProfile';
+import { getTimeZoneAPIKey } from '../../actions/timezoneAPIActions';
 
 export const Dashboard = (props) => {
   const [popup, setPopup] = useState(false);
@@ -26,6 +27,10 @@ export const Dashboard = (props) => {
       }
     }, 150);
   };
+
+  useEffect(() => {
+    props.getTimeZoneAPIKey();
+  }, []);
 
   useEffect(() => {
     if (props.match.params && props.match.params.userid && userId != props.match.params.userId) {
@@ -87,4 +92,6 @@ const mapStateToProps = state => ({
   auth: state.auth,
 });
 
-export default connect(mapStateToProps)(Dashboard);
+export default connect(mapStateToProps, {
+  getTimeZoneAPIKey,
+})(Dashboard);

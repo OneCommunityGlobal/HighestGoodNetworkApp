@@ -3,6 +3,7 @@ import {
   ADD_SELECT_BADGE,
   REMOVE_SELECT_BADGE,
   CLEAR_NAME_AND_SELECTED,
+  CLEAR_SELECTED,
   GET_FIRST_NAME,
   GET_LAST_NAME,
   GET_MESSAGE,
@@ -33,6 +34,8 @@ export const badgeReducer = (state = badgeInitial, action) => {
       return { ...state, selectedBadges: toRemove };
     case CLEAR_NAME_AND_SELECTED:
       return { ...state, selectedBadges: [], firstName: '', lastName: '' };
+    case CLEAR_SELECTED:
+      return { ...state, selectedBadges: [] };
     case GET_FIRST_NAME:
       return { ...state, firstName: action.firstName };
     case GET_LAST_NAME:
