@@ -1,5 +1,5 @@
-import React, { Component } from 'react'
-import { StickyContainer } from 'react-sticky'
+import React, { Component } from 'react';
+import { StickyContainer } from 'react-sticky';
 import {
   Container,
   Row,
@@ -15,37 +15,37 @@ import {
   NavItem,
   NavLink,
   Nav,
-} from 'reactstrap'
+} from 'reactstrap';
 
-import ToggleSwitch from '../UserProfileEdit/ToggleSwitch'
-import './UserProfileAdd.scss'
-import { createUser, resetPassword } from '../../../services/userProfileService'
-import { toast } from 'react-toastify'
-import TeamsTab from '../TeamsAndProjects/TeamsTab'
-import ProjectsTab from '../TeamsAndProjects/ProjectsTab'
-import { connect } from 'react-redux'
-import _ from 'lodash'
-import { getUserProfile, updateUserProfile, clearUserProfile } from '../../../actions/userProfile'
+import ToggleSwitch from '../UserProfileEdit/ToggleSwitch';
+import './UserProfileAdd.scss';
+import { createUser, resetPassword } from '../../../services/userProfileService';
+import { toast } from 'react-toastify';
+import TeamsTab from '../TeamsAndProjects/TeamsTab';
+import ProjectsTab from '../TeamsAndProjects/ProjectsTab';
+import { connect } from 'react-redux';
+import _ from 'lodash';
+import { getUserProfile, updateUserProfile, clearUserProfile } from '../../../actions/userProfile';
 import {
   getAllUserTeams,
   updateTeam,
   deleteTeamMember,
   addTeamMember,
-} from '../../../actions/allTeamsAction'
+} from '../../../actions/allTeamsAction';
 
-import { fetchAllProjects } from 'actions/projects'
+import { fetchAllProjects } from 'actions/projects';
 
-import PhoneInput from 'react-phone-input-2'
-import 'react-phone-input-2/lib/style.css'
+import PhoneInput from 'react-phone-input-2';
+import 'react-phone-input-2/lib/style.css';
 
-import classnames from 'classnames'
-import TimeZoneDropDown from '../TimeZoneDropDown'
-import { getUserTimeZone } from 'services/timezoneApiService'
+import classnames from 'classnames';
+import TimeZoneDropDown from '../TimeZoneDropDown';
+import { getUserTimeZone } from 'services/timezoneApiService';
 
-const patt = RegExp(/^([\w.%+-]+)@([\w-]+\.)+([\w]{2,})$/i)
+const patt = RegExp(/^([\w.%+-]+)@([\w-]+\.)+([\w]{2,})$/i);
 class AddUserProfile extends Component {
   constructor(props) {
-    super(props)
+    super(props);
     this.state = {
       weeklyCommittedHours: 10,
       teams: [],
@@ -73,18 +73,19 @@ class AddUserProfile extends Component {
       location: '',
       timeZoneFilter: '',
       formSubmitted: false,
-    }
+    };
   }
 
   componentDidMount() {
-    this.state.showphone = true
-    this.onCreateNewUser()
+    this.state.showphone = true;
+    this.onCreateNewUser();
   }
 
   render() {
-    const { firstName, email, lastName, phoneNumber, role, jobTitle } = this.state.userProfile
+    const { firstName, email, lastName, phoneNumber, role, jobTitle } = this.state.userProfile;
     const phoneNumberEntered =
-      this.state.userProfile.phoneNumber === null || this.state.userProfile.phoneNumber.length === 0
+      this.state.userProfile.phoneNumber === null ||
+      this.state.userProfile.phoneNumber.length === 0;
     return (
       <StickyContainer>
         <Container className="emp-profile">
@@ -174,7 +175,7 @@ class AddUserProfile extends Component {
                       <PhoneInput
                         country={'us'}
                         value={phoneNumber}
-                        onChange={phone => this.phoneChange(phone)}
+                        onChange={(phone) => this.phoneChange(phone)}
                       />
                       {this.state.formSubmitted && phoneNumberEntered && (
                         <div className="required-user-field">
@@ -277,7 +278,9 @@ class AddUserProfile extends Component {
                     <Row>
                       <Col md="6">
                         <Input
-                          onChange={e => this.setState({ ...this.state, location: e.target.value })}
+                          onChange={(e) =>
+                            this.setState({ ...this.state, location: e.target.value })
+                          }
                         />
                       </Col>
                       <Col md="6">
@@ -320,7 +323,7 @@ class AddUserProfile extends Component {
                     <NavLink
                       className={classnames({ active: this.state.activeTab === '1' }, 'nav-link')}
                       onClick={() => {
-                        this.toggleTab('1')
+                        this.toggleTab('1');
                       }}
                     >
                       Project
@@ -330,7 +333,7 @@ class AddUserProfile extends Component {
                     <NavLink
                       className={classnames({ active: this.state.activeTab === '2' }, 'nav-link')}
                       onClick={() => {
-                        this.toggleTab('2')
+                        this.toggleTab('2');
                       }}
                     >
                       Team
@@ -379,98 +382,98 @@ class AddUserProfile extends Component {
           </Row>
         </Container>
       </StickyContainer>
-    )
+    );
   }
 
-  onDeleteTeam = deletedTeamId => {
-    const teams = [...this.state.teams]
-    const filteredTeam = teams.filter(team => team._id !== deletedTeamId)
+  onDeleteTeam = (deletedTeamId) => {
+    const teams = [...this.state.teams];
+    const filteredTeam = teams.filter((team) => team._id !== deletedTeamId);
 
     this.setState({
       teams: filteredTeam,
-    })
-  }
+    });
+  };
 
-  onDeleteProject = deletedProjectId => {
-    const projects = [...this.state.projects]
-    const _projects = projects.filter(project => project._id !== deletedProjectId)
+  onDeleteProject = (deletedProjectId) => {
+    const projects = [...this.state.projects];
+    const _projects = projects.filter((project) => project._id !== deletedProjectId);
     this.setState({
       projects: _projects,
-    })
-  }
+    });
+  };
 
-  onAssignTeam = assignedTeam => {
-    const teams = [...this.state.teams]
-    teams.push(assignedTeam)
+  onAssignTeam = (assignedTeam) => {
+    const teams = [...this.state.teams];
+    teams.push(assignedTeam);
 
     this.setState({
       teams: teams,
-    })
-  }
+    });
+  };
 
-  onAssignProject = assignedProject => {
-    const projects = [...this.state.projects]
-    projects.push(assignedProject)
+  onAssignProject = (assignedProject) => {
+    const projects = [...this.state.projects];
+    projects.push(assignedProject);
 
     this.setState({
       projects: projects,
-    })
-  }
+    });
+  };
 
   onCreateNewUser = () => {
-    this.props.fetchAllProjects()
+    this.props.fetchAllProjects();
 
     const initialUserProject = this.props.allProjects.projects.filter(
       ({ projectName }) => projectName === 'Orientation and Initial Setup',
-    )
+    );
 
-    this.setState({ projects: initialUserProject })
-  }
+    this.setState({ projects: initialUserProject });
+  };
 
   // Function to call TimeZoneService with location and key
   onClickGetTimeZone = () => {
-    const location = this.state.location
-    const key = this.props.timeZoneKey
+    const location = this.state.location;
+    const key = this.props.timeZoneKey;
     if (!location) {
-      alert('Please enter valid location')
-      return
+      alert('Please enter valid location');
+      return;
     }
     if (key) {
       getUserTimeZone(location, key)
-        .then(response => {
+        .then((response) => {
           if (
             response.data.status.code === 200 &&
             response.data.results &&
             response.data.results.length
           ) {
-            let timezone = response.data.results[0].annotations.timezone.name
-            this.setState({ ...this.state, timeZoneFilter: timezone })
+            let timezone = response.data.results[0].annotations.timezone.name;
+            this.setState({ ...this.state, timeZoneFilter: timezone });
           } else {
-            alert('Invalid location or ' + response.data.status.message)
+            alert('Invalid location or ' + response.data.status.message);
           }
         })
-        .catch(err => console.log(err))
+        .catch((err) => console.log(err));
     }
-  }
+  };
 
   fieldsAreValid = () => {
-    const firstLength = this.state.userProfile.firstName !== ''
-    const lastLength = this.state.userProfile.lastName !== ''
-    const phone = this.state.userProfile.phoneNumber
+    const firstLength = this.state.userProfile.firstName !== '';
+    const lastLength = this.state.userProfile.lastName !== '';
+    const phone = this.state.userProfile.phoneNumber;
 
     if (phone === null) {
-      toast.error('Phone Number is required')
-      return false
+      toast.error('Phone Number is required');
+      return false;
     } else if (firstLength && lastLength && phone.length > 10) {
-      return true
+      return true;
     } else {
-      toast.error('Please fill all the required fields')
-      return false
+      toast.error('Please fill all the required fields');
+      return false;
     }
-  }
+  };
 
   createUserProfile = () => {
-    let that = this
+    let that = this;
     const {
       firstName,
       email,
@@ -482,7 +485,7 @@ class AddUserProfile extends Component {
       googleDoc,
       jobTitle,
       timeZone,
-    } = that.state.userProfile
+    } = that.state.userProfile;
 
     const userData = {
       password: '123Welcome!',
@@ -501,28 +504,28 @@ class AddUserProfile extends Component {
       privacySettings: privacySettings,
       collaborationPreference: collaborationPreference,
       timeZone,
-    }
+    };
 
-    this.setState({ formSubmitted: true })
+    this.setState({ formSubmitted: true });
 
     if (googleDoc) {
-      userData.adminLinks.push({ Name: 'Google Doc', Link: googleDoc })
+      userData.adminLinks.push({ Name: 'Google Doc', Link: googleDoc });
     }
     if (this.fieldsAreValid()) {
-      this.setState({ showphone: false })
+      this.setState({ showphone: false });
       if (!email.match(patt)) {
-        toast.error('Email is not valid,Please include @ followed by .com format')
+        toast.error('Email is not valid,Please include @ followed by .com format');
       } else {
         createUser(userData)
-          .then(res => {
+          .then((res) => {
             if (res.data.warning) {
-              toast.warn(res.data.warning)
+              toast.warn(res.data.warning);
             } else {
-              toast.success('User profile created.')
+              toast.success('User profile created.');
             }
-            this.props.userCreated()
+            this.props.userCreated();
           })
-          .catch(err => {
+          .catch((err) => {
             if (err.response?.data?.type) {
               switch (err.response.data.type) {
                 case 'email':
@@ -535,8 +538,8 @@ class AddUserProfile extends Component {
                       ...that.state.formErrors,
                       email: 'Email already exists',
                     },
-                  })
-                  break
+                  });
+                  break;
                 case 'phoneNumber':
                   this.setState({
                     formValid: {
@@ -548,31 +551,31 @@ class AddUserProfile extends Component {
                       ...that.state.formErrors,
                       phoneNumber: 'Phone number already exists',
                     },
-                  })
-                  break
+                  });
+                  break;
               }
             }
             toast.error(
               err.response?.data?.error ||
                 'An unknown error occurred while attempting to create this user.',
-            )
-          })
+            );
+          });
       }
     }
-  }
+  };
 
-  handleImageUpload = async e => {
-    e.preventDefault()
+  handleImageUpload = async (e) => {
+    e.preventDefault();
 
-    const file = e.target.files[0]
+    const file = e.target.files[0];
 
-    const allowedTypesString = 'image/png,image/jpeg, image/jpg'
-    const allowedTypes = allowedTypesString.split(',')
-    let isValid = true
-    let imageUploadError = ''
+    const allowedTypesString = 'image/png,image/jpeg, image/jpg';
+    const allowedTypes = allowedTypesString.split(',');
+    let isValid = true;
+    let imageUploadError = '';
     if (!allowedTypes.includes(file.type)) {
-      imageUploadError = `File type must be ${allowedTypesString}.`
-      isValid = false
+      imageUploadError = `File type must be ${allowedTypesString}.`;
+      isValid = false;
 
       return this.setState({
         type: 'image',
@@ -581,14 +584,14 @@ class AddUserProfile extends Component {
         showModal: true,
         modalTitle: 'Profile Pic Error',
         modalMessage: imageUploadError,
-      })
+      });
     }
-    const filesizeKB = file.size / 1024
+    const filesizeKB = file.size / 1024;
 
     if (filesizeKB > 50) {
       imageUploadError = `\n The file you are trying to upload exceeds the maximum size of 50KB. You can either
-														choose a different file, or use an online file compressor.`
-      isValid = false
+														choose a different file, or use an online file compressor.`;
+      isValid = false;
 
       return this.setState({
         type: 'image',
@@ -597,11 +600,11 @@ class AddUserProfile extends Component {
         showModal: true,
         modalTitle: 'Profile Pic Error',
         modalMessage: imageUploadError,
-      })
+      });
     }
 
-    const reader = new FileReader()
-    reader.readAsDataURL(file)
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
     reader.onloadend = () => {
       this.setState({
         imageUploadError: '',
@@ -609,20 +612,20 @@ class AddUserProfile extends Component {
           ...this.state.userProfile,
           profilePic: reader.result,
         },
-      })
-    }
-  }
+      });
+    };
+  };
 
-  toggleTab = tab => {
+  toggleTab = (tab) => {
     if (this.state.activeTab !== tab) {
       this.setState({
         activeTab: tab,
-      })
+      });
     }
-  }
+  };
 
-  phoneChange = phone => {
-    const { userProfile, formValid, formErrors } = this.state
+  phoneChange = (phone) => {
+    const { userProfile, formValid, formErrors } = this.state;
     this.setState({
       userProfile: {
         ...userProfile,
@@ -638,11 +641,11 @@ class AddUserProfile extends Component {
         ...formErrors,
         phoneNumber: phone.length > 10 ? '' : 'Please enter valid phone number',
       },
-    })
-  }
+    });
+  };
 
-  handleUserProfile = event => {
-    const { userProfile, formValid, formErrors } = this.state
+  handleUserProfile = (event) => {
+    const { userProfile, formValid, formErrors } = this.state;
 
     switch (event.target.id) {
       case 'firstName':
@@ -660,8 +663,8 @@ class AddUserProfile extends Component {
             ...formErrors,
             firstName: event.target.value.length > 0 ? '' : 'First Name required',
           },
-        })
-        break
+        });
+        break;
       case 'lastName':
         this.setState({
           userProfile: {
@@ -676,8 +679,8 @@ class AddUserProfile extends Component {
             ...formErrors,
             lastName: event.target.value.length > 0 ? '' : 'Last Name required',
           },
-        })
-        break
+        });
+        break;
       case 'email':
         this.setState({
           userProfile: {
@@ -692,8 +695,8 @@ class AddUserProfile extends Component {
             ...formErrors,
             email: event.target.value.match(patt) ? '' : 'Email is not valid',
           },
-        })
-        break
+        });
+        break;
       case 'timeZone':
         this.setState({
           userProfile: {
@@ -704,8 +707,8 @@ class AddUserProfile extends Component {
             ...formValid,
             [event.target.id]: !!event.target.value,
           },
-        })
-        break
+        });
+        break;
       case 'jobTitle':
         this.setState({
           ...this.state,
@@ -713,8 +716,8 @@ class AddUserProfile extends Component {
             ...this.state.userProfile,
             jobTitle: event.target.value,
           },
-        })
-        break
+        });
+        break;
       case 'weeklyCommittedHours':
         this.setState({
           userProfile: {
@@ -729,8 +732,8 @@ class AddUserProfile extends Component {
             ...formErrors,
             weeklyCommittedHours: !!event.target.value ? '' : 'Committed hours can not be empty',
           },
-        })
-        break
+        });
+        break;
       case 'collaborationPreference':
         this.setState({
           userProfile: {
@@ -741,8 +744,8 @@ class AddUserProfile extends Component {
             ...formValid,
             [event.target.id]: !!event.target.value,
           },
-        })
-        break
+        });
+        break;
       case 'role':
         this.setState({
           userProfile: {
@@ -753,16 +756,16 @@ class AddUserProfile extends Component {
             ...formValid,
             [event.target.id]: !!event.target.value,
           },
-        })
-        break
+        });
+        break;
       case 'googleDoc':
         this.setState({
           userProfile: {
             ...userProfile,
             [event.target.id]: event.target.value,
           },
-        })
-        break
+        });
+        break;
       case 'emailPubliclyAccessible':
         this.setState({
           userProfile: {
@@ -772,8 +775,8 @@ class AddUserProfile extends Component {
               email: !userProfile.privacySettings?.email,
             },
           },
-        })
-        break
+        });
+        break;
       case 'phonePubliclyAccessible':
         this.setState({
           userProfile: {
@@ -783,24 +786,24 @@ class AddUserProfile extends Component {
               phoneNumber: !userProfile.privacySettings?.phoneNumber,
             },
           },
-        })
-        break
+        });
+        break;
       default:
         this.setState({
           ...userProfile,
-        })
+        });
     }
-  }
+  };
 }
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state) => ({
   auth: state.auth,
   userProjects: state.userProjects,
   allProjects: _.get(state, 'allProjects'),
   allTeams: state,
   timeZoneKey: state.timeZoneAPI.userAPIKey,
   state,
-})
+});
 
 export default connect(mapStateToProps, {
   getUserProfile,
@@ -811,4 +814,4 @@ export default connect(mapStateToProps, {
   deleteTeamMember,
   addTeamMember,
   fetchAllProjects,
-})(AddUserProfile)
+})(AddUserProfile);

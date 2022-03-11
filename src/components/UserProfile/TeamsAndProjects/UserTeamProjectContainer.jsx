@@ -5,7 +5,6 @@ import AddTeamPopup from './AddTeamPopup';
 import UserProjectsTable from './UserProjectsTable';
 import UserTeamsTable from './UserTeamsTable';
 
-
 class UserTeamProjectContainer extends React.PureComponent {
   constructor(props) {
     super(props);
@@ -62,11 +61,11 @@ class UserTeamProjectContainer extends React.PureComponent {
 
   onSelectDeleteTeam = (teamId) => {
     this.props.onDeleteteam(teamId);
-  }
+  };
 
   onSelectDeleteProject = (projectId) => {
     this.props.onDeleteProject(projectId);
-  }
+  };
 
   onSelectAssignTeam = (team) => {
     this.props.onAssignTeam(team);
@@ -74,7 +73,7 @@ class UserTeamProjectContainer extends React.PureComponent {
       renderedOn: Date.now(),
       addTeamPopupOpen: false,
     });
-  }
+  };
 
   onSelectAssignProject = (project) => {
     this.props.onAssignProject(project);
@@ -82,31 +81,30 @@ class UserTeamProjectContainer extends React.PureComponent {
       renderedOn: Date.now(),
       addProjectPopupOpen: false,
     });
-  }
+  };
 
   onAddProjectPopupShow = () => {
     this.setState({
       addProjectPopupOpen: true,
     });
-  }
-
+  };
 
   onAddProjectPopupClose = () => {
     this.setState({
       addProjectPopupOpen: false,
     });
-  }
+  };
 
   onAddTeamPopupShow = () => {
     this.setState({
       addTeamPopupOpen: true,
     });
-  }
+  };
 
   onAddTeamPopupClose = () => {
     this.setState({
       addTeamPopupOpen: false,
     });
-  }
+  };
 }
 export default UserTeamProjectContainer;

@@ -1,15 +1,13 @@
-import {
-  SET_TIMER
-} from '../constants/timer'
-  
-  const initialState = {
-    seconds: 0
-  }
-  
+import { SET_TIMER } from '../constants/timer';
+
+const initialState = {
+  seconds: 0,
+};
+
 export const timerReducer = (state = initialState, action) => {
   switch (action.type) {
-    case SET_TIMER: 
-      return action.payload
+    case SET_TIMER:
+      return action.payload;
     // case GET_TIME_ENTRIES_PERIOD:
     //   return {
     //     ...state,
@@ -26,4 +24,4 @@ export const timerReducer = (state = initialState, action) => {
     default:
       return state;
   }
-}
+};

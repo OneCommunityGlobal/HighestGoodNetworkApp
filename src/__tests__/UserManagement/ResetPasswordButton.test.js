@@ -1,18 +1,15 @@
 import React from 'react';
-import {screen, render, fireEvent, waitFor} from '@testing-library/react';
+import { screen, render, fireEvent, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import ResetPasswordButton from '../../components/UserManagement/ResetPasswordButton';
 import * as services from '../../services/userProfileService';
 import { userProfileMock } from '../mockStates';
-import {toast} from "react-toastify";
+import { toast } from 'react-toastify';
 jest.mock('react-toastify');
 
 describe('reset password button ', () => {
   beforeEach(() => {
-    render(<ResetPasswordButton
-      isSmallButton
-      user={userProfileMock}
-    />);
+    render(<ResetPasswordButton isSmallButton user={userProfileMock} />);
   });
   describe('Structure', () => {
     it('should render a button', () => {
@@ -28,8 +25,12 @@ describe('reset password button ', () => {
       const spy = jest.spyOn(services, 'resetPassword').mockImplementation(() => Promise.resolve());
 
       userEvent.click(screen.getByRole('button', { name: /reset password/i }));
-      await userEvent.type(screen.getByLabelText(/new password/i), 'ABc@12345!', { allAtOnce: false });
-      await userEvent.type(screen.getByLabelText(/confirm password/i), 'ABc@12345!', { allAtOnce: false });
+      await userEvent.type(screen.getByLabelText(/new password/i), 'ABc@12345!', {
+        allAtOnce: false,
+      });
+      await userEvent.type(screen.getByLabelText(/confirm password/i), 'ABc@12345!', {
+        allAtOnce: false,
+      });
       userEvent.click(screen.getAllByRole('button', { name: /reset password/i })[1]);
 
       expect(spy).toHaveBeenCalled();
@@ -38,8 +39,12 @@ describe('reset password button ', () => {
       jest.spyOn(services, 'resetPassword').mockImplementation(() => Promise.resolve());
 
       userEvent.click(screen.getByRole('button', { name: /reset password/i }));
-      await userEvent.type(screen.getByLabelText(/new password/i), 'ABc@12345!', { allAtOnce: false });
-      await userEvent.type(screen.getByLabelText(/confirm password/i), 'ABc@12345!', { allAtOnce: false });
+      await userEvent.type(screen.getByLabelText(/new password/i), 'ABc@12345!', {
+        allAtOnce: false,
+      });
+      await userEvent.type(screen.getByLabelText(/confirm password/i), 'ABc@12345!', {
+        allAtOnce: false,
+      });
       userEvent.click(screen.getAllByRole('button', { name: /reset password/i })[1]);
 
       await waitFor(() => {

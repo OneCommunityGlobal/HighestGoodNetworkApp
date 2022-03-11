@@ -7,7 +7,6 @@ import Dashboard from '../components/Dashboard';
 describe('App tests', () => {
   let mountedapp;
 
-
   beforeEach(() => {
     mountedapp = shallow(<App />);
   });

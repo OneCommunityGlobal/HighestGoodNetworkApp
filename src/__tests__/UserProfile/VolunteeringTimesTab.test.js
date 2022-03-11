@@ -1,14 +1,13 @@
 import React from 'react';
 import { screen, render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import {
-  authMock, userProfileMock, timeEntryMock, userProjectMock,
-} from '../mockStates';
+import { authMock, userProfileMock, timeEntryMock, userProjectMock } from '../mockStates';
 
 // import BasicInformationTab from '../../components/UserProfile/BasicInformationTab';
 import VolunteeringTimeTab from '../../components/UserProfile/VolunteeringTimeTab/VolunteeringTimeTab';
 
-const weeklyHoursReducer = (acc, val) => acc + (parseInt(val.hours, 10) + parseInt(val.minutes, 10) / 60);
+const weeklyHoursReducer = (acc, val) =>
+  acc + (parseInt(val.hours, 10) + parseInt(val.minutes, 10) / 60);
 describe('volunteering times tab user is admin', () => {
   const handleUserProfile = jest.fn();
   beforeEach(() => {
@@ -44,7 +43,9 @@ describe('volunteering times tab user is admin', () => {
       expect(screen.getByTestId('weeklyCommittedHours')).toBeInTheDocument();
     });
     it('should render a weekly committed hours field with correct value', () => {
-      expect(screen.getByTestId('weeklyCommittedHours')).toHaveValue(userProfileMock.weeklyComittedHours);
+      expect(screen.getByTestId('weeklyCommittedHours')).toHaveValue(
+        userProfileMock.weeklyComittedHours,
+      );
     });
     it('should render a total hours field', () => {
       //TEST IS FAILING NEED TO FIX

@@ -1,9 +1,7 @@
 import React from 'react';
 import { screen, render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import {
-  authMock, userProfileMock, timeEntryMock, userProjectMock,
-} from '../mockStates';
+import { authMock, userProfileMock, timeEntryMock, userProjectMock } from '../mockStates';
 import BlueSquare from '../../components/UserProfile/BlueSquares';
 
 describe('blue squre is user admin', () => {
@@ -34,7 +32,7 @@ describe('blue squre is user admin', () => {
   it('should have a + button', () => {
     expect(screen.getByText('+')).toBeInTheDocument();
   });
-  it('should fire handleBlueSquare to add blue square once the admin user click +',() =>{
+  it('should fire handleBlueSquare to add blue square once the admin user click +', () => {
     userEvent.click(screen.getByText('+'));
     expect(handleBlueSquare).toHaveBeenCalled();
   });
@@ -56,6 +54,6 @@ describe('blue square is not user admin', () => {
   });
   //it('should fire handleBlueSquare to view the blue square once the user click',() =>{
   //  userEvent.click(screen.getByTestId('addBlueSquare'));
-  //  expect(handleBlueSquare).toHaveBeenCalled();    
+  //  expect(handleBlueSquare).toHaveBeenCalled();
   //});
 });

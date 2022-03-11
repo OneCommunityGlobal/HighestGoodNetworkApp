@@ -4,22 +4,28 @@ class TextSearchBox extends React.PureComponent {
   constructor(props) {
     super(props);
     this.state = {
-      text: ''
-    }
+      text: '',
+    };
   }
 
   render() {
-    return <input type="text" value={this.props.value} id={'search_' + this.props.id}
-      style={this.props.style}
-      onChange={this.onTextChange}></input>
+    return (
+      <input
+        type="text"
+        value={this.props.value}
+        id={'search_' + this.props.id}
+        style={this.props.style}
+        onChange={this.onTextChange}
+      ></input>
+    );
   }
 
   onTextChange = (event) => {
     this.props.searchCallback(event.target.value);
     this.setState({
-      text: event.target.value
+      text: event.target.value,
     });
-  }
+  };
 }
 
 export default TextSearchBox;

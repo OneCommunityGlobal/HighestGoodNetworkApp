@@ -6,19 +6,12 @@ import './UserProfile.scss';
 import './UserProfileEdit/UserProfileEdit.scss';
 
 const BlueSqaureLayout = (props) => {
-
-  const {
-    userProfile,
-    handleUserProfile,
-    handleBlueSquare,
-    isUserAdmin,
-    isUserSelf,
-  } = props;
+  const { userProfile, handleUserProfile, handleBlueSquare, isUserAdmin, isUserSelf } = props;
 
   const { privacySettings, infringments } = userProfile;
 
   const canEdit = isUserAdmin || isUserSelf;
-  
+
   if (canEdit) {
     return (
       <div data-testid="blueSqaure-field">
@@ -44,7 +37,9 @@ const BlueSqaureLayout = (props) => {
   }
   return (
     <div>
-      {!privacySettings.blueSquares ? <p>Blue Square Info is Private</p> : (
+      {!privacySettings.blueSquares ? (
+        <p>Blue Square Info is Private</p>
+      ) : (
         <div>
           <p>BLUE SQAURES</p>
           <BlueSquare

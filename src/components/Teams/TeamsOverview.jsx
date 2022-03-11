@@ -1,7 +1,5 @@
-import React from 'react'
+import React from 'react';
 import { TOTAL_TEAMS, ACTIVE_TEAMS } from '../../languages/en/ui';
-
-
 
 const TeamsOverview = (props) => {
   return (
@@ -18,16 +16,15 @@ const TeamsOverview = (props) => {
       <div className="card" id="card_active">
         <div className="card-body">
           <h4 className="card-title">{props.numberOfActiveTeams}</h4>
-          <h6 className="card-subtitle" >
+          <h6 className="card-subtitle">
             <div className="isActive">
               <i className="fa fa-circle" aria-hidden="true"></i> {ACTIVE_TEAMS}
             </div>
           </h6>
         </div>
       </div>
-
     </div>
-  )
-}
+  );
+};
 
 export default TeamsOverview;

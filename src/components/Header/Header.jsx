@@ -1,10 +1,10 @@
-import React from "react";
+import React from 'react';
 // import { getUserProfile } from '../../actions/userProfile'
-import { getHeaderData } from "../../actions/authActions";
-import { getTimerData } from "../../actions/timer";
-import { Link } from "react-router-dom";
-import { connect } from "react-redux";
-import Timer from "../Timer/Timer";
+import { getHeaderData } from '../../actions/authActions';
+import { getTimerData } from '../../actions/timer';
+import { Link } from 'react-router-dom';
+import { connect } from 'react-redux';
+import Timer from '../Timer/Timer';
 import {
   LOGO,
   DASHBOARD,
@@ -20,8 +20,8 @@ import {
   VIEW_PROFILE,
   UPDATE_PASSWORD,
   LOGOUT,
-  POPUP_MANAGEMENT
-} from "../../languages/en/ui";
+  POPUP_MANAGEMENT,
+} from '../../languages/en/ui';
 import {
   Collapse,
   Navbar,
@@ -33,17 +33,17 @@ import {
   UncontrolledDropdown,
   DropdownToggle,
   DropdownMenu,
-  DropdownItem
-} from "reactstrap";
-import { UserRole } from "../../utils/enums";
-import "./Header.css";
+  DropdownItem,
+} from 'reactstrap';
+import { UserRole } from '../../utils/enums';
+import './Header.css';
 
 export class Header extends React.Component {
   constructor(props) {
     super(props);
     this.toggle = this.toggle.bind(this);
     this.state = {
-      isOpen: false
+      isOpen: false,
     };
   }
 
@@ -63,7 +63,7 @@ export class Header extends React.Component {
   }
   toggle() {
     this.setState({
-      isOpen: !this.state.isOpen
+      isOpen: !this.state.isOpen,
     });
   }
 
@@ -177,10 +177,7 @@ export class Header extends React.Component {
                     <DropdownItem tag={Link} to={`/userprofile/${user.userid}`}>
                       {VIEW_PROFILE}
                     </DropdownItem>
-                    <DropdownItem
-                      tag={Link}
-                      to={`/updatepassword/${user.userid}`}
-                    >
+                    <DropdownItem tag={Link} to={`/updatepassword/${user.userid}`}>
                       {UPDATE_PASSWORD}
                     </DropdownItem>
                     <DropdownItem divider />
@@ -197,11 +194,11 @@ export class Header extends React.Component {
     );
   }
 }
-const mapStateToProps = state => ({
+const mapStateToProps = (state) => ({
   auth: state.auth,
-  userProfile: state.userProfile
+  userProfile: state.userProfile,
 });
 export default connect(mapStateToProps, {
   getHeaderData,
-  getTimerData
+  getTimerData,
 })(Header);

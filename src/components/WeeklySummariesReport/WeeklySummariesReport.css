@@ -3,13 +3,13 @@
 }
 
 .nav-tabs .nav-link {
-	cursor: pointer;
+  cursor: pointer;
 }
 
 .tab-content {
-	background-color: #fff;
-	border: 1px solid transparent;
-	border-color:#fff #dee2e6 #dee2e6;
+  background-color: #fff;
+  border: 1px solid transparent;
+  border-color: #fff #dee2e6 #dee2e6;
 }
 
 .report-wrapper {

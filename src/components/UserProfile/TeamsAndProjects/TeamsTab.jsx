@@ -4,9 +4,7 @@ import AddTeamPopup from './AddTeamPopup';
 import UserTeamsTable from './UserTeamsTable';
 
 const TeamsTab = (props) => {
-  const {
-    teamsData, userTeams, isUserAdmin, onDeleteteam, onAssignTeam, edit,
-  } = props;
+  const { teamsData, userTeams, isUserAdmin, onDeleteteam, onAssignTeam, edit } = props;
   const [addTeamPopupOpen, setaddTeamPopupOpen] = useState(false);
   const [renderedOn, setRenderedOn] = useState(0);
 

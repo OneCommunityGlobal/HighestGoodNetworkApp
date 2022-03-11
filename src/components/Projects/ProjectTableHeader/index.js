@@ -1,1 +1,1 @@
-export { default } from "./ProjectTableHeader";
+export { default } from './ProjectTableHeader';

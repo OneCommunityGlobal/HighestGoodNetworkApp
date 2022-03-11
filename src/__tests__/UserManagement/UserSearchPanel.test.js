@@ -11,11 +11,13 @@ describe('user search panel', () => {
     onNewUserClick = jest.fn();
     onSearch = jest.fn();
     onActiveFilter = jest.fn();
-    render(<UserSearchPanel
-      onSearch={onSearch}
-      onActiveFiter={onActiveFilter}
-      onNewUserClick={onNewUserClick}
-    />);
+    render(
+      <UserSearchPanel
+        onSearch={onSearch}
+        onActiveFiter={onActiveFilter}
+        onNewUserClick={onNewUserClick}
+      />,
+    );
   });
 
   describe('Structure', () => {

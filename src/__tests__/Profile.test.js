@@ -2,9 +2,7 @@ import React from 'react';
 import { shallow } from 'enzyme';
 import Profile from '../components/Profile';
 
-it('Profile TEST Commented Out', () => {
-})
-
+it('Profile TEST Commented Out', () => {});
 
 // const setInputField = function (page, name, value) {
 //   const mockEvent = {
