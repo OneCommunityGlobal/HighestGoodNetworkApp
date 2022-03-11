@@ -97,6 +97,7 @@ const UserProfile = props => {
     try {
       const response = await axios.get(ENDPOINTS.USER_PROFILE(userId));
       const newUserProfile = response.data;
+
       setUserProfile(newUserProfile);
       setOriginalUserProfile(newUserProfile);
       setShowLoading(false);
@@ -151,9 +152,9 @@ const UserProfile = props => {
     setChanged(true)
   }
 
-   const handleImageUpload = async evt => { 
-    if (evt) evt.preventDefault() 
-    const file = evt.target.files[0]   
+   const handleImageUpload = async evt => {
+    if (evt) evt.preventDefault()
+    const file = evt.target.files[0]
     if (typeof(file) != "undefined"){
 
     const filesizeKB = file.size / 1024
@@ -161,11 +162,11 @@ const UserProfile = props => {
     const allowedTypesString = `File type not permitted. Allowed types are ${allowedTypes
       .toString()
       .replaceAll(',', ', ')}`
-     
+
 
     //Input validation: file type
     if (!allowedTypes.includes(file.type)) {
-      setType('image')      
+      setType('image')
       //setIsValid(false)
       setShowModal(true)
       setModalTitle('Profile Pic Error')
@@ -186,7 +187,7 @@ const UserProfile = props => {
 
       return
     }
- 
+
 
     const fileReader = new FileReader()
     fileReader.readAsDataURL(file)
@@ -194,7 +195,7 @@ const UserProfile = props => {
       setChanged(true)
       setUserProfile({ ...userProfile, profilePic: fileReader.result })
     }
-    } 
+    }
   }
 
   const handleBlueSquare = (status = true, type = 'message', blueSquareID = '') => {
@@ -283,10 +284,10 @@ const UserProfile = props => {
   }
 
   /**
-   * 
+   *
    * UserProfile.jsx and its subsomponents are being refactored to avoid the use of this monolithic function.
    * Please pass userProfile, setUserProfile, and setChanged as props to subcomponents and modify state that way.
-   * This function is being kept here until the refactoring is complete. 
+   * This function is being kept here until the refactoring is complete.
    */
   const handleUserProfile = event => {
     setChanged(true)
@@ -343,6 +344,7 @@ const UserProfile = props => {
   const canEdit = isUserAdmin || isUserSelf
 
   return (
+
     <div>
       {showModal && (
         <UserProfileModal
@@ -384,7 +386,7 @@ const UserProfile = props => {
                    // onChange={this.handleImageUpload}
                     onChange={handleImageUpload}
                     accept="image/png,image/jpeg, image/jpg"
-                    
+
                   />
                 </div>
               ) : null}

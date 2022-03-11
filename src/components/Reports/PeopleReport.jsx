@@ -16,6 +16,8 @@ import { DropdownItem, FormGroup, Label, Input, Form, Modal, ModalHeader, ModalB
 import { getTimeEntriesForPeriod } from '../../actions/timeEntries'
 import InfringmentsViz from './InfringmentsViz'
 import TimeEntriesViz from './TimeEntriesViz'
+import PeopleTableDetails from './PeopleTableDetails'
+import DatePicker from 'react-datepicker'
 
 class PeopleReport extends Component {
   constructor(props) {
@@ -42,6 +44,8 @@ class PeopleReport extends Component {
       fromDate: "2016-01-01",
       toDate: this.endOfWeek(0),
       timeEntries: {},
+      startDate:'',
+      endDate:''
     }
     this.setStatus=this.setStatus.bind(this)
     this.setPriority=this.setPriority.bind(this)
@@ -51,6 +55,8 @@ class PeopleReport extends Component {
     this.setClassfication=this.setClassfication.bind(this)
     this.setUsers=this.setUsers.bind(this)
     this.setDate=this.setDate.bind(this)
+    this.setStartDate=this.setStartDate.bind(this)
+    this.setEndDate=this.setEndDate.bind(this)
   }
 
   async componentDidMount() {
@@ -82,6 +88,23 @@ class PeopleReport extends Component {
           console.log(this.state.userProjects)
       )
     }
+  }
+
+  setStartDate(date) {
+    console.log("start date::"+date)
+    this.setState((state) => {
+      return {
+        startDate:date
+      }
+    });
+  }
+  setEndDate(date) {
+    console.log("end date::"+date)
+    this.setState((state) => {
+      return {
+        endDate:date
+      }
+    });
   }
 
   setDate(e) {
@@ -172,7 +195,9 @@ class PeopleReport extends Component {
         classification:'',
         users:"",
         fromDate:  "2016-01-01",
-        toDate: this.endOfWeek(0)
+        toDate: this.endOfWeek(0),
+        startDate:'',
+        endDate:''
       }
     });
   }
@@ -224,6 +249,8 @@ class PeopleReport extends Component {
       users,
       fromDate,
       toDate,
+      startDate,
+      endDate,
       timeEntries
     } = this.state
     const {
@@ -442,103 +469,103 @@ if (tasks.length>0) {
 }
       return (
         <>
-        <Row>
-          <Col>
-            <h2>Total: {userTaskList.length}</h2>
-            <div>Selected filters:</div>
-          </Col>
-              <div className="row">
-                <Col>
-                  <Col>
-                    Assignment:
-                  </Col>
-                  <Col>
-                    <ToggleButtonGroup type="checkbox" variant="info">
-                        {isAssigned ?
-                          <ToggleButton variant="info">Assign</ToggleButton>
-                          :
-                          <ToggleButton variant="info">Not Assign</ToggleButton>
-                        }
-                      </ToggleButtonGroup>
-                  </Col>
-                </Col>
-                <Col class="block">
-                  <Col>
-                    Active:
-                  </Col>
-                  <Col>
-                    <ToggleButtonGroup type="checkbox" variant="info">
-                      {isActive ?
-                        <ToggleButton variant="info">Active</ToggleButton>
-                        :
-                        <ToggleButton variant="info">InActive</ToggleButton>
-                      }
-                    </ToggleButtonGroup>
-                  </Col>
-                </Col>
+        {/*<Row>*/}
+        {/*  <Col>*/}
+        {/*    <h2>Total: {userTaskList.length}</h2>*/}
+        {/*    <div>Selected filters:</div>*/}
+        {/*  </Col>*/}
+        {/*      <div className="row">*/}
+        {/*        <Col>*/}
+        {/*          <Col>*/}
+        {/*            Assignment:*/}
+        {/*          </Col>*/}
+        {/*          <Col>*/}
+        {/*            <ToggleButtonGroup type="checkbox" variant="info">*/}
+        {/*                {isAssigned ?*/}
+        {/*                  <ToggleButton variant="info">Assign</ToggleButton>*/}
+        {/*                  :*/}
+        {/*                  <ToggleButton variant="info">Not Assign</ToggleButton>*/}
+        {/*                }*/}
+        {/*              </ToggleButtonGroup>*/}
+        {/*          </Col>*/}
+        {/*        </Col>*/}
+        {/*        <Col class="block">*/}
+        {/*          <Col>*/}
+        {/*            Active:*/}
+        {/*          </Col>*/}
+        {/*          <Col>*/}
+        {/*            <ToggleButtonGroup type="checkbox" variant="info">*/}
+        {/*              {isActive ?*/}
+        {/*                <ToggleButton variant="info">Active</ToggleButton>*/}
+        {/*                :*/}
+        {/*                <ToggleButton variant="info">InActive</ToggleButton>*/}
+        {/*              }*/}
+        {/*            </ToggleButtonGroup>*/}
+        {/*          </Col>*/}
+        {/*        </Col>*/}
 
-                {priorityList.length > 0 ? 
-                    <Col class="block">
-                        <Col>
-                          Priority:
-                        </Col>
-                        <Col>
-                          <ToggleButtonGroup type="checkbox" variant="info">
-                          {priorityList.map((c, index) => (
-                              <ToggleButton variant="info">{c}</ToggleButton>
-                          ))}
-                          </ToggleButtonGroup>
-                        </Col>
-                    </Col>
-                  : <></>}
-                  
-                {statusList.length > 0 ?
-                  <Col class="block">
-                    <Col>
-                      Status:
-                    </Col>
-                    <Col>
-                      <ToggleButtonGroup type="checkbox" variant="info">
-                        {statusList.map((c, index) => (
-                          <ToggleButton variant="info">{c}</ToggleButton>
-                        ))}
-                      </ToggleButtonGroup>
-                    </Col>
-                  </Col>
-                : <></>}
+        {/*        {priorityList.length > 0 ?*/}
+        {/*            <Col class="block">*/}
+        {/*                <Col>*/}
+        {/*                  Priority:*/}
+        {/*                </Col>*/}
+        {/*                <Col>*/}
+        {/*                  <ToggleButtonGroup type="checkbox" variant="info">*/}
+        {/*                  {priorityList.map((c, index) => (*/}
+        {/*                      <ToggleButton variant="info">{c}</ToggleButton>*/}
+        {/*                  ))}*/}
+        {/*                  </ToggleButtonGroup>*/}
+        {/*                </Col>*/}
+        {/*            </Col>*/}
+        {/*          : <></>}*/}
 
-                {classificationList.length > 0 ? 
-                  <Col class="block">
-                    <Col>
-                      Classification:
-                    </Col>
-                    <Col>
-                      <ToggleButtonGroup type="checkbox" variant="info">
-                        {classificationList.map((c, index) => (
-                          <ToggleButton variant="info">{c}</ToggleButton>
-                        ))}
-                      </ToggleButtonGroup>
-                    </Col>
-                  </Col>
-                : <></>}
-                
-                {users.length > 0 ?  
-                  <Col class="block">
-                  <Col>
-                    User:
-                  </Col>
-                  <Col>
-                    <ToggleButtonGroup type="checkbox" variant="info">
-                        <ToggleButton variant="info">{users}</ToggleButton>
-                    </ToggleButtonGroup>
-                  </Col>
-                  </Col>
-                : <></>}
-            </div>
-        </Row>
-          <Row>
-             <ShowTasksCollapse userTaskList={userTaskList}/> {/*give margin zero on left & right to prevent cutting the edge */}
-          </Row>
+        {/*        {statusList.length > 0 ?*/}
+        {/*          <Col class="block">*/}
+        {/*            <Col>*/}
+        {/*              Status:*/}
+        {/*            </Col>*/}
+        {/*            <Col>*/}
+        {/*              <ToggleButtonGroup type="checkbox" variant="info">*/}
+        {/*                {statusList.map((c, index) => (*/}
+        {/*                  <ToggleButton variant="info">{c}</ToggleButton>*/}
+        {/*                ))}*/}
+        {/*              </ToggleButtonGroup>*/}
+        {/*            </Col>*/}
+        {/*          </Col>*/}
+        {/*        : <></>}*/}
+
+        {/*        {classificationList.length > 0 ?*/}
+        {/*          <Col class="block">*/}
+        {/*            <Col>*/}
+        {/*              Classification:*/}
+        {/*            </Col>*/}
+        {/*            <Col>*/}
+        {/*              <ToggleButtonGroup type="checkbox" variant="info">*/}
+        {/*                {classificationList.map((c, index) => (*/}
+        {/*                  <ToggleButton variant="info">{c}</ToggleButton>*/}
+        {/*                ))}*/}
+        {/*              </ToggleButtonGroup>*/}
+        {/*            </Col>*/}
+        {/*          </Col>*/}
+        {/*        : <></>}*/}
+
+        {/*        {users.length > 0 ?*/}
+        {/*          <Col class="block">*/}
+        {/*          <Col>*/}
+        {/*            User:*/}
+        {/*          </Col>*/}
+        {/*          <Col>*/}
+        {/*            <ToggleButtonGroup type="checkbox" variant="info">*/}
+        {/*                <ToggleButton variant="info">{users}</ToggleButton>*/}
+        {/*            </ToggleButtonGroup>*/}
+        {/*          </Col>*/}
+        {/*          </Col>*/}
+        {/*        : <></>}*/}
+        {/*    </div>*/}
+        {/*</Row>*/}
+        {/*  <Row>*/}
+        {/*     <ShowTasksCollapse userTaskList={userTaskList}/> /!*give margin zero on left & right to prevent cutting the edge *!/*/}
+        {/*  </Row>*/}
       </>
       )
     }
@@ -660,11 +687,11 @@ if (tasks.length>0) {
         ))}
       return (
         <div>
-        <h2>Blue Square: {infringments.length}</h2>
+
       <div>
       </div>
-          <ShowInfringmentsCollapse BlueSquare={BlueSquare}/>
-          </div>
+          {/*<ShowInfringmentsCollapse BlueSquare={BlueSquare}/>*/}
+      </div>
       )
     }
     const StartDate = (props) => {
@@ -686,7 +713,9 @@ if (tasks.length>0) {
 
 
 
+
     const PriorityOptions = props => {
+      console.log('pic::'+userProfile.profilePic);
       var allPriorities=[...Array.from(new Set(props.get_tasks.map((item) => item.priority))).sort()]
       allPriorities.unshift("Filter Off")
       return (
@@ -698,7 +727,7 @@ if (tasks.length>0) {
       )
     };
 
-    
+
 
     const DateRangeSelect = () => {
       return(
@@ -735,52 +764,149 @@ if (tasks.length>0) {
       )
     }
 
+    const PeopleDataTable = () => {
+      let peopleData = {
+        "alertVisible": false,
+        "taskData": [
+          {
+            "taskName": "Task 1",
+            "priority": "Medium",
+            "status":"Pending",
+            "resources":"max",
+            "active":"yes",
+            "assign":"Assigned",
+            "estimatedHours":"20",
+            "_id": "1"
+          },
+          {
+            "taskName": "Task 2",
+            "priority": "High",
+            "status":"Pending",
+            "resources":"max",
+            "active":"Active",
+            "assign":"Assigned",
+            "estimatedHours":"30",
+            "_id": "2"
+          },
+          {
+            "taskName": "Task 3",
+            "priority": "Medium",
+            "status":"Completed",
+            "resources":"max",
+            "active":"Not Active",
+            "assign":"Not Assigned",
+            "estimatedHours":"20",
+            "_id": "3"
+          },
+          {
+            "taskName": "Task 4",
+            "priority": "Low",
+            "status":"Pending",
+            "resources":"min",
+            "active":"Active",
+            "assign":"Assigned",
+            "estimatedHours":"10",
+            "_id": "4"
+          }
+        ],
+        "color": null,
+        "message": ""
+      }
+      console.log('length::'+peopleData.taskData.length)
+      return (
+        <PeopleTableDetails taskData={peopleData.taskData}  />
+      )
+    }
+
     return (
-      
-      <div className='container'>
-        <table>
-          <h1 className="center"
-            style={{ display: 'inline-block', marginRight: 10 }}
-          > {`${firstName} ${lastName}`}</h1>
-          <div >Weekly Comitted Hours: {weeklyComittedHours}</div>
-          <div>Total Comitted Hours:{totalComittedHours}</div>
-          <div>Total Tangible Hours:{totalTangibleHrsRound}</div>
-          <StartDate userProfile={userProfile}/>
-          <div class="row" style={{justifyContent:'flex-start'}}>
-            <div>
-              <div><button style={{margin:'3px'}} exact className="btn btn-secondary btn-bg mt-3" onClick={()=>this.setFilter()}>Filters Off</button>
+    <div style={{ marginTop: -16 }}>
+      <section className="profile">
+        <header className="header">
+          <div className="details">
+            <img
+              src={this.props.auth.profilePic || '/pfp-default.png'}
+              alt="Profile Picture" className="profile-pic" />
+            <h1 className="heading">{`${firstName} ${lastName}`}</h1>
+
+            <div className="stats">
+              <div className="col-4">
+                <h4>{weeklyComittedHours}</h4>
+                <p>Weekly Committed Hours</p>
               </div>
-            <div>
-              <input name='radio' type="radio" style={{margin:'5px'}} value="active" onChange={()=>this.setAssign(true)}  />
-              Assigned
-              <input name='radio' type="radio" style={{margin:'5px'}} value="inactive" onChange={()=>this.setAssign(false) } />
-              Not Assigned
+              <div className="col-4">
+                <h4>{totalComittedHours}</h4>
+                <p>Hours Logged So Far This Week</p>
               </div>
-              <div>
-              <input name='radio' type="radio" style={{margin:'5px'}} value="active" onChange={()=>this.setActive(true)}  />
-              Active
-              <input name='radio' type="radio" style={{margin:'5px'}} value="inactive" onChange={()=>this.setActive(false) } />
-              Inactive
+              <div className="col-4">
+                <h4>{totalTangibleHrsRound}</h4>
+                <p>Total Tangible Hours Logged</p>
               </div>
+              <div className="col-4">
+                <h4>{moment(userProfile.createdDate).format('YYYY-MM-DD')}</h4>
+                <p>Start Date</p>
               </div>
-            <div className="row" style={{justifyContent:'space-evenly', margin:'3px'}}>
-              <div> 
-                <PriorityOptions get_tasks={userTask}/>
+              <div className="col-4">
+                <h4>{userProfile.endDate ? userProfile.endDate.toLocaleString().split('T')[0] : 'N/A'}</h4>
+                <p>End Date</p>
               </div>
-              <div>
-                <StatusOptions get_tasks={userTask}/>
-              </div>
-              <div>
-                <ClassificationOptions allClassification={allClassification}/>
-              </div>
-              <div>
-                <UserOptions userTask={userTask}/>
-              </div>
-              <div>
-                <DateRangeSelect />
+              <div className="col-4">
+                <h4>{infringments.length}</h4>
+                <p>Blue squares</p>
               </div>
             </div>
           </div>
+        </header>
+      </section>
+
+      <div class="intro_date">
+        <h1>Tasks Contributed  </h1>
+      </div>
+      {/*<div>*/}
+      {/*  <div>*/}
+      {/*    From: <DatePicker selected={startDate} onChange={date => this.setStartDate(date)}/>*/}
+      {/*    To: <DatePicker selected={endDate} onChange={date => this.setEndDate(date)}/>*/}
+      {/*  </div>*/}
+      {/*</div>*/}
+      <PeopleDataTable/>
+
+      <div className='container'>
+
+        <table>
+          {/*<div class="row" style={{justifyContent:'flex-start'}}>*/}
+          {/*  <div>*/}
+          {/*    <div><button style={{margin:'3px'}} exact className="btn btn-secondary btn-bg mt-3" onClick={()=>this.setFilter()}>Filters Off</button>*/}
+          {/*    </div>*/}
+          {/*  <div>*/}
+          {/*    <input name='radio' type="radio" style={{margin:'5px'}} value="active" onChange={()=>this.setAssign(true)}  />*/}
+          {/*    Assigned*/}
+          {/*    <input name='radio' type="radio" style={{margin:'5px'}} value="inactive" onChange={()=>this.setAssign(false) } />*/}
+          {/*    Not Assigned*/}
+          {/*    </div>*/}
+          {/*    <div>*/}
+          {/*    <input name='radio' type="radio" style={{margin:'5px'}} value="active" onChange={()=>this.setActive(true)}  />*/}
+          {/*    Active*/}
+          {/*    <input name='radio' type="radio" style={{margin:'5px'}} value="inactive" onChange={()=>this.setActive(false) } />*/}
+          {/*    Inactive*/}
+          {/*    </div>*/}
+          {/*    </div>*/}
+          {/*  <div className="row" style={{justifyContent:'space-evenly', margin:'3px'}}>*/}
+          {/*    <div>*/}
+          {/*      <PriorityOptions get_tasks={userTask}/>*/}
+          {/*    </div>*/}
+          {/*    <div>*/}
+          {/*      <StatusOptions get_tasks={userTask}/>*/}
+          {/*    </div>*/}
+          {/*    <div>*/}
+          {/*      <ClassificationOptions allClassification={allClassification}/>*/}
+          {/*    </div>*/}
+          {/*    <div>*/}
+          {/*      <UserOptions userTask={userTask}/>*/}
+          {/*    </div>*/}
+          {/*    <div>*/}
+          {/*      <DateRangeSelect />*/}
+          {/*    </div>*/}
+          {/*  </div>*/}
+          {/*</div>*/}
 
             <UserTask userTask={userTask}
                       isAssigned={isAssigned}
@@ -803,7 +929,7 @@ if (tasks.length>0) {
         </table>
 
       </div>
-      
+    </div>
       )
     }
 }

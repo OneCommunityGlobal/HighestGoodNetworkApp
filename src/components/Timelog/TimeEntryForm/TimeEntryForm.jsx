@@ -29,18 +29,18 @@ import axios from 'axios'
 import { ApiEndpoint } from '../../../utils/URL'
 
 /**
- * Modal used to submit and edit tangible and intangible time entries. 
- * 
+ * Modal used to submit and edit tangible and intangible time entries.
+ *
  * @param {boolean} props.edit If true, the time entry already exists and is being modified
- * @param {string} props.userId 
+ * @param {string} props.userId
  * @param {function} props.toggle Toggles the visability of this modal
  * @param {boolean} props.isOpen Whether or not this modal is visible
- * @param {*} props.timer 
+ * @param {*} props.timer
  * @param {boolean} props.data.disabled
  * @param {boolean} props.data.isTangible
- * @param {*} props.userProfile 
- * @param {function} props.resetTimer 
- * @returns 
+ * @param {*} props.userProfile
+ * @param {function} props.resetTimer
+ * @returns
  */
 const TimeEntryForm = props => {
   const { userId, edit, data, isOpen, toggle, timer, resetTimer } = props
@@ -102,7 +102,7 @@ const TimeEntryForm = props => {
       setProjects(res?.data?.projects || [])
     })
     .catch((err) => {
-      
+
     })
   }, []);
 
@@ -262,13 +262,13 @@ const TimeEntryForm = props => {
     }
     setSubmitting(false)
 
-    if (timeEntryStatus !== 200) {
-      toggle()
-      alert(
-        `An error occurred while attempting to submit your time entry. Error code: ${timeEntryStatus}`,
-      )
-      return
-    }
+    // if (timeEntryStatus !== 200) {
+    //   toggle()
+    //   alert(
+    //     `An error occurred while attempting to submit your time entry. Error code: ${timeEntryStatus}`,
+    //   )
+    //   return
+    // }
 
     //Clear the form and clean up.
     if (fromTimer) {
@@ -359,7 +359,7 @@ const TimeEntryForm = props => {
     if (closed === true && isOpen) toggle();
   }
 
-  console.log(data.isTangible == inputs.isTangible)
+ // console.log(data.isTangible == inputs.isTangible)
 
   return (
     <>
@@ -370,7 +370,7 @@ const TimeEntryForm = props => {
 
       <AboutModal
         visible={isInfoModalVisible}
-        setVisible={setInfoModalVisible} 
+        setVisible={setInfoModalVisible}
       />
 
       <ReminderModal
@@ -512,7 +512,7 @@ const TimeEntryForm = props => {
             </FormGroup>
             <FormGroup check>
               <Label check>
-                
+
                 <Input
                   type="checkbox"
                   name="isTangible"
