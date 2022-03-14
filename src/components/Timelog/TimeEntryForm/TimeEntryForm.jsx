@@ -361,7 +361,7 @@ const TimeEntryForm = (props) => {
     if (closed === true && isOpen) toggle();
   };
 
-  console.log(data.isTangible == inputs.isTangible);
+  console.log('isTangible', data.isTangible == inputs.isTangible);
 
   return (
     <>
