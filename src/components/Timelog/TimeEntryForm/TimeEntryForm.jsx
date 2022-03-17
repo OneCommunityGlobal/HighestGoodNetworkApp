@@ -46,7 +46,7 @@ const TimeEntryForm = props => {
   const { userId, edit, data, isOpen, toggle, timer, resetTimer } = props
 
   const initialFormValues = {
-    dateOfWork: moment().tz('America/New_York').format('YYYY-MM-DD'),
+    dateOfWork: moment().tz('America/Los_Angeles').format('YYYY-MM-DD'),
     hours: 0,
     minutes: 0,
     projectId: '',
@@ -153,7 +153,7 @@ const TimeEntryForm = props => {
   const getEditMessage = () => {
     let editCount = 0;
     userProfile.timeEntryEditHistory.forEach((item) => {
-      if(moment().tz('America/New_York').diff(item.date, 'days') <= 365) {
+      if(moment().tz('America/Los_Angeles').diff(item.date, 'days') <= 365) {
         editCount += 1;
       }
     });
@@ -358,7 +358,7 @@ const TimeEntryForm = props => {
    * @param {*} closed If true, the form closes after being cleared.
    */
   const clearForm = closed => {
-    const newInputs = {...inputs, notes: '', projectId: '', dateOfWork: moment().tz('America/New_York').format('YYYY-MM-DD')}
+    const newInputs = {...inputs, notes: '', projectId: '', dateOfWork: moment().tz('America/Los_Angeles').format('YYYY-MM-DD')}
     setInputs(newInputs)
     setReminder({ ...initialReminder })
     setErrors({})
