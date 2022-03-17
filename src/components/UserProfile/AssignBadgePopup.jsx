@@ -1,46 +1,46 @@
-import React, { useState } from 'react'
-import { Table, Button, UncontrolledTooltip } from 'reactstrap'
-import { connect } from 'react-redux'
-import AssignTableRow from '../Badge/AssignTableRow'
+import React, { useState } from 'react';
+import { Table, Button, UncontrolledTooltip } from 'reactstrap';
+import { connect } from 'react-redux';
+import AssignTableRow from '../Badge/AssignTableRow';
 import {
   assignBadgesByUserID,
   clearNameAndSelected,
   closeAlert,
-} from '../../actions/badgeManagement'
-import { ENDPOINTS } from 'utils/URL'
-import axios from 'axios'
+} from '../../actions/badgeManagement';
+import { ENDPOINTS } from 'utils/URL';
+import axios from 'axios';
 
-const AssignBadgePopup = props => {
-  const [searchedName, setSearchedName] = useState('')
+const AssignBadgePopup = (props) => {
+  const [searchedName, setSearchedName] = useState('');
 
-  const onSearch = text => {
-    setSearchedName(text)
-  }
+  const onSearch = (text) => {
+    setSearchedName(text);
+  };
 
   const assignBadges = async () => {
     try {
-      await props.assignBadgesByUserID(props.userProfile._id, props.selectedBadges)
-      const response = await axios.get(ENDPOINTS.USER_PROFILE(props.userProfile._id))
+      await props.assignBadgesByUserID(props.userProfile._id, props.selectedBadges);
+      const response = await axios.get(ENDPOINTS.USER_PROFILE(props.userProfile._id));
       props.setUserProfile({
         ...props.userProfile,
         badgeCollection: response.data.badgeCollection,
-      })
+      });
     } catch (e) {
       //TODO: Proper error handling.
     }
-    props.close()
-  }
+    props.close();
+  };
 
-  const filterBadges = allBadges => {
-    let filteredList = allBadges.filter(badge => {
+  const filterBadges = (allBadges) => {
+    let filteredList = allBadges.filter((badge) => {
       if (badge.badgeName.toLowerCase().indexOf(searchedName.toLowerCase()) > -1) {
-        return badge
+        return badge;
       }
-    })
-    return filteredList
-  }
+    });
+    return filteredList;
+  };
 
-  let filteredBadges = filterBadges(props.allBadgeData)
+  let filteredBadges = filterBadges(props.allBadgeData);
 
   return (
     <div>
@@ -48,8 +48,8 @@ const AssignBadgePopup = props => {
         type="text"
         className="form-control assign_badge_search_box"
         placeholder="Search Badge Name"
-        onChange={e => {
-          onSearch(e.target.value)
+        onChange={(e) => {
+          onSearch(e.target.value);
         }}
       />
       <Table>
@@ -90,19 +90,19 @@ const AssignBadgePopup = props => {
         Confirm
       </Button>
     </div>
-  )
-}
+  );
+};
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state) => ({
   selectedBadges: state.badge.selectedBadges,
-})
+});
 
-const mapDispatchToProps = dispatch => {
+const mapDispatchToProps = (dispatch) => {
   return {
     assignBadgesByUserID: (userId, selectedBadge) =>
       assignBadgesByUserID(userId, selectedBadge)(dispatch),
     clearNameAndSelected: () => dispatch(clearNameAndSelected()),
-  }
-}
+  };
+};
 
-export default connect(mapStateToProps, mapDispatchToProps)(AssignBadgePopup)
+export default connect(mapStateToProps, mapDispatchToProps)(AssignBadgePopup);

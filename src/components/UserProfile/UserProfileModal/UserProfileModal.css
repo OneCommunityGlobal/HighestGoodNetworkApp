@@ -1,5 +1,3 @@
-
-
 .customInput {
   display: block;
   width: 100%;
@@ -39,7 +37,7 @@
   transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
 }
 
-.customEdit{
+.customEdit {
   display: 'flex';
   margin: 2px;
   padding: 2px;
@@ -49,7 +47,7 @@
   border: 1px solid #ced4da;
 }
 
-.customTitle{
+.customTitle {
   display: flex;
   padding: 0.25em 0.4em;
   margin: 2px;
@@ -61,13 +59,15 @@
   white-space: nowrap;
   vertical-align: baseline;
   border-radius: 0.25rem;
-  -webkit-transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
-  transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+  -webkit-transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out,
+    border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+  transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out,
+    border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
   color: #fff;
   background-color: #6c757d;
 }
 
-.addButton{
+.addButton {
   display: block;
   padding: 2px;
   margin: 2px;

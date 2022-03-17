@@ -1,19 +1,19 @@
-import React, { Component } from "react";
-import routes from '../routes'
-import logger from "../services/logService";
+import React, { Component } from 'react';
+import routes from '../routes';
+import logger from '../services/logService';
 
-import httpService from "../services/httpService";
+import httpService from '../services/httpService';
 import jwtDecode from 'jwt-decode';
-import { setCurrentUser, logoutUser } from "../actions/authActions"
+import { setCurrentUser, logoutUser } from '../actions/authActions';
 
 import { Provider } from 'react-redux';
 import { BrowserRouter as Router } from 'react-router-dom';
 import configureStore from '../store';
 import { PersistGate } from 'redux-persist/integration/react';
-import Loading from './common/Loading'
+import Loading from './common/Loading';
 
-import config from "../config.json";
-import "../App.css";
+import config from '../config.json';
+import '../App.css';
 
 const { persistor, store } = configureStore();
 const tokenKey = config.tokenKey;
@@ -32,8 +32,7 @@ if (localStorage.getItem(tokenKey)) {
   if (expiryTime - TOKEN_LIFETIME_BUFFER < currentTime) {
     // Logout user
     store.dispatch(logoutUser());
-  }
-  else {
+  } else {
     // Set auth token header auth
     httpService.setjwt(localStorage.getItem(tokenKey));
     // Set user and isAuthenticated
@@ -52,7 +51,7 @@ class App extends Component {
   // componentDidMount() {
   //   window.addEventListener('beforeunload', this.confirmAlert);
   // }
-  
+
   // componentWillUnmount() {
   //   window.removeEventListener('beforeunload', this.confirmAlert);
   // }
@@ -64,10 +63,8 @@ class App extends Component {
   render() {
     return (
       <Provider store={store}>
-        <PersistGate loading={<Loading/>} persistor={persistor}>
-          <Router>
-            { routes }
-          </Router>
+        <PersistGate loading={<Loading />} persistor={persistor}>
+          <Router>{routes}</Router>
         </PersistGate>
       </Provider>
     );

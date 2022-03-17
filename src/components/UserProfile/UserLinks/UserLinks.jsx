@@ -4,7 +4,6 @@ import { Link } from 'react-router-dom';
 //import styles from './UserLinks.css';
 // import styleProfile from '../UserProfile.module.scss';
 
-
 const UserLinks = ({
   // eslint-disable-next-line react/prop-types
   links = [],
@@ -26,7 +25,6 @@ const UserLinks = ({
               </a>
               <br />
             </React.Fragment>
-
           );
         }
         return (
@@ -36,7 +34,6 @@ const UserLinks = ({
             </Link>
             <br />
           </React.Fragment>
-
         );
       })}
     </div>

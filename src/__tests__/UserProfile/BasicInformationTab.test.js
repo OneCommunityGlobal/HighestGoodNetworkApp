@@ -1,16 +1,13 @@
 import React from 'react';
 import { screen, render, cleanup } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import {
-  authMock, userProfileMock, timeEntryMock, userProjectMock,
-} from '../mockStates';
+import { authMock, userProfileMock, timeEntryMock, userProjectMock } from '../mockStates';
 
 import { renderWithProvider } from '__tests__/utils';
 
 import BasicInformationTab from '../../components/UserProfile/BasicInformationTab/BasicInformationTab';
 // import EditForm from '../../components/UserProfile/BasicInformationTab/EditForm';
 // import ViewForm from '../../components/UserProfile/BasicInformationTab/ViewTab';
-
 
 describe('Edit form', () => {
   let handleUserProfile = jest.fn();
@@ -26,9 +23,7 @@ describe('Edit form', () => {
         isUserAdmin
         isUserSelf
         handleUserProfile={handleUserProfile}
-        formValid={
-          formValid
-        }
+        formValid={formValid}
       />,
     );
   });

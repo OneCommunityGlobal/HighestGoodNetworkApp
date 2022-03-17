@@ -8,16 +8,12 @@ const { store } = configureStore();
 const url = ENDPOINTS.WEEKLY_SUMMARIES_REPORT();
 
 const server = setupServer(
-  rest.get(url, (req, res, ctx) => res(
-    ctx.status(200),
-    ctx.json([{ _id: 1 }]),
-  )),
+  rest.get(url, (req, res, ctx) => res(ctx.status(200), ctx.json([{ _id: 1 }]))),
   rest.get('*', (req, res, ctx) => {
-    console.error(`Please add request handler for ${req.url.toString()} in your MSW server requests.`);
-    return res(
-      ctx.status(500),
-      ctx.json({ error: 'You must add request handler.' }),
+    console.error(
+      `Please add request handler for ${req.url.toString()} in your MSW server requests.`,
     );
+    return res(ctx.status(500), ctx.json({ error: 'You must add request handler.' }));
   }),
 );
 
@@ -54,9 +50,7 @@ describe('WeeklySummariesReport Redux related actions', () => {
       });
 
       it('should be false if the server returns an error', async () => {
-        server.use(
-          rest.get(url, (req, res, ctx) => res(ctx.status(500))),
-        );
+        server.use(rest.get(url, (req, res, ctx) => res(ctx.status(500))));
 
         await store.dispatch(getWeeklySummariesReport());
 

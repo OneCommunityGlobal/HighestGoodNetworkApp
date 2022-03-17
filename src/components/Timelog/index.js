@@ -1,1 +1,1 @@
-export { default } from "./Timelog";
+export { default } from './Timelog';

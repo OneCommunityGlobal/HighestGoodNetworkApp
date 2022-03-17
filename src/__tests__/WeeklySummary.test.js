@@ -15,16 +15,12 @@ const weeklySummariesMockData = {
 };
 
 const server = setupServer(
-  rest.get(url, (req, res, ctx) => res(
-    ctx.json(weeklySummariesMockData),
-    ctx.status(200),
-  )),
+  rest.get(url, (req, res, ctx) => res(ctx.json(weeklySummariesMockData), ctx.status(200))),
   rest.get('*', (req, res, ctx) => {
-    console.error(`Please add request handler for ${req.url.toString()} in your MSW server requests.`);
-    return res(
-      ctx.status(500),
-      ctx.json({ error: 'You must add request handler.' }),
+    console.error(
+      `Please add request handler for ${req.url.toString()} in your MSW server requests.`,
     );
+    return res(ctx.status(500), ctx.json({ error: 'You must add request handler.' }));
   }),
 );
 
@@ -40,7 +36,9 @@ describe('WeeklySummary Redux related actions', () => {
       await store.dispatch(getWeeklySummaries('1'));
 
       expect(wSummariesSlice().summaries).toHaveProperty('mediaUrl', 'u');
-      expect(wSummariesSlice().summaries).toHaveProperty('weeklySummaries', [{ _id: '1', dueDate: '1', summary: 'a' }]);
+      expect(wSummariesSlice().summaries).toHaveProperty('weeklySummaries', [
+        { _id: '1', dueDate: '1', summary: 'a' },
+      ]);
       expect(wSummariesSlice().summaries).toHaveProperty('weeklySummariesCount', 1);
     });
 
@@ -63,9 +61,7 @@ describe('WeeklySummary Redux related actions', () => {
       });
 
       it('should be false if the server returns an error', async () => {
-        server.use(
-          rest.get(url, (req, res, ctx) => res(ctx.status(500))),
-        );
+        server.use(rest.get(url, (req, res, ctx) => res(ctx.status(500))));
 
         await store.dispatch(getWeeklySummaries('1'));
 
@@ -79,10 +75,7 @@ describe('WeeklySummary Redux related actions', () => {
       server.use(
         rest.put(url, (req, res, ctx) => {
           const { userId } = req.params;
-          return res(
-            ctx.json({ _id: userId }),
-            ctx.status(200),
-          );
+          return res(ctx.json({ _id: userId }), ctx.status(200));
         }),
       );
       const response = await store.dispatch(updateWeeklySummaries('1', weeklySummariesMockData));
@@ -90,11 +83,7 @@ describe('WeeklySummary Redux related actions', () => {
     });
 
     it('should return status 404 on record is not found', async () => {
-      server.use(
-        rest.put(url, (req, res, ctx) => res(
-          ctx.status(404),
-        )),
-      );
+      server.use(rest.put(url, (req, res, ctx) => res(ctx.status(404))));
       const response = await store.dispatch(updateWeeklySummaries('1', weeklySummariesMockData));
       expect(response).toBe(404);
     });

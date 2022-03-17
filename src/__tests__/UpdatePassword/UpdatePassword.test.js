@@ -4,9 +4,7 @@ import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
-import {
-  screen,
-} from '@testing-library/react';
+import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 // import mockAxios from 'jest-mock-axios';
 import UpdatePassword from '../../components/UpdatePassword';
@@ -30,11 +28,10 @@ const server = setupServer(
   }),
   // Any other requests error out
   rest.get('*', (req, res, ctx) => {
-    console.error(`Please add request handler for ${req.url.toString()} in your MSW server requests.`);
-    return res(
-      ctx.status(500),
-      ctx.json({ error: 'You must add request handler.' }),
+    console.error(
+      `Please add request handler for ${req.url.toString()} in your MSW server requests.`,
     );
+    return res(ctx.status(500), ctx.json({ error: 'You must add request handler.' }));
   }),
 );
 beforeAll(() => server.listen());
@@ -51,10 +48,8 @@ const errorMessages = {
     '"New Password" should be at least 8 characters long and must include at least one uppercase letter, one lowercase letter, and one number or special character',
   oldnewPasswordsSame: '"New Password" should not be same as old password',
   confirmpasswordMismatch: '"Confirm Password" must match new password',
-  errorNon400Response:
-    'Something went wrong. Please contact your administrator.',
+  errorNon400Response: 'Something went wrong. Please contact your administrator.',
 };
-
 
 describe('Update Password Page', () => {
   let store;
@@ -65,9 +60,7 @@ describe('Update Password Page', () => {
     });
     store.dispatch = jest.fn();
     renderWithRouterMatch(
-      <Route path="/updatepassword/:userId">
-        {props => <UpdatePassword {...props} />}
-      </Route>,
+      <Route path="/updatepassword/:userId">{(props) => <UpdatePassword {...props} />}</Route>,
       {
         route: `/updatepassword/${userID}`,
         store,
@@ -89,7 +82,6 @@ describe('Update Password Page', () => {
       expect(button).toBeDisabled();
     });
   });
-
 
   describe('For incorrect user inputs', () => {
     it('should show error if current password is left blank', () => {
@@ -163,17 +155,29 @@ describe('Update Password Page', () => {
     });
 
     it('should show error if new and confirm passwords are not same', async () => {
-      await userEvent.type(screen.getByLabelText(/current password:/i), 'abced', { allAtOnce: false });
-      await userEvent.type(screen.getByLabelText(/new password:/i), 'ABCDabc123', { allAtOnce: false });
-      await userEvent.type(screen.getByLabelText(/confirm password:/i), 'ABCDabc1234', { allAtOnce: false });
+      await userEvent.type(screen.getByLabelText(/current password:/i), 'abced', {
+        allAtOnce: false,
+      });
+      await userEvent.type(screen.getByLabelText(/new password:/i), 'ABCDabc123', {
+        allAtOnce: false,
+      });
+      await userEvent.type(screen.getByLabelText(/confirm password:/i), 'ABCDabc1234', {
+        allAtOnce: false,
+      });
       expect(screen.getByText(errorMessages.confirmpasswordMismatch)).toBeInTheDocument();
       expect(screen.getByRole('button')).toBeDisabled();
     });
 
     it('should show error if old,new, and confirm passwords are same', async () => {
-      await userEvent.type(screen.getByLabelText(/current password:/i), 'ABCDabc123', { allAtOnce: false });
-      await userEvent.type(screen.getByLabelText(/new password:/i), 'ABCDabc123', { allAtOnce: false });
-      await userEvent.type(screen.getByLabelText(/confirm password:/i), 'ABCDabc123', { allAtOnce: false });
+      await userEvent.type(screen.getByLabelText(/current password:/i), 'ABCDabc123', {
+        allAtOnce: false,
+      });
+      await userEvent.type(screen.getByLabelText(/new password:/i), 'ABCDabc123', {
+        allAtOnce: false,
+      });
+      await userEvent.type(screen.getByLabelText(/confirm password:/i), 'ABCDabc123', {
+        allAtOnce: false,
+      });
       expect(screen.getByText(errorMessages.oldnewPasswordsSame)).toBeInTheDocument();
       expect(screen.getByRole('button')).toBeDisabled();
     });
@@ -184,15 +188,22 @@ describe('Update Password Page', () => {
       const newpassword = 'ABCdef@123';
       const confirmnewpassword = newpassword;
       const currentpassword = 'currentPassword1';
-      await userEvent.type(screen.getByLabelText(/current password:/i), currentpassword, { allAtOnce: false });
-      await userEvent.type(screen.getByLabelText(/new password:/i), newpassword, { allAtOnce: false });
-      await userEvent.type(screen.getByLabelText(/confirm password:/i), confirmnewpassword, { allAtOnce: false });
+      await userEvent.type(screen.getByLabelText(/current password:/i), currentpassword, {
+        allAtOnce: false,
+      });
+      await userEvent.type(screen.getByLabelText(/new password:/i), newpassword, {
+        allAtOnce: false,
+      });
+      await userEvent.type(screen.getByLabelText(/confirm password:/i), confirmnewpassword, {
+        allAtOnce: false,
+      });
       userEvent.click(screen.getByRole('button'), { name: /submit/i });
       expect(actions.updatePassword).toHaveBeenCalled();
-      expect(actions.updatePassword).toHaveBeenCalledWith(
-        userID,
-        { currentpassword, newpassword, confirmnewpassword },
-      );
+      expect(actions.updatePassword).toHaveBeenCalledWith(userID, {
+        currentpassword,
+        newpassword,
+        confirmnewpassword,
+      });
     });
   });
 });

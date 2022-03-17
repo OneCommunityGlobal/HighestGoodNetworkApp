@@ -7,8 +7,8 @@
 
 //     const getLink = id =>`/${_.lowerCase(label)}/${id}`
 //     const getText = element =>  _.has(element, "teamName")? element.teamName : element.projectName
-   
-//     return ( 
+
+//     return (
 //         <div className="card background-primary w-100">
 //         <div className="card-body">
 //         <h4 className="card-title">{_.startCase(label)} Memberships</h4>
@@ -17,10 +17,10 @@
 //         {data.map((element, index) =>
 //         <li className="list-group-item" key = {element._id}>
 //                <Link to = {getLink(element._id)}>{getText(element)}</Link>
-//                {canEdit && <span className="fa fa-trash pull-right" 
+//                {canEdit && <span className="fa fa-trash pull-right"
 //                onClick = {() => handleDelete(collection, element, "delete", index )}></span> }
 //         </li>)}
-        
+
 //         </ul>
 //         </div>
 //         <div className="card-footer">
@@ -29,5 +29,5 @@
 //         </div>
 //      );
 // }
- 
+
 // export default Memberships;

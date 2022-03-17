@@ -1,50 +1,50 @@
-import React, { useState, useEffect } from 'react'
-import { Alert, Row, Col, Container } from 'reactstrap'
-import { Link } from 'react-router-dom'
-import Leaderboard from '../LeaderBoard'
-import WeeklySummary from '../WeeklySummary/WeeklySummary'
-import Badge from '../Badge'
-import TeamMemberTasks from '../TeamMemberTasks/TeamMemberTasks'
-import Timelog from '../Timelog/Timelog'
-import SummaryBar from '../SummaryBar/SummaryBar'
-import PopUpBar from '../PopUpBar'
-import '../../App.css'
-import { connect } from 'react-redux'
-import { getUserProfile } from '../../actions/userProfile'
-import { getTimeZoneAPIKey } from '../../actions/timezoneAPIActions'
+import React, { useState, useEffect } from 'react';
+import { Alert, Row, Col, Container } from 'reactstrap';
+import { Link } from 'react-router-dom';
+import Leaderboard from '../LeaderBoard';
+import WeeklySummary from '../WeeklySummary/WeeklySummary';
+import Badge from '../Badge';
+import TeamMemberTasks from '../TeamMemberTasks/TeamMemberTasks';
+import Timelog from '../Timelog/Timelog';
+import SummaryBar from '../SummaryBar/SummaryBar';
+import PopUpBar from '../PopUpBar';
+import '../../App.css';
+import { connect } from 'react-redux';
+import { getUserProfile } from '../../actions/userProfile';
+import { getTimeZoneAPIKey } from '../../actions/timezoneAPIActions';
 
-export const Dashboard = props => {
-  const [popup, setPopup] = useState(false)
-  let isAdmin = props.auth.user.role === 'Administrator'
-  let userId = props.match.params.userId ? props.match.params.userId : props.auth.user.userid
+export const Dashboard = (props) => {
+  const [popup, setPopup] = useState(false);
+  let isAdmin = props.auth.user.role === 'Administrator';
+  let userId = props.match.params.userId ? props.match.params.userId : props.auth.user.userid;
 
   const toggle = () => {
-    setPopup(!popup)
+    setPopup(!popup);
     setTimeout(() => {
-      let elem = document.getElementById('weeklySum')
+      let elem = document.getElementById('weeklySum');
       if (elem) {
-        elem.scrollIntoView()
+        elem.scrollIntoView();
       }
-    }, 150)
-  }
+    }, 150);
+  };
 
-  useEffect(()=>{
+  useEffect(() => {
     props.getTimeZoneAPIKey();
-  },[]);
+  }, []);
 
   useEffect(() => {
     if (props.match.params && props.match.params.userid && userId != props.match.params.userId) {
-      userId = props.match.params.userId
-      getUserProfile(userId)
+      userId = props.match.params.userId;
+      getUserProfile(userId);
     }
-  }, [props.match])
-  let getUrl = window.location
-  let baseUrl = getUrl.protocol + '//' + getUrl.host + '/' + getUrl.pathname.split('/')[1]
+  }, [props.match]);
+  let getUrl = window.location;
+  let baseUrl = getUrl.protocol + '//' + getUrl.host + '/' + getUrl.pathname.split('/')[1];
 
   return (
     <Container fluid>
       <PopUpBar />
-      <SummaryBar asUser={userId} toggleSubmitForm={toggle} isAdmin={isAdmin}/>
+      <SummaryBar asUser={userId} toggleSubmitForm={toggle} isAdmin={isAdmin} />
 
       <Row>
         <Col lg={{ size: 7 }}>&nbsp;</Col>
@@ -85,13 +85,13 @@ export const Dashboard = props => {
         </Col>
       </Row>
     </Container>
-  )
-}
+  );
+};
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state) => ({
   auth: state.auth,
-})
+});
 
 export default connect(mapStateToProps, {
   getTimeZoneAPIKey,
-})(Dashboard)
+})(Dashboard);

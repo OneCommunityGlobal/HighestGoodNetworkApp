@@ -4,12 +4,10 @@
  *********************************************************/
 
 // INIT POPUPS
-export const FETCH_POPUP_START = "FETCH_POPUP_START";
-export const RECEIVE_POPUP = "RECIVE_POPUP";
-export const FETCH_POPUP_ERROR = "FETCH_POPUP_ERROR";
-
+export const FETCH_POPUP_START = 'FETCH_POPUP_START';
+export const RECEIVE_POPUP = 'RECIVE_POPUP';
+export const FETCH_POPUP_ERROR = 'FETCH_POPUP_ERROR';
 
 // CURRENT POPUP
-export const CURRENT_POPUP = "CURRENT_POPUP";
-export const SET_CONTENT_POPUP = "SET_CONTENT_POPUP";
-
+export const CURRENT_POPUP = 'CURRENT_POPUP';
+export const SET_CONTENT_POPUP = 'SET_CONTENT_POPUP';

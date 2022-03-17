@@ -4,23 +4,25 @@ import BadgeDevelopmentTable from './BadgeDevelopmentTable';
 import CreateNewBadgePopup from './CreateNewBadgePopup';
 
 const BadgeDevelopment = (props) => {
-
   const [isCreateNewBadgePopupOpen, setCreateNewBadgePopupOpen] = useState(false);
 
-  const toggle = () => setCreateNewBadgePopupOpen(isCreateNewBadgePopupOpen => !isCreateNewBadgePopupOpen);
+  const toggle = () =>
+    setCreateNewBadgePopupOpen((isCreateNewBadgePopupOpen) => !isCreateNewBadgePopupOpen);
 
   return (
     <div>
-      <Button className="btn--dark-sea-green" onClick={toggle} style={{ margin: 20 }}>Create New Badge</Button>
-      <Modal isOpen={isCreateNewBadgePopupOpen} toggle={toggle} backdrop='static'>
+      <Button className="btn--dark-sea-green" onClick={toggle} style={{ margin: 20 }}>
+        Create New Badge
+      </Button>
+      <Modal isOpen={isCreateNewBadgePopupOpen} toggle={toggle} backdrop="static">
         <ModalHeader toggle={toggle}>New Badge</ModalHeader>
-        <ModalBody><CreateNewBadgePopup toggle={toggle} /></ModalBody>
+        <ModalBody>
+          <CreateNewBadgePopup toggle={toggle} />
+        </ModalBody>
       </Modal>
       <BadgeDevelopmentTable allBadgeData={props.allBadgeData} />
-    </div >
+    </div>
   );
-}
-
-
+};
 
 export default BadgeDevelopment;

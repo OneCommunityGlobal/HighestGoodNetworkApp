@@ -1,9 +1,7 @@
 /* eslint-disable no-undef */
 import React from 'react';
 import moment from 'moment';
-import {
-  render, screen, waitFor,
-} from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';
 import userEvent from '@testing-library/user-event';
 import { weeklySummaryMockData1 } from 'weeklySummaryMockData'; // Located in the tested component's __mocks__ folder
@@ -106,7 +104,7 @@ describe('WeeklySummary page', () => {
       const dueDate = moment().subtract(1, 'seconds');
       render(<CountdownTimer date={dueDate} />);
 
-      await waitFor(() => screen.getByText('Time\'s up!'));
+      await waitFor(() => screen.getByText("Time's up!"));
 
       expect(screen.getByText(/^time's up!$/i)).toBeInTheDocument();
     });
@@ -180,23 +178,28 @@ describe('WeeklySummary page', () => {
 
     describe('Confirmation checkbox for media files', () => {
       it('should be unchecked by default and can be checked', () => {
-        const checkbox = screen.getByLabelText("I have provided a minimum of 4 screenshots (6-10 preferred) of this week's work. (required)");
+        const checkbox = screen.getByLabelText(
+          "I have provided a minimum of 4 screenshots (6-10 preferred) of this week's work. (required)",
+        );
         expect(checkbox).not.toBeChecked();
         userEvent.click(checkbox);
         expect(checkbox).toBeChecked();
       });
       it('should display an error message if the checkbox is unchecked after it was checked first', () => {
-        const checkbox = screen.getByLabelText("I have provided a minimum of 4 screenshots (6-10 preferred) of this week's work. (required)");
+        const checkbox = screen.getByLabelText(
+          "I have provided a minimum of 4 screenshots (6-10 preferred) of this week's work. (required)",
+        );
         expect(checkbox).not.toBeChecked();
         userEvent.click(checkbox);
         expect(checkbox).toBeChecked();
         userEvent.click(checkbox);
         expect(checkbox).not.toBeChecked();
-        const mediaConfirmError = screen.getByText(/Please confirm that you have provided the required media files./i);
+        const mediaConfirmError = screen.getByText(
+          /Please confirm that you have provided the required media files./i,
+        );
         expect(mediaConfirmError).toBeInTheDocument();
       });
     });
-
 
     describe('Handle save', () => {
       props = {
@@ -212,7 +215,9 @@ describe('WeeklySummary page', () => {
         const labelText = screen.getByLabelText(/Link to your media files/i);
         await userEvent.type(labelText, 'https://www.example.com/');
         // check off the media URL concent checkbox
-        const checkbox = screen.getByLabelText("I have provided a minimum of 4 screenshots (6-10 preferred) of this week's work. (required)");
+        const checkbox = screen.getByLabelText(
+          "I have provided a minimum of 4 screenshots (6-10 preferred) of this week's work. (required)",
+        );
         userEvent.click(checkbox);
 
         expect(saveButton).toBeEnabled();

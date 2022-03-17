@@ -1,24 +1,23 @@
 import React from 'react';
 
-import {
-  Card, Row, CardTitle, CardText, Col, Badge,
-} from 'reactstrap';
+import { Card, Row, CardTitle, CardText, Col, Badge } from 'reactstrap';
 
 const WorkHistory = () => (
-  <Row style={{
-	  marginRight: 0,
-  }}
+  <Row
+    style={{
+      marginRight: 0,
+    }}
   >
     <Col lg>
       <Card body>
         <CardTitle style={{ fontWeight: 'bold' }}>Hours Contributed :</CardTitle>
         <CardText
           style={{
-					  fontSize: 20,
-					  justifyContent: 'space-between',
-					  display: 'flex',
-					  paddingLeft: 20,
-					  paddingRight: 20,
+            fontSize: 20,
+            justifyContent: 'space-between',
+            display: 'flex',
+            paddingLeft: 20,
+            paddingRight: 20,
           }}
         >
           <Badge color="primary">This Week</Badge>
@@ -26,16 +25,14 @@ const WorkHistory = () => (
         </CardText>
         <CardText
           style={{
-					  fontSize: 20,
-					  justifyContent: 'space-between',
-					  display: 'flex',
-					  paddingLeft: 20,
-					  paddingRight: 20,
+            fontSize: 20,
+            justifyContent: 'space-between',
+            display: 'flex',
+            paddingLeft: 20,
+            paddingRight: 20,
           }}
         >
-          <Badge color="primary">This Month</Badge>
-          {' '}
-          <span>40 hours</span>
+          <Badge color="primary">This Month</Badge> <span>40 hours</span>
         </CardText>
       </Card>
     </Col>
@@ -45,11 +42,11 @@ const WorkHistory = () => (
         <CardTitle style={{ fontWeight: 'bold' }}>Volunteering History :</CardTitle>
         <CardText
           style={{
-					  fontSize: 20,
-					  justifyContent: 'space-between',
-					  display: 'flex',
-					  paddingLeft: 20,
-					  paddingRight: 20,
+            fontSize: 20,
+            justifyContent: 'space-between',
+            display: 'flex',
+            paddingLeft: 20,
+            paddingRight: 20,
           }}
         >
           <Badge color="primary">Start Date: </Badge>
@@ -57,11 +54,11 @@ const WorkHistory = () => (
         </CardText>
         <CardText
           style={{
-					  fontSize: 20,
-					  justifyContent: 'space-between',
-					  display: 'flex',
-					  paddingLeft: 20,
-					  paddingRight: 20,
+            fontSize: 20,
+            justifyContent: 'space-between',
+            display: 'flex',
+            paddingLeft: 20,
+            paddingRight: 20,
           }}
         >
           <Badge color="primary">End Date:</Badge>

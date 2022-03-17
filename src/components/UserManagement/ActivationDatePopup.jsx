@@ -1,25 +1,25 @@
-import React, { useState } from 'react'
+import React, { useState } from 'react';
 import { toast } from 'react-toastify';
-import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Input, Alert } from 'reactstrap'
+import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Input, Alert } from 'reactstrap';
 
 /**
  * Modal popup to show the user profile in create mode
  */
-const ActivationDatePopup = React.memo(props => {
-  const [activationDate, onDateChange] = useState(Date.now())
+const ActivationDatePopup = React.memo((props) => {
+  const [activationDate, onDateChange] = useState(Date.now());
   const [dateError, setDateError] = useState(false);
 
-  const closePopup = e => {
-    props.onClose()
-  }
+  const closePopup = (e) => {
+    props.onClose();
+  };
   const pauseUser = () => {
     if (Date.parse(activationDate) > Date.now()) {
-      props.onPause(activationDate)
-      toast.success('Your Changes were saved successfully.')
+      props.onPause(activationDate);
+      toast.success('Your Changes were saved successfully.');
     } else {
       setDateError(true);
     }
-  }
+  };
 
   return (
     <Modal isOpen={props.open} toggle={closePopup}>
@@ -30,9 +30,9 @@ const ActivationDatePopup = React.memo(props => {
           name="pauseUntilDate"
           id="pauseUntilDate"
           value={activationDate}
-          onChange={event => {
+          onChange={(event) => {
             setDateError(false);
-            onDateChange(event.target.value)
+            onDateChange(event.target.value);
           }}
           data-testid="date-input"
         />
@@ -47,7 +47,7 @@ const ActivationDatePopup = React.memo(props => {
         </Button>
       </ModalFooter>
     </Modal>
-  )
-})
+  );
+});
 
-export default ActivationDatePopup
+export default ActivationDatePopup;

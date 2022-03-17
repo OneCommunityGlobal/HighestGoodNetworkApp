@@ -1,5 +1,5 @@
-import React from 'react'
-import * as Diff from 'diff'
+import React from 'react';
+import * as Diff from 'diff';
 
 const DiffedText = ({ oldText, newText }) => (
   <>
@@ -12,5 +12,5 @@ const DiffedText = ({ oldText, newText }) => (
       </span>
     ))}
   </>
-)
-export default DiffedText
+);
+export default DiffedText;

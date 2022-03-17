@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
-import {
-  Nav, NavItem, NavLink, TabContent, TabPane,
-} from 'reactstrap';
+import { Nav, NavItem, NavLink, TabContent, TabPane } from 'reactstrap';
 import classnames from 'classnames';
 import AssignBadge from './AssignBadge';
 import BadgeDevelopment from './BadgeDevelopment';
@@ -19,29 +17,31 @@ const BadgeManagement = (props) => {
     props.fetchAllBadges();
   }, []);
 
-
   return (
-    <div style={{
-      margin: 20,
-    }}
+    <div
+      style={{
+        margin: 20,
+      }}
     >
       <Nav pills>
         <NavItem>
           <NavLink
             className={classnames({ active: activeTab === '1' })}
-            onClick={() => { toggle('1'); }}
+            onClick={() => {
+              toggle('1');
+            }}
           >
             Badge Assignment
-
           </NavLink>
         </NavItem>
         <NavItem>
           <NavLink
             className={classnames({ active: activeTab === '2' })}
-            onClick={() => { toggle('2'); }}
+            onClick={() => {
+              toggle('2');
+            }}
           >
             Badge Development
-
           </NavLink>
         </NavItem>
       </Nav>
@@ -57,9 +57,9 @@ const BadgeManagement = (props) => {
   );
 };
 
-const mapStateToProps = state => ({ allBadgeData: state.badge.allBadgeData });
+const mapStateToProps = (state) => ({ allBadgeData: state.badge.allBadgeData });
 
-const mapDispatchToProps = dispatch => ({
+const mapDispatchToProps = (dispatch) => ({
   fetchAllBadges: () => dispatch(fetchAllBadges()),
 });
 

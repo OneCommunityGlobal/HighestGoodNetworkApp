@@ -1,19 +1,21 @@
 /* eslint-disable react/prop-types */
 import React, { useState, useEffect } from 'react';
-import {
-  Button, Modal, ModalHeader, ModalBody, ModalFooter, Input, Alert,
-} from 'reactstrap';
+import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Input, Alert } from 'reactstrap';
 
 const CreateNewTeamPopup = React.memo((props) => {
   const [newTeam, onNewName] = useState('');
-  const closePopup = () => { props.onClose(); };
+  const closePopup = () => {
+    props.onClose();
+  };
   const [isValidTeam, onValidation] = useState(true);
   useEffect(() => {
     onNewName(props.teamName);
   }, [props.open, props.teamName]);
   return (
     <Modal isOpen={props.open} toggle={closePopup}>
-      <ModalHeader toggle={closePopup}>{(props.isEdit ? 'Update Team Name' : 'Create New Team')}</ModalHeader>
+      <ModalHeader toggle={closePopup}>
+        {props.isEdit ? 'Update Team Name' : 'Create New Team'}
+      </ModalHeader>
       <ModalBody style={{ textAlign: 'start' }}>
         <label>Name of the Team</label>
         <Input
@@ -26,15 +28,12 @@ const CreateNewTeamPopup = React.memo((props) => {
           }}
           required
         />
-        {(isValidTeam === false) ? (
-          <Alert color="danger">
-            Please enter a team name.
-          </Alert>
-        ) : <></>}
-
+        {isValidTeam === false ? <Alert color="danger">Please enter a team name.</Alert> : <></>}
       </ModalBody>
       <ModalFooter>
-        <Button color="secondary" onClick={closePopup}>Close</Button>
+        <Button color="secondary" onClick={closePopup}>
+          Close
+        </Button>
         <Button
           color="primary"
           onClick={() => {

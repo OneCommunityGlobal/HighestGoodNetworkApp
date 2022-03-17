@@ -1,4 +1,3 @@
-
 const mockSummaries = [
   {
     _id: '1',
