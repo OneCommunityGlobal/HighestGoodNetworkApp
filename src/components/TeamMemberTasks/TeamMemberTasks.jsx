@@ -141,7 +141,8 @@ const TeamMemberTasks = (props) => {
                 userProfilePromises.push(httpService.get(ENDPOINTS.USER_PROFILE(member._id)).catch(err => { }));
               });
               Promise.all(userProfilePromises).then(async (data) => { 
-                try {   
+                try {
+                  console.log('data', data);   
                   for (let i = 0; i < uniqueMembers.length; i++) {
                     const user = uniqueMembers[i];
                     const userLeaderBoardData = data.find(member => member.data._id === user._id);
