@@ -6,10 +6,12 @@ import htmlToPdfmake from 'html-to-pdfmake';
 import moment from 'moment-timezone';
 import { Button } from 'reactstrap';
 
-pdfMake.vfs = pdfFonts.pdfMake.vfs;
+
 
 const GeneratePdfReport = ({ summaries, weekIndex, weekDates }) => {
   const generateFormattedReport = () => {
+    pdfMake.vfs = pdfFonts.pdfMake.vfs;
+
     const emails = [];
 
     let wsReport = `<h1>Weekly Summaries Report</h1>
