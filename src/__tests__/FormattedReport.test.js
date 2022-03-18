@@ -7,7 +7,6 @@ import FormattedReport from '../components/WeeklySummariesReport/FormattedReport
 describe('FormattedReport Component', () => {
   it('Snapshot with mocked data', () => {
     //const { asFragment } = render(<FormattedReport summaries={mockSummaries} weekIndex="1" />);
-
     // expect(asFragment()).toMatchSnapshot();
   });
 });

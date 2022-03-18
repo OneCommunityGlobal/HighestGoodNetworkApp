@@ -2,7 +2,6 @@ import { taskReducer } from '../../reducers/allTasksReducer';
 import * as types from '../../constants/task';
 
 describe('Task Reducer', () => {
-
   it('start fetch', () => {
     const allTasks = taskReducer({}, { type: types.FETCH_TASKS_START });
     expect(allTasks).toMatchObject({
@@ -13,10 +12,13 @@ describe('Task Reducer', () => {
   });
 
   it('error fetching', () => {
-    const allTasks = taskReducer({}, {
-      type: types.FETCH_TASKS_ERROR,
-      err: 'error',
-    });
+    const allTasks = taskReducer(
+      {},
+      {
+        type: types.FETCH_TASKS_ERROR,
+        err: 'error',
+      },
+    );
     expect(allTasks).toMatchObject({
       fetched: true,
       fetching: false,
@@ -25,12 +27,14 @@ describe('Task Reducer', () => {
   });
 
   describe('Receive Tasks', () => {
-
     it('level -1', () => {
-      const allTasks = taskReducer({}, {
-        level: -1,
-        type: types.RECEIVE_TASKS,
-      });
+      const allTasks = taskReducer(
+        {},
+        {
+          level: -1,
+          type: types.RECEIVE_TASKS,
+        },
+      );
       expect(allTasks).toMatchObject({
         taskItems: [],
         fetched: true,
@@ -40,20 +44,23 @@ describe('Task Reducer', () => {
     });
 
     it('level 0', () => {
-      const allTasks = taskReducer({}, {
-        level: 0,
-        type: types.RECEIVE_TASKS,
-        taskItems: [
-          {level: 0, num: '2'},
-          {level: 0, num: '3'},
-          {level: 0, num: '1'},
-        ]
-      });
+      const allTasks = taskReducer(
+        {},
+        {
+          level: 0,
+          type: types.RECEIVE_TASKS,
+          taskItems: [
+            { level: 0, num: '2' },
+            { level: 0, num: '3' },
+            { level: 0, num: '1' },
+          ],
+        },
+      );
       expect(allTasks).toMatchObject({
         taskItems: [
-          {level: 0, num: '1'},
-          {level: 0, num: '2'},
-          {level: 0, num: '3'},
+          { level: 0, num: '1' },
+          { level: 0, num: '2' },
+          { level: 0, num: '3' },
         ],
         fetched: true,
         fetching: false,
@@ -62,33 +69,36 @@ describe('Task Reducer', () => {
     });
 
     it('with mother task', () => {
-      const allTasks = taskReducer({
-        taskItems: [
-          {taskId: 5, level: 0, num: '1'},
-          {taskId: 0, level: 0, num: '2', _id: 0},
-          {taskId: 1, level: 0, num: '3'},
-        ]
-      }, {
-        mother: 0,
-        type: types.RECEIVE_TASKS,
-        taskItems: [
-          {taskId: 2, level: 1, num: '2.1'},
-          {taskId: 6, level: 3, num: '2.2.2.1'},
-          {taskId: 4, level: 2, num: '2.2.2'},
-          {taskId: 3, level: 2, num: '2.2.1'},
-          {taskId: 7, level: 2, num: '2.2.1'},
-        ]
-      });
+      const allTasks = taskReducer(
+        {
+          taskItems: [
+            { taskId: 5, level: 0, num: '1' },
+            { taskId: 0, level: 0, num: '2', _id: 0 },
+            { taskId: 1, level: 0, num: '3' },
+          ],
+        },
+        {
+          mother: 0,
+          type: types.RECEIVE_TASKS,
+          taskItems: [
+            { taskId: 2, level: 1, num: '2.1' },
+            { taskId: 6, level: 3, num: '2.2.2.1' },
+            { taskId: 4, level: 2, num: '2.2.2' },
+            { taskId: 3, level: 2, num: '2.2.1' },
+            { taskId: 7, level: 2, num: '2.2.1' },
+          ],
+        },
+      );
       expect(allTasks).toMatchObject({
         taskItems: [
-          {taskId: 5, level: 0, num: '1'},
-          {taskId: 0, level: 0, num: '2', _id: 0},
-          {taskId: 2, level: 1, num: '2.1.0.0.0', hasChildren: false},
-          {taskId: 3, level: 2, num: '2.2.1.0.0', hasChildren: false},
-          {taskId: 7, level: 2, num: '2.2.1.0.0', hasChildren: false},
-          {taskId: 4, level: 2, num: '2.2.2.0.0', hasChildren: false},
-          {taskId: 6, level: 3, num: '2.2.2.1.0', hasChildren: false},
-          {taskId: 1, level: 0, num: '3'},
+          { taskId: 5, level: 0, num: '1' },
+          { taskId: 0, level: 0, num: '2', _id: 0 },
+          { taskId: 2, level: 1, num: '2.1.0.0.0', hasChildren: false },
+          { taskId: 3, level: 2, num: '2.2.1.0.0', hasChildren: false },
+          { taskId: 7, level: 2, num: '2.2.1.0.0', hasChildren: false },
+          { taskId: 4, level: 2, num: '2.2.2.0.0', hasChildren: false },
+          { taskId: 6, level: 3, num: '2.2.2.1.0', hasChildren: false },
+          { taskId: 1, level: 0, num: '3' },
         ],
         fetched: true,
         fetching: false,
@@ -98,23 +108,26 @@ describe('Task Reducer', () => {
   });
 
   it('add task', () => {
-    const allTasks = taskReducer({
-      taskItems: [
-        {taskId: 5, level: 0, num: '1'},
-        {taskId: 0, level: 0, num: '2', _id: 0},
-        {taskId: 1, level: 0, num: '3'},
-      ]
-    }, {
-      mother: 0,
-      type: types.ADD_NEW_TASK,
-      newTask: {taskId: 2, level: 1, num: '2.1'},
-    });
+    const allTasks = taskReducer(
+      {
+        taskItems: [
+          { taskId: 5, level: 0, num: '1' },
+          { taskId: 0, level: 0, num: '2', _id: 0 },
+          { taskId: 1, level: 0, num: '3' },
+        ],
+      },
+      {
+        mother: 0,
+        type: types.ADD_NEW_TASK,
+        newTask: { taskId: 2, level: 1, num: '2.1' },
+      },
+    );
     expect(allTasks).toMatchObject({
       taskItems: [
-        {taskId: 5, level: 0, num: '1'},
-        {taskId: 2, level: 1, num: '2.1.0.0.0', hasChildren: false},
-        {taskId: 0, level: 0, num: '2', _id: 0, hasChildren: false},
-        {taskId: 1, level: 0, num: '3', hasChildren: false},
+        { taskId: 5, level: 0, num: '1' },
+        { taskId: 2, level: 1, num: '2.1.0.0.0', hasChildren: false },
+        { taskId: 0, level: 0, num: '2', _id: 0, hasChildren: false },
+        { taskId: 1, level: 0, num: '3', hasChildren: false },
       ],
       fetched: true,
       fetching: false,
@@ -123,22 +136,22 @@ describe('Task Reducer', () => {
   });
 
   it('delete task', () => {
-    const allTasks = taskReducer({
-      taskItems: [
-        {num: '1'},
-        {num: '2', _id: 0},
-        {num: '2.1', parentId1: 0, parentId2: 0, parentId3: 0},
-        {num: '3'},
-      ]
-    }, {
-      type: types.DELETE_TASK,
-      taskId: 0,
-    });
+    const allTasks = taskReducer(
+      {
+        taskItems: [
+          { num: '1' },
+          { num: '2', _id: 0 },
+          { num: '2.1', parentId1: 0, parentId2: 0, parentId3: 0 },
+          { num: '3' },
+        ],
+      },
+      {
+        type: types.DELETE_TASK,
+        taskId: 0,
+      },
+    );
     expect(allTasks).toMatchObject({
-      taskItems: [
-        {num: '1'},
-        {num: '3'},
-      ],
+      taskItems: [{ num: '1' }, { num: '3' }],
       fetched: true,
       fetching: false,
       error: 'none',
@@ -146,23 +159,18 @@ describe('Task Reducer', () => {
   });
 
   it('update task', () => {
-    const allTasks = taskReducer({
-      taskItems: [
-        {num: '1'},
-        {num: '2', _id: 0},
-        {num: '3'},
-      ]
-    }, {
-      type: types.UPDATE_TASK,
-      taskId: 0,
-      updatedTask: {msg: 'msg'}
-    });
+    const allTasks = taskReducer(
+      {
+        taskItems: [{ num: '1' }, { num: '2', _id: 0 }, { num: '3' }],
+      },
+      {
+        type: types.UPDATE_TASK,
+        taskId: 0,
+        updatedTask: { msg: 'msg' },
+      },
+    );
     expect(allTasks).toMatchObject({
-      taskItems: [
-        {num: '1'},
-        {num: '2', msg: 'msg'},
-        {num: '3'},
-      ],
+      taskItems: [{ num: '1' }, { num: '2', msg: 'msg' }, { num: '3' }],
       fetched: true,
       fetching: false,
       error: 'none',
@@ -170,19 +178,17 @@ describe('Task Reducer', () => {
   });
 
   it('copy task', () => {
-    const allTasks = taskReducer({
-      taskItems: [
-        {num: '1'},
-        {num: '2', _id: 0},
-        {num: '3'},
-      ]
-    }, {
-      type: types.COPY_TASK,
-      taskId: 0,
-    });
+    const allTasks = taskReducer(
+      {
+        taskItems: [{ num: '1' }, { num: '2', _id: 0 }, { num: '3' }],
+      },
+      {
+        type: types.COPY_TASK,
+        taskId: 0,
+      },
+    );
     expect(allTasks).toMatchObject({
-      copiedTask: {num: '2'}
+      copiedTask: { num: '2' },
     });
   });
-
 });

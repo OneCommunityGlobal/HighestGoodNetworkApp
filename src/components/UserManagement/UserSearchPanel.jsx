@@ -1,5 +1,5 @@
 import React from 'react';
-import { SEARCH, SHOW, CREATE_NEW_USER } from '../../languages/en/ui'
+import { SEARCH, SHOW, CREATE_NEW_USER } from '../../languages/en/ui';
 
 /**
  * The search panel stateless component for user management grid
@@ -7,22 +7,36 @@ import { SEARCH, SHOW, CREATE_NEW_USER } from '../../languages/en/ui'
 const UserSearchPanel = (props) => {
   return (
     <div className="input-group" id="new_usermanagement">
-      <button type="button" className="btn btn-info"
-        onClick={(e) => { props.onNewUserClick() }}>{CREATE_NEW_USER}</button>
-      <div className="input-group-prepend" style={{ marginLeft: "10px" }}>
+      <button
+        type="button"
+        className="btn btn-info"
+        onClick={(e) => {
+          props.onNewUserClick();
+        }}
+      >
+        {CREATE_NEW_USER}
+      </button>
+      <div className="input-group-prepend" style={{ marginLeft: '10px' }}>
         <span className="input-group-text">{SEARCH}</span>
       </div>
-      <input type="text" className="form-control" aria-label="Search"
-        placeholder="Search Text" id="user-profiles-wild-card-search"
+      <input
+        type="text"
+        className="form-control"
+        aria-label="Search"
+        placeholder="Search Text"
+        id="user-profiles-wild-card-search"
         onChange={(e) => {
           props.onSearch(e.target.value);
-        }} />
-      <div className="input-group-prepend" style={{ marginLeft: "10px" }}>
+        }}
+      />
+      <div className="input-group-prepend" style={{ marginLeft: '10px' }}>
         <span className="input-group-text">{SHOW}</span>
-        <select id="active-filter-dropdown"
+        <select
+          id="active-filter-dropdown"
           onChange={(e) => {
             props.onActiveFiter(e.target.value);
-          }}>
+          }}
+        >
           <option value="all">All</option>
           <option value="active">Active</option>
           <option value="inactive">Inactive</option>
@@ -32,7 +46,7 @@ const UserSearchPanel = (props) => {
 
       <div className="input-group-append"></div>
     </div>
-  )
-}
+  );
+};
 
 export default UserSearchPanel;

@@ -1,10 +1,8 @@
-import React from "react";
-import { shallow } from "enzyme";
-import { Header } from "./Header";
+import React from 'react';
+import { shallow } from 'enzyme';
+import { Header } from './Header';
 import mockAdminState from '../../__tests__/mockAdminState';
-import { getHeaderData } from '../../actions/authActions'
-
-
+import { getHeaderData } from '../../actions/authActions';
 
 describe('Header page structure', () => {
   let mountedHeader, props;
@@ -34,13 +32,12 @@ describe('Header page structure', () => {
     const img = mountedHeader.find('img');
     expect(img.length).toBeGreaterThan(0);
   });
-
 });
 
 describe('UnAuthenticated Header page structure', () => {
   let mountedHeader, props;
   beforeEach(() => {
-    props = {auth:{isAuthenticated: false}};
+    props = { auth: { isAuthenticated: false } };
     props.isAuthenticated = false;
     props.getHeaderData = getHeaderData;
     props.getTimerData = jest.fn();
@@ -66,7 +63,4 @@ describe('UnAuthenticated Header page structure', () => {
     const img = mountedHeader.find('img');
     expect(img.length).toBe(0);
   });
-
 });
-
-

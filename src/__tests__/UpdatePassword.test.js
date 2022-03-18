@@ -46,26 +46,26 @@
 //     );
 //   });
 
-  describe('Structure', () => {
-    it('should have 3 input fields', () => {
-      // const inputs = mountedPage.find('Input');
-      // expect(inputs.length).toBe(3);
-    });
-    // it('should have 1 button fields', () => {
-    //   const button = mountedPage.find('button');
-    //   expect(button.length).toBe(1);
-    // });
-    // it('should have submit button in disabled state by default', () => {
-    //   const button = mountedPage.find('button');
-    //   expect(button.props()).toHaveProperty('disabled');
-    // });
-
-    // it('should have userId as a prop', () => {
-    //   expect(mountedPage.instance().props.match.params).toHaveProperty(
-    //     'userId',
-    //   );
-    // });
+describe('Structure', () => {
+  it('should have 3 input fields', () => {
+    // const inputs = mountedPage.find('Input');
+    // expect(inputs.length).toBe(3);
   });
+  // it('should have 1 button fields', () => {
+  //   const button = mountedPage.find('button');
+  //   expect(button.length).toBe(1);
+  // });
+  // it('should have submit button in disabled state by default', () => {
+  //   const button = mountedPage.find('button');
+  //   expect(button.props()).toHaveProperty('disabled');
+  // });
+
+  // it('should have userId as a prop', () => {
+  //   expect(mountedPage.instance().props.match.params).toHaveProperty(
+  //     'userId',
+  //   );
+  // });
+});
 
 //   describe('For incorrect user inputs', () => {
 //     it('should show error if current password is left blank', () => {

@@ -1,1 +1,1 @@
-export { default } from "./Task";
+export { default } from './Task';

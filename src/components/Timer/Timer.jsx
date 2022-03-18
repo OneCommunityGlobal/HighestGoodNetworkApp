@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
-import { Badge, Button } from 'reactstrap'
-import { startTimer, pauseTimer, updateTimer, getTimerData } from '../../actions/timer'
-import TimeEntryForm from '../Timelog/TimeEntryForm'
-import './Timer.css'
-import axios from 'axios'
-import { ENDPOINTS } from '../../utils/URL'
+import React, { useState, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { Badge, Button } from 'reactstrap';
+import { startTimer, pauseTimer, updateTimer, getTimerData } from '../../actions/timer';
+import TimeEntryForm from '../Timelog/TimeEntryForm';
+import './Timer.css';
+import axios from 'axios';
+import { ENDPOINTS } from '../../utils/URL';
 
 const Timer = () => {
   const data = {
@@ -14,136 +14,136 @@ const Timer = () => {
     //isTangible: window.screenX > 500
     //How does the screen position of the element influence tangability?
     //This has been changed as part of a hotfix.
-  }
-  const userId = useSelector(state => state.auth.user.userid)
-  const userProfile = useSelector(state => state.auth.user)
-  const pausedAt = useSelector(state => state.timer?.seconds)
-  const isWorking = useSelector(state => state.timer?.isWorking)
-  const dispatch = useDispatch()
+  };
+  const userId = useSelector((state) => state.auth.user.userid);
+  const userProfile = useSelector((state) => state.auth.user);
+  const pausedAt = useSelector((state) => state.timer?.seconds);
+  const isWorking = useSelector((state) => state.timer?.isWorking);
+  const dispatch = useDispatch();
   const alert = {
     va: true,
-  }
-  const [seconds, setSeconds] = useState(isNaN(pausedAt) ? 0 : pausedAt)
-  const [isActive, setIsActive] = useState(false)
-  const [modal, setModal] = useState(false)
-  let intervalSec = null
-  let intervalMin = null
-  let intervalThreeMin = null
+  };
+  const [seconds, setSeconds] = useState(isNaN(pausedAt) ? 0 : pausedAt);
+  const [isActive, setIsActive] = useState(false);
+  const [modal, setModal] = useState(false);
+  let intervalSec = null;
+  let intervalMin = null;
+  let intervalThreeMin = null;
 
-  const toggle = () => setModal(modal => !modal)
+  const toggle = () => setModal((modal) => !modal);
 
   const reset = async () => {
-    setSeconds(0)
-    const status = await pauseTimer(userId, 0)
+    setSeconds(0);
+    const status = await pauseTimer(userId, 0);
     if (status === 200 || status === 201) {
-      setIsActive(false)
+      setIsActive(false);
     }
-  }
+  };
   const handleStart = async () => {
-    await dispatch(getTimerData(userId))
+    await dispatch(getTimerData(userId));
 
-    const status = await startTimer(userId, seconds)
+    const status = await startTimer(userId, seconds);
     if ([9, 200, 2001].includes(status)) {
-      setIsActive(true)
+      setIsActive(true);
     }
 
-    let maxtime = null
+    let maxtime = null;
 
     if (seconds === 0 && alert.va) {
-      maxtime = setInterval(handleStop, 36000900)
-      alert.va = !alert.va
+      maxtime = setInterval(handleStop, 36000900);
+      alert.va = !alert.va;
     } else {
-      clearInterval(maxtime)
+      clearInterval(maxtime);
     }
-  }
+  };
 
   const handleUpdate = async () => {
     try {
-      const status = await updateTimer(userId)
+      const status = await updateTimer(userId);
       if (status === 9) {
-        setIsActive(false)
+        setIsActive(false);
       }
-      await dispatch(getTimerData(userId))
+      await dispatch(getTimerData(userId));
     } catch (e) {}
-  }
+  };
 
   const handlePause = async () => {
-    await dispatch(getTimerData(userId))
-    const status = await pauseTimer(userId, seconds)
+    await dispatch(getTimerData(userId));
+    const status = await pauseTimer(userId, seconds);
     if (status === 200 || status === 201) {
-      setIsActive(false)
-      return true
+      setIsActive(false);
+      return true;
     }
-    return false
-  }
+    return false;
+  };
 
   const handleStop = () => {
-    toggle()
-  }
+    toggle();
+  };
 
   useEffect(() => {
     const fetchSeconds = async () => {
       try {
-        const res = await axios.get(ENDPOINTS.TIMER(userId))
+        const res = await axios.get(ENDPOINTS.TIMER(userId));
         if (res.status === 200) {
-          setSeconds(res.data?.seconds || 0)
-          setIsActive(res.data.isWorking)
+          setSeconds(res.data?.seconds || 0);
+          setIsActive(res.data.isWorking);
         } else {
-          setSeconds(isNaN(pausedAt) ? 0 : pausedAt)
+          setSeconds(isNaN(pausedAt) ? 0 : pausedAt);
         }
       } catch {
-        setSeconds(isNaN(pausedAt) ? 0 : pausedAt)
+        setSeconds(isNaN(pausedAt) ? 0 : pausedAt);
       }
-    }
+    };
 
-    fetchSeconds()
-  }, [pausedAt])
+    fetchSeconds();
+  }, [pausedAt]);
 
   useEffect(() => {
     try {
-      setIsActive(isWorking)
+      setIsActive(isWorking);
     } catch {}
-  }, [isWorking])
+  }, [isWorking]);
 
   useEffect(() => {
     if (isActive) {
       if (intervalThreeMin) {
-        clearInterval(intervalThreeMin)
+        clearInterval(intervalThreeMin);
       }
       intervalSec = setInterval(() => {
-        setSeconds(seconds => seconds + 1)
-      }, 1000)
+        setSeconds((seconds) => seconds + 1);
+      }, 1000);
 
-      intervalMin = setInterval(handleUpdate, 60000)
+      intervalMin = setInterval(handleUpdate, 60000);
     } else if (!isActive && seconds !== 0) {
-      clearInterval(intervalSec)
-      clearInterval(intervalMin)
+      clearInterval(intervalSec);
+      clearInterval(intervalMin);
       if (intervalThreeMin) {
-        clearInterval(intervalThreeMin)
+        clearInterval(intervalThreeMin);
       }
       //handles restarting timer if you restart it in another tab
-      intervalThreeMin = setInterval(handleUpdate, 1800000)
+      intervalThreeMin = setInterval(handleUpdate, 1800000);
     } else {
-      clearInterval(intervalSec)
-      clearInterval(intervalMin)
+      clearInterval(intervalSec);
+      clearInterval(intervalMin);
       if (intervalThreeMin) {
-        clearInterval(intervalThreeMin)
+        clearInterval(intervalThreeMin);
       }
       //handles restarting timer if you restart it in another tab
-      intervalThreeMin = setInterval(handleUpdate, 1800000)
+      intervalThreeMin = setInterval(handleUpdate, 1800000);
     }
     return () => {
-      clearInterval(intervalSec)
-      clearInterval(intervalMin)
+      clearInterval(intervalSec);
+      clearInterval(intervalMin);
       if (intervalThreeMin) {
-        clearInterval(intervalThreeMin)
+        clearInterval(intervalThreeMin);
       }
-    }
-  }, [isActive])
+    };
+  }, [isActive]);
 
-  const hours = Math.floor(seconds / 3600)
-  const minutes = Math.floor((seconds % 3600) / 60)
-  const secondsRemainder = seconds % 60
+  const hours = Math.floor(seconds / 3600);
+  const minutes = Math.floor((seconds % 3600) / 60);
+  const secondsRemainder = seconds % 60;
 
   return (
     <div style={{ zIndex: 2 }} className="timer">
@@ -181,9 +181,9 @@ const Timer = () => {
         resetTimer={reset}
       />
     </div>
-  )
-}
+  );
+};
 
-const padZero = number => `0${number}`.slice(-2)
+const padZero = (number) => `0${number}`.slice(-2);
 
-export default Timer
+export default Timer;

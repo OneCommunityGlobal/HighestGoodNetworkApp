@@ -220,9 +220,7 @@ export function getAllTimeEntries() {
 }
 
 export function getTimeEntryForSpecifiedPeriod(userId, fromDate, toDate) {
-  const request = httpService.get(
-    `${APIEndpoint}/TimeEntry/user/${userId}/${fromDate}/${toDate}`,
-  );
+  const request = httpService.get(`${APIEndpoint}/TimeEntry/user/${userId}/${fromDate}/${toDate}`);
 
   return (dispatch) => {
     request.then(({ data }) => {
@@ -253,8 +251,8 @@ export function postTimeEntry(timeEntryObj) {
   const request = httpService.post(`${APIEndpoint}/TimeEntry`, timeEntryObj);
   return (dispatch) => {
     request.then(
-      response => dispatch({ type: 'REQUEST_SUCCEEDED', payload: response }),
-      error => dispatch({ type: 'REQUEST_FAILED', error }),
+      (response) => dispatch({ type: 'REQUEST_SUCCEEDED', payload: response }),
+      (error) => dispatch({ type: 'REQUEST_FAILED', error }),
     );
   };
 }

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect } from 'react';
 import {
   Button,
   Form,
@@ -12,9 +12,9 @@ import {
   ModalBody,
   Alert,
   UncontrolledTooltip,
-} from 'reactstrap'
-import { connect } from 'react-redux'
-import AssignBadgePopup from './AssignBadgePopup'
+} from 'reactstrap';
+import { connect } from 'react-redux';
+import AssignBadgePopup from './AssignBadgePopup';
 import {
   getFirstName,
   getLastName,
@@ -22,100 +22,100 @@ import {
   clearNameAndSelected,
   closeAlert,
   validateBadges,
-} from '../../actions/badgeManagement'
-import { getAllUserProfile } from '../../actions/userManagement'
-import Autosuggest from 'react-autosuggest'
+} from '../../actions/badgeManagement';
+import { getAllUserProfile } from '../../actions/userManagement';
+import Autosuggest from 'react-autosuggest';
 
-const AssignBadge = props => {
-  const [isOpen, setOpen] = useState(false)
-  const [firstSuggestions, setFirstSuggestions] = useState([])
-  const [lastSuggestions, setLastSuggestions] = useState([])
+const AssignBadge = (props) => {
+  const [isOpen, setOpen] = useState(false);
+  const [firstSuggestions, setFirstSuggestions] = useState([]);
+  const [lastSuggestions, setLastSuggestions] = useState([]);
 
   useEffect(() => {
-    props.getAllUserProfile()
-    props.clearNameAndSelected()
-    props.closeAlert()
-  }, [])
+    props.getAllUserProfile();
+    props.clearNameAndSelected();
+    props.closeAlert();
+  }, []);
 
-  const activeUsers = props.allUserProfiles.filter(profile => profile.isActive === true)
+  const activeUsers = props.allUserProfiles.filter((profile) => profile.isActive === true);
 
-  const escapeRegexCharacters = str => str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+  const escapeRegexCharacters = (str) => str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
-  const getSuggestions = value => {
-    const escapedValue = escapeRegexCharacters(value.trim())
-    const regex = new RegExp('^' + escapedValue, 'i')
-    return activeUsers.filter(user => regex.test(user.firstName) || regex.test(user.lastName))
-  }
+  const getSuggestions = (value) => {
+    const escapedValue = escapeRegexCharacters(value.trim());
+    const regex = new RegExp('^' + escapedValue, 'i');
+    return activeUsers.filter((user) => regex.test(user.firstName) || regex.test(user.lastName));
+  };
 
-  const getSuggestionFirst = suggestion => suggestion.firstName
+  const getSuggestionFirst = (suggestion) => suggestion.firstName;
 
-  const getSuggestionLast = suggestion => suggestion.lastName
+  const getSuggestionLast = (suggestion) => suggestion.lastName;
 
-  const renderSuggestion = suggestion => {
+  const renderSuggestion = (suggestion) => {
     return (
       <div>
         {suggestion.firstName} {suggestion.lastName}
       </div>
-    )
-  }
+    );
+  };
 
   const onFirstChange = (event, { newValue }) => {
-    props.getFirstName(newValue)
-  }
+    props.getFirstName(newValue);
+  };
 
   const onLastChange = (event, { newValue }) => {
-    props.getLastName(newValue)
-  }
+    props.getLastName(newValue);
+  };
 
   const onFirstSuggestionsFetchRequested = ({ value }) => {
-    setFirstSuggestions(getSuggestions(value))
-  }
+    setFirstSuggestions(getSuggestions(value));
+  };
 
   const onFirstSuggestionsClearRequested = () => {
-    setFirstSuggestions([])
-  }
+    setFirstSuggestions([]);
+  };
 
   const onFirstSuggestionSelected = (event, { suggestion }) => {
-    props.getLastName(suggestion.lastName)
-  }
+    props.getLastName(suggestion.lastName);
+  };
 
   const onLastSuggestionsFetchRequested = ({ value }) => {
-    setLastSuggestions(getSuggestions(value))
-  }
+    setLastSuggestions(getSuggestions(value));
+  };
 
   const onLastSuggestionsClearRequested = () => {
-    setLastSuggestions([])
-  }
+    setLastSuggestions([]);
+  };
 
   const onLastSuggestionSelected = (event, { suggestion }) => {
-    props.getFirstName(suggestion.firstName)
-  }
+    props.getFirstName(suggestion.firstName);
+  };
 
   const toggle = () => {
-    const { firstName, lastName, selectedBadges } = props
+    const { firstName, lastName, selectedBadges } = props;
     if (isOpen) {
-      props.assignBadges(firstName, lastName, selectedBadges)
-      setOpen(isOpen => !isOpen)
-      props.clearNameAndSelected()
+      props.assignBadges(firstName, lastName, selectedBadges);
+      setOpen((isOpen) => !isOpen);
+      props.clearNameAndSelected();
     } else {
       if (firstName && lastName) {
-        setOpen(isOpen => !isOpen)
+        setOpen((isOpen) => !isOpen);
       } else {
-        props.validateBadges(firstName, lastName)
+        props.validateBadges(firstName, lastName);
       }
     }
-  }
+  };
 
   const FirstInputProps = {
     placeholder: 'first name',
     value: props.firstName,
     onChange: onFirstChange,
-  }
+  };
   const LastInputProps = {
     placeholder: 'last name',
     value: props.lastName,
     onChange: onLastChange,
-  }
+  };
 
   return (
     <Form
@@ -186,10 +186,10 @@ const AssignBadge = props => {
       </FormGroup>
       {/* <Button size="lg" color="info" className="assign-badge-margin-top" onClick={clickSubmit}>Submit</Button> */}
     </Form>
-  )
-}
+  );
+};
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state) => ({
   selectedBadges: state.badge.selectedBadges,
   firstName: state.badge.firstName,
   lastName: state.badge.lastName,
@@ -197,17 +197,17 @@ const mapStateToProps = state => ({
   alertVisible: state.badge.alertVisible,
   color: state.badge.color,
   allUserProfiles: state.allUserProfiles.userProfiles,
-})
+});
 
-const mapDispatchToProps = dispatch => ({
-  getFirstName: firstName => dispatch(getFirstName(firstName)),
-  getLastName: lastName => dispatch(getLastName(lastName)),
+const mapDispatchToProps = (dispatch) => ({
+  getFirstName: (firstName) => dispatch(getFirstName(firstName)),
+  getLastName: (lastName) => dispatch(getLastName(lastName)),
   getAllUserProfile: () => dispatch(getAllUserProfile()),
   clearNameAndSelected: () => dispatch(clearNameAndSelected()),
   assignBadges: (fisrtName, lastName, selectedBadge) =>
     dispatch(assignBadges(fisrtName, lastName, selectedBadge)),
   validateBadges: (firstName, lastName) => dispatch(validateBadges(firstName, lastName)),
   closeAlert: () => dispatch(closeAlert()),
-})
+});
 
-export default connect(mapStateToProps, mapDispatchToProps)(AssignBadge)
+export default connect(mapStateToProps, mapDispatchToProps)(AssignBadge);

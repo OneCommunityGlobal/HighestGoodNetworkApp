@@ -1,4 +1,4 @@
-import React, { useState, useReducer } from 'react'
+import React, { useState, useReducer } from 'react';
 import {
   Button,
   Modal,
@@ -11,9 +11,9 @@ import {
   CardBody,
   Card,
   Col,
-} from 'reactstrap'
+} from 'reactstrap';
 
-const UserProfileModal = props => {
+const UserProfileModal = (props) => {
   const {
     isOpen,
     closeModal,
@@ -24,8 +24,8 @@ const UserProfileModal = props => {
     type,
     userProfile,
     id,
-    isUserAdmin
-  } = props
+    isUserAdmin,
+  } = props;
 
   let blueSquare = [
     {
@@ -33,27 +33,27 @@ const UserProfileModal = props => {
       description:
         'This is auto generated text. You must save the document first before viewing newly created blue squares.',
     },
-  ]
+  ];
 
   if (type === 'modBlueSquare' || type === 'viewBlueSquare') {
     if (id.length > 0) {
-      blueSquare = userProfile.infringments.filter(blueSquare => blueSquare._id === id)
+      blueSquare = userProfile.infringments.filter((blueSquare) => blueSquare._id === id);
     }
   }
 
   //const [modal, setModal] = useState(false)
 
-  const [linkName, setLinkName] = useState('')
-  const [linkURL, setLinkURL] = useState('')
+  const [linkName, setLinkName] = useState('');
+  const [linkURL, setLinkURL] = useState('');
 
-  const [adminLinkName, setAdminLinkName] = useState('')
-  const [adminLinkURL, setAdminLinkURL] = useState('')
+  const [adminLinkName, setAdminLinkName] = useState('');
+  const [adminLinkURL, setAdminLinkURL] = useState('');
 
-  const [dateStamp, setDateStamp] = useState(blueSquare[0]?.date || '')
-  const [summary, setSummary] = useState(blueSquare[0]?.description || '')
+  const [dateStamp, setDateStamp] = useState(blueSquare[0]?.date || '');
+  const [summary, setSummary] = useState(blueSquare[0]?.description || '');
 
-  const [addButton, setAddButton] = useState(true)
-  const [summaryFieldView, setSummaryFieldView] = useState(true)
+  const [addButton, setAddButton] = useState(true);
+  const [summaryFieldView, setSummaryFieldView] = useState(true);
 
   // console.log('grabed personal links:', personalLinks)
 
@@ -70,82 +70,82 @@ const UserProfileModal = props => {
     (personalLinks, { type, value, passedIndex }) => {
       switch (type) {
         case 'add':
-          return [...personalLinks, value]
+          return [...personalLinks, value];
         case 'remove':
-          return personalLinks.filter((_, index) => index !== passedIndex)
+          return personalLinks.filter((_, index) => index !== passedIndex);
         case 'updateName':
           return personalLinks.filter((_, index) => {
             if (index === passedIndex) {
-              _.Name = value
+              _.Name = value;
             }
-            return _
-          })
+            return _;
+          });
         case 'updateLink':
           return personalLinks.filter((_, index) => {
             if (index === passedIndex) {
-              _.Link = value
+              _.Link = value;
             }
-            return _
-          })
+            return _;
+          });
         default:
-          return personalLinks
+          return personalLinks;
       }
     },
     userProfile.personalLinks,
-  )
+  );
 
   const [adminLinks, dispatchAdminLinks] = useReducer(
     (adminLinks, { type, value, passedIndex }) => {
       switch (type) {
         case 'add':
-          return [...adminLinks, value]
+          return [...adminLinks, value];
         case 'remove':
-          return adminLinks.filter((_, index) => index !== passedIndex)
+          return adminLinks.filter((_, index) => index !== passedIndex);
         case 'updateName':
           return adminLinks.filter((_, index) => {
             if (index === passedIndex) {
-              _.Name = value
+              _.Name = value;
             }
-            return _
-          })
+            return _;
+          });
         case 'updateLink':
           return adminLinks.filter((_, index) => {
             if (index === passedIndex) {
-              _.Link = value
+              _.Link = value;
             }
-            return _
-          })
+            return _;
+          });
         default:
-          return adminLinks
+          return adminLinks;
       }
     },
     userProfile.adminLinks,
-  )
+  );
 
-  const handleChange = event => {
-    event.preventDefault()
+  const handleChange = (event) => {
+    event.preventDefault();
 
     if (event.target.id === 'linkName') {
-      setLinkName(event.target.value.trim())
+      setLinkName(event.target.value.trim());
     } else if (event.target.id === 'linkURL') {
-      setLinkURL(event.target.value.trim())
+      setLinkURL(event.target.value.trim());
     } else if (event.target.id === 'summary') {
-      setSummary(event.target.value)
-      checkFields(dateStamp, summary)
+      setSummary(event.target.value);
+      checkFields(dateStamp, summary);
     } else if (event.target.id === 'date') {
-      setDateStamp(event.target.value)
-      setSummaryFieldView(false)
-      checkFields(dateStamp, summary)
+      setDateStamp(event.target.value);
+      setSummaryFieldView(false);
+      checkFields(dateStamp, summary);
     }
-  }
+  };
 
   function checkFields(field1, field2) {
-    console.log('f1:', field1, ' f2:', field2)
+    console.log('f1:', field1, ' f2:', field2);
 
     if (field1 != null && field2 != null) {
-      setAddButton(false)
+      setAddButton(false);
     } else {
-      setAddButton(true)
+      setAddButton(true);
     }
   }
 
@@ -170,7 +170,7 @@ const UserProfileModal = props => {
                         <input
                           className="customInput"
                           value={link.Name}
-                          onChange={e =>
+                          onChange={(e) =>
                             dispatchAdminLinks({
                               type: 'updateName',
                               value: e.target.value,
@@ -181,7 +181,7 @@ const UserProfileModal = props => {
                         <input
                           className="customInput"
                           value={link.Link}
-                          onChange={e =>
+                          onChange={(e) =>
                             dispatchAdminLinks({
                               type: 'updateLink',
                               value: e.target.value,
@@ -208,13 +208,13 @@ const UserProfileModal = props => {
                         className="customEdit"
                         id="linkName"
                         placeholder="enter name"
-                        onChange={e => setAdminLinkName(e.target.value)}
+                        onChange={(e) => setAdminLinkName(e.target.value)}
                       />
                       <input
                         className="customEdit"
                         id="linkURL"
                         placeholder="enter link"
-                        onChange={e => setAdminLinkURL(e.target.value.trim())}
+                        onChange={(e) => setAdminLinkURL(e.target.value.trim())}
                       />
                       <button
                         className="addButton"
@@ -245,7 +245,7 @@ const UserProfileModal = props => {
                       <input
                         className="customInput"
                         value={link.Name}
-                        onChange={e =>
+                        onChange={(e) =>
                           dispatchPersonalLinks({
                             type: 'updateName',
                             value: e.target.value,
@@ -256,7 +256,7 @@ const UserProfileModal = props => {
                       <input
                         className="customInput"
                         value={link.Link}
-                        onChange={e =>
+                        onChange={(e) =>
                           dispatchPersonalLinks({
                             type: 'updateLink',
                             value: e.target.value,
@@ -285,13 +285,13 @@ const UserProfileModal = props => {
                       className="customEdit"
                       id="linkName"
                       placeholder="enter name"
-                      onChange={e => setLinkName(e.target.value)}
+                      onChange={(e) => setLinkName(e.target.value)}
                     />
                     <input
                       className="customEdit"
                       id="linkURL"
                       placeholder="enter link"
-                      onChange={e => setLinkURL(e.target.value.trim())}
+                      onChange={(e) => setLinkURL(e.target.value.trim())}
                     />
                     <button
                       className="addButton"
@@ -329,12 +329,12 @@ const UserProfileModal = props => {
           <>
             <FormGroup>
               <Label for="date">Date</Label>
-              <Input type="date" onChange={e => setDateStamp(e.target.value)} value={dateStamp} />
+              <Input type="date" onChange={(e) => setDateStamp(e.target.value)} value={dateStamp} />
             </FormGroup>
 
             <FormGroup>
               <Label for="report">Summary</Label>
-              <Input type="textarea" onChange={e => setSummary(e.target.value)} value={summary} />
+              <Input type="textarea" onChange={(e) => setSummary(e.target.value)} value={summary} />
             </FormGroup>
           </>
         )}
@@ -377,10 +377,12 @@ const UserProfileModal = props => {
 
         {type === 'modBlueSquare' && (
           <>
-            <Button color="info" onClick={() => {
-              modifyBlueSquares(id, dateStamp, summary, 'update');
-            }}>
-
+            <Button
+              color="info"
+              onClick={() => {
+                modifyBlueSquares(id, dateStamp, summary, 'update');
+              }}
+            >
               Update
             </Button>
             <Button
@@ -388,7 +390,6 @@ const UserProfileModal = props => {
               onClick={() => {
                 modifyBlueSquares(id, dateStamp, summary, 'delete');
               }}
-
             >
               Delete
             </Button>
@@ -399,7 +400,7 @@ const UserProfileModal = props => {
           <Button
             color="info"
             onClick={() => {
-              updateLink(personalLinks, adminLinks)
+              updateLink(personalLinks, adminLinks);
             }}
           >
             Update
@@ -415,7 +416,7 @@ const UserProfileModal = props => {
             <Button
               color="info"
               onClick={() => {
-                window.open('https://picresize.com/')
+                window.open('https://picresize.com/');
               }}
             >
               {' '}
@@ -435,7 +436,7 @@ const UserProfileModal = props => {
         )}
       </ModalFooter>
     </Modal>
-  )
-}
+  );
+};
 
-export default UserProfileModal
+export default UserProfileModal;

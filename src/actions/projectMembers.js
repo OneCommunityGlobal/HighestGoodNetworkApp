@@ -2,9 +2,9 @@
  * Action: MEMBER MEMBERSHIP
  * Author: Henry Ng - 02/03/20
  ********************************************************************************/
-import axios from 'axios'
-import * as types from './../constants/projectMembership'
-import { ENDPOINTS } from '../utils/URL'
+import axios from 'axios';
+import * as types from './../constants/projectMembership';
+import { ENDPOINTS } from '../utils/URL';
 /*******************************************
  * ACTION CREATORS
  *******************************************/
@@ -13,127 +13,135 @@ export const getAllUserProfiles = () => {
   const request = axios.get(ENDPOINTS.USER_PROFILES);
   return async (dispatch, getState) => {
     await dispatch(findUsersStart());
-    request.then(res => {
-      let users = res.data;
-      let members = getState().projectMembers.members;
-      users = users.map((user) => {
-        if (!members.find(member => member._id === user._id)) {
-          return user = { ...user, assigned: false }
-        } else {
-          return user = { ...user, assigned: true }
-        }
+    request
+      .then((res) => {
+        let users = res.data;
+        let members = getState().projectMembers.members;
+        users = users.map((user) => {
+          if (!members.find((member) => member._id === user._id)) {
+            return (user = { ...user, assigned: false });
+          } else {
+            return (user = { ...user, assigned: true });
+          }
+        });
+        // console.log(users);
+        dispatch(foundUsers(users));
       })
-      // console.log(users);
-      dispatch(foundUsers(users));
-
-    }).catch((err) => {
-      // console.log("Error", err);
-      dispatch(findUsersError(err));
-    })
-  }
-}
+      .catch((err) => {
+        // console.log("Error", err);
+        dispatch(findUsersError(err));
+      });
+  };
+};
 
 /**
-* Call API to find a user profile
-*/
+ * Call API to find a user profile
+ */
 export const findUserProfiles = (keyword) => {
-
   //console.log(ENDPOINTS.USER_PROFILES, keyword);
   const request = axios.get(ENDPOINTS.USER_PROFILES);
   //console.log(request);
 
   return async (dispatch, getState) => {
     await dispatch(findUsersStart());
-    request.then(res => {
-      // console.log("FOUND USER ", res);
-      if (keyword.trim() !== "") {
-        let users = res.data.filter(user => (user.firstName + " " + user.lastName).toLowerCase().includes(keyword.toLowerCase()));
-        let members = getState().projectMembers.members;
-        users = users.map((user) => {
-          if (!members.find(member => member._id === user._id)) {
-            return user = { ...user, assigned: false }
-          } else {
-            return user = { ...user, assigned: true }
-          }
-        })
-        // console.log(users);
-        dispatch(foundUsers(users));
-      } else {
-        dispatch(foundUsers([]));
-      }
-    }).catch((err) => {
-      // console.log("Error", err);
-      dispatch(findUsersError(err));
-    })
-  }
-}
+    request
+      .then((res) => {
+        // console.log("FOUND USER ", res);
+        if (keyword.trim() !== '') {
+          let users = res.data.filter((user) =>
+            (user.firstName + ' ' + user.lastName).toLowerCase().includes(keyword.toLowerCase()),
+          );
+          let members = getState().projectMembers.members;
+          users = users.map((user) => {
+            if (!members.find((member) => member._id === user._id)) {
+              return (user = { ...user, assigned: false });
+            } else {
+              return (user = { ...user, assigned: true });
+            }
+          });
+          // console.log(users);
+          dispatch(foundUsers(users));
+        } else {
+          dispatch(foundUsers([]));
+        }
+      })
+      .catch((err) => {
+        // console.log("Error", err);
+        dispatch(findUsersError(err));
+      });
+  };
+};
 
 /**
  * Call API to get all members
  */
 export const fetchAllMembers = (projectId) => {
   const request = axios.get(ENDPOINTS.PROJECT_MEMBER(projectId));
-  return async dispatch => {
+  return async (dispatch) => {
     await dispatch(setMemberStart());
     await dispatch(foundUsers([]));
-    request.then(res => {
-      // console.log("RES", res);
-      dispatch(setMembers(res.data));
-    }).catch((err) => {
-      //console.log("Error", err);
-      dispatch(setMembersError(err));
-    })
-  }
-}
+    request
+      .then((res) => {
+        // console.log("RES", res);
+        dispatch(setMembers(res.data));
+      })
+      .catch((err) => {
+        //console.log("Error", err);
+        dispatch(setMembersError(err));
+      });
+  };
+};
 
 /**
  * Call API to assign/ unassign project
  */
 export const assignProject = (projectId, userId, operation, firstName, lastName) => {
-
   const request = axios.post(ENDPOINTS.PROJECT_MEMBER(projectId), {
     projectId: projectId,
-    users: [{
-      userId,
-      operation
-    }]
+    users: [
+      {
+        userId,
+        operation,
+      },
+    ],
   });
 
-  return async dispatch => {
-    request.then(res => {
-      //console.log("RES", res);
-      if (operation === "Assign") {
-        dispatch(assignNewMember({
-          _id: userId,
-          firstName,
-          lastName
-        }));
-        dispatch(removeFoundUser(userId))
-      } else {
-        dispatch(deleteMember(userId));
-      }
-    }).catch((err) => {
-      //console.log("Error", err);
-      dispatch(addNewMemberError(err));
-    })
-  }
-}
-
-
+  return async (dispatch) => {
+    request
+      .then((res) => {
+        //console.log("RES", res);
+        if (operation === 'Assign') {
+          dispatch(
+            assignNewMember({
+              _id: userId,
+              firstName,
+              lastName,
+            }),
+          );
+          dispatch(removeFoundUser(userId));
+        } else {
+          dispatch(deleteMember(userId));
+        }
+      })
+      .catch((err) => {
+        //console.log("Error", err);
+        dispatch(addNewMemberError(err));
+      });
+  };
+};
 
 /*******************************************
  * PLAIN OBJ ACTIONS
  *******************************************/
 
 /**
-* Set a flag that fetching Members
-*/
+ * Set a flag that fetching Members
+ */
 export const setMemberStart = () => {
   return {
     type: types.FETCH_MEMBERS_START,
-  }
-}
-
+  };
+};
 
 /**
  * set Members in store
@@ -142,9 +150,9 @@ export const setMemberStart = () => {
 export const setMembers = (members) => {
   return {
     type: types.RECEIVE_MEMBERS,
-    members
-  }
-}
+    members,
+  };
+};
 
 /**
  * Error when setting project
@@ -153,23 +161,20 @@ export const setMembers = (members) => {
 export const setMembersError = (err) => {
   return {
     type: types.FETCH_MEMBERS_ERROR,
-    err
-  }
-}
-
-
+    err,
+  };
+};
 
 /**
-* Set a flag that finding Members
-*/
+ * Set a flag that finding Members
+ */
 export const findUsersStart = () => {
   // console.log("find user start");
 
   return {
     type: types.FIND_USERS_START,
-  }
-}
-
+  };
+};
 
 /**
  * set Users in store
@@ -179,9 +184,9 @@ export const foundUsers = (users) => {
   // console.log("foundUsers");
   return {
     type: types.FOUND_USERS,
-    users
-  }
-}
+    users,
+  };
+};
 
 /**
  * Error when setting project
@@ -190,12 +195,9 @@ export const foundUsers = (users) => {
 export const findUsersError = (err) => {
   return {
     type: types.FIND_USERS_ERROR,
-    err
-  }
-}
-
-
-
+    err,
+  };
+};
 
 /**
  * add new member to project
@@ -205,10 +207,9 @@ export const assignNewMember = (member) => {
   // console.log("new member", member);
   return {
     type: types.ADD_NEW_MEMBER,
-    member
-  }
-}
-
+    member,
+  };
+};
 
 /**
  * remove a member from project
@@ -217,9 +218,9 @@ export const assignNewMember = (member) => {
 export const deleteMember = (userId) => {
   return {
     type: types.DELETE_MEMBER,
-    userId
-  }
-}
+    userId,
+  };
+};
 
 /**
  * remove found user after assign
@@ -228,9 +229,9 @@ export const deleteMember = (userId) => {
 export const removeFoundUser = (userId) => {
   return {
     type: types.REMOVE_FOUND_USER,
-    userId
-  }
-}
+    userId,
+  };
+};
 
 /**
  * Error when add new member
@@ -239,7 +240,6 @@ export const removeFoundUser = (userId) => {
 export const addNewMemberError = (err) => {
   return {
     type: types.ADD_NEW_MEMBER_ERROR,
-    err
-  }
-}
-
+    err,
+  };
+};

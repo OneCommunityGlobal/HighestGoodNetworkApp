@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect } from 'react';
 
 import {
   Container,
@@ -16,154 +16,153 @@ import {
   Label,
   Input,
   FormText,
-} from 'reactstrap'
-import { useSelector } from 'react-redux'
-import { HashLink as Link } from 'react-router-hash-link'
-import './SummaryBar.css'
-import task_icon from './task_icon.png'
-import badges_icon from './badges_icon.png'
-import bluesquare_icon from './bluesquare_icon.png'
-import report_icon from './report_icon.png'
-import httpService from '../../services/httpService'
-import { faWindowMinimize } from '@fortawesome/free-regular-svg-icons'
+} from 'reactstrap';
+import { useSelector } from 'react-redux';
+import { HashLink as Link } from 'react-router-hash-link';
+import './SummaryBar.css';
+import task_icon from './task_icon.png';
+import badges_icon from './badges_icon.png';
+import bluesquare_icon from './bluesquare_icon.png';
+import report_icon from './report_icon.png';
+import httpService from '../../services/httpService';
+import { faWindowMinimize } from '@fortawesome/free-regular-svg-icons';
 
-import { ApiEndpoint } from 'utils/URL'
+import { ApiEndpoint } from 'utils/URL';
 
-const SummaryBar = props => {
-  const {asUser,isAdmin} = props;
-  const { firstName, lastName, email, _id } = useSelector(state => state.userProfile)
-  const authenticateUser = useSelector(state=> state.auth.user)
-  const authenticateUserId = authenticateUser ?  authenticateUser.userid : ''
+const SummaryBar = (props) => {
+  const { asUser, isAdmin } = props;
+  const { firstName, lastName, email, _id } = useSelector((state) => state.userProfile);
+  const authenticateUser = useSelector((state) => state.auth.user);
+  const authenticateUserId = authenticateUser ? authenticateUser.userid : '';
   const matchUser = asUser == authenticateUserId ? true : false;
 
-  
-  const timeEntries = useSelector(state => {
-    let timeEntries = state?.timeEntries?.weeks
+  const timeEntries = useSelector((state) => {
+    let timeEntries = state?.timeEntries?.weeks;
     if (timeEntries) {
-      return timeEntries[0]
+      return timeEntries[0];
     } else {
-      return []
+      return [];
     }
-  })
+  });
 
   const calculateTotalTime = (data, isTangible) => {
-    const filteredData = data.filter(entry => entry.isTangible === isTangible)
+    const filteredData = data.filter((entry) => entry.isTangible === isTangible);
 
-    const reducer = (total, entry) => total + parseInt(entry.hours) + parseInt(entry.minutes) / 60
-    return filteredData.reduce(reducer, 0)
-  }
+    const reducer = (total, entry) => total + parseInt(entry.hours) + parseInt(entry.minutes) / 60;
+    return filteredData.reduce(reducer, 0);
+  };
 
-  const weeklyComittedHours = useSelector(state => state.userProfile.weeklyComittedHours)
-  const weeklySummary = useSelector(state => {
-    let summaries = state.userProfile?.weeklySummaries
+  const weeklyComittedHours = useSelector((state) => state.userProfile.weeklyComittedHours);
+  const weeklySummary = useSelector((state) => {
+    let summaries = state.userProfile?.weeklySummaries;
     if (summaries && Array.isArray(summaries) && summaries[0] && summaries[0].summary) {
-      return summaries[0].summary
+      return summaries[0].summary;
     } else {
-      return ''
+      return '';
     }
-  })
+  });
 
-  const infringements = useSelector(state => {
+  const infringements = useSelector((state) => {
     if (state.userProfile && state.userProfile.infringments) {
-      return state.userProfile.infringments.length
+      return state.userProfile.infringments.length;
     } else {
-      return 0
+      return 0;
     }
-  })
+  });
 
-  const badges = useSelector(state => {
+  const badges = useSelector((state) => {
     if (state.userProfile && state.userProfile.badgeCollection) {
-      return state.userProfile.badgeCollection.length
+      return state.userProfile.badgeCollection.length;
     } else {
-      return 0
+      return 0;
     }
-  })
+  });
 
-  let tasks = useSelector(state => {
+  let tasks = useSelector((state) => {
     if (state.tasks && state.tasks.taskItems) {
-      return state.tasks.taskItems.length
+      return state.tasks.taskItems.length;
     } else {
-      return 0
+      return 0;
     }
-  })
+  });
 
   const initialInfo = {
     in: false,
     information: '',
-  }
+  };
 
-  const [report, setBugReport] = useState(initialInfo)
+  const [report, setBugReport] = useState(initialInfo);
 
   const openReport = () => {
-    const htmlStr = '' //str.split('\n').map((item, i) => <p key={i}>{item}</p>)
-    setBugReport(info => ({
+    const htmlStr = ''; //str.split('\n').map((item, i) => <p key={i}>{item}</p>)
+    setBugReport((info) => ({
       ...info,
       in: !info.in,
       information: htmlStr,
-    }))
-  }
+    }));
+  };
 
-  const sendBugReport = event => {
-    event.preventDefault()
-    let bugReportForm = document.getElementById('bugReportForm')
-    let formData = new FormData(bugReportForm)
-    var data = {}
-    formData.forEach(function(value, key) {
-      data[key] = value
-    })
-    data['firstName'] = firstName
-    data['lastName'] = lastName
-    data['email'] = email
+  const sendBugReport = (event) => {
+    event.preventDefault();
+    let bugReportForm = document.getElementById('bugReportForm');
+    let formData = new FormData(bugReportForm);
+    var data = {};
+    formData.forEach(function (value, key) {
+      data[key] = value;
+    });
+    data['firstName'] = firstName;
+    data['lastName'] = lastName;
+    data['email'] = email;
 
-    httpService.post(`${ApiEndpoint}/dashboard/bugreport/${_id}`, data).catch(e => {})
-    openReport()
-  }
+    httpService.post(`${ApiEndpoint}/dashboard/bugreport/${_id}`, data).catch((e) => {});
+    openReport();
+  };
 
   // async componentDidMount() {
   //   await this.props.getWeeklySummaries(this.props.currentUser.userid);
   //   const { weeklySummariesCount } = this.props.summaries;}
 
-  const getBarColor = hours => {
+  const getBarColor = (hours) => {
     if (hours < 5) {
-      return 'red'
+      return 'red';
     }
     if (hours < 10) {
-      return 'orange'
+      return 'orange';
     }
     if (hours < 20) {
-      return 'green'
+      return 'green';
     }
     if (hours < 30) {
-      return 'blue'
+      return 'blue';
     }
     if (hours < 40) {
-      return 'indigo'
+      return 'indigo';
     }
     if (hours < 50) {
-      return 'violet'
+      return 'violet';
     }
-    return 'purple'
-  }
+    return 'purple';
+  };
 
-  const getBarValue = hours => {
+  const getBarValue = (hours) => {
     if (hours <= 40) {
-      return hours * 2
+      return hours * 2;
     }
     if (hours <= 50) {
-      return (hours - 40) * 1.5 + 80
+      return (hours - 40) * 1.5 + 80;
     }
-    return ((hours - 50) * 5) / 40 + 95
-  }
+    return ((hours - 50) * 5) / 40 + 95;
+  };
 
   const onTaskClick = () => {
-    window.location.hash = '#tasks'
-  }
+    window.location.hash = '#tasks';
+  };
 
   const onBadgeClick = () => {
-    window.location.hash = '#badgesearned'
-  }
+    window.location.hash = '#badgesearned';
+  };
 
-  let totalEffort = calculateTotalTime(timeEntries, true)
+  let totalEffort = calculateTotalTime(timeEntries, true);
 
   return (
     <Container fluid className="px-lg-0 bg--bar">
@@ -235,11 +234,22 @@ const SummaryBar = props => {
               <div className="border-red col-4 bg--white-smoke no-gutters" align="center">
                 <div className="py-1"> </div>
 
-                { matchUser || isAdmin ?
-                  <p className={'summary-toggle large_text_summary text--black text-danger'} align="center" onClick={props.toggleSubmitForm}>!</p>
-                  :
-                  <p className={'summary-toggle large_text_summary text--black text-danger'} align="center">!</p>
-                }
+                {matchUser || isAdmin ? (
+                  <p
+                    className={'summary-toggle large_text_summary text--black text-danger'}
+                    align="center"
+                    onClick={props.toggleSubmitForm}
+                  >
+                    !
+                  </p>
+                ) : (
+                  <p
+                    className={'summary-toggle large_text_summary text--black text-danger'}
+                    align="center"
+                  >
+                    !
+                  </p>
+                )}
 
                 <font className="text--black" size="3">
                   SUMMARY
@@ -420,7 +430,7 @@ const SummaryBar = props => {
         </Modal>
       </Row>
     </Container>
-  )
-}
+  );
+};
 
-export default SummaryBar
+export default SummaryBar;

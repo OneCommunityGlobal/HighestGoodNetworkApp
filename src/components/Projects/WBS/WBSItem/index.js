@@ -1,1 +1,1 @@
-export { default } from "./WBSItem";
+export { default } from './WBSItem';

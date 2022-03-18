@@ -11,7 +11,7 @@ import {
 
 import UserProfileEdit from './UserProfileEdit';
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state) => ({
   auth: state.auth,
   userProfile: _.get(state, 'userProfile'),
   user: _.get(state, 'user', {}),
@@ -30,5 +30,4 @@ export default connect(mapStateToProps, {
   updateTeam,
   deleteTeamMember,
   addTeamMember,
-
 })(UserProfileEdit);

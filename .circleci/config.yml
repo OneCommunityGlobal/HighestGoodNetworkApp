@@ -1,6 +1,5 @@
 version: 2
 jobs:
-
   build_PROD:
     docker:
       - image: cimg/node:14.17.0
@@ -8,14 +7,14 @@ jobs:
       - checkout
       - run:
           name: npm install
-          command: "sudo npm install"
+          command: 'sudo npm install'
       - run:
           name: Run react build
-          command: "sudo REACT_APP_APIENDPOINT=$APIENDPOINT_PROD REACT_APP_SENTRY_URL=$SENTRY_URL_PROD SKIP_PREFLIGHT_CHECK=true npm run build && sudo mv build/index.html build/200.html"
+          command: 'sudo REACT_APP_APIENDPOINT=$APIENDPOINT_PROD REACT_APP_SENTRY_URL=$SENTRY_URL_PROD SKIP_PREFLIGHT_CHECK=true npm run build && sudo mv build/index.html build/200.html'
       - run:
           name: Deploy app
           command: ./node_modules/.bin/surge build --domain $SURGE_DOMAIN_PROD
-          
+
   build_development:
     docker:
       - image: ubuntu:20.04
@@ -113,7 +112,6 @@ workflows:
   version: 2
   build-deploy:
     jobs:
-
       - build_beta:
           filters:
             branches:
@@ -124,10 +122,9 @@ workflows:
           filters:
             branches:
               only: master
-              
+
       - build_development:
           filters:
-              branches:
-                only:
-                  - development
-
+            branches:
+              only:
+                - development

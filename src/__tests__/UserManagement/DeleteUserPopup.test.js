@@ -8,11 +8,7 @@ describe('delete user popup', () => {
   const onClose = jest.fn();
   const onDelete = jest.fn();
   beforeEach(() => {
-    render(<DeleteUserPopup
-      open
-      onClose={onClose}
-      onDelete={onDelete}
-    />);
+    render(<DeleteUserPopup open onClose={onClose} onDelete={onDelete} />);
   });
   describe('Structure', () => {
     it('should render the modal', () => {
