@@ -119,7 +119,7 @@ const FormattedReport = ({ summaries, weekIndex }) => {
 
 FormattedReport.propTypes = {
   summaries: PropTypes.arrayOf(PropTypes.object).isRequired,
-  weekIndex: PropTypes.string.isRequired,
+  weekIndex: PropTypes.number.isRequired,
 };
 
 export default FormattedReport;
