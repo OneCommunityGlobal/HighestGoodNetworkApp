@@ -20,7 +20,7 @@ import { Editor } from '@tinymce/tinymce-react'
 import ReactTooltip from 'react-tooltip'
 import { postTimeEntry, editTimeEntry } from '../../../actions/timeEntries'
 import { getUserProjects } from '../../../actions/userProjects'
-import { getUserProfile } from 'actions/userProfile';
+import { getUserProfile } from 'actions/userProfile'
 import { stopTimer } from '../../../actions/timer'
 import AboutModal from './AboutModal'
 import TangibleInfoModal from './TangibleInfoModal'
@@ -29,24 +29,26 @@ import axios from 'axios'
 import { ApiEndpoint } from '../../../utils/URL'
 
 /**
- * Modal used to submit and edit tangible and intangible time entries. 
- * 
+ * Modal used to submit and edit tangible and intangible time entries.
+ *
  * @param {boolean} props.edit If true, the time entry already exists and is being modified
- * @param {string} props.userId 
+ * @param {string} props.userId
  * @param {function} props.toggle Toggles the visability of this modal
  * @param {boolean} props.isOpen Whether or not this modal is visible
- * @param {*} props.timer 
+ * @param {*} props.timer
  * @param {boolean} props.data.disabled
  * @param {boolean} props.data.isTangible
- * @param {*} props.userProfile 
- * @param {function} props.resetTimer 
- * @returns 
+ * @param {*} props.userProfile
+ * @param {function} props.resetTimer
+ * @returns
  */
 const TimeEntryForm = props => {
   const { userId, edit, data, isOpen, toggle, timer, resetTimer } = props
 
   const initialFormValues = {
-    dateOfWork: moment().tz('America/Los_Angeles').format('YYYY-MM-DD'),
+    dateOfWork: moment()
+      .tz('America/Los_Angeles')
+      .format('YYYY-MM-DD'),
     hours: 0,
     minutes: 0,
     projectId: '',
@@ -69,11 +71,11 @@ const TimeEntryForm = props => {
   const [reminder, setReminder] = useState(initialReminder)
   const [isTangibleInfoModalVisible, setTangibleInfoModalVisibleModalVisible] = useState(false)
   const [isInfoModalVisible, setInfoModalVisible] = useState(false)
-  const [projects, setProjects] = useState([]);
+  const [projects, setProjects] = useState([])
 
   const fromTimer = !_.isEmpty(timer)
   const isAdmin = useSelector(state => state.auth.user.role) === 'Administrator'
-  const userProfile = useSelector(state => state.userProfile);
+  const userProfile = useSelector(state => state.userProfile)
 
   const dispatch = useDispatch()
 
@@ -97,14 +99,13 @@ const TimeEntryForm = props => {
   }, [close, inputs])
 
   useEffect(() => {
-    axios.get(`${ApiEndpoint}/userprofile/${userId}`)
-    .then((res) => {
-      setProjects(res?.data?.projects || [])
-    })
-    .catch((err) => {
-      
-    })
-  }, []);
+    axios
+      .get(`${ApiEndpoint}/userprofile/${userId}`)
+      .then(res => {
+        setProjects(res?.data?.projects || [])
+      })
+      .catch(err => {})
+  }, [])
 
   const openModal = () =>
     setReminder(reminder => ({
@@ -121,11 +122,6 @@ const TimeEntryForm = props => {
     }))
   }
 
-
-  useEffect(() => {
-    console.log("TimeEntryForm rendering")
-  }, [])
-
   useEffect(() => {
     const fetchProjects = async userId => {
       await dispatch(getUserProjects(userId))
@@ -135,13 +131,11 @@ const TimeEntryForm = props => {
 
   useEffect(() => {
     setInputs({ ...inputs, ...timer })
-  
   }, [timer])
 
   const projectOptions = projects.map(project => (
     <option value={project._id} key={project._id}>
-      {' '}
-      {project.projectName}{' '}
+      {project.projectName}
     </option>
   ))
   projectOptions.unshift(
@@ -151,12 +145,16 @@ const TimeEntryForm = props => {
   )
 
   const getEditMessage = () => {
-    let editCount = 0;
-    userProfile.timeEntryEditHistory.forEach((item) => {
-      if(moment().tz('America/Los_Angeles').diff(item.date, 'days') <= 365) {
-        editCount += 1;
+    let editCount = 0
+    userProfile.timeEntryEditHistory.forEach(item => {
+      if (
+        moment()
+          .tz('America/Los_Angeles')
+          .diff(item.date, 'days') <= 365
+      ) {
+        editCount += 1
       }
-    });
+    })
     return `If you edit your time entries 5 times or more within the span of a year, you will be issued a blue square on the 5th time.
     You will receive an additional blue square for each edit beyond the 5th.
     Currently, you have edited your time entries ${editCount} times within the last 365 days.
@@ -227,7 +225,6 @@ const TimeEntryForm = props => {
   }
 
   const handleSubmit = async event => {
-
     //Validation and variable initialization
     if (event) event.preventDefault()
     if (isSubmitting) return
@@ -244,7 +241,7 @@ const TimeEntryForm = props => {
       dateOfWork: inputs.dateOfWork,
       projectId: inputs.projectId,
       notes: inputs.notes,
-      isTangible: inputs.isTangible.toString()
+      isTangible: inputs.isTangible.toString(),
     }
 
     if (edit) {
@@ -293,14 +290,13 @@ const TimeEntryForm = props => {
       }))
     }
 
-    if(isOpen) toggle();
-    if(fromTimer) clearForm()
-    setReminder(initialReminder);
+    if (isOpen) toggle()
+    if (fromTimer) clearForm()
+    setReminder(initialReminder)
 
-    if(!props.edit) setInputs(initialFormValues)
+    if (!props.edit) setInputs(initialFormValues)
 
-    await getUserProfile(userId)(dispatch);
-
+    await getUserProfile(userId)(dispatch)
   }
 
   const handleInputChange = event => {
@@ -358,15 +354,19 @@ const TimeEntryForm = props => {
    * @param {*} closed If true, the form closes after being cleared.
    */
   const clearForm = closed => {
-    const newInputs = {...inputs, notes: '', projectId: '', dateOfWork: moment().tz('America/Los_Angeles').format('YYYY-MM-DD')}
+    const newInputs = {
+      ...inputs,
+      notes: '',
+      projectId: '',
+      dateOfWork: moment()
+        .tz('America/Los_Angeles')
+        .format('YYYY-MM-DD'),
+    }
     setInputs(newInputs)
     setReminder({ ...initialReminder })
     setErrors({})
-    if (closed === true && isOpen) toggle();
+    if (closed === true && isOpen) toggle()
   }
-
-  console.log(data.isTangible == inputs.isTangible)
-
   return (
     <>
       <TangibleInfoModal
@@ -374,10 +374,7 @@ const TimeEntryForm = props => {
         setVisible={setTangibleInfoModalVisibleModalVisible}
       />
 
-      <AboutModal
-        visible={isInfoModalVisible}
-        setVisible={setInfoModalVisible} 
-      />
+      <AboutModal visible={isInfoModalVisible} setVisible={setInfoModalVisible} />
 
       <ReminderModal
         inputs={inputs}
@@ -392,7 +389,13 @@ const TimeEntryForm = props => {
       <Modal isOpen={isOpen} toggle={toggle} data-testid="timeEntryFormModal">
         <ModalHeader toggle={toggle}>
           <div>
-            {edit ? 'Edit ' : 'Add '} {inputs.isTangible ? 'Tangible' : <span style={{textDecoration: 'underline'}}>Intangible</span>} Time Entry
+            {edit ? 'Edit ' : 'Add '}
+            {inputs.isTangible ? (
+              'Tangible'
+            ) : (
+              <span style={{ textDecoration: 'underline' }}>Intangible</span>
+            )}
+            Time Entry
             <i
               className="fa fa-info-circle"
               data-tip
@@ -518,7 +521,6 @@ const TimeEntryForm = props => {
             </FormGroup>
             <FormGroup check>
               <Label check>
-                
                 <Input
                   type="checkbox"
                   name="isTangible"
@@ -545,11 +547,10 @@ const TimeEntryForm = props => {
         <ModalFooter>
           <small className="mr-auto">* All the fields are required</small>
           <Button onClick={clearForm} color="danger">
-            {' '}
-            Clear Form{' '}
+            Clear Form
           </Button>
           {/* <Button color="primary" disabled={isSubmitting || (data.hours === inputs.hours && data.minutes === inputs.minutes && data.notes === inputs.notes)} onClick={handleSubmit}> */}
-          <Button color="primary"  onClick={handleSubmit}>
+          <Button color="primary" onClick={handleSubmit}>
             {edit ? 'Save' : 'Submit'}
           </Button>
         </ModalFooter>
