@@ -11,7 +11,9 @@ import { Button } from 'reactstrap';
 const GeneratePdfReport = ({ summaries, weekIndex, weekDates }) => {
   const generateFormattedReport = () => {
     pdfMake.vfs = pdfFonts.pdfMake.vfs;
-
+    //Replace any style copied into the weekly summary message.
+    let styleRegex = /<style([\S\s]*?)>([\S\s]*?)<\/style>/gmi;
+    let styleInlineRegex = /style="([\S\s]*?)"/gmi;
     const emails = [];
 
     let wsReport = `<h1>Weekly Summaries Report</h1>
@@ -50,7 +52,6 @@ const GeneratePdfReport = ({ summaries, weekIndex, weekDates }) => {
       const totalValidWeeklySummaries = weeklySummariesCount || 'No valid submissions yet!';
 
       let weeklySummaryMessage = weeklySummaryNotProvidedMessage;
-
       if (Array.isArray(weeklySummaries) && weeklySummaries[weekIndex]) {
         const { dueDate, summary } = weeklySummaries[weekIndex];
         if (summary) {
@@ -59,7 +60,7 @@ const GeneratePdfReport = ({ summaries, weekIndex, weekDates }) => {
           )
             .tz('America/Los_Angeles')
             .format('YYYY-MMM-DD')}</b>):</div>
-                                  <div data-pdfmake="{&quot;margin&quot;:[20,0,20,0]}">${summary}</div>`;
+                                  <div data-pdfmake="{&quot;margin&quot;:[20,0,20,0]}">${summary.replace(styleRegex, "").replace(styleInlineRegex, "")}</div>`;
         } else if (eachSummary.weeklySummaryNotReq === true) {
           weeklySummaryMessage = weeklySummaryNotRequiredMessage;
         }
@@ -120,7 +121,7 @@ GeneratePdfReport.propTypes = {
     fromDate: PropTypes.string,
     toDate: PropTypes.string,
   }).isRequired,
-  weekIndex: PropTypes.string.isRequired,
+  weekIndex: PropTypes.number.isRequired,
 };
 
 export default GeneratePdfReport;
