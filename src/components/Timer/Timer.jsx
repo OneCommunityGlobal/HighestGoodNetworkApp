@@ -154,7 +154,7 @@ const Timer = () => {
         {hours}:{padZero(minutes)}:{padZero(secondsRemainder)}
       </Badge>
       <div className="button-container">
-          <Button
+        <Button
           id="start"
           onClick={isActive ? handlePause : handleStart}
           color={isActive ? 'primary' : 'success'}
@@ -170,16 +170,18 @@ const Timer = () => {
           Stop
         </Button>
       </div>
-        {modal && <TimeEntryForm
-        edit={false}
-        userId={userId}
-        toggle={toggle}
-        isOpen={true}
-        timer={{ hours, minutes }}
-        data={data}
-        userProfile={userProfile}
-        resetTimer={reset}
-      /> }
+      {modal && (
+        <TimeEntryForm
+          edit={false}
+          userId={userId}
+          toggle={toggle}
+          isOpen={true}
+          timer={{ hours, minutes }}
+          data={data}
+          userProfile={userProfile}
+          resetTimer={reset}
+        />
+      )}
     </div>
   )
 }
