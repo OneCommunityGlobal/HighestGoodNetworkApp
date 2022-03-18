@@ -4,7 +4,6 @@ import { Button, Input, Alert } from 'reactstrap';
 import { toast } from 'react-toastify';
 import { forgotPassword } from '../../services/authorizationService';
 
-
 const ForgotPassword = React.memo(() => {
   const [email, onEmailChange] = useState('');
   const [firstName, setFirstName] = useState('');
@@ -19,28 +18,34 @@ const ForgotPassword = React.memo(() => {
       setMessage({ success: false, msg: 'Please enter your full name.' });
     } else {
       const forgotPasswordData = { email: email, firstName: firstName, lastName: lastName };
-      forgotPassword(forgotPasswordData).then(() => {
-        toast.success(`Nice! You have successfully passed the 3-question Change My Password Challenge. Check your email for your reward: A NEW PASSWORD!`);
-        setTimeout(() => {
-          history.push('/login');
-        }, 1000);
-      }).catch((error) => {
-        toast.error(`Well bummer, your entries don't match what is in our system. Don't give up though, you can do this!`);
-      });
+      forgotPassword(forgotPasswordData)
+        .then(() => {
+          toast.success(
+            `Nice! You have successfully passed the 3-question Change My Password Challenge. Check your email for your reward: A NEW PASSWORD!`,
+          );
+          setTimeout(() => {
+            history.push('/login');
+          }, 1000);
+        })
+        .catch((error) => {
+          toast.error(
+            `Well bummer, your entries don't match what is in our system. Don't give up though, you can do this!`,
+          );
+        });
     }
   };
 
   return (
-
     <div className="container mt-5">
       <form className="col-md-6 xs-12">
-
         <label>Email</label>
         <Input
           type="text"
           placeholder="Enter your email ID"
           value={email}
-          onChange={(e) => { onEmailChange(e.target.value); }}
+          onChange={(e) => {
+            onEmailChange(e.target.value);
+          }}
         />
 
         <label>First Name</label>
@@ -48,7 +53,9 @@ const ForgotPassword = React.memo(() => {
           type="text"
           placeholder="Enter your first name"
           value={firstName}
-          onChange={(e) => { setFirstName(e.target.value); }}
+          onChange={(e) => {
+            setFirstName(e.target.value);
+          }}
         />
 
         <label>Last Name</label>
@@ -56,21 +63,24 @@ const ForgotPassword = React.memo(() => {
           type="text"
           placeholder="Enter your last name"
           value={lastName}
-          onChange={(e) => { setLastName(e.target.value); }}
+          onChange={(e) => {
+            setLastName(e.target.value);
+          }}
         />
 
-        {message.msg !== '' && <Alert color={message.success ? 'success' : 'danger'}>{message.msg}</Alert>}
+        {message.msg !== '' && (
+          <Alert color={message.success ? 'success' : 'danger'}>{message.msg}</Alert>
+        )}
         <div style={{ marginTop: '40px' }}>
-
-          <Button color="primary" onClick={onForgotPassword}>Submit</Button>
+          <Button color="primary" onClick={onForgotPassword}>
+            Submit
+          </Button>
           <Link to="login">
             {' '}
             <Button style={{ marginLeft: '350px' }}>Cancel</Button>
           </Link>
         </div>
-
       </form>
-
     </div>
   );
 });

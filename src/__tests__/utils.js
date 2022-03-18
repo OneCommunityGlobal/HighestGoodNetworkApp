@@ -9,14 +9,9 @@ import reducer from '../reducers';
 
 const middleware = [thunk];
 
-
 function renderWithProvider(
   ui,
-  {
-    initialState,
-    store = createStore(reducer),
-    ...renderOptions
-  } = {},
+  { initialState, store = createStore(reducer), ...renderOptions } = {},
 ) {
   function Wrapper({ children }) {
     return <Provider store={store}>{children}</Provider>;
@@ -47,14 +42,9 @@ export function renderWithRouterMatch(
 
 export function renderWithRouter(
   ui,
-  {
-    route = '/',
-    history = createMemoryHistory({ initialEntries: [route] }),
-  } = {},
+  { route = '/', history = createMemoryHistory({ initialEntries: [route] }) } = {},
 ) {
-  const Wrapper = ({ children }) => (
-    <Router history={history}>{children}</Router>
-  );
+  const Wrapper = ({ children }) => <Router history={history}>{children}</Router>;
   return {
     ...rtlRender(ui, { wrapper: Wrapper }),
     // adding `history` to the returned utilities to allow us
@@ -65,9 +55,8 @@ export function renderWithRouter(
 }
 
 export function sleep(ms) {
-  return new Promise(resolve => setTimeout(resolve, ms));
+  return new Promise((resolve) => setTimeout(resolve, ms));
 }
-
 
 // export function renderWithRouterMatch(
 //   ui,
@@ -91,6 +80,5 @@ export * from '@testing-library/react';
 export { renderWithProvider };
 
 describe('Stop Error', () => {
-  it('should not error out due to no tests  (utils.js)', () => {
-  });
+  it('should not error out due to no tests  (utils.js)', () => {});
 });

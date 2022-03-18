@@ -26,8 +26,7 @@ describe('user table search header row', () => {
             roles={['1', '2', '3', '4']}
           />
         </tbody>
-      </table>
-
+      </table>,
     );
   });
   describe('Structure', () => {
@@ -63,12 +62,5 @@ describe('user table search header row', () => {
       await userEvent.type(screen.getAllByRole('textbox')[3], 'test', { allAtOnce: false });
       expect(onWeeklyHrsSearch).toHaveBeenCalledTimes(4);
     });
-
-
-
-
-
   });
-
-
 });

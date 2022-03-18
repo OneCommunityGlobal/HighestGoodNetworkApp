@@ -4,7 +4,7 @@ import _ from 'lodash';
 import { editUserProfile } from '../../../../actions/userProfile';
 import ToggleSwitch from './ToggleSwitch';
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state) => ({
   userProfile: _.get(state, 'userProfile'),
 });
 

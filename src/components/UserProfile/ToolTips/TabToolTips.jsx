@@ -19,9 +19,15 @@ const TabToolTips = () => {
         This shares your start and end dates, committed hours, total hours volunteered, etc.
       </Tooltip>
       <Tooltip placement="top" isOpen={teamsOpen} target="nabLink-teams" toggle={toggleTeams}>
-        This shows any teams you are a member of. You will see all other members of your team in the Leaderboard on the Time Log page and have access to their Profiles and Time Logs from there.
+        This shows any teams you are a member of. You will see all other members of your team in the
+        Leaderboard on the Time Log page and have access to their Profiles and Time Logs from there.
       </Tooltip>
-      <Tooltip placement="top" isOpen={projectsOpen} target="nabLink-projects" toggle={toggleProjects}>
+      <Tooltip
+        placement="top"
+        isOpen={projectsOpen}
+        target="nabLink-projects"
+        toggle={toggleProjects}
+      >
         This shows all the projects and tasks you are assigned to.
       </Tooltip>
     </div>

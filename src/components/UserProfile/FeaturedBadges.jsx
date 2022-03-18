@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import BadgeImage from './BadgeImage';
 
 const FeaturedBadges = (props) => {
@@ -15,19 +15,18 @@ const FeaturedBadges = (props) => {
       if (a.badge.badgeName < b.badge.badgeName) return -1;
       return 0;
     });
-    
+
     return filteredList.slice(0, 5);
-  }
-  useEffect(()=>{
+  };
+  useEffect(() => {
     setFilteredBadges(filterBadges(props.badges));
-  }, [props.badges])
- 
+  }, [props.badges]);
 
   return (
     <div className="badge_featured_container">
-      {filteredBadges.map((value, index) =>
+      {filteredBadges.map((value, index) => (
         <BadgeImage count={value.count} badgeData={value.badge} index={index} key={index} />
-      )}
+      ))}
     </div>
   );
 };

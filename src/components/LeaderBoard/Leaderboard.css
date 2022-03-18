@@ -1,27 +1,26 @@
 /* Small devices (landscape phones, 544px and up) */
-@media (max-width: 544px) {  
-  .leaderboard {font-size:0.7rem;} /*1rem = 16px*/
+@media (max-width: 544px) {
+  .leaderboard {
+    font-size: 0.7rem;
+  } /*1rem = 16px*/
 
   .my-custom-scrollbar {
     height: 300px;
     overflow: scroll;
     margin-bottom: 1rem;
   }
-  
+
   .table-wrapper-scroll-y {
     display: relative;
   }
-  
 
-  thead  th {
+  thead th {
     position: sticky;
     top: 0;
-    background-color: aliceblue; 
+    background-color: aliceblue;
     border-top: 1px solid #dee2e6;
     border-top-width: 1px;
     border-top-style: solid;
     border-top-color: rgb(222, 226, 230);
   }
-  
 }
-

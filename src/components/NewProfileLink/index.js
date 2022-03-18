@@ -1,1 +1,1 @@
-export { default } from "./NewProfileLink";
+export { default } from './NewProfileLink';

@@ -5,7 +5,7 @@ import { authMock, userProfileMock, timeEntryMock, userProjectMock } from '../mo
 import { renderWithProvider, renderWithRouterMatch } from '../utils';
 import UserTableFooter from '../../components/UserManagement/UserTableFooter';
 function sleep(ms) {
-  return new Promise(resolve => setTimeout(resolve, ms));
+  return new Promise((resolve) => setTimeout(resolve, ms));
 }
 describe('user table footer', () => {
   let onSelectPageSize;
@@ -27,7 +27,7 @@ describe('user table footer', () => {
         datacount={datacount}
         isSelected={isSelected}
         pageNo={pageNo}
-      />
+      />,
     );
   });
   describe('structure', () => {
@@ -73,12 +73,11 @@ describe('user table footer', () => {
           datacount={100}
           isSelected={true}
           pageNo={10}
-        />
+        />,
       );
       userEvent.click(screen.getByRole('button', { name: /next/i }));
       expect(onPageSelect).not.toHaveBeenCalled();
     });
-
 
     it('should fire onPageSelect() with previous page once the user clicks `previous`', () => {
       cleanup();
@@ -91,17 +90,11 @@ describe('user table footer', () => {
           datacount={100}
           isSelected={true}
           pageNo={2}
-        />
+        />,
       );
       userEvent.click(screen.getByRole('button', { name: /previous/i }));
       expect(onPageSelect).toHaveBeenCalled();
       expect(onPageSelect).toHaveBeenCalledWith(1);
     });
-
-
-
-
   });
-
-
 });

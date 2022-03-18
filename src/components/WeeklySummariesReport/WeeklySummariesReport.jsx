@@ -1,10 +1,8 @@
 /* eslint-disable react/jsx-one-expression-per-line */
 import React, { Component } from 'react';
-import PropTypes from "prop-types";
+import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import {
-  Alert, Container, Row, Col, TabContent, TabPane, Nav, NavItem, NavLink,
-} from 'reactstrap';
+import { Alert, Container, Row, Col, TabContent, TabPane, Nav, NavItem, NavLink } from 'reactstrap';
 import './WeeklySummariesReport.css';
 import classnames from 'classnames';
 import moment from 'moment';
@@ -29,26 +27,29 @@ export class WeeklySummariesReport extends Component {
       loading: this.props.loading,
       summaries: this.props.summaries,
     });
-  };
+  }
 
-  getWeekDates = weekIndex => (
-    {
-      fromDate: moment().tz('America/Los_Angeles').startOf('week').subtract(weekIndex, 'week')
-        .format('MMM-DD-YY'),
-      toDate: moment().tz('America/Los_Angeles').endOf('week').subtract(weekIndex, 'week')
-        .format('MMM-DD-YY'),
-    }
-  );
+  getWeekDates = (weekIndex) => ({
+    fromDate: moment()
+      .tz('America/Los_Angeles')
+      .startOf('week')
+      .subtract(weekIndex, 'week')
+      .format('MMM-DD-YY'),
+    toDate: moment()
+      .tz('America/Los_Angeles')
+      .endOf('week')
+      .subtract(weekIndex, 'week')
+      .format('MMM-DD-YY'),
+  });
 
-  toggleTab = tab => {
+  toggleTab = (tab) => {
     const activeTab = this.state.activeTab;
     if (activeTab !== tab) {
       this.setState({ activeTab: tab });
-    };
-  }
+    }
+  };
 
   render() {
-
     const { error, loading, summaries, activeTab } = this.state;
 
     if (error) {
@@ -114,8 +115,17 @@ export class WeeklySummariesReport extends Component {
             <TabContent activeTab={activeTab} className="p-4">
               <TabPane tabId="1">
                 <Row>
-                  <Col sm="12" md="8" className="mb-2">From <b>{this.getWeekDates(0).fromDate}</b> to <b>{this.getWeekDates(0).toDate}</b></Col>
-                  <Col sm="12" md="4"><GeneratePdfReport summaries={summaries} weekIndex={0} weekDates={this.getWeekDates(0)} /></Col>
+                  <Col sm="12" md="8" className="mb-2">
+                    From <b>{this.getWeekDates(0).fromDate}</b> to{' '}
+                    <b>{this.getWeekDates(0).toDate}</b>
+                  </Col>
+                  <Col sm="12" md="4">
+                    <GeneratePdfReport
+                      summaries={summaries}
+                      weekIndex={0}
+                      weekDates={this.getWeekDates(0)}
+                    />
+                  </Col>
                 </Row>
                 <Row>
                   <Col>
@@ -125,8 +135,17 @@ export class WeeklySummariesReport extends Component {
               </TabPane>
               <TabPane tabId="2">
                 <Row>
-                  <Col sm="12" md="8" className="mb-2">From <b>{this.getWeekDates(1).fromDate}</b> to <b>{this.getWeekDates(1).toDate}</b></Col>
-                  <Col sm="12" md="4"><GeneratePdfReport summaries={summaries} weekIndex={1} weekDates={this.getWeekDates(1)} /></Col>
+                  <Col sm="12" md="8" className="mb-2">
+                    From <b>{this.getWeekDates(1).fromDate}</b> to{' '}
+                    <b>{this.getWeekDates(1).toDate}</b>
+                  </Col>
+                  <Col sm="12" md="4">
+                    <GeneratePdfReport
+                      summaries={summaries}
+                      weekIndex={1}
+                      weekDates={this.getWeekDates(1)}
+                    />
+                  </Col>
                 </Row>
                 <Row>
                   <Col>
@@ -136,8 +155,17 @@ export class WeeklySummariesReport extends Component {
               </TabPane>
               <TabPane tabId="3">
                 <Row>
-                  <Col sm="12" md="8" className="mb-2">From <b>{this.getWeekDates(2).fromDate}</b> to <b>{this.getWeekDates(2).toDate}</b></Col>
-                  <Col sm="12" md="4"><GeneratePdfReport summaries={summaries} weekIndex={2} weekDates={this.getWeekDates(2)} /></Col>
+                  <Col sm="12" md="8" className="mb-2">
+                    From <b>{this.getWeekDates(2).fromDate}</b> to{' '}
+                    <b>{this.getWeekDates(2).toDate}</b>
+                  </Col>
+                  <Col sm="12" md="4">
+                    <GeneratePdfReport
+                      summaries={summaries}
+                      weekIndex={2}
+                      weekDates={this.getWeekDates(2)}
+                    />
+                  </Col>
                 </Row>
                 <Row>
                   <Col>
@@ -157,8 +185,8 @@ WeeklySummariesReport.propTypes = {
   error: PropTypes.any,
   getWeeklySummariesReport: PropTypes.func.isRequired,
   loading: PropTypes.bool.isRequired,
-  summaries: PropTypes.array.isRequired
-}
+  summaries: PropTypes.array.isRequired,
+};
 
 const mapStateToProps = ({ weeklySummariesReport }) => ({
   error: weeklySummariesReport.error,

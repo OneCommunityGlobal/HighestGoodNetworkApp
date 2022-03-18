@@ -1,8 +1,8 @@
 import React from 'react';
-import { renderWithRouterMatch } from './utils.js'
+import { renderWithRouterMatch } from './utils.js';
 import { screen, waitFor } from '@testing-library/react';
-import '@testing-library/jest-dom/extend-expect'
-import mockState from './mockAdminState.js'
+import '@testing-library/jest-dom/extend-expect';
+import mockState from './mockAdminState.js';
 import Dashboard from '../components/Dashboard';
 import thunk from 'redux-thunk';
 import configureStore from 'redux-mock-store';
@@ -18,7 +18,7 @@ describe('Dashboard ', () => {
       userProfile: mockState.userProfile,
       timeEntries: mockState.timeEntries,
       userProjects: mockState.userProjects,
-      weeklySummaries : mockState.weeklySummaries,
+      weeklySummaries: mockState.weeklySummaries,
     });
     store.dispatch = jest.fn();
     //check what props should be being passed seems the getUserProfile isnt there see if your using renderWithRouterMatch correctly
@@ -33,8 +33,7 @@ describe('Dashboard ', () => {
     //   },
     // );
   });
-  it('should render Dashboard without crashing', async () => {
-  });
+  it('should render Dashboard without crashing', async () => {});
   it('should render Weekly Summaries after pressing summary due date button', async () => {
     //THIS ERRORS OUT CHECK THAT IT STILL EXISTS AlSO THIS MAYBE BETTER TO BE TESTED IN WEEKLY SUMMARIES
     // window.HTMLElement.prototype.scrollIntoView = function() {};

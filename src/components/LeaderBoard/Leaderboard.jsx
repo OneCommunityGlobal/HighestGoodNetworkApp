@@ -1,24 +1,24 @@
-import React, { useEffect, useState, useRef } from 'react'
-import './Leaderboard.css'
-import _ from 'lodash'
-import { Link } from 'react-router-dom'
-import { Table, Progress, Modal, ModalBody, ModalFooter, ModalHeader, Button } from 'reactstrap'
+import React, { useEffect, useState, useRef } from 'react';
+import './Leaderboard.css';
+import _ from 'lodash';
+import { Link } from 'react-router-dom';
+import { Table, Progress, Modal, ModalBody, ModalFooter, ModalHeader, Button } from 'reactstrap';
 
 function useDeepEffect(effectFunc, deps) {
-  const isFirst = useRef(true)
-  const prevDeps = useRef(deps)
+  const isFirst = useRef(true);
+  const prevDeps = useRef(deps);
   useEffect(() => {
     const isSame = prevDeps.current.every((obj, index) => {
-      let isItEqual = _.isEqual(obj, deps[index])
-      return isItEqual
-    })
+      let isItEqual = _.isEqual(obj, deps[index]);
+      return isItEqual;
+    });
     if (isFirst.current || !isSame) {
-      effectFunc()
+      effectFunc();
     }
 
-    isFirst.current = false
-    prevDeps.current = deps
-  }, deps)
+    isFirst.current = false;
+    prevDeps.current = deps;
+  }, deps);
 }
 
 const LeaderBoard = ({
@@ -30,32 +30,32 @@ const LeaderBoard = ({
   timeEntries,
   asUser,
 }) => {
-  const userId = asUser ? asUser : loggedInUser.userId
+  const userId = asUser ? asUser : loggedInUser.userId;
 
   useDeepEffect(() => {
-    getLeaderboardData(userId)
-    getOrgData()
-  }, [timeEntries])
+    getLeaderboardData(userId);
+    getOrgData();
+  }, [timeEntries]);
 
   useEffect(() => {
     try {
       if (window.screen.width < 540) {
-        const scrollWindow = document.getElementById('leaderboard')
+        const scrollWindow = document.getElementById('leaderboard');
         if (scrollWindow) {
-          const elem = document.getElementById(`id${userId}`) //
+          const elem = document.getElementById(`id${userId}`); //
 
           if (elem) {
-            const topPos = elem.offsetTop
-            scrollWindow.scrollTo(0, topPos - 100 < 100 ? 0 : topPos - 100)
+            const topPos = elem.offsetTop;
+            scrollWindow.scrollTo(0, topPos - 100 < 100 ? 0 : topPos - 100);
           }
         }
       }
     } catch {}
-  }, [])
+  }, []);
 
-  const [isOpen, setOpen] = useState(false)
+  const [isOpen, setOpen] = useState(false);
 
-  const toggle = () => setOpen(isOpen => !isOpen)
+  const toggle = () => setOpen((isOpen) => !isOpen);
 
   return (
     <div>
@@ -69,7 +69,7 @@ const LeaderBoard = ({
           aria-hidden="true"
           className="fa fa-refresh"
           onClick={() => {
-            getLeaderboardData(userId)
+            getLeaderboardData(userId);
           }}
         />
         &nbsp;&nbsp;
@@ -184,20 +184,33 @@ const LeaderBoard = ({
             </tr>
             {leaderBoardData.map((item, key) => (
               <tr key={key}>
-                <td className="align-middle" onClick={() => { if (window.confirm(`Are you sure you wish to view this ${item.name} dashboard ?`)) {window.open(`/dashboard/${item.personId}`, "Popup","toolbar=no, location=no, statusbar=no, menubar=no, scrollbars=1, resizable=0, width=580, height=600, top=30")}} }> 
+                <td
+                  className="align-middle"
+                  onClick={() => {
+                    if (
+                      window.confirm(`Are you sure you wish to view this ${item.name} dashboard ?`)
+                    ) {
+                      window.open(
+                        `/dashboard/${item.personId}`,
+                        'Popup',
+                        'toolbar=no, location=no, statusbar=no, menubar=no, scrollbars=1, resizable=0, width=580, height=600, top=30',
+                      );
+                    }
+                  }}
+                >
                   {/* <Link to={`/dashboard/${item.personId}`}> */}
-                    <div
-                      title={`Weekly Committed: ${item.weeklyComittedHours} hours`}
-                      style={{
-                        backgroundColor:
-                          item.tangibletime >= item.weeklyComittedHours ? 'green' : 'red',
-                        width: 15,
-                        height: 15,
-                        borderRadius: 7.5,
-                        margin: 'auto',
-                        verticalAlign: 'middle',
-                      }}
-                    />
+                  <div
+                    title={`Weekly Committed: ${item.weeklyComittedHours} hours`}
+                    style={{
+                      backgroundColor:
+                        item.tangibletime >= item.weeklyComittedHours ? 'green' : 'red',
+                      width: 15,
+                      height: 15,
+                      borderRadius: 7.5,
+                      margin: 'auto',
+                      verticalAlign: 'middle',
+                    }}
+                  />
                   {/* </Link> */}
                 </td>
                 <th scope="row">
@@ -225,7 +238,7 @@ const LeaderBoard = ({
         </Table>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default LeaderBoard
+export default LeaderBoard;

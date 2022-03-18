@@ -1,1 +1,1 @@
-export { default } from "./CheckboxCollection";
+export { default } from './CheckboxCollection';

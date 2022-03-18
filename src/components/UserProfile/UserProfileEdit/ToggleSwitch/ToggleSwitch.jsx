@@ -1,5 +1,5 @@
-import React from 'react'
-import style from './ToggleSwitch.module.scss'
+import React from 'react';
+import style from './ToggleSwitch.module.scss';
 
 const ToggleSwitch = ({ switchType, state, handleUserProfile }) => {
   switch (switchType) {
@@ -22,7 +22,7 @@ const ToggleSwitch = ({ switchType, state, handleUserProfile }) => {
               </div>
             </div>
           </div>
-        )
+        );
       }
       return (
         <div className="blueSqare">
@@ -41,8 +41,8 @@ const ToggleSwitch = ({ switchType, state, handleUserProfile }) => {
               private
             </div>
           </div>
-          </div>
-        );
+        </div>
+      );
 
     case 'email':
       if (state) {
@@ -65,7 +65,7 @@ const ToggleSwitch = ({ switchType, state, handleUserProfile }) => {
               </div>
             </div>
           </div>
-        )
+        );
       }
       return (
         <div className="blueSqare">
@@ -87,7 +87,7 @@ const ToggleSwitch = ({ switchType, state, handleUserProfile }) => {
             </div>
           </div>
         </div>
-      )
+      );
     case 'phone':
       if (state) {
         return (
@@ -110,7 +110,7 @@ const ToggleSwitch = ({ switchType, state, handleUserProfile }) => {
               </div>
             </div>
           </div>
-        )
+        );
       }
       return (
         <div className="blueSqare">
@@ -132,11 +132,11 @@ const ToggleSwitch = ({ switchType, state, handleUserProfile }) => {
             </div>
           </div>
         </div>
-      )
+      );
     default:
-      break
+      break;
   }
-  return <div>ERROR: Toggle Switch.</div>
-}
+  return <div>ERROR: Toggle Switch.</div>;
+};
 
-export default ToggleSwitch
+export default ToggleSwitch;

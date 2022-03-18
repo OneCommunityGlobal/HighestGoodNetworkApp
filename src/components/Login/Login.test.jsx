@@ -1,19 +1,19 @@
-import React from "react";
-import { shallow, mount } from "enzyme";
-import { Login } from "./Login";
-import { loginUser } from "../../actions/authActions";
-import { clearErrors } from "../../actions/errorsActions";
-import { BrowserRouter } from "react-router-dom";
+import React from 'react';
+import { shallow, mount } from 'enzyme';
+import { Login } from './Login';
+import { loginUser } from '../../actions/authActions';
+import { clearErrors } from '../../actions/errorsActions';
+import { BrowserRouter } from 'react-router-dom';
 
 describe('Login page structure', () => {
   let mountedLogin, props;
   beforeEach(() => {
-    props = ({
-      auth: {isAuthenticated: false},
+    props = {
+      auth: { isAuthenticated: false },
       errors: {},
-      "loginUser":  loginUser,
-      "clearErrors": clearErrors
-    });
+      loginUser: loginUser,
+      clearErrors: clearErrors,
+    };
     mountedLogin = shallow(<Login {...props} />);
   });
 
@@ -39,18 +39,19 @@ describe('When user tries to input data', () => {
 
   beforeEach(() => {
     loginU = jest.fn();
-    props = ({
-      auth: {isAuthenticated: false},
+    props = {
+      auth: { isAuthenticated: false },
       errors: {},
-      "loginUser":  loginU
-    });
+      loginUser: loginU,
+    };
     mountedLoginPage = shallow(<Login {...props} />);
   });
 
-
   it('should call handleInput when input is changed', () => {
     const spy = jest.spyOn(mountedLoginPage.instance(), 'handleInput');
-    mountedLoginPage.find("[name='email']").simulate('change', { currentTarget: { name: 'email', value: 'abc' } });
+    mountedLoginPage
+      .find("[name='email']")
+      .simulate('change', { currentTarget: { name: 'email', value: 'abc' } });
     expect(spy).toHaveBeenCalled();
   });
 
@@ -77,7 +78,9 @@ describe('When user tries to input data', () => {
     const Input = { name: 'password', value: expected };
     const mockEvent = { currentTarget: Input };
     mountedLoginPage.instance().handleInput(mockEvent);
-    expect(mountedLoginPage.instance().state.errors.password).toEqual('"Password" is not allowed to be empty');
+    expect(mountedLoginPage.instance().state.errors.password).toEqual(
+      '"Password" is not allowed to be empty',
+    );
   });
 
   it('should have disabled submit button if form is invalid', () => {
@@ -94,19 +97,19 @@ describe('When user tries to input data', () => {
 
   it('onSubmit loginPage method is called with credentials', async () => {
     await mountedLoginPage.instance().doSubmit();
-    expect(loginU).toHaveBeenCalledWith({email: "", password: ""});
+    expect(loginU).toHaveBeenCalledWith({ email: '', password: '' });
   });
 });
 
 describe('Login behavior', () => {
   let props;
   it('should have redirection set to homepage ', () => {
-    props = ({
-      auth: {isAuthenticated: true},
+    props = {
+      auth: { isAuthenticated: true },
       errors: {},
-      "loginUser":  loginUser,
-      history: []
-    });
+      loginUser: loginUser,
+      history: [],
+    };
     const wrapper = shallow(<Login {...props} />);
     expect(wrapper.instance().props.history).toEqual(['/']);
   });

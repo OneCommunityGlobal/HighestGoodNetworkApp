@@ -12,7 +12,7 @@ import * as actions from '../../actions/timeEntries';
 const mockStore = configureStore([thunk]);
 jest.mock('../../actions/timeEntries.js');
 function sleep(ms) {
-  return new Promise(resolve => setTimeout(resolve, ms));
+  return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
 describe('<Timelog/>', () => {
@@ -26,17 +26,14 @@ describe('<Timelog/>', () => {
     });
     store.dispatch = jest.fn();
     renderWithRouterMatch(
-      <Route path="/timelog/:userId">
-        {props => <Timelog {...props} />}
-      </Route>,
+      <Route path="/timelog/:userId">{(props) => <Timelog {...props} />}</Route>,
       {
         route: '/timelog/5edf141c78f1380017b829a6',
         store,
       },
     );
   });
-  it('should render Timelog without crashing', () => {
-  });
+  it('should render Timelog without crashing', () => {});
   it('should render <TimeEntryForm /> after click `Add Time Entry` button', async () => {
     const button = screen.getByRole('button', { name: /add.*/i });
     expect(button).toBeInTheDocument();
@@ -84,17 +81,21 @@ describe('<Timelog/>', () => {
     await userEvent.type(screen.getByLabelText('To'), '2020-08-03', { allAtOnce: false });
     userEvent.click(screen.getByRole('button', { name: /search/i }));
     expect(actions.getTimeEntriesForPeriod).toHaveBeenCalled();
-    expect(actions.getTimeEntriesForPeriod).toHaveBeenCalledWith('5edf141c78f1380017b829a6', '2020-08-01', '2020-08-03');
+    expect(actions.getTimeEntriesForPeriod).toHaveBeenCalledWith(
+      '5edf141c78f1380017b829a6',
+      '2020-08-01',
+      '2020-08-03',
+    );
   });
 
   it('should render filtered project with <select> and show number of heading project base on selection', async () => {
     const projectSelect = screen.getByLabelText(/filter entries by project/i);
     expect(projectSelect.value).toBe('all');
-    fireEvent.change(projectSelect, {target: { value: userProjectMock.projects[1].projectId },});
+    fireEvent.change(projectSelect, { target: { value: userProjectMock.projects[1].projectId } });
     expect(screen.getAllByRole('heading', { name: /mock project \d/i })).toHaveLength(2);
-    fireEvent.change(projectSelect, {target: { value: userProjectMock.projects[2].projectId },});
+    fireEvent.change(projectSelect, { target: { value: userProjectMock.projects[2].projectId } });
     expect(screen.getAllByRole('heading', { name: /mock project \d/i })).toHaveLength(1);
-    fireEvent.change(projectSelect, {target: { value: userProjectMock.projects[3].projectId },});
+    fireEvent.change(projectSelect, { target: { value: userProjectMock.projects[3].projectId } });
     expect(screen.getAllByRole('heading', { name: /mock project \d/i })).toHaveLength(3);
   });
-}); 
+});
