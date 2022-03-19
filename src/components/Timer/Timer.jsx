@@ -170,16 +170,18 @@ const Timer = () => {
           Stop
         </Button>
       </div>
-      <TimeEntryForm
-        edit={false}
-        userId={userId}
-        toggle={toggle}
-        isOpen={modal}
-        timer={{ hours, minutes }}
-        data={data}
-        userProfile={userProfile}
-        resetTimer={reset}
-      />
+      {modal && (
+        <TimeEntryForm
+          edit={false}
+          userId={userId}
+          toggle={toggle}
+          isOpen={true}
+          timer={{ hours, minutes }}
+          data={data}
+          userProfile={userProfile}
+          resetTimer={reset}
+        />
+      )}
     </div>
   );
 };
