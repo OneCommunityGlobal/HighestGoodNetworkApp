@@ -46,7 +46,9 @@ const TimeEntryForm = (props) => {
   const { userId, edit, data, isOpen, toggle, timer, resetTimer } = props;
 
   const initialFormValues = {
-    dateOfWork: moment().tz('America/Los_Angeles').format('YYYY-MM-DD'),
+    dateOfWork: moment()
+      .tz('America/Los_Angeles')
+      .format('YYYY-MM-DD'),
     hours: 0,
     minutes: 0,
     projectId: '',
@@ -133,8 +135,7 @@ const TimeEntryForm = (props) => {
 
   const projectOptions = projects.map((project) => (
     <option value={project._id} key={project._id}>
-      {' '}
-      {project.projectName}{' '}
+      {project.projectName}
     </option>
   ));
   projectOptions.unshift(
@@ -149,7 +150,7 @@ const TimeEntryForm = (props) => {
       if (moment().tz('America/Los_Angeles').diff(item.date, 'days') <= 365) {
         editCount += 1;
       }
-    });
+    })
     return `If you edit your time entries 5 times or more within the span of a year, you will be issued a blue square on the 5th time.
     You will receive an additional blue square for each edit beyond the 5th.
     Currently, you have edited your time entries ${editCount} times within the last 365 days.
@@ -385,12 +386,12 @@ const TimeEntryForm = (props) => {
       <Modal isOpen={isOpen} toggle={toggle} data-testid="timeEntryFormModal">
         <ModalHeader toggle={toggle}>
           <div>
-            {edit ? 'Edit ' : 'Add '}{' '}
+            {edit ? 'Edit ' : 'Add '}
             {inputs.isTangible ? (
               'Tangible'
             ) : (
               <span style={{ textDecoration: 'underline' }}>Intangible</span>
-            )}{' '}
+            )}
             Time Entry
             <i
               className="fa fa-info-circle"
@@ -543,8 +544,7 @@ const TimeEntryForm = (props) => {
         <ModalFooter>
           <small className="mr-auto">* All the fields are required</small>
           <Button onClick={clearForm} color="danger">
-            {' '}
-            Clear Form{' '}
+            Clear Form
           </Button>
           {/* <Button color="primary" disabled={isSubmitting || (data.hours === inputs.hours && data.minutes === inputs.minutes && data.notes === inputs.notes)} onClick={handleSubmit}> */}
           <Button color="primary" onClick={handleSubmit}>
