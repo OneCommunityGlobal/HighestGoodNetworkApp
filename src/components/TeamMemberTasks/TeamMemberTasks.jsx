@@ -39,6 +39,7 @@ const TeamMemberTasks = (props) => {
         });
     
         Promise.all(taskReadPromises).then((data) => {
+          console.log('read tasks');
           const newTeamsState = [];
           teams.forEach((member) => {
             if (member._id === userId) {
@@ -73,18 +74,20 @@ const TeamMemberTasks = (props) => {
         const teamMembersPromises = [];
         const memberTimeEntriesPromises = [];
         const teamMemberTasksPromises = [];
-        const userProfilePromises = [];
+        // const userProfilePromises = [];
 
         //to fetch users in a team
-        const usersInATeamPromises = [];
+        // const usersInATeamPromises = [];
         // const wbsProjectPromises = []
         // const fetchedProjects = []
         const finalData = [];
-        const userNotifications = [];
-        const taskNotificationPromises = [];
+        // const userNotifications = [];
+        // const taskNotificationPromises = [];
         const allManagingTeams = [];
 
-        const teamMembers = [];
+        // const teamMembers = [];
+
+        console.log('before calls');
 
         // fetch all team members for each team
         managingTeams.forEach((team) => {
@@ -92,8 +95,8 @@ const TeamMemberTasks = (props) => {
         });
 
         Promise.all(teamMembersPromises).then((data) => {
-          // console.log('team members', data);
-          teamMembers.push(data[0].data);
+          console.log('team members', data);       
+          // teamMembers.push(data[0].data);
           for (let i = 0; i < managingTeams.length; i++) {
             allManagingTeams[i] = {
               ...managingTeams[i],
@@ -121,6 +124,7 @@ const TeamMemberTasks = (props) => {
           });
 
           Promise.all(memberTimeEntriesPromises).then((data) => {
+            console.log('time entries', data);
             // merge time entries into each user obj
             for (let i = 0; i < uniqueMembers.length; i++) {
               uniqueMembers[i] = {
@@ -128,6 +132,10 @@ const TeamMemberTasks = (props) => {
                 timeEntries: data[i].data,
               };
             }
+
+            console.log('members: ', uniqueMembers);
+
+            /////////////////////////////////
         
             // fetch all tasks for each member
             uniqueMembers.forEach((member) => {
@@ -135,6 +143,7 @@ const TeamMemberTasks = (props) => {
             });
                         
             Promise.all(teamMemberTasksPromises).then(async (data) => {
+              console.log('tasks by userid', data);
               // merge assigned tasks into each user obj
               for (let i = 0; i < uniqueMembers.length; i++) {
                 uniqueMembers[i] = {
@@ -142,17 +151,13 @@ const TeamMemberTasks = (props) => {
                   tasks: data[i].data,
                 };
               }
-
-              /////////////////////////////////////////////////////////////////////////////////
         
-              console.log('team members: ', teamMembers[0]);
-
-              console.log(uniqueMembers.length, teamMembers[0].length);
+              //console.log('team members: ', teamMembers[0]);
 
               try { 
                 for (let i = 0; i < uniqueMembers.length; i++) {
                   const user = uniqueMembers[i];
-                  const userLeaderBoardData = teamMembers[0].find(member => member._id === user._id);
+                  const userLeaderBoardData = uniqueMembers.find(member => member._id === user._id);
                   let userWeeklyCommittedHours = 0;
                   if (userLeaderBoardData) {
                     userWeeklyCommittedHours = userLeaderBoardData.weeklyComittedHours;
@@ -167,6 +172,7 @@ const TeamMemberTasks = (props) => {
                 // currently fetches all projects, should consider refactoring if number of projects increases
                 const WBSRes = await httpService.get(ENDPOINTS.WBS_ALL).catch((err) => { if (err.status === 401) { loggedOut = true; } });
                 const allWBS = WBSRes.data;
+                console.log('tasks', WBSRes.data);
       
                 // calculate hours done in current week and add to user obj for ease of access
                 for (let i = 0; i < uniqueMembers.length; i++) {
@@ -223,9 +229,6 @@ const TeamMemberTasks = (props) => {
                 // catch error on logout
                 console.log('err1', err);
               }
-
-              ///////////////////////////////////////////////////
-
             }); 
           }); 
         }); 
@@ -252,7 +255,7 @@ const TeamMemberTasks = (props) => {
           </td>
           <td>{`${member.weeklyCommittedHours} / ${member.hoursCurrentWeek}`}</td>
           <td>
-            {member.tasks &&
+          {member.tasks &&
               member.tasks.map((task, index) => (
                 <p key={`${task._id}${index}`}>
                   <Link
