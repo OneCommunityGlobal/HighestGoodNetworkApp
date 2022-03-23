@@ -76,7 +76,7 @@ const TeamMemberTasks = (props) => {
         const teamMemberTasksPromises = [];
         // const userProfilePromises = [];
 
-        //to fetch users in a team
+        // to fetch users in a team
         // const usersInATeamPromises = [];
         // const wbsProjectPromises = []
         // const fetchedProjects = []
@@ -104,6 +104,8 @@ const TeamMemberTasks = (props) => {
             };
             allMembers = allMembers.concat(data[i].data);
           }
+
+          console.log('after teams call');
         
           // fetch all time entries for current week for all members
           const uniqueMembers = _.uniqBy(allMembers, '_id');
@@ -134,8 +136,6 @@ const TeamMemberTasks = (props) => {
             }
 
             console.log('members: ', uniqueMembers);
-
-            /////////////////////////////////
         
             // fetch all tasks for each member
             uniqueMembers.forEach((member) => {
