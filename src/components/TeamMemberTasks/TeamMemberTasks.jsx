@@ -87,8 +87,6 @@ const TeamMemberTasks = (props) => {
 
         // const teamMembers = [];
 
-        console.log('before calls');
-
         // fetch all team members for each team
         managingTeams.forEach((team) => {
             teamMembersPromises.push(httpService.get(ENDPOINTS.TEAM_MEMBERS(team._id)));
@@ -104,8 +102,6 @@ const TeamMemberTasks = (props) => {
             };
             allMembers = allMembers.concat(data[i].data);
           }
-
-          console.log('after teams call');
         
           // fetch all time entries for current week for all members
           const uniqueMembers = _.uniqBy(allMembers, '_id');
@@ -136,23 +132,39 @@ const TeamMemberTasks = (props) => {
             }
 
             console.log('members: ', uniqueMembers);
+
+            const membersId = [];
+            for (let i = 0; i < uniqueMembers.length; i++) {
+              membersId.push(uniqueMembers[i]._id);
+            }
+
         
             // fetch all tasks for each member
-            uniqueMembers.forEach((member) => {
-              teamMemberTasksPromises.push(httpService.get(ENDPOINTS.TASKS_BY_USERID(member._id)).catch((err) => { if (err.status !== 401) { console.log(err); } }));
-            });
+            // uniqueMembers.forEach((member) => {
+              teamMemberTasksPromises.push(httpService.get(ENDPOINTS.TASKS_BY_USERID(membersId)).catch((err) => { if (err.status !== 401) { console.log(err); } }));
+            // });
                         
             Promise.all(teamMemberTasksPromises).then(async (data) => {
-              console.log('tasks by userid', data);
+              await console.log('tasks by userid', data);
+
+              
               // merge assigned tasks into each user obj
               for (let i = 0; i < uniqueMembers.length; i++) {
+                const userTasks = [];
+                for (let j = 0; j < data[0].data.length; j++) {
+                  for (let k = 0; k < data[0].data[j].resources.length; k++) {
+                    if (data[0].data[j].resources[k].userID === uniqueMembers[i]._id) {
+                      userTasks.push(data[0].data[j]);
+                    }
+                  }
+                }
                 uniqueMembers[i] = {
                   ...uniqueMembers[i],
-                  tasks: data[i].data,
+                  tasks: userTasks,
                 };
               }
-        
-              //console.log('team members: ', teamMembers[0]);
+
+              console.log('members after tasks: ', uniqueMembers);
 
               try { 
                 for (let i = 0; i < uniqueMembers.length; i++) {
@@ -202,12 +214,9 @@ const TeamMemberTasks = (props) => {
                   }
                 }
       
-                // create array of just user ids to use for querying user tasks notifications
-                const uniqueMemberIds = [];
-                uniqueMembers.forEach((member) => {
-                  uniqueMemberIds.push(member._id);
-                });
                 let loggedOut = false;
+
+                console.log('member tasks in obj: ', uniqueMembers);
       
                 if (!loggedOut) {
                     // sort each members' tasks by last modified time
@@ -218,7 +227,7 @@ const TeamMemberTasks = (props) => {
                         const timeDifference = date2 - date1;
                         return timeDifference;
                       });
-                    });
+                    }); 
       
                     // console.log('final data ', finalData)
                     setFetched(true);
@@ -236,12 +245,15 @@ const TeamMemberTasks = (props) => {
       fetchData();
     }, []);
 
+    console.log('teams: ', teams);
+
     let teamsList = [];
     if (teams && teams.length > 0) {
       teamsList = teams.map((member, index) => (
         <tr key={index}>
           {/* green if member has met committed hours for the week, red if not */}
           <td>
+            {console.log('member ', member)}
             {member.hoursCurrentWeek >= member.weeklyComittedHours ? (
               <FontAwesomeIcon style={{ color: 'green' }} icon={faCircle} />
             ) : (
