@@ -93,8 +93,7 @@ const TeamMemberTasks = (props) => {
         });
 
         Promise.all(teamMembersPromises).then((data) => {
-          console.log('team members', data);       
-          // teamMembers.push(data[0].data);
+          console.log('team members', data);
           for (let i = 0; i < managingTeams.length; i++) {
             allManagingTeams[i] = {
               ...managingTeams[i],
@@ -105,44 +104,46 @@ const TeamMemberTasks = (props) => {
         
           // fetch all time entries for current week for all members
           const uniqueMembers = _.uniqBy(allMembers, '_id');
-          uniqueMembers.forEach((member) => {
-            const fromDate = moment()
-              .tz('America/Los_Angeles')
-              .startOf('week')
-              .subtract(0, 'weeks');
-        
-            const toDate = moment()
-              .tz('America/Los_Angeles')
-              .endOf('week')
-              .subtract(0, 'weeks');
-        
-            memberTimeEntriesPromises.push(
-              httpService.get(ENDPOINTS.TIME_ENTRIES_PERIOD(member._id, fromDate, toDate)).catch((err) => { }),
-            );
-          });
+
+          console.log('members: ', uniqueMembers);
+
+          const membersId = [];
+          for (let i = 0; i < uniqueMembers.length; i++) {
+            membersId.push(uniqueMembers[i]._id);
+          }
+
+          memberTimeEntriesPromises.push(
+            httpService.get(ENDPOINTS.TIME_ENTRIES_USER_LIST(membersId)).catch((err) => {}),
+          );
 
           Promise.all(memberTimeEntriesPromises).then((data) => {
-            console.log('time entries', data);
-            // merge time entries into each user obj
-            for (let i = 0; i < uniqueMembers.length; i++) {
-              uniqueMembers[i] = {
-                ...uniqueMembers[i],
-                timeEntries: data[i].data,
-              };
+            console.log('time entries: ', data);
+            if (data[0].data.length === 0) {
+              for (let i = 0; i < uniqueMembers.length; i++) {
+                uniqueMembers[i] = {
+                  ...uniqueMembers[i],
+                  timeEntries: [],
+                };
+              }
+            } else {
+              for (let i = 0; i < uniqueMembers.length; i++) {
+                const entries = [];
+                for (let j = 0; j < data[0].data.length; j++) {
+                  if (uniqueMembers[i]._id === data[0].data[j].personId) {
+                    entries.push(data[0].data[j]);
+                    console.log('push');
+                  }
+                }
+                uniqueMembers[i] = {
+                  ...uniqueMembers[i],
+                  timeEntries: entries,
+                };
+              }
             }
-
-            console.log('members: ', uniqueMembers);
-
-            const membersId = [];
-            for (let i = 0; i < uniqueMembers.length; i++) {
-              membersId.push(uniqueMembers[i]._id);
-            }
-
+            console.log('members after entries: ', uniqueMembers);
         
             // fetch all tasks for each member
-            // uniqueMembers.forEach((member) => {
-              teamMemberTasksPromises.push(httpService.get(ENDPOINTS.TASKS_BY_USERID(membersId)).catch((err) => { if (err.status !== 401) { console.log(err); } }));
-            // });
+            teamMemberTasksPromises.push(httpService.get(ENDPOINTS.TASKS_BY_USERID(membersId)).catch((err) => { if (err.status !== 401) { console.log(err); } }));
                         
             Promise.all(teamMemberTasksPromises).then(async (data) => {
               await console.log('tasks by userid', data);
@@ -267,7 +268,7 @@ const TeamMemberTasks = (props) => {
           </td>
           <td>{`${member.weeklyCommittedHours} / ${member.hoursCurrentWeek}`}</td>
           <td>
-          {member.tasks &&
+            {member.tasks &&
               member.tasks.map((task, index) => (
                 <p key={`${task._id}${index}`}>
                   <Link
@@ -335,12 +336,10 @@ const TeamMemberTasks = (props) => {
                               <td>{notification.oldTaskInfos.oldWhyInfo}</td>
                               <td>{notification.newTaskInfos.newWhyInfo}</td>
                               <td>
-                                {
-                                  <DiffedText
-                                    oldText={notification.oldTaskInfos.oldWhyInfo}
-                                    newText={notification.newTaskInfos.newWhyInfo}
-                                  />
-                                }
+                                <DiffedText
+                                  oldText={notification.oldTaskInfos.oldWhyInfo}
+                                  newText={notification.newTaskInfos.newWhyInfo}
+                                />                               
                               </td>
                             </tr>
                           ) : null}
@@ -351,12 +350,10 @@ const TeamMemberTasks = (props) => {
                               <td>{notification.oldTaskInfos.oldIntentInfo}</td>
                               <td>{notification.newTaskInfos.newIntentInfo}</td>
                               <td>
-                                {
-                                  <DiffedText
-                                    oldText={notification.oldTaskInfos.oldIntentInfo}
-                                    newText={notification.newTaskInfos.newIntentInfo}
-                                  />
-                                }
+                                <DiffedText
+                                  oldText={notification.oldTaskInfos.oldIntentInfo}
+                                  newText={notification.newTaskInfos.newIntentInfo}
+                                />
                               </td>
                             </tr>
                           ) : null}
@@ -367,12 +364,10 @@ const TeamMemberTasks = (props) => {
                               <td>{notification.oldTaskInfos.oldEndstateInfo}</td>
                               <td>{notification.newTaskInfos.newEndstateInfo}</td>
                               <td>
-                                {
-                                  <DiffedText
-                                    oldText={notification.oldTaskInfos.oldEndstateInfo}
-                                    newText={notification.newTaskInfos.newEndstateInfo}
-                                  />
-                                }
+                                <DiffedText
+                                  oldText={notification.oldTaskInfos.oldEndstateInfo}
+                                  newText={notification.newTaskInfos.newEndstateInfo}
+                                />
                               </td>
                             </tr>
                           ) : null}
