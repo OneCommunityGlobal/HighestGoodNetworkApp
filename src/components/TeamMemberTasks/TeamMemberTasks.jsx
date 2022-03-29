@@ -93,7 +93,7 @@ const TeamMemberTasks = (props) => {
         });
 
         Promise.all(teamMembersPromises).then((data) => {
-          console.log('team members', data);
+          // console.log('team members', data);
           for (let i = 0; i < managingTeams.length; i++) {
             allManagingTeams[i] = {
               ...managingTeams[i],
@@ -105,7 +105,7 @@ const TeamMemberTasks = (props) => {
           // fetch all time entries for current week for all members
           const uniqueMembers = _.uniqBy(allMembers, '_id');
 
-          console.log('members: ', uniqueMembers);
+          // console.log('members: ', uniqueMembers);
 
           const membersId = [];
           for (let i = 0; i < uniqueMembers.length; i++) {
@@ -117,7 +117,7 @@ const TeamMemberTasks = (props) => {
           );
 
           Promise.all(memberTimeEntriesPromises).then((data) => {
-            console.log('time entries: ', data);
+            // console.log('time entries: ', data);
             if (data[0].data.length === 0) {
               for (let i = 0; i < uniqueMembers.length; i++) {
                 uniqueMembers[i] = {
@@ -131,7 +131,7 @@ const TeamMemberTasks = (props) => {
                 for (let j = 0; j < data[0].data.length; j++) {
                   if (uniqueMembers[i]._id === data[0].data[j].personId) {
                     entries.push(data[0].data[j]);
-                    console.log('push');
+                    // console.log('push');
                   }
                 }
                 uniqueMembers[i] = {
@@ -140,13 +140,13 @@ const TeamMemberTasks = (props) => {
                 };
               }
             }
-            console.log('members after entries: ', uniqueMembers);
+            // console.log('members after entries: ', uniqueMembers);
         
             // fetch all tasks for each member
             teamMemberTasksPromises.push(httpService.get(ENDPOINTS.TASKS_BY_USERID(membersId)).catch((err) => { if (err.status !== 401) { console.log(err); } }));
                         
             Promise.all(teamMemberTasksPromises).then(async (data) => {
-              await console.log('tasks by userid', data);
+              // await console.log('tasks by userid', data);
 
               
               // merge assigned tasks into each user obj
@@ -165,7 +165,7 @@ const TeamMemberTasks = (props) => {
                 };
               }
 
-              console.log('members after tasks: ', uniqueMembers);
+              // console.log('members after tasks: ', uniqueMembers);
 
               try { 
                 for (let i = 0; i < uniqueMembers.length; i++) {
@@ -185,7 +185,7 @@ const TeamMemberTasks = (props) => {
                 // currently fetches all projects, should consider refactoring if number of projects increases
                 const WBSRes = await httpService.get(ENDPOINTS.WBS_ALL).catch((err) => { if (err.status === 401) { loggedOut = true; } });
                 const allWBS = WBSRes.data;
-                console.log('tasks', WBSRes.data);
+                // console.log('tasks', WBSRes.data);
       
                 // calculate hours done in current week and add to user obj for ease of access
                 for (let i = 0; i < uniqueMembers.length; i++) {
@@ -217,7 +217,7 @@ const TeamMemberTasks = (props) => {
       
                 let loggedOut = false;
 
-                console.log('member tasks in obj: ', uniqueMembers);
+                // console.log('member tasks in obj: ', uniqueMembers);
       
                 if (!loggedOut) {
                     // sort each members' tasks by last modified time
@@ -246,7 +246,7 @@ const TeamMemberTasks = (props) => {
       fetchData();
     }, []);
 
-    console.log('teams: ', teams);
+    // console.log('teams: ', teams);
 
     let teamsList = [];
     if (teams && teams.length > 0) {
@@ -254,7 +254,7 @@ const TeamMemberTasks = (props) => {
         <tr key={index}>
           {/* green if member has met committed hours for the week, red if not */}
           <td>
-            {console.log('member ', member)}
+            {/* console.log('member ', member) */}
             {member.hoursCurrentWeek >= member.weeklyComittedHours ? (
               <FontAwesomeIcon style={{ color: 'green' }} icon={faCircle} />
             ) : (
