@@ -454,14 +454,14 @@ const BasicInformationTab = (props) => {
         </Col>
       </Row>
       <Row style={{ marginBottom: '10px' }}>
-        <Col>
+        {/* <Col>
           <Label>Search For Time Zone</Label>
         </Col>
         <Col>
           <Input type="text" onChange={(e) => setTimeZoneFilter(e.target.value)} />
         </Col>
       </Row>
-      <Row style={{ marginBottom: '10px' }}>
+      <Row style={{ marginBottom: '10px' }}> */}
         <Col>
           <Label>Status</Label>
         </Col>
