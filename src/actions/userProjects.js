@@ -7,7 +7,7 @@ export const getUserProjects = (userId) => {
   return async (dispatch) => {
     const res = await axios.get(url).catch((err) => {
       if (err.status !== 401) {
-        console.log(err.message);
+        console.log('err.message', err.message);
       }
     });
     if (res) {

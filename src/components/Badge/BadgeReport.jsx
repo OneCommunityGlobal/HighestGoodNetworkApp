@@ -174,7 +174,7 @@ const BadgeReport = (props) => {
         newBadges[index].lastModified = new Date(newBadges[index].lastModified);
       }
     });
-    console.log(numFeatured);
+    console.log('numFeatured: ', numFeatured);
     setSortBadges(newBadges);
   }, [props.badges]);
 
@@ -185,7 +185,7 @@ const BadgeReport = (props) => {
   };
 
   const featuredChange = (badge, index, e) => {
-    console.log(numFeatured);
+    console.log('numFeatured: ', numFeatured);
 
     let newBadges = sortBadges.slice();
     if ((e.target.checked && numFeatured < 5) || !e.target.checked) {
