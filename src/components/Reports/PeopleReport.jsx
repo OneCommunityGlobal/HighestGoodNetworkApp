@@ -606,7 +606,7 @@ class PeopleReport extends Component {
         </div>
       );
     };
-      )
+      
     }
 
     const Infringments = props => {
