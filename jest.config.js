@@ -36,7 +36,7 @@ module.exports = {
   testURL: 'http://localhost',
 
   // An array of regexp pattern strings that are matched against all source file paths, matched files will skip transformation
-  transformIgnorePatterns: ['<rootDir>/node_modules/'],
+  transformIgnorePatterns: ["/node_modules/(?!d3|d3-array|internmap|delaunator|robust-predicates)"],
   snapshotSerializers: ['enzyme-to-json/serializer'],
 
   // Indicates whether each individual test should be reported during the run
