@@ -1,25 +1,25 @@
-.container-tasks{
+.container-tasks {
   margin: 20px;
   width: calc(100% - 40px);
 }
 
-.container{
+.container {
   overflow: auto;
 }
 
-.level-space-1{
+.level-space-1 {
   margin-left: 0px;
 }
 
-.level-space-2{
+.level-space-2 {
   margin-left: 15px;
 }
 
-.level-space-3{
+.level-space-3 {
   margin-left: 25px;
 }
 
-.level-space-4{
+.level-space-4 {
   margin-left: 35px;
 }
 
@@ -34,56 +34,53 @@
   text-transform: uppercase;
 }
 
-.img-circle{
+.img-circle {
   border-radius: 50%;
   border-radius: 50%;
   height: 20px;
   width: 20px;
 }
 
-
-.task-hour{
+.task-hour {
   width: 35px;
 }
 
-.task-resouces-input{
+.task-resouces-input {
   width: 80%;
-  float:left;
+  float: left;
 }
-.task-resouces-btn{
+.task-resouces-btn {
   width: 20%;
-  float:right;
+  float: right;
 }
-.task-reousces-list{
+.task-reousces-list {
   margin-top: 3px;
   float: left;
   width: 100%;
 }
 
-.wbsTaskController{
+.wbsTaskController {
   display: none;
 }
-.wbsTask{
-
+.wbsTask {
   line-height: 14px;
-
 }
 
-.controlBtn{
+.controlBtn {
   float: left;
   margin-bottom: 10px;
   margin-right: 10px;
 }
 
-.controlTd{
+.controlTd {
   background-color: #effff2;
 }
 
-.controlBtn_remove{
-  float:right;
+.controlBtn_remove {
+  float: right;
 }
 
-.newTask{
+.newTask {
   background-color: #effff2;
 }
 
@@ -91,63 +88,58 @@
   padding: 0.45rem;
 }
 
-
-
-.taskNum{
+.taskNum {
   cursor: context-menu;
   width: 80px;
 }
 
-.taskName{
+.taskName {
   width: 300px;
 }
 
-.taskDrop{
+.taskDrop {
   width: 100%;
   background: #effff2;
   display: none;
 }
 
-.name{
+.name {
   margin-right: 2px;
 }
 
-.resourceMoreToggle{
+.resourceMoreToggle {
   cursor: pointer;
   color: white;
   font-size: 14px;
 }
-.resourceMore{
-  display: none
+.resourceMore {
+  display: none;
 }
 
-.warning{
-  color:red;
+.warning {
+  color: red;
   font-size: 10px;
 }
 
-.toggle-all{
-  float:right;
+.toggle-all {
+  float: right;
 }
-.tasks-table{
-  overflow-x:scroll;
+.tasks-table {
+  overflow-x: scroll;
   width: 100% !important;
 }
 
-.task-link{
+.task-link {
   font-size: 10px;
   float: left;
 }
 
 @media only screen and (max-width: 600px) {
-  .desktop-view{
+  .desktop-view {
     display: none;
   }
 
   .table td {
     padding: 5px !important;
   }
-
- }
-
-
+}

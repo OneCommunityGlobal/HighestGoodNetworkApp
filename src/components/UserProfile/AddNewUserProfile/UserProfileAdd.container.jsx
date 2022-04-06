@@ -13,7 +13,7 @@ import { fetchAllProjects } from 'actions/projects';
 
 import AddUserProfile from './UserProfileAdd';
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state) => ({
   auth: state.auth,
   userProfile: _.get(state, 'userProfile'),
   user: _.get(state, 'user', {}),

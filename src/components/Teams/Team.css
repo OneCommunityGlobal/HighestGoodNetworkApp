@@ -1,89 +1,89 @@
-thead{
+thead {
   background: aliceblue;
 }
 
-#new_team{
+#new_team {
   margin-bottom: 10px;
 }
 
-#teams__order{
+#teams__order {
   width: 5px;
 }
 
-#teams__active{
+#teams__active {
   width: 10px;
 }
 
-#teams__members{
+#teams__members {
   width: 15px;
 }
 
-#teams__wbs{
+#teams__wbs {
   width: 15px;
 }
 
-#teams__delete{
+#teams__delete {
   width: 20px;
 }
 
-.teams__tr{
+.teams__tr {
   text-align: start;
 }
 
-.teams__overview--top{
+.teams__overview--top {
   background: gray;
 }
 
-.teams__overview--top .card{
+.teams__overview--top .card {
   width: 200px;
   float: left;
   margin-right: 10px;
   margin-bottom: 10px;
 }
 
-#card_team{
-  background:#1D62F0;
-  color: white
+#card_team {
+  background: #1d62f0;
+  color: white;
 }
 
-#card_active{
+#card_active {
   background: #fbad4c;
-  color: white
+  color: white;
 }
 
-.teams__order--input div{
+.teams__order--input div {
   margin-top: 7px;
 }
 
-.teams__active--input i{
+.teams__active--input i {
   margin-top: 10px;
   cursor: pointer;
 }
 
-.teams__name--input input{
+.teams__name--input input {
   border: 1px solid white;
 }
 
-.teams__name--input input:hover{
+.teams__name--input input:hover {
   border: 1px solid #dee2e6;
 }
 
-.isActive i{
+.isActive i {
   color: lawngreen;
 }
 
-.isNotActive{
-  color:#dee2e6
+.isNotActive {
+  color: #dee2e6;
 }
 
-.isDisabled{
+.isDisabled {
   opacity: 0;
   transition: opacity 10ms;
-  display:none;
+  display: none;
 }
 
-tr:hover{
-  background: #e9f6ff
+tr:hover {
+  background: #e9f6ff;
 }
 
 .user-auto-cpmplete {
@@ -92,5 +92,5 @@ tr:hover{
 }
 
 .user-auto-cpmplete:hover {
-  background: #1D62F0;
+  background: #1d62f0;
 }

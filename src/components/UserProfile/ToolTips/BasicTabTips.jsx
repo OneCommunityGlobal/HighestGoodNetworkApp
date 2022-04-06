@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { Tooltip } from 'reactstrap';
 
-
 const BasicTabTips = () => {
   const [nameOpen, setNameOpen] = useState(false);
   const [emailOpen, setEmailOpen] = useState(false);
@@ -14,7 +13,13 @@ const BasicTabTips = () => {
   const toggleTitle = () => setTitleOpen(!titleOpen);
   return (
     <div>
-      <Tooltip placement="top" data-testid="tooltip-name" isOpen={nameOpen} target="info-name" toggle={toggleName}>
+      <Tooltip
+        placement="top"
+        data-testid="tooltip-name"
+        isOpen={nameOpen}
+        target="info-name"
+        toggle={toggleName}
+      >
         First Name and Last Name
       </Tooltip>
       <Tooltip placement="top" isOpen={emailOpen} target="info-email" toggle={toggleEmail}>

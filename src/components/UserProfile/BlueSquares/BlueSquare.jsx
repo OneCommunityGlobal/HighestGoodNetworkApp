@@ -1,8 +1,7 @@
-import React from 'react'
-import './BlueSquare.css'
+import React from 'react';
+import './BlueSquare.css';
 
-const BlueSquare = ({blueSquares, handleBlueSquare, isUserAdmin}) => {
-
+const BlueSquare = ({ blueSquares, handleBlueSquare, isUserAdmin }) => {
   return (
     <div className="blueSquareContainer">
       <div className="blueSquares">
@@ -15,11 +14,11 @@ const BlueSquare = ({blueSquares, handleBlueSquare, isUserAdmin}) => {
             className="blueSquareButton"
             onClick={() => {
               if (!blueSquare._id) {
-                handleBlueSquare(isUserAdmin, 'message', 'none')
+                handleBlueSquare(isUserAdmin, 'message', 'none');
               } else if (isUserAdmin) {
-                handleBlueSquare(isUserAdmin, 'modBlueSquare', blueSquare._id)
+                handleBlueSquare(isUserAdmin, 'modBlueSquare', blueSquare._id);
               } else {
-                handleBlueSquare(!isUserAdmin, 'viewBlueSquare', blueSquare._id)
+                handleBlueSquare(!isUserAdmin, 'viewBlueSquare', blueSquare._id);
               }
             }}
           >
@@ -46,6 +45,6 @@ const BlueSquare = ({blueSquares, handleBlueSquare, isUserAdmin}) => {
       <br />
     </div>
   );
-}
+};
 
 export default BlueSquare;

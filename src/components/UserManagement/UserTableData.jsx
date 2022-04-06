@@ -30,12 +30,24 @@ const UserTableData = React.memo((props) => {
         />
       </td>
       <td>
-        <a href={`/userprofile/${props.user._id}`} onClick={(e) => { e.preventDefault(); history.push('/userprofile/' + props.user._id) }}>
+        <a
+          href={`/userprofile/${props.user._id}`}
+          onClick={(e) => {
+            e.preventDefault();
+            history.push('/userprofile/' + props.user._id);
+          }}
+        >
           {props.user.firstName}
         </a>
       </td>
       <td>
-        <a href={`/userprofile/${props.user._id}`} onClick={(e) => { e.preventDefault(); history.push('/userprofile/' + props.user._id) }}>
+        <a
+          href={`/userprofile/${props.user._id}`}
+          onClick={(e) => {
+            e.preventDefault();
+            history.push('/userprofile/' + props.user._id);
+          }}
+        >
           {props.user.lastName}
         </a>
       </td>
@@ -48,20 +60,21 @@ const UserTableData = React.memo((props) => {
           className={`btn btn-outline-${props.isActive ? 'warning' : 'success'} btn-sm`}
           onClick={(e) => {
             onReset(true);
-            props.onPauseResumeClick(props.user, (props.isActive ? UserStatus.InActive : UserStatus.Active));
+            props.onPauseResumeClick(
+              props.user,
+              props.isActive ? UserStatus.InActive : UserStatus.Active,
+            );
           }}
         >
-          {isChanging ? '...' : (props.isActive ? PAUSE : RESUME)}
+          {isChanging ? '...' : props.isActive ? PAUSE : RESUME}
         </button>
-
       </td>
       <td>
-        {(props.user.isActive === false && props.user.reactivationDate)
-          ? (props.user.reactivationDate.toLocaleString().split('T')[0]) : ''}
+        {props.user.isActive === false && props.user.reactivationDate
+          ? props.user.reactivationDate.toLocaleString().split('T')[0]
+          : ''}
       </td>
-      <td>
-        {props.user.endDate ? (props.user.endDate.toLocaleString().split('T')[0]) : 'N/A'}
-      </td>
+      <td>{props.user.endDate ? props.user.endDate.toLocaleString().split('T')[0] : 'N/A'}</td>
       <td>
         <span className="usermanagement-actions-cell">
           <button
@@ -72,7 +85,6 @@ const UserTableData = React.memo((props) => {
             }}
           >
             {DELETE}
-
           </button>
         </span>
         <span className="usermanagement-actions-cell">

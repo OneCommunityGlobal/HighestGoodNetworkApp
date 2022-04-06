@@ -1,6 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import {
-  Button, Modal, ModalHeader, ModalBody, ModalFooter, Form, FormGroup, Label, Input, FormText, FormFeedback, UncontrolledTooltip
+  Button,
+  Modal,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+  Form,
+  FormGroup,
+  Label,
+  Input,
+  FormText,
+  FormFeedback,
+  UncontrolledTooltip,
 } from 'reactstrap';
 import { connect } from 'react-redux';
 import './Badge.css';
@@ -49,9 +60,13 @@ const EditBadgePopup = (props) => {
   const validRanking = (ranking) => {
     const pattern = /^[0-9]*$/;
     return pattern.test(ranking);
-  }
+  };
 
-  const enableButton = badgeName.length === 0 || imageUrl.length === 0 || description.length === 0 || !validRanking(ranking);
+  const enableButton =
+    badgeName.length === 0 ||
+    imageUrl.length === 0 ||
+    description.length === 0 ||
+    !validRanking(ranking);
 
   const resetTypeFieldDisplay = () => {
     setShowCategory(false);
@@ -60,7 +75,7 @@ const EditBadgePopup = (props) => {
     setShowMonths(false);
     setShowMultiple(false);
     setShowPeople(false);
-  }
+  };
 
   const displayTypeRelatedFields = (targetType) => {
     resetTypeFieldDisplay();
@@ -85,11 +100,11 @@ const EditBadgePopup = (props) => {
       default:
         return;
     }
-  }
+  };
 
   const closePopup = () => {
     props.setEditPopup(false);
-  }
+  };
 
   const handleChange = (event) => {
     switch (event.target.id) {
@@ -114,7 +129,7 @@ const EditBadgePopup = (props) => {
         const selectedType = event.target.value;
         setType(selectedType);
         if (selectedType.length === 0) {
-          setType("Custom");
+          setType('Custom');
         }
         displayTypeRelatedFields(selectedType);
         break;
@@ -139,8 +154,7 @@ const EditBadgePopup = (props) => {
       default:
         return;
     }
-  }
-
+  };
 
   const handleSubmit = () => {
     const badgeData = {
@@ -154,12 +168,12 @@ const EditBadgePopup = (props) => {
       weeks: weeks,
       months: months,
       multiple: multiple,
-      people: people
-    }
+      people: people,
+    };
     props.updateBadge(badgeId, badgeData).then(() => {
       closePopup();
     });
-  }
+  };
 
   return (
     <Modal isOpen={props.open} toggle={closePopup}>
@@ -168,41 +182,86 @@ const EditBadgePopup = (props) => {
         <Form id="badgeEdit">
           <FormGroup>
             <Label for="badgeName">Name</Label>
-            <Input type="name" name="name" id="badgeName" value={badgeName} onChange={handleChange} placeholder="Badge Name" invalid={badgeName.length === 0} />
+            <Input
+              type="name"
+              name="name"
+              id="badgeName"
+              value={badgeName}
+              onChange={handleChange}
+              placeholder="Badge Name"
+              invalid={badgeName.length === 0}
+            />
             <FormFeedback>Badge name is required and must be unique.</FormFeedback>
           </FormGroup>
           <FormGroup>
             <Label for="imageUrl">Image URL</Label>
-            <Input type="url" name="url" id="imageUrl" value={imageUrl} onChange={handleChange} placeholder="Image URL" invalid={imageUrl.length === 0} />
+            <Input
+              type="url"
+              name="url"
+              id="imageUrl"
+              value={imageUrl}
+              onChange={handleChange}
+              placeholder="Image URL"
+              invalid={imageUrl.length === 0}
+            />
             <FormText color="muted">
               For Dropbox URL that ends with "dl=0", please replace with "raw=1".
             </FormText>
           </FormGroup>
           <FormGroup>
             <Label for="badgeDescription">Description</Label>
-            <Input type="textarea" name="text" id="badgeDescription" value={description} onChange={handleChange} invalid={description.length === 0} />
+            <Input
+              type="textarea"
+              name="text"
+              id="badgeDescription"
+              value={description}
+              onChange={handleChange}
+              invalid={description.length === 0}
+            />
           </FormGroup>
 
           <FormGroup>
             <Label for="badgeType">Type</Label>
             <i className="fa fa-info-circle ml-1" id="TypeInfo" />
             <UncontrolledTooltip placement="right" target="TypeInfo" className="badgeTooltip">
-              <p className="badge_info_icon_text">Choosing a type is optional but generally the best thing to do. If no type is chosen, the type will automatically be marked as "Custom", the least cool option of all as no autoassignment will happen.</p>
+              <p className="badge_info_icon_text">
+                Choosing a type is optional but generally the best thing to do. If no type is
+                chosen, the type will automatically be marked as "Custom", the least cool option of
+                all as no autoassignment will happen.
+              </p>
             </UncontrolledTooltip>
-            <Input type="select" name="selectType" id="badgeType" value={type} onChange={handleChange}>
+            <Input
+              type="select"
+              name="selectType"
+              id="badgeType"
+              value={type}
+              onChange={handleChange}
+            >
               <option value={'Custom'}>{'Custom'}</option>
-              {badgeTypes.map((element, i) => (<option key={i}>{element}</option>))}
+              {badgeTypes.map((element, i) => (
+                <option key={i}>{element}</option>
+              ))}
             </Input>
           </FormGroup>
 
-          {showCategory ?
+          {showCategory ? (
             <FormGroup>
               <Label for="category">Category</Label>
               <i className="fa fa-info-circle ml-1" id="CategoryInfo" />
               <UncontrolledTooltip placement="right" target="CategoryInfo" className="badgeTooltip">
-                <p className="badge_info_icon_text">Choosing a category is necessary if type is Total Hrs in Category in order to autoassign the badge. If no category is chosen, the category will automatically be marked as "unspecified", the least cool option of all.</p>
+                <p className="badge_info_icon_text">
+                  Choosing a category is necessary if type is Total Hrs in Category in order to
+                  autoassign the badge. If no category is chosen, the category will automatically be
+                  marked as "unspecified", the least cool option of all.
+                </p>
               </UncontrolledTooltip>
-              <Input type="select" name="selectCategory" id="category" value={category} onChange={handleChange}>
+              <Input
+                type="select"
+                name="selectCategory"
+                id="category"
+                value={category}
+                onChange={handleChange}
+              >
                 <option value={''}>{''}</option>
                 <option>Food</option>
                 <option>Energy</option>
@@ -214,94 +273,180 @@ const EditBadgePopup = (props) => {
                 <option>Unassigned</option>
               </Input>
             </FormGroup>
-            : ""}
+          ) : (
+            ''
+          )}
 
-          {showTotalHrs ?
+          {showTotalHrs ? (
             <FormGroup>
               <Label for="badgeTotalHrs">Hours</Label>
               <i className="fa fa-info-circle ml-1" id="TotalHrsInfo" />
               <UncontrolledTooltip placement="right" target="TotalHrsInfo" className="badgeTooltip">
-                <p className="badge_info_icon_text">Choosing a the amount of Hours necessary for .</p>
+                <p className="badge_info_icon_text">
+                  Choosing a the amount of Hours necessary for .
+                </p>
               </UncontrolledTooltip>
-              <Input type="number" min="1" name="totalHrs" id="badgeTotalHrs" value={totalHrs} onChange={handleChange} placeholder="Please Enter a Number" />
+              <Input
+                type="number"
+                min="1"
+                name="totalHrs"
+                id="badgeTotalHrs"
+                value={totalHrs}
+                onChange={handleChange}
+                placeholder="Please Enter a Number"
+              />
             </FormGroup>
-            : ""}
+          ) : (
+            ''
+          )}
 
-          {showWeeks ?
+          {showWeeks ? (
             <FormGroup>
               <Label for="badgeWeeks">Weeks</Label>
               <i className="fa fa-info-circle ml-1" id="WeeksInfo" />
               <UncontrolledTooltip placement="right" target="WeeksInfo" className="badgeTooltip">
-                <p className="badge_info_icon_text">Choosing a the amount of Weeks necessary for .</p>
+                <p className="badge_info_icon_text">
+                  Choosing a the amount of Weeks necessary for .
+                </p>
               </UncontrolledTooltip>
-              <Input type="number" min="1" name="weeks" id="badgeWeeks" value={weeks} onChange={handleChange} placeholder="Please Enter a Number" />
+              <Input
+                type="number"
+                min="1"
+                name="weeks"
+                id="badgeWeeks"
+                value={weeks}
+                onChange={handleChange}
+                placeholder="Please Enter a Number"
+              />
             </FormGroup>
-            : ""}
+          ) : (
+            ''
+          )}
 
-          {showMonths ?
+          {showMonths ? (
             <FormGroup>
               <Label for="badgeMonths">Months </Label>
               <i className="fa fa-info-circle ml-1" id="MonthsInfo" />
               <UncontrolledTooltip placement="right" target="MonthsInfo" className="badgeTooltip">
-                <p className="badge_info_icon_text">Choosing a the amount of Months necessary for .</p>
+                <p className="badge_info_icon_text">
+                  Choosing a the amount of Months necessary for .
+                </p>
               </UncontrolledTooltip>
-              <Input type="number" min="1" name="months" id="badgeMonths" value={months} onChange={handleChange} placeholder="Please Enter a Number" />
+              <Input
+                type="number"
+                min="1"
+                name="months"
+                id="badgeMonths"
+                value={months}
+                onChange={handleChange}
+                placeholder="Please Enter a Number"
+              />
             </FormGroup>
-            : ""}
+          ) : (
+            ''
+          )}
 
-          {showMultiple ?
+          {showMultiple ? (
             <FormGroup>
               <Label for="badgeMultiple">Multiple </Label>
               <i className="fa fa-info-circle ml-1" id="MultipleInfo" />
               <UncontrolledTooltip placement="right" target="MultipleInfo" className="badgeTooltip">
-                <p className="badge_info_icon_text">Choosing a the amount of Multiple necessary for .</p>
+                <p className="badge_info_icon_text">
+                  Choosing a the amount of Multiple necessary for .
+                </p>
               </UncontrolledTooltip>
-              <Input type="number" min="1" name="multiple" id="badgeMultiple" value={multiple} onChange={handleChange} placeholder="Please Enter a Number" />
+              <Input
+                type="number"
+                min="1"
+                name="multiple"
+                id="badgeMultiple"
+                value={multiple}
+                onChange={handleChange}
+                placeholder="Please Enter a Number"
+              />
             </FormGroup>
-            : ""}
+          ) : (
+            ''
+          )}
 
-          {showPeople ?
+          {showPeople ? (
             <FormGroup>
               <Label for="badgePeople">People</Label>
               <i className="fa fa-info-circle ml-1" id="PeopleInfo" />
               <UncontrolledTooltip placement="right" target="PeopleInfo" className="badgeTooltip">
-                <p className="badge_info_icon_text">Choosing a the amount of People necessary for .</p>
+                <p className="badge_info_icon_text">
+                  Choosing a the amount of People necessary for .
+                </p>
               </UncontrolledTooltip>
-              <Input type="number" min="1" name="people" id="badgePeople" value={people} onChange={handleChange} placeholder="Please Enter a Number" />
+              <Input
+                type="number"
+                min="1"
+                name="people"
+                id="badgePeople"
+                value={people}
+                onChange={handleChange}
+                placeholder="Please Enter a Number"
+              />
             </FormGroup>
-            : ""}
+          ) : (
+            ''
+          )}
 
           <FormGroup>
             <Label for="badgeRanking">Ranking</Label>
             <i className="fa fa-info-circle ml-1" id="RankingInfo" />
             <UncontrolledTooltip placement="right" target="RankingInfo" className="badgeTooltip">
-              <p className="badge_info_icon_text">Ranking number MUST be non-negative and whole number. Seriously, how could anything be ranked -1.1? Also, the default value is "0", which would be the lowest rank, 1 though is the highest rank. Confused yet?</p>
-              <p className="badge_info_icon_text">Good news is, everything else is really simple! The lower the number (other than zero) the higher the badge ranking and the higher a badge will show up on a person's dashboard. Want to see a badge at the top of someone's list, make it #1!</p>
-              <p className="badge_info_icon_text">All badges of the same number in ranking sort alphabetically by their names.</p>
+              <p className="badge_info_icon_text">
+                Ranking number MUST be non-negative and whole number. Seriously, how could anything
+                be ranked -1.1? Also, the default value is "0", which would be the lowest rank, 1
+                though is the highest rank. Confused yet?
+              </p>
+              <p className="badge_info_icon_text">
+                Good news is, everything else is really simple! The lower the number (other than
+                zero) the higher the badge ranking and the higher a badge will show up on a person's
+                dashboard. Want to see a badge at the top of someone's list, make it #1!
+              </p>
+              <p className="badge_info_icon_text">
+                All badges of the same number in ranking sort alphabetically by their names.
+              </p>
             </UncontrolledTooltip>
-            <Input type="number" min={0} valid={validRanking(ranking)} invalid={!validRanking(ranking)} name="ranking" id="badgeRanking" value={ranking} onChange={handleChange} placeholder="Please Enter a Number" />
+            <Input
+              type="number"
+              min={0}
+              valid={validRanking(ranking)}
+              invalid={!validRanking(ranking)}
+              name="ranking"
+              id="badgeRanking"
+              value={ranking}
+              onChange={handleChange}
+              placeholder="Please Enter a Number"
+            />
           </FormGroup>
-        </Form >
+        </Form>
       </ModalBody>
       <ModalFooter>
-        <Button color="info" onClick={handleSubmit} disabled={enableButton}>Update</Button>{' '}
-        <Button color="primary" onClick={closePopup}>Cancel</Button>
+        <Button color="info" onClick={handleSubmit} disabled={enableButton}>
+          Update
+        </Button>{' '}
+        <Button color="primary" onClick={closePopup}>
+          Cancel
+        </Button>
       </ModalFooter>
     </Modal>
   );
 };
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state) => ({
   allProjects: state.allProjects.projects,
   message: state.badge.message,
   alertVisible: state.badge.alertVisible,
-  color: state.badge.color
+  color: state.badge.color,
 });
 
-const mapDispatchToProps = dispatch => ({
+const mapDispatchToProps = (dispatch) => ({
   fetchAllProjects: () => dispatch(fetchAllProjects()),
   updateBadge: (badgeId, badgeData) => dispatch(updateBadge(badgeId, badgeData)),
-  closeAlert: () => dispatch(closeAlert())
+  closeAlert: () => dispatch(closeAlert()),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(EditBadgePopup);

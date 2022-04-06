@@ -1,10 +1,17 @@
-import React from "react";
-import { shallow, mount } from "enzyme";
-import { Projects } from "./Projects";
+import React from 'react';
+import { shallow, mount } from 'enzyme';
+import { Projects } from './Projects';
 import { createMemoryHistory } from 'history';
-import {PROJECTS, ACTIVE_PROJECTS, PROJECT_NAME, ACTIVE, MEMBERS, WBS} from './../../languages/en/ui'
+import {
+  PROJECTS,
+  ACTIVE_PROJECTS,
+  PROJECT_NAME,
+  ACTIVE,
+  MEMBERS,
+  WBS,
+} from './../../languages/en/ui';
 
-import { Router } from 'react-router-dom'
+import { Router } from 'react-router-dom';
 
 describe('Projects page structure', () => {
   // let mountedProjects, props;
@@ -54,7 +61,6 @@ describe('Projects page structure', () => {
     // expect(h4.length).toEqual(2);
     // expect(h4.first().text()).toContain(`4`);
     // expect(h4.at(1).text()).toContain(`3`);
-
     // const h6 = mountedProjects.find('h6');
     // expect(h6.length).toEqual(2);
     // expect(h6.first().text()).toContain(` ${PROJECTS}`);
@@ -81,7 +87,6 @@ describe('Projects page structure', () => {
     //TEST IS FAILING NEED TO FIX
     // const links = mountedProjects.find('a');
     // expect(links.length).toEqual(8);
-    
     // let projects = props.state.allProjects.projects;
     // for (let i = 0; i<projects.length; i++) {
     //     expect(links.at(2 * i).prop('href')).toContain(`members/${projects[i]._id}`);
@@ -99,6 +104,5 @@ describe('Projects page structure', () => {
     // expect(th.at(2).text()).toContain(ACTIVE);
     // expect(th.at(3).text()).toContain(MEMBERS);
     // expect(th.at(4).text()).toContain(WBS);
-    
   });
 });

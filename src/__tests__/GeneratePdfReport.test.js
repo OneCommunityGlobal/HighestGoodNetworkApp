@@ -11,7 +11,9 @@ const getWeekDates = () => ({
 
 describe('FormattedReport Component', () => {
   it('Snapshot with mocked data', () => {
-    const { asFragment } = render(<GeneratePdfReport summaries={mockSummaries} weekIndex="1" weekDates={getWeekDates()} />);
+    const { asFragment } = render(
+      <GeneratePdfReport summaries={mockSummaries} weekIndex="1" weekDates={getWeekDates()} />,
+    );
 
     expect(asFragment()).toMatchSnapshot();
   });

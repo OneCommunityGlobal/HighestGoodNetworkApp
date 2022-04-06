@@ -1,39 +1,38 @@
-import { combineReducers } from 'redux'
-import { userProfileByIdReducer,userTaskByIdReducer } from './userProfileByIdReducer'
-import { authReducer } from './authReducer'
+import { combineReducers } from 'redux';
+import { userProfileByIdReducer, userTaskByIdReducer } from './userProfileByIdReducer';
+import { authReducer } from './authReducer';
 // import { handleSuccessReducer } from './handleSuccessReducer'
-import { allUserProfilesReducer } from './allUserProfilesReducer'
+import { allUserProfilesReducer } from './allUserProfilesReducer';
 // import { userTeamMembersReducer } from './userTeamMembersReducer'
 // import { userProjectMembersReducer } from './userProjectMembersReducer'
 // import { dashboardDataReducer } from './dashboardDataReducer'
 // import { weeklyDashboardDataReducer } from './weeklyDashboardDataReducer'
 // import { monthlyDashboardDataReducer } from './monthlyDashboardDataReducer'
-import { leaderboardDataReducer, orgDataReducer } from './leaderboardDataReducer'
-import { weeklySummariesReducer } from './weeklySummariesReducer'
-import { weeklySummariesReportReducer } from './weeklySummariesReportReducer'
+import { leaderboardDataReducer, orgDataReducer } from './leaderboardDataReducer';
+import { weeklySummariesReducer } from './weeklySummariesReducer';
+import { weeklySummariesReportReducer } from './weeklySummariesReportReducer';
 // import { actionItemsReducer } from './actionItemsReducer'
 // import { notificationsReducer } from './notificationsReducer'
-import { allProjectsReducer } from './allProjectsReducer'
-import { projectByIdReducer } from './projectByIdReducer'
-import { userProjectsReducer } from './userProjectsReducer'
-import { projectMembershipReducer } from './projectMembershipReducer'
-import { allTeamsReducer, allUserTeamsReducer } from './allTeamsReducer'
-import { teamByIdReducer } from './teamByIdReducer'
+import { allProjectsReducer } from './allProjectsReducer';
+import { projectByIdReducer } from './projectByIdReducer';
+import { userProjectsReducer } from './userProjectsReducer';
+import { projectMembershipReducer } from './projectMembershipReducer';
+import { allTeamsReducer, allUserTeamsReducer } from './allTeamsReducer';
+import { teamByIdReducer } from './teamByIdReducer';
 // import { teamMembershipReducer } from './teamMembershipReducer'
 // import { timeEntriesForSpecifiedProjectReducer } from './timeEntriesForSpecifiedProjectReducer'
 // import { allTimeEntriesReducer } from './allTimeEntriesReducer'
 // import { timeEntriesForSpecifiedPeriodReducer } from './timeEntriesForSpecifiedPeriodReducer'
-import { errorsReducer } from './errorsReducer'
-import { timeEntriesReducer } from './timeEntriesReducer'
-import { wbsReducer } from './wbsReducer'
-import { taskReducer } from './allTasksReducer'
-import { timerReducer } from './timerReducer'
-import { managingTeamsReducer } from './managingTeamsReducer'
-import { teamUsersReducer } from './teamsTeamMembersReducer'
-import { badgeReducer } from './badgeReducer'
-import { popupEditorReducer } from './popupEditorReducer'
-import { timeZoneAPIReducer } from './timezoneApiReducer'
-
+import { errorsReducer } from './errorsReducer';
+import { timeEntriesReducer } from './timeEntriesReducer';
+import { wbsReducer } from './wbsReducer';
+import { taskReducer } from './allTasksReducer';
+import { timerReducer } from './timerReducer';
+import { managingTeamsReducer } from './managingTeamsReducer';
+import { teamUsersReducer } from './teamsTeamMembersReducer';
+import { badgeReducer } from './badgeReducer';
+import { popupEditorReducer } from './popupEditorReducer';
+import { timeZoneAPIReducer } from './timezoneApiReducer';
 
 export default combineReducers({
   auth: authReducer,
@@ -73,4 +72,4 @@ export default combineReducers({
   badge: badgeReducer,
   popupEditor: popupEditorReducer,
   timeZoneAPI: timeZoneAPIReducer,
-})
+});

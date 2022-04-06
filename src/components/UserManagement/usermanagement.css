@@ -1,95 +1,95 @@
-thead{
+thead {
   background: aliceblue;
 }
 
-#new_usermanagement{
+#new_usermanagement {
   margin-bottom: 10px;
 }
 
-#usermanagement_order{
+#usermanagement_order {
   width: 5px;
 }
 
-#usermanagement_active{
+#usermanagement_active {
   width: 10px;
 }
 
-#usermanagement__delete{
+#usermanagement__delete {
   width: 20px;
 }
 
 #usermanagement_resume_date {
   min-width: 125px;
 }
-.usermanagement__tr{
+.usermanagement__tr {
   text-align: center;
 }
 
-.usermanagement_overview--top{
+.usermanagement_overview--top {
   background: gray;
 }
 
-.usermanagement_overview--top .card{
+.usermanagement_overview--top .card {
   width: 200px;
   float: left;
   margin-right: 10px;
   margin-bottom: 10px;
 }
 
-#card_project{
-  background:#1D62F0;
-  color: white
+#card_project {
+  background: #1d62f0;
+  color: white;
 }
 
-#card_active{
+#card_active {
   background: #fbad4c;
-  color: white
+  color: white;
 }
 
-.usermanagement__order--input div{
+.usermanagement__order--input div {
   margin-top: 7px;
 }
 
-.usermanagement__active--input i{
+.usermanagement__active--input i {
   margin-top: 10px;
   cursor: pointer;
 }
 
-.usermanagement__name--input input{
+.usermanagement__name--input input {
   border: 1px solid white;
 }
 
-.usermanagement__name--input input:hover{
+.usermanagement__name--input input:hover {
   border: 1px solid #dee2e6;
 }
 
-.isActive i{
+.isActive i {
   color: lawngreen;
 }
 
-.isNotActive{
-  color:#dee2e6
+.isNotActive {
+  color: #dee2e6;
 }
 
-.isDisabled{
+.isDisabled {
   opacity: 0;
   transition: opacity 10ms;
-  display:none;
+  display: none;
 }
 
 .page-no-link {
-    margin-left: 10px;
-    text-align: center;
-    margin-top: 7px;
+  margin-left: 10px;
+  text-align: center;
+  margin-top: 7px;
 }
 
 .usermanagement-actions-cell {
-    display: table-cell;
-    padding-left: 10px;
+  display: table-cell;
+  padding-left: 10px;
 }
 
-tr:hover{
-  background: #e9f6ff
+tr:hover {
+  background: #e9f6ff;
 }
 
 .link-button {
@@ -100,15 +100,15 @@ tr:hover{
   display: inline;
   margin: 0;
   padding: 5px;
-  color: #1D62F0;
+  color: #1d62f0;
 }
 
 .link-button:hover,
 .link-button:focus {
-text-decoration: none;
+  text-decoration: none;
 }
 
 .add-user-modal {
-  min-width: 50vw;    /* Occupy the 90% of the screen width */
+  min-width: 50vw; /* Occupy the 90% of the screen width */
   max-width: 90vw !important;
-} 
+}

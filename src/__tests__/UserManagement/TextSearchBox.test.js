@@ -8,10 +8,7 @@ describe('text search box', () => {
   const id = 'test_search';
   beforeEach(() => {
     searchCallback = jest.fn();
-    render(<TextSearchBox
-      id={id}
-      searchCallback={searchCallback}
-    />);
+    render(<TextSearchBox id={id} searchCallback={searchCallback} />);
   });
   it('should render a textbox', () => {
     expect(screen.getByRole('textbox')).toBeInTheDocument();

@@ -1,6 +1,6 @@
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
-import { getUserProfile } from '../actions/userProfile'
+import { getUserProfile } from '../actions/userProfile';
 import configureStore from '../store';
 import { ENDPOINTS } from '../utils/URL';
 
@@ -10,33 +10,29 @@ const url = ENDPOINTS.USER_PROFILE(':userId');
 const userProfileMockData = {
   privacySettings: { email: true, phoneNumber: true, blueSquares: true },
   isActive: true,
-  phoneNumber: [""],
-  jobTitle: [""],
-  weeklyComittedHours:0,
+  phoneNumber: [''],
+  jobTitle: [''],
+  weeklyComittedHours: 0,
   teams: [],
-  projects: [{_id:'1', projectName:'name'}],
+  projects: [{ _id: '1', projectName: 'name' }],
   _id: '1234',
   role: 'Administrator',
   firstName: 'John',
   lastName: 'Doe',
   email: '',
-  infringments: [{ _id:'1', date:'2020-01-01', description: 'a'}],
-  adminLinks: [{Name: 'admin', Link:'https://www.google.com/'}],
-  personalLinks: [{Name: 'personal', Link:'https://www.google.com/'}],
-  profilePic: ''
-}
+  infringments: [{ _id: '1', date: '2020-01-01', description: 'a' }],
+  adminLinks: [{ Name: 'admin', Link: 'https://www.google.com/' }],
+  personalLinks: [{ Name: 'personal', Link: 'https://www.google.com/' }],
+  profilePic: '',
+};
 
 const server = setupServer(
-  rest.get(url, (req, res, ctx) => res (
-    ctx.json(userProfileMockData),
-    ctx.status(200),
-  )),
+  rest.get(url, (req, res, ctx) => res(ctx.json(userProfileMockData), ctx.status(200))),
   rest.get('*', (req, res, ctx) => {
-    console.error(`Please add request handler for ${req.url.toString()} in your MSW server requests.`);
-    return res(
-      ctx.status(500),
-      ctx.json({ error: 'You must add request handler.' }),
+    console.error(
+      `Please add request handler for ${req.url.toString()} in your MSW server requests.`,
     );
+    return res(ctx.status(500), ctx.json({ error: 'You must add request handler.' }));
   }),
 );
 
@@ -48,12 +44,11 @@ const userProfileSlice = () => store.getState().userProfile;
 
 describe('UserProfile Redux related actions', () => {
   describe('Fetching user profile from server', () => {
-
     it('should fetch privacySettings from the userProfile and put it in the store', async () => {
-    await store.dispatch(getUserProfile('1234'));
-    expect(userProfileSlice().privacySettings).toHaveProperty('email', true);
-    expect(userProfileSlice().privacySettings).toHaveProperty('phoneNumber', true);
-    expect(userProfileSlice().privacySettings).toHaveProperty('blueSquares', true);
+      await store.dispatch(getUserProfile('1234'));
+      expect(userProfileSlice().privacySettings).toHaveProperty('email', true);
+      expect(userProfileSlice().privacySettings).toHaveProperty('phoneNumber', true);
+      expect(userProfileSlice().privacySettings).toHaveProperty('blueSquares', true);
     });
 
     it('should fetch general info : _id, role, phoneNumber, jobTitle, email, firstName, lastName, weeklyCommitedHours, teams and profilePic from the userProfile, and put it in the store', async () => {
@@ -65,34 +60,37 @@ describe('UserProfile Redux related actions', () => {
       expect(userProfileSlice()).toHaveProperty('email', '');
       expect(userProfileSlice()).toHaveProperty('firstName', 'John');
       expect(userProfileSlice()).toHaveProperty('lastName', 'Doe');
-      expect(userProfileSlice()).toHaveProperty('weeklyComittedHours',0);
+      expect(userProfileSlice()).toHaveProperty('weeklyComittedHours', 0);
       expect(userProfileSlice()).toHaveProperty('teams', []);
       expect(userProfileSlice()).toHaveProperty('profilePic', '');
-
     });
-    
+
     it('should fetch infringments, and put it in the store', async () => {
       await store.dispatch(getUserProfile('1234'));
-      expect(userProfileSlice().infringments).toHaveProperty([0], { _id:'1', date:'2020-01-01', description: 'a'})
+      expect(userProfileSlice().infringments).toHaveProperty([0], {
+        _id: '1',
+        date: '2020-01-01',
+        description: 'a',
+      });
     });
 
     it('should fetch admin links, and put it in the store', async () => {
       await store.dispatch(getUserProfile('1234'));
-      expect(userProfileSlice().adminLinks).toHaveProperty([0], {Name: 'admin', Link:'https://www.google.com/'})
+      expect(userProfileSlice().adminLinks).toHaveProperty([0], {
+        Name: 'admin',
+        Link: 'https://www.google.com/',
+      });
     });
 
     it('should fetch personal links, and put it in the store', async () => {
       await store.dispatch(getUserProfile('1234'));
-      expect(userProfileSlice().personalLinks).toHaveProperty([0], {Name: 'personal', Link:'https://www.google.com/'})
+      expect(userProfileSlice().personalLinks).toHaveProperty([0], {
+        Name: 'personal',
+        Link: 'https://www.google.com/',
+      });
     });
-    
-  })
-
+  });
 });
-
-
-
-
 
 // describe('WeeklySummary Redux related actions', () => {
 //   describe('Fetching the weekly summaries from the server', () => {

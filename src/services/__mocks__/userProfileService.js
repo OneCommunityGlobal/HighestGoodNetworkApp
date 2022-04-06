@@ -1,11 +1,10 @@
 let getUserProfile_result;
 const getUserProfileOptions = {
   userProfile: {
-        	name: 'Foobar',
+    name: 'Foobar',
     profilePic: undefined,
     userId: '5be0952c633dae0016081b4b',
   },
-
 };
 
 getUserProfile.__setValue = (option) => {

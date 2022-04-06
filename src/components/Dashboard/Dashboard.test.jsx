@@ -2,7 +2,7 @@ import { render } from '@testing-library/react';
 import React from 'react';
 import reducers from './../../reducers';
 import { createMemoryHistory } from 'history';
-import '@testing-library/jest-dom/extend-expect'
+import '@testing-library/jest-dom/extend-expect';
 
 // import { renderWithProvider, renderWithRouterMatch } from './../../__tests__/utils.js'
 // import '@testing-library/jest-dom/extend-expect'
@@ -14,17 +14,13 @@ import '@testing-library/jest-dom/extend-expect'
 
 //mock the child components to test that they are indeed there
 
-jest.mock('../LeaderBoard', () => () => 
-            <div data-testid="leaderboard">
-            </div>
-    );
+jest.mock('../LeaderBoard', () => () => <div data-testid="leaderboard"></div>);
 
-jest.mock('../WeeklySummary/WeeklySummaryModal', () => () => 
-            <div data-testid="weeklysummary">
-            </div>
-    );
+jest.mock('../WeeklySummary/WeeklySummaryModal', () => () => (
+  <div data-testid="weeklysummary"></div>
+));
 
-// jest.mock('../MonthlyEffort', () => () => 
+// jest.mock('../MonthlyEffort', () => () =>
 //             <div data-testid="monthlyeffort">
 //             </div>
 //     );
@@ -36,7 +32,7 @@ import { Dashboard } from './Dashboard.jsx';
 //     let dashBoardMountedPage
 //    beforeEach(() => {
 //     dashBoardMountedPage = render(<Dashboard />);
-//     }); 
+//     });
 
 //   it('should render a leaderboard', async () => {
 //     const leaderboard = await dashBoardMountedPage.queryByTestId('leaderboard');
@@ -48,11 +44,9 @@ import { Dashboard } from './Dashboard.jsx';
 //     expect(weeklySummary).toBeTruthy();
 //   });
 
-  // it('should render a monthly effort', async () => {
-  //   const monthlyEffort = await dashBoardMountedPage.queryByTestId('monthlyeffort');
-  //   expect(monthlyEffort).toBeTruthy();
-  // });
-
-
+// it('should render a monthly effort', async () => {
+//   const monthlyEffort = await dashBoardMountedPage.queryByTestId('monthlyeffort');
+//   expect(monthlyEffort).toBeTruthy();
+// });
 
 // });

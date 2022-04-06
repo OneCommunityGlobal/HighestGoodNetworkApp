@@ -7,14 +7,14 @@
   margin: 5px;
   background: dodgerblue;
   transition: all 0.5s ease;
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    appearance: none;
-    -webkit-tap-highlight-color: transparent;
-    cursor: pointer;
-    &:focus {
-      outline: 0;
-    }
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  -webkit-tap-highlight-color: transparent;
+  cursor: pointer;
+  &:focus {
+    outline: 0;
+  }
   &:after {
     content: '';
     position: absolute;

@@ -1,1 +1,1 @@
-export { default } from "./ManageMemberships";
+export { default } from './ManageMemberships';

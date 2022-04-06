@@ -2,13 +2,17 @@ import React from 'react';
 import { screen, render, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import configureStore from 'redux-mock-store';
-import {renderWithProvider} from "../utils";
-import thunk from "redux-thunk";
+import { renderWithProvider } from '../utils';
+import thunk from 'redux-thunk';
 
 import NewUserPopup from '../../components/UserManagement/NewUserPopup';
 
 jest.mock('../../components/UserProfile/AddNewUserProfile', () => {
-  const userprofile = () => <div><h4>User Profile</h4></div>;
+  const userprofile = () => (
+    <div>
+      <h4>User Profile</h4>
+    </div>
+  );
   return userprofile;
 });
 const mockStore = configureStore([thunk]);
@@ -18,10 +22,7 @@ describe('new user popup', () => {
   let store;
   beforeEach(() => {
     store = mockStore();
-    renderWithProvider(<NewUserPopup
-      open
-      onUserPopupClose={onUserPopupClose}
-    />,{store});
+    renderWithProvider(<NewUserPopup open onUserPopupClose={onUserPopupClose} />, { store });
   });
   describe('Structure', () => {
     it('should render the modal', () => {

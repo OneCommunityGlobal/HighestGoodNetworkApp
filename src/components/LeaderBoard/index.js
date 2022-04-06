@@ -1,2 +1,2 @@
-import Leaderboard from './LeaderBoard.container'
-export default Leaderboard
+import Leaderboard from './LeaderBoard.container';
+export default Leaderboard;
