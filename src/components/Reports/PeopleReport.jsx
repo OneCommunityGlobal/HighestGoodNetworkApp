@@ -11,7 +11,7 @@ import { getWeeklySummaries, updateWeeklySummaries } from '../../actions/weeklyS
 import moment from 'moment'
 import "react-input-range/lib/css/index.css"
 import Collapse from 'react-bootstrap/Collapse'
-import * as d3 from 'd3'
+import * as d3 from 'd3/dist/d3.min'
 import { DropdownItem, FormGroup, Label, Input, Form, Modal, ModalHeader, ModalBody, ModalFooter} from 'reactstrap';
 import { getTimeEntriesForPeriod } from '../../actions/timeEntries'
 import InfringmentsViz from './InfringmentsViz'
