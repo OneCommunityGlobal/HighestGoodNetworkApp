@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 
 import {
   Container,
@@ -43,86 +43,64 @@ import ActiveCell from 'components/UserManagement/ActiveCell';
 import { ProfileNavDot } from 'components/UserManagement/ProfileNavDot';
 import Loading from '../common/Loading';
 
-class Timelog extends Component {
-  constructor(props) {
-    super(props);
-    this.toggle = this.toggle.bind(this);
-    this.showSummary = this.showSummary.bind(this);
-    this.changeTab = this.changeTab.bind(this);
-    this.handleInputChange = this.handleInputChange.bind(this);
-    this.handleSearch = this.handleSearch.bind(this);
-    this.openInfo = this.openInfo.bind(this);
-    this.data = {
-      disabled: this.props.auth.isAdmin ? false : true,
-      isTangible: this.props.auth.isAdmin ? true : false,
-    };
-    this.userProfile = this.props.userProfile;
-  }
+const startOfWeek = (offset) => {
+  return moment()
+    .tz('America/Los_Angeles')
+    .startOf('week')
+    .subtract(offset, 'weeks')
+    .format('YYYY-MM-DD');
+};
 
-  initialState = {
-    modal: false,
-    summary: false,
-    activeTab: 0,
-    projectsSelected: ['all'],
-    fromDate: this.startOfWeek(0),
-    toDate: this.endOfWeek(0),
-    in: false,
-    information: '',
-    isTimeEntriesLoading: true,
+const endOfWeek = (offset) => {
+  return moment()
+    .tz('America/Los_Angeles')
+    .endOf('week')
+    .subtract(offset, 'weeks')
+    .format('YYYY-MM-DD');
+};
+
+const Timelog = (props) => {
+  const data = {
+    disabled: props.auth.isAdmin ? false : true,
+    isTangible: props.auth.isAdmin ? true : false,
+  };
+  let userProfile = props.userProfile;
+
+  const [modal, setModal] = useState(false);
+  const [summary, setSummary] = useState(false);
+  const [activeTab, setActiveTab] = useState(0);
+  const [projectsSelected, setProjectsSelected] = useState(['all']);
+  const [fromDate, setFromDate] = useState(startOfWeek(0));
+  const [toDate, setToDate] = useState(endOfWeek(0));
+  const [inThere, setInThere] = useState(false);
+  const [information, setInformation] = useState('');
+  const [isTimeEntriesLoading, setIsTimeEntriesLoading] = useState(true);
+
+  // const prevProps = usePrevious(props);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const userId = props?.match?.params?.userId || props.auth.user.userid;
+      await props.getUserProfile(userId);
+      userProfile = props.userProfile;
+      await props.getTimeEntriesForWeek(userId, 0);
+      await props.getTimeEntriesForWeek(userId, 1);
+      await props.getTimeEntriesForWeek(userId, 2);
+      await props.getTimeEntriesForPeriod(userId, fromDate, toDate);
+      await props.getUserProjects(userId);
+      setIsTimeEntriesLoading(false);
+    };
+
+    fetchData();
+  }, []);
+
+  const toggle = () => {
+    setModal(!modal);
   };
 
-  state = this.initialState;
-
-  async componentDidMount() {
-    const userId = this.props?.match?.params?.userId || this.props.auth.user.userid;
-    await this.props.getUserProfile(userId);
-    this.userProfile = this.props.userProfile;
-    await this.props.getTimeEntriesForWeek(userId, 0);
-    await this.props.getTimeEntriesForWeek(userId, 1);
-    await this.props.getTimeEntriesForWeek(userId, 2);
-    await this.props.getTimeEntriesForPeriod(userId, this.state.fromDate, this.state.toDate);
-    await this.props.getUserProjects(userId);
-    this.setState({ isTimeEntriesLoading: false });
-  }
-
-  async componentDidUpdate(prevProps) {
-    //Don't run function on first render
-    if (!this.props.match) return;
-
-    if (
-      prevProps.match?.params?.userId !== this.props.match.params.userId ||
-      prevProps.asUser !== this.props.asUser
-    ) {
-      this.setState(this.initialState);
-
-      const userId =
-        this.props.match?.params?.userId || this.props.asUser || this.props.auth.user.userid;
-
-      await this.props.getUserProfile(userId);
-
-      this.userProfile = this.props.userProfile;
-
-      await Promise.all([
-        this.props.getTimeEntriesForWeek(userId, 0),
-        this.props.getTimeEntriesForWeek(userId, 1),
-        this.props.getTimeEntriesForWeek(userId, 2),
-        this.props.getTimeEntriesForPeriod(userId, this.state.fromDate, this.state.toDate),
-        this.props.getUserProjects(userId),
-      ]);
-    }
-  }
-
-  toggle() {
-    this.setState({
-      modal: !this.state.modal,
-    });
-  }
-
-  showSummary(isOwner) {
+  const showSummary = (isOwner) => {
     if (isOwner) {
-      this.setState({
-        summary: !this.state.summary,
-      });
+      setSummary(!summary);
       setTimeout(() => {
         let elem = document.getElementById('weeklySum');
         if (elem) {
@@ -130,9 +108,9 @@ class Timelog extends Component {
         }
       }, 150);
     }
-  }
+  };
 
-  openInfo() {
+  const openInfo = () => {
     const str = `This is the One Community time log! It is used to show a record of all the time you have volunteered with One Community, what you’ve done for each work session, etc.
 
     * “Add Time Entry” Button: Clicking this button will only allow you to add “Intangible” time. This is for time not related to your tasks OR for time you need a manager to change to “Tangible” for you because you were working away from your computer or made a mistake and are trying to manually log time. Intangible time will not be counted towards your committed time for the week or your tasks. “Intangible” time changed by a manager to “Tangible” time WILL be counted towards your committed time for the week and whatever task it is logged towards. For Blue Square purposes, changing Intangible Time to Tangible Time for any reason other than work away from your computer will count and be recorded in the system the same as a time edit.
@@ -142,392 +120,360 @@ class Timelog extends Component {
     * Tangible Time: By default, the “Tangible” box is clicked. Tangible time is any time spent working on your Projects/Tasks and counts towards your committed time for the week and also the time allocated for your task.
     * Intangible Time: Clicking the Tangible box OFF will mean you are logging “Intangible Time.” This is for time not related to your tasks OR for time you need a manager to change to “Tangible” for you because you were working away from your computer or made a mistake and are trying to manually log time. Intangible time will not be counted towards your committed time for the week or your tasks. “Intangible” time changed by a manager to “Tangible” time WILL be counted towards your committed time for the week and whatever task it is logged towards. For Blue Square purposes, changing Intangible Time to Tangible Time for any reason other than work away from your computer will count and be recorded in the system the same as a time edit. `;
 
-    this.setState({
-      in: !this.state.in,
-      information: str.split('\n').map((item, i) => <p key={i}>{item}</p>),
-    });
-  }
+    setInThere(!inThere);
+    setInformation(str.split('\n').map((item, i) => <p key={i}>{item}</p>));
+  };
 
-  changeTab(tab) {
-    this.setState({
-      activeTab: tab,
-    });
-  }
+  const changeTab = (tab) => {
+    setActiveTab(tab);
+  };
 
-  handleInputChange(e) {
-    this.setState({ [e.target.name]: e.target.value });
-  }
+  const handleInputChange = (e) => {
+    const [targetName, setTargetName] = useState(e.target.value);
+    // this.setState({ [e.target.name]: e.target.value });
+  };
 
-  handleSearch(e) {
+  const handleSearch = (e) => {
     e.preventDefault();
     const userId =
-      this.props.match && this.props.match.params.userId
-        ? this.props.match.params.userId
-        : this.props.asUser || this.props.auth.user.userid;
-    this.props.getTimeEntriesForPeriod(userId, this.state.fromDate, this.state.toDate);
-  }
+      props.match && props.match.params.userId
+        ? props.match.params.userId
+        : props.asUser || props.auth.user.userid;
+    props.getTimeEntriesForPeriod(userId, fromDate, toDate);
+  };
 
-  startOfWeek(offset) {
-    return moment()
-      .tz('America/Los_Angeles')
-      .startOf('week')
-      .subtract(offset, 'weeks')
-      .format('YYYY-MM-DD');
-  }
-
-  endOfWeek(offset) {
-    return moment()
-      .tz('America/Los_Angeles')
-      .endOf('week')
-      .subtract(offset, 'weeks')
-      .format('YYYY-MM-DD');
-  }
-
-  generateTimeEntries(data) {
+  const generateTimeEntries = (data) => {
     let filteredData = data;
-    if (!this.state.projectsSelected.includes('all')) {
-      filteredData = data.filter((entry) => this.state.projectsSelected.includes(entry.projectId));
+    if (!projectsSelected.includes('all')) {
+      filteredData = data.filter(entry => projectsSelected.includes(entry.projectId));
     }
 
-    return filteredData.map((entry) => (
-      <TimeEntry data={entry} displayYear={false} key={entry._id} userProfile={this.userProfile} />
+    return filteredData.map(entry => (
+      <TimeEntry data={entry} displayYear={false} key={entry._id} userProfile={userProfile} />
     ));
+  };
+
+  const currentWeekEntries = generateTimeEntries(props.timeEntries.weeks[0]);
+  const lastWeekEntries = generateTimeEntries(props.timeEntries.weeks[1]);
+  const beforeLastEntries = generateTimeEntries(props.timeEntries.weeks[2]);
+  const periodEntries = generateTimeEntries(props.timeEntries.period);
+  const userId =
+    props.match && props.match.params.userId
+      ? props.match.params.userId
+      : props.asUser || props.auth.user.userid;
+  const isAdmin = props.auth.user.role === 'Administrator';
+  const isOwner = props.auth.user.userid === userId;
+  const fullName = `${props.userProfile.firstName} ${props.userProfile.lastName}`;
+
+  let projects = [];
+  if (!_.isEmpty(props.userProjects.projects)) {
+    projects = props.userProjects.projects;
   }
+  const projectOptions = projects.map(project => (
+    <option value={project.projectId} key={project.projectId}>
+      {' '}
+      {project.projectName}{' '}
+    </option>
+  ));
+  projectOptions.unshift(
+    <option value="all" key="all">
+      All Projects (Default)
+    </option>,
+  );
 
-  render() {
-    const currentWeekEntries = this.generateTimeEntries(this.props.timeEntries.weeks[0]);
-    const lastWeekEntries = this.generateTimeEntries(this.props.timeEntries.weeks[1]);
-    const beforeLastEntries = this.generateTimeEntries(this.props.timeEntries.weeks[2]);
-    const periodEntries = this.generateTimeEntries(this.props.timeEntries.period);
-    const userId =
-      this.props.match && this.props.match.params.userId
-        ? this.props.match.params.userId
-        : this.props.asUser || this.props.auth.user.userid;
-    const isAdmin = this.props.auth.user.role === 'Administrator';
-    const isOwner = this.props.auth.user.userid === userId;
-    const fullName = `${this.props.userProfile.firstName} ${this.props.userProfile.lastName}`;
-
-    let projects = [];
-    if (!_.isEmpty(this.props.userProjects.projects)) {
-      projects = this.props.userProjects.projects;
-    }
-    const projectOptions = projects.map((project) => (
-      <option value={project.projectId} key={project.projectId}>
-        {' '}
-        {project.projectName}{' '}
-      </option>
-    ));
-    projectOptions.unshift(
-      <option value="all" key="all">
-        All Projects (Default)
-      </option>,
-    );
-
-    return (
-      <div>
-        {!this.props.isDashboard ? (
-          <Container fluid>
-            <SummaryBar toggleSubmitForm={() => this.showSummary(isOwner)} />
-          </Container>
-        ) : (
-          ''
-        )}
-        {this.state.isTimeEntriesLoading ? (
-          <Loading />
-        ) : (
-          <Container>
-            {this.state.summary ? (
-              <div className="my-2">
-                <div id="weeklySum">
-                  <WeeklySummary asUser={userId} />
-                </div>
+  return (
+    <div>
+      {!props.isDashboard ? (
+        <Container fluid>
+          <SummaryBar toggleSubmitForm={() => showSummary(isOwner)} />
+        </Container>
+      ) : (
+        ''
+      )}
+      {isTimeEntriesLoading ? (
+        <Loading />
+      ) : (
+        <Container>
+          {summary ? (
+            <div className="my-2">
+              <div id="weeklySum">
+                <WeeklySummary asUser={userId} />
               </div>
-            ) : null}
-            <Row>
-              <Col md={12}>
-                <Card>
-                  <CardHeader>
-                    <Row>
-                      <Col md={11}>
-                        <CardTitle tag="h4">
-                          Time Entries &nbsp;
-                          <i
-                            className="fa fa-info-circle"
-                            data-tip
-                            data-for="registerTip"
-                            aria-hidden="true"
-                            onClick={this.openInfo}
-                          />
-                          <ActiveCell
-                            isActive={this.props.userProfile.isActive}
-                            user={this.props.userProfile}
-                            onClick={() => {
-                              const userId =
-                                this.props.match?.params?.userId ||
-                                this.props.asUser ||
-                                this.props.auth.user.userid;
-                              this.props.updateUserProfile(userId, {
-                                ...this.props.userProfile,
-                                isActive: !this.props.userProfile.isActive,
-                                endDate:
-                                  !this.props.userProfile.isActive === false
-                                    ? moment(new Date()).format('YYYY-MM-DD')
-                                    : undefined,
-                              });
-                            }}
-                          />
-                          <ProfileNavDot
-                            userId={
-                              this.props.match?.params?.userId ||
-                              this.props.asUser ||
-                              this.props.auth.user.userid
-                            }
-                          />
-                        </CardTitle>
-                        <CardSubtitle tag="h6" className="text-muted">
-                          Viewing time entries logged in the last 3 weeks
-                        </CardSubtitle>
-                      </Col>
-                      <Col md={11}>
-                        {isOwner ? (
+            </div>
+          ) : null}
+          <Row>
+            <Col md={12}>
+              <Card>
+                <CardHeader>
+                  <Row>
+                    <Col md={11}>
+                      <CardTitle tag="h4">
+                        Time Entries &nbsp;
+                        <i
+                          className="fa fa-info-circle"
+                          data-tip
+                          data-for="registerTip"
+                          aria-hidden="true"
+                          onClick={openInfo}
+                        />
+                        <ActiveCell
+                          isActive={props.userProfile.isActive}
+                          user={props.userProfile}
+                          onClick={() => {
+                            const userId =
+                              props.match?.params?.userId || props.asUser || props.auth.user.userid;
+                            props.updateUserProfile(userId, {
+                              ...props.userProfile,
+                              isActive: !props.userProfile.isActive,
+                              endDate:
+                                !props.userProfile.isActive === false
+                                  ? moment(new Date()).format('YYYY-MM-DD')
+                                  : undefined,
+                            });
+                          }}
+                        />
+                        <ProfileNavDot
+                          userId={
+                            props.match?.params?.userId || props.asUser || props.auth.user.userid
+                          }
+                        />
+                      </CardTitle>
+                      <CardSubtitle tag="h6" className="text-muted">
+                        Viewing time entries logged in the last 3 weeks
+                      </CardSubtitle>
+                    </Col>
+                    <Col md={11}>
+                      {isOwner ? (
+                        <div className="float-right">
+                          <div>
+                            <Button color="success" onClick={toggle}>
+                              {'Add Intangible Time Entry '}
+                              <i
+                                className="fa fa-info-circle"
+                                data-tip
+                                data-for="timeEntryTip"
+                                data-delay-hide="1000"
+                                aria-hidden="true"
+                                title=""
+                              />
+                            </Button>
+                            <ReactTooltip id="timeEntryTip" place="bottom" effect="solid">
+                              Clicking this button only allows for “Intangible Time” to be added to
+                              your time log.{' '}
+                              <u>
+                                You can manually log Intangible Time but it doesn’t <br />
+                                count towards your weekly time commitment.
+                              </u>
+                              <br />
+                              <br />
+                              “Tangible Time” is the default for logging time using the timer at the
+                              top of the app. It represents all work done on assigned action items{' '}
+                              <br />
+                              and is what counts towards a person’s weekly volunteer time
+                              commitment. The only way for a volunteer to log Tangible Time is by
+                              using the clock
+                              <br />
+                              in/out timer. <br />
+                              <br />
+                              Intangible Time is almost always used only by the management team. It
+                              is used for weekly Monday night management team calls, monthly
+                              management
+                              <br />
+                              team reviews and Welcome Team Calls, and non-action-item related
+                              research, classes, and other learning, meetings, etc. that benefit or
+                              relate to <br />
+                              the project but aren’t related to a specific action item on the{' '}
+                              <a href="https://www.tinyurl.com/oc-os-wbs">
+                                One Community Work Breakdown Structure.
+                              </a>
+                              <br />
+                              <br />
+                              Intangible Time may also be logged by a volunteer when in the field or
+                              for other reasons when the timer wasn’t able to be used. In these
+                              cases, the <br />
+                              volunteer will use this button to log time as “intangible time” and
+                              then request that an Admin manually change the log from Intangible to
+                              Tangible.
+                              <br />
+                              <br />
+                            </ReactTooltip>
+                          </div>
+                        </div>
+                      ) : (
+                        isAdmin && (
                           <div className="float-right">
                             <div>
-                              <Button color="success" onClick={this.toggle}>
-                                {'Add Intangible Time Entry '}
-                                <i
-                                  className="fa fa-info-circle"
-                                  data-tip
-                                  data-for="timeEntryTip"
-                                  data-delay-hide="1000"
-                                  aria-hidden="true"
-                                  title=""
-                                />
+                              <Button color="warning" onClick={toggle}>
+                                Add Time Entry {!isOwner && `for ${fullName}`}
                               </Button>
-                              <ReactTooltip id="timeEntryTip" place="bottom" effect="solid">
-                                Clicking this button only allows for “Intangible Time” to be added
-                                to your time log.{' '}
-                                <u>
-                                  You can manually log Intangible Time but it doesn’t <br />
-                                  count towards your weekly time commitment.
-                                </u>
-                                <br />
-                                <br />
-                                “Tangible Time” is the default for logging time using the timer at
-                                the top of the app. It represents all work done on assigned action
-                                items <br />
-                                and is what counts towards a person’s weekly volunteer time
-                                commitment. The only way for a volunteer to log Tangible Time is by
-                                using the clock
-                                <br />
-                                in/out timer. <br />
-                                <br />
-                                Intangible Time is almost always used only by the management team.
-                                It is used for weekly Monday night management team calls, monthly
-                                management
-                                <br />
-                                team reviews and Welcome Team Calls, and non-action-item related
-                                research, classes, and other learning, meetings, etc. that benefit
-                                or relate to <br />
-                                the project but aren’t related to a specific action item on the{' '}
-                                <a href="https://www.tinyurl.com/oc-os-wbs">
-                                  One Community Work Breakdown Structure.
-                                </a>
-                                <br />
-                                <br />
-                                Intangible Time may also be logged by a volunteer when in the field
-                                or for other reasons when the timer wasn’t able to be used. In these
-                                cases, the <br />
-                                volunteer will use this button to log time as “intangible time” and
-                                then request that an Admin manually change the log from Intangible
-                                to Tangible.
-                                <br />
-                                <br />
-                              </ReactTooltip>
                             </div>
                           </div>
-                        ) : (
-                          isAdmin && (
-                            <div className="float-right">
-                              <div>
-                                <Button color="warning" onClick={this.toggle}>
-                                  Add Time Entry {!isOwner && `for ${fullName}`}
-                                </Button>
-                              </div>
-                            </div>
-                          )
-                        )}
-                        <Modal isOpen={this.state.in} toggle={this.openInfo}>
-                          <ModalHeader>Info</ModalHeader>
-                          <ModalBody>{this.state.information}</ModalBody>
-                          <ModalFooter>
-                            <Button onClick={this.openInfo} color="primary">
-                              Close
-                            </Button>
-                            {isAdmin && (
-                              <Button onClick={this.openInfo} color="secondary">
-                                Edit
-                              </Button>
-                            )}
-                          </ModalFooter>
-                        </Modal>
-                        <TimeEntryForm
-                          userId={userId}
-                          data={this.data}
-                          edit={false}
-                          toggle={this.toggle}
-                          isOpen={this.state.modal}
-                          userProfile={this.userProfile}
-                          isInTangible={true}
-                        />
-                        <ReactTooltip id="registerTip" place="bottom" effect="solid">
-                          Click this icon to learn about the timelog.
-                        </ReactTooltip>
-                      </Col>
-                    </Row>
-                  </CardHeader>
-                  <CardBody>
-                    <Nav tabs className="mb-1">
-                      <NavItem>
-                        <NavLink
-                          className={classnames({ active: this.state.activeTab === 0 })}
-                          onClick={() => {
-                            this.changeTab(0);
-                          }}
-                          href="#"
-                          to="#"
-                        >
-                          Current Week
-                        </NavLink>
-                      </NavItem>
-                      <NavItem>
-                        <NavLink
-                          className={classnames({ active: this.state.activeTab === 1 })}
-                          onClick={() => {
-                            this.changeTab(1);
-                          }}
-                          href="#"
-                          to="#"
-                        >
-                          Last Week
-                        </NavLink>
-                      </NavItem>
-                      <NavItem>
-                        <NavLink
-                          className={classnames({ active: this.state.activeTab === 2 })}
-                          onClick={() => {
-                            this.changeTab(2);
-                          }}
-                          href="#"
-                          to="#"
-                        >
-                          Week Before Last
-                        </NavLink>
-                      </NavItem>
-                      <NavItem>
-                        <NavLink
-                          className={classnames({ active: this.state.activeTab === 3 })}
-                          onClick={() => {
-                            this.changeTab(3);
-                          }}
-                          href="#"
-                          to="#"
-                        >
-                          Search by Date Range
-                        </NavLink>
-                      </NavItem>
-                    </Nav>
-
-                    <TabContent activeTab={this.state.activeTab}>
-                      {this.state.activeTab === 3 ? (
-                        <p className="ml-1">
-                          Viewing time Entries from <b>{this.state.fromDate}</b> to{' '}
-                          <b>{this.state.toDate}</b>
-                        </p>
-                      ) : (
-                        <p className="ml-1">
-                          Viewing time Entries from <b>{this.startOfWeek(this.state.activeTab)}</b>
-                          {' to '}
-                          <b>{this.endOfWeek(this.state.activeTab)}</b>
-                        </p>
+                        )
                       )}
-                      {this.state.activeTab === 3 && (
-                        <Form inline className="mb-2">
-                          <FormGroup className="mr-2">
-                            <Label for="fromDate" className="mr-2">
-                              From
-                            </Label>
-                            <Input
-                              type="date"
-                              name="fromDate"
-                              id="fromDate"
-                              value={this.state.fromDate}
-                              onChange={this.handleInputChange}
-                            />
-                          </FormGroup>
-                          <FormGroup>
-                            <Label for="toDate" className="mr-2">
-                              To
-                            </Label>
-                            <Input
-                              type="date"
-                              name="toDate"
-                              id="toDate"
-                              value={this.state.toDate}
-                              onChange={this.handleInputChange}
-                            />
-                          </FormGroup>
-                          <Button color="primary" onClick={this.handleSearch} className="ml-2">
-                            Search
+                      <Modal isOpen={inThere} toggle={openInfo}>
+                        <ModalHeader>Info</ModalHeader>
+                        <ModalBody>{information}</ModalBody>
+                        <ModalFooter>
+                          <Button onClick={openInfo} color="primary">
+                            Close
                           </Button>
-                        </Form>
-                      )}
+                          {isAdmin && (
+                            <Button onClick={openInfo} color="secondary">
+                              Edit
+                            </Button>
+                          )}
+                        </ModalFooter>
+                      </Modal>
+                      <TimeEntryForm
+                        userId={userId}
+                        data={data}
+                        edit={false}
+                        toggle={toggle}
+                        isOpen={modal}
+                        userProfile={userProfile}
+                        isInTangible={true}
+                      />
+                      <ReactTooltip id="registerTip" place="bottom" effect="solid">
+                        Click this icon to learn about the timelog.
+                      </ReactTooltip>
+                    </Col>
+                  </Row>
+                </CardHeader>
+                <CardBody>
+                  <Nav tabs className="mb-1">
+                    <NavItem>
+                      <NavLink
+                        className={classnames({ active: activeTab === 0 })}
+                        onClick={() => {
+                          changeTab(0);
+                        }}
+                        href="#"
+                        to="#"
+                      >
+                        Current Week
+                      </NavLink>
+                    </NavItem>
+                    <NavItem>
+                      <NavLink
+                        className={classnames({ active: activeTab === 1 })}
+                        onClick={() => {
+                          changeTab(1);
+                        }}
+                        href="#"
+                        to="#"
+                      >
+                        Last Week
+                      </NavLink>
+                    </NavItem>
+                    <NavItem>
+                      <NavLink
+                        className={classnames({ active: activeTab === 2 })}
+                        onClick={() => {
+                          changeTab(2);
+                        }}
+                        href="#"
+                        to="#"
+                      >
+                        Week Before Last
+                      </NavLink>
+                    </NavItem>
+                    <NavItem>
+                      <NavLink
+                        className={classnames({ active: activeTab === 3 })}
+                        onClick={() => {
+                          changeTab(3);
+                        }}
+                        href="#"
+                        to="#"
+                      >
+                        Search by Date Range
+                      </NavLink>
+                    </NavItem>
+                  </Nav>
+
+                  <TabContent activeTab={activeTab}>
+                    {activeTab === 3 ? (
+                      <p className="ml-1">
+                        Viewing time Entries from <b>{fromDate}</b> to <b>{toDate}</b>
+                      </p>
+                    ) : (
+                      <p className="ml-1">
+                        Viewing time Entries from <b>{startOfWeek(activeTab)}</b>
+                        {' to '}
+                        <b>{endOfWeek(activeTab)}</b>
+                      </p>
+                    )}
+                    {activeTab === 3 && (
                       <Form inline className="mb-2">
-                        <FormGroup>
-                          <Label for="projectSelected" className="mr-1 ml-1 mb-1 align-top">
-                            Filter Entries by Project:
+                        <FormGroup className="mr-2">
+                          <Label for="fromDate" className="mr-2">
+                            From
                           </Label>
                           <Input
-                            type="select"
-                            name="projectSelected"
-                            id="projectSelected"
-                            value={this.state.projectsSelected}
-                            title="Ctrl + Click to select multiple projects to filter."
-                            onChange={(e) =>
-                              this.setState({
-                                projectsSelected: Array.from(
-                                  e.target.selectedOptions,
-                                  (option) => option.value,
-                                ),
-                              })
-                            }
-                            multiple
-                          >
-                            {projectOptions}
-                          </Input>
+                            type="date"
+                            name="fromDate"
+                            id="fromDate"
+                            value={fromDate}
+                            onChange={handleInputChange}
+                          />
                         </FormGroup>
+                        <FormGroup>
+                          <Label for="toDate" className="mr-2">
+                            To
+                          </Label>
+                          <Input
+                            type="date"
+                            name="toDate"
+                            id="toDate"
+                            value={toDate}
+                            onChange={handleInputChange}
+                          />
+                        </FormGroup>
+                        <Button color="primary" onClick={handleSearch} className="ml-2">
+                          Search
+                        </Button>
                       </Form>
-                      <EffortBar
-                        activeTab={this.state.activeTab}
-                        projectsSelected={this.state.projectsSelected}
-                      />
-                      <TabPane tabId={0}>{currentWeekEntries}</TabPane>
-                      <TabPane tabId={1}>{lastWeekEntries}</TabPane>
-                      <TabPane tabId={2}>{beforeLastEntries}</TabPane>
-                      <TabPane tabId={3}>{periodEntries}</TabPane>
-                    </TabContent>
-                  </CardBody>
-                </Card>
-              </Col>
-              <Col md={4} />
-            </Row>
-          </Container>
-        )}
-      </div>
-    );
-  }
-}
+                    )}
+                    <Form inline className="mb-2">
+                      <FormGroup>
+                        <Label for="projectSelected" className="mr-1 ml-1 mb-1 align-top">
+                          Filter Entries by Project:
+                        </Label>
+                        <Input
+                          type="select"
+                          name="projectSelected"
+                          id="projectSelected"
+                          value={projectsSelected}
+                          title="Ctrl + Click to select multiple projects to filter."
+                          onChange={(e) => {
+                            setProjectsSelected(
+                              Array.from(e.target.selectedOptions, option => option.value),
+                            );
+                          }}
+                          multiple
+                        >
+                          {projectOptions}
+                        </Input>
+                      </FormGroup>
+                    </Form>
+                    <EffortBar activeTab={activeTab} projectsSelected={projectsSelected} />
+                    <TabPane tabId={0}>{currentWeekEntries}</TabPane>
+                    <TabPane tabId={1}>{lastWeekEntries}</TabPane>
+                    <TabPane tabId={2}>{beforeLastEntries}</TabPane>
+                    <TabPane tabId={3}>{periodEntries}</TabPane>
+                  </TabContent>
+                </CardBody>
+              </Card>
+            </Col>
+            <Col md={4} />
+          </Row>
+        </Container>
+      )}
+    </div>
+  );
+};
 
-const mapStateToProps = (state) => ({
+const mapStateToProps = state => ({
   auth: state.auth,
   userProfile: state.userProfile,
   timeEntries: state.timeEntries,
