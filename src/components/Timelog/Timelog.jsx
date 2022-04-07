@@ -128,9 +128,14 @@ const Timelog = (props) => {
     setActiveTab(tab);
   };
 
-  const handleInputChange = (e) => {
-    const [targetName, setTargetName] = useState(e.target.value);
-    // this.setState({ [e.target.name]: e.target.value });
+  const handleInputFromChange = (e) => {
+    const from = e.target.value;
+    setFromDate(from);
+  };
+
+  const handleInputToChange = (e) => {
+    const to = e.target.value;
+    setToDate(to);
   };
 
   const handleSearch = (e) => {
@@ -414,7 +419,7 @@ const Timelog = (props) => {
                             name="fromDate"
                             id="fromDate"
                             value={fromDate}
-                            onChange={handleInputChange}
+                            onChange={handleInputFromChange}
                           />
                         </FormGroup>
                         <FormGroup>
@@ -426,7 +431,7 @@ const Timelog = (props) => {
                             name="toDate"
                             id="toDate"
                             value={toDate}
-                            onChange={handleInputChange}
+                            onChange={handleInputToChange}
                           />
                         </FormGroup>
                         <Button color="primary" onClick={handleSearch} className="ml-2">
