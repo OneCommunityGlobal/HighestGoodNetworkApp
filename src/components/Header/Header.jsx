@@ -39,7 +39,7 @@ import { UserRole } from '../../utils/enums';
 import { Logout } from '../Logout/Logout';
 import './Header.css';
 
-const Header = (props) => {
+export const Header = (props) => {
   const [isOpen, setIsOpen] = useState(false);
   const [logoutPopup, setLogoutPopup] = useState(false);
 

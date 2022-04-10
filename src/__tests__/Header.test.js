@@ -64,10 +64,13 @@ const server = setupServer(
   rest.get(timerUrl, (req, res, ctx) => {
     return res(ctx.status(200), ctx.json({}));
   }),
+  rest.get('http://localhost:4500/hash.txt', (req, res, ctx) => {
+    return res(ctx.status(200), ctx.json({}));
+  }),
   rest.get('*', (req, res, ctx) => {
-    /* console.error(
+    console.error(
       `Please add request handler for ${req.url.toString()} in your MSW server requests.`,
-    ); */
+    );
     return res(ctx.status(500), ctx.json({ error: 'You must add request handler.' }));
   }),
 );
@@ -136,13 +139,13 @@ describe('Header structure', () => {
       [TEAMS, '/teams'],
       [VIEW_PROFILE, `/userprofile/${mockState.auth.user.userid}`],
       [UPDATE_PASSWORD, `/updatepassword/${mockState.auth.user.userid}`],
-      // [LOGOUT, '/logout'],
+      [LOGOUT, ''],
     ];
 
     for (let i = 0; i < linkItems.length; i++) {
       await waitFor(() => {
         let results = screen.getAllByText(linkItems[i][0]);
-        // expect(results[results.length - 1].closest('a')).toHaveAttribute('href', linkItems[i][1]);
+        expect(results[results.length - 1].closest('a')).toHaveAttribute('href', linkItems[i][1]);
       });
     }
   });

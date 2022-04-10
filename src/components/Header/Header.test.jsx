@@ -5,12 +5,12 @@ import mockAdminState from '../../__tests__/mockAdminState';
 import { getHeaderData } from '../../actions/authActions';
 
 describe('Header page structure', () => {
-  /* let mountedHeader, props;
+  let mountedHeader, props;
   beforeEach(() => {
     props = mockAdminState;
     props.getHeaderData = getHeaderData;
     props.getTimerData = jest.fn();
-    // mountedHeader = shallow(<Header {...props} />);
+    mountedHeader = shallow(<Header {...props} />);
   });
 
   it('should be rendered with a navBar', () => {
@@ -31,20 +31,20 @@ describe('Header page structure', () => {
   it('should be rendered with at least one img', () => {
     const img = mountedHeader.find('img');
     expect(img.length).toBeGreaterThan(0);
-  }); */
+  }); 
 });
 
 describe('UnAuthenticated Header page structure', () => {
   let mountedHeader, props;
-  /* beforeEach(() => {
+  beforeEach(() => {
     props = { auth: { isAuthenticated: false } };
     props.isAuthenticated = false;
     props.getHeaderData = getHeaderData;
     props.getTimerData = jest.fn();
-    // mountedHeader = shallow(<Header {...props} />);
-  }); */
+    mountedHeader = shallow(<Header {...props} />);
+  });
 
-  /* it('should be rendered with a navBar', () => {
+  it('should be rendered with a navBar', () => {
     const navBar = mountedHeader.find('Navbar');
     expect(navBar.length).toBe(1);
   });
@@ -62,5 +62,5 @@ describe('UnAuthenticated Header page structure', () => {
   it('should be rendered with no img', () => {
     const img = mountedHeader.find('img');
     expect(img.length).toBe(0);
-  }); */
+  });
 });
