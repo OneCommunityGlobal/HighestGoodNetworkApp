@@ -33,13 +33,10 @@ const server = setupServer(
     }
   }),
   //prevents errors when loading header
-  rest.get('http://localhost:4500/api/userprofile/*', (req, res, ctx) => {
+  rest.get('http://*/api/userprofile/*', (req, res, ctx) => {
     return res(ctx.status(200), ctx.json({}));
   }),
   rest.get('http://*/hash.txt', (req, res, ctx) => {
-    return res(ctx.status(200), ctx.json({}));
-  }),
-  rest.get('http://*/api/userprofiles/*', (req, res, ctx) => {
     return res(ctx.status(200), ctx.json({}));
   }),
   //Leaderboard Data in case user gets to dashboard.
