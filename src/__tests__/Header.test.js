@@ -64,7 +64,7 @@ const server = setupServer(
   rest.get(timerUrl, (req, res, ctx) => {
     return res(ctx.status(200), ctx.json({}));
   }),
-  rest.get('http://localhost:4500/hash.txt', (req, res, ctx) => {
+  rest.get('http://*/hash.txt', (req, res, ctx) => {
     return res(ctx.status(200), ctx.json({}));
   }),
   rest.get('*', (req, res, ctx) => {

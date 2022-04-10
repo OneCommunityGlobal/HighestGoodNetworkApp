@@ -70,7 +70,7 @@ const server = setupServer(
   rest.get(ApiEndpoint + '/userprofile/*', (req, res, ctx) => {
     return res(ctx.status(200), ctx.json({}));
   }),
-  rest.get('http://localhost:4500/hash.txt', (req, res, ctx) => {
+  rest.get('http://*/hash.txt', (req, res, ctx) => {
     return res(ctx.status(200), ctx.json({}));
   }),
   rest.get(userProjectsUrl, (req, res, ctx) => {

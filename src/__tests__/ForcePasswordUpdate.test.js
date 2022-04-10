@@ -36,7 +36,10 @@ const server = setupServer(
   rest.get('http://localhost:4500/api/userprofile/*', (req, res, ctx) => {
     return res(ctx.status(200), ctx.json({}));
   }),
-  rest.get('http://localhost:4500/hash.txt', (req, res, ctx) => {
+  rest.get('http://*/hash.txt', (req, res, ctx) => {
+    return res(ctx.status(200), ctx.json({}));
+  }),
+  rest.get('http://*/api/userprofiles/*', (req, res, ctx) => {
     return res(ctx.status(200), ctx.json({}));
   }),
   //Leaderboard Data in case user gets to dashboard.
