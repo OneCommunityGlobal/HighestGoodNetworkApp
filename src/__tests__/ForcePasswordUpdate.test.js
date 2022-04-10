@@ -33,7 +33,7 @@ const server = setupServer(
     }
   }),
   //prevents errors when loading header
-  rest.get('http://*/api/userprofile/*', (req, res, ctx) => {
+  rest.get('http*/api/userprofile/*', (req, res, ctx) => {
     return res(ctx.status(200), ctx.json({}));
   }),
   rest.get('http://*/hash.txt', (req, res, ctx) => {
