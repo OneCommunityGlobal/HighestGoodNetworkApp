@@ -6,19 +6,20 @@ import { Row, Col, Button, ToggleButton,ToggleButtonGroup, Dropdown, DropdownBut
 import { connect } from 'react-redux'
 import { getUserProfile,getUserTask} from '../../actions/userProfile';
 import {getUserProjects} from '../../actions/userProjects'
-import _ from 'lodash'
+import _, { lte } from 'lodash'
 import { getWeeklySummaries, updateWeeklySummaries } from '../../actions/weeklySummaries'
 import moment from 'moment'
 import "react-input-range/lib/css/index.css"
 import Collapse from 'react-bootstrap/Collapse'
-import * as d3 from 'd3'
+import * as d3 from 'd3/dist/d3.min'
 import { DropdownItem, FormGroup, Label, Input, Form, Modal, ModalHeader, ModalBody, ModalFooter} from 'reactstrap';
 import { getTimeEntriesForPeriod } from '../../actions/timeEntries'
 import InfringmentsViz from './InfringmentsViz'
 import TimeEntriesViz from './TimeEntriesViz'
 import PeopleTableDetails from './PeopleTableDetails'
 import DatePicker from 'react-datepicker'
-
+import httpService from '../../services/httpService'
+import { ENDPOINTS } from '../../utils/URL'
 class PeopleReport extends Component {
   constructor(props) {
     super(props);
@@ -45,7 +46,8 @@ class PeopleReport extends Component {
       toDate: this.endOfWeek(0),
       timeEntries: {},
       startDate:'',
-      endDate:''
+      endDate:'',
+      fetched:false,
     }
     this.setStatus=this.setStatus.bind(this)
     this.setPriority=this.setPriority.bind(this)
@@ -84,12 +86,19 @@ class PeopleReport extends Component {
           infringments : this.props.userProfile.infringments,
           timeEntries : {
             ...this.props.timeEntries,},
-        },()=>
-          console.log(this.state.userProjects)
+        }
       )
     }
+    // get user's task from WBS
+    let MemberTasksPromises = [];
+    let userProfile=this.state.userProfile;
+    MemberTasksPromises.push(httpService.get(ENDPOINTS.TASKS_BY_USERID(userProfile._id)).catch(err => { if (err.status !== 401) { console.log("Sai roi") } }))
+     Promise.all(MemberTasksPromises).then(temp=>{    
+        this.setState({
+          userTask:temp[0].data,     
+      })
+    })
   }
-
   setStartDate(date) {
     console.log("start date::"+date)
     this.setState((state) => {
@@ -251,7 +260,7 @@ class PeopleReport extends Component {
       toDate,
       startDate,
       endDate,
-      timeEntries
+      timeEntries,
     } = this.state
     const {
       firstName,
@@ -764,55 +773,54 @@ if (tasks.length>0) {
       )
     }
 
-    const PeopleDataTable = () => {
-      let peopleData = {
-        "alertVisible": false,
-        "taskData": [
-          {
-            "taskName": "Task 1",
-            "priority": "Medium",
-            "status":"Pending",
-            "resources":"max",
-            "active":"yes",
-            "assign":"Assigned",
-            "estimatedHours":"20",
-            "_id": "1"
-          },
-          {
-            "taskName": "Task 2",
-            "priority": "High",
-            "status":"Pending",
-            "resources":"max",
-            "active":"Active",
-            "assign":"Assigned",
-            "estimatedHours":"30",
-            "_id": "2"
-          },
-          {
-            "taskName": "Task 3",
-            "priority": "Medium",
-            "status":"Completed",
-            "resources":"max",
-            "active":"Not Active",
-            "assign":"Not Assigned",
-            "estimatedHours":"20",
-            "_id": "3"
-          },
-          {
-            "taskName": "Task 4",
-            "priority": "Low",
-            "status":"Pending",
-            "resources":"min",
-            "active":"Active",
-            "assign":"Assigned",
-            "estimatedHours":"10",
-            "_id": "4"
-          }
+    const PeopleDataTable = props => {
+      // console.log(userTask);
+      let peopleData={
+        "alertVisible":false,
+        "taskData":[
         ],
         "color": null,
         "message": ""
       }
-      console.log('length::'+peopleData.taskData.length)
+      for(let i=0;i<userTask.length;i++){
+        let task={
+          "taskName":"",
+          "priority":"",
+          "status":"",
+          "resources":[
+          ],
+          "active":"",
+          "assign":"",
+          "estimatedHours":"",
+          "_id":""
+        }
+        let resourcesName=[
+        ]
+        if(userTask[i].isActive){
+          task.active="Yes";
+        }else{
+          task.active="No";
+        }
+        if(userTask[i].isAssigned){
+          task.assign="Yes";
+        }else{
+          task.assign="No";
+        }
+        task.taskName=userTask[i].taskName;
+        task.priority=userTask[i].priority;
+        task.status=userTask[i].status;
+        let n=userTask[i].estimatedHours;
+        task.estimatedHours=n.toFixed(2);
+        console.log(userTask[i].resources);
+        for(let j=0;j<userTask[i].resources.length;j++){
+          resourcesName.push(userTask[i].resources[j].name);
+        }
+        task._id=userTask[i]._id;
+        resourcesName=resourcesName.join(", ");
+        task.resources.push(resourcesName);
+        peopleData.taskData.push(task);
+      }
+      
       return (
         <PeopleTableDetails taskData={peopleData.taskData}  />
       )

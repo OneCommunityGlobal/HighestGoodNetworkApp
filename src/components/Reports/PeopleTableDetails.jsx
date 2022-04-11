@@ -110,7 +110,14 @@ const PeopleTableDetails = (props) => {
             <td>{value.taskName}</td>
             <td>{value.priority}</td>
             <td>{value.status}</td>
+            {/* <td>{value.resources.map(resource=>
+                <div>{resource}</div>
+                )}
+            </td> */}
             <td>{value.resources}</td>
+            {/* <td>{value.resources}</td> */}
+            {/* const data =[{"name":"test1"},{"name":"test2"}];
+              const listItems = data.map((d) => <li key={d.name}>{d.name}</li>; */}
             <td>{value.active}</td>
             <td>{value.assign}</td>
             <td>{value.estimatedHours}</td>

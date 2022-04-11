@@ -1,5 +1,5 @@
 import React from 'react'
-import * as d3 from 'd3'
+import * as d3 from 'd3/dist/d3.min'
 import {Button} from 'react-bootstrap'
 
 const TimeEntriesViz = ({timeEntries, fromDate, toDate}) =>{

@@ -174,7 +174,6 @@ class TeamMemberTasks extends Component {
               // currently fetches all projects, should consider refactoring if number of projects increases
               const WBSRes = await httpService.get(ENDPOINTS.WBS_ALL).catch(err => { if (err.status === 401) { loggedOut = true } })
               const allWBS = WBSRes.data
-
               // calculate hours done in current week and add to user obj for ease of access
               for (let i = 0; i < uniqueMembers.length; i++) {
                 let hoursCurrentWeek = 0
@@ -199,7 +198,7 @@ class TeamMemberTasks extends Component {
                   finalData[i].tasks[j] = {
                     ...finalData[i].tasks[j],
                     projectId: project ? project.projectId : '',
-                  }
+                  }                 
                 }
               }
 
@@ -236,9 +235,6 @@ class TeamMemberTasks extends Component {
                       return timeDifference
                     })
                   })
-
-                  //console.log('final data ', finalData)
-
                   this.setState({ fetched: true, teams: finalData })
                 })
               }

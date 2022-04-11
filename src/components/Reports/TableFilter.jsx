@@ -3,10 +3,10 @@ import TextSearchBox from '../UserManagement/TextSearchBox';
 import DropDownSearchBox from '../UserManagement/DropDownSearchBox';
 
 const TableFilter = (props) => {
-  const taskPriority = ['High','Medium', 'Low'];
-  const taskStatus = ['Pending','Completed', 'NotStarted'];
-  const taskActive = ['Active','Not Active'];
-  const taskAssign = ['Assigned','Not Assigned'];
+  const taskPriority = ['Primary','Secondary', 'Tertiary'];
+  const taskStatus = ['Paused','Complete', 'Active'];
+  const taskActive = ['Yes','No'];
+  const taskAssign = ['Yes','No'];
 
   const onTaskNameSearch = (text) => {
     props.onTaskNameSearch(text);
