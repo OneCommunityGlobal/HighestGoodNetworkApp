@@ -159,7 +159,7 @@ const Email = (props) => {
   }
   return (
     <>
-      {privacySettings.email && (
+      {privacySettings?.email && (
         <Col>
           <p>{email}</p>
         </Col>
@@ -226,7 +226,7 @@ const Phone = (props) => {
   }
   return (
     <>
-      {privacySettings.phoneNumber && (
+      {privacySettings?.phoneNumber && (
         <Col>
           <p>{formatPhoneNumber(phoneNumber)}</p>
         </Col>
@@ -470,8 +470,8 @@ const BasicInformationTab = (props) => {
             {userProfile.isActive
               ? 'Active'
               : userProfile.reactivationDate
-              ? 'Paused until ' + moment(userProfile.reactivationDate).format('YYYY-MM-DD')
-              : 'Inactive'}
+                ? 'Paused until ' + moment(userProfile.reactivationDate).format('YYYY-MM-DD')
+                : 'Inactive'}
           </Label>
           &nbsp;
           {props.isUserAdmin && <PauseAndResumeButton isBigBtn={true} userProfile={userProfile} />}

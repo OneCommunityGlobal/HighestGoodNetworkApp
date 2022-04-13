@@ -5,7 +5,7 @@ import './UserProfile.scss';
 // import styleEdit from './UserProfileEdit.module.scss';
 import './UserProfileEdit/UserProfileEdit.scss';
 
-const BlueSqaureLayout = (props) => {
+const BlueSquareLayout = (props) => {
   const { userProfile, handleUserProfile, handleBlueSquare, isUserAdmin, isUserSelf } = props;
 
   const { privacySettings, infringments } = userProfile;
@@ -37,7 +37,7 @@ const BlueSqaureLayout = (props) => {
   }
   return (
     <div>
-      {!privacySettings.blueSquares ? (
+      {!privacySettings?.blueSquares ? (
         <p>Blue Square Info is Private</p>
       ) : (
         <div>
@@ -53,4 +53,4 @@ const BlueSqaureLayout = (props) => {
   );
 };
 
-export default BlueSqaureLayout;
+export default BlueSquareLayout;
