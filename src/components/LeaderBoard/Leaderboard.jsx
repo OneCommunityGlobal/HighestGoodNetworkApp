@@ -57,6 +57,19 @@ const LeaderBoard = ({
 
   const toggle = () => setOpen((isOpen) => !isOpen);
 
+  // add state hook for the popup the personal's dashboard from leaderboard
+  const [isDashboardOpen, setIsDashboardOpen] = useState(false);
+  const dashboardToggle = () => setIsDashboardOpen((isDashboardOpen) => !isDashboardOpen);
+
+  const showDashboard = (item) => {
+    dashboardToggle();
+    window.open(
+      `/dashboard/${item.personId}`,
+      'Popup',
+      'toolbar=no, location=no, statusbar=no, menubar=no, scrollbars=1, resizable=0, width=580, height=600, top=30',
+    );
+  };
+
   return (
     <div>
       <h3>
@@ -186,18 +199,24 @@ const LeaderBoard = ({
               <tr key={key}>
                 <td
                   className="align-middle"
-                  onClick={() => {
-                    if (
-                      window.confirm(`Are you sure you wish to view this ${item.name} dashboard ?`)
-                    ) {
-                      window.open(
-                        `/dashboard/${item.personId}`,
-                        'Popup',
-                        'toolbar=no, location=no, statusbar=no, menubar=no, scrollbars=1, resizable=0, width=580, height=600, top=30',
-                      );
-                    }
-                  }}
+                  onClick={dashboardToggle}
                 >
+
+                <div>
+                  <Modal isOpen={isDashboardOpen} toggle={dashboardToggle}>
+                    <ModalHeader toggle={dashboardToggle}>Jump to personal Dashboard</ModalHeader>
+                      <ModalBody>
+                        <p>
+                          Are you sure you wish to view this {item.name} dashboard?
+                        </p>
+                      </ModalBody>
+                      <ModalFooter>
+                        <Button variant="primary" onClick={() => {showDashboard(item)}}>Ok</Button>{' '}
+                        <Button variant="secondary" onClick={dashboardToggle}>Cancel</Button>
+                      </ModalFooter>
+                  </Modal>
+                </div>
+
                   {/* <Link to={`/dashboard/${item.personId}`}> */}
                   <div
                     title={`Weekly Committed: ${item.weeklyComittedHours} hours`}
