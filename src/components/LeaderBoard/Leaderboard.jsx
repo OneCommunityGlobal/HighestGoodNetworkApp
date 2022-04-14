@@ -59,10 +59,11 @@ const LeaderBoard = ({
 
   // add state hook for the popup the personal's dashboard from leaderboard
   const [isDashboardOpen, setIsDashboardOpen] = useState(false);
-  const dashboardToggle = () => setIsDashboardOpen((isDashboardOpen) => !isDashboardOpen);
-
+  const dashboardToggle = (item) => setIsDashboardOpen(item.personId);
+  const dashboardClose = () => setIsDashboardOpen(false);
+  
   const showDashboard = (item) => {
-    dashboardToggle();
+    dashboardClose();
     window.open(
       `/dashboard/${item.personId}`,
       'Popup',
@@ -199,11 +200,11 @@ const LeaderBoard = ({
               <tr key={key}>
                 <td
                   className="align-middle"
-                  onClick={dashboardToggle}
+                  onClick={() => dashboardToggle(item)}
                 >
 
                 <div>
-                  <Modal isOpen={isDashboardOpen} toggle={dashboardToggle}>
+                  <Modal isOpen={isDashboardOpen === item.personId} toggle={dashboardToggle}>
                     <ModalHeader toggle={dashboardToggle}>Jump to personal Dashboard</ModalHeader>
                       <ModalBody>
                         <p>
@@ -211,7 +212,7 @@ const LeaderBoard = ({
                         </p>
                       </ModalBody>
                       <ModalFooter>
-                        <Button variant="primary" onClick={() => {showDashboard(item)}}>Ok</Button>{' '}
+                        <Button variant="primary" onClick={() => showDashboard(item)}>Ok</Button>{' '}
                         <Button variant="secondary" onClick={dashboardToggle}>Cancel</Button>
                       </ModalFooter>
                   </Modal>
