@@ -37,7 +37,7 @@ import { ENDPOINTS } from 'utils/URL';
 import ActiveCell from 'components/UserManagement/ActiveCell';
 import axios from 'axios';
 
-const UserProfile = (props) => {
+const UserProfile = props => {
   /* Constant values */
   const initialFormValid = {
     firstName: true,
@@ -65,6 +65,7 @@ const UserProfile = (props) => {
 
   /* useEffect functions */
   useEffect(() => {
+    console.log('onMount');
     loadUserProfile();
   }, []);
 
@@ -93,6 +94,7 @@ const UserProfile = (props) => {
     try {
       const response = await axios.get(ENDPOINTS.USER_PROFILE(userId));
       const newUserProfile = response.data;
+      console.log('new user profile: ', newUserProfile);
       setUserProfile(newUserProfile);
       setOriginalUserProfile(newUserProfile);
       setShowLoading(false);
@@ -101,19 +103,19 @@ const UserProfile = (props) => {
     }
   };
 
-  const onDeleteTeam = (deletedTeamId) => {
+  const onDeleteTeam = deletedTeamId => {
     const newUserProfile = { ...userProfile };
-    const filteredTeam = newUserProfile.teams.filter((team) => team._id !== deletedTeamId);
+    const filteredTeam = newUserProfile.teams.filter(team => team._id !== deletedTeamId);
     newUserProfile.teams = filteredTeam;
 
     setUserProfile(newUserProfile);
     setChanged(true);
   };
 
-  const onDeleteProject = (deletedProjectId) => {
+  const onDeleteProject = deletedProjectId => {
     const newUserProfile = { ...userProfile };
     const filteredProject = newUserProfile.projects.filter(
-      (project) => project._id !== deletedProjectId,
+      project => project._id !== deletedProjectId,
     );
     newUserProfile.projects = filteredProject;
 
@@ -121,7 +123,7 @@ const UserProfile = (props) => {
     setChanged(true);
   };
 
-  const onAssignTeam = (assignedTeam) => {
+  const onAssignTeam = assignedTeam => {
     const newUserProfile = { ...userProfile };
     if (newUserProfile.teams) {
       newUserProfile.teams.push(assignedTeam);
@@ -133,7 +135,7 @@ const UserProfile = (props) => {
     setUserProfile(newUserProfile);
   };
 
-  const onAssignProject = (assignedProject) => {
+  const onAssignProject = assignedProject => {
     const newUserProfile = { ...userProfile };
     if (newUserProfile.projects) {
       newUserProfile.projects.push(assignedProject);
@@ -145,7 +147,7 @@ const UserProfile = (props) => {
     setChanged(true);
   };
 
-  const handleImageUpload = async (evt) => {
+  const handleImageUpload = async evt => {
     if (evt) evt.preventDefault();
     const file = evt.target.files[0];
     if (typeof file != 'undefined') {
@@ -222,17 +224,17 @@ const UserProfile = (props) => {
     } else if (operation === 'update') {
       const currentBlueSquares = [...userProfile.infringments];
       if (dateStamp != null) {
-        currentBlueSquares.find((blueSquare) => blueSquare._id === id).date = dateStamp;
+        currentBlueSquares.find(blueSquare => blueSquare._id === id).date = dateStamp;
       }
       if (summary != null) {
-        currentBlueSquares.find((blueSquare) => blueSquare._id === id).description = summary;
+        currentBlueSquares.find(blueSquare => blueSquare._id === id).description = summary;
       }
 
       setShowModal(false);
       setUserProfile({ ...userProfile, infringments: currentBlueSquares });
     } else if (operation === 'delete') {
       const newInfringements = [];
-      userProfile.infringments.forEach((infringment) => {
+      userProfile.infringments.forEach(infringment => {
         if (infringment._id !== id) newInfringements.push(infringment);
       });
 
@@ -258,7 +260,7 @@ const UserProfile = (props) => {
     setShowSaveWarning(false);
   };
 
-  const toggleTab = (tab) => {
+  const toggleTab = tab => {
     if (activeTab !== tab) setActiveTab(tab);
   };
 
@@ -277,7 +279,7 @@ const UserProfile = (props) => {
    * Please pass userProfile, setUserProfile, and setChanged as props to subcomponents and modify state that way.
    * This function is being kept here until the refactoring is complete.
    */
-  const handleUserProfile = (event) => {
+  const handleUserProfile = event => {
     setChanged(true);
 
     switch (event.target.id) {
@@ -506,7 +508,7 @@ const UserProfile = (props) => {
                 <NavItem>
                   <NavLink
                     className={classnames({ active: activeTab === '5' }, 'nav-link')}
-                    onClick={(e) => {
+                    onClick={e => {
                       e.preventDefault();
                       toggleTab('5');
                     }}

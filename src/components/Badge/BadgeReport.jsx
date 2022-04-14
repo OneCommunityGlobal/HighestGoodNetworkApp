@@ -22,6 +22,7 @@ import 'moment-timezone';
 import { connect } from 'react-redux';
 import { getUserProfile } from '../../actions/userProfile';
 import { toast } from 'react-toastify';
+import hasPermission from '../../utils/permissions';
 
 pdfMake.vfs = pdfFonts.pdfMake.vfs;
 const BadgeReport = (props) => {
@@ -245,7 +246,7 @@ const BadgeReport = (props) => {
             <th>Name</th>
             <th style={{ width: '110px' }}>Modified</th>
             <th style={{ width: '90px' }}>Count</th>
-            {props.isAdmin ? <th>Delete</th> : []}
+            {hasPermission(props.role, 'deleteOwnBadge') ? <th>Delete</th> : []}
             <th style={{ width: '70px' }}>Featured</th>
           </tr>
         </thead>
@@ -282,7 +283,7 @@ const BadgeReport = (props) => {
                     : value.lastModified.toLocaleString().substring(0, 10)}
                 </td>
                 <td>
-                  {props.isAdmin ? (
+                  {hasPermission(props.role, 'modifyOwnBadgeAmount') ? (
                     <Input
                       type="number"
                       value={Math.round(value.count)}
@@ -296,7 +297,7 @@ const BadgeReport = (props) => {
                     Math.round(value.count)
                   )}
                 </td>
-                {props.isAdmin ? (
+                {hasPermission(props.role, 'deleteOwnBadge') ? (
                   <td>
                     <button
                       type="button"

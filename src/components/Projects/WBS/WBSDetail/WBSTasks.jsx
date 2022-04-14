@@ -13,10 +13,9 @@ import { Link } from 'react-router-dom';
 import { NavItem, Button } from 'reactstrap';
 import './wbs.css';
 import ReactTooltip from 'react-tooltip';
-import { UserRole } from './../../../../utils/enums';
+import hasPermission from 'utils/permissions';
 
 const WBSTasks = (props) => {
-  const [role] = useState(props.state ? props.state.auth.user.role : null);
   // modal
   const [modal, setModal] = useState(false);
   const toggle = () => setModal(!modal);
@@ -142,7 +141,8 @@ const WBSTasks = (props) => {
           </ol>
         </nav>
 
-        {props.state.auth.user.role === UserRole.Administrator ? (
+        {console.log(props.state.auth.user.role)}
+        {hasPermission(props.state.auth.user.role, 'addTask') ? (
           <AddTaskModal
             key="task_modal_null"
             parentNum={null}

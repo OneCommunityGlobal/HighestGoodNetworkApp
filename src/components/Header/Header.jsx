@@ -36,6 +36,7 @@ import {
   DropdownItem,
 } from 'reactstrap';
 import { UserRole } from '../../utils/enums';
+import hasPermission from 'utils/permissions';
 import './Header.css';
 
 export class Header extends React.Component {
@@ -100,9 +101,7 @@ export class Header extends React.Component {
                     <DropdownItem tag={Link} to="/reports">
                       {REPORTS}
                     </DropdownItem>
-                    {user.role === UserRole.Administrator ||
-                    user.role === UserRole.Manager ||
-                    user.role === UserRole.CoreTeam ? (
+                    {hasPermission(user.role, 'seeWeeklySummaryReports') ? (
                       <DropdownItem tag={Link} to="/weeklysummariesreport">
                         {WEEKLY_SUMMARIES_REPORT}
                       </DropdownItem>
@@ -126,14 +125,14 @@ export class Header extends React.Component {
                     {OTHER_LINKS}
                   </DropdownToggle>
                   <DropdownMenu>
-                    {user.role === UserRole.Administrator ? (
+                    {hasPermission(user.role, 'seeUserManagement') ? (
                       <DropdownItem tag={Link} to="/usermanagement">
                         {USER_MANAGEMENT}
                       </DropdownItem>
                     ) : (
                       <React.Fragment></React.Fragment>
                     )}
-                    {user.role === UserRole.Administrator ? (
+                    {hasPermission(user.role, 'seeBadgeManagement') ? (
                       <DropdownItem tag={Link} to="/badgemanagement">
                         {BADGE_MANAGEMENT}
                       </DropdownItem>
@@ -146,7 +145,7 @@ export class Header extends React.Component {
                     <DropdownItem tag={Link} to="/teams">
                       {TEAMS}
                     </DropdownItem>
-                    {user.role === UserRole.Administrator ? (
+                    {hasPermission(user.role, 'seePopupManagement') ? (
                       <>
                         <DropdownItem divider />
                         <DropdownItem tag={Link} to={`/admin/`}>

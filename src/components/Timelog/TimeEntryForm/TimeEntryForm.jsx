@@ -27,6 +27,7 @@ import TangibleInfoModal from './TangibleInfoModal';
 import ReminderModal from './ReminderModal';
 import axios from 'axios';
 import { ApiEndpoint } from '../../../utils/URL';
+import hasPermission from 'utils/permissions';
 
 /**
  * Modal used to submit and edit tangible and intangible time entries.
@@ -76,6 +77,7 @@ const TimeEntryForm = (props) => {
   const fromTimer = !_.isEmpty(timer);
   const isAdmin = useSelector((state) => state.auth.user.role) === 'Administrator';
   const userProfile = useSelector((state) => state.userProfile);
+  const role = userProfile.role;
 
   const dispatch = useDispatch();
 
@@ -362,7 +364,7 @@ const TimeEntryForm = (props) => {
     if (closed === true && isOpen) toggle();
   };
 
-  console.log('isTangible', data.isTangible == inputs.isTangible);
+  // console.log('isTangible', data.isTangible == inputs.isTangible);
 
   return (
     <>
@@ -410,7 +412,7 @@ const TimeEntryForm = (props) => {
           <Form>
             <FormGroup>
               <Label for="dateOfWork">Date</Label>
-              {isAdmin && !fromTimer ? (
+              {hasPermission(role, 'changeIntangibleTimeEntryDate') && !fromTimer ? (
                 <Input
                   type="date"
                   name="dateOfWork"
@@ -523,7 +525,7 @@ const TimeEntryForm = (props) => {
                   name="isTangible"
                   checked={inputs.isTangible}
                   onChange={handleCheckboxChange}
-                  disabled={!isAdmin && !data.isTangible}
+                  disabled={!hasPermission(role, 'toggleTangibleTime') && !data.isTangible}
                 />
                 Tangible&nbsp;
                 <i

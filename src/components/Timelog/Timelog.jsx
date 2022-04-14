@@ -42,6 +42,7 @@ import WeeklySummary from '../WeeklySummary/WeeklySummary';
 import ActiveCell from 'components/UserManagement/ActiveCell';
 import { ProfileNavDot } from 'components/UserManagement/ProfileNavDot';
 import Loading from '../common/Loading';
+import hasPermission from '../../utils/permissions';
 
 class Timelog extends Component {
   constructor(props) {
@@ -203,7 +204,7 @@ class Timelog extends Component {
       this.props.match && this.props.match.params.userId
         ? this.props.match.params.userId
         : this.props.asUser || this.props.auth.user.userid;
-    const isAdmin = this.props.auth.user.role === 'Administrator';
+    const role = this.props.auth.user.role;
     const isOwner = this.props.auth.user.userid === userId;
     const fullName = `${this.props.userProfile.firstName} ${this.props.userProfile.lastName}`;
 
@@ -346,7 +347,7 @@ class Timelog extends Component {
                             </div>
                           </div>
                         ) : (
-                          isAdmin && (
+                          hasPermission(role, 'addTimeEntryOthers') && (
                             <div className="float-right">
                               <div>
                                 <Button color="warning" onClick={this.toggle}>
@@ -363,11 +364,11 @@ class Timelog extends Component {
                             <Button onClick={this.openInfo} color="primary">
                               Close
                             </Button>
-                            {isAdmin && (
+                            {hasPermission(role, 'editTimelogInfo') ? (
                               <Button onClick={this.openInfo} color="secondary">
                                 Edit
                               </Button>
-                            )}
+                            ) : null }
                           </ModalFooter>
                         </Modal>
                         <TimeEntryForm

@@ -12,7 +12,7 @@ import TimeZoneDropDown from '../TimeZoneDropDown';
 import { useSelector } from 'react-redux';
 import { getUserTimeZone } from 'services/timezoneApiService';
 
-const Name = (props) => {
+const Name = props => {
   const {
     userProfile,
     setUserProfile,
@@ -36,7 +36,7 @@ const Name = (props) => {
               id="firstName"
               value={firstName}
               // className={styleProfile.profileText}
-              onChange={(e) => {
+              onChange={e => {
                 setUserProfile({ ...userProfile, firstName: e.target.value.trim() });
                 setFormValid({ ...formValid, firstName: !!e.target.value });
                 setChanged(true);
@@ -55,7 +55,7 @@ const Name = (props) => {
               id="lastName"
               value={lastName}
               // className={styleProfile.profileText}
-              onChange={(e) => {
+              onChange={e => {
                 setUserProfile({ ...userProfile, lastName: e.target.value.trim() });
                 setFormValid({ ...formValid, lastName: !!e.target.value });
                 setChanged(true);
@@ -79,7 +79,7 @@ const Name = (props) => {
   );
 };
 
-const Title = (props) => {
+const Title = props => {
   const { userProfile, setChanged, setUserProfile, isUserAdmin, isUserSelf } = props;
   const { jobTitle } = userProfile;
 
@@ -93,7 +93,7 @@ const Title = (props) => {
               name="title"
               id="jobTitle"
               value={jobTitle}
-              onChange={(e) => {
+              onChange={e => {
                 setUserProfile({ ...userProfile, jobTitle: e.target.value });
                 setChanged(true);
               }}
@@ -113,7 +113,7 @@ const Title = (props) => {
   );
 };
 
-const Email = (props) => {
+const Email = props => {
   const {
     userProfile,
     setUserProfile,
@@ -143,7 +143,7 @@ const Email = (props) => {
               name="email"
               id="email"
               value={email}
-              onChange={(e) => {
+              onChange={e => {
                 setUserProfile({ ...userProfile, email: e.target.value });
                 setFormValid({ ...formValid, email: emailPattern.test(e.target.value) });
                 setChanged(true);
@@ -167,7 +167,7 @@ const Email = (props) => {
     </>
   );
 };
-const formatPhoneNumber = (str) => {
+const formatPhoneNumber = str => {
   // Filter only numbers from the input
   const cleaned = `${str}`.replace(/\D/g, '');
   if (cleaned.length === 10) {
@@ -197,9 +197,15 @@ const formatPhoneNumber = (str) => {
   // Unconventional
   return str;
 };
-const Phone = (props) => {
-  const { userProfile, setUserProfile, handleUserProfile, setChanged, isUserAdmin, isUserSelf } =
-    props;
+const Phone = props => {
+  const {
+    userProfile,
+    setUserProfile,
+    handleUserProfile,
+    setChanged,
+    isUserAdmin,
+    isUserSelf,
+  } = props;
   const { phoneNumber, privacySettings } = userProfile;
   if (isUserAdmin || isUserSelf) {
     return (
@@ -214,7 +220,7 @@ const Phone = (props) => {
             <PhoneInput
               country={'us'}
               value={phoneNumber[0]}
-              onChange={(phoneNumber) => {
+              onChange={phoneNumber => {
                 setUserProfile({ ...userProfile, phoneNumber: phoneNumber.trim() });
                 setChanged(true);
               }}
@@ -226,6 +232,7 @@ const Phone = (props) => {
   }
   return (
     <>
+      {console.log('privacy settings basic info: ', privacySettings)}
       {privacySettings.phoneNumber && (
         <Col>
           <p>{formatPhoneNumber(phoneNumber)}</p>
@@ -235,7 +242,7 @@ const Phone = (props) => {
   );
 };
 
-const BasicInformationTab = (props) => {
+const BasicInformationTab = props => {
   const {
     userProfile,
     setUserProfile,
@@ -249,7 +256,7 @@ const BasicInformationTab = (props) => {
 
   const [timeZoneFilter, setTimeZoneFilter] = useState('');
   const [location, setLocation] = useState('');
-  const key = useSelector((state) => state.timeZoneAPI.userAPIKey);
+  const key = useSelector(state => state.timeZoneAPI.userAPIKey);
 
   const onClickGetTimeZone = () => {
     if (!location) {
@@ -258,7 +265,7 @@ const BasicInformationTab = (props) => {
     }
     if (key) {
       getUserTimeZone(location, key)
-        .then((response) => {
+        .then(response => {
           if (
             response.data.status.code === 200 &&
             response.data.results &&
@@ -270,7 +277,7 @@ const BasicInformationTab = (props) => {
             alert('Invalid location or ' + response.data.status.message);
           }
         })
-        .catch((err) => console.log(err));
+        .catch(err => console.log(err));
     }
   };
   return (
@@ -380,7 +387,7 @@ const BasicInformationTab = (props) => {
               name="collaborationPreference"
               id="collaborationPreference"
               value={userProfile.collaborationPreference}
-              onChange={(e) => {
+              onChange={e => {
                 setUserProfile({ ...userProfile, collaborationPreference: e.target.value });
                 setChanged(true);
               }}
@@ -397,7 +404,7 @@ const BasicInformationTab = (props) => {
           <FormGroup>
             <select
               value={userProfile.role}
-              onChange={(e) => {
+              onChange={e => {
                 setUserProfile({ ...userProfile, role: e.target.value });
                 setChanged(true);
               }}
@@ -422,7 +429,7 @@ const BasicInformationTab = (props) => {
           <Col md="6">
             <Row>
               <Col md="6">
-                <Input onChange={(e) => setLocation(e.target.value)} />
+                <Input onChange={e => setLocation(e.target.value)} />
               </Col>
               <Col md="6">
                 <div className="w-100 pt-1 mb-2 mx-auto">
@@ -444,7 +451,7 @@ const BasicInformationTab = (props) => {
           {props.isUserAdmin && (
             <TimeZoneDropDown
               filter={timeZoneFilter}
-              onChange={(e) => {
+              onChange={e => {
                 setUserProfile({ ...userProfile, timeZone: e.target.value });
                 setChanged(true);
               }}
