@@ -3,8 +3,8 @@ import { DELETE } from './../../../languages/en/ui';
 import './../projects.css';
 import { Link } from 'react-router-dom';
 import { NavItem } from 'reactstrap';
-import { UserRole } from './../../../utils/enums';
 import { connect } from 'react-redux';
+import hasPermission from 'utils/permissions';
 
 const Project = (props) => {
   console.log(props.auth.user.role);
@@ -15,6 +15,8 @@ const Project = (props) => {
   const [category, setCategory] = useState(props.category);
   const [active, setActive] = useState(props.active);
   const [firstLoad, setFirstLoad] = useState(true);
+  const role = props.auth.user.role;
+
   const updateActive = () => {
     props.onClickActive(props.projectId, name, category, active);
     setActive(!active);
@@ -50,7 +52,7 @@ const Project = (props) => {
         />
       </td>
       <td className="projects__category--input">
-        {props.auth.user.role === UserRole.Administrator ? (
+        {hasPermission(role, 'editProjectCategory') ? (
           <select
             value={category}
             onChange={(e) => {
@@ -109,7 +111,7 @@ const Project = (props) => {
         </NavItem>
       </td>
 
-      {props.auth.user.role === UserRole.Administrator ? (
+      {hasPermission(role, 'deleteProject') ? (
         <td>
           <button
             type="button"

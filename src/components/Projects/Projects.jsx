@@ -118,6 +118,11 @@ export class Projects extends Component {
     if (status === 400 && trackModelMsg) {
       showModalMsg = true;
     }
+
+    const role = this.props.state.auth.user.role;
+
+    console.log('role in projects: ', this.props.state.auth.user.role);
+
     // Display project lists
     let ProjectsList = [];
     if (projects.length > 0) {
@@ -156,7 +161,7 @@ export class Projects extends Component {
           <AddProject addNewProject={this.addProject} />
           <table className="table table-bordered table-responsive-sm">
             <thead>
-              <ProjectTableHeader />
+              <ProjectTableHeader role={role} />
             </thead>
             <tbody>{ProjectsList}</tbody>
           </table>

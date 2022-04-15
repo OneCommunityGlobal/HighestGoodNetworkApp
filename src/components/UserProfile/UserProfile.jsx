@@ -612,25 +612,6 @@ const UserProfile = props => {
           </Col>
         </Row>
       </Container>
-      {/* </Row>
-          </Col>
-
-        </div>
-
-        <div >
-
-          <UserTeamProjectContainer
-            userTeams={this.state ? this.state.userProfile.teams : []}
-            userProjects={this.state ? this.state.userProfile.projects : []}
-            teamsData={props ? props.allTeams.allTeamsData : []}
-            projectsData={props ? props.allProjects.projects : []}
-            onAssignTeam={this.onAssignTeam}
-            onAssignProject={this.onAssignProject}
-            onDeleteteam={this.onDeleteTeam}
-            onDeleteProject={this.onDeleteProject}
-            isUserAdmin={isUserAdmin} />
-
-        </div> */}
     </div>
   );
 };

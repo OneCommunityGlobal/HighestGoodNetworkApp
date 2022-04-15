@@ -41,7 +41,7 @@ const UserProfileModal = (props) => {
     }
   }
 
-  //const [modal, setModal] = useState(false)
+  // const [modal, setModal] = useState(false)
 
   const [linkName, setLinkName] = useState('');
   const [linkURL, setLinkURL] = useState('');

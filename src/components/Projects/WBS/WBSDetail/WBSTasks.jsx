@@ -141,7 +141,6 @@ const WBSTasks = (props) => {
           </ol>
         </nav>
 
-        {console.log(props.state.auth.user.role)}
         {hasPermission(props.state.auth.user.role, 'addTask') ? (
           <AddTaskModal
             key="task_modal_null"

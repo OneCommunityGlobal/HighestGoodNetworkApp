@@ -15,6 +15,11 @@ const permissions = {
         'deleteTimeEntry',
         'deleteWbs',
         'addTask',
+        'deleteTask',
+        'editTask',
+        'addWbs',
+        'deleteProject',
+        'editProjectCategory',
     ],
     'Volunteer': [
         'V'
@@ -44,6 +49,11 @@ const permissions = {
         'deleteTimeEntry',
         'deleteWbs',
         'addTask',
+        'deleteTask',
+        'editTask',
+        'addWbs',
+        'deleteProject',
+        'editProjectCategory',
     ],
 };
 
