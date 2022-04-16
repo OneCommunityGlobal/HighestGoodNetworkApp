@@ -70,6 +70,9 @@ const server = setupServer(
   rest.get(ApiEndpoint + '/userprofile/*', (req, res, ctx) => {
     return res(ctx.status(200), ctx.json({}));
   }),
+  rest.get('http://*/hash.txt', (req, res, ctx) => {
+    return res(ctx.status(200), ctx.json({}));
+  }),
   rest.get(userProjectsUrl, (req, res, ctx) => {
     return res(ctx.status(200), ctx.json([]));
   }),
