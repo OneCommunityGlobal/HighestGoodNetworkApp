@@ -53,6 +53,9 @@ const server = setupServer(
   rest.get(timerUrl, (req, res, ctx) => {
     return res(ctx.status(200), ctx.json({}));
   }),
+  rest.get('http://*/hash.txt', (req, res, ctx) => {
+    return res(ctx.status(200), ctx.json({}));
+  }),
   rest.get('*', (req, res, ctx) => {
     console.error(
       `Please add request handler for ${req.url.toString()} in your MSW server requests.`,
