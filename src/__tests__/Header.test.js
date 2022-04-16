@@ -64,6 +64,9 @@ const server = setupServer(
   rest.get(timerUrl, (req, res, ctx) => {
     return res(ctx.status(200), ctx.json({}));
   }),
+  rest.get('http://*/hash.txt', (req, res, ctx) => {
+    return res(ctx.status(200), ctx.json({}));
+  }),
   rest.get('*', (req, res, ctx) => {
     console.error(
       `Please add request handler for ${req.url.toString()} in your MSW server requests.`,
@@ -136,7 +139,7 @@ describe('Header structure', () => {
       [TEAMS, '/teams'],
       [VIEW_PROFILE, `/userprofile/${mockState.auth.user.userid}`],
       [UPDATE_PASSWORD, `/updatepassword/${mockState.auth.user.userid}`],
-      [LOGOUT, '/logout'],
+      [LOGOUT, ''],
     ];
 
     for (let i = 0; i < linkItems.length; i++) {

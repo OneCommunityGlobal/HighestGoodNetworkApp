@@ -112,135 +112,139 @@ const TeamMemberTasks = (props) => {
           membersId.push(uniqueMembers[i]._id);
         }
 
-        memberTimeEntriesPromises.push(
-          httpService.get(ENDPOINTS.TIME_ENTRIES_USER_LIST(membersId)).catch((err) => { }),
-        );
+        if (membersId.length) {
+          memberTimeEntriesPromises.push(
+            httpService.get(ENDPOINTS.TIME_ENTRIES_USER_LIST(membersId)).catch((err) => { }),
+          );
+        }
 
-        Promise.all(memberTimeEntriesPromises).then((data) => {
-          // console.log('time entries: ', data);
-          if (data[0].data.length === 0) {
-            for (let i = 0; i < uniqueMembers.length; i++) {
-              uniqueMembers[i] = {
-                ...uniqueMembers[i],
-                timeEntries: [],
-              };
-            }
-          } else {
-            for (let i = 0; i < uniqueMembers.length; i++) {
-              const entries = [];
-              for (let j = 0; j < data[0].data.length; j++) {
-                if (uniqueMembers[i]._id === data[0].data[j].personId) {
-                  entries.push(data[0].data[j]);
-                  // console.log('push');
-                }
-              }
-              uniqueMembers[i] = {
-                ...uniqueMembers[i],
-                timeEntries: entries,
-              };
-            }
-          }
-          // console.log('members after entries: ', uniqueMembers);
-
-          // fetch all tasks for each member
-          teamMemberTasksPromises.push(httpService.get(ENDPOINTS.TASKS_BY_USERID(membersId)).catch((err) => { if (err.status !== 401) { console.log(err); } }));
-
-          Promise.all(teamMemberTasksPromises).then(async (data) => {
-            // await console.log('tasks by userid', data);
-
-
-            // merge assigned tasks into each user obj
-            for (let i = 0; i < uniqueMembers.length; i++) {
-              const userTasks = [];
-              for (let j = 0; j < data[0].data.length; j++) {
-                for (let k = 0; k < data[0].data[j].resources.length; k++) {
-                  if (data[0].data[j].resources[k].userID === uniqueMembers[i]._id) {
-                    userTasks.push(data[0].data[j]);
-                  }
-                }
-              }
-              uniqueMembers[i] = {
-                ...uniqueMembers[i],
-                tasks: userTasks,
-              };
-            }
-
-            // console.log('members after tasks: ', uniqueMembers);
-
-            try {
+        if (memberTimeEntriesPromises.length) {
+          Promise.all(memberTimeEntriesPromises).then((data) => {
+            // console.log('time entries: ', data);
+            if (data[0].data.length === 0) {
               for (let i = 0; i < uniqueMembers.length; i++) {
-                const user = uniqueMembers[i];
-                const userLeaderBoardData = uniqueMembers.find(member => member._id === user._id);
-                let userWeeklyCommittedHours = 0;
-                if (userLeaderBoardData) {
-                  userWeeklyCommittedHours = userLeaderBoardData.weeklyComittedHours;
+                uniqueMembers[i] = {
+                  ...uniqueMembers[i],
+                  timeEntries: [],
+                };
+              }
+            } else {
+              for (let i = 0; i < uniqueMembers.length; i++) {
+                const entries = [];
+                for (let j = 0; j < data[0].data.length; j++) {
+                  if (uniqueMembers[i]._id === data[0].data[j].personId) {
+                    entries.push(data[0].data[j]);
+                    // console.log('push');
+                  }
                 }
                 uniqueMembers[i] = {
                   ...uniqueMembers[i],
-                  weeklyCommittedHours: userWeeklyCommittedHours,
+                  timeEntries: entries,
                 };
               }
+            }
+            // console.log('members after entries: ', uniqueMembers);
 
-              // for each task, must fetch the projectId of its wbs in order to generate appropriate link
-              // currently fetches all projects, should consider refactoring if number of projects increases
-              const WBSRes = await httpService.get(ENDPOINTS.WBS_ALL).catch((err) => { if (err.status === 401) { loggedOut = true; } });
-              const allWBS = WBSRes.data;
-              // console.log('tasks', WBSRes.data);
+            // fetch all tasks for each member
+            teamMemberTasksPromises.push(httpService.get(ENDPOINTS.TASKS_BY_USERID(membersId)).catch((err) => { if (err.status !== 401) { console.log(err); } }));
 
-              // calculate hours done in current week and add to user obj for ease of access
+            Promise.all(teamMemberTasksPromises).then(async (data) => {
+              // await console.log('tasks by userid', data);
+
+
+              // merge assigned tasks into each user obj
               for (let i = 0; i < uniqueMembers.length; i++) {
-                let hoursCurrentWeek = 0;
-                if (uniqueMembers[i].timeEntries.length > 0) {
-                  hoursCurrentWeek = uniqueMembers[i].timeEntries.reduce(
-                    (acc, current) => Number(current.hours) + acc,
-                    0,
-                  );
+                const userTasks = [];
+                for (let j = 0; j < data[0].data.length; j++) {
+                  for (let k = 0; k < data[0].data[j].resources.length; k++) {
+                    if (data[0].data[j].resources[k].userID === uniqueMembers[i]._id) {
+                      userTasks.push(data[0].data[j]);
+                    }
+                  }
                 }
-
-                finalData[i] = {
+                uniqueMembers[i] = {
                   ...uniqueMembers[i],
-                  hoursCurrentWeek,
+                  tasks: userTasks,
                 };
               }
 
-              // attach projectId of each task onto final user objects
-              for (let i = 0; i < uniqueMembers.length; i++) {
-                for (let j = 0; j < uniqueMembers[i].tasks.length; j++) {
-                  const { wbsId } = uniqueMembers[i].tasks[j];
-                  const project = allWBS.find(wbs => wbs._id === wbsId);
-                  finalData[i].tasks[j] = {
-                    ...finalData[i].tasks[j],
-                    projectId: project ? project.projectId : '',
+              // console.log('members after tasks: ', uniqueMembers);
+
+              try {
+                for (let i = 0; i < uniqueMembers.length; i++) {
+                  const user = uniqueMembers[i];
+                  const userLeaderBoardData = uniqueMembers.find(member => member._id === user._id);
+                  let userWeeklyCommittedHours = 0;
+                  if (userLeaderBoardData) {
+                    userWeeklyCommittedHours = userLeaderBoardData.weeklyComittedHours;
+                  }
+                  uniqueMembers[i] = {
+                    ...uniqueMembers[i],
+                    weeklyCommittedHours: userWeeklyCommittedHours,
                   };
                 }
-              }
 
-              let loggedOut = false;
+                // for each task, must fetch the projectId of its wbs in order to generate appropriate link
+                // currently fetches all projects, should consider refactoring if number of projects increases
+                const WBSRes = await httpService.get(ENDPOINTS.WBS_ALL).catch((err) => { if (err.status === 401) { loggedOut = true; } });
+                const allWBS = WBSRes.data;
+                // console.log('tasks', WBSRes.data);
 
-              // console.log('member tasks in obj: ', uniqueMembers);
+                // calculate hours done in current week and add to user obj for ease of access
+                for (let i = 0; i < uniqueMembers.length; i++) {
+                  let hoursCurrentWeek = 0;
+                  if (uniqueMembers[i].timeEntries.length > 0) {
+                    hoursCurrentWeek = uniqueMembers[i].timeEntries.reduce(
+                      (acc, current) => Number(current.hours) + acc,
+                      0,
+                    );
+                  }
 
-              if (!loggedOut) {
-                // sort each members' tasks by last modified time
-                finalData.forEach((user) => {
-                  user.tasks.sort((task1, task2) => {
-                    const date1 = new Date(task1.modifiedDatetime).valueOf();
-                    const date2 = new Date(task2.modifiedDatetime).valueOf();
-                    const timeDifference = date2 - date1;
-                    return timeDifference;
+                  finalData[i] = {
+                    ...uniqueMembers[i],
+                    hoursCurrentWeek,
+                  };
+                }
+
+                // attach projectId of each task onto final user objects
+                for (let i = 0; i < uniqueMembers.length; i++) {
+                  for (let j = 0; j < uniqueMembers[i].tasks.length; j++) {
+                    const { wbsId } = uniqueMembers[i].tasks[j];
+                    const project = allWBS.find(wbs => wbs._id === wbsId);
+                    finalData[i].tasks[j] = {
+                      ...finalData[i].tasks[j],
+                      projectId: project ? project.projectId : '',
+                    };
+                  }
+                }
+
+                let loggedOut = false;
+
+                // console.log('member tasks in obj: ', uniqueMembers);
+
+                if (!loggedOut) {
+                  // sort each members' tasks by last modified time
+                  finalData.forEach((user) => {
+                    user.tasks.sort((task1, task2) => {
+                      const date1 = new Date(task1.modifiedDatetime).valueOf();
+                      const date2 = new Date(task2.modifiedDatetime).valueOf();
+                      const timeDifference = date2 - date1;
+                      return timeDifference;
+                    });
                   });
-                });
 
-                // console.log('final data ', finalData)
-                setFetched(true);
-                setTeams(finalData);
-                // });
+                  // console.log('final data ', finalData)
+                  setFetched(true);
+                  setTeams(finalData);
+                  // });
+                }
+              } catch (err) {
+                // catch error on logout
+                console.log('err1', err);
               }
-            } catch (err) {
-              // catch error on logout
-              console.log('err1', err);
-            }
+            });
           });
-        });
+        }
       });
     };
     fetchData();
