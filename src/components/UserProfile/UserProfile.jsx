@@ -242,7 +242,6 @@ const UserProfile = (props) => {
   };
 
   const handleSubmit = async () => {
-    console.log('userProfile at submit: ', userProfile);
     try {
       await props.updateUserProfile(props.match.params.userId, userProfile);
       await loadUserProfile();

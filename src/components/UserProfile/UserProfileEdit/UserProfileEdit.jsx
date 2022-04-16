@@ -160,7 +160,6 @@ class UserProfileEdit extends Component {
   };
 
   saveChanges = () => {
-    console.log('this.state.userProfile: ', this.state.userProfile);
     this.props.updateUserProfile(this.props.match.params.userId, this.state.userProfile);
   };
 

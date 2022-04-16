@@ -31,7 +31,6 @@ const SaveButton = (props) => {
   const [randomMessage, setRandomMessage] = useState(getRandomMessage());
 
   const handleSave = () => {
-    console.log('saving')
     handleSubmit();
     setModal(true);
   };
