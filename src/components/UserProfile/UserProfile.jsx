@@ -347,7 +347,7 @@ const UserProfile = props => {
           id={id}
           isUserAdmin={isUserAdmin}
           handleLinkModel={props.handleLinkModel}
-          //setIsValid={setIsValid(true)}
+          // setIsValid={setIsValid(true)}
         />
       )}
       <TabToolTips />

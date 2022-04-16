@@ -35,7 +35,6 @@ import {
   DropdownMenu,
   DropdownItem,
 } from 'reactstrap';
-import { UserRole } from '../../utils/enums';
 import hasPermission from 'utils/permissions';
 import './Header.css';
 

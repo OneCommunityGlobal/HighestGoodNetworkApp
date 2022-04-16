@@ -43,16 +43,17 @@ const Project = (props) => {
         <div>{props.index + 1}</div>
       </th>
       <td className="projects__name--input">
+        {hasPermission(role, 'editProject') ?(
         <input
           type="text"
           className="form-control"
           value={name}
           onChange={(e) => setName(e.target.value)}
           onBlur={updateProject}
-        />
+        /> ) : (name)}
       </td>
       <td className="projects__category--input">
-        {hasPermission(role, 'editProjectCategory') ? (
+        {hasPermission(role, 'editProject') ? (
           <select
             value={category}
             onChange={(e) => {
