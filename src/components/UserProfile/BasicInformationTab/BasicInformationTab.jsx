@@ -414,7 +414,7 @@ const BasicInformationTab = (props) => {
           </FormGroup>
         </Col>
       </Row>
-      {props.isUserAdmin && (
+      {(props.isUserAdmin || props.isUserSelf) && (
         <Row>
           <Col md={{ size: 6, offset: 0 }} className="text-md-left my-2">
             <Label>Location</Label>
@@ -422,7 +422,14 @@ const BasicInformationTab = (props) => {
           <Col md="6">
             <Row>
               <Col md="6">
-                <Input onChange={(e) => setLocation(e.target.value)} />
+                <Input
+                  onChange={(e) => {
+                    setLocation(e.target.value)
+                    setUserProfile({ ...userProfile, location: e.target.value })
+                    setChanged(true)
+                  }}
+                  value={userProfile.location}
+                />
               </Col>
               <Col md="6">
                 <div className="w-100 pt-1 mb-2 mx-auto">
