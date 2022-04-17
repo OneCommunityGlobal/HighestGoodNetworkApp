@@ -159,7 +159,7 @@ const Email = (props) => {
   }
   return (
     <>
-      {privacySettings.email && (
+      {privacySettings?.email && (
         <Col>
           <p>{email}</p>
         </Col>
@@ -226,7 +226,7 @@ const Phone = (props) => {
   }
   return (
     <>
-      {privacySettings.phoneNumber && (
+      {privacySettings?.phoneNumber && (
         <Col>
           <p>{formatPhoneNumber(phoneNumber)}</p>
         </Col>
@@ -414,7 +414,7 @@ const BasicInformationTab = (props) => {
           </FormGroup>
         </Col>
       </Row>
-      {props.isUserAdmin && (
+      {(props.isUserAdmin || props.isUserSelf) && (
         <Row>
           <Col md={{ size: 6, offset: 0 }} className="text-md-left my-2">
             <Label>Location</Label>
@@ -422,7 +422,14 @@ const BasicInformationTab = (props) => {
           <Col md="6">
             <Row>
               <Col md="6">
-                <Input onChange={(e) => setLocation(e.target.value)} />
+                <Input
+                  onChange={(e) => {
+                    setLocation(e.target.value)
+                    setUserProfile({ ...userProfile, location: e.target.value })
+                    setChanged(true)
+                  }}
+                  value={userProfile.location}
+                />
               </Col>
               <Col md="6">
                 <div className="w-100 pt-1 mb-2 mx-auto">
@@ -470,8 +477,8 @@ const BasicInformationTab = (props) => {
             {userProfile.isActive
               ? 'Active'
               : userProfile.reactivationDate
-              ? 'Paused until ' + moment(userProfile.reactivationDate).format('YYYY-MM-DD')
-              : 'Inactive'}
+                ? 'Paused until ' + moment(userProfile.reactivationDate).format('YYYY-MM-DD')
+                : 'Inactive'}
           </Label>
           &nbsp;
           {props.isUserAdmin && <PauseAndResumeButton isBigBtn={true} userProfile={userProfile} />}
