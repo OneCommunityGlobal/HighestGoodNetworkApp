@@ -43,17 +43,17 @@ export const Header = (props) => {
   const [isOpen, setIsOpen] = useState(false);
   const [logoutPopup, setLogoutPopup] = useState(false);
 
-  /* useEffect(() => {
+  useEffect(() => {
     if(props.auth.isAuthenticated){
       props.getHeaderData(props.auth.user.userid);
       props.getTimerData(props.auth.user.userid);
     }
-  }, []); */
+  }, []);
 
-  useEffect(() => {
-    props.getHeaderData(props.auth.user.userid);
-    props.getTimerData(props.auth.user.userid);
-  }, [props.auth]);
+  // useEffect(() => {
+  //   props.getHeaderData(props.auth.user.userid);
+  //   props.getTimerData(props.auth.user.userid);
+  // }, [props.auth]);
 
   const toggle = () => {
     setIsOpen(prevIsOpen => !prevIsOpen);
