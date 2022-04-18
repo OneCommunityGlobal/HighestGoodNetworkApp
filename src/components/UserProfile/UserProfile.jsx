@@ -27,7 +27,7 @@ import BasicInformationTab from './BasicInformationTab/BasicInformationTab';
 import VolunteeringTimeTab from './VolunteeringTimeTab/VolunteeringTimeTab';
 import SaveButton from './UserProfileEdit/SaveButton';
 import UserLinkLayout from './UserLinkLayout';
-import BlueSqaureLayout from './BlueSqaureLayout';
+import BlueSquareLayout from './BlueSquareLayout';
 import TabToolTips from './ToolTips/TabToolTips';
 import BasicToolTips from './ToolTips/BasicTabTips';
 import ResetPasswordButton from '../UserManagement/ResetPasswordButton';
@@ -140,7 +140,6 @@ const UserProfile = (props) => {
     } else {
       newUserProfile.projects = [assignedProject];
     }
-
     setUserProfile(newUserProfile);
     setChanged(true);
   };
@@ -345,7 +344,7 @@ const UserProfile = (props) => {
           id={id}
           isUserAdmin={isUserAdmin}
           handleLinkModel={props.handleLinkModel}
-          //setIsValid={setIsValid(true)}
+        //setIsValid={setIsValid(true)}
         />
       )}
       <TabToolTips />
@@ -454,7 +453,7 @@ const UserProfile = (props) => {
                 updateLink={updateLink}
                 handleLinkModel={props.handleLinkModel}
               />
-              <BlueSqaureLayout
+              <BlueSquareLayout
                 userProfile={userProfile}
                 handleUserProfile={handleUserProfile}
                 handleSaveError={props.handleSaveError}
