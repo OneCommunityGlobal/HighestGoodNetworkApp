@@ -21,6 +21,9 @@ const permissions = {
         'addProject',
         'deleteProject',
         'editProject',
+        'findUserInProject',
+        'assignUserInProject',
+        'unassignUserInProject',
     ],
     'Volunteer': [
         'V'
@@ -56,6 +59,9 @@ const permissions = {
         'addProject',
         'deleteProject',
         'editProject',
+        'findUserInProject',
+        'assignUserInProject',
+        'unassignUserInProject',
     ],
 };
 

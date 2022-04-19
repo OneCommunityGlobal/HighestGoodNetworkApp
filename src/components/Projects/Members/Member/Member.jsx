@@ -6,7 +6,7 @@
 import React, { useState } from 'react';
 import { connect } from 'react-redux';
 import { assignProject } from './../../../../actions/projectMembers';
-import { UserRole } from './../../../../utils/enums';
+import hasPermission from 'utils/permissions';
 
 const Member = (props) => {
   const [role] = useState(props.state ? props.state.auth.user.role : null);
@@ -19,7 +19,7 @@ const Member = (props) => {
         <td className="members__name">
           <a href={`/userprofile/${props.uid}`}>{props.fullName}</a>
         </td>
-        {role === UserRole.Administrator ? (
+        {hasPermission(role, 'unassignUserInProject',) ? (
           <td className="members__assign">
             <button
               className="btn btn-outline-danger btn-sm"

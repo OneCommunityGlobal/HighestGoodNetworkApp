@@ -35,16 +35,16 @@ import {
   DropdownMenu,
   DropdownItem,
 } from 'reactstrap';
-import { UserRole } from '../../utils/enums';
 import { Logout } from '../Logout/Logout';
 import './Header.css';
+import hasPermission from '../../utils/permissions';
 
-export const Header = (props) => {
+export const Header = props => {
   const [isOpen, setIsOpen] = useState(false);
   const [logoutPopup, setLogoutPopup] = useState(false);
 
   useEffect(() => {
-    if(props.auth.isAuthenticated){
+    if (props.auth.isAuthenticated) {
       props.getHeaderData(props.auth.user.userid);
       props.getTimerData(props.auth.user.userid);
     }
@@ -97,9 +97,7 @@ export const Header = (props) => {
                   <DropdownItem tag={Link} to="/reports">
                     {REPORTS}
                   </DropdownItem>
-                  {user.role === UserRole.Administrator ||
-                  user.role === UserRole.Manager ||
-                  user.role === UserRole.CoreTeam ? (
+                  {hasPermission(user.role, 'seeWeeklySummaryReports') ? (
                     <DropdownItem tag={Link} to="/weeklysummariesreport">
                       {WEEKLY_SUMMARIES_REPORT}
                     </DropdownItem>
@@ -123,14 +121,14 @@ export const Header = (props) => {
                   {OTHER_LINKS}
                 </DropdownToggle>
                 <DropdownMenu>
-                  {user.role === UserRole.Administrator ? (
+                  {hasPermission(user.role, 'seeUserManagement') ? (
                     <DropdownItem tag={Link} to="/usermanagement">
                       {USER_MANAGEMENT}
                     </DropdownItem>
                   ) : (
                     <React.Fragment></React.Fragment>
                   )}
-                  {user.role === UserRole.Administrator ? (
+                  {hasPermission(user.role, 'seeBadgeManagement') ? (
                     <DropdownItem tag={Link} to="/badgemanagement">
                       {BADGE_MANAGEMENT}
                     </DropdownItem>
@@ -143,7 +141,7 @@ export const Header = (props) => {
                   <DropdownItem tag={Link} to="/teams">
                     {TEAMS}
                   </DropdownItem>
-                  {user.role === UserRole.Administrator ? (
+                  {hasPermission(user.role, 'seePopupManagement') ? (
                     <>
                       <DropdownItem divider />
                       <DropdownItem tag={Link} to={`/admin/`}>
@@ -178,7 +176,7 @@ export const Header = (props) => {
                     {UPDATE_PASSWORD}
                   </DropdownItem>
                   <DropdownItem divider />
-                  <DropdownItem tag={Link} onClick={openModal}>
+                  <DropdownItem tag={Link} to='/#' onClick={openModal}>
                     {LOGOUT}
                   </DropdownItem>
                 </DropdownMenu>
@@ -191,7 +189,7 @@ export const Header = (props) => {
   );
 };
 
-const mapStateToProps = (state) => ({
+const mapStateToProps = state => ({
   auth: state.auth,
   userProfile: state.userProfile,
 });
