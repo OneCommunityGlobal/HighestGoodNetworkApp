@@ -16,6 +16,7 @@ import FeaturedBadges from './FeaturedBadges';
 import BadgeReport from '../Badge/BadgeReport';
 import AssignBadgePopup from './AssignBadgePopup';
 import { clearSelected } from 'actions/badgeManagement';
+import hasPermission from '../../utils/permissions';
 
 const Badges = (props) => {
   const [isOpen, setOpen] = useState(false);
@@ -51,19 +52,18 @@ const Badges = (props) => {
             </Button>
             <Modal size="lg" isOpen={isOpen} toggle={toggle}>
               <ModalHeader toggle={toggle}>Full View of Badge History</ModalHeader>
-              {/* <ModalBody><BadgeReport badges={props.userProfile.badgeCollection} userId={props.userId} isAdmin={props.isAdmin} firstName={props.userProfile.firstName} lastName={props.userProfile.lastName} close={toggle}/></ModalBody> */}
               <ModalBody>
                 <BadgeReport
                   badges={props.userProfile.badgeCollection}
                   userId={props.userProfile._id}
-                  isAdmin={props.isAdmin}
+                  role={props.role}
                   firstName={props.userProfile.firstName}
                   lastName={props.userProfile.lastName}
                   close={toggle}
                 />
               </ModalBody>
             </Modal>
-            {props.isAdmin && (
+            {hasPermission(props.role, 'assignBadgeOthers') && (
               <>
                 <Button className="btn--dark-sea-green float-right mr-2" onClick={assignToggle}>
                   Assign Badges

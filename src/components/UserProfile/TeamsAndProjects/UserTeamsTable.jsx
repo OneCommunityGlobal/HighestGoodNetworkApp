@@ -1,6 +1,7 @@
 import React from 'react';
 import { Button, Col } from 'reactstrap';
 import './TeamsAndProjects.css';
+import hasPermission from '../../../utils/permissions';
 
 const UserTeamsTable = (props) => (
   // debugger;
@@ -15,7 +16,7 @@ const UserTeamsTable = (props) => (
         </Col>
         {props.edit && (
           <Col md="5">
-            {props.isUserAdmin ? (
+            {hasPermission(props.role, 'assignTeamToUser') ? (
               <Button
                 className="btn-addteam"
                 color="primary"
@@ -38,7 +39,9 @@ const UserTeamsTable = (props) => (
           <tr>
             <th>#</th>
             <th>Team Name</th>
-            <th>{}</th>
+            {hasPermission(props.role, 'assignTeamToUser') ? (
+              <th>{}</th>
+            ) : null }
           </tr>
         </thead>
         <tbody>
@@ -50,7 +53,7 @@ const UserTeamsTable = (props) => (
                 {props.edit && (
                   <td>
                     <Button
-                      disabled={!props.isUserAdmin}
+                      disabled={!hasPermission(props.role, 'assignTeamToUser')}
                       color="danger"
                       onClick={(e) => {
                         props.onDeleteClick(team._id);

@@ -1,13 +1,14 @@
 import React from 'react';
 import UserLinks from './UserLinks';
 import LinkModButton from './UserProfileEdit/LinkModButton';
+import hasPermission from 'utils/permissions';
 
 const UserLinkLayout = (props) => {
-  const { isUserAdmin, isUserSelf, userProfile, updateLink, handleLinkModel, setChanged } = props;
+  const { isUserAdmin, isUserSelf, userProfile, updateLink, handleLinkModel, setChanged, role } = props;
 
   const { adminLinks, personalLinks } = userProfile;
 
-  const canEdit = isUserAdmin || isUserSelf;
+  const canEdit = hasPermission(role, 'editUserProfile') || isUserSelf;
 
   return (
     <div data-testid="user-link">
@@ -18,6 +19,7 @@ const UserLinkLayout = (props) => {
           updateLink={updateLink}
           isUserAdmin={isUserAdmin}
           setChanged={setChanged}
+          role={props.role}
         />
       ) : null}
       <UserLinks

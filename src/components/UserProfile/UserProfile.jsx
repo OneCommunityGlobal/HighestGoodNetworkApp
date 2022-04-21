@@ -36,6 +36,7 @@ import TimeEntryEditHistory from './TimeEntryEditHistory.jsx';
 import { ENDPOINTS } from 'utils/URL';
 import ActiveCell from 'components/UserManagement/ActiveCell';
 import axios from 'axios';
+import hasPermission from 'utils/permissions';
 
 const UserProfile = props => {
   /* Constant values */
@@ -65,7 +66,6 @@ const UserProfile = props => {
 
   /* useEffect functions */
   useEffect(() => {
-    console.log('onMount');
     loadUserProfile();
   }, []);
 
@@ -329,7 +329,7 @@ const UserProfile = props => {
 
   const isUserSelf = targetUserId === requestorId;
   const isUserAdmin = requestorRole === 'Administrator';
-  const canEdit = isUserAdmin || isUserSelf;
+  const canEdit = hasPermission(requestorRole, 'editUserProfile') || isUserSelf;
 
   return (
     <div>
@@ -346,7 +346,8 @@ const UserProfile = props => {
           id={id}
           isUserAdmin={isUserAdmin}
           handleLinkModel={props.handleLinkModel}
-        //setIsValid={setIsValid(true)}
+          role={requestorRole}
+          //setIsValid={setIsValid(true)}
         />
       )}
       <TabToolTips />
@@ -397,7 +398,7 @@ const UserProfile = props => {
                 className="fa fa-info-circle"
                 onClick={toggleInfoModal}
               />{' '}
-              {isUserAdmin && (
+              {hasPermission(requestorRole, 'changeUserStatus') && (
                 <>
                   <ActiveCell
                     isActive={userProfile.isActive}
@@ -417,7 +418,7 @@ const UserProfile = props => {
                   &nbsp;
                 </>
               )}
-              {isUserAdmin && (
+              {hasPermission(requestorRole, 'seeUserTimelog') && (
                 <i
                   data-toggle="tooltip"
                   className="fa fa-clock-o"
@@ -441,6 +442,7 @@ const UserProfile = props => {
               isAdmin={isUserAdmin}
               userProfile={userProfile}
               setUserProfile={setUserProfile}
+              role={requestorRole}
             />
           </Col>
         </Row>
@@ -454,6 +456,7 @@ const UserProfile = props => {
                 setChanged={setChanged}
                 updateLink={updateLink}
                 handleLinkModel={props.handleLinkModel}
+                role={requestorRole}
               />
               <BlueSquareLayout
                 userProfile={userProfile}
@@ -462,6 +465,7 @@ const UserProfile = props => {
                 handleBlueSquare={handleBlueSquare}
                 isUserAdmin={isUserAdmin}
                 isUserSelf={isUserSelf}
+                role={requestorRole}
               />
             </div>
           </Col>
@@ -525,7 +529,9 @@ const UserProfile = props => {
               style={{ border: 0 }}
             >
               <TabPane tabId="1">
+              {console.log('USER ROLE:', requestorRole)}
                 <BasicInformationTab
+                  role={requestorRole}
                   userProfile={userProfile}
                   setUserProfile={setUserProfile}
                   setChanged={setChanged}
@@ -544,6 +550,7 @@ const UserProfile = props => {
                   setChanged={setChanged}
                   isUserAdmin={isUserAdmin}
                   isUserSelf={isUserSelf}
+                  role={requestorRole}
                 />
               </TabPane>
               <TabPane tabId="3">
@@ -553,7 +560,8 @@ const UserProfile = props => {
                   onAssignTeam={onAssignTeam}
                   onDeleteteam={onDeleteTeam}
                   isUserAdmin={isUserAdmin}
-                  edit={isUserAdmin}
+                  edit={canEdit}
+                  role={requestorRole}
                 />
               </TabPane>
               <TabPane tabId="4">
@@ -563,7 +571,8 @@ const UserProfile = props => {
                   onAssignProject={onAssignProject}
                   onDeleteProject={onDeleteProject}
                   isUserAdmin={isUserAdmin}
-                  edit={isUserAdmin}
+                  edit={canEdit}
+                  role={requestorRole}
                 />
               </TabPane>
               <TabPane tabId="5">
@@ -572,6 +581,7 @@ const UserProfile = props => {
                   setUserProfile={setUserProfile}
                   setChanged={setChanged}
                   isAdmin={isUserAdmin}
+                  role={requestorRole}
                 />
               </TabPane>
             </TabContent>
@@ -580,7 +590,7 @@ const UserProfile = props => {
         <Row>
           <Col md="4"></Col>
           <Col md="8">
-            {requestorRole === 'Administrator' && canEdit && !isUserSelf && (
+            {hasPermission(requestorRole, 'resetPasswordOthers') && canEdit && !isUserSelf && (
               <ResetPasswordButton className="mr-1" user={userProfile} />
             )}
             {isUserSelf && (

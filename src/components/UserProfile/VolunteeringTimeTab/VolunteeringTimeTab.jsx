@@ -1,14 +1,14 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Row, Label, Input, Col } from 'reactstrap';
 import moment from 'moment-timezone';
 import { capitalize } from 'lodash';
 import style from '../UserProfileEdit/ToggleSwitch/ToggleSwitch.module.scss';
 import { ENDPOINTS } from 'utils/URL';
 import axios from 'axios';
-import { useEffect } from 'react';
+import hasPermission from '../../../utils/permissions';
 
 const StartDate = (props) => {
-  if (!props.isUserAdmin) {
+  if (!hasPermission(props.role, 'editUserProfile')) {
     return <p>{moment(props.userProfile.createdDate).format('YYYY-MM-DD')}</p>;
   }
   return (
@@ -22,13 +22,13 @@ const StartDate = (props) => {
         props.setUserProfile({ ...props.userProfile, createdDate: e.target.value });
       }}
       placeholder="Start Date"
-      invalid={!props.isUserAdmin}
+      invalid={!hasPermission(props.role, 'editUserProfile')}
     />
   );
 };
 
 const EndDate = (props) => {
-  if (!props.isUserAdmin) {
+  if (!hasPermission(props.role, 'editUserProfile')) {
     return (
       <p>
         {props.userProfile.endDate
@@ -50,13 +50,14 @@ const EndDate = (props) => {
         props.setUserProfile({ ...props.userProfile, endDate: e.target.value });
       }}
       placeholder="End Date"
-      invalid={!props.isUserAdmin}
+      invalid={!hasPermission(props.role, 'editUserProfile')}
     />
   );
 };
 
 const WeeklyCommitedHours = (props) => {
-  if (!props.isUserAdmin) {
+  console.log('REQUESTOR ROLE:', props.role);
+  if (!hasPermission(props.role, 'editUserProfile')) {
     return <p>{props.userProfile.weeklyComittedHours}</p>;
   }
   return (
@@ -71,13 +72,13 @@ const WeeklyCommitedHours = (props) => {
         props.setChanged(true);
       }}
       placeholder="Weekly Committed Hours"
-      invalid={!props.isUserAdmin}
+      invalid={!hasPermission(props.role, 'editUserProfile')}
     />
   );
 };
 
 const TotalCommittedHours = (props) => {
-  if (!props.isUserAdmin) {
+  if (!hasPermission(props.role, 'editUserProfile')) {
     return <p>{props.userProfile.totalTangibleHrs}</p>;
   }
   return (
@@ -91,13 +92,13 @@ const TotalCommittedHours = (props) => {
         props.setChanged(true);
       }}
       placeholder="Total Tangible Time Logged"
-      invalid={!props.isUserAdmin}
+      invalid={!hasPermission(props.role, 'editUserProfile')}
     />
   );
 };
 
 const WeeklySummaryReqd = (props) => {
-  if (!props.isUserAdmin) {
+  if (!hasPermission(props.role, 'editUserProfile')) {
     return <p>{props.userProfile.weeklySummaryNotReq ? 'Not Required' : 'Required'}</p>;
   }
   return (
@@ -125,14 +126,13 @@ const WeeklySummaryReqd = (props) => {
 /**
  *
  * @param {*} props.userProfile
- * @param {*} props.isUserAdmin
  * @param {*} props.isUserSelf
  * @param {Function} handleUserProfile
  *
  * @returns
  */
 const ViewTab = (props) => {
-  const { userProfile, setUserProfile, setChanged, isUserAdmin, handleUserProfile } = props;
+  const { userProfile, setUserProfile, setChanged, role } = props;
 
   const [totalTangibleHoursThisWeek, setTotalTangibleHoursThisWeek] = useState('Loading...');
   useEffect(() => {
@@ -162,7 +162,7 @@ const ViewTab = (props) => {
         </Col>
         <Col md="6">
           <StartDate
-            isUserAdmin={isUserAdmin}
+            role={role}
             userProfile={userProfile}
             setUserProfile={setUserProfile}
             setChanged={setChanged}
@@ -176,7 +176,7 @@ const ViewTab = (props) => {
         </Col>
         <Col md="6">
           <EndDate
-            isUserAdmin={isUserAdmin}
+            role={role}
             userProfile={userProfile}
             setUserProfile={setUserProfile}
             setChanged={setChanged}
@@ -199,7 +199,7 @@ const ViewTab = (props) => {
         </Col>
         <Col md="6">
           <WeeklySummaryReqd
-            isUserAdmin={isUserAdmin}
+            role={role}
             userProfile={userProfile}
             setUserProfile={setUserProfile}
             setChanged={setChanged}
@@ -212,7 +212,7 @@ const ViewTab = (props) => {
         </Col>
         <Col md="6">
           <WeeklyCommitedHours
-            isUserAdmin={isUserAdmin}
+            role={role}
             userProfile={userProfile}
             setUserProfile={setUserProfile}
             setChanged={setChanged}
@@ -226,7 +226,7 @@ const ViewTab = (props) => {
         </Col>
         <Col md="6">
           <TotalCommittedHours
-            isUserAdmin={isUserAdmin}
+            role={role}
             userProfile={userProfile}
             setUserProfile={setUserProfile}
             setChanged={setChanged}
@@ -248,7 +248,7 @@ const ViewTab = (props) => {
                   </Label>
                 </Col>
                 <Col md="6">
-                  {props.isUserAdmin ? (
+                  {hasPermission(props.role, 'editUserProfile') ? (
                     <Input
                       type="number"
                       id={`${key}Hours`}

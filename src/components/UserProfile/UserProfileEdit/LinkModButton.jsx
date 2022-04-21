@@ -18,8 +18,8 @@ const LinkModButton = (props) => {
         isOpen={modal}
         closeModal={toggleModal}
         userProfile={userProfile}
-        isUserAdmin={isUserAdmin}
         setChanged={setChanged}
+        role={props.role}
       />
       <span
         style={{

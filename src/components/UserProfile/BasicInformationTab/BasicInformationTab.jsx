@@ -11,6 +11,7 @@ import PauseAndResumeButton from 'components/UserManagement/PauseAndResumeButton
 import TimeZoneDropDown from '../TimeZoneDropDown';
 import { useSelector } from 'react-redux';
 import { getUserTimeZone } from 'services/timezoneApiService';
+import hasPermission from 'utils/permissions';
 
 const Name = props => {
   const {
@@ -21,11 +22,14 @@ const Name = props => {
     isUserSelf,
     formValid,
     setFormValid,
+    role,
   } = props;
 
   const { firstName, lastName } = userProfile;
 
-  if (isUserAdmin || isUserSelf) {
+  console.log('ROLE:', role);
+
+  if (hasPermission(role, 'editUserProfile') || isUserSelf) {
     return (
       <>
         <Col md="3">
@@ -80,10 +84,10 @@ const Name = props => {
 };
 
 const Title = props => {
-  const { userProfile, setChanged, setUserProfile, isUserAdmin, isUserSelf } = props;
+  const { userProfile, setChanged, setUserProfile, isUserAdmin, isUserSelf, role } = props;
   const { jobTitle } = userProfile;
 
-  if (isUserAdmin || isUserSelf) {
+  if (hasPermission(role, 'editUserProfile') || isUserSelf) {
     return (
       <>
         <Col>
@@ -122,12 +126,13 @@ const Email = props => {
     isUserSelf,
     formValid,
     setFormValid,
+    role,
   } = props;
   const { email, privacySettings } = userProfile;
 
   const emailPattern = new RegExp(/^\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/i);
 
-  if (isUserAdmin || isUserSelf) {
+  if (hasPermission(role, 'editUserProfile') || isUserSelf) {
     return (
       <>
         <Col>
@@ -205,9 +210,10 @@ const Phone = props => {
     setChanged,
     isUserAdmin,
     isUserSelf,
+    role,
   } = props;
   const { phoneNumber, privacySettings } = userProfile;
-  if (isUserAdmin || isUserSelf) {
+  if (hasPermission(role, 'editUserProfile') || isUserSelf) {
     return (
       <>
         <Col>
@@ -251,6 +257,7 @@ const BasicInformationTab = props => {
     handleUserProfile,
     formValid,
     setFormValid,
+    role,
   } = props;
 
   const [timeZoneFilter, setTimeZoneFilter] = useState('');
@@ -303,6 +310,7 @@ const BasicInformationTab = props => {
           handleUserProfile={handleUserProfile}
           formValid={formValid}
           setChanged={setChanged}
+          role={props.role}
         />
       </Row>
       <Row>
@@ -326,6 +334,7 @@ const BasicInformationTab = props => {
           isUserSelf={isUserSelf}
           handleUserProfile={handleUserProfile}
           formValid={formValid}
+          role={props.role}
         />
       </Row>
       <Row>
@@ -350,6 +359,7 @@ const BasicInformationTab = props => {
           handleUserProfile={handleUserProfile}
           formValid={formValid}
           setFormValid={setFormValid}
+          role={props.role}
         />
       </Row>
       <Row>
@@ -373,6 +383,7 @@ const BasicInformationTab = props => {
           isUserSelf={isUserSelf}
           handleUserProfile={handleUserProfile}
           formValid={formValid}
+          role={props.role}
         />
       </Row>
       <Row>
@@ -410,7 +421,7 @@ const BasicInformationTab = props => {
               id="role"
               name="role"
               className="form-control"
-              disabled={!isUserAdmin}
+              disabled={!hasPermission(role, 'editUserProfile')}
             >
               <option value="Administrator">Administrator</option>
               <option value="Volunteer">Volunteer</option>
@@ -420,7 +431,7 @@ const BasicInformationTab = props => {
           </FormGroup>
         </Col>
       </Row>
-      {(props.isUserAdmin || props.isUserSelf) && (
+      {(hasPermission(props.role, 'editUserProfile') || props.isUserSelf) && (
         <Row>
           <Col md={{ size: 6, offset: 0 }} className="text-md-left my-2">
             <Label>Location</Label>
@@ -453,8 +464,8 @@ const BasicInformationTab = props => {
           <Label>Time Zone</Label>
         </Col>
         <Col>
-          {!props.isUserAdmin && <p>{userProfile.timeZone}</p>}
-          {props.isUserAdmin && (
+          {!hasPermission(props.role, 'editUserProfile') && <p>{userProfile.timeZone}</p>}
+          {hasPermission(props.role, 'editUserProfile') && (
             <TimeZoneDropDown
               filter={timeZoneFilter}
               onChange={e => {
@@ -467,14 +478,6 @@ const BasicInformationTab = props => {
         </Col>
       </Row>
       <Row style={{ marginBottom: '10px' }}>
-        {/* <Col>
-          <Label>Search For Time Zone</Label>
-        </Col>
-        <Col>
-          <Input type="text" onChange={(e) => setTimeZoneFilter(e.target.value)} />
-        </Col>
-      </Row>
-      <Row style={{ marginBottom: '10px' }}> */}
         <Col>
           <Label>Status</Label>
         </Col>
@@ -487,7 +490,7 @@ const BasicInformationTab = props => {
                 : 'Inactive'}
           </Label>
           &nbsp;
-          {props.isUserAdmin && <PauseAndResumeButton isBigBtn={true} userProfile={userProfile} />}
+          {hasPermission(props.role, 'editUserProfile') && <PauseAndResumeButton isBigBtn={true} userProfile={userProfile} />}
         </Col>
       </Row>
     </div>

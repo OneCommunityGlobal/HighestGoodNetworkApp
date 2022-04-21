@@ -12,6 +12,7 @@ import {
   Card,
   Col,
 } from 'reactstrap';
+import hasPermission from 'utils/permissions';
 
 const UserProfileModal = (props) => {
   const {
@@ -24,7 +25,7 @@ const UserProfileModal = (props) => {
     type,
     userProfile,
     id,
-    isUserAdmin,
+    role
   } = props;
 
   let blueSquare = [
@@ -152,11 +153,10 @@ const UserProfileModal = (props) => {
   return (
     <Modal isOpen={isOpen} toggle={closeModal}>
       <ModalHeader toggle={closeModal}>{modalTitle}</ModalHeader>
-
       <ModalBody>
         {type === 'updateLink' && (
           <div>
-            {isUserAdmin && (
+            {hasPermission(role, 'editUserProfile') && (
               <CardBody>
                 <Card>
                   <Label style={{ display: 'flex', margin: '5px' }}>Admin Links:</Label>

@@ -4,13 +4,14 @@ import ToggleSwitch from './UserProfileEdit/ToggleSwitch';
 import './UserProfile.scss';
 // import styleEdit from './UserProfileEdit.module.scss';
 import './UserProfileEdit/UserProfileEdit.scss';
+import hasPermission from 'utils/permissions';
 
 const BlueSquareLayout = (props) => {
-  const { userProfile, handleUserProfile, handleBlueSquare, isUserAdmin, isUserSelf } = props;
+  const { userProfile, handleUserProfile, handleBlueSquare, isUserAdmin, isUserSelf, role } = props;
 
   const { privacySettings, infringments } = userProfile;
 
-  const canEdit = isUserAdmin || isUserSelf;
+  const canEdit = hasPermission(role, 'editUserProfile') || isUserSelf;
 
   if (canEdit) {
     return (
@@ -31,6 +32,7 @@ const BlueSquareLayout = (props) => {
           isUserAdmin={isUserAdmin}
           blueSquares={infringments}
           handleBlueSquare={handleBlueSquare}
+          role={role}
         />
       </div>
     );
@@ -41,11 +43,12 @@ const BlueSquareLayout = (props) => {
         <p>Blue Square Info is Private</p>
       ) : (
         <div>
-          <p>BLUE SQAURES</p>
+          <p>BLUE SQUARES</p>
           <BlueSquare
             isUserAdmin={isUserAdmin}
             blueSquares={infringments}
             handleBlueSquare={handleBlueSquare}
+            role={role}
           />
         </div>
       )}
