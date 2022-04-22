@@ -54,8 +54,8 @@ class Timelog extends Component {
     this.handleSearch = this.handleSearch.bind(this);
     this.openInfo = this.openInfo.bind(this);
     this.data = {
-      disabled: this.props.auth.isAdmin ? false : true,
-      isTangible: this.props.auth.isAdmin ? true : false,
+      disabled: !hasPermission(this.props.auth.user.role, 'disabledDataTimelog') ? false : true,
+      isTangible: hasPermission(this.props.auth.user.role, 'dataIsTangibleTimelog') ? true : false,
     };
     this.userProfile = this.props.userProfile;
   }
@@ -186,10 +186,10 @@ class Timelog extends Component {
   generateTimeEntries(data) {
     let filteredData = data;
     if (!this.state.projectsSelected.includes('all')) {
-      filteredData = data.filter((entry) => this.state.projectsSelected.includes(entry.projectId));
+      filteredData = data.filter(entry => this.state.projectsSelected.includes(entry.projectId));
     }
 
-    return filteredData.map((entry) => (
+    return filteredData.map(entry => (
       <TimeEntry data={entry} displayYear={false} key={entry._id} userProfile={this.userProfile} />
     ));
   }
@@ -211,7 +211,7 @@ class Timelog extends Component {
     if (!_.isEmpty(this.props.userProjects.projects)) {
       projects = this.props.userProjects.projects;
     }
-    const projectOptions = projects.map((project) => (
+    const projectOptions = projects.map(project => (
       <option value={project.projectId} key={project.projectId}>
         {' '}
         {project.projectName}{' '}
@@ -367,7 +367,7 @@ class Timelog extends Component {
                               <Button onClick={this.openInfo} color="secondary">
                                 Edit
                               </Button>
-                            ) : null }
+                            ) : null}
                           </ModalFooter>
                         </Modal>
                         <TimeEntryForm
@@ -492,11 +492,11 @@ class Timelog extends Component {
                             id="projectSelected"
                             value={this.state.projectsSelected}
                             title="Ctrl + Click to select multiple projects to filter."
-                            onChange={(e) =>
+                            onChange={e =>
                               this.setState({
                                 projectsSelected: Array.from(
                                   e.target.selectedOptions,
-                                  (option) => option.value,
+                                  option => option.value,
                                 ),
                               })
                             }
@@ -527,7 +527,7 @@ class Timelog extends Component {
   }
 }
 
-const mapStateToProps = (state) => ({
+const mapStateToProps = state => ({
   auth: state.auth,
   userProfile: state.userProfile,
   timeEntries: state.timeEntries,

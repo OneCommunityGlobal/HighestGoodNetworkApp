@@ -75,7 +75,6 @@ const Badges = (props) => {
                       allBadgeData={props.allBadgeData}
                       userProfile={props.userProfile}
                       setUserProfile={props.setUserProfile}
-                      isAdmin={props.isAdmin}
                       close={assignToggle}
                     />
                   </ModalBody>

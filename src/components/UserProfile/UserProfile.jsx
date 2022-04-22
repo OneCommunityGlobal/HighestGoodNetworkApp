@@ -328,7 +328,7 @@ const UserProfile = props => {
   const { userid: requestorId, role: requestorRole } = props.auth.user;
 
   const isUserSelf = targetUserId === requestorId;
-  const isUserAdmin = requestorRole === 'Administrator';
+  // const isUserAdmin = requestorRole === 'Administrator';
   const canEdit = hasPermission(requestorRole, 'editUserProfile') || isUserSelf;
 
   return (
@@ -344,7 +344,6 @@ const UserProfile = props => {
           modifyBlueSquares={modifyBlueSquares}
           userProfile={userProfile}
           id={id}
-          isUserAdmin={isUserAdmin}
           handleLinkModel={props.handleLinkModel}
           role={requestorRole}
           //setIsValid={setIsValid(true)}
@@ -439,7 +438,6 @@ const UserProfile = props => {
               </p>
             </div>
             <Badges
-              isAdmin={isUserAdmin}
               userProfile={userProfile}
               setUserProfile={setUserProfile}
               role={requestorRole}
@@ -450,7 +448,6 @@ const UserProfile = props => {
           <Col md="4">
             <div className="profile-work">
               <UserLinkLayout
-                isUserAdmin={isUserAdmin}
                 isUserSelf={isUserSelf}
                 userProfile={userProfile}
                 setChanged={setChanged}
@@ -463,7 +460,6 @@ const UserProfile = props => {
                 handleUserProfile={handleUserProfile}
                 handleSaveError={props.handleSaveError}
                 handleBlueSquare={handleBlueSquare}
-                isUserAdmin={isUserAdmin}
                 isUserSelf={isUserSelf}
                 role={requestorRole}
               />
@@ -538,7 +534,6 @@ const UserProfile = props => {
                   handleUserProfile={handleUserProfile}
                   formValid={formValid}
                   setFormValid={setFormValid}
-                  isUserAdmin={isUserAdmin}
                   isUserSelf={isUserSelf}
                   setShouldRefresh={setShouldRefresh}
                 />
@@ -548,7 +543,6 @@ const UserProfile = props => {
                   userProfile={userProfile}
                   setUserProfile={setUserProfile}
                   setChanged={setChanged}
-                  isUserAdmin={isUserAdmin}
                   isUserSelf={isUserSelf}
                   role={requestorRole}
                 />
@@ -559,7 +553,6 @@ const UserProfile = props => {
                   teamsData={props?.allTeams?.allTeamsData || []}
                   onAssignTeam={onAssignTeam}
                   onDeleteteam={onDeleteTeam}
-                  isUserAdmin={isUserAdmin}
                   edit={canEdit}
                   role={requestorRole}
                 />
@@ -570,7 +563,6 @@ const UserProfile = props => {
                   projectsData={props?.allProjects?.projects || []}
                   onAssignProject={onAssignProject}
                   onDeleteProject={onDeleteProject}
-                  isUserAdmin={isUserAdmin}
                   edit={canEdit}
                   role={requestorRole}
                 />
@@ -580,7 +572,6 @@ const UserProfile = props => {
                   userProfile={userProfile}
                   setUserProfile={setUserProfile}
                   setChanged={setChanged}
-                  isAdmin={isUserAdmin}
                   role={requestorRole}
                 />
               </TabPane>

@@ -4,7 +4,7 @@ import LinkModButton from './UserProfileEdit/LinkModButton';
 import hasPermission from 'utils/permissions';
 
 const UserLinkLayout = (props) => {
-  const { isUserAdmin, isUserSelf, userProfile, updateLink, handleLinkModel, setChanged, role } = props;
+  const { isUserSelf, userProfile, updateLink, handleLinkModel, setChanged, role } = props;
 
   const { adminLinks, personalLinks } = userProfile;
 
@@ -17,7 +17,6 @@ const UserLinkLayout = (props) => {
         <LinkModButton
           userProfile={userProfile}
           updateLink={updateLink}
-          isUserAdmin={isUserAdmin}
           setChanged={setChanged}
           role={props.role}
         />
@@ -26,13 +25,11 @@ const UserLinkLayout = (props) => {
         linkSection="user"
         links={personalLinks}
         handleLinkModel={handleLinkModel}
-        isUserAdmin={isUserAdmin}
       />
       <UserLinks
         linkSection="user"
         links={adminLinks}
         handleLinkModel={handleLinkModel}
-        isUserAdmin={isUserAdmin}
       />
     </div>
   );

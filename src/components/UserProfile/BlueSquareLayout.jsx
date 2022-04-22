@@ -7,7 +7,7 @@ import './UserProfileEdit/UserProfileEdit.scss';
 import hasPermission from 'utils/permissions';
 
 const BlueSquareLayout = (props) => {
-  const { userProfile, handleUserProfile, handleBlueSquare, isUserAdmin, isUserSelf, role } = props;
+  const { userProfile, handleUserProfile, handleBlueSquare, isUserSelf, role } = props;
 
   const { privacySettings, infringments } = userProfile;
 
@@ -29,7 +29,6 @@ const BlueSquareLayout = (props) => {
         </div>
 
         <BlueSquare
-          isUserAdmin={isUserAdmin}
           blueSquares={infringments}
           handleBlueSquare={handleBlueSquare}
           role={role}
@@ -45,7 +44,6 @@ const BlueSquareLayout = (props) => {
         <div>
           <p>BLUE SQUARES</p>
           <BlueSquare
-            isUserAdmin={isUserAdmin}
             blueSquares={infringments}
             handleBlueSquare={handleBlueSquare}
             role={role}

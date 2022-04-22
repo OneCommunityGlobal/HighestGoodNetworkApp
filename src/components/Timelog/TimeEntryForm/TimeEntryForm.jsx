@@ -75,7 +75,6 @@ const TimeEntryForm = (props) => {
   const [projects, setProjects] = useState([]);
 
   const fromTimer = !_.isEmpty(timer);
-  const isAdmin = useSelector((state) => state.auth.user.role) === 'Administrator';
   const userProfile = useSelector((state) => state.userProfile);
   const role = userProfile.role;
 
@@ -208,7 +207,7 @@ const TimeEntryForm = (props) => {
       result.notes = 'Description and reference link are required';
     }
 
-    if (!isAdmin && data.isTangible && isTimeModified && reminder.editNotice) {
+    if (!hasPermission(role, 'addTimeEntryOthers') && data.isTangible && isTimeModified && reminder.editNotice) {
       openModal();
       setReminder((reminder) => ({
         ...reminder,

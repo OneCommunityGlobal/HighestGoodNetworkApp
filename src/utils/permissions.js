@@ -33,6 +33,7 @@ const permissions = {
         'assignTeamToUser',
         'handleBlueSquare',
         'resetPasswordOthers',
+        'dataIsTangibleTimelog',
     ],
     'Volunteer': [
         'V'
@@ -80,6 +81,7 @@ const permissions = {
         'assignTeamToUser',
         'handleBlueSquare',
         'resetPasswordOthers',
+        'dataIsTangibleTimelog',
     ],
 };
 

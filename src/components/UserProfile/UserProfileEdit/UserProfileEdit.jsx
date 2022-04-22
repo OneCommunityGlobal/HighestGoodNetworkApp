@@ -31,6 +31,7 @@ import './UserProfileEdit.scss';
 import LinkModButton from './LinkModButton';
 import ProjectsTab from '../TeamsAndProjects/ProjectsTab';
 import TeamsTab from '../TeamsAndProjects/TeamsTab';
+import hasPermission from '../../../utils/permissions';
 
 const styleProfile = {};
 class UserProfileEdit extends Component {
@@ -475,25 +476,6 @@ class UserProfileEdit extends Component {
     const { updateUserProfile, match } = this.props;
     const { userProfile, formValid } = this.state;
     const submitResult = await updateUserProfile(match.params.userId, userProfile);
-    // console.log(submitResult);
-
-    // if (submitResult === 200) {
-    //   this.setState({
-    //     showModal: true,
-    //     modalMessage: 'Your Changes were saved successfully',
-    //     modalTitle: 'Success',
-    //     type: 'save',
-    //   });
-    //   const elem = document.getElementById('warningCard');
-    //   // elem.style.display = 'none';
-    // } else {
-    //   this.setState({
-    //     showModal: true,
-    //     modalMessage: 'Please try again.',
-    //     modalTitle: 'Error',
-    //     type: 'save',
-    //   });
-    // }
   };
 
   updateLink = (personalLinksUpdate, adminLinksUpdate) =>
@@ -524,7 +506,7 @@ class UserProfileEdit extends Component {
     }
   };
 
-  modLinkButton = (canEditFields, isUserAdmin) => {
+  /* modLinkButton = (canEditFields, isUserAdmin) => {
     if (canEditFields) {
       let user = 'user';
       if (isUserAdmin) {
@@ -544,7 +526,7 @@ class UserProfileEdit extends Component {
         </button>
       );
     }
-  };
+  }; */
 
   // render drop down list of teams, or auto-fill team names...
   // fetch and display available teams
@@ -625,8 +607,8 @@ class UserProfileEdit extends Component {
     } = userProfile;
 
     const isUserSelf = targetUserId === requestorId;
-    const isUserAdmin = requestorRole === 'Administrator';
-    const canEditFields = isUserAdmin || isUserSelf;
+    // const isUserAdmin = requestorRole === 'Administrator';
+    const canEditFields = hasPermission(requestorRole, 'editUserProfile') || isUserSelf;
     const weeklyHoursReducer = (acc, val) =>
       acc + (parseInt(val.hours, 10) + parseInt(val.minutes, 10) / 60);
 
@@ -666,9 +648,9 @@ class UserProfileEdit extends Component {
             linkType={linkType}
             userProfile={userProfile}
             id={id}
-            isUserAdmin={isUserAdmin}
             handleLinkModel={this.handleLinkModel}
             handleSubmit={this.handleSubmit}
+            role={requestorRole}
           />
         )}
 
@@ -712,23 +694,22 @@ class UserProfileEdit extends Component {
               <Col md="4">
                 <div className="profile-work">
                   <p>LINKS</p>
-                  {/* {this.modLinkButton(canEditFields, isUserAdmin)} */}
                   <LinkModButton
                     updateLink={this.updateLink}
                     userProfile={userProfile}
-                    isUserAdmin={isUserAdmin}
+                    role={requestorRole}
                   />
                   <UserLinks
                     linkSection="user"
                     links={personalLinks}
                     handleLinkModel={this.handleLinkModel}
-                    isUserAdmin={isUserAdmin}
+                    role={requestorRole}
                   />
                   <UserLinks
                     linkSection="user"
                     links={adminLinks}
                     handleLinkModel={this.handleLinkModel}
-                    isUserAdmin={isUserAdmin}
+                    role={requestorRole}
                   />
                   {/* <p>BLUE SQAURES</p> */}
                   <div className="blueSquare-toggle">
@@ -742,9 +723,9 @@ class UserProfileEdit extends Component {
                   </div>
 
                   <BlueSquare
-                    isUserAdmin={isUserAdmin}
                     blueSquares={infringments}
                     handleBlueSquare={this.handleBlueSquare}
+                    role={requestorRole}
                   />
                 </div>
               </Col>
@@ -953,7 +934,7 @@ class UserProfileEdit extends Component {
                           value={userProfile.weeklyComittedHours}
                           onChange={this.handleUserProfile}
                           placeholder="weeklyCommittedHours"
-                          invalid={!isUserAdmin}
+                          invalid={!hasPermission(requestorRole, 'editUserProfile')}
                         />
                       </Col>
                     </Row>
@@ -970,7 +951,7 @@ class UserProfileEdit extends Component {
                           value={userProfile.totalComittedHours}
                           onChange={this.handleUserProfile}
                           placeholder="totalCommittedHours"
-                          invalid={!isUserAdmin}
+                          invalid={!hasPermission(requestorRole, 'editUserProfile')}
                         />
                       </Col>
                     </Row>
@@ -981,7 +962,7 @@ class UserProfileEdit extends Component {
                       teamsData={this.props ? this.props.allTeams.allTeamsData : []}
                       onAssignTeam={this.onAssignTeam}
                       onDeleteteam={this.onDeleteTeam}
-                      isUserAdmin={isUserAdmin}
+                      role={requestorRole}
                       edit
                     />
                   </TabPane>
@@ -991,7 +972,7 @@ class UserProfileEdit extends Component {
                       projectsData={this.props ? this.props.allProjects.projects : []}
                       onAssignProject={this.onAssignProject}
                       onDeleteProject={this.onDeleteProject}
-                      isUserAdmin={isUserAdmin}
+                      role={requestorRole}
                       edit
                     />
                   </TabPane>

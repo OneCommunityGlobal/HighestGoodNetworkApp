@@ -18,7 +18,6 @@ const Name = props => {
     userProfile,
     setUserProfile,
     setChanged,
-    isUserAdmin,
     isUserSelf,
     formValid,
     setFormValid,
@@ -26,8 +25,6 @@ const Name = props => {
   } = props;
 
   const { firstName, lastName } = userProfile;
-
-  console.log('ROLE:', role);
 
   if (hasPermission(role, 'editUserProfile') || isUserSelf) {
     return (
@@ -84,7 +81,7 @@ const Name = props => {
 };
 
 const Title = props => {
-  const { userProfile, setChanged, setUserProfile, isUserAdmin, isUserSelf, role } = props;
+  const { userProfile, setChanged, setUserProfile, isUserSelf, role } = props;
   const { jobTitle } = userProfile;
 
   if (hasPermission(role, 'editUserProfile') || isUserSelf) {
@@ -122,7 +119,6 @@ const Email = props => {
     userProfile,
     setUserProfile,
     setChanged,
-    isUserAdmin,
     isUserSelf,
     formValid,
     setFormValid,
@@ -208,7 +204,6 @@ const Phone = props => {
     setUserProfile,
     handleUserProfile,
     setChanged,
-    isUserAdmin,
     isUserSelf,
     role,
   } = props;
@@ -252,7 +247,6 @@ const BasicInformationTab = props => {
     userProfile,
     setUserProfile,
     setChanged,
-    isUserAdmin,
     isUserSelf,
     handleUserProfile,
     formValid,
@@ -305,7 +299,6 @@ const BasicInformationTab = props => {
           userProfile={userProfile}
           setUserProfile={setUserProfile}
           setFormValid={setFormValid}
-          isUserAdmin={isUserAdmin}
           isUserSelf={isUserSelf}
           handleUserProfile={handleUserProfile}
           formValid={formValid}
@@ -330,7 +323,6 @@ const BasicInformationTab = props => {
           userProfile={userProfile}
           setUserProfile={setUserProfile}
           setChanged={setChanged}
-          isUserAdmin={isUserAdmin}
           isUserSelf={isUserSelf}
           handleUserProfile={handleUserProfile}
           formValid={formValid}
@@ -354,7 +346,6 @@ const BasicInformationTab = props => {
           userProfile={userProfile}
           setUserProfile={setUserProfile}
           setChanged={setChanged}
-          isUserAdmin={isUserAdmin}
           isUserSelf={isUserSelf}
           handleUserProfile={handleUserProfile}
           formValid={formValid}
@@ -379,7 +370,6 @@ const BasicInformationTab = props => {
           userProfile={userProfile}
           setUserProfile={setUserProfile}
           setChanged={setChanged}
-          isUserAdmin={isUserAdmin}
           isUserSelf={isUserSelf}
           handleUserProfile={handleUserProfile}
           formValid={formValid}
