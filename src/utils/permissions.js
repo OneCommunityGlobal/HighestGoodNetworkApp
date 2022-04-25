@@ -87,7 +87,7 @@ const permissions = {
 
 const hasPermission = (role, action) => {
     let isAllowed;
-    console.log('user role permissions: ', permissions[role]);
+    // console.log('user role permissions: ', permissions[role]);
     if (permissions[role].includes(action)) {
         isAllowed = true;
     } else {
