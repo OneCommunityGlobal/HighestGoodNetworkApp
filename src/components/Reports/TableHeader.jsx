@@ -10,6 +10,9 @@ const TableHeader = () =>
       <th>Active</th>
       <th>Assign</th>
       <th>Estimated Hours</th>
+      <th>Start Date</th>
+      <th>End Date</th>
+      <th>Link</th>
     </tr>
   );
 

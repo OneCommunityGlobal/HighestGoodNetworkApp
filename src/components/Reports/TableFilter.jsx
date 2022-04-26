@@ -1,13 +1,19 @@
-import React from 'react';
+import React, { useState } from 'react';
 import TextSearchBox from '../UserManagement/TextSearchBox';
 import DropDownSearchBox from '../UserManagement/DropDownSearchBox';
+import Calendar from 'react-calendar';
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+
+
 
 const TableFilter = (props) => {
   const taskPriority = ['Primary','Secondary', 'Tertiary'];
   const taskStatus = ['Paused','Complete', 'Active'];
   const taskActive = ['Yes','No'];
   const taskAssign = ['Yes','No'];
-
+  const [startDate, setStartDate] = useState(new Date());
+  const [endDate, setEndDate]=useState(new Date());
   const onTaskNameSearch = (text) => {
     props.onTaskNameSearch(text);
   }
@@ -34,6 +40,12 @@ const TableFilter = (props) => {
 
   const searchEstimatedHours = (text) => {
     props.searchEstimatedHours(text);
+  }
+  const searchStartDate = (text) => {
+    props.searchStartDate(text);
+  }
+  const searchEndDate = (text) => {
+    props.searchEndDate(text);
   }
 
   return (
@@ -84,6 +96,12 @@ const TableFilter = (props) => {
                        searchCallback={searchEstimatedHours}
                        value={props.estimatedHours}
         />
+      </td>
+      <td id="task_startDate">
+        <DatePicker selected={startDate} onChange={(date) => setStartDate(date)} />
+      </td>
+      <td id="task_EndDate">
+        <DatePicker selected={endDate} onChange={(date) => setEndDate(date)} />
       </td>
     </tr>
   );
