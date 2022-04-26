@@ -97,6 +97,7 @@ class PeopleReport extends Component {
         this.setState({
           userTask:temp[0].data,     
       })
+
     })
   }
   setStartDate(date) {
@@ -774,7 +775,6 @@ if (tasks.length>0) {
     }
 
     const PeopleDataTable = props => {
-      // console.log(userTask);
       let peopleData={
         "alertVisible":false,
         "taskData":[
@@ -782,20 +782,25 @@ if (tasks.length>0) {
         "color": null,
         "message": ""
       }
+      // console.log(userTask);
       for(let i=0;i<userTask.length;i++){
         let task={
           "taskName":"",
           "priority":"",
           "status":"",
-          "resources":[
-          ],
+          "resources":[],         
           "active":"",
           "assign":"",
           "estimatedHours":"",
-          "_id":""
+          "_id":"",
+          "startDate":"",
+          "endDate":"",
+          "hoursBest": "",
+          "hoursMost": "",
+          "hoursWorst": ""
         }
-        let resourcesName=[
-        ]
+        let resourcesName= []
+        
         if(userTask[i].isActive){
           task.active="Yes";
         }else{
@@ -811,13 +816,33 @@ if (tasks.length>0) {
         task.status=userTask[i].status;
         let n=userTask[i].estimatedHours;
         task.estimatedHours=n.toFixed(2);
-        console.log(userTask[i].resources);
         for(let j=0;j<userTask[i].resources.length;j++){
-          resourcesName.push(userTask[i].resources[j].name);
+          let tempResource={
+            "name":"",
+            "profilePic":""
+          }
+          if(userTask[i].resources[j].profilePic){
+            // resourcesName.push(userTask[i].resources[j].profilePic);
+            tempResource.name=userTask[i].resources[j].name;
+            tempResource.profilePic=userTask[i].resources[j].profilePic;
+            //resourcesName.set(userTask[i].resources[j].name,userTask[i].resources[j].profilePic);
+          }      
+          else{
+            // resourcesName.push("/pfp-default.png");
+            tempResource.name=userTask[i].resources[j].name;
+            tempResource.profilePic="/pfp-default.png";
+            //resourcesName.set(userTask[i].resources[j].name,userTask[i].resources[j].profilePic);
+          }
+          resourcesName.push(tempResource);
         }
         task._id=userTask[i]._id;
-        resourcesName=resourcesName.join(", ");
         task.resources.push(resourcesName);
+        if(userTask[i].startedDatetime==null){
+          task.startDate="null";
+        }
+        task.hoursBest=userTask[i].hoursBest;
+        task.hoursMost=userTask[i].hoursMost;
+        task.hoursWorst=userTask[i].hoursWorst;       
         peopleData.taskData.push(task);
       }
       
@@ -832,7 +857,7 @@ if (tasks.length>0) {
         <header className="header">
           <div className="details">
             <img
-              src={this.props.auth.profilePic || '/pfp-default.png'}
+              src={this.state.userProfile.profilePic || '/pfp-default.png'}
               alt="Profile Picture" className="profile-pic" />
             <h1 className="heading">{`${firstName} ${lastName}`}</h1>
 
@@ -876,7 +901,9 @@ if (tasks.length>0) {
       {/*  </div>*/}
       {/*</div>*/}
       <PeopleDataTable/>
-
+      {/* <div>
+        <img src={this.state.userProfile.profilePic||'/pfp-default.png'} alt="profile picture" className="test-pic"/>
+      </div> */}
       <div className='container'>
 
         <table>
@@ -933,7 +960,7 @@ if (tasks.length>0) {
             <InfringmentsViz infringments={infringments} fromDate={fromDate} toDate={toDate} />
             <TimeEntriesViz timeEntries={timeEntries} fromDate={fromDate} toDate={toDate} />
           </div>
-
+          
         </table>
 
       </div>

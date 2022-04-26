@@ -5,7 +5,10 @@ import {
 import { connect } from 'react-redux';
 import TableFilter from './TableFilter'
 import TableHeader from './TableHeader'
-
+import './PeopleTableDetails.css';
+import Popup from 'reactjs-popup';
+import 'reactjs-popup/dist/index.css';
+import TextSearchBox from '../UserManagement/TextSearchBox';
 
 const PeopleTableDetails = (props) => {
 
@@ -20,9 +23,10 @@ const PeopleTableDetails = (props) => {
   const [deleteId, setDeleteId] = useState('')
   const [deleteName, setDeleteName] = useState('')
   const [deletePopup, setDeletePopup] = useState(false);
-
   const [editPopup, setEditPopup] = useState(false);
-
+  const [startDate, setStartDate] =useState('');
+  const [endDate, setEndDate] =useState('');
+  const [link, setLink]=useState('');
   const onTaskNameSearch = (text) => {
     setName(text);
   };
@@ -102,6 +106,9 @@ const PeopleTableDetails = (props) => {
           active={active}
           assign={assign}
           estimatedHours={estimatedHours}
+          startDate={startDate}
+          EndDate={endDate}
+          Link={link}
         />
         </thead>
         <tbody>
@@ -110,17 +117,68 @@ const PeopleTableDetails = (props) => {
             <td>{value.taskName}</td>
             <td>{value.priority}</td>
             <td>{value.status}</td>
-            {/* <td>{value.resources.map(resource=>
-                <div>{resource}</div>
-                )}
-            </td> */}
-            <td>{value.resources}</td>
-            {/* <td>{value.resources}</td> */}
-            {/* const data =[{"name":"test1"},{"name":"test2"}];
-              const listItems = data.map((d) => <li key={d.name}>{d.name}</li>; */}
+            <td>
+              {value.resources.map(res=>
+                res.map(resource=>{
+                  return <img src={resource.profilePic||'/pfp-default.png'} alt="Profile Picture" className="pic" auto="format" title={resource.name}/>
+              })
+            )}</td>
             <td>{value.active}</td>
             <td>{value.assign}</td>
             <td>{value.estimatedHours}</td>
+            <td>{value.startDate}</td>
+            <td>{value.endDate}</td>
+            <td>
+                {/* <div>
+                  <Popup trigger={<button> Click here  </button>} 
+                          position="left center">
+                    <div>Hours Best: {value.hoursBest}</div>
+                    <div>Hours Worst: {value.hoursWorst}</div>
+                    <div>Hours Most: {value.hoursMost}</div>
+                    <div>Why This Task is important</div>
+                    <div>Design Intent</div>
+                    <input
+                        className='rectangle'
+                        type="text"
+                        // value={this.state.value}
+                        // onChange={this.handleChange}
+                    />
+                    <div>Endstate</div>
+                    <input
+                        className='rectangle'
+                        type="text"
+                        // value={this.state.value}
+                        // onChange={this.handleChange}
+                    />                    
+                  </Popup>
+                </div> */}
+                <Popup trigger={<button className="button"></button>} modal>
+                    <div>Hours Best: <textarea className='hours_text' type="text">{value.hoursBest}</textarea></div>
+                    <div>Hours Worst: <textarea className='hours_text' type="text">{value.hoursWorst}</textarea></div>
+                    <div>Hours Most: <textarea className='hours_text' type="text">{value.hoursMost}</textarea></div>
+                    <div>Why This Task is important</div>
+                    <textarea
+                        className='rectangle'
+                        type="text"
+                        // value={this.state.value}
+                        // onChange={this.handleChange}
+                    />
+                    <div>Design Intent</div>
+                    <textarea
+                        className='rectangle'
+                        type="text"
+                        // value={this.state.value}
+                        // onChange={this.handleChange}
+                    />
+                    <div>Endstate</div>
+                    <textarea
+                        className='rectangle'
+                        type="text"
+                        // value={this.state.value}
+                        // onChange={this.handleChange}
+                    />
+                </Popup>
+            </td>
           </tr>)}
         </tbody>
       </table>

@@ -21,7 +21,9 @@ body {
 .profile-pic {
   height: 6rem;
 }
-
+.test-pic {
+  height: 2rem;
+}
 .location p {
   display: inline-block;
 }
