@@ -56,7 +56,6 @@ const EndDate = (props) => {
 };
 
 const WeeklyCommitedHours = (props) => {
-  console.log('REQUESTOR ROLE:', props.role);
   if (!hasPermission(props.role, 'editUserProfile')) {
     return <p>{props.userProfile.weeklyComittedHours}</p>;
   }

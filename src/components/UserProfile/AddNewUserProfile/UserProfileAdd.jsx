@@ -231,6 +231,8 @@ class AddUserProfile extends Component {
                         <option value="Volunteer">Volunteer</option>
                         <option value="Manager">Manager</option>
                         <option value="Core Team">Core Team</option>
+                        <option value="Mentor">Mentor</option>
+                        <option value="Owner">Owner</option>
                         {/* </select> */}
                       </Input>
                     </FormGroup>
@@ -354,6 +356,7 @@ class AddUserProfile extends Component {
                     onAssignProject={this.onAssignProject}
                     onDeleteProject={this.onDeleteProject}
                     isUserAdmin={true}
+                    role={this.props.auth.user.role}
                     edit
                   />
                 </TabPane>
@@ -364,6 +367,7 @@ class AddUserProfile extends Component {
                     onAssignTeam={this.onAssignTeam}
                     onDeleteteam={this.onDeleteTeam}
                     isUserAdmin={true}
+                    role={this.props.auth.user.role}
                     edit
                   />
                 </TabPane>

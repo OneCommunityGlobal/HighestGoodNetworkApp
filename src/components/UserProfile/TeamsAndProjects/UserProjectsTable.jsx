@@ -20,7 +20,7 @@ const UserProjectsTable = React.memo((props) => {
           >
             <span className="projects-span">Projects</span>
           </Col>
-          {props.edit && (
+          {props.edit && props.role && (
             <Col md="5">
               {hasPermission(props.role, 'assignUserInProject') ? (
                 <Button
@@ -42,6 +42,7 @@ const UserProjectsTable = React.memo((props) => {
       <div style={{ maxHeight: '300px', overflow: 'auto' }}>
         <table className="table table-bordered table-responsive-sm">
           <thead>
+            {props.role && (
             <tr>
               <th>#</th>
               <th>Project Name</th>
@@ -49,6 +50,7 @@ const UserProjectsTable = React.memo((props) => {
                 <th>{}</th>
               ) : null}
             </tr>
+            )}
           </thead>
           <tbody>
             {props.userProjectsById.length > 0 ? (
@@ -56,7 +58,7 @@ const UserProjectsTable = React.memo((props) => {
                 <tr key={index}>
                   <td>{index + 1}</td>
                   <td>{`${project.projectName}`}</td>
-                  {props.edit && (
+                  {props.edit && props.role && (
                     <td>
                       <Button
                         color="danger"

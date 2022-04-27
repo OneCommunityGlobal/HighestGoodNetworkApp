@@ -525,7 +525,6 @@ const UserProfile = props => {
               style={{ border: 0 }}
             >
               <TabPane tabId="1">
-              {console.log('USER ROLE:', requestorRole)}
                 <BasicInformationTab
                   role={requestorRole}
                   userProfile={userProfile}

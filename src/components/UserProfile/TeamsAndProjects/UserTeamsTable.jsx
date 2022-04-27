@@ -14,7 +14,7 @@ const UserTeamsTable = (props) => (
         >
           <span className="teams-span">Teams</span>
         </Col>
-        {props.edit && (
+        {props.edit && props.role && (
           <Col md="5">
             {hasPermission(props.role, 'assignTeamToUser') ? (
               <Button
@@ -36,6 +36,7 @@ const UserTeamsTable = (props) => (
     <div style={{ maxHeight: '300px', overflow: 'auto' }}>
       <table className="table table-bordered table-responsive-sm">
         <thead>
+          {props.role && (
           <tr>
             <th>#</th>
             <th>Team Name</th>
@@ -43,6 +44,7 @@ const UserTeamsTable = (props) => (
               <th>{}</th>
             ) : null }
           </tr>
+          )}
         </thead>
         <tbody>
           {props.userTeamsById.length > 0 ? (
@@ -50,7 +52,7 @@ const UserTeamsTable = (props) => (
               <tr key={index}>
                 <td>{index + 1}</td>
                 <td>{`${team.teamName}`}</td>
-                {props.edit && (
+                {props.edit  && props.role && (
                   <td>
                     <Button
                       disabled={!hasPermission(props.role, 'assignTeamToUser')}
