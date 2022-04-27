@@ -105,7 +105,7 @@ class AddUserProfile extends Component {
                         value={firstName}
                         onChange={this.handleUserProfile}
                         placeholder="First Name"
-                        invalid={this.state.formSubmitted && this.state.formErrors.firstName}
+                        invalid={this.state.formErrors.firstName}
                       />
                       <FormFeedback>{this.state.formErrors.firstName}</FormFeedback>
                     </FormGroup>
@@ -119,7 +119,7 @@ class AddUserProfile extends Component {
                         value={lastName}
                         onChange={this.handleUserProfile}
                         placeholder="Last Name"
-                        invalid={this.state.formSubmitted && this.state.formErrors.lastName}
+                        invalid={this.state.formErrors.lastName}
                       />
                       <FormFeedback>{this.state.formErrors.lastName}</FormFeedback>
                     </FormGroup>
@@ -155,7 +155,7 @@ class AddUserProfile extends Component {
                         value={email}
                         onChange={this.handleUserProfile}
                         placeholder="Email"
-                        invalid={this.state.formSubmitted && this.state.formErrors.email}
+                        invalid={this.state.formErrors.email}
                       />
                       <FormFeedback>{this.state.formErrors.email}</FormFeedback>
                       <ToggleSwitch
@@ -177,7 +177,7 @@ class AddUserProfile extends Component {
                         value={phoneNumber}
                         onChange={(phone) => this.phoneChange(phone)}
                       />
-                      {this.state.formSubmitted && phoneNumberEntered && (
+                      {phoneNumberEntered && (
                         <div className="required-user-field">
                           {this.state.formErrors.phoneNumber}
                         </div>
