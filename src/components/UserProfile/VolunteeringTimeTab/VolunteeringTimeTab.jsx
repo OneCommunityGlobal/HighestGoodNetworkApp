@@ -103,9 +103,7 @@ const WeeklyCommitedHours = (props) => {
 };
 
 const TotalTangibleHours = (props) => {
-  console.log("TotalTangibleHours props", props)
-
-  const { userProfile, setUserProfile, setChanged, isUserAdmin, handleUserProfile } = props;
+  const { userProfile } = props;
   const [totalTangibleHours, setTotalTangibleHours] = useState('loading...');
   useEffect(() => {
     const startOfWeek = props.userProfile.createdDate.slice(0,10);
@@ -113,7 +111,6 @@ const TotalTangibleHours = (props) => {
     axios
       .get(ENDPOINTS.TIME_ENTRIES_PERIOD(userProfile._id, startOfWeek, endOfWeek))
       .then(res => {
-        console.log("time entries whole time : ", res)
         let output = 0;
         for (let i = 0; i < res.data.length; i++) {
           const timeEntry = res.data[i];
@@ -121,7 +118,6 @@ const TotalTangibleHours = (props) => {
             output += parseFloat(timeEntry.hours) + parseFloat(timeEntry.minutes) / 60;
           }
         }
-        console.log("total tangible hours whole time: ", output)
         setTotalTangibleHours(output.toFixed(2));
       })
       .catch((err) => {});
@@ -157,7 +153,6 @@ const TotalTangibleHours = (props) => {
  * @returns
  */
 const ViewTab = (props) => {
-  console.log("viewtab props", props)
   const { userProfile, setUserProfile, setChanged, isUserAdmin, handleUserProfile } = props;
 
   const [totalTangibleHoursThisWeek, setTotalTangibleHoursThisWeek] = useState('Loading...');
