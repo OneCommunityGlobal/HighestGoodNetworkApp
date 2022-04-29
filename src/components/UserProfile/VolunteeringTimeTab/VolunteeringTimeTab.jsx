@@ -236,10 +236,10 @@ const ViewTab = (props) => {
   const [totalTangibleUnassignedHours, setTotalTangibleUnassignedHours] = useState(0);
 
   useEffect(() => {
-    const startOfWeek = props.userProfile.createdDate.length > 0 ? (
-                          props.userProfile.createdDate.slice(0,10)
-                        ) : (
+    const startOfWeek = (typeof props.userProfile.createdDate == 'undefined') ? (
                           moment().tz('America/Los_Angeles').startOf('week').format('YYYY-MM-DD')
+                        ) : (
+                          props.userProfile.createdDate.slice(0,10)
                         );
     const endOfWeek = moment().tz('America/Los_Angeles').endOf('week').format('YYYY-MM-DD');
     axios
