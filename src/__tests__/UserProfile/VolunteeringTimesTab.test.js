@@ -94,9 +94,9 @@ describe('volunteering times tab user as not admin', () => {
     it('should render correct weekly committed hours value', () => {
       expect(screen.getByText(`${userProfileMock.weeklyComittedHours}`)).toBeInTheDocument();
     });
-    it('should render correct total committed hours value', () => {
-      expect(screen.getByText(`${userProfileMock.totalTangibleHrs}`)).toBeInTheDocument();
-    });
+    // it('should render correct total committed hours value', () => {
+    //   expect(screen.getByText(`${userProfileMock.totalTangibleHrs}`)).toBeInTheDocument();
+    // });
     // it('should render the correct start date', () => {
     //   expect(screen.getByText(`${userProfileMock.createdDate}`)).toBeInTheDocument();
     // });
