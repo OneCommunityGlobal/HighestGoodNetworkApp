@@ -41,6 +41,7 @@ import 'react-phone-input-2/lib/style.css';
 import classnames from 'classnames';
 import TimeZoneDropDown from '../TimeZoneDropDown';
 import { getUserTimeZone } from 'services/timezoneApiService';
+import hasPermission from 'utils/permissions';
 
 const patt = RegExp(/^([\w.%+-]+)@([\w-]+\.)+([\w]{2,})$/i);
 class AddUserProfile extends Component {
@@ -232,8 +233,9 @@ class AddUserProfile extends Component {
                         <option value="Manager">Manager</option>
                         <option value="Core Team">Core Team</option>
                         <option value="Mentor">Mentor</option>
-                        <option value="Owner">Owner</option>
-                        {/* </select> */}
+                        {hasPermission(this.props.auth.user.role, 'addDeleteEditOwners') && (
+                          <option value="Owner">Owner</option>
+                        )}
                       </Input>
                     </FormGroup>
                   </Col>

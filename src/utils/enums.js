@@ -14,6 +14,8 @@ export const UserRole = {
   Volunteer: 'Volunteer',
   Manager: 'Manager',
   CoreTeam: 'Core Team',
+  Mentor: 'Mentor',
+  Owner: 'Owner',
 };
 
 export const UserDeleteType = {

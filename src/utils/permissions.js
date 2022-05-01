@@ -82,6 +82,7 @@ const permissions = {
         'handleBlueSquare',
         'resetPasswordOthers',
         'dataIsTangibleTimelog',
+        'addDeleteEditOwners',
     ],
 };
 
