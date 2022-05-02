@@ -278,9 +278,8 @@ class AddUserProfile extends Component {
                     <Row>
                       <Col md="6">
                         <Input
-                          onChange={(e) =>
-                            this.setState({ ...this.state, location: e.target.value })
-                          }
+                          id="location"
+                          onChange={this.handleLocation}
                         />
                       </Col>
                       <Col md="6">
@@ -308,6 +307,7 @@ class AddUserProfile extends Component {
                         filter={this.state.timeZoneFilter}
                         onChange={this.handleUserProfile}
                         selected={'America/Los_Angeles'}
+                        id="timeZone"
                       />
                     </FormGroup>
                   </Col>
@@ -485,6 +485,7 @@ class AddUserProfile extends Component {
       googleDoc,
       jobTitle,
       timeZone,
+      location
     } = that.state.userProfile;
 
     const userData = {
@@ -504,6 +505,7 @@ class AddUserProfile extends Component {
       privacySettings: privacySettings,
       collaborationPreference: collaborationPreference,
       timeZone,
+      location
     };
 
     this.setState({ formSubmitted: true });
@@ -557,7 +559,7 @@ class AddUserProfile extends Component {
             }
             toast.error(
               err.response?.data?.error ||
-                'An unknown error occurred while attempting to create this user.',
+              'An unknown error occurred while attempting to create this user.',
             );
           });
       }
@@ -644,6 +646,11 @@ class AddUserProfile extends Component {
     });
   };
 
+  handleLocation = e => {
+    this.setState({ ...this.state, location: e.target.value });
+    this.handleUserProfile(e);
+  }
+
   handleUserProfile = (event) => {
     const { userProfile, formValid, formErrors } = this.state;
 
@@ -694,6 +701,18 @@ class AddUserProfile extends Component {
           formErrors: {
             ...formErrors,
             email: event.target.value.match(patt) ? '' : 'Email is not valid',
+          },
+        });
+        break;
+      case 'location':
+        this.setState({
+          userProfile: {
+            ...userProfile,
+            [event.target.id]: event.target.value.trim(),
+          },
+          formValid: {
+            ...formValid,
+            [event.target.id]: !!event.target.value,
           },
         });
         break;
