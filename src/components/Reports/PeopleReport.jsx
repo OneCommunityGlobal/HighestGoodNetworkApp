@@ -101,7 +101,6 @@ class PeopleReport extends Component {
     })
   }
   setStartDate(date) {
-    console.log("start date::"+date)
     this.setState((state) => {
       return {
         startDate:date
@@ -109,7 +108,6 @@ class PeopleReport extends Component {
     });
   }
   setEndDate(date) {
-    console.log("end date::"+date)
     this.setState((state) => {
       return {
         endDate:date
@@ -725,7 +723,6 @@ if (tasks.length>0) {
 
 
     const PriorityOptions = props => {
-      console.log('pic::'+userProfile.profilePic);
       var allPriorities=[...Array.from(new Set(props.get_tasks.map((item) => item.priority))).sort()]
       allPriorities.unshift("Filter Off")
       return (

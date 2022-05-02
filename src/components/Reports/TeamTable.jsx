@@ -32,8 +32,8 @@ const  TeamTable = (props) => {
       <thead>
       <tr>
         <th scope="col" id="projects__order">#</th>
-        <th scope="col">TEAM_NAME</th>
-        <th scope="col" id="projects__active">ACTIVE</th>
+        <th scope="col">Team Name</th>
+        <th scope="col" id="projects__active">Active</th>
       </tr>
       </thead>
       <tbody>

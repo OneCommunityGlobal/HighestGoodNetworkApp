@@ -29,8 +29,8 @@ const  ProjectTable = (props) => {
       <thead>
     <tr>
       <th scope="col" id="projects__order">#</th>
-      <th scope="col">PROJECT_NAME</th>
-      <th scope="col" id="projects__active">ACTIVE</th>
+      <th scope="col">Project Name</th>
+      <th scope="col" id="projects__active">Active</th>
     </tr>
     </thead>
       <tbody>

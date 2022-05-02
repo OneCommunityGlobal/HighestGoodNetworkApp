@@ -20,6 +20,15 @@ const PeopleTable=props=>{
             ? <div className="isActive"><i className="fa fa-circle" aria-hidden="true" /></div>
             : <div className="isNotActive"><i className="fa fa-circle-o" aria-hidden="true" /></div>}
         </td>
+        <td>
+          {person.createdDate.substr(0,10)}
+        </td>
+        <td>
+          {person.endDate?.substr(0,10) || "N/A" }
+        </td>
+        <td>
+          {person.blueSquares||"N/A"}
+        </td>
       </tr>
     );
   }
@@ -30,8 +39,11 @@ const PeopleTable=props=>{
     <thead>
     <tr>
       <th scope="col" id="projects__order">#</th>
-      <th scope="col">PERSON_NAME</th>
-      <th scope="col" id="projects__active">ACTIVE</th>
+      <th scope="col">Person Name</th>
+      <th scope="col" id="projects__active">Active</th>
+      <th scope="col">Start Date</th>
+      <th scope="col">End Date</th>
+      <th scope="col">Blue Squares</th>
     </tr>
     </thead>
     <tbody>

@@ -78,7 +78,7 @@ const PeopleTableDetails = (props) => {
         return task;
       }
     });
-
+    
     return filteredList;
   }
 
