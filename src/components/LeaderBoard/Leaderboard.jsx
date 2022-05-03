@@ -196,7 +196,6 @@ const LeaderBoard = ({
                 </span>
               </td>
             </tr>
-            {console.log('leaderboard data', leaderBoardData)}
             {leaderBoardData.map((item, key) => (
               <tr key={key}>
                 <td

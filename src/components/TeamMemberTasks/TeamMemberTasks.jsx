@@ -261,7 +261,7 @@ const TeamMemberTasks = props => {
         });
       } else {
         // if user is not in any teams
-        console.log('no managing teams');
+        // console.log('no managing teams');
         setFetched(true);
       }
     };

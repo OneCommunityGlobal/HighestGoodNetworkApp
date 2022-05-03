@@ -608,7 +608,13 @@ class UserProfileEdit extends Component {
 
     const isUserSelf = targetUserId === requestorId;
     // const isUserAdmin = requestorRole === 'Administrator';
-    const canEditFields = hasPermission(requestorRole, 'editUserProfile') || isUserSelf;
+    let canEditFields;
+    if(userProfile.role !== 'Owner'){
+      canEditFields = hasPermission(requestorRole, 'editUserProfile') || isUserSelf;
+    } else {
+      canEditFields = hasPermission(requestorRole, 'addDeleteEditOwners') || isUserSelf;
+    }
+
     const weeklyHoursReducer = (acc, val) =>
       acc + (parseInt(val.hours, 10) + parseInt(val.minutes, 10) / 60);
 
