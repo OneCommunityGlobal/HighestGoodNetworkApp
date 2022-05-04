@@ -167,6 +167,7 @@ const Email = (props) => {
     </>
   );
 };
+
 const formatPhoneNumber = (str) => {
   // Filter only numbers from the input
   const cleaned = `${str}`.replace(/\D/g, '');
@@ -234,6 +235,31 @@ const Phone = (props) => {
     </>
   );
 };
+
+const TimeZoneDifference = (props) => {
+  console.log("TimeZoneDifference props: ", props)
+  const { userProfile, setChanged, setUserProfile, isUserAdmin, isUserSelf } = props;
+
+  let userId = props.auth;
+  console.log("test output: ", userId)
+
+  if (! isUserSelf) {
+    return (
+      <>
+        <Col>
+        </Col>
+      </>
+    )
+  }
+
+  return (
+    <>
+      <Col>
+        <p>This is your own profile page</p>
+      </Col>
+    </>
+  )
+}
 
 const BasicInformationTab = (props) => {
   const {
@@ -461,6 +487,20 @@ const BasicInformationTab = (props) => {
             />
           )}
         </Col>
+      </Row>
+      <Row>
+        <Col>
+          <label>Difference in this Time Zone from Your Own</label>
+        </Col>
+        <TimeZoneDifference 
+          userProfile={userProfile}
+          setUserProfile={setUserProfile}
+          setChanged={setChanged}
+          isUserAdmin={isUserAdmin}
+          isUserSelf={isUserSelf}
+          handleUserProfile={handleUserProfile}
+          formValid={formValid}
+        />
       </Row>
       <Row style={{ marginBottom: '10px' }}>
         {/* <Col>
