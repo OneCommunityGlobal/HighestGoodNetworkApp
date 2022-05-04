@@ -122,8 +122,6 @@ export class Projects extends Component {
 
     const role = this.props.state.auth.user.role;
 
-    console.log('role in projects: ', this.props.state.auth.user.role);
-
     // Display project lists
     let ProjectsList = [];
     if (projects.length > 0) {

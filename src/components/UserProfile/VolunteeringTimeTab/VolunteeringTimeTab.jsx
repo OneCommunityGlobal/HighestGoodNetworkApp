@@ -5,10 +5,9 @@ import { capitalize } from 'lodash';
 import style from '../UserProfileEdit/ToggleSwitch/ToggleSwitch.module.scss';
 import { ENDPOINTS } from 'utils/URL';
 import axios from 'axios';
-import hasPermission from '../../../utils/permissions';
 
 const StartDate = (props) => {
-  if (!hasPermission(props.role, 'editUserProfile')) {
+  if (!props.canEdit) {
     return <p>{moment(props.userProfile.createdDate).format('YYYY-MM-DD')}</p>;
   }
   return (
@@ -22,13 +21,13 @@ const StartDate = (props) => {
         props.setUserProfile({ ...props.userProfile, createdDate: e.target.value });
       }}
       placeholder="Start Date"
-      invalid={!hasPermission(props.role, 'editUserProfile')}
+      invalid={!props.canEdit}
     />
   );
 };
 
 const EndDate = (props) => {
-  if (!hasPermission(props.role, 'editUserProfile')) {
+  if (!props.canEdit) {
     return (
       <p>
         {props.userProfile.endDate
@@ -50,13 +49,13 @@ const EndDate = (props) => {
         props.setUserProfile({ ...props.userProfile, endDate: e.target.value });
       }}
       placeholder="End Date"
-      invalid={!hasPermission(props.role, 'editUserProfile')}
+      invalid={!props.canEdit}
     />
   );
 };
 
 const WeeklyCommitedHours = (props) => {
-  if (!hasPermission(props.role, 'editUserProfile')) {
+  if (!props.canEdit) {
     return <p>{props.userProfile.weeklyComittedHours}</p>;
   }
   return (
@@ -71,13 +70,13 @@ const WeeklyCommitedHours = (props) => {
         props.setChanged(true);
       }}
       placeholder="Weekly Committed Hours"
-      invalid={!hasPermission(props.role, 'editUserProfile')}
+      invalid={!props.canEdit}
     />
   );
 };
 
 const TotalCommittedHours = (props) => {
-  if (!hasPermission(props.role, 'editUserProfile')) {
+  if (!props.canEdit) {
     return <p>{props.userProfile.totalTangibleHrs}</p>;
   }
   return (
@@ -91,13 +90,13 @@ const TotalCommittedHours = (props) => {
         props.setChanged(true);
       }}
       placeholder="Total Tangible Time Logged"
-      invalid={!hasPermission(props.role, 'editUserProfile')}
+      invalid={!props.canEdit}
     />
   );
 };
 
 const WeeklySummaryReqd = (props) => {
-  if (!hasPermission(props.role, 'editUserProfile')) {
+  if (!props.canEdit) {
     return <p>{props.userProfile.weeklySummaryNotReq ? 'Not Required' : 'Required'}</p>;
   }
   return (
@@ -131,7 +130,7 @@ const WeeklySummaryReqd = (props) => {
  * @returns
  */
 const ViewTab = (props) => {
-  const { userProfile, setUserProfile, setChanged, role } = props;
+  const { userProfile, setUserProfile, setChanged, role, canEdit } = props;
 
   const [totalTangibleHoursThisWeek, setTotalTangibleHoursThisWeek] = useState('Loading...');
   useEffect(() => {
@@ -165,6 +164,7 @@ const ViewTab = (props) => {
             userProfile={userProfile}
             setUserProfile={setUserProfile}
             setChanged={setChanged}
+            canEdit={canEdit}
           />
         </Col>
       </Row>
@@ -179,6 +179,7 @@ const ViewTab = (props) => {
             userProfile={userProfile}
             setUserProfile={setUserProfile}
             setChanged={setChanged}
+            canEdit={canEdit}
           />
         </Col>
       </Row>
@@ -202,6 +203,7 @@ const ViewTab = (props) => {
             userProfile={userProfile}
             setUserProfile={setUserProfile}
             setChanged={setChanged}
+            canEdit={canEdit}
           />
         </Col>
       </Row>
@@ -215,6 +217,7 @@ const ViewTab = (props) => {
             userProfile={userProfile}
             setUserProfile={setUserProfile}
             setChanged={setChanged}
+            canEdit={canEdit}
           />
         </Col>
       </Row>
@@ -229,6 +232,7 @@ const ViewTab = (props) => {
             userProfile={userProfile}
             setUserProfile={setUserProfile}
             setChanged={setChanged}
+            canEdit={canEdit}
           />
         </Col>
       </Row>
@@ -247,7 +251,7 @@ const ViewTab = (props) => {
                   </Label>
                 </Col>
                 <Col md="6">
-                  {hasPermission(props.role, 'editUserProfile') ? (
+                  {canEdit ? (
                     <Input
                       type="number"
                       id={`${key}Hours`}

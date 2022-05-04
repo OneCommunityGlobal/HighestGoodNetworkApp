@@ -8,12 +8,10 @@ const UserLinkLayout = (props) => {
 
   const { adminLinks, personalLinks } = userProfile;
 
-  const canEdit = hasPermission(role, 'editUserProfile') || isUserSelf;
-
   return (
     <div data-testid="user-link">
       <p style={{ display: 'inline-block', marginRight: 10 }}>LINKS </p>
-      {canEdit ? (
+      {props.canEdit ? (
         <LinkModButton
           userProfile={userProfile}
           updateLink={updateLink}

@@ -22,11 +22,12 @@ const Name = props => {
     formValid,
     setFormValid,
     role,
+    canEdit
   } = props;
 
   const { firstName, lastName } = userProfile;
 
-  if (hasPermission(role, 'editUserProfile') || isUserSelf) {
+  if (canEdit) {
     return (
       <>
         <Col md="3">
@@ -81,10 +82,10 @@ const Name = props => {
 };
 
 const Title = props => {
-  const { userProfile, setChanged, setUserProfile, isUserSelf, role } = props;
+  const { userProfile, setChanged, setUserProfile, isUserSelf, role, canEdit } = props;
   const { jobTitle } = userProfile;
 
-  if (hasPermission(role, 'editUserProfile') || isUserSelf) {
+  if (canEdit) {
     return (
       <>
         <Col>
@@ -123,12 +124,13 @@ const Email = props => {
     formValid,
     setFormValid,
     role,
+    canEdit
   } = props;
   const { email, privacySettings } = userProfile;
 
   const emailPattern = new RegExp(/^\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/i);
 
-  if (hasPermission(role, 'editUserProfile') || isUserSelf) {
+  if (canEdit) {
     return (
       <>
         <Col>
@@ -206,9 +208,10 @@ const Phone = props => {
     setChanged,
     isUserSelf,
     role,
+    canEdit
   } = props;
   const { phoneNumber, privacySettings } = userProfile;
-  if (hasPermission(role, 'editUserProfile') || isUserSelf) {
+  if (canEdit) {
     return (
       <>
         <Col>
@@ -252,7 +255,10 @@ const BasicInformationTab = props => {
     formValid,
     setFormValid,
     role,
+    canEdit,
   } = props;
+
+  
 
   const [timeZoneFilter, setTimeZoneFilter] = useState('');
   const [location, setLocation] = useState('');
@@ -304,6 +310,7 @@ const BasicInformationTab = props => {
           formValid={formValid}
           setChanged={setChanged}
           role={props.role}
+          canEdit={canEdit}
         />
       </Row>
       <Row>
@@ -327,6 +334,7 @@ const BasicInformationTab = props => {
           handleUserProfile={handleUserProfile}
           formValid={formValid}
           role={props.role}
+          canEdit={canEdit}
         />
       </Row>
       <Row>
@@ -351,6 +359,7 @@ const BasicInformationTab = props => {
           formValid={formValid}
           setFormValid={setFormValid}
           role={props.role}
+          canEdit={canEdit}
         />
       </Row>
       <Row>
@@ -374,6 +383,7 @@ const BasicInformationTab = props => {
           handleUserProfile={handleUserProfile}
           formValid={formValid}
           role={props.role}
+          canEdit={canEdit}
         />
       </Row>
       <Row>
@@ -381,7 +391,8 @@ const BasicInformationTab = props => {
           <Label>Video Call Preference</Label>
         </Col>
         <Col>
-          <FormGroup>
+          {canEdit ? (
+          <FormGroup disabled={!canEdit}>
             <Input
               type="text"
               name="collaborationPreference"
@@ -394,6 +405,9 @@ const BasicInformationTab = props => {
               placeholder="Skype, Zoom, etc."
             />
           </FormGroup>
+          ) : (
+            `${userProfile.collaborationPreference}`
+          )}
         </Col>
       </Row>
       <Row>
@@ -411,21 +425,20 @@ const BasicInformationTab = props => {
               id="role"
               name="role"
               className="form-control"
-              disabled={!hasPermission(role, 'editUserProfile')}
+              disabled={!canEdit}
+              canEdit={canEdit}
             >
               <option value="Administrator">Administrator</option>
               <option value="Volunteer">Volunteer</option>
               <option value="Manager">Manager</option>
               <option value="Core Team">Core Team</option>
               <option value="Mentor">Mentor</option>
-              {hasPermission(role, 'addDeleteEditOwners') && (
-                <option value="Owner">Owner</option>
-              )}
+              <option value="Owner">Owner</option>
             </select>
           </FormGroup>
         </Col>
       </Row>
-      {(hasPermission(props.role, 'editUserProfile') || props.isUserSelf) && (
+      {canEdit && (
         <Row>
           <Col md={{ size: 6, offset: 0 }} className="text-md-left my-2">
             <Label>Location</Label>
@@ -458,8 +471,8 @@ const BasicInformationTab = props => {
           <Label>Time Zone</Label>
         </Col>
         <Col>
-          {!hasPermission(props.role, 'editUserProfile') && <p>{userProfile.timeZone}</p>}
-          {hasPermission(props.role, 'editUserProfile') && (
+          {!canEdit && <p>{userProfile.timeZone}</p>}
+          {canEdit && (
             <TimeZoneDropDown
               filter={timeZoneFilter}
               onChange={e => {
@@ -484,7 +497,7 @@ const BasicInformationTab = props => {
                 : 'Inactive'}
           </Label>
           &nbsp;
-          {hasPermission(props.role, 'editUserProfile') && <PauseAndResumeButton isBigBtn={true} userProfile={userProfile} />}
+          {canEdit && <PauseAndResumeButton isBigBtn={true} userProfile={userProfile} />}
         </Col>
       </Row>
     </div>

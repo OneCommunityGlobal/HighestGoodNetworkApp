@@ -7,11 +7,9 @@ import './UserProfileEdit/UserProfileEdit.scss';
 import hasPermission from 'utils/permissions';
 
 const BlueSquareLayout = (props) => {
-  const { userProfile, handleUserProfile, handleBlueSquare, isUserSelf, role } = props;
+  const { userProfile, handleUserProfile, handleBlueSquare, isUserSelf, role, canEdit } = props;
 
   const { privacySettings, infringments } = userProfile;
-
-  const canEdit = hasPermission(role, 'editUserProfile') || isUserSelf;
 
   if (canEdit) {
     return (

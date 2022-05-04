@@ -329,7 +329,14 @@ const UserProfile = props => {
 
   const isUserSelf = targetUserId === requestorId;
   // const isUserAdmin = requestorRole === 'Administrator';
-  const canEdit = hasPermission(requestorRole, 'editUserProfile') || isUserSelf;
+  // const canEdit = hasPermission(requestorRole, 'editUserProfile') || isUserSelf;
+  let canEdit;
+  if(userProfile.role !== 'Owner'){
+    canEdit = hasPermission(requestorRole, 'editUserProfile') || isUserSelf;
+  } else {
+    canEdit = hasPermission(requestorRole, 'addDeleteEditOwners') || isUserSelf;
+  }
+
 
   return (
     <div>
@@ -397,7 +404,7 @@ const UserProfile = props => {
                 className="fa fa-info-circle"
                 onClick={toggleInfoModal}
               />{' '}
-              {hasPermission(requestorRole, 'changeUserStatus') && (
+              {canEdit && (
                 <>
                   <ActiveCell
                     isActive={userProfile.isActive}
@@ -417,7 +424,7 @@ const UserProfile = props => {
                   &nbsp;
                 </>
               )}
-              {hasPermission(requestorRole, 'seeUserTimelog') && (
+              {canEdit && (
                 <i
                   data-toggle="tooltip"
                   className="fa fa-clock-o"
@@ -441,6 +448,7 @@ const UserProfile = props => {
               userProfile={userProfile}
               setUserProfile={setUserProfile}
               role={requestorRole}
+              canEdit={canEdit}
             />
           </Col>
         </Row>
@@ -454,6 +462,7 @@ const UserProfile = props => {
                 updateLink={updateLink}
                 handleLinkModel={props.handleLinkModel}
                 role={requestorRole}
+                canEdit={canEdit}
               />
               <BlueSquareLayout
                 userProfile={userProfile}
@@ -462,6 +471,7 @@ const UserProfile = props => {
                 handleBlueSquare={handleBlueSquare}
                 isUserSelf={isUserSelf}
                 role={requestorRole}
+                canEdit={canEdit}
               />
             </div>
           </Col>
@@ -535,6 +545,7 @@ const UserProfile = props => {
                   setFormValid={setFormValid}
                   isUserSelf={isUserSelf}
                   setShouldRefresh={setShouldRefresh}
+                  canEdit={canEdit}
                 />
               </TabPane>
               <TabPane tabId="2">
@@ -544,6 +555,7 @@ const UserProfile = props => {
                   setChanged={setChanged}
                   isUserSelf={isUserSelf}
                   role={requestorRole}
+                  canEdit={canEdit}
                 />
               </TabPane>
               <TabPane tabId="3">
@@ -593,21 +605,25 @@ const UserProfile = props => {
                 </Link>
               </div>
             )}
-            <span
-              onClick={() => {
-                setUserProfile(originalUserProfile);
-                setChanged(false);
-              }}
-              className="btn btn-outline-danger mr-1"
-            >
-              Cancel
-            </span>
-            <SaveButton
-              className="mr-1"
-              handleSubmit={handleSubmit}
-              disabled={!formValid.firstName || !formValid.lastName || !formValid.email || !changed}
-              userProfile={userProfile}
-            />
+            {canEdit && (
+              <>
+              <span
+                onClick={() => {
+                  setUserProfile(originalUserProfile);
+                  setChanged(false);
+                }}
+                className="btn btn-outline-danger mr-1"
+              >
+                Cancel
+              </span>      
+              <SaveButton
+                className="mr-1"
+                handleSubmit={handleSubmit}
+                disabled={!formValid.firstName || !formValid.lastName || !formValid.email || !changed}
+                userProfile={userProfile}
+              />
+              </>
+            )}
           </Col>
         </Row>
       </Container>
