@@ -11,6 +11,7 @@ import PauseAndResumeButton from 'components/UserManagement/PauseAndResumeButton
 import TimeZoneDropDown from '../TimeZoneDropDown';
 import { useSelector } from 'react-redux';
 import { getUserTimeZone } from 'services/timezoneApiService';
+import { difference } from 'lodash';
 
 const Name = (props) => {
   const {
@@ -240,13 +241,39 @@ const TimeZoneDifference = (props) => {
   console.log("TimeZoneDifference props: ", props)
   const { userProfile, setChanged, setUserProfile, isUserAdmin, isUserSelf } = props;
 
-  let userId = props.auth;
-  console.log("test output: ", userId)
+  const viewingTimeZone = props.userProfile.timeZone;
+  console.log("viewingTimeZone", viewingTimeZone)
+
+  const yourLocaltimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+  console.log("yourLocaltimezone", yourLocaltimezone); // Asia/Karachi
+
+  function getOffsetBetweenTimezonesForDate(date, timezone1, timezone2) {
+    const timezone1Date = convertDateToAnotherTimeZone(date, timezone1);
+    const timezone2Date = convertDateToAnotherTimeZone(date, timezone2);
+    return timezone1Date.getTime() - timezone2Date.getTime();
+  }
+  
+  function convertDateToAnotherTimeZone(date, timezone) {
+    const dateString = date.toLocaleString('en-US', {
+      timeZone: timezone
+    });
+    return new Date(dateString);
+  }
+
+  let date = new Date();
+  // date.setDate(date.getDate() - 90);
+  console.log("date is: ", date)
+  const offset = getOffsetBetweenTimezonesForDate(date, yourLocaltimezone, viewingTimeZone);
+  const offsetInHours = offset/3600000
+  const signedOffset = (offsetInHours > 0) ? "+" + offsetInHours : "" + offsetInHours
+  console.log("offsetInHours", (offsetInHours > 0) ? "+" + offsetInHours : "" + offsetInHours)
+
 
   if (! isUserSelf) {
     return (
       <>
         <Col>
+          <p>{signedOffset} hours</p>
         </Col>
       </>
     )
@@ -262,6 +289,7 @@ const TimeZoneDifference = (props) => {
 }
 
 const BasicInformationTab = (props) => {
+  console.log("BasicInformationTab props: ", props)
   const {
     userProfile,
     setUserProfile,
@@ -490,7 +518,7 @@ const BasicInformationTab = (props) => {
       </Row>
       <Row>
         <Col>
-          <label>Difference in this Time Zone from Your Own</label>
+          <label>Difference in this Time Zone from Your Local</label>
         </Col>
         <TimeZoneDifference 
           userProfile={userProfile}
