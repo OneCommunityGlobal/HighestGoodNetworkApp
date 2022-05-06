@@ -11,7 +11,6 @@ import PauseAndResumeButton from 'components/UserManagement/PauseAndResumeButton
 import TimeZoneDropDown from '../TimeZoneDropDown';
 import { useSelector } from 'react-redux';
 import { getUserTimeZone } from 'services/timezoneApiService';
-import { difference } from 'lodash';
 
 const Name = (props) => {
   const {
@@ -199,6 +198,7 @@ const formatPhoneNumber = (str) => {
   // Unconventional
   return str;
 };
+
 const Phone = (props) => {
   const { userProfile, setUserProfile, handleUserProfile, setChanged, isUserAdmin, isUserSelf } =
     props;
@@ -238,21 +238,17 @@ const Phone = (props) => {
 };
 
 const TimeZoneDifference = (props) => {
-  console.log("TimeZoneDifference props: ", props)
   const { userProfile, setChanged, setUserProfile, isUserAdmin, isUserSelf } = props;
 
   const viewingTimeZone = props.userProfile.timeZone;
-  console.log("viewingTimeZone", viewingTimeZone)
-
-  const yourLocaltimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-  console.log("yourLocaltimezone", yourLocaltimezone); // Asia/Karachi
+  const yourLocalTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
   function getOffsetBetweenTimezonesForDate(date, timezone1, timezone2) {
     const timezone1Date = convertDateToAnotherTimeZone(date, timezone1);
     const timezone2Date = convertDateToAnotherTimeZone(date, timezone2);
     return timezone1Date.getTime() - timezone2Date.getTime();
   }
-  
+
   function convertDateToAnotherTimeZone(date, timezone) {
     const dateString = date.toLocaleString('en-US', {
       timeZone: timezone
@@ -261,13 +257,9 @@ const TimeZoneDifference = (props) => {
   }
 
   let date = new Date();
-  // date.setDate(date.getDate() - 90);
-  console.log("date is: ", date)
-  const offset = getOffsetBetweenTimezonesForDate(date, yourLocaltimezone, viewingTimeZone);
-  const offsetInHours = offset/3600000
-  const signedOffset = (offsetInHours > 0) ? "+" + offsetInHours : "" + offsetInHours
-  console.log("offsetInHours", (offsetInHours > 0) ? "+" + offsetInHours : "" + offsetInHours)
-
+  const offset = getOffsetBetweenTimezonesForDate(date, viewingTimeZone, yourLocalTimeZone);
+  const offsetInHours = offset/3600000;
+  const signedOffset = (offsetInHours > 0) ? "+" + offsetInHours : "" + offsetInHours;
 
   if (! isUserSelf) {
     return (
@@ -289,7 +281,6 @@ const TimeZoneDifference = (props) => {
 }
 
 const BasicInformationTab = (props) => {
-  console.log("BasicInformationTab props: ", props)
   const {
     userProfile,
     setUserProfile,
