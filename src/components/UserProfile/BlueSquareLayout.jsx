@@ -9,6 +9,8 @@ import hasPermission from 'utils/permissions';
 const BlueSquareLayout = (props) => {
   const { userProfile, handleUserProfile, handleBlueSquare, isUserSelf, role, canEdit } = props;
 
+  console.log('CAN EDIT',canEdit);
+
   const { privacySettings, infringments } = userProfile;
 
   if (canEdit) {

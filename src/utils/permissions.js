@@ -43,6 +43,8 @@ const permissions = {
     ],
     'Manager': [
         'seeWeeklySummaryReports',
+        'assignOnlyBlueSquares',
+        'editTask',
     ],
     'Mentor': [
         'M'

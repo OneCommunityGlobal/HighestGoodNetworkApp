@@ -31,7 +31,7 @@ const BlueSquare = ({ blueSquares, handleBlueSquare, role }) => {
         ))}
       </div>
 
-      {hasPermission(role, 'editUserProfile') && (
+      {hasPermission(role, 'editUserProfile') || hasPermission(role, 'assignOnlyBlueSquares')  && (
         <div
           onClick={() => {
             handleBlueSquare(true, 'addBlueSquare', '');
