@@ -17,7 +17,11 @@ const Member = (props) => {
           <div>{props.index + 1}</div>
         </th>
         <td className="members__name">
+          {hasPermission(role, 'seeUserProfileInProjects') ? (
           <a href={`/userprofile/${props.uid}`}>{props.fullName}</a>
+          ) : (
+            props.fullName
+          )}
         </td>
         {hasPermission(role, 'unassignUserInProject',) ? (
           <td className="members__assign">

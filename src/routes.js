@@ -63,9 +63,14 @@ export default (
         path="/weeklysummariesreport"
         exact
         component={WeeklySummariesReport}
-        allowedRoles={[UserRole.Administrator, UserRole.Manager, UserRole.CoreTeam, UserRole.Owner]}
+        allowedRoles={[UserRole.Administrator, UserRole.Manager, UserRole.CoreTeam, UserRole.Owner, UserRole.Mentor]}
       />
-      <ProtectedRoute path="/projects" exact component={Projects} />
+      <ProtectedRoute 
+        path="/projects" 
+        exact 
+        component={Projects} 
+        allowedRoles={[UserRole.Administrator, UserRole.Owner]}
+      />
       <ProtectedRoute path="/project/wbs/:projectId" component={WBS} />
       <ProtectedRoute path="/wbs/tasks/:wbsId/:projectId" component={WBSDetail} />
       <ProtectedRoute
@@ -80,7 +85,11 @@ export default (
         component={BadgeManagement}
         allowedRoles={[UserRole.Administrator, UserRole.Owner]}
       />
-      <ProtectedRoute path="/teams" exact component={Teams} />
+      <ProtectedRoute path="/teams" 
+        exact 
+        component={Teams} 
+        allowedRoles={[UserRole.Administrator, UserRole.Owner]}
+      />
       <ProtectedRoute path="/project/members/:projectId" component={Members} />
 
       <Route path="/login" component={Login} />

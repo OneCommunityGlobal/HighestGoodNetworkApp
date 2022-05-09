@@ -76,7 +76,7 @@ const Project = (props) => {
           category
         )}
       </td>
-      <td className="projects__active--input" onClick={updateActive}>
+      <td className="projects__active--input" onClick={hasPermission(role, 'editProject') ? updateActive : null}>
         {props.active ? (
           <div className="isActive">
             <i className="fa fa-circle" aria-hidden="true"></i>

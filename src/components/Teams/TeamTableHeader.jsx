@@ -1,5 +1,6 @@
 import React from 'react';
 import { TEAM_NAME, ACTIVE, MEMBERS } from '../../languages/en/ui';
+import hasPermission from 'utils/permissions';
 
 /**
  * The header row of the team table.
@@ -17,7 +18,9 @@ const TeamTableHeader = React.memo((props) => {
       <th scope="col" id="teams__members">
         {MEMBERS}
       </th>
-      <th scope="col" id="teams__delete"></th>
+      {hasPermission(props.requestorRole, 'editDeleteTeam') && (
+        <th scope="col" id="teams__delete"></th>
+      )}
     </tr>
   );
 });

@@ -116,6 +116,11 @@ export const Header = props => {
                   </i>
                 </NavLink>
               </NavItem>
+              {(hasPermission(user.role, 'seeUserManagement') ||
+              hasPermission(user.role, 'seeBadgeManagement') ||
+              hasPermission(user.role, 'seeProjectManagement') ||
+              hasPermission(user.role, 'seeTeamsManagement') ||
+              hasPermission(user.role, 'seePopupManagement')) && (
               <UncontrolledDropdown nav inNavbar>
                 <DropdownToggle nav caret>
                   {OTHER_LINKS}
@@ -135,12 +140,16 @@ export const Header = props => {
                   ) : (
                     <React.Fragment></React.Fragment>
                   )}
-                  <DropdownItem tag={Link} to="/projects">
-                    {PROJECTS}
-                  </DropdownItem>
-                  <DropdownItem tag={Link} to="/teams">
-                    {TEAMS}
-                  </DropdownItem>
+                  {hasPermission(user.role, 'seeProjectManagement') && (
+                    <DropdownItem tag={Link} to="/projects">
+                      {PROJECTS}
+                    </DropdownItem>
+                  )}
+                  {hasPermission(user.role, 'seeTeamsManagement') && (
+                    <DropdownItem tag={Link} to="/teams">
+                      {TEAMS}
+                    </DropdownItem>
+                  )}
                   {hasPermission(user.role, 'seePopupManagement') ? (
                     <>
                       <DropdownItem divider />
@@ -151,6 +160,7 @@ export const Header = props => {
                   ) : null}
                 </DropdownMenu>
               </UncontrolledDropdown>
+              )}
               <NavItem>
                 <NavLink tag={Link} to={`/userprofile/${user.userid}`}>
                   <img
