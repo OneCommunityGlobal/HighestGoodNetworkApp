@@ -279,6 +279,8 @@ const BasicInformationTab = props => {
           ) {
             let timezone = response.data.results[0].annotations.timezone.name;
             setTimeZoneFilter(timezone);
+            setUserProfile({ ...userProfile, timeZone: timezone });
+            setChanged(true);
           } else {
             alert('Invalid location or ' + response.data.status.message);
           }

@@ -133,7 +133,7 @@ const TeamMemberTasks = props => {
               } else {
                 for (let i = 0; i < uniqueMembers.length; i++) {
                   const entries = [];
-                  for (let j = 0; j < data[0].data.length; j++) {
+                  for (let j = 0; j < data[0]?.data.length; j++) {
                     if (uniqueMembers[i]._id === data[0].data[j].personId) {
                       entries.push(data[0].data[j]);
                       // console.log('push');
@@ -162,8 +162,8 @@ const TeamMemberTasks = props => {
                 // merge assigned tasks into each user obj
                 for (let i = 0; i < uniqueMembers.length; i++) {
                   const userTasks = [];
-                  for (let j = 0; j < data[0].data.length; j++) {
-                    for (let k = 0; k < data[0].data[j].resources.length; k++) {
+                  for (let j = 0; j < data[0]?.data.length; j++) {
+                    for (let k = 0; k < data[0]?.data[j].resources.length; k++) {
                       if (data[0].data[j].resources[k].userID === uniqueMembers[i]._id) {
                         userTasks.push(data[0].data[j]);
                       }

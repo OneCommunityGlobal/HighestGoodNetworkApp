@@ -54,47 +54,6 @@ const EndDate = (props) => {
   );
 };
 
-const WeeklyCommitedHours = (props) => {
-  if (!props.canEdit) {
-    return <p>{props.userProfile.weeklyComittedHours}</p>;
-  }
-  return (
-    <Input
-      type="number"
-      name="weeklyComittedHours"
-      id="weeklyComittedHours"
-      data-testid="weeklyCommittedHours"
-      value={props.userProfile.weeklyComittedHours}
-      onChange={(e) => {
-        props.setUserProfile({ ...props.userProfile, weeklyComittedHours: e.target.value });
-        props.setChanged(true);
-      }}
-      placeholder="Weekly Committed Hours"
-      invalid={!props.canEdit}
-    />
-  );
-};
-
-const TotalCommittedHours = (props) => {
-  if (!props.canEdit) {
-    return <p>{props.userProfile.totalTangibleHrs}</p>;
-  }
-  return (
-    <Input
-      type="number"
-      name="totalTangibleHours"
-      id="totalTangibleHours"
-      value={props.userProfile.totalTangibleHrs}
-      onChange={(e) => {
-        props.setUserProfile({ ...props.userProfile, totalTangibleHrs: e.target.value });
-        props.setChanged(true);
-      }}
-      placeholder="Total Tangible Time Logged"
-      invalid={!props.canEdit}
-    />
-  );
-};
-
 const WeeklySummaryReqd = (props) => {
   if (!props.canEdit) {
     return <p>{props.userProfile.weeklySummaryNotReq ? 'Not Required' : 'Required'}</p>;
@@ -121,6 +80,48 @@ const WeeklySummaryReqd = (props) => {
   );
 };
 
+const WeeklyCommitedHours = (props) => {
+  if (!props.canEdit) {
+    return <p>{props.userProfile.weeklyComittedHours}</p>;
+  }
+  return (
+    <Input
+      type="number"
+      name="weeklyComittedHours"
+      id="weeklyComittedHours"
+      data-testid="weeklyCommittedHours"
+      value={props.userProfile.weeklyComittedHours}
+      onChange={(e) => {
+        props.setUserProfile({ ...props.userProfile, weeklyComittedHours: e.target.value });
+        props.setChanged(true);
+      }}
+      placeholder="Weekly Committed Hours"
+      invalid={!props.isUserAdmin}
+    />
+  );
+};
+
+const TotalTangibleHours = (props) => {
+  if (!props.isUserAdmin) {
+    return <p>{props.userProfile.totalTangibleHrs}</p>;
+  }
+  return (
+    <Input
+      type="number"
+      name="totalTangibleHours"
+      id="totalTangibleHours"
+      value={props.userProfile.totalTangibleHrs}
+      onChange={(e) => {
+        props.setUserProfile({ ...props.userProfile, totalTangibleHrs: e.target.value });
+        props.setChanged(true);
+      }}
+      placeholder="Total Tangible Time Logged"
+      invalid={!props.isUserAdmin}
+    />
+  );
+};
+
+
 /**
  *
  * @param {*} props.userProfile
@@ -143,11 +144,11 @@ const ViewTab = (props) => {
         for (let i = 0; i < res.data.length; i++) {
           const timeEntry = res.data[i];
           if (timeEntry.isTangible === true) {
-            output += timeEntry.hours + timeEntry.minutes / 60;
+            output += parseFloat(timeEntry.hours) + parseFloat(timeEntry.minutes) / 60;
           }
         }
 
-        setTotalTangibleHoursThisWeek(parseFloat(output).toFixed(2));
+        setTotalTangibleHoursThisWeek(output.toFixed(2));
       })
       .catch((err) => {});
   }, []);
@@ -227,12 +228,12 @@ const ViewTab = (props) => {
           <Label>Total Tangible Hours </Label>
         </Col>
         <Col md="6">
-          <TotalCommittedHours
-            role={role}
+          <TotalTangibleHours
             userProfile={userProfile}
             setUserProfile={setUserProfile}
             setChanged={setChanged}
             canEdit={canEdit}
+            role={role}
           />
         </Col>
       </Row>
