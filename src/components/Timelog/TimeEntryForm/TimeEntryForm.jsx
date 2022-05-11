@@ -390,10 +390,9 @@ const TimeEntryForm = (props) => {
             {inputs.isTangible ? (
               'Tangible'
             ) : (
-              <span style={{ textDecoration: 'underline' }}>Intangible</span>
+              <span style={{ color: 'orange' }}>Intangible </span>
             )}
-            Time Entry
-            <i
+            Time Entry <i
               className="fa fa-info-circle"
               data-tip
               data-for="registerTip"
