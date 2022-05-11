@@ -95,7 +95,7 @@ const TeamMemberTasks = (props) => {
       });
 
       Promise.all(teamMembersPromises).then((data) => {
-        console.log('team members', data);
+       // console.log('team members', data);
         for (let i = 0; i < managingTeams.length; i++) {
           allManagingTeams[i] = {
             ...managingTeams[i],
@@ -122,8 +122,8 @@ const TeamMemberTasks = (props) => {
 
         if (memberTimeEntriesPromises.length) {
           Promise.all(memberTimeEntriesPromises).then((data) => {
-          console.log('time entries: ', data);
-            if (data[0].data.length === 0) {
+        //  console.log('time entries: ', data);
+            if (data[0]?.data.length === 0) {
               for (let i = 0; i < uniqueMembers.length; i++) {
                 uniqueMembers[i] = {
                   ...uniqueMembers[i],
@@ -151,7 +151,7 @@ const TeamMemberTasks = (props) => {
             teamMemberTasksPromises.push(httpService.get(ENDPOINTS.TASKS_BY_USERID(membersId)).catch((err) => { if (err.status !== 401) { console.log(err); } }));
 
             Promise.all(teamMemberTasksPromises).then(async (data) => {
-               await console.log('tasks by userid', data);
+             //  await console.log('tasks by userid', data);
 
 
               // merge assigned tasks into each user obj
