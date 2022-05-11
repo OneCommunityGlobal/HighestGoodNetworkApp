@@ -168,7 +168,6 @@ const TimeEntryForm = (props) => {
         result.dateOfWork = 'Invalid date';
       }
     }
-
     if (inputs.hours === '' && inputs.minutes === '') {
       result.time = 'Time is required';
     } else {
@@ -362,7 +361,7 @@ const TimeEntryForm = (props) => {
     if (closed === true && isOpen) toggle();
   };
 
-  console.log('isTangible', data.isTangible == inputs.isTangible);
+ // console.log('isTangible', data.isTangible == inputs.isTangible);
 
   return (
     <>

@@ -5,7 +5,7 @@
 import React, { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
-import { Table, Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
+import { Table, Button, Modal, ModalHeader, ModalBody, ModalFooter, Progress } from 'reactstrap';
 import moment from 'moment';
 import _ from 'lodash';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -65,8 +65,10 @@ const TeamMemberTasks = (props) => {
 
   useEffect(() => {
     const fetchData = async () => {
+      console.log('props: ', props)
       const userId = props.asUser ? props.asUser : props.auth.user.userid;
       await props.getUserProfile(userId);
+
 
       // const { leaderBoardData } = props
       const { managingTeams } = props;
@@ -93,7 +95,7 @@ const TeamMemberTasks = (props) => {
       });
 
       Promise.all(teamMembersPromises).then((data) => {
-        // console.log('team members', data);
+        console.log('team members', data);
         for (let i = 0; i < managingTeams.length; i++) {
           allManagingTeams[i] = {
             ...managingTeams[i],
@@ -105,7 +107,7 @@ const TeamMemberTasks = (props) => {
         // fetch all time entries for current week for all members
         const uniqueMembers = _.uniqBy(allMembers, '_id');
 
-        // console.log('members: ', uniqueMembers);
+         console.log('members: ', uniqueMembers);
 
         const membersId = [];
         for (let i = 0; i < uniqueMembers.length; i++) {
@@ -120,7 +122,7 @@ const TeamMemberTasks = (props) => {
 
         if (memberTimeEntriesPromises.length) {
           Promise.all(memberTimeEntriesPromises).then((data) => {
-            // console.log('time entries: ', data);
+          console.log('time entries: ', data);
             if (data[0].data.length === 0) {
               for (let i = 0; i < uniqueMembers.length; i++) {
                 uniqueMembers[i] = {
@@ -143,13 +145,13 @@ const TeamMemberTasks = (props) => {
                 };
               }
             }
-            // console.log('members after entries: ', uniqueMembers);
+             console.log('members after entries: ', uniqueMembers);
 
             // fetch all tasks for each member
             teamMemberTasksPromises.push(httpService.get(ENDPOINTS.TASKS_BY_USERID(membersId)).catch((err) => { if (err.status !== 401) { console.log(err); } }));
 
             Promise.all(teamMemberTasksPromises).then(async (data) => {
-              // await console.log('tasks by userid', data);
+               await console.log('tasks by userid', data);
 
 
               // merge assigned tasks into each user obj
@@ -168,7 +170,7 @@ const TeamMemberTasks = (props) => {
                 };
               }
 
-              // console.log('members after tasks: ', uniqueMembers);
+               console.log('members after tasks: ', uniqueMembers);
 
               try {
                 for (let i = 0; i < uniqueMembers.length; i++) {
@@ -188,7 +190,7 @@ const TeamMemberTasks = (props) => {
                 // currently fetches all projects, should consider refactoring if number of projects increases
                 const WBSRes = await httpService.get(ENDPOINTS.WBS_ALL).catch((err) => { if (err.status === 401) { loggedOut = true; } });
                 const allWBS = WBSRes.data;
-                // console.log('tasks', WBSRes.data);
+                 console.log('tasks', WBSRes.data);
 
                 // calculate hours done in current week and add to user obj for ease of access
                 for (let i = 0; i < uniqueMembers.length; i++) {
@@ -217,10 +219,31 @@ const TeamMemberTasks = (props) => {
                     };
                   }
                 }
+                
+//Add time entry property to task
+                let allTimeEntries = []
+                finalData.forEach((member)=>{
+                  member.tasks.forEach((task)=>{
+                  task.allTimeEntries = allTimeEntries
+                  member.timeEntries.forEach((entry)=>{
+                    if (task.projectId === entry.projectId ){
+                   task.allTimeEntries.push(entry)
+                  
+                    }else{
+                     return null
+                    }
+                  })
+                  })
+                })
+
+               
+               
+             
+               
 
                 let loggedOut = false;
 
-                // console.log('member tasks in obj: ', uniqueMembers);
+                 console.log('member tasks in obj: ', uniqueMembers);
 
                 if (!loggedOut) {
                   // sort each members' tasks by last modified time
@@ -233,7 +256,7 @@ const TeamMemberTasks = (props) => {
                     });
                   });
 
-                  // console.log('final data ', finalData)
+                   console.log('final data ', finalData)
                   setFetched(true);
                   setTeams(finalData);
                   // });
@@ -299,7 +322,27 @@ const TeamMemberTasks = (props) => {
               </p>
             ))}
         </td>
-        <td>tempprogress</td>
+        <td  className=''>
+          { 
+             member.tasks &&
+             member.tasks.map((task, index)=>{ 
+               const value = task.allTimeEntries? Math.floor(task.allTimeEntries.reduce(
+                (acc, curr) => acc + (curr.minutes/60 + curr.hours),
+               0
+              )) : 0
+               return(<div key={`${task._id}${index}`} className=''>
+                <p>{`${value} of ${Math.floor(task.estimatedHours)}` }</p>
+                <Progress
+                value={value}
+                max={task.estimatedHours}
+              /></div>
+             )
+               //const hoursDone = task.allTimeEntries.reduce((acc, curr)=> acc + curr.isTangible? curr.totalSeconds/3600 : 0,0 );
+               
+             })
+             
+             }
+        </td>
       </tr>
     ));
   }
