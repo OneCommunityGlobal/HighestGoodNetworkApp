@@ -67,23 +67,49 @@ const PeopleTableDetails = (props) => {
   }
 
   const filterTasks = (tasks) => {
+    let simple=[];
     let filteredList = tasks.filter((task) => {
       if (task.taskName.toLowerCase().indexOf(name.toLowerCase()) > -1 &&
         (!priority.toLowerCase() || task?.priority?.toLowerCase().indexOf(priority.toLowerCase()) > -1) &&
         (!status.toLowerCase() || task?.status?.toLowerCase().indexOf(status.toLowerCase()) > -1) &&
-        (!resources.toLowerCase() || task?.resources?.toLowerCase().indexOf(resources.toLowerCase()) > -1) &&
+        (!resources.toLowerCase() || task?.resources[0].forEach(t=>{
+          t.name.toLowerCase().indexOf(resources.toLowerCase()) > -1})
+        ) &&
+        
         (!active.toLowerCase() || task?.active?.toLowerCase().indexOf(active.toLowerCase()) > -1) &&
         (!estimatedHours.toLowerCase() || task?.estimatedHours?.toLowerCase().indexOf(estimatedHours.toLowerCase()) > -1) &&
         (!assign.toLowerCase() || task?.assign?.toLowerCase().indexOf(assign.toLowerCase()) > -1)) {
-        return task;
+          return true;     
       }
     });
-    
+    // let filteredList = tasks.filter((task) => {
+    //   (!resources.toLowerCase()||task.resources[0].forEach(person=>{
+    //     if (person.name.toLowerCase().indexOf(resources.toLowerCase())>-1){
+    //       simple.push(task);
+    //     }
+    //   }))
+      
+    // });
+    // filteredList=filteredList.filter(task=>{
+    //    (!resources.toLowerCase() || task?.resources[0].filter(t=>{
+    //     t.name.toLowerCase().includes(resources.toLowerCase())}))
+    // })
+    // console.log(filteredList.length);
+    // console.log(filteredList);
     return filteredList;
   }
-
+  let toggleMoreResourcesStatus = true;
+  const toggleMoreResources = (id) => {
+    let x=document.getElementById(id);
+    // let hidden = x.getAttribute("hidden");
+    if (toggleMoreResourcesStatus) {
+      x.style.display = 'table-cell';
+    } else {
+      x.style.display = 'none';
+    }
+    toggleMoreResourcesStatus = !toggleMoreResourcesStatus;
+  }
   let filteredTasks = filterTasks(props.taskData);
-
   return (
     <Container fluid>
       <table className="table table-bordered">
@@ -114,67 +140,66 @@ const PeopleTableDetails = (props) => {
         <tbody>
         {filteredTasks.map((value) =>
           <tr key={value._id} >
-            <td>{value.taskName}</td>
-            <td>{value.priority}</td>
-            <td>{value.status}</td>
-            <td>
-              {value.resources.map(res=>
-                res.map(resource=>{
-                  return <img src={resource.profilePic||'/pfp-default.png'} alt="Profile Picture" className="pic" auto="format" title={resource.name}/>
-              })
-            )}</td>
-            <td>{value.active}</td>
-            <td>{value.assign}</td>
-            <td>{value.estimatedHours}</td>
-            <td>{value.startDate}</td>
-            <td>{value.endDate}</td>
-            <td>
-                {/* <div>
-                  <Popup trigger={<button> Click here  </button>} 
-                          position="left center">
-                    <div>Hours Best: {value.hoursBest}</div>
-                    <div>Hours Worst: {value.hoursWorst}</div>
-                    <div>Hours Most: {value.hoursMost}</div>
-                    <div>Why This Task is important</div>
-                    <div>Design Intent</div>
-                    <input
-                        className='rectangle'
-                        type="text"
-                        // value={this.state.value}
-                        // onChange={this.handleChange}
-                    />
-                    <div>Endstate</div>
-                    <input
-                        className='rectangle'
-                        type="text"
-                        // value={this.state.value}
-                        // onChange={this.handleChange}
-                    />                    
-                  </Popup>
-                </div> */}
+            <td >{value.taskName}</td>
+            <td >{value.priority}</td>
+            <td >{value.status}</td>
+            <td >
+              {value.resources?.map(res=>
+                
+                res.map((resource,index)=>{
+                  if(index<2){
+                    return <img alt={resource.name} src={resource.profilePic||'/pfp-default.png'}  
+                              className='img-circle' auto="format" title={resource.name}/>
+                    
+                  }
+              }),
+            )}
+              {value.resources?.map(res=>
+              res.length >2 ? <a className="name resourceMoreToggle" onClick={() => 
+                      toggleMoreResources(value._id)}>
+                  <span className="dot">{res.length - 2}+</span>
+                </a>:null
+              )}
+              <tr id={value._id} class="extra" >
+                <td class="extra1" >
+                  {value.resources?.map(res=>
+                    res.map((resource,index)=>{
+                      if(index>=2){
+                        return <img alt={resource.name} src={resource.profilePic||'/pfp-default.png'} 
+                         className='img-circle' auto="format" title={resource.name}/>
+                      }
+                  }),
+                )}
+                </td>
+              </tr>
+              
+            </td>
+            <td >{value.active}</td>
+            <td >{value.assign}</td>
+            <td >{value.estimatedHours}</td>
+            <td >{value.startDate}</td>
+            <td >{value.endDate}</td>
+            <td >
+                
                 <Popup trigger={<button className="button"></button>} modal>
-                    <div>Hours Best: <textarea className='hours_text' type="text">{value.hoursBest}</textarea></div>
-                    <div>Hours Worst: <textarea className='hours_text' type="text">{value.hoursWorst}</textarea></div>
-                    <div>Hours Most: <textarea className='hours_text' type="text">{value.hoursMost}</textarea></div>
                     <div>Why This Task is important</div>
                     <textarea
                         className='rectangle'
                         type="text"
-                        // value={this.state.value}
-                        // onChange={this.handleChange}
+                        value={value.whyInfo}
                     />
                     <div>Design Intent</div>
                     <textarea
                         className='rectangle'
                         type="text"
-                        // value={this.state.value}
+                        value={value.intentInfo}
                         // onChange={this.handleChange}
                     />
-                    <div>Endstate</div>
+                    <div>End State</div>
                     <textarea
                         className='rectangle'
                         type="text"
-                        // value={this.state.value}
+                        value={value.endstateInfo}
                         // onChange={this.handleChange}
                     />
                 </Popup>

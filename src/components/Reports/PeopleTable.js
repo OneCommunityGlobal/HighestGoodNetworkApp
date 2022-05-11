@@ -2,7 +2,7 @@ import React from 'react';
 import '../Teams/Team.css';
 import { Link } from 'react-router-dom'
 import './reports.css'
-
+import moment from 'moment'
 
 const PeopleTable=props=>{
   let PeopleList = [];
@@ -21,14 +21,14 @@ const PeopleTable=props=>{
             : <div className="isNotActive"><i className="fa fa-circle-o" aria-hidden="true" /></div>}
         </td>
         <td>
-          {person.createdDate.substr(0,10)}
+          {moment(person.createdDate).format('MM/DD/YYYY')}
         </td>
         <td>
-          {person.endDate?.substr(0,10) || "N/A" }
+          {moment(person.endDate).format('MM/DD/YYYY') || "N/A" }
         </td>
-        <td>
+        {/* <td>
           {person.blueSquares||"N/A"}
-        </td>
+        </td> */}
       </tr>
     );
   }
@@ -43,7 +43,7 @@ const PeopleTable=props=>{
       <th scope="col" id="projects__active">Active</th>
       <th scope="col">Start Date</th>
       <th scope="col">End Date</th>
-      <th scope="col">Blue Squares</th>
+      {/* <th scope="col">Blue Squares</th> */}
     </tr>
     </thead>
     <tbody>

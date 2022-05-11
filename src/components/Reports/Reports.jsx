@@ -51,7 +51,7 @@ class ReportsPage extends Component {
       peopleSearchData:[],
       projectSearchData:{},
       users:{},
-      startDate: new Date(),
+      startDate: new Date("01-01-2010"),
       endDate: new Date(),
     }
     this.showProjectTable = this.showProjectTable.bind(this);
@@ -60,20 +60,6 @@ class ReportsPage extends Component {
     this.setActive=this.setActive.bind(this)
     this.setInActive=this.setInActive.bind(this)
     this.setAll=this.setAll.bind(this);
-    this.setStartDate=this.setStartDate.bind(this);
-    this.setEndDate=this.setEndDate.bind(this);
-  }
-  setStartDate=(date)=>{
-    this.setState(()=>{
-      return{
-        startDate: date
-      }
-      })
-  }
-  setEndDate=(date)=> {
-    this.setState( {
-        endDate: date
-      })
   }
   
   async componentDidMount() {
@@ -154,6 +140,10 @@ class ReportsPage extends Component {
 
   filteredPeopleList = (userProfiles) => {
     const filteredList = userProfiles.filter((userProfile) => {
+      let start=moment(userProfile.createdDate);
+      let start_check=moment(this.state.startDate);
+      let end=moment(userProfile.endDate);
+      let end_check=moment(this.state.endDate);
       // Applying the search filters before creating each team table data element
       if ((userProfile.firstName
         && userProfile.firstName.toLowerCase().indexOf(this.state.teamNameSearchText.toLowerCase()) > -1
@@ -167,10 +157,12 @@ class ReportsPage extends Component {
         userProfile.lastName
         && (userProfile.lastName.toLowerCase().indexOf(this.state.wildCardSearchText.toLowerCase()) > -1
           )
-        )
+        ) 
 
       ) {
-        return userProfile;
+        return (new Date(Date.parse(userProfile.createdDate))>=this.state.startDate)&&
+                (this.state.startDate<=new Date(Date.parse(userProfile.endDate))<=(this.state.endDate));
+        
       }
       return false;
     });
@@ -236,8 +228,6 @@ class ReportsPage extends Component {
     let { allTeams } = this.props.state.allTeamsData;
     let { userProfiles } = this.props.state.allUserProfiles;
     // console.log(this.props.state.allUserProfiles.userProfiles);
-    this.setStartDate = new Date();
-    this.setEndDate =new Date();
     this.state.teamSearchData = this.filteredTeamList(allTeams);
     this.state.peopleSearchData = this.filteredPeopleList(userProfiles);
     this.state.projectSearchData = this.filteredProjectList(projects);
@@ -257,7 +247,9 @@ class ReportsPage extends Component {
       this.state.peopleSearchData = this.filteredPeopleList(this.state.peopleSearchData);
       this.state.projectSearchData = this.filteredProjectList(this.state.projectSearchData);
     }
-     console.log(this.state.peopleSearchData);
+    if(this.state.startDate!=null && this.state.endDate!=null){
+      this.state.peopleSearchData = this.filteredPeopleList(this.state.peopleSearchData);
+    }
     return (
       
       <Container fluid className="bg--white py-3 mb-5">
@@ -297,10 +289,10 @@ class ReportsPage extends Component {
             </div>
             <div>
                 <td id="task_startDate">Start Date 
-                  <DatePicker selected={this.state.startDate} onChange={this.setStartDate} name="startDate" dateFormat="MM/dd/yyyy"/>
+                  <DatePicker selected={this.state.startDate } minDate={new Date("01/01/2010")} maxDate={new Date()} onChange={(date)=>this.setState({startDate:date})}  />
                 </td>
                 <td id="task_EndDate">End Date
-                  <DatePicker selected={this.state.endDate} onChange={this.setEndDate} name="endDate" dateFormat="MM/dd/yyyy"/>
+                  <DatePicker selected={this.state.endDate } maxDate={new Date()} minDate={new Date("01/01/2010")} onChange={date=>this.setState({endDate:date})}  />
                 </td>
             </div>
 

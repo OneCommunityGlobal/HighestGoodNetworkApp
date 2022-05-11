@@ -12,7 +12,7 @@ const TableFilter = (props) => {
   const taskStatus = ['Paused','Complete', 'Active'];
   const taskActive = ['Yes','No'];
   const taskAssign = ['Yes','No'];
-  const [startDate, setStartDate] = useState(new Date());
+  const [startDate, setStartDate] = useState(new Date("01/01/2010"));
   const [endDate, setEndDate]=useState(new Date());
   const onTaskNameSearch = (text) => {
     props.onTaskNameSearch(text);
@@ -98,10 +98,10 @@ const TableFilter = (props) => {
         />
       </td>
       <td id="task_startDate">
-        <DatePicker selected={startDate} onChange={(date) => setStartDate(date)} />
+        <DatePicker selected={startDate} minDate={new Date("01/01/2010")} maxDate={new Date()} onChange={(date) => setStartDate(date)} />
       </td>
       <td id="task_EndDate">
-        <DatePicker selected={endDate} onChange={(date) => setEndDate(date)} />
+        <DatePicker selected={endDate} maxDate={new Date()} minDate={new Date("01/01/2010")} onChange={(date) => setEndDate(date)} />
       </td>
     </tr>
   );

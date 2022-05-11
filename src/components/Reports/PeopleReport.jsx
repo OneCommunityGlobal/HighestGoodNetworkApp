@@ -794,7 +794,10 @@ if (tasks.length>0) {
           "endDate":"",
           "hoursBest": "",
           "hoursMost": "",
-          "hoursWorst": ""
+          "hoursWorst": "",
+          "whyInfo":"",
+          "endstateInfo":"",
+          "intentInfo":"",
         }
         let resourcesName= []
         
@@ -837,9 +840,15 @@ if (tasks.length>0) {
         if(userTask[i].startedDatetime==null){
           task.startDate="null";
         }
+        if(userTask[i].endedDatime==null){
+          task.endDate="null";
+        }
         task.hoursBest=userTask[i].hoursBest;
         task.hoursMost=userTask[i].hoursMost;
-        task.hoursWorst=userTask[i].hoursWorst;       
+        task.hoursWorst=userTask[i].hoursWorst;   
+        task.whyInfo=userTask[i].whyInfo;
+        task.intentInfo=userTask[i].intentInfo;
+        task.endstateInfo=userTask[i].endstateInfo;    
         peopleData.taskData.push(task);
       }
       

@@ -25,8 +25,16 @@
 }
 .modal {
   font-size: 12px;
+  width: 300px;
 }
-.modal > .header {
+.extra{
+  display:none;
+  border: collapse;
+}
+.extra1{
+  border: none !important;
+}
+/* .modal > .header {
   width: 100%;
   border-bottom: 1px solid gray;
   font-size: 18px;
@@ -55,4 +63,4 @@
   background: #ffffff;
   border-radius: 18px;
   border: 1px solid #cfcece;
-}
+} */
