@@ -221,9 +221,10 @@ const TeamMemberTasks = (props) => {
                 }
                 
 //Add time entry property to task
-                let allTimeEntries = []
+               
                 finalData.forEach((member)=>{
                   member.tasks.forEach((task)=>{
+                    let allTimeEntries = []
                   task.allTimeEntries = allTimeEntries
                   member.timeEntries.forEach((entry)=>{
                     if (task.projectId === entry.projectId ){
@@ -330,11 +331,28 @@ const TeamMemberTasks = (props) => {
                 (acc, curr) => acc + (curr.minutes/60 + curr.hours),
                0
               )) : 0
+              let color ="";
+             if (value < 5){
+                 color = "danger"
+              }else if (value >=5 && value < 10){
+                 color = "warning"
+              }else if (value >=10 && value < 20){
+                 color = "sucess"
+              }else if (value >=20 && value < 30){
+                 color = "primary"
+              }else if (value >=30 && value < 40){
+                 color = "info"
+              }else if (value >=40 && value < 50){
+                 color = "super"
+              }else if (value >=50){
+                 color = "awesome"
+              }
                return(<div key={`${task._id}${index}`} className=''>
                 <p>{`${value} of ${Math.floor(task.estimatedHours)}` }</p>
                 <Progress
                 value={value}
                 max={task.estimatedHours}
+                color = {color}
               /></div>
              )
                //const hoursDone = task.allTimeEntries.reduce((acc, curr)=> acc + curr.isTangible? curr.totalSeconds/3600 : 0,0 );
