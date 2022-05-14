@@ -1,7 +1,6 @@
 import React from 'react';
 import UserLinks from './UserLinks';
 import LinkModButton from './UserProfileEdit/LinkModButton';
-import hasPermission from 'utils/permissions';
 
 const UserLinkLayout = (props) => {
   const { isUserSelf, userProfile, updateLink, handleLinkModel, setChanged, role } = props;

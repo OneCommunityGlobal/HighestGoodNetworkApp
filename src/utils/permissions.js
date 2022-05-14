@@ -39,6 +39,7 @@ const permissions = {
         'handleBlueSquare',
         'resetPasswordOthers',
         'dataIsTangibleTimelog',
+        'toggleSubmitForm',
     ],
     'Volunteer': [
         'V'
@@ -97,6 +98,7 @@ const permissions = {
         'resetPasswordOthers',
         'dataIsTangibleTimelog',
         'addDeleteEditOwners',
+        'toggleSubmitForm',
     ],
 };
 

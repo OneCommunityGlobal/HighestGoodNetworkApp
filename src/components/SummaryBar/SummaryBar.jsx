@@ -234,8 +234,7 @@ const SummaryBar = (props) => {
             {!weeklySummary ? (
               <div className="border-red col-4 bg--white-smoke no-gutters" align="center">
                 <div className="py-1"> </div>
-
-                {matchUser  ? (
+                {matchUser || hasPermission(role, 'toggleSubmitForm') ? (
                   <p
                     className={'summary-toggle large_text_summary text--black text-danger'}
                     align="center"

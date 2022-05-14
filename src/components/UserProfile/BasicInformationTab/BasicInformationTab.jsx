@@ -435,7 +435,9 @@ const BasicInformationTab = props => {
               <option value="Manager">Manager</option>
               <option value="Core Team">Core Team</option>
               <option value="Mentor">Mentor</option>
-              <option value="Owner">Owner</option>
+              {hasPermission(role, 'addDeleteEditOwners') && (
+                <option value="Owner">Owner</option>
+              )}
             </select>
           </FormGroup>
         </Col>
