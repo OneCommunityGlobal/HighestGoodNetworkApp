@@ -69,33 +69,25 @@ const PeopleTableDetails = (props) => {
   const filterTasks = (tasks) => {
     let simple=[];
     let filteredList = tasks.filter((task) => {
-      if (task.taskName.toLowerCase().indexOf(name.toLowerCase()) > -1 &&
-        (!priority.toLowerCase() || task?.priority?.toLowerCase().indexOf(priority.toLowerCase()) > -1) &&
-        (!status.toLowerCase() || task?.status?.toLowerCase().indexOf(status.toLowerCase()) > -1) &&
-        (!resources.toLowerCase() || task?.resources[0].forEach(t=>{
-          t.name.toLowerCase().indexOf(resources.toLowerCase()) > -1})
-        ) &&
-        
-        (!active.toLowerCase() || task?.active?.toLowerCase().indexOf(active.toLowerCase()) > -1) &&
-        (!estimatedHours.toLowerCase() || task?.estimatedHours?.toLowerCase().indexOf(estimatedHours.toLowerCase()) > -1) &&
-        (!assign.toLowerCase() || task?.assign?.toLowerCase().indexOf(assign.toLowerCase()) > -1)) {
+      if (task.taskName.toLowerCase().includes(name.toLowerCase())  &&
+        (task?.priority?.toLowerCase().includes(priority.toLowerCase()) ) &&
+        ( task?.status?.toLowerCase().includes(status.toLowerCase()) ) &&    
+        ( task?.active?.toLowerCase().includes(active.toLowerCase()) ) &&
+        (task?.estimatedHours?.toLowerCase().includes(estimatedHours.toLowerCase())) &&
+        (task?.assign?.toLowerCase().includes(assign.toLowerCase()) )) {
           return true;     
       }
     });
-    // let filteredList = tasks.filter((task) => {
-    //   (!resources.toLowerCase()||task.resources[0].forEach(person=>{
-    //     if (person.name.toLowerCase().indexOf(resources.toLowerCase())>-1){
-    //       simple.push(task);
-    //     }
-    //   }))
-      
-    // });
-    // filteredList=filteredList.filter(task=>{
-    //    (!resources.toLowerCase() || task?.resources[0].filter(t=>{
-    //     t.name.toLowerCase().includes(resources.toLowerCase())}))
-    // })
-    // console.log(filteredList.length);
-    // console.log(filteredList);
+    filteredList = filteredList.filter((task) => {
+      let flag = false;
+      for (let i = 0; i<task.resources[0].length; i++) {
+          if ( task.resources[0][i].name.toLowerCase().includes(resources.toLowerCase() ) ){
+              flag = true;
+              break;
+          }
+      }
+      return flag;
+  })
     return filteredList;
   }
   let toggleMoreResourcesStatus = true;
@@ -148,7 +140,7 @@ const PeopleTableDetails = (props) => {
                 
                 res.map((resource,index)=>{
                   if(index<2){
-                    return <img alt={resource.name} src={resource.profilePic||'/pfp-default.png'}  
+                    return <img key={resource.index} alt={resource.name} src={resource.profilePic||'/pfp-default.png'}  
                               className='img-circle' auto="format" title={resource.name}/>
                     
                   }
@@ -165,7 +157,7 @@ const PeopleTableDetails = (props) => {
                   {value.resources?.map(res=>
                     res.map((resource,index)=>{
                       if(index>=2){
-                        return <img alt={resource.name} src={resource.profilePic||'/pfp-default.png'} 
+                        return <img key={resource.index} alt={resource.name} src={resource.profilePic||'/pfp-default.png'} 
                          className='img-circle' auto="format" title={resource.name}/>
                       }
                   }),

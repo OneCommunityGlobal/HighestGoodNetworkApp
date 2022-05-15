@@ -140,10 +140,6 @@ class ReportsPage extends Component {
 
   filteredPeopleList = (userProfiles) => {
     const filteredList = userProfiles.filter((userProfile) => {
-      let start=moment(userProfile.createdDate);
-      let start_check=moment(this.state.startDate);
-      let end=moment(userProfile.endDate);
-      let end_check=moment(this.state.endDate);
       // Applying the search filters before creating each team table data element
       if ((userProfile.firstName
         && userProfile.firstName.toLowerCase().indexOf(this.state.teamNameSearchText.toLowerCase()) > -1
@@ -161,7 +157,7 @@ class ReportsPage extends Component {
 
       ) {
         return (new Date(Date.parse(userProfile.createdDate))>=this.state.startDate)&&
-                (this.state.startDate<=new Date(Date.parse(userProfile.endDate))<=(this.state.endDate));
+                (this.state.startDate<=new Date(Date.parse(userProfile?.endDate))<=(this.state.endDate));
         
       }
       return false;
