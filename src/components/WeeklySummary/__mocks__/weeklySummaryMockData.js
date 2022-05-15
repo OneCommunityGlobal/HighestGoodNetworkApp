@@ -1,13 +1,17 @@
-
 import moment from 'moment';
 import 'moment-timezone';
 
 const dueDateThisWeek = moment().tz('America/Los_Angeles').endOf('week').toISOString();
-const dueDateLastWeek = moment().tz('America/Los_Angeles').endOf('week').subtract(1, 'week')
+const dueDateLastWeek = moment()
+  .tz('America/Los_Angeles')
+  .endOf('week')
+  .subtract(1, 'week')
   .toISOString();
-const dueDateBeforeLast = moment().tz('America/Los_Angeles').endOf('week').subtract(2, 'week')
+const dueDateBeforeLast = moment()
+  .tz('America/Los_Angeles')
+  .endOf('week')
+  .subtract(2, 'week')
   .toISOString();
-
 
 export const weeklySummaryMockData1 = {
   mediaUrl: 'u',

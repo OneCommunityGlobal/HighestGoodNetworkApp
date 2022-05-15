@@ -61,8 +61,14 @@ describe('User Table Data', () => {
   });
   describe('Behavior', () => {
     it('should redirect to user profile once the user name has been clicked', () => {
-      expect(screen.getByRole('link', { name: userProfileMock.firstName })).toHaveAttribute('href', `/userprofile/${userProfileMock._id}`);
-      expect(screen.getByRole('link', { name: userProfileMock.lastName })).toHaveAttribute('href', `/userprofile/${userProfileMock._id}`);
+      expect(screen.getByRole('link', { name: userProfileMock.firstName })).toHaveAttribute(
+        'href',
+        `/userprofile/${userProfileMock._id}`,
+      );
+      expect(screen.getByRole('link', { name: userProfileMock.lastName })).toHaveAttribute(
+        'href',
+        `/userprofile/${userProfileMock._id}`,
+      );
     });
     it('should fire onDeleteClick() once the user clicks the delete button', () => {
       userEvent.click(screen.getByRole('button', { name: /delete/i }));

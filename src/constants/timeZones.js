@@ -2255,14 +2255,14 @@ export const timeZones = [
     utcOffset: '+12:00',
     utcDstOffset: '+12:00',
   },
-]
+];
 
-const timeZoneMap = {}
+const timeZoneMap = {};
 
 timeZones.forEach((timeZone) => {
-    const newTimeZone = {...timeZone};
-    delete newTimeZone['name'];
-    timeZoneMap[timeZone.name] = newTimeZone;
-})
+  const newTimeZone = { ...timeZone };
+  delete newTimeZone['name'];
+  timeZoneMap[timeZone.name] = newTimeZone;
+});
 
 export default timeZoneMap;

@@ -64,18 +64,15 @@ export function CountdownTimer({ date }) {
 
   return (
     <div className="countdown">
-      {
-        !_.isEmpty(timeLeft)
-          ? Object.keys(timeLeft).map(interval => (
+      {!_.isEmpty(timeLeft)
+        ? Object.keys(timeLeft).map((interval) => (
             <span key={interval} className="countdown__col">
               <span className="countdown__col__element">
-                <strong>{addLeadingZeros(interval)}</strong>
-                {' '}
-                <span>{pluralOrSingle(interval)}</span>
+                <strong>{addLeadingZeros(interval)}</strong> <span>{pluralOrSingle(interval)}</span>
               </span>
             </span>
-          )) : whenTimeIsUp()
-      }
+          ))
+        : whenTimeIsUp()}
     </div>
   );
 }

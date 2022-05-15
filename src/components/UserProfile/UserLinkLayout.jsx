@@ -3,20 +3,9 @@ import UserLinks from './UserLinks';
 import LinkModButton from './UserProfileEdit/LinkModButton';
 
 const UserLinkLayout = (props) => {
+  const { isUserAdmin, isUserSelf, userProfile, updateLink, handleLinkModel, setChanged } = props;
 
-  const {
-    isUserAdmin,
-    isUserSelf,
-    userProfile,
-    updateLink,
-    handleLinkModel,
-    setChanged
-  } = props;
-
-  const {
-    adminLinks,
-    personalLinks,
-  } = userProfile;
+  const { adminLinks, personalLinks } = userProfile;
 
   const canEdit = isUserAdmin || isUserSelf;
 
@@ -45,7 +34,6 @@ const UserLinkLayout = (props) => {
       />
     </div>
   );
-
 };
 
 export default UserLinkLayout;

@@ -1,21 +1,29 @@
-import React, { useState } from 'react'
-import { Row, Label, Input, Col, FormFeedback, FormGroup, Button } from 'reactstrap'
-import ToggleSwitch from '../UserProfileEdit/ToggleSwitch'
-import moment from 'moment'
+import React, { useState } from 'react';
+import { Row, Label, Input, Col, FormFeedback, FormGroup, Button } from 'reactstrap';
+import ToggleSwitch from '../UserProfileEdit/ToggleSwitch';
+import moment from 'moment';
 
-import PhoneInput from 'react-phone-input-2'
-import 'react-phone-input-2/lib/style.css'
+import PhoneInput from 'react-phone-input-2';
+import 'react-phone-input-2/lib/style.css';
 
-import PauseAndResumeButton from 'components/UserManagement/PauseAndResumeButton'
+import PauseAndResumeButton from 'components/UserManagement/PauseAndResumeButton';
 
-import TimeZoneDropDown from '../TimeZoneDropDown'
+import TimeZoneDropDown from '../TimeZoneDropDown';
 import { useSelector } from 'react-redux';
-import { getUserTimeZone } from 'services/timezoneApiService'
+import { getUserTimeZone } from 'services/timezoneApiService';
 
-const Name = props => {
-  const { userProfile, setUserProfile, setChanged, isUserAdmin, isUserSelf, formValid, setFormValid } = props
+const Name = (props) => {
+  const {
+    userProfile,
+    setUserProfile,
+    setChanged,
+    isUserAdmin,
+    isUserSelf,
+    formValid,
+    setFormValid,
+  } = props;
 
-  const { firstName, lastName } = userProfile
+  const { firstName, lastName } = userProfile;
 
   if (isUserAdmin || isUserSelf) {
     return (
@@ -29,8 +37,8 @@ const Name = props => {
               value={firstName}
               // className={styleProfile.profileText}
               onChange={(e) => {
-                setUserProfile({...userProfile, firstName: e.target.value.trim()});
-                setFormValid({...formValid, firstName: !!e.target.value})
+                setUserProfile({ ...userProfile, firstName: e.target.value.trim() });
+                setFormValid({ ...formValid, firstName: !!e.target.value });
                 setChanged(true);
               }}
               placeholder="First Name"
@@ -48,9 +56,9 @@ const Name = props => {
               value={lastName}
               // className={styleProfile.profileText}
               onChange={(e) => {
-                setUserProfile({...userProfile, lastName: e.target.value.trim()});
-                setFormValid({...formValid, lastName: !!e.target.value})
-                setChanged(true)
+                setUserProfile({ ...userProfile, lastName: e.target.value.trim() });
+                setFormValid({ ...formValid, lastName: !!e.target.value });
+                setChanged(true);
               }}
               placeholder="Last Name"
               invalid={!formValid.lastName}
@@ -59,7 +67,7 @@ const Name = props => {
           </FormGroup>
         </Col>
       </>
-    )
+    );
   }
 
   return (
@@ -68,12 +76,12 @@ const Name = props => {
         <p>{`${firstName} ${lastName}`}</p>
       </Col>
     </>
-  )
-}
+  );
+};
 
-const Title = props => {
-  const { userProfile, setChanged, setUserProfile, isUserAdmin, isUserSelf } = props
-  const { jobTitle } = userProfile
+const Title = (props) => {
+  const { userProfile, setChanged, setUserProfile, isUserAdmin, isUserSelf } = props;
+  const { jobTitle } = userProfile;
 
   if (isUserAdmin || isUserSelf) {
     return (
@@ -86,15 +94,15 @@ const Title = props => {
               id="jobTitle"
               value={jobTitle}
               onChange={(e) => {
-                setUserProfile({...userProfile, jobTitle: e.target.value})
-                setChanged(true)
+                setUserProfile({ ...userProfile, jobTitle: e.target.value });
+                setChanged(true);
               }}
               placeholder="Job Title"
             />
           </FormGroup>
         </Col>
       </>
-    )
+    );
   }
   return (
     <>
@@ -102,14 +110,22 @@ const Title = props => {
         <p>{`${jobTitle}`}</p>
       </Col>
     </>
-  )
-}
+  );
+};
 
-const Email = props => {
-  const { userProfile, setUserProfile, setChanged, isUserAdmin, isUserSelf, formValid, setFormValid } = props
-  const { email, privacySettings } = userProfile
+const Email = (props) => {
+  const {
+    userProfile,
+    setUserProfile,
+    setChanged,
+    isUserAdmin,
+    isUserSelf,
+    formValid,
+    setFormValid,
+  } = props;
+  const { email, privacySettings } = userProfile;
 
-  const emailPattern = new RegExp(/^\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/i)
+  const emailPattern = new RegExp(/^\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/i);
 
   if (isUserAdmin || isUserSelf) {
     return (
@@ -128,9 +144,9 @@ const Email = props => {
               id="email"
               value={email}
               onChange={(e) => {
-                setUserProfile({ ...userProfile, email: e.target.value })
-                setFormValid({ ...formValid, email: emailPattern.test(e.target.value) })
-                setChanged(true)
+                setUserProfile({ ...userProfile, email: e.target.value });
+                setFormValid({ ...formValid, email: emailPattern.test(e.target.value) });
+                setChanged(true);
               }}
               placeholder="Email"
               invalid={!formValid.email}
@@ -139,21 +155,22 @@ const Email = props => {
           </FormGroup>
         </Col>
       </>
-    )
+    );
   }
   return (
     <>
-      {privacySettings.email && (
+      {privacySettings?.email && (
         <Col>
           <p>{email}</p>
         </Col>
       )}
     </>
-  )
-}
-const formatPhoneNumber = str => {
+  );
+};
+
+const formatPhoneNumber = (str) => {
   // Filter only numbers from the input
-  const cleaned = `${str}`.replace(/\D/g, '')
+  const cleaned = `${str}`.replace(/\D/g, '');
   if (cleaned.length === 10) {
     // Domestic (USA)
     return [
@@ -163,7 +180,7 @@ const formatPhoneNumber = str => {
       cleaned.substring(3, 6),
       ' - ',
       cleaned.substring(6, 10),
-    ].join('')
+    ].join('');
   }
   if (cleaned.length === 11) {
     // International
@@ -176,14 +193,16 @@ const formatPhoneNumber = str => {
       cleaned.substring(4, 7),
       ' - ',
       cleaned.substring(7, 11),
-    ].join('')
+    ].join('');
   }
   // Unconventional
-  return str
-}
-const Phone = props => {
-  const { userProfile, setUserProfile, handleUserProfile, setChanged, isUserAdmin, isUserSelf } = props
-  const { phoneNumber, privacySettings } = userProfile
+  return str;
+};
+
+const Phone = (props) => {
+  const { userProfile, setUserProfile, handleUserProfile, setChanged, isUserAdmin, isUserSelf } =
+    props;
+  const { phoneNumber, privacySettings } = userProfile;
   if (isUserAdmin || isUserSelf) {
     return (
       <>
@@ -198,55 +217,109 @@ const Phone = props => {
               country={'us'}
               value={phoneNumber[0]}
               onChange={(phoneNumber) => {
-                setUserProfile({...userProfile, phoneNumber: phoneNumber.trim()})
-                setChanged(true)
+                setUserProfile({ ...userProfile, phoneNumber: phoneNumber.trim() });
+                setChanged(true);
               }}
             />
           </FormGroup>
         </Col>
       </>
-    )
+    );
   }
   return (
     <>
-      {privacySettings.phoneNumber && (
+      {privacySettings?.phoneNumber && (
         <Col>
           <p>{formatPhoneNumber(phoneNumber)}</p>
         </Col>
       )}
     </>
+  );
+};
+
+const TimeZoneDifference = (props) => {
+  const { userProfile, setChanged, setUserProfile, isUserAdmin, isUserSelf } = props;
+
+  const viewingTimeZone = props.userProfile.timeZone;
+  const yourLocalTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+
+  function getOffsetBetweenTimezonesForDate(date, timezone1, timezone2) {
+    const timezone1Date = convertDateToAnotherTimeZone(date, timezone1);
+    const timezone2Date = convertDateToAnotherTimeZone(date, timezone2);
+    return timezone1Date.getTime() - timezone2Date.getTime();
+  }
+
+  function convertDateToAnotherTimeZone(date, timezone) {
+    const dateString = date.toLocaleString('en-US', {
+      timeZone: timezone
+    });
+    return new Date(dateString);
+  }
+
+  let date = new Date();
+  const offset = getOffsetBetweenTimezonesForDate(date, viewingTimeZone, yourLocalTimeZone);
+  const offsetInHours = offset/3600000;
+  const signedOffset = (offsetInHours > 0) ? "+" + offsetInHours : "" + offsetInHours;
+
+  if (! isUserSelf) {
+    return (
+      <>
+        <Col>
+          <p>{signedOffset} hours</p>
+        </Col>
+      </>
+    )
+  }
+
+  return (
+    <>
+      <Col>
+        <p>This is your own profile page</p>
+      </Col>
+    </>
   )
 }
 
-const BasicInformationTab = props => {
-  const { userProfile, setUserProfile, setChanged, isUserAdmin, isUserSelf, handleUserProfile, formValid, setFormValid} = props
+const BasicInformationTab = (props) => {
+  const {
+    userProfile,
+    setUserProfile,
+    setChanged,
+    isUserAdmin,
+    isUserSelf,
+    handleUserProfile,
+    formValid,
+    setFormValid,
+  } = props;
 
-  const [timeZoneFilter, setTimeZoneFilter] = useState('')
-  const [location, setLocation] = useState('')
-  const key =  useSelector(state => state.timeZoneAPI.userAPIKey)
+  const [timeZoneFilter, setTimeZoneFilter] = useState('');
+  const [location, setLocation] = useState('');
+  const key = useSelector((state) => state.timeZoneAPI.userAPIKey);
 
   const onClickGetTimeZone = () => {
     if (!location) {
-      alert('Please enter valid location')
-      return
+      alert('Please enter valid location');
+      return;
     }
     if (key) {
       getUserTimeZone(location, key)
-        .then(response => {
+        .then((response) => {
           if (
             response.data.status.code === 200 &&
             response.data.results &&
             response.data.results.length
           ) {
-            let timezone = response.data.results[0].annotations.timezone.name
-            setTimeZoneFilter(timezone)
+            let timezone = response.data.results[0].annotations.timezone.name;
+            setTimeZoneFilter(timezone);
+            setUserProfile({ ...userProfile, timeZone: timezone });
+            setChanged(true);
           } else {
-            alert('Invalid location or ' + response.data.status.message)
+            alert('Invalid location or ' + response.data.status.message);
           }
         })
-        .catch(err => console.log(err))
+        .catch((err) => console.log(err));
     }
-  }
+  };
   return (
     <div data-testid="basic-info-tab">
       <Row>
@@ -336,7 +409,6 @@ const BasicInformationTab = props => {
         <Phone
           userProfile={userProfile}
           setUserProfile={setUserProfile}
-
           setChanged={setChanged}
           isUserAdmin={isUserAdmin}
           isUserSelf={isUserSelf}
@@ -356,7 +428,7 @@ const BasicInformationTab = props => {
               id="collaborationPreference"
               value={userProfile.collaborationPreference}
               onChange={(e) => {
-                setUserProfile({...userProfile, collaborationPreference: e.target.value})
+                setUserProfile({ ...userProfile, collaborationPreference: e.target.value });
                 setChanged(true);
               }}
               placeholder="Skype, Zoom, etc."
@@ -373,8 +445,8 @@ const BasicInformationTab = props => {
             <select
               value={userProfile.role}
               onChange={(e) => {
-                setUserProfile({...userProfile, role: e.target.value})
-                setChanged(true)
+                setUserProfile({ ...userProfile, role: e.target.value });
+                setChanged(true);
               }}
               id="role"
               name="role"
@@ -389,7 +461,7 @@ const BasicInformationTab = props => {
           </FormGroup>
         </Col>
       </Row>
-      {props.isUserAdmin && (
+      {(props.isUserAdmin || props.isUserSelf) && (
         <Row>
           <Col md={{ size: 6, offset: 0 }} className="text-md-left my-2">
             <Label>Location</Label>
@@ -398,19 +470,19 @@ const BasicInformationTab = props => {
             <Row>
               <Col md="6">
                 <Input
-                    onChange={e => setLocation(e.target.value)}
+                  onChange={(e) => {
+                    setLocation(e.target.value)
+                    setUserProfile({ ...userProfile, location: e.target.value })
+                    setChanged(true)
+                  }}
+                  value={userProfile.location}
                 />
               </Col>
               <Col md="6">
                 <div className="w-100 pt-1 mb-2 mx-auto">
-                    <Button
-                    color="secondary"
-                    block
-                    size="sm"
-                    onClick={onClickGetTimeZone}
-                    >
-                      Get Time Zone
-                    </Button>
+                  <Button color="secondary" block size="sm" onClick={onClickGetTimeZone}>
+                    Get Time Zone
+                  </Button>
                 </div>
               </Col>
             </Row>
@@ -427,7 +499,7 @@ const BasicInformationTab = props => {
             <TimeZoneDropDown
               filter={timeZoneFilter}
               onChange={(e) => {
-                setUserProfile({...userProfile, timeZone: e.target.value})
+                setUserProfile({ ...userProfile, timeZone: e.target.value });
                 setChanged(true);
               }}
               selected={userProfile.timeZone}
@@ -435,26 +507,45 @@ const BasicInformationTab = props => {
           )}
         </Col>
       </Row>
-      <Row style={{ marginBottom: '10px' }}>
+      <Row>
         <Col>
+          <label>Difference in this Time Zone from Your Local</label>
+        </Col>
+        <TimeZoneDifference 
+          userProfile={userProfile}
+          setUserProfile={setUserProfile}
+          setChanged={setChanged}
+          isUserAdmin={isUserAdmin}
+          isUserSelf={isUserSelf}
+          handleUserProfile={handleUserProfile}
+          formValid={formValid}
+        />
+      </Row>
+      <Row style={{ marginBottom: '10px' }}>
+        {/* <Col>
           <Label>Search For Time Zone</Label>
         </Col>
         <Col>
-          <Input type="text" onChange={e => setTimeZoneFilter(e.target.value)} />
+          <Input type="text" onChange={(e) => setTimeZoneFilter(e.target.value)} />
         </Col>
       </Row>
-      <Row style={{ marginBottom: '10px' }}>
+      <Row style={{ marginBottom: '10px' }}> */}
         <Col>
           <Label>Status</Label>
         </Col>
         <Col md="6">
-        <Label>{userProfile.isActive ? "Active" : (userProfile.reactivationDate ? "Paused until " + moment(userProfile.reactivationDate).format('YYYY-MM-DD') : "Inactive")}</Label>
-        &nbsp;
-        {
-          props.isUserAdmin && <PauseAndResumeButton isBigBtn={true} userProfile={userProfile}/>}
+          <Label>
+            {userProfile.isActive
+              ? 'Active'
+              : userProfile.reactivationDate
+                ? 'Paused until ' + moment(userProfile.reactivationDate).format('YYYY-MM-DD')
+                : 'Inactive'}
+          </Label>
+          &nbsp;
+          {props.isUserAdmin && <PauseAndResumeButton isBigBtn={true} userProfile={userProfile} />}
         </Col>
       </Row>
     </div>
-  )
-}
-export default BasicInformationTab
+  );
+};
+export default BasicInformationTab;

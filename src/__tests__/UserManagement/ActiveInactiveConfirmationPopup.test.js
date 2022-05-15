@@ -1,7 +1,5 @@
 import React from 'react';
-import {
-  screen, render, cleanup,
-} from '@testing-library/react';
+import { screen, render, cleanup } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import ActiveInactiveConfirmationPopup from '../../components/UserManagement/ActiveInactiveConfirmationPopup';
 
@@ -10,13 +8,15 @@ describe('Active Inactive confirmation popup', () => {
   const setActiveInactive = jest.fn();
   const isActive = true;
   beforeEach(() => {
-    render(<ActiveInactiveConfirmationPopup
-      open
-      fullName="Test Admin"
-      onClose={onClose}
-      setActiveInactive={setActiveInactive}
-      isActive={isActive}
-    />);
+    render(
+      <ActiveInactiveConfirmationPopup
+        open
+        fullName="Test Admin"
+        onClose={onClose}
+        setActiveInactive={setActiveInactive}
+        isActive={isActive}
+      />,
+    );
   });
   describe('Structure', () => {
     it('should render the modal', () => {
@@ -32,13 +32,15 @@ describe('Active Inactive confirmation popup', () => {
 
     it('should render the `ACTIVE` text when isActive is set to false', () => {
       cleanup();
-      render(<ActiveInactiveConfirmationPopup
-        open
-        fullName="Test Admin"
-        onClose={onClose}
-        setActiveInactive={setActiveInactive}
-        isActive={false}
-      />);
+      render(
+        <ActiveInactiveConfirmationPopup
+          open
+          fullName="Test Admin"
+          onClose={onClose}
+          setActiveInactive={setActiveInactive}
+          isActive={false}
+        />,
+      );
       expect(screen.getByText(/active/i)).toBeInTheDocument();
     });
     it('should render one confirm button and two close buttons', () => {

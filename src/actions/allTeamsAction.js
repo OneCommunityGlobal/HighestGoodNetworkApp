@@ -19,7 +19,7 @@ import {
  * set allteams in store
  * @param payload : allteams []
  */
-export const teamMembersFectchACtion = payload => ({
+export const teamMembersFectchACtion = (payload) => ({
   type: RECEIVE_ALL_USER_TEAMS,
   payload,
 });
@@ -28,7 +28,7 @@ export const teamMembersFectchACtion = payload => ({
  * Action for Updating an teams
  * @param {*} team : the updated user
  */
-export const userTeamsUpdateAction = team => ({
+export const userTeamsUpdateAction = (team) => ({
   type: USER_TEAMS_UPDATE,
   team,
 });
@@ -46,7 +46,7 @@ export const addNewTeam = (payload, status) => ({
  * Delete team action
  * @param {*} team : the deleted team
  */
-export const teamsDeleteAction = team => ({
+export const teamsDeleteAction = (team) => ({
   type: TEAMS_DELETE,
   team,
 });
@@ -72,7 +72,7 @@ export const teamUsersFetchAction = () => ({
  * setting team users in store
  * @param payload : allteams []
  */
-export const teamUsersFetchCompleteAction = payload => ({
+export const teamUsersFetchCompleteAction = (payload) => ({
   type: RECEIVE_TEAM_USERS,
   payload,
 });
@@ -81,7 +81,7 @@ export const teamUsersFetchCompleteAction = payload => ({
  * Error when setting the team users list
  * @param payload : error status code
  */
-export const teamUsersFetchErrorAction = payload => ({
+export const teamUsersFetchErrorAction = (payload) => ({
   type: FETCH_TEAM_USERS_ERROR,
   payload,
 });
@@ -89,7 +89,7 @@ export const teamUsersFetchErrorAction = payload => ({
 /*
 delete team member action
 */
-export const teamMemberDeleteAction = member => ({
+export const teamMemberDeleteAction = (member) => ({
   type: TEAM_MEMBER_DELETE,
   member,
 });
@@ -97,7 +97,7 @@ export const teamMemberDeleteAction = member => ({
 /*
 delete team member action
 */
-export const teamMemberAddAction = member => ({
+export const teamMemberAddAction = (member) => ({
   type: TEAM_MEMBER_ADD,
   member,
 });
@@ -108,12 +108,14 @@ export const teamMemberAddAction = member => ({
 export const getAllUserTeams = () => {
   const userTeamsPromise = axios.get(ENDPOINTS.TEAM);
   return async (dispatch) => {
-    userTeamsPromise.then((res) => {
-      dispatch(teamMembersFectchACtion(res.data));
-      // console.log("getAllUserTeams: res:", res.data)
-    }).catch(() => {
-      dispatch(teamMembersFectchACtion(undefined));
-    });
+    userTeamsPromise
+      .then((res) => {
+        dispatch(teamMembersFectchACtion(res.data));
+        // console.log("getAllUserTeams: res:", res.data)
+      })
+      .catch(() => {
+        dispatch(teamMembersFectchACtion(undefined));
+      });
   };
 };
 
@@ -164,11 +166,13 @@ export const getTeamMembers = (teamId) => {
   const teamMembersPromise = axios.get(ENDPOINTS.TEAM_USERS(teamId));
   return async (dispatch) => {
     await dispatch(teamUsersFetchAction());
-    teamMembersPromise.then((res) => {
-      dispatch(teamUsersFetchCompleteAction(res.data));
-    }).catch(() => {
-      dispatch(teamUsersFetchErrorAction());
-    });
+    teamMembersPromise
+      .then((res) => {
+        dispatch(teamUsersFetchCompleteAction(res.data));
+      })
+      .catch(() => {
+        dispatch(teamUsersFetchErrorAction());
+      });
   };
 };
 

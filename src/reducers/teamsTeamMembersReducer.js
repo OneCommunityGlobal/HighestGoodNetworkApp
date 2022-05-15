@@ -31,7 +31,9 @@ export const teamUsersReducer = (teamMembers = teamUsersInitial, action) => {
       });
     case types.TEAM_MEMBER_DELETE:
       return updateObject(teamMembers, {
-        teamMembers: Object.assign(teamMembers.teamMembers.filter((item) => item._id !== action.member)),
+        teamMembers: Object.assign(
+          teamMembers.teamMembers.filter((item) => item._id !== action.member),
+        ),
         fetching: false,
         fetched: true,
         status: '200',

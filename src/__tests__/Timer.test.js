@@ -1,15 +1,18 @@
 import React from 'react';
 import {
-  screen, render, fireEvent, waitFor, waitForElementToBeRemoved, act,
+  screen,
+  render,
+  fireEvent,
+  waitFor,
+  waitForElementToBeRemoved,
+  act,
 } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
-import {
-  authMock, userProfileMock, timerMock, timeEntryMock, userProjectMock,
-} from './mockStates';
+import { authMock, userProfileMock, timerMock, timeEntryMock, userProjectMock } from './mockStates';
 import { renderWithProvider, sleep } from './utils';
 import Timer from '../components/Timer/Timer';
 import * as actions from '../actions/timer';
@@ -25,11 +28,10 @@ const server = setupServer(
   rest.get('*', (req, res, ctx) => res(ctx.status(200))),
   // Any other requests error out
   rest.get('*', (req, res, ctx) => {
-    console.error(`Please add request handler for ${req.url.toString()} in your MSW server requests.`);
-    return res(
-      ctx.status(500),
-      ctx.json({ error: 'You must add request handler.' }),
+    console.error(
+      `Please add request handler for ${req.url.toString()} in your MSW server requests.`,
     );
+    return res(ctx.status(500), ctx.json({ error: 'You must add request handler.' }));
   }),
 );
 
@@ -44,19 +46,14 @@ describe('Timer component', () => {
   jest.useFakeTimers();
   let store;
   beforeEach(() => {
-    store = mockStore(
-      {
-        timer: timerMock,
-        auth: authMock,
-      },
-    );
+    store = mockStore({
+      timer: timerMock,
+      auth: authMock,
+    });
     // store.dispatch = jest.fn();
-    renderWithProvider(
-      <Timer />,
-      {
-        store,
-      },
-    );
+    renderWithProvider(<Timer />, {
+      store,
+    });
   });
   describe('Structure', () => {
     it('should render the timer with 0:00:00', () => {

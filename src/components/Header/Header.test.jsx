@@ -1,10 +1,8 @@
-import React from "react";
-import { shallow } from "enzyme";
-import { Header } from "./Header";
+import React from 'react';
+import { shallow } from 'enzyme';
+import { Header } from './Header';
 import mockAdminState from '../../__tests__/mockAdminState';
-import { getHeaderData } from '../../actions/authActions'
-
-
+import { getHeaderData } from '../../actions/authActions';
 
 describe('Header page structure', () => {
   let mountedHeader, props;
@@ -33,14 +31,13 @@ describe('Header page structure', () => {
   it('should be rendered with at least one img', () => {
     const img = mountedHeader.find('img');
     expect(img.length).toBeGreaterThan(0);
-  });
-
+  }); 
 });
 
 describe('UnAuthenticated Header page structure', () => {
   let mountedHeader, props;
   beforeEach(() => {
-    props = {auth:{isAuthenticated: false}};
+    props = { auth: { isAuthenticated: false } };
     props.isAuthenticated = false;
     props.getHeaderData = getHeaderData;
     props.getTimerData = jest.fn();
@@ -52,12 +49,12 @@ describe('UnAuthenticated Header page structure', () => {
     expect(navBar.length).toBe(1);
   });
 
-  it('should be rendered with no navLinks', () => {
+   it('should be rendered with no navLinks', () => {
     const navLinks = mountedHeader.find('NavLink');
     expect(navLinks.length).toBe(0);
   });
 
-  it('should be rendered with no dropdown items', () => {
+   it('should be rendered with no dropdown items', () => {
     const dropDownItems = mountedHeader.find('DropdownItem');
     expect(dropDownItems.length).toBe(0);
   });
@@ -66,7 +63,4 @@ describe('UnAuthenticated Header page structure', () => {
     const img = mountedHeader.find('img');
     expect(img.length).toBe(0);
   });
-
 });
-
-

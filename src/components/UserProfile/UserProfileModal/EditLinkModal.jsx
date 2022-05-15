@@ -13,10 +13,7 @@ import {
 import PropTypes from 'prop-types';
 
 const EditLinkModal = (props) => {
-
-  const {
-    isOpen, closeModal, updateLink, userProfile, isUserAdmin, setChanged
-  } = props;
+  const { isOpen, closeModal, updateLink, userProfile, isUserAdmin, setChanged } = props;
 
   const [linkName, setLinkName] = useState('');
   const [linkURL, setLinkURL] = useState('');
@@ -29,8 +26,8 @@ const EditLinkModal = (props) => {
       setChanged(true);
       switch (type) {
         case 'add':
-          setLinkName('')
-          setLinkURL('')
+          setLinkName('');
+          setLinkURL('');
           return [...personalLinks, value];
         case 'remove':
           return personalLinks.filter((_, index) => index !== passedIndex);
@@ -57,11 +54,11 @@ const EditLinkModal = (props) => {
 
   const [adminLinks, dispatchAdminLinks] = useReducer(
     (adminLinks, { type, value, passedIndex }) => {
-      setChanged(true)
+      setChanged(true);
       switch (type) {
         case 'add':
-          setAdminLinkName('')
-          setAdminLinkURL('')
+          setAdminLinkName('');
+          setAdminLinkURL('');
           return [...adminLinks, value];
         case 'remove':
           return adminLinks.filter((_, index) => index !== passedIndex);
@@ -106,21 +103,23 @@ const EditLinkModal = (props) => {
                         <input
                           className="customInput"
                           value={link.Name}
-                          onChange={e => dispatchAdminLinks({
-                            type: 'updateName',
-                            value: e.target.value,
-                            passedIndex: index,
-                          })
+                          onChange={(e) =>
+                            dispatchAdminLinks({
+                              type: 'updateName',
+                              value: e.target.value,
+                              passedIndex: index,
+                            })
                           }
                         />
                         <input
                           className="customInput"
                           value={link.Link}
-                          onChange={e => dispatchAdminLinks({
-                            type: 'updateLink',
-                            value: e.target.value,
-                            passedIndex: index,
-                          })
+                          onChange={(e) =>
+                            dispatchAdminLinks({
+                              type: 'updateLink',
+                              value: e.target.value,
+                              passedIndex: index,
+                            })
                           }
                         />
                         <button
@@ -143,21 +142,22 @@ const EditLinkModal = (props) => {
                         className="customEdit"
                         id="linkName"
                         placeholder="enter name"
-                        onChange={e => setAdminLinkName(e.target.value)}
+                        onChange={(e) => setAdminLinkName(e.target.value)}
                       />
                       <input
                         className="customEdit"
                         id="linkURL"
                         placeholder="enter link"
-                        onChange={e => setAdminLinkURL(e.target.value.trim())}
+                        onChange={(e) => setAdminLinkURL(e.target.value.trim())}
                       />
                       <button
                         type="button"
                         className="addButton"
-                        onClick={() => dispatchAdminLinks({
-                          type: 'add',
-                          value: { Name: adminLinkName, Link: adminLinkURL },
-                        })
+                        onClick={() =>
+                          dispatchAdminLinks({
+                            type: 'add',
+                            value: { Name: adminLinkName, Link: adminLinkURL },
+                          })
                         }
                       >
                         +
@@ -180,28 +180,31 @@ const EditLinkModal = (props) => {
                       <input
                         className="customInput"
                         value={link.Name}
-                        onChange={e => dispatchPersonalLinks({
-                          type: 'updateName',
-                          value: e.target.value,
-                          passedIndex: index,
-                        })
+                        onChange={(e) =>
+                          dispatchPersonalLinks({
+                            type: 'updateName',
+                            value: e.target.value,
+                            passedIndex: index,
+                          })
                         }
                       />
                       <input
                         className="customInput"
                         value={link.Link}
-                        onChange={e => dispatchPersonalLinks({
-                          type: 'updateLink',
-                          value: e.target.value,
-                          passedIndex: index,
-                        })
+                        onChange={(e) =>
+                          dispatchPersonalLinks({
+                            type: 'updateLink',
+                            value: e.target.value,
+                            passedIndex: index,
+                          })
                         }
                       />
                       <button
                         type="button"
                         className="closeButton"
                         color="danger"
-                        onClick={() => dispatchPersonalLinks({ type: 'remove', passedIndex: index })
+                        onClick={() =>
+                          dispatchPersonalLinks({ type: 'remove', passedIndex: index })
                         }
                       >
                         X
@@ -218,21 +221,22 @@ const EditLinkModal = (props) => {
                       className="customEdit"
                       id="linkName"
                       placeholder="enter name"
-                      onChange={e => setLinkName(e.target.value)}
+                      onChange={(e) => setLinkName(e.target.value)}
                     />
                     <input
                       className="customEdit"
                       id="linkURL"
                       placeholder="enter link"
-                      onChange={e => setLinkURL(e.target.value.trim())}
+                      onChange={(e) => setLinkURL(e.target.value.trim())}
                     />
                     <button
                       type="button"
                       className="addButton"
-                      onClick={() => dispatchPersonalLinks({
-                        type: 'add',
-                        value: { Name: linkName, Link: linkURL },
-                      })
+                      onClick={() =>
+                        dispatchPersonalLinks({
+                          type: 'add',
+                          value: { Name: linkName, Link: linkURL },
+                        })
                       }
                     >
                       +

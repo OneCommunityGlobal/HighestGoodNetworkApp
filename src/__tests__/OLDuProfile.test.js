@@ -85,7 +85,3 @@ test.skip('it skips tests because redux', () => {
 //     expect(toast.success).toHaveBeenCalledWith("Edits were successfully saved");
 //   });
 // });
-
-
-
-

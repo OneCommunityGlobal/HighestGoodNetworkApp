@@ -14,11 +14,10 @@ describe('<DeleteModal />', () => {
   beforeEach(() => {
     store = mockStore();
     store.dispatch = jest.fn();
-    renderWithProvider(<DeleteModal
-        timeEntry={timeEntryMock.weeks[0][0]}
-        userProfile={userProfileMock}
-      />,
-      { store });
+    renderWithProvider(
+      <DeleteModal timeEntry={timeEntryMock.weeks[0][0]} userProfile={userProfileMock} />,
+      { store },
+    );
   });
   it('should generate Modal after click', () => {
     const icon = screen.getByRole('img', { hidden: true });

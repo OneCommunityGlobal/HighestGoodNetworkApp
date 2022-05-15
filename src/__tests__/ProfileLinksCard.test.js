@@ -2,8 +2,6 @@ import React from 'react';
 import ProfileLinksCard from '../components/ProfileLinks/ProfileLinks';
 import { shallow } from 'enzyme';
 
-
-
 it('verifying the ProfileLinksCard component structure', () => {
   // const component = shallow(<ProfileLinksCard
   //   data={['www.google.com']}
@@ -22,7 +20,6 @@ it('verifying the ProfileLinksCard component structure', () => {
   // expect(component.find('form-control col-12').length).toBe(0);
   // expect(component.find('col-8').length).toBe(0);
 });
-
 
 it('verifying the ProfileLinksCard component structure', () => {
   // const component = shallow(<ProfileLinksCard
@@ -43,8 +40,6 @@ it('verifying the ProfileLinksCard component structure', () => {
   // expect(component.find('col-8').length).toBe(0);
 });
 
-
-
 it('verifying the ProfileLinksCard component structure', () => {
   // const component = shallow(<ProfileLinksCard
   //   data={['www.facebook.com', 'www.gmail.com', 'www.twitter.com']}
@@ -64,9 +59,6 @@ it('verifying the ProfileLinksCard component structure', () => {
   // expect(component.find('col-8').length).toBe(0);
 });
 
-
-
-
 it('verifying the ProfileLinksCard component structure', () => {
   // const component = shallow(<ProfileLinksCard
   //   data={['www.gmail.com', 'www.twitter.com']}
@@ -85,6 +77,3 @@ it('verifying the ProfileLinksCard component structure', () => {
   // expect(component.find('form-control col-12').length).toBe(0);
   // expect(component.find('col-8').length).toBe(0);
 });
-
-
-

@@ -1,25 +1,25 @@
 /*****************************************************************
- * Component   : USER MANAGEMENT 
- * Author      : Nithesh A N - TEKTalent 
+ * Component   : USER MANAGEMENT
+ * Author      : Nithesh A N - TEKTalent
  * Created on  : 05/27/2020
  * List the users in the application for administrator.
  *****************************************************************/
-import React from 'react'
-import { getAllUserProfile, updateUserStatus, deleteUser } from '../../actions/userManagement'
-import { connect } from 'react-redux'
-import Loading from '../common/Loading'
-import UserTableHeader from './UserTableHeader'
-import UserTableData from './UserTableData'
-import UserTableSearchHeader from './UserTableSearchHeader'
-import UserTableFooter from './UserTableFooter'
-import './usermanagement.css'
-import UserSearchPanel from './UserSearchPanel'
-import NewUserPopup from './NewUserPopup'
-import ActivationDatePopup from './ActivationDatePopup'
-import { UserStatus, UserDeleteType } from '../../utils/enums'
-import DeleteUserPopup from './DeleteUserPopup'
-import ActiveInactiveConfirmationPopup from './ActiveInactiveConfirmationPopup'
-import { Container } from 'reactstrap'
+import React from 'react';
+import { getAllUserProfile, updateUserStatus, deleteUser } from '../../actions/userManagement';
+import { connect } from 'react-redux';
+import Loading from '../common/Loading';
+import UserTableHeader from './UserTableHeader';
+import UserTableData from './UserTableData';
+import UserTableSearchHeader from './UserTableSearchHeader';
+import UserTableFooter from './UserTableFooter';
+import './usermanagement.css';
+import UserSearchPanel from './UserSearchPanel';
+import NewUserPopup from './NewUserPopup';
+import ActivationDatePopup from './ActivationDatePopup';
+import { UserStatus, UserDeleteType } from '../../utils/enums';
+import DeleteUserPopup from './DeleteUserPopup';
+import ActiveInactiveConfirmationPopup from './ActiveInactiveConfirmationPopup';
+import { Container } from 'reactstrap';
 
 class UserManagement extends React.PureComponent {
   filteredUserDataCount = 0;
@@ -38,7 +38,7 @@ class UserManagement extends React.PureComponent {
       isActive: undefined,
       activationDateOpen: false,
       deletePopupOpen: false,
-      isPaused: false
+      isPaused: false,
     };
   }
 
@@ -50,43 +50,47 @@ class UserManagement extends React.PureComponent {
   render() {
     let { userProfiles, fetching } = this.props.state.allUserProfiles;
     let userTable = this.userTableElements(userProfiles);
-    let roles = [...new Set(userProfiles.map(item => item.role))];
+    let roles = [...new Set(userProfiles.map((item) => item.role))];
 
-    return <Container fluid>
-      {fetching ?
-        <Loading /> :
-        <React.Fragment>
-          {this.popupElements()}
-          <UserSearchPanel
-            onSearch={this.onWildCardSearch}
-            onActiveFiter={this.onActiveFiter}
-            onNewUserClick={this.onNewUserClick} />
-          <div className="table-responsive">
-            <table className="table table-bordered">
-              <thead>
-                <UserTableHeader />
-                <UserTableSearchHeader
-                  onFirstNameSearch={this.onFirstNameSearch}
-                  onLastNameSearch={this.onLastNameSearch}
-                  onRoleSearch={this.onRoleSearch}
-                  onEmailSearch={this.onEmailSearch}
-                  onWeeklyHrsSearch={this.onWeeklyHrsSearch}
-                  roles={roles} />
-              </thead>
-              <tbody>
-                {userTable}
-              </tbody>
-            </table>
-          </div>
-          <UserTableFooter
-            datacount={this.filteredUserDataCount}
-            selectedPage={this.state.selectedPage}
-            onPageSelect={this.onSelectPage}
-            onSelectPageSize={this.onSelectPageSize}
-            pageSize={this.state.pageSize} />
-        </React.Fragment>
-      }
-    </Container>
+    return (
+      <Container fluid>
+        {fetching ? (
+          <Loading />
+        ) : (
+          <React.Fragment>
+            {this.popupElements()}
+            <UserSearchPanel
+              onSearch={this.onWildCardSearch}
+              onActiveFiter={this.onActiveFiter}
+              onNewUserClick={this.onNewUserClick}
+            />
+            <div className="table-responsive">
+              <table className="table table-bordered">
+                <thead>
+                  <UserTableHeader />
+                  <UserTableSearchHeader
+                    onFirstNameSearch={this.onFirstNameSearch}
+                    onLastNameSearch={this.onLastNameSearch}
+                    onRoleSearch={this.onRoleSearch}
+                    onEmailSearch={this.onEmailSearch}
+                    onWeeklyHrsSearch={this.onWeeklyHrsSearch}
+                    roles={roles}
+                  />
+                </thead>
+                <tbody>{userTable}</tbody>
+              </table>
+            </div>
+            <UserTableFooter
+              datacount={this.filteredUserDataCount}
+              selectedPage={this.state.selectedPage}
+              onPageSelect={this.onSelectPage}
+              onSelectPageSize={this.onSelectPageSize}
+              pageSize={this.state.pageSize}
+            />
+          </React.Fragment>
+        )}
+      </Container>
+    );
   }
 
   /**
@@ -97,95 +101,110 @@ class UserManagement extends React.PureComponent {
    * 4. Popup to confirm the action of setting a user active or inactive upon the status column click.
    */
   popupElements = () => {
-    return <React.Fragment>
-      <ActivationDatePopup
-        open={this.state.activationDateOpen}
-        onClose={this.activationDatePopupClose}
-        onPause={this.pauseUser}
-      />
-      <NewUserPopup
-        open={this.state.newUserPopupOpen}
-        onUserPopupClose={this.onUserPopupClose}
-        userCreated={this.userCreated}
-      />
-      <DeleteUserPopup
-        open={this.state.deletePopupOpen}
-        onClose={this.deletePopupClose}
-        onDelete={this.onDeleteUser}
-      />
-      <ActiveInactiveConfirmationPopup
-        isActive={this.state.selectedUser ? this.state.selectedUser.isActive : false}
-        fullName={this.state.selectedUser ? (this.state.selectedUser.firstName + " " + this.state.selectedUser.lastName) : ""}
-        open={this.state.activeInactivePopupOpen}
-        setActiveInactive={this.setActiveInactive}
-        onClose={this.activeInactivePopupClose}
-      />
-    </React.Fragment>
-  }
+    return (
+      <React.Fragment>
+        <ActivationDatePopup
+          open={this.state.activationDateOpen}
+          onClose={this.activationDatePopupClose}
+          onPause={this.pauseUser}
+        />
+        <NewUserPopup
+          open={this.state.newUserPopupOpen}
+          onUserPopupClose={this.onUserPopupClose}
+          userCreated={this.userCreated}
+        />
+        <DeleteUserPopup
+          open={this.state.deletePopupOpen}
+          onClose={this.deletePopupClose}
+          onDelete={this.onDeleteUser}
+        />
+        <ActiveInactiveConfirmationPopup
+          isActive={this.state.selectedUser ? this.state.selectedUser.isActive : false}
+          fullName={
+            this.state.selectedUser
+              ? this.state.selectedUser.firstName + ' ' + this.state.selectedUser.lastName
+              : ''
+          }
+          open={this.state.activeInactivePopupOpen}
+          setActiveInactive={this.setActiveInactive}
+          onClose={this.activeInactivePopupClose}
+        />
+      </React.Fragment>
+    );
+  };
 
   /**
    * Creates the table body elements after applying the search filter and return it.
    */
   userTableElements = (userProfiles) => {
-
     if (userProfiles && userProfiles.length > 0) {
       let usersSearchData = this.filteredUserList(userProfiles);
       this.filteredUserDataCount = usersSearchData.length;
       let that = this;
-      /* Builiding the table body for users based on the page size and selected page number and returns 
-       * the rows for currently selected page . 
+      /* Builiding the table body for users based on the page size and selected page number and returns
+       * the rows for currently selected page .
        * Applying the Default sort in the order of created date as well
        */
-      return usersSearchData.sort((a, b) => {
-        if (a.createdDate > b.createdDate) return -1;
-        if (a.createdDate < b.createdDate) return 1;
-        return 0;
-      }).slice((this.state.selectedPage - 1) * this.state.pageSize, (this.state.selectedPage * this.state.pageSize))
+      return usersSearchData
+        .sort((a, b) => {
+          if (a.createdDate > b.createdDate) return -1;
+          if (a.createdDate < b.createdDate) return 1;
+          return 0;
+        })
+        .slice(
+          (this.state.selectedPage - 1) * this.state.pageSize,
+          this.state.selectedPage * this.state.pageSize,
+        )
         .map((user, index) => {
-          return <UserTableData
-            key={'user_' + index}
-            index={index}
-            isActive={user.isActive}
-            resetLoading={(this.state.selectedUser
-              && this.state.selectedUser._id === user._id
-              && this.state.activationDateOpen)}
-            onPauseResumeClick={that.onPauseResumeClick}
-            onDeleteClick={that.onDeleteButtonClick}
-            onActiveInactiveClick={that.onActiveInactiveClick}
-            onResetClick={that.onResetClick}
-            user={user}
-          />
+          return (
+            <UserTableData
+              key={'user_' + index}
+              index={index}
+              isActive={user.isActive}
+              resetLoading={
+                this.state.selectedUser &&
+                this.state.selectedUser._id === user._id &&
+                this.state.activationDateOpen
+              }
+              onPauseResumeClick={that.onPauseResumeClick}
+              onDeleteClick={that.onDeleteButtonClick}
+              onActiveInactiveClick={that.onActiveInactiveClick}
+              onResetClick={that.onResetClick}
+              user={user}
+            />
+          );
         });
     }
-  }
+  };
 
   filteredUserList = (userProfiles) => {
     let filteredList = userProfiles.filter((user) => {
       //Applying the search filters before creating each table data element
-      if ((user.firstName.toLowerCase().indexOf(this.state.firstNameSearchText.toLowerCase()) > -1
-        && user.lastName.toLowerCase().indexOf(this.state.lastNameSearchText.toLowerCase()) > -1
-        && user.role.toLowerCase().indexOf(this.state.roleSearchText.toLowerCase()) > -1
-        && user.email.toLowerCase().indexOf(this.state.emailSearchText.toLowerCase()) > -1
-        && (this.state.weeklyHrsSearchText === ''
-          || user.weeklyComittedHours === Number(this.state.weeklyHrsSearchText))
-        && (this.state.isActive === undefined || user.isActive === this.state.isActive)
-        && (this.state.isPaused === false || user.reactivationDate)
-        && this.state.wildCardSearchText === '')
+      if (
+        (user.firstName.toLowerCase().indexOf(this.state.firstNameSearchText.toLowerCase()) > -1 &&
+          user.lastName.toLowerCase().indexOf(this.state.lastNameSearchText.toLowerCase()) > -1 &&
+          user.role.toLowerCase().indexOf(this.state.roleSearchText.toLowerCase()) > -1 &&
+          user.email.toLowerCase().indexOf(this.state.emailSearchText.toLowerCase()) > -1 &&
+          (this.state.weeklyHrsSearchText === '' ||
+            user.weeklyComittedHours === Number(this.state.weeklyHrsSearchText)) &&
+          (this.state.isActive === undefined || user.isActive === this.state.isActive) &&
+          (this.state.isPaused === false || user.reactivationDate) &&
+          this.state.wildCardSearchText === '') ||
         //the wild card serach, the search text can be match with any item
-        || (this.state.wildCardSearchText !== '' &&
-          (user.firstName.toLowerCase().indexOf(this.state.wildCardSearchText.toLowerCase()) > -1
-            || user.lastName.toLowerCase().indexOf(this.state.wildCardSearchText.toLowerCase()) > -1
-            || user.role.toLowerCase().indexOf(this.state.wildCardSearchText.toLowerCase()) > -1
-            || user.email.toLowerCase().indexOf(this.state.wildCardSearchText.toLowerCase()) > -1
-            || user.weeklyComittedHours === Number(this.state.wildCardSearchText)))
+        (this.state.wildCardSearchText !== '' &&
+          (user.firstName.toLowerCase().indexOf(this.state.wildCardSearchText.toLowerCase()) > -1 ||
+            user.lastName.toLowerCase().indexOf(this.state.wildCardSearchText.toLowerCase()) > -1 ||
+            user.role.toLowerCase().indexOf(this.state.wildCardSearchText.toLowerCase()) > -1 ||
+            user.email.toLowerCase().indexOf(this.state.wildCardSearchText.toLowerCase()) > -1 ||
+            user.weeklyComittedHours === Number(this.state.wildCardSearchText)))
       ) {
         return user;
       }
-        return false;
-    })
+      return false;
+    });
 
     return filteredList;
-  }
+  };
 
   /**
    * reload user list and close user creation popup
@@ -193,9 +212,9 @@ class UserManagement extends React.PureComponent {
   userCreated = () => {
     this.props.getAllUserProfile();
     this.setState({
-      newUserPopupOpen: false
-    })
-  }
+      newUserPopupOpen: false,
+    });
+  };
 
   /**
    * Call back on Pause or Resume button click to trigger the action to update user status
@@ -206,30 +225,30 @@ class UserManagement extends React.PureComponent {
     } else {
       this.setState({
         activationDateOpen: true,
-        selectedUser: user
-      })
+        selectedUser: user,
+      });
     }
-  }
+  };
 
   /**
    * call back function to close the activation date popup
    */
   activationDatePopupClose = () => {
     this.setState({
-      activationDateOpen: false
-    })
-  }
+      activationDateOpen: false,
+    });
+  };
 
   /**
-  * Call back on Pause confirmation button click to trigger the action to update user status
-  */
+   * Call back on Pause confirmation button click to trigger the action to update user status
+   */
   pauseUser = (reActivationDate) => {
     this.props.updateUserStatus(this.state.selectedUser, UserStatus.InActive, reActivationDate);
     this.setState({
       activationDateOpen: false,
-      selectedUser: undefined
-    })
-  }
+      selectedUser: undefined,
+    });
+  };
 
   /**
    * Callback to trigger on the status (active/inactive) column click to show the confirmaton change the status
@@ -237,29 +256,33 @@ class UserManagement extends React.PureComponent {
   onActiveInactiveClick = (user) => {
     this.setState({
       activeInactivePopupOpen: true,
-      selectedUser: user
-    })
-  }
+      selectedUser: user,
+    });
+  };
 
   /**
    * Callback to trigger the status change on confirmation ok click.
    */
   setActiveInactive = (isActive) => {
-    this.props.updateUserStatus(this.state.selectedUser, (isActive ? UserStatus.Active : UserStatus.InActive), undefined);
+    this.props.updateUserStatus(
+      this.state.selectedUser,
+      isActive ? UserStatus.Active : UserStatus.InActive,
+      undefined,
+    );
     this.setState({
       activeInactivePopupOpen: false,
-      selectedUser: undefined
-    })
-  }
+      selectedUser: undefined,
+    });
+  };
 
   /**
    * Callback to close the confirmation popup on close button click.
    */
   activeInactivePopupClose = () => {
     this.setState({
-      activeInactivePopupOpen: false
-    })
-  }
+      activeInactivePopupOpen: false,
+    });
+  };
 
   /**
    * Call back on delete button clic and triggering the delete action.
@@ -267,9 +290,9 @@ class UserManagement extends React.PureComponent {
   onDeleteButtonClick = (user) => {
     this.setState({
       deletePopupOpen: true,
-      selectedUser: user
-    })
-  }
+      selectedUser: user,
+    });
+  };
 
   /**
    * Call back to trigger the delete based on the type chosen from the popup.
@@ -282,18 +305,18 @@ class UserManagement extends React.PureComponent {
     }
     this.setState({
       deletePopupOpen: false,
-      selectedUser: undefined
-    })
-  }
+      selectedUser: undefined,
+    });
+  };
 
   /**
    * To hide the delete user popup upon close button click
    */
   deletePopupClose = () => {
     this.setState({
-      deletePopupOpen: false
-    })
-  }
+      deletePopupOpen: false,
+    });
+  };
 
   /**
    * Call back for search filter - First name
@@ -301,9 +324,9 @@ class UserManagement extends React.PureComponent {
   onFirstNameSearch = (searchText) => {
     this.setState({
       firstNameSearchText: searchText,
-      selectedPage: 1
-    })
-  }
+      selectedPage: 1,
+    });
+  };
 
   /**
    * Call back for search filter - Last name
@@ -311,9 +334,9 @@ class UserManagement extends React.PureComponent {
   onLastNameSearch = (searchText) => {
     this.setState({
       lastNameSearchText: searchText,
-      selectedPage: 1
-    })
-  }
+      selectedPage: 1,
+    });
+  };
 
   /**
    * Call back for search filter - role
@@ -321,9 +344,9 @@ class UserManagement extends React.PureComponent {
   onRoleSearch = (searchText) => {
     this.setState({
       roleSearchText: searchText,
-      selectedPage: 1
-    })
-  }
+      selectedPage: 1,
+    });
+  };
 
   /**
    * Call back for search filter - email
@@ -331,9 +354,9 @@ class UserManagement extends React.PureComponent {
   onEmailSearch = (searchText) => {
     this.setState({
       emailSearchText: searchText,
-      selectedPage: 1
-    })
-  }
+      selectedPage: 1,
+    });
+  };
 
   /**
    * Call back for search filter - weekly committed hours
@@ -341,18 +364,18 @@ class UserManagement extends React.PureComponent {
   onWeeklyHrsSearch = (searchText) => {
     this.setState({
       weeklyHrsSearchText: searchText,
-      selectedPage: 1
-    })
-  }
+      selectedPage: 1,
+    });
+  };
 
   /**
    * Callback for page selection
    */
   onSelectPage = (pageNo) => {
     this.setState({
-      selectedPage: pageNo
-    })
-  }
+      selectedPage: pageNo,
+    });
+  };
 
   /**
    * Callback for page size selection
@@ -360,9 +383,9 @@ class UserManagement extends React.PureComponent {
   onSelectPageSize = (pageSize) => {
     this.setState({
       pageSize: pageSize,
-      selectedPage: 1
-    })
-  }
+      selectedPage: 1,
+    });
+  };
 
   /**
    * callback for search
@@ -370,9 +393,9 @@ class UserManagement extends React.PureComponent {
   onWildCardSearch = (searchText) => {
     this.setState({
       wildCardSearchText: searchText,
-      selectedPage: 1
-    })
-  }
+      selectedPage: 1,
+    });
+  };
 
   /**
    * call back for active/inactive search filter
@@ -382,13 +405,13 @@ class UserManagement extends React.PureComponent {
     let paused = false;
 
     switch (value) {
-      case "active":
+      case 'active':
         active = true;
         break;
-      case "inactive":
+      case 'inactive':
         active = false;
         break;
-      case "paused":
+      case 'paused':
         active = false;
         paused = true;
     }
@@ -396,29 +419,32 @@ class UserManagement extends React.PureComponent {
     this.setState({
       isActive: active,
       selectedPage: 1,
-      isPaused: paused
-    })
-  }
+      isPaused: paused,
+    });
+  };
 
   /**
    * New user button click
    */
   onNewUserClick = () => {
     this.setState({
-      newUserPopupOpen: true
-    })
-  }
+      newUserPopupOpen: true,
+    });
+  };
 
   /**
    * New user popup close button click
    */
   onUserPopupClose = () => {
     this.setState({
-      newUserPopupOpen: false
-    })
-  }
+      newUserPopupOpen: false,
+    });
+  };
 }
 
-const mapStateToProps = state => { return { state } }
-export default connect(mapStateToProps, { getAllUserProfile, updateUserStatus, deleteUser })(UserManagement)
-
+const mapStateToProps = (state) => {
+  return { state };
+};
+export default connect(mapStateToProps, { getAllUserProfile, updateUserStatus, deleteUser })(
+  UserManagement,
+);

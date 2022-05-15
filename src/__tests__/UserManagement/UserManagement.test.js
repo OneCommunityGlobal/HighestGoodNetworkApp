@@ -8,7 +8,6 @@ import { renderWithProvider, renderWithRouterMatch } from '../utils';
 import UserManagement from '../../components/UserManagement/UserManagement';
 import * as actions from '../../actions/userManagement';
 
-
 const mockStore = configureMockStore([thunk]);
 
 jest.mock('../../actions/userManagement.js');
@@ -24,16 +23,12 @@ describe('user management', () => {
       timeZoneAPI: timeZoneAPIMock,
     });
     store.dispatch = jest.fn();
-    renderWithProvider(
-      <UserManagement />,
-      {
-        store,
-      },
-    );
+    renderWithProvider(<UserManagement />, {
+      store,
+    });
   });
   describe('structure', () => {
-    it('should render the page without crashing', () => {
-    });
+    it('should render the page without crashing', () => {});
     it('should render 10 lines of user data row plus 1 line of header and 1 line of search box', () => {
       expect(screen.getAllByRole('row')).toHaveLength(10 + 2);
     });
@@ -70,7 +65,9 @@ describe('user management', () => {
     });
     it('should filter the last name once the user types somthing in the last name search box', async () => {
       expect(screen.getAllByText('Test')).toBeTruthy();
-      await userEvent.type(screen.getAllByRole('textbox')[2], 'Administrator', { allAtOnce: false });
+      await userEvent.type(screen.getAllByRole('textbox')[2], 'Administrator', {
+        allAtOnce: false,
+      });
       expect(screen.queryByText('Test')).toBeFalsy();
     });
     it('should fileter the role once the user select a role in the role search box', () => {
@@ -111,14 +108,18 @@ describe('user management', () => {
     });
     it('should filter active/inactive once the user select the filter', () => {
       userEvent.selectOptions(screen.getByDisplayValue('All'), 'active');
-      expect(screen.getAllByTitle('Click here to change the user status')[0]).not.toHaveClass('inactive');
+      expect(screen.getAllByTitle('Click here to change the user status')[0]).not.toHaveClass(
+        'inactive',
+      );
     });
     it('should filter pause once the user select the filter', () => {
       userEvent.selectOptions(screen.getByDisplayValue('All'), 'paused');
       expect(screen.queryByRole('button', { name: /pause/i })).toBeFalsy();
     });
     it('should perform wildcard search while the user typing in the search box', async () => {
-      await userEvent.type(screen.getByPlaceholderText(/Search Text/i), 'gmail.com', { allAtOnce: false });
+      await userEvent.type(screen.getByPlaceholderText(/Search Text/i), 'gmail.com', {
+        allAtOnce: false,
+      });
       expect(screen.queryByText(/.*hgn.net.*/)).toBeFalsy();
     });
   });

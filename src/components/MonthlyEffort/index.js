@@ -1,1 +1,1 @@
-export { default } from "./MonthlyEffort";
+export { default } from './MonthlyEffort';

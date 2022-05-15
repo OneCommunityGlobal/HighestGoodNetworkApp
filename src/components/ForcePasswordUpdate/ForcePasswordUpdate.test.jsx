@@ -1,18 +1,18 @@
-import React from "react";
-import { shallow } from "enzyme";
-import { ForcePasswordUpdate } from "./ForcePasswordUpdate";
-import { clearErrors } from "../../actions/errorsActions";
+import React from 'react';
+import { shallow } from 'enzyme';
+import { ForcePasswordUpdate } from './ForcePasswordUpdate';
+import { clearErrors } from '../../actions/errorsActions';
 import { render } from '@testing-library/react';
 
 describe('Force Password Update page structure', () => {
   let mountedFPUpdate, props;
   beforeEach(() => {
-    props = ({
-      auth: {isAuthenticated: true},
+    props = {
+      auth: { isAuthenticated: true },
       errors: {},
-      "clearErrors": clearErrors,
-      "forcePasswordUpdate": ForcePasswordUpdate
-    });
+      clearErrors: clearErrors,
+      forcePasswordUpdate: ForcePasswordUpdate,
+    };
     mountedFPUpdate = shallow(<ForcePasswordUpdate {...props} />);
   });
 
@@ -31,7 +31,6 @@ describe('Force Password Update page structure', () => {
     expect(h2.length).toEqual(1);
     expect(h2.first().text()).toContain('Change Password');
   });
-
 });
 
 describe('When user tries to input data', () => {
@@ -39,19 +38,21 @@ describe('When user tries to input data', () => {
 
   beforeEach(() => {
     fPU = jest.fn();
-    props = ({
-      match: { params: {userId: "5edf141c78f1380017b829a6"}},
-      auth: {isAuthenticated: true},
+    props = {
+      match: { params: { userId: '5edf141c78f1380017b829a6' } },
+      auth: { isAuthenticated: true },
       errors: {},
-      "clearErrors": clearErrors,
-      "forcePasswordUpdate": fPU
-    });
+      clearErrors: clearErrors,
+      forcePasswordUpdate: fPU,
+    };
     mountedFPUpdate = shallow(<ForcePasswordUpdate {...props} />);
   });
 
   it('should call handleInput when input is changed', () => {
     const spy = jest.spyOn(mountedFPUpdate.instance(), 'handleInput');
-    mountedFPUpdate.find("[name='newpassword']").simulate('change', { currentTarget: { name: 'newpassword', value: 'abc' } });
+    mountedFPUpdate
+      .find("[name='newpassword']")
+      .simulate('change', { currentTarget: { name: 'newpassword', value: 'abc' } });
     expect(spy).toHaveBeenCalled();
   });
 
@@ -80,7 +81,6 @@ describe('When user tries to input data', () => {
 
   it('onSubmit forcePasswordUpdate method is called with credentials', async () => {
     await mountedFPUpdate.instance().doSubmit();
-    expect(fPU).toHaveBeenCalledWith({userId: "5edf141c78f1380017b829a6", newpassword: ""});
+    expect(fPU).toHaveBeenCalledWith({ userId: '5edf141c78f1380017b829a6', newpassword: '' });
   });
 });
-

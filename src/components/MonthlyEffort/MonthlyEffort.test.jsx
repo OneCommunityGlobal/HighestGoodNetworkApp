@@ -1,13 +1,13 @@
-import React from "react";
-import { shallow, mount } from "enzyme";
-import { MonthlyEffort } from "./MonthlyEffort";
+import React from 'react';
+import { shallow, mount } from 'enzyme';
+import { MonthlyEffort } from './MonthlyEffort';
 
 describe('Monthly Effort component structure', () => {
   let mountedMonthlyEffort, props;
   beforeEach(() => {
-    props = ({
-      auth: {isAuthenticated: true , user: {userid: 'abcdef'}}
-    });
+    props = {
+      auth: { isAuthenticated: true, user: { userid: 'abcdef' } },
+    };
     mountedMonthlyEffort = shallow(<MonthlyEffort {...props} />);
   });
 

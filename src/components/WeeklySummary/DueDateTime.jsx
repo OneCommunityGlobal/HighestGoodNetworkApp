@@ -13,8 +13,7 @@ function DueDateTime({ dueDate }) {
       <div className="mb-1">Weekly Summary Due Date (click to add)</div>
       <div className="mx-auto due-section">
         <div className="text-white due-section__date">
-          <FontAwesomeIcon icon={faCalendarCheck} className="mr-1" />
-          {' '}
+          <FontAwesomeIcon icon={faCalendarCheck} className="mr-1" />{' '}
           {/* eslint-disable-next-line react/jsx-one-expression-per-line */}
           {displayTime.format('YYYY-MMM-DD')} at {displayTime.format('HH:mm')} PST
         </div>

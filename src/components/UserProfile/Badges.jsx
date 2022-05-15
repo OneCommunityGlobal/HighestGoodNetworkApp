@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect } from 'react';
 import {
   Card,
   CardTitle,
@@ -9,29 +9,29 @@ import {
   ModalHeader,
   ModalBody,
   UncontrolledTooltip,
-} from 'reactstrap'
-import { connect } from 'react-redux'
-import './Badge.css'
-import FeaturedBadges from './FeaturedBadges'
-import BadgeReport from '../Badge/BadgeReport'
-import AssignBadgePopup from './AssignBadgePopup'
-import { clearSelected } from 'actions/badgeManagement'
+} from 'reactstrap';
+import { connect } from 'react-redux';
+import './Badge.css';
+import FeaturedBadges from './FeaturedBadges';
+import BadgeReport from '../Badge/BadgeReport';
+import AssignBadgePopup from './AssignBadgePopup';
+import { clearSelected } from 'actions/badgeManagement';
 
-const Badges = props => {
-  const [isOpen, setOpen] = useState(false)
-  const [isAssignOpen, setAssignOpen] = useState(false)
+const Badges = (props) => {
+  const [isOpen, setOpen] = useState(false);
+  const [isAssignOpen, setAssignOpen] = useState(false);
 
-  const toggle = () => setOpen(!isOpen)
+  const toggle = () => setOpen(!isOpen);
 
   const assignToggle = () => {
-    setAssignOpen(isAssignOpen => !isAssignOpen)
-  }
+    setAssignOpen((isAssignOpen) => !isAssignOpen);
+  };
 
   useEffect(() => {
     if (!isOpen && !isAssignOpen) {
-      props.clearSelected()
+      props.clearSelected();
     }
-  }, [isOpen, isAssignOpen])
+  }, [isOpen, isAssignOpen]);
 
   return (
     <>
@@ -135,15 +135,15 @@ const Badges = props => {
         </p>
       </UncontrolledTooltip>
     </>
-  )
-}
+  );
+};
 
-const mapDispatchToProps = dispatch => ({
+const mapDispatchToProps = (dispatch) => ({
   clearSelected: () => dispatch(clearSelected()),
-})
+});
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state) => ({
   allBadgeData: state?.badge?.allBadgeData,
-})
+});
 
-export default connect(mapStateToProps, mapDispatchToProps)(Badges)
+export default connect(mapStateToProps, mapDispatchToProps)(Badges);

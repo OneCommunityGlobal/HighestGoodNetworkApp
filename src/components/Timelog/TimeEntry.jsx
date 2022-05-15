@@ -19,23 +19,23 @@ const TimeEntry = ({ data, displayYear, userProfile }) => {
   const { user } = useSelector((state) => state.auth);
   const isOwner = data.personId === user.userid;
 
-  const isSameDay = moment().tz('America/Los_Angeles').format('YYYY-MM-DD') === data.dateOfWork
+  const isSameDay = moment().tz('America/Los_Angeles').format('YYYY-MM-DD') === data.dateOfWork;
   const isAdmin = user.role === 'Administrator';
 
   const dispatch = useDispatch();
 
   const toggleTangibility = () => {
-    
-    const newData = {...data,
+    const newData = {
+      ...data,
       isTangible: !data.isTangible,
-      timeSpent: `${data.hours}:${data.minutes}:00`
+      timeSpent: `${data.hours}:${data.minutes}:00`,
     };
 
     dispatch(editTimeEntry(data._id, newData));
-  }
+  };
 
   return (
-    <Card className="mb-1 p-2" style={{backgroundColor: data.isTangible ? '#CCFFCC' : '#CCFFFF'}}>
+    <Card className="mb-1 p-2" style={{ backgroundColor: data.isTangible ? '#CCFFCC' : '#CCFFFF' }}>
       <Row className="mx-0">
         <Col md={3} className="date-block px-0">
           <div className="date-div">
@@ -53,7 +53,13 @@ const TimeEntry = ({ data, displayYear, userProfile }) => {
           <div className="text-muted">Project/Task:</div>
           <h6> {data.projectName} </h6>
           <span className="text-muted">Tangible:&nbsp;</span>
-          <input type="checkbox" name="isTangible" checked={data.isTangible} disabled={!isAdmin} onChange={() => toggleTangibility(data)}/>
+          <input
+            type="checkbox"
+            name="isTangible"
+            checked={data.isTangible}
+            disabled={!isAdmin}
+            onChange={() => toggleTangibility(data)}
+          />
         </Col>
         <Col md={5} className="pl-2 pr-0">
           <div className="text-muted">Notes:</div>

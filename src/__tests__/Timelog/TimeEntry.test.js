@@ -1,16 +1,12 @@
 import React from 'react';
-import {
-  screen,
-} from '@testing-library/react';
+import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import thunk from 'redux-thunk';
 import configureStore from 'redux-mock-store';
 import moment from 'moment-timezone';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
-import {
-  authMock, userProfileMock, timeEntryMock, userProjectMock,
-} from '../mockStates';
+import { authMock, userProfileMock, timeEntryMock, userProjectMock } from '../mockStates';
 import { renderWithProvider } from '../utils';
 import TimeEntry from '../../components/Timelog/TimeEntry';
 
@@ -18,12 +14,7 @@ const mockStore = configureStore([thunk]);
 const weekDayRegex = /monday|tuesday|wednesday|thursday|friyday|saturday|sunday/i;
 const dateRegex = /(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec) \d\d?/i;
 
-const server = setupServer(
-
-  rest.get('*', (req, res, ctx) => res(
-    ctx.status(200),
-  )),
-);
+const server = setupServer(rest.get('*', (req, res, ctx) => res(ctx.status(200))));
 
 beforeAll(() => server.listen());
 afterAll(() => server.close());
@@ -38,21 +29,18 @@ describe('<TimeEntry />', () => {
       userProjects: userProjectMock,
       userProfile: userProfileMock,
     });
-    renderWithProvider(
-      <TimeEntry data={data} displayYear />,
-      {
-        store,
-      },
-    );
+    renderWithProvider(<TimeEntry data={data} displayYear />, {
+      store,
+    });
   });
-  it('should render <TimeEntry /> without crashing', () => {
-
-  });
+  it('should render <TimeEntry /> without crashing', () => {});
   it('should render the correct date, year, and the day of the week', () => {
     const date = screen.getByRole('heading', { name: dateRegex });
     expect(date.textContent).toMatch(moment(timeEntryMock.weeks[0][0].dateOfWork).format('MMM D'));
     const dayOfWeek = screen.getByRole('heading', { name: weekDayRegex });
-    expect(dayOfWeek.textContent).toMatch(moment(timeEntryMock.weeks[0][0].dateOfWork).format('dddd'));
+    expect(dayOfWeek.textContent).toMatch(
+      moment(timeEntryMock.weeks[0][0].dateOfWork).format('dddd'),
+    );
     const year = screen.getByRole('heading', { name: /20\d\d/ });
     expect(year.textContent).toMatch(moment(timeEntryMock.weeks[0][0].dateOfWork).format('YYYY'));
   });

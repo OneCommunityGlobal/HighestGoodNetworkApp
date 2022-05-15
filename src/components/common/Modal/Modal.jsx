@@ -57,11 +57,7 @@ const ModalExample = (props) => {
               <InputGroupAddon addonType="prepend">
                 <InputGroupText style={{ width: '80px' }}>Name</InputGroupText>
               </InputGroupAddon>
-              <Input
-                id="linkName"
-                placeholder="Name of the link"
-                onChange={handleChange}
-              />
+              <Input id="linkName" placeholder="Name of the link" onChange={handleChange} />
             </InputGroup>
             <br />
 
@@ -73,16 +69,24 @@ const ModalExample = (props) => {
             </InputGroup>
           </>
         ) : (
-            parse(modalMessage)
-          )}
+          parse(modalMessage)
+        )}
       </ModalBody>
       <ModalFooter>
         <Button color="primary" onClick={closeModal}>
           Close
         </Button>
 
-        {confirmModal != null ? <Button color="danger" onClick={confirmModal}>Confirm</Button> : null}
-        {setInactiveModal != null ? <Button color="warning" onClick={setInactiveModal}>Set inactive</Button> : null}
+        {confirmModal != null ? (
+          <Button color="danger" onClick={confirmModal}>
+            Confirm
+          </Button>
+        ) : null}
+        {setInactiveModal != null ? (
+          <Button color="warning" onClick={setInactiveModal}>
+            Set inactive
+          </Button>
+        ) : null}
 
         {type === 'input' && (
           <Button

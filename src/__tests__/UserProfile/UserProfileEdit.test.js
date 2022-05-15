@@ -1,16 +1,19 @@
 import React from 'react';
 import { Route } from 'react-router-dom';
-import {
-  screen, fireEvent,
-} from '@testing-library/react';
+import { screen, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import {
-  authMock, userProfileMock, timeEntryMock, userProjectMock, allProjectsMock, allTeamsMock,
+  authMock,
+  userProfileMock,
+  timeEntryMock,
+  userProjectMock,
+  allProjectsMock,
+  allTeamsMock,
 } from '../mockStates';
 import { renderWithRouterMatch } from '../utils';
-import UserProfileEdit from '../../components/UserProfile/UserProfileEdit/UserProfileEdit.container'
+import UserProfileEdit from '../../components/UserProfile/UserProfileEdit/UserProfileEdit.container';
 import * as actions from '../../actions/userProfile';
 
 jest.mock('../../actions/allTeamsAction.js');
@@ -37,9 +40,7 @@ describe('user profile page', () => {
     });
     store.dispatch = jest.fn();
     renderWithRouterMatch(
-      <Route path="/userprofileedit/:userId">
-        {props => <UserProfileEdit {...props} />}
-      </Route>,
+      <Route path="/userprofileedit/:userId">{(props) => <UserProfileEdit {...props} />}</Route>,
       {
         route: `/userprofileedit/${userId}`,
         store,
@@ -72,7 +73,9 @@ describe('user profile page', () => {
     });
 
     it('should render multiple bluesquares', () => {
-      expect(screen.getAllByRole('button', { name: /\d\d\d\d-\d\d-\d\d/i })).toHaveLength(userProfileMock.infringments.length);
+      expect(screen.getAllByRole('button', { name: /\d\d\d\d-\d\d-\d\d/i })).toHaveLength(
+        userProfileMock.infringments.length,
+      );
     });
     it('should render a email field', () => {
       expect(screen.getByPlaceholderText(/email/i)).toBeInTheDocument();
@@ -87,13 +90,17 @@ describe('user profile page', () => {
       expect(screen.getByPlaceholderText(/phone/i)).toBeInTheDocument();
     });
     it('should render the correct phone number', () => {
-      expect(screen.getByPlaceholderText(/phone/i)).toHaveValue(parseInt(userProfileMock.phoneNumber, 10));
+      expect(screen.getByPlaceholderText(/phone/i)).toHaveValue(
+        parseInt(userProfileMock.phoneNumber, 10),
+      );
     });
     it('should render an assign team button', () => {
       expect(screen.getByRole('button', { name: /assign team/i })).toBeInTheDocument();
     });
     it('should render delete buttons', () => {
-      expect(screen.getAllByRole('button', { name: /delete/i })).toHaveLength(userProfileMock.teams.length + userProfileMock.projects.length);
+      expect(screen.getAllByRole('button', { name: /delete/i })).toHaveLength(
+        userProfileMock.teams.length + userProfileMock.projects.length,
+      );
     });
     it('should render `Basic Information` Tab', () => {
       expect(screen.getByText('Basic Information')).toBeInTheDocument();
@@ -108,7 +115,9 @@ describe('user profile page', () => {
       expect(screen.getAllByText('Projects')).toHaveLength(2);
     });
     it('should render multiple links', () => {
-      expect(screen.getAllByRole('link')).toHaveLength(userProfileMock.personalLinks.length + userProfileMock.adminLinks.length + 1);
+      expect(screen.getAllByRole('link')).toHaveLength(
+        userProfileMock.personalLinks.length + userProfileMock.adminLinks.length + 1,
+      );
     });
     it('should render a edit link button', () => {
       expect(screen.getByTestId('edit-link')).toBeInTheDocument();
@@ -121,51 +130,51 @@ describe('user profile page', () => {
     });
   });
   describe('Behavior', () => {
-    it('should fire toggleTab to Basic Information tab when the user clicks on the Basic Information tab link', async () =>{
+    it('should fire toggleTab to Basic Information tab when the user clicks on the Basic Information tab link', async () => {
       userEvent.click(screen.getByText(/basic information/i));
     });
-    it('should fire toggleTab to Volunteering Times tab when the user clicks on the Basic Information tab link', async () =>{
+    it('should fire toggleTab to Volunteering Times tab when the user clicks on the Basic Information tab link', async () => {
       userEvent.click(screen.getByText(/volunteering times/i));
     });
-    it('should fire toggleTab to Teams tab when the user clicks on the Teams tab link', async () =>{
+    it('should fire toggleTab to Teams tab when the user clicks on the Teams tab link', async () => {
       userEvent.click(screen.getAllByText(/teams/i)[0]);
     });
-    it('should fire toggleTab to Projects tab when the user clicks on the Projects tab link', async () =>{
+    it('should fire toggleTab to Projects tab when the user clicks on the Projects tab link', async () => {
       userEvent.click(screen.getAllByText(/projects/i)[0]);
     });
-    it('should fire toggleTab to Edit History Tabs tab when the user clicks on the Edit History tab link', async () =>{
+    it('should fire toggleTab to Edit History Tabs tab when the user clicks on the Edit History tab link', async () => {
       userEvent.click(screen.getByTestId('edit-history-tab'));
     });
-    it("should trigger addBlueSquare when admin click on + button", async () => {
+    it('should trigger addBlueSquare when admin click on + button', async () => {
       userEvent.click(screen.getByText('+'));
-      expect(screen.getByRole('button', {name : 'Submit'})).toBeInTheDocument();
-    })
-    it("should trigger addBlueSquare when admin click on random blue square", async () => {
+      expect(screen.getByRole('button', { name: 'Submit' })).toBeInTheDocument();
+    });
+    it('should trigger addBlueSquare when admin click on random blue square', async () => {
       userEvent.click(screen.getAllByRole('button')[2]);
       expect(screen.getByText('Summary')).toBeInTheDocument();
-    })
+    });
     it('should change value while user typing in first name field', async () => {
       const firstName = screen.getByPlaceholderText(/first name/i);
       userEvent.clear(firstName);
-      userEvent.type(firstName,'testFirstName');
+      userEvent.type(firstName, 'testFirstName');
       expect(firstName).toHaveValue('testFirstName');
     });
     it('should change value while user typing in last name field', async () => {
       const lastName = screen.getByPlaceholderText(/last name/i);
       userEvent.clear(lastName);
-      userEvent.type(lastName,'testLastName');
+      userEvent.type(lastName, 'testLastName');
       expect(lastName).toHaveValue('testLastName');
     });
     it('should change value while user typing in email field', async () => {
       const email = screen.getByPlaceholderText(/email/i);
       userEvent.clear(email);
-      userEvent.type(email,'testaccount@hgn.com');
+      userEvent.type(email, 'testaccount@hgn.com');
       expect(email).toHaveValue('testaccount@hgn.com');
     });
     it('should change value while user typing in phone field', async () => {
       const phoneNumber = screen.getByPlaceholderText(/phone/i);
       userEvent.clear(phoneNumber);
-      userEvent.type(phoneNumber,'5465468798');
+      userEvent.type(phoneNumber, '5465468798');
       expect(phoneNumber).toHaveValue(5465468798);
     });
     it('should change value while user click on phone switch', async () => {
@@ -186,17 +195,17 @@ describe('user profile page', () => {
     it('should change value while user typing in Video Call Preference', async () => {
       const preference = screen.getByPlaceholderText(/Skype, Zoom, etc./i);
       userEvent.clear(preference);
-      userEvent.type(preference,'Zoom');
-      expect(preference).toHaveValue("Zoom");
+      userEvent.type(preference, 'Zoom');
+      expect(preference).toHaveValue('Zoom');
     });
     it('should change value while user typing in weekly committed field', async () => {
       const weekCommittedHour = screen.getByPlaceholderText(/weeklyCommittedHours/i);
-      fireEvent.change(weekCommittedHour, { target: { value: "20" } }); 
+      fireEvent.change(weekCommittedHour, { target: { value: '20' } });
       expect(weekCommittedHour).toHaveValue(20);
     });
     it('should change value while user typing in total committed field', async () => {
       const weekCommittedHour = screen.getByPlaceholderText(/totalCommittedHours/i);
-      fireEvent.change(weekCommittedHour, { target: { value: "40" } }); 
+      fireEvent.change(weekCommittedHour, { target: { value: '40' } });
       expect(weekCommittedHour).toHaveValue(40);
     });
     // it('should popup a modal once the user clicks the blue + button', () => {
