@@ -227,7 +227,7 @@ class Timelog extends Component {
       <div>
         {!this.props.isDashboard ? (
           <Container fluid>
-            <SummaryBar toggleSubmitForm={() => this.showSummary(isOwner)} />
+            <SummaryBar toggleSubmitForm={() => this.showSummary(isOwner)} role={role} />
           </Container>
         ) : (
           ''
