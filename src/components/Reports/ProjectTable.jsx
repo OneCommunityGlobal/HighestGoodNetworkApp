@@ -47,5 +47,6 @@ const ProjectTable = (props) => {
   </table>
   </table>
   )
-
+  }
 export default ProjectTable;
+  

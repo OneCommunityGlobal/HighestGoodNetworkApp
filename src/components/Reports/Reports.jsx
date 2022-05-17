@@ -153,7 +153,7 @@ class ReportsPage extends Component {
         (userProfile.firstName &&
           userProfile.firstName.toLowerCase().indexOf(this.state.teamNameSearchText.toLowerCase()) >
             -1 &&
-          this.state.wildCardSearchText === '') ||
+          this.state.wildCardSearchText === '')
         // the wild card search, the search text can be match with any item
         || (this.state.wildCardSearchText !== ''
           && (userProfile.firstName.toLowerCase().indexOf(this.state.wildCardSearchText.toLowerCase()) > -1

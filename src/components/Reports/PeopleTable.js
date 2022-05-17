@@ -64,7 +64,7 @@ const PeopleTable=props=>{
     </tbody>
   </table>
       </table>
-    </table>
+    
   );
 };
 export default PeopleTable;
