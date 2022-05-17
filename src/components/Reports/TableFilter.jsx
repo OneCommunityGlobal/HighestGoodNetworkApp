@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import TextSearchBox from '../UserManagement/TextSearchBox';
 import DropDownSearchBox from '../UserManagement/DropDownSearchBox';
-import Calendar from 'react-calendar';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 
