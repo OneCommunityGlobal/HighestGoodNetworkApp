@@ -35,7 +35,7 @@ const Badges = (props) => {
 
   return (
     <>
-      <Card style={{ backgroundColor: '#f6f6f3', marginTop: 20, marginBottom: 20 }}>
+      <Card style={{ backgroundColor: '#f6f6f3', marginTop: 20, marginBottom: 20, minWidth: 477 }}>
         <CardBody>
           <CardTitle
             style={{
