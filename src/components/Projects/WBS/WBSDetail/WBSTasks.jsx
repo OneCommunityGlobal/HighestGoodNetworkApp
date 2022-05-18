@@ -173,7 +173,7 @@ const WBSTasks = (props) => {
               <th scope="col" data-tip="Action" colSpan="2">
                 Action
               </th>
-              <th scope="col" data-tip="WBS ID" colSpan="2">
+              <th scope="col" data-tip="WBS ID" colSpan="1">
                 #
               </th>
               <th scope="col" data-tip="Task Name" className="task-name">

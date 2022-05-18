@@ -170,7 +170,8 @@ const Email = props => {
     </>
   );
 };
-const formatPhoneNumber = str => {
+
+const formatPhoneNumber = (str) => {
   // Filter only numbers from the input
   const cleaned = `${str}`.replace(/\D/g, '');
   if (cleaned.length === 10) {
@@ -245,7 +246,50 @@ const Phone = props => {
   );
 };
 
-const BasicInformationTab = props => {
+const TimeZoneDifference = (props) => {
+  const { userProfile, setChanged, setUserProfile, isUserAdmin, isUserSelf } = props;
+
+  const viewingTimeZone = props.userProfile.timeZone;
+  const yourLocalTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+
+  function getOffsetBetweenTimezonesForDate(date, timezone1, timezone2) {
+    const timezone1Date = convertDateToAnotherTimeZone(date, timezone1);
+    const timezone2Date = convertDateToAnotherTimeZone(date, timezone2);
+    return timezone1Date.getTime() - timezone2Date.getTime();
+  }
+
+  function convertDateToAnotherTimeZone(date, timezone) {
+    const dateString = date.toLocaleString('en-US', {
+      timeZone: timezone
+    });
+    return new Date(dateString);
+  }
+
+  let date = new Date();
+  const offset = getOffsetBetweenTimezonesForDate(date, viewingTimeZone, yourLocalTimeZone);
+  const offsetInHours = offset/3600000;
+  const signedOffset = (offsetInHours > 0) ? "+" + offsetInHours : "" + offsetInHours;
+
+  if (! isUserSelf) {
+    return (
+      <>
+        <Col>
+          <p>{signedOffset} hours</p>
+        </Col>
+      </>
+    )
+  }
+
+  return (
+    <>
+      <Col>
+        <p>This is your own profile page</p>
+      </Col>
+    </>
+  )
+}
+
+const BasicInformationTab = (props) => {
   const {
     userProfile,
     setUserProfile,
@@ -417,6 +461,7 @@ const BasicInformationTab = props => {
           <Label>Role</Label>
         </Col>
         <Col>
+        {canEdit ? (
           <FormGroup>
             <select
               value={userProfile.role}
@@ -440,6 +485,7 @@ const BasicInformationTab = props => {
               )}
             </select>
           </FormGroup>
+        ) : `${userProfile.role}`}
         </Col>
       </Row>
       {canEdit && (
@@ -487,6 +533,19 @@ const BasicInformationTab = props => {
             />
           )}
         </Col>
+      </Row>
+      <Row>
+        <Col>
+          <label>Difference in this Time Zone from Your Local</label>
+        </Col>
+        <TimeZoneDifference 
+          userProfile={userProfile}
+          setUserProfile={setUserProfile}
+          setChanged={setChanged}
+          isUserSelf={isUserSelf}
+          handleUserProfile={handleUserProfile}
+          formValid={formValid}
+        />
       </Row>
       <Row style={{ marginBottom: '10px' }}>
         <Col>
