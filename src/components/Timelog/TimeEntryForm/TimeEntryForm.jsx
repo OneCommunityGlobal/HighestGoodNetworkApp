@@ -388,7 +388,7 @@ const TimeEntryForm = (props) => {
           <div>
             {edit ? 'Edit ' : 'Add '}
             {inputs.isTangible ? (
-              'Tangible'
+              <span style={{ color: 'blue' }}>Tangible </span>
             ) : (
               <span style={{ color: 'orange' }}>Intangible </span>
             )}
