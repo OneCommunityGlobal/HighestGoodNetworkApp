@@ -29,6 +29,7 @@ import './projects.css';
 import { connect } from 'react-redux';
 import Loading from '../common/Loading';
 import { PROJECT_DELETE_POPUP_ID } from './../../constants/popupId';
+import hasPermission from '../../utils/permissions'
 
 export class Projects extends Component {
   constructor(props) {
@@ -118,6 +119,9 @@ export class Projects extends Component {
     if (status === 400 && trackModelMsg) {
       showModalMsg = true;
     }
+
+    const role = this.props.state.auth.user.role;
+
     // Display project lists
     let ProjectsList = [];
     if (projects.length > 0) {
@@ -153,10 +157,13 @@ export class Projects extends Component {
             onClick={this.toggleProjectInfoModal}
           />
           <Overview numberOfProjects={numberOfProjects} numberOfActive={numberOfActive} />
+          {hasPermission(role, 'addProject') ? 
           <AddProject addNewProject={this.addProject} />
+          : null}
+          
           <table className="table table-bordered table-responsive-sm">
             <thead>
-              <ProjectTableHeader />
+              <ProjectTableHeader role={role} />
             </thead>
             <tbody>{ProjectsList}</tbody>
           </table>

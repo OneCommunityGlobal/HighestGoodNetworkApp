@@ -11,9 +11,10 @@ import {
   Col,
 } from 'reactstrap';
 import PropTypes from 'prop-types';
+import hasPermission from '../../../utils/permissions';
 
 const EditLinkModal = (props) => {
-  const { isOpen, closeModal, updateLink, userProfile, isUserAdmin, setChanged } = props;
+  const { isOpen, closeModal, updateLink, userProfile, setChanged, role } = props;
 
   const [linkName, setLinkName] = useState('');
   const [linkURL, setLinkURL] = useState('');
@@ -89,7 +90,7 @@ const EditLinkModal = (props) => {
         <ModalHeader toggle={closeModal}>Edit Links</ModalHeader>
         <ModalBody>
           <div>
-            {isUserAdmin && (
+            {hasPermission(role, 'adminLinks') && (
               <CardBody>
                 <Card>
                   <Label style={{ display: 'flex', margin: '5px' }}>Admin Links:</Label>
@@ -271,7 +272,6 @@ EditLinkModal.propTypes = {
   isOpen: PropTypes.bool.isRequired,
   closeModal: PropTypes.func.isRequired,
   updateLink: PropTypes.func.isRequired,
-  isUserAdmin: PropTypes.bool.isRequired,
   userProfile: PropTypes.object.isRequired,
 };
 

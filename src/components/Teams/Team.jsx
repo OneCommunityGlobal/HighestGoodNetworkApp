@@ -2,6 +2,7 @@ import React from 'react';
 import './Team.css';
 import { DELETE } from '../../languages/en/ui';
 import TeamTable from '../Reports/TeamTable';
+import hasPermission from 'utils/permissions';
 
 const Team = (props) => (
   <tr className="teams__tr" id={`tr_${props.teamId}`}>
@@ -12,7 +13,11 @@ const Team = (props) => (
     <td
       className="teams__active--input"
       onClick={(e) => {
-        props.onStatusClick(props.name, props.teamId, props.active);
+        hasPermission(props.requestorRole, 'editDeleteTeam') ? (
+        props.onStatusClick(props.name, props.teamId, props.active)
+        ) : (
+          null
+        )
       }}
     >
       {props.active ? (
@@ -36,6 +41,7 @@ const Team = (props) => (
         <i className="fa fa-users" aria-hidden="true" />
       </button>
     </td>
+    {hasPermission(props.requestorRole, 'editDeleteTeam') && (
     <td>
       <span className="usermanagement-actions-cell">
         <button
@@ -60,6 +66,7 @@ const Team = (props) => (
         </button>
       </span>
     </td>
+    )}
   </tr>
 );
 export default Team;

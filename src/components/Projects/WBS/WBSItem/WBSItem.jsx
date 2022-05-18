@@ -7,9 +7,10 @@ import React, { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
 import ModalDelete from './../../../common/Modal';
 import { deleteWBS } from './../../../../actions/wbs';
-import { UserRole } from './../../../../utils/enums';
 import { getPopupById } from './../../../../actions/popupEditorAction';
 import { WBS_DELETE_POPUP_ID } from './../../../../constants/popupId';
+import hasPermission from 'utils/permissions';
+
 const WBSItem = (props) => {
   const [showModalDelete, setShowModalDelete] = useState(false);
 
@@ -27,7 +28,7 @@ const WBSItem = (props) => {
         <td className="members__name">
           <a href={`/wbs/tasks/${props.wbsId}/${props.projectId}/${props.name}`}>{props.name}</a>
         </td>
-        {props.auth.user.role === UserRole.Administrator ? (
+        {hasPermission(props.auth.user.role, 'deleteWbs') ? (
           <td className="members__assign">
             <button
               className="btn btn-outline-danger btn-sm"

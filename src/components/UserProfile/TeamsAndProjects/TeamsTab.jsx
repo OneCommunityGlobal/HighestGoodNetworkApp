@@ -4,7 +4,7 @@ import AddTeamPopup from './AddTeamPopup';
 import UserTeamsTable from './UserTeamsTable';
 
 const TeamsTab = (props) => {
-  const { teamsData, userTeams, isUserAdmin, onDeleteteam, onAssignTeam, edit } = props;
+  const { teamsData, userTeams, onDeleteteam, onAssignTeam, edit, role } = props;
   const [addTeamPopupOpen, setaddTeamPopupOpen] = useState(false);
   const [renderedOn, setRenderedOn] = useState(0);
 
@@ -33,18 +33,14 @@ const TeamsTab = (props) => {
         userTeamsById={userTeams}
         onSelectAssignTeam={onSelectAssignTeam}
       />
-      {/* <Row>
-        <Col> */}
       <UserTeamsTable
         userTeamsById={userTeams}
         onButtonClick={onAddTeamPopupShow}
         onDeleteClick={onSelectDeleteTeam}
         renderedOn={renderedOn}
-        isUserAdmin={isUserAdmin}
         edit={edit}
+        role={role}
       />
-      {/* </Col>
-      </Row> */}
     </React.Fragment>
   );
 };
