@@ -4,7 +4,7 @@ import AddProjectPopup from './AddProjectPopup';
 import UserProjectsTable from './UserProjectsTable';
 
 const ProjectsTab = (props) => {
-  const { projectsData, userProjects, isUserAdmin, onDeleteProject, onAssignProject, edit } = props;
+  const { projectsData, userProjects, onDeleteProject, onAssignProject, edit, role } = props;
   const [addProjectPopupOpen, setaddProjectPopupOpen] = useState(false);
   const [renderedOn, setRenderedOn] = useState(0);
 
@@ -40,8 +40,8 @@ const ProjectsTab = (props) => {
         onButtonClick={onAddProjectPopupShow}
         onDeleteClicK={onSelectDeleteProject}
         renderedOn={renderedOn}
-        isUserAdmin={isUserAdmin}
         edit={edit}
+        role={role}
       />
     </React.Fragment>
   );

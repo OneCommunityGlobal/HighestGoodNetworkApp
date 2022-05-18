@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Container, Alert } from 'reactstrap';
 import MembersAutoComplete from './MembersAutoComplete';
+import hasPermission from 'utils/permissions';
 
 const TeamMembersPopup = React.memo((props) => {
   debugger;
@@ -35,17 +36,19 @@ const TeamMembersPopup = React.memo((props) => {
       <Modal isOpen={props.open} toggle={closePopup}>
         <ModalHeader toggle={closePopup}>{`Members of ${props.selectedTeamName}`}</ModalHeader>
         <ModalBody style={{ textAlign: 'center' }}>
-          <div className="input-group-prepend" style={{ marginBottom: '10px' }}>
-            <MembersAutoComplete
-              userProfileData={props.usersdata}
-              onAddUser={selectUser}
-              searchText={searchText}
-              setSearchText={setSearchText}
-            />
-            <Button color="primary" onClick={onAddUser}>
-              Add
-            </Button>
-          </div>
+          {hasPermission(props.requestorRole, 'assignTeamToUser') && (
+            <div className="input-group-prepend" style={{ marginBottom: '10px' }}>
+              <MembersAutoComplete
+                userProfileData={props.usersdata}
+                onAddUser={selectUser}
+                searchText={searchText}
+                setSearchText={setSearchText}
+              />
+              <Button color="primary" onClick={onAddUser}>
+                Add
+              </Button>
+            </div>
+          )}
           {isValidUser === false ? (
             <Alert color="danger">Please choose a valid user.</Alert>
           ) : (
@@ -57,7 +60,9 @@ const TeamMembersPopup = React.memo((props) => {
                 <tr>
                   <th>#</th>
                   <th>User Name</th>
-                  <th> </th>
+                  {hasPermission(props.requestorRole, 'assignTeamToUser') && (
+                    <th> </th>
+                  )}
                 </tr>
               </thead>
               <tbody>
@@ -66,16 +71,18 @@ const TeamMembersPopup = React.memo((props) => {
                     <tr key={`team_member_${index}`}>
                       <td>{index + 1}</td>
                       <td>{`${user.firstName} ${user.lastName}`}</td>
-                      <td>
-                        <Button
-                          color="danger"
-                          onClick={() => {
-                            props.onDeleteClick(`${user._id}`);
-                          }}
-                        >
-                          Delete
-                        </Button>
-                      </td>
+                      {hasPermission(props.requestorRole, 'assignTeamToUser') && (
+                        <td>
+                          <Button
+                            color="danger"
+                            onClick={() => {
+                              props.onDeleteClick(`${user._id}`);
+                            }}
+                          >
+                            Delete
+                          </Button>
+                        </td>
+                      )}
                     </tr>
                   ))
                 ) : (

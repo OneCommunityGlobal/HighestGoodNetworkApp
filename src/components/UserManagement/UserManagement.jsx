@@ -156,7 +156,9 @@ class UserManagement extends React.PureComponent {
           this.state.selectedPage * this.state.pageSize,
         )
         .map((user, index) => {
+          
           return (
+           
             <UserTableData
               key={'user_' + index}
               index={index}
@@ -171,6 +173,7 @@ class UserManagement extends React.PureComponent {
               onActiveInactiveClick={that.onActiveInactiveClick}
               onResetClick={that.onResetClick}
               user={user}
+              role={this.props.state.auth.user.role}
             />
           );
         });
