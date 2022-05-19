@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
 // import { getUserProfile } from '../../actions/userProfile'
 import { getHeaderData } from '../../actions/authActions';
-import { useDispatch, useSelector } from 'react-redux';
-import { getTimerData, pauseTimer } from '../../actions/timer';
+import { getTimerData } from '../../actions/timer';
 import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 import Timer from '../Timer/Timer';
@@ -22,7 +21,6 @@ import {
   UPDATE_PASSWORD,
   LOGOUT,
   POPUP_MANAGEMENT,
-  LAST_NAME,
 } from '../../languages/en/ui';
 import {
   Collapse,
@@ -40,12 +38,11 @@ import {
 import { UserRole } from '../../utils/enums';
 import { Logout } from '../Logout/Logout';
 import './Header.css';
-import { dispatch } from 'd3';
 
 export const Header = props => {
   const [isOpen, setIsOpen] = useState(false);
   const [logoutPopup, setLogoutPopup] = useState(false);
-  const pausedAt = useSelector(state => state.timer?.seconds); // agrego esta linea
+
   useEffect(() => {
     if (props.auth.isAuthenticated) {
       props.getHeaderData(props.auth.user.userid);
@@ -63,7 +60,6 @@ export const Header = props => {
   };
 
   const openModal = () => {
-    pauseTimer(user.userid, pausedAt);
     setLogoutPopup(true);
   };
 
