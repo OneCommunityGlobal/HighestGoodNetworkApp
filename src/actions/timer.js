@@ -10,7 +10,6 @@ export const getTimerData = userId => {
       if (res.status === 200) {
         dispatch(setTimer({ isWorking: res.data.isWorking, seconds: res.data.seconds }));
       } else {
-        console.log('entro al 9');
         dispatch(setTimer({ isWorking: false, seconds: 0 }));
       }
     } catch (e) {

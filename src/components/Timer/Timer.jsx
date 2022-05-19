@@ -86,7 +86,6 @@ const Timer = () => {
   useEffect(() => {
     const fetchSeconds = async () => {
       try {
-        console.log('primer caso');
         const res = await axios.get(ENDPOINTS.TIMER(userId));
         if (res.status === 200) {
           setSeconds(res.data?.seconds || 0);
