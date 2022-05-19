@@ -44,7 +44,6 @@ const Timer = () => {
 
     const status = await startTimer(userId, seconds);
     if ([9, 200, 201].includes(status)) {
-      //cambio el 2001 por 201
       setIsActive(true);
     }
 
@@ -80,7 +79,7 @@ const Timer = () => {
 
   const handleStop = () => {
     toggle();
-    handlePause(); //add line
+    handlePause();
   };
 
   useEffect(() => {
@@ -104,7 +103,7 @@ const Timer = () => {
   useEffect(() => {
     try {
       setIsActive(isWorking);
-      clearInterval(intervalThreeMin); // add this line
+      clearInterval(intervalThreeMin);
     } catch {}
   }, [isWorking]);
 
