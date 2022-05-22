@@ -15,8 +15,8 @@ import {
 } from './../../../actions/projectMembers';
 import Member from './Member';
 import FoundUser from './FoundUser';
-import { UserRole } from './../../../utils/enums';
 import './members.css';
+import hasPermission from '../../../utils/permissions';
 
 const Members = (props) => {
   const [role] = useState(props.state ? props.state.auth.user.role : null);
@@ -49,7 +49,7 @@ const Members = (props) => {
             <div id="member_project__name">PROJECTS {props.projectId}</div>
           </ol>
         </nav>
-        {role === UserRole.Administrator ? (
+        {hasPermission(role, 'findUserInProject') ? (
           <div className="input-group" id="new_project">
             <div className="input-group-prepend">
               <span className="input-group-text">Find user</span>
@@ -85,7 +85,7 @@ const Members = (props) => {
                 </th>
                 <th scope="col">Name</th>
                 <th scope="col">Email</th>
-                {role === UserRole.Administrator ? (
+                {hasPermission(role, 'assignUserInProject') ? (
                   <th scope="col">
                     Assign
                     <button
@@ -123,7 +123,7 @@ const Members = (props) => {
                 #
               </th>
               <th scope="col" id="members__name"></th>
-              {role === UserRole.Administrator ? <th scope="col" id="members__name"></th> : null}
+              {hasPermission(role, 'unassignUserInProject') ? <th scope="col" id="members__name"></th> : null}
             </tr>
           </thead>
           <tbody>

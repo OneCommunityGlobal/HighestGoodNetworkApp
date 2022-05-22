@@ -4,6 +4,7 @@ import { DELETE, PAUSE, RESUME } from '../../languages/en/ui';
 import { UserStatus } from '../../utils/enums';
 import { useHistory } from 'react-router-dom';
 import ActiveCell from './ActiveCell';
+import hasPermission from 'utils/permissions';
 
 /**
  * The body row of the user table
@@ -77,7 +78,9 @@ const UserTableData = React.memo((props) => {
       <td>{props.user.endDate ? props.user.endDate.toLocaleString().split('T')[0] : 'N/A'}</td>
       <td>
         <span className="usermanagement-actions-cell">
-          <button
+          {props.user.role === 'Owner' && !hasPermission(props.role, 'addDeleteEditOwners') 
+          ? null : (
+            <button
             type="button"
             className="btn btn-outline-danger btn-sm"
             onClick={(e) => {
@@ -86,6 +89,9 @@ const UserTableData = React.memo((props) => {
           >
             {DELETE}
           </button>
+          )}
+          
+          
         </span>
         <span className="usermanagement-actions-cell">
           <ResetPasswordButton user={props.user} isSmallButton />

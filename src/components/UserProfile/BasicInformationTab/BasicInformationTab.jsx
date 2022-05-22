@@ -11,21 +11,23 @@ import PauseAndResumeButton from 'components/UserManagement/PauseAndResumeButton
 import TimeZoneDropDown from '../TimeZoneDropDown';
 import { useSelector } from 'react-redux';
 import { getUserTimeZone } from 'services/timezoneApiService';
+import hasPermission from 'utils/permissions';
 
-const Name = (props) => {
+const Name = props => {
   const {
     userProfile,
     setUserProfile,
     setChanged,
-    isUserAdmin,
     isUserSelf,
     formValid,
     setFormValid,
+    role,
+    canEdit
   } = props;
 
   const { firstName, lastName } = userProfile;
 
-  if (isUserAdmin || isUserSelf) {
+  if (canEdit) {
     return (
       <>
         <Col md="3">
@@ -36,7 +38,7 @@ const Name = (props) => {
               id="firstName"
               value={firstName}
               // className={styleProfile.profileText}
-              onChange={(e) => {
+              onChange={e => {
                 setUserProfile({ ...userProfile, firstName: e.target.value.trim() });
                 setFormValid({ ...formValid, firstName: !!e.target.value });
                 setChanged(true);
@@ -55,7 +57,7 @@ const Name = (props) => {
               id="lastName"
               value={lastName}
               // className={styleProfile.profileText}
-              onChange={(e) => {
+              onChange={e => {
                 setUserProfile({ ...userProfile, lastName: e.target.value.trim() });
                 setFormValid({ ...formValid, lastName: !!e.target.value });
                 setChanged(true);
@@ -79,11 +81,11 @@ const Name = (props) => {
   );
 };
 
-const Title = (props) => {
-  const { userProfile, setChanged, setUserProfile, isUserAdmin, isUserSelf } = props;
+const Title = props => {
+  const { userProfile, setChanged, setUserProfile, isUserSelf, role, canEdit } = props;
   const { jobTitle } = userProfile;
 
-  if (isUserAdmin || isUserSelf) {
+  if (canEdit) {
     return (
       <>
         <Col>
@@ -93,7 +95,7 @@ const Title = (props) => {
               name="title"
               id="jobTitle"
               value={jobTitle}
-              onChange={(e) => {
+              onChange={e => {
                 setUserProfile({ ...userProfile, jobTitle: e.target.value });
                 setChanged(true);
               }}
@@ -113,21 +115,22 @@ const Title = (props) => {
   );
 };
 
-const Email = (props) => {
+const Email = props => {
   const {
     userProfile,
     setUserProfile,
     setChanged,
-    isUserAdmin,
     isUserSelf,
     formValid,
     setFormValid,
+    role,
+    canEdit
   } = props;
   const { email, privacySettings } = userProfile;
 
   const emailPattern = new RegExp(/^\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/i);
 
-  if (isUserAdmin || isUserSelf) {
+  if (canEdit) {
     return (
       <>
         <Col>
@@ -143,7 +146,7 @@ const Email = (props) => {
               name="email"
               id="email"
               value={email}
-              onChange={(e) => {
+              onChange={e => {
                 setUserProfile({ ...userProfile, email: e.target.value });
                 setFormValid({ ...formValid, email: emailPattern.test(e.target.value) });
                 setChanged(true);
@@ -198,12 +201,18 @@ const formatPhoneNumber = (str) => {
   // Unconventional
   return str;
 };
-
-const Phone = (props) => {
-  const { userProfile, setUserProfile, handleUserProfile, setChanged, isUserAdmin, isUserSelf } =
-    props;
+const Phone = props => {
+  const {
+    userProfile,
+    setUserProfile,
+    handleUserProfile,
+    setChanged,
+    isUserSelf,
+    role,
+    canEdit
+  } = props;
   const { phoneNumber, privacySettings } = userProfile;
-  if (isUserAdmin || isUserSelf) {
+  if (canEdit) {
     return (
       <>
         <Col>
@@ -216,7 +225,7 @@ const Phone = (props) => {
             <PhoneInput
               country={'us'}
               value={phoneNumber[0]}
-              onChange={(phoneNumber) => {
+              onChange={phoneNumber => {
                 setUserProfile({ ...userProfile, phoneNumber: phoneNumber.trim() });
                 setChanged(true);
               }}
@@ -285,16 +294,19 @@ const BasicInformationTab = (props) => {
     userProfile,
     setUserProfile,
     setChanged,
-    isUserAdmin,
     isUserSelf,
     handleUserProfile,
     formValid,
     setFormValid,
+    role,
+    canEdit,
   } = props;
+
+  
 
   const [timeZoneFilter, setTimeZoneFilter] = useState('');
   const [location, setLocation] = useState('');
-  const key = useSelector((state) => state.timeZoneAPI.userAPIKey);
+  const key = useSelector(state => state.timeZoneAPI.userAPIKey);
 
   const onClickGetTimeZone = () => {
     if (!location) {
@@ -303,7 +315,7 @@ const BasicInformationTab = (props) => {
     }
     if (key) {
       getUserTimeZone(location, key)
-        .then((response) => {
+        .then(response => {
           if (
             response.data.status.code === 200 &&
             response.data.results &&
@@ -317,7 +329,7 @@ const BasicInformationTab = (props) => {
             alert('Invalid location or ' + response.data.status.message);
           }
         })
-        .catch((err) => console.log(err));
+        .catch(err => console.log(err));
     }
   };
   return (
@@ -339,11 +351,12 @@ const BasicInformationTab = (props) => {
           userProfile={userProfile}
           setUserProfile={setUserProfile}
           setFormValid={setFormValid}
-          isUserAdmin={isUserAdmin}
           isUserSelf={isUserSelf}
           handleUserProfile={handleUserProfile}
           formValid={formValid}
           setChanged={setChanged}
+          role={props.role}
+          canEdit={canEdit}
         />
       </Row>
       <Row>
@@ -363,10 +376,11 @@ const BasicInformationTab = (props) => {
           userProfile={userProfile}
           setUserProfile={setUserProfile}
           setChanged={setChanged}
-          isUserAdmin={isUserAdmin}
           isUserSelf={isUserSelf}
           handleUserProfile={handleUserProfile}
           formValid={formValid}
+          role={props.role}
+          canEdit={canEdit}
         />
       </Row>
       <Row>
@@ -386,11 +400,12 @@ const BasicInformationTab = (props) => {
           userProfile={userProfile}
           setUserProfile={setUserProfile}
           setChanged={setChanged}
-          isUserAdmin={isUserAdmin}
           isUserSelf={isUserSelf}
           handleUserProfile={handleUserProfile}
           formValid={formValid}
           setFormValid={setFormValid}
+          role={props.role}
+          canEdit={canEdit}
         />
       </Row>
       <Row>
@@ -410,10 +425,11 @@ const BasicInformationTab = (props) => {
           userProfile={userProfile}
           setUserProfile={setUserProfile}
           setChanged={setChanged}
-          isUserAdmin={isUserAdmin}
           isUserSelf={isUserSelf}
           handleUserProfile={handleUserProfile}
           formValid={formValid}
+          role={props.role}
+          canEdit={canEdit}
         />
       </Row>
       <Row>
@@ -421,19 +437,23 @@ const BasicInformationTab = (props) => {
           <Label>Video Call Preference</Label>
         </Col>
         <Col>
-          <FormGroup>
+          {canEdit ? (
+          <FormGroup disabled={!canEdit}>
             <Input
               type="text"
               name="collaborationPreference"
               id="collaborationPreference"
               value={userProfile.collaborationPreference}
-              onChange={(e) => {
+              onChange={e => {
                 setUserProfile({ ...userProfile, collaborationPreference: e.target.value });
                 setChanged(true);
               }}
               placeholder="Skype, Zoom, etc."
             />
           </FormGroup>
+          ) : (
+            `${userProfile.collaborationPreference}`
+          )}
         </Col>
       </Row>
       <Row>
@@ -441,27 +461,34 @@ const BasicInformationTab = (props) => {
           <Label>Role</Label>
         </Col>
         <Col>
+        {canEdit ? (
           <FormGroup>
             <select
               value={userProfile.role}
-              onChange={(e) => {
+              onChange={e => {
                 setUserProfile({ ...userProfile, role: e.target.value });
                 setChanged(true);
               }}
               id="role"
               name="role"
               className="form-control"
-              disabled={!isUserAdmin}
+              disabled={!canEdit}
+              canEdit={canEdit}
             >
               <option value="Administrator">Administrator</option>
               <option value="Volunteer">Volunteer</option>
               <option value="Manager">Manager</option>
               <option value="Core Team">Core Team</option>
+              <option value="Mentor">Mentor</option>
+              {hasPermission(role, 'addDeleteEditOwners') && (
+                <option value="Owner">Owner</option>
+              )}
             </select>
           </FormGroup>
+        ) : `${userProfile.role}`}
         </Col>
       </Row>
-      {(props.isUserAdmin || props.isUserSelf) && (
+      {canEdit && (
         <Row>
           <Col md={{ size: 6, offset: 0 }} className="text-md-left my-2">
             <Label>Location</Label>
@@ -494,11 +521,11 @@ const BasicInformationTab = (props) => {
           <Label>Time Zone</Label>
         </Col>
         <Col>
-          {!props.isUserAdmin && <p>{userProfile.timeZone}</p>}
-          {props.isUserAdmin && (
+          {!canEdit && <p>{userProfile.timeZone}</p>}
+          {canEdit && (
             <TimeZoneDropDown
               filter={timeZoneFilter}
-              onChange={(e) => {
+              onChange={e => {
                 setUserProfile({ ...userProfile, timeZone: e.target.value });
                 setChanged(true);
               }}
@@ -515,21 +542,12 @@ const BasicInformationTab = (props) => {
           userProfile={userProfile}
           setUserProfile={setUserProfile}
           setChanged={setChanged}
-          isUserAdmin={isUserAdmin}
           isUserSelf={isUserSelf}
           handleUserProfile={handleUserProfile}
           formValid={formValid}
         />
       </Row>
       <Row style={{ marginBottom: '10px' }}>
-        {/* <Col>
-          <Label>Search For Time Zone</Label>
-        </Col>
-        <Col>
-          <Input type="text" onChange={(e) => setTimeZoneFilter(e.target.value)} />
-        </Col>
-      </Row>
-      <Row style={{ marginBottom: '10px' }}> */}
         <Col>
           <Label>Status</Label>
         </Col>
@@ -542,7 +560,7 @@ const BasicInformationTab = (props) => {
                 : 'Inactive'}
           </Label>
           &nbsp;
-          {props.isUserAdmin && <PauseAndResumeButton isBigBtn={true} userProfile={userProfile} />}
+          {canEdit && <PauseAndResumeButton isBigBtn={true} userProfile={userProfile} />}
         </Col>
       </Row>
     </div>

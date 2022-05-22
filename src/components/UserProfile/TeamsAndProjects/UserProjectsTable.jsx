@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Button, Col } from 'reactstrap';
 import './TeamsAndProjects.css';
+import hasPermission from '../../../utils/permissions';
 
 const UserProjectsTable = React.memo((props) => {
   //const [addProjectPopupOpen, showProjectPopup] = useState(false);
@@ -19,9 +20,9 @@ const UserProjectsTable = React.memo((props) => {
           >
             <span className="projects-span">Projects</span>
           </Col>
-          {props.edit && (
+          {props.edit && props.role && (
             <Col md="5">
-              {props.isUserAdmin ? (
+              {hasPermission(props.role, 'assignUserInProject') ? (
                 <Button
                   className="btn-addproject"
                   color="primary"
@@ -41,11 +42,15 @@ const UserProjectsTable = React.memo((props) => {
       <div style={{ maxHeight: '300px', overflow: 'auto' }}>
         <table className="table table-bordered table-responsive-sm">
           <thead>
+            {props.role && (
             <tr>
               <th>#</th>
               <th>Project Name</th>
-              <th>{}</th>
+              {hasPermission(props.role, 'assignUserInProject') ? (
+                <th>{}</th>
+              ) : null}
             </tr>
+            )}
           </thead>
           <tbody>
             {props.userProjectsById.length > 0 ? (
@@ -53,11 +58,11 @@ const UserProjectsTable = React.memo((props) => {
                 <tr key={index}>
                   <td>{index + 1}</td>
                   <td>{`${project.projectName}`}</td>
-                  {props.edit && (
+                  {props.edit && props.role && (
                     <td>
                       <Button
                         color="danger"
-                        disabled={!props.isUserAdmin}
+                        disabled={!hasPermission(props.role, 'unassignUserInProject')}
                         onClick={(e) => {
                           props.onDeleteClicK(project._id);
                         }}

@@ -36,8 +36,9 @@ import TimeEntryEditHistory from './TimeEntryEditHistory.jsx';
 import { ENDPOINTS } from 'utils/URL';
 import ActiveCell from 'components/UserManagement/ActiveCell';
 import axios from 'axios';
+import hasPermission from 'utils/permissions';
 
-const UserProfile = (props) => {
+const UserProfile = props => {
   /* Constant values */
   const initialFormValid = {
     firstName: true,
@@ -93,7 +94,7 @@ const UserProfile = (props) => {
     try {
       const response = await axios.get(ENDPOINTS.USER_PROFILE(userId));
       const newUserProfile = response.data;
-
+      console.log('new user profile: ', newUserProfile);
       setUserProfile(newUserProfile);
       setOriginalUserProfile(newUserProfile);
       setShowLoading(false);
@@ -102,19 +103,19 @@ const UserProfile = (props) => {
     }
   };
 
-  const onDeleteTeam = (deletedTeamId) => {
+  const onDeleteTeam = deletedTeamId => {
     const newUserProfile = { ...userProfile };
-    const filteredTeam = newUserProfile.teams.filter((team) => team._id !== deletedTeamId);
+    const filteredTeam = newUserProfile.teams.filter(team => team._id !== deletedTeamId);
     newUserProfile.teams = filteredTeam;
 
     setUserProfile(newUserProfile);
     setChanged(true);
   };
 
-  const onDeleteProject = (deletedProjectId) => {
+  const onDeleteProject = deletedProjectId => {
     const newUserProfile = { ...userProfile };
     const filteredProject = newUserProfile.projects.filter(
-      (project) => project._id !== deletedProjectId,
+      project => project._id !== deletedProjectId,
     );
     newUserProfile.projects = filteredProject;
 
@@ -122,7 +123,7 @@ const UserProfile = (props) => {
     setChanged(true);
   };
 
-  const onAssignTeam = (assignedTeam) => {
+  const onAssignTeam = assignedTeam => {
     const newUserProfile = { ...userProfile };
     if (newUserProfile.teams) {
       newUserProfile.teams.push(assignedTeam);
@@ -134,7 +135,7 @@ const UserProfile = (props) => {
     setUserProfile(newUserProfile);
   };
 
-  const onAssignProject = (assignedProject) => {
+  const onAssignProject = assignedProject => {
     const newUserProfile = { ...userProfile };
     if (newUserProfile.projects) {
       newUserProfile.projects.push(assignedProject);
@@ -145,7 +146,7 @@ const UserProfile = (props) => {
     setChanged(true);
   };
 
-  const handleImageUpload = async (evt) => {
+  const handleImageUpload = async evt => {
     if (evt) evt.preventDefault();
     const file = evt.target.files[0];
     if (typeof file != 'undefined') {
@@ -222,17 +223,17 @@ const UserProfile = (props) => {
     } else if (operation === 'update') {
       const currentBlueSquares = [...userProfile.infringments];
       if (dateStamp != null) {
-        currentBlueSquares.find((blueSquare) => blueSquare._id === id).date = dateStamp;
+        currentBlueSquares.find(blueSquare => blueSquare._id === id).date = dateStamp;
       }
       if (summary != null) {
-        currentBlueSquares.find((blueSquare) => blueSquare._id === id).description = summary;
+        currentBlueSquares.find(blueSquare => blueSquare._id === id).description = summary;
       }
 
       setShowModal(false);
       setUserProfile({ ...userProfile, infringments: currentBlueSquares });
     } else if (operation === 'delete') {
       const newInfringements = [];
-      userProfile.infringments.forEach((infringment) => {
+      userProfile.infringments.forEach(infringment => {
         if (infringment._id !== id) newInfringements.push(infringment);
       });
 
@@ -258,7 +259,7 @@ const UserProfile = (props) => {
     setShowSaveWarning(false);
   };
 
-  const toggleTab = (tab) => {
+  const toggleTab = tab => {
     if (activeTab !== tab) setActiveTab(tab);
   };
 
@@ -277,7 +278,7 @@ const UserProfile = (props) => {
    * Please pass userProfile, setUserProfile, and setChanged as props to subcomponents and modify state that way.
    * This function is being kept here until the refactoring is complete.
    */
-  const handleUserProfile = (event) => {
+  const handleUserProfile = event => {
     setChanged(true);
 
     switch (event.target.id) {
@@ -327,8 +328,15 @@ const UserProfile = (props) => {
   const { userid: requestorId, role: requestorRole } = props.auth.user;
 
   const isUserSelf = targetUserId === requestorId;
-  const isUserAdmin = requestorRole === 'Administrator';
-  const canEdit = isUserAdmin || isUserSelf;
+  // const isUserAdmin = requestorRole === 'Administrator';
+  // const canEdit = hasPermission(requestorRole, 'editUserProfile') || isUserSelf;
+  let canEdit;
+  if(userProfile.role !== 'Owner'){
+    canEdit = hasPermission(requestorRole, 'editUserProfile') || isUserSelf;
+  } else {
+    canEdit = hasPermission(requestorRole, 'addDeleteEditOwners') || isUserSelf;
+  }
+
 
   return (
 
@@ -344,9 +352,9 @@ const UserProfile = (props) => {
           modifyBlueSquares={modifyBlueSquares}
           userProfile={userProfile}
           id={id}
-          isUserAdmin={isUserAdmin}
           handleLinkModel={props.handleLinkModel}
-        //setIsValid={setIsValid(true)}
+          role={requestorRole}
+          //setIsValid={setIsValid(true)}
         />
       )}
       <TabToolTips />
@@ -397,7 +405,7 @@ const UserProfile = (props) => {
                 className="fa fa-info-circle"
                 onClick={toggleInfoModal}
               />{' '}
-              {isUserAdmin && (
+              {canEdit && (
                 <>
                   <ActiveCell
                     isActive={userProfile.isActive}
@@ -417,7 +425,7 @@ const UserProfile = (props) => {
                   &nbsp;
                 </>
               )}
-              {isUserAdmin && (
+              {canEdit && (
                 <i
                   data-toggle="tooltip"
                   className="fa fa-clock-o"
@@ -438,9 +446,10 @@ const UserProfile = (props) => {
               </p>
             </div>
             <Badges
-              isAdmin={isUserAdmin}
               userProfile={userProfile}
               setUserProfile={setUserProfile}
+              role={requestorRole}
+              canEdit={canEdit}
             />
           </Col>
         </Row>
@@ -448,20 +457,22 @@ const UserProfile = (props) => {
           <Col md="4">
             <div className="profile-work">
               <UserLinkLayout
-                isUserAdmin={isUserAdmin}
                 isUserSelf={isUserSelf}
                 userProfile={userProfile}
                 setChanged={setChanged}
                 updateLink={updateLink}
                 handleLinkModel={props.handleLinkModel}
+                role={requestorRole}
+                canEdit={canEdit}
               />
               <BlueSquareLayout
                 userProfile={userProfile}
                 handleUserProfile={handleUserProfile}
                 handleSaveError={props.handleSaveError}
                 handleBlueSquare={handleBlueSquare}
-                isUserAdmin={isUserAdmin}
                 isUserSelf={isUserSelf}
+                role={requestorRole}
+                canEdit={canEdit}
               />
             </div>
           </Col>
@@ -507,7 +518,7 @@ const UserProfile = (props) => {
                 <NavItem>
                   <NavLink
                     className={classnames({ active: activeTab === '5' }, 'nav-link')}
-                    onClick={(e) => {
+                    onClick={e => {
                       e.preventDefault();
                       toggleTab('5');
                     }}
@@ -526,15 +537,16 @@ const UserProfile = (props) => {
             >
               <TabPane tabId="1">
                 <BasicInformationTab
+                  role={requestorRole}
                   userProfile={userProfile}
                   setUserProfile={setUserProfile}
                   setChanged={setChanged}
                   handleUserProfile={handleUserProfile}
                   formValid={formValid}
                   setFormValid={setFormValid}
-                  isUserAdmin={isUserAdmin}
                   isUserSelf={isUserSelf}
                   setShouldRefresh={setShouldRefresh}
+                  canEdit={canEdit}
                 />
               </TabPane>
               <TabPane tabId="2">
@@ -542,8 +554,9 @@ const UserProfile = (props) => {
                   userProfile={userProfile}
                   setUserProfile={setUserProfile}
                   setChanged={setChanged}
-                  isUserAdmin={isUserAdmin}
                   isUserSelf={isUserSelf}
+                  role={requestorRole}
+                  canEdit={canEdit}
                 />
               </TabPane>
               <TabPane tabId="3">
@@ -552,8 +565,8 @@ const UserProfile = (props) => {
                   teamsData={props?.allTeams?.allTeamsData || []}
                   onAssignTeam={onAssignTeam}
                   onDeleteteam={onDeleteTeam}
-                  isUserAdmin={isUserAdmin}
-                  edit={isUserAdmin}
+                  edit={canEdit}
+                  role={requestorRole}
                 />
               </TabPane>
               <TabPane tabId="4">
@@ -562,8 +575,8 @@ const UserProfile = (props) => {
                   projectsData={props?.allProjects?.projects || []}
                   onAssignProject={onAssignProject}
                   onDeleteProject={onDeleteProject}
-                  isUserAdmin={isUserAdmin}
-                  edit={isUserAdmin}
+                  edit={canEdit}
+                  role={requestorRole}
                 />
               </TabPane>
               <TabPane tabId="5">
@@ -571,7 +584,7 @@ const UserProfile = (props) => {
                   userProfile={userProfile}
                   setUserProfile={setUserProfile}
                   setChanged={setChanged}
-                  isAdmin={isUserAdmin}
+                  role={requestorRole}
                 />
               </TabPane>
             </TabContent>
@@ -580,7 +593,7 @@ const UserProfile = (props) => {
         <Row>
           <Col md="4"></Col>
           <Col md="8">
-            {requestorRole === 'Administrator' && canEdit && !isUserSelf && (
+            {hasPermission(requestorRole, 'resetPasswordOthers') && canEdit && !isUserSelf && (
               <ResetPasswordButton className="mr-1" user={userProfile} />
             )}
             {isUserSelf && (
@@ -593,43 +606,28 @@ const UserProfile = (props) => {
                 </Link>
               </div>
             )}
-            <span
-              onClick={() => {
-                setUserProfile(originalUserProfile);
-                setChanged(false);
-              }}
-              className="btn btn-outline-danger mr-1"
-            >
-              Cancel
-            </span>
-            <SaveButton
-              className="mr-1"
-              handleSubmit={handleSubmit}
-              disabled={!formValid.firstName || !formValid.lastName || !formValid.email || !changed}
-              userProfile={userProfile}
-            />
+            {canEdit && (
+              <>
+              <span
+                onClick={() => {
+                  setUserProfile(originalUserProfile);
+                  setChanged(false);
+                }}
+                className="btn btn-outline-danger mr-1"
+              >
+                Cancel
+              </span>      
+              <SaveButton
+                className="mr-1"
+                handleSubmit={handleSubmit}
+                disabled={!formValid.firstName || !formValid.lastName || !formValid.email || !changed}
+                userProfile={userProfile}
+              />
+              </>
+            )}
           </Col>
         </Row>
       </Container>
-      {/* </Row>
-          </Col>
-
-        </div>
-
-        <div >
-
-          <UserTeamProjectContainer
-            userTeams={this.state ? this.state.userProfile.teams : []}
-            userProjects={this.state ? this.state.userProfile.projects : []}
-            teamsData={props ? props.allTeams.allTeamsData : []}
-            projectsData={props ? props.allProjects.projects : []}
-            onAssignTeam={this.onAssignTeam}
-            onAssignProject={this.onAssignProject}
-            onDeleteteam={this.onDeleteTeam}
-            onDeleteProject={this.onDeleteProject}
-            isUserAdmin={isUserAdmin} />
-
-        </div> */}
     </div>
   );
 };

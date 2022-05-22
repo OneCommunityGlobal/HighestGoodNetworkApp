@@ -35,7 +35,7 @@ const Badges = (props) => {
 
   return (
     <>
-      <Card style={{ backgroundColor: '#f6f6f3', marginTop: 20, marginBottom: 20 }}>
+      <Card style={{ backgroundColor: '#f6f6f3', marginTop: 20, marginBottom: 20, minWidth: 477 }}>
         <CardBody>
           <CardTitle
             style={{
@@ -51,19 +51,18 @@ const Badges = (props) => {
             </Button>
             <Modal size="lg" isOpen={isOpen} toggle={toggle}>
               <ModalHeader toggle={toggle}>Full View of Badge History</ModalHeader>
-              {/* <ModalBody><BadgeReport badges={props.userProfile.badgeCollection} userId={props.userId} isAdmin={props.isAdmin} firstName={props.userProfile.firstName} lastName={props.userProfile.lastName} close={toggle}/></ModalBody> */}
               <ModalBody>
                 <BadgeReport
                   badges={props.userProfile.badgeCollection}
                   userId={props.userProfile._id}
-                  isAdmin={props.isAdmin}
+                  role={props.role}
                   firstName={props.userProfile.firstName}
                   lastName={props.userProfile.lastName}
                   close={toggle}
                 />
               </ModalBody>
             </Modal>
-            {props.isAdmin && (
+            {props.canEdit && (
               <>
                 <Button className="btn--dark-sea-green float-right mr-2" onClick={assignToggle}>
                   Assign Badges
@@ -75,7 +74,6 @@ const Badges = (props) => {
                       allBadgeData={props.allBadgeData}
                       userProfile={props.userProfile}
                       setUserProfile={props.setUserProfile}
-                      isAdmin={props.isAdmin}
                       close={assignToggle}
                     />
                   </ModalBody>

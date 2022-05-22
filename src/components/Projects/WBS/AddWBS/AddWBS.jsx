@@ -6,7 +6,7 @@
 import React, { useState } from 'react';
 import { connect } from 'react-redux';
 import { addNewWBS } from './../../../../actions/wbs';
-import { UserRole } from './../../../../utils/enums';
+import hasPermission from 'utils/permissions';
 
 const AddWBS = (props) => {
   const [role] = useState(props.state ? props.state.auth.user.role : null);
@@ -24,7 +24,7 @@ const AddWBS = (props) => {
 
   return (
     <>
-      {props.state.auth.user.role === UserRole.Administrator ? (
+      {hasPermission(role, 'addWbs') ? (
         <div className="input-group" id="new_project">
           <div className="input-group-prepend">
             <span className="input-group-text">Add new WBS</span>

@@ -15,7 +15,6 @@ import { getTimeZoneAPIKey } from '../../actions/timezoneAPIActions';
 
 export const Dashboard = (props) => {
   const [popup, setPopup] = useState(false);
-  let isAdmin = props.auth.user.role === 'Administrator';
   let userId = props.match.params.userId ? props.match.params.userId : props.auth.user.userid;
 
   const toggle = () => {
@@ -44,7 +43,7 @@ export const Dashboard = (props) => {
   return (
     <Container fluid>
       <PopUpBar />
-      <SummaryBar asUser={userId} toggleSubmitForm={toggle} isAdmin={isAdmin} />
+      <SummaryBar asUser={userId} toggleSubmitForm={toggle} role={props.auth.user.role} />
 
       <Row>
         <Col lg={{ size: 7 }}>&nbsp;</Col>
@@ -81,7 +80,7 @@ export const Dashboard = (props) => {
           <div className="my-2">
             <TeamMemberTasks asUser={userId} />
           </div>
-          <Badge userId={userId} isAdmin={isAdmin} />
+          <Badge userId={userId} role={props.auth.user.role} />
         </Col>
       </Row>
     </Container>

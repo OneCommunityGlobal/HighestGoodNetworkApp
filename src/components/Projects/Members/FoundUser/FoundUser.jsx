@@ -6,7 +6,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { assignProject } from './../../../../actions/projectMembers';
-import { UserRole } from './../../../../utils/enums';
 
 const FoundUser = (props) => {
   return (
