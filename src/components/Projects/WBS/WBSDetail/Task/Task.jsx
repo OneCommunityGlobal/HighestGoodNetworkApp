@@ -342,7 +342,7 @@ const Task = (props) => {
           )}
         </td>
         <td className="desktop-view">
-          {props.status === 'Started' ? (
+          {(props.status === 'Started' || props.status === 'Active') ? (
             <i data-tip="Started" className="fa fa-pause" aria-hidden="true"></i>
           ) : (
             <i data-tip="Not Started" className="fa fa-play" aria-hidden="true"></i>
