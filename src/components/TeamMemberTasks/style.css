@@ -5,3 +5,17 @@
 .team-member-tasks h1 {
   color: black;
 }
+.redCell{
+  color:red;
+}
+.spanCol{
+  display: flex;
+  justify-content: space-between;
+  border-bottom: 0.5px solid rgb(224, 223, 223);
+  padding-bottom: 5px;
+  margin-bottom: 0px;
+  padding-top: 5px;
+}
+.spanCell{
+  padding-bottom: 0px !important;
+}
