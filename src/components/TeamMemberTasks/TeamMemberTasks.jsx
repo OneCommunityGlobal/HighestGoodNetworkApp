@@ -63,6 +63,26 @@ const TeamMemberTasks = props => {
     toggleTaskNotificationModal();
   };
 
+  const checkColor = (value)=>{
+    let color = ''
+    if (value < 5){
+      color = "danger"
+   }else if (value >=5 && value < 10){
+      color = "warning"
+   }else if (value >=10 && value < 20){
+      color = "success"
+   }else if (value >=20 && value < 30){
+     color = "primary"
+   }else if (value >=30 && value < 40){
+      color = "info"
+   }else if (value >=40 && value < 50){
+      color = "super"
+   }else if (value >=50){
+      color = "awesome"
+   } 
+   return color
+  }
+
   useEffect(() => {
     const fetchData = async () => {
       console.log('props: ', props)
@@ -72,11 +92,14 @@ const TeamMemberTasks = props => {
 
       // const { leaderBoardData } = props
       const { managingTeams } = props;
+      const {role} = props.auth.user;
       let allMembers = [];
       const teamMembersPromises = [];
       const memberTimeEntriesPromises = [];
       const teamMemberTasksPromises = [];
       // const userProfilePromises = [];
+      
+     
 
       // to fetch users in a team
       // const usersInATeamPromises = [];
@@ -89,6 +112,17 @@ const TeamMemberTasks = props => {
 
       // const teamMembers = [];
 
+     // Get all teams for Admin
+     if(role === "Administrator"){
+      await httpService.get(ENDPOINTS.TEAM).then((res)=>{  
+      res.data.forEach((data)=>{
+       managingTeams.push(data)}
+      )
+       console.log('managing team, ', managingTeams)
+      })
+    }
+     
+      //console.log('all admin view', managingTeams)
       // fetch all team members for each team
       managingTeams.forEach(team => {
         teamMembersPromises.push(httpService.get(ENDPOINTS.TEAM_MEMBERS(team._id)));
@@ -122,7 +156,6 @@ const TeamMemberTasks = props => {
         }
 
         if (memberTimeEntriesPromises.length) {
-
           Promise.all(memberTimeEntriesPromises).then(data => {
             // console.log('time entries: ', data);
             if (data[0]?.data.length === 0) {
@@ -232,9 +265,10 @@ const TeamMemberTasks = props => {
                 }
                 
 //Add time entry property to task
-                let allTimeEntries = []
+               
                 finalData.forEach((member)=>{
                   member.tasks.forEach((task)=>{
+                    let allTimeEntries = []
                   task.allTimeEntries = allTimeEntries
                   member.timeEntries.forEach((entry)=>{
                     if (task.projectId === entry.projectId ){
@@ -302,11 +336,22 @@ const TeamMemberTasks = props => {
         <td>
           <Link to={`/userprofile/${member._id}`}>{`${member.firstName} ${member.lastName}`}</Link>
         </td>
-        <td>{`${member.weeklyCommittedHours} / ${member.hoursCurrentWeek}`}</td>
-        <td>
+        <td >{`${member.weeklyCommittedHours} / ${member.hoursCurrentWeek}/ `}
+          <span className='redCell'>
+            { member.tasks.length > 0?
+               Math.round(member.tasks.reduce((acc, curr)=> Number(acc) + Number(curr.estimatedHours), 0)
+               -member.hoursCurrentWeek): 0 }
+            </span>
+           </td>
+        <td colspan="2" className='spanCell'>
           {member.tasks &&
-            member.tasks.map((task, index) => (
-              <p key={`${task._id}${index}`}>
+            member.tasks.map((task, index) => {
+              const value = task.allTimeEntries? Math.round(task.allTimeEntries.reduce(
+                (acc, curr) => Number(acc) + (Number(curr.minutes/60) + Number(curr.hours)),
+               0
+              )) : 0
+              return(
+              <div key={`${task._id}${index}`} className='spanCol'>
                 <Link
                   key={index}
                   to={task.projectId ? `/wbs/tasks/${task.wbsId}/${task.projectId}` : '/'}
@@ -325,30 +370,20 @@ const TeamMemberTasks = props => {
                         }}
                       />
                     ) : null}
-                  </span> */}
-              </p>
-            ))}
-        </td>
-        <td  className=''>
-          { 
-             member.tasks &&
-             member.tasks.map((task, index)=>{ 
-               const value = task.allTimeEntries? Math.floor(task.allTimeEntries.reduce(
-                (acc, curr) => acc + (curr.minutes/60 + curr.hours),
-               0
-              )) : 0
-               return(<div key={`${task._id}${index}`} className=''>
-                <p>{`${value} of ${Math.floor(task.estimatedHours)}` }</p>
-                <Progress
-                value={value}
-                max={task.estimatedHours}
-              /></div>
-             )
-               //const hoursDone = task.allTimeEntries.reduce((acc, curr)=> acc + curr.isTangible? curr.totalSeconds/3600 : 0,0 );
-               
-             })
-             
-             }
+                  </span> */
+                }
+                <span>
+                  <div className=''>
+                    <p>{`${value} of ${Math.floor(task.estimatedHours)}` }</p>
+                    <Progress
+                      value={value}
+                      max={task.estimatedHours}
+                      color = {checkColor(value)}
+                    />
+                </div>
+                </span>
+              </div>
+            )})}
         </td>
       </tr>
     ));
@@ -445,7 +480,12 @@ const TeamMemberTasks = props => {
                   style={{ color: 'green' }}
                   icon={faClock}
                   title="Weekly Completed Hours"
-                />
+                />/<FontAwesomeIcon
+                style={{ color: 'red' }}
+                icon={faClock}
+                title="Hours remaining for task"
+              />
+                
               </th>
               <th>Tasks(s)</th>
               <th>Progress</th>
