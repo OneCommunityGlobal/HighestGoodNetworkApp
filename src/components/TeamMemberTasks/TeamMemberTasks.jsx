@@ -18,6 +18,7 @@ import { fetchAllManagingTeams } from '../../actions/team';
 import { getUserProfile } from '../../actions/userProfile';
 import Loading from '../common/Loading';
 import DiffedText from './DiffedText';
+import EditTaskModal from 'components/Projects/WBS/WBSDetail/EditTask/EditTaskModal';
 
 const TeamMemberTasks = props => {
   const [fetched, setFetched] = useState(false);
@@ -246,7 +247,7 @@ const TeamMemberTasks = props => {
                       });
                     });
 
-                    // console.log('final data ', finalData)
+                    console.log('final data ', finalData)
                     setFetched(true);
                     setTeams(finalData);
                     // });
@@ -313,7 +314,10 @@ const TeamMemberTasks = props => {
                       ) : null}
                     </span> */}
                 </p>
-                <FontAwesomeIcon style={{ color: 'red' }} icon={faBell} />
+                <FontAwesomeIcon 
+                  style={{ color: 'red' }} icon={faBell} 
+                  onClick={() => handleOpenTaskNotificationModal()}
+                  />
               </>
             ))}
         </td>
@@ -328,7 +332,18 @@ const TeamMemberTasks = props => {
         {!fetched ? <Loading /> : null}
         <h1>Team Member Tasks</h1>
         <div className="row">
-          <Modal isOpen={taskNotificationModal} toggle={handleOpenTaskNotificationModal} size="xl">
+          {/* <EditTaskModal
+            key={`editTask_${task._id}`}
+            parentNum={task.num}
+            taskId={task._id}
+            wbsId={task.wbsId}
+            parentId1={task.parentId1}
+            parentId2={task.parentId2}
+            parentId3={task.parentId3}
+            mother={task.mother}
+            level={task.level}
+          /> */}
+          {/* <Modal isOpen={taskNotificationModal} toggle={handleOpenTaskNotificationModal} size="xl">
             <ModalHeader toggle={handleOpenTaskNotificationModal}>Task Info Changes</ModalHeader>
             <ModalBody>
               {currentTaskNotifications.length > 0
@@ -398,7 +413,7 @@ const TeamMemberTasks = props => {
                 Okay
               </Button>
             </ModalFooter>
-          </Modal>
+          </Modal> */}
         </div>
         <Table>
           <thead>
