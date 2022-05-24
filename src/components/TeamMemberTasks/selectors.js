@@ -1,0 +1,1 @@
+export const getTeamMemberTasksData = (state) => state.tasks;

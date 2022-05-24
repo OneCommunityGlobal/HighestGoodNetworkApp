@@ -3,7 +3,7 @@
 /* eslint-disable no-plusplus */
 /* eslint-disable indent */
 import React, { useState, useEffect } from 'react';
-import { connect } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { Table, Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import moment from 'moment';
@@ -19,12 +19,17 @@ import { getUserProfile } from '../../actions/userProfile';
 import Loading from '../common/Loading';
 import DiffedText from './DiffedText';
 import EditTaskModal from 'components/Projects/WBS/WBSDetail/EditTask/EditTaskModal';
+import { getTeamMemberTasksData } from './selectors';
 
 const TeamMemberTasks = props => {
   const [fetched, setFetched] = useState(false);
   const [teams, setTeams] = useState([]);
   const [taskNotificationModal, setTaskNotificationModal] = useState(false);
   const [currentTaskNotifications, setCurrentTaskNotifications] = useState([]);
+
+  const { tasks } = useSelector(getTeamMemberTasksData);
+
+  const dispatch = useDispatch();
 
   const setTaskNotifications = taskNotifications => {
     setCurrentTaskNotifications(taskNotifications);
@@ -64,210 +69,7 @@ const TeamMemberTasks = props => {
     toggleTaskNotificationModal();
   };
 
-  useEffect(() => {
-    const fetchData = async () => {
-      const userId = props.asUser ? props.asUser : props.auth.user.userid;
-      await props.getUserProfile(userId);
-
-      // const { leaderBoardData } = props
-      const { managingTeams } = props;
-      let allMembers = [];
-      const teamMembersPromises = [];
-      const memberTimeEntriesPromises = [];
-      const teamMemberTasksPromises = [];
-      // const userProfilePromises = [];
-
-      // to fetch users in a team
-      // const usersInATeamPromises = [];
-      // const wbsProjectPromises = []
-      // const fetchedProjects = []
-      const finalData = [];
-      // const userNotifications = [];
-      // const taskNotificationPromises = [];
-      const allManagingTeams = [];
-
-      // const teamMembers = [];
-
-      console.log(props);
-      if (managingTeams && managingTeams.length) {
-        // fetch all team members for each team
-        managingTeams.forEach(team => {
-          teamMembersPromises.push(httpService.get(ENDPOINTS.TEAM_MEMBERS(team._id)));
-        });
-
-        Promise.all(teamMembersPromises).then(data => {
-          // console.log('team members', data);
-          for (let i = 0; i < managingTeams.length; i++) {
-            allManagingTeams[i] = {
-              ...managingTeams[i],
-              members: data[i].data,
-            };
-            allMembers = allMembers.concat(data[i].data);
-          }
-
-          // fetch all time entries for current week for all members
-          const uniqueMembers = _.uniqBy(allMembers, '_id');
-
-          // console.log('members: ', uniqueMembers);
-
-          const membersId = [];
-          for (let i = 0; i < uniqueMembers.length; i++) {
-            membersId.push(uniqueMembers[i]._id);
-          }
-
-          if (membersId.length) {
-            memberTimeEntriesPromises.push(
-              httpService.get(ENDPOINTS.TIME_ENTRIES_USER_LIST(membersId)).catch(err => {}),
-            );
-          }
-
-          if (memberTimeEntriesPromises.length) {
-            Promise.all(memberTimeEntriesPromises).then(data => {
-              // console.log('time entries: ', data);
-              if (data[0].data.length === 0) {
-                for (let i = 0; i < uniqueMembers.length; i++) {
-                  uniqueMembers[i] = {
-                    ...uniqueMembers[i],
-                    timeEntries: [],
-                  };
-                }
-              } else {
-                for (let i = 0; i < uniqueMembers.length; i++) {
-                  const entries = [];
-                  for (let j = 0; j < data[0]?.data.length; j++) {
-                    if (uniqueMembers[i]._id === data[0].data[j].personId) {
-                      entries.push(data[0].data[j]);
-                      // console.log('push');
-                    }
-                  }
-                  uniqueMembers[i] = {
-                    ...uniqueMembers[i],
-                    timeEntries: entries,
-                  };
-                }
-              }
-              // console.log('members after entries: ', uniqueMembers);
-
-              // fetch all tasks for each member
-              teamMemberTasksPromises.push(
-                httpService.get(ENDPOINTS.TASKS_BY_USERID(membersId)).catch(err => {
-                  if (err.status !== 401) {
-                    console.log(err);
-                  }
-                }),
-              );
-
-              Promise.all(teamMemberTasksPromises).then(async data => {
-                // await console.log('tasks by userid', data);
-
-                // merge assigned tasks into each user obj
-                for (let i = 0; i < uniqueMembers.length; i++) {
-                  const userTasks = [];
-                  for (let j = 0; j < data[0]?.data.length; j++) {
-                    for (let k = 0; k < data[0]?.data[j].resources.length; k++) {
-                      if (data[0].data[j].resources[k].userID === uniqueMembers[i]._id) {
-                        userTasks.push(data[0].data[j]);
-                      }
-                    }
-                  }
-                  uniqueMembers[i] = {
-                    ...uniqueMembers[i],
-                    tasks: userTasks,
-                  };
-                }
-
-                // console.log('members after tasks: ', uniqueMembers);
-
-                try {
-                  for (let i = 0; i < uniqueMembers.length; i++) {
-                    const user = uniqueMembers[i];
-                    const userLeaderBoardData = uniqueMembers.find(
-                      member => member._id === user._id,
-                    );
-                    let userWeeklyCommittedHours = 0;
-                    if (userLeaderBoardData) {
-                      userWeeklyCommittedHours = userLeaderBoardData.weeklyComittedHours;
-                    }
-                    uniqueMembers[i] = {
-                      ...uniqueMembers[i],
-                      weeklyCommittedHours: userWeeklyCommittedHours,
-                    };
-                  }
-
-                  // for each task, must fetch the projectId of its wbs in order to generate appropriate link
-                  // currently fetches all projects, should consider refactoring if number of projects increases
-                  const WBSRes = await httpService.get(ENDPOINTS.WBS_ALL).catch(err => {
-                    if (err.status === 401) {
-                      loggedOut = true;
-                    }
-                  });
-                  const allWBS = WBSRes.data;
-                  // console.log('tasks', WBSRes.data);
-
-                  // calculate hours done in current week and add to user obj for ease of access
-                  for (let i = 0; i < uniqueMembers.length; i++) {
-                    let hoursCurrentWeek = 0;
-                    if (uniqueMembers[i].timeEntries.length > 0) {
-                      hoursCurrentWeek = uniqueMembers[i].timeEntries.reduce(
-                        (acc, current) => Number(current.hours) + acc,
-                        0,
-                      );
-                    }
-
-                    finalData[i] = {
-                      ...uniqueMembers[i],
-                      hoursCurrentWeek,
-                    };
-                  }
-
-                  // attach projectId of each task onto final user objects
-                  for (let i = 0; i < uniqueMembers.length; i++) {
-                    for (let j = 0; j < uniqueMembers[i].tasks.length; j++) {
-                      const { wbsId } = uniqueMembers[i].tasks[j];
-                      const project = allWBS.find(wbs => wbs._id === wbsId);
-                      finalData[i].tasks[j] = {
-                        ...finalData[i].tasks[j],
-                        projectId: project ? project.projectId : '',
-                      };
-                    }
-                  }
-
-                  let loggedOut = false;
-
-                  // console.log('member tasks in obj: ', uniqueMembers);
-
-                  if (!loggedOut) {
-                    // sort each members' tasks by last modified time
-                    finalData.forEach(user => {
-                      user.tasks.sort((task1, task2) => {
-                        const date1 = new Date(task1.modifiedDatetime).valueOf();
-                        const date2 = new Date(task2.modifiedDatetime).valueOf();
-                        const timeDifference = date2 - date1;
-                        return timeDifference;
-                      });
-                    });
-
-                    console.log('final data ', finalData)
-                    setFetched(true);
-                    setTeams(finalData);
-                    // });
-                  }
-                } catch (err) {
-                  // catch error on logout
-                  console.log('err1', err);
-                }
-              });
-            });
-          }
-        });
-      } else {
-        // if user is not in any teams
-        // console.log('no managing teams');
-        setFetched(true);
-      }
-    };
-    fetchData();
-  }, []);
+  useEffect(() => {dispatch(fetchTeamMembersTask), []});
 
   // console.log('teams: ', teams);
 

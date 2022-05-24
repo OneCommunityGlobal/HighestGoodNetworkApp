@@ -1,3 +1,4 @@
+import { fetchTeamMembersTaskSuccess } from 'components/TeamMemberTasks/actions';
 import * as types from './../constants/task';
 
 const allTasksInital = {
@@ -140,6 +141,8 @@ export const taskReducer = (allTasks = allTasksInital, action) => {
       const copiedIndex = allTasks.taskItems.findIndex((item) => item._id === action.taskId);
       console.log(allTasks.taskItems[copiedIndex]);
       return { ...allTasks, copiedTask: allTasks.taskItems[copiedIndex] };
+    case fetchTeamMembersTaskSuccess.type:
+      return { ...allTasks, ...action.tasks} // change that when there will be backend
     default:
       return allTasks;
   }
