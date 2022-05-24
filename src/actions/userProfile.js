@@ -27,7 +27,7 @@ export const getUserProfile = (userId) => {
 };
 
 export const getUserTask = (userId) => {
-  const url = ENDPOINTS.TASKS_BY_userID(userId);
+  const url = ENDPOINTS.TASKS_BY_USERID(userId);
   return async (dispatch) => {
     const res = await axios.get(url).catch((error) => {
       if (error.status === 401) {
