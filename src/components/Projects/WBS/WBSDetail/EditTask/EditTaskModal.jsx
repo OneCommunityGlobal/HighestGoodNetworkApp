@@ -10,7 +10,7 @@ import dateFnsFormat from 'date-fns/format';
 import dateFnsParse from 'date-fns/parse';
 import { updateTask, fetchAllTasks } from '../../../../../actions/task';
 import { Editor } from '@tinymce/tinymce-react';
-import { UserRole } from './../../../../../utils/enums';
+import hasPermission from 'utils/permissions';
 
 const EditTaskModal = (props) => {
   const [role] = useState(props.auth ? props.auth.user.role : null);
@@ -241,14 +241,14 @@ const EditTaskModal = (props) => {
     <div className="controlBtn">
       <Modal isOpen={modal} toggle={toggle}>
         <ModalHeader toggle={toggle}>
-          {role === UserRole.Administrator ? 'Edit' : 'View'}
+          {hasPermission(role, 'editTask') ? 'Edit' : 'View'}
         </ModalHeader>
         <ModalBody>
           <ReactTooltip />
 
           <table
             className={`table table-bordered ${
-              role === UserRole.Administrator ? null : 'disable-div'
+              hasPermission(role, 'editTask') ? null : 'disable-div'
             }`}
           >
             <tbody>
@@ -593,7 +593,7 @@ const EditTaskModal = (props) => {
           </table>
         </ModalBody>
 
-        {role === UserRole.Administrator ? (
+        {hasPermission(role, 'editTask') ? (
           <ModalFooter>
             {taskName !== '' && startedDate !== '' && dueDate !== '' ? (
               <Button color="primary" onClick={toggle} onClick={updateTask}>
@@ -607,7 +607,7 @@ const EditTaskModal = (props) => {
         ) : null}
       </Modal>
       <Button color="primary" size="sm" onClick={toggle}>
-        {role === UserRole.Administrator ? 'Edit' : 'View'}
+        {hasPermission(role, 'editTask') ? 'Edit' : 'View'}
       </Button>
     </div>
   );

@@ -81,7 +81,6 @@ export function getLeaderboardData(userId) {
 
   return (dispatch) => {
     request.then(({ data }) => {
-      console.log('data', data);
       dispatch({
         type: 'GET_LEADERBOARD_DATA',
         payload: data,

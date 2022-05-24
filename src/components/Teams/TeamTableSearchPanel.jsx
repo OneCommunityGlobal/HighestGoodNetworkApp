@@ -1,12 +1,15 @@
 import React from 'react';
 import { SEARCH, CREATE_NEW_TEAM } from '../../languages/en/ui';
+import hasPermission from 'utils/permissions';
 
 /**
  * The search panel stateless component for  Teams grid
  */
 const TeamTablesearchPanel = (props) => {
   return (
+
     <div className="input-group" id="new_team">
+      {hasPermission(props.requestorRole, 'createTeam') && (
       <button
         type="button"
         className="btn btn-info"
@@ -16,6 +19,7 @@ const TeamTablesearchPanel = (props) => {
       >
         {CREATE_NEW_TEAM}
       </button>
+      )}
       <div className="input-group-prepend" style={{ marginLeft: '10px' }}>
         <span className="input-group-text">{SEARCH}</span>
       </div>

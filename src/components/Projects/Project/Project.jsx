@@ -3,8 +3,8 @@ import { DELETE } from './../../../languages/en/ui';
 import './../projects.css';
 import { Link } from 'react-router-dom';
 import { NavItem } from 'reactstrap';
-import { UserRole } from './../../../utils/enums';
 import { connect } from 'react-redux';
+import hasPermission from 'utils/permissions';
 
 const Project = (props) => {
   console.log(props.auth.user.role);
@@ -15,6 +15,8 @@ const Project = (props) => {
   const [category, setCategory] = useState(props.category);
   const [active, setActive] = useState(props.active);
   const [firstLoad, setFirstLoad] = useState(true);
+  const role = props.auth.user.role;
+
   const updateActive = () => {
     props.onClickActive(props.projectId, name, category, active);
     setActive(!active);
@@ -41,16 +43,17 @@ const Project = (props) => {
         <div>{props.index + 1}</div>
       </th>
       <td className="projects__name--input">
+        {hasPermission(role, 'editProject') ?(
         <input
           type="text"
           className="form-control"
           value={name}
           onChange={(e) => setName(e.target.value)}
           onBlur={updateProject}
-        />
+        /> ) : (name)}
       </td>
       <td className="projects__category--input">
-        {props.auth.user.role === UserRole.Administrator ? (
+        {hasPermission(role, 'editProject') ? (
           <select
             value={category}
             onChange={(e) => {
@@ -73,7 +76,7 @@ const Project = (props) => {
           category
         )}
       </td>
-      <td className="projects__active--input" onClick={updateActive}>
+      <td className="projects__active--input" onClick={hasPermission(role, 'editProject') ? updateActive : null}>
         {props.active ? (
           <div className="isActive">
             <i className="fa fa-circle" aria-hidden="true"></i>
@@ -109,7 +112,7 @@ const Project = (props) => {
         </NavItem>
       </td>
 
-      {props.auth.user.role === UserRole.Administrator ? (
+      {hasPermission(role, 'deleteProject') ? (
         <td>
           <button
             type="button"

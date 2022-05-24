@@ -1,14 +1,13 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Row, Label, Input, Col } from 'reactstrap';
 import moment from 'moment-timezone';
 import { capitalize } from 'lodash';
 import style from '../UserProfileEdit/ToggleSwitch/ToggleSwitch.module.scss';
 import { ENDPOINTS } from 'utils/URL';
 import axios from 'axios';
-import { useEffect } from 'react';
 
 const StartDate = (props) => {
-  if (!props.isUserAdmin) {
+  if (!props.canEdit) {
     return <p>{moment(props.userProfile.createdDate).format('YYYY-MM-DD')}</p>;
   }
   return (
@@ -22,13 +21,13 @@ const StartDate = (props) => {
         props.setUserProfile({ ...props.userProfile, createdDate: e.target.value });
       }}
       placeholder="Start Date"
-      invalid={!props.isUserAdmin}
+      invalid={!props.canEdit}
     />
   );
 };
 
 const EndDate = (props) => {
-  if (!props.isUserAdmin) {
+  if (!props.canEdit) {
     return (
       <p>
         {props.userProfile.endDate
@@ -50,13 +49,13 @@ const EndDate = (props) => {
         props.setUserProfile({ ...props.userProfile, endDate: e.target.value });
       }}
       placeholder="End Date"
-      invalid={!props.isUserAdmin}
+      invalid={!props.canEdit}
     />
   );
 };
 
 const WeeklySummaryReqd = (props) => {
-  if (!props.isUserAdmin) {
+  if (!props.canEdit) {
     return <p>{props.userProfile.weeklySummaryNotReq ? 'Not Required' : 'Required'}</p>;
   }
   return (
@@ -82,7 +81,7 @@ const WeeklySummaryReqd = (props) => {
 };
 
 const WeeklyCommitedHours = (props) => {
-  if (!props.isUserAdmin) {
+  if (!props.canEdit) {
     return <p>{props.userProfile.weeklyComittedHours}</p>;
   }
   return (
@@ -126,14 +125,13 @@ const TotalTangibleHours = (props) => {
 /**
  *
  * @param {*} props.userProfile
- * @param {*} props.isUserAdmin
  * @param {*} props.isUserSelf
  * @param {Function} handleUserProfile
  *
  * @returns
  */
 const ViewTab = (props) => {
-  const { userProfile, setUserProfile, setChanged, isUserAdmin, handleUserProfile } = props;
+  const { userProfile, setUserProfile, setChanged, role, canEdit } = props;
 
   const [totalTangibleHoursThisWeek, setTotalTangibleHoursThisWeek] = useState('Loading...');
   useEffect(() => {
@@ -163,10 +161,11 @@ const ViewTab = (props) => {
         </Col>
         <Col md="6">
           <StartDate
-            isUserAdmin={isUserAdmin}
+            role={role}
             userProfile={userProfile}
             setUserProfile={setUserProfile}
             setChanged={setChanged}
+            canEdit={canEdit}
           />
         </Col>
       </Row>
@@ -177,10 +176,11 @@ const ViewTab = (props) => {
         </Col>
         <Col md="6">
           <EndDate
-            isUserAdmin={isUserAdmin}
+            role={role}
             userProfile={userProfile}
             setUserProfile={setUserProfile}
             setChanged={setChanged}
+            canEdit={canEdit}
           />
         </Col>
       </Row>
@@ -200,10 +200,11 @@ const ViewTab = (props) => {
         </Col>
         <Col md="6">
           <WeeklySummaryReqd
-            isUserAdmin={isUserAdmin}
+            role={role}
             userProfile={userProfile}
             setUserProfile={setUserProfile}
             setChanged={setChanged}
+            canEdit={canEdit}
           />
         </Col>
       </Row>
@@ -213,10 +214,11 @@ const ViewTab = (props) => {
         </Col>
         <Col md="6">
           <WeeklyCommitedHours
-            isUserAdmin={isUserAdmin}
+            role={role}
             userProfile={userProfile}
             setUserProfile={setUserProfile}
             setChanged={setChanged}
+            canEdit={canEdit}
           />
         </Col>
       </Row>
@@ -227,10 +229,11 @@ const ViewTab = (props) => {
         </Col>
         <Col md="6">
           <TotalTangibleHours
-            isUserAdmin={isUserAdmin}
             userProfile={userProfile}
             setUserProfile={setUserProfile}
             setChanged={setChanged}
+            canEdit={canEdit}
+            role={role}
           />
         </Col>
       </Row>
@@ -249,7 +252,7 @@ const ViewTab = (props) => {
                   </Label>
                 </Col>
                 <Col md="6">
-                  {props.isUserAdmin ? (
+                  {canEdit ? (
                     <Input
                       type="number"
                       id={`${key}Hours`}

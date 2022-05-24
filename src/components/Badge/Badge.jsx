@@ -98,7 +98,7 @@ const Badge = (props) => {
                 userId={props.userId}
                 firstName={props.userProfile.firstName}
                 lastName={props.userProfile.lastName}
-                isAdmin={props.isAdmin}
+                role={props.role}
                 close={toggle}
               />
             </ModalBody>

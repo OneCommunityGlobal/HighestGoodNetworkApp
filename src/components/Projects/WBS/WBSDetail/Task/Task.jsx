@@ -12,11 +12,11 @@ import { moveTasks, fetchAllTasks, deleteTask, copyTask } from '../../../../../a
 import './tagcolor.css';
 import './task.css';
 import { Editor } from '@tinymce/tinymce-react';
-import { UserRole } from './../../../../../utils/enums';
 import ModalDelete from './../../../../../components/common/Modal';
 import * as Message from './../../../../../languages/en/messages';
 import { getPopupById } from './../../../../../actions/popupEditorAction';
 import { TASK_DELETE_POPUP_ID } from './../../../../../constants/popupId';
+import hasPermission from 'utils/permissions';
 
 const Task = (props) => {
   const [role] = useState(props.state ? props.state.auth.user.role : null);
@@ -342,7 +342,7 @@ const Task = (props) => {
           )}
         </td>
         <td className="desktop-view">
-          {props.status === 'Started' ? (
+          {(props.status === 'Started' || props.status === 'Active') ? (
             <i data-tip="Started" className="fa fa-pause" aria-hidden="true"></i>
           ) : (
             <i data-tip="Not Started" className="fa fa-play" aria-hidden="true"></i>
@@ -399,7 +399,7 @@ const Task = (props) => {
 
       <tr className="wbsTaskController desktop-view" id={`controller_${props.id}`}>
         <td colSpan={15} className="controlTd">
-          {role === UserRole.Administrator ? (
+          {hasPermission(role, 'addTask') ? (
             <AddTaskModal
               key={`addTask_${props.id}`}
               parentNum={props.num}
@@ -427,7 +427,7 @@ const Task = (props) => {
             level={props.level}
           />
 
-          {role === UserRole.Administrator ? (
+          {hasPermission(role, 'deleteTask') ? (
             <>
               <Button
                 color="danger"

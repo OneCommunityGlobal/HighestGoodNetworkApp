@@ -10,12 +10,6 @@ const UserLinks = ({
 }) => (
   <>
     <div className="linkContainer">
-      {/* {!links.length && (
-      <CardText className="linkContainer">
-        <Badge color="danger">No Links present</Badge>
-      </CardText>
-      )} */}
-
       {links.map((item, index) => {
         if (item.Link.includes('http')) {
           return (

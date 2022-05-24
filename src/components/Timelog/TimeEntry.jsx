@@ -10,6 +10,7 @@ import TimeEntryForm from './TimeEntryForm';
 import DeleteModal from './DeleteModal';
 import { useDispatch } from 'react-redux';
 import { editTimeEntry, postTimeEntry } from '../../actions/timeEntries';
+import hasPermission from 'utils/permissions';
 
 const TimeEntry = ({ data, displayYear, userProfile }) => {
   const [modal, setModal] = useState(false);
@@ -20,7 +21,7 @@ const TimeEntry = ({ data, displayYear, userProfile }) => {
   const isOwner = data.personId === user.userid;
 
   const isSameDay = moment().tz('America/Los_Angeles').format('YYYY-MM-DD') === data.dateOfWork;
-  const isAdmin = user.role === 'Administrator';
+  const role = user.role;
 
   const dispatch = useDispatch();
 
@@ -57,7 +58,7 @@ const TimeEntry = ({ data, displayYear, userProfile }) => {
             type="checkbox"
             name="isTangible"
             checked={data.isTangible}
-            disabled={!isAdmin}
+            disabled={!hasPermission(role, 'toggleTangibleTime')}
             onChange={() => toggleTangibility(data)}
           />
         </Col>
@@ -65,7 +66,7 @@ const TimeEntry = ({ data, displayYear, userProfile }) => {
           <div className="text-muted">Notes:</div>
           {ReactHtmlParser(data.notes)}
           <div className="buttons">
-            {(isAdmin || (isOwner && isSameDay)) && (
+            {(hasPermission(role, 'editTimeEntry') || (isOwner && isSameDay)) && (
               <span>
                 <FontAwesomeIcon
                   icon={faEdit}
@@ -83,7 +84,7 @@ const TimeEntry = ({ data, displayYear, userProfile }) => {
                 />
               </span>
             )}
-            {(isAdmin || (!data.isTangible && isOwner && isSameDay)) && (
+            {(hasPermission(role, 'deleteTimeEntry') || (!data.isTangible && isOwner && isSameDay)) && (
               <DeleteModal timeEntry={data} userProfile={userProfile} />
             )}
           </div>
