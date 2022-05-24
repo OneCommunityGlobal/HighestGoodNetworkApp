@@ -290,27 +290,31 @@ const TeamMemberTasks = props => {
         <td>
           {member.tasks &&
             member.tasks.map((task, index) => (
-              <p key={`${task._id}${index}`}>
-                <Link
-                  key={index}
-                  to={task.projectId ? `/wbs/tasks/${task.wbsId}/${task.projectId}` : '/'}
-                >
-                  <span>{`${task.num} ${task.taskName}`}</span>
-                </Link>
-                {/* <span>
-                    {member.taskNotifications.find(notification => {
-                      return notification.taskId === task._id
-                    }) ? (
-                      <FontAwesomeIcon
-                        style={{ color: 'red' }}
-                        icon={faBell}
-                        onClick={() => {
-                          handleOpenTaskNotificationModal(member.taskNotifications);
-                        }}
-                      />
-                    ) : null}
-                  </span> */}
-              </p>
+              <>
+                <p key={`${task._id}${index}`}>
+                  <Link
+                    key={index}
+                    to={task.projectId ? `/wbs/tasks/${task.wbsId}/${task.projectId}` : '/'}
+                  >
+                    <span>{`${task.num} ${task.taskName}`} </span>
+                  </Link>
+                  
+                  {/* <span>
+                      {member.taskNotifications.find(notification => {
+                        return notification.taskId === task._id
+                      }) ? (
+                        <FontAwesomeIcon
+                          style={{ color: 'red' }}
+                          icon={faBell}
+                          onClick={() => {
+                            handleOpenTaskNotificationModal(member.taskNotifications);
+                          }}
+                        />
+                      ) : null}
+                    </span> */}
+                </p>
+                <FontAwesomeIcon style={{ color: 'red' }} icon={faBell} />
+              </>
             ))}
         </td>
         <td>tempprogress</td>
