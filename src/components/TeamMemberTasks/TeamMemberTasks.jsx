@@ -2,38 +2,28 @@
 /* eslint-disable no-trailing-spaces */
 /* eslint-disable no-plusplus */
 /* eslint-disable indent */
-import React, { useState, useEffect } from 'react';
+import { faBell, faCircle, faClock } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { fetchTeamMembersTask } from 'actions/task';
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
-import { Table, Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
-import moment from 'moment';
-import _ from 'lodash';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faClock, faCircle, faBell } from '@fortawesome/free-solid-svg-icons';
-
-import './style.css';
+import { Table } from 'reactstrap';
 import httpService from '../../services/httpService';
 import { ENDPOINTS } from '../../utils/URL';
-import { fetchAllManagingTeams } from '../../actions/team';
-import { getUserProfile } from '../../actions/userProfile';
 import Loading from '../common/Loading';
-import DiffedText from './DiffedText';
-import EditTaskModal from 'components/Projects/WBS/WBSDetail/EditTask/EditTaskModal';
 import { getTeamMemberTasksData } from './selectors';
+import './style.css';
 
-const TeamMemberTasks = props => {
+
+const TeamMemberTasks = () => {
   const [fetched, setFetched] = useState(false);
-  const [teams, setTeams] = useState([]);
   const [taskNotificationModal, setTaskNotificationModal] = useState(false);
   const [currentTaskNotifications, setCurrentTaskNotifications] = useState([]);
 
-  const { tasks } = useSelector(getTeamMemberTasksData);
+  const { teams } = useSelector(getTeamMemberTasksData);
 
   const dispatch = useDispatch();
-
-  const setTaskNotifications = taskNotifications => {
-    setCurrentTaskNotifications(taskNotifications);
-  };
 
   const handleTaskNotificationRead = () => {
     const taskReadPromises = [];
@@ -55,23 +45,17 @@ const TeamMemberTasks = props => {
         }
       });
       setTeams(newTeamsState);
-      setTaskNotifications([]);
-      toggleTaskNotificationModal();
+      setCurrentTaskNotifications([]);
+      setTaskNotificationModal(!taskNotificationModal);
     });
-  };
-
-  const toggleTaskNotificationModal = () => {
-    setTaskNotificationModal(!taskNotificationModal);
   };
 
   const handleOpenTaskNotificationModal = taskNotifications => {
     setCurrentTaskNotifications(taskNotifications);
-    toggleTaskNotificationModal();
+    setTaskNotificationModal(!taskNotificationModal);
   };
 
-  useEffect(() => {dispatch(fetchTeamMembersTask), []});
-
-  // console.log('teams: ', teams);
+  useEffect(() => {dispatch(fetchTeamMembersTask()), []});
 
   let teamsList = [];
   if (teams && teams.length > 0) {
@@ -80,11 +64,7 @@ const TeamMemberTasks = props => {
         {/* green if member has met committed hours for the week, red if not */}
         <td>
           {/* console.log('member ', member) */}
-          {member.hoursCurrentWeek >= member.weeklyComittedHours ? (
-            <FontAwesomeIcon style={{ color: 'green' }} icon={faCircle} />
-          ) : (
-            <FontAwesomeIcon style={{ color: 'red' }} icon={faCircle} />
-          )}
+            <FontAwesomeIcon style={{ color: member.hoursCurrentWeek >= member.weeklyComittedHours ? 'green' : 'red' }} icon={faCircle} />
         </td>
         <td>
           <Link to={`/userprofile/${member._id}`}>{`${member.firstName} ${member.lastName}`}</Link>
@@ -95,10 +75,7 @@ const TeamMemberTasks = props => {
             member.tasks.map((task, index) => (
               <>
                 <p key={`${task._id}${index}`}>
-                  <Link
-                    key={index}
-                    to={task.projectId ? `/wbs/tasks/${task.wbsId}/${task.projectId}` : '/'}
-                  >
+                  <Link key={index} to={task.projectId ? `/wbs/tasks/${task.wbsId}/${task.projectId}` : '/'}>
                     <span>{`${task.num} ${task.taskName}`} </span>
                   </Link>
                   
@@ -116,10 +93,7 @@ const TeamMemberTasks = props => {
                       ) : null}
                     </span> */}
                 </p>
-                <FontAwesomeIcon 
-                  style={{ color: 'red' }} icon={faBell} 
-                  onClick={() => handleOpenTaskNotificationModal()}
-                  />
+                <FontAwesomeIcon style={{ color: 'red' }} icon={faBell} onClick={handleOpenTaskNotificationModal}/>
               </>
             ))}
         </td>
@@ -129,9 +103,8 @@ const TeamMemberTasks = props => {
   }
 
   return (
-    <React.Fragment>
       <div className="container team-member-tasks">
-        {!fetched ? <Loading /> : null}
+        {!fetched && <Loading />}
         <h1>Team Member Tasks</h1>
         <div className="row">
           {/* <EditTaskModal
@@ -239,18 +212,7 @@ const TeamMemberTasks = props => {
           <tbody>{teamsList}</tbody>
         </Table>
       </div>
-    </React.Fragment>
   );
 };
 
-const mapStateToProps = state => ({
-  auth: state.auth,
-  userId: state.userProfile.id,
-  managingTeams: state.userProfile.teams,
-  teamsInfo: state.managingTeams,
-});
-
-export default connect(mapStateToProps, {
-  getUserProfile,
-  fetchAllManagingTeams,
-})(TeamMemberTasks);
+export default TeamMemberTasks;

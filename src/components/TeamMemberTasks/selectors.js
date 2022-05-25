@@ -1,1 +1,3 @@
-export const getTeamMemberTasksData = (state) => state.tasks;
+export const getTeamMemberTasksData = (state) => ({
+  teams: state.teams
+});
