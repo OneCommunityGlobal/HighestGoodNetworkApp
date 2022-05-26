@@ -44,6 +44,7 @@ const Timer = () => {
 
     const status = await startTimer(userId, seconds);
     if ([9, 200, 201].includes(status)) {
+      //cambio el 2001 por 201
       setIsActive(true);
     }
 
@@ -79,7 +80,7 @@ const Timer = () => {
 
   const handleStop = () => {
     toggle();
-    handlePause();
+    handlePause(); //add line
   };
 
   useEffect(() => {
@@ -103,7 +104,8 @@ const Timer = () => {
   useEffect(() => {
     try {
       setIsActive(isWorking);
-      clearInterval(intervalThreeMin);
+      console.log('activo start');
+      clearInterval(intervalThreeMin); // add this line
     } catch {}
   }, [isWorking]);
 
@@ -124,7 +126,7 @@ const Timer = () => {
         clearInterval(intervalThreeMin);
       }
       //handles restarting timer if you restart it in another tab
-      intervalThreeMin = setInterval(handleUpdate, 1800); //Original 1800000  original
+      intervalThreeMin = setInterval(handleUpdate, 18000); //Original 1800000
     } else {
       clearInterval(intervalSec);
       clearInterval(intervalMin);
