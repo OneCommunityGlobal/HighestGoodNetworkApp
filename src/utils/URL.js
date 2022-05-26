@@ -4,6 +4,7 @@ let APIEndpoint =
 let GeocodeAPIEndpoint = 'https://api.opencagedata.com/geocode/v1/json';
 
 export const ENDPOINTS = {
+  APIEndpoint: () => APIEndpoint,
   USER_PROFILE: (userId) => `${APIEndpoint}/userprofile/${userId}`,
   USER_PROFILES: `${APIEndpoint}/userprofile/`,
   USER_PROFILE_BY_NAME: (userName) => `${APIEndpoint}/userProfile/name/${userName}`,

@@ -3,18 +3,22 @@
  * Author: Henry Ng - 03/20/20
  ********************************************************************************/
 import axios from 'axios';
-import { fetchTeamMembersTaskSuccess } from 'components/TeamMemberTasks/actions';
+import { fetchTeamMembersTaskSuccess, fetchTeamMembersTaskBegin, fetchTeamMembersTaskError } from 'components/TeamMemberTasks/actions';
 import * as types from '../constants/task';
 import { ENDPOINTS } from '../utils/URL';
 
 const selectFetchTeamMembersTaskData = (state) => state.auth.userId;
 
-export const fetchTeamMembersTask = () => async (dispatch, getState) => { 
-  const state = getState();
-  const userId = selectFetchTeamMembersTaskData(state);
-
-  const response = await axios.get(`/fakeApi/fetchTeamMembersTask/${userId}`);
-  dispatch(fetchTeamMembersTaskSuccess(response))
+export const fetchTeamMembersTask = () => async (dispatch, getState) => {
+  try {
+    const state = getState();
+    const userId = selectFetchTeamMembersTaskData(state);
+    dispatch(fetchTeamMembersTaskBegin());
+    const response = await axios.get(`${ENDPOINTS.APIEndpoint()}/user/607b0ff930d5080017c0adad/teams/tasks`);
+    dispatch(fetchTeamMembersTaskSuccess(response.data));
+  } catch (error) {
+    dispatch(fetchTeamMembersTaskError());
+  }
 }
 
 

@@ -17,11 +17,11 @@ import './style.css';
 
 
 const TeamMemberTasks = () => {
-  const [fetched, setFetched] = useState(false);
   const [taskNotificationModal, setTaskNotificationModal] = useState(false);
   const [currentTaskNotifications, setCurrentTaskNotifications] = useState([]);
 
-  const { teams } = useSelector(getTeamMemberTasksData);
+  const { isLoading, usersWithTasks } = useSelector(getTeamMemberTasksData);
+  // console.log(teams);
 
   const dispatch = useDispatch();
 
@@ -55,24 +55,24 @@ const TeamMemberTasks = () => {
     setTaskNotificationModal(!taskNotificationModal);
   };
 
-  useEffect(() => {dispatch(fetchTeamMembersTask()), []});
+  useEffect(() => {dispatch(fetchTeamMembersTask())}, []);
 
   let teamsList = [];
-  if (teams && teams.length > 0) {
-    teamsList = teams.map((member, index) => (
-      <tr key={index}>
+  if (usersWithTasks && usersWithTasks.length > 0) {
+    teamsList = usersWithTasks.map((user, index) => (
+      <tr key={user._id}>
         {/* green if member has met committed hours for the week, red if not */}
         <td>
           {/* console.log('member ', member) */}
-            <FontAwesomeIcon style={{ color: member.hoursCurrentWeek >= member.weeklyComittedHours ? 'green' : 'red' }} icon={faCircle} />
+            <FontAwesomeIcon style={{ color: user.hoursCurrentWeek >= user.weeklyComittedHours ? 'green' : 'red' }} icon={faCircle} />
         </td>
         <td>
-          <Link to={`/userprofile/${member._id}`}>{`${member.firstName} ${member.lastName}`}</Link>
+          <Link to={`/userprofile/${user._id}`}>{`${user.firstName} ${user.lastName}`}</Link>
         </td>
-        <td>{`${member.weeklyCommittedHours} / ${member.hoursCurrentWeek}`}</td>
+        <td>{`${user.weeklyComittedHours} / ${user.hoursCurrentWeek}`}</td>
         <td>
-          {member.tasks &&
-            member.tasks.map((task, index) => (
+          {user.tasks &&
+            user.tasks.map((task, index) => (
               <>
                 <p key={`${task._id}${index}`}>
                   <Link key={index} to={task.projectId ? `/wbs/tasks/${task.wbsId}/${task.projectId}` : '/'}>
@@ -99,12 +99,11 @@ const TeamMemberTasks = () => {
         </td>
         <td>tempprogress</td>
       </tr>
-    ));
+  ));
   }
 
   return (
       <div className="container team-member-tasks">
-        {!fetched && <Loading />}
         <h1>Team Member Tasks</h1>
         <div className="row">
           {/* <EditTaskModal
@@ -209,7 +208,7 @@ const TeamMemberTasks = () => {
               <th>Progress</th>
             </tr>
           </thead>
-          <tbody>{teamsList}</tbody>
+          <tbody>{isLoading ? <Loading /> : teamsList}</tbody>
         </Table>
       </div>
   );

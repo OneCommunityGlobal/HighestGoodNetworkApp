@@ -1,3 +1,4 @@
 export const getTeamMemberTasksData = (state) => ({
-  teams: state.teams
+  isLoading: state.teamMemberTasks.isLoading,
+  usersWithTasks: state.teamMemberTasks.usersWithTasks
 });
