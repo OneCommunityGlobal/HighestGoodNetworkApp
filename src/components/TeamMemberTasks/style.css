@@ -5,3 +5,8 @@
 .team-member-tasks h1 {
   color: black;
 }
+
+.team-member-tasks-bell {
+  color: red;
+  cursor: pointer;
+}
