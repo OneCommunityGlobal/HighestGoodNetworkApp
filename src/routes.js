@@ -29,6 +29,7 @@ import TeamReport from './components/Reports/TeamReport';
 import Inventory from './components/Inventory';
 import BadgeManagement from './components/Badge/BadgeManagement';
 import AutoUpdate from 'components/AutoUpdate';
+import PermissionsManagement from 'components/PermissionsManagement/PermissionsManagement';
 
 export default (
   <React.Fragment>
@@ -83,6 +84,12 @@ export default (
         path="/badgemanagement"
         exact
         component={BadgeManagement}
+        allowedRoles={[UserRole.Administrator, UserRole.Owner]}
+      />
+      <ProtectedRoute
+        path="/permissionsmanagement"
+        exact
+        component={PermissionsManagement}
         allowedRoles={[UserRole.Administrator, UserRole.Owner]}
       />
       <ProtectedRoute path="/teams" 

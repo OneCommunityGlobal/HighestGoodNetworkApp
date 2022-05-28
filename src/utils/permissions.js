@@ -1,4 +1,4 @@
-const permissions = {
+export const permissions = {
     'Administrator' : [
         'seeWeeklySummaryReports',
         'seeUserManagement',
@@ -9,7 +9,7 @@ const permissions = {
         'deleteOwnBadge',
         'modifyOwnBadgeAmount',
         'assignBadgeOthers',
-        'toggleWeeklySummary',
+        /* 'toggleWeeklySummary', */
         'editTimelogInfo',
         'addTimeEntryOthers',
         'deleteTimeEntryOthers',
@@ -67,7 +67,7 @@ const permissions = {
         'deleteOwnBadge',
         'modifyOwnBadgeAmount',
         'assignBadgeOthers',
-        'toggleWeeklySummary',
+        /* 'toggleWeeklySummary', */
         'editTimelogInfo',
         'addTimeEntryOthers',
         'deleteTimeEntryOthers',
