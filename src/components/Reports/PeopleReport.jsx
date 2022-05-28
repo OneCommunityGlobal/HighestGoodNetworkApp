@@ -869,27 +869,27 @@ class PeopleReport extends Component {
             <h1 className="heading">{`${firstName} ${lastName}`}</h1>
 
             <div className="stats">
-              <div className="col-4">
+              <div>
                 <h4>{weeklyComittedHours}</h4>
                 <p>Weekly Committed Hours</p>
               </div>
-              <div className="col-4">
+              <div>
                 <h4>{totalComittedHours}</h4>
                 <p>Hours Logged So Far This Week</p>
               </div>
-              <div className="col-4">
+              <div>
                 <h4>{totalTangibleHrsRound}</h4>
                 <p>Total Tangible Hours Logged</p>
               </div>
-              <div className="col-4">
+              <div>
                 <h4>{moment(userProfile.createdDate).format('YYYY-MM-DD')}</h4>
                 <p>Start Date</p>
               </div>
-              <div className="col-4">
+              <div>
                 <h4>{userProfile.endDate ? userProfile.endDate.toLocaleString().split('T')[0] : 'N/A'}</h4>
                 <p>End Date</p>
               </div>
-              <div className="col-4">
+              <div>
                 <h4>{infringments.length}</h4>
                 <p>Blue squares</p>
               </div>
@@ -898,7 +898,7 @@ class PeopleReport extends Component {
         </header>
       </section>
 
-      <div class="intro_date">
+      <div className="intro_date">
         <h1>Tasks Contributed  </h1>
       </div>
       {/*<div>*/}

@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import TextSearchBox from '../UserManagement/TextSearchBox';
-import DropDownSearchBox from '../UserManagement/DropDownSearchBox';
+import TextSearchBox from '../../UserManagement/TextSearchBox';
+import DropDownSearchBox from '../../UserManagement/DropDownSearchBox';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import "./TableFilter.css";
 
 
 
@@ -97,10 +98,10 @@ const TableFilter = (props) => {
         />
       </td>
       <td id="task_startDate">
-        <DatePicker selected={startDate} minDate={new Date("01/01/2010")} maxDate={new Date()} onChange={(date) => setStartDate(date)} />
+        <DatePicker className="table-filter-datePicker" selected={startDate} minDate={new Date("01/01/2010")} maxDate={new Date()} onChange={(date) => setStartDate(date)} />
       </td>
       <td id="task_EndDate">
-        <DatePicker selected={endDate} maxDate={new Date()} minDate={new Date("01/01/2010")} onChange={(date) => setEndDate(date)} />
+        <DatePicker className="table-filter-datePicker" selected={endDate} maxDate={new Date()} minDate={new Date("01/01/2010")} onChange={(date) => setEndDate(date)} />
       </td>
     </tr>
   );

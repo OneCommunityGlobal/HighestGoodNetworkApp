@@ -15,6 +15,7 @@ body {
 }
 
 .details {
+  width: 100%;
   text-align: center;
 }
 
@@ -34,10 +35,7 @@ body {
 
 .stats {
   display: flex;
-  justify-content: space-evenly;
-}
-
-.stats .col-4 {
+  justify-content: space-between;
   flex-basis: 235px;
   height: 100px;
   margin: 23px 23px 0px 27px;

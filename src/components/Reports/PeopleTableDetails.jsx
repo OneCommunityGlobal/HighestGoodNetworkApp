@@ -103,8 +103,8 @@ const PeopleTableDetails = (props) => {
   }
   let filteredTasks = filterTasks(props.taskData);
   return (
-    <Container fluid>
-      <table className="table table-bordered">
+    <Container fluid className="wrapper">
+      <table className="table table-bordered people-table">
         <thead>
         <TableHeader />
         <TableFilter

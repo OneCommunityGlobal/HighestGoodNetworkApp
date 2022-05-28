@@ -1,3 +1,11 @@
+.wrapper.container-fluid{
+  padding: 0;
+}
+
+.people-table {
+  table-layout: fixed;
+}
+
 .pic {
   height: 20px;
   width: 20px;
