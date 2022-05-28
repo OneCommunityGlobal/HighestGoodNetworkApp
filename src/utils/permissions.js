@@ -28,8 +28,8 @@ export const permissions = {
         'findUserInProject',
         'assignUserInProject',
         'unassignUserInProject',
-        'changeUserStatus',
-        'seeUserTimelog',
+        /* 'changeUserStatus', */
+        /* 'seeUserTimelog', */
         'adminLinks',
         'editUserProfile',
         'assignTeamToUser',
@@ -86,8 +86,8 @@ export const permissions = {
         'findUserInProject',
         'assignUserInProject',
         'unassignUserInProject',
-        'changeUserStatus',
-        'seeUserTimelog',
+        /* 'changeUserStatus', */
+        /* 'seeUserTimelog', */
         'adminLinks',
         'editUserProfile',
         'assignTeamToUser',

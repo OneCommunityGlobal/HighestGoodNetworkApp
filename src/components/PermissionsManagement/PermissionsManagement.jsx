@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { permissions } from '../../utils/permissions';
 
 const permissionLabel = {
@@ -25,7 +25,22 @@ const permissionLabel = {
     'addWbs': 'Add WBS',
     'addProject': 'Add Project',
     'deleteProject': 'Delete Project',
-    'editProject': 'Edit Project'
+    'editProject': 'Edit Project',
+    'findUserInProject': 'Find User in Project',
+    'assignUserInProject': 'Assign User in Project',
+    'unassignUserInProject': 'Unassign User in Project',
+    'changeUserStatus': 'Change User Status',
+    'adminLinks': 'Manage Admin Links in User Profile',
+    'editUserProfile': 'Edit User Profile',
+    'assignTeamToUser': 'Assign Team to User',
+    'seeUserProfileInProjects': 'See User Profiles in Projects',
+    'createTeam': 'Create Team',
+    'editDeleteTeam': 'Edit/Delete Team',
+    'handleBlueSquare': 'Handle Blue Squares',
+    'resetPasswordOthers': 'Reset Password (Others)',
+    'dataIsTangibleTimelog': 'Timelog Data is Tangible',
+    'toggleSubmitForm': 'Toggle Summary Submit Form (Others)',
+    'assignOnlyBlueSquares': 'Only Assign Blue Squares'
 }
 
 function getKeyByValue(object, value) {
@@ -43,17 +58,35 @@ const mapPermissionToLabel = (role) => {
     console.log(label);
 
     console.log('other way:', getKeyByValue(permissionLabel, 'Delete Badge'));
+
+    return label;
 }
 
-const PermissionsManagement = () => {
-  return (
-      <>
-        <h2>Admin Permissions:</h2>
-        {mapPermissionToLabel('Administrator')}
-        <div>{permissions.Administrator.map(p => <p>{p}</p>)}</div>
-      </>
-    
-  );
+const PermissionsManagement = () => {  
+    const adminPermissions = mapPermissionToLabel('Administrator');
+    const ownerPermissions = mapPermissionToLabel('Owner');
+    const mentorPermissions = mapPermissionToLabel('Mentor');
+    const managerPermissions = mapPermissionToLabel('Manager');
+    const voluenteerPermissions = mapPermissionToLabel('Volunteer');
+    const coreteamPermissions = mapPermissionToLabel('Core Team');
+
+    return (
+        <>
+            <h2>Admin Permissions:</h2>
+            {adminPermissions.map(permission => <p>{permission}</p>)}
+            <h2>Core Team Permissions:</h2>
+            {coreteamPermissions.map(permission => <p>{permission}</p>)}
+            <h2>Manager Permissions:</h2>
+            {managerPermissions.map(permission => <p>{permission}</p>)}
+            <h2>Mentor Permissions:</h2>
+            {mentorPermissions.map(permission => <p>{permission}</p>)}
+            <h2>Volunteer Permissions:</h2>
+            {voluenteerPermissions.map(permission => <p>{permission}</p>)}
+            <h2>Owner Permissions:</h2>
+            {ownerPermissions.map(permission => <p>{permission}</p>)}
+        </>
+        
+    );
 }
 
 export default PermissionsManagement;
