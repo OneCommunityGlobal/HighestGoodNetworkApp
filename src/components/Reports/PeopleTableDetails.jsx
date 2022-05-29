@@ -3,7 +3,7 @@ import {
   Container, Button, Modal, ModalBody, ModalFooter, Card, CardTitle, CardBody, CardImg, CardText, UncontrolledPopover,
 } from 'reactstrap';
 import { connect } from 'react-redux';
-import TableFilter from './TableFilter'
+import TableFilter from './TableFilter/TableFilter'
 import TableHeader from './TableHeader'
 import './PeopleTableDetails.css';
 import Popup from 'reactjs-popup';
