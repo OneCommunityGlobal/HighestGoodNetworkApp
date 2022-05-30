@@ -104,7 +104,6 @@ const Timer = () => {
   useEffect(() => {
     try {
       setIsActive(isWorking);
-      console.log('activo start');
       clearInterval(intervalThreeMin); // add this line
     } catch {}
   }, [isWorking]);
@@ -112,7 +111,7 @@ const Timer = () => {
   useEffect(() => {
     if (isActive) {
       if (intervalThreeMin) {
-        clearInterval(intervalThreeMin);
+        // clearInterval(intervalThreeMin);
       }
       intervalSec = setInterval(() => {
         setSeconds(seconds => seconds + 1);
