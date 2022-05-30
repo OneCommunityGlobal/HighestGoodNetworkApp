@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { permissions } from '../../utils/permissions';
+import RolePermissions from './RolePermissions';
 
-const permissionLabel = {
+export const permissionLabel = {
     'seeWeeklySummaryReports': 'See Weekly Summary Reports Tab',
     'seeUserManagement': 'See User Management Tab',
     'seeBadgeManagement': 'See Badge Management Tab',
@@ -43,47 +44,47 @@ const permissionLabel = {
     'assignOnlyBlueSquares': 'Only Assign Blue Squares'
 }
 
-function getKeyByValue(object, value) {
-    return Object.keys(object).find(key => object[key] === value);
-}
-
-const mapPermissionToLabel = (role) => {
-    const label = [];
-    permissions[role].map((permission) => {
-        if(permissionLabel[permission]){
-            label.push(permissionLabel[permission]);
-        }
-    });
-
-    console.log(label);
-
-    console.log('other way:', getKeyByValue(permissionLabel, 'Delete Badge'));
-
-    return label;
-}
-
 const PermissionsManagement = () => {  
-    const adminPermissions = mapPermissionToLabel('Administrator');
-    const ownerPermissions = mapPermissionToLabel('Owner');
-    const mentorPermissions = mapPermissionToLabel('Mentor');
-    const managerPermissions = mapPermissionToLabel('Manager');
-    const voluenteerPermissions = mapPermissionToLabel('Volunteer');
-    const coreteamPermissions = mapPermissionToLabel('Core Team');
+    const permissionsList = [];
+
+    for(const key in permissionLabel){
+        permissionsList.push(permissionLabel[key]);
+    }
+
+    console.log('All permissions: ', permissionsList);
 
     return (
         <>
-            <h2>Admin Permissions:</h2>
-            {adminPermissions.map(permission => <p>{permission}</p>)}
-            <h2>Core Team Permissions:</h2>
-            {coreteamPermissions.map(permission => <p>{permission}</p>)}
-            <h2>Manager Permissions:</h2>
-            {managerPermissions.map(permission => <p>{permission}</p>)}
-            <h2>Mentor Permissions:</h2>
-            {mentorPermissions.map(permission => <p>{permission}</p>)}
-            <h2>Volunteer Permissions:</h2>
-            {voluenteerPermissions.map(permission => <p>{permission}</p>)}
-            <h2>Owner Permissions:</h2>
-            {ownerPermissions.map(permission => <p>{permission}</p>)}
+            <RolePermissions 
+                role='Administrator'
+                header='Admin Permissions (Total):'
+                permissionsList={permissionsList}
+            />
+            <RolePermissions 
+                role='Core Team'
+                header='Core Team Permissions (Total):'
+                permissionsList={permissionsList}
+            />
+            <RolePermissions 
+                role='Manager'
+                header='Manager Permissions (Total):'
+                permissionsList={permissionsList}
+            />
+            <RolePermissions 
+                role='Mentor'
+                header='Mentor Permissions (Total):'
+                permissionsList={permissionsList}
+            />
+            <RolePermissions 
+                role='Volunteer'
+                header='Volunteer Permissions (Total):'
+                permissionsList={permissionsList}
+            />
+            <RolePermissions 
+                role='Owner'
+                header='Owner Permissions (Total):'
+                permissionsList={permissionsList}
+            />
         </>
         
     );
