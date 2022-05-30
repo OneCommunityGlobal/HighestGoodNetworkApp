@@ -35,6 +35,7 @@
     "react": "^16.13.1",
     "react-autosuggest": "^10.1.0",
     "react-bootstrap": "^1.0.1",
+    "react-compose": "^2.0.0",
     "react-datepicker": "^3.7.0",
     "react-day-picker": "^7.4.8",
     "react-dom": "^16.13.1",
