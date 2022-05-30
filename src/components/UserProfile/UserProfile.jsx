@@ -434,15 +434,7 @@ const UserProfile = props => {
                     isActive={userProfile.isActive}
                     user={userProfile}
                     onClick={() => {
-                      // setChanged(true);
                       setActiveInactivePopupOpen(true);
-                      // setUserProfile({
-                      //   ...userProfile,
-                      //   isActive: !userProfile.isActive,
-                      //   endDate: userProfile.isActive
-                      //     ? moment(new Date()).format('YYYY-MM-DD')
-                      //     : undefined,
-                      // });
                     }}
                   />
                   &nbsp;
