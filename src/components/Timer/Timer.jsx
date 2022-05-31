@@ -117,7 +117,7 @@ const Timer = () => {
         setSeconds(seconds => seconds + 1);
       }, 1000);
 
-      intervalMin = setInterval(handleUpdate, 700); //Original 60000
+      intervalMin = setInterval(handleUpdate, 500); //Original 60000
     } else if (!isActive && seconds !== 0) {
       clearInterval(intervalSec);
       clearInterval(intervalMin);
