@@ -30,6 +30,7 @@ import Inventory from './components/Inventory';
 import BadgeManagement from './components/Badge/BadgeManagement';
 import AutoUpdate from 'components/AutoUpdate';
 import PermissionsManagement from 'components/PermissionsManagement/PermissionsManagement';
+import UserRoleTab from 'components/PermissionsManagement/UserRoleTab';
 
 export default (
   <React.Fragment>
@@ -90,6 +91,12 @@ export default (
         path="/permissionsmanagement"
         exact
         component={PermissionsManagement}
+        allowedRoles={[UserRole.Administrator, UserRole.Owner]}
+      />
+      <ProtectedRoute
+        path="/permissionsmanagement/:userRole"
+        exact
+        component={UserRoleTab}
         allowedRoles={[UserRole.Administrator, UserRole.Owner]}
       />
       <ProtectedRoute path="/teams" 
