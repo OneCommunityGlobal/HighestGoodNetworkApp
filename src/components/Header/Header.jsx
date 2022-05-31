@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 // import { getUserProfile } from '../../actions/userProfile'
 import { getHeaderData } from '../../actions/authActions';
-import { getTimerData } from '../../actions/timer';
+import { getTimerData, pauseTimer } from '../../actions/timer';
 import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 import Timer from '../Timer/Timer';
@@ -38,10 +38,12 @@ import {
 import { UserRole } from '../../utils/enums';
 import { Logout } from '../Logout/Logout';
 import './Header.css';
+import { pausedAt } from 'utils/constants';
 
 export const Header = props => {
   const [isOpen, setIsOpen] = useState(false);
   const [logoutPopup, setLogoutPopup] = useState(false);
+
   useEffect(() => {
     if (props.auth.isAuthenticated) {
       props.getHeaderData(props.auth.user.userid);

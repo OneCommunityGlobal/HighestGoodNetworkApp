@@ -8,7 +8,7 @@ import { setCurrentUser, logoutUser } from '../actions/authActions';
 
 import { Provider } from 'react-redux';
 import { BrowserRouter as Router } from 'react-router-dom';
-import configureStore from '../store';
+import configureStore from '../storesync';
 import { PersistGate } from 'redux-persist/integration/react';
 import Loading from './common/Loading';
 

@@ -117,7 +117,7 @@ const Timer = () => {
         setSeconds(seconds => seconds + 1);
       }, 1000);
 
-      intervalMin = setInterval(handleUpdate, 600); //Original 60000
+      intervalMin = setInterval(handleUpdate, 700); //Original 60000
     } else if (!isActive && seconds !== 0) {
       clearInterval(intervalSec);
       clearInterval(intervalMin);
@@ -125,7 +125,7 @@ const Timer = () => {
         clearInterval(intervalThreeMin);
       }
       //handles restarting timer if you restart it in another tab
-      intervalThreeMin = setInterval(handleUpdate, 18000); //Original 1800000
+      intervalThreeMin = setInterval(handleUpdate, 1300); //Original 1800000 comentariado
     } else {
       clearInterval(intervalSec);
       clearInterval(intervalMin);
@@ -133,7 +133,7 @@ const Timer = () => {
         clearInterval(intervalThreeMin);
       }
       //handles restarting timer if you restart it in another tab
-      intervalThreeMin = setInterval(handleUpdate, 1800000);
+      intervalThreeMin = setInterval(handleUpdate, 1300); // comentariado
     }
     return () => {
       clearInterval(intervalSec);
