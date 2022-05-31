@@ -55,7 +55,7 @@ class Timelog extends Component {
     this.openInfo = this.openInfo.bind(this);
     this.data = {
       disabled: !hasPermission(this.props.auth.user.role, 'disabledDataTimelog') ? false : true,
-      // isTangible: hasPermission(this.props.auth.user.role, 'dataIsTangibleTimelog') ? true : false,
+      isTangible: hasPermission(this.props.auth.user.role, 'dataIsTangibleTimelog') ? true : false,
     };
     this.userProfile = this.props.userProfile;
   }
