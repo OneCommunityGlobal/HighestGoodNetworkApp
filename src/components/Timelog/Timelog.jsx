@@ -53,7 +53,6 @@ class Timelog extends Component {
     this.handleInputChange = this.handleInputChange.bind(this);
     this.handleSearch = this.handleSearch.bind(this);
     this.openInfo = this.openInfo.bind(this);
-    // Line 59 has been re-added to revert previous PR.
     this.data = {
       disabled: !hasPermission(this.props.auth.user.role, 'disabledDataTimelog') ? false : true,
       isTangible: hasPermission(this.props.auth.user.role, 'dataIsTangibleTimelog') ? true : false,
