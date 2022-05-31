@@ -339,6 +339,7 @@ const UserProfile = props => {
 
 
   return (
+
     <div>
       {showModal && (
         <UserProfileModal

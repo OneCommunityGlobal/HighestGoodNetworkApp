@@ -1,0 +1,7 @@
+td > input, select {
+  width: 100%;
+}
+
+.table-filter-datePicker {
+  width: 100%;
+}
