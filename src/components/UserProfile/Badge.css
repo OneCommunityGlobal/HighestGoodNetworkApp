@@ -88,7 +88,7 @@
 
 .badge_featured_container {
   display: flex;
-  flex-wrap: none;
+  flex-wrap: nowrap;
   overflow-y: none;
 }
 
@@ -130,9 +130,8 @@
   text-align: left;
 }
 
-@media (max-width: 1199px) {
+@media screen and (max-width: 1199px) {
   .badge_featured_container {
-    flex-wrap: none;
     overflow-y: hidden;
     overflow-x: scroll;
   }
