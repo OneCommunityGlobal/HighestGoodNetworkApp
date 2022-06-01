@@ -43,12 +43,8 @@ const Timer = () => {
     await dispatch(getTimerData(userId));
 
     const status = await startTimer(userId, seconds);
-<<<<<<< HEAD
     if ([9, 200, 201].includes(status)) {
       //cambio el 2001 por 201
-=======
-    if ([9, 200, 2001].includes(status)) {
->>>>>>> 8349d7908eb3be84121ba870fdc48800ba13583a
       setIsActive(true);
     }
 
@@ -84,10 +80,7 @@ const Timer = () => {
 
   const handleStop = () => {
     toggle();
-<<<<<<< HEAD
     handlePause(); //add line
-=======
->>>>>>> 8349d7908eb3be84121ba870fdc48800ba13583a
   };
 
   useEffect(() => {
@@ -111,10 +104,7 @@ const Timer = () => {
   useEffect(() => {
     try {
       setIsActive(isWorking);
-<<<<<<< HEAD
       clearInterval(intervalThreeMin); // add this line
-=======
->>>>>>> 8349d7908eb3be84121ba870fdc48800ba13583a
     } catch {}
   }, [isWorking]);
 
@@ -127,11 +117,7 @@ const Timer = () => {
         setSeconds((seconds) => seconds + 1);
       }, 1000);
 
-<<<<<<< HEAD
       intervalMin = setInterval(handleUpdate, 500); //Original 60000
-=======
-      intervalMin = setInterval(handleUpdate, 60000);
->>>>>>> 8349d7908eb3be84121ba870fdc48800ba13583a
     } else if (!isActive && seconds !== 0) {
       clearInterval(intervalSec);
       clearInterval(intervalMin);
@@ -139,11 +125,7 @@ const Timer = () => {
         clearInterval(intervalThreeMin);
       }
       //handles restarting timer if you restart it in another tab
-<<<<<<< HEAD
       intervalThreeMin = setInterval(handleUpdate, 1300); //Original 1800000 comentariado
-=======
-      intervalThreeMin = setInterval(handleUpdate, 1800000);
->>>>>>> 8349d7908eb3be84121ba870fdc48800ba13583a
     } else {
       clearInterval(intervalSec);
       clearInterval(intervalMin);
