@@ -331,7 +331,7 @@ const UserProfile = props => {
   // const isUserAdmin = requestorRole === 'Administrator';
   // const canEdit = hasPermission(requestorRole, 'editUserProfile') || isUserSelf;
   let canEdit;
-  if (userProfile.role !== 'Owner') {
+  if (requestorRole !== 'Owner') {
     canEdit = hasPermission(requestorRole, 'editUserProfile') || isUserSelf;
   } else {
     canEdit = hasPermission(requestorRole, 'addDeleteEditOwners') || isUserSelf;
@@ -604,7 +604,7 @@ const UserProfile = props => {
                 </Link>
               </div>
             )}
-            {isUserSelf && (activeTab == '1' || hasPermission(requestorRole, 'editUserProfile')) && (
+            {canEdit && (activeTab == '1' || hasPermission(requestorRole, 'editUserProfile')) && (
               <>
                 <span
                   onClick={() => {
