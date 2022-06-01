@@ -111,7 +111,7 @@ const Timer = () => {
   useEffect(() => {
     if (isActive) {
       if (intervalThreeMin) {
-        // clearInterval(intervalThreeMin);
+         clearInterval(intervalThreeMin);
       }
       intervalSec = setInterval(() => {
         setSeconds((seconds) => seconds + 1);
@@ -125,7 +125,7 @@ const Timer = () => {
         clearInterval(intervalThreeMin);
       }
       //handles restarting timer if you restart it in another tab
-      intervalThreeMin = setInterval(handleUpdate, 1300); //Original 1800000 comentariado
+      intervalThreeMin = setInterval(handleUpdate, 1800); //Original 1800000 comentariado
     } else {
       clearInterval(intervalSec);
       clearInterval(intervalMin);
