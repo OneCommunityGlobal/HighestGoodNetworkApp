@@ -14,8 +14,9 @@ import {
   INVENTORY,
   DELETE,
 } from './../../../languages/en/ui';
+import hasPermission from 'utils/permissions';
 
-const ProjectTableHeader = () => {
+const ProjectTableHeader = (props) => {
   return (
     <tr>
       <th scope="col" id="projects__order">
@@ -37,9 +38,10 @@ const ProjectTableHeader = () => {
       <th scope="col" id="projects__wbs">
         {WBS}
       </th>
+      {hasPermission(props.role, 'deleteProject') ?
       <th scope="col" id="projects__delete">
         {DELETE}
-      </th>
+      </th> : null}
     </tr>
   );
 };

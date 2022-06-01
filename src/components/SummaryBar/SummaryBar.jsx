@@ -28,9 +28,10 @@ import httpService from '../../services/httpService';
 import { faWindowMinimize } from '@fortawesome/free-regular-svg-icons';
 
 import { ApiEndpoint } from 'utils/URL';
+import hasPermission from 'utils/permissions';
 
 const SummaryBar = (props) => {
-  const { asUser, isAdmin } = props;
+  const { asUser, role } = props;
   const { firstName, lastName, email, _id } = useSelector((state) => state.userProfile);
   const authenticateUser = useSelector((state) => state.auth.user);
   const authenticateUserId = authenticateUser ? authenticateUser.userid : '';
@@ -233,8 +234,7 @@ const SummaryBar = (props) => {
             {!weeklySummary ? (
               <div className="border-red col-4 bg--white-smoke no-gutters" align="center">
                 <div className="py-1"> </div>
-
-                {matchUser || isAdmin ? (
+                {matchUser || hasPermission(role, 'toggleSubmitForm') ? (
                   <p
                     className={'summary-toggle large_text_summary text--black text-danger'}
                     align="center"

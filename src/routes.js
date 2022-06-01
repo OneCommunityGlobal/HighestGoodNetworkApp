@@ -51,36 +51,45 @@ export default (
       <ProtectedRoute
         path="/inventory/:projectId"
         component={Inventory}
-        allowedRoles={[UserRole.Administrator, UserRole.Manager, UserRole.CoreTeam]}
+        allowedRoles={[UserRole.Administrator, UserRole.Manager, UserRole.CoreTeam, UserRole.Owner]}
       />
       <ProtectedRoute
         path="/inventory/:projectId/wbs/:wbsId"
         component={Inventory}
-        allowedRoles={[UserRole.Administrator, UserRole.Manager, UserRole.CoreTeam]}
+        allowedRoles={[UserRole.Administrator, UserRole.Manager, UserRole.CoreTeam, UserRole.Owner]}
       />
 
       <ProtectedRoute
         path="/weeklysummariesreport"
         exact
         component={WeeklySummariesReport}
-        allowedRoles={[UserRole.Administrator, UserRole.Manager, UserRole.CoreTeam]}
+        allowedRoles={[UserRole.Administrator, UserRole.Manager, UserRole.CoreTeam, UserRole.Owner, UserRole.Mentor]}
       />
-      <ProtectedRoute path="/projects" exact component={Projects} />
+      <ProtectedRoute 
+        path="/projects" 
+        exact 
+        component={Projects} 
+        allowedRoles={[UserRole.Administrator, UserRole.Owner]}
+      />
       <ProtectedRoute path="/project/wbs/:projectId" component={WBS} />
       <ProtectedRoute path="/wbs/tasks/:wbsId/:projectId" component={WBSDetail} />
       <ProtectedRoute
         path="/usermanagement"
         exact
         component={UserManagement}
-        allowedRoles={[UserRole.Administrator]}
+        allowedRoles={[UserRole.Administrator, UserRole.Owner]}
       />
       <ProtectedRoute
         path="/badgemanagement"
         exact
         component={BadgeManagement}
-        allowedRoles={[UserRole.Administrator]}
+        allowedRoles={[UserRole.Administrator, UserRole.Owner]}
       />
-      <ProtectedRoute path="/teams" exact component={Teams} />
+      <ProtectedRoute path="/teams" 
+        exact 
+        component={Teams} 
+        allowedRoles={[UserRole.Administrator, UserRole.Owner]}
+      />
       <ProtectedRoute path="/project/members/:projectId" component={Members} />
 
       <Route path="/login" component={Login} />

@@ -13,10 +13,9 @@ import { Link } from 'react-router-dom';
 import { NavItem, Button } from 'reactstrap';
 import './wbs.css';
 import ReactTooltip from 'react-tooltip';
-import { UserRole } from './../../../../utils/enums';
+import hasPermission from 'utils/permissions';
 
 const WBSTasks = (props) => {
-  const [role] = useState(props.state ? props.state.auth.user.role : null);
   // modal
   const [modal, setModal] = useState(false);
   const toggle = () => setModal(!modal);
@@ -27,6 +26,7 @@ const WBSTasks = (props) => {
   const [isShowImport, setIsShowImport] = useState(false);
 
   const [selectedId, setSelectedId] = useState(null);
+  const [filterState, setFilterState] = useState('all');
 
   useEffect(() => {
     props.fetchAllTasks(wbsId, 0);
@@ -111,20 +111,25 @@ const WBSTasks = (props) => {
     }, 4000);
   };
 
-  const toggleGroups = (open) => {
-    const items2 = document.getElementsByClassName(`lv_2`);
-    const items3 = document.getElementsByClassName(`lv_3`);
-    const items4 = document.getElementsByClassName(`lv_4`);
-    const allItems = [...items2, ...items3, ...items4];
-
-    for (let i = 0; i < allItems.length; i++) {
-      if (!open) {
-        allItems[i].style.display = 'none';
-      } else {
-        allItems[i].style.display = 'table-row';
-      }
+  const filterTasks = (allTaskItems, filter) => {
+    if (filter === "all") {
+      return allTaskItems;
+    } else if (filter === "open") {
+      return allTaskItems.filter((taskItem) => {
+        if (taskItem.status === "Active" || taskItem.status === "Started") {
+          return taskItem;
+        } 
+      });
+    } else if (filter === "close") {
+      return allTaskItems.filter((taskItem) => {
+        if (taskItem.status === "Complete" || taskItem.status === "Not Started") {
+          return taskItem;
+        } 
+      });
     }
-  };
+  }
+
+  let filteredTasks = filterTasks(props.state.tasks.taskItems, filterState);
 
   return (
     <React.Fragment>
@@ -142,7 +147,7 @@ const WBSTasks = (props) => {
           </ol>
         </nav>
 
-        {props.state.auth.user.role === UserRole.Administrator ? (
+        {hasPermission(props.state.auth.user.role, 'addTask') ? (
           <AddTaskModal
             key="task_modal_null"
             parentNum={null}
@@ -160,11 +165,14 @@ const WBSTasks = (props) => {
         </Button>
 
         <div className="toggle-all">
-          <Button color="light" size="sm" onClick={() => toggleGroups(true)}>
+          <Button color="light" size="sm" onClick={() => setFilterState('open')}>
             Open
           </Button>
-          <Button color="dark" size="sm" onClick={() => toggleGroups(false)}>
+          <Button color="dark" size="sm" onClick={() => setFilterState("close")}>
             Close
+          </Button>
+          <Button color="grey" size="sm" onClick={() => setFilterState("all")}>
+            All
           </Button>
         </div>
 
@@ -223,7 +231,7 @@ const WBSTasks = (props) => {
               <td colSpan={14}></td>
             </tr>
 
-            {props.state.tasks.taskItems.map((task, i) => (
+            {filteredTasks.map((task, i) => (
               <Task
                 key={`${task._id}${i}`}
                 id={task._id}

@@ -15,10 +15,10 @@ const Timer = () => {
     //How does the screen position of the element influence tangability?
     //This has been changed as part of a hotfix.
   };
-  const userId = useSelector(state => state.auth.user.userid);
-  const userProfile = useSelector(state => state.auth.user);
-  const pausedAt = useSelector(state => state.timer?.seconds);
-  const isWorking = useSelector(state => state.timer?.isWorking);
+  const userId = useSelector((state) => state.auth.user.userid);
+  const userProfile = useSelector((state) => state.auth.user);
+  const pausedAt = useSelector((state) => state.timer?.seconds);
+  const isWorking = useSelector((state) => state.timer?.isWorking);
   const dispatch = useDispatch();
   const alert = {
     va: true,
@@ -30,7 +30,7 @@ const Timer = () => {
   let intervalMin = null;
   let intervalThreeMin = null;
 
-  const toggle = () => setModal(modal => !modal);
+  const toggle = () => setModal((modal) => !modal);
 
   const reset = async () => {
     setSeconds(0);
@@ -43,8 +43,12 @@ const Timer = () => {
     await dispatch(getTimerData(userId));
 
     const status = await startTimer(userId, seconds);
+<<<<<<< HEAD
     if ([9, 200, 201].includes(status)) {
       //cambio el 2001 por 201
+=======
+    if ([9, 200, 2001].includes(status)) {
+>>>>>>> 8349d7908eb3be84121ba870fdc48800ba13583a
       setIsActive(true);
     }
 
@@ -80,7 +84,10 @@ const Timer = () => {
 
   const handleStop = () => {
     toggle();
+<<<<<<< HEAD
     handlePause(); //add line
+=======
+>>>>>>> 8349d7908eb3be84121ba870fdc48800ba13583a
   };
 
   useEffect(() => {
@@ -104,7 +111,10 @@ const Timer = () => {
   useEffect(() => {
     try {
       setIsActive(isWorking);
+<<<<<<< HEAD
       clearInterval(intervalThreeMin); // add this line
+=======
+>>>>>>> 8349d7908eb3be84121ba870fdc48800ba13583a
     } catch {}
   }, [isWorking]);
 
@@ -114,10 +124,14 @@ const Timer = () => {
         // clearInterval(intervalThreeMin);
       }
       intervalSec = setInterval(() => {
-        setSeconds(seconds => seconds + 1);
+        setSeconds((seconds) => seconds + 1);
       }, 1000);
 
+<<<<<<< HEAD
       intervalMin = setInterval(handleUpdate, 500); //Original 60000
+=======
+      intervalMin = setInterval(handleUpdate, 60000);
+>>>>>>> 8349d7908eb3be84121ba870fdc48800ba13583a
     } else if (!isActive && seconds !== 0) {
       clearInterval(intervalSec);
       clearInterval(intervalMin);
@@ -125,7 +139,11 @@ const Timer = () => {
         clearInterval(intervalThreeMin);
       }
       //handles restarting timer if you restart it in another tab
+<<<<<<< HEAD
       intervalThreeMin = setInterval(handleUpdate, 1300); //Original 1800000 comentariado
+=======
+      intervalThreeMin = setInterval(handleUpdate, 1800000);
+>>>>>>> 8349d7908eb3be84121ba870fdc48800ba13583a
     } else {
       clearInterval(intervalSec);
       clearInterval(intervalMin);
@@ -189,6 +207,6 @@ const Timer = () => {
   );
 };
 
-const padZero = number => `0${number}`.slice(-2);
+const padZero = (number) => `0${number}`.slice(-2);
 
 export default Timer;

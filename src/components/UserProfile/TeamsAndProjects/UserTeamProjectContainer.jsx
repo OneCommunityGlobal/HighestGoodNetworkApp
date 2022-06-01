@@ -41,7 +41,6 @@ class UserTeamProjectContainer extends React.PureComponent {
                 onButtonClick={this.onAddTeamPopupShow}
                 onDeleteClick={this.onSelectDeleteTeam}
                 renderedOn={this.state.renderedOn}
-                isUserAdmin={this.props.isUserAdmin}
               />
             </div>
             <div className="col">
@@ -50,7 +49,6 @@ class UserTeamProjectContainer extends React.PureComponent {
                 onButtonClick={this.onAddProjectPopupShow}
                 onDeleteClicK={this.onSelectDeleteProject}
                 renderedOn={this.state.renderedOn}
-                isUserAdmin={this.props.isUserAdmin}
               />
             </div>
           </div>

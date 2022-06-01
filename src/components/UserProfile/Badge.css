@@ -88,7 +88,7 @@
 
 .badge_featured_container {
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   overflow-y: none;
 }
 
@@ -128,4 +128,11 @@
 
 .badge_info_icon_text {
   text-align: left;
+}
+
+@media screen and (max-width: 1199px) {
+  .badge_featured_container {
+    overflow-y: hidden;
+    overflow-x: scroll;
+  }
 }

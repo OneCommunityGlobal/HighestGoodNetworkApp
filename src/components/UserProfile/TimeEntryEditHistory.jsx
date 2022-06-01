@@ -1,13 +1,13 @@
 import moment from 'moment';
 import React from 'react';
 import { Table, Button } from 'react-bootstrap';
+import hasPermission from '../../utils/permissions';
 
 /**
  * Shows the dates and times a user has edited their time entries. Admins are given the ability to delete these edits.
  * @param {*} props.userProfile
  * @param {function} props.setUserProfile
  * @param {function} props.setChanged
- * @param {boolean} props.isAdmin True if trhe suer viewing this component is signed in as an admin.
  * @returns
  */
 const TimeEntryEditHistory = (props) => {
@@ -55,7 +55,7 @@ const TimeEntryEditHistory = (props) => {
               <br />
               (HH:MM:SS)
             </th>
-            {props.isAdmin === true && <th></th>}
+            {hasPermission(props.role, 'deleteTimeEntryOthers') && <th></th>}
           </tr>
         </thead>
         <tbody>
@@ -65,7 +65,7 @@ const TimeEntryEditHistory = (props) => {
                 <td>{moment(item.date).tz('America/Los_Angeles').format('YYYY-MM-DD hh:mm:ss')}</td>
                 <td>{secondsToHms(item.initialSeconds)}</td>
                 <td>{secondsToHms(item.newSeconds)}</td>
-                {props.isAdmin === true && (
+                {hasPermission(props.role, 'deleteTimeEntryOthers') && (
                   <td>
                     <Button variant="danger" onClick={() => deleteEdit(item._id)}>
                       Delete&nbsp;Edit
