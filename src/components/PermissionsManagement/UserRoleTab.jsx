@@ -41,7 +41,8 @@ export const permissionLabel = {
   'resetPasswordOthers': 'Reset Password (Others)',
   'dataIsTangibleTimelog': 'Timelog Data is Tangible',
   'toggleSubmitForm': 'Toggle Summary Submit Form (Others)',
-  'assignOnlyBlueSquares': 'Only Assign Blue Squares'
+  'assignOnlyBlueSquares': 'Only Assign Blue Squares',
+  'seePermissionsManagement': 'See Permissions Management Tab'
 }
 
 const UserRoleTab = (props) => {

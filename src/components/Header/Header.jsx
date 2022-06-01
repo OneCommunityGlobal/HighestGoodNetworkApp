@@ -21,6 +21,7 @@ import {
   UPDATE_PASSWORD,
   LOGOUT,
   POPUP_MANAGEMENT,
+  PERMISSIONS_MANAGEMENT,
 } from '../../languages/en/ui';
 import {
   Collapse,
@@ -158,6 +159,11 @@ export const Header = props => {
                       </DropdownItem>
                     </>
                   ) : null}
+                  {hasPermission(user.role, 'seePermissionsManagement') && (
+                    <DropdownItem tag={Link} to="/permissionsmanagement">
+                      {PERMISSIONS_MANAGEMENT}
+                    </DropdownItem>
+                  )}
                 </DropdownMenu>
               </UncontrolledDropdown>
               )}

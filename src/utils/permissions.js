@@ -99,6 +99,7 @@ export const permissions = {
         'dataIsTangibleTimelog',
         'addDeleteEditOwners',
         'toggleSubmitForm',
+        'seePermissionsManagement',
     ],
 };
 
