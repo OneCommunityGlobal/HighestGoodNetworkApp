@@ -43,6 +43,7 @@ const Badges = (props) => {
               fontSize: 18,
               color: '#285739',
               marginBottom: 15,
+              minWidth: 446
             }}
           >
             Featured Badges <i className="fa fa-info-circle" id="FeaturedBadgeInfo" />

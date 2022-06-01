@@ -349,7 +349,8 @@ const UserProfile = props => {
   // const isUserAdmin = requestorRole === 'Administrator';
   // const canEdit = hasPermission(requestorRole, 'editUserProfile') || isUserSelf;
   let canEdit;
-  if (userProfile.role !== 'Owner') {
+
+  if (requestorRole !== 'Owner') {
     canEdit = hasPermission(requestorRole, 'editUserProfile') || isUserSelf;
   } else {
     canEdit = hasPermission(requestorRole, 'addDeleteEditOwners') || isUserSelf;
@@ -611,7 +612,7 @@ const UserProfile = props => {
             {hasPermission(requestorRole, 'resetPasswordOthers') && canEdit && !isUserSelf && (
               <ResetPasswordButton className="mr-1" user={userProfile} />
             )}
-            {isUserSelf && (
+            {isUserSelf && (activeTab == '1' || hasPermission(requestorRole, 'editUserProfile')) && (
               <div className="profileEditButtonContainer">
                 <Link to={`/updatepassword/${userProfile._id}`}>
                   <Button className="mr-1" color="primary">
@@ -621,7 +622,7 @@ const UserProfile = props => {
                 </Link>
               </div>
             )}
-            {canEdit && (
+            {canEdit && (activeTab == '1' || hasPermission(requestorRole, 'editUserProfile')) && (
               <>
                 <span
                   onClick={() => {

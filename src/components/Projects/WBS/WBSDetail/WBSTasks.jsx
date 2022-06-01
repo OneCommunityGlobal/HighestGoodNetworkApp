@@ -26,6 +26,7 @@ const WBSTasks = (props) => {
   const [isShowImport, setIsShowImport] = useState(false);
 
   const [selectedId, setSelectedId] = useState(null);
+  const [filterState, setFilterState] = useState('all');
 
   useEffect(() => {
     props.fetchAllTasks(wbsId, 0);
@@ -110,20 +111,43 @@ const WBSTasks = (props) => {
     }, 4000);
   };
 
-  const toggleGroups = (open) => {
-    const items2 = document.getElementsByClassName(`lv_2`);
-    const items3 = document.getElementsByClassName(`lv_3`);
-    const items4 = document.getElementsByClassName(`lv_4`);
-    const allItems = [...items2, ...items3, ...items4];
-
-    for (let i = 0; i < allItems.length; i++) {
-      if (!open) {
-        allItems[i].style.display = 'none';
-      } else {
-        allItems[i].style.display = 'table-row';
-      }
+  const filterTasks = (allTaskItems, filter) => {
+    if (filter === "all") {
+      return allTaskItems;
+    } else if (filter === "assigned") {
+      return allTaskItems.filter((taskItem) => {
+        if (taskItem.isAssigned === true) {
+          return taskItem;
+        } 
+      });
+    } else if (filter === "unassigned") {
+      return allTaskItems.filter((taskItem) => {
+        if (taskItem.isAssigned === false) {
+          return taskItem;
+        } 
+      });
+    } else if (filter === "active") {
+      return allTaskItems.filter((taskItem) => {
+        if (taskItem.status === "Active" || taskItem.status === "Started") {
+          return taskItem;
+        } 
+      });
+    } else if (filter === "inactive") {
+      return allTaskItems.filter((taskItem) => {
+        if (taskItem.status === "Not Started") {
+          return taskItem;
+        } 
+      });
+    } else if (filter === "complete") {
+      return allTaskItems.filter((taskItem) => {
+        if (taskItem.status === "Complete") {
+          return taskItem;
+        }
+      })
     }
-  };
+  }
+
+  let filteredTasks = filterTasks(props.state.tasks.taskItems, filterState);
 
   return (
     <React.Fragment>
@@ -159,11 +183,23 @@ const WBSTasks = (props) => {
         </Button>
 
         <div className="toggle-all">
-          <Button color="light" size="sm" onClick={() => toggleGroups(true)}>
-            Open
+          <Button color="primary" size="sm" onClick={() => setFilterState("all")}>
+            All
           </Button>
-          <Button color="dark" size="sm" onClick={() => toggleGroups(false)}>
-            Close
+          <Button color="secondary" size="sm" onClick={() => setFilterState("assigned")}>
+            Assigned
+          </Button>
+          <Button color="success" size="sm" onClick={() => setFilterState("unassigned")}>
+            Unasigned
+          </Button>
+          <Button color="info" size="sm" onClick={() => setFilterState("active")}>
+            Active
+          </Button>
+          <Button color="warning" size="sm" onClick={() => setFilterState("inactive")}>
+            Inactive
+          </Button>
+          <Button color="danger" size="sm" onClick={() => setFilterState("complete")}>
+            Complete
           </Button>
         </div>
 
@@ -222,7 +258,7 @@ const WBSTasks = (props) => {
               <td colSpan={14}></td>
             </tr>
 
-            {props.state.tasks.taskItems.map((task, i) => (
+            {filteredTasks.map((task, i) => (
               <Task
                 key={`${task._id}${i}`}
                 id={task._id}
