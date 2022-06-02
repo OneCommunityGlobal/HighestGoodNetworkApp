@@ -96,14 +96,22 @@ const WeeklyCommitedHours = (props) => {
         props.setChanged(true);
       }}
       placeholder="Weekly Committed Hours"
-      invalid={!props.isUserAdmin}
+      // invalid={!props.isUserAdmin}
     />
   );
 };
 
 const TotalTangibleHours = (props) => {
+  var sum=0;
+  props.userProfile.categoryTangibleHrs.forEach(object=>{
+    sum+=object.hrs;
+  }) 
+  console.log(props.userProfile);
   if (!props.isUserAdmin) {
-    return <p>{props.userProfile.totalTangibleHrs}</p>;
+    // return <p>{ (Object.values(props.userProfile.hoursByCategory).reduce((a,b)=>a+b))}</p>;
+    return <p>
+      {sum.toFixed(2)}
+    </p>
   }
   return (
     <Input
@@ -111,10 +119,10 @@ const TotalTangibleHours = (props) => {
       name="totalTangibleHours"
       id="totalTangibleHours"
       value={props.userProfile.totalTangibleHrs}
-      onChange={(e) => {
-        props.setUserProfile({ ...props.userProfile, totalTangibleHrs: e.target.value });
-        props.setChanged(true);
-      }}
+      // onChange={(e) => {
+      //   props.setUserProfile({ ...props.userProfile, totalTangibleHrs: e.target.value });
+      //   props.setChanged(true);
+      // }}
       placeholder="Total Tangible Time Logged"
       invalid={!props.isUserAdmin}
     />
