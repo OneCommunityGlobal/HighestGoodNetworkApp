@@ -593,11 +593,11 @@ const UserProfile = props => {
           <Col md="8">
             <div className="profileEditButtonContainer">
               {hasPermission(requestorRole, 'resetPasswordOthers') && canEdit && !isUserSelf && (
-                <ResetPasswordButton className="mr-1" user={userProfile} />
+                <ResetPasswordButton className="mr-1 btn-bottom" user={userProfile} />
               )}
               {isUserSelf && (activeTab == '1' || hasPermission(requestorRole, 'editUserProfile')) && (
                 <Link to={`/updatepassword/${userProfile._id}`}>
-                  <Button className="mr-1" color="primary">
+                  <Button className="mr-1 btn-bottom" color="primary">
                     {' '}
                     Update Password
                   </Button>
@@ -605,23 +605,23 @@ const UserProfile = props => {
               )}
               {canEdit && (activeTab == '1' || hasPermission(requestorRole, 'editUserProfile')) && (
                 <>
-                  <span
-                    onClick={() => {
-                      setUserProfile(originalUserProfile);
-                      setChanged(false);
-                    }}
-                    className="btn btn-outline-danger mr-1"
-                  >
-                    Cancel
-                  </span>
                   <SaveButton
-                    className="mr-1"
+                    className="mr-1 btn-bottom"
                     handleSubmit={handleSubmit}
                     disabled={
                       !formValid.firstName || !formValid.lastName || !formValid.email || !changed
                     }
                     userProfile={userProfile}
                   />
+                  <span
+                    onClick={() => {
+                      setUserProfile(originalUserProfile);
+                      setChanged(false);
+                    }}
+                    className="btn btn-outline-danger mr-1 btn-bottom"
+                  >
+                    Cancel
+                  </span>
                 </>
               )}
             </div>
