@@ -73,6 +73,7 @@ export default (
       />
       <ProtectedRoute path="/project/wbs/:projectId" component={WBS} />
       <ProtectedRoute path="/wbs/tasks/:wbsId/:projectId" component={WBSDetail} />
+      <ProtectedRoute path="/wbs/tasks/:wbsId/:projectId/:taskId" component={WBSDetail} />
       <ProtectedRoute
         path="/usermanagement"
         exact

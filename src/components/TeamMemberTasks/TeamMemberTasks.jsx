@@ -293,7 +293,7 @@ const TeamMemberTasks = props => {
               <p key={`${task._id}${index}`}>
                 <Link
                   key={index}
-                  to={task.projectId ? `/wbs/tasks/${task.wbsId}/${task.projectId}` : '/'}
+                  to={task.projectId ? `/wbs/tasks/${task.wbsId}/${task.projectId}/${task._id}` : '/'}
                 >
                   <span>{`${task.num} ${task.taskName}`}</span>
                 </Link>
