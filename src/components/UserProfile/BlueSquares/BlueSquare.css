@@ -29,7 +29,7 @@
 }
 
 .blueSquareContainer {
-  /* display: flex; */
+  display: flex;
   text-decoration: none;
   justify-content: center;
   /* margin: 10px; */
@@ -37,9 +37,11 @@
 
 .blueSquares {
   width: 100%;
+  max-height: 450px;
   display: flex;
   flex-wrap: wrap;
   align-items: center;
+  overflow: auto;
   /* justify-content: center; */
 }
 
