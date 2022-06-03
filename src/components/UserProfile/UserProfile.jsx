@@ -609,40 +609,40 @@ const UserProfile = props => {
         <Row>
           <Col md="4"></Col>
           <Col md="8">
-            {hasPermission(requestorRole, 'resetPasswordOthers') && canEdit && !isUserSelf && (
-              <ResetPasswordButton className="mr-1" user={userProfile} />
-            )}
-            {isUserSelf && (activeTab == '1' || hasPermission(requestorRole, 'editUserProfile')) && (
-              <div className="profileEditButtonContainer">
+            <div className="profileEditButtonContainer">
+              {hasPermission(requestorRole, 'resetPasswordOthers') && canEdit && !isUserSelf && (
+                <ResetPasswordButton className="mr-1 btn-bottom" user={userProfile} />
+              )}
+              {isUserSelf && (activeTab == '1' || hasPermission(requestorRole, 'editUserProfile')) && (
                 <Link to={`/updatepassword/${userProfile._id}`}>
-                  <Button className="mr-1" color="primary">
+                  <Button className="mr-1 btn-bottom" color="primary">
                     {' '}
                     Update Password
                   </Button>
                 </Link>
-              </div>
-            )}
-            {canEdit && (activeTab == '1' || hasPermission(requestorRole, 'editUserProfile')) && (
-              <>
-                <span
-                  onClick={() => {
-                    setUserProfile(originalUserProfile);
-                    setChanged(false);
-                  }}
-                  className="btn btn-outline-danger mr-1"
-                >
-                  Cancel
-                </span>
-                <SaveButton
-                  className="mr-1"
-                  handleSubmit={handleSubmit}
-                  disabled={
-                    !formValid.firstName || !formValid.lastName || !formValid.email || !changed
-                  }
-                  userProfile={userProfile}
-                />
-              </>
-            )}
+              )}
+              {canEdit && (activeTab == '1' || hasPermission(requestorRole, 'editUserProfile')) && (
+                <>
+                  <SaveButton
+                    className="mr-1 btn-bottom"
+                    handleSubmit={handleSubmit}
+                    disabled={
+                      !formValid.firstName || !formValid.lastName || !formValid.email || !changed
+                    }
+                    userProfile={userProfile}
+                  />
+                  <span
+                    onClick={() => {
+                      setUserProfile(originalUserProfile);
+                      setChanged(false);
+                    }}
+                    className="btn btn-outline-danger mr-1 btn-bottom"
+                  >
+                    Cancel
+                  </span>
+                </>
+              )}
+            </div>
           </Col>
         </Row>
       </Container>
