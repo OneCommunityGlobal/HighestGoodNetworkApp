@@ -61,20 +61,22 @@ const TeamMemberTasks = () => {
         <tr key={user._id}>
           {/* green if member has met committed hours for the week, red if not */}
           <td>
-              <FontAwesomeIcon style={{ color: user.hoursCurrentWeek >= user.weeklyComittedHours ? 'green' : 'red' }} icon={faCircle} />
+              <FontAwesomeIcon style={{ color: user.totaltangibletime_hrs >= user.weeklyComittedHours ? 'green' : 'red' }} icon={faCircle} />
           </td>
           <td>
-            <Link to={`/userprofile/${user._id}`}>{`${user.firstName} ${user.lastName}`}</Link>
+            <Link to={`/userprofile/${user.personId}`}>{`${user.name}`}</Link>
           </td>
-          <td>{`${user.weeklyComittedHours} / ${user.hoursCurrentWeek}`}</td>
+          <td>{`${user.weeklyComittedHours ? user.weeklyComittedHours : 0} / ${user.totaltangibletime_hrs.toFixed(0)}`}</td>
           <td>
             {user.tasks &&
               user.tasks.map((task) => (
+                task.wbsId && task.projectId &&
                   <p key={`${task._id}`}>
                     <Link to={task.projectId ? `/wbs/tasks/${task.wbsId}/${task.projectId}` : '/'}>
                       <span>{`${task.num} ${task.taskName}`} </span>
                     </Link>
-                    {task.taskNotifications.length > 0 &&
+                    {/* {
+                      task.taskNotifications.length > 0 &&
                       <FontAwesomeIcon
                         className="team-member-tasks-bell"
                         icon={faBell}
@@ -82,7 +84,7 @@ const TeamMemberTasks = () => {
                           handleOpenTaskNotificationModal(task.taskNotifications);
                         }}
                       />
-                    }
+                    } */}
                   </p>
               ))}
           </td>
