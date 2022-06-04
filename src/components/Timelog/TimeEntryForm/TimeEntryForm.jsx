@@ -28,6 +28,7 @@ import ReminderModal from './ReminderModal';
 import axios from 'axios';
 import { ApiEndpoint } from '../../../utils/URL';
 import hasPermission from 'utils/permissions';
+import { getTimeEntryFormData } from './selectors';
 
 /**
  * Modal used to submit and edit tangible and intangible time entries.
@@ -75,8 +76,7 @@ const TimeEntryForm = (props) => {
   const [projects, setProjects] = useState([]);
 
   const fromTimer = !_.isEmpty(timer);
-  const userProfile = useSelector((state) => state.userProfile);
-  const role = userProfile.role;
+  const { userProfile, currentUserRole } = useSelector(getTimeEntryFormData);
 
   const dispatch = useDispatch();
 
@@ -207,7 +207,7 @@ const TimeEntryForm = (props) => {
       result.notes = 'Description and reference link are required';
     }
 
-    if (!hasPermission(role, 'addTimeEntryOthers') && data.isTangible && isTimeModified && reminder.editNotice) {
+    if (!hasPermission(currentUserRole, 'addTimeEntryOthers') && data.isTangible && isTimeModified && reminder.editNotice) {
       openModal();
       setReminder((reminder) => ({
         ...reminder,
@@ -410,7 +410,7 @@ const TimeEntryForm = (props) => {
           <Form>
             <FormGroup>
               <Label for="dateOfWork">Date</Label>
-              {hasPermission(role, 'changeIntangibleTimeEntryDate') && !fromTimer ? (
+              {hasPermission(currentUserRole, 'changeIntangibleTimeEntryDate') && !fromTimer ? (
                 <Input
                   type="date"
                   name="dateOfWork"
@@ -523,7 +523,7 @@ const TimeEntryForm = (props) => {
                   name="isTangible"
                   checked={inputs.isTangible}
                   onChange={handleCheckboxChange}
-                  disabled={!hasPermission(role, 'toggleTangibleTime') && !data.isTangible}
+                  disabled={!hasPermission(currentUserRole, 'toggleTangibleTime') && !data.isTangible}
                 />
                 Tangible&nbsp;
                 <i
