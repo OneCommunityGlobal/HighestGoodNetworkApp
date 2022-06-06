@@ -218,7 +218,7 @@ const WBSTasks = (props) => {
             Assigned
           </Button>
           <Button color="success" size="sm" onClick={() => setFilterState("unassigned")}>
-            Unasigned
+            Unassigned
           </Button>
           <Button color="info" size="sm" onClick={() => setFilterState("active")}>
             Active
