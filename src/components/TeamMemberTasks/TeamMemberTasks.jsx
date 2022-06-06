@@ -25,6 +25,8 @@ const TeamMemberTasks = props => {
   const [taskNotificationModal, setTaskNotificationModal] = useState(false);
   const [currentTaskNotifications, setCurrentTaskNotifications] = useState([]);
 
+  const userRole = props.auth.user.role;
+
   const setTaskNotifications = taskNotifications => {
     setCurrentTaskNotifications(taskNotifications);
   };
@@ -272,7 +274,19 @@ const TeamMemberTasks = props => {
 
   let teamsList = [];
   if (teams && teams.length > 0) {
-    teamsList = teams.map((member, index) => (
+    // give different users different views
+    const filteredMembers = teams.filter(member => {
+      if (userRole === "Volunteer" || userRole === "Core Team") {
+        return member.role === "Volunteer" || member.role === "Core Team";
+      } else if (userRole === "Manager" || userRole === "Mentor") {
+        return member.role === "Volunteer" || member.role === "Core Team" || 
+        member.role === "Manager" || member.role === "Mentor";
+      } else {
+        return member;
+      }
+    })
+
+    teamsList = filteredMembers.map((member, index) => (
       <tr key={index}>
         {/* green if member has met committed hours for the week, red if not */}
         <td>
