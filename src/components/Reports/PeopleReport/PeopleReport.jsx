@@ -4,22 +4,23 @@ import './PeopleReport.css';
 import { Row, Col, Button, ToggleButton,ToggleButtonGroup, Dropdown, DropdownButton } from 'react-bootstrap'
 //import { Label, Input, Form } from 'reactstrap'
 import { connect } from 'react-redux'
-import { getUserProfile,getUserTask} from '../../actions/userProfile';
-import {getUserProjects} from '../../actions/userProjects'
+import { getUserProfile,getUserTask} from '../../../actions/userProfile';
+import {getUserProjects} from '../../../actions/userProjects'
 import _, { lte } from 'lodash'
-import { getWeeklySummaries, updateWeeklySummaries } from '../../actions/weeklySummaries'
+import { getWeeklySummaries, updateWeeklySummaries } from '../../../actions/weeklySummaries'
 import moment from 'moment'
 import "react-input-range/lib/css/index.css"
 import Collapse from 'react-bootstrap/Collapse'
 import * as d3 from 'd3/dist/d3.min'
 import { DropdownItem, FormGroup, Label, Input, Form, Modal, ModalHeader, ModalBody, ModalFooter} from 'reactstrap';
-import { getTimeEntriesForPeriod } from '../../actions/timeEntries'
-import InfringmentsViz from './InfringmentsViz'
-import TimeEntriesViz from './TimeEntriesViz'
-import PeopleTableDetails from './PeopleTableDetails'
+import { getTimeEntriesForPeriod } from '../../../actions/timeEntries'
+import InfringmentsViz from '../InfringmentsViz'
+import TimeEntriesViz from '../TimeEntriesViz'
+import PeopleTableDetails from '../PeopleTableDetails'
+import { getPeopleReportData } from "./selectors";
 import DatePicker from 'react-datepicker'
-import httpService from '../../services/httpService'
-import { ENDPOINTS } from '../../utils/URL'
+import httpService from '../../../services/httpService'
+import { ENDPOINTS } from '../../../utils/URL'
 class PeopleReport extends Component {
   constructor(props) {
     super(props);
@@ -63,14 +64,14 @@ class PeopleReport extends Component {
 
   async componentDidMount() {
     if (this.props.match) {
-      const { userId } = this.props.match.params.userId
-      await this.props.getUserProfile(this.props.match.params.userId)
-      await this.props.getUserTask(this.props.match.params.userId)
-      await this.props.getUserProjects(this.props.match.params.userId)
-      await this.props.getWeeklySummaries(this.props.match.params.userId);
-      await this.props.getTimeEntriesForPeriod(this.props.match.params.userId, this.state.fromDate, this.state.toDate)
+      const userId = this.props.match.params.userId;
+      await this.props.getUserProfile(userId)
+      await this.props.getUserTask(userId)
+      await this.props.getUserProjects(userId)
+      await this.props.getWeeklySummaries(userId);
+      await this.props.getTimeEntriesForPeriod(userId, this.state.fromDate, this.state.toDate)
       this.setState({
-          userId: this.props.match.params.userId,
+          userId,
           isLoading: false,
           userProfile: {
             ...this.props.userProfile,
@@ -266,7 +267,6 @@ class PeopleReport extends Component {
       firstName,
       lastName,
       weeklyComittedHours,
-      totalComittedHours,
       totalTangibleHrs
     } = userProfile
 
@@ -874,7 +874,7 @@ class PeopleReport extends Component {
                 <p>Weekly Committed Hours</p>
               </div>
               <div>
-                <h4>{totalComittedHours}</h4>
+                <h4>{this.props.tangibleHoursReportedThisWeek}</h4>
                 <p>Hours Logged So Far This Week</p>
               </div>
               <div>
@@ -977,31 +977,7 @@ class PeopleReport extends Component {
     }
 }
 
-
-const mapStateToProps = state => ({
-  auth: state.auth,
-  userProfile: state.userProfile,
-  userTask: state.userTask,
-  infringments: state.userProfile.infringments,
-  user: _.get(state, 'user', {}),
-  timeEntries: state.timeEntries,
-  userProjects: state.userProjects,
-  allProjects: _.get(state, 'allProjects'),
-  allTeams: state,
-  isAssigned:state.isAssigned,
-  isActive:state.isActive,
-  priority:state.priority,
-  status:state.status,
-  hasFilter: state.hasFilter,
-  allClassification:state.allClassification,
-  classification:state.classification,
-  users:state.users,
-  classificationList:state.classificationList,
-  priorityList:state.priorityList,
-  statusList:state.statusList,
-});
-
-export default connect(mapStateToProps, {
+export default connect(getPeopleReportData, {
   getUserProfile,
   getWeeklySummaries,
   updateWeeklySummaries,
