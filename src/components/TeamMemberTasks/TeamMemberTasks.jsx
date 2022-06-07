@@ -286,54 +286,67 @@ const TeamMemberTasks = props => {
       }
     })
 
-    teamsList = filteredMembers.map((member, index) => (
-      <tr key={index}>
-        {/* green if member has met committed hours for the week, red if not */}
-        <td>
-          {/* console.log('member ', member) */}
-          {member.hoursCurrentWeek >= member.weeklyComittedHours ? (
-            <FontAwesomeIcon style={{ color: 'green' }} icon={faCircle} />
-          ) : (
-            <FontAwesomeIcon style={{ color: 'red' }} icon={faCircle} />
-          )}
-        </td>
-        <td>
-          <Link to={`/userprofile/${member._id}`}>{`${member.firstName} ${member.lastName}`}</Link>
-        </td>
-        <td>
-          <u>{member.weeklyCommittedHours}</u> / 
-          <font color="green"> {member.hoursCurrentWeek}</font> / 
-          <font color="red"> {member.hoursCurrentWeek}</font>
+    // get logged hours and remaining hours for each member
+    teamsList = filteredMembers.map((member, index) => {
+      let totalHoursLogged = 0;
+      let totalHoursRemaining = 0;
+      if (member.tasks) {
+        totalHoursLogged = member.tasks
+          .map((task) => task.hoursLogged)
+          .reduce((previousValue, currentValue) => previousValue + currentValue, 0);
+        totalHoursRemaining = member.tasks
+          .map((task) => task.estimatedHours - task.hoursLogged)
+          .reduce((previousValue, currentValue) => previousValue + currentValue, 0);
+      }
+
+      return (
+        <tr key={index}>
+          {/* green if member has met committed hours for the week, red if not */}
+          <td>
+            {member.hoursCurrentWeek >= member.weeklyComittedHours ? (
+              <FontAwesomeIcon style={{ color: 'green' }} icon={faCircle} />
+            ) : (
+              <FontAwesomeIcon style={{ color: 'red' }} icon={faCircle} />
+            )}
           </td>
-        <td>
-          {member.tasks &&
-            member.tasks.map((task, index) => (
-              <p key={`${task._id}${index}`}>
-                <Link
-                  key={index}
-                  to={task.projectId ? `/wbs/tasks/${task.wbsId}/${task.projectId}/${task._id}` : '/'}
-                >
-                  <span>{`${task.num} ${task.taskName}`}</span>
-                </Link>
-                {/* <span>
-                    {member.taskNotifications.find(notification => {
-                      return notification.taskId === task._id
-                    }) ? (
-                      <FontAwesomeIcon
-                        style={{ color: 'red' }}
-                        icon={faBell}
-                        onClick={() => {
-                          handleOpenTaskNotificationModal(member.taskNotifications);
-                        }}
-                      />
-                    ) : null}
-                  </span> */}
-              </p>
-            ))}
-        </td>
-        <td>tempprogress</td>
-      </tr>
-    ));
+          <td>
+            <Link to={`/userprofile/${member._id}`}>{`${member.firstName} ${member.lastName}`}</Link>
+          </td>
+          <td>
+            <u>{member.weeklyCommittedHours}</u> / 
+            <font color="green"> {Math.round(totalHoursLogged)}</font> / 
+            <font color="red"> {Math.round(totalHoursRemaining)}</font>
+            </td>
+          <td>
+            {member.tasks &&
+              member.tasks.map((task, index) => (
+                <p key={`${task._id}${index}`}>
+                  <Link
+                    key={index}
+                    to={task.projectId ? `/wbs/tasks/${task.wbsId}/${task.projectId}/${task._id}` : '/'}
+                  >
+                    <span>{`${task.num} ${task.taskName}`}</span>
+                  </Link>
+                  {/* <span>
+                      {member.taskNotifications.find(notification => {
+                        return notification.taskId === task._id
+                      }) ? (
+                        <FontAwesomeIcon
+                          style={{ color: 'red' }}
+                          icon={faBell}
+                          onClick={() => {
+                            handleOpenTaskNotificationModal(member.taskNotifications);
+                          }}
+                        />
+                      ) : null}
+                    </span> */}
+                </p>
+              ))}
+          </td>
+          <td>tempprogress</td>
+        </tr>
+      );
+    });
   }
 
   return (
