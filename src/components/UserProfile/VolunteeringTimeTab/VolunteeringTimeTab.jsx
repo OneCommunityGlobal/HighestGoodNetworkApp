@@ -100,7 +100,6 @@ const WeeklyCommitedHours = (props) => {
     />
   );
 };
-
 const TotalTangibleHours = (props) => {
   var sum=0;
   props.userProfile.categoryTangibleHrs.forEach(object=>{
@@ -240,20 +239,19 @@ const ViewTab = (props) => {
             userProfile={userProfile}
             setUserProfile={setUserProfile}
             setChanged={setChanged}
-            canEdit={canEdit}
+            // canEdit={canEdit}
             role={role}
           />
         </Col>
       </Row>
 
-      {props?.userProfile?.hoursByCategory
-        ? Object.keys(props.userProfile.hoursByCategory).map((key) => (
-            <React.Fragment key={'hours-by-category-' + key}>
+      {props?.userProfile?.categoryTangibleHrs.map((key) => (
+            <React.Fragment key={'hours-by-category-' + key.category}>
               <Row>
                 <Col md="6">
                   <Label>
-                    {key !== 'unassigned' ? (
-                      <>Total Tangible {capitalize(key)} Hours</>
+                    {key.category !== 'Other' ? (
+                      <>Total Tangible {capitalize(key.category)} Hours</>
                     ) : (
                       <>Total Unassigned Category Hours</>
                     )}{' '}
@@ -264,7 +262,7 @@ const ViewTab = (props) => {
                     <Input
                       type="number"
                       id={`${key}Hours`}
-                      value={props.userProfile.hoursByCategory[key]}
+                      value={key.hrs.toFixed(2)}
                       onChange={(e) => {
                         setUserProfile({
                           ...props.userProfile,
@@ -274,7 +272,7 @@ const ViewTab = (props) => {
                           },
                         });
                       }}
-                      placeholder={`Total Tangible ${capitalize(key)} Hours`}
+                      placeholder={`Total Tangible ${capitalize(key.category)} Hours`}
                     />
                   ) : (
                     <p>{props.userProfile.hoursByCategory[key]}</p>
@@ -282,8 +280,8 @@ const ViewTab = (props) => {
                 </Col>
               </Row>
             </React.Fragment>
-          ))
-        : []}
+          ))}
+        {/* : []} */}
     </div>
   );
 };
