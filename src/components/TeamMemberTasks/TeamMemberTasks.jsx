@@ -300,7 +300,11 @@ const TeamMemberTasks = props => {
         <td>
           <Link to={`/userprofile/${member._id}`}>{`${member.firstName} ${member.lastName}`}</Link>
         </td>
-        <td>{`${member.weeklyCommittedHours} / ${member.hoursCurrentWeek}`}</td>
+        <td>
+          <u>{member.weeklyCommittedHours}</u> / 
+          <font color="green"> {member.hoursCurrentWeek}</font> / 
+          <font color="red"> {member.hoursCurrentWeek}</font>
+          </td>
         <td>
           {member.tasks &&
             member.tasks.map((task, index) => (
@@ -423,6 +427,12 @@ const TeamMemberTasks = props => {
                   style={{ color: 'green' }}
                   icon={faClock}
                   title="Weekly Completed Hours"
+                />
+                /
+                <FontAwesomeIcon
+                  style={{ color: 'red' }}
+                  icon={faClock}
+                  title="Total Remaining Hours"
                 />
               </th>
               <th>Tasks(s)</th>
