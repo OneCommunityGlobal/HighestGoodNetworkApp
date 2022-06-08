@@ -3,3 +3,7 @@ import { createAction } from "redux-actions";
 export const fetchTeamMembersTaskBegin = createAction("FETCH_TEAM_MEMBERS_TASK_BEGIN");
 export const fetchTeamMembersTaskSuccess = createAction("FETCH_TEAM_MEMBERS_TASK_SUCCESS");
 export const fetchTeamMembersTaskError = createAction("FETCH_TEAM_MEMBERS_TASK_ERROR");
+
+export const createOrUpdateTaskNotificationBegin = createAction("CREATE_OR_UPDATE_TASK_NOTIFICATION_BEGIN");
+export const createOrUpdateTaskNotificationSuccess = createAction("CREATE_OR_UPDATE_TASK_NOTIFICATION_SUCCESS");
+export const createOrUpdateTaskNotificationError = createAction("CREATE_OR_UPDATE_TASK_NOTIFICATION_ERROR");

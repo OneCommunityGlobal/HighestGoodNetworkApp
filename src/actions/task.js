@@ -12,9 +12,9 @@ const selectFetchTeamMembersTaskData = (state) => state.auth.userId;
 export const fetchTeamMembersTask = () => async (dispatch, getState) => {
   try {
     const state = getState();
-    const userId = selectFetchTeamMembersTaskData(state);
+    const userId = selectFetchTeamMembersTaskData(state); // TODO: fix this
     dispatch(fetchTeamMembersTaskBegin());
-    const response = await axios.get(`${ENDPOINTS.APIEndpoint()}/user/607b0ff930d5080017c0adad/teams/tasks`);
+    const response = await axios.get(`${ENDPOINTS.APIEndpoint()}/user/607b0ff930d5080017c0adad/teams/tasks`); // TODO: replace once userId fixed. add endpoint to endpoint file
     dispatch(fetchTeamMembersTaskSuccess(response.data));
   } catch (error) {
     dispatch(fetchTeamMembersTaskError());

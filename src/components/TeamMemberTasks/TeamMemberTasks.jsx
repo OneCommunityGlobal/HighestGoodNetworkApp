@@ -75,7 +75,7 @@ const TeamMemberTasks = () => {
                     <Link to={task.projectId ? `/wbs/tasks/${task.wbsId}/${task.projectId}` : '/'}>
                       <span>{`${task.num} ${task.taskName}`} </span>
                     </Link>
-                    {/* {
+                    {
                       task.taskNotifications.length > 0 &&
                       <FontAwesomeIcon
                         className="team-member-tasks-bell"
@@ -84,7 +84,7 @@ const TeamMemberTasks = () => {
                           handleOpenTaskNotificationModal(task.taskNotifications);
                         }}
                       />
-                    } */}
+                    }
                   </p>
               ))}
           </td>
