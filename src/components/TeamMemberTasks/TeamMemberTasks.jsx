@@ -439,7 +439,7 @@ const TeamMemberTasks = props => {
                 <FontAwesomeIcon
                   style={{ color: 'green' }}
                   icon={faClock}
-                  title="Weekly Completed Hours"
+                  title="Total Logged Hours"
                 />
                 /
                 <FontAwesomeIcon
