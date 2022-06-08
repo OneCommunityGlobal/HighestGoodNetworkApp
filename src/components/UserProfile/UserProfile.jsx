@@ -572,7 +572,7 @@ const UserProfile = props => {
                   setChanged={setChanged}
                   isUserSelf={isUserSelf}
                   role={requestorRole}
-                  canEdit={canEdit}
+                  canEdit={hasPermission(requestorRole, 'editUserProfile')}
                 />
               </TabPane>
               <TabPane tabId="3">
@@ -581,7 +581,7 @@ const UserProfile = props => {
                   teamsData={props?.allTeams?.allTeamsData || []}
                   onAssignTeam={onAssignTeam}
                   onDeleteteam={onDeleteTeam}
-                  edit={canEdit}
+                  edit={hasPermission(requestorRole, 'editUserProfile')}
                   role={requestorRole}
                 />
               </TabPane>
@@ -591,7 +591,7 @@ const UserProfile = props => {
                   projectsData={props?.allProjects?.projects || []}
                   onAssignProject={onAssignProject}
                   onDeleteProject={onDeleteProject}
-                  edit={canEdit}
+                  edit={hasPermission(requestorRole, 'editUserProfile')}
                   role={requestorRole}
                 />
               </TabPane>
