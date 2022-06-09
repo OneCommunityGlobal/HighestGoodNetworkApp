@@ -1,5 +1,5 @@
 import React, { Component, useState } from 'react'
-import '../Teams/Team.css';
+import '../../Teams/Team.css';
 import './PeopleReport.css';
 import { Row, Col, Button, ToggleButton,ToggleButtonGroup, Dropdown, DropdownButton } from 'react-bootstrap'
 //import { Label, Input, Form } from 'reactstrap'
