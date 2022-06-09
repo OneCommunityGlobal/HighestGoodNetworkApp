@@ -117,7 +117,7 @@ const TotalTangibleHours = (props) => {
       type="number"
       name="totalTangibleHours"
       id="totalTangibleHours"
-      value={props.userProfile.totalTangibleHrs}
+      value={sum.toFixed(2)}
       // onChange={(e) => {
       //   props.setUserProfile({ ...props.userProfile, totalTangibleHrs: e.target.value });
       //   props.setChanged(true);
@@ -246,6 +246,7 @@ const ViewTab = (props) => {
       </Row>
 
       {props?.userProfile?.categoryTangibleHrs.map((key) => (
+            
             <React.Fragment key={'hours-by-category-' + key.category}>
               <Row>
                 <Col md="6">
@@ -258,7 +259,6 @@ const ViewTab = (props) => {
                   </Label>
                 </Col>
                 <Col md="6">
-                  {canEdit ? (
                     <Input
                       type="number"
                       id={`${key}Hours`}
@@ -266,17 +266,17 @@ const ViewTab = (props) => {
                       onChange={(e) => {
                         setUserProfile({
                           ...props.userProfile,
-                          hoursByCategory: {
-                            ...props.userProfile.hoursByCategory,
-                            [key]: e.target.value,
+                          categoryTangibleHrs: {
+                            ...props.userProfile.categoryTangibleHrs,
+                            [key.hrs]: e.target.value,
                           },
                         });
+                        props.setChanged(true);
                       }}
                       placeholder={`Total Tangible ${capitalize(key.category)} Hours`}
+                      // invalid={!props.isUserAdmin}
+                      canEdit={canEdit}
                     />
-                  ) : (
-                    <p>{props.userProfile.hoursByCategory[key]}</p>
-                  )}
                 </Col>
               </Row>
             </React.Fragment>
