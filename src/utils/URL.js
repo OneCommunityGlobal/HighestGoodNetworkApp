@@ -59,6 +59,7 @@ export const ENDPOINTS = {
   BADGE_ASSIGN: (userId) => `${APIEndpoint}/badge/assign/${userId}`,
   BADGE_BY_ID: (badgeId) => `${APIEndpoint}/badge/${badgeId}`,
 
+  TEAM_MEMBER_TASKS: (userId) => `${ENDPOINTS.APIEndpoint()}/user/${userId}/teams/tasks`,
   TIMEZONE_KEY: `${APIEndpoint}/timezone`,
   GEOCODE_URI: (location, key) =>
     `${GeocodeAPIEndpoint}?key=${key}&q=${encodeURIComponent(location)}&pretty=1&limit=1`,
