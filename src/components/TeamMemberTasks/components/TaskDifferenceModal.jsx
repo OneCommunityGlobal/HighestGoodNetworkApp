@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, Modal, ModalHeader, ModalBody } from 'reactstrap';
+import { Button, Modal, ModalHeader, ModalBody, Table } from 'reactstrap';
 
 export const TaskDifferenceModal = ({ currentTaskNotifications, onApprove }) => (
   <Modal size="xl">

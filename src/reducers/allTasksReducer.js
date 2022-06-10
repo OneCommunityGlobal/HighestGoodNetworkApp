@@ -1,3 +1,4 @@
+import { createOrUpdateTaskNotificationHTTP } from 'actions/taskNotification';
 import { fetchTeamMembersTaskSuccess } from 'components/TeamMemberTasks/actions';
 import * as types from './../constants/task';
 
@@ -87,6 +88,8 @@ export const taskReducer = (allTasks = allTasksInital, action) => {
         (item) => item._id === action.newTask.mother,
       );
       const index = motherIndex + 1;
+      const userIds = action.newTask.resources.map(resource => resource.userID);
+      createOrUpdateTaskNotificationHTTP(action.newTask._id, {}, userIds);
       return {
         ...allTasks,
         taskItems: [

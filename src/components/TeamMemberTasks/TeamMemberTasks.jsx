@@ -12,6 +12,7 @@ import { Table } from 'reactstrap';
 import httpService from '../../services/httpService';
 import { ENDPOINTS } from '../../utils/URL';
 import Loading from '../common/Loading';
+import { TaskDifferenceModal } from './components/TaskDifferenceModal';
 import { getTeamMemberTasksData } from './selectors';
 import './style.css';
 
