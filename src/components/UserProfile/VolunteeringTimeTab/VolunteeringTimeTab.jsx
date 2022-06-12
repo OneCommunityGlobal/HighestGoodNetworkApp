@@ -96,32 +96,25 @@ const WeeklyCommitedHours = (props) => {
         props.setChanged(true);
       }}
       placeholder="Weekly Committed Hours"
-      // invalid={!props.isUserAdmin}
+      invalid={!props.isUserAdmin}
     />
   );
 };
+
 const TotalTangibleHours = (props) => {
-  var sum=0;
-  props.userProfile.categoryTangibleHrs.forEach(object=>{
-    sum+=object.hrs;
-  }) 
-  console.log(props.userProfile);
   if (!props.isUserAdmin) {
-    // return <p>{ (Object.values(props.userProfile.hoursByCategory).reduce((a,b)=>a+b))}</p>;
-    return <p>
-      {sum.toFixed(2)}
-    </p>
+    return <p>{props.userProfile.totalTangibleHrs}</p>;
   }
   return (
     <Input
       type="number"
       name="totalTangibleHours"
       id="totalTangibleHours"
-      value={sum.toFixed(2)}
-      // onChange={(e) => {
-      //   props.setUserProfile({ ...props.userProfile, totalTangibleHrs: e.target.value });
-      //   props.setChanged(true);
-      // }}
+      value={props.userProfile.totalTangibleHrs}
+      onChange={(e) => {
+        props.setUserProfile({ ...props.userProfile, totalTangibleHrs: e.target.value });
+        props.setChanged(true);
+      }}
       placeholder="Total Tangible Time Logged"
       invalid={!props.isUserAdmin}
     />
@@ -239,49 +232,50 @@ const ViewTab = (props) => {
             userProfile={userProfile}
             setUserProfile={setUserProfile}
             setChanged={setChanged}
-            // canEdit={canEdit}
+            canEdit={canEdit}
             role={role}
           />
         </Col>
       </Row>
 
-      {props?.userProfile?.categoryTangibleHrs.map((key) => (
-            
-            <React.Fragment key={'hours-by-category-' + key.category}>
+      {props?.userProfile?.hoursByCategory
+        ? Object.keys(props.userProfile.hoursByCategory).map((key) => (
+            <React.Fragment key={'hours-by-category-' + key}>
               <Row>
                 <Col md="6">
                   <Label>
-                    {key.category !== 'Other' ? (
-                      <>Total Tangible {capitalize(key.category)} Hours</>
+                    {key !== 'unassigned' ? (
+                      <>Total Tangible {capitalize(key)} Hours</>
                     ) : (
                       <>Total Unassigned Category Hours</>
                     )}{' '}
                   </Label>
                 </Col>
                 <Col md="6">
+                  {canEdit ? (
                     <Input
                       type="number"
                       id={`${key}Hours`}
-                      value={key.hrs.toFixed(2)}
+                      value={props.userProfile.hoursByCategory[key]}
                       onChange={(e) => {
                         setUserProfile({
                           ...props.userProfile,
-                          categoryTangibleHrs: {
-                            ...props.userProfile.categoryTangibleHrs,
-                            [key.hrs]: e.target.value,
+                          hoursByCategory: {
+                            ...props.userProfile.hoursByCategory,
+                            [key]: e.target.value,
                           },
                         });
-                        props.setChanged(true);
                       }}
-                      placeholder={`Total Tangible ${capitalize(key.category)} Hours`}
-                      // invalid={!props.isUserAdmin}
-                      canEdit={canEdit}
+                      placeholder={`Total Tangible ${capitalize(key)} Hours`}
                     />
+                  ) : (
+                    <p>{props.userProfile.hoursByCategory[key]}</p>
+                  )}
                 </Col>
               </Row>
             </React.Fragment>
-          ))}
-        {/* : []} */}
+          ))
+        : []}
     </div>
   );
 };
