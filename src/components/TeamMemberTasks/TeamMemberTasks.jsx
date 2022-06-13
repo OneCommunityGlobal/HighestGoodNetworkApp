@@ -17,7 +17,7 @@ import { getTeamMemberTasksData } from './selectors';
 import './style.css';
 
 const TeamMemberTasks = () => {
-  const [taskNotificationModal, setTaskNotificationModal] = useState(false);
+  const [isTaskNotificationModalOpen, setIsTaskNotificationModalOpen] = useState(false);
   const [currentTaskNotifications, setCurrentTaskNotifications] = useState([]);
 
   const { isLoading, usersWithTasks } = useSelector(getTeamMemberTasksData);
@@ -86,6 +86,9 @@ const TeamMemberTasks = () => {
                         }}
                       />
                     }
+                    {taskNotificationModal && 
+                      <TaskDifferenceModal task={task} taskNotifications={task.taskNotifications} onApprove={handleTaskNotificationRead} />
+                    }
                   </p>
               ))}
           </td>
@@ -123,9 +126,9 @@ const TeamMemberTasks = () => {
         </tbody>
       </Table>
 
-      {taskNotificationModal && 
-        <TaskDifferenceModal currentTaskNotifications={currentTaskNotifications} onApprove={handleTaskNotificationRead} />
-      }
+      {/* {taskNotificationModal && 
+        <TaskDifferenceModal taskNotification={taskNotification} onApprove={handleTaskNotificationRead} />
+      } */}
     </div>
   );
 };

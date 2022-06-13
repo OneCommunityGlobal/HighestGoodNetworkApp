@@ -1,13 +1,14 @@
 import React from 'react';
-import { Button, Modal, ModalHeader, ModalBody, Table } from 'reactstrap';
+import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Table } from 'reactstrap';
+import DiffedText from './DiffedText';
 
-export const TaskDifferenceModal = ({ currentTaskNotifications, onApprove }) => (
+export const TaskDifferenceModal = ({ taskNotifications, task, onApprove }) => (
   <Modal size="xl">
     <ModalHeader>Task Info Changes</ModalHeader>
     <ModalBody>
-      {currentTaskNotifications.map((notification) => (
-            <React.Fragment key={notification.id}>
-              <h4>{`${notification.taskNum} ${notification.taskName}`}</h4>
+      {taskNotifications.map((notification) => (
+            <React.Fragment key={notification._id}>
+              <h4>{`${task.taskNum} ${task.taskName}`}</h4>
               <Table striped>
                 <thead>
                   <tr>
@@ -18,44 +19,44 @@ export const TaskDifferenceModal = ({ currentTaskNotifications, onApprove }) => 
                   </tr>
                 </thead>
                 <tbody>
-                  {notification.oldTaskInfos.oldWhyInfo !==
-                  notification.newTaskInfos.newWhyInfo ? (
+                  {!notification.oldTask.oldWhyInfo || notification.oldTask.oldWhyInfo !==
+                  task.whyInfo ? (
                     <tr>
                       <th>Why Task is Important</th>
-                      <td>{notification.oldTaskInfos.oldWhyInfo}</td>
-                      <td>{notification.newTaskInfos.newWhyInfo}</td>
+                      <td>{!notification.oldTask.oldWhyInfo ? '' : notification.oldTask.oldWhyInfo}</td>
+                      <td>{task.whyInfo}</td>
                       <td>
                         <DiffedText
-                          oldText={notification.oldTaskInfos.oldWhyInfo}
-                          newText={notification.newTaskInfos.newWhyInfo}
+                          oldText={!notification.oldTask.oldWhyInfo ? '' : notification.oldTask.oldWhyInfo}
+                          newText={task.whyInfo}
                         />
                       </td>
                     </tr>
                   ) : null}
-                  {notification.oldTaskInfos.oldIntentInfo !==
-                  notification.newTaskInfos.newIntentInfo ? (
+                  {!notification.oldTask.oldIntentInfo || notification.oldTask.oldIntentInfo !==
+                  task.intentInfo ? (
                     <tr>
                       <th>Intent of Task</th>
-                      <td>{notification.oldTaskInfos.oldIntentInfo}</td>
-                      <td>{notification.newTaskInfos.newIntentInfo}</td>
+                      <td>{!notification.oldTask.oldIntentInfo ? '' : notification.oldTask.oldIntentInfo}</td>
+                      <td>{task.intentInfo}</td>
                       <td>
                         <DiffedText
-                          oldText={notification.oldTaskInfos.oldIntentInfo}
-                          newText={notification.newTaskInfos.newIntentInfo}
+                          oldText={!notification.oldTask.oldIntentInfo ? '' : notification.oldTask.oldIntentInfo}
+                          newText={task.intentInfo}
                         />
                       </td>
                     </tr>
                   ) : null}
-                  {notification.oldTaskInfos.oldEndstateInfo !==
-                  notification.newTaskInfos.newEndstateInfo ? (
+                  {!notification.oldTask.oldEndstateInfo || notification.oldTask.oldEndstateInfo !==
+                  task.endstateInfo ? (
                     <tr>
                       <th>Task Endstate</th>
-                      <td>{notification.oldTaskInfos.oldEndstateInfo}</td>
-                      <td>{notification.newTaskInfos.newEndstateInfo}</td>
+                      <td>{!notification.oldTask.oldEndstateInfo ? '' : notification.oldTask.oldEndstateInfo}</td>
+                      <td>{task.endstateInfo}</td>
                       <td>
                         <DiffedText
-                          oldText={notification.oldTaskInfos.oldEndstateInfo}
-                          newText={notification.newTaskInfos.newEndstateInfo}
+                          oldText={!notification.oldTask.oldEndstateInfo ? '' : notification.oldTask.oldEndstateInfo}
+                          newText={task.endstateInfo}
                         />
                       </td>
                     </tr>
