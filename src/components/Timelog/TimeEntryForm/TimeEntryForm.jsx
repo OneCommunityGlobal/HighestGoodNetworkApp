@@ -74,6 +74,7 @@ const TimeEntryForm = (props) => {
   const [isTangibleInfoModalVisible, setTangibleInfoModalVisibleModalVisible] = useState(false);
   const [isInfoModalVisible, setInfoModalVisible] = useState(false);
   const [projects, setProjects] = useState([]);
+  const [tasks, setTasks] = useState([]);
 
   const fromTimer = !_.isEmpty(timer);
   const { userProfile, currentUserRole } = useSelector(getTimeEntryFormData);
@@ -108,6 +109,15 @@ const TimeEntryForm = (props) => {
       .catch((err) => {});
   }, []);
 
+  useEffect(() => {
+    axios
+      .get(`${ApiEndpoint}/tasks/userProfile?members=${userId}`)
+      .then((res) => {
+        setTasks(res?.data || []); 
+      })
+      .catch((err) => {});
+  }, []);
+
   const openModal = () =>
     setReminder((reminder) => ({
       ...reminder,
@@ -134,16 +144,24 @@ const TimeEntryForm = (props) => {
     setInputs({ ...inputs, ...timer });
   }, [timer]);
 
-  const projectOptions = projects.map((project) => (
+  const projectOrTaskOptions = projects.map((project) => (
     <option value={project._id} key={project._id}>
       {project.projectName}
     </option>
   ));
-  projectOptions.unshift(
+  projectOrTaskOptions.unshift(
     <option value="" key="none" disabled>
       Select Project/Task
     </option>,
   );
+
+  const taskOptions = tasks.map((task) => (
+    <option value={task._id} key={task._id}>
+      {task.taskName}
+    </option>
+  ));
+
+  projectOrTaskOptions.push(taskOptions)
 
   const getEditMessage = () => {
     let editCount = 0;
@@ -478,7 +496,7 @@ const TimeEntryForm = (props) => {
                 value={inputs.projectId}
                 onChange={handleInputChange}
               >
-                {projectOptions}
+                {projectOrTaskOptions}
               </Input>
               {'projectId' in errors && (
                 <div className="text-danger">

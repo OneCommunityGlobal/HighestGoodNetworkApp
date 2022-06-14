@@ -219,7 +219,7 @@ class Timelog extends Component {
     ));
     projectOptions.unshift(
       <option value="all" key="all">
-        All Projects (Default)
+        All Projects and Tasks (Default)
       </option>,
     );
 
@@ -484,7 +484,7 @@ class Timelog extends Component {
                       <Form inline className="mb-2">
                         <FormGroup>
                           <Label for="projectSelected" className="mr-1 ml-1 mb-1 align-top">
-                            Filter Entries by Project:
+                            Filter Entries by Project and Task:
                           </Label>
                           <Input
                             type="select"
