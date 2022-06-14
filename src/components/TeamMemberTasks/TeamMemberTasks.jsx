@@ -17,7 +17,7 @@ import { getTeamMemberTasksData } from './selectors';
 import './style.css';
 
 const TeamMemberTasks = () => {
-  const [taskNotificationModal, setTaskNotificationModal] = useState(false);
+  const [showTaskNotificationModal, setTaskNotificationModal] = useState(false);
   const [currentTaskNotifications, setCurrentTaskNotifications] = useState([]);
 
   const { isLoading, usersWithTasks } = useSelector(getTeamMemberTasksData);
@@ -27,7 +27,7 @@ const TeamMemberTasks = () => {
 
   const handleOpenTaskNotificationModal = taskNotifications => {
     setCurrentTaskNotifications(taskNotifications);
-    setTaskNotificationModal(!taskNotificationModal);
+    setTaskNotificationModal(!showTaskNotificationModal);
   };
   
   const handleTaskNotificationRead = () => {
@@ -51,7 +51,7 @@ const TeamMemberTasks = () => {
       });
       setTeams(newTeamsState);
       setCurrentTaskNotifications([]);
-      setTaskNotificationModal(!taskNotificationModal);
+      setTaskNotificationModal(!showTaskNotificationModal);
     });
   };
 
@@ -86,9 +86,7 @@ const TeamMemberTasks = () => {
                         }}
                       />
                     }
-                    {taskNotificationModal && 
-                      <TaskDifferenceModal task={task} taskNotifications={task.taskNotifications} onApprove={handleTaskNotificationRead} />
-                    }
+                    <TaskDifferenceModal isOpen={showTaskNotificationModal} task={task} onApprove={handleTaskNotificationRead} />
                   </p>
               ))}
           </td>
@@ -125,10 +123,6 @@ const TeamMemberTasks = () => {
           {isLoading ? <Loading /> : renderTeamsList()}
         </tbody>
       </Table>
-
-      {/* {taskNotificationModal && 
-        <TaskDifferenceModal taskNotification={taskNotification} onApprove={handleTaskNotificationRead} />
-      } */}
     </div>
   );
 };
