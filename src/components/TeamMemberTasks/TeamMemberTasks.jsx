@@ -17,7 +17,7 @@ import { getTeamMemberTasksData } from './selectors';
 import './style.css';
 
 const TeamMemberTasks = () => {
-  const [isTaskNotificationModalOpen, setIsTaskNotificationModalOpen] = useState(false);
+  const [taskNotificationModal, setTaskNotificationModal] = useState(false);
   const [currentTaskNotifications, setCurrentTaskNotifications] = useState([]);
 
   const { isLoading, usersWithTasks } = useSelector(getTeamMemberTasksData);
