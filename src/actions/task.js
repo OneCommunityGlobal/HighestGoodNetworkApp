@@ -6,15 +6,16 @@ import axios from 'axios';
 import { fetchTeamMembersTaskSuccess, fetchTeamMembersTaskBegin, fetchTeamMembersTaskError } from 'components/TeamMemberTasks/actions';
 import * as types from '../constants/task';
 import { ENDPOINTS } from '../utils/URL';
+import { createOrUpdateTaskNotificationHTTP } from './taskNotification';
 
-const selectFetchTeamMembersTaskData = (state) => state.auth.userId;
+const selectFetchTeamMembersTaskData = (state) => state.auth.user.userid;
 
 export const fetchTeamMembersTask = () => async (dispatch, getState) => {
   try {
     const state = getState();
-    const userId = selectFetchTeamMembersTaskData(state); // TODO: fix this
+    const userId = selectFetchTeamMembersTaskData(state);
     dispatch(fetchTeamMembersTaskBegin());
-    const response = await axios.get(ENDPOINTS.TEAM_MEMBER_TASKS('607b0ff930d5080017c0adad'));
+    const response = await axios.get(ENDPOINTS.TEAM_MEMBER_TASKS(userId));
     dispatch(fetchTeamMembersTaskSuccess(response.data));
   } catch (error) {
     dispatch(fetchTeamMembersTaskError());
@@ -308,7 +309,7 @@ export const fetchAllTasks = (wbsId, level = 0, mother = null) => {
   };
 };
 
-export const updateTask = (taskId, updatedTask) => {
+export const updateTask = (taskId, updatedTask, oldTask) => {
   const url = ENDPOINTS.TASK_UPDATE(taskId);
   return async (dispatch) => {
     let status = 200;
@@ -316,6 +317,10 @@ export const updateTask = (taskId, updatedTask) => {
     try {
       const res = await axios.put(url, updatedTask);
       task = res.data;
+
+      const oldTask = 
+      const userIds = task.resources.map(resource => resource.userID);
+      createOrUpdateTaskNotificationHTTP(taskId, oldTask, userIds);
     } catch (err) {
       status = 400;
     }
