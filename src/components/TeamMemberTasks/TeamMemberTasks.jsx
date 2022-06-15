@@ -5,7 +5,7 @@
 import React, { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
-import { Table, Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
+import { Table, Button, Modal, ModalHeader, ModalBody, ModalFooter, Progress } from 'reactstrap';
 import moment from 'moment';
 import _ from 'lodash';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -18,6 +18,8 @@ import { fetchAllManagingTeams } from '../../actions/team';
 import { getUserProfile } from '../../actions/userProfile';
 import Loading from '../common/Loading';
 import DiffedText from './DiffedText';
+import { getcolor } from '../../utils/effortColors'
+
 
 const TeamMemberTasks = props => {
   const [fetched, setFetched] = useState(false);
@@ -343,7 +345,28 @@ const TeamMemberTasks = props => {
                 </p>
               ))}
           </td>
-          <td>tempprogress</td>
+
+          {/* progress bar implementation */}
+          <td className='team-task-hours'>  
+          {member.tasks &&
+              member.tasks.map((task, index) => (
+   
+                <div key={`${task._id}${index}`}>
+                  <span>
+                  {`${parseFloat(task.hoursLogged.toFixed(2))} 
+                    of 
+                  ${parseFloat(task.estimatedHours.toFixed(2))}`}
+                  </span>
+                  <Progress 
+                    color={(task.hoursLogged > task.estimatedHours) ? 
+                          getcolor(0) : 
+                          getcolor(task.estimatedHours - task.hoursLogged)}
+
+                    value={((task.hoursLogged / task.estimatedHours) * 100)}
+                    />
+                </div>
+            ))}
+          </td>             
         </tr>
       );
     });
