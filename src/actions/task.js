@@ -9,6 +9,7 @@ import { ENDPOINTS } from '../utils/URL';
 import { createOrUpdateTaskNotificationHTTP } from './taskNotification';
 
 const selectFetchTeamMembersTaskData = (state) => state.auth.user.userid;
+const selectUpdateTaskData = (state, taskId) => state.tasks.taskItems.filter(({_id}) => _id === taskId);
 
 export const fetchTeamMembersTask = () => async (dispatch, getState) => {
   try {
@@ -309,24 +310,21 @@ export const fetchAllTasks = (wbsId, level = 0, mother = null) => {
   };
 };
 
-export const updateTask = (taskId, updatedTask, oldTask) => {
-  const url = ENDPOINTS.TASK_UPDATE(taskId);
-  return async (dispatch) => {
-    let status = 200;
-    let task = {};
-    try {
-      const res = await axios.put(url, updatedTask);
-      task = res.data;
+export const updateTask = (taskId, updatedTask) => async (dispatch, getState) => {
+  let status = 200;
+  try {
+    const state = getState();
+    const oldTask = selectUpdateTaskData(state, taskId);
+    //dispatch(fetchTeamMembersTaskBegin());
+    const response = await axios.put(ENDPOINTS.TASK_UPDATE(taskId), updatedTask);
+    const userIds = response.data.resources.map(resource => resource.userID);
+    await createOrUpdateTaskNotificationHTTP(taskId, oldTask, userIds);
+  } catch (error) {
+    //dispatch(fetchTeamMembersTaskError());
+    status = 400;
+  }
 
-      const oldTask = 
-      const userIds = task.resources.map(resource => resource.userID);
-      createOrUpdateTaskNotificationHTTP(taskId, oldTask, userIds);
-    } catch (err) {
-      status = 400;
-    }
-
-    await dispatch(putUpdatedTask(updatedTask, taskId, status));
-  };
+  await dispatch(putUpdatedTask(updatedTask, taskId, status));
 };
 
 export const deleteTask = (taskId, mother) => {
