@@ -316,8 +316,8 @@ export const updateTask = (taskId, updatedTask) => async (dispatch, getState) =>
     const state = getState();
     const oldTask = selectUpdateTaskData(state, taskId);
     //dispatch(fetchTeamMembersTaskBegin());
-    const response = await axios.put(ENDPOINTS.TASK_UPDATE(taskId), updatedTask);
-    const userIds = response.data.resources.map(resource => resource.userID);
+    await axios.put(ENDPOINTS.TASK_UPDATE(taskId), updatedTask);
+    const userIds = updatedTask.resources.map(resource => resource.userID);
     await createOrUpdateTaskNotificationHTTP(taskId, oldTask, userIds);
   } catch (error) {
     //dispatch(fetchTeamMembersTaskError());
