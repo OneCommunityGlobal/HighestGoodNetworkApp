@@ -26,7 +26,7 @@ import AboutModal from './AboutModal';
 import TangibleInfoModal from './TangibleInfoModal';
 import ReminderModal from './ReminderModal';
 import axios from 'axios';
-import { ApiEndpoint } from '../../../utils/URL';
+import { ENDPOINTS } from '../../../utils/URL';
 import hasPermission from 'utils/permissions';
 import { getTimeEntryFormData } from './selectors';
 
@@ -102,20 +102,20 @@ const TimeEntryForm = (props) => {
 
   useEffect(() => {
     axios
-      .get(`${ApiEndpoint}/userprofile/${userId}`)
+      .get(ENDPOINTS.USER_PROFILE(userId))
       .then((res) => {
         setProjects(res?.data?.projects || []);
       })
-      .catch((err) => {});
+      .catch(err => console.log(err));
   }, []);
 
   useEffect(() => {
     axios
-      .get(`${ApiEndpoint}/tasks/userProfile?members=${userId}`)
+      .get(ENDPOINTS.TASKS_BY_USERID(userId))
       .then((res) => {
         setTasks(res?.data || []); 
       })
-      .catch((err) => {});
+      .catch(err => console.log(err));
   }, []);
 
   const openModal = () =>
