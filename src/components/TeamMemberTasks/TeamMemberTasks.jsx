@@ -19,13 +19,15 @@ import './style.css';
 const TeamMemberTasks = () => {
   const [showTaskNotificationModal, setTaskNotificationModal] = useState(false);
   const [currentTaskNotifications, setCurrentTaskNotifications] = useState([]);
+  const [currentTask, setCurrentTask] = useState();
 
   const { isLoading, usersWithTasks } = useSelector(getTeamMemberTasksData);
 
   const dispatch = useDispatch();
   useEffect(() => {dispatch(fetchTeamMembersTask())}, []);
 
-  const handleOpenTaskNotificationModal = taskNotifications => {
+  const handleOpenTaskNotificationModal = (task, taskNotifications) => {
+    setCurrentTask(task);
     setCurrentTaskNotifications(taskNotifications);
     setTaskNotificationModal(!showTaskNotificationModal);
   };
@@ -82,11 +84,10 @@ const TeamMemberTasks = () => {
                         className="team-member-tasks-bell"
                         icon={faBell}
                         onClick={() => {
-                          handleOpenTaskNotificationModal(task.taskNotifications);
+                          handleOpenTaskNotificationModal(task, task.taskNotifications);
                         }}
                       />
                     }
-                    <TaskDifferenceModal isOpen={showTaskNotificationModal} task={task} onApprove={handleTaskNotificationRead} />
                   </p>
               ))}
           </td>
@@ -100,6 +101,7 @@ const TeamMemberTasks = () => {
   return (
     <div className="container team-member-tasks">
       <h1>Team Member Tasks</h1>
+      <TaskDifferenceModal isOpen={showTaskNotificationModal} task={currentTask} toggle={handleOpenTaskNotificationModal} onApprove={handleTaskNotificationRead} />
       <Table>
         <thead>
           <tr>

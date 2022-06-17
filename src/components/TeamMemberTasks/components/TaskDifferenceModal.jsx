@@ -2,11 +2,11 @@ import React from 'react';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Table } from 'reactstrap';
 import DiffedText from './DiffedText';
 
-export const TaskDifferenceModal = ({ task, onApprove, isOpen }) => (
-  <Modal size="xl" isOpen={isOpen}>
-    <ModalHeader>Task Info Changes</ModalHeader>
+export const TaskDifferenceModal = ({ task, onApprove, isOpen, toggle }) => (
+  <Modal size="xl" isOpen={isOpen} toggle={toggle}>
+    <ModalHeader toggle={toggle}>Task Info Changes</ModalHeader>
     <ModalBody>
-      {task.taskNotifications.map((notification) => (
+      {/* {task.taskNotifications.map((notification) => (
             <React.Fragment key={notification._id}>
               <h4>{`${task.taskNum} ${task.taskName}`}</h4>
               <Table striped>
@@ -64,7 +64,7 @@ export const TaskDifferenceModal = ({ task, onApprove, isOpen }) => (
                 </tbody>
               </Table>
             </React.Fragment>
-          ))}
+          ))} */}
     </ModalBody>
     <ModalFooter>
       <Button color="primary" onClick={onApprove}>
