@@ -252,27 +252,6 @@ export const importTask = (newTask, wbsId) => {
   };
 };
 
-export const addNewTask = (newTask, wbsId) => {
-  const url = ENDPOINTS.TASK(wbsId);
-  return async (dispatch) => {
-    let status = 200;
-    let _id = null;
-    let task = {};
-
-    try {
-      const res = await axios.post(url, newTask);
-      _id = res.data._id;
-      status = res.status;
-      task = res.data;
-    } catch (err) {
-      status = 400;
-    }
-
-    newTask._id = _id;
-    await dispatch(postNewTask(task, status));
-  };
-};
-
 export const updateNumList = (wbsId, list) => {
   const url = ENDPOINTS.TASKS_UPDATE + '/num';
   return async (dispatch) => {
@@ -308,6 +287,26 @@ export const fetchAllTasks = (wbsId, level = 0, mother = null) => {
       dispatch(setTasksError(err));
     }
   };
+};
+
+export const addNewTask = (newTask, wbsId) => async (dispatch, getState) => {
+  let status = 200;
+  let _id = null;
+  let task = {};
+  try {
+    //dispatch(fetchTeamMembersTaskBegin());
+    const res = await axios.post(ENDPOINTS.TASK(wbsId), newTask);
+    _id = res.data._id;
+    status = res.status;
+    task = res.data;
+    const userIds = task.resources.map(resource => resource.userID);
+    await createOrUpdateTaskNotificationHTTP(task._id, {}, userIds);
+  } catch (error) {
+    //dispatch(fetchTeamMembersTaskError());
+    status = 400;
+  }
+  newTask._id = _id;
+  await dispatch(postNewTask(task, status));
 };
 
 export const updateTask = (taskId, updatedTask) => async (dispatch, getState) => {
