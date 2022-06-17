@@ -24,7 +24,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import { UserRole } from './utils/enums';
 import ForgotPassword from './components/Login/ForgotPassword';
 import { PeopleReport } from './components/Reports/PeopleReport';
-import ProjectReport from './components/Reports/ProjectReport';
+import { ProjectReport } from './components/Reports/ProjectReport';
 import TeamReport from './components/Reports/TeamReport';
 import Inventory from './components/Inventory';
 import BadgeManagement from './components/Badge/BadgeManagement';
