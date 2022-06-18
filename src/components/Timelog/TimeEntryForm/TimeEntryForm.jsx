@@ -255,7 +255,7 @@ const TimeEntryForm = (props) => {
 
     if (edit) {
       if (!reminder.notice) {
-        timeEntryStatus = await dispatch(editTimeEntry(data._id, timeEntry));
+        timeEntryStatus = await dispatch(editTimeEntry(data._id, timeEntry, data.dateOfWork));
       }
     } else {
       timeEntryStatus = await dispatch(postTimeEntry(timeEntry));
