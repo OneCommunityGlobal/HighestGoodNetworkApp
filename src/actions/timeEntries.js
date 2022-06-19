@@ -67,12 +67,12 @@ export const postTimeEntry = (timeEntry) => {
   };
 };
 
-export const editTimeEntry = (timeEntryId, timeEntry) => {
+export const editTimeEntry = (timeEntryId, timeEntry, oldDateOfWork) => {
   const url = ENDPOINTS.TIME_ENTRY_CHANGE(timeEntryId);
   return async (dispatch) => {
     try {
       const res = await axios.put(url, timeEntry);
-      dispatch(updateTimeEntries(timeEntry));
+      dispatch(updateTimeEntries(timeEntry, oldDateOfWork));
       return res.status;
     } catch (e) {
       return e.response.status;
@@ -93,11 +93,17 @@ export const deleteTimeEntry = (timeEntry) => {
   };
 };
 
-const updateTimeEntries = (timeEntry) => {
+const updateTimeEntries = (timeEntry, oldDateOfWork) => {
   const startOfWeek = moment().startOf('week');
-  const offset = Math.ceil(startOfWeek.diff(timeEntry.dateOfWork, 'week', true));
 
   return async (dispatch) => {
+    if (oldDateOfWork) {
+      const oldOffset = Math.ceil(startOfWeek.diff(oldDateOfWork, 'week', true));
+      dispatch(getTimeEntriesForWeek(timeEntry.personId, oldOffset));
+    }
+
+    const offset = Math.ceil(startOfWeek.diff(timeEntry.dateOfWork, 'week', true));
+
     if (offset <= 2 && offset >= 0) {
       dispatch(getTimeEntriesForWeek(timeEntry.personId, offset));
     }
