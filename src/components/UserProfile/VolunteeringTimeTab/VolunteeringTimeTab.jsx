@@ -103,13 +103,13 @@ const WeeklyCommitedHours = (props) => {
 const TotalTangibleHours = (props) => {
   var sum=0;
   props.userProfile.categoryTangibleHrs.forEach(object=>{
-    sum+=object.hrs;
+    sum+=Number(object.hrs);
   }) 
   console.log(props.userProfile);
   if (!props.isUserAdmin) {
     // return <p>{ (Object.values(props.userProfile.hoursByCategory).reduce((a,b)=>a+b))}</p>;
     return <p>
-      {sum.toFixed(2)}
+      {Number(sum).toFixed(2)}
     </p>
   }
   return (
@@ -263,11 +263,20 @@ const ViewTab = (props) => {
                   <Input
                       type="number"
                       id={`${key}Hours`}
-                      value={key.hrs.toFixed(2)}
-                      onChange={(e) => {
-                        key.hrs=Math.floor(e.target.value);
-                        console.log(key.hrs);
-                        props.setChanged(true);
+                      value={Number(key.hrs).toFixed(2)}
+                      onChange={(e) => {  
+                        let temp;                 
+                        for(var i in props.userProfile.categoryTangibleHrs){
+                          if(props.userProfile.categoryTangibleHrs[i].category=== key.category){
+                            props.userProfile.categoryTangibleHrs[i].hrs=e.target.value;
+                            temp=props.userProfile.categoryTangibleHrs;
+                          }
+                        }
+                        setUserProfile({ 
+                          ...props.userProfile, 
+                          categoryTangibleHrs: temp
+                               });
+                        props.setChanged(true); 
                       }}
                       placeholder={`Total Tangible ${capitalize(key.category)} Hours`}
                     />
