@@ -101,7 +101,7 @@ const TeamMemberTasks = () => {
   return (
     <div className="container team-member-tasks">
       <h1>Team Member Tasks</h1>
-      <TaskDifferenceModal isOpen={showTaskNotificationModal} task={currentTask} toggle={handleOpenTaskNotificationModal} onApprove={handleTaskNotificationRead} />
+      <TaskDifferenceModal isOpen={showTaskNotificationModal} taskNotifications={currentTaskNotifications} task={currentTask} toggle={handleOpenTaskNotificationModal} onApprove={handleTaskNotificationRead} />
       <Table>
         <thead>
           <tr>
