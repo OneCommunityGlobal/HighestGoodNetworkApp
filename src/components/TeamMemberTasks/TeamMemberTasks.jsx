@@ -351,7 +351,7 @@ const TeamMemberTasks = props => {
                   
                   {/* progress bar implementation */}
                   <td className='team-task-hours'>  
-                    <div key={`${task._id}${index}`}>
+                    <div>
                       <span>
                       {`${parseFloat(task.hoursLogged.toFixed(2))} 
                         of 
