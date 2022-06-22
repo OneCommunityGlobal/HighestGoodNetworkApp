@@ -5,6 +5,8 @@ import { capitalize } from 'lodash';
 import style from '../UserProfileEdit/ToggleSwitch/ToggleSwitch.module.scss';
 import { ENDPOINTS } from 'utils/URL';
 import axios from 'axios';
+import Alert from 'reactstrap/lib/Alert';
+
 
 const StartDate = (props) => {
   if (!props.canEdit) {
@@ -19,6 +21,9 @@ const StartDate = (props) => {
       onChange={(e) => {
         props.setChanged(true);
         props.setUserProfile({ ...props.userProfile, createdDate: e.target.value });
+        <Alert color="warning">
+          Please click on "Save changes" to save the changes you have made.{' '}
+        </Alert>
       }}
       placeholder="Start Date"
       invalid={!props.canEdit}
@@ -47,6 +52,9 @@ const EndDate = (props) => {
       onChange={(e) => {
         props.setChanged(true);
         props.setUserProfile({ ...props.userProfile, endDate: e.target.value });
+        <Alert color="warning">
+          Please click on "Save changes" to save the changes you have made.{' '}
+        </Alert>
       }}
       placeholder="End Date"
       invalid={!props.canEdit}
@@ -72,6 +80,9 @@ const WeeklySummaryReqd = (props) => {
             weeklySummaryNotReq: !props.userProfile.weeklySummaryNotReq,
           });
           props.setChanged(true);
+          <Alert color="warning">
+          Please click on "Save changes" to save the changes you have made.{' '}
+        </Alert>
         }}
         checked={props.userProfile.weeklySummaryNotReq}
       />
@@ -94,6 +105,9 @@ const WeeklyCommitedHours = (props) => {
       onChange={(e) => {
         props.setUserProfile({ ...props.userProfile, weeklyComittedHours: e.target.value });
         props.setChanged(true);
+        <Alert color="warning">
+          Please click on "Save changes" to save the changes you have made.{' '}
+        </Alert>
       }}
       placeholder="Weekly Committed Hours"
       // invalid={!props.isUserAdmin}
@@ -277,6 +291,9 @@ const ViewTab = (props) => {
                           categoryTangibleHrs: temp
                                });
                         props.setChanged(true); 
+                        <Alert color="warning">
+                          Please click on "Save changes" to save the changes you have made.{' '}
+                        </Alert>
                       }}
                       placeholder={`Total Tangible ${capitalize(key.category)} Hours`}
                     />
