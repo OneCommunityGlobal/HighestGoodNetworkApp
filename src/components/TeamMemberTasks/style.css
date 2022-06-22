@@ -6,6 +6,15 @@
   color: black;
 }
 
-.team-task-hours {
+.team-member-tasks .team-member-tasks-headers {
+  vertical-align: middle;
+}
+
+.team-member-tasks .team-member-tasks-subtable {
+  margin: 0;
   text-align: center;
+}
+
+.team-task-hours {
+  width: 35%;
 }
