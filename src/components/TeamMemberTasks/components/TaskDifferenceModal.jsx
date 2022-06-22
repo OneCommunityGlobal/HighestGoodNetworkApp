@@ -2,12 +2,41 @@ import React from 'react';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Table } from 'reactstrap';
 import DiffedText from './DiffedText';
 
+const resourcesToString = (resources) => {
+  if (!resources) {
+    return "";
+  }
+  const namesString = resources.reduce((acc, resource) => acc + "," + resource.name, "");
+  const trimmed = namesString.replace(/(^,)|(,$)/g, '');
+  return trimmed;
+};
+
+const booleanToString = (bool) => {
+  if (bool == null) {
+    return "";
+  }
+  return bool.toString();
+}
+
+const numberToString = (num) => {
+  if (num == null) {
+    return "";
+  }
+  return num.toString();
+}
+
+const arrayToString = (arr) => {
+  if (arr == null) {
+    return "";
+  }
+  return arr.reduce((acc, ele) => acc + "\n " + ele, "").trim();
+}
 
 export const TaskDifferenceModal = ({ taskNotifications, task, onApprove, isOpen, toggle }) => (
   <Modal size="xl" isOpen={isOpen} toggle={() => toggle(undefined, [])}>
     <ModalHeader toggle={() => toggle(undefined, [])}>Task Info Changes</ModalHeader>
     <ModalBody>
-      {taskNotifications.map((notification) => (
+      {taskNotifications.map((taskNotification) => (
           <table className="table table-bordered">
             <tbody>
               {/* <tr>
@@ -19,31 +48,31 @@ export const TaskDifferenceModal = ({ taskNotifications, task, onApprove, isOpen
               <tr>
                 <td scope="col">Task Name</td>
                 <td scope="col">
-                  {/* Task Name */}
+                  <DiffedText oldText={taskNotification.oldTask.oldTaskName} newText={task.taskName}/>
                 </td>
               </tr>
               <tr>
                 <td scope="col">Priority</td>
                 <td scope="col">
-                  {/* Priority */}
+                <DiffedText oldText={taskNotification.oldTask.oldPriority} newText={task.priority}/>
                 </td>
               </tr>
               <tr>
                 <td scope="col">Resources</td>
                 <td scope="col">
-                  {/* Resources */}
+                  <DiffedText oldText={resourcesToString(taskNotification.oldTask.oldResources)} newText={resourcesToString(task.resources)}/>
                 </td>
               </tr>
               <tr>
                 <td scope="col">Assigned</td>
                 <td scope="col">
-                  {/* isAssigned */}
+                  <DiffedText oldText={booleanToString(taskNotification.oldTask.oldIsAssigned)} newText={booleanToString(task.isAssigned)}/>
                 </td>
               </tr>
               <tr>
                 <td scope="col">Status</td>
                 <td scope="col">
-                  {/* status */}
+                  <DiffedText oldText={taskNotification.oldTask.oldStatus} newText={task.status}/>
                 </td>
               </tr>
               <tr>
@@ -51,7 +80,7 @@ export const TaskDifferenceModal = ({ taskNotifications, task, onApprove, isOpen
                   Hours - Best-case
                 </td>
                 <td scope="col" data-tip="Hours - Best-case">
-                  {/* hours best case */}
+                  <DiffedText oldText={numberToString(taskNotification.oldTask.oldHoursBest)} newText={numberToString(task.hoursBest)}/>
                 </td>
               </tr>
               <tr>
@@ -59,7 +88,7 @@ export const TaskDifferenceModal = ({ taskNotifications, task, onApprove, isOpen
                   Hours - Worst-case
                 </td>
                 <td scope="col" data-tip="Hours - Worst-case">
-                  {/* hours worst case */}
+                  <DiffedText oldText={numberToString(taskNotification.oldTask.oldHoursWorst)} newText={numberToString(task.hoursWorst)}/>
                 </td>
               </tr>
               <tr>
@@ -67,7 +96,7 @@ export const TaskDifferenceModal = ({ taskNotifications, task, onApprove, isOpen
                   Hours - Most-case
                 </td>
                 <td scope="col" data-tip="Hours - Most-case">
-                  {/* hours most case */}
+                  <DiffedText oldText={numberToString(taskNotification.oldTask.oldHoursMost)} newText={numberToString(task.hoursMost)}/>
                 </td>
               </tr>
               <tr>
@@ -75,38 +104,44 @@ export const TaskDifferenceModal = ({ taskNotifications, task, onApprove, isOpen
                   Estimated Hours
                 </td>
                 <td scope="col" data-tip="Estimated Hours">
-                  {/* estimated hours */}
+                  <DiffedText oldText={numberToString(taskNotification.oldTask.oldEstimatedHours)} newText={numberToString(task.estimatedHours)}/>
                 </td>
               </tr>
 
               <tr>
                 <td scope="col">Links</td>
                 <td scope="col">
-                  {/* links */}
+                  <DiffedText oldText={arrayToString(taskNotification.oldTask.oldLinks)} newText={arrayToString(task.links)}/>
                 </td>
               </tr>
               <tr>
                 <td scope="col">Classification</td>
                 <td scope="col">
-                  {/* classification */}
+                  <DiffedText oldText={taskNotification.oldTask.oldClassification} newText={task.classification}/>
                 </td>
               </tr>
               <tr>
                 <td scope="col" colSpan="2">
                   Why this Task is Important
-                  {/* why important */}
+                </td>
+                <td>
+                  <DiffedText oldText={taskNotification.oldTask.oldTaskWhyInfo} newText={task.taskWhyInfo}/>
                 </td>
               </tr>
               <tr>
                 <td scope="col" colSpan="2">
                   Design Intent
-                  {/* intent */}
+                </td>
+                <td>
+                  <DiffedText oldText={taskNotification.oldTask.oldIntentInfo} newText={task.intentInfo}/>
                 </td>
               </tr>
               <tr>
                 <td scope="col" colSpan="2">
                   Endstate
-                  {/* end info */}
+                </td>
+                <td>
+                  <DiffedText oldText={taskNotification.oldTask.oldEndStateInfo} newText={task.endStateInfo}/>
                 </td>
               </tr>
               <tr>

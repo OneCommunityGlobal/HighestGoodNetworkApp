@@ -1,7 +1,13 @@
 import React from 'react';
 import * as Diff from 'diff';
 
-const DiffedText = ({ oldText, newText }) => (
+const DiffedText = ({ oldText, newText }) => {
+  if (oldText == null) {
+    oldText = "";
+  } if (newText == null) {
+    newText = "";
+  }
+  return (
   <>
     {Diff.diffWords(oldText, newText, { ignoreCase: true }).map((part, index) => (
       <span
@@ -12,5 +18,5 @@ const DiffedText = ({ oldText, newText }) => (
       </span>
     ))}
   </>
-);
+)};
 export default DiffedText;
