@@ -29,7 +29,7 @@ const arrayToString = (arr) => {
   if (arr == null) {
     return "";
   }
-  return arr.reduce((acc, ele) => acc + "\n " + ele, "").trim();
+  return arr.reduce((acc, ele) => acc + "\n" + ele, "").trim();
 }
 
 const trimParagraphTags = (str) => {
