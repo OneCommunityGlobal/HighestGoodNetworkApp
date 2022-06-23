@@ -32,6 +32,24 @@ const arrayToString = (arr) => {
   return arr.reduce((acc, ele) => acc + "\n " + ele, "").trim();
 }
 
+const trimParagraphTags = (str) => {
+  if (str == null) {
+    return "";
+  }
+  return str.replace(/(<p[^>]+?>|<p>|<\/p>)/img, "");
+}
+
+const datetimeToDate = (datetime) => {
+  if (datetime == null) {
+    return "";
+  }
+  const date = new Date(datetime);
+  const day = date.getUTCDate();
+  const month = date.getUTCMonth() + 1;
+  const year = date.getUTCFullYear();
+  return day + "/" + month + "/" + year;
+}
+
 export const TaskDifferenceModal = ({ taskNotifications, task, onApprove, isOpen, toggle }) => (
   <Modal size="xl" isOpen={isOpen} toggle={() => toggle(undefined, [])}>
     <ModalHeader toggle={() => toggle(undefined, [])}>Task Info Changes</ModalHeader>
@@ -121,32 +139,33 @@ export const TaskDifferenceModal = ({ taskNotifications, task, onApprove, isOpen
                 </td>
               </tr>
               <tr>
-                <td scope="col" colSpan="2">
+                <td scope="col">
                   Why this Task is Important
                 </td>
                 <td>
-                  <DiffedText oldText={taskNotification.oldTask.oldTaskWhyInfo} newText={task.taskWhyInfo}/>
+                  <DiffedText oldText={trimParagraphTags(taskNotification.oldTask.oldWhyInfo)} newText={trimParagraphTags(task.whyInfo)}/>
                 </td>
               </tr>
               <tr>
-                <td scope="col" colSpan="2">
+                <td scope="col">
                   Design Intent
                 </td>
                 <td>
-                  <DiffedText oldText={taskNotification.oldTask.oldIntentInfo} newText={task.intentInfo}/>
+                  <DiffedText oldText={trimParagraphTags(taskNotification.oldTask.oldIntentInfo)} newText={trimParagraphTags(task.intentInfo)}/>
                 </td>
               </tr>
               <tr>
-                <td scope="col" colSpan="2">
+                <td scope="col">
                   Endstate
                 </td>
                 <td>
-                  <DiffedText oldText={taskNotification.oldTask.oldEndStateInfo} newText={task.endStateInfo}/>
+                  <DiffedText oldText={trimParagraphTags(taskNotification.oldTask.oldEndstateInfo)} newText={trimParagraphTags(task.endstateInfo)}/>
                 </td>
               </tr>
               <tr>
                 <td scope="col">Start Date</td>
                 <td scope="col">
+                  <DiffedText oldText={datetimeToDate(taskNotification.oldTask.oldStartedDatetime)} newText={datetimeToDate(task.startedDatetime)}/>
                   {/* <div>
                     <DayPickerInput
                       format={FORMAT}
@@ -164,6 +183,7 @@ export const TaskDifferenceModal = ({ taskNotifications, task, onApprove, isOpen
               <tr>
                 <td scope="col">End Date</td>
                 <td scope="col">
+                  <DiffedText oldText={datetimeToDate(taskNotification.oldTask.oldDueDatetime)} newText={datetimeToDate(task.dueDatetime)}/>
                   {/* <DayPickerInput
                     format={FORMAT}
                     formatDate={formatDate}
