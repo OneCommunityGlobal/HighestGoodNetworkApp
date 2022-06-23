@@ -324,7 +324,7 @@ const TeamMemberTasks = props => {
               <tbody>
                 {member.tasks &&
                 member.tasks.map((task, index) => (
-                <tr key={`${task._id}${index}`}>
+                <tr key={`${task._id}${index}`} className='task-break'>
                   <td>
                     <p>
                       <Link

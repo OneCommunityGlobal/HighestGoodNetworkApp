@@ -18,3 +18,11 @@
 .team-task-hours {
   width: 35%;
 }
+
+.task-break {
+  border-bottom: 1px solid lightgray;
+}
+
+.task-break:last-of-type {
+  border-bottom: none;
+}
