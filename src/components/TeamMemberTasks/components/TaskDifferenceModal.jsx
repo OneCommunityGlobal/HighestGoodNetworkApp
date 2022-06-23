@@ -66,31 +66,31 @@ export const TaskDifferenceModal = ({ taskNotifications, task, onApprove, isOpen
               <tr>
                 <td scope="col">Task Name</td>
                 <td scope="col">
-                  <DiffedText oldText={taskNotification.oldTask.oldTaskName} newText={task.taskName}/>
+                  <DiffedText oldText={taskNotification.oldTask.taskName} newText={task.taskName}/>
                 </td>
               </tr>
               <tr>
                 <td scope="col">Priority</td>
                 <td scope="col">
-                <DiffedText oldText={taskNotification.oldTask.oldPriority} newText={task.priority}/>
+                <DiffedText oldText={taskNotification.oldTask.priority} newText={task.priority}/>
                 </td>
               </tr>
               <tr>
                 <td scope="col">Resources</td>
                 <td scope="col">
-                  <DiffedText oldText={resourcesToString(taskNotification.oldTask.oldResources)} newText={resourcesToString(task.resources)}/>
+                  <DiffedText oldText={resourcesToString(taskNotification.oldTask.resources)} newText={resourcesToString(task.resources)}/>
                 </td>
               </tr>
               <tr>
                 <td scope="col">Assigned</td>
                 <td scope="col">
-                  <DiffedText oldText={booleanToString(taskNotification.oldTask.oldIsAssigned)} newText={booleanToString(task.isAssigned)}/>
+                  <DiffedText oldText={booleanToString(taskNotification.oldTask.isAssigned)} newText={booleanToString(task.isAssigned)}/>
                 </td>
               </tr>
               <tr>
                 <td scope="col">Status</td>
                 <td scope="col">
-                  <DiffedText oldText={taskNotification.oldTask.oldStatus} newText={task.status}/>
+                  <DiffedText oldText={taskNotification.oldTask.status} newText={task.status}/>
                 </td>
               </tr>
               <tr>
@@ -98,7 +98,7 @@ export const TaskDifferenceModal = ({ taskNotifications, task, onApprove, isOpen
                   Hours - Best-case
                 </td>
                 <td scope="col" data-tip="Hours - Best-case">
-                  <DiffedText oldText={numberToString(taskNotification.oldTask.oldHoursBest)} newText={numberToString(task.hoursBest)}/>
+                  <DiffedText oldText={numberToString(taskNotification.oldTask.hoursBest)} newText={numberToString(task.hoursBest)}/>
                 </td>
               </tr>
               <tr>
@@ -106,7 +106,7 @@ export const TaskDifferenceModal = ({ taskNotifications, task, onApprove, isOpen
                   Hours - Worst-case
                 </td>
                 <td scope="col" data-tip="Hours - Worst-case">
-                  <DiffedText oldText={numberToString(taskNotification.oldTask.oldHoursWorst)} newText={numberToString(task.hoursWorst)}/>
+                  <DiffedText oldText={numberToString(taskNotification.oldTask.hoursWorst)} newText={numberToString(task.hoursWorst)}/>
                 </td>
               </tr>
               <tr>
@@ -114,7 +114,7 @@ export const TaskDifferenceModal = ({ taskNotifications, task, onApprove, isOpen
                   Hours - Most-case
                 </td>
                 <td scope="col" data-tip="Hours - Most-case">
-                  <DiffedText oldText={numberToString(taskNotification.oldTask.oldHoursMost)} newText={numberToString(task.hoursMost)}/>
+                  <DiffedText oldText={numberToString(taskNotification.oldTask.hoursMost)} newText={numberToString(task.hoursMost)}/>
                 </td>
               </tr>
               <tr>
@@ -122,20 +122,20 @@ export const TaskDifferenceModal = ({ taskNotifications, task, onApprove, isOpen
                   Estimated Hours
                 </td>
                 <td scope="col" data-tip="Estimated Hours">
-                  <DiffedText oldText={numberToString(taskNotification.oldTask.oldEstimatedHours)} newText={numberToString(task.estimatedHours)}/>
+                  <DiffedText oldText={numberToString(taskNotification.oldTask.estimatedHours)} newText={numberToString(task.estimatedHours)}/>
                 </td>
               </tr>
 
               <tr>
                 <td scope="col">Links</td>
                 <td scope="col">
-                  <DiffedText oldText={arrayToString(taskNotification.oldTask.oldLinks)} newText={arrayToString(task.links)}/>
+                  <DiffedText oldText={arrayToString(taskNotification.oldTask.links)} newText={arrayToString(task.links)}/>
                 </td>
               </tr>
               <tr>
                 <td scope="col">Classification</td>
                 <td scope="col">
-                  <DiffedText oldText={taskNotification.oldTask.oldClassification} newText={task.classification}/>
+                  <DiffedText oldText={taskNotification.oldTask.classification} newText={task.classification}/>
                 </td>
               </tr>
               <tr>
@@ -143,7 +143,7 @@ export const TaskDifferenceModal = ({ taskNotifications, task, onApprove, isOpen
                   Why this Task is Important
                 </td>
                 <td>
-                  <DiffedText oldText={trimParagraphTags(taskNotification.oldTask.oldWhyInfo)} newText={trimParagraphTags(task.whyInfo)}/>
+                  <DiffedText oldText={trimParagraphTags(taskNotification.oldTask.whyInfo)} newText={trimParagraphTags(task.whyInfo)}/>
                 </td>
               </tr>
               <tr>
@@ -151,7 +151,7 @@ export const TaskDifferenceModal = ({ taskNotifications, task, onApprove, isOpen
                   Design Intent
                 </td>
                 <td>
-                  <DiffedText oldText={trimParagraphTags(taskNotification.oldTask.oldIntentInfo)} newText={trimParagraphTags(task.intentInfo)}/>
+                  <DiffedText oldText={trimParagraphTags(taskNotification.oldTask.intentInfo)} newText={trimParagraphTags(task.intentInfo)}/>
                 </td>
               </tr>
               <tr>
@@ -159,13 +159,13 @@ export const TaskDifferenceModal = ({ taskNotifications, task, onApprove, isOpen
                   Endstate
                 </td>
                 <td>
-                  <DiffedText oldText={trimParagraphTags(taskNotification.oldTask.oldEndstateInfo)} newText={trimParagraphTags(task.endstateInfo)}/>
+                  <DiffedText oldText={trimParagraphTags(taskNotification.oldTask.endstateInfo)} newText={trimParagraphTags(task.endstateInfo)}/>
                 </td>
               </tr>
               <tr>
                 <td scope="col">Start Date</td>
                 <td scope="col">
-                  <DiffedText oldText={datetimeToDate(taskNotification.oldTask.oldStartedDatetime)} newText={datetimeToDate(task.startedDatetime)}/>
+                  <DiffedText oldText={datetimeToDate(taskNotification.oldTask.startedDatetime)} newText={datetimeToDate(task.startedDatetime)}/>
                   {/* <div>
                     <DayPickerInput
                       format={FORMAT}
@@ -183,7 +183,7 @@ export const TaskDifferenceModal = ({ taskNotifications, task, onApprove, isOpen
               <tr>
                 <td scope="col">End Date</td>
                 <td scope="col">
-                  <DiffedText oldText={datetimeToDate(taskNotification.oldTask.oldDueDatetime)} newText={datetimeToDate(task.dueDatetime)}/>
+                  <DiffedText oldText={datetimeToDate(taskNotification.oldTask.dueDatetime)} newText={datetimeToDate(task.dueDatetime)}/>
                   {/* <DayPickerInput
                     format={FORMAT}
                     formatDate={formatDate}

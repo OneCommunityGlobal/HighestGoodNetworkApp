@@ -9,7 +9,7 @@ import { ENDPOINTS } from '../utils/URL';
 import { createOrUpdateTaskNotificationHTTP } from './taskNotification';
 
 const selectFetchTeamMembersTaskData = (state) => state.auth.user.userid;
-const selectUpdateTaskData = (state, taskId) => state.tasks.taskItems.filter(({_id}) => _id === taskId);
+const selectUpdateTaskData = (state, taskId) => state.tasks.taskItems.find(({_id}) => _id === taskId);
 
 export const fetchTeamMembersTask = () => async (dispatch, getState) => {
   try {
