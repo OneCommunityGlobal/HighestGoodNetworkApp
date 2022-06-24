@@ -57,12 +57,12 @@ export const TaskDifferenceModal = ({ taskNotifications, task, onApprove, isOpen
       {taskNotifications.map((taskNotification) => (
           <table className="table table-bordered">
             <tbody>
-              {/* <tr>
+              <tr>
                 <td scope="col" data-tip="WBS ID">
                   WBS #
                 </td>
-                <td scope="col">{task.wbsId}</td>
-              </tr> */}
+                <td scope="col">{task.num}</td>
+              </tr>
               <tr>
                 <td scope="col">Task Name</td>
                 <td scope="col">
@@ -166,34 +166,12 @@ export const TaskDifferenceModal = ({ taskNotifications, task, onApprove, isOpen
                 <td scope="col">Start Date</td>
                 <td scope="col">
                   <DiffedText oldText={datetimeToDate(taskNotification.oldTask.startedDatetime)} newText={datetimeToDate(task.startedDatetime)}/>
-                  {/* <div>
-                    <DayPickerInput
-                      format={FORMAT}
-                      formatDate={formatDate}
-                      placeholder={`${dateFnsFormat(new Date(), FORMAT)}`}
-                      onDayChange={(day, mod, input) => changeDateStart(input.state.value)}
-                      value={startedDate}
-                    />
-                    <div className="warning">
-                      {dateWarning ? DUE_DATE_MUST_GREATER_THAN_START_DATE : ''}
-                    </div>
-                  </div> */}
                 </td>
               </tr>
               <tr>
                 <td scope="col">End Date</td>
                 <td scope="col">
                   <DiffedText oldText={datetimeToDate(taskNotification.oldTask.dueDatetime)} newText={datetimeToDate(task.dueDatetime)}/>
-                  {/* <DayPickerInput
-                    format={FORMAT}
-                    formatDate={formatDate}
-                    placeholder={`${dateFnsFormat(new Date(), FORMAT)}`}
-                    onDayChange={(day, mod, input) => changeDateEnd(input.state.value)}
-                    value={dueDate}
-                  />
-                  <div className="warning">
-                    {dateWarning ? DUE_DATE_MUST_GREATER_THAN_START_DATE : ''}
-                  </div> */}
                 </td>
               </tr>
             </tbody>
