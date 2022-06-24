@@ -21,7 +21,56 @@ export const fetchTeamMembersTask = () => async (dispatch, getState) => {
   } catch (error) {
     dispatch(fetchTeamMembersTaskError());
   }
-}
+};
+
+// Need 3 ids because reducer will have users which have tasks which have taskNotifications
+// TODO: reducer.js, actions.js, TeamMemberTasks.js dispatch
+// export const deleteTaskNotification = (userId, taskId, taskNotificationId) => async (dispatch, getState) => {
+//   try {
+//     //dispatch(deleteTaskNotificationBegin());
+//     const res = await axios.post(ENDPOINTS.DELETE_TASK_NOTIFICATION(taskNotificationId));
+//     // dispatch(deleteTaskNotificationSuccess(res.data));
+//   } catch (error) {
+//     //dispatch(deleteTaskNotificationError());
+//   }
+// };
+
+export const addNewTask = (newTask, wbsId) => async (dispatch, getState) => {
+  let status = 200;
+  let _id = null;
+  let task = {};
+  try {
+    //dispatch(fetchTeamMembersTaskBegin());
+    const res = await axios.post(ENDPOINTS.TASK(wbsId), newTask);
+    _id = res.data._id;
+    status = res.status;
+    task = res.data;
+    const userIds = task.resources.map(resource => resource.userID);
+    await createOrUpdateTaskNotificationHTTP(task._id, {}, userIds);
+  } catch (error) {
+    //dispatch(fetchTeamMembersTaskError());
+    status = 400;
+  }
+  newTask._id = _id;
+  await dispatch(postNewTask(task, status));
+};
+
+export const updateTask = (taskId, updatedTask) => async (dispatch, getState) => {
+  let status = 200;
+  try {
+    const state = getState();
+    const oldTask = selectUpdateTaskData(state, taskId);
+    //dispatch(fetchTeamMembersTaskBegin());
+    await axios.put(ENDPOINTS.TASK_UPDATE(taskId), updatedTask);
+    const userIds = updatedTask.resources.map(resource => resource.userID);
+    await createOrUpdateTaskNotificationHTTP(taskId, oldTask, userIds);
+  } catch (error) {
+    //dispatch(fetchTeamMembersTaskError());
+    status = 400;
+  }
+
+  await dispatch(putUpdatedTask(updatedTask, taskId, status));
+};
 
 export const importTask = (newTask, wbsId) => {
   const url = ENDPOINTS.TASK_IMPORT(wbsId);
@@ -84,43 +133,6 @@ export const fetchAllTasks = (wbsId, level = 0, mother = null) => {
       dispatch(setTasksError(err));
     }
   };
-};
-
-export const addNewTask = (newTask, wbsId) => async (dispatch, getState) => {
-  let status = 200;
-  let _id = null;
-  let task = {};
-  try {
-    //dispatch(fetchTeamMembersTaskBegin());
-    const res = await axios.post(ENDPOINTS.TASK(wbsId), newTask);
-    _id = res.data._id;
-    status = res.status;
-    task = res.data;
-    const userIds = task.resources.map(resource => resource.userID);
-    await createOrUpdateTaskNotificationHTTP(task._id, {}, userIds);
-  } catch (error) {
-    //dispatch(fetchTeamMembersTaskError());
-    status = 400;
-  }
-  newTask._id = _id;
-  await dispatch(postNewTask(task, status));
-};
-
-export const updateTask = (taskId, updatedTask) => async (dispatch, getState) => {
-  let status = 200;
-  try {
-    const state = getState();
-    const oldTask = selectUpdateTaskData(state, taskId);
-    //dispatch(fetchTeamMembersTaskBegin());
-    await axios.put(ENDPOINTS.TASK_UPDATE(taskId), updatedTask);
-    const userIds = updatedTask.resources.map(resource => resource.userID);
-    await createOrUpdateTaskNotificationHTTP(taskId, oldTask, userIds);
-  } catch (error) {
-    //dispatch(fetchTeamMembersTaskError());
-    status = 400;
-  }
-
-  await dispatch(putUpdatedTask(updatedTask, taskId, status));
 };
 
 export const deleteTask = (taskId, mother) => {

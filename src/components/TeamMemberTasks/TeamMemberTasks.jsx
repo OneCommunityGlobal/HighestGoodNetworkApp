@@ -33,28 +33,31 @@ const TeamMemberTasks = () => {
   };
   
   const handleTaskNotificationRead = () => {
-    const taskReadPromises = [];
-    const userId = currentTaskNotifications[0].recipient;
-    currentTaskNotifications.forEach(notification => {
-      taskReadPromises.push(
-        httpService.post(ENDPOINTS.MARK_TASK_NOTIFICATION_READ(notification._id)),
-      );
-    });
 
-    Promise.all(taskReadPromises).then(data => {
-      console.log('read tasks');
-      const newTeamsState = [];
-      teams.forEach(member => {
-        if (member._id === userId) {
-          newTeamsState.push({ ...member, taskNotifications: [] });
-        } else {
-          newTeamsState.push(member);
-        }
-      });
-      setTeams(newTeamsState);
-      setCurrentTaskNotifications([]);
-      setTaskNotificationModal(!showTaskNotificationModal);
-    });
+    // dispatch(deleteTaskNotification(userId, taskId, taskNotificationId))
+
+    // const taskReadPromises = [];
+    // const userId = currentTaskNotifications[0].recipient;
+    // currentTaskNotifications.forEach(notification => {
+    //   taskReadPromises.push(
+    //     httpService.post(ENDPOINTS.MARK_TASK_NOTIFICATION_READ(notification._id)),
+    //   );
+    // });
+
+    // Promise.all(taskReadPromises).then(data => {
+    //   console.log('read tasks');
+    //   const newTeamsState = [];
+    //   teams.forEach(member => {
+    //     if (member._id === userId) {
+    //       newTeamsState.push({ ...member, taskNotifications: [] });
+    //     } else {
+    //       newTeamsState.push(member);
+    //     }
+    //   });
+    //   setTeams(newTeamsState);
+    //   setCurrentTaskNotifications([]);
+    //   setTaskNotificationModal(!showTaskNotificationModal);
+    // });
   };
 
   const renderTeamsList = () => {

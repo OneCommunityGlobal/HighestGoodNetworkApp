@@ -52,8 +52,6 @@ export const ENDPOINTS = {
 
   TEAM_MEMBERS: (teamId) => `${APIEndpoint}/team/${teamId}/users`,
   TEAM_BY_ID: (teamId) => `${APIEndpoint}/team/${teamId}`,
-  TASKNOTIFICATION: `${APIEndpoint}/tasknotification`,
-  MARK_TASK_NOTIFICATION_READ: (taskId) => `${APIEndpoint}/tasknotification/read/${taskId}`,
   USER_UNREAD_TASK_NOTIFICATIONS: (userId) => `${APIEndpoint}/tasknotification/user/${userId}`,
   BADGE: () => `${APIEndpoint}/badge`,
   BADGE_ASSIGN: (userId) => `${APIEndpoint}/badge/assign/${userId}`,
@@ -61,6 +59,8 @@ export const ENDPOINTS = {
 
   TEAM_MEMBER_TASKS: (userId) => `${ENDPOINTS.APIEndpoint()}/user/${userId}/teams/tasks`,
   CREATE_OR_UPDATE_TASK_NOTIFICATION: (taskId) => `${ENDPOINTS.APIEndpoint()}/task/${taskId}/tasknotification`,
+  DELETE_TASK_NOTIFICATION: (taskNotificationId) => `${APIEndpoint}/tasknotification/${taskNotificationId}`,
+
   TIMEZONE_KEY: `${APIEndpoint}/timezone`,
   GEOCODE_URI: (location, key) =>
     `${GeocodeAPIEndpoint}?key=${key}&q=${encodeURIComponent(location)}&pretty=1&limit=1`,
