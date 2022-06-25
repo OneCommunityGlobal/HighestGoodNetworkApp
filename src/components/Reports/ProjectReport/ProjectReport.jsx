@@ -15,7 +15,7 @@ import { projectReportViewData } from './selectors';
 export const ProjectReport = ({ match }) => {
 
   const dispatch = useDispatch();
-  const { wbs, projectMembers, isActive, projectName } = useSelector(projectReportViewData);
+  const { wbs, projectMembers, isActive, projectName, isLoading } = useSelector(projectReportViewData);
 
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
