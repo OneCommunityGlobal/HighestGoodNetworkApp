@@ -1,0 +1,19 @@
+.wrapper {
+  margin-top: -16px;
+}
+
+.header {
+  min-height: 35vh;
+  background: #009FFF;
+  background: linear-gradient(to right, #ec2F4B, #009FFF);
+  color: white;
+  clip-path: ellipse(100vw 60vh at 50% 50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.details {
+  width: 100%;
+  text-align: center;
+}

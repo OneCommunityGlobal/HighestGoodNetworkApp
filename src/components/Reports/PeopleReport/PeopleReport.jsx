@@ -17,6 +17,7 @@ import { getTimeEntriesForPeriod } from '../../../actions/timeEntries'
 import InfringmentsViz from '../InfringmentsViz'
 import TimeEntriesViz from '../TimeEntriesViz'
 import PeopleTableDetails from '../PeopleTableDetails'
+import { ReportHeader } from "../sharedComponents/ReportHeader";
 import { getPeopleReportData } from "./selectors";
 import DatePicker from 'react-datepicker'
 import httpService from '../../../services/httpService'
@@ -859,44 +860,40 @@ class PeopleReport extends Component {
     }
 
     return (
-    <div style={{ marginTop: -16 }}>
-      <section className="profile">
-        <header className="header">
-          <div className="details">
-            <img
-              src={this.state.userProfile.profilePic || '/pfp-default.png'}
-              alt="Profile Picture" className="profile-pic" />
-            <h1 className="heading">{`${firstName} ${lastName}`}</h1>
+    <div>
+      <ReportHeader>
+        <img
+          src={this.state.userProfile.profilePic || '/pfp-default.png'}
+          alt="Profile Picture" className="profile-pic" />
+        <h1 className="heading">{`${firstName} ${lastName}`}</h1>
 
-            <div className="stats">
-              <div>
-                <h4>{weeklyComittedHours}</h4>
-                <p>Weekly Committed Hours</p>
-              </div>
-              <div>
-                <h4>{this.props.tangibleHoursReportedThisWeek}</h4>
-                <p>Hours Logged So Far This Week</p>
-              </div>
-              <div>
-                <h4>{totalTangibleHrsRound}</h4>
-                <p>Total Tangible Hours Logged</p>
-              </div>
-              <div>
-                <h4>{moment(userProfile.createdDate).format('YYYY-MM-DD')}</h4>
-                <p>Start Date</p>
-              </div>
-              <div>
-                <h4>{userProfile.endDate ? userProfile.endDate.toLocaleString().split('T')[0] : 'N/A'}</h4>
-                <p>End Date</p>
-              </div>
-              <div>
-                <h4>{infringments.length}</h4>
-                <p>Blue squares</p>
-              </div>
-            </div>
+        <div className="stats">
+          <div>
+            <h4>{weeklyComittedHours}</h4>
+            <p>Weekly Committed Hours</p>
           </div>
-        </header>
-      </section>
+          <div>
+            <h4>{this.props.tangibleHoursReportedThisWeek}</h4>
+            <p>Hours Logged So Far This Week</p>
+          </div>
+          <div>
+            <h4>{totalTangibleHrsRound}</h4>
+            <p>Total Tangible Hours Logged</p>
+          </div>
+          <div>
+            <h4>{moment(userProfile.createdDate).format('YYYY-MM-DD')}</h4>
+            <p>Start Date</p>
+          </div>
+          <div>
+            <h4>{userProfile.endDate ? userProfile.endDate.toLocaleString().split('T')[0] : 'N/A'}</h4>
+            <p>End Date</p>
+          </div>
+          <div>
+            <h4>{infringments.length}</h4>
+            <p>Blue squares</p>
+          </div>
+        </div>
+      </ReportHeader>
 
       <div className="intro_date">
         <h1>Tasks Contributed  </h1>

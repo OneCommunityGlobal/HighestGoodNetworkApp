@@ -8,6 +8,7 @@ import { getProjectDetail } from '../../../actions/project';
 import { fetchAllMembers } from '../../../actions/projectMembers';
 import { fetchAllWBS } from '../../../actions/wbs';
 import ProjectMemberTable from '../ProjectMemberTable';
+import { ReportHeader } from "../sharedComponents/ReportHeader";
 import '../../Teams/Team.css';
 import WbsTable from '../WbsTable';
 import { projectReportViewData } from './selectors';
@@ -30,7 +31,9 @@ export const ProjectReport = ({ match }) => {
   }, []);
 
     return (
-      <Container fluid className="bg--white py-3 mb-5">
+      <div>
+        <ReportHeader />
+        <Container fluid className="bg--white py-3 mb-5">
         <div className="container">
           <h3 className="projects__active--input">
             {isActive ? (
@@ -69,5 +72,6 @@ export const ProjectReport = ({ match }) => {
           <ProjectMemberTable projectMembers={projectMembers} />
         </div>
       </Container>
+      </div>
     );
 };
