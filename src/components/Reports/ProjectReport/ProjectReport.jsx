@@ -32,23 +32,13 @@ export const ProjectReport = ({ match }) => {
 
     return (
       <div>
-        <ReportHeader />
-        <Container fluid className="bg--white py-3 mb-5">
-        <div className="container">
-          <h3 className="projects__active--input">
-            {isActive ? (
-              <div className="isActive">
-                <i className="fa fa-circle" aria-hidden="true"></i> <h3 className="mt-3 mb-5"></h3>
-              </div>
-            ) : (
-              <div className="isNotActive">
-                <i className="fa fa-circle-o" aria-hidden="true"></i>{' '}
-                <h3 className="mt-3 mb-5"> </h3>
-              </div>
-            )}
+        <ReportHeader isActive>
+          <h3>
             {projectName}
           </h3>
-
+        </ReportHeader>
+        <Container fluid className="bg--white py-3 mb-5">
+        <div className="container">
           <DropdownButton id="dropdown-basic-button" title="Time Frame">
             <Dropdown.Item href="#/action-1">Past Week</Dropdown.Item>
             <Dropdown.Item href="#/action-2">Past Two Weeks</Dropdown.Item>

@@ -861,10 +861,7 @@ class PeopleReport extends Component {
 
     return (
     <div>
-      <ReportHeader>
-        <img
-          src={this.state.userProfile.profilePic || '/pfp-default.png'}
-          alt="Profile Picture" className="profile-pic" />
+      <ReportHeader src={this.state.userProfile.profilePic} isActive>
         <h1 className="heading">{`${firstName} ${lastName}`}</h1>
 
         <div className="stats">

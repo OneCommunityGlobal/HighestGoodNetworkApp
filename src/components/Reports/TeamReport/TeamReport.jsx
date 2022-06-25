@@ -34,7 +34,7 @@ class TeamReportComponent extends Component {
 
     return (
       <div>
-        <ReportHeader>
+        <ReportHeader isActive>
           <h2>{teamName}</h2>
         </ReportHeader>
         <DropdownButton id="dropdown-basic-button" title="Time Frame">
@@ -46,7 +46,6 @@ class TeamReportComponent extends Component {
           <Dropdown.Item href="#/action-6">Custom range</Dropdown.Item>
         </DropdownButton>
         <h2>Team ID:{_id}</h2>
-        <h5>Active:{String(isActive)}</h5>
         <h5>Modified Date time:{modifiedDatetime}</h5>
         <h5>Created Date time:{createdDatetime}</h5>
       </div>
