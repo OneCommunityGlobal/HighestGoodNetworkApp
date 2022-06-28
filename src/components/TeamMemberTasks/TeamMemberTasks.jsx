@@ -78,7 +78,7 @@ const TeamMemberTasks = () => {
               user.tasks.map((task) => (
                 task.wbsId && task.projectId &&
                   <p key={`${task._id}`}>
-                    <Link to={task.projectId ? `/wbs/tasks/${task.wbsId}/${task.projectId}` : '/'}>
+                    <Link to={task.projectId ? `/wbs/tasks/${task.wbsId}/${task.projectId}/${task._id}` : '/'}>
                       <span>{`${task.num} ${task.taskName}`} </span>
                     </Link>
                     {
