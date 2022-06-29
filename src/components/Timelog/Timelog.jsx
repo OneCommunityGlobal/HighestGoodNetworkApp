@@ -500,13 +500,13 @@ class Timelog extends Component {
                       )}
                       <Form inline className="mb-2">
                         <FormGroup>
-                          <Label for="projectsSelected" className="mr-1 ml-1 mb-1 align-top">
+                          <Label for="projectSelected" className="mr-1 ml-1 mb-1 align-top">
                             Filter Entries by Project and Task:
                           </Label>
                           <Input
                             type="select"
-                            name="projectsSelected"
-                            id="projectsSelected"
+                            name="projectSelected"
+                            id="projectSelected"
                             value={this.state.projectsSelected}
                             title="Ctrl + Click to select multiple projects and tasks to filter."
                             onChange={e =>
