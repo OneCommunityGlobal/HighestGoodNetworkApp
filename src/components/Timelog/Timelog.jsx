@@ -33,6 +33,7 @@ import ReactTooltip from 'react-tooltip';
 
 import { getTimeEntriesForWeek, getTimeEntriesForPeriod } from '../../actions/timeEntries';
 import { getUserProfile, updateUserProfile, getUserTask } from '../../actions/userProfile';
+import { getUserProjects } from '../../actions/userProjects';
 import TimeEntryForm from './TimeEntryForm';
 import TimeEntry from './TimeEntry';
 import EffortBar from './EffortBar';
@@ -63,7 +64,7 @@ class Timelog extends Component {
     modal: false,
     summary: false,
     activeTab: 0,
-    tasksSelected: ['all'],
+    projectsSelected: ['all'],
     fromDate: this.startOfWeek(0),
     toDate: this.endOfWeek(0),
     in: false,
@@ -83,6 +84,7 @@ class Timelog extends Component {
     await this.props.getTimeEntriesForWeek(userId, 1);
     await this.props.getTimeEntriesForWeek(userId, 2);
     await this.props.getTimeEntriesForPeriod(userId, this.state.fromDate, this.state.toDate);
+    await this.props.getUserProjects(userId);
     this.setState({ isTimeEntriesLoading: false });
   }
 
@@ -111,6 +113,7 @@ class Timelog extends Component {
         this.props.getTimeEntriesForWeek(userId, 1),
         this.props.getTimeEntriesForWeek(userId, 2),
         this.props.getTimeEntriesForPeriod(userId, this.state.fromDate, this.state.toDate),
+        this.props.getUserProjects(userId),
         this.props.getUserTask(userId),
       ]);
     }
@@ -140,9 +143,9 @@ class Timelog extends Component {
     const str = `This is the One Community time log! It is used to show a record of all the time you have volunteered with One Community, what you’ve done for each work session, etc.
     * “Add Time Entry” Button: Clicking this button will only allow you to add “Intangible” time. This is for time not related to your tasks OR for time you need a manager to change to “Tangible” for you because you were working away from your computer or made a mistake and are trying to manually log time. Intangible time will not be counted towards your committed time for the week or your tasks. “Intangible” time changed by a manager to “Tangible” time WILL be counted towards your committed time for the week and whatever task it is logged towards. For Blue Square purposes, changing Intangible Time to Tangible Time for any reason other than work away from your computer will count and be recorded in the system the same as a time edit.
     * Viewing Past Work: The current week is always shown by default but past weeks can also be viewed by clicking the tabs or selecting a date range.
-    * Sorting by Task: All tasks are shown by default but you can also choose to sort your time log by Task.
+    * Sorting by Project and Task: All projects and tasks are shown by default but you can also choose to sort your time log by Project or Task.
     * Notes: The “Notes” section is where you write a summary of what you did during the time you are about to log. You must write a minimum of 10 words because we want you to be specific. You must include a link to your work so others can easily confirm and review it.
-    * Tangible Time: By default, the “Tangible” box is clicked. Tangible time is any time spent working on your Tasks and counts towards your committed time for the week and also the time allocated for your task.
+    * Tangible Time: By default, the “Tangible” box is clicked. Tangible time is any time spent working on your Projects/Tasks and counts towards your committed time for the week and also the time allocated for your task.
     * Intangible Time: Clicking the Tangible box OFF will mean you are logging “Intangible Time.” This is for time not related to your tasks OR for time you need a manager to change to “Tangible” for you because you were working away from your computer or made a mistake and are trying to manually log time. Intangible time will not be counted towards your committed time for the week or your tasks. “Intangible” time changed by a manager to “Tangible” time WILL be counted towards your committed time for the week and whatever task it is logged towards. For Blue Square purposes, changing Intangible Time to Tangible Time for any reason other than work away from your computer will count and be recorded in the system the same as a time edit. `;
 
     this.setState({
@@ -188,8 +191,8 @@ class Timelog extends Component {
 
   generateTimeEntries(data) {
     let filteredData = data;
-    if (!this.state.tasksSelected.includes('all')) {
-      filteredData = data.filter(entry => this.state.tasksSelected.includes(entry.projectId));
+    if (!this.state.projectsSelected.includes('all')) {
+      filteredData = data.filter(entry => this.state.projectsSelected.includes(entry.projectId));
     }
 
     return filteredData.map(entry => (
@@ -210,6 +213,22 @@ class Timelog extends Component {
     const isOwner = this.props.auth.user.userid === userId;
     const fullName = `${this.props.userProfile.firstName} ${this.props.userProfile.lastName}`;
 
+    let projects = [];
+    if (!_.isEmpty(this.props.userProjects.projects)) {
+      projects = this.props.userProjects.projects;
+    }
+    const projectOrTaskOptions = projects.map(project => (
+      <option value={project.projectId} key={project.projectId}>
+        {' '}
+        {project.projectName}{' '}
+      </option>
+    ));
+    projectOrTaskOptions.unshift(
+      <option value="all" key="all">
+        All Projects and Tasks (Default)
+      </option>,
+    );
+
     let tasks = [];
     if (!_.isEmpty(this.props.userTask)) {
       tasks = this.props.userTask;
@@ -219,11 +238,7 @@ class Timelog extends Component {
         {task.taskName}
       </option>
     ));
-    taskOptions.unshift(
-      <option value="all" key="all">
-        All Tasks (Default)
-      </option>,
-    );
+    projectOrTaskOptions.push(taskOptions);
 
     return (
       <div>
@@ -485,18 +500,18 @@ class Timelog extends Component {
                       )}
                       <Form inline className="mb-2">
                         <FormGroup>
-                          <Label for="taskSelected" className="mr-1 ml-1 mb-1 align-top">
-                            Filter Entries by Task:
+                          <Label for="projectsSelected" className="mr-1 ml-1 mb-1 align-top">
+                            Filter Entries by Project and Task:
                           </Label>
                           <Input
                             type="select"
-                            name="taskSelected"
-                            id="taskSelected"
-                            value={this.state.tasksSelected}
-                            title="Ctrl + Click to select multiple tasks to filter."
+                            name="projectsSelected"
+                            id="projectsSelected"
+                            value={this.state.projectsSelected}
+                            title="Ctrl + Click to select multiple projects and tasks to filter."
                             onChange={e =>
                               this.setState({
-                                tasksSelected: Array.from(
+                                projectsSelected: Array.from(
                                   e.target.selectedOptions,
                                   option => option.value,
                                 ),
@@ -504,13 +519,13 @@ class Timelog extends Component {
                             }
                             multiple
                           >
-                            {taskOptions}
+                            {projectOrTaskOptions}
                           </Input>
                         </FormGroup>
                       </Form>
                       <EffortBar
                         activeTab={this.state.activeTab}
-                        tasksSelected={this.state.tasksSelected}
+                        projectsSelected={this.state.projectsSelected}
                       />
                       <TabPane tabId={0}>{currentWeekEntries}</TabPane>
                       <TabPane tabId={1}>{lastWeekEntries}</TabPane>
@@ -533,12 +548,14 @@ const mapStateToProps = state => ({
   auth: state.auth,
   userProfile: state.userProfile,
   timeEntries: state.timeEntries,
+  userProjects: state.userProjects,
   userTask: state.userTask,
 });
 
 export default connect(mapStateToProps, {
   getTimeEntriesForWeek,
   getTimeEntriesForPeriod,
+  getUserProjects,
   getUserProfile,
   getUserTask,
   updateUserProfile,
