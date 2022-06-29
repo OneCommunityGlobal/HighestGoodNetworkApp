@@ -18,6 +18,8 @@ import { fetchAllManagingTeams } from '../../actions/team';
 import { getUserProfile } from '../../actions/userProfile';
 import Loading from '../common/Loading';
 import DiffedText from './DiffedText';
+import { getcolor } from '../../utils/effortColors'
+
 
 const TeamMemberTasks = props => {
   const [fetched, setFetched] = useState(false);
@@ -318,32 +320,57 @@ const TeamMemberTasks = props => {
             <font color="red"> {Math.round(totalHoursRemaining)}</font>
             </td>
           <td>
-            {member.tasks &&
-              member.tasks.map((task, index) => (
-                <p key={`${task._id}${index}`}>
-                  <Link
-                    key={index}
-                    to={task.projectId ? `/wbs/tasks/${task.wbsId}/${task.projectId}/${task._id}` : '/'}
-                  >
-                    <span>{`${task.num} ${task.taskName}`}</span>
-                  </Link>
-                  {/* <span>
-                      {member.taskNotifications.find(notification => {
-                        return notification.taskId === task._id
-                      }) ? (
-                        <FontAwesomeIcon
-                          style={{ color: 'red' }}
-                          icon={faBell}
-                          onClick={() => {
-                            handleOpenTaskNotificationModal(member.taskNotifications);
-                          }}
+            <Table borderless className='team-member-tasks-subtable'>
+              <tbody>
+                {member.tasks &&
+                member.tasks.map((task, index) => (
+                <tr key={`${task._id}${index}`} className='task-break'>
+                  <td>
+                    <p>
+                      <Link
+                        key={index}
+                        to={task.projectId ? `/wbs/tasks/${task.wbsId}/${task.projectId}/${task._id}` : '/'}
+                      >
+                        <span>{`${task.num} ${task.taskName}`}</span>
+                      </Link>
+                      {/* <span>
+                          {member.taskNotifications.find(notification => {
+                            return notification.taskId === task._id
+                          }) ? (
+                            <FontAwesomeIcon
+                              style={{ color: 'red' }}
+                              icon={faBell}
+                              onClick={() => {
+                                handleOpenTaskNotificationModal(member.taskNotifications);
+                              }}
+                            />
+                          ) : null}
+                        </span> */}
+                    </p>
+                  </td>
+                  
+                  {/* progress bar implementation */}
+                  <td className='team-task-hours'>  
+                    <div>
+                      <span>
+                      {`${parseFloat(task.hoursLogged.toFixed(2))} 
+                        of 
+                      ${parseFloat(task.estimatedHours.toFixed(2))}`}
+                      </span>
+                      <Progress 
+                        color={(task.hoursLogged > task.estimatedHours) ? 
+                              getcolor(0) : 
+                              getcolor(task.estimatedHours - task.hoursLogged)}
+
+                        value={((task.hoursLogged / task.estimatedHours) * 100)}
                         />
-                      ) : null}
-                    </span> */}
-                </p>
-              ))}
-          </td>
-          <td>tempprogress</td>
+                    </div>
+                  </td>
+                </tr> 
+                ))}
+              </tbody>
+            </Table>
+          </td>            
         </tr>
       );
     });
@@ -432,8 +459,8 @@ const TeamMemberTasks = props => {
             <tr>
               {/* Empty column header for hours completed icon */}
               <th />
-              <th>Team Member</th>
-              <th width="100px">
+              <th className='team-member-tasks-headers'>Team Member</th>
+              <th width="100px" className='team-member-tasks-headers'>
                 <FontAwesomeIcon icon={faClock} title="Weekly Committed Hours" />
                 /
                 <FontAwesomeIcon
@@ -448,8 +475,16 @@ const TeamMemberTasks = props => {
                   title="Total Remaining Hours"
                 />
               </th>
-              <th>Tasks(s)</th>
-              <th>Progress</th>
+              <th className='team-member-tasks-headers'>
+                <Table borderless className='team-member-tasks-subtable'>
+                  <thead>
+                    <tr>
+                      <th>Tasks(s)</th>
+                      <th className='team-task-hours'>Progress</th>
+                    </tr>
+                  </thead>
+                </Table>
+              </th>
             </tr>
           </thead>
           <tbody>{teamsList}</tbody>
