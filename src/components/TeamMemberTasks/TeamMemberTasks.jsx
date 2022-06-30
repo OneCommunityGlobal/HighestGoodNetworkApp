@@ -4,7 +4,7 @@
 /* eslint-disable indent */
 import { faBell, faCircle, faClock } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { fetchTeamMembersTask } from 'actions/task';
+import { fetchTeamMembersTask, deleteTaskNotification } from 'actions/task';
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
@@ -20,21 +20,24 @@ const TeamMemberTasks = () => {
   const [showTaskNotificationModal, setTaskNotificationModal] = useState(false);
   const [currentTaskNotifications, setCurrentTaskNotifications] = useState([]);
   const [currentTask, setCurrentTask] = useState();
+  const [currentUserId, setCurrentUserId] = useState();
 
   const { isLoading, usersWithTasks } = useSelector(getTeamMemberTasksData);
 
   const dispatch = useDispatch();
   useEffect(() => {dispatch(fetchTeamMembersTask())}, []);
 
-  const handleOpenTaskNotificationModal = (task, taskNotifications) => {
+  const handleOpenTaskNotificationModal = (userId, task, taskNotifications = []) => {
+    setCurrentUserId(userId);
     setCurrentTask(task);
     setCurrentTaskNotifications(taskNotifications);
     setTaskNotificationModal(!showTaskNotificationModal);
   };
   
-  const handleTaskNotificationRead = () => {
+  const handleTaskNotificationRead = (userId, taskId, taskNotificationId) => {
 
-    // dispatch(deleteTaskNotification(userId, taskId, taskNotificationId))
+    dispatch(deleteTaskNotification(userId, taskId, taskNotificationId));
+    handleOpenTaskNotificationModal();
 
     // const taskReadPromises = [];
     // const userId = currentTaskNotifications[0].recipient;
@@ -64,7 +67,7 @@ const TeamMemberTasks = () => {
     let teamsList = [];
     if (usersWithTasks && usersWithTasks.length > 0) {
       teamsList = usersWithTasks.map((user, index) => (
-        <tr key={user._id}>
+        <tr key={user.personId}>
           {/* green if member has met committed hours for the week, red if not */}
           <td>
               <FontAwesomeIcon style={{ color: user.totaltangibletime_hrs >= user.weeklyComittedHours ? 'green' : 'red' }} icon={faCircle} />
@@ -87,7 +90,7 @@ const TeamMemberTasks = () => {
                         className="team-member-tasks-bell"
                         icon={faBell}
                         onClick={() => {
-                          handleOpenTaskNotificationModal(task, task.taskNotifications);
+                          handleOpenTaskNotificationModal(user.personId, task, task.taskNotifications);
                         }}
                       />
                     }
@@ -104,7 +107,7 @@ const TeamMemberTasks = () => {
   return (
     <div className="container team-member-tasks">
       <h1>Team Member Tasks</h1>
-      <TaskDifferenceModal isOpen={showTaskNotificationModal} taskNotifications={currentTaskNotifications} task={currentTask} toggle={handleOpenTaskNotificationModal} onApprove={handleTaskNotificationRead} />
+      <TaskDifferenceModal isOpen={showTaskNotificationModal} taskNotifications={currentTaskNotifications} task={currentTask} userId={currentUserId} toggle={handleOpenTaskNotificationModal} onApprove={handleTaskNotificationRead} />
       <Table>
         <thead>
           <tr>

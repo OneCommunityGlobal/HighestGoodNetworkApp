@@ -23,17 +23,16 @@ export const fetchTeamMembersTask = () => async (dispatch, getState) => {
   }
 };
 
-// Need 3 ids because reducer will have users which have tasks which have taskNotifications
-// TODO: reducer.js, actions.js, TeamMemberTasks.js dispatch
-// export const deleteTaskNotification = (userId, taskId, taskNotificationId) => async (dispatch, getState) => {
-//   try {
-//     //dispatch(deleteTaskNotificationBegin());
-//     const res = await axios.post(ENDPOINTS.DELETE_TASK_NOTIFICATION(taskNotificationId));
-//     // dispatch(deleteTaskNotificationSuccess(res.data));
-//   } catch (error) {
-//     //dispatch(deleteTaskNotificationError());
-//   }
-// };
+// TODO: TeamMemberTasks.jsx dispatch
+export const deleteTaskNotification = (userId, taskId, taskNotificationId) => async (dispatch, getState) => {
+  try {
+    //dispatch(deleteTaskNotificationBegin());
+    const res = await axios.delete(ENDPOINTS.DELETE_TASK_NOTIFICATION(taskNotificationId));
+    dispatch(deleteTaskNotificationSuccess({userId, taskId, taskNotificationId}));
+  } catch (error) {
+    //dispatch(deleteTaskNotificationError());
+  }
+};
 
 export const addNewTask = (newTask, wbsId) => async (dispatch, getState) => {
   let status = 200;

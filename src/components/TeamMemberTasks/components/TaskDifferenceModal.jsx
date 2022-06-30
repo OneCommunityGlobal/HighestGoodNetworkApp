@@ -50,11 +50,11 @@ const datetimeToDate = (datetime) => {
   return day + "/" + month + "/" + year;
 }
 
-export const TaskDifferenceModal = ({ taskNotifications, task, onApprove, isOpen, toggle }) => (
+export const TaskDifferenceModal = ({ taskNotifications, task, onApprove, userId, isOpen, toggle }) => (
   <Modal size="xl" isOpen={isOpen} toggle={() => toggle(undefined, [])}>
     <ModalHeader toggle={() => toggle(undefined, [])}>Task Info Changes</ModalHeader>
     <ModalBody>
-      {taskNotifications.map((taskNotification) => (
+      {taskNotifications && taskNotifications.map((taskNotification) => (
           <table className="table table-bordered">
             <tbody>
               <tr>
@@ -179,7 +179,7 @@ export const TaskDifferenceModal = ({ taskNotifications, task, onApprove, isOpen
           ))}
     </ModalBody>
     <ModalFooter>
-      <Button color="primary" onClick={onApprove}>
+      <Button color="primary" onClick={() => onApprove(userId, task._id, taskNotifications[0]._id)}>
         Mark as read
       </Button>
     </ModalFooter>
