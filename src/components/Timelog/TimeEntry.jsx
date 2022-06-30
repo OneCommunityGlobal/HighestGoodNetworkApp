@@ -42,6 +42,7 @@ const TimeEntry = ({ data, displayYear, userProfile }) => {
 
   useEffect(() => {
     axios
+      // Note: Here taskId is stored in projectId since no taskId field in timeEntry schema
       .get(ENDPOINTS.GET_TASK(data.projectId))
       .then((res) => {
         setTaskName(res?.data?.taskName || "")
