@@ -1,37 +1,29 @@
-.wrapper {
-  margin-top: -16px;
-}
-
-.header {
+.report-header {
   min-height: 35vh;
-  background: #009FFF;
-  background: linear-gradient(to right, #ec2F4B, #009FFF);
-  color: white;
-  clip-path: ellipse(100vw 60vh at 50% 50%);
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
 
-.details {
+.report-header-details {
   width: 100%;
   text-align: center;
 }
 
-.profile-pic {
+.report-header-profile-pic {
   width: 6rem;
   height: 6rem;
 
   border-radius: 10px;
 }
 
-.profile-pic-wrapper {
+.report-header-profile-pic-wrapper {
   position: relative;
   display: inline-block;
 }
 
-.activity {
+.report-header-activity {
   position: absolute;
   right: -6px;
   bottom: -1px;
@@ -42,6 +34,6 @@
   border: 2px solid white;
 }
 
-.activity.active {
+.report-header-activity.active {
   background-color: #2affa1;
 }

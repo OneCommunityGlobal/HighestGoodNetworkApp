@@ -1,17 +1,18 @@
 import classnames from 'classnames';
+import { ReportBlock } from '../ReportBlock';
 import './ReportHeader.css';
 
 export const ReportHeader = ({ children, isActive, src}) => {
   return (
-    <section className='wrapper'>
-      <header className='header'>
-        <div className='details'>
-          <div className="profile-pic-wrapper">
-            <img src={src || '/pfp-default.png'} alt="Report profile picture" className="profile-pic" />
-            <div className={classnames('activity', {active: isActive})} />
+    <ReportBlock>
+      <header className='report-header'>
+        <div className='report-header-details'>
+          <div className="report-header-profile-pic-wrapper">
+            <img src={src || '/pfp-default.png'} alt="Report profile picture" className="report-header-profile-pic" />
+            <div className={classnames('report-header-activity', {active: isActive})} />
           </div>
           {children}
         </div>
       </header>
-    </section>
+    </ReportBlock>
 )}
