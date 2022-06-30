@@ -16,10 +16,7 @@ body {
 
 .stats {
   display: flex;
-  justify-content: space-between;
-  flex-basis: 235px;
-  height: 100px;
-  margin: 23px 23px 0px 27px;
+  flex-direction: column;
 }
 
 .heading {
@@ -193,4 +190,12 @@ body {
   vertical-align: top;
   font-family: 'Open Sans', sans-serif;
   line-height: 28px;
+}
+
+.people-report-time-logs-wrapper {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  column-gap: 16px;
+  justify-content: space-between;
+  color: white;
 }
