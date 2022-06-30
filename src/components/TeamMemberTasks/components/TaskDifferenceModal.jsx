@@ -52,9 +52,21 @@ const datetimeToDate = (datetime) => {
 
 export const TaskDifferenceModal = ({ taskNotifications, task, onApprove, userId, isOpen, toggle }) => (
   <Modal size="xl" isOpen={isOpen} toggle={() => toggle(undefined, [])}>
-    <ModalHeader toggle={() => toggle(undefined, [])}>Task Info Changes</ModalHeader>
+    <ModalHeader toggle={() => toggle(undefined, [])}>
+    Task Info Changes
+    </ModalHeader>
     <ModalBody>
       {taskNotifications && taskNotifications.map((taskNotification) => (
+        <div>
+          <div style={ {color: 'black', fontWeight: 'bold'} }>
+            No changes
+          </div>
+          <div style={ {color: 'red', textDecorationLine: 'line-through'} }>
+            Deleted
+          </div>
+          <div style={ {color: 'green'} }>
+            Added
+          </div>
           <table className="table table-bordered">
             <tbody>
               <tr>
@@ -176,6 +188,7 @@ export const TaskDifferenceModal = ({ taskNotifications, task, onApprove, userId
               </tr>
             </tbody>
           </table>
+        </div>
           ))}
     </ModalBody>
     <ModalFooter>
