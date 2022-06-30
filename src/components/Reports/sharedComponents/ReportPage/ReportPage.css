@@ -1,0 +1,14 @@
+.report-page-wrapper {
+  display: grid;
+  grid-template-columns: 1fr 256px;
+  column-gap: 24px;
+  background-color: #faf7fd;
+  margin-top: -16px;
+  padding: 24px;
+}
+
+.report-page-content {
+  display: grid;
+  grid-row-start: 1;
+  row-gap: 32px;
+}
