@@ -15,7 +15,7 @@ const booleanToString = (bool) => {
   if (bool == null) {
     return "";
   }
-  return bool.toString();
+  return bool ? "Yes" : "No";
 }
 
 const numberToString = (num) => {
