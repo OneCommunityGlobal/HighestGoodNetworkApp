@@ -1,4 +1,3 @@
-import { ReportHeader } from "../ReportHeader";
 import "./ReportPage.css";
 
 export const ReportPage = ({ children, renderProfile }) => (

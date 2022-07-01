@@ -2,6 +2,33 @@ td > input, select {
   width: 100%;
 }
 
+.table-filter-wrapper {
+  display: flex;
+  justify-content: space-between;
+  white-space: nowrap;
+}
+
 .table-filter-datePicker {
   width: 100%;
+}
+
+.table-filter-item {
+  display: flex;
+  align-items: center;
+  border-radius: 4px;
+  background-color: #f8f7f8;
+  padding: 4px 10px;
+  height: 30px;
+  margin-right: 8px;
+}
+
+.table-filter-checkbox {
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+}
+
+.table-filter-checkbox-label {
+  margin: 0 4px;
+  cursor: pointer;
 }

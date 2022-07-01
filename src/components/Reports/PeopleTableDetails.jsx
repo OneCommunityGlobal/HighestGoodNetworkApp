@@ -1,14 +1,10 @@
-import React, { useState } from 'react';
-import {
-  Container, Button, Modal, ModalBody, ModalFooter, Card, CardTitle, CardBody, CardImg, CardText, UncontrolledPopover,
-} from 'reactstrap';
-import { connect } from 'react-redux';
-import TableFilter from './TableFilter/TableFilter'
-import TableHeader from './TableHeader'
-import './PeopleTableDetails.css';
+import { useState } from 'react';
 import Popup from 'reactjs-popup';
 import 'reactjs-popup/dist/index.css';
-import TextSearchBox from '../UserManagement/TextSearchBox';
+import { Container } from 'reactstrap';
+import './PeopleTableDetails.css';
+import TableFilter from './TableFilter/TableFilter';
+import TableHeader from './TableHeader';
 
 const PeopleTableDetails = (props) => {
 
@@ -26,10 +22,9 @@ const PeopleTableDetails = (props) => {
   const [editPopup, setEditPopup] = useState(false);
   const [startDate, setStartDate] =useState('');
   const [endDate, setEndDate] =useState('');
-  const [link, setLink]=useState('');
   const onTaskNameSearch = (text) => {
     setName(text);
-  };
+  }; 
 
   const searchPriority = (text) => {
     setPriority(text);
@@ -102,12 +97,54 @@ const PeopleTableDetails = (props) => {
     toggleMoreResourcesStatus = !toggleMoreResourcesStatus;
   }
   let filteredTasks = filterTasks(props.taskData);
+
+  const renderFilteredTask = (value) => (
+    <tr key={value._id}>
+      <td >{value.taskName}</td>
+      <td >{value.priority}</td>
+      <td >{value.status}</td>
+      <td >
+        {value.resources?.map(res=>
+          
+          res.map((resource,index)=>{
+            if(index<2){
+              return <img key={resource.index} alt={resource.name} src={resource.profilePic||'/pfp-default.png'}  
+                        className='img-circle' auto="format" title={resource.name}/>
+              
+            }
+        }),
+      )}
+        {value.resources?.map(res=>
+        res.length >2 ? <a className="name resourceMoreToggle" onClick={() => 
+                toggleMoreResources(value._id)}>
+            <span className="dot">{res.length - 2}+</span>
+          </a>:null
+        )}
+        <tr id={value._id} class="extra" >
+          <td class="extra1" >
+            {value.resources?.map(res=>
+              res.map((resource,index)=>{
+                if(index>=2){
+                  return <img key={resource.index} alt={resource.name} src={resource.profilePic||'/pfp-default.png'} 
+                    className='img-circle' auto="format" title={resource.name}/>
+                }
+            }),
+          )}
+          </td>
+        </tr>
+        
+      </td>
+      <td >{value.active}</td>
+      <td >{value.assign}</td>
+      <td >{value.estimatedHours}</td>
+      <td >{value.startDate}</td>
+      <td >{value.endDate}</td>  
+    </tr>
+  )
+
   return (
     <Container fluid className="wrapper">
-      <table className="table table-bordered people-table">
-        <thead>
-        <TableHeader />
-        <TableFilter
+      <TableFilter
           onTaskNameSearch={onTaskNameSearch}
           searchPriority={searchPriority}
           searchResources={searchResources}
@@ -126,77 +163,36 @@ const PeopleTableDetails = (props) => {
           estimatedHours={estimatedHours}
           startDate={startDate}
           EndDate={endDate}
-          Link={link}
         />
+      <table className="table table-bordered people-table">
+        <thead>
+        <TableHeader />
         </thead>
         <tbody>
-        {filteredTasks.map((value) =>
-          <tr key={value._id} >
-            <td >{value.taskName}</td>
-            <td >{value.priority}</td>
-            <td >{value.status}</td>
-            <td >
-              {value.resources?.map(res=>
-                
-                res.map((resource,index)=>{
-                  if(index<2){
-                    return <img key={resource.index} alt={resource.name} src={resource.profilePic||'/pfp-default.png'}  
-                              className='img-circle' auto="format" title={resource.name}/>
-                    
-                  }
-              }),
-            )}
-              {value.resources?.map(res=>
-              res.length >2 ? <a className="name resourceMoreToggle" onClick={() => 
-                      toggleMoreResources(value._id)}>
-                  <span className="dot">{res.length - 2}+</span>
-                </a>:null
-              )}
-              <tr id={value._id} class="extra" >
-                <td class="extra1" >
-                  {value.resources?.map(res=>
-                    res.map((resource,index)=>{
-                      if(index>=2){
-                        return <img key={resource.index} alt={resource.name} src={resource.profilePic||'/pfp-default.png'} 
-                         className='img-circle' auto="format" title={resource.name}/>
-                      }
-                  }),
-                )}
-                </td>
-              </tr>
-              
-            </td>
-            <td >{value.active}</td>
-            <td >{value.assign}</td>
-            <td >{value.estimatedHours}</td>
-            <td >{value.startDate}</td>
-            <td >{value.endDate}</td>
-            <td >
-                
-                <Popup trigger={<button className="button"></button>} modal>
-                    <div>Why This Task is important</div>
-                    <textarea
-                        className='rectangle'
-                        type="text"
-                        value={value.whyInfo}
-                    />
-                    <div>Design Intent</div>
-                    <textarea
-                        className='rectangle'
-                        type="text"
-                        value={value.intentInfo}
-                        // onChange={this.handleChange}
-                    />
-                    <div>End State</div>
-                    <textarea
-                        className='rectangle'
-                        type="text"
-                        value={value.endstateInfo}
-                        // onChange={this.handleChange}
-                    />
-                </Popup>
-            </td>
-          </tr>)}
+        {filteredTasks.map((value) => (
+          <Popup trigger={renderFilteredTask(value)} modal>
+            <div>Why This Task is important</div>
+            <textarea
+                className='rectangle'
+                type="text"
+                value={value.whyInfo}
+            />
+            <div>Design Intent</div>
+            <textarea
+                className='rectangle'
+                type="text"
+                value={value.intentInfo}
+                // onChange={this.handleChange}
+            />
+            <div>End State</div>
+            <textarea
+                className='rectangle'
+                type="text"
+                value={value.endstateInfo}
+                // onChange={this.handleChange}
+            />
+          </Popup>
+        ))}
         </tbody>
       </table>
     </Container >
