@@ -89,7 +89,7 @@
 .badge_featured_container {
   display: flex;
   flex-wrap: nowrap;
-  overflow-y: none;
+  overflow-y: hidden;
 }
 
 .badge_md_image_container {
@@ -130,9 +130,12 @@
   text-align: left;
 }
 
+#badgeCard {
+  min-width: 475px;
+}
+
 @media screen and (max-width: 1199px) {
   .badge_featured_container {
-    overflow-y: hidden;
     overflow-x: scroll;
   }
 }
