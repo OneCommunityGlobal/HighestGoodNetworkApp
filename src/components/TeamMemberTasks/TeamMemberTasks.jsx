@@ -325,7 +325,7 @@ const TeamMemberTasks = props => {
                 {member.tasks &&
                 member.tasks.map((task, index) => (
                 <tr key={`${task._id}${index}`} className='task-break'>
-                  <td>
+                  <td className='task-align'>
                     <p>
                       <Link
                         key={index}
