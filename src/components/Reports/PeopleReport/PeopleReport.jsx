@@ -882,19 +882,19 @@ class PeopleReport extends Component {
     <ReportPage renderProfile={renderProfileInfo}>
 
       <div className='people-report-time-logs-wrapper'>
-        <ReportBlock firstColor='#ff5e82' secondColor='#e25cb2'>
+        <ReportBlock firstColor='#ff5e82' secondColor='#e25cb2' className='people-report-time-log-block'>
           <h3>{weeklyComittedHours}</h3>
           <p>Weekly Committed Hours</p>
         </ReportBlock>
-        <ReportBlock firstColor='#b368d2' secondColor='#831ec4'>
+        <ReportBlock firstColor='#b368d2' secondColor='#831ec4' className='people-report-time-log-block'>
           <h3>{this.props.tangibleHoursReportedThisWeek}</h3>
           <p>Hours Logged This Week</p>
         </ReportBlock>
-        <ReportBlock firstColor='#64b7ff' secondColor='#928aef'>
+        <ReportBlock firstColor='#64b7ff' secondColor='#928aef' className='people-report-time-log-block'>
             <h3>{infringments.length}</h3>
             <p>Blue squares</p>
         </ReportBlock>
-        <ReportBlock firstColor='#ffdb56' secondColor='#ff9145'>
+        <ReportBlock firstColor='#ffdb56' secondColor='#ff9145' className='people-report-time-log-block'>
           <h3>{totalTangibleHrsRound}</h3>
           <p>Total Hours Logged</p>
         </ReportBlock>
@@ -902,7 +902,7 @@ class PeopleReport extends Component {
 
       <ReportBlock>
         <div className="intro_date">
-        <h1>Tasks Contributed  </h1>
+        <h4>Tasks contributed</h4>
         </div>
         {/*<div>*/}
         {/*  <div>*/}

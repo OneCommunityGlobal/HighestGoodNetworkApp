@@ -1,8 +1,8 @@
 import React from 'react';
 
-const TableHeader = () =>
+export const TableHeader = () =>
   (
-    <tr>
+    <tr className='table-header-wrapper'>
       <th>Task</th>
       <th>Priority</th>
       <th>Status</th>
@@ -14,7 +14,3 @@ const TableHeader = () =>
       <th>End Date</th>
     </tr>
   );
-
-export default TableHeader;
-
-

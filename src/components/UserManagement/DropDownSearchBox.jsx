@@ -14,6 +14,7 @@ class DropDownSearchBox extends React.PureComponent {
         onChange={this.onSelectionChange}
         value={this.props.value}
         id={'search_' + this.props.id}
+        className={this.props.className}
       >
         <option value={''}>{''}</option>
         {this.props.items.map((item, index) => {

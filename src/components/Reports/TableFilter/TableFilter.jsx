@@ -52,56 +52,53 @@ const TableFilter = (props) => {
 
   return (
     <div className='table-filter-wrapper'>
-      <div className='table-filter-item'>
+      <TextSearchBox id={"name_search"}
+        searchCallback={onTaskNameSearch}
+        value={props.name}
+        className='table-filter-item table-filter-input'
+        placeholder='Task name'
+      />
+
+      <TextSearchBox
+        searchCallback={searchEstimatedHours}
+        value={props.estimatedHours}
+        placeholder='Estimated Hours'
+        className='table-filter-item table-filter-input'
+      />
+
+      <TextSearchBox
+        searchCallback={searchTaskResources}
+        value={props.resources}
+        placeholder='Resources'
+        className='table-filter-item table-filter-input'
+      />
+
+      <DropDownSearchBox
+        items={taskStatus}
+        searchCallback={searchStatus}
+        value={props.status}
+        className='table-filter-item table-filter-input'
+      />
+
+      <DropDownSearchBox
+        items={taskPriority}
+        searchCallback={searchPriority}
+        value={props.priority}
+        className='table-filter-item table-filter-input'
+      />
+
+      <DatePicker className="table-filter-datePicker table-filter-item table-filter-input" selected={startDate} minDate={new Date("01/01/2010")} maxDate={new Date()} onChange={(date) => setStartDate(date)} />
+      <DatePicker className="table-filter-datePicker table-filter-item table-filter-input" selected={endDate} maxDate={new Date()} minDate={new Date("01/01/2010")} onChange={(date) => setEndDate(date)} />
+
+      <div className='table-filter-item table-filter-checkbox-wrapper'>
         <input className='table-filter-checkbox' type='checkbox' id='active' name='active' checked={taskActive} onChange={searchActive} />
         <label className='table-filter-checkbox-label' for='active'>Active</label>
       </div>
       
-      <div className='table-filter-item'>
+      <div className='table-filter-item table-filter-checkbox-wrapper'>
         <input className='table-filter-checkbox' type='checkbox' id='assign' name='assign' checked={taskAssign} onChange={searchAssign} />
         <label className='table-filter-checkbox-label' for='assign'>Assign</label>
       </div>
-
-      <div>
-      <td id="name">
-        <TextSearchBox id={"name_search"}
-                       searchCallback={onTaskNameSearch}
-                       value={props.name}
-        />
-      </td>
-      <td id="task_priority">
-        <DropDownSearchBox
-                           items={taskPriority}
-                           searchCallback={searchPriority}
-                           value={props.priority}
-        />
-      </td>
-      <td id="task_status">
-        <DropDownSearchBox
-          items={taskStatus}
-          searchCallback={searchStatus}
-          value={props.status}
-        />
-      </td>
-      <td id="task_resources">
-        <TextSearchBox
-                       searchCallback={searchTaskResources}
-                       value={props.resources}
-        />
-      </td>
-      <td id="task_estimatedHours">
-        <TextSearchBox
-                       searchCallback={searchEstimatedHours}
-                       value={props.estimatedHours}
-        />
-      </td>
-      <td id="task_startDate">
-        <DatePicker className="table-filter-datePicker" selected={startDate} minDate={new Date("01/01/2010")} maxDate={new Date()} onChange={(date) => setStartDate(date)} />
-      </td>
-      <td id="task_EndDate">
-        <DatePicker className="table-filter-datePicker" selected={endDate} maxDate={new Date()} minDate={new Date("01/01/2010")} onChange={(date) => setEndDate(date)} />
-      </td>
-    </div>
     </div>
   );
 };

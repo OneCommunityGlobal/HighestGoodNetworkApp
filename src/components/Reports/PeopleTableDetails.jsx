@@ -4,7 +4,7 @@ import 'reactjs-popup/dist/index.css';
 import { Container } from 'reactstrap';
 import './PeopleTableDetails.css';
 import TableFilter from './TableFilter/TableFilter';
-import TableHeader from './TableHeader';
+import { TableHeader } from './TableHeader';
 
 const PeopleTableDetails = (props) => {
 
@@ -134,8 +134,8 @@ const PeopleTableDetails = (props) => {
         </tr>
         
       </td>
-      <td >{value.active}</td>
-      <td >{value.assign}</td>
+      <td >{value.active === 'Yes' ? <span>&#10003;</span> : <span>&#10060;</span>}</td>
+      <td >{value.assign === 'Yes' ? <span>&#10003;</span> : <span>&#10060;</span>}</td>
       <td >{value.estimatedHours}</td>
       <td >{value.startDate}</td>
       <td >{value.endDate}</td>  
@@ -164,7 +164,7 @@ const PeopleTableDetails = (props) => {
           startDate={startDate}
           EndDate={endDate}
         />
-      <table className="table table-bordered people-table">
+      <table className="table people-table">
         <thead>
         <TableHeader />
         </thead>

@@ -172,17 +172,8 @@ body {
 /*Table css starts*/
 
 .intro_date {
-  margin: 25px 0px 15px 0px;
+  margin: 16px 0px 16px 0px;
   display: flex;
-  justify-content: space-evenly;
-}
-
-.intro_date h1 {
-  display: inline-flex;
-  vertical-align: top;
-  font-family: 'Open Sans', sans-serif;
-  font-size: 2.5rem;
-  line-height: 28px;
 }
 
 .intro_date div{
@@ -193,9 +184,15 @@ body {
 }
 
 .people-report-time-logs-wrapper {
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr 1fr;
-  column-gap: 16px;
+  display: flex;
+  flex-wrap: wrap;
   justify-content: space-between;
   color: white;
+}
+
+.people-report-time-log-block {
+  max-height: 100px;
+  width: 240px;
+  white-space: nowrap;
+  margin-bottom: 16px;
 }
