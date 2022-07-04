@@ -314,7 +314,7 @@ const TeamMemberTasks = props => {
           <td>
             <Link to={`/userprofile/${member._id}`}>{`${member.firstName} ${member.lastName}`}</Link>
           </td>
-          <td>
+          <td className='team-clocks'>
             <u>{member.weeklyCommittedHours}</u> / 
             <font color="green"> {Math.round(totalHoursLogged)}</font> / 
             <font color="red"> {Math.round(totalHoursRemaining)}</font>
@@ -460,7 +460,7 @@ const TeamMemberTasks = props => {
               {/* Empty column header for hours completed icon */}
               <th />
               <th className='team-member-tasks-headers'>Team Member</th>
-              <th width="100px" className='team-member-tasks-headers'>
+              <th className='team-member-tasks-headers team-clocks team-clocks-header'>
                 <FontAwesomeIcon icon={faClock} title="Weekly Committed Hours" />
                 /
                 <FontAwesomeIcon

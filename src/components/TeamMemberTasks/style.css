@@ -30,3 +30,13 @@
 .task-align {
   text-align: left;
 }
+
+.team-clocks {
+  display: flex;
+  justify-content: space-around;
+}
+
+.team-clocks-header {
+  height: 73.5px;
+  align-items: center;
+}
