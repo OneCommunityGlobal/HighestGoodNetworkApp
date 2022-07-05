@@ -108,7 +108,7 @@ const TeamMemberTasks = (props) => {
           <td>
             <Link to={`/userprofile/${user.personId}`}>{`${user.name}`}</Link>
           </td>
-          <td>
+          <td className='team-clocks'>
             <u>{user.weeklyComittedHours ? user.weeklyComittedHours : 0}</u> / 
             <font color="green"> {Math.round(totalHoursLogged)}</font> / 
             <font color="red"> {Math.round(totalHoursRemaining)}</font>
@@ -120,7 +120,7 @@ const TeamMemberTasks = (props) => {
                 user.tasks.map((task, index) => (
                   task.wbsId && task.projectId &&
                   <tr key={`${task._id}${index}`} className='task-break'>
-                    <td>
+                    <td className='task-align'>
                       <p>
                         <Link to={task.projectId ? `/wbs/tasks/${task.wbsId}/${task.projectId}/${task._id}` : '/'}>
                           <span>{`${task.num} ${task.taskName}`} </span>
@@ -175,8 +175,8 @@ const TeamMemberTasks = (props) => {
           <tr>
             {/* Empty column header for hours completed icon */}
             <th />
-            <th>Team Member</th>
-            <th width="100px">
+            <th className='team-member-tasks-headers'>Team Member</th>
+            <th className='team-member-tasks-headers team-clocks team-clocks-header'>
               <FontAwesomeIcon icon={faClock} title="Weekly Committed Hours" />
               /
               <FontAwesomeIcon
