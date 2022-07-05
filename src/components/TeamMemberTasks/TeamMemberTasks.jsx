@@ -169,7 +169,7 @@ const TeamMemberTasks = (props) => {
   return (
     <div className="container team-member-tasks">
       <h1>Team Member Tasks</h1>
-      <TaskDifferenceModal isOpen={showTaskNotificationModal} taskNotifications={currentTaskNotifications} task={currentTask} userId={currentUserId} toggle={handleOpenTaskNotificationModal} onApprove={handleTaskNotificationRead} />
+      <TaskDifferenceModal isOpen={showTaskNotificationModal} taskNotifications={currentTaskNotifications} task={currentTask} userId={currentUserId} toggle={handleOpenTaskNotificationModal} onApprove={handleTaskNotificationRead} loggedInUserId={props.auth.user.userid} />
       <Table>
         <thead>
           <tr>

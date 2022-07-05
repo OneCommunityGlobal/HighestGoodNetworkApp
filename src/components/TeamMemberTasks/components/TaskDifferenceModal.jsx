@@ -50,7 +50,7 @@ const datetimeToDate = (datetime) => {
   return day + "/" + month + "/" + year;
 }
 
-export const TaskDifferenceModal = ({ taskNotifications, task, onApprove, userId, isOpen, toggle }) => (
+export const TaskDifferenceModal = ({ taskNotifications, task, onApprove, userId, isOpen, toggle, loggedInUserId }) => (
   <Modal size="xl" isOpen={isOpen} toggle={() => toggle(undefined, [])}>
     <ModalHeader toggle={() => toggle(undefined, [])}>
     Task Info Changes
@@ -188,9 +188,9 @@ export const TaskDifferenceModal = ({ taskNotifications, task, onApprove, userId
           ))}
     </ModalBody>
     <ModalFooter>
-      <Button color="primary" onClick={() => onApprove(userId, task._id, taskNotifications[0]._id)}>
+      {loggedInUserId === userId && <Button color="primary" onClick={() => onApprove(userId, task._id, taskNotifications[0]._id)}>
         Mark as read
-      </Button>
+      </Button>}
     </ModalFooter>
   </Modal>
 );
