@@ -29,7 +29,6 @@ const TeamMemberTasks = (props) => {
   useEffect(() => {dispatch(fetchTeamMembersTask())}, []);
 
   const userRole = props.auth.user.role;
-  console.log('userRole: ' + userRole);
 
   const handleOpenTaskNotificationModal = (userId, task, taskNotifications = []) => {
     setCurrentUserId(userId);
@@ -70,6 +69,7 @@ const TeamMemberTasks = (props) => {
   const renderTeamsList = () => {
     let teamsList = [];
 
+    console.log(usersWithTasks);
     if (usersWithTasks && usersWithTasks.length > 0) {
       // give different users different views
       const filteredMembers = usersWithTasks.filter(member => {
