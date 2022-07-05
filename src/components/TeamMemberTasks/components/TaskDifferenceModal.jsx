@@ -57,15 +57,11 @@ export const TaskDifferenceModal = ({ taskNotifications, task, onApprove, userId
     </ModalHeader>
     <ModalBody>
       {taskNotifications && taskNotifications.map((taskNotification) => (
-        <div>
-          <div style={ {color: 'black', fontWeight: 'bold'} }>
-            No changes
-          </div>
-          <div style={ {color: 'red', textDecorationLine: 'line-through'} }>
-            Deleted
-          </div>
-          <div style={ {color: 'green'} }>
-            Added
+        <div style={{textAlign: 'center'}}>
+        <div >
+            <span style={ {color: 'black', fontWeight: 'bold'} }>No changes</span>
+            <span style={ {color: 'red', textDecorationLine: 'line-through', marginLeft: '30px'} }>No changes</span>
+            <span style={ {color: 'green', marginLeft: '30px'} }>No changes</span>
           </div>
           <table className="table table-bordered">
             <tbody>
