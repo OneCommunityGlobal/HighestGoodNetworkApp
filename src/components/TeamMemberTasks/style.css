@@ -6,6 +6,10 @@
   color: black;
 }
 
+.team-member-tasks-bell {
+  color: red;
+  cursor: pointer;
+}
 .team-member-tasks .team-member-tasks-headers {
   vertical-align: middle;
 }
