@@ -52,7 +52,7 @@ const TimeEntry = ({ data, displayYear, userProfile }) => {
             {data.hours}h {data.minutes}m
           </h4>
           <div className="text-muted">Project/Task:</div>
-          <h6> {data.projectName} </h6>
+          <h6>{data.projectName} </h6>
           <span className="text-muted">Tangible:&nbsp;</span>
           <input
             type="checkbox"

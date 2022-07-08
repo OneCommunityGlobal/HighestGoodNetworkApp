@@ -97,7 +97,10 @@ const WeeklyCommitedHours = (props) => {
   }
   return (
     <Input
-      type="number"
+      min="0"
+      max="20"
+      inputmode="numeric"
+      type="text"
       name="weeklyComittedHours"
       id="weeklyComittedHours"
       data-testid="weeklyCommittedHours"
@@ -117,13 +120,13 @@ const WeeklyCommitedHours = (props) => {
 const TotalTangibleHours = (props) => {
   var sum=0;
   props.userProfile.categoryTangibleHrs.forEach(object=>{
-    sum+=Number(object.hrs);
+    sum+=object.hrs;
   }) 
-  console.log(props.userProfile);
+  // console.log(props.userProfile);
   if (!props.isUserAdmin) {
     // return <p>{ (Object.values(props.userProfile.hoursByCategory).reduce((a,b)=>a+b))}</p>;
     return <p>
-      {Number(sum).toFixed(2)}
+      {sum}
     </p>
   }
   return (
@@ -131,7 +134,7 @@ const TotalTangibleHours = (props) => {
       type="number"
       name="totalTangibleHours"
       id="totalTangibleHours"
-      value={sum.toFixed(2)}
+      value={sum}
       // onChange={(e) => {
       //   props.setUserProfile({ ...props.userProfile, totalTangibleHrs: e.target.value });
       //   props.setChanged(true);
@@ -175,6 +178,7 @@ const ViewTab = (props) => {
   }, []);
 
   return (
+    
     <div data-testid="volunteering-time-tab">
       <Row>
         <Col md="6">
@@ -274,21 +278,23 @@ const ViewTab = (props) => {
                 </Col>
                 <Col md="6">
                 {canEdit ?(
-                  <Input
-                      type="number"
-                      id={`${key}Hours`}
-                      value={Number(key.hrs).toFixed(2)}
-                      onChange={(e) => {  
-                        let temp;                 
+                  <Input  
+                                         
+                      step="any"
+                      min="0"
+                      type="number"         
+                      id={key.category}
+                      value={
+                        key.hrs
+                      }            
+                      onChange={(e) => {                 
                         for(var i in props.userProfile.categoryTangibleHrs){
                           if(props.userProfile.categoryTangibleHrs[i].category=== key.category){
-                            props.userProfile.categoryTangibleHrs[i].hrs=e.target.value;
-                            temp=props.userProfile.categoryTangibleHrs;
+                            props.userProfile.categoryTangibleHrs[i].hrs=Math.abs(parseFloat(e.target.value));
                           }
-                        }
+                        }                    
                         setUserProfile({ 
                           ...props.userProfile, 
-                          categoryTangibleHrs: temp
                                });
                         props.setChanged(true); 
                         <Alert color="warning">
@@ -298,7 +304,7 @@ const ViewTab = (props) => {
                       placeholder={`Total Tangible ${capitalize(key.category)} Hours`}
                     />
                 ): (
-                    <p>{key.hrs.toFixed(2)}</p>
+                    <p>{key.hrs}</p>
                   )}                
                 </Col>
               </Row>
