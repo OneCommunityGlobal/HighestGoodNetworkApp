@@ -1,8 +1,9 @@
+import { yearsToMonths } from 'date-fns/fp';
 import { useState } from 'react';
-import Popup from 'reactjs-popup';
 import 'reactjs-popup/dist/index.css';
 import { Container } from 'reactstrap';
 import './PeopleTableDetails.css';
+import { NewModal } from 'components/common/NewModal';
 import TableFilter from './TableFilter/TableFilter';
 import { TableHeader } from './TableHeader';
 
@@ -22,6 +23,7 @@ const PeopleTableDetails = (props) => {
   const [editPopup, setEditPopup] = useState(false);
   const [startDate, setStartDate] =useState('');
   const [endDate, setEndDate] =useState('');
+
   const onTaskNameSearch = (text) => {
     setName(text);
   }; 
@@ -170,7 +172,7 @@ const PeopleTableDetails = (props) => {
         </thead>
         <tbody>
         {filteredTasks.map((value) => (
-          <Popup trigger={renderFilteredTask(value)} modal>
+          <NewModal header={"Task info"} trigger={() => renderFilteredTask(value)}>
             <div>Why This Task is important</div>
             <textarea
                 className='rectangle'
@@ -191,7 +193,7 @@ const PeopleTableDetails = (props) => {
                 value={value.endstateInfo}
                 // onChange={this.handleChange}
             />
-          </Popup>
+          </NewModal>
         ))}
         </tbody>
       </table>
