@@ -3,8 +3,73 @@
  * Author: Henry Ng - 03/20/20
  ********************************************************************************/
 import axios from 'axios';
+import { fetchTeamMembersTaskSuccess, fetchTeamMembersTaskBegin, fetchTeamMembersTaskError } from 'components/TeamMemberTasks/actions';
 import * as types from '../constants/task';
 import { ENDPOINTS } from '../utils/URL';
+import { createOrUpdateTaskNotificationHTTP } from './taskNotification';
+
+const selectFetchTeamMembersTaskData = (state) => state.auth.user.userid;
+const selectUpdateTaskData = (state, taskId) => state.tasks.taskItems.find(({_id}) => _id === taskId);
+
+export const fetchTeamMembersTask = () => async (dispatch, getState) => {
+  try {
+    const state = getState();
+    const userId = selectFetchTeamMembersTaskData(state);
+    dispatch(fetchTeamMembersTaskBegin());
+    const response = await axios.get(ENDPOINTS.TEAM_MEMBER_TASKS(userId));
+    dispatch(fetchTeamMembersTaskSuccess(response.data));
+  } catch (error) {
+    dispatch(fetchTeamMembersTaskError());
+  }
+};
+
+// TODO: TeamMemberTasks.jsx dispatch
+export const deleteTaskNotification = (userId, taskId, taskNotificationId) => async (dispatch, getState) => {
+  try {
+    //dispatch(deleteTaskNotificationBegin());
+    const res = await axios.delete(ENDPOINTS.DELETE_TASK_NOTIFICATION(taskNotificationId));
+    dispatch(deleteTaskNotificationSuccess({userId, taskId, taskNotificationId}));
+  } catch (error) {
+    //dispatch(deleteTaskNotificationError());
+  }
+};
+
+export const addNewTask = (newTask, wbsId) => async (dispatch, getState) => {
+  let status = 200;
+  let _id = null;
+  let task = {};
+  try {
+    //dispatch(fetchTeamMembersTaskBegin());
+    const res = await axios.post(ENDPOINTS.TASK(wbsId), newTask);
+    _id = res.data._id;
+    status = res.status;
+    task = res.data;
+    const userIds = task.resources.map(resource => resource.userID);
+    await createOrUpdateTaskNotificationHTTP(task._id, {}, userIds);
+  } catch (error) {
+    //dispatch(fetchTeamMembersTaskError());
+    status = 400;
+  }
+  newTask._id = _id;
+  await dispatch(postNewTask(task, status));
+};
+
+export const updateTask = (taskId, updatedTask) => async (dispatch, getState) => {
+  let status = 200;
+  try {
+    const state = getState();
+    const oldTask = selectUpdateTaskData(state, taskId);
+    //dispatch(fetchTeamMembersTaskBegin());
+    await axios.put(ENDPOINTS.TASK_UPDATE(taskId), updatedTask);
+    const userIds = updatedTask.resources.map(resource => resource.userID);
+    await createOrUpdateTaskNotificationHTTP(taskId, oldTask, userIds);
+  } catch (error) {
+    //dispatch(fetchTeamMembersTaskError());
+    status = 400;
+  }
+
+  await dispatch(putUpdatedTask(updatedTask, taskId, status));
+};
 
 export const importTask = (newTask, wbsId) => {
   const url = ENDPOINTS.TASK_IMPORT(wbsId);
@@ -29,27 +94,6 @@ export const importTask = (newTask, wbsId) => {
       postNewTask(task,
         status
       ));*/
-  };
-};
-
-export const addNewTask = (newTask, wbsId) => {
-  const url = ENDPOINTS.TASK(wbsId);
-  return async (dispatch) => {
-    let status = 200;
-    let _id = null;
-    let task = {};
-
-    try {
-      const res = await axios.post(url, newTask);
-      _id = res.data._id;
-      status = res.status;
-      task = res.data;
-    } catch (err) {
-      status = 400;
-    }
-
-    newTask._id = _id;
-    await dispatch(postNewTask(task, status));
   };
 };
 
@@ -87,22 +131,6 @@ export const fetchAllTasks = (wbsId, level = 0, mother = null) => {
     } catch (err) {
       dispatch(setTasksError(err));
     }
-  };
-};
-
-export const updateTask = (taskId, updatedTask) => {
-  const url = ENDPOINTS.TASK_UPDATE(taskId);
-  return async (dispatch) => {
-    let status = 200;
-    let task = {};
-    try {
-      const res = await axios.put(url, updatedTask);
-      task = res.data;
-    } catch (err) {
-      status = 400;
-    }
-
-    await dispatch(putUpdatedTask(updatedTask, taskId, status));
   };
 };
 

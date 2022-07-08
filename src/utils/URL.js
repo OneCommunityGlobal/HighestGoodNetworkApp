@@ -4,6 +4,7 @@ let APIEndpoint =
 let GeocodeAPIEndpoint = 'https://api.opencagedata.com/geocode/v1/json';
 
 export const ENDPOINTS = {
+  APIEndpoint: () => APIEndpoint,
   USER_PROFILE: (userId) => `${APIEndpoint}/userprofile/${userId}`,
   USER_PROFILES: `${APIEndpoint}/userprofile/`,
   USER_PROFILE_BY_NAME: (userName) => `${APIEndpoint}/userProfile/name/${userName}`,
@@ -52,12 +53,14 @@ export const ENDPOINTS = {
 
   TEAM_MEMBERS: (teamId) => `${APIEndpoint}/team/${teamId}/users`,
   TEAM_BY_ID: (teamId) => `${APIEndpoint}/team/${teamId}`,
-  TASKNOTIFICATION: `${APIEndpoint}/tasknotification`,
-  MARK_TASK_NOTIFICATION_READ: (taskId) => `${APIEndpoint}/tasknotification/read/${taskId}`,
   USER_UNREAD_TASK_NOTIFICATIONS: (userId) => `${APIEndpoint}/tasknotification/user/${userId}`,
   BADGE: () => `${APIEndpoint}/badge`,
   BADGE_ASSIGN: (userId) => `${APIEndpoint}/badge/assign/${userId}`,
   BADGE_BY_ID: (badgeId) => `${APIEndpoint}/badge/${badgeId}`,
+
+  TEAM_MEMBER_TASKS: (userId) => `${ENDPOINTS.APIEndpoint()}/user/${userId}/teams/tasks`,
+  CREATE_OR_UPDATE_TASK_NOTIFICATION: (taskId) => `${ENDPOINTS.APIEndpoint()}/task/${taskId}/tasknotification`,
+  DELETE_TASK_NOTIFICATION: (taskNotificationId) => `${APIEndpoint}/tasknotification/${taskNotificationId}`,
 
   TIMEZONE_KEY: `${APIEndpoint}/timezone`,
   GEOCODE_URI: (location, key) =>

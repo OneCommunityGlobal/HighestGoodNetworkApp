@@ -5,3 +5,42 @@
 .team-member-tasks h1 {
   color: black;
 }
+
+.team-member-tasks-bell {
+  color: red;
+  cursor: pointer;
+}
+.team-member-tasks .team-member-tasks-headers {
+  vertical-align: middle;
+}
+
+.team-member-tasks .team-member-tasks-subtable {
+  margin: 0;
+  text-align: center;
+}
+
+.team-task-hours {
+  width: 35%;
+}
+
+.task-break {
+  border-bottom: 1px solid lightgray;
+}
+
+.task-break:last-of-type {
+  border-bottom: none;
+} 
+
+.task-align {
+  text-align: left;
+}
+
+.team-clocks {
+  display: flex;
+  justify-content: space-around;
+}
+
+.team-clocks-header {
+  height: 73.5px;
+  align-items: center;
+}
