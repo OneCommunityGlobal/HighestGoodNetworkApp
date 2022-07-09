@@ -154,22 +154,11 @@ const TimeEntryForm = (props) => {
       Select Project/Task
     </option>,
   );
-  const pjT=userProfile.categoryTangibleHrs.map((project)=>(
-    <option value={project._id} key={project._id}>
-      {project.category}
-    </option>
-  ));
-  pjT.unshift(
-    <option value="" key="none" disabled>
-        Select Project/Task
-  </option>);
   const taskOptions = tasks.map((task) => (
     <option value={task._id} key={task._id}>
       {task.taskName}
     </option>
   ));
-
-   pjT.push(taskOptions)
 
   const getEditMessage = () => {
     let editCount = 0;
@@ -504,7 +493,7 @@ const TimeEntryForm = (props) => {
                 value={inputs.projectId}
                 onChange={handleInputChange}
               >
-                {pjT}
+                {projectOrTaskOptions}
               </Input>
               {'projectId' in errors && (
                 <div className="text-danger">
