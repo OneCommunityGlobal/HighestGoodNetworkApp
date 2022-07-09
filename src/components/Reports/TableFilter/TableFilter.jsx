@@ -2,10 +2,19 @@ import React, { useState } from 'react';
 import TextSearchBox from '../../UserManagement/TextSearchBox';
 import DropDownSearchBox from '../../UserManagement/DropDownSearchBox';
 import DatePicker from "react-datepicker";
+import { FiCalendar } from 'react-icons/fi';
 import "react-datepicker/dist/react-datepicker.css";
 import "./TableFilter.css";
 
+const InputWithCalendarIcon = ({value, onClick}) => {
 
+  return (
+      <>
+          <input type="text" className="table-filter-datePicker table-filter-item table-filter-input" value={value} onClick={onClick}/>
+          <FiCalendar className="date-picker-icon" onClick={onClick} />
+      </>
+  );
+}
 
 const TableFilter = (props) => {
   const taskPriority = ['Primary','Secondary', 'Tertiary'];
@@ -77,6 +86,7 @@ const TableFilter = (props) => {
         items={taskStatus}
         searchCallback={searchStatus}
         value={props.status}
+        placeholder='Any status'
         className='table-filter-item table-filter-input'
       />
 
@@ -84,11 +94,24 @@ const TableFilter = (props) => {
         items={taskPriority}
         searchCallback={searchPriority}
         value={props.priority}
+        placeholder='Any priority'
         className='table-filter-item table-filter-input'
       />
 
-      <DatePicker className="table-filter-datePicker table-filter-item table-filter-input" selected={startDate} minDate={new Date("01/01/2010")} maxDate={new Date()} onChange={(date) => setStartDate(date)} />
-      <DatePicker className="table-filter-datePicker table-filter-item table-filter-input" selected={endDate} maxDate={new Date()} minDate={new Date("01/01/2010")} onChange={(date) => setEndDate(date)} />
+      <DatePicker
+        customInput={<InputWithCalendarIcon/>} 
+        selected={startDate} 
+        minDate={new Date("01/01/2010")} 
+        maxDate={new Date()} 
+        onChange={(date) => setStartDate(date)} 
+      />
+      <DatePicker
+        customInput={<InputWithCalendarIcon/>} 
+        selected={endDate}
+        maxDate={new Date()}
+        minDate={new Date("01/01/2010")}
+        onChange={(date) => setEndDate(date)} 
+      />
 
       <div className='table-filter-item table-filter-checkbox-wrapper'>
         <input className='table-filter-checkbox' type='checkbox' id='active' name='active' checked={taskActive} onChange={searchActive} />
