@@ -26,8 +26,9 @@ import AboutModal from './AboutModal';
 import TangibleInfoModal from './TangibleInfoModal';
 import ReminderModal from './ReminderModal';
 import axios from 'axios';
-import { ApiEndpoint } from '../../../utils/URL';
+import { ENDPOINTS } from '../../../utils/URL';
 import hasPermission from 'utils/permissions';
+import { getTimeEntryFormData } from './selectors';
 
 /**
  * Modal used to submit and edit tangible and intangible time entries.
@@ -73,10 +74,10 @@ const TimeEntryForm = (props) => {
   const [isTangibleInfoModalVisible, setTangibleInfoModalVisibleModalVisible] = useState(false);
   const [isInfoModalVisible, setInfoModalVisible] = useState(false);
   const [projects, setProjects] = useState([]);
+  const [tasks, setTasks] = useState([]);
 
   const fromTimer = !_.isEmpty(timer);
-  const userProfile = useSelector((state) => state.userProfile);
-  const role = userProfile.role;
+  const { userProfile, currentUserRole } = useSelector(getTimeEntryFormData);
 
   const dispatch = useDispatch();
 
@@ -101,11 +102,20 @@ const TimeEntryForm = (props) => {
 
   useEffect(() => {
     axios
-      .get(`${ApiEndpoint}/userprofile/${userId}`)
+      .get(ENDPOINTS.USER_PROFILE(userId))
       .then((res) => {
         setProjects(res?.data?.projects || []);
       })
-      .catch((err) => {});
+      .catch(err => console.log(err));
+  }, []);
+
+  useEffect(() => {
+    axios
+      .get(ENDPOINTS.TASKS_BY_USERID(userId))
+      .then((res) => {
+        setTasks(res?.data || []); 
+      })
+      .catch(err => console.log(err));
   }, []);
 
   const openModal = () =>
@@ -134,16 +144,24 @@ const TimeEntryForm = (props) => {
     setInputs({ ...inputs, ...timer });
   }, [timer]);
 
-  const projectOptions = projects.map((project) => (
+  const projectOrTaskOptions = projects.map((project) => (
     <option value={project._id} key={project._id}>
       {project.projectName}
     </option>
   ));
-  projectOptions.unshift(
+  projectOrTaskOptions.unshift(
     <option value="" key="none" disabled>
       Select Project/Task
     </option>,
   );
+
+  const taskOptions = tasks.map((task) => (
+    <option value={task._id} key={task._id}>
+      {task.taskName}
+    </option>
+  ));
+
+  projectOrTaskOptions.push(taskOptions)
 
   const getEditMessage = () => {
     let editCount = 0;
@@ -207,7 +225,7 @@ const TimeEntryForm = (props) => {
       result.notes = 'Description and reference link are required';
     }
 
-    if (!hasPermission(role, 'addTimeEntryOthers') && data.isTangible && isTimeModified && reminder.editNotice) {
+    if (!hasPermission(currentUserRole, 'addTimeEntryOthers') && data.isTangible && isTimeModified && reminder.editNotice) {
       openModal();
       setReminder((reminder) => ({
         ...reminder,
@@ -255,7 +273,7 @@ const TimeEntryForm = (props) => {
 
     if (edit) {
       if (!reminder.notice) {
-        timeEntryStatus = await dispatch(editTimeEntry(data._id, timeEntry));
+        timeEntryStatus = await dispatch(editTimeEntry(data._id, timeEntry, data.dateOfWork));
       }
     } else {
       timeEntryStatus = await dispatch(postTimeEntry(timeEntry));
@@ -410,7 +428,7 @@ const TimeEntryForm = (props) => {
           <Form>
             <FormGroup>
               <Label for="dateOfWork">Date</Label>
-              {hasPermission(role, 'changeIntangibleTimeEntryDate') && !fromTimer ? (
+              {hasPermission(currentUserRole, 'changeIntangibleTimeEntryDate') && !fromTimer ? (
                 <Input
                   type="date"
                   name="dateOfWork"
@@ -478,7 +496,7 @@ const TimeEntryForm = (props) => {
                 value={inputs.projectId}
                 onChange={handleInputChange}
               >
-                {projectOptions}
+                {projectOrTaskOptions}
               </Input>
               {'projectId' in errors && (
                 <div className="text-danger">
@@ -523,7 +541,7 @@ const TimeEntryForm = (props) => {
                   name="isTangible"
                   checked={inputs.isTangible}
                   onChange={handleCheckboxChange}
-                  disabled={!hasPermission(role, 'toggleTangibleTime') && !data.isTangible}
+                  disabled={!hasPermission(currentUserRole, 'toggleTangibleTime') && !data.isTangible}
                 />
                 Tangible&nbsp;
                 <i

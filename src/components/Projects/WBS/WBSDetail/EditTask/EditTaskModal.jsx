@@ -351,6 +351,7 @@ const EditTaskModal = (props) => {
                   <select id="Status" onChange={(e) => setStatus(e.target.value)}>
                     <option value="Started">Started</option>
                     <option value="Not Started">Not Started</option>
+                    <option value="Complete">Complete</option>
                   </select>
                 </td>
               </tr>

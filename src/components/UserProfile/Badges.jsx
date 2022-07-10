@@ -35,7 +35,7 @@ const Badges = (props) => {
 
   return (
     <>
-      <Card style={{ backgroundColor: '#f6f6f3', marginTop: 20, marginBottom: 20, minWidth: 477 }}>
+      <Card id='badgeCard' style={{ backgroundColor: '#f6f6f3', marginTop: 20, marginBottom: 20}}>
         <CardBody>
           <CardTitle
             style={{
@@ -43,6 +43,7 @@ const Badges = (props) => {
               fontSize: 18,
               color: '#285739',
               marginBottom: 15,
+              minWidth: 446
             }}
           >
             Featured Badges <i className="fa fa-info-circle" id="FeaturedBadgeInfo" />

@@ -1,7 +1,7 @@
 import React from 'react'
 import * as d3 from 'd3/dist/d3.min'
 import {Button, Modal} from 'react-bootstrap'
-import './PeopleReport.css';
+import './PeopleReport/PeopleReport.css';
 
 const InfringmentsViz = ({infringments, fromDate, toDate}) =>{
   const [show, setShow] = React.useState(false)
