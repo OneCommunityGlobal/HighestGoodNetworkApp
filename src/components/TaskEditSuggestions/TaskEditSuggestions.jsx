@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { Container, Table } from 'reactstrap';
-import { TaskEditSuggestionRow } from './TaskEditSuggestionRow';
+import { TaskEditSuggestionRow } from './Components/TaskEditSuggestionRow';
+import { TaskEditSuggestionsModal } from './Components/TaskEditSuggestionsModal';
 
 const taskEditSuggestions = [
   {
-    id: 1,
+    _id: 1,
     user: "EK Example",
     newTask: {
 			_id:"62c9b82d11575257acb95f5f",
@@ -83,6 +84,14 @@ const taskEditSuggestions = [
 
 export const TaskEditSuggestions = () => {
 
+  const [isTaskEditSuggestionModalOpen, setIsTaskEditSuggestionModalOpen] = useState(false);
+  const [currentTaskEditSuggestion, setCurrentTaskEditSuggestion] = useState();
+
+  const handleToggleTaskEditSuggestionModal = (currentTaskEditSuggestion) => {
+    setCurrentTaskEditSuggestion(currentTaskEditSuggestion);
+    setIsTaskEditSuggestionModalOpen(!isTaskEditSuggestionModalOpen);
+  };
+
   return (
     <Container>
       <h1>Task Edit Suggestions</h1>
@@ -99,10 +108,18 @@ export const TaskEditSuggestions = () => {
             <TaskEditSuggestionRow
               key={taskEditSuggestion._id}
               taskEditSuggestion={taskEditSuggestion}
+              handleToggleTaskEditSuggestionModal={handleToggleTaskEditSuggestionModal}
             />)
           }
         </tbody>
       </Table>
+      <TaskEditSuggestionsModal 
+        isTaskEditSuggestionModalOpen={isTaskEditSuggestionModalOpen}
+        taskEditSuggestion={currentTaskEditSuggestion}
+        handleToggleTaskEditSuggestionModal={handleToggleTaskEditSuggestionModal}
+        // onApprove={handleTaskNotificationRead}
+        // loggedInUserId={props.auth.user.userid}
+      />
     </Container>
   );
 }

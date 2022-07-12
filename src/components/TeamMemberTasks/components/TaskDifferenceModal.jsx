@@ -2,7 +2,7 @@ import React from 'react';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Table } from 'reactstrap';
 import DiffedText from './DiffedText';
 
-const resourcesToString = (resources) => {
+export const resourcesToString = (resources) => {
   if (!resources) {
     return "";
   }
@@ -11,35 +11,35 @@ const resourcesToString = (resources) => {
   return trimmed;
 };
 
-const booleanToString = (bool) => {
+export const booleanToString = (bool) => {
   if (bool == null) {
     return "";
   }
   return bool ? "Yes" : "No";
 }
 
-const numberToString = (num) => {
+export const numberToString = (num) => {
   if (num == null) {
     return "";
   }
   return num.toString();
 }
 
-const arrayToString = (arr) => {
+export const arrayToString = (arr) => {
   if (arr == null) {
     return "";
   }
   return arr.reduce((acc, ele) => acc + "\n" + ele, "").trim();
 }
 
-const trimParagraphTags = (str) => {
+export const trimParagraphTags = (str) => {
   if (str == null) {
     return "";
   }
   return str.replace(/(<p[^>]+?>|<p>|<\/p>)/img, "");
 }
 
-const datetimeToDate = (datetime) => {
+export const datetimeToDate = (datetime) => {
   if (datetime == null) {
     return "";
   }
