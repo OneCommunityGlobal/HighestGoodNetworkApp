@@ -3,10 +3,11 @@ import { Container, Table } from 'reactstrap';
 import { TaskEditSuggestionRow } from './Components/TaskEditSuggestionRow';
 import { TaskEditSuggestionsModal } from './Components/TaskEditSuggestionsModal';
 
-const taskEditSuggestions = [
+const taskEditSuggestionsInitial = [
   {
     _id: 1,
     user: "EK Example",
+    dateSuggested: "2022-07-12T16:25:26.837Z",
     newTask: {
 			_id:"62c9b82d11575257acb95f5f",
 			taskId:"62a382a44ee5b0299c5ff212",
@@ -29,7 +30,7 @@ const taskEditSuggestions = [
           name:"EK Volunteer",
         }
       ],
-			taskName:"Red Bell Test 13",
+			taskName:"EK Example Task 1",
 			startedDatetime:null,
 			dueDatetime:null,
 			whyInfo:"",
@@ -81,8 +82,9 @@ const taskEditSuggestions = [
     }
   },
   {
-    _id: 1,
+    _id: 2,
     user: "EK Example",
+    dateSuggested: "2022-07-11T16:25:26.837Z",
     newTask: {
 			_id:"62c9b82d11575257acb95f5f",
 			taskId:"62a382a44ee5b0299c5ff212",
@@ -105,7 +107,7 @@ const taskEditSuggestions = [
           name:"EK Volunteer",
         }
       ],
-			taskName:"Red Bell Test 13",
+			taskName:"EK Example Task 2",
 			startedDatetime:null,
 			dueDatetime:null,
 			whyInfo:"",
@@ -157,8 +159,9 @@ const taskEditSuggestions = [
     }
   },
   {
-    _id: 1,
-    user: "EK Example",
+    _id: 3,
+    user: "AAA",
+    dateSuggested: "2022-07-10T16:25:26.837Z",
     newTask: {
 			_id:"62c9b82d11575257acb95f5f",
 			taskId:"62a382a44ee5b0299c5ff212",
@@ -181,7 +184,7 @@ const taskEditSuggestions = [
           name:"EK Volunteer",
         }
       ],
-			taskName:"Red Bell Test 13",
+			taskName:"AAA Task 1",
 			startedDatetime:null,
 			dueDatetime:null,
 			whyInfo:"",
@@ -236,12 +239,50 @@ const taskEditSuggestions = [
 
 export const TaskEditSuggestions = () => {
 
+  const[taskEditSuggestions, setTaskEditSuggestions] = useState([]);
   const [isTaskEditSuggestionModalOpen, setIsTaskEditSuggestionModalOpen] = useState(false);
   const [currentTaskEditSuggestion, setCurrentTaskEditSuggestion] = useState();
+  
+  const [userSortDirection, setUserSortDirection] = useState();
+  const [dateSuggestedSortDirection, setDateSuggestedSortDirection] = useState("desc");
+
+  useEffect(() => setTaskEditSuggestions(taskEditSuggestionsInitial.sort((tes1, tes2) => tes2.dateSuggested.localeCompare(tes1.dateSuggested))), []);
 
   const handleToggleTaskEditSuggestionModal = (currentTaskEditSuggestion) => {
     setCurrentTaskEditSuggestion(currentTaskEditSuggestion);
     setIsTaskEditSuggestionModalOpen(!isTaskEditSuggestionModalOpen);
+  };
+
+  const SortArrow = ({sortDirection}) => {
+    if (sortDirection === "asc") {
+      return <i class="fa fa-arrow-up"></i>;
+    } else if (sortDirection === "desc") {
+      return <i class="fa fa-arrow-down"></i>;
+    } else {
+      return <></>;
+    }
+  };
+
+  const toggleDateSuggestedSortDirection = () => {
+    setUserSortDirection();
+    if (dateSuggestedSortDirection == null || dateSuggestedSortDirection == "asc") {
+      setTaskEditSuggestions([...taskEditSuggestions].sort((tes1, tes2) => tes2.dateSuggested.localeCompare(tes1.dateSuggested)));
+      setDateSuggestedSortDirection("desc");
+    } else if (dateSuggestedSortDirection == "desc") {
+      setTaskEditSuggestions([...taskEditSuggestions].sort((tes1, tes2) => tes1.dateSuggested.localeCompare(tes2.dateSuggested)));
+      setDateSuggestedSortDirection("asc");
+    }
+  };
+
+  const toggleUserSortDirection = () => {
+    setDateSuggestedSortDirection();
+    if (userSortDirection == null || userSortDirection == "asc") {
+      setTaskEditSuggestions([...taskEditSuggestions].sort((tes1, tes2) => tes1.user.localeCompare(tes2.user)));
+      setUserSortDirection("desc");
+    } else if (userSortDirection == "desc") {
+      setTaskEditSuggestions([...taskEditSuggestions].sort((tes1, tes2) => tes2.user.localeCompare(tes1.user)));
+      setUserSortDirection("asc");
+    }
   };
 
   return (
@@ -250,7 +291,8 @@ export const TaskEditSuggestions = () => {
       <Table>
         <thead>
           <tr>
-            <th>User</th>
+            <th onClick={toggleDateSuggestedSortDirection}>Date Suggested <SortArrow sortDirection={dateSuggestedSortDirection}/></th>
+            <th onClick={toggleUserSortDirection}>User <SortArrow sortDirection={userSortDirection}/></th>
             <th>Task</th>
           </tr>
         </thead>

@@ -5,10 +5,8 @@ import DiffedText from 'components/TeamMemberTasks/components/DiffedText';
 
 export const TaskEditSuggestionsModal = ({isTaskEditSuggestionModalOpen, taskEditSuggestion, handleToggleTaskEditSuggestionModal}) => {
   return (
-    <Modal size="xl" isOpen={isTaskEditSuggestionModalOpen} toggle={() => handleToggleTaskEditSuggestionModal(undefined, [])}>
-    <ModalHeader toggle={() => handleToggleTaskEditSuggestionModal(undefined, [])}>
-    Suggested Changes
-    </ModalHeader>
+    <Modal size="xl" isOpen={isTaskEditSuggestionModalOpen} toggle={() => handleToggleTaskEditSuggestionModal()}>
+    <ModalHeader toggle={() => handleToggleTaskEditSuggestionModal()}>Suggested Changes</ModalHeader>
     <ModalBody>
       {
         taskEditSuggestion &&
