@@ -1,3 +1,6 @@
+const selectFetchTeamMembersTaskData = (state) => state.auth.user.userid;
+const selectUpdateTaskData = (state, taskId) => state.tasks.taskItems.find(({_id}) => _id === taskId);
+
 export const fetchTaskEditSuggestions = () => async (dispatch, getState) => {
   try {
     const state = getState();
