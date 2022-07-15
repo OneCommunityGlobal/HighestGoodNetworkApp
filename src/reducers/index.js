@@ -33,6 +33,7 @@ import { teamUsersReducer } from './teamsTeamMembersReducer';
 import { badgeReducer } from './badgeReducer';
 import { popupEditorReducer } from './popupEditorReducer';
 import { timeZoneAPIReducer } from './timezoneApiReducer';
+import { teamMemberTasksReducer } from 'components/TeamMemberTasks/reducer';
 
 export default combineReducers({
   auth: authReducer,
@@ -72,4 +73,5 @@ export default combineReducers({
   badge: badgeReducer,
   popupEditor: popupEditorReducer,
   timeZoneAPI: timeZoneAPIReducer,
+  teamMemberTasks: teamMemberTasksReducer
 });
