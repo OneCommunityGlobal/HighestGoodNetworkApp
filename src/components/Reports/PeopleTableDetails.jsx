@@ -5,7 +5,6 @@ import { Container } from 'reactstrap';
 import './PeopleTableDetails.css';
 import { NewModal } from 'components/common/NewModal';
 import TableFilter from './TableFilter/TableFilter';
-import { TableHeader } from './TableHeader';
 
 const PeopleTableDetails = (props) => {
 
@@ -101,11 +100,11 @@ const PeopleTableDetails = (props) => {
   let filteredTasks = filterTasks(props.taskData);
 
   const renderFilteredTask = (value) => (
-    <tr key={value._id}>
-      <td >{value.taskName}</td>
-      <td >{value.priority}</td>
-      <td >{value.status}</td>
-      <td >
+    <div key={value._id} className="people-table-row people-table-body-row">
+      <div >{value.taskName}</div>
+      <div >{value.priority}</div>
+      <div >{value.status}</div>
+      <div >
         {value.resources?.map(res=>
           
           res.map((resource,index)=>{
@@ -122,8 +121,8 @@ const PeopleTableDetails = (props) => {
             <span className="dot">{res.length - 2}+</span>
           </a>:null
         )}
-        <tr id={value._id} class="extra" >
-          <td class="extra1" >
+        <div id={value._id} class="extra" >
+          <div class="extra1" >
             {value.resources?.map(res=>
               res.map((resource,index)=>{
                 if(index>=2){
@@ -132,45 +131,52 @@ const PeopleTableDetails = (props) => {
                 }
             }),
           )}
-          </td>
-        </tr>
+          </div>
+        </div>
         
-      </td>
-      <td >{value.active === 'Yes' ? <span>&#10003;</span> : <span>&#10060;</span>}</td>
-      <td >{value.assign === 'Yes' ? <span>&#10003;</span> : <span>&#10060;</span>}</td>
-      <td >{value.estimatedHours}</td>
-      <td >{value.startDate}</td>
-      <td >{value.endDate}</td>  
-    </tr>
+      </div>
+      <div className='people-table-center-cell'>{value.active === 'Yes' ? <span>&#10003;</span> : <span>&#10060;</span>}</div>
+      <div className='people-table-center-cell'>{value.assign === 'Yes' ? <span>&#10003;</span> : <span>&#10060;</span>}</div>
+      <div className='people-table-end-cell'>{value.estimatedHours}</div>
+      <div className='people-table-end-cell'>{value.startDate}</div>
+      <div className='people-table-end-cell'>{value.endDate}</div>  
+    </div>
   )
 
   return (
     <Container fluid className="wrapper">
       <TableFilter
-          onTaskNameSearch={onTaskNameSearch}
-          searchPriority={searchPriority}
-          searchResources={searchResources}
-          searchStatus={searchStatus}
-          searchActive={searchActive}
-          searchAssign={searchAssign}
-          searchEstimatedHours={searchEstimatedHours}
-          resetFilters={resetFilters}
-          name={name}
-          order={order}
-          priority={priority}
-          status={status}
-          resources={resources}
-          active={active}
-          assign={assign}
-          estimatedHours={estimatedHours}
-          startDate={startDate}
-          EndDate={endDate}
-        />
-      <table className="table people-table">
-        <thead>
-        <TableHeader />
-        </thead>
-        <tbody>
+        onTaskNameSearch={onTaskNameSearch}
+        searchPriority={searchPriority}
+        searchResources={searchResources}
+        searchStatus={searchStatus}
+        searchActive={searchActive}
+        searchAssign={searchAssign}
+        searchEstimatedHours={searchEstimatedHours}
+        resetFilters={resetFilters}
+        name={name}
+        order={order}
+        priority={priority}
+        status={status}
+        resources={resources}
+        active={active}
+        assign={assign}
+        estimatedHours={estimatedHours}
+        startDate={startDate}
+        EndDate={endDate}
+      />
+      <div className="people-table-row reports-table-head">
+        <div>Task</div>
+        <div>Priority</div>
+        <div>Status</div>
+        <div>Resources</div>
+        <div className='people-table-center-cell'>Active</div>
+        <div className='people-table-center-cell'>Assign</div>
+        <div className='people-table-end-cell'>Estimated Hours</div>
+        <div className='people-table-end-cell'>Start Date</div>
+        <div className='people-table-end-cell'>End Date</div>
+      </div>
+      <div className="people-table">
         {filteredTasks.map((value) => (
           <NewModal header={"Task info"} trigger={() => renderFilteredTask(value)}>
             <div>Why This Task is important</div>
@@ -195,8 +201,7 @@ const PeopleTableDetails = (props) => {
             />
           </NewModal>
         ))}
-        </tbody>
-      </table>
+      </div>
     </Container >
   );
 };
