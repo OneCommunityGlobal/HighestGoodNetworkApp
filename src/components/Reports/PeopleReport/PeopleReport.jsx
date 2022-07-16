@@ -862,7 +862,7 @@ class PeopleReport extends Component {
     }
 
     const renderProfileInfo = () => (
-      <ReportHeader src={this.state.userProfile.profilePic} isActive>
+      <ReportHeader src={this.state.userProfile.profilePic} isActive={isActive}>
         <h1 className="heading">{`${firstName} ${lastName}`}</h1>
 
         <div className="stats">

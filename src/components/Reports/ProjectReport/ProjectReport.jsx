@@ -32,7 +32,7 @@ export const ProjectReport = ({ match }) => {
 
     return (
       <div>
-        <ReportHeader isActive>
+        <ReportHeader isActive={isActive}>
           <h3>
             {projectName}
           </h3>
