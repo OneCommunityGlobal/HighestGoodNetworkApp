@@ -3,7 +3,7 @@
 /* eslint-disable no-plusplus */
 /* eslint-disable indent */
 import { faBell, faCircle, faClock } from '@fortawesome/free-solid-svg-icons';
-import { Table, Progress } from 'reactstrap';
+import { Table, Progress, TabPane } from 'reactstrap';
 import _ from 'lodash';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { fetchTeamMembersTask, deleteTaskNotification } from 'actions/task';
@@ -17,9 +17,14 @@ import { getUserProfile } from '../../actions/userProfile';
 import './style.css';
 import { getcolor } from '../../utils/effortColors'
 import { fetchAllManagingTeams } from '../../actions/team';
+import  EffortBar  from '../../components/Timelog/EffortBar';
+import TimeEntry from 'components/Timelog/TimeEntry';
+
+
 
 
 const TeamMemberTasks = (props) => {
+  const [timeLogOpen, setTimeLogOpen] = useState(false);
   const [showTaskNotificationModal, setTaskNotificationModal] = useState(false);
   const [currentTaskNotifications, setCurrentTaskNotifications] = useState([]);
   const [currentTask, setCurrentTask] = useState();
@@ -107,6 +112,19 @@ const TeamMemberTasks = (props) => {
           </td>
           <td>
             <Link to={`/userprofile/${user.personId}`}>{`${user.name}`}</Link>
+            {timeLogOpen ?
+            <div>
+            <EffortBar
+              activeTab={0}
+              projectsSelected={['all']}
+            />
+            <TimeEntry
+              data={1}
+              displayYear={0}
+              userProfile={0}
+               />
+            </div> : ""}
+
           </td>
           <td className='team-clocks'>
             <u>{user.weeklyComittedHours ? user.weeklyComittedHours : 0}</u> / 
@@ -168,7 +186,37 @@ const TeamMemberTasks = (props) => {
 
   return (
     <div className="container team-member-tasks">
+      <header className='header-box'>
       <h1>Team Member Tasks</h1>
+      <div>
+      <button 
+        type='button' 
+        className="circle-border"
+        title='Timelogs submitted in the past 24 hours' 
+        style={{ backgroundColor: 'pink' }} 
+        onClick={() => {
+          setTimeLogOpen(!timeLogOpen)
+        }}
+        >24h
+        </button>
+      <button 
+        type='button' 
+        className='circle-border' 
+        title='Timelogs submitted in the past 48 hours' 
+        style={{ backgroundColor: 'lightblue' }} 
+        onClick={''}
+        >48h
+        </button>
+      <button 
+        type='button' 
+        className='circle-border' 
+        title='Timelogs submitted in the past 72 hours' 
+        style={{ backgroundColor: 'lightgray' }} 
+        onClick={''}
+        >72h
+        </button>
+      </div>
+      </header>
       <TaskDifferenceModal isOpen={showTaskNotificationModal} taskNotifications={currentTaskNotifications} task={currentTask} userId={currentUserId} toggle={handleOpenTaskNotificationModal} onApprove={handleTaskNotificationRead} loggedInUserId={props.auth.user.userid} />
       <Table>
         <thead>
