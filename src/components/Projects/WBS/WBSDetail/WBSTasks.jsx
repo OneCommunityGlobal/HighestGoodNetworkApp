@@ -23,9 +23,14 @@ const WBSTasks = (props) => {
   const wbsId = props.match.params.wbsId;
   const projectId = props.match.params.projectId;
   const wbsName = props.match.params.wbsName;
+  // when passing from management-dashboard, wbsName is the taskId of the single task
+  const taskId = props.match.params.wbsName;
+
+  const WBSItems = props.state.wbs.WBSItems;
   const [isShowImport, setIsShowImport] = useState(false);
 
   const [selectedId, setSelectedId] = useState(null);
+  const [filterState, setFilterState] = useState('all');
 
   useEffect(() => {
     props.fetchAllTasks(wbsId, 0);
@@ -110,20 +115,67 @@ const WBSTasks = (props) => {
     }, 4000);
   };
 
-  const toggleGroups = (open) => {
-    const items2 = document.getElementsByClassName(`lv_2`);
-    const items3 = document.getElementsByClassName(`lv_3`);
-    const items4 = document.getElementsByClassName(`lv_4`);
-    const allItems = [...items2, ...items3, ...items4];
-
-    for (let i = 0; i < allItems.length; i++) {
-      if (!open) {
-        allItems[i].style.display = 'none';
-      } else {
-        allItems[i].style.display = 'table-row';
-      }
+  const filterTasks = (allTaskItems, filter) => {
+    if (filter === "all") {
+      return allTaskItems;
+    } else if (filter === "assigned") {
+      return allTaskItems.filter((taskItem) => {
+        if (taskItem.isAssigned === true) {
+          return taskItem;
+        } 
+      });
+    } else if (filter === "unassigned") {
+      return allTaskItems.filter((taskItem) => {
+        if (taskItem.isAssigned === false) {
+          return taskItem;
+        } 
+      });
+    } else if (filter === "active") {
+      return allTaskItems.filter((taskItem) => {
+        if (taskItem.status === "Active" || taskItem.status === "Started") {
+          return taskItem;
+        } 
+      });
+    } else if (filter === "inactive") {
+      return allTaskItems.filter((taskItem) => {
+        if (taskItem.status === "Not Started") {
+          return taskItem;
+        } 
+      });
+    } else if (filter === "complete") {
+      return allTaskItems.filter((taskItem) => {
+        if (taskItem.status === "Complete") {
+          return taskItem;
+        }
+      })
     }
-  };
+  }
+
+  let filteredTasks = filterTasks(props.state.tasks.taskItems, filterState);
+
+  // looking for the single task object by its id which clicked on management-dashboard 
+  const filterTaskById = (allTaskItems, id) => {
+    return allTaskItems.filter((taskItem) => {
+      if (taskItem._id === id) {
+        return taskItem;
+      }
+    });
+  }
+  let filteredTaskById = filterTaskById(props.state.tasks.taskItems, taskId);
+  let singleTaskName = filteredTaskById[0]? filteredTaskById[0].taskName : "";
+  
+  // if showSingleTask is true, means showing the single task version WBS
+  // otherwise, showing the whole tasks on the WBS
+  let showSingleTask = true;
+  for (let wbsitem of WBSItems) {
+    if (wbsName === wbsitem.wbsName) {
+      showSingleTask = false;
+      break;
+    }
+  }
+  if (showSingleTask === true) {
+    filteredTasks = filteredTaskById
+  }
 
   return (
     <React.Fragment>
@@ -136,8 +188,8 @@ const WBSTasks = (props) => {
                 <i className="fa fa-chevron-circle-left" aria-hidden="true"></i>
               </button>
             </NavItem>
-
-            <div id="member_project__name">{wbsName}</div>
+            {showSingleTask === false && <div id="member_project__name">{wbsName}</div>}
+            {showSingleTask === true && <div id="member_project__name">{singleTaskName}</div>}
           </ol>
         </nav>
 
@@ -159,11 +211,23 @@ const WBSTasks = (props) => {
         </Button>
 
         <div className="toggle-all">
-          <Button color="light" size="sm" onClick={() => toggleGroups(true)}>
-            Open
+          <Button color="primary" size="sm" onClick={() => setFilterState("all")}>
+            All
           </Button>
-          <Button color="dark" size="sm" onClick={() => toggleGroups(false)}>
-            Close
+          <Button color="secondary" size="sm" onClick={() => setFilterState("assigned")}>
+            Assigned
+          </Button>
+          <Button color="success" size="sm" onClick={() => setFilterState("unassigned")}>
+            Unassigned
+          </Button>
+          <Button color="info" size="sm" onClick={() => setFilterState("active")}>
+            Active
+          </Button>
+          <Button color="warning" size="sm" onClick={() => setFilterState("inactive")}>
+            Inactive
+          </Button>
+          <Button color="danger" size="sm" onClick={() => setFilterState("complete")}>
+            Complete
           </Button>
         </div>
 
@@ -222,7 +286,7 @@ const WBSTasks = (props) => {
               <td colSpan={14}></td>
             </tr>
 
-            {props.state.tasks.taskItems.map((task, i) => (
+            {filteredTasks.map((task, i) => (
               <Task
                 key={`${task._id}${i}`}
                 id={task._id}
