@@ -33,7 +33,7 @@ const NewUserPopup = React.memo((props) => {
         
         {/* Nested Modal that triggers when a first and last name user already exists */}
 
-        <Modal isOpen={props.open}>
+        <Modal isOpen={props.close}>
         <ModalHeader>
           WARNING: Duplicate Name Exists!
         </ModalHeader>
