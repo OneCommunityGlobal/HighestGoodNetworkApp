@@ -80,7 +80,7 @@ const TimeEntryForm = (props) => {
   const { userProfile, currentUserRole } = useSelector(getTimeEntryFormData);
 
   const dispatch = useDispatch();
-
+ 
   const tangibleInfoToggle = (e) => {
     e.preventDefault();
     setTangibleInfoModalVisibleModalVisible(!isTangibleInfoModalVisible);
@@ -406,11 +406,11 @@ const TimeEntryForm = (props) => {
         <ModalHeader toggle={toggle}>
           <div>
             {edit ? 'Edit ' : 'Add '}
-            {hasPermission(role, 'adminLinks') ? (
+            {hasPermission(currentUserRole, 'adminLinks') ? (
               inputs.isTangible ? (
-                <span style={{ color: 'orange' }}>Intangible </span>
-              ) : (
                 <span style={{ color: 'blue' }}>Tangible </span>
+              ) : (
+                <span style={{ color: 'orange' }}>Intangible </span>
               )
               ) : (
               inputs.isTangible ? (
