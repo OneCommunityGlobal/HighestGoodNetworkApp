@@ -251,7 +251,6 @@ export const TaskEditSuggestions = () => {
 
   const dispatch = useDispatch();
   useEffect(() => {dispatch(fetchTaskEditSuggestions())}, []);
-  // useEffect(() => setTaskEditSuggestions(taskEditSuggestionsInitial.sort((tes1, tes2) => tes2.dateSuggested.localeCompare(tes1.dateSuggested))), []);
 
   const handleToggleTaskEditSuggestionModal = (currentTaskEditSuggestion) => {
     setCurrentTaskEditSuggestion(currentTaskEditSuggestion);
