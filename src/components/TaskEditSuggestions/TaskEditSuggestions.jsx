@@ -268,17 +268,6 @@ export const TaskEditSuggestions = () => {
     }
   };
 
-  // const toggleUserSortDirection = () => {
-  //   setDateSuggestedSortDirection();
-  //   if (userSortDirection == null || userSortDirection == "asc") {
-  //     setTaskEditSuggestions([...taskEditSuggestions].sort((tes1, tes2) => tes1.user.localeCompare(tes2.user)));
-  //     setUserSortDirection("desc");
-  //   } else if (userSortDirection == "desc") {
-  //     setTaskEditSuggestions([...taskEditSuggestions].sort((tes1, tes2) => tes2.user.localeCompare(tes1.user)));
-  //     setUserSortDirection("asc");
-  //   }
-  // };
-
   return (
     <Container>
       <h1>Task Edit Suggestions</h1>
