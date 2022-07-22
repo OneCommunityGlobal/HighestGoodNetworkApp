@@ -248,6 +248,6 @@ export const taskEditSuggestionsReducer = (state = initialState, action) => {
     case "FETCH_TASK_EDIT_SUGGESTIONS_ERROR":
       return { ...state, isLoading: false };
     default:
-      return state;
+      return { ...state };
   }
 };
