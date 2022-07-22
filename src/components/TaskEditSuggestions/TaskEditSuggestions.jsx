@@ -1,3 +1,4 @@
+import Loading from 'components/common/Loading';
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector, connect } from 'react-redux';
 import { Container, Table } from 'reactstrap';
@@ -5,6 +6,7 @@ import { TaskEditSuggestionRow } from './Components/TaskEditSuggestionRow';
 import { TaskEditSuggestionsModal } from './Components/TaskEditSuggestionsModal';
 import { getTaskEditSuggestionsData } from './selectors'
 import { fetchTaskEditSuggestions } from './thunks';
+import { toggleDateSuggestedSortDirection, toggleUserSortDirection } from './actions';
 
 // const taskEditSuggestionsInitial = [
 //   {
@@ -244,15 +246,11 @@ export const TaskEditSuggestions = () => {
 
   const [isTaskEditSuggestionModalOpen, setIsTaskEditSuggestionModalOpen] = useState(false);
   const [currentTaskEditSuggestion, setCurrentTaskEditSuggestion] = useState();
-  
-  const [userSortDirection, setUserSortDirection] = useState();
-  const [dateSuggestedSortDirection, setDateSuggestedSortDirection] = useState("desc");
 
-  const { isLoading, taskEditSuggestions } = useSelector(getTaskEditSuggestionsData);
+  const { isLoading, taskEditSuggestions, userSortDirection, dateSuggestedSortDirection } = useSelector(getTaskEditSuggestionsData);
 
   const dispatch = useDispatch();
-  
-  useEffect(() => dispatch(fetchTaskEditSuggestions()), []);
+  useEffect(() => {dispatch(fetchTaskEditSuggestions())}, []);
   // useEffect(() => setTaskEditSuggestions(taskEditSuggestionsInitial.sort((tes1, tes2) => tes2.dateSuggested.localeCompare(tes1.dateSuggested))), []);
 
   const handleToggleTaskEditSuggestionModal = (currentTaskEditSuggestion) => {
@@ -270,36 +268,26 @@ export const TaskEditSuggestions = () => {
     }
   };
 
-  const toggleDateSuggestedSortDirection = () => {
-    setUserSortDirection();
-    if (dateSuggestedSortDirection == null || dateSuggestedSortDirection == "asc") {
-      setTaskEditSuggestions([...taskEditSuggestions].sort((tes1, tes2) => tes2.dateSuggested.localeCompare(tes1.dateSuggested)));
-      setDateSuggestedSortDirection("desc");
-    } else if (dateSuggestedSortDirection == "desc") {
-      setTaskEditSuggestions([...taskEditSuggestions].sort((tes1, tes2) => tes1.dateSuggested.localeCompare(tes2.dateSuggested)));
-      setDateSuggestedSortDirection("asc");
-    }
-  };
-
-  const toggleUserSortDirection = () => {
-    setDateSuggestedSortDirection();
-    if (userSortDirection == null || userSortDirection == "asc") {
-      setTaskEditSuggestions([...taskEditSuggestions].sort((tes1, tes2) => tes1.user.localeCompare(tes2.user)));
-      setUserSortDirection("desc");
-    } else if (userSortDirection == "desc") {
-      setTaskEditSuggestions([...taskEditSuggestions].sort((tes1, tes2) => tes2.user.localeCompare(tes1.user)));
-      setUserSortDirection("asc");
-    }
-  };
+  // const toggleUserSortDirection = () => {
+  //   setDateSuggestedSortDirection();
+  //   if (userSortDirection == null || userSortDirection == "asc") {
+  //     setTaskEditSuggestions([...taskEditSuggestions].sort((tes1, tes2) => tes1.user.localeCompare(tes2.user)));
+  //     setUserSortDirection("desc");
+  //   } else if (userSortDirection == "desc") {
+  //     setTaskEditSuggestions([...taskEditSuggestions].sort((tes1, tes2) => tes2.user.localeCompare(tes1.user)));
+  //     setUserSortDirection("asc");
+  //   }
+  // };
 
   return (
     <Container>
       <h1>Task Edit Suggestions</h1>
+      {isLoading && <Loading/>}
       {!isLoading && taskEditSuggestions && <Table>
         <thead>
           <tr>
-            <th onClick={toggleDateSuggestedSortDirection}>Date Suggested <SortArrow sortDirection={dateSuggestedSortDirection}/></th>
-            <th onClick={toggleUserSortDirection}>User <SortArrow sortDirection={userSortDirection}/></th>
+            <th onClick={() => dispatch(toggleDateSuggestedSortDirection())}>Date Suggested <SortArrow sortDirection={dateSuggestedSortDirection}/></th>
+            <th onClick={() => dispatch(toggleUserSortDirection())}>User <SortArrow sortDirection={userSortDirection}/></th>
             <th>Task</th>
           </tr>
         </thead>
