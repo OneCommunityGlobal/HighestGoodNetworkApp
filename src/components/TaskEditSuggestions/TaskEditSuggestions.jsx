@@ -270,32 +270,32 @@ export const TaskEditSuggestions = () => {
     }
   };
 
-  // const toggleDateSuggestedSortDirection = () => {
-  //   setUserSortDirection();
-  //   if (dateSuggestedSortDirection == null || dateSuggestedSortDirection == "asc") {
-  //     setTaskEditSuggestions([...taskEditSuggestions].sort((tes1, tes2) => tes2.dateSuggested.localeCompare(tes1.dateSuggested)));
-  //     setDateSuggestedSortDirection("desc");
-  //   } else if (dateSuggestedSortDirection == "desc") {
-  //     setTaskEditSuggestions([...taskEditSuggestions].sort((tes1, tes2) => tes1.dateSuggested.localeCompare(tes2.dateSuggested)));
-  //     setDateSuggestedSortDirection("asc");
-  //   }
-  // };
+  const toggleDateSuggestedSortDirection = () => {
+    setUserSortDirection();
+    if (dateSuggestedSortDirection == null || dateSuggestedSortDirection == "asc") {
+      setTaskEditSuggestions([...taskEditSuggestions].sort((tes1, tes2) => tes2.dateSuggested.localeCompare(tes1.dateSuggested)));
+      setDateSuggestedSortDirection("desc");
+    } else if (dateSuggestedSortDirection == "desc") {
+      setTaskEditSuggestions([...taskEditSuggestions].sort((tes1, tes2) => tes1.dateSuggested.localeCompare(tes2.dateSuggested)));
+      setDateSuggestedSortDirection("asc");
+    }
+  };
 
-  // const toggleUserSortDirection = () => {
-  //   setDateSuggestedSortDirection();
-  //   if (userSortDirection == null || userSortDirection == "asc") {
-  //     setTaskEditSuggestions([...taskEditSuggestions].sort((tes1, tes2) => tes1.user.localeCompare(tes2.user)));
-  //     setUserSortDirection("desc");
-  //   } else if (userSortDirection == "desc") {
-  //     setTaskEditSuggestions([...taskEditSuggestions].sort((tes1, tes2) => tes2.user.localeCompare(tes1.user)));
-  //     setUserSortDirection("asc");
-  //   }
-  // };
+  const toggleUserSortDirection = () => {
+    setDateSuggestedSortDirection();
+    if (userSortDirection == null || userSortDirection == "asc") {
+      setTaskEditSuggestions([...taskEditSuggestions].sort((tes1, tes2) => tes1.user.localeCompare(tes2.user)));
+      setUserSortDirection("desc");
+    } else if (userSortDirection == "desc") {
+      setTaskEditSuggestions([...taskEditSuggestions].sort((tes1, tes2) => tes2.user.localeCompare(tes1.user)));
+      setUserSortDirection("asc");
+    }
+  };
 
   return (
     <Container>
       <h1>Task Edit Suggestions</h1>
-      {taskEditSuggestions && <Table>
+      {!isLoading && taskEditSuggestions && <Table>
         <thead>
           <tr>
             <th onClick={toggleDateSuggestedSortDirection}>Date Suggested <SortArrow sortDirection={dateSuggestedSortDirection}/></th>
