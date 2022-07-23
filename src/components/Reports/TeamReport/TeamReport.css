@@ -1,0 +1,29 @@
+.team-report-main-info-wrapper {
+  margin-top: 24px;
+  height: 60px;
+}
+
+.team-report-main-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 100%;
+}
+
+.team-report-star {
+  color: #a177d6;
+}
+
+.update-date {
+  color: #a1a1a1;
+}
+
+.heading {
+  font-weight: 400;
+  font-size: 1.3rem;
+  margin: 1rem 0;
+}
+
+.team-report-blocks {
+  grid-template-rows: 60px 1fr;
+}
