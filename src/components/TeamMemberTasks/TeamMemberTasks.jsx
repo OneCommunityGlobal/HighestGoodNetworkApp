@@ -193,7 +193,7 @@ const TeamMemberTasks = (props) => {
         type='button' 
         className="circle-border"
         title='Timelogs submitted in the past 24 hours' 
-        style={{ backgroundColor: 'pink' }} 
+        style={{ backgroundColor: '#ffebcd' }} 
         onClick={() => {
           setTimeLogOpen(!timeLogOpen)
         }}
@@ -203,7 +203,7 @@ const TeamMemberTasks = (props) => {
         type='button' 
         className='circle-border' 
         title='Timelogs submitted in the past 48 hours' 
-        style={{ backgroundColor: 'lightblue' }} 
+        style={{ backgroundColor: '#f0ffff' }} 
         onClick={''}
         >48h
         </button>
