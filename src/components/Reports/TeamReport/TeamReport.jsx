@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import moment from 'moment';
+import { FiUsers } from 'react-icons/fi';
 import { getTeamDetail } from '../../../actions/team';
 import { ReportHeader } from "../sharedComponents/ReportHeader";
 import { ReportPage } from '../sharedComponents/ReportPage';
@@ -28,7 +29,7 @@ export const TeamReport = ({ match }) => {
       contentClassName='team-report-blocks'
       renderProfile={
         () =>
-          <ReportHeader isActive={team.isActive}>
+          <ReportHeader isActive={team.isActive} avatar={<div className='team-report-avatar'><FiUsers className='team-report-icon' /></div>}>
             <h1 className="heading">{team.teamName}</h1>
             <div>
               <h5>{moment(team.createdDatetime).format('YYYY-MM-DD')}</h5>

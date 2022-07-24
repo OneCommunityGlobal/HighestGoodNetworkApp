@@ -11,7 +11,7 @@
 }
 
 .team-report-star {
-  color: #a177d6;
+  color: #996cd3;
 }
 
 .update-date {
@@ -26,4 +26,22 @@
 
 .team-report-blocks {
   grid-template-rows: 60px 1fr;
+}
+
+.team-report-avatar {
+  width: 6rem;
+  height: 6rem;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: #a780d9;
+  border: 3px solid #e5daf0;
+}
+
+.team-report-icon {
+  width: 50px;
+  height: 50px;
+  color: #faf7fd;
 }
