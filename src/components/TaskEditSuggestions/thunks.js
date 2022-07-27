@@ -18,7 +18,6 @@ export const fetchTaskEditSuggestions = () => async (dispatch, getState) => {
 export const rejectTaskEditSuggestion = (taskEditSuggestionId) => async (dispatch, getState) => {
   try {
     // dispatch(rejectTaskEditSuggestionBegin());
-    console.log('rejectTaskEditSuggestion');
     await rejectTaskEditSuggestionHTTP(taskEditSuggestionId);
     dispatch(rejectTaskEditSuggestionSuccess(taskEditSuggestionId));
   } catch (error) {
