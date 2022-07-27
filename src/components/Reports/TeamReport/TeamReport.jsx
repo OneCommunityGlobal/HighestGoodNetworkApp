@@ -1,10 +1,11 @@
 import React, { Component } from 'react';
-import '../Teams/Team.css';
+import '../../Teams/Team.css';
 import { connect } from 'react-redux';
-import { getTeamDetail } from '../../actions/team';
+import { getTeamDetail } from '../../../actions/team';
 import { Dropdown, DropdownButton } from 'react-bootstrap';
+import { ReportHeader } from "../sharedComponents/ReportHeader";
 
-class TeamReport extends Component {
+class TeamReportComponent extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -33,7 +34,9 @@ class TeamReport extends Component {
 
     return (
       <div>
-        teamProfile
+        <ReportHeader isActive>
+          <h2>{teamName}</h2>
+        </ReportHeader>
         <DropdownButton id="dropdown-basic-button" title="Time Frame">
           <Dropdown.Item href="#/action-1">Past Week</Dropdown.Item>
           <Dropdown.Item href="#/action-2">Past Two Weeks</Dropdown.Item>
@@ -42,9 +45,7 @@ class TeamReport extends Component {
           <Dropdown.Item href="#/action-5">Past Year</Dropdown.Item>
           <Dropdown.Item href="#/action-6">Custom range</Dropdown.Item>
         </DropdownButton>
-        <h2>Team Name:{teamName}</h2>
         <h2>Team ID:{_id}</h2>
-        <h5>Active:{String(isActive)}</h5>
         <h5>Modified Date time:{modifiedDatetime}</h5>
         <h5>Created Date time:{createdDatetime}</h5>
       </div>
@@ -55,6 +56,6 @@ const mapStateToProps = (state) => ({
   team: state.team,
 });
 
-export default connect(mapStateToProps, {
+export const TeamReport = connect(mapStateToProps, {
   getTeamDetail,
-})(TeamReport);
+})(TeamReportComponent);

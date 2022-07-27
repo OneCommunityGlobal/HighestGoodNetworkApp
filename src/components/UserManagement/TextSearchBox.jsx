@@ -16,6 +16,8 @@ class TextSearchBox extends React.PureComponent {
         id={'search_' + this.props.id}
         style={this.props.style}
         onChange={this.onTextChange}
+        placeholder={this.props.placeholder}
+        className={this.props.className}
       ></input>
     );
   }

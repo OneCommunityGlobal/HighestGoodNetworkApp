@@ -1,14 +1,10 @@
-import React, { useState } from 'react';
-import {
-  Container, Button, Modal, ModalBody, ModalFooter, Card, CardTitle, CardBody, CardImg, CardText, UncontrolledPopover,
-} from 'reactstrap';
-import { connect } from 'react-redux';
-import TableFilter from './TableFilter/TableFilter'
-import TableHeader from './TableHeader'
-import './PeopleTableDetails.css';
-import Popup from 'reactjs-popup';
+import { yearsToMonths } from 'date-fns/fp';
+import { useState } from 'react';
 import 'reactjs-popup/dist/index.css';
-import TextSearchBox from '../UserManagement/TextSearchBox';
+import { Container } from 'reactstrap';
+import './PeopleTableDetails.css';
+import { NewModal } from 'components/common/NewModal';
+import TableFilter from './TableFilter/TableFilter';
 
 const PeopleTableDetails = (props) => {
 
@@ -26,10 +22,10 @@ const PeopleTableDetails = (props) => {
   const [editPopup, setEditPopup] = useState(false);
   const [startDate, setStartDate] =useState('');
   const [endDate, setEndDate] =useState('');
-  const [link, setLink]=useState('');
+
   const onTaskNameSearch = (text) => {
     setName(text);
-  };
+  }; 
 
   const searchPriority = (text) => {
     setPriority(text);
@@ -102,103 +98,110 @@ const PeopleTableDetails = (props) => {
     toggleMoreResourcesStatus = !toggleMoreResourcesStatus;
   }
   let filteredTasks = filterTasks(props.taskData);
+
+  const renderFilteredTask = (value) => (
+    <div key={value._id} className="people-table-row people-table-body-row">
+      <div >{value.taskName}</div>
+      <div >{value.priority}</div>
+      <div >{value.status}</div>
+      <div >
+        {value.resources?.map(res=>
+          
+          res.map((resource,index)=>{
+            if(index<2){
+              return <img key={resource.index} alt={resource.name} src={resource.profilePic||'/pfp-default.png'}  
+                        className='img-circle' auto="format" title={resource.name}/>
+              
+            }
+        }),
+      )}
+        {value.resources?.map(res=>
+        res.length >2 ? <a className="name resourceMoreToggle" onClick={() => 
+                toggleMoreResources(value._id)}>
+            <span className="dot">{res.length - 2}+</span>
+          </a>:null
+        )}
+        <div id={value._id} class="extra" >
+          <div class="extra1" >
+            {value.resources?.map(res=>
+              res.map((resource,index)=>{
+                if(index>=2){
+                  return <img key={resource.index} alt={resource.name} src={resource.profilePic||'/pfp-default.png'} 
+                    className='img-circle' auto="format" title={resource.name}/>
+                }
+            }),
+          )}
+          </div>
+        </div>
+        
+      </div>
+      <div className='people-table-center-cell'>{value.active === 'Yes' ? <span>&#10003;</span> : <span>&#10060;</span>}</div>
+      <div className='people-table-center-cell'>{value.assign === 'Yes' ? <span>&#10003;</span> : <span>&#10060;</span>}</div>
+      <div className='people-table-end-cell'>{value.estimatedHours}</div>
+      <div className='people-table-end-cell'>{value.startDate}</div>
+      <div className='people-table-end-cell'>{value.endDate}</div>  
+    </div>
+  )
+
   return (
     <Container fluid className="wrapper">
-      <table className="table table-bordered people-table">
-        <thead>
-        <TableHeader />
-        <TableFilter
-          onTaskNameSearch={onTaskNameSearch}
-          searchPriority={searchPriority}
-          searchResources={searchResources}
-          searchStatus={searchStatus}
-          searchActive={searchActive}
-          searchAssign={searchAssign}
-          searchEstimatedHours={searchEstimatedHours}
-          resetFilters={resetFilters}
-          name={name}
-          order={order}
-          priority={priority}
-          status={status}
-          resources={resources}
-          active={active}
-          assign={assign}
-          estimatedHours={estimatedHours}
-          startDate={startDate}
-          EndDate={endDate}
-          Link={link}
-        />
-        </thead>
-        <tbody>
-        {filteredTasks.map((value) =>
-          <tr key={value._id} >
-            <td >{value.taskName}</td>
-            <td >{value.priority}</td>
-            <td >{value.status}</td>
-            <td >
-              {value.resources?.map(res=>
-                
-                res.map((resource,index)=>{
-                  if(index<2){
-                    return <img key={resource.index} alt={resource.name} src={resource.profilePic||'/pfp-default.png'}  
-                              className='img-circle' auto="format" title={resource.name}/>
-                    
-                  }
-              }),
-            )}
-              {value.resources?.map(res=>
-              res.length >2 ? <a className="name resourceMoreToggle" onClick={() => 
-                      toggleMoreResources(value._id)}>
-                  <span className="dot">{res.length - 2}+</span>
-                </a>:null
-              )}
-              <tr id={value._id} class="extra" >
-                <td class="extra1" >
-                  {value.resources?.map(res=>
-                    res.map((resource,index)=>{
-                      if(index>=2){
-                        return <img key={resource.index} alt={resource.name} src={resource.profilePic||'/pfp-default.png'} 
-                         className='img-circle' auto="format" title={resource.name}/>
-                      }
-                  }),
-                )}
-                </td>
-              </tr>
-              
-            </td>
-            <td >{value.active}</td>
-            <td >{value.assign}</td>
-            <td >{value.estimatedHours}</td>
-            <td >{value.startDate}</td>
-            <td >{value.endDate}</td>
-            <td >
-                
-                <Popup trigger={<button className="button"></button>} modal>
-                    <div>Why This Task is important</div>
-                    <textarea
-                        className='rectangle'
-                        type="text"
-                        value={value.whyInfo}
-                    />
-                    <div>Design Intent</div>
-                    <textarea
-                        className='rectangle'
-                        type="text"
-                        value={value.intentInfo}
-                        // onChange={this.handleChange}
-                    />
-                    <div>End State</div>
-                    <textarea
-                        className='rectangle'
-                        type="text"
-                        value={value.endstateInfo}
-                        // onChange={this.handleChange}
-                    />
-                </Popup>
-            </td>
-          </tr>)}
-        </tbody>
-      </table>
+      <TableFilter
+        onTaskNameSearch={onTaskNameSearch}
+        searchPriority={searchPriority}
+        searchResources={searchResources}
+        searchStatus={searchStatus}
+        searchActive={searchActive}
+        searchAssign={searchAssign}
+        searchEstimatedHours={searchEstimatedHours}
+        resetFilters={resetFilters}
+        name={name}
+        order={order}
+        priority={priority}
+        status={status}
+        resources={resources}
+        active={active}
+        assign={assign}
+        estimatedHours={estimatedHours}
+        startDate={startDate}
+        EndDate={endDate}
+      />
+      <div className="people-table-row reports-table-head">
+        <div>Task</div>
+        <div>Priority</div>
+        <div>Status</div>
+        <div>Resources</div>
+        <div className='people-table-center-cell'>Active</div>
+        <div className='people-table-center-cell'>Assign</div>
+        <div className='people-table-end-cell'>Estimated Hours</div>
+        <div className='people-table-end-cell'>Start Date</div>
+        <div className='people-table-end-cell'>End Date</div>
+      </div>
+      <div className="people-table">
+        {filteredTasks.map((value) => (
+          <NewModal header={"Task info"} trigger={() => renderFilteredTask(value)}>
+            <div>Why This Task is important</div>
+            <textarea
+                className='rectangle'
+                type="text"
+                value={value.whyInfo}
+            />
+            <div>Design Intent</div>
+            <textarea
+                className='rectangle'
+                type="text"
+                value={value.intentInfo}
+                // onChange={this.handleChange}
+            />
+            <div>End State</div>
+            <textarea
+                className='rectangle'
+                type="text"
+                value={value.endstateInfo}
+                // onChange={this.handleChange}
+            />
+          </NewModal>
+        ))}
+      </div>
     </Container >
   );
 };

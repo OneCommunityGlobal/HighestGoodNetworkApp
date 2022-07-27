@@ -17,10 +17,13 @@ import { getTimeEntriesForPeriod } from '../../../actions/timeEntries'
 import InfringmentsViz from '../InfringmentsViz'
 import TimeEntriesViz from '../TimeEntriesViz'
 import PeopleTableDetails from '../PeopleTableDetails'
+import { ReportHeader } from "../sharedComponents/ReportHeader";
+import { ReportPage } from "../sharedComponents/ReportPage";
 import { getPeopleReportData } from "./selectors";
 import DatePicker from 'react-datepicker'
 import httpService from '../../../services/httpService'
 import { ENDPOINTS } from '../../../utils/URL'
+import { ReportBlock } from '../sharedComponents/ReportBlock';
 class PeopleReport extends Component {
   constructor(props) {
     super(props);
@@ -858,121 +861,122 @@ class PeopleReport extends Component {
       )
     }
 
+    const renderProfileInfo = () => (
+      <ReportHeader src={this.state.userProfile.profilePic} isActive>
+        <h1 className="heading">{`${firstName} ${lastName}`}</h1>
+
+        <div className="stats">
+          <div>
+            <h4>{moment(userProfile.createdDate).format('YYYY-MM-DD')}</h4>
+            <p>Start Date</p>
+          </div>
+          <div>
+            <h4>{userProfile.endDate ? userProfile.endDate.toLocaleString().split('T')[0] : 'N/A'}</h4>
+            <p>End Date</p>
+          </div>
+        </div>
+      </ReportHeader>
+    )
+
     return (
-    <div style={{ marginTop: -16 }}>
-      <section className="profile">
-        <header className="header">
-          <div className="details">
-            <img
-              src={this.state.userProfile.profilePic || '/pfp-default.png'}
-              alt="Profile Picture" className="profile-pic" />
-            <h1 className="heading">{`${firstName} ${lastName}`}</h1>
+    <ReportPage renderProfile={renderProfileInfo}>
 
-            <div className="stats">
-              <div>
-                <h4>{weeklyComittedHours}</h4>
-                <p>Weekly Committed Hours</p>
-              </div>
-              <div>
-                <h4>{this.props.tangibleHoursReportedThisWeek}</h4>
-                <p>Hours Logged So Far This Week</p>
-              </div>
-              <div>
-                <h4>{totalTangibleHrsRound}</h4>
-                <p>Total Tangible Hours Logged</p>
-              </div>
-              <div>
-                <h4>{moment(userProfile.createdDate).format('YYYY-MM-DD')}</h4>
-                <p>Start Date</p>
-              </div>
-              <div>
-                <h4>{userProfile.endDate ? userProfile.endDate.toLocaleString().split('T')[0] : 'N/A'}</h4>
-                <p>End Date</p>
-              </div>
-              <div>
-                <h4>{infringments.length}</h4>
-                <p>Blue squares</p>
-              </div>
+      <div className='people-report-time-logs-wrapper'>
+        <ReportBlock firstColor='#ff5e82' secondColor='#e25cb2' className='people-report-time-log-block'>
+          <h3>{weeklyComittedHours}</h3>
+          <p>Weekly Committed Hours</p>
+        </ReportBlock>
+        <ReportBlock firstColor='#b368d2' secondColor='#831ec4' className='people-report-time-log-block'>
+          <h3>{this.props.tangibleHoursReportedThisWeek}</h3>
+          <p>Hours Logged This Week</p>
+        </ReportBlock>
+        <ReportBlock firstColor='#64b7ff' secondColor='#928aef' className='people-report-time-log-block'>
+            <h3>{infringments.length}</h3>
+            <p>Blue squares</p>
+        </ReportBlock>
+        <ReportBlock firstColor='#ffdb56' secondColor='#ff9145' className='people-report-time-log-block'>
+          <h3>{totalTangibleHrsRound}</h3>
+          <p>Total Hours Logged</p>
+        </ReportBlock>
+      </div>
+
+      <ReportBlock>
+        <div className="intro_date">
+        <h4>Tasks contributed</h4>
+        </div>
+        {/*<div>*/}
+        {/*  <div>*/}
+        {/*    From: <DatePicker selected={startDate} onChange={date => this.setStartDate(date)}/>*/}
+        {/*    To: <DatePicker selected={endDate} onChange={date => this.setEndDate(date)}/>*/}
+        {/*  </div>*/}
+        {/*</div>*/}
+        <PeopleDataTable/>
+        {/* <div>
+          <img src={this.state.userProfile.profilePic||'/pfp-default.png'} alt="profile picture" className="test-pic"/>
+        </div> */}
+        <div className='container'>
+
+          <table>
+            {/*<div class="row" style={{justifyContent:'flex-start'}}>*/}
+            {/*  <div>*/}
+            {/*    <div><button style={{margin:'3px'}} exact className="btn btn-secondary btn-bg mt-3" onClick={()=>this.setFilter()}>Filters Off</button>*/}
+            {/*    </div>*/}
+            {/*  <div>*/}
+            {/*    <input name='radio' type="radio" style={{margin:'5px'}} value="active" onChange={()=>this.setAssign(true)}  />*/}
+            {/*    Assigned*/}
+            {/*    <input name='radio' type="radio" style={{margin:'5px'}} value="inactive" onChange={()=>this.setAssign(false) } />*/}
+            {/*    Not Assigned*/}
+            {/*    </div>*/}
+            {/*    <div>*/}
+            {/*    <input name='radio' type="radio" style={{margin:'5px'}} value="active" onChange={()=>this.setActive(true)}  />*/}
+            {/*    Active*/}
+            {/*    <input name='radio' type="radio" style={{margin:'5px'}} value="inactive" onChange={()=>this.setActive(false) } />*/}
+            {/*    Inactive*/}
+            {/*    </div>*/}
+            {/*    </div>*/}
+            {/*  <div className="row" style={{justifyContent:'space-evenly', margin:'3px'}}>*/}
+            {/*    <div>*/}
+            {/*      <PriorityOptions get_tasks={userTask}/>*/}
+            {/*    </div>*/}
+            {/*    <div>*/}
+            {/*      <StatusOptions get_tasks={userTask}/>*/}
+            {/*    </div>*/}
+            {/*    <div>*/}
+            {/*      <ClassificationOptions allClassification={allClassification}/>*/}
+            {/*    </div>*/}
+            {/*    <div>*/}
+            {/*      <UserOptions userTask={userTask}/>*/}
+            {/*    </div>*/}
+            {/*    <div>*/}
+            {/*      <DateRangeSelect />*/}
+            {/*    </div>*/}
+            {/*  </div>*/}
+            {/*</div>*/}
+
+              {/* <UserTask userTask={userTask}
+                        isAssigned={isAssigned}
+                        isActive={isActive}
+                        priority={priority}
+                        status={status}
+                        classification={classification}
+                        users={users}
+                        classificationList={classificationList}
+                        priorityList={priorityList}
+                        statusList={statusList}
+              /> */}
+            <UserProject userProjects={userProjects}/>
+            <Infringments infringments={infringments} fromDate={fromDate} toDate={toDate} timeEntries={timeEntries}/>
+            <div className='visualizationDiv'>
+              <InfringmentsViz infringments={infringments} fromDate={fromDate} toDate={toDate} />
             </div>
-          </div>
-        </header>
-      </section>
+            <div className='visualizationDiv'>
+              <TimeEntriesViz timeEntries={timeEntries} fromDate={fromDate} toDate={toDate} />
+            </div>
+          </table>
 
-      <div className="intro_date">
-        <h1>Tasks Contributed  </h1>
-      </div>
-      {/*<div>*/}
-      {/*  <div>*/}
-      {/*    From: <DatePicker selected={startDate} onChange={date => this.setStartDate(date)}/>*/}
-      {/*    To: <DatePicker selected={endDate} onChange={date => this.setEndDate(date)}/>*/}
-      {/*  </div>*/}
-      {/*</div>*/}
-      <PeopleDataTable/>
-      {/* <div>
-        <img src={this.state.userProfile.profilePic||'/pfp-default.png'} alt="profile picture" className="test-pic"/>
-      </div> */}
-      <div className='container'>
-
-        <table>
-          {/*<div class="row" style={{justifyContent:'flex-start'}}>*/}
-          {/*  <div>*/}
-          {/*    <div><button style={{margin:'3px'}} exact className="btn btn-secondary btn-bg mt-3" onClick={()=>this.setFilter()}>Filters Off</button>*/}
-          {/*    </div>*/}
-          {/*  <div>*/}
-          {/*    <input name='radio' type="radio" style={{margin:'5px'}} value="active" onChange={()=>this.setAssign(true)}  />*/}
-          {/*    Assigned*/}
-          {/*    <input name='radio' type="radio" style={{margin:'5px'}} value="inactive" onChange={()=>this.setAssign(false) } />*/}
-          {/*    Not Assigned*/}
-          {/*    </div>*/}
-          {/*    <div>*/}
-          {/*    <input name='radio' type="radio" style={{margin:'5px'}} value="active" onChange={()=>this.setActive(true)}  />*/}
-          {/*    Active*/}
-          {/*    <input name='radio' type="radio" style={{margin:'5px'}} value="inactive" onChange={()=>this.setActive(false) } />*/}
-          {/*    Inactive*/}
-          {/*    </div>*/}
-          {/*    </div>*/}
-          {/*  <div className="row" style={{justifyContent:'space-evenly', margin:'3px'}}>*/}
-          {/*    <div>*/}
-          {/*      <PriorityOptions get_tasks={userTask}/>*/}
-          {/*    </div>*/}
-          {/*    <div>*/}
-          {/*      <StatusOptions get_tasks={userTask}/>*/}
-          {/*    </div>*/}
-          {/*    <div>*/}
-          {/*      <ClassificationOptions allClassification={allClassification}/>*/}
-          {/*    </div>*/}
-          {/*    <div>*/}
-          {/*      <UserOptions userTask={userTask}/>*/}
-          {/*    </div>*/}
-          {/*    <div>*/}
-          {/*      <DateRangeSelect />*/}
-          {/*    </div>*/}
-          {/*  </div>*/}
-          {/*</div>*/}
-
-            {/* <UserTask userTask={userTask}
-                      isAssigned={isAssigned}
-                      isActive={isActive}
-                      priority={priority}
-                      status={status}
-                      classification={classification}
-                       users={users}
-                      classificationList={classificationList}
-                      priorityList={priorityList}
-                      statusList={statusList}
-            /> */}
-          <UserProject userProjects={userProjects}/>
-          <Infringments infringments={infringments} fromDate={fromDate} toDate={toDate} timeEntries={timeEntries}/>
-          <div className='visualizationDiv'>
-            <InfringmentsViz infringments={infringments} fromDate={fromDate} toDate={toDate} />
-          </div>
-          <div className='visualizationDiv'>
-            <TimeEntriesViz timeEntries={timeEntries} fromDate={fromDate} toDate={toDate} />
-          </div>
-        </table>
-
-      </div>
-    </div>
+        </div>
+      </ReportBlock>
+    </ReportPage>
       )
     }
 }
