@@ -7,13 +7,15 @@ import { TaskEditSuggestionsModal } from './Components/TaskEditSuggestionsModal'
 import { getTaskEditSuggestionsData } from './selectors'
 import { fetchTaskEditSuggestions } from './thunks';
 import { toggleDateSuggestedSortDirection, toggleUserSortDirection } from './actions';
+import hasPermission from 'utils/permissions';
 
 export const TaskEditSuggestions = () => {
-
   const [isTaskEditSuggestionModalOpen, setIsTaskEditSuggestionModalOpen] = useState(false);
   const [currentTaskEditSuggestion, setCurrentTaskEditSuggestion] = useState();
 
-  const { isLoading, taskEditSuggestions, userSortDirection, dateSuggestedSortDirection } = useSelector(getTaskEditSuggestionsData);
+  const { isLoading, taskEditSuggestions, userSortDirection, dateSuggestedSortDirection, userRole } = useSelector(getTaskEditSuggestionsData);
+
+  const isUserPermitted = hasPermission(userRole, 'editTask');
 
   const dispatch = useDispatch();
   useEffect(() => {dispatch(fetchTaskEditSuggestions())}, []);
@@ -35,7 +37,8 @@ export const TaskEditSuggestions = () => {
 
   return (
     <Container>
-      <h1>Task Edit Suggestions</h1>
+    <h1>Task Edit Suggestions</h1>
+      {/* {isUserPermitted ? <h1>Task Edit Suggestions</h1> : <h1>{userRole} is not permitted to view this</h1>} */}
       {isLoading && <Loading/>}
       {!isLoading && taskEditSuggestions && <Table>
         <thead>
