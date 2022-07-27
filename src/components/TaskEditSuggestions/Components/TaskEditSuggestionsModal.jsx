@@ -2,8 +2,13 @@ import React from 'react';
 import { Modal, ModalHeader, ModalBody, ModalFooter, Row, Col, Button } from 'reactstrap';
 import { resourcesToString, booleanToString, numberToString, arrayToString, trimParagraphTags, datetimeToDate } from "components/TeamMemberTasks/components/TaskDifferenceModal";
 import DiffedText from 'components/TeamMemberTasks/components/DiffedText';
+import { useDispatch } from 'react-redux';
+import { rejectTaskEditSuggestion } from '../thunks';
 
 export const TaskEditSuggestionsModal = ({isTaskEditSuggestionModalOpen, taskEditSuggestion, handleToggleTaskEditSuggestionModal}) => {
+
+  const dispatch = useDispatch();
+
   return (
     <Modal size="xl" isOpen={isTaskEditSuggestionModalOpen} toggle={() => handleToggleTaskEditSuggestionModal()}>
     <ModalHeader toggle={() => handleToggleTaskEditSuggestionModal()}>Suggested Changes</ModalHeader>
@@ -143,10 +148,17 @@ export const TaskEditSuggestionsModal = ({isTaskEditSuggestionModalOpen, taskEdi
     <ModalFooter>
       <Row>
         <Col>
-          <Button color="success">Approve</Button>
+          <Button color="success">
+            Approve
+          </Button>
         </Col>
         <Col style={{display: "flex"}}>
-          <Button color="danger" style={{marginLeft: "auto"}}>Reject</Button>
+          <Button color="danger" style={{marginLeft: "auto"}} onClick={() => {
+            dispatch(rejectTaskEditSuggestion(taskEditSuggestion._id));
+            handleToggleTaskEditSuggestionModal();
+            }}>
+            Reject
+          </Button>
         </Col>
       </Row>
     </ModalFooter>
