@@ -75,7 +75,6 @@ export const updateTask = (taskId, updatedTask, hasPermission) => async (dispatc
     status = 400;
   }
   // TODO: DISPATCH TO TASKEDITSUGGESETIONS REDUCER TO UPDATE STATE
-  console.log('reach this');
   await dispatch(putUpdatedTask(updatedTask, taskId, status));
 };
 
