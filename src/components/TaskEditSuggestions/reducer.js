@@ -13,6 +13,8 @@ export const taskEditSuggestionsReducer = (state = initialState, action) => {
       return { ...state, isLoading: false, taskEditSuggestions: [...action.payload].sort((tes1, tes2) => tes2.dateSuggested.localeCompare(tes1.dateSuggested)) };
     case "FETCH_TASK_EDIT_SUGGESTIONS_ERROR":
       return { ...state, isLoading: false };
+    case "REJECT_TASK_EDIT_SUGGESTION_SUCCESS":
+      return { ...state, taskEditSuggestions: [...state.taskEditSuggestions].filter(tes => tes._id !== action.payload) };
     case "TOGGLE_DATE_SUGGESTED_SORT_DIRECTION":
       if (state.dateSuggestedSortDirection == null || state.dateSuggestedSortDirection == "asc") {
         return { ...state,

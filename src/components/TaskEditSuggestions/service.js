@@ -18,3 +18,12 @@ export const createTaskEditSuggestionHTTP = async ( taskId, userId, oldTask, upd
     console.log('Error on create task edit suggestion: ' + error);
   } 
 };
+
+export const rejectTaskEditSuggestionHTTP = async ( taskEditSuggestionId ) => {
+  try {
+    console.log('reject http');
+    await axios.delete(ENDPOINTS.REJECT_TASK_EDIT_SUGGESTION(taskEditSuggestionId));
+  } catch (error) {
+    'reject task edit suggestion http error\n' + error
+  }
+};
