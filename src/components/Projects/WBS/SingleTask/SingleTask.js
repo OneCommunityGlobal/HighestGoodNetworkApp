@@ -3,6 +3,8 @@ import { useState, useEffect } from "react";
 import ReactTooltip from "react-tooltip";
 import axios from 'axios';
 import { NavItem, Button } from "reactstrap";
+import { Modal, ModalBody, } from 'reactstrap';
+import { Editor } from '@tinymce/tinymce-react';
 import { Link } from "react-router-dom";
 import { ENDPOINTS } from 'utils/URL';
 
@@ -12,6 +14,8 @@ const SingleTask = (props) => {
   console.log("task id is: ", taskId)
 
   const [task, setTask] = useState({});
+  const [modal, setModal] = useState(false);
+  const toggleModel = () => setModal(!modal);
 
   useEffect(() => {
     axios
@@ -40,78 +44,196 @@ const SingleTask = (props) => {
         </nav>
 
         <table className="table table-bordered tasks-table">
-        <thead>
-          <tr>
-            <th scope="col" data-tip="task-num" colSpan="1">
-              #
-            </th>
-            <th scope="col" data-tip="Task Name" className="task-name">
-              Task Name
-            </th>
-            <th scope="col" data-tip="Priority">
-              <i className="fa fa-star" aria-hidden="true"></i>
-            </th>
-            <th className="desktop-view" scope="col" data-tip="Resources">
-              <i className="fa fa-users" aria-hidden="true"></i>
-            </th>
-            <th scope="col" data-tip="Assigned">
-              <i className="fa fa-user-circle-o" aria-hidden="true"></i>
-            </th>
-            <th className="desktop-view" scope="col" data-tip="Status">
-              <i className="fa fa-tasks" aria-hidden="true"></i>
-            </th>
-            <th className="desktop-view" scope="col" data-tip="Hours-Best">
-              <i className="fa fa-hourglass-start" aria-hidden="true"></i>
-            </th>
-            <th className="desktop-view" scope="col" data-tip="Hours-Worst">
-              <i className="fa fa-hourglass" aria-hidden="true"></i>
-            </th>
-            <th className="desktop-view" scope="col" data-tip="Hours-Most">
-              <i className="fa fa-hourglass-half" aria-hidden="true"></i>
-            </th>
-            <th className="desktop-view" scope="col" data-tip="Estimated Hours">
-              <i className="fa fa-clock-o" aria-hidden="true"></i>
-            </th>
-            <th className="desktop-view" scope="col" data-tip="Hours-Logged">
-            <i className="fa fa-clock-o" aria-hidden="true"></i>
-            </th>
-            <th className="desktop-view" scope="col" data-tip="Start Date">
-              <i className="fa fa-calendar-check-o" aria-hidden="true"></i> Start
-            </th>
-            <th className="desktop-view" scope="col" data-tip="Due Date">
-              <i className="fa fa-calendar-times-o" aria-hidden="true"></i> End
-            </th>
-            <th className="desktop-view" scope="col" data-tip="Links">
-              <i className="fa fa-link" aria-hidden="true"></i>
-            </th>
-            <th className="desktop-view" scope="col" data-tip="Details">
-              <i className="fa fa-question" aria-hidden="true"></i>
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <th scope="row">{task.num}</th>
-            <td>{task.taskName}</td>
-            <td>{task.priority}</td>
-            <td>need more work</td>
-            <td>{task.isAssigned}</td>
-            <td>{task.isActive}</td>
-            <td>{task.hoursBest}</td>
-            <td>{task.hoursWorst}</td>
-            <td>{task.hoursMost}</td>
-            <td>{task.estimatedHours}</td>
-            <td>{task.hoursLogged}</td>
-            <td>{task.startedDatetime}</td>
-            <td>{task.dueDatetime}</td>
-            <td>{task.links}</td>
-            <td>need more work</td>
-          </tr>
-        </tbody>
+          <thead>
+            <tr>
+              <th scope="col" data-tip="task-num" colSpan="1">
+                #
+              </th>
+              <th scope="col" data-tip="Task Name" className="task-name">
+                Task Name
+              </th>
+              <th scope="col" data-tip="Priority">
+                <i className="fa fa-star" aria-hidden="true"></i>
+              </th>
+              <th className="desktop-view" scope="col" data-tip="Resources">
+                <i className="fa fa-users" aria-hidden="true"></i>
+              </th>
+              <th scope="col" data-tip="Assigned">
+                <i className="fa fa-user-circle-o" aria-hidden="true"></i>
+              </th>
+              <th className="desktop-view" scope="col" data-tip="Status">
+                <i className="fa fa-tasks" aria-hidden="true"></i>
+              </th>
+              <th className="desktop-view" scope="col" data-tip="Hours-Best">
+                <i className="fa fa-hourglass-start" aria-hidden="true"></i>
+              </th>
+              <th className="desktop-view" scope="col" data-tip="Hours-Worst">
+                <i className="fa fa-hourglass" aria-hidden="true"></i>
+              </th>
+              <th className="desktop-view" scope="col" data-tip="Hours-Most">
+                <i className="fa fa-hourglass-half" aria-hidden="true"></i>
+              </th>
+              <th className="desktop-view" scope="col" data-tip="Estimated Hours">
+                <i className="fa fa-clock-o" aria-hidden="true"></i>
+              </th>
+              <th className="desktop-view" scope="col" data-tip="Hours-Logged">
+              <i className="fa fa-hourglass-end" aria-hidden="true"></i>
+              </th>
+              <th className="desktop-view" scope="col" data-tip="Start Date">
+                <i className="fa fa-calendar-check-o" aria-hidden="true"></i> Start
+              </th>
+              <th className="desktop-view" scope="col" data-tip="Due Date">
+                <i className="fa fa-calendar-times-o" aria-hidden="true"></i> End
+              </th>
+              <th className="desktop-view" scope="col" data-tip="Links">
+                <i className="fa fa-link" aria-hidden="true"></i>
+              </th>
+              <th className="desktop-view" scope="col" data-tip="Details">
+                <i className="fa fa-question" aria-hidden="true"></i>
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <th scope="row">{task.num}</th>
+              <td>{task.taskName}</td>
+              <td>{task.priority}</td>
+              <td className="desktop-view">
+                {task.resources
+                  ? task.resources.map((elm, i) => {
+                    if (i < 2) {
+                      try {
+                        if (!elm.profilePic) {
+                          return (
+                            <a
+                              key={`res_${i}`}
+                              data-tip={elm.name}
+                              className="name"
+                              href={`/userprofile/${elm.userID}`}
+                              target="_blank"
+                            >
+                              <span className="dot">{elm.name.substring(0, 2)}</span>
+                            </a>
+                          );
+                        }
+                        return (
+                          <a
+                            key={`res_${i}`}
+                            data-tip={elm.name}
+                            className="name"
+                            href={`/userprofile/${elm.userID}`}
+                            target="_blank"
+                          >
+                            <img className="img-circle" src={elm.profilePic} />
+                          </a>
+                        );
+                      } catch (err) {}
+                    }
+                  })
+                : null}
 
+                <div id={`res-${task.id}`} className="resourceMore">
+                  {task.resources
+                    ? task.resources.map((elm, i) => {
+                      if (i >= 2) {
+                        if (!elm.profilePic) {
+                          return (
+                            <a
+                              data-tip={elm.name}
+                              className="name"
+                              key={i}
+                              href={`/userprofile/${elm.userID}`}
+                              target="_blank"
+                            >
+                              <span className="dot">{elm.name.substring(0, 2)}</span>
+                            </a>
+                          );
+                        }
+                        return (
+                          <a
+                            data-tip={elm.name}
+                            className="name"
+                            key={i}
+                            href={`/userprofile/${elm.userID}`}
+                            target="_blank"
+                          >
+                            <img className="img-circle" src={elm.profilePic} />
+                          </a>
+                        );
+                      }
+                    })
+                    : null}
+                </div>
+              </td>
+              <td>
+                {task.isAssigned ? (
+                  <i data-tip="Assigned" className="fa fa-check-square" aria-hidden="true"></i>
+                ) : (
+                  <i data-tip="Not Assigned" className="fa fa-square-o" aria-hidden="true"></i>
+                )}
+              </td>
+              <td>{task.status}</td>
+              <td>{task.hoursBest}</td>
+              <td>{task.hoursWorst}</td>
+              <td>{task.hoursMost}</td>
+              <td>{parseInt(task.estimatedHours).toFixed(2)}</td>
+              <td>{task.hoursLogged}</td>
+              <td>{task.startedDatetime ? task.startedDatetime.slice(0,10) : "N/A" }</td>
+              <td>{task.dueDatetime ? task.dueDatetime.slice(0,10) : "N/A"}</td>
+              <td>{task.links}</td>
+              <td className="desktop-view" onClick={toggleModel}>
+                <i className="fa fa-book" aria-hidden="true"></i>
+              </td>
+            </tr>
+          </tbody>
         </table>
-
       </div>
+
+      <Modal isOpen={modal} toggle={toggleModel}>
+        <ModalBody>
+          <h6>WHY THIS TASK IS IMPORTANT:</h6>
+          <Editor
+            init={{
+              menubar: false,
+              toolbar: false,
+              branding: false,
+              min_height: 80,
+              max_height: 300,
+              autoresize_bottom_margin: 1,
+            }}
+            disabled={true}
+            value={task.whyInfo}
+          />
+
+          <h6>THE DESIGN INTENT:</h6>
+          <Editor
+            init={{
+              menubar: false,
+              toolbar: false,
+              branding: false,
+              min_height: 80,
+              max_height: 300,
+              autoresize_bottom_margin: 1,
+            }}
+            disabled={true}
+            value={task.intentInfo}
+          />
+
+          <h6>ENDSTATE:</h6>
+          <Editor
+            init={{
+              menubar: false,
+              toolbar: false,
+              branding: false,
+              min_height: 80,
+              max_height: 300,
+              autoresize_bottom_margin: 1,
+            }}
+            disabled={true}
+            value={task.endstateInfo}
+          />
+        </ModalBody>
+      </Modal>
       
     </React.Fragment>
   );
