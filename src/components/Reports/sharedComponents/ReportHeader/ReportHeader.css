@@ -1,0 +1,39 @@
+.report-header {
+  min-height: 35vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+
+.report-header-details {
+  width: 100%;
+  text-align: center;
+}
+
+.report-header-profile-pic {
+  width: 6rem;
+  height: 6rem;
+
+  border-radius: 10px;
+}
+
+.report-header-profile-pic-wrapper {
+  position: relative;
+  display: inline-block;
+}
+
+.report-header-activity {
+  position: absolute;
+  right: -6px;
+  bottom: -1px;
+  width: 20px;
+  height: 20px;
+  background-color: #c6c6c6;
+  border-radius: 50%;
+  border: 2px solid white;
+}
+
+.report-header-activity.active {
+  background-color: #2affa1;
+}
