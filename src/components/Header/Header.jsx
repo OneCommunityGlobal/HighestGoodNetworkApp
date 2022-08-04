@@ -79,13 +79,13 @@ export const Header = props => {
         {isAuthenticated && (
           <Collapse isOpen={isOpen} navbar>
             <Nav className="ml-auto" navbar>
-              <NavItem>
+              {hasPermission(user.role, 'editTask') && <NavItem>
                 <NavLink tag={Link} to="/taskeditsuggestions">
                   <div className="redBackGroupHeader">
                     <span>{5}</span>
                   </div>
                 </NavLink>
-              </NavItem>
+              </NavItem>}
               <NavItem>
                 <NavLink tag={Link} to="/dashboard">
                   {DASHBOARD}
