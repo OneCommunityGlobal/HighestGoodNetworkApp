@@ -80,6 +80,13 @@ export const Header = props => {
           <Collapse isOpen={isOpen} navbar>
             <Nav className="ml-auto" navbar>
               <NavItem>
+                <NavLink tag={Link} to="/taskeditsuggestions">
+                  <div className="redBackGroupHeader">
+                    <span>{5}</span>
+                  </div>
+                </NavLink>
+              </NavItem>
+              <NavItem>
                 <NavLink tag={Link} to="/dashboard">
                   {DASHBOARD}
                 </NavLink>
