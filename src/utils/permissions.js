@@ -50,12 +50,12 @@ const permissions = {
     'Manager': [
         'seeWeeklySummaryReports',
         'assignOnlyBlueSquares',
-        'editTask',
+        'suggestTask',
     ],
     'Mentor': [
         'seeWeeklySummaryReports',
         'assignOnlyBlueSquares',
-        'editTask',
+        'suggestTask',
     ],
     'Owner': [
         'seeWeeklySummaryReports',
