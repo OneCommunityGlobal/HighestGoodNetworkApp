@@ -3,8 +3,6 @@ import { datetimeToDate } from 'components/TeamMemberTasks/components/TaskDiffer
 import { Link } from 'react-router-dom';
 
 export const TaskEditSuggestionRow = ({taskEditSuggestion, handleToggleTaskEditSuggestionModal}) => {
-
-
   return (
     <tr onClick={() => handleToggleTaskEditSuggestionModal(taskEditSuggestion)}>
       <td>{datetimeToDate(taskEditSuggestion.dateSuggested)}</td>
