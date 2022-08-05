@@ -241,14 +241,14 @@ const EditTaskModal = (props) => {
     <div className="controlBtn">
       <Modal isOpen={modal} toggle={toggle}>
         <ModalHeader toggle={toggle}>
-          {hasPermission(role, 'editTask') ? 'Edit' : 'Suggest'}
+          {hasPermission(role, 'editTask') ? 'Edit' : (hasPermission(role, 'suggestTask') ? 'Suggest' : 'View') }
         </ModalHeader>
         <ModalBody>
           <ReactTooltip />
 
           <table
-            className={`table table-bordered `
-            // ${hasPermission(role, 'editTask') ? null : 'disable-div'}`
+            className={`table table-bordered 
+            ${(hasPermission(role, 'editTask') || hasPermission(role, 'suggestTask')) ? null : 'disable-div'}`
             }
           >
             <tbody>
@@ -594,7 +594,7 @@ const EditTaskModal = (props) => {
           </table>
         </ModalBody>
 
-        {(
+        {(hasPermission(role, 'editTask') || hasPermission(role, 'suggestTask')) ? (
           <ModalFooter>
             {taskName !== '' && startedDate !== '' && dueDate !== '' ? (
               <Button color="primary" onClick={toggle} onClick={updateTask}>
@@ -605,10 +605,11 @@ const EditTaskModal = (props) => {
               Cancel
             </Button>
           </ModalFooter>
-        )}
+        ) : null}
+
       </Modal>
       <Button color="primary" size="sm" onClick={toggle}>
-        {hasPermission(role, 'editTask') ? 'Edit' : 'Suggest'}
+        {hasPermission(role, 'editTask') ? 'Edit' : (hasPermission(role, 'suggestTask') ? 'Suggest' : 'View') }
       </Button>
     </div>
   );
