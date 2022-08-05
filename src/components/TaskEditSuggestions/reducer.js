@@ -18,7 +18,8 @@ export const taskEditSuggestionsReducer = (state = initialState, action) => {
     case "FETCH_TASK_EDIT_SUGGESTIONS_ERROR":
       return { ...state, isLoading: false };
     case "REJECT_TASK_EDIT_SUGGESTION_SUCCESS":
-      return { ...state, taskEditSuggestions: [...state.taskEditSuggestions].filter(tes => tes._id !== action.payload) };
+      const filteredTaskEditSuggestions = [...state.taskEditSuggestions].filter(tes => tes._id !== action.payload);
+      return { ...state, taskEditSuggestions: filteredTaskEditSuggestions, count: filteredTaskEditSuggestions.length };
     case "FETCH_TASK_EDIT_SUGGESTIONS_COUNT_SUCESS":
       return { ...state, count: action.payload };
     case "TOGGLE_DATE_SUGGESTED_SORT_DIRECTION":
