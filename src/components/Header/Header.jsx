@@ -52,9 +52,8 @@ export const Header = props => {
     if (props.auth.isAuthenticated) {
       props.getHeaderData(props.auth.user.userid);
       props.getTimerData(props.auth.user.userid);
-    } if (hasPermission(user.role)) {
-      dispatch(props.fetchTaskEditSuggestionCount());
     }
+    dispatch(fetchTaskEditSuggestionCount());
   }, []);
 
   // useEffect(() => {
@@ -218,6 +217,5 @@ const mapStateToProps = state => ({
 });
 export default connect(mapStateToProps, {
   getHeaderData,
-  getTimerData,
-  fetchTaskEditSuggestionCount
+  getTimerData
 })(Header);
