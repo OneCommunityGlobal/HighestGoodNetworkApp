@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { getHeaderData } from '../../actions/authActions';
 import { getTimerData } from '../../actions/timer';
 import { Link } from 'react-router-dom';
-import { connect } from 'react-redux';
+import { connect, useDispatch } from 'react-redux';
 import Timer from '../Timer/Timer';
 import {
   LOGO,
@@ -46,12 +46,14 @@ export const Header = props => {
 
   const { isAuthenticated, user, firstName, profilePic } = props.auth;
 
+  const dispatch = useDispatch();
+
   useEffect(() => {
     if (props.auth.isAuthenticated) {
       props.getHeaderData(props.auth.user.userid);
       props.getTimerData(props.auth.user.userid);
     } if (hasPermission(user.role)) {
-      props.fetchTaskEditSuggestionCount();
+      dispatch(props.fetchTaskEditSuggestionCount());
     }
   }, []);
 

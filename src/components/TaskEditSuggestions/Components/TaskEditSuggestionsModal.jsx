@@ -11,7 +11,7 @@ export const TaskEditSuggestionsModal = ({isTaskEditSuggestionModalOpen, taskEdi
 
   return (
     <Modal size="xl" isOpen={isTaskEditSuggestionModalOpen} toggle={() => handleToggleTaskEditSuggestionModal()}>
-    <ModalHeader toggle={() => handleToggleTaskEditSuggestionModal()}>Suggested Changes</ModalHeader>
+    <ModalHeader toggle={() => handleToggleTaskEditSuggestionModal()}>{taskEditSuggestion && `Changes suggested by: ${taskEditSuggestion.user}`}</ModalHeader>
     <ModalBody>
       {
         taskEditSuggestion &&

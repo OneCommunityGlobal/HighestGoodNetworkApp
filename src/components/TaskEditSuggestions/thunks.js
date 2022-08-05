@@ -27,7 +27,6 @@ export const rejectTaskEditSuggestion = (taskEditSuggestionId) => async (dispatc
 };
 
 export const fetchTaskEditSuggestionCount = () => async (dispatch, getState) => {
-  console.log('fetchTaskEditSuggestionCount start');
   try {
     const response = await getTaskEditSuggestionCountHTTP();
     dispatch(fetchTaskEditSuggestionCountSuccess(response.data.count));
