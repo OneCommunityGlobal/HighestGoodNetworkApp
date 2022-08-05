@@ -38,15 +38,20 @@ import {
 import { Logout } from '../Logout/Logout';
 import './Header.css';
 import hasPermission from '../../utils/permissions';
+import { fetchTaskEditSuggestionCount } from 'components/TaskEditSuggestions/thunks';
 
 export const Header = props => {
   const [isOpen, setIsOpen] = useState(false);
   const [logoutPopup, setLogoutPopup] = useState(false);
 
+  const { isAuthenticated, user, firstName, profilePic } = props.auth;
+
   useEffect(() => {
     if (props.auth.isAuthenticated) {
       props.getHeaderData(props.auth.user.userid);
       props.getTimerData(props.auth.user.userid);
+    } if (hasPermission(user.role)) {
+      props.fetchTaskEditSuggestionCount();
     }
   }, []);
 
@@ -62,8 +67,6 @@ export const Header = props => {
   const openModal = () => {
     setLogoutPopup(true);
   };
-
-  const { isAuthenticated, user, firstName, profilePic } = props.auth;
 
   return (
     <div className='header-wrapper'>
@@ -82,7 +85,7 @@ export const Header = props => {
               {hasPermission(user.role, 'editTask') && <NavItem>
                 <NavLink tag={Link} to="/taskeditsuggestions">
                   <div className="redBackGroupHeader">
-                    <span>{5}</span>
+                    <span>{props.taskEditSuggestionCount}</span>
                   </div>
                 </NavLink>
               </NavItem>}
@@ -209,8 +212,10 @@ export const Header = props => {
 const mapStateToProps = state => ({
   auth: state.auth,
   userProfile: state.userProfile,
+  taskEditSuggestionCount: state.taskEditSuggestions.count
 });
 export default connect(mapStateToProps, {
   getHeaderData,
   getTimerData,
+  fetchTaskEditSuggestionCount
 })(Header);

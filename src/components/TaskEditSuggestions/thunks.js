@@ -1,6 +1,6 @@
-import { fetchTaskEditSuggestionsBegin, fetchTaskEditSuggestionsError, fetchTaskEditSuggestionsSuccess, rejectTaskEditSuggestionSuccess } from "./actions";
+import { fetchTaskEditSuggestionsBegin, fetchTaskEditSuggestionsError, fetchTaskEditSuggestionsSuccess, rejectTaskEditSuggestionSuccess, fetchTaskEditSuggestionCountSuccess } from "./actions";
 import { ENDPOINTS } from "utils/URL";
-import { getTaskEditSuggestionsHTTP, rejectTaskEditSuggestionHTTP } from "./service";
+import { getTaskEditSuggestionsHTTP, rejectTaskEditSuggestionHTTP, getTaskEditSuggestionCountHTTP } from "./service";
 
 const selectFetchTeamMembersTaskData = (state) => state.auth.user.userid;
 const selectUpdateTaskData = (state, taskId) => state.tasks.taskItems.find(({_id}) => _id === taskId);
@@ -25,3 +25,13 @@ export const rejectTaskEditSuggestion = (taskEditSuggestionId) => async (dispatc
     // dispatch(rejectTaskEditSuggestionError());
   }
 };
+
+export const fetchTaskEditSuggestionCount = () => async (dispatch, getState) => {
+  console.log('fetchTaskEditSuggestionCount start');
+  try {
+    const response = await getTaskEditSuggestionCountHTTP();
+    dispatch(fetchTaskEditSuggestionCountSuccess(response.data.count));
+  } catch (error) {
+    console.log('fetch task edit suggestion count thunk error\n' + error);
+  }
+}
