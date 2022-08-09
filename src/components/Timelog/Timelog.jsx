@@ -54,8 +54,7 @@ class Timelog extends Component {
     this.handleSearch = this.handleSearch.bind(this);
     this.openInfo = this.openInfo.bind(this);
     this.data = {
-      disabled: !hasPermission(this.props.auth.user.role, 'disabledDataTimelog') ? false : true,
-      isTangible: hasPermission(this.props.auth.user.role, 'dataIsTangibleTimelog') ? true : false,
+      disabled: !hasPermission(this.props.auth.user.role, 'disabledDataTimelog') ? false : true
     };
     this.userProfile = this.props.userProfile;
   }
@@ -394,7 +393,6 @@ class Timelog extends Component {
                           toggle={this.toggle}
                           isOpen={this.state.modal}
                           userProfile={this.userProfile}
-                          isInTangible={true}
                         />
                         <ReactTooltip id="registerTip" place="bottom" effect="solid">
                           Click this icon to learn about the timelog.
