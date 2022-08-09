@@ -9,10 +9,7 @@ import { Link } from "react-router-dom";
 import { ENDPOINTS } from 'utils/URL';
 
 const SingleTask = (props) => {
-  console.log("single task props is: ", props)
   const taskId = props.match.params.taskId;
-  console.log("task id is: ", taskId)
-
   const [task, setTask] = useState({});
   const [modal, setModal] = useState(false);
   const toggleModel = () => setModal(!modal);
@@ -25,8 +22,6 @@ const SingleTask = (props) => {
       })
       .catch(err => console.log(err));
   }, []);
-
-  console.log("get task is: ", task)
 
   return ( 
     <React.Fragment>
@@ -100,70 +95,36 @@ const SingleTask = (props) => {
               <td>{task.priority}</td>
               <td className="desktop-view">
                 {task.resources
-                  ? task.resources.map((elm, i) => {
-                    if (i < 2) {
-                      try {
-                        if (!elm.profilePic) {
-                          return (
-                            <a
-                              key={`res_${i}`}
-                              data-tip={elm.name}
-                              className="name"
-                              href={`/userprofile/${elm.userID}`}
-                              target="_blank"
-                            >
-                              <span className="dot">{elm.name.substring(0, 2)}</span>
-                            </a>
-                          );
-                        }
+                  ? task.resources.map((elem, i) => {
+                    try {
+                      if (elem.profilePic) {
                         return (
                           <a
                             key={`res_${i}`}
-                            data-tip={elm.name}
+                            data-tip={elem.name}
                             className="name"
-                            href={`/userprofile/${elm.userID}`}
+                            href={`/userprofile/${elem.userID}`}
                             target="_blank"
                           >
-                            <img className="img-circle" src={elm.profilePic} />
+                            <img className="img-circle" src={elem.profilePic} />
                           </a>
                         );
-                      } catch (err) {}
-                    }
-                  })
-                : null}
-
-                <div id={`res-${task.id}`} className="resourceMore">
-                  {task.resources
-                    ? task.resources.map((elm, i) => {
-                      if (i >= 2) {
-                        if (!elm.profilePic) {
-                          return (
-                            <a
-                              data-tip={elm.name}
-                              className="name"
-                              key={i}
-                              href={`/userprofile/${elm.userID}`}
-                              target="_blank"
-                            >
-                              <span className="dot">{elm.name.substring(0, 2)}</span>
-                            </a>
-                          );
-                        }
+                      } else {
                         return (
                           <a
-                            data-tip={elm.name}
+                            key={`res_${i}`}
+                            data-tip={elem.name}
                             className="name"
-                            key={i}
-                            href={`/userprofile/${elm.userID}`}
+                            href={`/userprofile/${elem.userID}`}
                             target="_blank"
                           >
-                            <img className="img-circle" src={elm.profilePic} />
+                            <span className="dot">{elem.name.substring(0, 2)}</span>
                           </a>
                         );
                       }
-                    })
-                    : null}
-                </div>
+                    } catch (err) {}
+                  })
+                : null}
               </td>
               <td>
                 {task.isAssigned ? (
@@ -176,8 +137,8 @@ const SingleTask = (props) => {
               <td>{task.hoursBest}</td>
               <td>{task.hoursWorst}</td>
               <td>{task.hoursMost}</td>
-              <td>{parseInt(task.estimatedHours).toFixed(2)}</td>
-              <td>{task.hoursLogged}</td>
+              <td>{parseFloat(task.estimatedHours).toFixed(2)}</td>
+              <td>{parseFloat(task.hoursLogged).toFixed(2)}</td>
               <td>{task.startedDatetime ? task.startedDatetime.slice(0,10) : "N/A" }</td>
               <td>{task.dueDatetime ? task.dueDatetime.slice(0,10) : "N/A"}</td>
               <td>{task.links}</td>
