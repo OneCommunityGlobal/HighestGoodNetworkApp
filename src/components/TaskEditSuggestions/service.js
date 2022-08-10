@@ -10,10 +10,10 @@ export const getTaskEditSuggestionsHTTP = async () => {
   } 
 };
 
-export const createTaskEditSuggestionHTTP = async ( taskId, userId, oldTask, updatedTask ) => {
+export const createOrUpdateTaskEditSuggestionHTTP = async ( taskId, userId, oldTask, updatedTask ) => {
   try {
     const payload = { taskId, userId, oldTask, newTask: updatedTask };
-    await axios.post(ENDPOINTS.TASK_EDIT_SUGGESTION(), payload);
+    return await axios.post(ENDPOINTS.TASK_EDIT_SUGGESTION(), payload);
   } catch (error) {
     console.log('Error on create task edit suggestion: ' + error);
   } 
@@ -33,4 +33,4 @@ export const getTaskEditSuggestionCountHTTP = async () => {
   } catch (error) {
     console.log('get task edit suggestion count http error: ' + error);
   }
-}
+};

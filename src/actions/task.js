@@ -7,7 +7,8 @@ import { fetchTeamMembersTaskSuccess, fetchTeamMembersTaskBegin, fetchTeamMember
 import * as types from '../constants/task';
 import { ENDPOINTS } from '../utils/URL';
 import { createOrUpdateTaskNotificationHTTP } from './taskNotification';
-import { createTaskEditSuggestionHTTP } from 'components/TaskEditSuggestions/service';
+import { createOrUpdateTaskEditSuggestion } from '../components/TaskEditSuggestions/thunks'
+
 
 const selectFetchTeamMembersTaskData = (state) => state.auth.user.userid;
 <<<<<<< HEAD
@@ -71,7 +72,7 @@ export const updateTask = (taskId, updatedTask, hasPermission) => async (dispatc
       const userIds = updatedTask.resources.map(resource => resource.userID);
       await createOrUpdateTaskNotificationHTTP(taskId, oldTask, userIds);
     } else {
-      await createTaskEditSuggestionHTTP(taskId, selectUserId(state), oldTask, updatedTask);
+      dispatch(createOrUpdateTaskEditSuggestion(taskId, selectUserId(state), oldTask, updatedTask));
     }
   } catch (error) {
     //dispatch(fetchTeamMembersTaskError());

@@ -9,4 +9,8 @@ export const rejectTaskEditSuggestionSuccess = createAction("REJECT_TASK_EDIT_SU
 export const toggleDateSuggestedSortDirection = createAction("TOGGLE_DATE_SUGGESTED_SORT_DIRECTION");
 export const toggleUserSortDirection = createAction("TOGGLE_USER_SORT_DIRECTION");
 
-export const fetchTaskEditSuggestionCountSuccess = createAction("FETCH_TASK_EDIT_SUGGESTIONS_COUNT_SUCESS")
+export const fetchTaskEditSuggestionCountSuccess = createAction("FETCH_TASK_EDIT_SUGGESTIONS_COUNT_SUCESS");
+
+export const createTaskEditSuggestion = createAction("CREATE_TASK_EDIT_SUGGESTION");
+
+export const updateTaskEditSuggestion = createAction("UPDATE_TASK_EDIT_SUGGESTION");

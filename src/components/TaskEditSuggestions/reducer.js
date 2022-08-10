@@ -28,13 +28,13 @@ export const taskEditSuggestionsReducer = (state = initialState, action) => {
           dateSuggestedSortDirection: "desc", 
           taskEditSuggestions: [...state.taskEditSuggestions].sort((tes1, tes2) => tes2.dateSuggested.localeCompare(tes1.dateSuggested)),
           userSortDirection: null,
-         }
+         };
       } else if (state.dateSuggestedSortDirection == "desc") {
         return { ...state,
           dateSuggestedSortDirection: "asc", 
           taskEditSuggestions: [...state.taskEditSuggestions].sort((tes1, tes2) => tes1.dateSuggested.localeCompare(tes2.dateSuggested)),
           userSortDirection: null,
-         }
+         };
       }
     case "TOGGLE_USER_SORT_DIRECTION":
       if (state.userSortDirection == null || state.userSortDirection == "asc") {
@@ -42,14 +42,20 @@ export const taskEditSuggestionsReducer = (state = initialState, action) => {
           userSortDirection: "desc", 
           taskEditSuggestions: [...state.taskEditSuggestions].sort((tes1, tes2) => tes2.user.localeCompare(tes1.user)),
           dateSuggestedSortDirection: null,
-          }
+          };
       } else if (state.userSortDirection == "desc") {
         return { ...state,
           userSortDirection: "asc", 
           taskEditSuggestions: [...state.taskEditSuggestions].sort((tes1, tes2) => tes1.user.localeCompare(tes2.user)),
           dateSuggestedSortDirection: null,
-          }
+          };
       }
+    case "CREATE_TASK_EDIT_SUGGESTION":
+      const newTaskEditSuggestions = [...state.taskEditSuggestions];
+      newTaskEditSuggestions.push(action.payload);
+      return { ...state, newTaskEditSuggestions, count: newTaskEditSuggestions.length };
+    case "UPDATE_TASK_EDIT_SUGGESTION":
+      return { ...state, taskEditSuggestions: state.taskEditSuggestions.map(tes => tes._id === action.payload._id ? action.payload : tes) };
     default:
       return { ...state };
   }
