@@ -39,7 +39,6 @@ export const fetchTaskEditSuggestionCount = () => async (dispatch, getState) => 
 export const createOrUpdateTaskEditSuggestion = (taskId, userId, oldTask, updatedTask) => async (dispatch, getState) => {
   try {
     const response = await createOrUpdateTaskEditSuggestionHTTP(taskId, userId, oldTask, updatedTask);
-    console.log(response);
     if (response.data.lastErrorObject.updatedExisting === true) {
       dispatch(updateTaskEditSuggestion(response.data.value));
     } else if (response.data.lastErrorObject.updatedExisting === false) {
