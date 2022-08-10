@@ -54,7 +54,8 @@ class Timelog extends Component {
     this.handleSearch = this.handleSearch.bind(this);
     this.openInfo = this.openInfo.bind(this);
     this.data = {
-      disabled: !hasPermission(this.props.auth.user.role, 'disabledDataTimelog') ? false : true
+      disabled: !hasPermission(this.props.auth.user.role, 'disabledDataTimelog') ? false : true,
+      isTangible: false,
     };
     this.userProfile = this.props.userProfile;
   }
