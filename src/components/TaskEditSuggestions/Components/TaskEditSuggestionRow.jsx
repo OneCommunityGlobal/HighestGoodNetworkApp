@@ -7,7 +7,7 @@ export const TaskEditSuggestionRow = ({taskEditSuggestion, handleToggleTaskEditS
     <tr onClick={() => handleToggleTaskEditSuggestionModal(taskEditSuggestion)}>
       <td>{datetimeToDate(taskEditSuggestion.dateSuggested)}</td>
       <td>{taskEditSuggestion.user}</td>
-      <td>{<Link to={`/wbs/tasks/${taskEditSuggestion.oldTask.wbsId}/${taskEditSuggestion.oldTask.projectId}/${taskEditSuggestion.oldTask._id}`}>{taskEditSuggestion.oldTask.taskName}</Link>}</td>
+      <td>{<Link to={`/wbs/tasks/${taskEditSuggestion.wbsId}/${taskEditSuggestion.projectId}/${taskEditSuggestion.taskId}`}>{taskEditSuggestion.oldTask.taskName}</Link>}</td>
     </tr>
   );
 }
