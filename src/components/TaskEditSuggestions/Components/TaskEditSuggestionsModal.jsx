@@ -4,10 +4,12 @@ import { resourcesToString, booleanToString, numberToString, arrayToString, trim
 import DiffedText from 'components/TeamMemberTasks/components/DiffedText';
 import { useDispatch } from 'react-redux';
 import { rejectTaskEditSuggestion } from '../thunks';
+import { updateTask } from 'actions/task';
 
 export const TaskEditSuggestionsModal = ({isTaskEditSuggestionModalOpen, taskEditSuggestion, handleToggleTaskEditSuggestionModal}) => {
 
   const dispatch = useDispatch();
+  console.log(taskEditSuggestion);
 
   return (
     <Modal size="xl" isOpen={isTaskEditSuggestionModalOpen} toggle={() => handleToggleTaskEditSuggestionModal()}>
@@ -148,7 +150,11 @@ export const TaskEditSuggestionsModal = ({isTaskEditSuggestionModalOpen, taskEdi
     <ModalFooter>
       <Row>
         <Col>
-          <Button color="success">
+          <Button color="success" onClick={() => {
+            dispatch(updateTask(taskEditSuggestion.taskId, taskEditSuggestion.newTask, true));
+            dispatch(rejectTaskEditSuggestion(taskEditSuggestion._id));
+            handleToggleTaskEditSuggestionModal();
+          }}>
             Approve
           </Button>
         </Col>
