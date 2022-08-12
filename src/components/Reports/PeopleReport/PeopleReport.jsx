@@ -4,6 +4,7 @@ import './PeopleReport.css';
 import { Row, Col, Button, ToggleButton, ToggleButtonGroup, Dropdown, DropdownButton } from 'react-bootstrap'
 //import { Label, Input, Form } from 'reactstrap'
 import { connect } from 'react-redux'
+import { FiUser } from 'react-icons/fi';
 import { getUserProfile, getUserTask } from '../../../actions/userProfile';
 import { getUserProjects } from '../../../actions/userProjects'
 import _, { lte } from 'lodash'
@@ -862,7 +863,12 @@ class PeopleReport extends Component {
     }
 
     const renderProfileInfo = () => (
-      <ReportPage.ReportHeader src={this.state.userProfile.profilePic} isActive={isActive} name={`${firstName} ${lastName}`}>
+      <ReportPage.ReportHeader
+        src={this.state.userProfile.profilePic}
+        avatar={this.state.userProfile.profilePic ? undefined : <FiUser />}
+        isActive={isActive}
+        name={`${firstName} ${lastName}`}
+      >
 
         <div className="stats">
           <div>
