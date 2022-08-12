@@ -4,14 +4,15 @@ import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { useDispatch, useSelector } from 'react-redux';
 import { Container } from 'reactstrap';
+import { FiBox } from 'react-icons/fi';
 import { getProjectDetail } from '../../../actions/project';
 import { fetchAllMembers } from '../../../actions/projectMembers';
 import { fetchAllWBS } from '../../../actions/wbs';
 import ProjectMemberTable from '../ProjectMemberTable';
-import { ReportHeader } from "../sharedComponents/ReportHeader";
-import '../../Teams/Team.css';
+import { ReportPage } from '../sharedComponents/ReportPage';
 import WbsTable from '../WbsTable';
 import { projectReportViewData } from './selectors';
+import '../../Teams/Team.css';
 
 export const ProjectReport = ({ match }) => {
 
@@ -31,24 +32,9 @@ export const ProjectReport = ({ match }) => {
   }, []);
 
   return (
-    <div>
-      <ReportHeader isActive={isActive}>
-        <h3>
-          {projectName}
-        </h3>
-      </ReportHeader>
-      <Container fluid className="bg--white py-3 mb-5">
+    <ReportPage renderProfile={() => <ReportPage.ReportHeader isActive={isActive} avatar={<FiBox />} name={projectName} />}>
+      <ReportPage.ReportBlock>
         <div className="container">
-          <DropdownButton id="dropdown-basic-button" title="Time Frame">
-            <Dropdown.Item href="#/action-1">Past Week</Dropdown.Item>
-            <Dropdown.Item href="#/action-2">Past Two Weeks</Dropdown.Item>
-            <Dropdown.Item href="#/action-3">Past Month</Dropdown.Item>
-            <Dropdown.Item href="#/action-4">Past 6 Months</Dropdown.Item>
-            <Dropdown.Item href="#/action-5">Past Year</Dropdown.Item>
-            <Dropdown.Item href="#/action-6" onClick={() => setShowDatePicker(!showDatePicker)}>
-              Custom range
-            </Dropdown.Item>
-          </DropdownButton>
           <div>
             {showDatePicker && (
               <div>
@@ -61,7 +47,7 @@ export const ProjectReport = ({ match }) => {
           <WbsTable wbs={wbs} />
           <ProjectMemberTable projectMembers={projectMembers} />
         </div>
-      </Container>
-    </div>
+      </ReportPage.ReportBlock>
+    </ReportPage>
   );
 };
