@@ -8,7 +8,7 @@ export const ReportHeader = ({ children, isActive, src, avatar }) => {
       <header className='report-header'>
         <div className='report-header-details'>
           <div className="report-header-profile-pic-wrapper">
-            {avatar ? avatar : <img src={src || '/pfp-default.png'} alt="Report profile picture" className="report-header-profile-pic" />}
+            {avatar ?? <img src={src || '/pfp-default.png'} alt="Report profile picture" className="report-header-profile-pic" />}
             <div className={classnames('report-header-activity', { active: isActive })} />
           </div>
           {children}
