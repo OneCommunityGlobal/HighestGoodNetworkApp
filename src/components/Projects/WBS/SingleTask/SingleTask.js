@@ -94,8 +94,8 @@ const SingleTask = (props) => {
               <td>{task.taskName}</td>
               <td>{task.priority}</td>
               <td className="desktop-view">
-                {task.resources
-                  ? task.resources.map((elem, i) => {
+                {task?.resources && 
+                  task.resources.map((elem, i) => {
                     try {
                       if (elem.profilePic) {
                         return (
@@ -124,7 +124,7 @@ const SingleTask = (props) => {
                       }
                     } catch (err) {}
                   })
-                : null}
+                }
               </td>
               <td>
                 {task.isAssigned ? (
