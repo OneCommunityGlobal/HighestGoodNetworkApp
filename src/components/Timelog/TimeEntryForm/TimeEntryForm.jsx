@@ -80,7 +80,7 @@ const TimeEntryForm = (props) => {
   const { userProfile, currentUserRole } = useSelector(getTimeEntryFormData);
 
   const dispatch = useDispatch();
- 
+
   const tangibleInfoToggle = (e) => {
     e.preventDefault();
     setTangibleInfoModalVisibleModalVisible(!isTangibleInfoModalVisible);
@@ -113,7 +113,7 @@ const TimeEntryForm = (props) => {
     axios
       .get(ENDPOINTS.TASKS_BY_USERID(userId))
       .then((res) => {
-        setTasks(res?.data || []); 
+        setTasks(res?.data || []);
       })
       .catch(err => console.log(err));
   }, []);
@@ -381,8 +381,6 @@ const TimeEntryForm = (props) => {
     if (closed === true && isOpen) toggle();
   };
 
-  // console.log('isTangible', data.isTangible == inputs.isTangible);
-
   return (
     <>
       <TangibleInfoModal
@@ -406,25 +404,12 @@ const TimeEntryForm = (props) => {
         <ModalHeader toggle={toggle}>
           <div>
             {edit ? 'Edit ' : 'Add '}
-            {hasPermission(currentUserRole, 'adminLinks') ? (
-              inputs.isTangible ? (
-                <span style={{ color: 'blue' }}>Tangible </span>
-              ) : (
-                <span style={{ color: 'orange' }}>Intangible </span>
-              )
-              ) : (
-              inputs.isTangible ? (
-                <span style={{ color: 'blue' }}>Tangible </span>
-              ) : (
-                <span style={{ color: 'orange' }}>Intangible </span>
-              )
-              )}  
-              {/* {inputs.isTangible ? (
-                <span style={{ color: 'blue' }}>Tangible </span>
-              ) : (
-                <span style={{ color: 'orange' }}>Intangible </span>
-              )} */}
-              Time Entry <i
+            {inputs.isTangible ? (
+              <span style={{ color: 'blue' }}>Tangible </span>
+            ) : (
+              <span style={{ color: 'orange' }}>Intangible </span>
+            )}
+            Time Entry <i
               className="fa fa-info-circle"
               data-tip
               data-for="registerTip"
