@@ -1,6 +1,6 @@
 import React from 'react';
 import './reports.css';
-import TasksTable from './TasksTable';
+import { TasksTable } from './TasksTable';
 
 const WbsTable = (props) => {
   let WbsList = [];
