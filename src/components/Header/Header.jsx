@@ -46,14 +46,8 @@ export const Header = props => {
   useEffect(() => {
     if (props.auth.isAuthenticated) {
       props.getHeaderData(props.auth.user.userid);
-      props.getTimerData(props.auth.user.userid);
     }
   }, []);
-
-  // useEffect(() => {
-  //   props.getHeaderData(props.auth.user.userid);
-  //   props.getTimerData(props.auth.user.userid);
-  // }, [props.auth]);
 
   const toggle = () => {
     setIsOpen(prevIsOpen => !prevIsOpen);
@@ -117,49 +111,49 @@ export const Header = props => {
                 </NavLink>
               </NavItem>
               {(hasPermission(user.role, 'seeUserManagement') ||
-              hasPermission(user.role, 'seeBadgeManagement') ||
-              hasPermission(user.role, 'seeProjectManagement') ||
-              hasPermission(user.role, 'seeTeamsManagement') ||
-              hasPermission(user.role, 'seePopupManagement')) && (
-              <UncontrolledDropdown nav inNavbar>
-                <DropdownToggle nav caret>
-                  {OTHER_LINKS}
-                </DropdownToggle>
-                <DropdownMenu>
-                  {hasPermission(user.role, 'seeUserManagement') ? (
-                    <DropdownItem tag={Link} to="/usermanagement">
-                      {USER_MANAGEMENT}
-                    </DropdownItem>
-                  ) : (
-                    <React.Fragment></React.Fragment>
-                  )}
-                  {hasPermission(user.role, 'seeBadgeManagement') ? (
-                    <DropdownItem tag={Link} to="/badgemanagement">
-                      {BADGE_MANAGEMENT}
-                    </DropdownItem>
-                  ) : (
-                    <React.Fragment></React.Fragment>
-                  )}
-                  {hasPermission(user.role, 'seeProjectManagement') && (
-                    <DropdownItem tag={Link} to="/projects">
-                      {PROJECTS}
-                    </DropdownItem>
-                  )}
-                  {hasPermission(user.role, 'seeTeamsManagement') && (
-                    <DropdownItem tag={Link} to="/teams">
-                      {TEAMS}
-                    </DropdownItem>
-                  )}
-                  {hasPermission(user.role, 'seePopupManagement') ? (
-                    <>
-                      <DropdownItem divider />
-                      <DropdownItem tag={Link} to={`/admin/`}>
-                        {POPUP_MANAGEMENT}
+                hasPermission(user.role, 'seeBadgeManagement') ||
+                hasPermission(user.role, 'seeProjectManagement') ||
+                hasPermission(user.role, 'seeTeamsManagement') ||
+                hasPermission(user.role, 'seePopupManagement')) && (
+                <UncontrolledDropdown nav inNavbar>
+                  <DropdownToggle nav caret>
+                    {OTHER_LINKS}
+                  </DropdownToggle>
+                  <DropdownMenu>
+                    {hasPermission(user.role, 'seeUserManagement') ? (
+                      <DropdownItem tag={Link} to="/usermanagement">
+                        {USER_MANAGEMENT}
                       </DropdownItem>
-                    </>
-                  ) : null}
-                </DropdownMenu>
-              </UncontrolledDropdown>
+                    ) : (
+                      <React.Fragment></React.Fragment>
+                    )}
+                    {hasPermission(user.role, 'seeBadgeManagement') ? (
+                      <DropdownItem tag={Link} to="/badgemanagement">
+                        {BADGE_MANAGEMENT}
+                      </DropdownItem>
+                    ) : (
+                      <React.Fragment></React.Fragment>
+                    )}
+                    {hasPermission(user.role, 'seeProjectManagement') && (
+                      <DropdownItem tag={Link} to="/projects">
+                        {PROJECTS}
+                      </DropdownItem>
+                    )}
+                    {hasPermission(user.role, 'seeTeamsManagement') && (
+                      <DropdownItem tag={Link} to="/teams">
+                        {TEAMS}
+                      </DropdownItem>
+                    )}
+                    {hasPermission(user.role, 'seePopupManagement') ? (
+                      <>
+                        <DropdownItem divider />
+                        <DropdownItem tag={Link} to={`/admin/`}>
+                          {POPUP_MANAGEMENT}
+                        </DropdownItem>
+                      </>
+                    ) : null}
+                  </DropdownMenu>
+                </UncontrolledDropdown>
               )}
               <NavItem>
                 <NavLink tag={Link} to={`/userprofile/${user.userid}`}>
@@ -186,7 +180,7 @@ export const Header = props => {
                     {UPDATE_PASSWORD}
                   </DropdownItem>
                   <DropdownItem divider />
-                  <DropdownItem tag={Link} to='/#' onClick={openModal}>
+                  <DropdownItem tag={Link} to="/#" onClick={openModal}>
                     {LOGOUT}
                   </DropdownItem>
                 </DropdownMenu>

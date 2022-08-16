@@ -1,171 +1,230 @@
-import React, { useState, useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import React, { useState, useEffect, useCallback } from 'react';
+import { useSelector } from 'react-redux';
 import { Badge, Button } from 'reactstrap';
-import { startTimer, pauseTimer, updateTimer, getTimerData } from '../../actions/timer';
+import useWindowFocus from '../../hooks/useWindowFocus';
+import useInterval from '../../hooks/useInterval';
 import TimeEntryForm from '../Timelog/TimeEntryForm';
+import {
+  GET_TIMER,
+  PAUSE_TIMER,
+  START_TIMER,
+  STOP_TIMER,
+  useWebsocketMessage,
+  client,
+} from '../../services/timerService';
+
 import './Timer.css';
-import axios from 'axios';
-import { ENDPOINTS } from '../../utils/URL';
 
-const Timer = () => {
-  const data = {
-    disabled: window.screenX <= 500,
-    isTangible: true,
-    //isTangible: window.screenX > 500
-    //How does the screen position of the element influence tangability?
-    //This has been changed as part of a hotfix.
-  };
-  const userId = useSelector((state) => state.auth.user.userid);
-  const userProfile = useSelector((state) => state.auth.user);
-  const pausedAt = useSelector((state) => state.timer?.seconds);
-  const isWorking = useSelector((state) => state.timer?.isWorking);
-  const dispatch = useDispatch();
-  const alert = {
-    va: true,
-  };
-  const [seconds, setSeconds] = useState(isNaN(pausedAt) ? 0 : pausedAt);
-  const [isActive, setIsActive] = useState(false);
+function Timer() {
+  const userId = useSelector(state => state.auth.user.userid);
+  const userProfile = useSelector(state => state.auth.user);
+  const [startedAt, setStartedAt] = useState(0);
+  const [seconds, setSeconds] = useState(0);
+  const [startingSeconds, setStartingSeconds] = useState(0);
+  const [isRunning, setIsRunning] = useState(false);
+  const [isApplicationPaused, setIsApplicationPaused] = useState(false);
+  const [isUserPaused, setIsUserPaused] = useState(false);
   const [modal, setModal] = useState(false);
-  let intervalSec = null;
-  let intervalMin = null;
-  let intervalThreeMin = null;
+  const [isConnected, setIsConnected] = useState(client.isConnected());
 
-  const toggle = () => setModal((modal) => !modal);
+  const isWindowFocused = useWindowFocus();
+  const message = useWebsocketMessage();
 
-  const reset = async () => {
-    setSeconds(0);
-    const status = await pauseTimer(userId, 0);
-    if (status === 200 || status === 201) {
-      setIsActive(false);
-    }
-  };
-  const handleStart = async () => {
-    await dispatch(getTimerData(userId));
-
-    const status = await startTimer(userId, seconds);
-    if ([9, 200, 2001].includes(status)) {
-      setIsActive(true);
-    }
-
-    let maxtime = null;
-
-    if (seconds === 0 && alert.va) {
-      maxtime = setInterval(handleStop, 36000900);
-      alert.va = !alert.va;
-    } else {
-      clearInterval(maxtime);
-    }
-  };
-
-  const handleUpdate = async () => {
-    try {
-      const status = await updateTimer(userId);
-      if (status === 9) {
-        setIsActive(false);
-      }
-      await dispatch(getTimerData(userId));
-    } catch (e) {}
-  };
-
-  const handlePause = async () => {
-    await dispatch(getTimerData(userId));
-    const status = await pauseTimer(userId, seconds);
-    if (status === 200 || status === 201) {
-      setIsActive(false);
-      return true;
-    }
-    return false;
-  };
-
-  const handleStop = () => {
-    toggle();
-  };
-
-  useEffect(() => {
-    const fetchSeconds = async () => {
-      try {
-        const res = await axios.get(ENDPOINTS.TIMER(userId));
-        if (res.status === 200) {
-          setSeconds(res.data?.seconds || 0);
-          setIsActive(res.data.isWorking);
-        } else {
-          setSeconds(isNaN(pausedAt) ? 0 : pausedAt);
-        }
-      } catch {
-        setSeconds(isNaN(pausedAt) ? 0 : pausedAt);
-      }
-    };
-
-    fetchSeconds();
-  }, [pausedAt]);
-
-  useEffect(() => {
-    try {
-      setIsActive(isWorking);
-    } catch {}
-  }, [isWorking]);
-
-  useEffect(() => {
-    if (isActive) {
-      if (intervalThreeMin) {
-        clearInterval(intervalThreeMin);
-      }
-      intervalSec = setInterval(() => {
-        setSeconds((seconds) => seconds + 1);
-      }, 1000);
-
-      intervalMin = setInterval(handleUpdate, 60000);
-    } else if (!isActive && seconds !== 0) {
-      clearInterval(intervalSec);
-      clearInterval(intervalMin);
-      if (intervalThreeMin) {
-        clearInterval(intervalThreeMin);
-      }
-      //handles restarting timer if you restart it in another tab
-      intervalThreeMin = setInterval(handleUpdate, 1800000);
-    } else {
-      clearInterval(intervalSec);
-      clearInterval(intervalMin);
-      if (intervalThreeMin) {
-        clearInterval(intervalThreeMin);
-      }
-      //handles restarting timer if you restart it in another tab
-      intervalThreeMin = setInterval(handleUpdate, 1800000);
-    }
-    return () => {
-      clearInterval(intervalSec);
-      clearInterval(intervalMin);
-      if (intervalThreeMin) {
-        clearInterval(intervalThreeMin);
-      }
-    };
-  }, [isActive]);
-
+  // Calculate time to readable format
   const hours = Math.floor(seconds / 3600);
   const minutes = Math.floor((seconds % 3600) / 60);
   const secondsRemainder = seconds % 60;
+  const data = {
+    disabled: window.screenX <= 500,
+    isTangible: true,
+    seconds,
+    isRunning,
+  };
+
+  /**
+   * If window is not focused,
+   * we should pause the timer
+   * for the user.
+   */
+  useEffect(() => {
+    if (isConnected) {
+      if (!isWindowFocused && !isUserPaused && isRunning) {
+        client
+          .getClient()
+          .send(
+            PAUSE_TIMER({ isUserPaused: false, isApplicationPaused: true, saveTimerData: false }),
+          );
+      } else if (isApplicationPaused) {
+        client.getClient().send(START_TIMER({ restartTimerWithSync: true }));
+      }
+    }
+  }, [isWindowFocused]);
+
+  // Toggle modal to open
+  const handleStop = useCallback(() => setModal(previousModal => !previousModal), []);
+
+  /**
+   * Checking websocket connection -
+   *
+   * If the connection fails, the UI will update accordingly.
+   */
+  useEffect(() => client.onStateChange(setIsConnected), [setIsConnected]);
+
+  /**
+   * Checking websocket connection -
+   *
+   * When we gain connection we will re-sync the timer
+   * against the backend server
+   */
+  useEffect(() => {
+    if (isConnected) {
+      client.getClient().send(GET_TIMER);
+    }
+  }, [isConnected]);
+
+  useEffect(() => {
+    if (message) {
+      const {
+        seconds: secondsFromBackend,
+        startedAtInSeconds: startedAtInSecondsFromBackend,
+        isRunning: isRunningFromBackend,
+        isUserPaused: isUserPausedFromBackend,
+        isApplicationPaused: isApplicationPausedFromBackend,
+      } = message;
+
+      if (isUserPaused && !isRunningFromBackend) {
+        setIsRunning(isRunningFromBackend);
+        setIsUserPaused(isUserPausedFromBackend);
+        setIsApplicationPaused(isApplicationPausedFromBackend);
+        return;
+      }
+
+      setIsRunning(isRunningFromBackend);
+      setIsUserPaused(isUserPausedFromBackend);
+      setIsApplicationPaused(isApplicationPausedFromBackend);
+
+      if (isWindowFocused && isApplicationPausedFromBackend) {
+        client.getClient().send(START_TIMER({ restartTimerWithSync: true }));
+      }
+
+      if (isRunningFromBackend && !isUserPausedFromBackend && !isApplicationPausedFromBackend) {
+        /**
+         * Calculate timer from when timer was
+         * started in timer service against local
+         * time and add seconds from database
+         * */
+        const currentTimeInSeconds = new Date().getTime() / 1000;
+        const currentTime =
+          currentTimeInSeconds - startedAtInSecondsFromBackend + secondsFromBackend;
+
+        // Set when started from database to be used in future calculation
+        setStartedAt(startedAtInSecondsFromBackend);
+
+        // Set current seconds to timer
+        setSeconds(Math.floor(currentTime));
+
+        // Set initial seconds received from timer
+        setStartingSeconds(secondsFromBackend);
+      }
+
+      if (!isRunningFromBackend && (isUserPausedFromBackend || isApplicationPausedFromBackend)) {
+        setSeconds(Math.floor(secondsFromBackend));
+        setStartedAt(startedAtInSecondsFromBackend);
+
+        // Calculation is done from backend already, so we can set this to 0.
+        setStartingSeconds(0);
+      }
+
+      // Timer was reset
+      if (!isRunningFromBackend && !isUserPausedFromBackend && !isApplicationPausedFromBackend) {
+        setSeconds(secondsFromBackend);
+        setStartedAt(0);
+        setStartingSeconds(0);
+      }
+    }
+  }, [message]);
+
+  // Start the timer
+  const startTimer = () => {
+    if (isConnected) {
+      client.getClient().send(START_TIMER({ restartTimerWithSync: false }));
+    }
+  };
+
+  // Pause the timer
+  const pauseTimer = () => {
+    if (isConnected) {
+      client.getClient().send(PAUSE_TIMER({ isUserPaused: true, isApplicationPaused: false }));
+    }
+  };
+
+  // Reset the timer
+  const resetTimer = () => {
+    if (isConnected) {
+      client.getClient().send(STOP_TIMER);
+    }
+  };
+
+  /**
+   * This is how we update the UI
+   * to reflect an accurate time
+   */
+  useInterval(() => {
+    if (isRunning && !isUserPaused && !isApplicationPaused && startedAt !== 0 && isConnected) {
+      /**
+       * How do we calculate time?
+       *
+       * We take the current time right now and
+       * take the difference between the time
+       * when the timer started in the server
+       * and add that with the starting seconds
+       */
+      const currentTimeInSeconds = new Date().getTime() / 1000;
+      const currentTime = Math.floor(currentTimeInSeconds - startedAt + startingSeconds);
+
+      // Set to UI
+      setSeconds(currentTime);
+    }
+  }, 1000);
+
+  const padZero = number => `0${number}`.slice(-2);
 
   return (
     <div style={{ zIndex: 2 }} className="timer">
-      <Button onClick={reset} color="secondary" className="mr-1 align-middle">
+      <Button
+        onClick={resetTimer}
+        color="secondary"
+        className="mr-1 align-middle"
+        disabled={seconds === 0 || !isConnected}
+      >
         Clear
       </Button>
-      <Badge className="mr-1 align-middle">
-        {hours}:{padZero(minutes)}:{padZero(secondsRemainder)}
-      </Badge>
+
+      {isConnected ? (
+        <Badge className="mr-1 align-middle">
+          {hours}:{padZero(minutes)}:{padZero(secondsRemainder)}
+        </Badge>
+      ) : (
+        <Badge className="mr-1 align-middle">
+          <span className="visually-hidden">Loading...</span>
+        </Badge>
+      )}
+
       <div className="button-container">
         <Button
           id="start"
-          onClick={isActive ? handlePause : handleStart}
-          color={isActive ? 'primary' : 'success'}
+          onClick={isRunning ? pauseTimer : startTimer}
+          color="primary"
           className="ml-xs-1 align-middle start-btn"
+          disabled={!isConnected || isApplicationPaused}
         >
-          {isActive ? 'Pause' : 'Start'}
+          {isRunning ? 'Pause' : 'Start'}
         </Button>
         <Button
           onClick={seconds !== 0 ? handleStop : null}
           color="danger"
           className="ml-1 align-middle"
+          disabled={seconds === 0 || !isConnected}
         >
           Stop
         </Button>
@@ -174,18 +233,16 @@ const Timer = () => {
         <TimeEntryForm
           edit={false}
           userId={userId}
-          toggle={toggle}
-          isOpen={true}
+          toggle={handleStop}
+          isOpen
           timer={{ hours, minutes }}
           data={data}
           userProfile={userProfile}
-          resetTimer={reset}
+          resetTimer={resetTimer}
         />
       )}
     </div>
   );
-};
-
-const padZero = (number) => `0${number}`.slice(-2);
+}
 
 export default Timer;

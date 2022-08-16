@@ -65,6 +65,8 @@ export const ENDPOINTS = {
   TIMEZONE_KEY: `${APIEndpoint}/timezone`,
   GEOCODE_URI: (location, key) =>
     `${GeocodeAPIEndpoint}?key=${key}&q=${encodeURIComponent(location)}&pretty=1&limit=1`,
+  
+  TIMER_SERVICE: `${APIEndpoint.replace('http:', 'wss:').replace('api', 'timer-service')}`,
 };
 
 export const ApiEndpoint = APIEndpoint;

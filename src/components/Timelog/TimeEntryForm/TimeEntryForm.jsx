@@ -18,16 +18,16 @@ import moment from 'moment-timezone';
 import _ from 'lodash';
 import { Editor } from '@tinymce/tinymce-react';
 import ReactTooltip from 'react-tooltip';
+import { getUserProfile } from 'actions/userProfile';
+import axios from 'axios';
+import hasPermission from 'utils/permissions';
 import { postTimeEntry, editTimeEntry } from '../../../actions/timeEntries';
 import { getUserProjects } from '../../../actions/userProjects';
-import { getUserProfile } from 'actions/userProfile';
 import { stopTimer } from '../../../actions/timer';
 import AboutModal from './AboutModal';
 import TangibleInfoModal from './TangibleInfoModal';
 import ReminderModal from './ReminderModal';
-import axios from 'axios';
 import { ENDPOINTS } from '../../../utils/URL';
-import hasPermission from 'utils/permissions';
 import { getTimeEntryFormData } from './selectors';
 
 /**
@@ -44,8 +44,10 @@ import { getTimeEntryFormData } from './selectors';
  * @param {function} props.resetTimer
  * @returns
  */
-const TimeEntryForm = (props) => {
-  const { userId, edit, data, isOpen, toggle, timer, resetTimer } = props;
+function TimeEntryForm(props) {
+  const {
+    userId, edit, data, isOpen, toggle, timer, resetTimer,
+  } = props;
 
   const initialFormValues = {
     dateOfWork: moment()
@@ -60,7 +62,7 @@ const TimeEntryForm = (props) => {
 
   const initialReminder = {
     notification: false,
-    hasLink: data && data.notes && data.notes.includes('http') ? true : false,
+    hasLink: !!(data && data.notes && data.notes.includes('http')),
     remind: '',
     wordCount: data && data.notes && data.notes.split(' ').length > 10 ? 10 : 0,
     editNotice: true,
@@ -80,19 +82,19 @@ const TimeEntryForm = (props) => {
   const { userProfile, currentUserRole } = useSelector(getTimeEntryFormData);
 
   const dispatch = useDispatch();
- 
+
   const tangibleInfoToggle = (e) => {
     e.preventDefault();
     setTangibleInfoModalVisibleModalVisible(!isTangibleInfoModalVisible);
   };
 
   useEffect(() => {
-    //this to make sure that the form is cleared before closing
+    // this to make sure that the form is cleared before closing
     if (close && inputs.projectId == '') {
-      //double make sure close is set to false to stop form from reclosing on open
+      // double make sure close is set to false to stop form from reclosing on open
       setClose(false);
       setClose((close) => {
-        setTimeout(function myfunc() {
+        setTimeout(() => {
           toggle();
         }, 100);
         return false;
@@ -106,23 +108,22 @@ const TimeEntryForm = (props) => {
       .then((res) => {
         setProjects(res?.data?.projects || []);
       })
-      .catch(err => console.log(err));
+      .catch((err) => console.log(err));
   }, []);
 
   useEffect(() => {
     axios
       .get(ENDPOINTS.TASKS_BY_USERID(userId))
       .then((res) => {
-        setTasks(res?.data || []); 
+        setTasks(res?.data || []);
       })
-      .catch(err => console.log(err));
+      .catch((err) => console.log(err));
   }, []);
 
-  const openModal = () =>
-    setReminder((reminder) => ({
-      ...reminder,
-      notification: !reminder.notification,
-    }));
+  const openModal = () => setReminder((reminder) => ({
+    ...reminder,
+    notification: !reminder.notification,
+  }));
 
   const cancelChange = () => {
     setReminder(initialReminder);
@@ -161,7 +162,7 @@ const TimeEntryForm = (props) => {
     </option>
   ));
 
-  projectOrTaskOptions.push(taskOptions)
+  projectOrTaskOptions.push(taskOptions);
 
   const getEditMessage = () => {
     let editCount = 0;
@@ -169,7 +170,7 @@ const TimeEntryForm = (props) => {
       if (moment().tz('America/Los_Angeles').diff(item.date, 'days') <= 365) {
         editCount += 1;
       }
-    })
+    });
     return `If you edit your time entries 5 times or more within the span of a year, you will be issued a blue square on the 5th time.
     You will receive an additional blue square for each edit beyond the 5th.
     Currently, you have edited your time entries ${editCount} times within the last 365 days.
@@ -240,7 +241,7 @@ const TimeEntryForm = (props) => {
   };
 
   const handleSubmit = async (event) => {
-    //Validation and variable initialization
+    // Validation and variable initialization
     if (event) event.preventDefault();
     if (isSubmitting) return;
 
@@ -250,7 +251,7 @@ const TimeEntryForm = (props) => {
 
     if (!validateForm(isTimeModified)) return;
 
-    //Construct the timeEntry object
+    // Construct the timeEntry object
     const timeEntry = {
       personId: userId,
       dateOfWork: inputs.dateOfWork,
@@ -266,7 +267,7 @@ const TimeEntryForm = (props) => {
       timeEntry.timeSpent = `${hours}:${minutes}:00`;
     }
 
-    //Send the time entry to the server
+    // Send the time entry to the server
     setSubmitting(true);
 
     let timeEntryStatus;
@@ -288,12 +289,11 @@ const TimeEntryForm = (props) => {
       return;
     }
 
-    //Clear the form and clean up.
+    // Clear the form and clean up.
     if (fromTimer) {
-      const timerStatus = await dispatch(stopTimer(userId));
-      if (timerStatus === 200 || timerStatus === 201) {
+      try {
         resetTimer();
-      } else {
+      } catch (e) {
         alert(
           'Your time entry was successfully recorded, but an error occurred while asking the server to reset your timer. There is no need to submit your hours a second time, and doing so will result in a duplicate time entry.',
         );
@@ -412,19 +412,20 @@ const TimeEntryForm = (props) => {
               ) : (
                 <span style={{ color: 'orange' }}>Intangible </span>
               )
-              ) : (
+            ) : (
               inputs.isTangible ? (
                 <span style={{ color: 'blue' }}>Tangible </span>
               ) : (
                 <span style={{ color: 'orange' }}>Intangible </span>
               )
-              )}  
-              {/* {inputs.isTangible ? (
+            )}
+            {/* {inputs.isTangible ? (
                 <span style={{ color: 'blue' }}>Tangible </span>
               ) : (
                 <span style={{ color: 'orange' }}>Intangible </span>
               )} */}
-              Time Entry <i
+            Time Entry
+            <i
               className="fa fa-info-circle"
               data-tip
               data-for="registerTip"
@@ -585,7 +586,7 @@ const TimeEntryForm = (props) => {
       </Modal>
     </>
   );
-};
+}
 
 TimeEntryForm.propTypes = {
   edit: PropTypes.bool.isRequired,
