@@ -16,9 +16,17 @@
   display: inline-block;
 }
 
+.timerWrapper {
+  display: flex;
+  flex-direction: column;
+}
+
 @media (min-width: 1550px) {
   .timer {
     display: flex;
+  }
+
+  .timerWrapper {
     margin-left: 40%;
   }
 }

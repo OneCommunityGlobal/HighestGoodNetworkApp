@@ -14,6 +14,7 @@ import {
 } from '../../services/timerService';
 
 import './Timer.css';
+import { useMemo } from 'react';
 
 function Timer() {
   const userId = useSelector(state => state.auth.user.userid);
@@ -27,7 +28,7 @@ function Timer() {
   const [modal, setModal] = useState(false);
   const [isConnected, setIsConnected] = useState(client.isConnected());
 
-  const isWindowFocused = useWindowFocus();
+  const isPastMaxTime = useMemo(() => seconds >= 28800, [seconds]);
   const message = useWebsocketMessage();
 
   // Calculate time to readable format
@@ -40,25 +41,6 @@ function Timer() {
     seconds,
     isRunning,
   };
-
-  /**
-   * If window is not focused,
-   * we should pause the timer
-   * for the user.
-   */
-  useEffect(() => {
-    if (isConnected) {
-      if (!isWindowFocused && !isUserPaused && isRunning) {
-        client
-          .getClient()
-          .send(
-            PAUSE_TIMER({ isUserPaused: false, isApplicationPaused: true, saveTimerData: false }),
-          );
-      } else if (isApplicationPaused) {
-        client.getClient().send(START_TIMER({ restartTimerWithSync: true }));
-      }
-    }
-  }, [isWindowFocused]);
 
   // Toggle modal to open
   const handleStop = useCallback(() => setModal(previousModal => !previousModal), []);
@@ -103,8 +85,12 @@ function Timer() {
       setIsUserPaused(isUserPausedFromBackend);
       setIsApplicationPaused(isApplicationPausedFromBackend);
 
-      if (isWindowFocused && isApplicationPausedFromBackend) {
-        client.getClient().send(START_TIMER({ restartTimerWithSync: true }));
+      if (isApplicationPausedFromBackend) {
+        const shouldRestartTimer = sessionStorage.getItem('working-session-timer');
+
+        if (shouldRestartTimer && 28800 >= secondsFromBackend) {
+          client.getClient().send(START_TIMER({ restartTimerWithSync: true }));
+        }
       }
 
       if (isRunningFromBackend && !isUserPausedFromBackend && !isApplicationPausedFromBackend) {
@@ -125,6 +111,9 @@ function Timer() {
 
         // Set initial seconds received from timer
         setStartingSeconds(secondsFromBackend);
+
+        // Set session in browser
+        sessionStorage.setItem('working-session-timer', true);
       }
 
       if (!isRunningFromBackend && (isUserPausedFromBackend || isApplicationPausedFromBackend)) {
@@ -170,7 +159,14 @@ function Timer() {
    * to reflect an accurate time
    */
   useInterval(() => {
-    if (isRunning && !isUserPaused && !isApplicationPaused && startedAt !== 0 && isConnected) {
+    if (
+      isRunning &&
+      !isUserPaused &&
+      !isApplicationPaused &&
+      startedAt !== 0 &&
+      isConnected &&
+      !isPastMaxTime
+    ) {
       /**
        * How do we calculate time?
        *
@@ -184,63 +180,81 @@ function Timer() {
 
       // Set to UI
       setSeconds(currentTime);
+
+      // Edge Case, if user timer is approaching or at 8 hours we should pause.
+      if (currentTime >= 28800) {
+        client.getClient().send(PAUSE_TIMER({ isUserPaused: false, isApplicationPaused: true }));
+      }
     }
   }, 1000);
 
   const padZero = number => `0${number}`.slice(-2);
 
   return (
-    <div style={{ zIndex: 2 }} className="timer">
-      <Button
-        onClick={resetTimer}
-        color="secondary"
-        className="mr-1 align-middle"
-        disabled={seconds === 0 || !isConnected}
-      >
-        Clear
-      </Button>
-
-      {isConnected ? (
-        <Badge className="mr-1 align-middle">
-          {hours}:{padZero(minutes)}:{padZero(secondsRemainder)}
-        </Badge>
-      ) : (
-        <Badge className="mr-1 align-middle">
-          <span className="visually-hidden">Loading...</span>
-        </Badge>
+    <div className="timerWrapper">
+      {isPastMaxTime && (
+        <div class="alert alert-danger" role="alert">
+          Your timer is paused, you reached 8 hours please log your time.
+        </div>
       )}
-
-      <div className="button-container">
+      {!isPastMaxTime && isApplicationPaused && !sessionStorage.getItem('working-session-timer') && (
+        <div class="alert alert-warning" role="alert">
+          Your timer was paused since you left without pausing, please remember to pause or stop
+          timer when leaving.
+        </div>
+      )}
+      <div style={{ zIndex: 2 }} className="timer">
         <Button
-          id="start"
-          onClick={isRunning ? pauseTimer : startTimer}
-          color="primary"
-          className="ml-xs-1 align-middle start-btn"
-          disabled={!isConnected || isApplicationPaused}
-        >
-          {isRunning ? 'Pause' : 'Start'}
-        </Button>
-        <Button
-          onClick={seconds !== 0 ? handleStop : null}
-          color="danger"
-          className="ml-1 align-middle"
+          onClick={resetTimer}
+          color="secondary"
+          className="mr-1 align-middle"
           disabled={seconds === 0 || !isConnected}
         >
-          Stop
+          Clear
         </Button>
+
+        {isConnected ? (
+          <Badge className="mr-1 align-middle">
+            {hours}:{padZero(minutes)}:{padZero(secondsRemainder)}
+          </Badge>
+        ) : (
+          <Badge className="mr-1 align-middle">
+            <span className="visually-hidden">Loading...</span>
+          </Badge>
+        )}
+
+        <div className="button-container">
+          <Button
+            id="start"
+            onClick={isRunning ? pauseTimer : startTimer}
+            color="primary"
+            className="ml-xs-1 align-middle start-btn"
+            disabled={!isConnected || isPastMaxTime}
+          >
+            {isRunning ? 'Pause' : 'Start'}
+          </Button>
+          <Button
+            onClick={seconds !== 0 ? handleStop : null}
+            color="danger"
+            className="ml-1 align-middle"
+            disabled={seconds === 0 || !isConnected}
+          >
+            Stop
+          </Button>
+        </div>
+        {modal && (
+          <TimeEntryForm
+            edit={false}
+            userId={userId}
+            toggle={handleStop}
+            isOpen
+            timer={{ hours, minutes }}
+            data={data}
+            userProfile={userProfile}
+            resetTimer={resetTimer}
+          />
+        )}
       </div>
-      {modal && (
-        <TimeEntryForm
-          edit={false}
-          userId={userId}
-          toggle={handleStop}
-          isOpen
-          timer={{ hours, minutes }}
-          data={data}
-          userProfile={userProfile}
-          resetTimer={resetTimer}
-        />
-      )}
     </div>
   );
 }
