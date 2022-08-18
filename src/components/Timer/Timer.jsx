@@ -9,10 +9,10 @@ import {
   PAUSE_TIMER,
   START_TIMER,
   STOP_TIMER,
+  MAX_TIME_8_HOURS,
   useWebsocketMessage,
   client,
 } from '../../services/timerService';
-
 import './Timer.css';
 import { useMemo } from 'react';
 
@@ -28,21 +28,23 @@ function Timer() {
   const [modal, setModal] = useState(false);
   const [isConnected, setIsConnected] = useState(client.isConnected());
 
-  const isPastMaxTime = useMemo(() => seconds >= 28800, [seconds]);
   const message = useWebsocketMessage();
 
   // Calculate time to readable format
   const hours = Math.floor(seconds / 3600);
   const minutes = Math.floor((seconds % 3600) / 60);
-  const secondsRemainder = seconds % 60;
-  const data = {
+  const secondsRemainder = seconds % 60;  
+  const padZero = useCallback(number => `0${number}`.slice(-2), []);
+  
+  // Our max time allowed is 8 hours per timer
+  const isPastMaxTime = useMemo(() => seconds >= MAX_TIME_8_HOURS, [seconds]);
+  const data = useMemo(() => ({
     disabled: window.screenX <= 500,
     isTangible: true,
-    seconds,
-    isRunning,
-  };
+  }), []);
 
-  // Toggle modal to open
+
+  // This should open the timer entry form, and handle closing it as well
   const handleStop = useCallback(() => setModal(previousModal => !previousModal), []);
 
   /**
@@ -53,10 +55,9 @@ function Timer() {
   useEffect(() => client.onStateChange(setIsConnected), [setIsConnected]);
 
   /**
-   * Checking websocket connection -
-   *
-   * When we gain connection we will re-sync the timer
-   * against the backend server
+   * On first render when connected, we would like
+   * to get the timer to check if it is running and
+   * all the details around it.
    */
   useEffect(() => {
     if (isConnected) {
@@ -74,25 +75,36 @@ function Timer() {
         isApplicationPaused: isApplicationPausedFromBackend,
       } = message;
 
-      if (isUserPaused && !isRunningFromBackend) {
-        setIsRunning(isRunningFromBackend);
-        setIsUserPaused(isUserPausedFromBackend);
-        setIsApplicationPaused(isApplicationPausedFromBackend);
-        return;
-      }
-
       setIsRunning(isRunningFromBackend);
       setIsUserPaused(isUserPausedFromBackend);
       setIsApplicationPaused(isApplicationPausedFromBackend);
 
+      /** If we paused the timer ourselves, no need to gain new information from backend
+       * Note: This is only if this client pauses timer, but if another does we want that 
+       * information in our state.
+       */
+      if (isUserPaused && !isRunningFromBackend) {
+        return;
+      }
+
+      /**
+       * Cases: User closes tab or puts computer to sleep mode / refreshes
+       * 
+       * We would like to restart the timer only if the user refreshes.
+       * Otherwise we would like to keep it paused. We grab from session-storage
+       * since that makes the assumption the user refreshed.
+       */
       if (isApplicationPausedFromBackend) {
         const shouldRestartTimer = sessionStorage.getItem('working-session-timer');
 
-        if (shouldRestartTimer && 28800 >= secondsFromBackend) {
+        if (shouldRestartTimer && MAX_TIME_8_HOURS >= secondsFromBackend) {
           client.getClient().send(START_TIMER({ restartTimerWithSync: true }));
         }
       }
 
+      /**
+       * Cases: Timer is running and no pauses, sync with frontend
+       */
       if (isRunningFromBackend && !isUserPausedFromBackend && !isApplicationPausedFromBackend) {
         /**
          * Calculate timer from when timer was
@@ -112,11 +124,14 @@ function Timer() {
         // Set initial seconds received from timer
         setStartingSeconds(secondsFromBackend);
 
-        // Set session in browser
+        // Set session in browser, and will help determine if the user refreshes
         sessionStorage.setItem('working-session-timer', true);
       }
 
+      /** Cases: Timer was paused from another client and we are taking in the change */
       if (!isRunningFromBackend && (isUserPausedFromBackend || isApplicationPausedFromBackend)) {
+
+        // When user paused we saved based off of the original second difference calculation
         setSeconds(Math.floor(secondsFromBackend));
         setStartedAt(startedAtInSecondsFromBackend);
 
@@ -124,7 +139,7 @@ function Timer() {
         setStartingSeconds(0);
       }
 
-      // Timer was reset
+      /** Cases: Timer is reset or being cleared */
       if (!isRunningFromBackend && !isUserPausedFromBackend && !isApplicationPausedFromBackend) {
         setSeconds(secondsFromBackend);
         setStartedAt(0);
@@ -133,21 +148,18 @@ function Timer() {
     }
   }, [message]);
 
-  // Start the timer
   const startTimer = () => {
     if (isConnected) {
       client.getClient().send(START_TIMER({ restartTimerWithSync: false }));
     }
   };
 
-  // Pause the timer
   const pauseTimer = () => {
     if (isConnected) {
       client.getClient().send(PAUSE_TIMER({ isUserPaused: true, isApplicationPaused: false }));
     }
   };
 
-  // Reset the timer
   const resetTimer = () => {
     if (isConnected) {
       client.getClient().send(STOP_TIMER);
@@ -174,6 +186,7 @@ function Timer() {
        * take the difference between the time
        * when the timer started in the server
        * and add that with the starting seconds
+       * from any previous timer start / stops
        */
       const currentTimeInSeconds = new Date().getTime() / 1000;
       const currentTime = Math.floor(currentTimeInSeconds - startedAt + startingSeconds);
@@ -182,13 +195,11 @@ function Timer() {
       setSeconds(currentTime);
 
       // Edge Case, if user timer is approaching or at 8 hours we should pause.
-      if (currentTime >= 28800) {
+      if (currentTime >= MAX_TIME_8_HOURS) {
         client.getClient().send(PAUSE_TIMER({ isUserPaused: false, isApplicationPaused: true }));
       }
     }
   }, 1000);
-
-  const padZero = number => `0${number}`.slice(-2);
 
   return (
     <div className="timerWrapper">

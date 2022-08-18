@@ -1,6 +1,6 @@
 /* eslint-disable import/prefer-default-export */
 let APIEndpoint =
-  process.env.REACT_APP_APIENDPOINT || 'https://hgn-rest-beta.azurewebsites.net/api';
+  process.env.REACT_APP_APIENDPOINT || 'https://onecommunitytest.azurewebsites.net/api';
 let GeocodeAPIEndpoint = 'https://api.opencagedata.com/geocode/v1/json';
 
 export const ENDPOINTS = {
@@ -66,7 +66,7 @@ export const ENDPOINTS = {
   GEOCODE_URI: (location, key) =>
     `${GeocodeAPIEndpoint}?key=${key}&q=${encodeURIComponent(location)}&pretty=1&limit=1`,
   
-  TIMER_SERVICE: `${APIEndpoint.replace('http:', 'ws:').replace('api', 'timer-service')}`,
+  TIMER_SERVICE: `${APIEndpoint.replace('http', 'ws').replace('api', 'timer-service')}`,
 };
 
 export const ApiEndpoint = APIEndpoint;

@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { ENDPOINTS } from '../utils/URL';
 import config from '../config.json';
 
+export const MAX_TIME_8_HOURS = 28800;
 export const GET_TIMER = JSON.stringify({ intent: 'GET_TIMER' });
 export const START_TIMER = ({ restartTimerWithSync = false }) => JSON.stringify({ intent: 'START_TIMER', restartTimerWithSync });
 export const STOP_TIMER = JSON.stringify({ intent: 'STOP_TIMER' });
@@ -62,11 +63,11 @@ function initializeWebsocket(url) {
       stateChangeListeners.forEach((fn) => fn(false));
 
       if (!reconnectOnClose) {
-        console.log('ws closed by app');
         return;
       }
 
-      console.log('ws closed by server');
+      // Remove session since socket is closed
+      sessionStorage.removeItem('working-session-timer');
 
       setTimeout(start, 10000);
     };
