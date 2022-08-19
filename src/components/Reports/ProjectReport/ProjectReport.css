@@ -1,0 +1,8 @@
+.wbs-and-members-blocks-wrapper {
+  display: flex;
+  justify-content: space-between;
+}
+
+.wbs-and-members-blocks {
+  height: 450px;
+}

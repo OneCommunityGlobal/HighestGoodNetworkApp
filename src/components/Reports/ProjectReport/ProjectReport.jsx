@@ -10,18 +10,16 @@ import { fetchAllMembers } from '../../../actions/projectMembers';
 import { fetchAllWBS } from '../../../actions/wbs';
 import ProjectMemberTable from '../ProjectMemberTable';
 import { ReportPage } from '../sharedComponents/ReportPage';
+import { TasksTable } from '../TasksTable';
 import WbsTable from '../WbsTable';
 import { projectReportViewData } from './selectors';
 import '../../Teams/Team.css';
+import './ProjectReport.css';
 
 export const ProjectReport = ({ match }) => {
 
   const dispatch = useDispatch();
-  const { wbs, projectMembers, isActive, projectName, isLoading } = useSelector(projectReportViewData);
-
-  const [startDate, setStartDate] = useState('');
-  const [endDate, setEndDate] = useState('');
-  const [showDatePicker, setShowDatePicker] = useState(false);
+  const { wbs, projectMembers, isActive, projectName, wbsTasksID, isLoading } = useSelector(projectReportViewData);
 
   useEffect(() => {
     if (match) {
@@ -33,21 +31,17 @@ export const ProjectReport = ({ match }) => {
 
   return (
     <ReportPage renderProfile={() => <ReportPage.ReportHeader isActive={isActive} avatar={<FiBox />} name={projectName} />}>
-      <ReportPage.ReportBlock>
-        <div className="container">
-          <div>
-            {showDatePicker && (
-              <div>
-                From:{' '}
-                <DatePicker selected={startDate} onChange={(date) => setStartDate(date)} />
-                To: <DatePicker selected={endDate} onChange={(date) => setEndDate(date)} />
-              </div>
-            )}
-          </div>
+      <div className='wbs-and-members-blocks-wrapper'>
+        <ReportPage.ReportBlock className='wbs-and-members-blocks'>
           <WbsTable wbs={wbs} />
+        </ReportPage.ReportBlock>
+        <ReportPage.ReportBlock className='wbs-and-members-blocks'>
           <ProjectMemberTable projectMembers={projectMembers} />
-        </div>
+        </ReportPage.ReportBlock>
+      </div>
+      <ReportPage.ReportBlock>
+        <TasksTable WbsTasksID={wbsTasksID} />
       </ReportPage.ReportBlock>
-    </ReportPage>
+    </ReportPage >
   );
 };

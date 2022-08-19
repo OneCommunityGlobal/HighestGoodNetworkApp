@@ -91,6 +91,7 @@ export const TasksTable = ({ WbsTasksID }) => {
           <FilterOptions filterName={'classification'} />
           <FilterOptions filterName={'priority'} />
           <FilterOptions filterName={'status'} />
+          <FilterOptions filterName={'assignment'} />
           <input
             name="radio"
             type="radio"
@@ -107,23 +108,6 @@ export const TasksTable = ({ WbsTasksID }) => {
             onChange={() => setActive(false)}
           />
           InActive
-
-          <input
-            name="radio"
-            type="radio"
-            style={{ margin: '5px' }}
-            value="assigned"
-            onChange={() => setAssigned(true)}
-          />
-          Assign
-          <input
-            name="radio"
-            type="radio"
-            style={{ margin: '5px' }}
-            value="notassigned"
-            onChange={() => setAssigned(false)}
-          />
-          Not Assigned
 
           <button style={{ margin: '3px' }} exact className="btn btn-secondary btn-bg mt-3">
             Estimated Hours

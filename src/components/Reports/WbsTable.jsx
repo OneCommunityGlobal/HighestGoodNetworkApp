@@ -1,16 +1,10 @@
 import React from 'react';
 import './reports.css';
-import { TasksTable } from './TasksTable';
 
 const WbsTable = (props) => {
   let WbsList = [];
-  let WbsTasksID = [];
-  let tasksTable = [];
   if (props.wbs.fetched) {
     if (props.wbs.WBSItems.length > 0) {
-      for (var i = 0; i < props.wbs.WBSItems.length; i++) {
-        WbsTasksID.push(props.wbs.WBSItems[i]._id);
-      }
       WbsList = props.wbs.WBSItems.map((item, index) => (
         <tr id={'tr_' + item._id} key={item._id}>
           <th scope="row">
@@ -31,11 +25,6 @@ const WbsTable = (props) => {
           <td>{item._id}</td>
         </tr>
       ));
-      tasksTable = (
-        <table>
-          <TasksTable WbsTasksID={WbsTasksID} />
-        </table>
-      );
     }
   }
 
@@ -60,7 +49,6 @@ const WbsTable = (props) => {
           <tbody>{WbsList}</tbody>
         </table>
       </table>
-      {tasksTable}
     </div>
   );
 };
