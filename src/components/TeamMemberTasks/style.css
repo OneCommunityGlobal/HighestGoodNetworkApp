@@ -10,6 +10,11 @@
   color: red;
   cursor: pointer;
 }
+
+.comitted-hours-circle {
+  padding: 0.75rem;
+}
+
 .team-member-tasks .team-member-tasks-headers {
   vertical-align: middle;
 }
@@ -19,7 +24,7 @@
   text-align: center;
 }
 
-.team-task-hours {
+.team-task-progress {
   width: 35%;
 }
 
@@ -29,15 +34,18 @@
 
 .task-break:last-of-type {
   border-bottom: none;
-} 
+}
 
 .task-align {
   text-align: left;
 }
 
+.team-member-tasks-user-name {
+  width: 70%;
+}
+
 .team-clocks {
   display: flex;
-  justify-content: space-around;
 }
 
 .team-clocks-header {
@@ -65,4 +73,3 @@
   display: flex;
   justify-content: space-between;
 }
-

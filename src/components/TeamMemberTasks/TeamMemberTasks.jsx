@@ -17,7 +17,7 @@ import { getUserProfile } from '../../actions/userProfile';
 import './style.css';
 import { getcolor } from '../../utils/effortColors'
 import { fetchAllManagingTeams } from '../../actions/team';
-import  EffortBar  from '../../components/Timelog/EffortBar';
+import EffortBar from '../../components/Timelog/EffortBar';
 import TimeEntry from 'components/Timelog/TimeEntry';
 
 
@@ -114,28 +114,40 @@ const TeamMemberTasks = (props) => {
           <tr key={user.personId}>
             {/* green if member has met committed hours for the week, red if not */}
             <td>
-              <FontAwesomeIcon
-                style={{
-                  color: user.totaltangibletime_hrs >= user.weeklyComittedHours ? 'green' : 'red',
-                }}
-                icon={faCircle}
-              />
+              <div className='comitted-hours-circle'>
+                <FontAwesomeIcon
+                  style={{
+                    color: user.totaltangibletime_hrs >= user.weeklyComittedHours ? 'green' : 'red',
+                  }}
+                  icon={faCircle}
+                />
+              </div>
             </td>
             <td>
-              <Link to={`/userprofile/${user.personId}`}>{`${user.name}`}</Link>
-              {timeLogOpen ? (
-                <div>
-                  <EffortBar activeTab={0} projectsSelected={['all']} />
-                  <TimeEntry data={1} displayYear={0} userProfile={0} />
-                </div>
-              ) : (
-                ''
-              )}
-            </td>
-            <td className="team-clocks">
-              <u>{user.weeklyComittedHours ? user.weeklyComittedHours : 0}</u> /
-              <font color="green"> {Math.round(totalHoursLogged)}</font> /
-              <font color="red"> {Math.round(totalHoursRemaining)}</font>
+              <Table borderless className="team-member-tasks-subtable">
+                <tbody>
+                  <tr>
+                    <td className='team-member-tasks-user-name'>
+                      <Link to={`/userprofile/${user.personId}`}>{`${user.name}`}</Link>
+                    </td>
+                    <td className="team-clocks">
+                      <u>{user.weeklyComittedHours ? user.weeklyComittedHours : 0}</u> /
+                      <font color="green"> {Math.round(totalHoursLogged)}</font> /
+                      <font color="red"> {Math.round(totalHoursRemaining)}</font>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td colSpan={2}>
+                      {timeLogOpen && (
+                        <div>
+                          <EffortBar activeTab={0} projectsSelected={['all']} />
+                          <TimeEntry data={1} displayYear={0} userProfile={0} />
+                        </div>
+                      )}
+                    </td>
+                  </tr>
+                </tbody>
+              </Table>
             </td>
             <td>
               <Table borderless className="team-member-tasks-subtable">
@@ -146,7 +158,7 @@ const TeamMemberTasks = (props) => {
                         task.wbsId &&
                         task.projectId && (
                           <tr key={`${task._id}${index}`} className="task-break">
-                            <td className="task-align">
+                            <td>
                               <p>
                                 <Link
                                   to={
@@ -173,7 +185,7 @@ const TeamMemberTasks = (props) => {
                               </p>
                             </td>
                             {task.hoursLogged != null && task.estimatedHours != null && (
-                              <td className="team-task-hours">
+                              <td className="team-task-progress">
                                 <div>
                                   <span>
                                     {`${parseFloat(task.hoursLogged.toFixed(2))} 
@@ -285,28 +297,36 @@ const TeamMemberTasks = (props) => {
           <tr>
             {/* Empty column header for hours completed icon */}
             <th />
-            <th className="team-member-tasks-headers">Team Member</th>
-            <th className="team-member-tasks-headers team-clocks team-clocks-header">
-              <FontAwesomeIcon icon={faClock} title="Weekly Committed Hours" />
-              /
-              <FontAwesomeIcon
-                style={{ color: 'green' }}
-                icon={faClock}
-                title="Weekly Completed Hours"
-              />
-              /
-              <FontAwesomeIcon
-                style={{ color: 'red' }}
-                icon={faClock}
-                title="Total Remaining Hours"
-              />
+            <th className="team-member-tasks-headers">
+              <Table borderless className="team-member-tasks-subtable">
+                <thead>
+                  <tr>
+                    <th className="team-member-tasks-headers team-member-tasks-user-name">Team Member</th>
+                    <th className="team-member-tasks-headers team-clocks team-clocks-header">
+                      <FontAwesomeIcon icon={faClock} title="Weekly Committed Hours" />
+                      /
+                      <FontAwesomeIcon
+                        style={{ color: 'green' }}
+                        icon={faClock}
+                        title="Weekly Completed Hours"
+                      />
+                      /
+                      <FontAwesomeIcon
+                        style={{ color: 'red' }}
+                        icon={faClock}
+                        title="Total Remaining Hours"
+                      />
+                    </th>
+                  </tr>
+                </thead>
+              </Table>
             </th>
             <th className="team-member-tasks-headers">
               <Table borderless className="team-member-tasks-subtable">
                 <thead>
                   <tr>
                     <th>Tasks(s)</th>
-                    <th className="team-task-hours">Progress</th>
+                    <th className="team-task-progress">Progress</th>
                   </tr>
                 </thead>
               </Table>
