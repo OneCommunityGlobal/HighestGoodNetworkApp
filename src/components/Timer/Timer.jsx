@@ -125,7 +125,7 @@ function Timer() {
           currentTimeInSeconds - startedAtInSecondsFromBackend + secondsFromBackend;
 
         // Set when started from database to be used in future calculation
-        setStartedAt(startedAtInSecondsFromBackend);
+        setStartedAt(Math.floor(startedAtInSecondsFromBackend));
 
         // Set current seconds to timer
         setSeconds(Math.floor(currentTime));
@@ -142,7 +142,7 @@ function Timer() {
 
         // When user paused we saved based off of the original second difference calculation
         setSeconds(Math.floor(secondsFromBackend));
-        setStartedAt(startedAtInSecondsFromBackend);
+        setStartedAt(Math.floor(startedAtInSecondsFromBackend));
 
         // Calculation is done from backend already, so we can set this to 0.
         setStartingSeconds(0);
