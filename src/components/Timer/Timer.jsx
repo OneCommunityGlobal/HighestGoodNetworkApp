@@ -193,7 +193,7 @@ function Timer() {
        */
       const currentTimeInSeconds = new Date().getTime() / 1000;
       const currentTime = Math.floor(currentTimeInSeconds - startedAt + startingSeconds);
-
+      console.log("Timing calculation", { currentTime, currentTimeInSeconds, startedAt, startingSeconds, "CurrentTimeInSeconds - startedAt": currentTimeInSeconds - startedAt})
       // Set to UI
       setSeconds(currentTime);
 
@@ -202,7 +202,7 @@ function Timer() {
         client.getClient().send(PAUSE_TIMER({ isUserPaused: false, isApplicationPaused: true }));
       }
     }
-  }, isRunning ? 1000 : null);
+  }, (isRunning && isConnected) ? 1000 : null);
 
   return (
     <div className="timerWrapper">
