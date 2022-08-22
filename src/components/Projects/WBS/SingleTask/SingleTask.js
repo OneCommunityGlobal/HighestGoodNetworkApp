@@ -23,13 +23,15 @@ const SingleTask = (props) => {
       .catch(err => console.log(err));
   }, []);
 
+  console.log("current task is: ", task)
+
   return ( 
     <React.Fragment>
       <ReactTooltip />
       <div className="container-single-task">
         <nav aria-label="breadcrumb">
           <ol className="breadcrumb">
-            <NavItem tag={Link} to={`/project/wbs/{task.wbsId}`}>
+            <NavItem tag={Link} to={`/wbs/samefoldertasks/{task.wbsId}`}>
               <Button type="button" className="btn btn-secondary">
                 <i className="fa fa-chevron-circle-left" aria-hidden="true"></i>
               </Button>
