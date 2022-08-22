@@ -79,6 +79,15 @@ function Timer() {
       setIsUserPaused(isUserPausedFromBackend);
       setIsApplicationPaused(isApplicationPausedFromBackend);
 
+
+      /** Cases: Timer is reset or being cleared */
+      if (!isRunningFromBackend && !isUserPausedFromBackend && !isApplicationPausedFromBackend) {
+        setSeconds(secondsFromBackend);
+        setStartedAt(0);
+        setStartingSeconds(0);
+        return;
+      }
+
       /** If we paused the timer ourselves, no need to gain new information from backend
        * Note: This is only if this client pauses timer, but if another does we want that 
        * information in our state.
@@ -136,13 +145,6 @@ function Timer() {
         setStartedAt(startedAtInSecondsFromBackend);
 
         // Calculation is done from backend already, so we can set this to 0.
-        setStartingSeconds(0);
-      }
-
-      /** Cases: Timer is reset or being cleared */
-      if (!isRunningFromBackend && !isUserPausedFromBackend && !isApplicationPausedFromBackend) {
-        setSeconds(secondsFromBackend);
-        setStartedAt(0);
         setStartingSeconds(0);
       }
     }
