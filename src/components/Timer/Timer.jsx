@@ -172,7 +172,8 @@ function Timer() {
    * This is how we update the UI
    * to reflect an accurate time
    */
-  useInterval(() => {
+  useInterval(() => {      
+    console.log("Running timer...", {isRunning, isUserPaused, isApplicationPaused, startedAt, isConnected, isPastMaxTime})
     if (
       isRunning &&
       !isUserPaused &&
@@ -201,7 +202,7 @@ function Timer() {
         client.getClient().send(PAUSE_TIMER({ isUserPaused: false, isApplicationPaused: true }));
       }
     }
-  }, 1000);
+  }, isRunning ? 1000 : null);
 
   return (
     <div className="timerWrapper">
