@@ -4,7 +4,7 @@ import { useDispatch } from 'react-redux';
 import { rejectTaskEditSuggestion } from '../thunks';
 import { updateTask } from 'actions/task';
 import { TaskEditSuggestionModalBodyView } from './TaskEditSuggestionModalBodyView';
-import { TaskEditSuggestionModalBodyEdit } from './TaskEditSuggestionModalBodyEdit';
+import { TaskEditSuggestionModalBodyEdit } from './TaskEditSuggestionModalBodyEdit/TaskEditSuggestionModalBodyEdit';
 
 export const TaskEditSuggestionsModal = ({isTaskEditSuggestionModalOpen, taskEditSuggestion, handleToggleTaskEditSuggestionModal}) => {
 

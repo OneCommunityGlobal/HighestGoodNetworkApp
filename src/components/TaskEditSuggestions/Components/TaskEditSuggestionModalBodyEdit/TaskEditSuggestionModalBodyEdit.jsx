@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useDispatch, useSelector, connect } from 'react-redux';
 import { ModalBody } from 'reactstrap';
 import ReactTooltip from 'react-tooltip';
 import hasPermission from 'utils/permissions';
@@ -10,11 +11,17 @@ import dateFnsParse from 'date-fns/parse';
 
 // TODO: Use react hook form
 
+// TODO: 
+// 1. Add projectMembers state to TaskEditSuggestions reducer, 
+// 2. On clicking a task edit suggestion, dispatch action to update projectMembers to reducer,
+// 3. useSelector from here
+
 export const TaskEditSuggestionModalBodyEdit = ({taskEditSuggestion}) => {
+
   const role = [];
   const hasPermission = () => true;
   const thisTask = taskEditSuggestion ? taskEditSuggestion.newTask : {};
-  const members = thisTask.resources;
+  const members = thisTask.resources; // TODO: selector for projectMembers.members
   let foundedMembers = [];
   const FORMAT = 'MM/dd/yy';
   const formatDate = (date, format, locale) => dateFnsFormat(date, format, { locale });
