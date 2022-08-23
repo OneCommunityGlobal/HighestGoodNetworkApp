@@ -9,6 +9,7 @@ import { Link } from "react-router-dom";
 import { ENDPOINTS } from 'utils/URL';
 
 const SingleTask = (props) => {
+  console.log("SingleTask props: ", props)
   const taskId = props.match.params.taskId;
   const [task, setTask] = useState({});
   const [modal, setModal] = useState(false);
@@ -31,7 +32,7 @@ const SingleTask = (props) => {
       <div className="container-single-task">
         <nav aria-label="breadcrumb">
           <ol className="breadcrumb">
-            <NavItem tag={Link} to={`/wbs/samefoldertasks/{task.wbsId}`}>
+            <NavItem tag={Link} to={`/wbs/samefoldertasks/${taskId}`}>
               <Button type="button" className="btn btn-secondary">
                 <i className="fa fa-chevron-circle-left" aria-hidden="true"></i>
               </Button>
