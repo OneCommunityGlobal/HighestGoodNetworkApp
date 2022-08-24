@@ -11,20 +11,31 @@ export const TaskEditSuggestionsModal = ({isTaskEditSuggestionModalOpen, taskEdi
   const dispatch = useDispatch();
 
   const [isView, setIsView] = useState(true);
+  const [newTask, setNewTask] = useState(taskEditSuggestion ? taskEditSuggestion.newTask : {});
+
+  useEffect(() => {
+    setNewTask(taskEditSuggestion ? taskEditSuggestion.newTask : {});
+  }, [taskEditSuggestion]);
 
   return (
     <Modal size="xl" isOpen={isTaskEditSuggestionModalOpen} toggle={() => handleToggleTaskEditSuggestionModal()}>
     <ModalHeader toggle={() => handleToggleTaskEditSuggestionModal()}>
       {taskEditSuggestion && `Changes suggested by: ${taskEditSuggestion.user}`}
     </ModalHeader>
-    {isView ? <TaskEditSuggestionModalBodyView taskEditSuggestion={taskEditSuggestion}/> : <TaskEditSuggestionModalBodyEdit taskEditSuggestion={taskEditSuggestion}/>}
+    {isView ? <TaskEditSuggestionModalBodyView taskEditSuggestion={taskEditSuggestion}/> : <TaskEditSuggestionModalBodyEdit taskEditSuggestion={taskEditSuggestion} newTask={newTask} setNewTask={setNewTask}/>}
     <ModalFooter>
       <Row>
         <Col>
           <Button color="success" onClick={() => {
-            dispatch(updateTask(taskEditSuggestion.taskId, taskEditSuggestion.newTask, true));
-            dispatch(rejectTaskEditSuggestion(taskEditSuggestion._id));
-            handleToggleTaskEditSuggestionModal();
+            if (isView) {
+              dispatch(updateTask(taskEditSuggestion.taskId, taskEditSuggestion.newTask, true));
+              dispatch(rejectTaskEditSuggestion(taskEditSuggestion._id));
+              handleToggleTaskEditSuggestionModal();
+            } else {
+              dispatch(updateTask(taskEditSuggestion.taskId, newTask, true));
+              dispatch(rejectTaskEditSuggestion(taskEditSuggestion._id));
+              handleToggleTaskEditSuggestionModal();
+            }
           }}>
             <i class="fa fa-check"></i>
           </Button>

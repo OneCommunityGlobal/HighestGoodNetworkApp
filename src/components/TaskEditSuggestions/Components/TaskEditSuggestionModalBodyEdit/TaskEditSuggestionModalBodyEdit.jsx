@@ -11,13 +11,14 @@ import dateFnsParse from 'date-fns/parse';
 
 // TODO: Use react hook form
 
-export const TaskEditSuggestionModalBodyEdit = ({taskEditSuggestion}) => {
+export const TaskEditSuggestionModalBodyEdit = ({taskEditSuggestion, newTask, setNewTask}) => {
 
   const role = [];
   const hasPermission = () => true;
   const thisTask = taskEditSuggestion ? taskEditSuggestion.newTask : {};
   const members = taskEditSuggestion ? taskEditSuggestion.projectMembers : [];
   let foundedMembers = [];
+
   const FORMAT = 'MM/dd/yy';
   const formatDate = (date, format, locale) => dateFnsFormat(date, format, { locale });
   const parseDate = (str, format, locale) => {
@@ -28,23 +29,9 @@ export const TaskEditSuggestionModalBodyEdit = ({taskEditSuggestion}) => {
     return undefined;
   };
 
-  const [taskName, setTaskName] = useState(thisTask.taskName);
-  const [priority, setPriority] = useState(thisTask.priority);
-  const [memberName, setMemberName] = useState('');
   const [resourceItems, setResourceItems] = useState(thisTask.resources);
-  const [assigned, setAssigned] = useState(thisTask.assigned);
-  const [status, setStatus] = useState(thisTask.status);
-  const [hoursBest, setHoursBest] = useState(thisTask.hoursBest);
-  const [hoursWorst, setHoursWorst] = useState(thisTask.hoursWorst);
-  const [hoursMost, setHoursMost] = useState(thisTask.hoursMost);
-  const [hoursEstimate, setHoursEstimate] = useState(thisTask.estimatedHours);
-  const [startedDate, setStartedDate] = useState(thisTask.startedDatetime);
-  const [dueDate, setDueDate] = useState(thisTask.dueDatetime);
-  const [links, setLinks] = useState(thisTask.links);
-  const [whyInfo, setWhyInfo] = useState(thisTask.whyInfo);
-  const [intentInfo, setIntentInfo] = useState(thisTask.intentInfo);
-  const [endstateInfo, setEndstateInfo] = useState(thisTask.endstateInfo);
-  const [classification, setClassification] = useState(thisTask.classification);
+  
+  const [memberName, setMemberName] = useState('');
   const [dateWarning, setDateWarning] = useState(false);
   const [hoursWarning, setHoursWarning] = useState(false);
   const [foundMembersHTML, setfoundMembersHTML] = useState('');
@@ -94,25 +81,25 @@ export const TaskEditSuggestionModalBodyEdit = ({taskEditSuggestion}) => {
 
   const [link, setLink] = useState('');
   const addLink = () => {
-    setLinks([...links, link]);
+    setNewTask({...newTask, links: [...newTask.links, link]});
   };
 
   const calHoursEstimate = (isOn = null) => {
-    let currHoursMost = parseInt(hoursMost);
-    let currHoursWorst = parseInt(hoursWorst);
-    const currHoursBest = parseInt(hoursBest);
+    let currHoursMost = parseInt(newTask.hoursMost);
+    let currHoursWorst = parseInt(newTask.hoursWorst);
+    const currHoursBest = parseInt(newTask.hoursBest);
     if (isOn !== 'hoursMost') {
       currHoursMost = Math.round((currHoursWorst - currHoursBest) / 2 + currHoursBest);
-      setHoursMost(currHoursMost);
+      setNewTask({...newTask, hoursMost: currHoursMost});
       if (isOn !== 'hoursWorst') {
         currHoursWorst = Math.round(currHoursBest * 2);
-        setHoursWorst(currHoursWorst);
+        setNewTask({...newTask, hoursWorst: currHoursWorst});
         currHoursMost = Math.round((currHoursWorst - currHoursBest) / 2 + currHoursBest);
-        setHoursMost(currHoursMost);
+        setNewTask({...newTask, hoursMost: currHoursMost});
       }
     }
 
-    setHoursEstimate(parseInt((currHoursMost + currHoursBest + currHoursWorst) / 3));
+    setNewTask({...newTask, estimatedHours: parseInt((currHoursMost + currHoursBest + currHoursWorst) / 3)});
 
     if (!(currHoursBest <= currHoursMost && currHoursMost <= currHoursWorst)) {
       setHoursWarning(true);
@@ -122,7 +109,7 @@ export const TaskEditSuggestionModalBodyEdit = ({taskEditSuggestion}) => {
   };
 
   const changeDateStart = (startDate) => {
-    setStartedDate(startDate);
+    setNewTask({...newTask, startedDateTime: startDate});
     if (dueDate) {
       if (startDate > dueDate) {
         setDateWarning(true);
@@ -133,7 +120,7 @@ export const TaskEditSuggestionModalBodyEdit = ({taskEditSuggestion}) => {
   };
 
   const changeDateEnd = (dueDate) => {
-    setDueDate(dueDate);
+    setNewTask({...newTask, dueDateTime: dueDate});
     if (startedDate) {
       if (dueDate < startedDate) {
         setDateWarning(true);
@@ -144,7 +131,7 @@ export const TaskEditSuggestionModalBodyEdit = ({taskEditSuggestion}) => {
   };
 
   const removeLink = (index) => {
-    setLinks([...links.splice(0, index), ...links.splice(index + 1)]);
+    setNewTask({...newTask, links: [...newTask.links.splice(0, index), ...newTask.links.splice(index + 1)]});
   };
 
   return (
@@ -162,9 +149,9 @@ export const TaskEditSuggestionModalBodyEdit = ({taskEditSuggestion}) => {
               <input
                 type="text"
                 className="task-name"
-                onChange={(e) => setTaskName(e.target.value)}
-                onKeyPress={(e) => setTaskName(e.target.value)}
-                value={taskName}
+                onChange={(e) => setNewTask({ ...newTask, taskName: e.target.value})}
+                onKeyPress={(e) => setNewTask({ ...newTask, taskName: e.target.value})}
+                value={newTask.taskName}
               />
             </td>
           </tr>
@@ -173,8 +160,8 @@ export const TaskEditSuggestionModalBodyEdit = ({taskEditSuggestion}) => {
             <td scope="col">
               <select
                 id="priority"
-                onChange={(e) => setPriority(e.target.value)}
-                value={priority}
+                onChange={(e) => setNewTask({ ...newTask, priority: e.target.value})}
+                value={newTask.priority}
               >
                 <option value="Primary">Primary</option>
                 <option value="Secondary">Secondary</option>
@@ -237,7 +224,7 @@ export const TaskEditSuggestionModalBodyEdit = ({taskEditSuggestion}) => {
           <tr>
             <td scope="col">Assigned</td>
             <td scope="col">
-              <select id="Assigned" onChange={(e) => setAssigned(e.target.value === 'true')}>
+              <select id="Assigned" value={newTask.isAssigned} onChange={(e) => setNewTask({...newTask, isAssigned: e.target.value === 'true'})}>
                 <option value="true">Yes</option>
                 <option value="false">No</option>
               </select>
@@ -246,7 +233,7 @@ export const TaskEditSuggestionModalBodyEdit = ({taskEditSuggestion}) => {
           <tr>
             <td scope="col">Status</td>
             <td scope="col">
-              <select id="Status" onChange={(e) => setStatus(e.target.value)}>
+              <select id="Status" value={newTask.status} onChange={(e) => setNewTask({...newTask, status: e.target.value})}>
                 <option value="Started">Started</option>
                 <option value="Not Started">Not Started</option>
                 <option value="Complete">Complete</option>
@@ -262,8 +249,8 @@ export const TaskEditSuggestionModalBodyEdit = ({taskEditSuggestion}) => {
                 type="number"
                 min="0"
                 max="500"
-                value={hoursBest}
-                onChange={(e) => setHoursBest(e.target.value)}
+                value={newTask.hoursBest}
+                onChange={(e) => setNewTask({...newTask, hoursBest: e.target.value})}
                 onBlur={() => calHoursEstimate()}
               />
               <div className="warning">
@@ -280,10 +267,10 @@ export const TaskEditSuggestionModalBodyEdit = ({taskEditSuggestion}) => {
             <td scope="col" data-tip="Hours - Worst-case">
               <input
                 type="number"
-                min={hoursBest}
+                min={newTask.hoursBest}
                 max="500"
-                value={hoursWorst}
-                onChange={(e) => setHoursWorst(e.target.value)}
+                value={newTask.hoursWorst}
+                onChange={(e) => setNewTask({...newTask, hoursWorst: e.target.value})}
                 onBlur={() => calHoursEstimate('hoursWorst')}
               />
               <div className="warning">
@@ -302,8 +289,8 @@ export const TaskEditSuggestionModalBodyEdit = ({taskEditSuggestion}) => {
                 type="number"
                 min="0"
                 max="500"
-                value={hoursMost}
-                onChange={(e) => setHoursMost(e.target.value)}
+                value={newTask.hoursMost}
+                onChange={(e) => setNewTask({...newTask, hoursMost: e.target.value})}
                 onBlur={() => calHoursEstimate('hoursMost')}
               />
               <div className="warning">
@@ -322,8 +309,8 @@ export const TaskEditSuggestionModalBodyEdit = ({taskEditSuggestion}) => {
                 type="number"
                 min="0"
                 max="500"
-                value={hoursEstimate}
-                onChange={(e) => setHoursEstimate(e.target.value)}
+                value={newTask.estimatedHours}
+                onChange={(e) => setNewTask({...newTask, estimatedHours: e.target.value})}
               />
             </td>
           </tr>
@@ -350,7 +337,7 @@ export const TaskEditSuggestionModalBodyEdit = ({taskEditSuggestion}) => {
                 </button>
               </div>
               <div>
-                {links.map((link, i) =>
+                {newTask.links && newTask.links.map((link, i) =>
                   link.length > 1 ? (
                     <div key={i} className="task-link">
                       <a href={link} target="_blank">
@@ -369,8 +356,8 @@ export const TaskEditSuggestionModalBodyEdit = ({taskEditSuggestion}) => {
             <td scope="col">Classification</td>
             <td scope="col">
               <select
-                value={classification}
-                onChange={(e) => setClassification(e.target.value)}
+                value={newTask.classification}
+                onChange={(e) => setNewTask({...newTask, classification: e.target.value})}
               >
                 <option value="Food">Food</option>
                 <option value="Energy">Energy</option>
@@ -402,8 +389,8 @@ export const TaskEditSuggestionModalBodyEdit = ({taskEditSuggestion}) => {
                 name="why-info"
                 className="why-info"
                 className="form-control"
-                value={whyInfo}
-                onEditorChange={(content) => setWhyInfo(content)}
+                value={newTask.whyInfo}
+                onEditorChange={(content) => setNewTask({...newTask, whyInfo: content})}
               />
             </td>
           </tr>
@@ -426,8 +413,8 @@ export const TaskEditSuggestionModalBodyEdit = ({taskEditSuggestion}) => {
                 name="intent-info"
                 className="intent-info"
                 className="form-control"
-                value={intentInfo}
-                onEditorChange={(content) => setIntentInfo(content)}
+                value={newTask.intentInfo}
+                onEditorChange={(content) => setNewTask({...newTask, intentInfo: content})}
               />
             </td>
           </tr>
@@ -450,8 +437,8 @@ export const TaskEditSuggestionModalBodyEdit = ({taskEditSuggestion}) => {
                 name="endstate-info"
                 className="endstate-info"
                 className="form-control"
-                value={endstateInfo}
-                onEditorChange={(content) => setEndstateInfo(content)}
+                value={newTask.endstateInfo}
+                onEditorChange={(content) => setNewTask({...newTask, endstateInfo: content})}
               />
             </td>
           </tr>
@@ -463,8 +450,8 @@ export const TaskEditSuggestionModalBodyEdit = ({taskEditSuggestion}) => {
                   format={FORMAT}
                   formatDate={formatDate}
                   placeholder={`${dateFnsFormat(new Date(), FORMAT)}`}
-                  onDayChange={(day, mod, input) => changeDateStart(input.state.value)}
-                  value={startedDate}
+                  onDayChange={(day, mod, input) => setNewTask({...newTask, startedDatetime: input.state.value})}
+                  value={newTask.startedDatetime}
                 />
                 <div className="warning">
                   {dateWarning ? DUE_DATE_MUST_GREATER_THAN_START_DATE : ''}
@@ -479,8 +466,8 @@ export const TaskEditSuggestionModalBodyEdit = ({taskEditSuggestion}) => {
                 format={FORMAT}
                 formatDate={formatDate}
                 placeholder={`${dateFnsFormat(new Date(), FORMAT)}`}
-                onDayChange={(day, mod, input) => changeDateEnd(input.state.value)}
-                value={dueDate}
+                onDayChange={(day, mod, input) => setNewTask({...newTask, dueDatetime: input.state.value})}
+                value={newTask.dueDatetime}
               />
 
               <div className="warning">
