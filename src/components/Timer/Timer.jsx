@@ -27,6 +27,7 @@ function Timer() {
   const [isUserPaused, setIsUserPaused] = useState(false);
   const [modal, setModal] = useState(false);
   const [isConnected, setIsConnected] = useState(client.isConnected());
+  const [clientOffset, setClientOffset] = useState(0);
 
   const message = useWebsocketMessage();
 
@@ -73,12 +74,16 @@ function Timer() {
         isRunning: isRunningFromBackend,
         isUserPaused: isUserPausedFromBackend,
         isApplicationPaused: isApplicationPausedFromBackend,
+        timeStamp
       } = message;
 
+      const timeNow = new Date().getTime() / 1000;
+
+      let clientOffsetFromBackend = timeStamp - timeNow;
+      setClientOffset(clientOffsetFromBackend)
       setIsRunning(isRunningFromBackend);
       setIsUserPaused(isUserPausedFromBackend);
       setIsApplicationPaused(isApplicationPausedFromBackend);
-
 
       /** Cases: Timer is reset or being cleared */
       if (!isRunningFromBackend && !isUserPausedFromBackend && !isApplicationPausedFromBackend) {
@@ -122,11 +127,11 @@ function Timer() {
          * */
         const currentTimeInSeconds = new Date().getTime() / 1000;
         const currentTime =
-          currentTimeInSeconds - startedAtInSecondsFromBackend + secondsFromBackend;
+          currentTimeInSeconds - startedAtInSecondsFromBackend + secondsFromBackend + clientOffsetFromBackend;
 
         // Set when started from database to be used in future calculation
-        setStartedAt(Math.floor(startedAtInSecondsFromBackend));
-
+        setStartedAt(startedAtInSecondsFromBackend);
+        
         // Set current seconds to timer
         setSeconds(Math.floor(currentTime));
 
@@ -142,7 +147,7 @@ function Timer() {
 
         // When user paused we saved based off of the original second difference calculation
         setSeconds(Math.floor(secondsFromBackend));
-        setStartedAt(Math.floor(startedAtInSecondsFromBackend));
+        setStartedAt(startedAtInSecondsFromBackend);
 
         // Calculation is done from backend already, so we can set this to 0.
         setStartingSeconds(0);
@@ -173,7 +178,6 @@ function Timer() {
    * to reflect an accurate time
    */
   useInterval(() => {      
-    console.log("Running timer...", {isRunning, isUserPaused, isApplicationPaused, startedAt, isConnected, isPastMaxTime})
     if (
       isRunning &&
       !isUserPaused &&
@@ -192,8 +196,7 @@ function Timer() {
        * from any previous timer start / stops
        */
       const currentTimeInSeconds = new Date().getTime() / 1000;
-      const currentTime = Math.floor(currentTimeInSeconds - startedAt + startingSeconds);
-      console.log("Timing calculation", { currentTime, currentTimeInSeconds, startedAt, startingSeconds, "CurrentTimeInSeconds - startedAt": currentTimeInSeconds - startedAt})
+      const currentTime = Math.floor(currentTimeInSeconds - startedAt + startingSeconds + clientOffset) ;
       // Set to UI
       setSeconds(currentTime);
 
