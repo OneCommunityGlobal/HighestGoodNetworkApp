@@ -1,11 +1,11 @@
 import React from 'react';
 import './reports.css';
 
-const ProjectMemberTable = (props) => {
+const ProjectMemberTable = ({ projectMembers, skip, take }) => {
   let memberList = [];
-  if (props.projectMembers.fetched) {
-    if (props.projectMembers.members.length > 0) {
-      memberList = props.projectMembers.members.map((member, index) => (
+  if (projectMembers.fetched) {
+    if (projectMembers.members.length > 0) {
+      memberList = projectMembers.members.slice(skip, skip + take).map((member, index) => (
         <tr id={'tr_' + member._id} key={member._id}>
           <th scope="row">
             <div>{index + 1}</div>

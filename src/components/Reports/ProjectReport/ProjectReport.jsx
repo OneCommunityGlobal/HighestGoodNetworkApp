@@ -10,6 +10,7 @@ import { fetchAllMembers } from '../../../actions/projectMembers';
 import { fetchAllWBS } from '../../../actions/wbs';
 import ProjectMemberTable from '../ProjectMemberTable';
 import { ReportPage } from '../sharedComponents/ReportPage';
+import { Paging } from '../../common/Paging';
 import { TasksTable } from '../TasksTable';
 import WbsTable from '../WbsTable';
 import { projectReportViewData } from './selectors';
@@ -36,7 +37,9 @@ export const ProjectReport = ({ match }) => {
           <WbsTable wbs={wbs} />
         </ReportPage.ReportBlock>
         <ReportPage.ReportBlock className='wbs-and-members-blocks'>
-          <ProjectMemberTable projectMembers={projectMembers} />
+          <Paging totalElementsCount={projectMembers.members.length}>
+            <ProjectMemberTable projectMembers={projectMembers} />
+          </Paging>
         </ReportPage.ReportBlock>
       </div>
       <ReportPage.ReportBlock>
