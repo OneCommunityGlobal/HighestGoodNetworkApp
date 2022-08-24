@@ -15,9 +15,6 @@ export const TaskEditSuggestionModalBodyEdit = ({taskEditSuggestion, newTask, se
 
   const role = [];
   const hasPermission = () => true;
-  const thisTask = taskEditSuggestion ? taskEditSuggestion.newTask : {};
-  const members = taskEditSuggestion ? taskEditSuggestion.projectMembers : [];
-  let foundedMembers = [];
 
   const FORMAT = 'MM/dd/yy';
   const formatDate = (date, format, locale) => dateFnsFormat(date, format, { locale });
@@ -28,8 +25,6 @@ export const TaskEditSuggestionModalBodyEdit = ({taskEditSuggestion, newTask, se
     }
     return undefined;
   };
-
-  const [resourceItems, setResourceItems] = useState(thisTask.resources);
   
   const [memberName, setMemberName] = useState('');
   const [dateWarning, setDateWarning] = useState(false);
@@ -37,7 +32,7 @@ export const TaskEditSuggestionModalBodyEdit = ({taskEditSuggestion, newTask, se
   const [foundMembersHTML, setfoundMembersHTML] = useState('');
 
   const findMembers = () => {
-    foundedMembers = members.filter((user) =>
+    const foundedMembers = taskEditSuggestion.projectMembers.filter((user) =>
       `${user.firstName} ${user.lastName}`.toLowerCase().includes(memberName.toLowerCase()),
     );
     const html = foundedMembers.map((elm) => (
@@ -62,21 +57,15 @@ export const TaskEditSuggestionModalBodyEdit = ({taskEditSuggestion, newTask, se
   };
 
   const removeResource = (userID) => {
-    const removeIndex = resourceItems.map((item) => item.userID).indexOf(userID);
-    setResourceItems([
-      ...resourceItems.slice(0, removeIndex),
-      ...resourceItems.slice(removeIndex + 1),
-    ]);
+    const removeIndex = newTask.resources.map((item) => item.userID).indexOf(userID);
+    setNewTask({...newTask, resources: [
+      ...newTask.resources.slice(0, removeIndex),
+      ...newTask.resources.slice(removeIndex + 1),
+    ]});
   };
 
-  const res = [...resourceItems];
   const addResources = (userID, first, last, profilePic) => {
-    res.push({
-      userID,
-      name: `${first} ${last}`,
-      profilePic,
-    });
-    setResourceItems([...res]);
+    setNewTask({...newTask, resources: [...newTask.resources].push({userID, name: `${first} ${last}`, profilePic})});
   };
 
   const [link, setLink] = useState('');
@@ -196,7 +185,7 @@ export const TaskEditSuggestionModalBodyEdit = ({taskEditSuggestion, newTask, se
                 <div>{foundMembersHTML}</div>
               </div>
               <div className="task-reousces-list">
-                {resourceItems.map((elm, i) => {
+                {newTask.resources.map((elm, i) => {
                   if (!elm.profilePic) {
                     return (
                       <a
