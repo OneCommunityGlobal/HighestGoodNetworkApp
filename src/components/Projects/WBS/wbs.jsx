@@ -12,6 +12,7 @@ import AddWBS from './AddWBS';
 import WBSItem from './WBSItem/WBSItem';
 
 const WBS = (props) => {
+  console.log("wbs props: ", props)
   const projectId = props.match.params.projectId;
 
   useEffect(() => {

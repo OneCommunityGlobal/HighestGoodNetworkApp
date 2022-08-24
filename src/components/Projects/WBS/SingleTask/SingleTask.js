@@ -1,4 +1,5 @@
 import React from "react";
+import { connect } from 'react-redux';
 import { useState, useEffect } from "react";
 import ReactTooltip from "react-tooltip";
 import axios from 'axios';
@@ -7,9 +8,10 @@ import { Modal, ModalBody, } from 'reactstrap';
 import { Editor } from '@tinymce/tinymce-react';
 import { Link } from "react-router-dom";
 import { ENDPOINTS } from 'utils/URL';
+import { getUserProfile } from "actions/userProfile";
 
 const SingleTask = (props) => {
-  console.log("SingleTask props: ", props)
+  console.log("SingleTask props: ", props);
   const taskId = props.match.params.taskId;
   const [task, setTask] = useState({});
   const [modal, setModal] = useState(false);
@@ -37,7 +39,7 @@ const SingleTask = (props) => {
                 <i className="fa fa-chevron-circle-left" aria-hidden="true"></i>
               </Button>
             </NavItem>
-            <div id="single_task_name">{task.taskName}</div>
+            <div id="single_task_name">See tasks in the same folder as "{task.taskName}"</div>
           </ol>
         </nav>
 
@@ -203,5 +205,7 @@ const SingleTask = (props) => {
   );
 
 }
-
-export default SingleTask;
+const mapStateToProps = (state) => state;
+export default connect(mapStateToProps, {
+  getUserProfile,
+}) (SingleTask);
