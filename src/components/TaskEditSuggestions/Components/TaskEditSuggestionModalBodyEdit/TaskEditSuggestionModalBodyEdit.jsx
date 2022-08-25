@@ -36,7 +36,7 @@ export const TaskEditSuggestionModalBodyEdit = ({taskEditSuggestion, newTask, se
       `${user.firstName} ${user.lastName}`.toLowerCase().includes(memberName.toLowerCase()),
     );
     const html = foundedMembers.map((elm) => (
-      <div>
+      <div key={elm._id}>
         <input
           type="text"
           className="task-resouces-input"
@@ -65,9 +65,9 @@ export const TaskEditSuggestionModalBodyEdit = ({taskEditSuggestion, newTask, se
   };
 
   const addResources = (userID, first, last, profilePic) => {
-    console.log(newTask.resources);
-    setNewTask({...newTask, resources: [...newTask.resources].push({userID, name: `${first} ${last}`, profilePic})});
-    console.log(newTask.resources);
+    const newResources = [...newTask.resources];
+    newResources.push({userID, name: `${first} ${last}`, profilePic});
+    setNewTask({...newTask, resources: newResources});
   };
 
   const [link, setLink] = useState('');
@@ -187,28 +187,26 @@ export const TaskEditSuggestionModalBodyEdit = ({taskEditSuggestion, newTask, se
                 <div>{foundMembersHTML}</div>
               </div>
               <div className="task-reousces-list">
-                {newTask.resources && newTask.resources.map((elm, i) => {
-                  if (!elm.profilePic) {
+                {newTask.resources && newTask.resources.map((resource) => {
+                  if (!resource.profilePic) {
                     return (
                       <a
-                        key={`res_${i}`}
-                        data-tip={elm.name}
-                        onClick={(e) => {
-                          removeResource(elm.userID, e.target)
-                          console.log(e)}}
+                        key={resource.userID}
+                        data-tip={resource.name}
+                        onClick={(e) => removeResource(resource.userID)}
                       >
-                        <span className="dot">{elm.name.substring(0, 2)}</span>
+                        <span className="dot">{resource.name.substring(0, 2)}</span>
                       </a>
                     );
                   }
-                  console.log("profile pic");
+                  console.log("has pro pic");
                   return (
                     <a
-                      key={`res_${i}`}
-                      data-tip={elm.name}
-                      onClick={(e) => removeResource(elm.userID, e.target)}
+                      key={resource.userID}
+                      data-tip={resource.name}
+                      onClick={(e) => removeResource(resource.userID)}
                     >
-                      <img className="img-circle" src={elm.profilePic} />
+                      <img className="img-circle" src={resource.profilePic} />
                     </a>
                   );
                 })}
