@@ -17,6 +17,18 @@ export const Paging = ({ maxElemPerPage = 6, totalElementsCount, children }) => 
   const renderPageIndexes = () => {
     const indexesButtons = [];
 
+    if (pagesCount <= 6) {
+      for (let i = 1; i <= pagesCount; i++) {
+        indexesButtons.push(renderPageNumberButton(i));
+      }
+
+      return (
+        <div className='pagination-buttons'>
+          {indexesButtons}
+        </div>
+      )
+    }
+
     if (currentPage <= 5) {
       for (let i = 1; i <= 5; i++) {
         indexesButtons.push(renderPageNumberButton(i));
@@ -75,11 +87,12 @@ export const Paging = ({ maxElemPerPage = 6, totalElementsCount, children }) => 
     <div className='paging-wrapper'>
       {React.cloneElement(children, { skip: maxElemPerPage * (currentPage - 1), take: maxElemPerPage })}
 
-      <div className="pagination-buttons-wrapper">
+      {(totalElementsCount > maxElemPerPage) && <div className="pagination-buttons-wrapper">
         <FiChevronLeft className={classnames('page-index-button', { 'disabled': currentPage === 1 })} onClick={handlePrevArrowClick} />
         {renderPageIndexes()}
         <FiChevronRight className={classnames('page-index-button', { 'disabled': currentPage === pagesCount })} onClick={handleNextArrowClick} />
       </div>
+      }
     </div>
   )
 }

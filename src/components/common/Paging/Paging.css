@@ -1,5 +1,5 @@
 .paging-wrapper {
-  height: 100%;
+  height: calc(100% - 40px);
   position: relative;
 }
 
@@ -8,7 +8,7 @@
   align-items: center;
 
   position: absolute;
-  bottom: 0;
+  bottom: -40px;
 }
 
 .pagination-buttons {
@@ -28,13 +28,14 @@
   color: #a1a1a1;
 }
 
-.page-index-button .disabled:hover {
-  cursor: unset;
-  background-color: none;
+
+.page-index-button:not(.disabled):hover {
+  background-color: #eee7f8;
 }
 
-.page-index-button:hover {
-  background-color: #eee7f8;
+.page-index-button.disabled {
+  cursor: unset;
+  color: #c6c6c6;
 }
 
 .active-button {
