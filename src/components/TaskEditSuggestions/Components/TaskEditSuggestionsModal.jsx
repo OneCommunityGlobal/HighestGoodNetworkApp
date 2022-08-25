@@ -37,18 +37,18 @@ export const TaskEditSuggestionsModal = ({isTaskEditSuggestionModalOpen, taskEdi
               handleToggleTaskEditSuggestionModal();
             }
           }}>
-            <i class="fa fa-check"></i>
+            <i className="fa fa-check"></i>
           </Button>
         </Col>
         <Col style={{display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-          <Button color='primary' onClick={() => setIsView(!isView)}><i class="fa fa-pencil" aria-hidden="true"></i></Button>
+          <Button color='primary' onClick={() => setIsView(!isView)}><i className="fa fa-pencil" aria-hidden="true"></i></Button>
         </Col>
         <Col style={{display: "flex"}}>
           <Button color="danger" style={{marginLeft: "auto"}} onClick={() => {
             dispatch(rejectTaskEditSuggestion(taskEditSuggestion._id));
             handleToggleTaskEditSuggestionModal();
             }}>
-            <i class="fa fa-trash"s></i>
+            <i className="fa fa-trash"></i>
           </Button>
         </Col>
       </Row>

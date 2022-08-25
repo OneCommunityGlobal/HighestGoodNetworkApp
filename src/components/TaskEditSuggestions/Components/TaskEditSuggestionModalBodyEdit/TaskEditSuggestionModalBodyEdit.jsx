@@ -65,7 +65,9 @@ export const TaskEditSuggestionModalBodyEdit = ({taskEditSuggestion, newTask, se
   };
 
   const addResources = (userID, first, last, profilePic) => {
+    console.log(newTask.resources);
     setNewTask({...newTask, resources: [...newTask.resources].push({userID, name: `${first} ${last}`, profilePic})});
+    console.log(newTask.resources);
   };
 
   const [link, setLink] = useState('');
@@ -185,18 +187,21 @@ export const TaskEditSuggestionModalBodyEdit = ({taskEditSuggestion, newTask, se
                 <div>{foundMembersHTML}</div>
               </div>
               <div className="task-reousces-list">
-                {newTask.resources.map((elm, i) => {
+                {newTask.resources && newTask.resources.map((elm, i) => {
                   if (!elm.profilePic) {
                     return (
                       <a
                         key={`res_${i}`}
                         data-tip={elm.name}
-                        onClick={(e) => removeResource(elm.userID, e.target)}
+                        onClick={(e) => {
+                          removeResource(elm.userID, e.target)
+                          console.log(e)}}
                       >
                         <span className="dot">{elm.name.substring(0, 2)}</span>
                       </a>
                     );
                   }
+                  console.log("profile pic");
                   return (
                     <a
                       key={`res_${i}`}

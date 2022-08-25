@@ -27,9 +27,9 @@ export const TaskEditSuggestions = () => {
 
   const SortArrow = ({sortDirection}) => {
     if (sortDirection === "asc") {
-      return <i class="fa fa-arrow-up"></i>;
+      return <i className="fa fa-arrow-up"></i>;
     } else if (sortDirection === "desc") {
-      return <i class="fa fa-arrow-down"></i>;
+      return <i className="fa fa-arrow-down"></i>;
     } else {
       return <></>;
     }
