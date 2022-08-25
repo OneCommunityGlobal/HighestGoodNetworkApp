@@ -199,7 +199,6 @@ export const TaskEditSuggestionModalBodyEdit = ({taskEditSuggestion, newTask, se
                       </a>
                     );
                   }
-                  console.log("has pro pic");
                   return (
                     <a
                       key={resource.userID}
