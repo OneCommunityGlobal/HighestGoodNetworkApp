@@ -12,7 +12,6 @@ import { WBS_DELETE_POPUP_ID } from './../../../../constants/popupId';
 import hasPermission from 'utils/permissions';
 
 const WBSItem = (props) => {
-  console.log("WBSItem props: ", props)
   const [showModalDelete, setShowModalDelete] = useState(false);
 
   const confirmDelete = () => {

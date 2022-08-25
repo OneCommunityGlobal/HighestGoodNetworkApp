@@ -4,9 +4,7 @@ import axios from 'axios';
 import { ENDPOINTS } from 'utils/URL';
 
 const SameFolderTasks = (props) => {
-  console.log("SameFolderTasks props: ", props)
   const taskId = props.match.params.taskId;
-  console.log("taskId is: ", taskId)
   const [task, setTask] = useState({});
   const [wbsId, setWBSId] = useState("");
   const [WBS, setWBS] = useState({});
@@ -20,7 +18,6 @@ const SameFolderTasks = (props) => {
       })
       .catch(err => console.log(err));
   }, []);
-  console.log("current task is: ", task)
 
   useEffect(() => {
     axios
@@ -31,19 +28,20 @@ const SameFolderTasks = (props) => {
       .catch(err => console.log(err));
   }, [])
 
-  console.log("wbs is: ", WBS)
   let projectId = WBS.projectId;
   let wbsName = WBS.wbsName;
 
   if (task.mother === null || task.mother === taskId) {
-    function handleClick() {
-      props.history.push(`/wbs/tasks/${wbsId}/${projectId}/${wbsName}`)
-    }
-    return (<p onClick={handleClick}>No such folder, click here leading to the WBS contains "{task.taskName}"</p>)
+    return (
+      <div className="App">
+        <p>This task doesn't have tasks in the same folder as itself</p>
+        <a href={`/wbs/tasks/${wbsId}/${projectId}/${wbsName}`}>Click here linking to the WBS contains this task {wbsName}</a>
+      </div>
+    );
   } else {
     return (
       <p>the same folder tasks </p>
-    )
+    );
   }
 
 }

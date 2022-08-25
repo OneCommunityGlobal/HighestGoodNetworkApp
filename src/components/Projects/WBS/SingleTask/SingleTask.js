@@ -9,10 +9,11 @@ import { Editor } from '@tinymce/tinymce-react';
 import { Link } from "react-router-dom";
 import { ENDPOINTS } from 'utils/URL';
 import { getUserProfile } from "actions/userProfile";
+import hasPermission from "utils/permissions";
 
 const SingleTask = (props) => {
-  console.log("SingleTask props: ", props);
   const taskId = props.match.params.taskId;
+  const { user } = props.auth;
   const [task, setTask] = useState({});
   const [modal, setModal] = useState(false);
   const toggleModel = () => setModal(!modal);
@@ -26,22 +27,22 @@ const SingleTask = (props) => {
       .catch(err => console.log(err));
   }, []);
 
-  console.log("current task is: ", task)
-
   return ( 
     <React.Fragment>
       <ReactTooltip />
       <div className="container-single-task">
-        <nav aria-label="breadcrumb">
-          <ol className="breadcrumb">
-            <NavItem tag={Link} to={`/wbs/samefoldertasks/${taskId}`}>
-              <Button type="button" className="btn btn-secondary">
-                <i className="fa fa-chevron-circle-left" aria-hidden="true"></i>
-              </Button>
-            </NavItem>
-            <div id="single_task_name">See tasks in the same folder as "{task.taskName}"</div>
-          </ol>
-        </nav>
+        {hasPermission(user.role, 'seeProjectManagement') && (
+          <nav aria-label="breadcrumb">
+            <ol className="breadcrumb">
+              <NavItem tag={Link} to={`/wbs/samefoldertasks/${taskId}`}>
+                <Button type="button" className="btn btn-secondary">
+                  <i className="fa fa-chevron-circle-left" aria-hidden="true"></i>
+                </Button>
+              </NavItem>
+              <div id="single_task_name">See tasks in the same folder as "{task.taskName}"</div>
+            </ol>
+          </nav>
+        )}
 
         <table className="table table-bordered tasks-table">
           <thead>

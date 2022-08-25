@@ -16,7 +16,6 @@ import ReactTooltip from 'react-tooltip';
 import hasPermission from 'utils/permissions';
 
 const WBSTasks = (props) => {
-  console.log("WBSTasks props: ", props)
   // modal
   const [modal, setModal] = useState(false);
   const toggle = () => setModal(!modal);
