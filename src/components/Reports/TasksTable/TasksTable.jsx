@@ -3,7 +3,7 @@ import { useSelector } from 'react-redux';
 import '../../Teams/Team.css';
 import { Dropdown, DropdownButton, ToggleButton, ToggleButtonGroup } from 'react-bootstrap';
 import 'react-datepicker/dist/react-datepicker.css';
-import TasksDetail from '../TasksDetail';
+import { TasksDetail } from '../TasksDetail';
 import { getTasksTableData } from './selectors';
 import './TasksTable.css';
 
@@ -76,58 +76,56 @@ export const TasksTable = ({ WbsTasksID }) => {
   };
 
   return (
-    <div className="container">
-      <table>
-        <div className='tasks-table-filters'>
-          <button
-            style={{ margin: '3px' }}
-            exact
-            className="btn btn-secondary btn-bg mt-3"
-            onClick={() => resetAllFilters()}
-          >
-            Filter Off
-          </button>
-          <UserOptions get_tasks={get_tasks} />
-          <FilterOptions filterName={'classification'} />
-          <FilterOptions filterName={'priority'} />
-          <FilterOptions filterName={'status'} />
-          <FilterOptions filterName={'assignment'} />
-          <input
-            name="radio"
-            type="radio"
-            style={{ margin: '5px' }}
-            value="active"
-            onChange={() => setActive(true)}
-          />
-          Active
-          <input
-            name="radio"
-            type="radio"
-            style={{ margin: '5px' }}
-            value="inactive"
-            onChange={() => setActive(false)}
-          />
-          InActive
-
-          <button style={{ margin: '3px' }} exact className="btn btn-secondary btn-bg mt-3">
-            Estimated Hours
-          </button>
-        </div>
-
-        <TasksDetail
-          tasks_filter={get_tasks}
-          isAssigned={isAssigned}
-          isActive={isActive}
-          priority={priority}
-          status={status}
-          classification={classification}
-          users={users}
-          classificationList={classificationList}
-          priorityList={priorityList}
-          statusList={statusList}
-          userList={userList}
+    <div>
+      <div className='tasks-table-filters'>
+        <button
+          style={{ margin: '3px' }}
+          exact
+          className="btn btn-secondary btn-bg mt-3"
+          onClick={() => resetAllFilters()}
+        >
+          Filter Off
+        </button>
+        <UserOptions get_tasks={get_tasks} />
+        <FilterOptions filterName={'classification'} />
+        <FilterOptions filterName={'priority'} />
+        <FilterOptions filterName={'status'} />
+        <FilterOptions filterName={'assignment'} />
+        <input
+          name="radio"
+          type="radio"
+          style={{ margin: '5px' }}
+          value="active"
+          onChange={() => setActive(true)}
         />
-      </table>
+        Active
+        <input
+          name="radio"
+          type="radio"
+          style={{ margin: '5px' }}
+          value="inactive"
+          onChange={() => setActive(false)}
+        />
+        InActive
+
+        <button style={{ margin: '3px' }} exact className="btn btn-secondary btn-bg mt-3">
+          Estimated Hours
+        </button>
+      </div>
+
+      <TasksDetail
+        tasks_filter={get_tasks}
+        isAssigned={isAssigned}
+        isActive={isActive}
+        priority={priority}
+        status={status}
+        classification={classification}
+        users={users}
+        classificationList={classificationList}
+        priorityList={priorityList}
+        statusList={statusList}
+        userList={userList}
+      />
     </div>
   );
 }

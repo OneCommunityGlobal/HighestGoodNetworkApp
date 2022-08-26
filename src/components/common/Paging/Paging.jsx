@@ -3,7 +3,7 @@ import { FiChevronLeft, FiChevronRight } from "react-icons/fi";
 import classnames from 'classnames';
 import './Paging.css'
 
-export const Paging = ({ maxElemPerPage = 4, totalElementsCount, children }) => {
+export const Paging = ({ maxElemPerPage = 6, totalElementsCount, children }) => {
 
   const [currentPage, setCurrentPage] = useState(1);
 

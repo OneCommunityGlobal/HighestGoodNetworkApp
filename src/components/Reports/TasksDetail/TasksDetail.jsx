@@ -1,9 +1,9 @@
-import './reports.css';
 import React, { useState } from 'react';
 import { Button, Dropdown, DropdownButton } from 'react-bootstrap';
-import EditTaskModal from './../Projects/WBS/WBSDetail/EditTask/EditTaskModal';
+import EditTaskModal from '../../Projects/WBS/WBSDetail/EditTask/EditTaskModal';
 import 'react-table/react-table.css';
 import Collapse from 'react-bootstrap/Collapse';
+import './TasksDetail.css';
 
 const ShowCollapse = (props) => {
   const [open, setOpen] = useState(false);
@@ -25,7 +25,8 @@ const ShowCollapse = (props) => {
     </div>
   );
 };
-const TasksDetail = (props) => {
+
+export const TasksDetail = (props) => {
   let tasksList = [];
   let tasks = [];
   tasks = props.tasks_filter;
@@ -127,8 +128,8 @@ const TasksDetail = (props) => {
   }
 
   tasksList = tasks.map((task, index) => (
-    <tr id={'tr_' + task._id}>
-      <th scope="row">
+    <div id={'tr_' + task._id} className='tasks-detail-table-row'>
+      <div>
         <EditTaskModal
           key={`editTask_${task._id}`}
           parentNum={task.num}
@@ -140,22 +141,22 @@ const TasksDetail = (props) => {
           mother={task.mother}
           level={task.level}
         />
-      </th>
-      <th scope="row">
+      </div>
+      <div>
         <div>{index + 1}</div>
-      </th>
-      <td>{task.taskName}</td>
-      <td>{task.priority}</td>
-      <td>{task.status}</td>
-      <td>
+      </div>
+      <div>{task.taskName}</div>
+      <div>{task.priority}</div>
+      <div>{task.status}</div>
+      <div>
         {task.resources.length <= 2 ? (
           task.resources.map((resource) => <div key={resource._id}>{resource.name}</div>)
         ) : (
           <ShowCollapse resources={task.resources} />
         )}
-      </td>
+      </div>
 
-      <td className="projects__active--input">
+      <div className="projects__active--input">
         {task.isActive ? (
           <tasks className="isActive">
             <i className="fa fa-circle" aria-hidden="true"></i>
@@ -165,66 +166,58 @@ const TasksDetail = (props) => {
             <i className="fa fa-circle-o" aria-hidden="true"></i>
           </div>
         )}
-      </td>
+      </div>
 
-      <td className="projects__active--input">
+      <div className="projects__active--input">
         {task.isAssigned ? <div>Assign</div> : <div>Not Assign</div>}
-      </td>
-      <td className="projects__active--input">{task.classification}</td>
-      <td className="projects__active--input">{task.estimatedHours.toFixed(2)}</td>
-      <td>{task.startedDatetime}</td>
-      <td>{task.dueDatetime}</td>
-    </tr>
+      </div>
+      <div className="projects__active--input">{task.classification}</div>
+      <div className="projects__active--input">{task.estimatedHours.toFixed(2)}</div>
+      <div>{task.startedDatetime}</div>
+      <div>{task.dueDatetime}</div>
+    </div>
   ));
 
   return (
     <div>
       <h2>Total: {tasksList.length}</h2>
-      <div className="table-responsive-sm">
-        <table className="table table-bordered table-responsive-sm">
-          <thead>
-            <tr>
-              <th scope="col" id="projects__order">
-                Action
-              </th>
-              <th scope="col" id="projects__order">
-                #
-              </th>
-              <th scope="col" id="projects__active">
-                Task
-              </th>
-              <th scope="col" id="projects__active">
-                Priority
-              </th>
-              <th scope="col" id="projects__active">
-                Status
-              </th>
-              <th scope="col">Resources</th>
-              <th scope="col" id="projects__active">
-                Active
-              </th>
-              <th scope="col" id="projects__active">
-                Assign
-              </th>
-              <th scope="col" id="projects__active">
-                Class
-              </th>
-              <th scope="col" id="projects__active">
-                Estimated Hours
-              </th>
-              <th scope="col" id="projects__active">
-                Start Date
-              </th>
-              <th scope="col" id="projects__active">
-                End Date
-              </th>
-            </tr>
-          </thead>
-          <tbody>{tasksList}</tbody>
-        </table>
+      <div className="tasks-detail-table-head tasks-detail-table-row">
+        <div id="projects__order">
+          Action
+        </div>
+        <div id="projects__order">
+          #
+        </div>
+        <div id="projects__active">
+          Task
+        </div>
+        <div id="projects__active">
+          Priority
+        </div>
+        <div id="projects__active">
+          Status
+        </div>
+        <div>Resources</div>
+        <div id="projects__active">
+          Active
+        </div>
+        <div id="projects__active">
+          Assign
+        </div>
+        <div id="projects__active">
+          Class
+        </div>
+        <div id="projects__active">
+          Estimated Hours
+        </div>
+        <div id="projects__active">
+          Start Date
+        </div>
+        <div id="projects__active">
+          End Date
+        </div>
       </div>
-    </div>
+      <div>{tasksList}</div>
+    </div >
   );
 };
-
-export default TasksDetail;
