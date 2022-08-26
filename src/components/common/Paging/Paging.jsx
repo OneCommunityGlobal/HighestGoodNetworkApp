@@ -3,7 +3,7 @@ import { FiChevronLeft, FiChevronRight } from "react-icons/fi";
 import classnames from 'classnames';
 import './Paging.css'
 
-export const Paging = ({ maxElemPerPage = 6, totalElementsCount, children }) => {
+export const Paging = ({ maxElemPerPage = 4, totalElementsCount, children }) => {
 
   const [currentPage, setCurrentPage] = useState(1);
 
@@ -43,7 +43,7 @@ export const Paging = ({ maxElemPerPage = 6, totalElementsCount, children }) => 
       )
     }
 
-    if (currentPage >= pagesCount - 5) {
+    if (currentPage > pagesCount - 5) {
       for (let i = pagesCount - 4; i <= pagesCount; i++) {
         indexesButtons.push(renderPageNumberButton(i));
       }

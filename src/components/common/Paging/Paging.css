@@ -43,6 +43,6 @@
   color: white;
 }
 
-.active-button:hover {
+.page-index-button.active-button:hover {
   background-color: rgb(179, 104, 210);
 }
