@@ -10,22 +10,28 @@ const SameFolderTasks = (props) => {
   const [WBS, setWBS] = useState({});
 
   useEffect(() => {
-    axios
-      .get(ENDPOINTS.GET_TASK(taskId))
-      .then((res) => {
+    const fetchTaskData = async () => {
+      try {
+        const res = await axios.get(ENDPOINTS.GET_TASK(taskId));
         setTask(res?.data || {});
         setWBSId(res?.data.wbsId || "");
-      })
-      .catch(err => console.log(err));
+      } catch (error) {
+        console.log(error);
+      }
+    }
+    fetchTaskData();
   }, []);
 
   useEffect(() => {
-    axios
-      .get(ENDPOINTS.GET_WBS(wbsId))
-      .then((res) => {
+    const fetchWBSData = async () => {
+      try {
+        const res = axios.get(ENDPOINTS.GET_WBS(wbsId));
         setWBS(res?.data || {})
-      })
-      .catch(err => console.log(err));
+      } catch (error) {
+        console.log(error);
+      }
+    }
+    fetchWBSData();
   }, [])
 
   let projectId = WBS.projectId;
