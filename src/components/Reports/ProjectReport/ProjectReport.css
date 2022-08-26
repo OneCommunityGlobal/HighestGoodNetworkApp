@@ -1,10 +1,19 @@
 .wbs-and-members-blocks-wrapper {
-  display: flex;
-  flex-grow: 1;
-  flex-shrink: 0;
-  justify-content: space-between;
+  display: grid;
+  grid-auto-flow: row;
+  row-gap: 40px;
 }
 
 .wbs-and-members-blocks {
   height: 450px;
+}
+
+@media (min-width: 1180px) {
+
+  .wbs-and-members-blocks-wrapper {
+    grid-auto-flow: column;
+    grid-template-columns: 1fr 1fr;
+    column-gap: 40px;
+  }
+
 }
