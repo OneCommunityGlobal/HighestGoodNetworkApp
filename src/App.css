@@ -1,3 +1,9 @@
+html,
+body,
+#root {
+  height: 100%;
+}
+
 .App {
   text-align: center;
 }
@@ -16,9 +22,11 @@
   right: 0;
   top: 0;
 }
+
 .infringement {
   color: blue;
 }
+
 .profilepic {
   height: 180px;
   width: 180px;
@@ -46,19 +54,23 @@
 }
 
 .bg-super {
-  background-color: #0000cd !important; /* medium blue #0000CD*/
+  background-color: #0000cd !important;
+  /* medium blue #0000CD*/
 }
 
 .bg-awesome {
-  background-color: #990099 !important; /*  violet */
+  background-color: #990099 !important;
+  /*  violet */
 }
 
 .bg-super-awesome {
-  background-color: #660099 !important; /*  purple */
+  background-color: #660099 !important;
+  /*  purple */
 }
 
 .bg-orange {
-  background-color: #ffa500 !important; /*  brighter orange */
+  background-color: #ffa500 !important;
+  /*  brighter orange */
 }
 
 .bg--dark-sea-green {
