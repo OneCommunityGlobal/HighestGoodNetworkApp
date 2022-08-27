@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { Row, Label, Input, Col, FormFeedback, FormGroup, Button } from 'reactstrap';
 import ToggleSwitch from '../UserProfileEdit/ToggleSwitch';
 import moment from 'moment';
-
 import PhoneInput from 'react-phone-input-2';
 import 'react-phone-input-2/lib/style.css';
 import PauseAndResumeButton from 'components/UserManagement/PauseAndResumeButton';
@@ -11,7 +10,6 @@ import { useSelector } from 'react-redux';
 import { getUserTimeZone } from 'services/timezoneApiService';
 import hasPermission from 'utils/permissions';
 import SetUpFinalDayButton from 'components/UserManagement/SetUpFinalDayButton';
-import ActiveCell from 'components/UserManagement/ActiveCell';
 
 const Name = props => {
   const {

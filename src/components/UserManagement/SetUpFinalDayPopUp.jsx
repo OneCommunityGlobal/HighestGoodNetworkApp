@@ -1,7 +1,5 @@
 import React, { useState } from 'react';
-import { toast } from 'react-toastify';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Input, Alert } from 'reactstrap';
-import store from 'store';
 
 /**
  * Modal popup to show the user profile in create mode
@@ -14,14 +12,13 @@ const SetUpFinalDayPopUp= React.memo((props) => {
   const closePopup = (e) => {
     props.onClose();
   };
+
   const deactiveUser = () => {
     if (Date.parse(finalDayDate) > Date.now()) {
       props.onSave(finalDayDate);
-      //toast.success('Your Final Day has been set.');
     } else {
       setDateError(true);
-    }
-    
+    } 
   };
 
   return (
@@ -52,5 +49,4 @@ const SetUpFinalDayPopUp= React.memo((props) => {
     </Modal>
   );
 });
-
 export default SetUpFinalDayPopUp;
