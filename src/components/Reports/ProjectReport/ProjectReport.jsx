@@ -30,14 +30,14 @@ export const ProjectReport = ({ match }) => {
     }
   }, []);
 
-    return (
-      <div>
-        <ReportHeader isActive>
-          <h3>
-            {projectName}
-          </h3>
-        </ReportHeader>
-        <Container fluid className="bg--white py-3 mb-5">
+  return (
+    <div>
+      <ReportHeader isActive={isActive}>
+        <h3>
+          {projectName}
+        </h3>
+      </ReportHeader>
+      <Container fluid className="bg--white py-3 mb-5">
         <div className="container">
           <DropdownButton id="dropdown-basic-button" title="Time Frame">
             <Dropdown.Item href="#/action-1">Past Week</Dropdown.Item>
@@ -62,6 +62,6 @@ export const ProjectReport = ({ match }) => {
           <ProjectMemberTable projectMembers={projectMembers} />
         </div>
       </Container>
-      </div>
-    );
+    </div>
+  );
 };

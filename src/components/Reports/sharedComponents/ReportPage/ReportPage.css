@@ -2,6 +2,7 @@
   display: grid;
   grid-template-columns: 1fr 256px;
   column-gap: 24px;
+  height: calc(100% - 83px + 16px);
   background-color: #faf7fd;
   margin-top: -16px;
   padding: 24px 0 0 24px;

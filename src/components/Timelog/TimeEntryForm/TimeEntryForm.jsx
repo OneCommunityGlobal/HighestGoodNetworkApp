@@ -381,8 +381,6 @@ function TimeEntryForm(props) {
     if (closed === true && isOpen) toggle();
   };
 
-  // console.log('isTangible', data.isTangible == inputs.isTangible);
-
   return (
     <>
       <TangibleInfoModal
@@ -406,26 +404,12 @@ function TimeEntryForm(props) {
         <ModalHeader toggle={toggle}>
           <div>
             {edit ? 'Edit ' : 'Add '}
-            {hasPermission(currentUserRole, 'adminLinks') ? (
-              inputs.isTangible ? (
-                <span style={{ color: 'blue' }}>Tangible </span>
-              ) : (
-                <span style={{ color: 'orange' }}>Intangible </span>
-              )
+            {inputs.isTangible ? (
+              <span style={{ color: 'blue' }}>Tangible </span>
             ) : (
-              inputs.isTangible ? (
-                <span style={{ color: 'blue' }}>Tangible </span>
-              ) : (
-                <span style={{ color: 'orange' }}>Intangible </span>
-              )
+              <span style={{ color: 'orange' }}>Intangible </span>
             )}
-            {/* {inputs.isTangible ? (
-                <span style={{ color: 'blue' }}>Tangible </span>
-              ) : (
-                <span style={{ color: 'orange' }}>Intangible </span>
-              )} */}
-            Time Entry
-            <i
+            Time Entry <i
               className="fa fa-info-circle"
               data-tip
               data-for="registerTip"

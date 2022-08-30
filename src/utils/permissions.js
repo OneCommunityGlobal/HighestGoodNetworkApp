@@ -1,5 +1,5 @@
 const permissions = {
-    'Administrator' : [
+    'Administrator': [
         'seeWeeklySummaryReports',
         'seeUserManagement',
         'seeBadgeManagement',
@@ -38,7 +38,6 @@ const permissions = {
         'editDeleteTeam',
         'handleBlueSquare',
         'resetPasswordOthers',
-        'dataIsTangibleTimelog',
         'toggleSubmitForm',
     ],
     'Volunteer': [
@@ -96,7 +95,6 @@ const permissions = {
         'seeUserProfileInProjects',
         'handleBlueSquare',
         'resetPasswordOthers',
-        'dataIsTangibleTimelog',
         'addDeleteEditOwners',
         'toggleSubmitForm',
     ],

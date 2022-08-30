@@ -60,7 +60,7 @@ export const Header = props => {
   const { isAuthenticated, user, firstName, profilePic } = props.auth;
 
   return (
-    <div>
+    <div className='header-wrapper'>
       <Navbar className="py-3 mb-3" color="dark" dark expand="lg">
         {/**
          * <NavbarBrand tag={Link} to="/" className="d-none d-md-block">
@@ -115,46 +115,46 @@ export const Header = props => {
                 hasPermission(user.role, 'seeProjectManagement') ||
                 hasPermission(user.role, 'seeTeamsManagement') ||
                 hasPermission(user.role, 'seePopupManagement')) && (
-                <UncontrolledDropdown nav inNavbar>
-                  <DropdownToggle nav caret>
-                    {OTHER_LINKS}
-                  </DropdownToggle>
-                  <DropdownMenu>
-                    {hasPermission(user.role, 'seeUserManagement') ? (
-                      <DropdownItem tag={Link} to="/usermanagement">
-                        {USER_MANAGEMENT}
-                      </DropdownItem>
-                    ) : (
-                      <React.Fragment></React.Fragment>
-                    )}
-                    {hasPermission(user.role, 'seeBadgeManagement') ? (
-                      <DropdownItem tag={Link} to="/badgemanagement">
-                        {BADGE_MANAGEMENT}
-                      </DropdownItem>
-                    ) : (
-                      <React.Fragment></React.Fragment>
-                    )}
-                    {hasPermission(user.role, 'seeProjectManagement') && (
-                      <DropdownItem tag={Link} to="/projects">
-                        {PROJECTS}
-                      </DropdownItem>
-                    )}
-                    {hasPermission(user.role, 'seeTeamsManagement') && (
-                      <DropdownItem tag={Link} to="/teams">
-                        {TEAMS}
-                      </DropdownItem>
-                    )}
-                    {hasPermission(user.role, 'seePopupManagement') ? (
-                      <>
-                        <DropdownItem divider />
-                        <DropdownItem tag={Link} to={`/admin/`}>
-                          {POPUP_MANAGEMENT}
+                  <UncontrolledDropdown nav inNavbar>
+                    <DropdownToggle nav caret>
+                      {OTHER_LINKS}
+                    </DropdownToggle>
+                    <DropdownMenu>
+                      {hasPermission(user.role, 'seeUserManagement') ? (
+                        <DropdownItem tag={Link} to="/usermanagement">
+                          {USER_MANAGEMENT}
                         </DropdownItem>
-                      </>
-                    ) : null}
-                  </DropdownMenu>
-                </UncontrolledDropdown>
-              )}
+                      ) : (
+                        <React.Fragment></React.Fragment>
+                      )}
+                      {hasPermission(user.role, 'seeBadgeManagement') ? (
+                        <DropdownItem tag={Link} to="/badgemanagement">
+                          {BADGE_MANAGEMENT}
+                        </DropdownItem>
+                      ) : (
+                        <React.Fragment></React.Fragment>
+                      )}
+                      {hasPermission(user.role, 'seeProjectManagement') && (
+                        <DropdownItem tag={Link} to="/projects">
+                          {PROJECTS}
+                        </DropdownItem>
+                      )}
+                      {hasPermission(user.role, 'seeTeamsManagement') && (
+                        <DropdownItem tag={Link} to="/teams">
+                          {TEAMS}
+                        </DropdownItem>
+                      )}
+                      {hasPermission(user.role, 'seePopupManagement') ? (
+                        <>
+                          <DropdownItem divider />
+                          <DropdownItem tag={Link} to={`/admin/`}>
+                            {POPUP_MANAGEMENT}
+                          </DropdownItem>
+                        </>
+                      ) : null}
+                    </DropdownMenu>
+                  </UncontrolledDropdown>
+                )}
               <NavItem>
                 <NavLink tag={Link} to={`/userprofile/${user.userid}`}>
                   <img
