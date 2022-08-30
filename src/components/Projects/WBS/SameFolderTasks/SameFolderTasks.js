@@ -40,8 +40,8 @@ const SameFolderTasks = (props) => {
   if (task.mother === null || task.mother === taskId) {
     return (
       <div className="App">
-        <p>This task doesn't have tasks in the same folder as itself</p>
-        <a href={`/wbs/tasks/${wbsId}/${projectId}/${wbsName}`}>Click here linking to the WBS contains this task {wbsName}</a>
+        <p>There are no other tasks in this task's folder.</p>
+        <a href={`/wbs/tasks/${wbsId}/${projectId}/${wbsName}`}>Click here to visit the source WBS that contains this task {wbsName}</a>
       </div>
     );
   } else {
