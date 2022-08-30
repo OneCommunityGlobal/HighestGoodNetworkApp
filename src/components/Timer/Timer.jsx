@@ -126,6 +126,8 @@ function Timer() {
          * time and add seconds from database
          * */
         const currentTimeInSeconds = new Date().getTime() / 1000;
+
+        // We need to calculate the offset from the backend here
         const currentTime =
           currentTimeInSeconds - startedAtInSecondsFromBackend + secondsFromBackend + clientOffsetFromBackend;
 
@@ -196,8 +198,9 @@ function Timer() {
        * from any previous timer start / stops
        */
       const currentTimeInSeconds = new Date().getTime() / 1000;
+
+      // Calculating the offset from the server timer
       const currentTime = Math.floor(currentTimeInSeconds - startedAt + startingSeconds + clientOffset) ;
-      // Set to UI
       setSeconds(currentTime);
 
       // Edge Case, if user timer is approaching or at 8 hours we should pause.
