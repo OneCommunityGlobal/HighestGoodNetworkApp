@@ -28,7 +28,7 @@
     "jwt-decode": "^2.2.0",
     "lodash": "^4.17.21",
     "moment": "^2.29.2",
-    "moment-timezone": "^0.5.33",
+    "moment-timezone": "^0.5.35",
     "nanoid": "^3.2.0",
     "pdfmake": "^0.1.65",
     "prop-types": "^15.7.2",
