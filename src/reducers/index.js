@@ -14,7 +14,7 @@ import { weeklySummariesReportReducer } from './weeklySummariesReportReducer';
 // import { actionItemsReducer } from './actionItemsReducer'
 // import { notificationsReducer } from './notificationsReducer'
 import { allProjectsReducer } from './allProjectsReducer';
-import { projectByIdReducer } from './projectByIdReducer';
+import { projectReportReducer } from './projectReportReducer';
 import { userProjectsReducer } from './userProjectsReducer';
 import { projectMembershipReducer } from './projectMembershipReducer';
 import { allTeamsReducer, allUserTeamsReducer } from './allTeamsReducer';
@@ -53,7 +53,7 @@ export default combineReducers({
   //	actionItems: actionItemsReducer,
   //	notifications: notificationsReducer,
   allProjects: allProjectsReducer,
-  project: projectByIdReducer,
+  projectReport: projectReportReducer,
   userProjects: userProjectsReducer,
   projectMembers: projectMembershipReducer,
   managingTeams: managingTeamsReducer,

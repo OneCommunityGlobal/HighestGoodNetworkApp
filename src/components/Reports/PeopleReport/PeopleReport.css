@@ -3,25 +3,6 @@ body {
   /* font-family: 'Lato', sans-serif; */
 }
 
-.header {
-  min-height: 35vh;
-  background: #009FFF;
-  background: linear-gradient(to right, #ec2F4B, #009FFF);
-  color: white;
-  clip-path: ellipse(100vw 60vh at 50% 50%);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.details {
-  width: 100%;
-  text-align: center;
-}
-
-.profile-pic {
-  height: 6rem;
-}
 .test-pic {
   height: 2rem;
 }
@@ -35,10 +16,7 @@ body {
 
 .stats {
   display: flex;
-  justify-content: space-between;
-  flex-basis: 235px;
-  height: 100px;
-  margin: 23px 23px 0px 27px;
+  flex-direction: column;
 }
 
 .heading {
@@ -194,17 +172,8 @@ body {
 /*Table css starts*/
 
 .intro_date {
-  margin: 25px 0px 15px 0px;
+  margin: 16px 0px 16px 0px;
   display: flex;
-  justify-content: space-evenly;
-}
-
-.intro_date h1 {
-  display: inline-flex;
-  vertical-align: top;
-  font-family: 'Open Sans', sans-serif;
-  font-size: 2.5rem;
-  line-height: 28px;
 }
 
 .intro_date div{
@@ -212,4 +181,18 @@ body {
   vertical-align: top;
   font-family: 'Open Sans', sans-serif;
   line-height: 28px;
+}
+
+.people-report-time-logs-wrapper {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  color: white;
+}
+
+.people-report-time-log-block {
+  max-height: 100px;
+  width: 240px;
+  white-space: nowrap;
+  margin-bottom: 16px;
 }

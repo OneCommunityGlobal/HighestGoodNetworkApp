@@ -121,7 +121,7 @@ const TeamMemberTasks = (props) => {
                   <tr key={`${task._id}${index}`} className='task-break'>
                     <td className='task-align'>
                       <p>
-                        <Link to={task.projectId ? `/wbs/tasks/${task.wbsId}/${task.projectId}/${task._id}` : '/'}>
+                        <Link to={task.projectId ? `/wbs/tasks/${task._id}` : '/'}>
                           <span>{`${task.num} ${task.taskName}`} </span>
                         </Link>
                         {
