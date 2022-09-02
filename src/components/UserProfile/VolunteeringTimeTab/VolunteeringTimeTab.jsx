@@ -80,8 +80,6 @@ const WeeklySummaryReqd = props => {
   );
 };
 
-//commented out invalid to remove "!" sign alert on weeklyCommitedHours inpurt.
-//isUserAdmin is currently undefined, !isUserAdmin value is alwasy true.
 const WeeklyCommitedHours = props => {
   if (!props.canEdit) {
     return <p>{props.userProfile.weeklyComittedHours}</p>;
