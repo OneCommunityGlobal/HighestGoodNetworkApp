@@ -1,4 +1,5 @@
 import React from "react";
+import { connect } from 'react-redux';
 import { useState, useEffect } from "react";
 import ReactTooltip from "react-tooltip";
 import axios from 'axios';
@@ -7,9 +8,12 @@ import { Modal, ModalBody, } from 'reactstrap';
 import { Editor } from '@tinymce/tinymce-react';
 import { Link } from "react-router-dom";
 import { ENDPOINTS } from 'utils/URL';
+import { getUserProfile } from "actions/userProfile";
+import hasPermission from "utils/permissions";
 
 const SingleTask = (props) => {
   const taskId = props.match.params.taskId;
+  const { user } = props.auth;
   const [task, setTask] = useState({});
   const [modal, setModal] = useState(false);
   const toggleModel = () => setModal(!modal);
@@ -27,16 +31,18 @@ const SingleTask = (props) => {
     <React.Fragment>
       <ReactTooltip />
       <div className="container-single-task">
-        <nav aria-label="breadcrumb">
-          <ol className="breadcrumb">
-            <NavItem tag={Link} to={`/project/wbs/{task.wbsId}`}>
-              <Button type="button" className="btn btn-secondary">
-                <i className="fa fa-chevron-circle-left" aria-hidden="true"></i>
-              </Button>
-            </NavItem>
-            <div id="single_task_name">{task.taskName}</div>
-          </ol>
-        </nav>
+        {hasPermission(user.role, 'seeProjectManagement') && (
+          <nav aria-label="breadcrumb">
+            <ol className="breadcrumb">
+              <NavItem tag={Link} to={`/wbs/samefoldertasks/${taskId}`}>
+                <Button type="button" className="btn btn-secondary">
+                  <i className="fa fa-chevron-circle-left" aria-hidden="true"></i>
+                </Button>
+              </NavItem>
+              <div id="single_task_name">See tasks in the same folder as "{task.taskName}"</div>
+            </ol>
+          </nav>
+        )}
 
         <table className="table table-bordered tasks-table">
           <thead>
@@ -200,5 +206,7 @@ const SingleTask = (props) => {
   );
 
 }
-
-export default SingleTask;
+const mapStateToProps = (state) => state;
+export default connect(mapStateToProps, {
+  getUserProfile,
+}) (SingleTask);

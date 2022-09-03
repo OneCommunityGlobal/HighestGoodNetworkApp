@@ -19,6 +19,7 @@ import Members from './components/Projects/Members';
 import WBS from './components/Projects/WBS';
 import WBSDetail from './components/Projects/WBS/WBSDetail';
 import SingleTask from './components/Projects/WBS/SingleTask';
+import SameFolderTasks from 'components/Projects/WBS/SameFolderTasks';
 import WeeklySummariesReport from './components/WeeklySummariesReport';
 import Admin from './components/Admin';
 import 'react-toastify/dist/ReactToastify.css';
@@ -75,6 +76,7 @@ export default (
       <ProtectedRoute path="/project/wbs/:projectId" component={WBS} />
       <ProtectedRoute path="/wbs/tasks/:wbsId/:projectId" component={WBSDetail} />
       <ProtectedRoute path="/wbs/tasks/:taskId" component={SingleTask} />
+      <ProtectedRoute path="/wbs/samefoldertasks/:taskId" component={SameFolderTasks} />
       <ProtectedRoute
         path="/usermanagement"
         exact
