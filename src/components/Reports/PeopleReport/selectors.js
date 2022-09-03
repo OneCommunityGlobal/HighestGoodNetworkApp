@@ -11,7 +11,7 @@ export const getPeopleReportData = (state) => ({
   isAssigned: state.isAssigned,
   isActive: state.isActive,
   priority: state.priority,
-  status:state.status,
+  status: state.status,
   hasFilter: state.hasFilter,
   allClassification: state.allClassification,
   classification: state.classification,
@@ -21,3 +21,19 @@ export const getPeopleReportData = (state) => ({
   statusList: state.statusList,
   tangibleHoursReportedThisWeek: parseFloat(state.userProfile.tangibleHoursReportedThisWeek)
 });
+
+export const peopleTasksPieChartViewData = (state) => {
+  const tasksWithLoggedHours = state.userTask.reduce((result, { hoursLogged, _id }) => {
+    if (hoursLogged) {
+      return { ...result, [_id]: hoursLogged }
+    }
+
+    return result;
+  }, {})
+
+  return {
+    tasksWithLoggedHours,
+    showPieChart: Object.keys(tasksWithLoggedHours).length > 0,
+  }
+
+}
