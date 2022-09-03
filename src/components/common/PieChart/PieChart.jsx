@@ -1,11 +1,9 @@
 import { useEffect } from 'react';
 import * as d3 from 'd3';
+import { CHART_RADIUS, CHART_SIZE, pieChartColors } from './constants';
+import './PieChart.css'
 
-const CHART_SIZE = 280;
-const CHART_MARGIN = 40;
-const CHART_RADIUS = CHART_SIZE / 2 - CHART_MARGIN;
-
-export const PieChart = ({ data }) => {
+export const PieChart = ({ data, dataLegend }) => {
 
   const getCreateSvgPie = () => {
     return d3.select("#pie-chart-container")
@@ -17,20 +15,20 @@ export const PieChart = ({ data }) => {
       .attr("transform", `translate(${CHART_SIZE / 2},${CHART_SIZE / 2})`);
   }
 
+  const color = d3.scaleOrdinal()
+    .range(pieChartColors);
+
+  const pie = d3.pie().value(d => d[1])
+
 
   useEffect(() => {
 
-    const pie = d3.pie()
-      .value(d => d[1])
-
-    const color = d3.scaleOrdinal()
-      .range(["rgb(255, 94, 130)", "rgb(179, 104, 210)", "rgb(100, 183, 255)", "rgb(255, 219, 86)", "rgb(94, 255, 219)", "rgb(255, 158, 180)", "rgb(255, 145, 69)", "rgb(0, 146, 178)"]);
-
     const data_ready = pie(Object.entries(data));
 
-    const svgPie = getCreateSvgPie();
+    console.log(data);
+    console.log(dataLegend);
 
-    svgPie
+    getCreateSvgPie()
       .selectAll('whatever')
       .data(data_ready)
       .join('path')
@@ -46,5 +44,17 @@ export const PieChart = ({ data }) => {
     }
   }, [data])
 
-  return <div id="pie-chart-container" className='pie-chart' />
+  return (
+    <div className='pie-chart-wrapper'>
+      <div id="pie-chart-container" className='pie-chart' />
+      <div>
+        {Object.keys(dataLegend).map((key) => (
+          <div key={key} className='pie-chart-legend-item'>
+            <div className='data-legend-color' style={{ backgroundColor: color(key) }} />
+            {dataLegend[key]}
+          </div>
+        ))}
+      </div>
+    </div>
+  )
 };

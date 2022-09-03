@@ -23,16 +23,19 @@ export const getPeopleReportData = (state) => ({
 });
 
 export const peopleTasksPieChartViewData = (state) => {
-  const tasksWithLoggedHours = state.userTask.reduce((result, { hoursLogged, _id }) => {
-    if (hoursLogged) {
-      return { ...result, [_id]: hoursLogged }
-    }
+  const tasksWithLoggedHours = {};
+  const tasksLegend = {};
 
-    return result;
-  }, {})
+  state.userTask.forEach(({ _id, hoursLogged, taskName }) => {
+    if (hoursLogged) {
+      tasksWithLoggedHours[_id] = hoursLogged;
+      tasksLegend[_id] = taskName;
+    }
+  });
 
   return {
     tasksWithLoggedHours,
+    tasksLegend,
     showPieChart: Object.keys(tasksWithLoggedHours).length > 0,
   }
 
