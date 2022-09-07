@@ -9,6 +9,7 @@ import { Editor } from '@tinymce/tinymce-react';
 import { Link } from "react-router-dom";
 import { ENDPOINTS } from 'utils/URL';
 import { getUserProfile } from "actions/userProfile";
+import EditTaskModal from "../WBSDetail/EditTask/EditTaskModal";
 import hasPermission from "utils/permissions";
 
 const SingleTask = (props) => {
@@ -19,12 +20,15 @@ const SingleTask = (props) => {
   const toggleModel = () => setModal(!modal);
 
   useEffect(() => {
-    axios
-      .get(ENDPOINTS.GET_TASK(taskId))
-      .then((res) => {
+    const fetchTaskData = async () => {
+      try {
+        const res = await axios.get(ENDPOINTS.GET_TASK(taskId));
         setTask(res?.data || {})
-      })
-      .catch(err => console.log(err));
+      } catch (error) {
+        console.log(error);
+      }
+    }
+    fetchTaskData();
   }, []);
 
   return ( 
@@ -47,6 +51,9 @@ const SingleTask = (props) => {
         <table className="table table-bordered tasks-table">
           <thead>
             <tr>
+              <th scope="col" data-tip="Action" colSpan="1">
+                Action
+              </th>
               <th scope="col" data-tip="task-num" colSpan="1">
                 #
               </th>
@@ -96,6 +103,19 @@ const SingleTask = (props) => {
           </thead>
           <tbody>
             <tr>
+              <th scope="row">
+                <EditTaskModal
+                  key={`editTask_${task._id}`}
+                  parentNum={task.num}
+                  taskId={task._id}
+                  wbsId={task.wbsId}
+                  parentId1={task.parentId1}
+                  parentId2={task.parentId2}
+                  parentId3={task.parentId3}
+                  mother={task.mother}
+                  level={task.level}
+                />
+              </th>
               <th scope="row">{task.num}</th>
               <td>{task.taskName}</td>
               <td>{task.priority}</td>
