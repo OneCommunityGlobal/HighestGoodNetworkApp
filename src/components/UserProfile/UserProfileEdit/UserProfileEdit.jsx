@@ -84,7 +84,7 @@ class UserProfileEdit extends Component {
     // console.log('edit profile, state:', this.state);
   }
 
-  toggleTab = (tab) => {
+  toggleTab = tab => {
     if (this.state.activeTab !== tab) {
       this.setState({
         activeTab: tab,
@@ -92,9 +92,9 @@ class UserProfileEdit extends Component {
     }
   };
 
-  onDeleteTeam = (deletedTeamId) => {
+  onDeleteTeam = deletedTeamId => {
     const _userProfile = Object.assign({}, this.state.userProfile);
-    const filteredTeam = _userProfile.teams.filter((team) => team._id !== deletedTeamId);
+    const filteredTeam = _userProfile.teams.filter(team => team._id !== deletedTeamId);
     _userProfile.teams = filteredTeam;
 
     this.setState(
@@ -107,10 +107,10 @@ class UserProfileEdit extends Component {
     );
   };
 
-  onDeleteProject = (deletedProjectId) => {
+  onDeleteProject = deletedProjectId => {
     const _userProfile = Object.assign({}, this.state.userProfile);
     const filteredProject = _userProfile.projects.filter(
-      (project) => project._id !== deletedProjectId,
+      project => project._id !== deletedProjectId,
     );
     _userProfile.projects = filteredProject;
 
@@ -124,7 +124,7 @@ class UserProfileEdit extends Component {
     );
   };
 
-  onAssignTeam = (assignedTeam) => {
+  onAssignTeam = assignedTeam => {
     const _userProfile = Object.assign({}, this.state.userProfile);
     if (_userProfile.teams) {
       _userProfile.teams.push(assignedTeam);
@@ -142,7 +142,7 @@ class UserProfileEdit extends Component {
     );
   };
 
-  onAssignProject = (assignedProject) => {
+  onAssignProject = assignedProject => {
     const _userProfile = Object.assign({}, this.state.userProfile);
     if (_userProfile.projects) {
       _userProfile.projects.push(assignedProject);
@@ -164,7 +164,7 @@ class UserProfileEdit extends Component {
     this.props.updateUserProfile(this.props.match.params.userId, this.state.userProfile);
   };
 
-  handleUserProfile = (event) => {
+  handleUserProfile = event => {
     this.setState({
       showWarning: true,
     });
@@ -287,7 +287,7 @@ class UserProfileEdit extends Component {
     }
   };
 
-  handleImageUpload = async (e) => {
+  handleImageUpload = async e => {
     e.preventDefault();
 
     const file = e.target.files[0];
@@ -352,7 +352,7 @@ class UserProfileEdit extends Component {
         });
         break;
       case 'delete':
-        userProfile.teams = userProfile.teams.filter((team) => team._id !== newTeam);
+        userProfile.teams = userProfile.teams.filter(team => team._id !== newTeam);
         this.setState({
           ...userProfile,
         });
@@ -365,7 +365,7 @@ class UserProfileEdit extends Component {
     }
   };
 
-  handleNullState = (kind) => {
+  handleNullState = kind => {
     // console.log('before handle def:', this.state.userProfile);
 
     switch (kind) {
@@ -421,7 +421,7 @@ class UserProfileEdit extends Component {
   updateBlueSquare = (id, dateStamp, summary, kind) => {
     if (kind === 'add') {
       const newBlueSquare = { date: dateStamp, description: summary };
-      this.setState((prevState) => ({
+      this.setState(prevState => ({
         showModal: false,
         userProfile: {
           ...this.state.userProfile,
@@ -432,10 +432,10 @@ class UserProfileEdit extends Component {
       this.setState(() => {
         const currentBlueSquares = this.state.userProfile.infringments;
         if (dateStamp != null) {
-          currentBlueSquares.find((blueSquare) => blueSquare._id === id).date = dateStamp;
+          currentBlueSquares.find(blueSquare => blueSquare._id === id).date = dateStamp;
         }
         if (summary != null) {
-          currentBlueSquares.find((blueSquare) => blueSquare._id === id).description = summary;
+          currentBlueSquares.find(blueSquare => blueSquare._id === id).description = summary;
         }
         return {
           showModal: false,
@@ -447,7 +447,7 @@ class UserProfileEdit extends Component {
       });
     } else if (kind === 'delete') {
       this.setState(() => {
-        const currentBlueSquares = this.state.userProfile.infringments.filter((blueSquare) => {
+        const currentBlueSquares = this.state.userProfile.infringments.filter(blueSquare => {
           if (blueSquare._id !== id) {
             return blueSquare;
           }
@@ -463,7 +463,7 @@ class UserProfileEdit extends Component {
     }
   };
 
-  handleSaveError = (message) => {
+  handleSaveError = message => {
     this.setState({
       showModal: true,
       modalMessage: 'Must save first.',
@@ -472,7 +472,7 @@ class UserProfileEdit extends Component {
     });
   };
 
-  handleSubmit = async (event) => {
+  handleSubmit = async event => {
     const { updateUserProfile, match } = this.props;
     const { userProfile, formValid } = this.state;
     const submitResult = await updateUserProfile(match.params.userId, userProfile);
@@ -609,7 +609,7 @@ class UserProfileEdit extends Component {
     const isUserSelf = targetUserId === requestorId;
     // const isUserAdmin = requestorRole === 'Administrator';
     let canEditFields;
-    if(userProfile.role !== 'Owner'){
+    if (userProfile.role !== 'Owner') {
       canEditFields = hasPermission(requestorRole, 'editUserProfile') || isUserSelf;
     } else {
       canEditFields = hasPermission(requestorRole, 'addDeleteEditOwners') || isUserSelf;
@@ -940,7 +940,7 @@ class UserProfileEdit extends Component {
                           value={userProfile.weeklyComittedHours}
                           onChange={this.handleUserProfile}
                           placeholder="weeklyCommittedHours"
-                          invalid={!hasPermission(requestorRole, 'editUserProfile')}
+                          invalid={/*!hasPermission(requestorRole, 'editUserProfile')*/ true}
                         />
                       </Col>
                     </Row>
