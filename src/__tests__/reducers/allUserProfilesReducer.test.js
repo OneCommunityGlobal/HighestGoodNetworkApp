@@ -1,14 +1,12 @@
 import { allUserProfilesReducer } from '../../reducers/allUserProfilesReducer';
 import * as types from '../../constants/userManagement';
 
-const fetched = (data) => {
-  return {
-    ...data,
-    fetching: false,
-    fetched: true,
-    status: '200',
-  };
-};
+const fetched = (data) => ({
+  ...data,
+  fetching: false,
+  fetched: true,
+  status: '200',
+});
 
 describe('User Profiles Reducer', () => {
   it('start fetch', () => {

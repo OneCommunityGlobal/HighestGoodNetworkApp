@@ -3,7 +3,8 @@ import { shallow, mount } from 'enzyme';
 import { MonthlyEffort } from './MonthlyEffort';
 
 describe('Monthly Effort component structure', () => {
-  let mountedMonthlyEffort, props;
+  let mountedMonthlyEffort; let
+    props;
   beforeEach(() => {
     props = {
       auth: { isAuthenticated: true, user: { userid: 'abcdef' } },

@@ -1,14 +1,14 @@
-/*********************************************************************************
+/** *******************************************************************************
  * Action: PROJECTS
  * Author: Henry Ng - 01/17/20
- ********************************************************************************/
+ ******************************************************************************* */
 import axios from 'axios';
-import * as types from './../constants/projects';
+import * as types from '../constants/projects';
 import { ENDPOINTS } from '../utils/URL';
 
-/*******************************************
+/** *****************************************
  * ACTION CREATORS
- *******************************************/
+ ****************************************** */
 
 /**
  * Call API to get all projects
@@ -35,7 +35,7 @@ export const fetchAllProjects = () => {
  */
 export const postNewProject = (projectName, projectCategory, isActive) => {
   const url = ENDPOINTS.PROJECTS;
-  //console.log("Call API: ", url);
+  // console.log("Call API: ", url);
   return async (dispatch) => {
     let status = 200;
     let _id = null;
@@ -52,10 +52,10 @@ export const postNewProject = (projectName, projectCategory, isActive) => {
     dispatch(
       addNewProject(
         {
-          _id: _id,
-          projectName: projectName,
+          _id,
+          projectName,
           category: projectCategory,
-          isActive: isActive,
+          isActive,
         },
         status,
       ),
@@ -70,7 +70,7 @@ export const postNewProject = (projectName, projectCategory, isActive) => {
 export const deleteProject = (projectId) => {
   const url = ENDPOINTS.PROJECT + projectId;
 
-  //console.log("Delete", projectId);
+  // console.log("Delete", projectId);
 
   return async (dispatch) => {
     let status = 200;
@@ -99,9 +99,9 @@ export const modifyProject = (type, projectId, projectName, category, isActive) 
 
     try {
       const res = await axios.put(url, {
-        projectName: projectName,
-        category: category,
-        isActive: isActive,
+        projectName,
+        category,
+        isActive,
       });
       status = res.status;
       console.log(status);
@@ -114,64 +114,52 @@ export const modifyProject = (type, projectId, projectName, category, isActive) 
   };
 };
 
-/*******************************************
+/** *****************************************
  * PLAIN OBJECT ACTIONS
- *******************************************/
+ ****************************************** */
 
 /**
  * Set a flag that fetching projects
  */
-export const setProjectsStart = () => {
-  return {
-    type: types.FETCH_PROJECTS_START,
-  };
-};
+export const setProjectsStart = () => ({
+  type: types.FETCH_PROJECTS_START,
+});
 
 /**
  * set Projects in store
  * @param payload : projects []
  */
-export const setProjects = (payload) => {
-  return {
-    type: types.RECEIVE_PROJECTS,
-    payload,
-  };
-};
+export const setProjects = (payload) => ({
+  type: types.RECEIVE_PROJECTS,
+  payload,
+});
 
 /**
  * Error when setting project
  * @param payload : error status code
  */
-export const setProjectsError = (payload) => {
-  return {
-    type: types.FETCH_PROJECTS_ERROR,
-    payload,
-  };
-};
+export const setProjectsError = (payload) => ({
+  type: types.FETCH_PROJECTS_ERROR,
+  payload,
+});
 
-export const addNewProject = (payload, status) => {
-  return {
-    type: types.ADD_NEW_PROJECT,
-    payload,
-    status,
-  };
-};
+export const addNewProject = (payload, status) => ({
+  type: types.ADD_NEW_PROJECT,
+  payload,
+  status,
+});
 
-export const removeProject = (projectId, status) => {
-  return {
-    type: types.DELETE_PROJECT,
-    projectId,
-    status,
-  };
-};
+export const removeProject = (projectId, status) => ({
+  type: types.DELETE_PROJECT,
+  projectId,
+  status,
+});
 
-export const updateProject = (projectId, projectName, category, isActive, status) => {
-  return {
-    type: types.UPDATE_PROJECT,
-    projectId,
-    projectName,
-    category,
-    isActive,
-    status,
-  };
-};
+export const updateProject = (projectId, projectName, category, isActive, status) => ({
+  type: types.UPDATE_PROJECT,
+  projectId,
+  projectName,
+  category,
+  isActive,
+  status,
+});

@@ -1,16 +1,17 @@
 import React from 'react';
 import { shallow } from 'enzyme';
+import { render } from '@testing-library/react';
 import { ForcePasswordUpdate } from './ForcePasswordUpdate';
 import { clearErrors } from '../../actions/errorsActions';
-import { render } from '@testing-library/react';
 
 describe('Force Password Update page structure', () => {
-  let mountedFPUpdate, props;
+  let mountedFPUpdate; let
+    props;
   beforeEach(() => {
     props = {
       auth: { isAuthenticated: true },
       errors: {},
-      clearErrors: clearErrors,
+      clearErrors,
       forcePasswordUpdate: ForcePasswordUpdate,
     };
     mountedFPUpdate = shallow(<ForcePasswordUpdate {...props} />);
@@ -34,7 +35,8 @@ describe('Force Password Update page structure', () => {
 });
 
 describe('When user tries to input data', () => {
-  let mountedFPUpdate, props, fPU;
+  let mountedFPUpdate; let props; let
+    fPU;
 
   beforeEach(() => {
     fPU = jest.fn();
@@ -42,7 +44,7 @@ describe('When user tries to input data', () => {
       match: { params: { userId: '5edf141c78f1380017b829a6' } },
       auth: { isAuthenticated: true },
       errors: {},
-      clearErrors: clearErrors,
+      clearErrors,
       forcePasswordUpdate: fPU,
     };
     mountedFPUpdate = shallow(<ForcePasswordUpdate {...props} />);

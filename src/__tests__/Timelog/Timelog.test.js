@@ -1,12 +1,14 @@
 import React from 'react';
 import { screen, fireEvent, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { authMock, userProfileMock, timeEntryMock, userProjectMock } from '../mockStates';
-import { renderWithRouterMatch } from '../utils';
 import thunk from 'redux-thunk';
 import { Route } from 'react-router-dom';
-import Timelog from '../../components/Timelog/Timelog';
 import configureStore from 'redux-mock-store';
+import {
+  authMock, userProfileMock, timeEntryMock, userProjectMock,
+} from '../mockStates';
+import { renderWithRouterMatch } from '../utils';
+import Timelog from '../../components/Timelog/Timelog';
 import * as actions from '../../actions/timeEntries';
 
 /* const mockStore = configureStore([thunk]);
@@ -35,7 +37,7 @@ describe('<Timelog/>', () => {
   });
   it('should render Timelog without crashing', () => {});
   it('should render <TimeEntryForm /> after click `Add Time Entry` button', async () => {
-    const button = screen.getByRole('button', { name: /add.*/ /*i  });
+    const button = screen.getByRole('button', { name: /add. */ /* i  });
      /* expect(button).toBeInTheDocument();
     userEvent.click(button);
     await waitFor(() => screen.getByRole('dialog'));

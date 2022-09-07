@@ -1,14 +1,18 @@
 import React from 'react';
-import { screen, render, fireEvent, waitFor, getByText } from '@testing-library/react';
+import {
+  screen, render, fireEvent, waitFor, getByText,
+} from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import thunk from 'redux-thunk';
 import configureStore from 'redux-mock-store';
 import moment from 'moment-timezone';
-import { authMock, userProfileMock, timeEntryMock, userProjectMock } from '../mockStates';
+import { icon } from '@fortawesome/fontawesome-svg-core';
+import {
+  authMock, userProfileMock, timeEntryMock, userProjectMock,
+} from '../mockStates';
 import { renderWithProvider, renderWithRouterMatch } from '../utils';
 import TimeEntryForm from '../../components/Timelog/TimeEntryForm';
 import * as actions from '../../actions/timeEntries';
-import { icon } from '@fortawesome/fontawesome-svg-core';
 
 const mockStore = configureStore([thunk]);
 
@@ -60,7 +64,7 @@ describe('<TimeEntryForm />', () => {
     expect(screen.getAllByRole('spinbutton')).toHaveLength(2);
     expect(screen.getByLabelText('Date')).toBeInTheDocument();
     expect(screen.getByDisplayValue('Select Project/Task')).toBeInTheDocument();
-    //expect(screen.getByLabelText(/notes/i)).toBeInTheDocument();
+    // expect(screen.getByLabelText(/notes/i)).toBeInTheDocument();
     userEvent.type(screen.getAllByRole('spinbutton')[0], '1');
     expect(screen.getAllByRole('spinbutton')[0]).toHaveValue(1);
 
@@ -68,13 +72,13 @@ describe('<TimeEntryForm />', () => {
       target: { value: userProjectMock.projects[0].projectId },
     });
     await sleep(100);
-    //userEvent.selectOptions(screen.getByRole('combobox'), userProjectMock.projects[0].projectId);
+    // userEvent.selectOptions(screen.getByRole('combobox'), userProjectMock.projects[0].projectId);
     const notes = screen.getByLabelText(/notes/i);
     fireEvent.change(notes, { target: { value: 'Test123' } });
     await sleep(1000);
     userEvent.click(screen.getByRole('button', { name: /submit/i }));
-    //expect(actions.postTimeEntry).toHaveBeenCalledTimes(1);
-    //expect(actions.postTimeEntry).toHaveBeenCalledWith(expectedPayload);
+    // expect(actions.postTimeEntry).toHaveBeenCalledTimes(1);
+    // expect(actions.postTimeEntry).toHaveBeenCalledWith(expectedPayload);
   });
   it('should render the openInfo and the content', () => {
     const tips = screen.getByTitle('timeEntryTip');
@@ -135,7 +139,7 @@ describe('<TimeEntryFormEdit />', () => {
     renderWithProvider(
       <TimeEntryForm
         userId={data.personId}
-        edit={true}
+        edit
         data={data}
         isOpen
         toggle={toggle}
@@ -171,7 +175,7 @@ describe('<TimeEntryFormEdit />', () => {
     expect(noteField).toBeInTheDocument();
     fireEvent.change(hours, { target: { value: '6' } });
     await sleep(10);
-    //userEvent.selectOptions(projectField,userProjectMock.projects[1].projectId)
+    // userEvent.selectOptions(projectField,userProjectMock.projects[1].projectId)
     fireEvent.change(noteField, {
       target: {
         value:
@@ -179,7 +183,7 @@ describe('<TimeEntryFormEdit />', () => {
       },
     });
     expect(hours).toHaveValue(6);
-    //expect(projectField).toHaveValue(userProjectMock.projects[1].projectId);
+    // expect(projectField).toHaveValue(userProjectMock.projects[1].projectId);
     fireEvent.click(screen.getByRole('button', { name: /save/i }));
     fireEvent.click(screen.getByRole('button', { name: /close/i }));
     fireEvent.click(screen.getByRole('button', { name: /save/i }));
@@ -187,7 +191,7 @@ describe('<TimeEntryFormEdit />', () => {
     await waitFor(() => {
       expect(toggle).toHaveBeenCalled();
     });
-    //expect(screen.getByText(/You are about to edit your time*/i)).toBeInTheDocument();
+    // expect(screen.getByText(/You are about to edit your time*/i)).toBeInTheDocument();
     /*
     userEvent.click(screen.getByRole('button', { name: /save/i }));
     expect(actions.editTimeEntry).toHaveBeenCalledTimes(1);

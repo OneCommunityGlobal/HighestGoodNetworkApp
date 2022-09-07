@@ -11,7 +11,7 @@ export const getPeopleReportData = (state) => ({
   isAssigned: state.isAssigned,
   isActive: state.isActive,
   priority: state.priority,
-  status:state.status,
+  status: state.status,
   hasFilter: state.hasFilter,
   allClassification: state.allClassification,
   classification: state.classification,
@@ -19,5 +19,5 @@ export const getPeopleReportData = (state) => ({
   classificationList: state.classificationList,
   priorityList: state.priorityList,
   statusList: state.statusList,
-  tangibleHoursReportedThisWeek: parseFloat(state.userProfile.tangibleHoursReportedThisWeek)
+  tangibleHoursReportedThisWeek: parseFloat(state.userProfile.tangibleHoursReportedThisWeek),
 });

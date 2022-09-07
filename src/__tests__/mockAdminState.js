@@ -1,4 +1,4 @@
-let dt = new Date();
+const dt = new Date();
 dt.setDate(dt.getDate() + 1);
 
 export default {

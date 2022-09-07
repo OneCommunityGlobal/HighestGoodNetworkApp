@@ -40,31 +40,29 @@ const server = setupServer(
     }
     return res(ctx.status(403), ctx.json({ message: 'Invalid email and/ or password.' }));
   }),
-  rest.get(ApiEndpoint + '/userprofile/*', (req, res, ctx) => res(ctx.status(200), ctx.json({}))),
-  rest.get(ApiEndpoint + '/api/dashboard/*', (req, res, ctx) =>
-    res(
-      ctx.status(200),
-      ctx.json([
-        {
-          personId: '5edf141c78f1380017b829a6',
-          name: 'Dev Admin',
-          weeklyComittedHours: 10,
-          totaltime_hrs: 6,
-          totaltangibletime_hrs: 6,
-          totalintangibletime_hrs: 0,
-          percentagespentintangible: 100,
-          didMeetWeeklyCommitment: false,
-          weeklycommited: 10,
-          tangibletime: 6,
-          intangibletime: 0,
-          tangibletimewidth: 100,
-          intangibletimewidth: 0,
-          tangiblebarcolor: 'orange',
-          totaltime: 6,
-        },
-      ]),
-    ),
-  ),
+  rest.get(`${ApiEndpoint}/userprofile/*`, (req, res, ctx) => res(ctx.status(200), ctx.json({}))),
+  rest.get(`${ApiEndpoint}/api/dashboard/*`, (req, res, ctx) => res(
+    ctx.status(200),
+    ctx.json([
+      {
+        personId: '5edf141c78f1380017b829a6',
+        name: 'Dev Admin',
+        weeklyComittedHours: 10,
+        totaltime_hrs: 6,
+        totaltangibletime_hrs: 6,
+        totalintangibletime_hrs: 0,
+        percentagespentintangible: 100,
+        didMeetWeeklyCommitment: false,
+        weeklycommited: 10,
+        tangibletime: 6,
+        intangibletime: 0,
+        tangibletimewidth: 100,
+        intangibletimewidth: 0,
+        tangiblebarcolor: 'orange',
+        totaltime: 6,
+      },
+    ]),
+  )),
   rest.get(userProjectsUrl, (req, res, ctx) => res(ctx.status(200), ctx.json([]))),
   rest.get(timerUrl, (req, res, ctx) => res(ctx.status(200), ctx.json({}))),
   rest.get('*', (req, res, ctx) => {
@@ -88,9 +86,9 @@ mockState.auth.isAuthenticated = false;
 describe('Login behavior', () => {
   let loginMountedPage;
 
- it('should perform correct redirection if user tries to access a proctected route from some other location', async () => {
-  jest.setTimeout(10000)  
-  const rt = '/updatepassword/5edf141c78f1380017b829a6';
+  it('should perform correct redirection if user tries to access a proctected route from some other location', async () => {
+    jest.setTimeout(10000);
+    const rt = '/updatepassword/5edf141c78f1380017b829a6';
     const hist = createMemoryHistory({ initialEntries: [rt] });
     loginMountedPage = renderWithRouterMatch(routes, {
       initialState: mockState,
@@ -98,7 +96,7 @@ describe('Login behavior', () => {
       history: hist,
     });
 
-    //This errors out should look into it.
+    // This errors out should look into it.
     fireEvent.change(screen.getByLabelText('Email:'), {
       target: { value: 'validEmail@gmail.com' },
     });
@@ -111,10 +109,10 @@ describe('Login behavior', () => {
     await waitFor(() => {
       expect(screen.getByLabelText('Current Password:')).toBeTruthy();
     });
-  }); 
+  });
 
   it('should redirect to dashboard if no previous redirection', async () => {
-    //TEST FAILING NEED TO FIX
+    // TEST FAILING NEED TO FIX
     // const rt = '/login';
     // const hist = createMemoryHistory({ initialEntries: [rt] });
     // loginMountedPage = renderWithRouterMatch(routes, { initialState: mockState, route: rt, history: hist });
@@ -132,7 +130,7 @@ describe('Login behavior', () => {
   });
 
   it('should redirect to forcePassword Update if new User', async () => {
-    //TEST FAILING NEED TO FIX
+    // TEST FAILING NEED TO FIX
     // const rt = '/login';
     // const hist = createMemoryHistory({ initialEntries: [rt] });
     // loginMountedPage = renderWithRouterMatch(routes, { initialState: mockState, route: rt, history: hist });

@@ -73,7 +73,9 @@ describe('Task Reducer', () => {
         {
           taskItems: [
             { taskId: 5, level: 0, num: '1' },
-            { taskId: 0, level: 0, num: '2', _id: 0 },
+            {
+              taskId: 0, level: 0, num: '2', _id: 0,
+            },
             { taskId: 1, level: 0, num: '3' },
           ],
         },
@@ -92,12 +94,24 @@ describe('Task Reducer', () => {
       expect(allTasks).toMatchObject({
         taskItems: [
           { taskId: 5, level: 0, num: '1' },
-          { taskId: 0, level: 0, num: '2', _id: 0 },
-          { taskId: 2, level: 1, num: '2.1.0.0.0', hasChildren: false },
-          { taskId: 3, level: 2, num: '2.2.1.0.0', hasChildren: false },
-          { taskId: 7, level: 2, num: '2.2.1.0.0', hasChildren: false },
-          { taskId: 4, level: 2, num: '2.2.2.0.0', hasChildren: false },
-          { taskId: 6, level: 3, num: '2.2.2.1.0', hasChildren: false },
+          {
+            taskId: 0, level: 0, num: '2', _id: 0,
+          },
+          {
+            taskId: 2, level: 1, num: '2.1.0.0.0', hasChildren: false,
+          },
+          {
+            taskId: 3, level: 2, num: '2.2.1.0.0', hasChildren: false,
+          },
+          {
+            taskId: 7, level: 2, num: '2.2.1.0.0', hasChildren: false,
+          },
+          {
+            taskId: 4, level: 2, num: '2.2.2.0.0', hasChildren: false,
+          },
+          {
+            taskId: 6, level: 3, num: '2.2.2.1.0', hasChildren: false,
+          },
           { taskId: 1, level: 0, num: '3' },
         ],
         fetched: true,
@@ -112,7 +126,9 @@ describe('Task Reducer', () => {
       {
         taskItems: [
           { taskId: 5, level: 0, num: '1' },
-          { taskId: 0, level: 0, num: '2', _id: 0 },
+          {
+            taskId: 0, level: 0, num: '2', _id: 0,
+          },
           { taskId: 1, level: 0, num: '3' },
         ],
       },
@@ -125,9 +141,15 @@ describe('Task Reducer', () => {
     expect(allTasks).toMatchObject({
       taskItems: [
         { taskId: 5, level: 0, num: '1' },
-        { taskId: 2, level: 1, num: '2.1.0.0.0', hasChildren: false },
-        { taskId: 0, level: 0, num: '2', _id: 0, hasChildren: false },
-        { taskId: 1, level: 0, num: '3', hasChildren: false },
+        {
+          taskId: 2, level: 1, num: '2.1.0.0.0', hasChildren: false,
+        },
+        {
+          taskId: 0, level: 0, num: '2', _id: 0, hasChildren: false,
+        },
+        {
+          taskId: 1, level: 0, num: '3', hasChildren: false,
+        },
       ],
       fetched: true,
       fetching: false,
@@ -141,7 +163,9 @@ describe('Task Reducer', () => {
         taskItems: [
           { num: '1' },
           { num: '2', _id: 0 },
-          { num: '2.1', parentId1: 0, parentId2: 0, parentId3: 0 },
+          {
+            num: '2.1', parentId1: 0, parentId2: 0, parentId3: 0,
+          },
           { num: '3' },
         ],
       },

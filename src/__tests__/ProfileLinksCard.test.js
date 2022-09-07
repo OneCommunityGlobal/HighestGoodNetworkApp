@@ -1,6 +1,6 @@
 import React from 'react';
-import ProfileLinksCard from '../components/ProfileLinks/ProfileLinks';
 import { shallow } from 'enzyme';
+import ProfileLinksCard from '../components/ProfileLinks/ProfileLinks';
 
 it('verifying the ProfileLinksCard component structure', () => {
   // const component = shallow(<ProfileLinksCard

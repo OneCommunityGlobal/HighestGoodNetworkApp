@@ -1,12 +1,12 @@
-import React from "react";
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from 'react';
+
 import axios from 'axios';
 import { ENDPOINTS } from 'utils/URL';
 
-const SameFolderTasks = (props) => {
-  const taskId = props.match.params.taskId;
+function SameFolderTasks(props) {
+  const { taskId } = props.match.params;
   const [task, setTask] = useState({});
-  const [wbsId, setWBSId] = useState("");
+  const [wbsId, setWBSId] = useState('');
   const [WBS, setWBS] = useState({});
 
   useEffect(() => {
@@ -14,11 +14,11 @@ const SameFolderTasks = (props) => {
       try {
         const res = await axios.get(ENDPOINTS.GET_TASK(taskId));
         setTask(res?.data || {});
-        setWBSId(res?.data.wbsId || "");
+        setWBSId(res?.data.wbsId || '');
       } catch (error) {
         console.log(error);
       }
-    }
+    };
     fetchTaskData();
   }, []);
 
@@ -26,30 +26,31 @@ const SameFolderTasks = (props) => {
     const fetchWBSData = async () => {
       try {
         const res = axios.get(ENDPOINTS.GET_WBS(wbsId));
-        setWBS(res?.data || {})
+        setWBS(res?.data || {});
       } catch (error) {
         console.log(error);
       }
-    }
+    };
     fetchWBSData();
-  }, [])
+  }, []);
 
-  let projectId = WBS.projectId;
-  let wbsName = WBS.wbsName;
+  const { projectId } = WBS;
+  const { wbsName } = WBS;
 
   if (task.mother === null || task.mother === taskId) {
     return (
       <div className="App">
         <p>There are no other tasks in this task's folder.</p>
-        <a href={`/wbs/tasks/${wbsId}/${projectId}/${wbsName}`}>Click here to visit the source WBS that contains this task {wbsName}</a>
+        <a href={`/wbs/tasks/${wbsId}/${projectId}/${wbsName}`}>
+          Click here to visit the source WBS that contains this task
+          {wbsName}
+        </a>
       </div>
     );
-  } else {
-    return (
-      <p>the same folder tasks </p>
-    );
   }
-
+  return (
+    <p>the same folder tasks </p>
+  );
 }
 
 export default SameFolderTasks;

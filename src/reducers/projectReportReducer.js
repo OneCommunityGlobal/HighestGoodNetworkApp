@@ -1,6 +1,6 @@
 import { combineReducers } from 'redux';
-import { projectByIdReducer } from "./projectByIdReducer";
-import { GET_PROJECT_REPORT_BEGIN, GET_PROJECT_REPORT_END } from "../components/Reports/ProjectReport/actions";
+import { projectByIdReducer } from './projectByIdReducer';
+import { GET_PROJECT_REPORT_BEGIN, GET_PROJECT_REPORT_END } from '../components/Reports/ProjectReport/actions';
 
 export const projectReportReducer = combineReducers({
   project: projectByIdReducer,
@@ -10,8 +10,8 @@ export const projectReportReducer = combineReducers({
         return true;
       case GET_PROJECT_REPORT_END:
         return false;
-      default: 
+      default:
         return state;
     }
-  }
+  },
 });

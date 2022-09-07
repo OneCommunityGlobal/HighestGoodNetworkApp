@@ -2,6 +2,7 @@ import React from 'react';
 import { screen, render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import UserTableSearchHeader from '../../components/UserManagement/UserTableSearchHeader';
+
 describe('user table search header row', () => {
   let onFirstNameSearch;
   let onLastNameSearch;

@@ -5,7 +5,9 @@ import configureStore from 'redux-mock-store';
 import { Route } from 'react-router-dom';
 import TimelogNavbar from '../../components/Timelog/TimelogNavbar';
 import { renderWithRouterMatch } from '../utils';
-import { authMock, userProfileMock, timeEntryMock, userProjectMock } from '../mockStates';
+import {
+  authMock, userProfileMock, timeEntryMock, userProjectMock,
+} from '../mockStates';
 
 const mockStore = configureStore();
 const userId = '5edf141c78f1380017b829a6';

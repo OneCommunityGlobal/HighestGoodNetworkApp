@@ -7,12 +7,10 @@ const initialUserProfileState = {
   isActive: '',
 };
 
-export const updateObject = (oldObject, updatedProperties) => {
-  return {
-    ...oldObject,
-    ...updatedProperties,
-  };
-};
+export const updateObject = (oldObject, updatedProperties) => ({
+  ...oldObject,
+  ...updatedProperties,
+});
 
 export const userProfileByIdReducer = (userProfile = initialUserProfileState, action) => {
   if (action.type === GET_USER_PROFILE) {

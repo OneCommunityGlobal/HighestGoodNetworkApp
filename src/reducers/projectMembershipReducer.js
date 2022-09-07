@@ -1,4 +1,4 @@
-import * as types from './../constants/projectMembership';
+import * as types from '../constants/projectMembership';
 
 const allMembershipInital = {
   projectName: '',
@@ -12,9 +12,13 @@ const allMembershipInital = {
 export const projectMembershipReducer = (allMembership = allMembershipInital, action) => {
   switch (action.type) {
     case types.FETCH_MEMBERS_START:
-      return { ...allMembership, fetched: false, fetching: true, error: 'none' };
+      return {
+        ...allMembership, fetched: false, fetching: true, error: 'none',
+      };
     case types.FETCH_MEMBERS_ERROR:
-      return { ...allMembership, fetched: true, fetching: false, error: action.err };
+      return {
+        ...allMembership, fetched: true, fetching: false, error: action.err,
+      };
     case types.RECEIVE_MEMBERS:
       return {
         ...allMembership,
@@ -24,9 +28,13 @@ export const projectMembershipReducer = (allMembership = allMembershipInital, ac
         error: 'none',
       };
     case types.FIND_USERS_START:
-      return { ...allMembership, fetched: false, fetching: true, error: 'none' };
+      return {
+        ...allMembership, fetched: false, fetching: true, error: 'none',
+      };
     case types.FIND_USERS_ERROR:
-      return { ...allMembership, fetched: true, fetching: false, error: action.err };
+      return {
+        ...allMembership, fetched: true, fetching: false, error: action.err,
+      };
     case types.FOUND_USERS:
       return {
         ...allMembership,
@@ -38,9 +46,11 @@ export const projectMembershipReducer = (allMembership = allMembershipInital, ac
     case types.ADD_NEW_MEMBER:
       return { ...allMembership, members: [action.member, ...allMembership.members] };
     case types.ADD_NEW_MEMBER_ERROR:
-      return { ...allMembership, fetched: true, fetching: false, error: action.err };
+      return {
+        ...allMembership, fetched: true, fetching: false, error: action.err,
+      };
     case types.DELETE_MEMBER:
-      let indexMember = allMembership.members.findIndex((member) => member._id === action.userId);
+      const indexMember = allMembership.members.findIndex((member) => member._id === action.userId);
       return {
         ...allMembership,
         members: [
@@ -49,7 +59,7 @@ export const projectMembershipReducer = (allMembership = allMembershipInital, ac
         ],
       };
     case types.REMOVE_FOUND_USER:
-      let indexUser = allMembership.foundUsers.findIndex((user) => user._id === action.userId);
+      const indexUser = allMembership.foundUsers.findIndex((user) => user._id === action.userId);
       return {
         ...allMembership,
         foundUsers: [

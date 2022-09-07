@@ -15,7 +15,7 @@ export const getUserProfile = (userId) => {
     let loggedOut = false;
     const res = await axios.get(url).catch((error) => {
       if (error.status === 401) {
-        //logout error
+        // logout error
         loggedOut = true;
       }
     });

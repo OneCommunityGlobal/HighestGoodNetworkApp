@@ -1,7 +1,7 @@
-/*********************************************************
+/** *******************************************************
  * There is the store to store constants that relate to
  * actions which will be sent to the reducers
- *********************************************************/
+ ******************************************************** */
 
 // INIT MEMBERS
 export const FETCH_MEMBERS_START = 'FETCH_MEMBERS_START';
