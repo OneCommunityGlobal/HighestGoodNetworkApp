@@ -25,9 +25,6 @@ export const PieChart = ({ data, dataLegend }) => {
 
     const data_ready = pie(Object.entries(data));
 
-    console.log(data);
-    console.log(dataLegend);
-
     getCreateSvgPie()
       .selectAll('whatever')
       .data(data_ready)
@@ -51,7 +48,7 @@ export const PieChart = ({ data, dataLegend }) => {
         {Object.keys(dataLegend).map((key) => (
           <div key={key} className='pie-chart-legend-item'>
             <div className='data-legend-color' style={{ backgroundColor: color(key) }} />
-            {dataLegend[key]}
+            <div className='data-legend-info'>{dataLegend[key].map((legendPart) => <div>{legendPart}</div>)}</div>
           </div>
         ))}
       </div>

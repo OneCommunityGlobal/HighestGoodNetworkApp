@@ -29,7 +29,7 @@ export const peopleTasksPieChartViewData = (state) => {
   state.userTask.forEach(({ _id, hoursLogged, taskName }) => {
     if (hoursLogged) {
       tasksWithLoggedHours[_id] = hoursLogged;
-      tasksLegend[_id] = taskName;
+      tasksLegend[_id] = [taskName, Math.round(hoursLogged * 100) / 100];
     }
   });
 

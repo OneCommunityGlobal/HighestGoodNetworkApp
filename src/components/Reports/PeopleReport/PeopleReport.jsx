@@ -499,9 +499,7 @@ class PeopleReport extends Component {
           </ReportBlock>
         </div>
 
-        <ReportBlock>
-          <PeopleTasksPieChart />
-        </ReportBlock>
+        <PeopleTasksPieChart />
 
         <ReportBlock>
           <div className="intro_date">
