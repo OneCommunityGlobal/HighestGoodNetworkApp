@@ -69,7 +69,7 @@ class Timelog extends Component {
   initialState = {
     modal: false,
     summary: false,
-    activeTab: 0,
+    activeTab: 1,
     projectsSelected: ['all'],
     fromDate: this.startOfWeek(0),
     toDate: this.endOfWeek(0),
@@ -213,9 +213,9 @@ class Timelog extends Component {
   //if the activeTab is 3, render Viewing Time Entries from startOfDate to endOfDate
   //Else subtract activeTab
   renderTab(data) {
-    if (this.state.activeTab === 4) {
+    if (this.state.activeTab === 0) {
       return <></>;
-    } else if (this.state.activeTab === 3) {
+    } else if (this.state.activeTab === 4) {
       return (
         <p className="ml-1">
           Viewing time Entries from <b>{this.state.fromDate}</b> to <b>{this.state.toDate}</b>
@@ -224,8 +224,8 @@ class Timelog extends Component {
     } else {
       return (
         <p className="ml-1">
-          Viewing time Entries from <b>{this.startOfWeek(this.state.activeTab)}</b> to{' '}
-          <b>{this.endOfWeek(this.state.activeTab)}</b>
+          Viewing time Entries from <b>{this.startOfWeek(this.state.activeTab - 1)}</b> to{' '}
+          <b>{this.endOfWeek(this.state.activeTab - 1)}</b>
         </p>
       );
     }
@@ -443,21 +443,20 @@ class Timelog extends Component {
                           href="#"
                           to="#"
                         >
-                          Current Week Timelog
+                          Tasks
                         </NavLink>
                       </NavItem>
-                      <NavItem>
-                        <NavLink
-                          className={classnames({ active: this.state.activeTab === 1 })}
-                          onClick={() => {
-                            this.changeTab(1);
-                          }}
-                          href="#"
-                          to="#"
-                        >
-                          Last Week
-                        </NavLink>
-                      </NavItem>
+                      <NavLink
+                        className={classnames({ active: this.state.activeTab === 1 })}
+                        onClick={() => {
+                          this.changeTab(1);
+                        }}
+                        href="#"
+                        to="#"
+                      >
+                        Current Week TimeLog
+                      </NavLink>
+
                       <NavItem>
                         <NavLink
                           className={classnames({ active: this.state.activeTab === 2 })}
@@ -467,7 +466,7 @@ class Timelog extends Component {
                           href="#"
                           to="#"
                         >
-                          Week Before Last
+                          Last Week
                         </NavLink>
                       </NavItem>
                       <NavItem>
@@ -479,7 +478,7 @@ class Timelog extends Component {
                           href="#"
                           to="#"
                         >
-                          Search by Date Range
+                          Week Before Last
                         </NavLink>
                       </NavItem>
                       <NavItem>
@@ -491,7 +490,7 @@ class Timelog extends Component {
                           href="#"
                           to="#"
                         >
-                          Tasks
+                          Search by Date Range
                         </NavLink>
                       </NavItem>
                     </Nav>
@@ -511,7 +510,7 @@ class Timelog extends Component {
                         </p>
                       )*/
                       }
-                      {this.state.activeTab === 3 && (
+                      {this.state.activeTab === 4 && (
                         <Form inline className="mb-2">
                           <FormGroup className="mr-2">
                             <Label for="fromDate" className="mr-2">
@@ -542,8 +541,8 @@ class Timelog extends Component {
                           </Button>
                         </Form>
                       )}
-                      {this.state.activeTab === 4 ? (
-                        <p>Different Tab</p>
+                      {this.state.activeTab === 0 ? (
+                        <></>
                       ) : (
                         <Form inline className="mb-2">
                           <FormGroup>
@@ -572,7 +571,7 @@ class Timelog extends Component {
                         </Form>
                       )}
 
-                      {this.state.activeTab === 4 ? (
+                      {this.state.activeTab === 0 ? (
                         <></>
                       ) : (
                         <EffortBar
@@ -582,11 +581,11 @@ class Timelog extends Component {
                       )}
 
                       {/* Tab Panal shows a list of tasks for each week, if it is tab 4, it will show ExampleTimeLogPanal instead */}
-                      <TabPane tabId={0}>{currentWeekEntries}</TabPane>
-                      <TabPane tabId={1}>{lastWeekEntries}</TabPane>
-                      <TabPane tabId={2}>{beforeLastEntries}</TabPane>
-                      <TabPane tabId={3}>{periodEntries}</TabPane>
-                      <TabPane tabId={4}>{<TeamMemberTasks asUser={this.props.asUser} />}</TabPane>
+                      <TabPane tabId={0}>{<TeamMemberTasks asUser={this.props.asUser} />}</TabPane>
+                      <TabPane tabId={1}>{currentWeekEntries}</TabPane>
+                      <TabPane tabId={2}>{lastWeekEntries}</TabPane>
+                      <TabPane tabId={3}>{beforeLastEntries}</TabPane>
+                      <TabPane tabId={4}>{periodEntries}</TabPane>
                     </TabContent>
                   </CardBody>
                 </Card>
