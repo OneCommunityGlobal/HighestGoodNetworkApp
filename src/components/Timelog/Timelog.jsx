@@ -27,7 +27,9 @@ import {
 
 import classnames from 'classnames';
 import { connect } from 'react-redux';
+//parsing dates package - moment
 import moment from 'moment';
+//common functional problems solutions - lodash
 import _ from 'lodash';
 import ReactTooltip from 'react-tooltip';
 
@@ -44,6 +46,8 @@ import { ProfileNavDot } from 'components/UserManagement/ProfileNavDot';
 import Loading from '../common/Loading';
 import hasPermission from '../../utils/permissions';
 
+import ExampleTimeLogPanal from './ExampleTimeLogPanal';
+
 class Timelog extends Component {
   constructor(props) {
     super(props);
@@ -53,6 +57,8 @@ class Timelog extends Component {
     this.handleInputChange = this.handleInputChange.bind(this);
     this.handleSearch = this.handleSearch.bind(this);
     this.openInfo = this.openInfo.bind(this);
+    //renderTab
+    this.renderTab = this.renderTab.bind(this);
     this.data = {
       disabled: !hasPermission(this.props.auth.user.role, 'disabledDataTimelog') ? false : true,
       isTangible: false,
@@ -173,6 +179,8 @@ class Timelog extends Component {
     this.props.getTimeEntriesForPeriod(userId, this.state.fromDate, this.state.toDate);
   }
 
+  //startOfWeek returns the date of the start of the week based on offset. Offset is the number of weeks before.
+  //For example, if offset is 0, returns the start of this week. If offset is 1, returns the start of last week.
   startOfWeek(offset) {
     return moment()
       .tz('America/Los_Angeles')
@@ -181,6 +189,8 @@ class Timelog extends Component {
       .format('YYYY-MM-DD');
   }
 
+  //endOfWeek returns the date of the end of the week based on offset. Offset is the number of weeks before.
+  //For example, if offset is 0, returns the end of this week. If offset is 1, returns the end of last week.
   endOfWeek(offset) {
     return moment()
       .tz('America/Los_Angeles')
@@ -198,6 +208,27 @@ class Timelog extends Component {
     return filteredData.map(entry => (
       <TimeEntry data={entry} displayYear={false} key={entry._id} userProfile={this.userProfile} />
     ));
+  }
+
+  //if the activeTab is 3, render Viewing Time Entries from startOfDate to endOfDate
+  //Else subtract activeTab
+  renderTab(data) {
+    if (this.state.activeTab === 4) {
+      return <></>;
+    } else if (this.state.activeTab === 3) {
+      return (
+        <p className="ml-1">
+          Viewing time Entries from <b>{this.state.fromDate}</b> to <b>{this.state.toDate}</b>
+        </p>
+      );
+    } else {
+      return (
+        <p className="ml-1">
+          Viewing time Entries from <b>{this.startOfWeek(this.state.activeTab)}</b> to{' '}
+          <b>{this.endOfWeek(this.state.activeTab)}</b>
+        </p>
+      );
+    }
   }
 
   render() {
@@ -233,7 +264,7 @@ class Timelog extends Component {
     if (!_.isEmpty(this.props.userTask)) {
       tasks = this.props.userTask;
     }
-    const taskOptions = tasks.map((task) => (
+    const taskOptions = tasks.map(task => (
       <option value={task._id} key={task._id}>
         {task.taskName}
       </option>
@@ -451,10 +482,23 @@ class Timelog extends Component {
                           Search by Date Range
                         </NavLink>
                       </NavItem>
+                      <NavItem>
+                        <NavLink
+                          className={classnames({ active: this.state.activeTab === 4 })}
+                          onClick={() => {
+                            this.changeTab(4);
+                          }}
+                          href="#"
+                          to="#"
+                        >
+                          Tasks
+                        </NavLink>
+                      </NavItem>
                     </Nav>
 
                     <TabContent activeTab={this.state.activeTab}>
-                      {this.state.activeTab === 3 ? (
+                      {this.renderTab(this.state.activeTab)
+                      /*this.state.activeTab === 3 ? (
                         <p className="ml-1">
                           Viewing time Entries from <b>{this.state.fromDate}</b> to{' '}
                           <b>{this.state.toDate}</b>
@@ -465,7 +509,8 @@ class Timelog extends Component {
                           {' to '}
                           <b>{this.endOfWeek(this.state.activeTab)}</b>
                         </p>
-                      )}
+                      )*/
+                      }
                       {this.state.activeTab === 3 && (
                         <Form inline className="mb-2">
                           <FormGroup className="mr-2">
@@ -497,39 +542,51 @@ class Timelog extends Component {
                           </Button>
                         </Form>
                       )}
-                      <Form inline className="mb-2">
-                        <FormGroup>
-                          <Label for="projectSelected" className="mr-1 ml-1 mb-1 align-top">
-                            Filter Entries by Project and Task:
-                          </Label>
-                          <Input
-                            type="select"
-                            name="projectSelected"
-                            id="projectSelected"
-                            value={this.state.projectsSelected}
-                            title="Ctrl + Click to select multiple projects and tasks to filter."
-                            onChange={e =>
-                              this.setState({
-                                projectsSelected: Array.from(
-                                  e.target.selectedOptions,
-                                  option => option.value,
-                                ),
-                              })
-                            }
-                            multiple
-                          >
-                            {projectOrTaskOptions}
-                          </Input>
-                        </FormGroup>
-                      </Form>
-                      <EffortBar
-                        activeTab={this.state.activeTab}
-                        projectsSelected={this.state.projectsSelected}
-                      />
+                      {this.state.activeTab === 4 ? (
+                        <p>Different Tab</p>
+                      ) : (
+                        <Form inline className="mb-2">
+                          <FormGroup>
+                            <Label for="projectSelected" className="mr-1 ml-1 mb-1 align-top">
+                              Filter Entries by Project and Task:
+                            </Label>
+                            <Input
+                              type="select"
+                              name="projectSelected"
+                              id="projectSelected"
+                              value={this.state.projectsSelected}
+                              title="Ctrl + Click to select multiple projects and tasks to filter."
+                              onChange={e =>
+                                this.setState({
+                                  projectsSelected: Array.from(
+                                    e.target.selectedOptions,
+                                    option => option.value,
+                                  ),
+                                })
+                              }
+                              multiple
+                            >
+                              {projectOrTaskOptions}
+                            </Input>
+                          </FormGroup>
+                        </Form>
+                      )}
+
+                      {this.state.activeTab === 4 ? (
+                        <></>
+                      ) : (
+                        <EffortBar
+                          activeTab={this.state.activeTab}
+                          projectsSelected={this.state.projectsSelected}
+                        />
+                      )}
+
+                      {/* Tab Panal shows a list of tasks for each week, if it is tab 4, it will show ExampleTimeLogPanal instead */}
                       <TabPane tabId={0}>{currentWeekEntries}</TabPane>
                       <TabPane tabId={1}>{lastWeekEntries}</TabPane>
                       <TabPane tabId={2}>{beforeLastEntries}</TabPane>
                       <TabPane tabId={3}>{periodEntries}</TabPane>
+                      <TabPane tabId={4}>{<ExampleTimeLogPanal />}</TabPane>
                     </TabContent>
                   </CardBody>
                 </Card>
