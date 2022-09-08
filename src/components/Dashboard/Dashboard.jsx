@@ -13,7 +13,7 @@ import { connect } from 'react-redux';
 import { getUserProfile } from '../../actions/userProfile';
 import { getTimeZoneAPIKey } from '../../actions/timezoneAPIActions';
 
-export const Dashboard = (props) => {
+export const Dashboard = props => {
   const [popup, setPopup] = useState(false);
   let userId = props.match.params.userId ? props.match.params.userId : props.auth.user.userid;
 
@@ -77,9 +77,10 @@ export const Dashboard = (props) => {
             <a name="wsummary"></a>
             <Timelog isDashboard asUser={userId} />
           </div>
-          <div className="my-2">
-            <TeamMemberTasks asUser={userId} />
-          </div>
+          {/*
+             <div className="my-2">
+                <TeamMemberTasks asUser={userId} />
+             </div> */}
           <Badge userId={userId} role={props.auth.user.role} />
         </Col>
       </Row>
@@ -87,7 +88,7 @@ export const Dashboard = (props) => {
   );
 };
 
-const mapStateToProps = (state) => ({
+const mapStateToProps = state => ({
   auth: state.auth,
 });
 
