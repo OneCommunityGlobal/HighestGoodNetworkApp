@@ -37,10 +37,9 @@ export const TaskEditSuggestions = () => {
 
   return (
     <Container>
-    <h1>Task Edit Suggestions</h1>
-      {/* {isUserPermitted ? <h1>Task Edit Suggestions</h1> : <h1>{userRole} is not permitted to view this</h1>} */}
-      {isLoading && <Loading/>}
-      {!isLoading && taskEditSuggestions && <Table>
+      {isUserPermitted ? <h1>Task Edit Suggestions</h1> : <div><h1>Forbidden</h1><p>{userRole} does not have permission to edit tasks. {userRole} does not have permission to view this page.</p></div>}
+      {isUserPermitted && isLoading && <Loading/>}
+      {isUserPermitted && !isLoading && taskEditSuggestions && <Table>
         <thead>
           <tr>
             <th onClick={() => dispatch(toggleDateSuggestedSortDirection())}>Date Suggested <SortArrow sortDirection={dateSuggestedSortDirection}/></th>
@@ -59,11 +58,11 @@ export const TaskEditSuggestions = () => {
           }
         </tbody>
       </Table>}
-      <TaskEditSuggestionsModal 
+      {isUserPermitted && <TaskEditSuggestionsModal 
         isTaskEditSuggestionModalOpen={isTaskEditSuggestionModalOpen}
         taskEditSuggestion={currentTaskEditSuggestion}
         handleToggleTaskEditSuggestionModal={handleToggleTaskEditSuggestionModal}
-      />
+      />}
     </Container>
   );
 }
