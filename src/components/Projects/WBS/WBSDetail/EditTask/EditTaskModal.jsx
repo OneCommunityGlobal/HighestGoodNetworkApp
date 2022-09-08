@@ -11,17 +11,28 @@ import dateFnsParse from 'date-fns/parse';
 import { updateTask, fetchAllTasks } from '../../../../../actions/task';
 import { Editor } from '@tinymce/tinymce-react';
 import hasPermission from 'utils/permissions';
+import axios from 'axios';
+import { ENDPOINTS } from 'utils/URL';
 
 const EditTaskModal = (props) => {
   const [role] = useState(props.auth ? props.auth.user.role : null);
 
-  // get taskItem list of current wbs
-  const tasks = props.tasks.taskItems;
   const { members } = props.projectMembers;
   let foundedMembers = [];
 
-  // filter the current task by task_id
-  const thisTask = tasks.filter((task) => task._id === props.taskId)[0];
+  // get this task by id
+  const [thisTask, setThisTask] = useState();
+  useEffect(() => {
+    const fetchTaskData = async () => {
+      try {
+        const res = await axios.get(ENDPOINTS.GET_TASK(props.taskId));
+        setThisTask(res?.data || {})
+      } catch (error) {
+        console.log(error);
+      }
+    }
+    fetchTaskData();
+  }, []);
 
   // modal
   const [modal, setModal] = useState(false);
@@ -54,6 +65,7 @@ const EditTaskModal = (props) => {
   const [hoursEstimate, setHoursEstimate] = useState(thisTask?.estimatedHours);
   // hours warning
   const [hoursWarning, setHoursWarning] = useState(false);
+
   // links
   const [links, setLinks] = useState(thisTask?.links);
 
@@ -73,6 +85,26 @@ const EditTaskModal = (props) => {
   const [dueDate, setDueDate] = useState(thisTask?.dueDatetime);
   // date warning
   const [dateWarning, setDateWarning] = useState(false);
+
+  // associate states with thisTask state
+  useEffect(() => {
+    setTaskName(thisTask?.taskName);
+    setPriority(thisTask?.priority);
+    setResourceItems(thisTask?.resources);
+    setAssigned(thisTask?.assigned);
+    setStatus(thisTask?.status);
+    setHoursBest(thisTask?.hoursBest);
+    setHoursWorst(thisTask?.hoursWorst);
+    setHoursMost(thisTask?.hoursMost);
+    setHoursEstimate(thisTask?.estimatedHours);
+    setLinks(thisTask?.links);
+    setClassification(thisTask?.classification);
+    setWhyInfo(thisTask?.whyInfo);
+    setIntentInfo(thisTask?.intentInfo);
+    setEndstateInfo(thisTask?.endstateInfo);
+    setStartedDate(thisTask?.startedDatetime);
+    setDueDate(thisTask?.dueDatetime);
+  }, [thisTask]);
 
   // helpers for editing the resources of task
   const [foundMembersHTML, setfoundMembersHTML] = useState('');
@@ -228,8 +260,6 @@ const EditTaskModal = (props) => {
       toggle();
     }
   };
-
-  useEffect(() => {}, [tasks]);
 
   return (
     <div className="controlBtn">
