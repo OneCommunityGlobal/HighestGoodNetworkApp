@@ -46,7 +46,7 @@ import { ProfileNavDot } from 'components/UserManagement/ProfileNavDot';
 import Loading from '../common/Loading';
 import hasPermission from '../../utils/permissions';
 
-import ExampleTimeLogPanal from './ExampleTimeLogPanal';
+import TeamMemberTasks from 'components/TeamMemberTasks';
 
 class Timelog extends Component {
   constructor(props) {
@@ -443,7 +443,7 @@ class Timelog extends Component {
                           href="#"
                           to="#"
                         >
-                          Current Week
+                          Current Week Timelog
                         </NavLink>
                       </NavItem>
                       <NavItem>
@@ -586,7 +586,7 @@ class Timelog extends Component {
                       <TabPane tabId={1}>{lastWeekEntries}</TabPane>
                       <TabPane tabId={2}>{beforeLastEntries}</TabPane>
                       <TabPane tabId={3}>{periodEntries}</TabPane>
-                      <TabPane tabId={4}>{<ExampleTimeLogPanal />}</TabPane>
+                      <TabPane tabId={4}>{<TeamMemberTasks asUser={this.props.asUser} />}</TabPane>
                     </TabContent>
                   </CardBody>
                 </Card>
