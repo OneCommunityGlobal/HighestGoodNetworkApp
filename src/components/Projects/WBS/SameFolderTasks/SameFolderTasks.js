@@ -25,14 +25,14 @@ const SameFolderTasks = (props) => {
   useEffect(() => {
     const fetchWBSData = async () => {
       try {
-        const res = axios.get(ENDPOINTS.GET_WBS(wbsId));
+        const res = await axios.get(ENDPOINTS.GET_WBS(wbsId));
         setWBS(res?.data || {})
       } catch (error) {
         console.log(error);
       }
     }
     fetchWBSData();
-  }, [])
+  }, [wbsId]);
 
   let projectId = WBS.projectId;
   let wbsName = WBS.wbsName;
