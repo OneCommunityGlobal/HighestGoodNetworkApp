@@ -62,6 +62,8 @@ class AddUserProfile extends Component {
         privacySettings: { blueSquares: true, email: true, phoneNumber: true },
         jobTitle: '',
         googleDoc: '',
+        timeZone: '',
+        location: '',
         showphone: true,
       },
       formValid: {},
@@ -454,8 +456,8 @@ class AddUserProfile extends Component {
               ...this.state,
               timeZoneFilter: timezone,
               userProfile: {
-                ...userProfile,
-                timezone: timezone,
+                ...this.state.userProfile,
+                timeZone: timezone,
               },
             });
           } else {
@@ -514,8 +516,8 @@ class AddUserProfile extends Component {
       email: email,
       privacySettings: privacySettings,
       collaborationPreference: collaborationPreference,
-      timeZone,
-      location,
+      timeZone: timeZone,
+      location: location,
     };
 
     this.setState({ formSubmitted: true });
