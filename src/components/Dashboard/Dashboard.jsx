@@ -77,10 +77,6 @@ export const Dashboard = props => {
             <a name="wsummary"></a>
             <Timelog isDashboard asUser={userId} />
           </div>
-          {/*
-             <div className="my-2">
-                <TeamMemberTasks asUser={userId} />
-             </div> */}
           <Badge userId={userId} role={props.auth.user.role} />
         </Col>
       </Row>
