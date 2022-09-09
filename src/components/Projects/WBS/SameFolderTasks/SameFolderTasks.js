@@ -41,7 +41,7 @@ const SameFolderTasks = (props) => {
     return (
       <div className="App">
         <p>There are no other tasks in this task's folder.</p>
-        <a href={`/wbs/tasks/${wbsId}/${projectId}/${wbsName}`}>Click here to visit the source WBS that contains this task {wbsName}</a>
+        <a href={`/wbs/tasks/${wbsId}/${projectId}/${wbsName}`}>Click here to visit the source WBS ({wbsName}) that contains this task</a>
       </div>
     );
   } else {
