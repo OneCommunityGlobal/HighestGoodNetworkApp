@@ -27,9 +27,7 @@ import {
 
 import classnames from 'classnames';
 import { connect } from 'react-redux';
-//parsing dates package - moment
 import moment from 'moment';
-//common functional problems solutions - lodash
 import _ from 'lodash';
 import ReactTooltip from 'react-tooltip';
 
@@ -57,8 +55,8 @@ class Timelog extends Component {
     this.handleInputChange = this.handleInputChange.bind(this);
     this.handleSearch = this.handleSearch.bind(this);
     this.openInfo = this.openInfo.bind(this);
-    //renderTab
-    this.renderTab = this.renderTab.bind(this);
+    //renderViewingTimeEntriesFrom
+    this.renderViewingTimeEntriesFrom = this.renderViewingTimeEntriesFrom.bind(this);
     this.data = {
       disabled: !hasPermission(this.props.auth.user.role, 'disabledDataTimelog') ? false : true,
       isTangible: false,
@@ -210,9 +208,7 @@ class Timelog extends Component {
     ));
   }
 
-  //if the activeTab is 3, render Viewing Time Entries from startOfDate to endOfDate
-  //Else subtract activeTab
-  renderTab(data) {
+  renderViewingTimeEntriesFrom() {
     if (this.state.activeTab === 0) {
       return <></>;
     } else if (this.state.activeTab === 4) {
@@ -454,7 +450,7 @@ class Timelog extends Component {
                         href="#"
                         to="#"
                       >
-                        Current Week TimeLog
+                        Current Week Timelog
                       </NavLink>
 
                       <NavItem>
@@ -496,20 +492,7 @@ class Timelog extends Component {
                     </Nav>
 
                     <TabContent activeTab={this.state.activeTab}>
-                      {this.renderTab(this.state.activeTab)
-                      /*this.state.activeTab === 3 ? (
-                        <p className="ml-1">
-                          Viewing time Entries from <b>{this.state.fromDate}</b> to{' '}
-                          <b>{this.state.toDate}</b>
-                        </p>
-                      ) : (
-                        <p className="ml-1">
-                          Viewing time Entries from <b>{this.startOfWeek(this.state.activeTab)}</b>
-                          {' to '}
-                          <b>{this.endOfWeek(this.state.activeTab)}</b>
-                        </p>
-                      )*/
-                      }
+                      {this.renderViewingTimeEntriesFrom()}
                       {this.state.activeTab === 4 && (
                         <Form inline className="mb-2">
                           <FormGroup className="mr-2">
@@ -579,8 +562,6 @@ class Timelog extends Component {
                           projectsSelected={this.state.projectsSelected}
                         />
                       )}
-
-                      {/* Tab Panal shows a list of tasks for each week, if it is tab 4, it will show ExampleTimeLogPanal instead */}
                       <TabPane tabId={0}>{<TeamMemberTasks asUser={this.props.asUser} />}</TabPane>
                       <TabPane tabId={1}>{currentWeekEntries}</TabPane>
                       <TabPane tabId={2}>{lastWeekEntries}</TabPane>
