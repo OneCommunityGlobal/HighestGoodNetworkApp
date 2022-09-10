@@ -3,32 +3,52 @@ import { useSelector } from 'react-redux';
 import { PieChart } from 'components/common/PieChart';
 import { peopleTasksPieChartViewData } from '../selectors';
 import { ReportBlock } from 'components/Reports/sharedComponents/ReportBlock';
+import { NewModal } from 'components/common/NewModal';
 import './PeopleTasksPieChart.css';
 
 export const PeopleTasksPieChart = () => {
 
   const {
-    tasksWithLoggedHours,
+    tasksWithLoggedHoursById,
     showTasksPieChart,
     showProjectsPieChart,
     tasksLegend,
-    projectsWithLoggedHours,
-    projectsWithLoggedHoursLegend
+    projectsWithLoggedHoursById,
+    projectsWithLoggedHoursLegend,
+    displayedTasksWithLoggedHoursById,
+    displayedTasksLegend,
+    showViewAllTasksButton
   } = useSelector(peopleTasksPieChartViewData);
 
-  const [hideTasksPieChart, setHideTasksPieChart] = useState(false);
+  const showAllTasks = () => {
+
+  }
+
 
   if (!showTasksPieChart && !showProjectsPieChart) {
     return null;
   }
 
   return (
-    <ReportBlock>
-      <div className='people-pie-charts-wrapper'>
-        {showProjectsPieChart && <PieChart pieChartId={'projectsPieChart'} data={projectsWithLoggedHours} dataLegend={projectsWithLoggedHoursLegend} />}
-        {showTasksPieChart && !hideTasksPieChart && <PieChart pieChartId={'tasksPieChart'} data={tasksWithLoggedHours} dataLegend={tasksLegend} />}
-      </div>
-    </ReportBlock>
+    <div className='people-pie-charts-wrapper'>
+      {showProjectsPieChart && (
+        <ReportBlock>
+          <h5 className='people-pie-charts-header'>Projets with committed hours</h5>
+          <PieChart pieChartId={'projectsPieChart'} data={projectsWithLoggedHoursById} dataLegend={projectsWithLoggedHoursLegend} />
+        </ReportBlock>
+      )}
+      {showTasksPieChart && (
+        <ReportBlock>
+          <h5 className='people-pie-charts-header'>{`${showViewAllTasksButton ? 'Last t' : 'T'}asks with committed hours`}</h5>
+          <PieChart pieChartId={'tasksPieChart'} data={displayedTasksWithLoggedHoursById} dataLegend={displayedTasksLegend} />
+          {showViewAllTasksButton && (
+            <NewModal header={"Tasks with committed hours"} trigger={() => <div onClick={showAllTasks} className='show-all-tasks-button'>View all</div>}>
+              <PieChart pieChartId={'allTasksPieChart'} data={tasksWithLoggedHoursById} dataLegend={tasksLegend} />
+            </NewModal>
+          )}
+        </ReportBlock>
+      )}
+    </div >
   )
 
 }

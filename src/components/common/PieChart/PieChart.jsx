@@ -48,7 +48,7 @@ export const PieChart = ({ data, dataLegend, pieChartId }) => {
         {Object.keys(dataLegend).map((key) => (
           <div key={key} className='pie-chart-legend-item'>
             <div className='data-legend-color' style={{ backgroundColor: color(key) }} />
-            <div className='data-legend-info'>{dataLegend[key].map((legendPart) => <div>{legendPart}</div>)}</div>
+            <div className='data-legend-info'>{dataLegend[key].map((legendPart) => <div className='data-legend-info-part'>{legendPart}</div>)}</div>
           </div>
         ))}
       </div>

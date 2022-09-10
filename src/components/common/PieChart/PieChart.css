@@ -13,6 +13,7 @@
   display: flex;
   align-items: baseline;
   text-align: start;
+  font-size: 14px;
 }
 
 .data-legend-color {
@@ -34,4 +35,8 @@
   justify-content: space-between;
 
   color: rgba(0, 0, 0, 0.5);
+}
+
+.data-legend-info-part:not(:last-child) {
+  margin-right: 24px;
 }

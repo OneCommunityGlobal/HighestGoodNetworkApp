@@ -27,38 +27,51 @@ const getRounded = (number) => {
 };
 
 export const peopleTasksPieChartViewData = ({ userTask, teamMemberTasks, userProfile, userProjects }) => {
-  const tasksWithLoggedHours = {};
-  const projectsWithLoggedHours = {};
+  const tasksWithLoggedHoursById = {};
+  const displayedTasksWithLoggedHoursById = {};
+  const projectsWithLoggedHoursById = {};
   const tasksLegend = {};
+  const displayedTasksLegend = {};
   const projectsWithLoggedHoursLegend = {};
   const currentUserTasks = teamMemberTasks.usersWithTasks.find(({ personId }) => personId === userProfile._id)?.tasks;
+  const tasksWithLoggedHours = userTask.filter(({ hoursLogged }) => hoursLogged);
 
-  userTask.forEach(({ _id, hoursLogged, taskName }) => {
-    if (hoursLogged) {
-      tasksWithLoggedHours[_id] = hoursLogged;
-      tasksLegend[_id] = [taskName, getRounded(hoursLogged)];
+  tasksWithLoggedHours.forEach(({ _id, hoursLogged, taskName }) => {
+    tasksWithLoggedHoursById[_id] = hoursLogged;
+    tasksLegend[_id] = [taskName, getRounded(hoursLogged)];
 
-      const currentTask = currentUserTasks.find((task) => task._id === _id);
-      const currentProjectName = userProjects.projects.find(({ projectId }) => projectId === currentTask.projectId).projectName;
-      const savedProjectWithLoggedHours = projectsWithLoggedHours[currentTask.projectId];
+    const currentTask = currentUserTasks.find((task) => task._id === _id);
+    const currentProjectName = userProjects.projects.find(({ projectId }) => projectId === currentTask.projectId).projectName;
+    const savedProjectWithLoggedHours = projectsWithLoggedHoursById[currentTask.projectId];
 
-      projectsWithLoggedHours[currentTask.projectId] = savedProjectWithLoggedHours ? savedProjectWithLoggedHours + hoursLogged : hoursLogged;
+    projectsWithLoggedHoursById[currentTask.projectId] = savedProjectWithLoggedHours ? savedProjectWithLoggedHours + hoursLogged : hoursLogged;
 
-      if (projectsWithLoggedHoursLegend[currentTask.projectId]) {
-        projectsWithLoggedHoursLegend[currentTask.projectId][1] += getRounded(hoursLogged);
-      } else {
-        projectsWithLoggedHoursLegend[currentTask.projectId] = [currentProjectName, getRounded(hoursLogged)];
-      }
+    if (projectsWithLoggedHoursLegend[currentTask.projectId]) {
+      projectsWithLoggedHoursLegend[currentTask.projectId][1] += getRounded(hoursLogged);
+    } else {
+      projectsWithLoggedHoursLegend[currentTask.projectId] = [currentProjectName, getRounded(hoursLogged)];
     }
   });
 
+  const displayedTasksCount = Math.max(4, Object.keys(projectsWithLoggedHoursById).length);
+
+  tasksWithLoggedHours.sort((a, b) => new Date(b.modifiedDatetime) - new Date(a.modifiedDatetime))
+    .slice(0, displayedTasksCount)
+    .forEach(({ _id, hoursLogged, taskName }) => {
+      displayedTasksWithLoggedHoursById[_id] = hoursLogged;
+      displayedTasksLegend[_id] = [taskName, getRounded(hoursLogged)];
+    });
+
   return {
-    tasksWithLoggedHours,
-    projectsWithLoggedHours,
+    tasksWithLoggedHoursById,
+    projectsWithLoggedHoursById,
     tasksLegend,
     projectsWithLoggedHoursLegend,
-    showTasksPieChart: 15 >= Object.keys(tasksWithLoggedHours).length > 0,
-    showProjectsPieChart: Object.keys(projectsWithLoggedHours).length > 0
+    showTasksPieChart: 15 >= Object.keys(tasksWithLoggedHoursById).length > 0,
+    showProjectsPieChart: Object.keys(projectsWithLoggedHoursById).length > 0,
+    displayedTasksWithLoggedHoursById,
+    displayedTasksLegend,
+    showViewAllTasksButton: Object.keys(tasksWithLoggedHoursById).length > Object.keys(displayedTasksWithLoggedHoursById).length
   }
 
 }
