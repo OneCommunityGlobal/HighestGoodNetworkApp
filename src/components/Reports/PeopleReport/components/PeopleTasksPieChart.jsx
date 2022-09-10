@@ -33,7 +33,7 @@ export const PeopleTasksPieChart = () => {
     <div className='people-pie-charts-wrapper'>
       {showProjectsPieChart && (
         <ReportBlock>
-          <h5 className='people-pie-charts-header'>Projets with committed hours</h5>
+          <h5 className='people-pie-charts-header'>Projects with committed hours</h5>
           <PieChart pieChartId={'projectsPieChart'} data={projectsWithLoggedHoursById} dataLegend={projectsWithLoggedHoursLegend} />
         </ReportBlock>
       )}
