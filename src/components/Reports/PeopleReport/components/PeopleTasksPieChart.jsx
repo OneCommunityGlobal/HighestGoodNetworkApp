@@ -1,19 +1,33 @@
+import { useState } from 'react';
 import { useSelector } from 'react-redux';
 import { PieChart } from 'components/common/PieChart';
 import { peopleTasksPieChartViewData } from '../selectors';
 import { ReportBlock } from 'components/Reports/sharedComponents/ReportBlock';
+import './PeopleTasksPieChart.css';
 
 export const PeopleTasksPieChart = () => {
 
-  const { tasksWithLoggedHours, showPieChart, tasksLegend } = useSelector(peopleTasksPieChartViewData);
+  const {
+    tasksWithLoggedHours,
+    showTasksPieChart,
+    showProjectsPieChart,
+    tasksLegend,
+    projectsWithLoggedHours,
+    projectsWithLoggedHoursLegend
+  } = useSelector(peopleTasksPieChartViewData);
 
-  if (!showPieChart) {
+  const [hideTasksPieChart, setHideTasksPieChart] = useState(false);
+
+  if (!showTasksPieChart && !showProjectsPieChart) {
     return null;
   }
 
   return (
     <ReportBlock>
-      <PieChart data={tasksWithLoggedHours} dataLegend={tasksLegend} />
+      <div className='people-pie-charts-wrapper'>
+        {showProjectsPieChart && <PieChart pieChartId={'projectsPieChart'} data={projectsWithLoggedHours} dataLegend={projectsWithLoggedHoursLegend} />}
+        {showTasksPieChart && !hideTasksPieChart && <PieChart pieChartId={'tasksPieChart'} data={tasksWithLoggedHours} dataLegend={tasksLegend} />}
+      </div>
     </ReportBlock>
   )
 

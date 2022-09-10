@@ -3,12 +3,12 @@ import * as d3 from 'd3';
 import { CHART_RADIUS, CHART_SIZE, pieChartColors } from './constants';
 import './PieChart.css'
 
-export const PieChart = ({ data, dataLegend }) => {
+export const PieChart = ({ data, dataLegend, pieChartId }) => {
 
   const getCreateSvgPie = () => {
-    return d3.select("#pie-chart-container")
+    return d3.select(`#pie-chart-container-${pieChartId}`)
       .append("svg")
-      .attr("id", "pie-chart")
+      .attr("id", `pie-chart-${pieChartId}`)
       .attr("width", CHART_SIZE)
       .attr("height", CHART_SIZE)
       .append("g")
@@ -37,13 +37,13 @@ export const PieChart = ({ data, dataLegend }) => {
       .style("opacity", 0.8)
 
     return () => {
-      d3.select("#pie-chart").remove();
+      d3.select(`#pie-chart-${pieChartId}`).remove();
     }
   }, [data])
 
   return (
     <div className='pie-chart-wrapper'>
-      <div id="pie-chart-container" className='pie-chart' />
+      <div id={`pie-chart-container-${pieChartId}`} className='pie-chart' />
       <div>
         {Object.keys(dataLegend).map((key) => (
           <div key={key} className='pie-chart-legend-item'>

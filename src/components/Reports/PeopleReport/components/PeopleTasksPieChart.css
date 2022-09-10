@@ -1,0 +1,4 @@
+.people-pie-charts-wrapper {
+  display: flex;
+  justify-content: space-between;
+}

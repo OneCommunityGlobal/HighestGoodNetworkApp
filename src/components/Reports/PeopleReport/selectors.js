@@ -22,21 +22,43 @@ export const getPeopleReportData = (state) => ({
   tangibleHoursReportedThisWeek: parseFloat(state.userProfile.tangibleHoursReportedThisWeek)
 });
 
-export const peopleTasksPieChartViewData = (state) => {
-  const tasksWithLoggedHours = {};
-  const tasksLegend = {};
+const getRounded = (number) => {
+  return Math.round(number * 100) / 100;
+};
 
-  state.userTask.forEach(({ _id, hoursLogged, taskName }) => {
+export const peopleTasksPieChartViewData = ({ userTask, teamMemberTasks, userProfile, userProjects }) => {
+  const tasksWithLoggedHours = {};
+  const projectsWithLoggedHours = {};
+  const tasksLegend = {};
+  const projectsWithLoggedHoursLegend = {};
+  const currentUserTasks = teamMemberTasks.usersWithTasks.find(({ personId }) => personId === userProfile._id)?.tasks;
+
+  userTask.forEach(({ _id, hoursLogged, taskName }) => {
     if (hoursLogged) {
       tasksWithLoggedHours[_id] = hoursLogged;
-      tasksLegend[_id] = [taskName, Math.round(hoursLogged * 100) / 100];
+      tasksLegend[_id] = [taskName, getRounded(hoursLogged)];
+
+      const currentTask = currentUserTasks.find((task) => task._id === _id);
+      const currentProjectName = userProjects.projects.find(({ projectId }) => projectId === currentTask.projectId).projectName;
+      const savedProjectWithLoggedHours = projectsWithLoggedHours[currentTask.projectId];
+
+      projectsWithLoggedHours[currentTask.projectId] = savedProjectWithLoggedHours ? savedProjectWithLoggedHours + hoursLogged : hoursLogged;
+
+      if (projectsWithLoggedHoursLegend[currentTask.projectId]) {
+        projectsWithLoggedHoursLegend[currentTask.projectId][1] += getRounded(hoursLogged);
+      } else {
+        projectsWithLoggedHoursLegend[currentTask.projectId] = [currentProjectName, getRounded(hoursLogged)];
+      }
     }
   });
 
   return {
     tasksWithLoggedHours,
+    projectsWithLoggedHours,
     tasksLegend,
-    showPieChart: Object.keys(tasksWithLoggedHours).length > 0,
+    projectsWithLoggedHoursLegend,
+    showTasksPieChart: 15 >= Object.keys(tasksWithLoggedHours).length > 0,
+    showProjectsPieChart: Object.keys(projectsWithLoggedHours).length > 0
   }
 
 }
