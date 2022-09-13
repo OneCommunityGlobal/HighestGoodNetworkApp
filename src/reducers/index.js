@@ -34,7 +34,6 @@ import { teamUsersReducer } from './teamsTeamMembersReducer';
 import { badgeReducer } from './badgeReducer';
 import { popupEditorReducer } from './popupEditorReducer';
 import { timeZoneAPIReducer } from './timezoneApiReducer';
-import { teamMemberTasksReducer } from 'components/TeamMemberTasks/reducer';
 import { taskEditSuggestionsReducer } from 'components/TaskEditSuggestions/reducer';
 
 export default combineReducers({
@@ -76,8 +75,5 @@ export default combineReducers({
   popupEditor: popupEditorReducer,
   timeZoneAPI: timeZoneAPIReducer,
   teamMemberTasks: teamMemberTasksReducer,
-<<<<<<< HEAD
-=======
   taskEditSuggestions: taskEditSuggestionsReducer
->>>>>>> ek-task-edit-suggest
 });

@@ -31,8 +31,7 @@ import { ProjectReport } from './components/Reports/ProjectReport';
 import { TeamReport } from './components/Reports/TeamReport';
 import Inventory from './components/Inventory';
 import BadgeManagement from './components/Badge/BadgeManagement';
-import AutoUpdate from 'components/AutoUpdate';
-import { TaskEditSuggestions } from 'components/TaskEditSuggestions/TaskEditSuggestions'
+import { TaskEditSuggestions } from 'components/TaskEditSuggestions/TaskEditSuggestions';
 
 export default (
   <>
