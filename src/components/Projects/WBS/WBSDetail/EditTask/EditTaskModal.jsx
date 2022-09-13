@@ -277,7 +277,7 @@ const EditTaskModal = (props) => {
             <tbody>
               <tr>
                 <td scope="col" data-tip="task ID" >Task #</td>
-                <td scope="col">{thisTask?.num.replace(/.0/g, '')}</td>
+                <td scope="col">{thisTask?.num}</td>
               </tr>
               <tr>
                 <td scope="col">Task Name</td>
