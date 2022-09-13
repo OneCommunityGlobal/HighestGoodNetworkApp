@@ -25,14 +25,14 @@ function SameFolderTasks(props) {
   useEffect(() => {
     const fetchWBSData = async () => {
       try {
-        const res = axios.get(ENDPOINTS.GET_WBS(wbsId));
-        setWBS(res?.data || {});
+        const res = await axios.get(ENDPOINTS.GET_WBS(wbsId));
+        setWBS(res?.data || {})
       } catch (error) {
         console.log(error);
       }
     };
     fetchWBSData();
-  }, []);
+  }, [wbsId]);
 
   const { projectId } = WBS;
   const { wbsName } = WBS;
@@ -41,10 +41,7 @@ function SameFolderTasks(props) {
     return (
       <div className="App">
         <p>There are no other tasks in this task's folder.</p>
-        <a href={`/wbs/tasks/${wbsId}/${projectId}/${wbsName}`}>
-          Click here to visit the source WBS that contains this task
-          {wbsName}
-        </a>
+        <a href={`/wbs/tasks/${wbsId}/${projectId}/${wbsName}`}>Click here to visit the source WBS ({wbsName}) that contains this task</a>
       </div>
     );
   }
