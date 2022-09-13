@@ -1,3 +1,19 @@
+.redBackGroupHeader {
+  z-index: 10;
+  bottom: 0;
+  right: 0;
+  position: relative;
+  height: 30px;
+  text-align: center;
+  vertical-align: middle;
+  background: #ff4d4f;
+  border-radius: 40px;
+  color: #fff;
+  padding: 3px 6px;
+  max-width: 39px;
+  font-size: 1rem;
+  min-width: 29px;
+}
 .header-wrapper {
   height: 83px;
 }

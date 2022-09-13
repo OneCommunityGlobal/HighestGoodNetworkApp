@@ -31,6 +31,8 @@ import { ProjectReport } from './components/Reports/ProjectReport';
 import { TeamReport } from './components/Reports/TeamReport';
 import Inventory from './components/Inventory';
 import BadgeManagement from './components/Badge/BadgeManagement';
+import AutoUpdate from 'components/AutoUpdate';
+import { TaskEditSuggestions } from 'components/TaskEditSuggestions/TaskEditSuggestions'
 
 export default (
   <>
@@ -49,6 +51,7 @@ export default (
       <ProtectedRoute path="/peoplereport/:userId" component={PeopleReport} />
       <ProtectedRoute path="/projectreport/:projectId" component={ProjectReport} />
       <ProtectedRoute path="/teamreport/:teamId" component={TeamReport} />
+      <ProtectedRoute path="/taskeditsuggestions" component={TaskEditSuggestions} />
 
       <ProtectedRoute
         path="/inventory/:projectId"

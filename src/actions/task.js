@@ -7,9 +7,12 @@ import { fetchTeamMembersTaskSuccess, fetchTeamMembersTaskBegin, fetchTeamMember
 import * as types from '../constants/task';
 import { ENDPOINTS } from '../utils/URL';
 import { createOrUpdateTaskNotificationHTTP } from './taskNotification';
+import { createOrUpdateTaskEditSuggestion } from '../components/TaskEditSuggestions/thunks'
+
 
 const selectFetchTeamMembersTaskData = (state) => state.auth.user.userid;
-const selectUpdateTaskData = (state, taskId) => state.tasks.taskItems.find(({ _id }) => _id === taskId);
+const selectUserId = (state) => state.auth.user.userid;
+const selectUpdateTaskData = (state, taskId) => state.tasks.taskItems.find(({_id}) => _id === taskId);
 
 export const fetchTeamMembersTask = () => async (dispatch, getState) => {
   try {
@@ -54,20 +57,25 @@ export const addNewTask = (newTask, wbsId) => async (dispatch, getState) => {
   await dispatch(postNewTask(task, status));
 };
 
-export const updateTask = (taskId, updatedTask) => async (dispatch, getState) => {
+export const updateTask = (taskId, updatedTask, hasPermission) => async (dispatch, getState) => {
   let status = 200;
   try {
     const state = getState();
     const oldTask = selectUpdateTaskData(state, taskId);
-    // dispatch(fetchTeamMembersTaskBegin());
-    await axios.put(ENDPOINTS.TASK_UPDATE(taskId), updatedTask);
-    const userIds = updatedTask.resources.map((resource) => resource.userID);
-    await createOrUpdateTaskNotificationHTTP(taskId, oldTask, userIds);
+    //dispatch(fetchTeamMembersTaskBegin());
+    if (hasPermission) {
+      await axios.put(ENDPOINTS.TASK_UPDATE(taskId), updatedTask);
+      const userIds = updatedTask.resources.map(resource => resource.userID);
+      await createOrUpdateTaskNotificationHTTP(taskId, oldTask, userIds);
+    } else {
+      dispatch(createOrUpdateTaskEditSuggestion(taskId, selectUserId(state), oldTask, updatedTask));
+    }
   } catch (error) {
-    // dispatch(fetchTeamMembersTaskError());
+    //dispatch(fetchTeamMembersTaskError());
+    console.log(error);
     status = 400;
   }
-
+  // TODO: DISPATCH TO TASKEDITSUGGESETIONS REDUCER TO UPDATE STATE
   await dispatch(putUpdatedTask(updatedTask, taskId, status));
 };
 

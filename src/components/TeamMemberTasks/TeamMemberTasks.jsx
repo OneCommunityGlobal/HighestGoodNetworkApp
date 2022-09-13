@@ -69,7 +69,6 @@ const TeamMemberTasks = (props) => {
   const renderTeamsList = () => {
     let teamsList = [];
 
-    console.log(usersWithTasks);
     if (usersWithTasks && usersWithTasks.length > 0) {
       // give different users different views
       const filteredMembers = usersWithTasks.filter(member => {
