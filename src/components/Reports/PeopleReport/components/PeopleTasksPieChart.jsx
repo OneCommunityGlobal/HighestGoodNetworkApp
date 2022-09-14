@@ -34,16 +34,16 @@ export const PeopleTasksPieChart = () => {
       {showProjectsPieChart && (
         <ReportBlock>
           <h5 className='people-pie-charts-header'>Projects with committed hours</h5>
-          <PieChart pieChartId={'projectsPieChart'} data={projectsWithLoggedHoursById} dataLegend={projectsWithLoggedHoursLegend} />
+          <PieChart pieChartId={'projectsPieChart'} data={projectsWithLoggedHoursById} dataLegend={projectsWithLoggedHoursLegend} dataLegendHeader="Hours" />
         </ReportBlock>
       )}
       {showTasksPieChart && (
         <ReportBlock>
           <h5 className='people-pie-charts-header'>{`${showViewAllTasksButton ? 'Last t' : 'T'}asks with committed hours`}</h5>
-          <PieChart pieChartId={'tasksPieChart'} data={displayedTasksWithLoggedHoursById} dataLegend={displayedTasksLegend} />
+          <PieChart pieChartId={'tasksPieChart'} data={displayedTasksWithLoggedHoursById} dataLegend={displayedTasksLegend} dataLegendHeader="Hours" />
           {showViewAllTasksButton && (
             <NewModal header={"Tasks with committed hours"} trigger={() => <div onClick={showAllTasks} className='show-all-tasks-button'>View all</div>}>
-              <PieChart pieChartId={'allTasksPieChart'} data={tasksWithLoggedHoursById} dataLegend={tasksLegend} />
+              <PieChart pieChartId={'allTasksPieChart'} data={tasksWithLoggedHoursById} dataLegend={tasksLegend} dataLegendHeader="Hours" />
             </NewModal>
           )}
         </ReportBlock>

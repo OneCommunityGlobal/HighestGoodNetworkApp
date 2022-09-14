@@ -1,9 +1,10 @@
 import { useEffect } from 'react';
 import * as d3 from 'd3';
-import { CHART_RADIUS, CHART_SIZE, pieChartColors } from './constants';
-import './PieChart.css'
+import { CHART_RADIUS, CHART_SIZE } from './constants';
+import { generateArrayOfUniqColors } from './colorsGenerator';
+import './PieChart.css';
 
-export const PieChart = ({ data, dataLegend, pieChartId }) => {
+export const PieChart = ({ data, dataLegend, pieChartId, dataLegendHeader }) => {
 
   const getCreateSvgPie = () => {
     return d3.select(`#pie-chart-container-${pieChartId}`)
@@ -16,7 +17,7 @@ export const PieChart = ({ data, dataLegend, pieChartId }) => {
   }
 
   const color = d3.scaleOrdinal()
-    .range(pieChartColors);
+    .range(generateArrayOfUniqColors(Object.keys(data).length));
 
   const pie = d3.pie().value(d => d[1])
 
@@ -45,10 +46,16 @@ export const PieChart = ({ data, dataLegend, pieChartId }) => {
     <div className='pie-chart-wrapper'>
       <div id={`pie-chart-container-${pieChartId}`} className='pie-chart' />
       <div>
+        <div className='pie-chart-legend-header'>
+          <div>Name</div>
+          <div>{dataLegendHeader}</div>
+        </div>
         {Object.keys(dataLegend).map((key) => (
           <div key={key} className='pie-chart-legend-item'>
             <div className='data-legend-color' style={{ backgroundColor: color(key) }} />
-            <div className='data-legend-info'>{dataLegend[key].map((legendPart) => <div className='data-legend-info-part'>{legendPart}</div>)}</div>
+            <div className='data-legend-info'>
+              {dataLegend[key].map((legendPart) => <div className='data-legend-info-part'>{legendPart}</div>)}
+            </div>
           </div>
         ))}
       </div>

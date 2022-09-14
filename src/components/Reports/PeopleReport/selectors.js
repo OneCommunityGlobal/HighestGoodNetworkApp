@@ -33,23 +33,26 @@ export const peopleTasksPieChartViewData = ({ userTask, teamMemberTasks, userPro
   const tasksLegend = {};
   const displayedTasksLegend = {};
   const projectsWithLoggedHoursLegend = {};
-  const currentUserTasks = teamMemberTasks.usersWithTasks.find(({ personId }) => personId === userProfile._id)?.tasks;
-  const tasksWithLoggedHours = userTask.filter(({ hoursLogged }) => hoursLogged);
+  const currentUserTasks = teamMemberTasks?.usersWithTasks?.find(({ personId }) => personId === userProfile._id)?.tasks;
+  const tasksWithLoggedHours = userTask?.filter(({ hoursLogged }) => hoursLogged);
 
   tasksWithLoggedHours.forEach(({ _id, hoursLogged, taskName }) => {
     tasksWithLoggedHoursById[_id] = hoursLogged;
     tasksLegend[_id] = [taskName, getRounded(hoursLogged)];
 
-    const currentTask = currentUserTasks.find((task) => task._id === _id);
-    const currentProjectName = userProjects.projects.find(({ projectId }) => projectId === currentTask.projectId).projectName;
-    const savedProjectWithLoggedHours = projectsWithLoggedHoursById[currentTask.projectId];
+    const currentTask = currentUserTasks?.find((task) => task._id === _id);
 
-    projectsWithLoggedHoursById[currentTask.projectId] = savedProjectWithLoggedHours ? savedProjectWithLoggedHours + hoursLogged : hoursLogged;
+    if (currentTask) {
+      const currentProjectName = userProjects?.projects?.find(({ projectId }) => projectId === currentTask.projectId)?.projectName;
+      const savedProjectWithLoggedHours = projectsWithLoggedHoursById[currentTask.projectId];
 
-    if (projectsWithLoggedHoursLegend[currentTask.projectId]) {
-      projectsWithLoggedHoursLegend[currentTask.projectId][1] += getRounded(hoursLogged);
-    } else {
-      projectsWithLoggedHoursLegend[currentTask.projectId] = [currentProjectName, getRounded(hoursLogged)];
+      projectsWithLoggedHoursById[currentTask.projectId] = savedProjectWithLoggedHours ? savedProjectWithLoggedHours + hoursLogged : hoursLogged;
+
+      if (projectsWithLoggedHoursLegend[currentTask.projectId]) {
+        projectsWithLoggedHoursLegend[currentTask.projectId][1] += getRounded(hoursLogged);
+      } else {
+        projectsWithLoggedHoursLegend[currentTask.projectId] = [currentProjectName, getRounded(hoursLogged)];
+      }
     }
   });
 
@@ -67,7 +70,7 @@ export const peopleTasksPieChartViewData = ({ userTask, teamMemberTasks, userPro
     projectsWithLoggedHoursById,
     tasksLegend,
     projectsWithLoggedHoursLegend,
-    showTasksPieChart: 15 >= Object.keys(tasksWithLoggedHoursById).length > 0,
+    showTasksPieChart: Object.keys(tasksWithLoggedHoursById).length > 0,
     showProjectsPieChart: Object.keys(projectsWithLoggedHoursById).length > 0,
     displayedTasksWithLoggedHoursById,
     displayedTasksLegend,

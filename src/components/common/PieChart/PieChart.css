@@ -7,6 +7,13 @@
   margin-right: 32px;
 }
 
+.pie-chart-legend-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 24px;
+  font-weight: 500;
+}
+
 .pie-chart-legend-item {
   position: relative;
   margin: 12px 0;
