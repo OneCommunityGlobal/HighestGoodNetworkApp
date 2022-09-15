@@ -67,5 +67,6 @@ export const ENDPOINTS = {
   
   TIMER_SERVICE: `${APIEndpoint.replace('http', 'ws').replace('api', 'timer-service')}`,
 };
+//test
 
 export const ApiEndpoint = APIEndpoint;
