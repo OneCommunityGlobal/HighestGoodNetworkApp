@@ -3,7 +3,7 @@
 /* eslint-disable no-plusplus */
 /* eslint-disable indent */
 import { faBell, faCircle, faClock } from '@fortawesome/free-solid-svg-icons';
-import { Table, Progress, TabPane } from 'reactstrap';
+import { Table, Progress } from 'reactstrap';
 import _ from 'lodash';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { fetchTeamMembersTask, deleteTaskNotification } from 'actions/task';
@@ -17,11 +17,8 @@ import { getUserProfile } from '../../actions/userProfile';
 import './style.css';
 import { getcolor } from '../../utils/effortColors'
 import { fetchAllManagingTeams } from '../../actions/team';
-import EffortBar from '../../components/Timelog/EffortBar';
+import EffortBar from 'components/Timelog/EffortBar';
 import TimeEntry from 'components/Timelog/TimeEntry';
-
-
-
 
 const TeamMemberTasks = (props) => {
   const [isTimeLogActive, setIsTimeLogActive] = useState(0);
@@ -31,12 +28,13 @@ const TeamMemberTasks = (props) => {
   const [currentTask, setCurrentTask] = useState();
   const [currentUserId, setCurrentUserId] = useState();
   const { isLoading, usersWithTasks } = useSelector(getTeamMemberTasksData);
+
+  const userRole = props.auth.user.role;
+
   const dispatch = useDispatch();
   useEffect(() => {
     dispatch(fetchTeamMembersTask());
   }, []);
-
-  const userRole = props.auth.user.role;
 
   const handleOpenTaskNotificationModal = (userId, task, taskNotifications = []) => {
     setCurrentUserId(userId);
@@ -48,35 +46,11 @@ const TeamMemberTasks = (props) => {
   const handleTaskNotificationRead = (userId, taskId, taskNotificationId) => {
     dispatch(deleteTaskNotification(userId, taskId, taskNotificationId));
     handleOpenTaskNotificationModal();
-
-    // const taskReadPromises = [];
-    // const userId = currentTaskNotifications[0].recipient;
-    // currentTaskNotifications.forEach(notification => {
-    //   taskReadPromises.push(
-    //     httpService.post(ENDPOINTS.MARK_TASK_NOTIFICATION_READ(notification._id)),
-    //   );
-    // });
-
-    // Promise.all(taskReadPromises).then(data => {
-    //   console.log('read tasks');
-    //   const newTeamsState = [];
-    //   teams.forEach(member => {
-    //     if (member._id === userId) {
-    //       newTeamsState.push({ ...member, taskNotifications: [] });
-    //     } else {
-    //       newTeamsState.push(member);
-    //     }
-    //   });
-    //   setTeams(newTeamsState);
-    //   setCurrentTaskNotifications([]);
-    //   setTaskNotificationModal(!showTaskNotificationModal);
-    // });
   };
 
   const renderTeamsList = () => {
     let teamsList = [];
 
-    console.log(usersWithTasks);
     if (usersWithTasks && usersWithTasks.length > 0) {
       // give different users different views
       const filteredMembers = usersWithTasks.filter(member => {
@@ -104,10 +78,10 @@ const TeamMemberTasks = (props) => {
             return task;
           });
           totalHoursLogged = user.tasks
-            .map(task => task.hoursLogged)
+            .map((task) => task.hoursLogged)
             .reduce((previousValue, currentValue) => previousValue + currentValue, 0);
           totalHoursRemaining = user.tasks
-            .map(task => task.estimatedHours - task.hoursLogged)
+            .map((task) => task.estimatedHours - task.hoursLogged)
             .reduce((previousValue, currentValue) => previousValue + currentValue, 0);
         }
         return (
@@ -116,9 +90,7 @@ const TeamMemberTasks = (props) => {
             <td>
               <div className='comitted-hours-circle'>
                 <FontAwesomeIcon
-                  style={{
-                    color: user.totaltangibletime_hrs >= user.weeklyComittedHours ? 'green' : 'red',
-                  }}
+                  style={{ color: user.totaltangibletime_hrs >= user.weeklyComittedHours ? 'green' : 'red' }}
                   icon={faCircle}
                 />
               </div>
@@ -130,7 +102,7 @@ const TeamMemberTasks = (props) => {
                     <td className='team-member-tasks-user-name'>
                       <Link to={`/userprofile/${user.personId}`}>{`${user.name}`}</Link>
                     </td>
-                    <td className="team-clocks">
+                    <td className='team-clocks'>
                       <u>{user.weeklyComittedHours ? user.weeklyComittedHours : 0}</u> /
                       <font color="green"> {Math.round(totalHoursLogged)}</font> /
                       <font color="red"> {Math.round(totalHoursRemaining)}</font>
@@ -150,71 +122,58 @@ const TeamMemberTasks = (props) => {
               </Table>
             </td>
             <td>
-              <Table borderless className="team-member-tasks-subtable">
+              <Table borderless className='team-member-tasks-subtable'>
                 <tbody>
                   {user.tasks &&
-                    user.tasks.map(
-                      (task, index) =>
-                        task.wbsId &&
-                        task.projectId && (
-                          <tr key={`${task._id}${index}`} className="task-break">
-                            <td>
-                              <p>
-                                <Link
-                                  to={
-                                    task.projectId
-                                      ? `/wbs/tasks/${task.wbsId}/${task.projectId}/${task._id}`
-                                      : '/'
-                                  }
-                                >
-                                  <span>{`${task.num} ${task.taskName}`} </span>
-                                </Link>
-                                {task.taskNotifications.length > 0 && (
-                                  <FontAwesomeIcon
-                                    className="team-member-tasks-bell"
-                                    icon={faBell}
-                                    onClick={() => {
-                                      handleOpenTaskNotificationModal(
-                                        user.personId,
-                                        task,
-                                        task.taskNotifications,
-                                      );
-                                    }}
-                                  />
-                                )}
-                              </p>
-                            </td>
-                            {task.hoursLogged != null && task.estimatedHours != null && (
-                              <td className="team-task-progress">
-                                <div>
-                                  <span>
-                                    {`${parseFloat(task.hoursLogged.toFixed(2))} 
-                            of 
-                          ${parseFloat(task.estimatedHours.toFixed(2))}`}
-                                  </span>
-                                  <Progress
-                                    color={
-                                      task.hoursLogged > task.estimatedHours
-                                        ? getcolor(0)
-                                        : getcolor(task.estimatedHours - task.hoursLogged)
-                                    }
-                                    value={(task.hoursLogged / task.estimatedHours) * 100}
-                                  />
-                                </div>
-                              </td>
-                            )}
-                          </tr>
-                        ),
-                    )}
+                    user.tasks.map((task, index) => (
+                      task.wbsId && task.projectId &&
+                      <tr key={`${task._id}${index}`} className='task-break'>
+                        <td className='task-align'>
+                          <p>
+                            <Link to={task.projectId ? `/wbs/tasks/${task._id}` : '/'}>
+                              <span>{`${task.num} ${task.taskName}`} </span>
+                            </Link>
+                            {
+                              task.taskNotifications.length > 0 &&
+                              <FontAwesomeIcon
+                                className="team-member-tasks-bell"
+                                icon={faBell}
+                                onClick={() => {
+                                  handleOpenTaskNotificationModal(user.personId, task, task.taskNotifications);
+                                }}
+                                />
+                              }
+                          </p>
+                        </td>
+                        {task.hoursLogged != null && task.estimatedHours != null &&
+                          <td className='team-task-progress'>
+                            <div>
+                              <span>
+                                {`${parseFloat(task.hoursLogged.toFixed(2))}
+                                  of 
+                                ${parseFloat(task.estimatedHours.toFixed(2))}`}
+                              </span>
+                              <Progress
+                                color={(task.hoursLogged > task.estimatedHours) ? 
+                                      getcolor(0) :
+                                      getcolor(task.estimatedHours - task.hoursLogged)}
+                                value={((task.hoursLogged / task.estimatedHours) * 100)}
+                              />
+                            </div>
+                          </td>
+                        }
+                      </tr>
+                    ))
+                  }
                 </tbody>
               </Table>
             </td>
           </tr>
-        );
+        )
       });
     }
     return teamsList;
-  };
+  }
 
   return (
     <div className="container team-member-tasks">
@@ -222,9 +181,9 @@ const TeamMemberTasks = (props) => {
         <h1>Team Member Tasks</h1>
         <div>
           <button
-            type="button"
+            type='button'
             className="circle-border"
-            title="Timelogs submitted in the past 24 hours"
+            title='Timelogs submitted in the past 24 hours'
             style={
               isTimeLogActive === 0 || isTimeLogActive === 1
                 ? { backgroundColor: '#ffebcd' }
@@ -241,10 +200,10 @@ const TeamMemberTasks = (props) => {
           >
             24h
           </button>
-          <button
-            type="button"
-            className="circle-border"
-            title="Timelogs submitted in the past 48 hours"
+          <button 
+            type='button'
+            className='circle-border'
+            title='Timelogs submitted in the past 48 hours'
             style={
               isTimeLogActive === 0 || isTimeLogActive === 2
                 ? { backgroundColor: '#f0ffff' }
@@ -262,9 +221,9 @@ const TeamMemberTasks = (props) => {
             48h
           </button>
           <button
-            type="button"
-            className="circle-border"
-            title="Timelogs submitted in the past 72 hours"
+            type='button'
+            className='circle-border'
+            title='Timelogs submitted in the past 72 hours'
             style={
               isTimeLogActive === 0 || isTimeLogActive === 3
                 ? { backgroundColor: 'lightgray' }
@@ -301,8 +260,8 @@ const TeamMemberTasks = (props) => {
               <Table borderless className="team-member-tasks-subtable">
                 <thead>
                   <tr>
-                    <th className="team-member-tasks-headers team-member-tasks-user-name">Team Member</th>
-                    <th className="team-member-tasks-headers team-clocks team-clocks-header">
+                    <th className='team-member-tasks-headers team-member-tasks-user-name'>Team Member</th>
+                    <th className='team-member-tasks-headers team-clocks team-clocks-header'>
                       <FontAwesomeIcon icon={faClock} title="Weekly Committed Hours" />
                       /
                       <FontAwesomeIcon
@@ -321,19 +280,21 @@ const TeamMemberTasks = (props) => {
                 </thead>
               </Table>
             </th>
-            <th className="team-member-tasks-headers">
-              <Table borderless className="team-member-tasks-subtable">
+            <th className='team-member-tasks-headers'>
+              <Table borderless className='team-member-tasks-subtable'>
                 <thead>
                   <tr>
                     <th>Tasks(s)</th>
-                    <th className="team-task-progress">Progress</th>
+                    <th className='team-task-progress'>Progress</th>
                   </tr>
                 </thead>
               </Table>
             </th>
           </tr>
         </thead>
-        <tbody>{isLoading ? <Loading /> : renderTeamsList()}</tbody>
+        <tbody>
+          {isLoading ? <Loading /> : renderTeamsList()}
+        </tbody>
       </Table>
     </div>
   );

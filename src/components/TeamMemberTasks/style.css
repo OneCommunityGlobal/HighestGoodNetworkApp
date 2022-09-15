@@ -46,6 +46,7 @@
 
 .team-clocks {
   display: flex;
+  justify-content: space-around;
 }
 
 .team-clocks-header {
