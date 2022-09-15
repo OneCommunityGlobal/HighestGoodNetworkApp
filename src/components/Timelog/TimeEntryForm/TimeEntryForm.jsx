@@ -113,7 +113,7 @@ const TimeEntryForm = (props) => {
     axios
       .get(ENDPOINTS.TASKS_BY_USERID(userId))
       .then((res) => {
-        setTasks(res?.data || []); 
+        setTasks(res?.data || []);
       })
       .catch(err => console.log(err));
   }, []);
@@ -380,8 +380,6 @@ const TimeEntryForm = (props) => {
     setErrors({});
     if (closed === true && isOpen) toggle();
   };
-
-  // console.log('isTangible', data.isTangible == inputs.isTangible);
 
   return (
     <>

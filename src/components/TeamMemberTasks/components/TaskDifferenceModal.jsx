@@ -36,7 +36,8 @@ const trimParagraphTags = (str) => {
   if (str == null) {
     return "";
   }
-  return str.replace(/(<p[^>]+?>|<p>|<\/p>)/img, "");
+  const regex = /(<([^>]+)>)/ig;
+  return str.replace(regex, '').replace(/(<p[^>]+?>|<p>|<\/p>)/img, "").replace(/&nbsp;/g, '');
 }
 
 const datetimeToDate = (datetime) => {
@@ -57,6 +58,7 @@ export const TaskDifferenceModal = ({ taskNotifications, task, onApprove, userId
     </ModalHeader>
     <ModalBody>
       {taskNotifications && taskNotifications.map((taskNotification) => (
+        taskNotification.userId === userId &&
         <div style={{textAlign: 'center'}}>
         <div >
             <span style={ {color: 'black', fontWeight: 'bold'} }>Black Bold = No Changes</span>

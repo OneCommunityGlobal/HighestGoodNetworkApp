@@ -174,7 +174,7 @@ const TeamMemberTasks = (props) => {
     }
     return teamsList;
   }
-
+  
   return (
     <div className="container team-member-tasks">
       <header className="header-box">
