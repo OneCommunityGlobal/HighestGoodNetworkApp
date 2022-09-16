@@ -566,7 +566,7 @@ const BasicInformationTab = (props) => {
           <Label>
             {
             userProfile.endDate
-            ? 'End Date ' + moment(userProfile.endDate).format('YYYY-MM-DD')
+            ? 'End Date ' + userProfile.endDate.toLocaleString().split('T')[0]
             : 'End Date '+ 'N/A'}
             </Label>
           
