@@ -1,3 +1,4 @@
+import moment from 'moment';
 import React, { useState } from 'react';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Input, Alert } from 'reactstrap';
 
@@ -12,9 +13,9 @@ const SetUpFinalDayPopUp= React.memo((props) => {
   const closePopup = (e) => {
     props.onClose();
   };
-
+  
   const deactiveUser = () => {
-    if (Date.parse(finalDayDate) > Date.now()) {
+    if (moment().isBefore(moment(finalDayDate))) {
       props.onSave(finalDayDate);
     } else {
       setDateError(true);
