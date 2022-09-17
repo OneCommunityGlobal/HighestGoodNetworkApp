@@ -17,8 +17,12 @@ import { getUserProfile } from '../../actions/userProfile';
 import './style.css';
 import { getcolor } from '../../utils/effortColors';
 import { fetchAllManagingTeams } from '../../actions/team';
+<<<<<<< HEAD
 import EffortBar from 'components/Timelog/EffortBar';
 import TimeEntry from 'components/Timelog/TimeEntry';
+=======
+import { BrowserBackend } from '@sentry/browser';
+>>>>>>> e3ee5e54 (move current user to top of tasks if there is any task assigned)
 
 const TeamMemberTasks = props => {
   const [isTimeLogActive, setIsTimeLogActive] = useState(0);
@@ -36,6 +40,12 @@ const TeamMemberTasks = props => {
     dispatch(fetchTeamMembersTask());
   }, []);
 
+<<<<<<< HEAD
+=======
+  const userRole = props.auth.user.role;
+  const userId = props.auth.user.userid;
+
+>>>>>>> e3ee5e54 (move current user to top of tasks if there is any task assigned)
   const handleOpenTaskNotificationModal = (userId, task, taskNotifications = []) => {
     setCurrentUserId(userId);
     setCurrentTask(task);
@@ -50,10 +60,14 @@ const TeamMemberTasks = props => {
 
   const renderTeamsList = () => {
     let teamsList = [];
+<<<<<<< HEAD
 
+=======
+    console.log(usersWithTasks);
+>>>>>>> e3ee5e54 (move current user to top of tasks if there is any task assigned)
     if (usersWithTasks && usersWithTasks.length > 0) {
       // give different users different views
-      const filteredMembers = usersWithTasks.filter(member => {
+      let filteredMembers = usersWithTasks.filter(member => {
         if (userRole === 'Volunteer' || userRole === 'Core Team') {
           return member.role === 'Volunteer' || member.role === 'Core Team';
         } else if (userRole === 'Manager' || userRole === 'Mentor') {
@@ -68,9 +82,29 @@ const TeamMemberTasks = props => {
         }
       });
 
+      //find currentUser
+      const currentUser = filteredMembers.find(user => user.personId === userId);
+      //conditional variable for moving current user up front.
+      let moveCurrentUserFront = false;
+      //Does the user has at least one task with project Id and task id assigned. Then set the current user up front.
+      for (const task of currentUser.tasks) {
+        if (task.wbsId && task.projectId) {
+          moveCurrentUserFront = true;
+          break;
+        }
+      }
+      //if needs to move current user up front, first remove current user from filterMembers. Then put the current user on top of the list.
+      if (moveCurrentUserFront) {
+        //removed currentUser
+        filteredMembers = filteredMembers.filter(user => user.personId !== userId);
+        //push currentUser on top of the array.
+        filteredMembers.unshift(currentUser);
+      }
+
       teamsList = filteredMembers.map((user, index) => {
         let totalHoursLogged = 0;
         let totalHoursRemaining = 0;
+
         if (user.tasks) {
           user.tasks = user.tasks.map(task => {
             task.hoursLogged = task.hoursLogged ? task.hoursLogged : 0;
@@ -181,6 +215,7 @@ const TeamMemberTasks = props => {
         );
       });
     }
+
     return teamsList;
   };
 
