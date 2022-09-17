@@ -17,12 +17,8 @@ import { getUserProfile } from '../../actions/userProfile';
 import './style.css';
 import { getcolor } from '../../utils/effortColors';
 import { fetchAllManagingTeams } from '../../actions/team';
-<<<<<<< HEAD
 import EffortBar from 'components/Timelog/EffortBar';
 import TimeEntry from 'components/Timelog/TimeEntry';
-=======
-import { BrowserBackend } from '@sentry/browser';
->>>>>>> e3ee5e54 (move current user to top of tasks if there is any task assigned)
 
 const TeamMemberTasks = props => {
   const [isTimeLogActive, setIsTimeLogActive] = useState(0);
@@ -33,19 +29,14 @@ const TeamMemberTasks = props => {
   const [currentUserId, setCurrentUserId] = useState();
   const { isLoading, usersWithTasks } = useSelector(getTeamMemberTasksData);
 
-  const userRole = props.auth.user.role;
-
   const dispatch = useDispatch();
   useEffect(() => {
     dispatch(fetchTeamMembersTask());
   }, []);
 
-<<<<<<< HEAD
-=======
   const userRole = props.auth.user.role;
   const userId = props.auth.user.userid;
 
->>>>>>> e3ee5e54 (move current user to top of tasks if there is any task assigned)
   const handleOpenTaskNotificationModal = (userId, task, taskNotifications = []) => {
     setCurrentUserId(userId);
     setCurrentTask(task);
@@ -60,11 +51,6 @@ const TeamMemberTasks = props => {
 
   const renderTeamsList = () => {
     let teamsList = [];
-<<<<<<< HEAD
-
-=======
-    console.log(usersWithTasks);
->>>>>>> e3ee5e54 (move current user to top of tasks if there is any task assigned)
     if (usersWithTasks && usersWithTasks.length > 0) {
       // give different users different views
       let filteredMembers = usersWithTasks.filter(member => {
