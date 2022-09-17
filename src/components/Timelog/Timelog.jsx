@@ -294,7 +294,7 @@ class Timelog extends Component {
                     <Row>
                       <Col md={11}>
                         <CardTitle tag="h4">
-                          Time Entries &nbsp;
+                          Tasks and Timelogs &nbsp;
                           <i
                             className="fa fa-info-circle"
                             data-tip
