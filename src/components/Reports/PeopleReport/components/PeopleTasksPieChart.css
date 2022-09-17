@@ -1,0 +1,29 @@
+.people-pie-charts-wrapper {
+  display: grid;
+  grid-auto-flow: row;
+  row-gap: 24px;
+  color: rgba(0, 0, 0, 0.5);
+}
+
+@media (min-width: 1420px) {
+  .people-pie-charts-wrapper {
+    grid-auto-flow: column;
+    column-gap: 24px;
+  }
+}
+
+.people-pie-charts-header {
+  text-align: start;
+  margin-bottom: 12px;
+}
+
+.show-all-tasks-button {
+  margin-left: auto;
+  margin-right: 0;
+  width: 100px;
+  cursor: pointer;
+}
+
+.show-all-tasks-button:hover {
+  color: #ca50db;
+}

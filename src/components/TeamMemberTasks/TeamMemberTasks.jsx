@@ -17,18 +17,24 @@ import { getUserProfile } from '../../actions/userProfile';
 import './style.css';
 import { getcolor } from '../../utils/effortColors'
 import { fetchAllManagingTeams } from '../../actions/team';
-
+import EffortBar from 'components/Timelog/EffortBar';
+import TimeEntry from 'components/Timelog/TimeEntry';
 
 const TeamMemberTasks = (props) => {
+  const [isTimeLogActive, setIsTimeLogActive] = useState(0);
+  const [timeLogOpen, setTimeLogOpen] = useState(false);
   const [showTaskNotificationModal, setTaskNotificationModal] = useState(false);
   const [currentTaskNotifications, setCurrentTaskNotifications] = useState([]);
   const [currentTask, setCurrentTask] = useState();
   const [currentUserId, setCurrentUserId] = useState();
   const { isLoading, usersWithTasks } = useSelector(getTeamMemberTasksData);
-  const dispatch = useDispatch();
-  useEffect(() => {dispatch(fetchTeamMembersTask())}, []);
 
   const userRole = props.auth.user.role;
+
+  const dispatch = useDispatch();
+  useEffect(() => {
+    dispatch(fetchTeamMembersTask());
+  }, []);
 
   const handleOpenTaskNotificationModal = (userId, task, taskNotifications = []) => {
     setCurrentUserId(userId);
@@ -36,52 +42,31 @@ const TeamMemberTasks = (props) => {
     setCurrentTaskNotifications(taskNotifications);
     setTaskNotificationModal(!showTaskNotificationModal);
   };
-  
-  const handleTaskNotificationRead = (userId, taskId, taskNotificationId) => {
 
+  const handleTaskNotificationRead = (userId, taskId, taskNotificationId) => {
     dispatch(deleteTaskNotification(userId, taskId, taskNotificationId));
     handleOpenTaskNotificationModal();
-
-    // const taskReadPromises = [];
-    // const userId = currentTaskNotifications[0].recipient;
-    // currentTaskNotifications.forEach(notification => {
-    //   taskReadPromises.push(
-    //     httpService.post(ENDPOINTS.MARK_TASK_NOTIFICATION_READ(notification._id)),
-    //   );
-    // });
-
-    // Promise.all(taskReadPromises).then(data => {
-    //   console.log('read tasks');
-    //   const newTeamsState = [];
-    //   teams.forEach(member => {
-    //     if (member._id === userId) {
-    //       newTeamsState.push({ ...member, taskNotifications: [] });
-    //     } else {
-    //       newTeamsState.push(member);
-    //     }
-    //   });
-    //   setTeams(newTeamsState);
-    //   setCurrentTaskNotifications([]);
-    //   setTaskNotificationModal(!showTaskNotificationModal);
-    // });
   };
 
   const renderTeamsList = () => {
     let teamsList = [];
 
-    console.log(usersWithTasks);
     if (usersWithTasks && usersWithTasks.length > 0) {
       // give different users different views
       const filteredMembers = usersWithTasks.filter(member => {
-        if (userRole === "Volunteer" || userRole === "Core Team") {
-          return member.role === "Volunteer" || member.role === "Core Team";
-        } else if (userRole === "Manager" || userRole === "Mentor") {
-          return member.role === "Volunteer" || member.role === "Core Team" || 
-          member.role === "Manager" || member.role === "Mentor";
+        if (userRole === 'Volunteer' || userRole === 'Core Team') {
+          return member.role === 'Volunteer' || member.role === 'Core Team';
+        } else if (userRole === 'Manager' || userRole === 'Mentor') {
+          return (
+            member.role === 'Volunteer' ||
+            member.role === 'Core Team' ||
+            member.role === 'Manager' ||
+            member.role === 'Mentor'
+          );
         } else {
           return member;
         }
-      })
+      });
 
       teamsList = filteredMembers.map((user, index) => {
         let totalHoursLogged = 0;
@@ -100,103 +85,207 @@ const TeamMemberTasks = (props) => {
             .reduce((previousValue, currentValue) => previousValue + currentValue, 0);
         }
         return (
-        <tr key={user.personId}>
-          {/* green if member has met committed hours for the week, red if not */}
-          <td>
-              <FontAwesomeIcon style={{ color: user.totaltangibletime_hrs >= user.weeklyComittedHours ? 'green' : 'red' }} icon={faCircle} />
-          </td>
-          <td>
-            <Link to={`/userprofile/${user.personId}`}>{`${user.name}`}</Link>
-          </td>
-          <td className='team-clocks'>
-            <u>{user.weeklyComittedHours ? user.weeklyComittedHours : 0}</u> / 
-            <font color="green"> {Math.round(totalHoursLogged)}</font> / 
-            <font color="red"> {Math.round(totalHoursRemaining)}</font>
-          </td>
-          <td>
-            <Table borderless className='team-member-tasks-subtable'>
-              <tbody>
-                {user.tasks &&
-                user.tasks.map((task, index) => (
-                  task.wbsId && task.projectId &&
-                  <tr key={`${task._id}${index}`} className='task-break'>
-                    <td className='task-align'>
-                      <p>
-                        <Link to={task.projectId ? `/wbs/tasks/${task._id}` : '/'}>
-                          <span>{`${task.num} ${task.taskName}`} </span>
-                        </Link>
-                        {
-                          task.taskNotifications.length > 0 &&
-                          <FontAwesomeIcon
-                            className="team-member-tasks-bell"
-                            icon={faBell}
-                            onClick={() => {
-                              handleOpenTaskNotificationModal(user.personId, task, task.taskNotifications);
-                            }}
-                            />
-                          }
-                      </p>
+          <tr key={user.personId}>
+            {/* green if member has met committed hours for the week, red if not */}
+            <td>
+              <div className='comitted-hours-circle'>
+                <FontAwesomeIcon
+                  style={{ color: user.totaltangibletime_hrs >= user.weeklyComittedHours ? 'green' : 'red' }}
+                  icon={faCircle}
+                />
+              </div>
+            </td>
+            <td>
+              <Table borderless className="team-member-tasks-subtable">
+                <tbody>
+                  <tr>
+                    <td className='team-member-tasks-user-name'>
+                      <Link to={`/userprofile/${user.personId}`}>{`${user.name}`}</Link>
                     </td>
-                    {  task.hoursLogged != null && task.estimatedHours != null &&
-                      <td className='team-task-hours'>  
+                    <td className='team-clocks'>
+                      <u>{user.weeklyComittedHours ? user.weeklyComittedHours : 0}</u> /
+                      <font color="green"> {Math.round(totalHoursLogged)}</font> /
+                      <font color="red"> {Math.round(totalHoursRemaining)}</font>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td colSpan={2}>
+                      {timeLogOpen && (
                         <div>
-                          <span>
-                          {`${parseFloat(task.hoursLogged.toFixed(2))} 
-                            of 
-                          ${parseFloat(task.estimatedHours.toFixed(2))}`}
-                          </span>
-                          <Progress 
-                            color={(task.hoursLogged > task.estimatedHours) ? 
-                                  getcolor(0) : 
-                                  getcolor(task.estimatedHours - task.hoursLogged)}
-
-                            value={((task.hoursLogged / task.estimatedHours) * 100)}
-                            />
+                          <EffortBar activeTab={0} projectsSelected={['all']} />
+                          <TimeEntry data={1} displayYear={0} userProfile={0} />
                         </div>
-                      </td>
-                    }
-                </tr> 
-                ))}
-              </tbody>
-            </Table>
-          </td>            
-        </tr>
-    )});
+                      )}
+                    </td>
+                  </tr>
+                </tbody>
+              </Table>
+            </td>
+            <td>
+              <Table borderless className='team-member-tasks-subtable'>
+                <tbody>
+                  {user.tasks &&
+                    user.tasks.map((task, index) => (
+                      task.wbsId && task.projectId &&
+                      <tr key={`${task._id}${index}`} className='task-break'>
+                        <td className='task-align'>
+                          <p>
+                            <Link to={task.projectId ? `/wbs/tasks/${task._id}` : '/'}>
+                              <span>{`${task.num} ${task.taskName}`} </span>
+                            </Link>
+                            {
+                              task.taskNotifications.length > 0 &&
+                              <FontAwesomeIcon
+                                className="team-member-tasks-bell"
+                                icon={faBell}
+                                onClick={() => {
+                                  handleOpenTaskNotificationModal(user.personId, task, task.taskNotifications);
+                                }}
+                                />
+                              }
+                          </p>
+                        </td>
+                        {task.hoursLogged != null && task.estimatedHours != null &&
+                          <td className='team-task-progress'>
+                            <div>
+                              <span>
+                                {`${parseFloat(task.hoursLogged.toFixed(2))}
+                                  of 
+                                ${parseFloat(task.estimatedHours.toFixed(2))}`}
+                              </span>
+                              <Progress
+                                color={(task.hoursLogged > task.estimatedHours) ? 
+                                      getcolor(0) :
+                                      getcolor(task.estimatedHours - task.hoursLogged)}
+                                value={((task.hoursLogged / task.estimatedHours) * 100)}
+                              />
+                            </div>
+                          </td>
+                        }
+                      </tr>
+                    ))
+                  }
+                </tbody>
+              </Table>
+            </td>
+          </tr>
+        )
+      });
     }
     return teamsList;
   }
-
+  
   return (
     <div className="container team-member-tasks">
-      <h1>Team Member Tasks</h1>
-      <TaskDifferenceModal isOpen={showTaskNotificationModal} taskNotifications={currentTaskNotifications} task={currentTask} userId={currentUserId} toggle={handleOpenTaskNotificationModal} onApprove={handleTaskNotificationRead} loggedInUserId={props.auth.user.userid} />
+      <header className="header-box">
+        <h1>Team Member Tasks</h1>
+        <div>
+          <button
+            type='button'
+            className="circle-border"
+            title='Timelogs submitted in the past 24 hours'
+            style={
+              isTimeLogActive === 0 || isTimeLogActive === 1
+                ? { backgroundColor: '#ffebcd' }
+                : { backgroundColor: 'white' }
+            }
+            onClick={() => {
+              setTimeLogOpen(!timeLogOpen);
+              if (isTimeLogActive === 1) {
+                setIsTimeLogActive(0);
+              } else {
+                setIsTimeLogActive(1);
+              }
+            }}
+          >
+            24h
+          </button>
+          <button 
+            type='button'
+            className='circle-border'
+            title='Timelogs submitted in the past 48 hours'
+            style={
+              isTimeLogActive === 0 || isTimeLogActive === 2
+                ? { backgroundColor: '#f0ffff' }
+                : { backgroundColor: 'white' }
+            }
+            onClick={() => {
+              setTimeLogOpen(!timeLogOpen);
+              if (isTimeLogActive === 2) {
+                setIsTimeLogActive(0);
+              } else {
+                setIsTimeLogActive(2);
+              }
+            }}
+          >
+            48h
+          </button>
+          <button
+            type='button'
+            className='circle-border'
+            title='Timelogs submitted in the past 72 hours'
+            style={
+              isTimeLogActive === 0 || isTimeLogActive === 3
+                ? { backgroundColor: 'lightgray' }
+                : { backgroundColor: 'white' }
+            }
+            onClick={() => {
+              setTimeLogOpen(!timeLogOpen);
+              if (isTimeLogActive === 3) {
+                setIsTimeLogActive(0);
+              } else {
+                setIsTimeLogActive(3);
+              }
+            }}
+          >
+            72h
+          </button>
+        </div>
+      </header>
+      <TaskDifferenceModal
+        isOpen={showTaskNotificationModal}
+        taskNotifications={currentTaskNotifications}
+        task={currentTask}
+        userId={currentUserId}
+        toggle={handleOpenTaskNotificationModal}
+        onApprove={handleTaskNotificationRead}
+        loggedInUserId={props.auth.user.userid}
+      />
       <Table>
         <thead>
           <tr>
             {/* Empty column header for hours completed icon */}
             <th />
-            <th className='team-member-tasks-headers'>Team Member</th>
-            <th className='team-member-tasks-headers team-clocks team-clocks-header'>
-              <FontAwesomeIcon icon={faClock} title="Weekly Committed Hours" />
-              /
-              <FontAwesomeIcon
-                style={{ color: 'green' }}
-                icon={faClock}
-                title="Weekly Completed Hours"
-              />
-              /
-              <FontAwesomeIcon
-                style={{ color: 'red' }}
-                icon={faClock}
-                title="Total Remaining Hours"
-              />
+            <th className="team-member-tasks-headers">
+              <Table borderless className="team-member-tasks-subtable">
+                <thead>
+                  <tr>
+                    <th className='team-member-tasks-headers team-member-tasks-user-name'>Team Member</th>
+                    <th className='team-member-tasks-headers team-clocks team-clocks-header'>
+                      <FontAwesomeIcon icon={faClock} title="Weekly Committed Hours" />
+                      /
+                      <FontAwesomeIcon
+                        style={{ color: 'green' }}
+                        icon={faClock}
+                        title="Weekly Completed Hours"
+                      />
+                      /
+                      <FontAwesomeIcon
+                        style={{ color: 'red' }}
+                        icon={faClock}
+                        title="Total Remaining Hours"
+                      />
+                    </th>
+                  </tr>
+                </thead>
+              </Table>
             </th>
             <th className='team-member-tasks-headers'>
               <Table borderless className='team-member-tasks-subtable'>
                 <thead>
                   <tr>
                     <th>Tasks(s)</th>
-                    <th className='team-task-hours'>Progress</th>
+                    <th className='team-task-progress'>Progress</th>
                   </tr>
                 </thead>
               </Table>
