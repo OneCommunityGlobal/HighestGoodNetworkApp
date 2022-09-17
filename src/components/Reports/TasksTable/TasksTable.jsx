@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
 import '../../Teams/Team.css';
-import { Dropdown, DropdownButton, ToggleButton, ToggleButtonGroup } from 'react-bootstrap';
 import 'react-datepicker/dist/react-datepicker.css';
 import { TasksDetail } from '../TasksDetail';
 import { getTasksTableData } from './selectors';
 import './TasksTable.css';
+import DropDownSearchBox from 'components/UserManagement/DropDownSearchBox';
+import { Checkbox } from 'components/common/Checkbox';
+import TextSearchBox from 'components/UserManagement/TextSearchBox';
 
 export const TasksTable = ({ WbsTasksID }) => {
 
@@ -21,8 +23,8 @@ export const TasksTable = ({ WbsTasksID }) => {
     get_tasks
   } = useSelector(state => getTasksTableData(state, { WbsTasksID }));
 
-  const [isActive, setActive] = useState(null);
-  const [isAssigned, setAssigned] = useState(null);
+  const [isActive, setActive] = useState(true);
+  const [isAssigned, setAssigned] = useState(true);
   const [filters, setFilters] = useState({});
 
   const resetAllFilters = () => {
@@ -44,17 +46,18 @@ export const TasksTable = ({ WbsTasksID }) => {
     }
   }
 
-  const FilterOptions = ({ filterName }) => {
+  const FilterOptions = ({ filterName, width }) => {
     var filtersOptions = [
       ...Array.from(new Set(get_tasks.map((item) => item[filterName]))).sort(),
     ];
-    filtersOptions.unshift('Filter Off');
     return (
-      <DropdownButton style={{ margin: '3px' }} exact id="dropdown-basic-button" title={filterName[0].toUpperCase() + filterName.slice(1)}>
-        {filtersOptions.map((c) => (
-          <Dropdown.Item onClick={() => setOneFilter(filterName, c)}>{c}</Dropdown.Item>
-        ))}
-      </DropdownButton>
+      <DropDownSearchBox
+        items={filtersOptions}
+        searchCallback={(value) => setOneFilter(filterName, value)}
+        placeholder={`Any ${filterName}`}
+        className='tasks-table-filter-item tasks-table-filter-input'
+        width={width}
+      />
     );
   };
 
@@ -65,51 +68,42 @@ export const TasksTable = ({ WbsTasksID }) => {
     );
 
     users = Array.from(new Set(users)).sort();
-    users.unshift('Filter Off');
     return (
-      <DropdownButton style={{ margin: '3px' }} exact id="dropdown-basic-button" title="Users">
-        {users.map((c) => (
-          <Dropdown.Item onClick={() => setOneFilter('users', c)}>{c}</Dropdown.Item>
-        ))}
-      </DropdownButton>
+      <DropDownSearchBox
+        items={users}
+        placeholder={`Any user`}
+        searchCallback={(value) => setOneFilter('users', value)}
+        className='tasks-table-filter-item tasks-table-filter-input'
+      />
     );
   };
 
   return (
     <div>
-      <div className='tasks-table-filters'>
+      <div className='tasks-table-filters-wrapper'>
+        <div className='tasks-table-filters'>
+          <UserOptions get_tasks={get_tasks} />
+          <FilterOptions filterName={'classification'} width='180px' />
+          <FilterOptions filterName={'priority'} />
+          <FilterOptions filterName={'status'} />
+
+          <TextSearchBox
+            placeholder='Estimated hours'
+            className='tasks-table-filter-item tasks-table-filter-input'
+            searchCallback={() => { }}
+          />
+
+          <Checkbox value={isActive} onChange={() => setActive(!isActive)} id='active' wrapperClassname='tasks-table-filter-item' label='Active' />
+          <Checkbox value={isAssigned} onChange={() => setAssigned(!isAssigned)} id='assign' wrapperClassname='tasks-table-filter-item' label='Assign' />
+
+        </div>
+
         <button
-          style={{ margin: '3px' }}
           exact
-          className="btn btn-secondary btn-bg mt-3"
+          className="tasks-table-clear-filter-button"
           onClick={() => resetAllFilters()}
         >
-          Filter Off
-        </button>
-        <UserOptions get_tasks={get_tasks} />
-        <FilterOptions filterName={'classification'} />
-        <FilterOptions filterName={'priority'} />
-        <FilterOptions filterName={'status'} />
-        <FilterOptions filterName={'assignment'} />
-        <input
-          name="radio"
-          type="radio"
-          style={{ margin: '5px' }}
-          value="active"
-          onChange={() => setActive(true)}
-        />
-        Active
-        <input
-          name="radio"
-          type="radio"
-          style={{ margin: '5px' }}
-          value="inactive"
-          onChange={() => setActive(false)}
-        />
-        InActive
-
-        <button style={{ margin: '3px' }} exact className="btn btn-secondary btn-bg mt-3">
-          Estimated Hours
+          Clear filters
         </button>
       </div>
 

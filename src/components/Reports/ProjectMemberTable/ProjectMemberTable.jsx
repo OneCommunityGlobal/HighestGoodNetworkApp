@@ -1,3 +1,4 @@
+import { Stub } from 'components/common/Stub';
 import React from 'react';
 import './ProjectMemberTable.css';
 
@@ -28,7 +29,7 @@ export const ProjectMemberTable = ({ projectMembers, skip, take }) => {
         <div>Name</div>
         <div>ID</div>
       </div>
-      <div>{memberList}</div>
+      <div>{memberList.length > 0 ? memberList : <Stub />}</div>
     </div>
   );
 };

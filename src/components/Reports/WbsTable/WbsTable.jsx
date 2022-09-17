@@ -1,3 +1,4 @@
+import { Stub } from 'components/common/Stub';
 import React from 'react';
 import './WbsTable.css';
 
@@ -41,7 +42,7 @@ export const WbsTable = ({ wbs, skip, take }) => {
           ID
         </div>
       </div>
-      <div>{WbsList}</div>
+      <div>{WbsList.length > 0 ? WbsList : <Stub />}</div>
     </div >
   );
 };

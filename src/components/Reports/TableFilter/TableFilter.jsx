@@ -5,6 +5,7 @@ import DatePicker from "react-datepicker";
 import { FiCalendar } from 'react-icons/fi';
 import "react-datepicker/dist/react-datepicker.css";
 import "./TableFilter.css";
+import { Checkbox } from 'components/common/Checkbox';
 
 const InputWithCalendarIcon = ({ value, onClick }) => {
 
@@ -113,15 +114,8 @@ const TableFilter = (props) => {
         onChange={(date) => setEndDate(date)}
       />
 
-      <div className='table-filter-item table-filter-checkbox-wrapper'>
-        <input className='table-filter-checkbox' type='checkbox' id='active' name='active' checked={taskActive} onChange={searchActive} />
-        <label className='table-filter-checkbox-label' for='active'>Active</label>
-      </div>
-
-      <div className='table-filter-item table-filter-checkbox-wrapper'>
-        <input className='table-filter-checkbox' type='checkbox' id='assign' name='assign' checked={taskAssign} onChange={searchAssign} />
-        <label className='table-filter-checkbox-label' for='assign'>Assign</label>
-      </div>
+      <Checkbox value={taskActive} onChange={searchActive} id='active' wrapperClassname='table-filter-item' label='Active' />
+      <Checkbox value={taskAssign} onChange={searchAssign} id='assign' wrapperClassname='table-filter-item' label='Assign' />
     </div>
   );
 };
