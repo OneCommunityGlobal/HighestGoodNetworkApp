@@ -66,7 +66,11 @@ function Timer() {
   useEffect(() => {
     if (isConnected) {
       client.getClient().send(GET_TIMER);
+    } 
+    if (!isConnected && !client.reconnectOnClose) {
+      client.start()
     }
+
   }, [isConnected]);
 
   /** Coordinate with redux store if timer is paused */
