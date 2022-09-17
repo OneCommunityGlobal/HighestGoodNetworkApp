@@ -15,8 +15,11 @@ import {
 } from '../../services/timerService';
 import './Timer.css';
 import { useMemo } from 'react';
+import { setTimer } from 'actions/timer';
+import { useDispatch } from 'react-redux';
 
 function Timer() {
+  const dispatch = useDispatch();
   const userId = useSelector(state => state.auth.user.userid);
   const userProfile = useSelector(state => state.auth.user);
   const [startedAt, setStartedAt] = useState(0);
@@ -34,14 +37,14 @@ function Timer() {
   // Calculate time to readable format
   const hours = Math.floor(seconds / 3600);
   const minutes = Math.floor((seconds % 3600) / 60);
-  const secondsRemainder = seconds % 60;  
+  const secondsRemainder = seconds % 60;
   const padZero = useCallback(number => `0${number}`.slice(-2), []);
-  
+
   // Our max time allowed is 8 hours per timer
   const isPastMaxTime = useMemo(() => seconds >= MAX_TIME_8_HOURS, [seconds]);
   const data = useMemo(() => ({
-    disabled: window.screenX <= 500,
-    isTangible: true,
+      disabled: window.screenX <= 500,
+      isTangible: true,
   }), []);
 
 
@@ -63,9 +66,19 @@ function Timer() {
   useEffect(() => {
     if (isConnected) {
       client.getClient().send(GET_TIMER);
+    } else {
+      client.start();
     }
   }, [isConnected]);
 
+  /** Coordinate with redux store if timer is paused */
+  useEffect(() => {
+    if (!isRunning) {
+      dispatch(setTimer({ paused: true }));
+    } else {
+      dispatch(setTimer({ paused: false }));
+    }
+  }, [isRunning]);
   useEffect(() => {
     if (message) {
       const {
@@ -94,7 +107,7 @@ function Timer() {
       }
 
       /** If we paused the timer ourselves, no need to gain new information from backend
-       * Note: This is only if this client pauses timer, but if another does we want that 
+       * Note: This is only if this client pauses timer, but if another does we want that
        * information in our state.
        */
       if (isUserPaused && !isRunningFromBackend) {
@@ -103,7 +116,7 @@ function Timer() {
 
       /**
        * Cases: User closes tab or puts computer to sleep mode / refreshes
-       * 
+       *
        * We would like to restart the timer only if the user refreshes.
        * Otherwise we would like to keep it paused. We grab from session-storage
        * since that makes the assumption the user refreshed.
@@ -133,7 +146,7 @@ function Timer() {
 
         // Set when started from database to be used in future calculation
         setStartedAt(startedAtInSecondsFromBackend);
-        
+
         // Set current seconds to timer
         setSeconds(Math.floor(currentTime));
 
@@ -180,34 +193,34 @@ function Timer() {
    * to reflect an accurate time
    */
   useInterval(() => {      
-    if (
-      isRunning &&
-      !isUserPaused &&
-      !isApplicationPaused &&
-      startedAt !== 0 &&
-      isConnected &&
-      !isPastMaxTime
-    ) {
-      /**
-       * How do we calculate time?
-       *
-       * We take the current time right now and
-       * take the difference between the time
-       * when the timer started in the server
-       * and add that with the starting seconds
-       * from any previous timer start / stops
-       */
-      const currentTimeInSeconds = new Date().getTime() / 1000;
+      if (
+        isRunning &&
+        !isUserPaused &&
+        !isApplicationPaused &&
+        startedAt !== 0 &&
+        isConnected &&
+        !isPastMaxTime
+      ) {
+        /**
+         * How do we calculate time?
+         *
+         * We take the current time right now and
+         * take the difference between the time
+         * when the timer started in the server
+         * and add that with the starting seconds
+         * from any previous timer start / stops
+         */
+        const currentTimeInSeconds = new Date().getTime() / 1000;
 
-      // Calculating the offset from the server timer
+        // Calculating the offset from the server timer
       const currentTime = Math.floor(currentTimeInSeconds - startedAt + startingSeconds + clientOffset) ;
-      setSeconds(currentTime);
+        setSeconds(currentTime);
 
-      // Edge Case, if user timer is approaching or at 8 hours we should pause.
-      if (currentTime >= MAX_TIME_8_HOURS) {
-        client.getClient().send(PAUSE_TIMER({ isUserPaused: false, isApplicationPaused: true }));
+        // Edge Case, if user timer is approaching or at 8 hours we should pause.
+        if (currentTime >= MAX_TIME_8_HOURS) {
+          client.getClient().send(PAUSE_TIMER({ isUserPaused: false, isApplicationPaused: true }));
+        }
       }
-    }
   }, (isRunning && isConnected) ? 1000 : null);
 
   return (

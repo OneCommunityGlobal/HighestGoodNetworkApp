@@ -80,6 +80,7 @@ function initializeWebsocket(url) {
     off,
     onStateChange,
     close: () => client.close(),
+    start,
     getClient: () => client,
     isConnected: () => isConnected,
   };

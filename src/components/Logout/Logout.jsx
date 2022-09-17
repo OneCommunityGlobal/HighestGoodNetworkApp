@@ -5,9 +5,11 @@ import { logoutUser } from '../../actions/authActions';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import { client, PAUSE_TIMER } from 'services/timerService';
 import { useState } from 'react';
+import { useSelector } from 'react-redux';
 
 export const Logout = props => {
   const dispatch = useDispatch();
+  const { paused } = useSelector(state => state.timer);
   const [isConnected, setIsConnected] = useState(client.isConnected());
 
   /**
@@ -17,8 +19,8 @@ export const Logout = props => {
    */
   useEffect(() => client.onStateChange(setIsConnected), [setIsConnected]);
 
-  useEffect(() => {
-    if (isConnected) {
+  const pauseTimerAndClearWebsocketSession = () => {
+    if (isConnected && !paused) {
       client.getClient().send(
         PAUSE_TIMER({
           isUserPaused: true,
@@ -27,7 +29,9 @@ export const Logout = props => {
         }),
       );
     }
-  }, [isConnected]);
+
+    client.getClient().close();
+  };
 
   const closePopup = () => {
     props.setLogoutPopup(false);
@@ -35,6 +39,7 @@ export const Logout = props => {
 
   const onLogout = () => {
     closePopup();
+    pauseTimerAndClearWebsocketSession();
     dispatch(logoutUser());
     return <Redirect to="/login" auth={false} />;
   };
