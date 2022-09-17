@@ -62,12 +62,14 @@ function initializeWebsocket(url) {
       isConnected = false;
       stateChangeListeners.forEach((fn) => fn(false));
 
+      // Remove session since socket is closed
+      sessionStorage.removeItem('working-session-timer');
+      
       if (!reconnectOnClose) {
         return;
       }
 
-      // Remove session since socket is closed
-      sessionStorage.removeItem('working-session-timer');
+
 
       setTimeout(start, 10000);
     };
@@ -83,6 +85,7 @@ function initializeWebsocket(url) {
     start,
     getClient: () => client,
     isConnected: () => isConnected,
+    reconnectOnClose
   };
 }
 

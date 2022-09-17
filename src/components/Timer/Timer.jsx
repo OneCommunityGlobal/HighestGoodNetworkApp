@@ -66,7 +66,9 @@ function Timer() {
   useEffect(() => {
     if (isConnected) {
       client.getClient().send(GET_TIMER);
-    } else {
+    }
+
+    if (!isConnected && !client.reconnectOnClose) {
       client.start();
     }
   }, [isConnected]);
