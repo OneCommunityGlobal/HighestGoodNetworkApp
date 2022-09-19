@@ -75,8 +75,6 @@ function initializeWebsocket(url) {
     };
   }
 
-  start();
-
   return {
     on,
     off,
