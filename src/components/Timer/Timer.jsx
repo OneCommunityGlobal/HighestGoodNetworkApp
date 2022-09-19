@@ -62,6 +62,7 @@ function Timer() {
    * On first render when connected, we would like
    * to get the timer to check if it is running and
    * all the details around it.
+   * redeploy
    */
   useEffect(() => {
     if (isConnected) {
