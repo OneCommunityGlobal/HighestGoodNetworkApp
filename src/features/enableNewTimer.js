@@ -1,0 +1,1 @@
+export const enableNewTimer = process.env.REACT_APP_ENABLE_NEW_TIMER ?? true;
