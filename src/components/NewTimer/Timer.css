@@ -12,21 +12,13 @@
   font-variant-numeric: tabular-nums;
 }
 
-.button-container-new-timer {
-  display: flex;
-}
-
-.timerWrapper {
-  display: flex;
-  flex-direction: column;
+.button-container {
+  display: inline-block;
 }
 
 @media (min-width: 1550px) {
   .timer {
     display: flex;
-  }
-
-  .timerWrapper {
     margin-left: 40%;
   }
 }

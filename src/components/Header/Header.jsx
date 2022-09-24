@@ -68,7 +68,7 @@ export const Header = props => {
   const TimerComponent = enableNewTimer ? NewTimer : Timer;
 
   return (
-    <div>
+    <div className='header-wrapper'>
       <Navbar className="py-3 mb-3" color="dark" dark expand="lg">
         {/**
          * <NavbarBrand tag={Link} to="/" className="d-none d-md-block">

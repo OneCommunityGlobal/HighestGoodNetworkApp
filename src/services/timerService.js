@@ -59,6 +59,7 @@ function initializeWebsocket(url) {
     client.onerror = (e) => console.error(e);
 
     client.onclose = () => {
+      console.log("Closing Websocket")
       isConnected = false;
       stateChangeListeners.forEach((fn) => fn(false));
 
