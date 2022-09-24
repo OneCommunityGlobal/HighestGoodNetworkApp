@@ -60,10 +60,6 @@ function Timer() {
    */
   useEffect(() => client.onStateChange(setIsConnected), [setIsConnected]);
 
-  useEffect(() => {
-    client.start();
-  }, []);
-
   /**
    * On first render when connected, we would like
    * to get the timer to check if it is running and
