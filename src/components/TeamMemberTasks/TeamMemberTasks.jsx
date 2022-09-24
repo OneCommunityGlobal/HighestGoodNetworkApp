@@ -68,10 +68,27 @@ const TeamMemberTasks = props => {
         }
       });
 
+      //sort all users by their name
+      filteredMembers.sort((a, b) => {
+        let filteredMembersA = a.name.toLowerCase();
+        let filteredMembersB = b.name.toLowerCase();
+
+        if (filteredMembersA < filteredMembersB) {
+          return -1;
+        }
+        if (filteredMembersA > filteredMembersB) {
+          return 1;
+        }
+        return 0;
+      });
+
       //find currentUser
       const currentUser = filteredMembers.find(user => user.personId === userId);
       //conditional variable for moving current user up front.
       let moveCurrentUserFront = false;
+
+      console.log('filteredMembers', filteredMembers);
+
       //Does the user has at least one task with project Id and task id assigned. Then set the current user up front.
       for (const task of currentUser.tasks) {
         if (task.wbsId && task.projectId) {
