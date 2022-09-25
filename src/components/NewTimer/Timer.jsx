@@ -244,7 +244,6 @@ function Timer() {
   }, [isPastMaxTime, isApplicationPaused]);
 
   return (
-    <div className="timerWrapper">
       <div style={{ zIndex: 2 }} className="timer">
         <Button
           onClick={resetTimer}
@@ -297,7 +296,6 @@ function Timer() {
           />
         )}
       </div>
-    </div>
   );
 }
 
