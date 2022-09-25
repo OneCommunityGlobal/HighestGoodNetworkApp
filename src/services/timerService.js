@@ -72,7 +72,7 @@ function initializeWebsocket(url) {
 
 
 
-      setTimeout(start, 10000);
+      // setTimeout(start, 10000);
     };
   }
 
