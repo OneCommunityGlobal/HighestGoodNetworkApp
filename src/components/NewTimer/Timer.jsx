@@ -60,7 +60,11 @@ function Timer() {
    */
   useEffect(() => client.onStateChange(setIsConnected), [setIsConnected]);
 
-
+useEffect(() => { 
+  if (!client?.getClient()?.reconnectOnClose && !isConnected) {
+    client?.start();
+  }
+}, [])
   /**
    * On first render when connected, we would like
    * to get the timer to check if it is running and
@@ -70,11 +74,7 @@ function Timer() {
   useEffect(() => {
     if (isConnected) {
       client?.getClient()?.send(GET_TIMER);
-    } else {
-      if (client.getClient().wasClosed) {
-        client.start();
-      }
-    }
+    } 
   }, [isConnected]);
 
   /** Coordinate with redux store if timer is paused */
