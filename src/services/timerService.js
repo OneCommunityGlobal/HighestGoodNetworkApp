@@ -21,7 +21,7 @@ function initializeWebsocket(url) {
   let wasClosed = false;
   let messageListeners = [];
   let stateChangeListeners = [];
-  client.reconnectOnClose = true;
+  client.shouldReconnect = true;
   function on(fn) {
     messageListeners.push(fn);
   }
@@ -67,7 +67,9 @@ function initializeWebsocket(url) {
 
       // Remove session since socket is closed
       sessionStorage.removeItem('working-session-timer');
-  
+
+      client.shouldReconnect = true;
+
       if (!reconnectOnClose) {
         return;
       }
