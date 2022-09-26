@@ -264,7 +264,7 @@ function Timer() {
           </Badge>
         )}
 
-        <div className="button-container-new-timer">
+        <div className="button-container">
           <Button
             id="start"
             onClick={isRunning ? pauseTimer : startTimer}
