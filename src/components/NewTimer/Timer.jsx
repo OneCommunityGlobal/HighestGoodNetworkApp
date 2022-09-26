@@ -71,7 +71,7 @@ function Timer() {
     if (isConnected) {
       client?.getClient()?.send(GET_TIMER);
     } else {
-      console.log({client})
+      console.log({client: client.getClient()})
       // client.start();
     }
   }, [isConnected]);
