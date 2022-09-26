@@ -70,6 +70,7 @@ function Timer() {
     if (isConnected) {
       client?.getClient()?.send(GET_TIMER);
     } 
+    console.log({ client, isConnected})
   }, [isConnected]);
 
   /** Coordinate with redux store if timer is paused */
