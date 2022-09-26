@@ -67,7 +67,7 @@ function initializeWebsocket(url) {
       // Remove session since socket is closed
       sessionStorage.removeItem('working-session-timer');
       
-      wasClosed = true;
+      client.wasClosed = true;
 
       if (!reconnectOnClose) {
         return;
