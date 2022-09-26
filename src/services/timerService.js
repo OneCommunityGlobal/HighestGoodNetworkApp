@@ -15,7 +15,7 @@ export const PAUSE_TIMER = ({
 });
 
 function initializeWebsocket(url) {
-  let client;
+  let client = {};
   let isConnected = false;
   let reconnectOnClose = true;
   let wasClosed = false;
