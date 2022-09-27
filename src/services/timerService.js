@@ -89,7 +89,7 @@ function initializeWebsocket(url) {
         return;
       }
 
-      setTimeout(start, 10000);
+      setTimeout(start, 1000);
     };
   }
 
