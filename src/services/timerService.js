@@ -84,7 +84,7 @@ function initializeWebsocket(url) {
       sessionStorage.removeItem('working-session-timer');
 
       client.shouldReconnect = true;
-
+      client.terminate();
       if (!reconnectOnClose) {
         return;
       }
