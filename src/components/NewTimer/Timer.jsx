@@ -72,6 +72,7 @@ function Timer() {
     } 
 
     if (!isConnected && client?.getClient()?.shouldReconnect) {
+      console.log({client: client?.getClient()})
       client?.start();
     }
     console.log({ client, isConnected})
