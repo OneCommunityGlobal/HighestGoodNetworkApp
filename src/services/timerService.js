@@ -14,18 +14,6 @@ export const PAUSE_TIMER = ({
   intent: 'PAUSE_TIMER', isUserPaused, isApplicationPaused, saveTimerData,
 });
 
-function heartbeat() {
-  clearTimeout(this.pingTimeout);
-
-  // Use `WebSocket#terminate()`, which immediately destroys the connection,
-  // instead of `WebSocket#close()`, which waits for the close timer.
-  // Delay should be equal to the interval at which your server
-  // sends out pings plus a conservative assumption of the latency.
-  this.pingTimeout = setTimeout(() => {
-    this.terminate();
-  }, 30000 + 1000);
-}
-
 
 function initializeWebsocket(url) {
   let client = {};
@@ -64,7 +52,7 @@ function initializeWebsocket(url) {
     // Close without reconnecting;
     client.close = () => {
       reconnectOnClose = false;
-      client.terminate();
+    
       client.reconnectOnClose = false;
       close.call(client);
     };

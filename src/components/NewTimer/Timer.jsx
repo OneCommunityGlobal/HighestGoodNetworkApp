@@ -205,6 +205,7 @@ function Timer() {
         isConnected &&
         !isPastMaxTime
       ) {
+        console.log(client?.getClient())
         /**
          * How do we calculate time?
          *
