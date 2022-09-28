@@ -1,6 +1,6 @@
 /* eslint-disable import/prefer-default-export */
 let APIEndpoint =
-  "https://onecommunitytest.azurewebsites.net/api";
+process.env.REACT_APP_APIENDPOINT || "https://onecommunitytest.azurewebsites.net/api";
 let GeocodeAPIEndpoint = 'https://api.opencagedata.com/geocode/v1/json';
 
 export const ENDPOINTS = {
