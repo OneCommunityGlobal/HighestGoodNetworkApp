@@ -1,4 +1,4 @@
-/*********************************************************************************
+/** *******************************************************************************
  * Action: PROJECTS
  * Author: Henry Ng - 12 / 19 / 20
  ****************************************************************************** */
@@ -23,8 +23,8 @@ export const updatePopupEditor = (popupId, popupContent, popupName) => {
   return async (dispatch) => {
     try {
       await axios.post(ENDPOINTS.POPUP_EDITOR_BY_ID(popupId), {
-        popupContent: popupContent,
-        popupName: popupName,
+        popupContent,
+        popupName,
       });
       const request = await axios.get(ENDPOINTS.POPUP_EDITORS);
       dispatch(setPopup(request.data));
@@ -49,8 +49,8 @@ export const backupPopupEditor = (popupId, popupContent, popupName) => {
   return async (dispatch) => {
     try {
       await axios.post(ENDPOINTS.POPUP_EDITOR_BACKUP_BY_ID(popupId), {
-        popupContent: popupContent,
-        popupName: popupName,
+        popupContent,
+        popupName,
       });
       const request = await axios.get(ENDPOINTS.POPUP_EDITORS);
       dispatch(setCurrentPopup(request.data));
@@ -60,9 +60,9 @@ export const backupPopupEditor = (popupId, popupContent, popupName) => {
   };
 };
 
-/*******************************************
+/** *****************************************
  * ACTION CREATORS
- *******************************************/
+ ****************************************** */
 
 export const setPopup = (popupItems) => {
   return {

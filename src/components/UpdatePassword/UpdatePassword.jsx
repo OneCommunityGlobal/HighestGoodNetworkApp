@@ -6,7 +6,7 @@ import Joi from 'joi';
 import { toast } from 'react-toastify';
 import { updatePassword } from '../../actions/updatePassword';
 import { logoutUser } from '../../actions/authActions';
-import { clearErrors } from '../../actions/errorsActions';
+import clearErrors from '../../actions/errorsActions';
 
 class UpdatePassword extends Form {
   state = {
