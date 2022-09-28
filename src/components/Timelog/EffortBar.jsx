@@ -2,13 +2,13 @@ import React from 'react';
 import { useSelector } from 'react-redux';
 
 const EffortBar = ({ activeTab, projectsSelected }) => {
-  const data = useSelector((state) =>
-    activeTab === 3 ? state.timeEntries.period : state.timeEntries.weeks[activeTab],
+  const data = useSelector(state =>
+    activeTab === 4 ? state.timeEntries.period : state.timeEntries.weeks[activeTab],
   );
 
   const calculateTotalTime = (data, isTangible) => {
     const filteredData = data.filter(
-      (entry) =>
+      entry =>
         entry.isTangible === isTangible &&
         (projectsSelected.includes('all') || projectsSelected.includes(entry.projectId)),
     );
