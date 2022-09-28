@@ -77,7 +77,18 @@ function initializeWebsocket(url) {
         return;
       }
 
-      setTimeout(start, 1000);
+
+      var TIMEOUT = 5000;
+      var lastTime = (new Date()).getTime();
+
+      setInterval(function() {
+        var currentTime = (new Date()).getTime();
+        if (currentTime > (lastTime + TIMEOUT + 2000)) {
+          start();
+        }
+        lastTime = currentTime;
+      }, TIMEOUT);
+
     };
   }
 

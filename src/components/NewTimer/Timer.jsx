@@ -123,12 +123,9 @@ function Timer() {
        * since that makes the assumption the user refreshed.
        */
       if (isApplicationPausedFromBackend) {
-        const sessionStart = sessionStorage.getItem('working-session-timer');
-        const currentTime = new Date().getTime() / 1000;
-       
-        const isWithinTenSeconds = (currentTime - +sessionStart) < 10000
- console.log({sessionStart, currentTime, isWithinTenSeconds})
-        if (isWithinTenSeconds && MAX_TIME_8_HOURS >= secondsFromBackend) {
+        const shouldRestartTimer = sessionStorage.getItem('working-session-timer');
+
+        if (shouldRestartTimer && MAX_TIME_8_HOURS >= secondsFromBackend) {
           client.getClient().send(START_TIMER({ restartTimerWithSync: true }));
         }
       }
@@ -161,7 +158,7 @@ function Timer() {
         setStartingSeconds(secondsFromBackend);
 
         // Set session in browser, and will help determine if the user refreshes
-        sessionStorage.setItem('working-session-timer', new Date().getTime() / 1000);
+        sessionStorage.setItem('working-session-timer', true);
       }
 
       /** Cases: Timer was paused from another client and we are taking in the change */
@@ -208,7 +205,6 @@ function Timer() {
         isConnected &&
         !isPastMaxTime
       ) {
-        console.log(client?.getClient())
         /**
          * How do we calculate time?
          *
