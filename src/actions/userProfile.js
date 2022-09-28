@@ -2,7 +2,6 @@ import axios from 'axios';
 import {
   getUserProfile as getUserProfileActionCreator,
   getUserTask as getUserTaskActionCreator,
-  getUserProject as getUserProjectActionCreator,
   editFirstName as editFirstNameActionCreator,
   editUserProfile as editUserProfileActionCreator,
   CLEAR_USER_PROFILE,
@@ -15,11 +14,9 @@ export const getUserProfile = (userId) => {
     let loggedOut = false;
     const res = await axios.get(url).catch((error) => {
       if (error.status === 401) {
-        //logout error
         loggedOut = true;
       }
     });
-    // console.log('GET user profile: response:', res)
     if (!loggedOut) {
       await dispatch(getUserProfileActionCreator(res.data));
     }
@@ -31,22 +28,12 @@ export const getUserTask = (userId) => {
   return async (dispatch) => {
     const res = await axios.get(url).catch((error) => {
       if (error.status === 401) {
+        console.log(error);
       }
     });
     await dispatch(getUserTaskActionCreator(res.data));
   };
 };
-
-// export const getUserProject = (userId) => {
-//   const url = ENDPOINTS.USER_PROJECTS(userId);
-//   return async (dispatch) => {
-//     const res = await axios.get(url).catch((error)=>{
-//       if (error.status === 401) {
-//       }
-//     });
-//     await dispatch(getUserProjectActionCreator(res.data));
-//   };
-// };
 
 export const editFirstName = (data) => (dispatch) => {
   dispatch(editFirstNameActionCreator(data));

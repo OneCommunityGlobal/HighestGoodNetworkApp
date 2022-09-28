@@ -1,14 +1,10 @@
 import moment from 'moment';
 import _ from 'lodash';
+import axios from 'axios';
 import httpService from '../services/httpService';
 import { FETCH_TEAMS_START, RECEIVE_TEAMS, FETCH_TEAMS_ERROR } from '../constants/teams';
 import { ENDPOINTS } from '../utils/URL';
-import axios from 'axios';
 import { GET_TEAM_BY_ID } from '../constants/team';
-import {
-  GET_USER_PROFILE,
-  getUserProfile as getUserProfileActionCreator,
-} from '../constants/userProfile';
 
 export function getUserTeamMembers1(userId) {
   const request = httpService.get(ENDPOINTS.USER_TEAM(userId));
@@ -37,7 +33,6 @@ export const fetchAllManagingTeams = (userId, managingTeams) => {
   const teamMembersPromises = [];
   const memberTimeEntriesPromises = [];
   managingTeams.forEach((team) => {
-    // req = await httpService.get(ENDPOINTS.TEAM_MEMBERS(team._id));
     teamMembersPromises.push(httpService.get(ENDPOINTS.TEAM_MEMBERS(team._id)));
   });
 
@@ -49,7 +44,6 @@ export const fetchAllManagingTeams = (userId, managingTeams) => {
       };
       allMembers = allMembers.concat(data[i].data);
     }
-    console.log('allManagingTeams:', allManagingTeams);
     const uniqueMembers = _.uniqBy(allMembers, '_id');
     uniqueMembers.forEach(async (member) => {
       const fromDate = moment().startOf('week').subtract(0, 'weeks');
@@ -62,8 +56,6 @@ export const fetchAllManagingTeams = (userId, managingTeams) => {
     });
 
     Promise.all(memberTimeEntriesPromises).then((data) => {
-      // console.log('After time entries: ', data);
-      // console.log('uniqueMemberTimeEntries: ', uniqueMemberTimeEntries);
       for (let i = 0; i < uniqueMembers.length; i++) {
         uniqueMembers[i] = {
           ...uniqueMembers[i],
@@ -79,8 +71,6 @@ export const fetchAllManagingTeams = (userId, managingTeams) => {
           allManagingTeams[i].members[j] = memberDataWithTimeEntries;
         }
       }
-
-      console.log('after processing: ', allManagingTeams);
     });
   });
 
@@ -115,11 +105,9 @@ export const getTeamDetail = (teamId) => {
     let loggedOut = false;
     const res = await axios.get(url).catch((error) => {
       if (error.status === 401) {
-        //logout error
         loggedOut = true;
       }
     });
-    // console.log('getTeamDetail:', res)
     if (!loggedOut) {
       await dispatch(setTeamDetail(res.data));
     }
