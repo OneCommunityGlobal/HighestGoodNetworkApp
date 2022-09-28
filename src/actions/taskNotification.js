@@ -1,5 +1,4 @@
 import axios from 'axios';
-import httpService from '../services/httpService';
 import { ENDPOINTS } from '../utils/URL';
 
 export const createOrUpdateTaskNotificationHTTP = async (taskId, oldTask, userIds) => {
@@ -7,9 +6,9 @@ export const createOrUpdateTaskNotificationHTTP = async (taskId, oldTask, userId
     const payload = { oldTask, userIds };
     await axios.post(ENDPOINTS.CREATE_OR_UPDATE_TASK_NOTIFICATION(taskId), payload);
   } catch (error) {
-    console.log('Error on create or update task notification with error: ' + error);
-  } 
-}
+    console.log(`Error on create or update task notification with error: ${ error}`);
+  }
+};
 
 export const createOrUpdateTaskNotification = () => async (dispatch, getState) => {
   try {
@@ -22,4 +21,4 @@ export const createOrUpdateTaskNotification = () => async (dispatch, getState) =
   } catch (error) {
     dispatch(createOrUpdateTaskNotificationError());
   }
-}
+};

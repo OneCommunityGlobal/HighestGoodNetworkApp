@@ -1,7 +1,7 @@
-/*********************************************************************************
+/** *******************************************************************************
  * Action: Tasks
  * Author: Henry Ng - 03/20/20
- ********************************************************************************/
+ ******************************************************************************* */
 import axios from 'axios';
 import { fetchTeamMembersTaskSuccess, fetchTeamMembersTaskBegin, fetchTeamMembersTaskError } from 'components/TeamMemberTasks/actions';
 import * as types from '../constants/task';
@@ -10,8 +10,7 @@ import { createOrUpdateTaskNotificationHTTP } from './taskNotification';
 import { createTaskEditSuggestionHTTP } from 'components/TaskEditSuggestions/service';
 
 const selectFetchTeamMembersTaskData = (state) => state.auth.user.userid;
-const selectUserId = (state) => state.auth.user.userid;
-const selectUpdateTaskData = (state, taskId) => state.tasks.taskItems.find(({_id}) => _id === taskId);
+const selectUpdateTaskData = (state, taskId) => state.tasks.taskItems.find(({ _id }) => _id === taskId);
 
 export const fetchTeamMembersTask = () => async (dispatch, getState) => {
   try {
@@ -28,11 +27,10 @@ export const fetchTeamMembersTask = () => async (dispatch, getState) => {
 // TODO: TeamMemberTasks.jsx dispatch
 export const deleteTaskNotification = (userId, taskId, taskNotificationId) => async (dispatch, getState) => {
   try {
-    //dispatch(deleteTaskNotificationBegin());
     const res = await axios.delete(ENDPOINTS.DELETE_TASK_NOTIFICATION(taskNotificationId));
-    dispatch(deleteTaskNotificationSuccess({userId, taskId, taskNotificationId}));
+    dispatch(deleteTaskNotificationSuccess({ userId, taskId, taskNotificationId }));
   } catch (error) {
-    //dispatch(deleteTaskNotificationError());
+    console.log(error);
   }
 };
 
@@ -41,15 +39,13 @@ export const addNewTask = (newTask, wbsId) => async (dispatch, getState) => {
   let _id = null;
   let task = {};
   try {
-    //dispatch(fetchTeamMembersTaskBegin());
     const res = await axios.post(ENDPOINTS.TASK(wbsId), newTask);
     _id = res.data._id;
     status = res.status;
     task = res.data;
-    const userIds = task.resources.map(resource => resource.userID);
+    const userIds = task.resources.map((resource) => resource.userID);
     await createOrUpdateTaskNotificationHTTP(task._id, {}, userIds);
   } catch (error) {
-    //dispatch(fetchTeamMembersTaskError());
     status = 400;
   }
   newTask._id = _id;
@@ -61,17 +57,10 @@ export const updateTask = (taskId, updatedTask, hasPermission) => async (dispatc
   try {
     const state = getState();
     const oldTask = selectUpdateTaskData(state, taskId);
-    //dispatch(fetchTeamMembersTaskBegin());
-    if (hasPermission) {
-      await axios.put(ENDPOINTS.TASK_UPDATE(taskId), updatedTask);
-      const userIds = updatedTask.resources.map(resource => resource.userID);
-      await createOrUpdateTaskNotificationHTTP(taskId, oldTask, userIds);
-    } else {
-      await createTaskEditSuggestionHTTP(taskId, selectUserId(state), oldTask, updatedTask);
-    }
+    await axios.put(ENDPOINTS.TASK_UPDATE(taskId), updatedTask);
+    const userIds = updatedTask.resources.map((resource) => resource.userID);
+    await createOrUpdateTaskNotificationHTTP(taskId, oldTask, userIds);
   } catch (error) {
-    //dispatch(fetchTeamMembersTaskError());
-    console.log(error);
     status = 400;
   }
   // TODO: DISPATCH TO TASKEDITSUGGESETIONS REDUCER TO UPDATE STATE
@@ -96,16 +85,11 @@ export const importTask = (newTask, wbsId) => {
     }
 
     newTask._id = _id;
-
-    /*await dispatch(
-      postNewTask(task,
-        status
-      ));*/
   };
 };
 
 export const updateNumList = (wbsId, list) => {
-  const url = ENDPOINTS.TASKS_UPDATE + '/num';
+  const url = `${ENDPOINTS.TASKS_UPDATE }/num`;
   return async (dispatch) => {
     let status = 200;
     try {
@@ -123,7 +107,9 @@ export const moveTasks = (wbsId, fromNum, toNum) => {
   return async (dispatch) => {
     try {
       const res = await axios.put(url, { fromNum, toNum });
-    } catch (err) {}
+    } catch (err) {
+      console.log(err);
+    }
     dispatch(setTasksError());
   };
 };
@@ -133,7 +119,6 @@ export const fetchAllTasks = (wbsId, level = 0, mother = null) => {
     await dispatch(setTasksStart());
     try {
       const request = await axios.get(ENDPOINTS.TASKS(wbsId, level === -1 ? 1 : level + 1, mother));
-      //console.log(request.data);
       dispatch(setTasks(request.data, level, mother));
     } catch (err) {
       dispatch(setTasksError(err));

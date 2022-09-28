@@ -9,7 +9,7 @@ import { ENDPOINTS } from '../utils/URL';
  * number === 2 week before last
  */
 export const getTimeEntriesForWeek = (userId, offset) => {
-  //TODO: Environment variable for server timezone
+  // TODO: Environment variable for server timezone
 
   const fromDate = moment()
     .tz('America/Los_Angeles')
@@ -28,7 +28,6 @@ export const getTimeEntriesForWeek = (userId, offset) => {
     let loggedOut = false;
     const res = await axios.get(url).catch(error => {
       if (error.status === 401) {
-        //logout error
         loggedOut = true;
       }
     });
@@ -44,7 +43,6 @@ export const getTimeEntriesForPeriod = (userId, fromDate, toDate) => {
     let loggedOut = false;
     const res = await axios.get(url).catch(error => {
       if (error.status === 401) {
-        //logout error
         loggedOut = true;
       }
     });
