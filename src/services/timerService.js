@@ -40,6 +40,8 @@ function initializeWebsocket(url) {
 
   function start() {
     client = null;
+    const date = new Date();
+    console.log("Starting websocket ", date.toGMTString())
     console.log("Restarting websocket")
     client = new WebSocket(url, localStorage.getItem(config.tokenKey));
     console.log({client})
@@ -72,6 +74,8 @@ function initializeWebsocket(url) {
     client.onclose = (e) => {
       console.log(e)
       console.log("Closing Websocket")
+      const date = new Date();
+      console.log("Closing websocket ", date.toGMTString())
       isConnected = false;
       stateChangeListeners.forEach((fn) => fn(false));
 
@@ -87,8 +91,10 @@ function initializeWebsocket(url) {
 
       if (!e.wasClean) { 
         setTimeout(() => {
+            const date = new Date();
+            console.log("Starting reconnection ", date.toGMTString())
             start()
-        }, 1000);       
+        }, 35000);       
       }
     };
   }
