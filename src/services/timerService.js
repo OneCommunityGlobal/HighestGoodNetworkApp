@@ -69,7 +69,8 @@ function initializeWebsocket(url) {
 
     client.onerror = (e) => console.error(e);
 
-    client.onclose = () => {
+    client.onclose = (e) => {
+      console.log(e)
       console.log("Closing Websocket")
       isConnected = false;
       stateChangeListeners.forEach((fn) => fn(false));
@@ -84,10 +85,11 @@ function initializeWebsocket(url) {
       }
 
 
-      if(!window.timerID){ /* Avoid firing a new setInterval, after one has been done */
-        console.log("Reconnecting")
-        window.timerID=setInterval(function(){start()}, 5000);
-     }
+      if (!e.wasClean) { 
+        setTimeout(() => {
+            start()
+        }, 1000);       
+      }
     };
   }
 
