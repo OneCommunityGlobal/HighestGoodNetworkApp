@@ -39,6 +39,8 @@ function initializeWebsocket(url) {
   }
 
   function start() {
+    client = null;
+    console.log("Restarting websocket")
     client = new WebSocket(url, localStorage.getItem(config.tokenKey));
 
     client.onopen = () => {
@@ -78,17 +80,7 @@ function initializeWebsocket(url) {
       }
 
 
-      var TIMEOUT = 5000;
-      var lastTime = (new Date()).getTime();
-
-      setInterval(function() {
-        var currentTime = (new Date()).getTime();
-        if (currentTime > (lastTime + TIMEOUT + 2000)) {
-          start();
-        }
-        lastTime = currentTime;
-      }, TIMEOUT);
-
+      setTimeout(start, 1000);
     };
   }
 
