@@ -44,6 +44,10 @@ function initializeWebsocket(url) {
     client = new WebSocket(url, localStorage.getItem(config.tokenKey));
 
     client.onopen = () => {
+      if(window.timerID){ /* a setInterval has been fired */
+        window.clearInterval(window.timerID);
+        window.timerID=0;
+      }
       isConnected = true;
       // heartbeat();
       stateChangeListeners.forEach((fn) => fn(true));
@@ -80,7 +84,10 @@ function initializeWebsocket(url) {
       }
 
 
-      setTimeout(start, 1000);
+      if(!window.timerID){ /* Avoid firing a new setInterval, after one has been done */
+        console.log("Reconnecting")
+        window.timerID=setInterval(function(){start()}, 5000);
+     }
     };
   }
 
