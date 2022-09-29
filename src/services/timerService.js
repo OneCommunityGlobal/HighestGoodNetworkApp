@@ -42,7 +42,7 @@ function initializeWebsocket(url) {
     client = null;
     console.log("Restarting websocket")
     client = new WebSocket(url, localStorage.getItem(config.tokenKey));
-
+    console.log({client})
     client.onopen = () => {
       if(window.timerID){ /* a setInterval has been fired */
         window.clearInterval(window.timerID);
@@ -76,7 +76,7 @@ function initializeWebsocket(url) {
 
       // Remove session since socket is closed
       sessionStorage.removeItem('working-session-timer');
-
+      console.log(sessionStorage.getItem('working-session-timer'))
       client.shouldReconnect = true;
       client = null;
       if (!reconnectOnClose) {
