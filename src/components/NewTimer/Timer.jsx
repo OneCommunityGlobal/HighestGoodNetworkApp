@@ -216,6 +216,7 @@ function Timer() {
         var current = (new Date()).getTime();
         if (current-timeTicksLast > 3000) {
           pauseTimer();
+          sessionStorage.removeItem('working-session-timer');
         }
         setTimeTicksLast(current);
 
