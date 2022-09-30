@@ -72,6 +72,7 @@ function initializeWebsocket(url) {
     client.onerror = (e) => console.error(e);
 
     client.onclose = (e) => {
+      isConnected = false;
       console.log(e)
       console.log("Closing Websocket")
       const date = new Date();
@@ -94,7 +95,7 @@ function initializeWebsocket(url) {
             const date = new Date();
             console.log("Starting reconnection ", date.toGMTString())
             start()
-        }, 10000);       
+        }, 15000);       
       }
     };
   }
