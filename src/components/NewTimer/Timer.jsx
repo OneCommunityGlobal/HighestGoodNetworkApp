@@ -215,7 +215,9 @@ function Timer() {
 
         var current = (new Date()).getTime();
         if (current-timeTicksLast > 3000) {
-          pauseTimer();
+          if (isConnected) {
+            client.getClient().send(PAUSE_TIMER({ isUserPaused: false, isApplicationPaused: true, saveTimerData: true }));
+          }
           sessionStorage.removeItem('working-session-timer');
         }
         setTimeTicksLast(current);
