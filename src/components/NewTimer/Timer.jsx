@@ -31,6 +31,7 @@ function Timer() {
   const [modal, setModal] = useState(false);
   const [isConnected, setIsConnected] = useState(client.isConnected());
   const [clientOffset, setClientOffset] = useState(0);
+  const [timeTicksLast, setTimeTicksLast] = useState(0);
 
   const message = useWebsocketMessage();
 
@@ -191,6 +192,12 @@ function Timer() {
     }
   };
 
+  useEffect(() => {
+    if (isRunning) {
+      setTimeTicksLast((new Date()).getTime())
+    }
+  }, [isRunning])
+
   /**
    * This is how we update the UI
    * to reflect an accurate time
@@ -205,6 +212,14 @@ function Timer() {
         isConnected &&
         !isPastMaxTime
       ) {
+
+        var current = (new Date()).getTime();
+        if (current-last > 3000) {
+          pauseTimer();
+        }
+        last = current;
+
+
         /**
          * How do we calculate time?
          *
