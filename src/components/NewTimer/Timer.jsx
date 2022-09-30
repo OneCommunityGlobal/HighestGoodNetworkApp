@@ -214,10 +214,10 @@ function Timer() {
       ) {
 
         var current = (new Date()).getTime();
-        if (current-last > 3000) {
+        if (current-timeTicksLast > 3000) {
           pauseTimer();
         }
-        last = current;
+        setTimeTicksLast(current);
 
 
         /**
