@@ -95,7 +95,7 @@ function initializeWebsocket(url) {
             const date = new Date();
             console.log("Starting reconnection ", date.toGMTString())
             start()
-        }, 15000);       
+        }, 3000);       
       }
     };
   }
