@@ -44,14 +44,11 @@ function initializeWebsocket(url) {
     console.log("Starting websocket ", date.toGMTString())
     console.log("Restarting websocket")
     client = new ReconnectingWebSocket(url, localStorage.getItem(config.tokenKey));
+    client.debug = true;
     console.log({client})
     client.onopen = () => {
-      if(window.timerID){ /* a setInterval has been fired */
-        window.clearInterval(window.timerID);
-        window.timerID=0;
-      }
+      console.log("Opened websocket")
       isConnected = true;
-      // heartbeat();
       stateChangeListeners.forEach((fn) => fn(true));
     };
 
@@ -90,6 +87,7 @@ function initializeWebsocket(url) {
     close: () => client.close(),
     start,
     getClient: () => client,
+    refreshWebsocket: () => client?.refresh(),
     isConnected: () => isConnected,
     wasClosed,
     reconnectOnClose
