@@ -210,8 +210,7 @@ function Timer() {
         !isApplicationPaused &&
         startedAt !== 0 &&
         isConnected &&
-        !isPastMaxTime && 
-        window.navigator.onLine
+        !isPastMaxTime
       ) {
 
         var current = (new Date()).getTime();
