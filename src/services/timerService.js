@@ -73,24 +73,10 @@ function initializeWebsocket(url) {
 
     client.onclose = (e) => {
       isConnected = false;
-      console.log(e)
-      console.log("Closing Websocket")
-      const date = new Date();
-      console.log("Closing websocket ", date.toGMTString())
-      isConnected = false;
       stateChangeListeners.forEach((fn) => fn(false));
 
       // Remove session since socket is closed
       sessionStorage.removeItem('working-session-timer');
-      console.log(sessionStorage.getItem('working-session-timer'))
-      client.shouldReconnect = true;
-      client = null;
-      if (!reconnectOnClose) {
-        return;
-      }
-
-
-  
     };
   }
 
