@@ -59,6 +59,7 @@
     "reactjs-popup": "^2.0.5",
     "reactstrap": "^8.4.1",
     "read-excel-file": "^4.0.7",
+    "reconnecting-websocket": "^4.4.0",
     "redux": "^4.0.5",
     "redux-actions": "^2.6.5",
     "redux-persist": "^5.10.0",

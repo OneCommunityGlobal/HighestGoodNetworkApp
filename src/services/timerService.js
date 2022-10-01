@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { ENDPOINTS } from '../utils/URL';
 import config from '../config.json';
-
+import ReconnectingWebSocket from 'reconnecting-websocket';
 export const MAX_TIME_8_HOURS = 28800;
 export const GET_TIMER = JSON.stringify({ intent: 'GET_TIMER' });
 export const START_TIMER = ({ restartTimerWithSync = false }) => JSON.stringify({ intent: 'START_TIMER', restartTimerWithSync });
@@ -43,7 +43,7 @@ function initializeWebsocket(url) {
     const date = new Date();
     console.log("Starting websocket ", date.toGMTString())
     console.log("Restarting websocket")
-    client = new WebSocket(url, localStorage.getItem(config.tokenKey));
+    client = new ReconnectingWebSocket(url, localStorage.getItem(config.tokenKey));
     console.log({client})
     client.onopen = () => {
       if(window.timerID){ /* a setInterval has been fired */
@@ -90,13 +90,7 @@ function initializeWebsocket(url) {
       }
 
 
-      if (!e.wasClean) { 
-        setTimeout(() => {
-            const date = new Date();
-            console.log("Starting reconnection ", date.toGMTString())
-            start()
-        }, 3000);       
-      }
+  
     };
   }
 
