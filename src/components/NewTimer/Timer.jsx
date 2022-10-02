@@ -69,6 +69,7 @@ function Timer() {
    */
   useEffect(() => {
     if (isConnected) {
+      console.log("Reconnecting")
       client?.getClient()?.send(GET_TIMER);
     } 
   }, [isConnected]);
@@ -217,9 +218,7 @@ function Timer() {
         if (current-timeTicksLast > 3000) {
           if (isConnected) {
             client.getClient().send(PAUSE_TIMER({ isUserPaused: false, isApplicationPaused: true, saveTimerData: true }));
-          } 
-            client.getClient().refresh();
-         
+          }          
           sessionStorage.removeItem('working-session-timer');
         }
         setTimeTicksLast(current);
