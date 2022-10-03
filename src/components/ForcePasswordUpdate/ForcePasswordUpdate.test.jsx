@@ -1,7 +1,7 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 import { ForcePasswordUpdate } from './ForcePasswordUpdate';
-import { clearErrors } from '../../actions/errorsActions';
+import clearErrors from '../../actions/errorsActions';
 import { render } from '@testing-library/react';
 
 describe('Force Password Update page structure', () => {
