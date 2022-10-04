@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import { Link, withRouter } from 'react-router-dom';
 import Form from '../common/Form/Form';
 import { loginUser } from '../../actions/authActions';
-import clearErrors from '../../actions/errorsActions';
+import { clearErrors } from '../../actions/errorsActions';
 
 /* export const Login = (props) => {
   console.log('Form: ', Form);

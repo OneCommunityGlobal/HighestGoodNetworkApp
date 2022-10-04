@@ -1,14 +1,14 @@
-/** *******************************************************************************
+/*********************************************************************************
  * Action: MEMBER MEMBERSHIP
  * Author: Henry Ng - 02/03/20
- ******************************************************************************* */
+ ********************************************************************************/
 import axios from 'axios';
-import * as types from '../constants/projectMembership';
+import * as types from './../constants/projectMembership';
 import { ENDPOINTS } from '../utils/URL';
-
-/** *****************************************
+/*******************************************
  * ACTION CREATORS
- ****************************************** */
+ *******************************************/
+
 export const getAllUserProfiles = () => {
   const request = axios.get(ENDPOINTS.USER_PROFILES);
   return async (dispatch, getState) => {
@@ -16,16 +16,19 @@ export const getAllUserProfiles = () => {
     request
       .then((res) => {
         let users = res.data;
-        const { members } = getState().projectMembers;
+        let members = getState().projectMembers.members;
         users = users.map((user) => {
           if (!members.find((member) => member._id === user._id)) {
             return (user = { ...user, assigned: false });
-          }
+          } else {
             return (user = { ...user, assigned: true });
+          }
         });
+        // console.log(users);
         dispatch(foundUsers(users));
       })
       .catch((err) => {
+        // console.log("Error", err);
         dispatch(findUsersError(err));
       });
   };
@@ -35,26 +38,35 @@ export const getAllUserProfiles = () => {
  * Call API to find a user profile
  */
 export const findUserProfiles = (keyword) => {
+  //console.log(ENDPOINTS.USER_PROFILES, keyword);
   const request = axios.get(ENDPOINTS.USER_PROFILES);
+  //console.log(request);
+
   return async (dispatch, getState) => {
     await dispatch(findUsersStart());
     request
       .then((res) => {
+        // console.log("FOUND USER ", res);
         if (keyword.trim() !== '') {
-          let users = res.data.filter((user) => (`${user.firstName } ${ user.lastName}`).toLowerCase().includes(keyword.toLowerCase()));
-          const { members } = getState().projectMembers;
+          let users = res.data.filter((user) =>
+            (user.firstName + ' ' + user.lastName).toLowerCase().includes(keyword.toLowerCase()),
+          );
+          let members = getState().projectMembers.members;
           users = users.map((user) => {
             if (!members.find((member) => member._id === user._id)) {
               return (user = { ...user, assigned: false });
-            }
+            } else {
               return (user = { ...user, assigned: true });
+            }
           });
+          // console.log(users);
           dispatch(foundUsers(users));
         } else {
           dispatch(foundUsers([]));
         }
       })
       .catch((err) => {
+        // console.log("Error", err);
         dispatch(findUsersError(err));
       });
   };
@@ -70,9 +82,11 @@ export const fetchAllMembers = (projectId) => {
     await dispatch(foundUsers([]));
     request
       .then((res) => {
+        // console.log("RES", res);
         dispatch(setMembers(res.data));
       })
       .catch((err) => {
+        //console.log("Error", err);
         dispatch(setMembersError(err));
       });
   };
@@ -83,7 +97,7 @@ export const fetchAllMembers = (projectId) => {
  */
 export const assignProject = (projectId, userId, operation, firstName, lastName) => {
   const request = axios.post(ENDPOINTS.PROJECT_MEMBER(projectId), {
-    projectId,
+    projectId: projectId,
     users: [
       {
         userId,
@@ -95,6 +109,7 @@ export const assignProject = (projectId, userId, operation, firstName, lastName)
   return async (dispatch) => {
     request
       .then((res) => {
+        //console.log("RES", res);
         if (operation === 'Assign') {
           dispatch(
             assignNewMember({
@@ -109,14 +124,15 @@ export const assignProject = (projectId, userId, operation, firstName, lastName)
         }
       })
       .catch((err) => {
+        //console.log("Error", err);
         dispatch(addNewMemberError(err));
       });
   };
 };
 
-/** *****************************************
+/*******************************************
  * PLAIN OBJ ACTIONS
- ****************************************** */
+ *******************************************/
 
 /**
  * Set a flag that fetching Members
@@ -153,6 +169,8 @@ export const setMembersError = (err) => {
  * Set a flag that finding Members
  */
 export const findUsersStart = () => {
+  // console.log("find user start");
+
   return {
     type: types.FIND_USERS_START,
   };
@@ -163,6 +181,7 @@ export const findUsersStart = () => {
  * @param payload : Users []
  */
 export const foundUsers = (users) => {
+  // console.log("foundUsers");
   return {
     type: types.FOUND_USERS,
     users,
@@ -185,6 +204,7 @@ export const findUsersError = (err) => {
  * @param member : {}
  */
 export const assignNewMember = (member) => {
+  // console.log("new member", member);
   return {
     type: types.ADD_NEW_MEMBER,
     member,
