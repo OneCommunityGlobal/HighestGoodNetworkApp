@@ -216,6 +216,7 @@ function Timer() {
 
         var current = (new Date()).getTime();
         if (current-timeTicksLast > 3000) {
+          console.log({isConnected, isPausingTime: true })
           if (isConnected) {
             client.getClient().send(PAUSE_TIMER({ isUserPaused: false, isApplicationPaused: true, saveTimerData: true }));
           }          
