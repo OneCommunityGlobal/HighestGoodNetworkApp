@@ -9,7 +9,7 @@ import { ApiEndpoint, ENDPOINTS } from '../utils/URL';
 import { GET_ERRORS } from '../constants/errors';
 import mockState from './mockAdminState.js';
 import routes from '../routes';
-import clearErrors from '../actions/errorsActions';
+import { clearErrors } from '../actions/errorsActions';
 
 import { loginUser } from '../actions/authActions';
 

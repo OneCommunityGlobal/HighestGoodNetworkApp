@@ -10,7 +10,7 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import routes from './../routes';
 import { ForcePasswordUpdate } from '../components/ForcePasswordUpdate/ForcePasswordUpdate';
 import { forcePasswordUpdate as fPU } from './../actions/updatePassword';
-import clearErrors from './../actions/errorsActions';
+import { clearErrors } from './../actions/errorsActions';
 
 const url = ENDPOINTS.FORCE_PASSWORD;
 const timerUrl = ENDPOINTS.TIMER(mockState.auth.user.userid);

@@ -1,1 +1,1 @@
-const BASE_URL = '$(RestApi)';
+var BASE_URL = '$(RestApi)';
