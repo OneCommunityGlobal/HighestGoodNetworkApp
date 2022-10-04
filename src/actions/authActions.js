@@ -1,6 +1,6 @@
 import jwtDecode from 'jwt-decode';
-import axios from 'axios';
 import httpService from '../services/httpService';
+import axios from 'axios';
 import config from '../config.json';
 import { ENDPOINTS } from '../utils/URL';
 import { GET_ERRORS } from '../constants/errors';
@@ -36,6 +36,7 @@ export const getHeaderData = (userId) => {
   const url = ENDPOINTS.USER_PROFILE(userId);
   return async (dispatch) => {
     const res = await axios.get(url);
+    console.log('userrprofie', res);
 
     await dispatch(
       setHeaderData({

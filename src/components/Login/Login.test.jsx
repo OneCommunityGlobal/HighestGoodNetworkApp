@@ -2,7 +2,7 @@ import React from 'react';
 import { shallow, mount } from 'enzyme';
 import { Login } from './Login';
 import { loginUser } from '../../actions/authActions';
-import clearErrors from '../../actions/errorsActions';
+import { clearErrors } from '../../actions/errorsActions';
 import { BrowserRouter } from 'react-router-dom';
 
 describe('Login page structure', () => {

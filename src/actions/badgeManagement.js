@@ -76,6 +76,7 @@ export const validateBadges = (firstName, lastName) => {
       setTimeout(() => {
         dispatch(closeAlert());
       }, 6000);
+      return;
     }
   };
 };
@@ -95,7 +96,7 @@ export const assignBadges = (firstName, lastName, selectedBadges) => {
       return;
     }
 
-    const userAssigned = `${firstName } ${ lastName}`;
+    const userAssigned = firstName + ' ' + lastName;
 
     const res = await axios.get(ENDPOINTS.USER_PROFILE_BY_NAME(userAssigned));
     if (res.data.length === 0) {
@@ -110,7 +111,7 @@ export const assignBadges = (firstName, lastName, selectedBadges) => {
       }, 6000);
       return;
     }
-    const { badgeCollection } = res.data[0];
+    const badgeCollection = res.data[0].badgeCollection;
     const UserToBeAssigned = res.data[0]._id;
 
     selectedBadges.forEach((badgeId) => {
@@ -176,7 +177,7 @@ export const assignBadgesByUserID = (userId, selectedBadges) => {
       }, 6000);
       return;
     }
-    const { badgeCollection } = res.data;
+    const badgeCollection = res.data.badgeCollection;
 
     for (let i = 0; i < badgeCollection.length; i++) {
       badgeCollection[i].badge = badgeCollection[i].badge._id;
