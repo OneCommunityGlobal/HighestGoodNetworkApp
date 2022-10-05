@@ -112,9 +112,6 @@ const TeamMemberTasks = props => {
         }
       }
 
-      /////////
-      console.log('FilteredMembers', filteredMembers);
-
       teamsList = filteredMembers.map((user, index) => {
         let totalHoursLogged = 0;
         let totalHoursRemaining = 0;
