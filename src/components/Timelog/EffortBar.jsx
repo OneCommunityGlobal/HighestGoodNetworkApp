@@ -3,7 +3,7 @@ import { useSelector } from 'react-redux';
 
 const EffortBar = ({ activeTab, projectsSelected }) => {
   const data = useSelector(state =>
-    activeTab === 4 ? state.timeEntries.period : state.timeEntries.weeks[activeTab],
+    activeTab === 4 ? state.timeEntries.period : state.timeEntries.weeks[activeTab - 1],
   );
 
   const calculateTotalTime = (data, isTangible) => {
