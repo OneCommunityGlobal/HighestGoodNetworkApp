@@ -216,7 +216,7 @@ function Timer() {
         var current = (new Date()).getTime();
         if (current-timeTicksLast > 3000) {
           client.getClient().send(PAUSE_TIMER({ isUserPaused: false, isApplicationPaused: true }));
-          console.log("pausing due to inactivity")
+          setIsConnected(false)
           location.reload();  
         }
         setTimeTicksLast(current);
