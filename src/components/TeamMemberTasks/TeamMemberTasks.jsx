@@ -84,24 +84,28 @@ const TeamMemberTasks = props => {
 
       //find currentUser
       const currentUser = filteredMembers.find(user => user.personId === userId);
-      //conditional variable for moving current user up front.
-      let moveCurrentUserFront = false;
+      // if current user doesn't have any task, the currentUser cannot be found
 
-      console.log('filteredMembers', filteredMembers);
+      if (currentUser) {
+        //conditional variable for moving current user up front.
+        let moveCurrentUserFront = false;
 
-      //Does the user has at least one task with project Id and task id assigned. Then set the current user up front.
-      for (const task of currentUser.tasks) {
-        if (task.wbsId && task.projectId) {
-          moveCurrentUserFront = true;
-          break;
+        console.log('filteredMembers', filteredMembers);
+
+        //Does the user has at least one task with project Id and task id assigned. Then set the current user up front.
+        for (const task of currentUser.tasks) {
+          if (task.wbsId && task.projectId) {
+            moveCurrentUserFront = true;
+            break;
+          }
         }
-      }
-      //if needs to move current user up front, first remove current user from filterMembers. Then put the current user on top of the list.
-      if (moveCurrentUserFront) {
-        //removed currentUser
-        filteredMembers = filteredMembers.filter(user => user.personId !== userId);
-        //push currentUser on top of the array.
-        filteredMembers.unshift(currentUser);
+        //if needs to move current user up front, first remove current user from filterMembers. Then put the current user on top of the list.
+        if (moveCurrentUserFront) {
+          //removed currentUser
+          filteredMembers = filteredMembers.filter(user => user.personId !== userId);
+          //push currentUser on top of the array.
+          filteredMembers.unshift(currentUser);
+        }
       }
 
       teamsList = filteredMembers.map((user, index) => {
