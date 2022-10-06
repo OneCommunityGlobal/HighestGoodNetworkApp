@@ -213,12 +213,10 @@ function Timer() {
         isConnected &&
         !isPastMaxTime
       ) {
-        console.log({document: document.hasFocus()})
         var current = (new Date()).getTime();
-        if (current-timeTicksLast > 3000 && document.hasFocus()) {
+        if (current-timeTicksLast > 3000) {
           console.log("pausing due to inactivity")
           location.reload();  
-          sessionStorage.removeItem('working-session-timer');
         }
         setTimeTicksLast(current);
 
