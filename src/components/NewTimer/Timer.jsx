@@ -213,6 +213,25 @@ function Timer() {
         isConnected &&
         !isPastMaxTime
       ) {
+        console.log({document: document.hasFocus()})
+        var current = (new Date()).getTime();
+        if (current-timeTicksLast > 3000 && document.hasFocus()) {
+          console.log("pausing due to inactivity")
+          location.reload();  
+          sessionStorage.removeItem('working-session-timer');
+        }
+        setTimeTicksLast(current);
+
+        //Force refresh after x minutes.
+var initialTime = new Date();
+var checkSessionTimeout = function () {
+    var minutes = Math.abs((initialTime - new Date()) / 1000 / 60);
+    if (minutes > 20) {
+        setInterval(function () { location.href = 'Audit.aspx' }, 5000)
+    } 
+};
+setInterval(checkSessionTimeout, 1000);
+
         /**
          * How do we calculate time?
          *
