@@ -220,16 +220,6 @@ function Timer() {
         }
         setTimeTicksLast(current);
 
-        //Force refresh after x minutes.
-var initialTime = new Date();
-var checkSessionTimeout = function () {
-    var minutes = Math.abs((initialTime - new Date()) / 1000 / 60);
-    if (minutes > 20) {
-        setInterval(function () { location.href = 'Audit.aspx' }, 5000)
-    } 
-};
-setInterval(checkSessionTimeout, 1000);
-
         /**
          * How do we calculate time?
          *
