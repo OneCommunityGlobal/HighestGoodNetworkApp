@@ -17,7 +17,7 @@ import OldBadges from './OldBadges';
 import BadgeReport from './BadgeReport';
 import { getUserProfile } from '../../actions/userProfile';
 
-const Badge = (props) => {
+const Badge = props => {
   const [isOpen, setOpen] = useState(false);
   const [isOpenTypes, setOpenTypes] = useState(false);
   const [totalBadge, setTotalBadge] = useState(0);
@@ -28,26 +28,19 @@ const Badge = (props) => {
       props.getUserProfile(userId).then(() => {
         let count = 0;
         if (props.userProfile.badgeCollection) {
-          props.userProfile.badgeCollection.forEach((badge) => {
+          props.userProfile.badgeCollection.forEach(badge => {
             console.log('badge1', badge);
-            if (
-              badge?.badge?.badgeName === 'Personal Max' ||
-              badge?.badge?.type === 'Personal Max'
-            ) {
-              count += 1;
-            } else {
-              count += badge.count;
-            }
+            count += badge.count;
           });
           setTotalBadge(Math.round(count));
         }
       });
     }
-    setOpen((isOpen) => !isOpen);
+    setOpen(isOpen => !isOpen);
   };
 
   const toggleTypes = () => {
-    setOpenTypes((isOpenTypes) => !isOpenTypes);
+    setOpenTypes(isOpenTypes => !isOpenTypes);
   };
 
   useEffect(() => {
@@ -55,18 +48,14 @@ const Badge = (props) => {
     props.getUserProfile(userId).then(() => {
       let count = 0;
       if (props.userProfile.badgeCollection) {
-        props.userProfile.badgeCollection.forEach((badge) => {
+        props.userProfile.badgeCollection.forEach(badge => {
           console.log('badge2', badge);
-          if (badge?.badge?.badgeName === 'Personal Max' || badge?.badge?.type === 'Personal Max') {
-            count += 1;
-          } else {
-            count += badge.count;
-          }
+          count += badge.count;
         });
         setTotalBadge(Math.round(count));
       }
     });
-  }, []);
+  }, [totalBadge]);
 
   return (
     <>
@@ -175,13 +164,13 @@ const Badge = (props) => {
   );
 };
 
-const mapStateToProps = (state) => ({
+const mapStateToProps = state => ({
   userProfile: state.userProfile,
 });
 
-const mapDispatchToProps = (dispatch) => {
+const mapDispatchToProps = dispatch => {
   return {
-    getUserProfile: (userId) => dispatch(getUserProfile(userId)),
+    getUserProfile: userId => dispatch(getUserProfile(userId)),
   };
 };
 
