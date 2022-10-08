@@ -1,0 +1,16 @@
+.permissions-management {
+  padding: 0.5rem 1rem;
+  max-width: 1140px;
+  margin: 0 auto;
+}
+
+.permissions-management__header {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  padding-bottom: 1rem;
+}
+
+.createRole__alert {
+  margin-top: 0.4rem;
+}

@@ -40,6 +40,7 @@ export const permissions = {
         'resetPasswordOthers',
         'dataIsTangibleTimelog',
         'toggleSubmitForm',
+        'seePermissionsManagement'
     ],
     'Volunteer': [
         'V'
