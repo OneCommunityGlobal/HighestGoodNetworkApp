@@ -78,6 +78,7 @@ const Badges = (props) => {
                       userProfile={props.userProfile}
                       setUserProfile={props.setUserProfile}
                       close={assignToggle}
+                      handleSubmit={props.handleSubmit}
                     />
                   </ModalBody>
                 </Modal>

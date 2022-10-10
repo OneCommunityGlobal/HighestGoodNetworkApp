@@ -28,6 +28,7 @@ const AssignBadgePopup = (props) => {
     } catch (e) {
       //TODO: Proper error handling.
     }
+    props.handleSubmit();
     props.close();
   };
 
