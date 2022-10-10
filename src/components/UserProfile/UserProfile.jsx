@@ -466,6 +466,7 @@ const UserProfile = props => {
               setUserProfile={setUserProfile}
               role={requestorRole}
               canEdit={canEdit}
+              handleSubmit={handleSubmit}
             />
           </Col>
         </Row>

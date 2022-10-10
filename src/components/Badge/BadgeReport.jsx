@@ -224,13 +224,18 @@ const BadgeReport = (props) => {
   };
 
   const saveChanges = async () => {
-    let newBadgeCollection = sortBadges.slice();
+    let newBadgeCollection = JSON.parse(JSON.stringify(sortBadges));  
     for (let i = 0; i < newBadgeCollection.length; i++) {
       newBadgeCollection[i].badge = newBadgeCollection[i].badge._id;
-    }
+    }  
     console.log(newBadgeCollection);
     await props.changeBadgesByUserID(props.userId, newBadgeCollection);
     await props.getUserProfile(props.userId);
+    
+    props.setUserProfile(prevProfile => {
+      return {...prevProfile, badgeCollection: sortBadges }
+    });
+    props.handleSubmit();
     //close the modal
     props.close();
     //Reload the view profile page with updated bages
