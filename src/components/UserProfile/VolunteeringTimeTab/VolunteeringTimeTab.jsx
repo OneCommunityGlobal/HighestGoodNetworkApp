@@ -6,7 +6,7 @@ import style from '../UserProfileEdit/ToggleSwitch/ToggleSwitch.module.scss';
 import { ENDPOINTS } from 'utils/URL';
 import axios from 'axios';
 
-const StartDate = (props) => {
+const StartDate = props => {
   if (!props.canEdit) {
     return <p>{moment(props.userProfile.createdDate).format('YYYY-MM-DD')}</p>;
   }
@@ -16,7 +16,7 @@ const StartDate = (props) => {
       name="StartDate"
       id="startDate"
       value={moment(props.userProfile.createdDate).format('YYYY-MM-DD')}
-      onChange={(e) => {
+      onChange={e => {
         props.setChanged(true);
         props.setUserProfile({ ...props.userProfile, createdDate: e.target.value });
       }}
@@ -26,7 +26,7 @@ const StartDate = (props) => {
   );
 };
 
-const EndDate = (props) => {
+const EndDate = props => {
   if (!props.canEdit) {
     return (
       <p>
@@ -44,7 +44,7 @@ const EndDate = (props) => {
       value={
         props.userProfile.endDate ? props.userProfile.endDate.toLocaleString().split('T')[0] : ''
       }
-      onChange={(e) => {
+      onChange={e => {
         props.setChanged(true);
         props.setUserProfile({ ...props.userProfile, endDate: e.target.value });
       }}
@@ -54,7 +54,7 @@ const EndDate = (props) => {
   );
 };
 
-const WeeklySummaryReqd = (props) => {
+const WeeklySummaryReqd = props => {
   if (!props.canEdit) {
     return <p>{props.userProfile.weeklySummaryNotReq ? 'Not Required' : 'Required'}</p>;
   }
@@ -66,7 +66,7 @@ const WeeklySummaryReqd = (props) => {
         data-testid="weeklySummary-switch"
         type="checkbox"
         className={style.toggle}
-        onChange={(e) => {
+        onChange={e => {
           props.setUserProfile({
             ...props.userProfile,
             weeklySummaryNotReq: !props.userProfile.weeklySummaryNotReq,
@@ -80,7 +80,7 @@ const WeeklySummaryReqd = (props) => {
   );
 };
 
-const WeeklyCommitedHours = (props) => {
+const WeeklyCommitedHours = props => {
   if (!props.canEdit) {
     return <p>{props.userProfile.weeklyComittedHours}</p>;
   }
@@ -91,17 +91,19 @@ const WeeklyCommitedHours = (props) => {
       id="weeklyComittedHours"
       data-testid="weeklyCommittedHours"
       value={props.userProfile.weeklyComittedHours}
-      onChange={(e) => {
+      onChange={e => {
         props.setUserProfile({ ...props.userProfile, weeklyComittedHours: e.target.value });
         props.setChanged(true);
       }}
       placeholder="Weekly Committed Hours"
-      invalid={!props.isUserAdmin}
     />
   );
 };
 
-const TotalTangibleHours = (props) => {
+const TotalTangibleHours = props => {
+  //isUserAdmin is currently a value of Undefined. Therefore, !props.isUserAdmin is set to true all the time.
+  //Therefore, I have chosen to comment out the other return statement section as it is not being rendered.
+  /*
   if (!props.isUserAdmin) {
     return <p>{props.userProfile.totalTangibleHrs}</p>;
   }
@@ -111,7 +113,7 @@ const TotalTangibleHours = (props) => {
       name="totalTangibleHours"
       id="totalTangibleHours"
       value={props.userProfile.totalTangibleHrs}
-      onChange={(e) => {
+      onChange={e => {
         props.setUserProfile({ ...props.userProfile, totalTangibleHrs: e.target.value });
         props.setChanged(true);
       }}
@@ -119,8 +121,9 @@ const TotalTangibleHours = (props) => {
       invalid={!props.isUserAdmin}
     />
   );
+  */
+  return <p>{props.userProfile.totalTangibleHrs}</p>;
 };
-
 
 /**
  *
@@ -130,16 +133,22 @@ const TotalTangibleHours = (props) => {
  *
  * @returns
  */
-const ViewTab = (props) => {
+const ViewTab = props => {
   const { userProfile, setUserProfile, setChanged, role, canEdit } = props;
 
   const [totalTangibleHoursThisWeek, setTotalTangibleHoursThisWeek] = useState('Loading...');
   useEffect(() => {
-    const startOfWeek = moment().tz('America/Los_Angeles').startOf('week').format('YYYY-MM-DD');
-    const endOfWeek = moment().tz('America/Los_Angeles').endOf('week').format('YYYY-MM-DD');
+    const startOfWeek = moment()
+      .tz('America/Los_Angeles')
+      .startOf('week')
+      .format('YYYY-MM-DD');
+    const endOfWeek = moment()
+      .tz('America/Los_Angeles')
+      .endOf('week')
+      .format('YYYY-MM-DD');
     axios
       .get(ENDPOINTS.TIME_ENTRIES_PERIOD(userProfile._id, startOfWeek, endOfWeek))
-      .then((res) => {
+      .then(res => {
         let output = 0;
         for (let i = 0; i < res.data.length; i++) {
           const timeEntry = res.data[i];
@@ -150,7 +159,7 @@ const ViewTab = (props) => {
 
         setTotalTangibleHoursThisWeek(output.toFixed(2));
       })
-      .catch((err) => {});
+      .catch(err => {});
   }, []);
 
   return (
@@ -239,7 +248,7 @@ const ViewTab = (props) => {
       </Row>
 
       {props?.userProfile?.hoursByCategory
-        ? Object.keys(props.userProfile.hoursByCategory).map((key) => (
+        ? Object.keys(props.userProfile.hoursByCategory).map(key => (
             <React.Fragment key={'hours-by-category-' + key}>
               <Row>
                 <Col md="6">
@@ -257,7 +266,7 @@ const ViewTab = (props) => {
                       type="number"
                       id={`${key}Hours`}
                       value={props.userProfile.hoursByCategory[key]}
-                      onChange={(e) => {
+                      onChange={e => {
                         setUserProfile({
                           ...props.userProfile,
                           hoursByCategory: {

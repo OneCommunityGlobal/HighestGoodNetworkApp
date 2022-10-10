@@ -31,6 +31,7 @@ export const ENDPOINTS = {
   WBS_ALL: `${APIEndpoint}/wbs`,
   TIMER: (userId) => `${APIEndpoint}/timer/${userId}`,
   WBS: (projectId) => `${APIEndpoint}/wbs/${projectId}`,
+  GET_WBS: (wbsId) => `${APIEndpoint}/wbsId/${wbsId}`,
   TASKS: (wbsId, level, mother) =>
     `${APIEndpoint}/tasks/${wbsId}/${level}/${mother ? mother : '0'}`,
   TASK: (wbsId) => `${APIEndpoint}/task/${wbsId}`,
