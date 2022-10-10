@@ -69,7 +69,6 @@ function Timer() {
    */
   useEffect(() => {
     if (isConnected) {
-      console.log("Reconnecting")
       client?.getClient()?.send(GET_TIMER);
     } 
   }, [isConnected]);
@@ -213,8 +212,13 @@ function Timer() {
         isConnected &&
         !isPastMaxTime
       ) {
-        var current = (new Date()).getTime();
-        if (current-timeTicksLast > 3000) {
+        
+        /**
+         * This block should handle sleep issues prevelant within
+         * the browser and pause the timer
+         */
+        let current = (new Date()).getTime();
+        if (current - timeTicksLast > 5000) {
           client.getClient().send(PAUSE_TIMER({ isUserPaused: false, isApplicationPaused: true }));
           location.reload();  
         }
