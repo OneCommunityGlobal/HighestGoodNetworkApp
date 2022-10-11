@@ -217,7 +217,10 @@ const BadgeReport = (props) => {
 
   const deleteBadge = () => {
     let newBadges = sortBadges.slice();
-    newBadges.splice(badgeToDelete, 1);
+    const deletedBadge = newBadges.splice(badgeToDelete, 1);  
+    if (deletedBadge[0].featured) {
+      setNumFeatured(--numFeatured);
+    } 
     setSortBadges(newBadges);
     setShowModal(false);
     setBadgeToDelete(null);
