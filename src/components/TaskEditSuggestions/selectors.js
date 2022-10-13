@@ -1,4 +1,4 @@
-export const getTeamMemberTasksData = (state) => ({
-  isLoading: state.teamMemberTasks.isLoading,
-  usersWithTasks: state.teamMemberTasks.usersWithTasks
+export const getTaskEditSuggestionsData = (state) => ({
+  isLoading: state.taskEditSuggestions.isLoading,
+  taskEditSuggestions: state.taskEditSuggestions.taskEditSuggestions
 });

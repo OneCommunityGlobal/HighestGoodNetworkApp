@@ -1,22 +1,3 @@
-
-const initialState = {
-  isLoading: false,
-  taskEditSuggestions: taskEditSuggestionsInitial, // TODO: change to []
-};
-
-export const taskEditSuggestionsReducer = (state = initialState, action) => {
-  switch (action.type) {
-    case "FETCH_TASK_EDIT_SUGGESTIONS_BEGIN":
-      return { ...state, isLoading: true} ;
-    case "FETCH_TASK_EDIT_SUGGESTIONS_SUCESS":
-      return { ...state, isLoading: false, taskEditSuggestions: [...action.payload]};
-    case "FETCH_TASK_EDIT_SUGGESTIONS_ERROR":
-      return { ...state, isLoading: false };
-    default:
-      return state;
-  }
-};
-
 // TODO: Delete
 const taskEditSuggestionsInitial = [
   {
@@ -251,3 +232,22 @@ const taskEditSuggestionsInitial = [
     }
   },
 ];
+
+const initialState = {
+  isLoading: false,
+  taskEditSuggestions: taskEditSuggestionsInitial, // TODO: change to []
+};
+
+export const taskEditSuggestionsReducer = (state = initialState, action) => {
+  switch (action.type) {
+    case "FETCH_TASK_EDIT_SUGGESTIONS_BEGIN":
+      return { ...state, isLoading: true } ;
+    case "FETCH_TASK_EDIT_SUGGESTIONS_SUCESS":
+      return { ...state, isLoading: false, taskEditSuggestions: taskEditSuggestionsInitial };
+      // return { ...state, isLoading: false, taskEditSuggestions: [...action.payload]};
+    case "FETCH_TASK_EDIT_SUGGESTIONS_ERROR":
+      return { ...state, isLoading: false };
+    default:
+      return state;
+  }
+};
