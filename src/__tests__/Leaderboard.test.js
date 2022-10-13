@@ -2,19 +2,21 @@ import React from 'react';
 // import Leaderboard from '../components/Leaderboard';
 import { renderWithProvider, renderWithRouterMatch } from './utils.js';
 import '@testing-library/jest-dom/extend-expect';
-import mockState from './mockAdminState.js';
 import { createMemoryHistory } from 'history';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
-import { ENDPOINTS } from '../utils/URL';
-import { render, fireEvent, waitFor, screen } from '@testing-library/react';
-import routes from './../routes';
+import {
+  render, fireEvent, waitFor, screen,
+} from '@testing-library/react';
+import { ENDPOINTS, ApiEndpoint } from '../utils/URL';
+import mockState from './mockAdminState.js';
+import routes from '../routes';
+
 const url = ENDPOINTS.LEADER_BOARD(mockState.auth.user.userid);
 const timerUrl = ENDPOINTS.TIMER(mockState.auth.user.userid);
 const userProjectsUrl = ENDPOINTS.USER_PROJECTS(mockState.auth.user.userid);
 let requestedLeaderBoard = false;
-let refreshed = false;
-import { ApiEndpoint } from '../utils/URL';
+const refreshed = false;
 
 const server = setupServer(
   rest.get(url, (req, res, ctx) => {
@@ -42,43 +44,34 @@ const server = setupServer(
           },
         ]),
       );
-    } else {
-      return res(
-        ctx.status(200),
-        ctx.json([
-          {
-            personId: 'abdefghijklmnop',
-            name: 'Fake Admin',
-            weeklyComittedHours: 10,
-            totaltime_hrs: 125,
-            totaltangibletime_hrs: 60,
-            totalintangibletime_hrs: 99,
-            percentagespentintangible: 100,
-            didMeetWeeklyCommitment: false,
-            weeklycommited: 10,
-            tangibletime: 60,
-            intangibletime: 9,
-            tangibletimewidth: 100,
-            intangibletimewidth: 0,
-            tangiblebarcolor: 'orange',
-            totaltime: 15,
-          },
-        ]),
-      );
     }
+    return res(
+      ctx.status(200),
+      ctx.json([
+        {
+          personId: 'abdefghijklmnop',
+          name: 'Fake Admin',
+          weeklyComittedHours: 10,
+          totaltime_hrs: 125,
+          totaltangibletime_hrs: 60,
+          totalintangibletime_hrs: 99,
+          percentagespentintangible: 100,
+          didMeetWeeklyCommitment: false,
+          weeklycommited: 10,
+          tangibletime: 60,
+          intangibletime: 9,
+          tangibletimewidth: 100,
+          intangibletimewidth: 0,
+          tangiblebarcolor: 'orange',
+          totaltime: 15,
+        },
+      ]),
+    );
   }),
-  rest.get(ApiEndpoint + '/userprofile/*', (req, res, ctx) => {
-    return res(ctx.status(200), ctx.json({}));
-  }),
-  rest.get('http://*/hash.txt', (req, res, ctx) => {
-    return res(ctx.status(200), ctx.json({}));
-  }),
-  rest.get(userProjectsUrl, (req, res, ctx) => {
-    return res(ctx.status(200), ctx.json([]));
-  }),
-  rest.get(timerUrl, (req, res, ctx) => {
-    return res(ctx.status(200), ctx.json({}));
-  }),
+  rest.get(`${ApiEndpoint}/userprofile/*`, (req, res, ctx) => res(ctx.status(200), ctx.json({}))),
+  rest.get('http://*/hash.txt', (req, res, ctx) => res(ctx.status(200), ctx.json({}))),
+  rest.get(userProjectsUrl, (req, res, ctx) => res(ctx.status(200), ctx.json([]))),
+  rest.get(timerUrl, (req, res, ctx) => res(ctx.status(200), ctx.json({}))),
   rest.get('*', (req, res, ctx) => {
     console.error(
       `Please add request handler for ${req.url.toString()} in your MSW server requests.`,
@@ -96,7 +89,7 @@ function sleep(ms) {
 }
 
 describe('Leaderboard structure', () => {
-  //TESTS ARE FAILING
+  // TESTS ARE FAILING
   // let mountedLeaderboard, rt, hist;
   // beforeEach(()=> {
   //     //used dashboard as it has the Leaderboard as a subcomponent
@@ -123,7 +116,7 @@ describe('Leaderboard structure', () => {
   // });
 
   it('should have requested user data from server and have loaded that data into the leaderboard', async () => {
-    //TEST FAILING NEED TO FIX
+    // TEST FAILING NEED TO FIX
     // await waitFor(()=>{
     //   expect(requestedLeaderBoard).toBe(true);
     // });
@@ -140,7 +133,7 @@ describe('Leaderboard structure', () => {
   });
 
   it('should have refreshed user data from server and have loaded that data into the leaderboard', async () => {
-    //TEST FAILING NEED TO FIX
+    // TEST FAILING NEED TO FIX
     // await waitFor(()=>{
     //   expect(requestedLeaderBoard).toBe(true);
     // });

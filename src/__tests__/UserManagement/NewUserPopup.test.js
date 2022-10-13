@@ -2,8 +2,8 @@ import React from 'react';
 import { screen, render, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import configureStore from 'redux-mock-store';
-import { renderWithProvider } from '../utils';
 import thunk from 'redux-thunk';
+import { renderWithProvider } from '../utils';
 
 import NewUserPopup from '../../components/UserManagement/NewUserPopup';
 

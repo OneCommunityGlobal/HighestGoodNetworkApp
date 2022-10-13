@@ -3,8 +3,7 @@ import { screen, render, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import ResetPasswordPopup from '../../components/UserManagement/ResetPasswordPopup';
 
-const invalidPasswordError =
-  'Please choose a strong password which is at least 8 characters long and should contains a digit , a capital letter and a special character.';
+const invalidPasswordError = 'Please choose a strong password which is at least 8 characters long and should contains a digit , a capital letter and a special character.';
 describe('reset password popup', () => {
   const onClose = jest.fn();
   const onReset = jest.fn();

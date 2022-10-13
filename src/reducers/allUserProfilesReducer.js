@@ -7,12 +7,10 @@ const userProfilesInitial = {
   status: 404,
 };
 
-export const updateObject = (oldObject, updatedProperties) => {
-  return {
-    ...oldObject,
-    ...updatedProperties,
-  };
-};
+export const updateObject = (oldObject, updatedProperties) => ({
+  ...oldObject,
+  ...updatedProperties,
+});
 
 export const allUserProfilesReducer = (userProfiles = userProfilesInitial, action) => {
   switch (action.type) {
@@ -31,7 +29,7 @@ export const allUserProfilesReducer = (userProfiles = userProfilesInitial, actio
       });
 
     case types.USER_PROFILE_UPDATE:
-      let index = userProfiles.userProfiles.findIndex((user) => user._id === action.user._id);
+      const index = userProfiles.userProfiles.findIndex((user) => user._id === action.user._id);
       return updateObject(userProfiles, {
         userProfiles: Object.assign([
           ...userProfiles.userProfiles.slice(0, index),
@@ -44,7 +42,7 @@ export const allUserProfilesReducer = (userProfiles = userProfilesInitial, actio
       });
 
     case types.USER_PROFILE_DELETE:
-      let deletedIndex = userProfiles.userProfiles.findIndex(
+      const deletedIndex = userProfiles.userProfiles.findIndex(
         (user) => user._id === action.user._id,
       );
       return updateObject(userProfiles, {

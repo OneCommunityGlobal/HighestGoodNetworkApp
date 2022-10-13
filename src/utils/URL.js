@@ -1,7 +1,6 @@
 /* eslint-disable import/prefer-default-export */
-let APIEndpoint =
-  process.env.REACT_APP_APIENDPOINT || 'https://hgn-rest-beta.azurewebsites.net/api';
-let GeocodeAPIEndpoint = 'https://api.opencagedata.com/geocode/v1/json';
+const APIEndpoint = process.env.REACT_APP_APIENDPOINT || 'https://hgn-rest-beta.azurewebsites.net/api';
+const GeocodeAPIEndpoint = 'https://api.opencagedata.com/geocode/v1/json';
 
 export const ENDPOINTS = {
   APIEndpoint: () => APIEndpoint,
@@ -23,8 +22,7 @@ export const ENDPOINTS = {
   FORCE_PASSWORD: `${APIEndpoint}/forcepassword`,
   LEADER_BOARD: (userId) => `${APIEndpoint}/dashboard/leaderboard/${userId}`,
   ORG_DATA: `${APIEndpoint}/dashboard/leaderboard/org/data`,
-  TIME_ENTRIES_PERIOD: (userId, fromDate, toDate) =>
-    `${APIEndpoint}/TimeEntry/user/${userId}/${fromDate}/${toDate}`,
+  TIME_ENTRIES_PERIOD: (userId, fromDate, toDate) => `${APIEndpoint}/TimeEntry/user/${userId}/${fromDate}/${toDate}`,
   TIME_ENTRIES_USER_LIST: (users) => `${APIEndpoint}/TimeEntry/users?members=${users}`,
   TIME_ENTRY: () => `${APIEndpoint}/TimeEntry`,
   TIME_ENTRY_CHANGE: (timeEntryId) => `${APIEndpoint}/TimeEntry/${timeEntryId}`,
@@ -32,8 +30,7 @@ export const ENDPOINTS = {
   TIMER: (userId) => `${APIEndpoint}/timer/${userId}`,
   WBS: (projectId) => `${APIEndpoint}/wbs/${projectId}`,
   GET_WBS: (wbsId) => `${APIEndpoint}/wbsId/${wbsId}`,
-  TASKS: (wbsId, level, mother) =>
-    `${APIEndpoint}/tasks/${wbsId}/${level}/${mother ? mother : '0'}`,
+  TASKS: (wbsId, level, mother) => `${APIEndpoint}/tasks/${wbsId}/${level}/${mother || '0'}`,
   TASK: (wbsId) => `${APIEndpoint}/task/${wbsId}`,
   TASK_IMPORT: (wbsId) => `${APIEndpoint}/task/import/${wbsId}`,
   TASK_WBS: (wbsId) => `${APIEndpoint}/task/wbs/del/${wbsId}`,
@@ -64,8 +61,7 @@ export const ENDPOINTS = {
   DELETE_TASK_NOTIFICATION: (taskNotificationId) => `${APIEndpoint}/tasknotification/${taskNotificationId}`,
 
   TIMEZONE_KEY: `${APIEndpoint}/timezone`,
-  GEOCODE_URI: (location, key) =>
-    `${GeocodeAPIEndpoint}?key=${key}&q=${encodeURIComponent(location)}&pretty=1&limit=1`,
+  GEOCODE_URI: (location, key) => `${GeocodeAPIEndpoint}?key=${key}&q=${encodeURIComponent(location)}&pretty=1&limit=1`,
 };
 
 export const ApiEndpoint = APIEndpoint;

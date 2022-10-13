@@ -4,7 +4,8 @@ import mockAdminState from '../../__tests__/mockAdminState';
 import Leaderboard from './Leaderboard';
 
 describe('Leaderboard page structure', () => {
-  let mountedLeaderboard, props;
+  let mountedLeaderboard; let
+    props;
   beforeEach(() => {
     props = mockAdminState;
     props.organizationData = { weeklyCommittedHours: 0, tangibletime: 0, totaltime: 0 };
@@ -28,17 +29,17 @@ describe('Leaderboard page structure', () => {
   it('should be rendered with mock Leaderboard data', () => {
     const leaderBoardBody = mountedLeaderboard.find('tbody');
     const leaderBoardItems = leaderBoardBody.find('tr');
-    let lbData = mockAdminState.leaderBoardData;
+    const lbData = mockAdminState.leaderBoardData;
     const lBLength = lbData.length;
     expect(leaderBoardItems.length).toBe(lBLength + 1);
 
     for (let i = 0; i < lBLength; i++) {
-      //find that a link to each user profile exists and test the text of the Link to be the name
-      let linkItem = leaderBoardItems.find({ to: `/userprofile/${lbData[i].personId}` });
+      // find that a link to each user profile exists and test the text of the Link to be the name
+      const linkItem = leaderBoardItems.find({ to: `/userprofile/${lbData[i].personId}` });
       expect(linkItem.length).toBe(1);
       expect(linkItem.text().includes(lbData[i].name)).toBeTruthy();
 
-      //check if the entries for the total time and intangibletime exist
+      // check if the entries for the total time and intangibletime exist
       expect(
         leaderBoardItems.containsMatchingElement(
           <td>

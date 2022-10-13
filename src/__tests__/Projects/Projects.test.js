@@ -8,11 +8,13 @@ import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import { ENDPOINTS } from '../../utils/URL';
 import * as Message from '../../languages/en/messages';
-import { render, fireEvent, waitFor, screen } from '@testing-library/react';
+import {
+  render, fireEvent, waitFor, screen,
+} from '@testing-library/react';
 import routes from '../../routes';
 
 const projectsUrl = ENDPOINTS.PROJECTS;
-const projectUrl = ENDPOINTS.PROJECT + '*';
+const projectUrl = `${ENDPOINTS.PROJECT}*`;
 const userProfileUrl = ENDPOINTS.USER_PROFILE(mockState.auth.user.userid);
 const leaderboardUrl = ENDPOINTS.LEADER_BOARD(mockState.auth.user.userid);
 const timerUrl = ENDPOINTS.TIMER(mockState.auth.user.userid);
@@ -43,18 +45,17 @@ const server = setupServer(
           },
         ]),
       );
-    } else {
-      return res(
-        ctx.status(200),
-        ctx.json([
-          {
-            isActive: true,
-            _id: '5ad91ec3590b19002acfcd26',
-            projectName: 'HG Fake Project',
-          },
-        ]),
-      );
     }
+    return res(
+      ctx.status(200),
+      ctx.json([
+        {
+          isActive: true,
+          _id: '5ad91ec3590b19002acfcd26',
+          projectName: 'HG Fake Project',
+        },
+      ]),
+    );
   }),
   rest.get(userProjectsUrl, (req, res, ctx) => {
     if (addedProject) {
@@ -72,14 +73,13 @@ const server = setupServer(
     );
   }),
   rest.post(projectsUrl, (req, res, ctx) => {
-    //console.log(req.body);
+    // console.log(req.body);
     if (req.body.projectName === 'HG Fake Project2') {
       addedProject = true;
       return res(ctx.status(200), ctx.json({}));
-    } else {
-      //console.log(req.body);
-      return res(ctx.status(400), ctx.json({}));
     }
+    // console.log(req.body);
+    return res(ctx.status(400), ctx.json({}));
   }),
   rest.delete(projectUrl, (req, res, ctx) => {
     deleteProjectCalled = true;
@@ -95,39 +95,31 @@ const server = setupServer(
     }
     return res(ctx.status(200), ctx.json({}));
   }),
-  rest.get(userProfileUrl, (req, res, ctx) => {
-    return res(ctx.status(200), ctx.json({}));
-  }),
-  rest.get(leaderboardUrl, (req, res, ctx) => {
-    return res(
-      ctx.status(200),
-      ctx.json([
-        {
-          personId: '5edf141c78f1380017b829a6',
-          name: 'Dev Admin',
-          weeklyComittedHours: 10,
-          totaltime_hrs: 6,
-          totaltangibletime_hrs: 6,
-          totalintangibletime_hrs: 0,
-          percentagespentintangible: 100,
-          didMeetWeeklyCommitment: false,
-          weeklycommited: 10,
-          tangibletime: 6,
-          intangibletime: 0,
-          tangibletimewidth: 100,
-          intangibletimewidth: 0,
-          tangiblebarcolor: 'orange',
-          totaltime: 6,
-        },
-      ]),
-    );
-  }),
-  rest.get(timerUrl, (req, res, ctx) => {
-    return res(ctx.status(200), ctx.json({}));
-  }),
-  rest.get('http://*/hash.txt', (req, res, ctx) => {
-    return res(ctx.status(200), ctx.json({}));
-  }),
+  rest.get(userProfileUrl, (req, res, ctx) => res(ctx.status(200), ctx.json({}))),
+  rest.get(leaderboardUrl, (req, res, ctx) => res(
+    ctx.status(200),
+    ctx.json([
+      {
+        personId: '5edf141c78f1380017b829a6',
+        name: 'Dev Admin',
+        weeklyComittedHours: 10,
+        totaltime_hrs: 6,
+        totaltangibletime_hrs: 6,
+        totalintangibletime_hrs: 0,
+        percentagespentintangible: 100,
+        didMeetWeeklyCommitment: false,
+        weeklycommited: 10,
+        tangibletime: 6,
+        intangibletime: 0,
+        tangibletimewidth: 100,
+        intangibletimewidth: 0,
+        tangiblebarcolor: 'orange',
+        totaltime: 6,
+      },
+    ]),
+  )),
+  rest.get(timerUrl, (req, res, ctx) => res(ctx.status(200), ctx.json({}))),
+  rest.get('http://*/hash.txt', (req, res, ctx) => res(ctx.status(200), ctx.json({}))),
   rest.get('*', (req, res, ctx) => {
     console.error(
       `Please add request handler for ${req.url.toString()} in your MSW server requests.`,
@@ -239,7 +231,7 @@ describe('Projects behavior', () => {
   });
 
   it('should be able to change the name of a project to a new name', async () => {
-    //FIX LATER NEEDS CATEGORY NOW
+    // FIX LATER NEEDS CATEGORY NOW
     // let rt = '/projects'
     // const hist = createMemoryHistory({ initialEntries: [rt] });
     // projectsMountedPage = renderWithRouterMatch(routes , {initialState: mockState, route: rt, history: hist});
@@ -252,7 +244,7 @@ describe('Projects behavior', () => {
   });
 
   it('should add a new project', async () => {
-    //NEED TO FIX ADDED CATEGORY
+    // NEED TO FIX ADDED CATEGORY
     // let rt = '/projects'
     // const hist = createMemoryHistory({ initialEntries: [rt] });
     // projectsMountedPage = renderWithRouterMatch(routes , {initialState: mockState, route: rt, history: hist});

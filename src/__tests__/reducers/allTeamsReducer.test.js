@@ -1,14 +1,12 @@
 import { allUserTeamsReducer } from '../../reducers/allTeamsReducer';
 import * as types from '../../constants/allTeamsConstants';
 
-const fetched = (stuff) => {
-  return {
-    ...stuff,
-    fetching: false,
-    fetched: true,
-    status: '200',
-  };
-};
+const fetched = (stuff) => ({
+  ...stuff,
+  fetching: false,
+  fetched: true,
+  status: '200',
+});
 
 describe('Teams Reducer', () => {
   it('start fetch', () => {

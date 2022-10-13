@@ -1,3 +1,3 @@
 export const getTeamReportData = (state) => ({
-  team: state.team
+  team: state.team,
 });

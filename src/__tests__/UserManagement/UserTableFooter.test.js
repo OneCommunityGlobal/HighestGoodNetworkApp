@@ -1,9 +1,14 @@
 import React from 'react';
-import { screen, render, fireEvent, cleanup } from '@testing-library/react';
+import {
+  screen, render, fireEvent, cleanup,
+} from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { authMock, userProfileMock, timeEntryMock, userProjectMock } from '../mockStates';
+import {
+  authMock, userProfileMock, timeEntryMock, userProjectMock,
+} from '../mockStates';
 import { renderWithProvider, renderWithRouterMatch } from '../utils';
 import UserTableFooter from '../../components/UserManagement/UserTableFooter';
+
 function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
@@ -71,7 +76,7 @@ describe('user table footer', () => {
           pageSize={10}
           selectedPage={11}
           datacount={100}
-          isSelected={true}
+          isSelected
           pageNo={10}
         />,
       );
@@ -88,7 +93,7 @@ describe('user table footer', () => {
           pageSize={10}
           selectedPage={2}
           datacount={100}
-          isSelected={true}
+          isSelected
           pageNo={2}
         />,
       );

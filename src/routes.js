@@ -1,6 +1,8 @@
 import React from 'react';
 import { Route, Switch } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
+import SameFolderTasks from 'components/Projects/WBS/SameFolderTasks';
+import AutoUpdate from 'components/AutoUpdate';
 import Timelog from './components/Timelog';
 import Reports from './components/Reports';
 import UserProfile from './components/UserProfile';
@@ -19,7 +21,6 @@ import Members from './components/Projects/Members';
 import WBS from './components/Projects/WBS';
 import WBSDetail from './components/Projects/WBS/WBSDetail';
 import SingleTask from './components/Projects/WBS/SingleTask';
-import SameFolderTasks from 'components/Projects/WBS/SameFolderTasks';
 import WeeklySummariesReport from './components/WeeklySummariesReport';
 import Admin from './components/Admin';
 import 'react-toastify/dist/ReactToastify.css';
@@ -30,10 +31,9 @@ import { ProjectReport } from './components/Reports/ProjectReport';
 import { TeamReport } from './components/Reports/TeamReport';
 import Inventory from './components/Inventory';
 import BadgeManagement from './components/Badge/BadgeManagement';
-import AutoUpdate from 'components/AutoUpdate';
 
 export default (
-  <React.Fragment>
+  <>
     <Header />
     <AutoUpdate />
     <ToastContainer />
@@ -67,10 +67,10 @@ export default (
         component={WeeklySummariesReport}
         allowedRoles={[UserRole.Administrator, UserRole.Manager, UserRole.CoreTeam, UserRole.Owner, UserRole.Mentor]}
       />
-      <ProtectedRoute 
-        path="/projects" 
-        exact 
-        component={Projects} 
+      <ProtectedRoute
+        path="/projects"
+        exact
+        component={Projects}
         allowedRoles={[UserRole.Administrator, UserRole.Owner]}
       />
       <ProtectedRoute path="/project/wbs/:projectId" component={WBS} />
@@ -89,9 +89,10 @@ export default (
         component={BadgeManagement}
         allowedRoles={[UserRole.Administrator, UserRole.Owner]}
       />
-      <ProtectedRoute path="/teams" 
-        exact 
-        component={Teams} 
+      <ProtectedRoute
+        path="/teams"
+        exact
+        component={Teams}
         allowedRoles={[UserRole.Administrator, UserRole.Owner]}
       />
       <ProtectedRoute path="/project/members/:projectId" component={Members} />
@@ -105,5 +106,5 @@ export default (
       <Route path="/forcePasswordUpdate/:userId" component={ForcePasswordUpdate} />
       <ProtectedRoute path="/" exact component={Dashboard} />
     </Switch>
-  </React.Fragment>
+  </>
 );

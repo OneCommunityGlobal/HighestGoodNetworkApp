@@ -1,7 +1,7 @@
-/*********************************************************
+/** *******************************************************
  * There is the store to store constants that relate to
  * actions which will be sent to the reducers
- *********************************************************/
+ ******************************************************** */
 
 // INIT POPUPS
 export const FETCH_POPUP_START = 'FETCH_POPUP_START';

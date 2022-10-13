@@ -8,7 +8,9 @@ import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import { ENDPOINTS } from '../../utils/URL';
 import * as Message from '../../languages/en/messages';
-import { render, fireEvent, waitFor, screen, within } from '@testing-library/react';
+import {
+  render, fireEvent, waitFor, screen, within,
+} from '@testing-library/react';
 import routes from '../../routes';
 
 const projectWBSUrl = ENDPOINTS.WBS('5ad91ec3590b19002asacd26');
@@ -20,18 +22,16 @@ let deleteWBSCalled = false;
 let addedWBSCalled = false;
 
 const server = setupServer(
-  rest.get(projectWBSUrl, (req, res, ctx) => {
-    return res(
-      ctx.status(200),
-      ctx.json([
-        {
-          wbsName: 'Fake WBS',
-          isActive: true,
-          _id: '5ad91ec3590b19002asacd26',
-        },
-      ]),
-    );
-  }),
+  rest.get(projectWBSUrl, (req, res, ctx) => res(
+    ctx.status(200),
+    ctx.json([
+      {
+        wbsName: 'Fake WBS',
+        isActive: true,
+        _id: '5ad91ec3590b19002asacd26',
+      },
+    ]),
+  )),
   rest.post(projectWBSUrl, (req, res, ctx) => {
     addedWBSCalled = true;
     return res(
@@ -50,39 +50,31 @@ const server = setupServer(
     deleteWBSCalled = true;
     return res(ctx.status(200), ctx.json({}));
   }),
-  rest.get(userProjectsUrl, (req, res, ctx) => {
-    return res(ctx.status(200), ctx.json([]));
-  }),
-  rest.get(userProfileUrl, (req, res, ctx) => {
-    return res(ctx.status(200), ctx.json({}));
-  }),
-  rest.get(leaderboardUrl, (req, res, ctx) => {
-    return res(
-      ctx.status(200),
-      ctx.json([
-        {
-          personId: '5edf141c78f1380017b829a6',
-          name: 'Dev Admin',
-          weeklyComittedHours: 10,
-          totaltime_hrs: 6,
-          totaltangibletime_hrs: 6,
-          totalintangibletime_hrs: 0,
-          percentagespentintangible: 100,
-          didMeetWeeklyCommitment: false,
-          weeklycommited: 10,
-          tangibletime: 6,
-          intangibletime: 0,
-          tangibletimewidth: 100,
-          intangibletimewidth: 0,
-          tangiblebarcolor: 'orange',
-          totaltime: 6,
-        },
-      ]),
-    );
-  }),
-  rest.get(timerUrl, (req, res, ctx) => {
-    return res(ctx.status(200), ctx.json({}));
-  }),
+  rest.get(userProjectsUrl, (req, res, ctx) => res(ctx.status(200), ctx.json([]))),
+  rest.get(userProfileUrl, (req, res, ctx) => res(ctx.status(200), ctx.json({}))),
+  rest.get(leaderboardUrl, (req, res, ctx) => res(
+    ctx.status(200),
+    ctx.json([
+      {
+        personId: '5edf141c78f1380017b829a6',
+        name: 'Dev Admin',
+        weeklyComittedHours: 10,
+        totaltime_hrs: 6,
+        totaltangibletime_hrs: 6,
+        totalintangibletime_hrs: 0,
+        percentagespentintangible: 100,
+        didMeetWeeklyCommitment: false,
+        weeklycommited: 10,
+        tangibletime: 6,
+        intangibletime: 0,
+        tangibletimewidth: 100,
+        intangibletimewidth: 0,
+        tangiblebarcolor: 'orange',
+        totaltime: 6,
+      },
+    ]),
+  )),
+  rest.get(timerUrl, (req, res, ctx) => res(ctx.status(200), ctx.json({}))),
   rest.get('*', (req, res, ctx) => {
     console.error(
       `Please add request handler for ${req.url.toString()} in your MSW server requests.`,
@@ -103,7 +95,7 @@ describe('Project WBS behavior', () => {
   let projectWBSMountedPage;
 
   it('should get the WBS list and display it on the page', async () => {
-    //TESTS FAILING IN CIRCLE CI needs /popupeditor url mocked then can unccoment them all
+    // TESTS FAILING IN CIRCLE CI needs /popupeditor url mocked then can unccoment them all
     // let rt = '/project/wbs/5ad91ec3590b19002asacd26'
     // const hist = createMemoryHistory({ initialEntries: [rt] });
     // projectWBSMountedPage = renderWithRouterMatch(routes , {initialState: mockState, route: rt, history: hist});

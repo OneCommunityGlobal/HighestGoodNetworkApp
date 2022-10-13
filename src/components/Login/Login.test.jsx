@@ -1,18 +1,19 @@
 import React from 'react';
 import { shallow, mount } from 'enzyme';
+import { BrowserRouter } from 'react-router-dom';
 import { Login } from './Login';
 import { loginUser } from '../../actions/authActions';
 import { clearErrors } from '../../actions/errorsActions';
-import { BrowserRouter } from 'react-router-dom';
 
 describe('Login page structure', () => {
-  let mountedLogin, props;
+  let mountedLogin; let
+    props;
   beforeEach(() => {
     props = {
       auth: { isAuthenticated: false },
       errors: {},
-      loginUser: loginUser,
-      clearErrors: clearErrors,
+      loginUser,
+      clearErrors,
     };
     mountedLogin = shallow(<Login {...props} />);
   });
@@ -35,7 +36,8 @@ describe('Login page structure', () => {
 });
 
 describe('When user tries to input data', () => {
-  let mountedLoginPage, props, loginU;
+  let mountedLoginPage; let props; let
+    loginU;
 
   beforeEach(() => {
     loginU = jest.fn();
@@ -107,7 +109,7 @@ describe('Login behavior', () => {
     props = {
       auth: { isAuthenticated: true },
       errors: {},
-      loginUser: loginUser,
+      loginUser,
       history: [],
     };
     const wrapper = shallow(<Login {...props} />);

@@ -1,7 +1,8 @@
 import React from 'react';
 import { shallow, mount } from 'enzyme';
-import { Projects } from './Projects';
 import { createMemoryHistory } from 'history';
+import { Router } from 'react-router-dom';
+import { Projects } from './Projects';
 import {
   PROJECTS,
   ACTIVE_PROJECTS,
@@ -9,9 +10,7 @@ import {
   ACTIVE,
   MEMBERS,
   WBS,
-} from './../../languages/en/ui';
-
-import { Router } from 'react-router-dom';
+} from '../../languages/en/ui';
 
 describe('Projects page structure', () => {
   // let mountedProjects, props;
@@ -56,7 +55,7 @@ describe('Projects page structure', () => {
   // });
 
   it('should be rendered with two h4/h6 labeled with number of projects/active projects', () => {
-    //TEST IS FAILING NEED TO FIX
+    // TEST IS FAILING NEED TO FIX
     // const h4 = mountedProjects.find('h4');
     // expect(h4.length).toEqual(2);
     // expect(h4.first().text()).toContain(`4`);
@@ -68,7 +67,7 @@ describe('Projects page structure', () => {
   });
 
   it('should be rendered with an input and button to add a project and an input per project', async () => {
-    //TEST IS FAILING NEED TO FIX
+    // TEST IS FAILING NEED TO FIX
     // const input = mountedProjects.find('input');
     // expect(input.length).toEqual(5);
     // expect(input.first().prop('placeholder')).toContain("Project Name");
@@ -84,7 +83,7 @@ describe('Projects page structure', () => {
   });
 
   it('should be rendered with 8 links to the member and WBS pages', async () => {
-    //TEST IS FAILING NEED TO FIX
+    // TEST IS FAILING NEED TO FIX
     // const links = mountedProjects.find('a');
     // expect(links.length).toEqual(8);
     // let projects = props.state.allProjects.projects;
@@ -95,7 +94,7 @@ describe('Projects page structure', () => {
   });
 
   it('should be rendered with a thead with 6 headers with correct text', () => {
-    //TEST IS FAILING NEED TO FIX
+    // TEST IS FAILING NEED TO FIX
     // const thead = mountedProjects.find('thead');
     // expect(thead.length).toEqual(1);
     // const th = thead.find('th');

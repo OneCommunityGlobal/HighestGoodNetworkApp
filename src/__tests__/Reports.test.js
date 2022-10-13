@@ -4,7 +4,7 @@ import ReportsPage from '../components/Reports/Reports';
 
 describe('<ReportsPage/>', () => {
   it('should render ReportsPage with no errors', () => {
-    //TEST IS FAILING NEED TO FIX USE STORE/MOCK
+    // TEST IS FAILING NEED TO FIX USE STORE/MOCK
     // const wrapper = shallow(<ReportsPage />);
   });
   // it('should render `ReportsPage` in jumbotron', () => {

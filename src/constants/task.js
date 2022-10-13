@@ -1,7 +1,7 @@
-/*********************************************************
+/** *******************************************************
  * There is the store to store constants that relate to
  * actions which will be sent to the reducers
- *********************************************************/
+ ******************************************************** */
 
 // INIT TASKS
 export const FETCH_TASKS_START = 'FETCH_TASKS_START';
