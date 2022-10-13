@@ -60,6 +60,8 @@ export const ENDPOINTS = {
   CREATE_OR_UPDATE_TASK_NOTIFICATION: (taskId) => `${ENDPOINTS.APIEndpoint()}/task/${taskId}/tasknotification`,
   DELETE_TASK_NOTIFICATION: (taskNotificationId) => `${APIEndpoint}/tasknotification/${taskNotificationId}`,
 
+  TASK_EDIT_SUGGESTION: () => `${APIEndpoint}/taskeditsuggestion`,
+
   TIMEZONE_KEY: `${APIEndpoint}/timezone`,
   GEOCODE_URI: (location, key) => `${GeocodeAPIEndpoint}?key=${key}&q=${encodeURIComponent(location)}&pretty=1&limit=1`,
 };
