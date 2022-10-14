@@ -17,7 +17,7 @@ import OldBadges from './OldBadges';
 import BadgeReport from './BadgeReport';
 import { getUserProfile } from '../../actions/userProfile';
 
-const Badge = (props) => {
+const Badge = props => {
   const [isOpen, setOpen] = useState(false);
   const [isOpenTypes, setOpenTypes] = useState(false);
   const [totalBadge, setTotalBadge] = useState(0);
@@ -25,38 +25,10 @@ const Badge = (props) => {
   const toggle = () => {
     if (isOpen) {
       const userId = props.userId;
-      props.getUserProfile(userId).then(() => {
-        let count = 0;
-        if (props.userProfile.badgeCollection) {
-          props.userProfile.badgeCollection.forEach((badge) => {
-            console.log('badge1', badge);
-            if (
-              badge?.badge?.badgeName === 'Personal Max' ||
-              badge?.badge?.type === 'Personal Max'
-            ) {
-              count += 1;
-            } else {
-              count += badge.count;
-            }
-          });
-          setTotalBadge(Math.round(count));
-        }
-      });
-    }
-    setOpen((isOpen) => !isOpen);
-  };
-
-  const toggleTypes = () => {
-    setOpenTypes((isOpenTypes) => !isOpenTypes);
-  };
-
-  useEffect(() => {
-    const userId = props.userId;
-    props.getUserProfile(userId).then(() => {
       let count = 0;
       if (props.userProfile.badgeCollection) {
-        props.userProfile.badgeCollection.forEach((badge) => {
-          console.log('badge2', badge);
+        props.userProfile.badgeCollection.forEach(badge => {
+          console.log('badge1', badge);
           if (badge?.badge?.badgeName === 'Personal Max' || badge?.badge?.type === 'Personal Max') {
             count += 1;
           } else {
@@ -65,8 +37,31 @@ const Badge = (props) => {
         });
         setTotalBadge(Math.round(count));
       }
-    });
-  }, []);
+    }
+    setOpen(isOpen => !isOpen);
+  };
+
+  const toggleTypes = () => {
+    setOpenTypes(isOpenTypes => !isOpenTypes);
+  };
+
+  useEffect(() => {
+    const userId = props.userId;
+    console.log('This is userId', userId);
+    let count = 0;
+    if (props.userProfile.badgeCollection) {
+      console.log('userProfileBadgeCollectionId', props.userProfile._id);
+      props.userProfile.badgeCollection.forEach(badge => {
+        console.log('badge2', badge);
+        if (badge?.badge?.badgeName === 'Personal Max' || badge?.badge?.type === 'Personal Max') {
+          count += 1;
+        } else {
+          count += badge.count;
+        }
+      });
+      setTotalBadge(Math.round(count));
+    }
+  }, [props.userProfile.badgeCollection, totalBadge]);
 
   return (
     <>
@@ -175,14 +170,8 @@ const Badge = (props) => {
   );
 };
 
-const mapStateToProps = (state) => ({
+const mapStateToProps = state => ({
   userProfile: state.userProfile,
 });
 
-const mapDispatchToProps = (dispatch) => {
-  return {
-    getUserProfile: (userId) => dispatch(getUserProfile(userId)),
-  };
-};
-
-export default connect(mapStateToProps, mapDispatchToProps)(Badge);
+export default connect(mapStateToProps)(Badge);
