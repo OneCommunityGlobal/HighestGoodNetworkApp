@@ -1,15 +1,28 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useState } from 'react';
 import { Modal, ModalBody, ModalHeader } from 'reactstrap';
 import CreateNewRolePopup from './NewRolePopUp';
 import './PermissionsManagement.css';
+import { connect } from 'react-redux';
+import { getAllRoles } from '../../actions/role';
 
-const PermissionsManagement = () => {
+const PermissionsManagement = ({ getAllRoles, roles }) => {
   const [isNewRolePopUpOpen, setIsNewRolePopUpOpen] = useState(false);
 
   const toggle = () => {
     setIsNewRolePopUpOpen(previousState => !previousState);
   };
+  console.log(roles);
+  roles = roles.filter(role => {
+    if (role != null) return role;
+  });
+
+  useEffect(() => {
+    getAllRoles();
+  }, []);
+
+  const roleNames = roles?.map(role => role.roleName);
+
   return (
     <div className="permissions-management">
       <div className="permissions-management__header">
@@ -25,26 +38,23 @@ const PermissionsManagement = () => {
           <CreateNewRolePopup toggle={toggle} />
         </ModalBody>
       </Modal>
-      <p>
-        <a href="/permissionsmanagement/admin">Administrator</a>
-      </p>
-      <p>
-        <a href="/permissionsmanagement/owner">Owner</a>
-      </p>
-      <p>
-        <a href="/permissionsmanagement/coreteam">Core Team</a>
-      </p>
-      <p>
-        <a href="/permissionsmanagement/manager">Manager</a>
-      </p>
-      <p>
-        <a href="/permissionsmanagement/mentor">Mentor</a>
-      </p>
-      <p>
-        <a href="/permissionsmanagement/volunteer">Volunteer</a>
-      </p>
+      {roleNames?.map(roleName => {
+        let roleNameLC = roleName.toLowerCase().replace(' ', '-');
+        return (
+          <p key={roleName}>
+            <a href={`/permissionsmanagement/${roleNameLC}`}>{roleName}</a>
+          </p>
+        );
+      })}
     </div>
   );
 };
 
-export default PermissionsManagement;
+// export default PermissionsManagement;
+const mapStateToProps = state => ({ roles: state.role.roles });
+
+const mapDispatchToProps = dispatch => ({
+  getAllRoles: () => dispatch(getAllRoles()),
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(PermissionsManagement);
