@@ -86,7 +86,7 @@ const TeamMemberTasks = props => {
       const currentUser = filteredMembers.find(user => user.personId === userId);
       // if current user doesn't have any task, the currentUser cannot be found
 
-      if (currentUser.tasks) {
+      if (currentUser) {
         //conditional variable for moving current user up front.
         let moveCurrentUserFront = false;
 
