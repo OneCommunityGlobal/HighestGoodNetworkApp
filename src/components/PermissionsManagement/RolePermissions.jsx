@@ -1,61 +1,88 @@
-import React from 'react';
-import { permissions } from '../../utils/permissions';
+import React, { useState } from 'react';
 import { permissionLabel } from './UserRoleTab';
 import { Button } from 'reactstrap';
+import { connect } from 'react-redux';
+import { updateRole, getAllRoles } from '../../actions/role';
+import { toast } from 'react-toastify';
 
 function getKeyByValue(object, value) {
   return Object.keys(object).find(key => object[key] === value);
 }
 
-const mapPermissionToLabel = role => {
+const mapPermissionToLabel = permissions => {
   const label = [];
-  permissions[role].map(permission => {
+
+  permissions.map(permission => {
     if (permissionLabel[permission]) {
       label.push(permissionLabel[permission]);
     }
   });
 
-  // console.log(label);
-
-  // console.log('other way:', getKeyByValue(permissionLabel, 'Delete Badge'));
-
   return label;
 };
 
 function RolePermissions(props) {
-  const permissions = mapPermissionToLabel(props.role);
+  const [permissions, setPermissions] = useState(mapPermissionToLabel(props.permissions));
 
-  const permissionsCopy = permissions;
-
-  console.log('user role permissions: ', permissionsCopy);
-
-  const onRemovePermission = () => {
-    console.log('Remove Permissions');
+  const onRemovePermission = permission => {
+    const newPermissions = permissions.filter(perm => perm !== permission);
+    setPermissions(newPermissions);
   };
 
-  const onAddPermission = () => {
-    console.log('Add Permissions');
+  const onAddPermission = permission => {
+    setPermissions(previous => [...previous, permission]);
+  };
+  const updateInfo = () => {
+    const permissionsObjectName = permissions.map(perm => {
+      return getKeyByValue(permissionLabel, perm);
+    });
+    const updatedRole = {
+      roleName: props.role,
+      permissions: permissionsObjectName,
+    };
+    const id = props.roleId;
+    try {
+      props.updateRole(id, updatedRole);
+      toast.success('Role updated successfully');
+    } catch (error) {
+      toast.error('Error updating role');
+    }
   };
 
   return (
     <>
       <h2>{props.header}</h2>
-      {props.permissionsList.map(permission => (
-        <p style={{ color: permissions.includes(permission) ? 'green' : 'red' }}>
-          {permission}{' '}
-          {permissions.includes(permission) ? (
-            <Button color="danger" onClick={onRemovePermission}>
-              -
-            </Button>
-          ) : (
-            <Button color="success" onClick={onAddPermission}>
-              +
-            </Button>
-          )}
-        </p>
-      ))}
+      <ul className="user-role-tab__permission-list">
+        {props.permissionsList.map(permission => (
+          <li className="user-role-tab__permission" key={permission}>
+            <p style={{ color: permissions.includes(permission) ? 'green' : 'red' }}>
+              {permission}
+            </p>
+            {permissions.includes(permission) ? (
+              <Button color="danger" onClick={() => onRemovePermission(permission)}>
+                -
+              </Button>
+            ) : (
+              <Button color="success" onClick={() => onAddPermission(permission)}>
+                +
+              </Button>
+            )}
+          </li>
+        ))}
+      </ul>
+
+      <Button className="mr-1" color="primary" onClick={() => updateInfo()}>
+        Save
+      </Button>
     </>
   );
 }
 
-export default RolePermissions;
+const mapStateToProps = state => ({ roles: state.role.roles });
+
+const mapDispatchToProps = dispatch => ({
+  getAllRoles: () => dispatch(getAllRoles()),
+  updateRole: (roleId, updatedRole) => dispatch(updateRole(roleId, updatedRole)),
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(RolePermissions);
