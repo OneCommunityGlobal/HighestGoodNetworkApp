@@ -30,91 +30,18 @@ export const TasksDetail = (props) => {
   let tasksList = [];
   let tasks = [];
   tasks = props.tasks_filter;
+
   if (props.tasks_filter.length > 0) {
-    if (!(props.isActive === '')) {
-      tasks = tasks.filter((item) => item.isActive === props.isActive);
-    }
-    if (!(props.isAssigned === '')) {
-      tasks = tasks.filter((item) => item.isAssigned === props.isAssigned);
-    }
 
-    if (props.priority === 'No filter') {
-      tasks = props.tasks_filter.filter((item) => item.isActive === props.isActive);
-    }
-    if (props.status === 'No filter') {
-      tasks = props.tasks_filter.filter((item) => item.isActive === props.isActive);
-    }
+    tasks = ["priority", "status", "classification", "isActive", "isAssigned"].reduce(
+      (filteredTask, filter) => {
+        return props[filter] ? filteredTask.filter((item) => item[filter] === props[filter]) : filteredTask;
+      },
+      tasks
+    );
 
-    if (props.priorityList.length > 0) {
-      var i = 0;
-      var get_tasks = [];
-      while (i < props.priorityList.length) {
-        if (props.priorityList[i] != 'Filter Off') {
-          for (var j = 0; j < tasks.length; j++) {
-            if (tasks[j].priority === props.priorityList[i]) {
-              get_tasks.push(tasks[j]);
-            }
-          }
-          i += 1;
-        } else {
-          get_tasks = props.tasks_filter;
-          break;
-        }
-      }
-      tasks = get_tasks;
-    }
 
-    if (props.classificationList.length > 0) {
-      var i = 0;
-      var get_tasks = [];
-      while (i < props.classificationList.length) {
-        if (props.classificationList[i] != 'Filter Off') {
-          for (var j = 0; j < tasks.length; j++) {
-            if (tasks[j].classification === props.classificationList[i]) {
-              get_tasks.push(tasks[j]);
-            }
-          }
-          i += 1;
-        } else {
-          get_tasks = props.tasks_filter;
-          break;
-        }
-      }
-      tasks = get_tasks;
-    }
-    if (props.statusList.length > 0) {
-      var i = 0;
-      var get_tasks = [];
-      while (i < props.statusList.length) {
-        if (props.statusList[i] != 'Filter Off') {
-          for (var j = 0; j < tasks.length; j++) {
-            if (tasks[j].status === props.statusList[i]) {
-              get_tasks.push(tasks[j]);
-            }
-          }
-          i += 1;
-        } else {
-          get_tasks = props.tasks_filter;
-          break;
-        }
-      }
-      tasks = get_tasks;
-    }
-
-    if (props.classification === 'Filter Off') {
-      tasks = props.tasks_filter.filter((item) => item.isActive === props.isActive);
-    }
-    if (props.users === 'Filter Off') {
-      tasks = props.tasks_filter.filter((item) => item.isActive === props.isActive);
-    }
-    if (props.isAssigned === 'Filter Off') {
-      tasks = props.tasks_filter.filter((item) => item.isActive === props.isActive);
-    }
-    if (props.users === 'Filter Off') {
-      tasks = props.tasks_filter.filter((item) => item.isActive === props.isActive);
-    }
-
-    if (!(props.users === '')) {
+    if (props.users) {
       let test = [];
       for (var i = 0; i < tasks.length; i++) {
         for (var j = 0; j < tasks[i].resources.length; j++) {

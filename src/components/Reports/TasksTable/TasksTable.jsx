@@ -11,39 +11,30 @@ import TextSearchBox from 'components/UserManagement/TextSearchBox';
 
 export const TasksTable = ({ WbsTasksID }) => {
 
-  const {
-    priority,
-    status,
-    classification,
-    users,
-    classificationList,
-    priorityList,
-    statusList,
-    userList,
-    get_tasks
-  } = useSelector(state => getTasksTableData(state, { WbsTasksID }));
+  const { get_tasks } = useSelector(state => getTasksTableData(state, { WbsTasksID }));
 
   const [isActive, setActive] = useState(true);
   const [isAssigned, setAssigned] = useState(true);
-  const [filters, setFilters] = useState({});
+  const [filters, setFilters] = useState({
+    status: '',
+    priority: '',
+    classification: '',
+    users: ''
+  });
 
   const resetAllFilters = () => {
-    setActive();
-    setAssigned();
+    setActive(true);
+    setAssigned(true);
     setFilters({
       priority: '',
       status: '',
       classification: '',
-      users: '',
+      users: ''
     })
   }
 
   const setOneFilter = (filterName, value) => {
-    if (value === 'Filter Off') {
-      setFilters({ ...filters, [filterName]: value, [`${filterName}List`]: [] })
-    } else {
-      setFilters({ ...filters, [filterName]: value, [`${filterName}List`]: filters[`${filterName}List`].concat(value) })
-    }
+    setFilters(prevState => ({ ...prevState, [filterName]: value }))
   }
 
   const FilterOptions = ({ filterName, width }) => {
@@ -57,14 +48,15 @@ export const TasksTable = ({ WbsTasksID }) => {
         placeholder={`Any ${filterName}`}
         className='tasks-table-filter-item tasks-table-filter-input'
         width={width}
+        value={filters[filterName]}
       />
     );
   };
 
-  const UserOptions = () => {
+  const UserOptions = ({ tasks }) => {
     let users = [];
-    get_tasks.map((task) =>
-      task.resources.map((resource) => users.push(resource.name)),
+    tasks.forEach((task) =>
+      task.resources?.forEach((resource) => users.push(resource.name)),
     );
 
     users = Array.from(new Set(users)).sort();
@@ -74,6 +66,7 @@ export const TasksTable = ({ WbsTasksID }) => {
         placeholder={`Any user`}
         searchCallback={(value) => setOneFilter('users', value)}
         className='tasks-table-filter-item tasks-table-filter-input'
+        value={filters.users}
       />
     );
   };
@@ -85,7 +78,7 @@ export const TasksTable = ({ WbsTasksID }) => {
       </div>
       <div className='tasks-table-filters-wrapper'>
         <div className='tasks-table-filters'>
-          <UserOptions get_tasks={get_tasks} />
+          <UserOptions tasks={get_tasks} />
           <FilterOptions filterName={'classification'} width='180px' />
           <FilterOptions filterName={'priority'} />
           <FilterOptions filterName={'status'} />
@@ -114,14 +107,10 @@ export const TasksTable = ({ WbsTasksID }) => {
         tasks_filter={get_tasks}
         isAssigned={isAssigned}
         isActive={isActive}
-        priority={priority}
-        status={status}
-        classification={classification}
-        users={users}
-        classificationList={classificationList}
-        priorityList={priorityList}
-        statusList={statusList}
-        userList={userList}
+        priority={filters.priority}
+        status={filters.status}
+        classification={filters.classification}
+        users={filters.users}
       />
     </div>
   );
