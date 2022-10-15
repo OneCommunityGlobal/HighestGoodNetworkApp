@@ -1,0 +1,23 @@
+.userRoleTab__container {
+  padding: 0.5rem 1rem;
+  max-width: 1140px;
+  margin: 0 auto;
+}
+.user-role-tab__permission-list {
+  display: flex;
+  padding-top: 1rem;
+  flex-direction: column;
+  gap: 0.4rem;
+  padding-left: 0;
+}
+.user-role-tab__permission {
+  display: flex;
+  gap: 10px;
+}
+
+.user-role-tab__permission > p {
+  min-width: 290px;
+}
+.user-role-tab__permission > button {
+  width: 38px;
+}
