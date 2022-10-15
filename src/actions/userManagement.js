@@ -34,7 +34,7 @@ export const getAllUserProfile = () => {
  */
 export const updateUserStatus = (user, status, reactivationDate) => {
   const userProfile = Object.assign({}, user);
-  userProfile.isActive = status === UserStatus.Active;
+  userProfile.isActive = (status === UserStatus.Active);
   userProfile.reactivationDate = reactivationDate;
   const patchData = { status: status, reactivationDate: reactivationDate };
   if (status === UserStatus.InActive) {
@@ -124,5 +124,31 @@ export const userProfileDeleteAction = (user) => {
   return {
     type: USER_PROFILE_DELETE,
     user,
+  };
+};
+
+/**
+ * update the user final day status
+ * @param {*} user - the user to be updated
+ * @param {*} finalDate  - the date to be inactive
+ */
+export const updateUserFinalDayStatus = (user, status, finalDayDate) => {
+  const userProfile = Object.assign({}, user);
+  userProfile.endDate = finalDayDate;
+  userProfile.isActive = status === "Active";
+  const patchData = { status: status, endDate: finalDayDate };
+  if (finalDayDate === undefined) {
+    patchData.endDate = undefined;
+    userProfile.endDate = undefined;
+  }else {
+    userProfile.endDate = moment(finalDayDate).format('YYYY-MM-DD');
+    patchData.endDate = moment(finalDayDate).format('YYYY-MM-DD');
+  }
+
+  const updateProfilePromise = axios.patch(ENDPOINTS.USER_PROFILE(user._id), patchData);
+  return async (dispatch) => {
+    updateProfilePromise.then((res) => {
+      dispatch(userProfileUpdateAction(userProfile)); 
+    });
   };
 };

@@ -36,7 +36,8 @@ const trimParagraphTags = (str) => {
   if (str == null) {
     return "";
   }
-  return str.replace(/(<p[^>]+?>|<p>|<\/p>)/img, "");
+  const regex = /(<([^>]+)>)/ig;
+  return str.replace(regex, '').replace(/(<p[^>]+?>|<p>|<\/p>)/img, "").replace(/&nbsp;/g, '');
 }
 
 const datetimeToDate = (datetime) => {

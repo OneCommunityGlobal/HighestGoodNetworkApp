@@ -1,0 +1,49 @@
+.pie-chart-wrapper {
+  display: flex;
+  align-items: center;
+}
+
+.pie-chart {
+  margin-right: 32px;
+}
+
+.pie-chart-legend-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 24px;
+  font-weight: 500;
+}
+
+.pie-chart-legend-item {
+  position: relative;
+  margin: 12px 0;
+  display: flex;
+  align-items: baseline;
+  text-align: start;
+  font-size: 14px;
+}
+
+.data-legend-color {
+  position: absolute;
+  top: 2px;
+  left: -28px;
+  width: 20px;
+  height: 20px;
+  min-width: 20px;
+  min-height: 20px;
+  margin-right: 12px;
+
+  border-radius: 50%;
+}
+
+.data-legend-info {
+  width: 240px;
+  display: flex;
+  justify-content: space-between;
+
+  color: rgba(0, 0, 0, 0.5);
+}
+
+.data-legend-info-part:not(:last-child) {
+  margin-right: 24px;
+}

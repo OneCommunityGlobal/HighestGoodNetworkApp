@@ -44,6 +44,8 @@ import { ProfileNavDot } from 'components/UserManagement/ProfileNavDot';
 import Loading from '../common/Loading';
 import hasPermission from '../../utils/permissions';
 
+import TeamMemberTasks from 'components/TeamMemberTasks';
+
 class Timelog extends Component {
   constructor(props) {
     super(props);
@@ -53,9 +55,11 @@ class Timelog extends Component {
     this.handleInputChange = this.handleInputChange.bind(this);
     this.handleSearch = this.handleSearch.bind(this);
     this.openInfo = this.openInfo.bind(this);
+    //renderViewingTimeEntriesFrom
+    this.renderViewingTimeEntriesFrom = this.renderViewingTimeEntriesFrom.bind(this);
     this.data = {
       disabled: !hasPermission(this.props.auth.user.role, 'disabledDataTimelog') ? false : true,
-      isTangible: hasPermission(this.props.auth.user.role, 'dataIsTangibleTimelog') ? true : false,
+      isTangible: false,
     };
     this.userProfile = this.props.userProfile;
   }
@@ -63,7 +67,7 @@ class Timelog extends Component {
   initialState = {
     modal: false,
     summary: false,
-    activeTab: 0,
+    activeTab: 1,
     projectsSelected: ['all'],
     fromDate: this.startOfWeek(0),
     toDate: this.endOfWeek(0),
@@ -173,6 +177,8 @@ class Timelog extends Component {
     this.props.getTimeEntriesForPeriod(userId, this.state.fromDate, this.state.toDate);
   }
 
+  //startOfWeek returns the date of the start of the week based on offset. Offset is the number of weeks before.
+  //For example, if offset is 0, returns the start of this week. If offset is 1, returns the start of last week.
   startOfWeek(offset) {
     return moment()
       .tz('America/Los_Angeles')
@@ -181,6 +187,8 @@ class Timelog extends Component {
       .format('YYYY-MM-DD');
   }
 
+  //endOfWeek returns the date of the end of the week based on offset. Offset is the number of weeks before.
+  //For example, if offset is 0, returns the end of this week. If offset is 1, returns the end of last week.
   endOfWeek(offset) {
     return moment()
       .tz('America/Los_Angeles')
@@ -198,6 +206,25 @@ class Timelog extends Component {
     return filteredData.map(entry => (
       <TimeEntry data={entry} displayYear={false} key={entry._id} userProfile={this.userProfile} />
     ));
+  }
+
+  renderViewingTimeEntriesFrom() {
+    if (this.state.activeTab === 0) {
+      return <></>;
+    } else if (this.state.activeTab === 4) {
+      return (
+        <p className="ml-1">
+          Viewing time Entries from <b>{this.state.fromDate}</b> to <b>{this.state.toDate}</b>
+        </p>
+      );
+    } else {
+      return (
+        <p className="ml-1">
+          Viewing time Entries from <b>{this.startOfWeek(this.state.activeTab - 1)}</b> to{' '}
+          <b>{this.endOfWeek(this.state.activeTab - 1)}</b>
+        </p>
+      );
+    }
   }
 
   render() {
@@ -233,7 +260,7 @@ class Timelog extends Component {
     if (!_.isEmpty(this.props.userTask)) {
       tasks = this.props.userTask;
     }
-    const taskOptions = tasks.map((task) => (
+    const taskOptions = tasks.map(task => (
       <option value={task._id} key={task._id}>
         {task.taskName}
       </option>
@@ -267,7 +294,7 @@ class Timelog extends Component {
                     <Row>
                       <Col md={11}>
                         <CardTitle tag="h4">
-                          Time Entries &nbsp;
+                          Tasks and Timelogs &nbsp;
                           <i
                             className="fa fa-info-circle"
                             data-tip
@@ -394,7 +421,6 @@ class Timelog extends Component {
                           toggle={this.toggle}
                           isOpen={this.state.modal}
                           userProfile={this.userProfile}
-                          isInTangible={true}
                         />
                         <ReactTooltip id="registerTip" place="bottom" effect="solid">
                           Click this icon to learn about the timelog.
@@ -413,21 +439,20 @@ class Timelog extends Component {
                           href="#"
                           to="#"
                         >
-                          Current Week
+                          Tasks
                         </NavLink>
                       </NavItem>
-                      <NavItem>
-                        <NavLink
-                          className={classnames({ active: this.state.activeTab === 1 })}
-                          onClick={() => {
-                            this.changeTab(1);
-                          }}
-                          href="#"
-                          to="#"
-                        >
-                          Last Week
-                        </NavLink>
-                      </NavItem>
+                      <NavLink
+                        className={classnames({ active: this.state.activeTab === 1 })}
+                        onClick={() => {
+                          this.changeTab(1);
+                        }}
+                        href="#"
+                        to="#"
+                      >
+                        Current Week Timelog
+                      </NavLink>
+
                       <NavItem>
                         <NavLink
                           className={classnames({ active: this.state.activeTab === 2 })}
@@ -437,7 +462,7 @@ class Timelog extends Component {
                           href="#"
                           to="#"
                         >
-                          Week Before Last
+                          Last Week
                         </NavLink>
                       </NavItem>
                       <NavItem>
@@ -449,25 +474,26 @@ class Timelog extends Component {
                           href="#"
                           to="#"
                         >
+                          Week Before Last
+                        </NavLink>
+                      </NavItem>
+                      <NavItem>
+                        <NavLink
+                          className={classnames({ active: this.state.activeTab === 4 })}
+                          onClick={() => {
+                            this.changeTab(4);
+                          }}
+                          href="#"
+                          to="#"
+                        >
                           Search by Date Range
                         </NavLink>
                       </NavItem>
                     </Nav>
 
                     <TabContent activeTab={this.state.activeTab}>
-                      {this.state.activeTab === 3 ? (
-                        <p className="ml-1">
-                          Viewing time Entries from <b>{this.state.fromDate}</b> to{' '}
-                          <b>{this.state.toDate}</b>
-                        </p>
-                      ) : (
-                        <p className="ml-1">
-                          Viewing time Entries from <b>{this.startOfWeek(this.state.activeTab)}</b>
-                          {' to '}
-                          <b>{this.endOfWeek(this.state.activeTab)}</b>
-                        </p>
-                      )}
-                      {this.state.activeTab === 3 && (
+                      {this.renderViewingTimeEntriesFrom()}
+                      {this.state.activeTab === 4 && (
                         <Form inline className="mb-2">
                           <FormGroup className="mr-2">
                             <Label for="fromDate" className="mr-2">
@@ -498,39 +524,49 @@ class Timelog extends Component {
                           </Button>
                         </Form>
                       )}
-                      <Form inline className="mb-2">
-                        <FormGroup>
-                          <Label for="projectSelected" className="mr-1 ml-1 mb-1 align-top">
-                            Filter Entries by Project and Task:
-                          </Label>
-                          <Input
-                            type="select"
-                            name="projectSelected"
-                            id="projectSelected"
-                            value={this.state.projectsSelected}
-                            title="Ctrl + Click to select multiple projects and tasks to filter."
-                            onChange={e =>
-                              this.setState({
-                                projectsSelected: Array.from(
-                                  e.target.selectedOptions,
-                                  option => option.value,
-                                ),
-                              })
-                            }
-                            multiple
-                          >
-                            {projectOrTaskOptions}
-                          </Input>
-                        </FormGroup>
-                      </Form>
-                      <EffortBar
-                        activeTab={this.state.activeTab}
-                        projectsSelected={this.state.projectsSelected}
-                      />
-                      <TabPane tabId={0}>{currentWeekEntries}</TabPane>
-                      <TabPane tabId={1}>{lastWeekEntries}</TabPane>
-                      <TabPane tabId={2}>{beforeLastEntries}</TabPane>
-                      <TabPane tabId={3}>{periodEntries}</TabPane>
+                      {this.state.activeTab === 0 ? (
+                        <></>
+                      ) : (
+                        <Form inline className="mb-2">
+                          <FormGroup>
+                            <Label for="projectSelected" className="mr-1 ml-1 mb-1 align-top">
+                              Filter Entries by Project and Task:
+                            </Label>
+                            <Input
+                              type="select"
+                              name="projectSelected"
+                              id="projectSelected"
+                              value={this.state.projectsSelected}
+                              title="Ctrl + Click to select multiple projects and tasks to filter."
+                              onChange={e =>
+                                this.setState({
+                                  projectsSelected: Array.from(
+                                    e.target.selectedOptions,
+                                    option => option.value,
+                                  ),
+                                })
+                              }
+                              multiple
+                            >
+                              {projectOrTaskOptions}
+                            </Input>
+                          </FormGroup>
+                        </Form>
+                      )}
+
+                      {this.state.activeTab === 0 ? (
+                        <></>
+                      ) : (
+                        <EffortBar
+                          activeTab={this.state.activeTab}
+                          projectsSelected={this.state.projectsSelected}
+                        />
+                      )}
+                      <TabPane tabId={0}>{<TeamMemberTasks asUser={this.props.asUser} />}</TabPane>
+                      <TabPane tabId={1}>{currentWeekEntries}</TabPane>
+                      <TabPane tabId={2}>{lastWeekEntries}</TabPane>
+                      <TabPane tabId={3}>{beforeLastEntries}</TabPane>
+                      <TabPane tabId={4}>{periodEntries}</TabPane>
                     </TabContent>
                   </CardBody>
                 </Card>
