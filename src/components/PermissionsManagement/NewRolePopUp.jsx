@@ -3,13 +3,15 @@ import { FormCheck } from 'react-bootstrap';
 import { Alert, Button, Form, FormGroup, Input, Label } from 'reactstrap';
 import { permissionLabel } from './UserRoleTab';
 import { toast } from 'react-toastify';
+import { connect } from 'react-redux';
+import { addNewRole, getAllRoles } from '../../actions/role';
 
-const CreateNewRolePopup = ({ toggle }) => {
+const CreateNewRolePopup = ({ toggle, addNewRole }) => {
   const [permissionsChecked, setPermissionsChecked] = useState([]);
   const [newRoleName, setNewRoleName] = useState('');
   const [isValidRole, setIsValidRole] = useState(true);
 
-  const handleSubmit = e => {
+  const handleSubmit = async e => {
     e.preventDefault();
 
     if (newRoleName === '') {
@@ -20,7 +22,9 @@ const CreateNewRolePopup = ({ toggle }) => {
         roleName: newRoleName,
         permissions: permissionsChecked,
       };
-      console.log(newRoleObject);
+      await addNewRole(newRoleObject);
+      toast.success('Role created successfully');
+
       toggle();
     }
   };
@@ -76,4 +80,11 @@ const CreateNewRolePopup = ({ toggle }) => {
   );
 };
 
-export default CreateNewRolePopup;
+const mapStateToProps = state => ({ roles: state.role.roles });
+
+const mapDispatchToProps = dispatch => ({
+  getAllRoles: () => dispatch(getAllRoles()),
+  addNewRole: newRole => dispatch(addNewRole(newRole)),
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(CreateNewRolePopup);
