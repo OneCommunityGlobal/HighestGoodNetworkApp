@@ -47,6 +47,17 @@ import hasPermission from '../../utils/permissions';
 
 import TeamMemberTasks from 'components/TeamMemberTasks';
 
+const doesUserHaveTaskWithWBS = tasks => {
+  let check = false;
+  for (let task of tasks) {
+    if (task.wbsId) {
+      check = true;
+      break;
+    }
+  }
+  return check;
+};
+
 class Timelog extends Component {
   constructor(props) {
     super(props);
@@ -99,6 +110,15 @@ class Timelog extends Component {
     await this.props.getUserProjects(userId);
     await this.props.getAllRoles();
     this.setState({ isTimeEntriesLoading: false });
+    const role = this.props.auth.user.role;
+    //if user role is admin, manager, mentor or owner then default tab is task. If user have any tasks assigned, default tab is task.
+    if (role === 'Administrator' || role === 'Manager' || role === "'Mentor'" || role === 'Owner') {
+      this.setState({ activeTab: 0 });
+    }
+    const UserHaveTask = doesUserHaveTaskWithWBS(this.userTask);
+    if (UserHaveTask) {
+      this.setState({ activeTab: 0 });
+    }
   }
 
   async componentDidUpdate(prevProps) {
@@ -575,7 +595,6 @@ class Timelog extends Component {
                           </FormGroup>
                         </Form>
                       )}
-
                       {this.state.activeTab === 0 ? (
                         <></>
                       ) : (
