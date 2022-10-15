@@ -1,3 +1,8 @@
+.tasks-table-header {
+  text-align: left;
+  margin-bottom: 24px;
+}
+
 .tasks-table-filters-wrapper {
   display: flex;
   justify-content: space-between;

@@ -80,6 +80,9 @@ export const TasksTable = ({ WbsTasksID }) => {
 
   return (
     <div>
+      <div>
+        <h4 className='tasks-table-header'>Tasks</h4>
+      </div>
       <div className='tasks-table-filters-wrapper'>
         <div className='tasks-table-filters'>
           <UserOptions get_tasks={get_tasks} />

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Button, Dropdown, DropdownButton } from 'react-bootstrap';
+import { Button } from 'react-bootstrap';
 import EditTaskModal from '../../Projects/WBS/WBSDetail/EditTask/EditTaskModal';
 import 'react-table/react-table.css';
 import Collapse from 'react-bootstrap/Collapse';
@@ -180,7 +180,7 @@ export const TasksDetail = (props) => {
 
   return (
     <div>
-      <h2>Total: {tasksList.length}</h2>
+      <div className="tasks-detail-total">Total: {tasksList.length}</div>
       <div className="tasks-detail-table-head tasks-detail-table-row">
         <div id="projects__order">
           Action
