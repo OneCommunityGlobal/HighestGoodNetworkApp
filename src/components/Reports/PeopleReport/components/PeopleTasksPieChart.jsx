@@ -1,8 +1,7 @@
-import { useState } from 'react';
 import { useSelector } from 'react-redux';
 import { PieChart } from 'components/common/PieChart';
 import { peopleTasksPieChartViewData } from '../selectors';
-import { ReportBlock } from 'components/Reports/sharedComponents/ReportBlock';
+import { ReportPage } from 'components/Reports/sharedComponents/ReportPage';
 import { NewModal } from 'components/common/NewModal';
 import './PeopleTasksPieChart.css';
 
@@ -32,13 +31,13 @@ export const PeopleTasksPieChart = () => {
   return (
     <div className='people-pie-charts-wrapper'>
       {showProjectsPieChart && (
-        <ReportBlock>
+        <ReportPage.ReportBlock>
           <h5 className='people-pie-charts-header'>Projects with committed hours</h5>
           <PieChart pieChartId={'projectsPieChart'} data={projectsWithLoggedHoursById} dataLegend={projectsWithLoggedHoursLegend} dataLegendHeader="Hours" />
-        </ReportBlock>
+        </ReportPage.ReportBlock>
       )}
       {showTasksPieChart && (
-        <ReportBlock>
+        <ReportPage.ReportBlock>
           <h5 className='people-pie-charts-header'>{`${showViewAllTasksButton ? 'Last t' : 'T'}asks with committed hours`}</h5>
           <PieChart pieChartId={'tasksPieChart'} data={displayedTasksWithLoggedHoursById} dataLegend={displayedTasksLegend} dataLegendHeader="Hours" />
           {showViewAllTasksButton && (
@@ -46,7 +45,7 @@ export const PeopleTasksPieChart = () => {
               <PieChart pieChartId={'allTasksPieChart'} data={tasksWithLoggedHoursById} dataLegend={tasksLegend} dataLegendHeader="Hours" />
             </NewModal>
           )}
-        </ReportBlock>
+        </ReportPage.ReportBlock>
       )}
     </div >
   )
