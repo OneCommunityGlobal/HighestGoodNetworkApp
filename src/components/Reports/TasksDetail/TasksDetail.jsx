@@ -55,7 +55,7 @@ export const TasksDetail = (props) => {
   }
 
   tasksList = tasks.map((task, index) => (
-    <div id={'tr_' + task._id} className='tasks-detail-table-row'>
+    <div key={task._id} className='tasks-detail-table-row'>
       <div>
         <EditTaskModal
           key={`editTask_${task._id}`}
@@ -72,10 +72,10 @@ export const TasksDetail = (props) => {
       <div>
         <div>{index + 1}</div>
       </div>
-      <div>{task.taskName}</div>
+      <div className='tasks-detail-task-name'>{task.taskName}</div>
       <div>{task.priority}</div>
       <div>{task.status}</div>
-      <div>
+      <div className='tasks-detail-center-cells'>
         {task.resources.length <= 2 ? (
           task.resources.map((resource) => <div key={resource._id}>{resource.name}</div>)
         ) : (
@@ -83,7 +83,7 @@ export const TasksDetail = (props) => {
         )}
       </div>
 
-      <div className="projects__active--input">
+      <div className='tasks-detail-center-cells'>
         {task.isActive ? (
           <tasks className="isActive">
             <i className="fa fa-circle" aria-hidden="true"></i>
@@ -95,11 +95,11 @@ export const TasksDetail = (props) => {
         )}
       </div>
 
-      <div className="projects__active--input">
+      <div className='tasks-detail-center-cells'>
         {task.isAssigned ? <div>Assign</div> : <div>Not Assign</div>}
       </div>
-      <div className="projects__active--input">{task.classification}</div>
-      <div className="projects__active--input">{task.estimatedHours.toFixed(2)}</div>
+      <div className='tasks-detail-center-cells'>{task.classification}</div>
+      <div className='tasks-detail-center-cells'>{task.estimatedHours.toFixed(2)}</div>
       <div>{task.startedDatetime}</div>
       <div>{task.dueDatetime}</div>
     </div>
@@ -108,39 +108,38 @@ export const TasksDetail = (props) => {
   return (
     <div>
       <div className="tasks-detail-total">Total: {tasksList.length}</div>
-      <div className="tasks-detail-table-head tasks-detail-table-row">
-        <div id="projects__order">
-          Action
+      <div className="tasks-detail-table-row tasks-detail-table-head">
+        <div>
         </div>
-        <div id="projects__order">
+        <div>
           #
         </div>
-        <div id="projects__active">
+        <div>
           Task
         </div>
-        <div id="projects__active">
+        <div>
           Priority
         </div>
-        <div id="projects__active">
+        <div>
           Status
         </div>
-        <div>Resources</div>
-        <div id="projects__active">
+        <div className='tasks-detail-center-cells'>Resources</div>
+        <div className='tasks-detail-center-cells'>
           Active
         </div>
-        <div id="projects__active">
+        <div className='tasks-detail-center-cells'>
           Assign
         </div>
-        <div id="projects__active">
+        <div className='tasks-detail-center-cells'>
           Class
         </div>
-        <div id="projects__active">
+        <div className='tasks-detail-center-cells'>
           Estimated Hours
         </div>
-        <div id="projects__active">
+        <div>
           Start Date
         </div>
-        <div id="projects__active">
+        <div>
           End Date
         </div>
       </div>
