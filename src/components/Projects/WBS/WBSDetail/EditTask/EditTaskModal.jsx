@@ -12,14 +12,15 @@ import { updateTask, fetchAllTasks } from '../../../../../actions/task';
 import { Editor } from '@tinymce/tinymce-react';
 import hasPermission from 'utils/permissions';
 
-const EditTaskModal = (props) => {
+const EditTaskModal = props => {
   const [role] = useState(props.auth ? props.auth.user.role : null);
+  const { roles } = props.role;
 
   const tasks = props.tasks.taskItems;
   const { members } = props.projectMembers;
   let foundedMembers = [];
 
-  const thisTask = tasks.filter((task) => task._id === props.taskId)[0];
+  const thisTask = tasks.filter(task => task._id === props.taskId)[0];
 
   // Date picker
   const FORMAT = 'MM/dd/yy';
@@ -93,10 +94,10 @@ const EditTaskModal = (props) => {
 
   const [foundMembersHTML, setfoundMembersHTML] = useState('');
   const findMembers = () => {
-    foundedMembers = members.filter((user) =>
+    foundedMembers = members.filter(user =>
       `${user.firstName} ${user.lastName}`.toLowerCase().includes(memberName.toLowerCase()),
     );
-    const html = foundedMembers.map((elm) => (
+    const html = foundedMembers.map(elm => (
       <div>
         <input
           type="text"
@@ -117,8 +118,8 @@ const EditTaskModal = (props) => {
     setfoundMembersHTML(html);
   };
 
-  const removeResource = (userID) => {
-    const removeIndex = resourceItems.map((item) => item.userID).indexOf(userID);
+  const removeResource = userID => {
+    const removeIndex = resourceItems.map(item => item.userID).indexOf(userID);
     setResourceItems([
       ...resourceItems.slice(0, removeIndex),
       ...resourceItems.slice(removeIndex + 1),
@@ -179,7 +180,7 @@ const EditTaskModal = (props) => {
     parentId3 = props.taskId;
   }
 
-  const changeDateStart = (startDate) => {
+  const changeDateStart = startDate => {
     setStartedDate(startDate);
     if (dueDate) {
       if (startDate > dueDate) {
@@ -190,7 +191,7 @@ const EditTaskModal = (props) => {
     }
   };
 
-  const changeDateEnd = (dueDate) => {
+  const changeDateEnd = dueDate => {
     setDueDate(dueDate);
     if (startedDate) {
       if (dueDate < startedDate) {
@@ -201,7 +202,7 @@ const EditTaskModal = (props) => {
     }
   };
 
-  const removeLink = (index) => {
+  const removeLink = index => {
     setLinks([...links.splice(0, index), ...links.splice(index + 1)]);
   };
 
@@ -241,14 +242,14 @@ const EditTaskModal = (props) => {
     <div className="controlBtn">
       <Modal isOpen={modal} toggle={toggle}>
         <ModalHeader toggle={toggle}>
-          {hasPermission(role, 'editTask') ? 'Edit' : 'View'}
+          {hasPermission(role, 'editTask', roles) ? 'Edit' : 'View'}
         </ModalHeader>
         <ModalBody>
           <ReactTooltip />
 
           <table
             className={`table table-bordered ${
-              hasPermission(role, 'editTask') ? null : 'disable-div'
+              hasPermission(role, 'editTask', roles) ? null : 'disable-div'
             }`}
           >
             <tbody>
@@ -264,8 +265,8 @@ const EditTaskModal = (props) => {
                   <input
                     type="text"
                     className="task-name"
-                    onChange={(e) => setTaskName(e.target.value)}
-                    onKeyPress={(e) => setTaskName(e.target.value)}
+                    onChange={e => setTaskName(e.target.value)}
+                    onKeyPress={e => setTaskName(e.target.value)}
                     value={taskName}
                   />
                 </td>
@@ -275,7 +276,7 @@ const EditTaskModal = (props) => {
                 <td scope="col">
                   <select
                     id="priority"
-                    onChange={(e) => setPriority(e.target.value)}
+                    onChange={e => setPriority(e.target.value)}
                     value={priority}
                   >
                     <option value="Primary">Primary</option>
@@ -294,8 +295,8 @@ const EditTaskModal = (props) => {
                       placeholder="Name"
                       className="task-resouces-input"
                       data-tip="Input a name"
-                      onChange={(e) => setMemberName(e.target.value)}
-                      onKeyPress={(e) => setMemberName(e.target.value)}
+                      onChange={e => setMemberName(e.target.value)}
+                      onKeyPress={e => setMemberName(e.target.value)}
                       onKeyPress={findMembers}
                     />
                     <button
@@ -317,7 +318,7 @@ const EditTaskModal = (props) => {
                           <a
                             key={`res_${i}`}
                             data-tip={elm.name}
-                            onClick={(e) => removeResource(elm.userID, e.target)}
+                            onClick={e => removeResource(elm.userID, e.target)}
                           >
                             <span className="dot">{elm.name.substring(0, 2)}</span>
                           </a>
@@ -327,7 +328,7 @@ const EditTaskModal = (props) => {
                         <a
                           key={`res_${i}`}
                           data-tip={elm.name}
-                          onClick={(e) => removeResource(elm.userID, e.target)}
+                          onClick={e => removeResource(elm.userID, e.target)}
                         >
                           <img className="img-circle" src={elm.profilePic} />
                         </a>
@@ -339,7 +340,7 @@ const EditTaskModal = (props) => {
               <tr>
                 <td scope="col">Assigned</td>
                 <td scope="col">
-                  <select id="Assigned" onChange={(e) => setAssigned(e.target.value === 'true')}>
+                  <select id="Assigned" onChange={e => setAssigned(e.target.value === 'true')}>
                     <option value="true">Yes</option>
                     <option value="false">No</option>
                   </select>
@@ -348,7 +349,7 @@ const EditTaskModal = (props) => {
               <tr>
                 <td scope="col">Status</td>
                 <td scope="col">
-                  <select id="Status" onChange={(e) => setStatus(e.target.value)}>
+                  <select id="Status" onChange={e => setStatus(e.target.value)}>
                     <option value="Started">Started</option>
                     <option value="Not Started">Not Started</option>
                   </select>
@@ -364,7 +365,7 @@ const EditTaskModal = (props) => {
                     min="0"
                     max="500"
                     value={hoursBest}
-                    onChange={(e) => setHoursBest(e.target.value)}
+                    onChange={e => setHoursBest(e.target.value)}
                     onBlur={() => calHoursEstimate()}
                   />
                   <div className="warning">
@@ -384,7 +385,7 @@ const EditTaskModal = (props) => {
                     min={hoursBest}
                     max="500"
                     value={hoursWorst}
-                    onChange={(e) => setHoursWorst(e.target.value)}
+                    onChange={e => setHoursWorst(e.target.value)}
                     onBlur={() => calHoursEstimate('hoursWorst')}
                   />
                   <div className="warning">
@@ -404,7 +405,7 @@ const EditTaskModal = (props) => {
                     min="0"
                     max="500"
                     value={hoursMost}
-                    onChange={(e) => setHoursMost(e.target.value)}
+                    onChange={e => setHoursMost(e.target.value)}
                     onBlur={() => calHoursEstimate('hoursMost')}
                   />
                   <div className="warning">
@@ -424,7 +425,7 @@ const EditTaskModal = (props) => {
                     min="0"
                     max="500"
                     value={hoursEstimate}
-                    onChange={(e) => setHoursEstimate(e.target.value)}
+                    onChange={e => setHoursEstimate(e.target.value)}
                   />
                 </td>
               </tr>
@@ -439,7 +440,7 @@ const EditTaskModal = (props) => {
                       placeholder="Link"
                       className="task-resouces-input"
                       data-tip="Add a link"
-                      onChange={(e) => setLink(e.target.value)}
+                      onChange={e => setLink(e.target.value)}
                     />
                     <button
                       className="task-resouces-btn"
@@ -469,10 +470,7 @@ const EditTaskModal = (props) => {
               <tr>
                 <td scope="col">Classification</td>
                 <td scope="col">
-                  <select
-                    value={classification}
-                    onChange={(e) => setClassification(e.target.value)}
-                  >
+                  <select value={classification} onChange={e => setClassification(e.target.value)}>
                     <option value="Food">Food</option>
                     <option value="Energy">Energy</option>
                     <option value="Housing">Housing</option>
@@ -504,7 +502,7 @@ const EditTaskModal = (props) => {
                     className="why-info"
                     className="form-control"
                     value={whyInfo}
-                    onEditorChange={(content) => setWhyInfo(content)}
+                    onEditorChange={content => setWhyInfo(content)}
                   />
                 </td>
               </tr>
@@ -528,7 +526,7 @@ const EditTaskModal = (props) => {
                     className="intent-info"
                     className="form-control"
                     value={intentInfo}
-                    onEditorChange={(content) => setIntentInfo(content)}
+                    onEditorChange={content => setIntentInfo(content)}
                   />
                 </td>
               </tr>
@@ -552,7 +550,7 @@ const EditTaskModal = (props) => {
                     className="endstate-info"
                     className="form-control"
                     value={endstateInfo}
-                    onEditorChange={(content) => setEndstateInfo(content)}
+                    onEditorChange={content => setEndstateInfo(content)}
                   />
                 </td>
               </tr>
@@ -593,7 +591,7 @@ const EditTaskModal = (props) => {
           </table>
         </ModalBody>
 
-        {hasPermission(role, 'editTask') ? (
+        {hasPermission(role, 'editTask', roles) ? (
           <ModalFooter>
             {taskName !== '' && startedDate !== '' && dueDate !== '' ? (
               <Button color="primary" onClick={toggle} onClick={updateTask}>
@@ -607,13 +605,13 @@ const EditTaskModal = (props) => {
         ) : null}
       </Modal>
       <Button color="primary" size="sm" onClick={toggle}>
-        {hasPermission(role, 'editTask') ? 'Edit' : 'View'}
+        {hasPermission(role, 'editTask', roles) ? 'Edit' : 'View'}
       </Button>
     </div>
   );
 };
 
-const mapStateToProps = (state) => state;
+const mapStateToProps = state => state;
 export default connect(mapStateToProps, {
   updateTask,
   fetchAllTasks,

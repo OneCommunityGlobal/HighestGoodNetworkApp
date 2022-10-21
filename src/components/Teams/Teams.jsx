@@ -48,9 +48,12 @@ class Teams extends React.PureComponent {
     // debugger;
     const { allTeams, fetching } = this.props.state.allTeamsData;
     const requestorRole = this.props.state.auth.user.role;
-    const teamTable = this.teamTableElements(allTeams, requestorRole);
+    const { roles } = this.props.state.role;
+
+    const teamTable = this.teamTableElements(allTeams, requestorRole, roles);
     const numberOfTeams = allTeams.length;
-    const numberOfActiveTeams = numberOfTeams ? allTeams.filter((team) => team.isActive).length : 0;
+    const numberOfActiveTeams = numberOfTeams ? allTeams.filter(team => team.isActive).length : 0;
+
     return (
       <Container fluid>
         {fetching ? (
@@ -58,7 +61,7 @@ class Teams extends React.PureComponent {
         ) : (
           <React.Fragment>
             <div className="container">
-              {this.teampopupElements(requestorRole)}
+              {this.teampopupElements(requestorRole, roles)}
               <TeamOverview
                 numberOfTeams={numberOfTeams}
                 numberOfActiveTeams={numberOfActiveTeams}
@@ -67,10 +70,11 @@ class Teams extends React.PureComponent {
                 onSearch={this.onWildCardSearch}
                 onCreateNewTeamClick={this.onCreateNewTeamShow}
                 requestorRole={requestorRole}
+                roles={roles}
               />
               <table className="table table-bordered table-responsive-sm">
                 <thead>
-                  <TeamTableHeader requestorRole={requestorRole}/>
+                  <TeamTableHeader requestorRole={requestorRole} roles={roles} />
                 </thead>
                 <tbody>{teamTable}</tbody>
               </table>
@@ -84,7 +88,7 @@ class Teams extends React.PureComponent {
   /**
    * Creates the table body elements after applying the search filter and return it.
    */
-  teamTableElements = (allTeams, requestorRole) => {
+  teamTableElements = (allTeams, requestorRole, roles) => {
     if (allTeams && allTeams.length > 0) {
       const teamSearchData = this.filteredTeamList(allTeams);
       /*
@@ -112,13 +116,14 @@ class Teams extends React.PureComponent {
             onClickActive={this.onClickActive}
             team={team}
             requestorRole={requestorRole}
+            roles={roles}
           />
         ));
     }
   };
 
-  filteredTeamList = (allTeams) => {
-    const filteredList = allTeams.filter((team) => {
+  filteredTeamList = (allTeams, roles) => {
+    const filteredList = allTeams.filter(team => {
       // Applying the search filters before creating each team table data element
       if (
         (team.teamName &&
@@ -142,7 +147,7 @@ class Teams extends React.PureComponent {
    * 3. Popup to display delete confirmation of the team upon clicking delete button.
    */
 
-  teampopupElements = (requestorRole) => {
+  teampopupElements = (requestorRole, roles) => {
     const members = this.props.state ? this.props.state.teamsTeamMembers : [];
     return (
       <React.Fragment>
@@ -155,6 +160,7 @@ class Teams extends React.PureComponent {
           onAddUser={this.onAddUser}
           selectedTeamName={this.state.selectedTeam}
           requestorRole={requestorRole}
+          roles={roles}
         />
         <CreateNewTeamPopup
           open={this.state.createNewTeamPopupOpen}
@@ -188,7 +194,7 @@ class Teams extends React.PureComponent {
     );
   };
 
-  onAddUser = (user) => {
+  onAddUser = user => {
     this.props.addTeamMember(this.state.selectedTeamId, user._id, user.firstName, user.lastName);
   };
 
@@ -296,7 +302,7 @@ class Teams extends React.PureComponent {
   /**
    * callback for search
    */
-  onWildCardSearch = (searchText) => {
+  onWildCardSearch = searchText => {
     this.setState({
       wildCardSearchText: searchText,
     });
@@ -324,7 +330,7 @@ class Teams extends React.PureComponent {
    * callback for deleting a team
    */
 
-  onDeleteUser = (deletedId) => {
+  onDeleteUser = deletedId => {
     this.props.deleteTeam(deletedId, 'delete');
     alert('Team deleted successfully');
     this.setState({
@@ -347,14 +353,14 @@ class Teams extends React.PureComponent {
   /**
    * callback for deleting a member in a team
    */
-  onDeleteTeamMember = (deletedUserId) => {
+  onDeleteTeamMember = deletedUserId => {
     this.props.deleteTeamMember(this.state.selectedTeamId, deletedUserId);
     alert(
       'Team member successfully deleted! Ryunosuke Satoro famously said, “Individually we are one drop, together we are an ocean.” Through the action you just took, this ocean is now one drop smaller.',
     );
   };
 }
-const mapStateToProps = (state) => ({ state });
+const mapStateToProps = state => ({ state });
 export default connect(mapStateToProps, {
   getAllUserProfile,
   getAllUserTeams,

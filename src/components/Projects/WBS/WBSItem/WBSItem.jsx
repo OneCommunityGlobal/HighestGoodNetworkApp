@@ -11,8 +11,9 @@ import { getPopupById } from './../../../../actions/popupEditorAction';
 import { WBS_DELETE_POPUP_ID } from './../../../../constants/popupId';
 import hasPermission from 'utils/permissions';
 
-const WBSItem = (props) => {
+const WBSItem = props => {
   const [showModalDelete, setShowModalDelete] = useState(false);
+  const { roles } = props.role;
 
   const confirmDelete = () => {
     props.deleteWBS(props.wbsId);
@@ -28,12 +29,12 @@ const WBSItem = (props) => {
         <td className="members__name">
           <a href={`/wbs/tasks/${props.wbsId}/${props.projectId}/${props.name}`}>{props.name}</a>
         </td>
-        {hasPermission(props.auth.user.role, 'deleteWbs') ? (
+        {hasPermission(props.auth.user.role, 'deleteWbs', roles) ? (
           <td className="members__assign">
             <button
               className="btn btn-outline-danger btn-sm"
               type="button"
-              onClick={(e) => {
+              onClick={e => {
                 setShowModalDelete(true);
                 props.getPopupById(WBS_DELETE_POPUP_ID);
               }}
@@ -54,5 +55,5 @@ const WBSItem = (props) => {
     </React.Fragment>
   );
 };
-const mapStateToProps = (state) => state;
+const mapStateToProps = state => state;
 export default connect(mapStateToProps, { deleteWBS, getPopupById })(WBSItem);

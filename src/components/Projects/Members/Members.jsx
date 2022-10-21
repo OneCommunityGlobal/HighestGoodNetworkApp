@@ -18,19 +18,18 @@ import FoundUser from './FoundUser';
 import './members.css';
 import hasPermission from '../../../utils/permissions';
 
-const Members = (props) => {
+const Members = props => {
   const [role] = useState(props.state ? props.state.auth.user.role : null);
   const projectId = props.match.params.projectId;
+  const { roles } = props.state.role;
 
   useEffect(() => {
     props.fetchAllMembers(projectId);
   }, [projectId]);
 
   const assignAll = () => {
-    const allUsers = props.state.projectMembers.foundUsers.filter(
-      (user) => user.assigned === false,
-    );
-    allUsers.forEach((user) => {
+    const allUsers = props.state.projectMembers.foundUsers.filter(user => user.assigned === false);
+    allUsers.forEach(user => {
       props.assignProject(projectId, user._id, 'Assign', user.firstName, user.lastName);
     });
   };
@@ -49,7 +48,7 @@ const Members = (props) => {
             <div id="member_project__name">PROJECTS {props.projectId}</div>
           </ol>
         </nav>
-        {hasPermission(role, 'findUserInProject') ? (
+        {hasPermission(role, 'findUserInProject', roles) ? (
           <div className="input-group" id="new_project">
             <div className="input-group-prepend">
               <span className="input-group-text">Find user</span>
@@ -60,7 +59,7 @@ const Members = (props) => {
               className="form-control"
               aria-label="Search user"
               placeholder="Name"
-              onChange={(e) => {
+              onChange={e => {
                 props.findUserProfiles(e.target.value);
               }}
             />
@@ -68,7 +67,7 @@ const Members = (props) => {
               <button
                 className="btn btn-outline-primary"
                 type="button"
-                onClick={(e) => props.getAllUserProfiles()}
+                onClick={e => props.getAllUserProfiles()}
               >
                 All
               </button>
@@ -85,7 +84,7 @@ const Members = (props) => {
                 </th>
                 <th scope="col">Name</th>
                 <th scope="col">Email</th>
-                {hasPermission(role, 'assignUserInProject') ? (
+                {hasPermission(role, 'assignUserInProject', roles) ? (
                   <th scope="col">
                     Assign
                     <button
@@ -123,7 +122,9 @@ const Members = (props) => {
                 #
               </th>
               <th scope="col" id="members__name"></th>
-              {hasPermission(role, 'unassignUserInProject') ? <th scope="col" id="members__name"></th> : null}
+              {hasPermission(role, 'unassignUserInProject', roles) ? (
+                <th scope="col" id="members__name"></th>
+              ) : null}
             </tr>
           </thead>
           <tbody>
@@ -143,7 +144,7 @@ const Members = (props) => {
   );
 };
 
-const mapStateToProps = (state) => {
+const mapStateToProps = state => {
   return { state };
 };
 export default connect(mapStateToProps, {

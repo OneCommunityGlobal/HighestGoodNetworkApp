@@ -22,7 +22,7 @@ const Name = props => {
     formValid,
     setFormValid,
     role,
-    canEdit
+    canEdit,
   } = props;
 
   const { firstName, lastName } = userProfile;
@@ -124,7 +124,7 @@ const Email = props => {
     formValid,
     setFormValid,
     role,
-    canEdit
+    canEdit,
   } = props;
   const { email, privacySettings } = userProfile;
 
@@ -171,7 +171,7 @@ const Email = props => {
   );
 };
 
-const formatPhoneNumber = (str) => {
+const formatPhoneNumber = str => {
   // Filter only numbers from the input
   const cleaned = `${str}`.replace(/\D/g, '');
   if (cleaned.length === 10) {
@@ -209,7 +209,7 @@ const Phone = props => {
     setChanged,
     isUserSelf,
     role,
-    canEdit
+    canEdit,
   } = props;
   const { phoneNumber, privacySettings } = userProfile;
   if (canEdit) {
@@ -246,7 +246,7 @@ const Phone = props => {
   );
 };
 
-const TimeZoneDifference = (props) => {
+const TimeZoneDifference = props => {
   const { userProfile, setChanged, setUserProfile, isUserAdmin, isUserSelf } = props;
 
   const viewingTimeZone = props.userProfile.timeZone;
@@ -260,24 +260,24 @@ const TimeZoneDifference = (props) => {
 
   function convertDateToAnotherTimeZone(date, timezone) {
     const dateString = date.toLocaleString('en-US', {
-      timeZone: timezone
+      timeZone: timezone,
     });
     return new Date(dateString);
   }
 
   let date = new Date();
   const offset = getOffsetBetweenTimezonesForDate(date, viewingTimeZone, yourLocalTimeZone);
-  const offsetInHours = offset/3600000;
-  const signedOffset = (offsetInHours > 0) ? "+" + offsetInHours : "" + offsetInHours;
+  const offsetInHours = offset / 3600000;
+  const signedOffset = offsetInHours > 0 ? '+' + offsetInHours : '' + offsetInHours;
 
-  if (! isUserSelf) {
+  if (!isUserSelf) {
     return (
       <>
         <Col>
           <p>{signedOffset} hours</p>
         </Col>
       </>
-    )
+    );
   }
 
   return (
@@ -286,10 +286,10 @@ const TimeZoneDifference = (props) => {
         <p>This is your own profile page</p>
       </Col>
     </>
-  )
-}
+  );
+};
 
-const BasicInformationTab = (props) => {
+const BasicInformationTab = props => {
   const {
     userProfile,
     setUserProfile,
@@ -300,10 +300,8 @@ const BasicInformationTab = (props) => {
     setFormValid,
     role,
     canEdit,
+    roles,
   } = props;
-
-  
-
   const [timeZoneFilter, setTimeZoneFilter] = useState('');
   const [location, setLocation] = useState('');
   const key = useSelector(state => state.timeZoneAPI.userAPIKey);
@@ -438,19 +436,19 @@ const BasicInformationTab = (props) => {
         </Col>
         <Col>
           {canEdit ? (
-          <FormGroup disabled={!canEdit}>
-            <Input
-              type="text"
-              name="collaborationPreference"
-              id="collaborationPreference"
-              value={userProfile.collaborationPreference}
-              onChange={e => {
-                setUserProfile({ ...userProfile, collaborationPreference: e.target.value });
-                setChanged(true);
-              }}
-              placeholder="Skype, Zoom, etc."
-            />
-          </FormGroup>
+            <FormGroup disabled={!canEdit}>
+              <Input
+                type="text"
+                name="collaborationPreference"
+                id="collaborationPreference"
+                value={userProfile.collaborationPreference}
+                onChange={e => {
+                  setUserProfile({ ...userProfile, collaborationPreference: e.target.value });
+                  setChanged(true);
+                }}
+                placeholder="Skype, Zoom, etc."
+              />
+            </FormGroup>
           ) : (
             `${userProfile.collaborationPreference}`
           )}
@@ -461,31 +459,33 @@ const BasicInformationTab = (props) => {
           <Label>Role</Label>
         </Col>
         <Col>
-        {canEdit ? (
-          <FormGroup>
-            <select
-              value={userProfile.role}
-              onChange={e => {
-                setUserProfile({ ...userProfile, role: e.target.value });
-                setChanged(true);
-              }}
-              id="role"
-              name="role"
-              className="form-control"
-              disabled={!canEdit}
-              canEdit={canEdit}
-            >
-              <option value="Administrator">Administrator</option>
-              <option value="Volunteer">Volunteer</option>
-              <option value="Manager">Manager</option>
-              <option value="Core Team">Core Team</option>
-              <option value="Mentor">Mentor</option>
-              {hasPermission(role, 'addDeleteEditOwners') && (
-                <option value="Owner">Owner</option>
-              )}
-            </select>
-          </FormGroup>
-        ) : `${userProfile.role}`}
+          {canEdit ? (
+            <FormGroup>
+              <select
+                value={userProfile.role}
+                onChange={e => {
+                  setUserProfile({ ...userProfile, role: e.target.value });
+                  setChanged(true);
+                }}
+                id="role"
+                name="role"
+                className="form-control"
+                disabled={!canEdit}
+                canEdit={canEdit}
+              >
+                <option value="Administrator">Administrator</option>
+                <option value="Volunteer">Volunteer</option>
+                <option value="Manager">Manager</option>
+                <option value="Core Team">Core Team</option>
+                <option value="Mentor">Mentor</option>
+                {hasPermission(role, 'addDeleteEditOwners', roles) && (
+                  <option value="Owner">Owner</option>
+                )}
+              </select>
+            </FormGroup>
+          ) : (
+            `${userProfile.role}`
+          )}
         </Col>
       </Row>
       {canEdit && (
@@ -497,10 +497,10 @@ const BasicInformationTab = (props) => {
             <Row>
               <Col md="6">
                 <Input
-                  onChange={(e) => {
-                    setLocation(e.target.value)
-                    setUserProfile({ ...userProfile, location: e.target.value })
-                    setChanged(true)
+                  onChange={e => {
+                    setLocation(e.target.value);
+                    setUserProfile({ ...userProfile, location: e.target.value });
+                    setChanged(true);
                   }}
                   value={userProfile.location}
                 />
@@ -538,7 +538,7 @@ const BasicInformationTab = (props) => {
         <Col>
           <label>Difference in this Time Zone from Your Local</label>
         </Col>
-        <TimeZoneDifference 
+        <TimeZoneDifference
           userProfile={userProfile}
           setUserProfile={setUserProfile}
           setChanged={setChanged}
@@ -556,8 +556,8 @@ const BasicInformationTab = (props) => {
             {userProfile.isActive
               ? 'Active'
               : userProfile.reactivationDate
-                ? 'Paused until ' + moment(userProfile.reactivationDate).format('YYYY-MM-DD')
-                : 'Inactive'}
+              ? 'Paused until ' + moment(userProfile.reactivationDate).format('YYYY-MM-DD')
+              : 'Inactive'}
           </Label>
           &nbsp;
           {canEdit && <PauseAndResumeButton isBigBtn={true} userProfile={userProfile} />}

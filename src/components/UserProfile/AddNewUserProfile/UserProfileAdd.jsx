@@ -176,7 +176,7 @@ class AddUserProfile extends Component {
                       <PhoneInput
                         country={'us'}
                         value={phoneNumber}
-                        onChange={(phone) => this.phoneChange(phone)}
+                        onChange={phone => this.phoneChange(phone)}
                       />
                       {phoneNumberEntered && (
                         <div className="required-user-field">
@@ -233,9 +233,11 @@ class AddUserProfile extends Component {
                         <option value="Manager">Manager</option>
                         <option value="Core Team">Core Team</option>
                         <option value="Mentor">Mentor</option>
-                        {hasPermission(this.props.auth.user.role, 'addDeleteEditOwners') && (
-                          <option value="Owner">Owner</option>
-                        )}
+                        {hasPermission(
+                          this.props.auth.user.role,
+                          'addDeleteEditOwners',
+                          this.props.role.roles,
+                        ) && <option value="Owner">Owner</option>}
                       </Input>
                     </FormGroup>
                   </Col>
@@ -281,10 +283,7 @@ class AddUserProfile extends Component {
                   <Col md="6">
                     <Row>
                       <Col md="6">
-                        <Input
-                          id="location"
-                          onChange={this.handleLocation}
-                        />
+                        <Input id="location" onChange={this.handleLocation} />
                       </Col>
                       <Col md="6">
                         <div className="w-100 pt-1 mb-2 mx-auto">
@@ -391,24 +390,24 @@ class AddUserProfile extends Component {
     );
   }
 
-  onDeleteTeam = (deletedTeamId) => {
+  onDeleteTeam = deletedTeamId => {
     const teams = [...this.state.teams];
-    const filteredTeam = teams.filter((team) => team._id !== deletedTeamId);
+    const filteredTeam = teams.filter(team => team._id !== deletedTeamId);
 
     this.setState({
       teams: filteredTeam,
     });
   };
 
-  onDeleteProject = (deletedProjectId) => {
+  onDeleteProject = deletedProjectId => {
     const projects = [...this.state.projects];
-    const _projects = projects.filter((project) => project._id !== deletedProjectId);
+    const _projects = projects.filter(project => project._id !== deletedProjectId);
     this.setState({
       projects: _projects,
     });
   };
 
-  onAssignTeam = (assignedTeam) => {
+  onAssignTeam = assignedTeam => {
     const teams = [...this.state.teams];
     teams.push(assignedTeam);
 
@@ -417,7 +416,7 @@ class AddUserProfile extends Component {
     });
   };
 
-  onAssignProject = (assignedProject) => {
+  onAssignProject = assignedProject => {
     const projects = [...this.state.projects];
     projects.push(assignedProject);
 
@@ -446,7 +445,7 @@ class AddUserProfile extends Component {
     }
     if (key) {
       getUserTimeZone(location, key)
-        .then((response) => {
+        .then(response => {
           if (
             response.data.status.code === 200 &&
             response.data.results &&
@@ -458,7 +457,7 @@ class AddUserProfile extends Component {
             alert('Invalid location or ' + response.data.status.message);
           }
         })
-        .catch((err) => console.log(err));
+        .catch(err => console.log(err));
     }
   };
 
@@ -491,7 +490,7 @@ class AddUserProfile extends Component {
       googleDoc,
       jobTitle,
       timeZone,
-      location
+      location,
     } = that.state.userProfile;
 
     const userData = {
@@ -511,7 +510,7 @@ class AddUserProfile extends Component {
       privacySettings: privacySettings,
       collaborationPreference: collaborationPreference,
       timeZone,
-      location
+      location,
     };
 
     this.setState({ formSubmitted: true });
@@ -525,7 +524,7 @@ class AddUserProfile extends Component {
         toast.error('Email is not valid,Please include @ followed by .com format');
       } else {
         createUser(userData)
-          .then((res) => {
+          .then(res => {
             if (res.data.warning) {
               toast.warn(res.data.warning);
             } else {
@@ -533,7 +532,7 @@ class AddUserProfile extends Component {
             }
             this.props.userCreated();
           })
-          .catch((err) => {
+          .catch(err => {
             if (err.response?.data?.type) {
               switch (err.response.data.type) {
                 case 'email':
@@ -565,14 +564,14 @@ class AddUserProfile extends Component {
             }
             toast.error(
               err.response?.data?.error ||
-              'An unknown error occurred while attempting to create this user.',
+                'An unknown error occurred while attempting to create this user.',
             );
           });
       }
     }
   };
 
-  handleImageUpload = async (e) => {
+  handleImageUpload = async e => {
     e.preventDefault();
 
     const file = e.target.files[0];
@@ -624,7 +623,7 @@ class AddUserProfile extends Component {
     };
   };
 
-  toggleTab = (tab) => {
+  toggleTab = tab => {
     if (this.state.activeTab !== tab) {
       this.setState({
         activeTab: tab,
@@ -632,7 +631,7 @@ class AddUserProfile extends Component {
     }
   };
 
-  phoneChange = (phone) => {
+  phoneChange = phone => {
     const { userProfile, formValid, formErrors } = this.state;
     this.setState({
       userProfile: {
@@ -655,9 +654,9 @@ class AddUserProfile extends Component {
   handleLocation = e => {
     this.setState({ ...this.state, location: e.target.value });
     this.handleUserProfile(e);
-  }
+  };
 
-  handleUserProfile = (event) => {
+  handleUserProfile = event => {
     const { userProfile, formValid, formErrors } = this.state;
 
     switch (event.target.id) {
@@ -821,12 +820,13 @@ class AddUserProfile extends Component {
   };
 }
 
-const mapStateToProps = (state) => ({
+const mapStateToProps = state => ({
   auth: state.auth,
   userProjects: state.userProjects,
   allProjects: _.get(state, 'allProjects'),
   allTeams: state,
   timeZoneKey: state.timeZoneAPI.userAPIKey,
+  role: state.role,
   state,
 });
 

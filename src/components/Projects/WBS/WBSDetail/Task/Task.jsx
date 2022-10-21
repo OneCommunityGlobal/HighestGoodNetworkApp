@@ -18,9 +18,9 @@ import { getPopupById } from './../../../../../actions/popupEditorAction';
 import { TASK_DELETE_POPUP_ID } from './../../../../../constants/popupId';
 import hasPermission from 'utils/permissions';
 
-const Task = (props) => {
+const Task = props => {
   const [role] = useState(props.state ? props.state.auth.user.role : null);
-
+  const { roles } = props.state.role;
   useEffect(() => {
     setIsCopied(false);
   }, [1]);
@@ -33,13 +33,13 @@ const Task = (props) => {
   const dueDate = new Date(props.dueDatetime);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [isLoad, setIsLoad] = useState(false);
-  const toggle = () => setDropdownOpen((prevState) => !prevState);
+  const toggle = () => setDropdownOpen(prevState => !prevState);
   const [isOpen, setIsOpen] = useState(false);
   const [isCopied, setIsCopied] = useState(false);
   let passCurrentNum = false;
 
   let controllerToggle = true;
-  const selectTask = (id) => {
+  const selectTask = id => {
     if (controllerToggle) {
       document.getElementById(id).style.background = '#effff2';
       document.getElementById(`controller_${id}`).style.display = 'contents';
@@ -82,7 +82,12 @@ const Task = (props) => {
     const allItems = document.getElementsByClassName(`wbsTask`);
     for (let i = 0; i < allItems.length; i++) {
       if (
-        allItems[i].className.indexOf(`num_${num.split('.').join('').replace(/0/g, '')}`) === 0 &&
+        allItems[i].className.indexOf(
+          `num_${num
+            .split('.')
+            .join('')
+            .replace(/0/g, '')}`,
+        ) === 0 &&
         allItems[i].id !== id
       ) {
         allItems[i].style.display = 'table-row';
@@ -92,7 +97,7 @@ const Task = (props) => {
   };
 
   let toggleMoreResourcesStatus = true;
-  const toggleMoreResources = (id) => {
+  const toggleMoreResources = id => {
     if (toggleMoreResourcesStatus) {
       document.getElementById(id).style.display = 'block';
     } else {
@@ -123,7 +128,7 @@ const Task = (props) => {
     }, 4000);
   };
 
-  const onCopy = (id) => {
+  const onCopy = id => {
     setIsCopied(true);
     props.copyTask(id);
   };
@@ -173,7 +178,7 @@ const Task = (props) => {
           {props.level === 1 ? (
             <div className="level-space-1" data-tip="Level 1">
               <span
-                onClick={(e) => toggleGroups(props.num, props.id, props.level)}
+                onClick={e => toggleGroups(props.num, props.id, props.level)}
                 id={`task_name_${props.id}`}
                 className={props.hasChildren ? 'has_children' : ''}
               >
@@ -192,7 +197,7 @@ const Task = (props) => {
           {props.level === 2 ? (
             <div className="level-space-2" data-tip="Level 2">
               <span
-                onClick={(e) => toggleGroups(props.num, props.id, props.level)}
+                onClick={e => toggleGroups(props.num, props.id, props.level)}
                 id={`task_name_${props.id}`}
                 className={props.hasChildren ? 'has_children' : ''}
               >
@@ -211,7 +216,7 @@ const Task = (props) => {
           {props.level === 3 ? (
             <div className="level-space-3" data-tip="Level 3">
               <span
-                onClick={(e) => toggleGroups(props.num, props.id, props.level)}
+                onClick={e => toggleGroups(props.num, props.id, props.level)}
                 id={`task_name_${props.id}`}
                 className={props.hasChildren ? 'has_children' : ''}
               >
@@ -230,7 +235,7 @@ const Task = (props) => {
           {props.level === 4 ? (
             <div className="level-space-4" data-tip="Level 4">
               <span
-                onClick={(e) => toggleGroups(props.num, props.id, props.level)}
+                onClick={e => toggleGroups(props.num, props.id, props.level)}
                 id={`task_name_${props.id}`}
                 className={props.hasChildren ? 'has_children' : ''}
               >
@@ -342,7 +347,7 @@ const Task = (props) => {
           )}
         </td>
         <td className="desktop-view">
-          {(props.status === 'Started' || props.status === 'Active') ? (
+          {props.status === 'Started' || props.status === 'Active' ? (
             <i data-tip="Started" className="fa fa-pause" aria-hidden="true"></i>
           ) : (
             <i data-tip="Not Started" className="fa fa-play" aria-hidden="true"></i>
@@ -399,7 +404,7 @@ const Task = (props) => {
 
       <tr className="wbsTaskController desktop-view" id={`controller_${props.id}`}>
         <td colSpan={15} className="controlTd">
-          {hasPermission(role, 'addTask') ? (
+          {hasPermission(role, 'addTask', roles) ? (
             <AddTaskModal
               key={`addTask_${props.id}`}
               parentNum={props.num}
@@ -411,7 +416,7 @@ const Task = (props) => {
               parentId3={props.parentId3}
               mother={props.mother}
               level={props.level}
-              openChild={(e) => openChild(props.num, props.id)}
+              openChild={e => openChild(props.num, props.id)}
             />
           ) : null}
           <EditTaskModal
@@ -427,7 +432,7 @@ const Task = (props) => {
             level={props.level}
           />
 
-          {hasPermission(role, 'deleteTask') ? (
+          {hasPermission(role, 'deleteTask', roles) ? (
             <>
               <Button
                 color="danger"
@@ -451,7 +456,7 @@ const Task = (props) => {
                   {props.siblings.map((item, i) => {
                     if (item.num !== props.num) {
                       return (
-                        <DropdownItem key={i} onClick={(e) => onMove(props.num, item.num)}>
+                        <DropdownItem key={i} onClick={e => onMove(props.num, item.num)}>
                           {item.num.split('.0')[0]}
                         </DropdownItem>
                       );
@@ -533,7 +538,7 @@ const Task = (props) => {
     </React.Fragment>
   );
 };
-const mapStateToProps = (state) => {
+const mapStateToProps = state => {
   return { state };
 };
 export default connect(mapStateToProps, {

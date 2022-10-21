@@ -25,21 +25,21 @@ import { toast } from 'react-toastify';
 import hasPermission from '../../utils/permissions';
 
 pdfMake.vfs = pdfFonts.pdfMake.vfs;
-const BadgeReport = (props) => {
+const BadgeReport = props => {
   let [sortBadges, setSortBadges] = useState(props.badges.slice() || []);
   let [numFeatured, setNumFeatured] = useState(0);
   let [showModal, setShowModal] = useState(false);
   let [badgeToDelete, setBadgeToDelete] = useState(null);
+  const { roles } = props.state.role;
 
   async function imageToUri(url, callback) {
     const canvas = document.createElement('canvas');
     const ctx = canvas.getContext('2d');
-
     let base_image = new Image();
     base_image.crossOrigin = 'anonymous';
     base_image.src = url.replace('dropbox.com', 'dl.dropboxusercontent.com');
     base_image.src = base_image.src.replace('www.dropbox.com', 'dl.dropboxusercontent.com');
-    base_image.onload = function () {
+    base_image.onload = function() {
       canvas.width = base_image.width;
       canvas.height = base_image.height;
 
@@ -59,7 +59,7 @@ const BadgeReport = (props) => {
     }</h4></div>
     <div style="color:#DEE2E6; margin:10px 0px 20px 0px; text-align:center;">_______________________________________________________________________________________________</div>`;
     for (let i = 0; i < badges.length; i++) {
-      imageToUri(badges[i].badge.imageUrl, function (uri) {
+      imageToUri(badges[i].badge.imageUrl, function(uri) {
         bgReport[i + 1] = `
         <table>
           <thead>
@@ -104,13 +104,13 @@ const BadgeReport = (props) => {
   const pdfDocGenerator = async () => {
     let CurrentDate = moment().format('MM-DD-YYYY-HH-mm-ss');
     let badges = sortBadges.slice();
-    FormatReportForPdf(badges, (formattedReport) => {
+    FormatReportForPdf(badges, formattedReport => {
       const html = htmlToPdfmake(formattedReport, {
         tableAutoSize: true,
       });
       let docDefinition = {
         content: [html],
-        pageBreakBefore: function (currentNode) {
+        pageBreakBefore: function(currentNode) {
           return currentNode.style && currentNode.style.indexOf('pdf-pagebreak-before') > -1;
         },
         styles: {
@@ -127,7 +127,7 @@ const BadgeReport = (props) => {
   const pdfFeaturedDocGenerator = async () => {
     let CurrentDate = moment().format('MM-DD-YYYY-HH-mm-ss');
     let badges = sortBadges.slice();
-    badges = badges.filter((badge) => {
+    badges = badges.filter(badge => {
       if (badge.featured) {
         return true;
       } else {
@@ -135,11 +135,11 @@ const BadgeReport = (props) => {
       }
     });
 
-    FormatReportForPdf(badges, (formattedReport) => {
+    FormatReportForPdf(badges, formattedReport => {
       const html = htmlToPdfmake(formattedReport, { tableAutoSize: true });
       let docDefinition = {
         content: [html],
-        pageBreakBefore: function (currentNode) {
+        pageBreakBefore: function(currentNode) {
           return currentNode.style && currentNode.style.indexOf('pdf-pagebreak-before') > -1;
         },
         styles: {
@@ -205,7 +205,7 @@ const BadgeReport = (props) => {
     setSortBadges(newBadges);
   };
 
-  const handleDeleteBadge = (index) => {
+  const handleDeleteBadge = index => {
     setShowModal(true);
     setBadgeToDelete(index);
   };
@@ -246,7 +246,7 @@ const BadgeReport = (props) => {
             <th>Name</th>
             <th style={{ width: '110px' }}>Modified</th>
             <th style={{ width: '90px' }}>Count</th>
-            {hasPermission(props.role, 'deleteOwnBadge') ? <th>Delete</th> : []}
+            {hasPermission(props.role, 'deleteOwnBadge', roles) ? <th>Delete</th> : []}
             <th style={{ width: '70px' }}>Featured</th>
           </tr>
         </thead>
@@ -283,13 +283,13 @@ const BadgeReport = (props) => {
                     : value.lastModified.toLocaleString().substring(0, 10)}
                 </td>
                 <td>
-                  {hasPermission(props.role, 'modifyOwnBadgeAmount') ? (
+                  {hasPermission(props.role, 'modifyOwnBadgeAmount', roles) ? (
                     <Input
                       type="number"
                       value={Math.round(value.count)}
                       min={0}
                       step={1}
-                      onChange={(e) => {
+                      onChange={e => {
                         countChange(value, index, e.target.value);
                       }}
                     ></Input>
@@ -297,12 +297,12 @@ const BadgeReport = (props) => {
                     Math.round(value.count)
                   )}
                 </td>
-                {hasPermission(props.role, 'deleteOwnBadge') ? (
+                {hasPermission(props.role, 'deleteOwnBadge', roles) ? (
                   <td>
                     <button
                       type="button"
                       className="btn btn-outline-danger"
-                      onClick={(e) => handleDeleteBadge(index)}
+                      onClick={e => handleDeleteBadge(index)}
                     >
                       Delete
                     </button>
@@ -315,7 +315,7 @@ const BadgeReport = (props) => {
                     type="checkbox"
                     id={value.badge._id}
                     checked={value.featured}
-                    onChange={(e) => {
+                    onChange={e => {
                       featuredChange(value, index, e);
                     }}
                   />
@@ -327,7 +327,7 @@ const BadgeReport = (props) => {
       <Button
         className="btn--dark-sea-green float-right"
         style={{ margin: 5 }}
-        onClick={(e) => {
+        onClick={e => {
           saveChanges();
         }}
       >
@@ -367,9 +367,13 @@ const BadgeReport = (props) => {
   );
 };
 
-const mapDispatchToProps = (dispatch) => ({
+const mapStateToProps = state => {
+  return { state };
+};
+
+const mapDispatchToProps = dispatch => ({
   changeBadgesByUserID: (userId, badges) => dispatch(changeBadgesByUserID(userId, badges)),
-  getUserProfile: (userId) => dispatch(getUserProfile(userId)),
+  getUserProfile: userId => dispatch(getUserProfile(userId)),
 });
 
-export default connect(null, mapDispatchToProps)(BadgeReport);
+export default connect(mapStateToProps, mapDispatchToProps)(BadgeReport);

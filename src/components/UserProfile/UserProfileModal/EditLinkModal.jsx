@@ -12,10 +12,11 @@ import {
 } from 'reactstrap';
 import PropTypes from 'prop-types';
 import hasPermission from '../../../utils/permissions';
+import { useSelector } from 'react-redux';
 
-const EditLinkModal = (props) => {
+const EditLinkModal = props => {
   const { isOpen, closeModal, updateLink, userProfile, setChanged, role } = props;
-
+  const { roles } = useSelector(state => state.role);
   const [linkName, setLinkName] = useState('');
   const [linkURL, setLinkURL] = useState('');
 
@@ -90,7 +91,7 @@ const EditLinkModal = (props) => {
         <ModalHeader toggle={closeModal}>Edit Links</ModalHeader>
         <ModalBody>
           <div>
-            {hasPermission(role, 'adminLinks') && (
+            {hasPermission(role, 'adminLinks', roles) && (
               <CardBody>
                 <Card>
                   <Label style={{ display: 'flex', margin: '5px' }}>Admin Links:</Label>
@@ -104,7 +105,7 @@ const EditLinkModal = (props) => {
                         <input
                           className="customInput"
                           value={link.Name}
-                          onChange={(e) =>
+                          onChange={e =>
                             dispatchAdminLinks({
                               type: 'updateName',
                               value: e.target.value,
@@ -115,7 +116,7 @@ const EditLinkModal = (props) => {
                         <input
                           className="customInput"
                           value={link.Link}
-                          onChange={(e) =>
+                          onChange={e =>
                             dispatchAdminLinks({
                               type: 'updateLink',
                               value: e.target.value,
@@ -143,13 +144,13 @@ const EditLinkModal = (props) => {
                         className="customEdit"
                         id="linkName"
                         placeholder="enter name"
-                        onChange={(e) => setAdminLinkName(e.target.value)}
+                        onChange={e => setAdminLinkName(e.target.value)}
                       />
                       <input
                         className="customEdit"
                         id="linkURL"
                         placeholder="enter link"
-                        onChange={(e) => setAdminLinkURL(e.target.value.trim())}
+                        onChange={e => setAdminLinkURL(e.target.value.trim())}
                       />
                       <button
                         type="button"
@@ -181,7 +182,7 @@ const EditLinkModal = (props) => {
                       <input
                         className="customInput"
                         value={link.Name}
-                        onChange={(e) =>
+                        onChange={e =>
                           dispatchPersonalLinks({
                             type: 'updateName',
                             value: e.target.value,
@@ -192,7 +193,7 @@ const EditLinkModal = (props) => {
                       <input
                         className="customInput"
                         value={link.Link}
-                        onChange={(e) =>
+                        onChange={e =>
                           dispatchPersonalLinks({
                             type: 'updateLink',
                             value: e.target.value,
@@ -222,13 +223,13 @@ const EditLinkModal = (props) => {
                       className="customEdit"
                       id="linkName"
                       placeholder="enter name"
-                      onChange={(e) => setLinkName(e.target.value)}
+                      onChange={e => setLinkName(e.target.value)}
                     />
                     <input
                       className="customEdit"
                       id="linkURL"
                       placeholder="enter link"
-                      onChange={(e) => setLinkURL(e.target.value.trim())}
+                      onChange={e => setLinkURL(e.target.value.trim())}
                     />
                     <button
                       type="button"

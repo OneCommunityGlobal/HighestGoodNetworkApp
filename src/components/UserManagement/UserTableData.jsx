@@ -9,7 +9,7 @@ import hasPermission from 'utils/permissions';
 /**
  * The body row of the user table
  */
-const UserTableData = React.memo((props) => {
+const UserTableData = React.memo(props => {
   const [isChanging, onReset] = useState(false);
   const history = useHistory();
 
@@ -33,7 +33,7 @@ const UserTableData = React.memo((props) => {
       <td>
         <a
           href={`/userprofile/${props.user._id}`}
-          onClick={(e) => {
+          onClick={e => {
             e.preventDefault();
             history.push('/userprofile/' + props.user._id);
           }}
@@ -44,7 +44,7 @@ const UserTableData = React.memo((props) => {
       <td>
         <a
           href={`/userprofile/${props.user._id}`}
-          onClick={(e) => {
+          onClick={e => {
             e.preventDefault();
             history.push('/userprofile/' + props.user._id);
           }}
@@ -59,7 +59,7 @@ const UserTableData = React.memo((props) => {
         <button
           type="button"
           className={`btn btn-outline-${props.isActive ? 'warning' : 'success'} btn-sm`}
-          onClick={(e) => {
+          onClick={e => {
             onReset(true);
             props.onPauseResumeClick(
               props.user,
@@ -78,20 +78,18 @@ const UserTableData = React.memo((props) => {
       <td>{props.user.endDate ? props.user.endDate.toLocaleString().split('T')[0] : 'N/A'}</td>
       <td>
         <span className="usermanagement-actions-cell">
-          {props.user.role === 'Owner' && !hasPermission(props.role, 'addDeleteEditOwners') 
-          ? null : (
+          {props.user.role === 'Owner' &&
+          !hasPermission(props.role, 'addDeleteEditOwners', props.roles) ? null : (
             <button
-            type="button"
-            className="btn btn-outline-danger btn-sm"
-            onClick={(e) => {
-              props.onDeleteClick(props.user, 'archive');
-            }}
-          >
-            {DELETE}
-          </button>
+              type="button"
+              className="btn btn-outline-danger btn-sm"
+              onClick={e => {
+                props.onDeleteClick(props.user, 'archive');
+              }}
+            >
+              {DELETE}
+            </button>
           )}
-          
-          
         </span>
         <span className="usermanagement-actions-cell">
           <ResetPasswordButton user={props.user} isSmallButton />

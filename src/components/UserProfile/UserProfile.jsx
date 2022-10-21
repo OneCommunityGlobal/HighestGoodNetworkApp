@@ -45,7 +45,7 @@ const UserProfile = props => {
     lastName: true,
     email: true,
   };
-
+  const { roles } = props.role;
   /* Hooks */
   const [showLoading, setShowLoading] = useState(true);
   const [userProfile, setUserProfile] = useState(undefined);
@@ -331,12 +331,11 @@ const UserProfile = props => {
   // const isUserAdmin = requestorRole === 'Administrator';
   // const canEdit = hasPermission(requestorRole, 'editUserProfile') || isUserSelf;
   let canEdit;
-  if(userProfile.role !== 'Owner'){
-    canEdit = hasPermission(requestorRole, 'editUserProfile') || isUserSelf;
+  if (userProfile.role !== 'Owner') {
+    canEdit = hasPermission(requestorRole, 'editUserProfile', roles) || isUserSelf;
   } else {
-    canEdit = hasPermission(requestorRole, 'addDeleteEditOwners') || isUserSelf;
+    canEdit = hasPermission(requestorRole, 'addDeleteEditOwners', roles) || isUserSelf;
   }
-
 
   return (
     <div>
@@ -472,6 +471,7 @@ const UserProfile = props => {
                 isUserSelf={isUserSelf}
                 role={requestorRole}
                 canEdit={canEdit}
+                roles={roles}
               />
             </div>
           </Col>
@@ -546,6 +546,7 @@ const UserProfile = props => {
                   isUserSelf={isUserSelf}
                   setShouldRefresh={setShouldRefresh}
                   canEdit={canEdit}
+                  roles={roles}
                 />
               </TabPane>
               <TabPane tabId="2">
@@ -566,6 +567,7 @@ const UserProfile = props => {
                   onDeleteteam={onDeleteTeam}
                   edit={canEdit}
                   role={requestorRole}
+                  roles={roles}
                 />
               </TabPane>
               <TabPane tabId="4">
@@ -584,6 +586,7 @@ const UserProfile = props => {
                   setUserProfile={setUserProfile}
                   setChanged={setChanged}
                   role={requestorRole}
+                  roles={roles}
                 />
               </TabPane>
             </TabContent>
@@ -592,9 +595,9 @@ const UserProfile = props => {
         <Row>
           <Col md="4"></Col>
           <Col md="8">
-            {hasPermission(requestorRole, 'resetPasswordOthers') && canEdit && !isUserSelf && (
-              <ResetPasswordButton className="mr-1" user={userProfile} />
-            )}
+            {hasPermission(requestorRole, 'resetPasswordOthers', roles) &&
+              canEdit &&
+              !isUserSelf && <ResetPasswordButton className="mr-1" user={userProfile} />}
             {isUserSelf && (
               <div className="profileEditButtonContainer">
                 <Link to={`/updatepassword/${userProfile._id}`}>
@@ -607,21 +610,23 @@ const UserProfile = props => {
             )}
             {canEdit && (
               <>
-              <span
-                onClick={() => {
-                  setUserProfile(originalUserProfile);
-                  setChanged(false);
-                }}
-                className="btn btn-outline-danger mr-1"
-              >
-                Cancel
-              </span>      
-              <SaveButton
-                className="mr-1"
-                handleSubmit={handleSubmit}
-                disabled={!formValid.firstName || !formValid.lastName || !formValid.email || !changed}
-                userProfile={userProfile}
-              />
+                <span
+                  onClick={() => {
+                    setUserProfile(originalUserProfile);
+                    setChanged(false);
+                  }}
+                  className="btn btn-outline-danger mr-1"
+                >
+                  Cancel
+                </span>
+                <SaveButton
+                  className="mr-1"
+                  handleSubmit={handleSubmit}
+                  disabled={
+                    !formValid.firstName || !formValid.lastName || !formValid.email || !changed
+                  }
+                  userProfile={userProfile}
+                />
               </>
             )}
           </Col>

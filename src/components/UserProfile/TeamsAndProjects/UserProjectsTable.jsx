@@ -2,10 +2,11 @@ import React, { useState } from 'react';
 import { Button, Col } from 'reactstrap';
 import './TeamsAndProjects.css';
 import hasPermission from '../../../utils/permissions';
+import { useSelector } from 'react-redux';
 
-const UserProjectsTable = React.memo((props) => {
+const UserProjectsTable = React.memo(props => {
   //const [addProjectPopupOpen, showProjectPopup] = useState(false);
-
+  const { roles } = useSelector(state => state.role);
   return (
     <div className="projecttable-container">
       <div className="container">
@@ -22,7 +23,7 @@ const UserProjectsTable = React.memo((props) => {
           </Col>
           {props.edit && props.role && (
             <Col md="5">
-              {hasPermission(props.role, 'assignUserInProject') ? (
+              {hasPermission(props.role, 'assignUserInProject', roles) ? (
                 <Button
                   className="btn-addproject"
                   color="primary"
@@ -43,13 +44,11 @@ const UserProjectsTable = React.memo((props) => {
         <table className="table table-bordered table-responsive-sm">
           <thead>
             {props.role && (
-            <tr>
-              <th>#</th>
-              <th>Project Name</th>
-              {hasPermission(props.role, 'assignUserInProject') ? (
-                <th>{}</th>
-              ) : null}
-            </tr>
+              <tr>
+                <th>#</th>
+                <th>Project Name</th>
+                {hasPermission(props.role, 'assignUserInProject', roles) ? <th>{}</th> : null}
+              </tr>
             )}
           </thead>
           <tbody>
@@ -62,8 +61,8 @@ const UserProjectsTable = React.memo((props) => {
                     <td>
                       <Button
                         color="danger"
-                        disabled={!hasPermission(props.role, 'unassignUserInProject')}
-                        onClick={(e) => {
+                        disabled={!hasPermission(props.role, 'unassignUserInProject', roles)}
+                        onClick={e => {
                           props.onDeleteClicK(project._id);
                         }}
                       >

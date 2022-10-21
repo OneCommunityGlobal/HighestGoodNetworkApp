@@ -14,13 +14,16 @@ import hasPermission from 'utils/permissions';
 
 const TimeEntry = ({ data, displayYear, userProfile }) => {
   const [modal, setModal] = useState(false);
-  const toggle = () => setModal((modal) => !modal);
+  const toggle = () => setModal(modal => !modal);
 
   const dateOfWork = moment(data.dateOfWork);
-  const { user } = useSelector((state) => state.auth);
+  const { user } = useSelector(state => state.auth);
+  const { roles } = useSelector(state => state.role);
   const isOwner = data.personId === user.userid;
-
-  const isSameDay = moment().tz('America/Los_Angeles').format('YYYY-MM-DD') === data.dateOfWork;
+  const isSameDay =
+    moment()
+      .tz('America/Los_Angeles')
+      .format('YYYY-MM-DD') === data.dateOfWork;
   const role = user.role;
 
   const dispatch = useDispatch();
@@ -58,7 +61,7 @@ const TimeEntry = ({ data, displayYear, userProfile }) => {
             type="checkbox"
             name="isTangible"
             checked={data.isTangible}
-            disabled={!hasPermission(role, 'toggleTangibleTime')}
+            disabled={!hasPermission(role, 'toggleTangibleTime', roles)}
             onChange={() => toggleTangibility(data)}
           />
         </Col>
@@ -66,7 +69,7 @@ const TimeEntry = ({ data, displayYear, userProfile }) => {
           <div className="text-muted">Notes:</div>
           {ReactHtmlParser(data.notes)}
           <div className="buttons">
-            {(hasPermission(role, 'editTimeEntry') || (isOwner && isSameDay)) && (
+            {(hasPermission(role, 'editTimeEntry', roles) || (isOwner && isSameDay)) && (
               <span>
                 <FontAwesomeIcon
                   icon={faEdit}
@@ -84,7 +87,8 @@ const TimeEntry = ({ data, displayYear, userProfile }) => {
                 />
               </span>
             )}
-            {(hasPermission(role, 'deleteTimeEntry') || (!data.isTangible && isOwner && isSameDay)) && (
+            {(hasPermission(role, 'deleteTimeEntry', roles) ||
+              (!data.isTangible && isOwner && isSameDay)) && (
               <DeleteModal timeEntry={data} userProfile={userProfile} />
             )}
           </div>

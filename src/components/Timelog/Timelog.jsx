@@ -26,7 +26,7 @@ import {
 } from 'reactstrap';
 
 import classnames from 'classnames';
-import { connect } from 'react-redux';
+import { connect, useSelector } from 'react-redux';
 import moment from 'moment';
 import _ from 'lodash';
 import ReactTooltip from 'react-tooltip';
@@ -47,6 +47,7 @@ import hasPermission from '../../utils/permissions';
 class Timelog extends Component {
   constructor(props) {
     super(props);
+
     this.toggle = this.toggle.bind(this);
     this.showSummary = this.showSummary.bind(this);
     this.changeTab = this.changeTab.bind(this);
@@ -54,8 +55,20 @@ class Timelog extends Component {
     this.handleSearch = this.handleSearch.bind(this);
     this.openInfo = this.openInfo.bind(this);
     this.data = {
-      disabled: !hasPermission(this.props.auth.user.role, 'disabledDataTimelog') ? false : true,
-      isTangible: hasPermission(this.props.auth.user.role, 'dataIsTangibleTimelog') ? true : false,
+      disabled: !hasPermission(
+        this.props.auth.user.role,
+        'disabledDataTimelog',
+        this.props.role.roles,
+      )
+        ? false
+        : true,
+      isTangible: hasPermission(
+        this.props.auth.user.role,
+        'dataIsTangibleTimelog',
+        this.props.role.roles,
+      )
+        ? true
+        : false,
     };
     this.userProfile = this.props.userProfile;
   }
@@ -346,7 +359,7 @@ class Timelog extends Component {
                             </div>
                           </div>
                         ) : (
-                          hasPermission(role, 'addTimeEntryOthers') && (
+                          hasPermission(role, 'addTimeEntryOthers', this.props.role.roles) && (
                             <div className="float-right">
                               <div>
                                 <Button color="warning" onClick={this.toggle}>
@@ -363,7 +376,7 @@ class Timelog extends Component {
                             <Button onClick={this.openInfo} color="primary">
                               Close
                             </Button>
-                            {hasPermission(role, 'editTimelogInfo') ? (
+                            {hasPermission(role, 'editTimelogInfo', this.props.role.roles) ? (
                               <Button onClick={this.openInfo} color="secondary">
                                 Edit
                               </Button>
@@ -378,6 +391,7 @@ class Timelog extends Component {
                           isOpen={this.state.modal}
                           userProfile={this.userProfile}
                           isInTangible={true}
+                          roles={this.props.role.roles}
                         />
                         <ReactTooltip id="registerTip" place="bottom" effect="solid">
                           Click this icon to learn about the timelog.
@@ -532,6 +546,7 @@ const mapStateToProps = state => ({
   userProfile: state.userProfile,
   timeEntries: state.timeEntries,
   userProjects: state.userProjects,
+  role: state.role,
 });
 
 export default connect(mapStateToProps, {

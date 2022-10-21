@@ -5,8 +5,8 @@ import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Container, Alert } 
 import MembersAutoComplete from './MembersAutoComplete';
 import hasPermission from 'utils/permissions';
 
-const TeamMembersPopup = React.memo((props) => {
-  debugger;
+const TeamMembersPopup = React.memo(props => {
+  // debugger;
   const closePopup = () => {
     props.onClose();
   };
@@ -15,14 +15,14 @@ const TeamMembersPopup = React.memo((props) => {
   const [searchText, setSearchText] = useState('');
 
   const onAddUser = () => {
-    if (selectedUser && !props.members.teamMembers.some((x) => x._id === selectedUser._id)) {
+    if (selectedUser && !props.members.teamMembers.some(x => x._id === selectedUser._id)) {
       props.onAddUser(selectedUser);
       setSearchText('');
     } else {
       onValidation(false);
     }
   };
-  const selectUser = (user) => {
+  const selectUser = user => {
     onSelectUser(user);
     onValidation(true);
   };
@@ -36,7 +36,7 @@ const TeamMembersPopup = React.memo((props) => {
       <Modal isOpen={props.open} toggle={closePopup}>
         <ModalHeader toggle={closePopup}>{`Members of ${props.selectedTeamName}`}</ModalHeader>
         <ModalBody style={{ textAlign: 'center' }}>
-          {hasPermission(props.requestorRole, 'assignTeamToUser') && (
+          {hasPermission(props.requestorRole, 'assignTeamToUser', props.roles) && (
             <div className="input-group-prepend" style={{ marginBottom: '10px' }}>
               <MembersAutoComplete
                 userProfileData={props.usersdata}
@@ -60,7 +60,7 @@ const TeamMembersPopup = React.memo((props) => {
                 <tr>
                   <th>#</th>
                   <th>User Name</th>
-                  {hasPermission(props.requestorRole, 'assignTeamToUser') && (
+                  {hasPermission(props.requestorRole, 'assignTeamToUser', props.roles) && (
                     <th> </th>
                   )}
                 </tr>
@@ -71,7 +71,7 @@ const TeamMembersPopup = React.memo((props) => {
                     <tr key={`team_member_${index}`}>
                       <td>{index + 1}</td>
                       <td>{`${user.firstName} ${user.lastName}`}</td>
-                      {hasPermission(props.requestorRole, 'assignTeamToUser') && (
+                      {hasPermission(props.requestorRole, 'assignTeamToUser', props.roles) && (
                         <td>
                           <Button
                             color="danger"

@@ -43,8 +43,8 @@ import hasPermission from 'utils/permissions';
  * @param {function} props.resetTimer
  * @returns
  */
-const TimeEntryForm = (props) => {
-  const { userId, edit, data, isOpen, toggle, timer, resetTimer } = props;
+const TimeEntryForm = props => {
+  const { userId, edit, data, isOpen, toggle, timer, resetTimer, roles } = props;
 
   const initialFormValues = {
     dateOfWork: moment()
@@ -75,12 +75,12 @@ const TimeEntryForm = (props) => {
   const [projects, setProjects] = useState([]);
 
   const fromTimer = !_.isEmpty(timer);
-  const userProfile = useSelector((state) => state.userProfile);
+  const userProfile = useSelector(state => state.userProfile);
   const role = userProfile.role;
 
   const dispatch = useDispatch();
 
-  const tangibleInfoToggle = (e) => {
+  const tangibleInfoToggle = e => {
     e.preventDefault();
     setTangibleInfoModalVisibleModalVisible(!isTangibleInfoModalVisible);
   };
@@ -90,7 +90,7 @@ const TimeEntryForm = (props) => {
     if (close && inputs.projectId == '') {
       //double make sure close is set to false to stop form from reclosing on open
       setClose(false);
-      setClose((close) => {
+      setClose(close => {
         setTimeout(function myfunc() {
           toggle();
         }, 100);
@@ -102,21 +102,21 @@ const TimeEntryForm = (props) => {
   useEffect(() => {
     axios
       .get(`${ApiEndpoint}/userprofile/${userId}`)
-      .then((res) => {
+      .then(res => {
         setProjects(res?.data?.projects || []);
       })
-      .catch((err) => {});
+      .catch(err => {});
   }, []);
 
   const openModal = () =>
-    setReminder((reminder) => ({
+    setReminder(reminder => ({
       ...reminder,
       notification: !reminder.notification,
     }));
 
   const cancelChange = () => {
     setReminder(initialReminder);
-    setInputs((inputs) => ({
+    setInputs(inputs => ({
       ...inputs,
       hours: data.hours,
       minutes: data.minutes,
@@ -124,7 +124,7 @@ const TimeEntryForm = (props) => {
   };
 
   useEffect(() => {
-    const fetchProjects = async (userId) => {
+    const fetchProjects = async userId => {
       await dispatch(getUserProjects(userId));
     };
     fetchProjects(userId);
@@ -134,7 +134,7 @@ const TimeEntryForm = (props) => {
     setInputs({ ...inputs, ...timer });
   }, [timer]);
 
-  const projectOptions = projects.map((project) => (
+  const projectOptions = projects.map(project => (
     <option value={project._id} key={project._id}>
       {project.projectName}
     </option>
@@ -147,18 +147,22 @@ const TimeEntryForm = (props) => {
 
   const getEditMessage = () => {
     let editCount = 0;
-    userProfile.timeEntryEditHistory.forEach((item) => {
-      if (moment().tz('America/Los_Angeles').diff(item.date, 'days') <= 365) {
+    userProfile.timeEntryEditHistory.forEach(item => {
+      if (
+        moment()
+          .tz('America/Los_Angeles')
+          .diff(item.date, 'days') <= 365
+      ) {
         editCount += 1;
       }
-    })
+    });
     return `If you edit your time entries 5 times or more within the span of a year, you will be issued a blue square on the 5th time.
     You will receive an additional blue square for each edit beyond the 5th.
     Currently, you have edited your time entries ${editCount} times within the last 365 days.
     Do you wish to continue?`;
   };
 
-  const validateForm = (isTimeModified) => {
+  const validateForm = isTimeModified => {
     const result = {};
 
     if (inputs.dateOfWork === '') {
@@ -189,7 +193,7 @@ const TimeEntryForm = (props) => {
 
     if (reminder.wordCount < 10) {
       openModal();
-      setReminder((reminder) => ({
+      setReminder(reminder => ({
         ...reminder,
         remind:
           'Please write a more detailed description of your work completed, write at least 1-2 sentences.',
@@ -199,7 +203,7 @@ const TimeEntryForm = (props) => {
 
     if (reminder.wordCount >= 10 && !reminder.hasLink) {
       openModal();
-      setReminder((reminder) => ({
+      setReminder(reminder => ({
         ...reminder,
         remind:
           'Do you have a link to your Google Doc or other place to review this work? You should add it if you do. (Note: Please include http[s]:// in your URL)',
@@ -207,9 +211,14 @@ const TimeEntryForm = (props) => {
       result.notes = 'Description and reference link are required';
     }
 
-    if (!hasPermission(role, 'addTimeEntryOthers') && data.isTangible && isTimeModified && reminder.editNotice) {
+    if (
+      !hasPermission(role, 'addTimeEntryOthers', roles) &&
+      data.isTangible &&
+      isTimeModified &&
+      reminder.editNotice
+    ) {
       openModal();
-      setReminder((reminder) => ({
+      setReminder(reminder => ({
         ...reminder,
         remind: getEditMessage(),
         editNotice: !reminder.editNotice,
@@ -221,7 +230,7 @@ const TimeEntryForm = (props) => {
     return _.isEmpty(result);
   };
 
-  const handleSubmit = async (event) => {
+  const handleSubmit = async event => {
     //Validation and variable initialization
     if (event) event.preventDefault();
     if (isSubmitting) return;
@@ -281,7 +290,7 @@ const TimeEntryForm = (props) => {
         );
       }
     } else if (!reminder.notice) {
-      setReminder((reminder) => ({
+      setReminder(reminder => ({
         ...reminder,
         editNotice: !reminder.editNotice,
       }));
@@ -296,31 +305,31 @@ const TimeEntryForm = (props) => {
     await getUserProfile(userId)(dispatch);
   };
 
-  const handleInputChange = (event) => {
+  const handleInputChange = event => {
     event.persist();
-    setInputs((inputs) => ({
+    setInputs(inputs => ({
       ...inputs,
       [event.target.name]: event.target.value,
     }));
   };
 
-  const handleHHInputChange = (event) => {
+  const handleHHInputChange = event => {
     event.persist();
     if (event.target.value < 0 || event.target.value > 40) {
       return;
     }
-    setInputs((inputs) => ({
+    setInputs(inputs => ({
       ...inputs,
       [event.target.name]: event.target.value,
     }));
   };
 
-  const handleMMInputChange = (event) => {
+  const handleMMInputChange = event => {
     event.persist();
     if (event.target.value < 0 || event.target.value > 59) {
       return;
     }
-    setInputs((inputs) => ({
+    setInputs(inputs => ({
       ...inputs,
       [event.target.name]: event.target.value,
     }));
@@ -330,17 +339,17 @@ const TimeEntryForm = (props) => {
     inputs.notes = content;
     const { wordcount } = editor.plugins;
 
-    setInputs((inputs) => ({ ...inputs, [editor.id]: content }));
-    setReminder((reminder) => ({
+    setInputs(inputs => ({ ...inputs, [editor.id]: content }));
+    setReminder(reminder => ({
       ...reminder,
       wordCount: wordcount.body.getWordCount(),
       hasLink: inputs.notes.indexOf('http://') > -1 || inputs.notes.indexOf('https://') > -1,
     }));
   };
 
-  const handleCheckboxChange = (event) => {
+  const handleCheckboxChange = event => {
     event.persist();
-    setInputs((inputs) => ({
+    setInputs(inputs => ({
       ...inputs,
       [event.target.name]: event.target.checked,
     }));
@@ -350,12 +359,14 @@ const TimeEntryForm = (props) => {
    * Resets the project/task and notes fields of the form without resetting hours and minutes.
    * @param {*} closed If true, the form closes after being cleared.
    */
-  const clearForm = (closed) => {
+  const clearForm = closed => {
     const newInputs = {
       ...inputs,
       notes: '',
       projectId: '',
-      dateOfWork: moment().tz('America/Los_Angeles').format('YYYY-MM-DD'),
+      dateOfWork: moment()
+        .tz('America/Los_Angeles')
+        .format('YYYY-MM-DD'),
     };
     setInputs(newInputs);
     setReminder({ ...initialReminder });
@@ -380,7 +391,7 @@ const TimeEntryForm = (props) => {
         edit={edit}
         reminder={reminder}
         visible={reminder.notification}
-        setVisible={(visible) => setReminder({ ...reminder, notification: visible })}
+        setVisible={visible => setReminder({ ...reminder, notification: visible })}
         cancelChange={cancelChange}
       />
 
@@ -393,7 +404,8 @@ const TimeEntryForm = (props) => {
             ) : (
               <span style={{ color: 'orange' }}>Intangible </span>
             )}
-            Time Entry <i
+            Time Entry{' '}
+            <i
               className="fa fa-info-circle"
               data-tip
               data-for="registerTip"
@@ -410,7 +422,7 @@ const TimeEntryForm = (props) => {
           <Form>
             <FormGroup>
               <Label for="dateOfWork">Date</Label>
-              {hasPermission(role, 'changeIntangibleTimeEntryDate') && !fromTimer ? (
+              {hasPermission(role, 'changeIntangibleTimeEntryDate', roles) && !fromTimer ? (
                 <Input
                   type="date"
                   name="dateOfWork"
@@ -523,7 +535,7 @@ const TimeEntryForm = (props) => {
                   name="isTangible"
                   checked={inputs.isTangible}
                   onChange={handleCheckboxChange}
-                  disabled={!hasPermission(role, 'toggleTangibleTime') && !data.isTangible}
+                  disabled={!hasPermission(role, 'toggleTangibleTime', roles) && !data.isTangible}
                 />
                 Tangible&nbsp;
                 <i

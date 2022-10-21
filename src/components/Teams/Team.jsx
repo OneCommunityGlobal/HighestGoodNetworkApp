@@ -4,7 +4,7 @@ import { DELETE } from '../../languages/en/ui';
 import TeamTable from '../Reports/TeamTable';
 import hasPermission from 'utils/permissions';
 
-const Team = (props) => (
+const Team = props => (
   <tr className="teams__tr" id={`tr_${props.teamId}`}>
     <th className="teams__order--input" scope="row">
       <div>{props.index + 1}</div>
@@ -12,12 +12,10 @@ const Team = (props) => (
     <td>{props.name}</td>
     <td
       className="teams__active--input"
-      onClick={(e) => {
-        hasPermission(props.requestorRole, 'editDeleteTeam') ? (
-        props.onStatusClick(props.name, props.teamId, props.active)
-        ) : (
-          null
-        )
+      onClick={e => {
+        hasPermission(props.requestorRole, 'editDeleteTeam', props.roles)
+          ? props.onStatusClick(props.name, props.teamId, props.active)
+          : null;
       }}
     >
       {props.active ? (
@@ -34,38 +32,38 @@ const Team = (props) => (
       <button
         type="button"
         className="btn btn-outline-info"
-        onClick={(e) => {
+        onClick={e => {
           props.onMembersClick(props.teamId, props.name);
         }}
       >
         <i className="fa fa-users" aria-hidden="true" />
       </button>
     </td>
-    {hasPermission(props.requestorRole, 'editDeleteTeam') && (
-    <td>
-      <span className="usermanagement-actions-cell">
-        <button
-          type="button"
-          className="btn btn-outline-success"
-          onClick={() => {
-            props.onEditTeam(props.name, props.teamId, props.active);
-          }}
-        >
-          Edit
-        </button>
-      </span>
-      <span className="usermanagement-actions-cell">
-        <button
-          type="button"
-          className="btn btn-outline-danger"
-          onClick={() => {
-            props.onDeleteClick(props.name, props.teamId, props.active);
-          }}
-        >
-          {DELETE}
-        </button>
-      </span>
-    </td>
+    {hasPermission(props.requestorRole, 'editDeleteTeam', props.roles) && (
+      <td>
+        <span className="usermanagement-actions-cell">
+          <button
+            type="button"
+            className="btn btn-outline-success"
+            onClick={() => {
+              props.onEditTeam(props.name, props.teamId, props.active);
+            }}
+          >
+            Edit
+          </button>
+        </span>
+        <span className="usermanagement-actions-cell">
+          <button
+            type="button"
+            className="btn btn-outline-danger"
+            onClick={() => {
+              props.onDeleteClick(props.name, props.teamId, props.active);
+            }}
+          >
+            {DELETE}
+          </button>
+        </span>
+      </td>
     )}
   </tr>
 );

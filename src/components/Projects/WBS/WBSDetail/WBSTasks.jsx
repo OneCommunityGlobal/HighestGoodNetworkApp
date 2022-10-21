@@ -15,10 +15,11 @@ import './wbs.css';
 import ReactTooltip from 'react-tooltip';
 import hasPermission from 'utils/permissions';
 
-const WBSTasks = (props) => {
+const WBSTasks = props => {
   // modal
   const [modal, setModal] = useState(false);
   const toggle = () => setModal(!modal);
+  const { roles } = props.state.role;
 
   const wbsId = props.match.params.wbsId;
   const projectId = props.match.params.projectId;
@@ -44,7 +45,7 @@ const WBSTasks = (props) => {
     }, 1000);
   };
 
-  const selectTaskFunc = (id) => {
+  const selectTaskFunc = id => {
     setSelectedId(id);
   };
 
@@ -68,8 +69,8 @@ const WBSTasks = (props) => {
     }
 
     const list = [];
-    let target = tasks.find((task) => task._id === taskIdTo);
-    let siblings = tasks.filter((task) => task.parentId === dragParent);
+    let target = tasks.find(task => task._id === taskIdTo);
+    let siblings = tasks.filter(task => task.parentId === dragParent);
     //console.log('sibs', siblings);
 
     let modifiedList = false;
@@ -104,7 +105,7 @@ const WBSTasks = (props) => {
     //props.updateNumList(wbsId, list);*/
   };
 
-  const deleteTask = (taskId) => {
+  const deleteTask = taskId => {
     props.deleteTask(taskId);
     setTimeout(() => {
       props.fetchAllTasks(wbsId);
@@ -112,22 +113,22 @@ const WBSTasks = (props) => {
   };
 
   const filterTasks = (allTaskItems, filter) => {
-    if (filter === "all") {
+    if (filter === 'all') {
       return allTaskItems;
-    } else if (filter === "open") {
-      return allTaskItems.filter((taskItem) => {
-        if (taskItem.status === "Active" || taskItem.status === "Started") {
+    } else if (filter === 'open') {
+      return allTaskItems.filter(taskItem => {
+        if (taskItem.status === 'Active' || taskItem.status === 'Started') {
           return taskItem;
-        } 
+        }
       });
-    } else if (filter === "close") {
-      return allTaskItems.filter((taskItem) => {
-        if (taskItem.status === "Complete" || taskItem.status === "Not Started") {
+    } else if (filter === 'close') {
+      return allTaskItems.filter(taskItem => {
+        if (taskItem.status === 'Complete' || taskItem.status === 'Not Started') {
           return taskItem;
-        } 
+        }
       });
     }
-  }
+  };
 
   let filteredTasks = filterTasks(props.state.tasks.taskItems, filterState);
 
@@ -147,7 +148,7 @@ const WBSTasks = (props) => {
           </ol>
         </nav>
 
-        {hasPermission(props.state.auth.user.role, 'addTask') ? (
+        {hasPermission(props.state.auth.user.role, 'addTask', roles) ? (
           <AddTaskModal
             key="task_modal_null"
             parentNum={null}
@@ -168,10 +169,10 @@ const WBSTasks = (props) => {
           <Button color="light" size="sm" onClick={() => setFilterState('open')}>
             Open
           </Button>
-          <Button color="dark" size="sm" onClick={() => setFilterState("close")}>
+          <Button color="dark" size="sm" onClick={() => setFilterState('close')}>
             Close
           </Button>
-          <Button color="grey" size="sm" onClick={() => setFilterState("all")}>
+          <Button color="grey" size="sm" onClick={() => setFilterState('all')}>
             All
           </Button>
         </div>
@@ -262,7 +263,7 @@ const WBSTasks = (props) => {
                 drag={dragTask}
                 deleteTask={deleteTask}
                 hasChildren={task.hasChild}
-                siblings={props.state.tasks.taskItems.filter((item) => item.mother === task.mother)}
+                siblings={props.state.tasks.taskItems.filter(item => item.mother === task.mother)}
                 taskId={task.taskId}
                 whyInfo={task.whyInfo}
                 intentInfo={task.intentInfo}
@@ -275,7 +276,7 @@ const WBSTasks = (props) => {
     </React.Fragment>
   );
 };
-const mapStateToProps = (state) => {
+const mapStateToProps = state => {
   return { state };
 };
 export default connect(mapStateToProps, {

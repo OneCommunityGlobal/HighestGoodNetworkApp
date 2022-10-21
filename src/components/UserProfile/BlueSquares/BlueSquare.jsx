@@ -2,7 +2,7 @@ import React from 'react';
 import './BlueSquare.css';
 import hasPermission from 'utils/permissions';
 
-const BlueSquare = ({ blueSquares, handleBlueSquare, role }) => {
+const BlueSquare = ({ blueSquares, handleBlueSquare, role, roles }) => {
   return (
     <div className="blueSquareContainer">
       <div className="blueSquares">
@@ -15,11 +15,19 @@ const BlueSquare = ({ blueSquares, handleBlueSquare, role }) => {
             className="blueSquareButton"
             onClick={() => {
               if (!blueSquare._id) {
-                handleBlueSquare(hasPermission(role, 'handleBlueSquare'), 'message', 'none');
-              } else if (hasPermission(role, 'handleBlueSquare')) {
-                handleBlueSquare(hasPermission(role, 'handleBlueSquare'), 'modBlueSquare', blueSquare._id);
+                handleBlueSquare(hasPermission(role, 'handleBlueSquare', roles), 'message', 'none');
+              } else if (hasPermission(role, 'handleBlueSquare', roles)) {
+                handleBlueSquare(
+                  hasPermission(role, 'handleBlueSquare', roles),
+                  'modBlueSquare',
+                  blueSquare._id,
+                );
               } else {
-                handleBlueSquare(!hasPermission(role, 'handleBlueSquare'), 'viewBlueSquare', blueSquare._id);
+                handleBlueSquare(
+                  !hasPermission(role, 'handleBlueSquare', roles),
+                  'viewBlueSquare',
+                  blueSquare._id,
+                );
               }
             }}
           >
@@ -31,7 +39,8 @@ const BlueSquare = ({ blueSquares, handleBlueSquare, role }) => {
         ))}
       </div>
 
-      {(hasPermission(role, 'editUserProfile') || hasPermission(role, 'assignOnlyBlueSquares'))  && (
+      {(hasPermission(role, 'editUserProfile', roles) ||
+        hasPermission(role, 'assignOnlyBlueSquares', roles)) && (
         <div
           onClick={() => {
             handleBlueSquare(true, 'addBlueSquare', '');

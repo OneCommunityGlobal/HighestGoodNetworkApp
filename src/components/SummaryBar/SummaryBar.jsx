@@ -30,14 +30,14 @@ import { faWindowMinimize } from '@fortawesome/free-regular-svg-icons';
 import { ApiEndpoint } from 'utils/URL';
 import hasPermission from 'utils/permissions';
 
-const SummaryBar = (props) => {
+const SummaryBar = props => {
   const { asUser, role } = props;
-  const { firstName, lastName, email, _id } = useSelector((state) => state.userProfile);
-  const authenticateUser = useSelector((state) => state.auth.user);
+  const { firstName, lastName, email, _id } = useSelector(state => state.userProfile);
+  const authenticateUser = useSelector(state => state.auth.user);
   const authenticateUserId = authenticateUser ? authenticateUser.userid : '';
   const matchUser = asUser == authenticateUserId ? true : false;
 
-  const timeEntries = useSelector((state) => {
+  const timeEntries = useSelector(state => {
     let timeEntries = state?.timeEntries?.weeks;
     if (timeEntries) {
       return timeEntries[0];
@@ -47,14 +47,16 @@ const SummaryBar = (props) => {
   });
 
   const calculateTotalTime = (data, isTangible) => {
-    const filteredData = data.filter((entry) => entry.isTangible === isTangible);
+    const filteredData = data.filter(entry => entry.isTangible === isTangible);
 
     const reducer = (total, entry) => total + parseInt(entry.hours) + parseInt(entry.minutes) / 60;
     return filteredData.reduce(reducer, 0);
   };
 
-  const weeklyComittedHours = useSelector((state) => state.userProfile.weeklyComittedHours);
-  const weeklySummary = useSelector((state) => {
+  const roles = useSelector(state => state.role.roles);
+
+  const weeklyComittedHours = useSelector(state => state.userProfile.weeklyComittedHours);
+  const weeklySummary = useSelector(state => {
     let summaries = state.userProfile?.weeklySummaries;
     if (summaries && Array.isArray(summaries) && summaries[0] && summaries[0].summary) {
       return summaries[0].summary;
@@ -63,7 +65,7 @@ const SummaryBar = (props) => {
     }
   });
 
-  const infringements = useSelector((state) => {
+  const infringements = useSelector(state => {
     if (state.userProfile && state.userProfile.infringments) {
       return state.userProfile.infringments.length;
     } else {
@@ -71,7 +73,7 @@ const SummaryBar = (props) => {
     }
   });
 
-  const badges = useSelector((state) => {
+  const badges = useSelector(state => {
     if (state.userProfile && state.userProfile.badgeCollection) {
       return state.userProfile.badgeCollection.length;
     } else {
@@ -79,7 +81,7 @@ const SummaryBar = (props) => {
     }
   });
 
-  let tasks = useSelector((state) => {
+  let tasks = useSelector(state => {
     if (state.tasks && state.tasks.taskItems) {
       return state.tasks.taskItems.length;
     } else {
@@ -96,26 +98,26 @@ const SummaryBar = (props) => {
 
   const openReport = () => {
     const htmlStr = ''; //str.split('\n').map((item, i) => <p key={i}>{item}</p>)
-    setBugReport((info) => ({
+    setBugReport(info => ({
       ...info,
       in: !info.in,
       information: htmlStr,
     }));
   };
 
-  const sendBugReport = (event) => {
+  const sendBugReport = event => {
     event.preventDefault();
     let bugReportForm = document.getElementById('bugReportForm');
     let formData = new FormData(bugReportForm);
     var data = {};
-    formData.forEach(function (value, key) {
+    formData.forEach(function(value, key) {
       data[key] = value;
     });
     data['firstName'] = firstName;
     data['lastName'] = lastName;
     data['email'] = email;
 
-    httpService.post(`${ApiEndpoint}/dashboard/bugreport/${_id}`, data).catch((e) => {});
+    httpService.post(`${ApiEndpoint}/dashboard/bugreport/${_id}`, data).catch(e => {});
     openReport();
   };
 
@@ -123,7 +125,7 @@ const SummaryBar = (props) => {
   //   await this.props.getWeeklySummaries(this.props.currentUser.userid);
   //   const { weeklySummariesCount } = this.props.summaries;}
 
-  const getBarColor = (hours) => {
+  const getBarColor = hours => {
     if (hours < 5) {
       return 'red';
     }
@@ -145,7 +147,7 @@ const SummaryBar = (props) => {
     return 'purple';
   };
 
-  const getBarValue = (hours) => {
+  const getBarValue = hours => {
     if (hours <= 40) {
       return hours * 2;
     }
@@ -234,7 +236,7 @@ const SummaryBar = (props) => {
             {!weeklySummary ? (
               <div className="border-red col-4 bg--white-smoke no-gutters" align="center">
                 <div className="py-1"> </div>
-                {matchUser || hasPermission(role, 'toggleSubmitForm') ? (
+                {matchUser || hasPermission(role, 'toggleSubmitForm', roles) ? (
                   <p
                     className={'summary-toggle large_text_summary text--black text-danger'}
                     align="center"
