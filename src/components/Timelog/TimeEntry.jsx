@@ -15,10 +15,10 @@ import hasPermission from 'utils/permissions';
 const TimeEntry = ({ data, displayYear, userProfile }) => {
   const [modal, setModal] = useState(false);
   const toggle = () => setModal(modal => !modal);
-
   const dateOfWork = moment(data.dateOfWork);
   const { user } = useSelector(state => state.auth);
   const { roles } = useSelector(state => state.role);
+
   const isOwner = data.personId === user.userid;
   const isSameDay =
     moment()

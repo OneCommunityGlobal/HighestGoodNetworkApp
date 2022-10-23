@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 // import { getUserProfile } from '../../actions/userProfile'
 import { getHeaderData } from '../../actions/authActions';
 import { getTimerData } from '../../actions/timer';
+import { getAllRoles } from '../../actions/role';
 import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 import Timer from '../Timer/Timer';
@@ -43,7 +44,6 @@ import hasPermission from '../../utils/permissions';
 export const Header = props => {
   const [isOpen, setIsOpen] = useState(false);
   const [logoutPopup, setLogoutPopup] = useState(false);
-  const { roles } = props.role;
 
   useEffect(() => {
     if (props.auth.isAuthenticated) {
@@ -51,6 +51,13 @@ export const Header = props => {
       props.getTimerData(props.auth.user.userid);
     }
   }, []);
+
+  const roles = props.role?.roles;
+  if (!roles) {
+    props.getAllRoles();
+  }
+  console.log(roles);
+  console.log(roles);
 
   // useEffect(() => {
   //   props.getHeaderData(props.auth.user.userid);
@@ -214,4 +221,5 @@ const mapStateToProps = state => ({
 export default connect(mapStateToProps, {
   getHeaderData,
   getTimerData,
+  getAllRoles,
 })(Header);

@@ -34,6 +34,7 @@ import ReactTooltip from 'react-tooltip';
 import { getTimeEntriesForWeek, getTimeEntriesForPeriod } from '../../actions/timeEntries';
 import { getUserProfile, updateUserProfile } from '../../actions/userProfile';
 import { getUserProjects } from '../../actions/userProjects';
+import { getAllRoles } from '../../actions/role';
 import TimeEntryForm from './TimeEntryForm';
 import TimeEntry from './TimeEntry';
 import EffortBar from './EffortBar';
@@ -96,6 +97,7 @@ class Timelog extends Component {
     await this.props.getTimeEntriesForWeek(userId, 2);
     await this.props.getTimeEntriesForPeriod(userId, this.state.fromDate, this.state.toDate);
     await this.props.getUserProjects(userId);
+    await this.props.getAllRoles();
     this.setState({ isTimeEntriesLoading: false });
   }
 
@@ -122,6 +124,7 @@ class Timelog extends Component {
         this.props.getTimeEntriesForWeek(userId, 2),
         this.props.getTimeEntriesForPeriod(userId, this.state.fromDate, this.state.toDate),
         this.props.getUserProjects(userId),
+        this.props.getAllRoles(),
       ]);
     }
   }
@@ -217,9 +220,9 @@ class Timelog extends Component {
         ? this.props.match.params.userId
         : this.props.asUser || this.props.auth.user.userid;
     const role = this.props.auth.user.role;
+
     const isOwner = this.props.auth.user.userid === userId;
     const fullName = `${this.props.userProfile.firstName} ${this.props.userProfile.lastName}`;
-
     let projects = [];
     if (!_.isEmpty(this.props.userProjects.projects)) {
       projects = this.props.userProjects.projects;
@@ -555,4 +558,5 @@ export default connect(mapStateToProps, {
   getUserProjects,
   getUserProfile,
   updateUserProfile,
+  getAllRoles,
 })(Timelog);

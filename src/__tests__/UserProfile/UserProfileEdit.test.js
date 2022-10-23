@@ -11,6 +11,7 @@ import {
   userProjectMock,
   allProjectsMock,
   allTeamsMock,
+  rolesMock
 } from '../mockStates';
 import { renderWithRouterMatch } from '../utils';
 import UserProfileEdit from '../../components/UserProfile/UserProfileEdit/UserProfileEdit.container';
@@ -34,6 +35,7 @@ describe('user profile page', () => {
       userProjects: userProjectMock,
       allProjects: allProjectsMock,
       allTeams: allTeamsMock,
+      role: rolesMock
       // state: {
       //   authMoc  k, userProfileMock, timeEntryMock, userProjectMock, allProjectsMock, allTeamsMock,
       // },
