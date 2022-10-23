@@ -1,3 +1,5 @@
+import { ReportHeader } from "./components/ReportHeader";
+import { ReportBlock } from "./components/ReportBlock";
 import "./ReportPage.css";
 
 export const ReportPage = ({ children, renderProfile, contentClassName }) => (
@@ -6,3 +8,6 @@ export const ReportPage = ({ children, renderProfile, contentClassName }) => (
     <div className={`report-page-content ${contentClassName}`}>{children}</div>
   </section>
 );
+
+ReportPage.ReportHeader = ReportHeader;
+ReportPage.ReportBlock = ReportBlock;
