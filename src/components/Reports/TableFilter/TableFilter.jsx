@@ -5,24 +5,25 @@ import DatePicker from "react-datepicker";
 import { FiCalendar } from 'react-icons/fi';
 import "react-datepicker/dist/react-datepicker.css";
 import "./TableFilter.css";
+import { Checkbox } from 'components/common/Checkbox';
 
-const InputWithCalendarIcon = ({value, onClick}) => {
+const InputWithCalendarIcon = ({ value, onClick }) => {
 
   return (
-      <>
-          <input type="text" className="table-filter-datePicker table-filter-item table-filter-input" value={value} onClick={onClick}/>
-          <FiCalendar className="date-picker-icon" onClick={onClick} />
-      </>
+    <>
+      <input type="text" className="table-filter-datePicker table-filter-item table-filter-input" value={value} onClick={onClick} />
+      <FiCalendar className="date-picker-icon" onClick={onClick} />
+    </>
   );
 }
 
 const TableFilter = (props) => {
-  const taskPriority = ['Primary','Secondary', 'Tertiary'];
-  const taskStatus = ['Paused','Complete', 'Active'];
+  const taskPriority = ['Primary', 'Secondary', 'Tertiary'];
+  const taskStatus = ['Paused', 'Complete', 'Active'];
   const [taskActive, setTaskActive] = useState(true);
   const [taskAssign, setTaskAssign] = useState(true);
   const [startDate, setStartDate] = useState(new Date("01/01/2010"));
-  const [endDate, setEndDate]=useState(new Date());
+  const [endDate, setEndDate] = useState(new Date());
   const onTaskNameSearch = (text) => {
     props.onTaskNameSearch(text);
   }
@@ -99,29 +100,22 @@ const TableFilter = (props) => {
       />
 
       <DatePicker
-        customInput={<InputWithCalendarIcon/>} 
-        selected={startDate} 
-        minDate={new Date("01/01/2010")} 
-        maxDate={new Date()} 
-        onChange={(date) => setStartDate(date)} 
+        customInput={<InputWithCalendarIcon />}
+        selected={startDate}
+        minDate={new Date("01/01/2010")}
+        maxDate={new Date()}
+        onChange={(date) => setStartDate(date)}
       />
       <DatePicker
-        customInput={<InputWithCalendarIcon/>} 
+        customInput={<InputWithCalendarIcon />}
         selected={endDate}
         maxDate={new Date()}
         minDate={new Date("01/01/2010")}
-        onChange={(date) => setEndDate(date)} 
+        onChange={(date) => setEndDate(date)}
       />
 
-      <div className='table-filter-item table-filter-checkbox-wrapper'>
-        <input className='table-filter-checkbox' type='checkbox' id='active' name='active' checked={taskActive} onChange={searchActive} />
-        <label className='table-filter-checkbox-label' for='active'>Active</label>
-      </div>
-      
-      <div className='table-filter-item table-filter-checkbox-wrapper'>
-        <input className='table-filter-checkbox' type='checkbox' id='assign' name='assign' checked={taskAssign} onChange={searchAssign} />
-        <label className='table-filter-checkbox-label' for='assign'>Assign</label>
-      </div>
+      <Checkbox value={taskActive} onChange={searchActive} id='active' wrapperClassname='table-filter-item' label='Active' />
+      <Checkbox value={taskAssign} onChange={searchAssign} id='assign' wrapperClassname='table-filter-item' label='Assign' />
     </div>
   );
 };

@@ -1,0 +1,13 @@
+.stub-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  margin: 32px;
+
+  color: #d1cfd4;
+}
+
+.stub-hint {
+  color: rgba(0, 0, 0, 0.4);
+}
