@@ -60,6 +60,8 @@ const Badges = (props) => {
                   firstName={props.userProfile.firstName}
                   lastName={props.userProfile.lastName}
                   close={toggle}
+                  setUserProfile={props.setUserProfile}
+                  handleSubmit={props.handleSubmit}
                 />
               </ModalBody>
             </Modal>
@@ -76,13 +78,14 @@ const Badges = (props) => {
                       userProfile={props.userProfile}
                       setUserProfile={props.setUserProfile}
                       close={assignToggle}
+                      handleSubmit={props.handleSubmit}
                     />
                   </ModalBody>
                 </Modal>
               </>
             )}
           </CardTitle>
-          <FeaturedBadges badges={props.userProfile.badgeCollection} />
+          <FeaturedBadges badges={props.userProfile.badgeCollection}  />
           <CardText
             style={{
               fontWeight: 'bold',
