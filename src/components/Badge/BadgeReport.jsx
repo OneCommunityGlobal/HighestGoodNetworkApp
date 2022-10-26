@@ -13,6 +13,7 @@ import {
   Modal,
   ModalBody,
   ModalFooter,
+  FormGroup
 } from 'reactstrap';
 import pdfMake from 'pdfmake/build/pdfmake';
 import pdfFonts from 'pdfmake/build/vfs_fonts';
@@ -319,14 +320,19 @@ const BadgeReport = (props) => {
                   []
                 )}
                 <td style={{ textAlign: 'center' }}>
-                  <Input
-                    type="checkbox"
-                    id={value.badge._id}
-                    checked={value.featured}
-                    onChange={(e) => {
-                      featuredChange(value, index, e);
-                    }}
-                  />
+                  <FormGroup check inline >
+                    <Input
+                      /* alternative to using the formgroup
+                      style={{ position: 'static' }} 
+                      */
+                      type="checkbox"
+                      id={value.badge._id}
+                      checked={value.featured}
+                      onChange={(e) => {
+                        featuredChange(value, index, e);
+                      }}
+                    />
+                  </FormGroup>
                 </td>
               </tr>
             ))}
