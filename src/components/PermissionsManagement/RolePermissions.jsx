@@ -4,6 +4,7 @@ import { Button } from 'reactstrap';
 import { connect } from 'react-redux';
 import { updateRole, getAllRoles } from '../../actions/role';
 import { toast } from 'react-toastify';
+import { permissionFrontToBack } from 'utils/associatedPermissions';
 
 function getKeyByValue(object, value) {
   return Object.keys(object).find(key => object[key] === value);
@@ -36,9 +37,14 @@ function RolePermissions(props) {
     const permissionsObjectName = permissions.map(perm => {
       return getKeyByValue(permissionLabel, perm);
     });
+
+    const permissionsBackEnd = permissionsObjectName.map(permission =>
+      permissionFrontToBack(permission),
+    );
     const updatedRole = {
       roleName: props.role,
       permissions: permissionsObjectName,
+      permissionsBackEnd: permissionsBackEnd.flat(),
     };
     const id = props.roleId;
     try {

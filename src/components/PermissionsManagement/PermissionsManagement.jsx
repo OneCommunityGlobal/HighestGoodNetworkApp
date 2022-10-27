@@ -12,7 +12,6 @@ const PermissionsManagement = ({ getAllRoles, roles }) => {
   const toggle = () => {
     setIsNewRolePopUpOpen(previousState => !previousState);
   };
-  console.log(roles);
   roles = roles.filter(role => {
     if (role != null) return role;
   });
