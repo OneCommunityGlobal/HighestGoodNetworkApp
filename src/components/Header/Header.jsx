@@ -50,19 +50,12 @@ export const Header = props => {
       props.getHeaderData(props.auth.user.userid);
       props.getTimerData(props.auth.user.userid);
     }
+    if (roles.length === 0) {
+      props.getAllRoles();
+    }
   }, []);
 
   const roles = props.role?.roles;
-  if (!roles) {
-    props.getAllRoles();
-  }
-  console.log(roles);
-  console.log(roles);
-
-  // useEffect(() => {
-  //   props.getHeaderData(props.auth.user.userid);
-  //   props.getTimerData(props.auth.user.userid);
-  // }, [props.auth]);
 
   const toggle = () => {
     setIsOpen(prevIsOpen => !prevIsOpen);

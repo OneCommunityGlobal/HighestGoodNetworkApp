@@ -21,6 +21,8 @@ import ReactTooltip from 'react-tooltip';
 import { postTimeEntry, editTimeEntry } from '../../../actions/timeEntries';
 import { getUserProjects } from '../../../actions/userProjects';
 import { getUserProfile } from 'actions/userProfile';
+import { getAllRoles } from 'actions/role';
+
 import { stopTimer } from '../../../actions/timer';
 import AboutModal from './AboutModal';
 import TangibleInfoModal from './TangibleInfoModal';
@@ -44,7 +46,7 @@ import hasPermission from 'utils/permissions';
  * @returns
  */
 const TimeEntryForm = props => {
-  const { userId, edit, data, isOpen, toggle, timer, resetTimer, roles } = props;
+  const { userId, edit, data, isOpen, toggle, timer, resetTimer } = props;
 
   const initialFormValues = {
     dateOfWork: moment()
@@ -76,6 +78,8 @@ const TimeEntryForm = props => {
 
   const fromTimer = !_.isEmpty(timer);
   const userProfile = useSelector(state => state.userProfile);
+  const roles = useSelector(state => state.role.roles);
+
   const role = userProfile.role;
 
   const dispatch = useDispatch();

@@ -20,15 +20,18 @@ describe('<TimeEntryForm />', () => {
   let store;
   let toggle;
   let userProfile;
+  let role
   const data = timeEntryMock.weeks[0][0];
   beforeEach(() => {
     store = mockStore({
       auth: authMock,
       userProjects: userProjectMock,
       userProfile: userProfileMock,
-      role: rolesMock
+      role: rolesMock.role
     });
     userProfile = jest.fn();
+    role = jest.fn();
+
     toggle = jest.fn();
     store.dispatch = jest.fn();
     renderWithProvider(

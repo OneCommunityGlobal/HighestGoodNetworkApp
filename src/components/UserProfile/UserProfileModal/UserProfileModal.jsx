@@ -26,8 +26,8 @@ const UserProfileModal = props => {
     userProfile,
     id,
     role,
+    roles,
   } = props;
-  const { roles } = useSelector(state => state.role);
   let blueSquare = [
     {
       date: 'ERROR',

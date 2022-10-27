@@ -28,7 +28,7 @@ describe('<TimeEntry />', () => {
       auth: authMock,
       userProjects: userProjectMock,
       userProfile: userProfileMock,
-      role: rolesMock
+      role: rolesMock.role
     });
     renderWithProvider(<TimeEntry data={data} displayYear />, {
       store,

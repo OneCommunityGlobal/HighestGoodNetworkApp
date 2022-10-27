@@ -311,7 +311,6 @@ class UserProfileEdit extends Component {
     }
     const filesizeKB = file.size / 1024;
     // console.log(filesizeKB);
-
     if (filesizeKB > 50) {
       imageUploadError = `\nThe file you are trying to upload exceeds the maximum size of 50KB. You can either 
 														choose a different file, or use an online file compressor.`;
@@ -659,6 +658,7 @@ class UserProfileEdit extends Component {
             handleLinkModel={this.handleLinkModel}
             handleSubmit={this.handleSubmit}
             role={requestorRole}
+            roles={this.props.role.roles}
           />
         )}
 
@@ -734,6 +734,7 @@ class UserProfileEdit extends Component {
                     blueSquares={infringments}
                     handleBlueSquare={this.handleBlueSquare}
                     role={requestorRole}
+                    roles={this.props.role.roles}
                   />
                 </div>
               </Col>

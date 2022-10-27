@@ -35,7 +35,7 @@ describe('user profile page', () => {
       userProjects: userProjectMock,
       allProjects: allProjectsMock,
       allTeams: allTeamsMock,
-      role: rolesMock
+      role: rolesMock.role
       // state: {
       //   authMoc  k, userProfileMock, timeEntryMock, userProjectMock, allProjectsMock, allTeamsMock,
       // },
@@ -149,6 +149,7 @@ describe('user profile page', () => {
     });
     it('should trigger addBlueSquare when admin click on + button', async () => {
       userEvent.click(screen.getByText('+'));
+
       expect(screen.getByRole('button', { name: 'Submit' })).toBeInTheDocument();
     });
     it('should trigger addBlueSquare when admin click on random blue square', async () => {
