@@ -47,13 +47,18 @@ export const Header = props => {
 
   useEffect(() => {
     if (props.auth.isAuthenticated) {
+      console.log(
+        'header.js: props.auth.isAuthenticated',
+        props.auth.isAuthenticated,
+        props.auth.user.userid,
+      );
       props.getHeaderData(props.auth.user.userid);
       props.getTimerData(props.auth.user.userid);
     }
     if (roles.length === 0) {
       props.getAllRoles();
     }
-  }, []);
+  }, [props.auth.isAuthenticated]);
 
   const roles = props.role?.roles;
 
@@ -68,7 +73,7 @@ export const Header = props => {
   const { isAuthenticated, user, firstName, profilePic } = props.auth;
 
   return (
-    <div>
+    <div className="header-wrapper">
       <Navbar className="py-3 mb-3" color="dark" dark expand="lg">
         {/**
          * <NavbarBrand tag={Link} to="/" className="d-none d-md-block">

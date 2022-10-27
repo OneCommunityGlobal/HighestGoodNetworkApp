@@ -134,408 +134,415 @@ const Task = props => {
   };
 
   return (
-    <React.Fragment>
-      <tr
-        key={props.key}
-        className={`num_${props.num.split('.').join('')} wbsTask  ${
-          props.isNew ? 'newTask' : ''
-        } parentId1_${props.parentId1} parentId2_${props.parentId2} parentId3_${
-          props.parentId3
-        } mother_${props.mother} lv_${props.level}`}
-        id={props.id}
-      >
-        <td
-          className={`tag_color tag_color_${
-            props.num.length > 0 ? props.num.split('.')[0] : props.num
-          } tag_color_lv_${props.level}`}
-        ></td>
-        <td>
-          <EditTaskModal
-            key={`editTask_${props.id}`}
-            parentNum={props.num}
-            taskId={props.id}
-            projectId={props.projectId}
-            wbsId={props.wbsId}
-            parentId1={props.parentId1}
-            parentId2={props.parentId2}
-            parentId3={props.parentId3}
-            mother={props.mother}
-            level={props.level}
-          />
-        </td>
-        <td
-          id={`r_${props.num}_${props.id}`}
-          scope="row"
-          className="taskNum"
-          onClick={() => {
-            selectTask(props.id);
-            toggleGroups(props.num, props.id, props.level);
-          }}
-        >
-          {props.num.split('.0').join('')}
-        </td>
-        <td className="taskName">
-          {props.level === 1 ? (
-            <div className="level-space-1" data-tip="Level 1">
-              <span
-                onClick={e => toggleGroups(props.num, props.id, props.level)}
-                id={`task_name_${props.id}`}
-                className={props.hasChildren ? 'has_children' : ''}
-              >
-                {' '}
-                {props.hasChildren ? (
-                  <i
-                    data-tip="Not Started"
-                    className={`fa fa-folder${isOpen ? '-open' : ''}`}
-                    aria-hidden="true"
-                  ></i>
-                ) : null}{' '}
-                {props.name}
-              </span>
-            </div>
-          ) : null}
-          {props.level === 2 ? (
-            <div className="level-space-2" data-tip="Level 2">
-              <span
-                onClick={e => toggleGroups(props.num, props.id, props.level)}
-                id={`task_name_${props.id}`}
-                className={props.hasChildren ? 'has_children' : ''}
-              >
-                {' '}
-                {props.hasChildren ? (
-                  <i
-                    data-tip="Not Started"
-                    className={`fa fa-folder${isOpen ? '-open' : ''}`}
-                    aria-hidden="true"
-                  ></i>
-                ) : null}{' '}
-                {props.name}
-              </span>
-            </div>
-          ) : null}
-          {props.level === 3 ? (
-            <div className="level-space-3" data-tip="Level 3">
-              <span
-                onClick={e => toggleGroups(props.num, props.id, props.level)}
-                id={`task_name_${props.id}`}
-                className={props.hasChildren ? 'has_children' : ''}
-              >
-                {' '}
-                {props.hasChildren ? (
-                  <i
-                    data-tip="Not Started"
-                    className={`fa fa-folder${isOpen ? '-open' : ''}`}
-                    aria-hidden="true"
-                  ></i>
-                ) : null}{' '}
-                {props.name}
-              </span>
-            </div>
-          ) : null}
-          {props.level === 4 ? (
-            <div className="level-space-4" data-tip="Level 4">
-              <span
-                onClick={e => toggleGroups(props.num, props.id, props.level)}
-                id={`task_name_${props.id}`}
-                className={props.hasChildren ? 'has_children' : ''}
-              >
-                {' '}
-                {props.hasChildren ? (
-                  <i
-                    data-tip="Not Started"
-                    className={`fa fa-folder${isOpen ? '-open' : ''}`}
-                    aria-hidden="true"
-                  ></i>
-                ) : null}{' '}
-                {props.name}
-              </span>
-            </div>
-          ) : null}
-        </td>
-        <td>
-          {props.priority === 'Primary' ? (
-            <i data-tip="Primary" className="fa fa-star" aria-hidden="true"></i>
-          ) : null}
-          {props.priority === 'Secondary' ? (
-            <i data-tip="Secondary" className="fa fa-star-half-o" aria-hidden="true"></i>
-          ) : null}
-          {props.priority === 'Tertiary' ? (
-            <i data-tip="Tertiary" className="fa fa-star-o" aria-hidden="true"></i>
-          ) : null}
-        </td>
-        <td className="desktop-view">
-          {props.resources
-            ? props.resources.map((elm, i) => {
-                if (i < 2) {
-                  try {
-                    if (!elm.profilePic) {
-                      return (
-                        <a
-                          key={`res_${i}`}
-                          data-tip={elm.name}
-                          className="name"
-                          href={`/userprofile/${elm.userID}`}
-                          target="_blank"
-                        >
-                          <span className="dot">{elm.name.substring(0, 2)}</span>
-                        </a>
-                      );
-                    }
-                    return (
-                      <a
-                        key={`res_${i}`}
-                        data-tip={elm.name}
-                        className="name"
-                        href={`/userprofile/${elm.userID}`}
-                        target="_blank"
-                      >
-                        <img className="img-circle" src={elm.profilePic} />
-                      </a>
-                    );
-                  } catch (err) {}
-                }
-              })
-            : null}
-
-          {props.resources.length > 2 ? (
-            <a
-              className="name resourceMoreToggle"
-              onClick={() => toggleMoreResources(`res-${props.id}`)}
+    <>
+      {props.id ? (
+        <React.Fragment>
+          <tr
+            key={props.key}
+            className={`num_${props.num?.split('.').join('')} wbsTask  ${
+              props.isNew ? 'newTask' : ''
+            } parentId1_${props.parentId1} parentId2_${props.parentId2} parentId3_${
+              props.parentId3
+            } mother_${props.mother} lv_${props.level}`}
+            id={props.id}
+          >
+            <td
+              className={`tag_color tag_color_${
+                props.num?.length > 0 ? props.num.split('.')[0] : props.num
+              } tag_color_lv_${props.level}`}
+            ></td>
+            <td>
+              <EditTaskModal
+                key={`editTask_${props.id}`}
+                parentNum={props.num}
+                taskId={props.id}
+                projectId={props.projectId}
+                wbsId={props.wbsId}
+                parentId1={props.parentId1}
+                parentId2={props.parentId2}
+                parentId3={props.parentId3}
+                mother={props.mother}
+                level={props.level}
+              />
+            </td>
+            <td
+              id={`r_${props.num}_${props.id}`}
+              scope="row"
+              className="taskNum"
+              onClick={() => {
+                selectTask(props.id);
+                toggleGroups(props.num, props.id, props.level);
+              }}
             >
-              <span className="dot">{props.resources.length - 2}+</span>
-            </a>
-          ) : null}
-
-          <div id={`res-${props.id}`} className="resourceMore">
-            {props.resources
-              ? props.resources.map((elm, i) => {
-                  if (i >= 2) {
-                    if (!elm.profilePic) {
-                      return (
-                        <a
-                          data-tip={elm.name}
-                          className="name"
-                          key={i}
-                          href={`/userprofile/${elm.userID}`}
-                          target="_blank"
-                        >
-                          <span className="dot">{elm.name.substring(0, 2)}</span>
-                        </a>
-                      );
+              {props.num.split('.0').join('')}
+            </td>
+            <td className="taskName">
+              {props.level === 1 ? (
+                <div className="level-space-1" data-tip="Level 1">
+                  <span
+                    onClick={e => toggleGroups(props.num, props.id, props.level)}
+                    id={`task_name_${props.id}`}
+                    className={props.hasChildren ? 'has_children' : ''}
+                  >
+                    {' '}
+                    {props.hasChildren ? (
+                      <i
+                        data-tip="Not Started"
+                        className={`fa fa-folder${isOpen ? '-open' : ''}`}
+                        aria-hidden="true"
+                      ></i>
+                    ) : null}{' '}
+                    {props.name}
+                  </span>
+                </div>
+              ) : null}
+              {props.level === 2 ? (
+                <div className="level-space-2" data-tip="Level 2">
+                  <span
+                    onClick={e => toggleGroups(props.num, props.id, props.level)}
+                    id={`task_name_${props.id}`}
+                    className={props.hasChildren ? 'has_children' : ''}
+                  >
+                    {' '}
+                    {props.hasChildren ? (
+                      <i
+                        data-tip="Not Started"
+                        className={`fa fa-folder${isOpen ? '-open' : ''}`}
+                        aria-hidden="true"
+                      ></i>
+                    ) : null}{' '}
+                    {props.name}
+                  </span>
+                </div>
+              ) : null}
+              {props.level === 3 ? (
+                <div className="level-space-3" data-tip="Level 3">
+                  <span
+                    onClick={e => toggleGroups(props.num, props.id, props.level)}
+                    id={`task_name_${props.id}`}
+                    className={props.hasChildren ? 'has_children' : ''}
+                  >
+                    {' '}
+                    {props.hasChildren ? (
+                      <i
+                        data-tip="Not Started"
+                        className={`fa fa-folder${isOpen ? '-open' : ''}`}
+                        aria-hidden="true"
+                      ></i>
+                    ) : null}{' '}
+                    {props.name}
+                  </span>
+                </div>
+              ) : null}
+              {props.level === 4 ? (
+                <div className="level-space-4" data-tip="Level 4">
+                  <span
+                    onClick={e => toggleGroups(props.num, props.id, props.level)}
+                    id={`task_name_${props.id}`}
+                    className={props.hasChildren ? 'has_children' : ''}
+                  >
+                    {' '}
+                    {props.hasChildren ? (
+                      <i
+                        data-tip="Not Started"
+                        className={`fa fa-folder${isOpen ? '-open' : ''}`}
+                        aria-hidden="true"
+                      ></i>
+                    ) : null}{' '}
+                    {props.name}
+                  </span>
+                </div>
+              ) : null}
+            </td>
+            <td>
+              {props.priority === 'Primary' ? (
+                <i data-tip="Primary" className="fa fa-star" aria-hidden="true"></i>
+              ) : null}
+              {props.priority === 'Secondary' ? (
+                <i data-tip="Secondary" className="fa fa-star-half-o" aria-hidden="true"></i>
+              ) : null}
+              {props.priority === 'Tertiary' ? (
+                <i data-tip="Tertiary" className="fa fa-star-o" aria-hidden="true"></i>
+              ) : null}
+            </td>
+            <td className="desktop-view">
+              {props.resources
+                ? props.resources.map((elm, i) => {
+                    if (i < 2) {
+                      try {
+                        if (!elm.profilePic) {
+                          return (
+                            <a
+                              key={`res_${i}`}
+                              data-tip={elm.name}
+                              className="name"
+                              href={`/userprofile/${elm.userID}`}
+                              target="_blank"
+                            >
+                              <span className="dot">{elm.name.substring(0, 2)}</span>
+                            </a>
+                          );
+                        }
+                        return (
+                          <a
+                            key={`res_${i}`}
+                            data-tip={elm.name}
+                            className="name"
+                            href={`/userprofile/${elm.userID}`}
+                            target="_blank"
+                          >
+                            <img className="img-circle" src={elm.profilePic} />
+                          </a>
+                        );
+                      } catch (err) {}
                     }
-                    return (
-                      <a
-                        data-tip={elm.name}
-                        className="name"
-                        key={i}
-                        href={`/userprofile/${elm.userID}`}
-                        target="_blank"
-                      >
-                        <img className="img-circle" src={elm.profilePic} />
-                      </a>
-                    );
-                  }
-                })
-              : null}
-          </div>
-        </td>
-        <td>
-          {props.isAssigned ? (
-            <i data-tip="Assigned" className="fa fa-check-square" aria-hidden="true"></i>
-          ) : (
-            <i data-tip="Not Assigned" className="fa fa-square-o" aria-hidden="true"></i>
-          )}
-        </td>
-        <td className="desktop-view">
-          {props.status === 'Started' || props.status === 'Active' ? (
-            <i data-tip="Started" className="fa fa-pause" aria-hidden="true"></i>
-          ) : (
-            <i data-tip="Not Started" className="fa fa-play" aria-hidden="true"></i>
-          )}
-        </td>
-        <td
-          className="desktop-view"
-          data-tip={`Hours-Best-case: ${parseFloat(props.hoursBest / 8).toFixed(2)} day(s)`}
-        >
-          {props.hoursBest}
-        </td>
-        <td
-          className="desktop-view"
-          data-tip={`Hours-Worst-case: ${parseFloat(props.hoursWorst / 8).toFixed(2)} day(s)`}
-        >
-          {props.hoursWorst}
-        </td>
-        <td
-          className="desktop-view"
-          data-tip={`Hours-Most-case: ${parseFloat(props.hoursMost / 8).toFixed(2)} day(s)`}
-        >
-          {props.hoursMost}
-        </td>
-        <td
-          className="desktop-view"
-          data-tip={`Estimated Hours: ${parseFloat(props.estimatedHours / 8).toFixed(2)} day(s)`}
-        >
-          {parseFloat(props.estimatedHours).toFixed(2)}
-        </td>
-        <td className="desktop-view">
-          {startedDate.getFullYear() !== 1969
-            ? `${startedDate.getMonth() + 1}/${startedDate.getDate()}/${startedDate.getFullYear()}`
-            : null}
-          <br />
-        </td>
-        <td className="desktop-view">
-          {dueDate.getFullYear() !== 1969
-            ? `${dueDate.getMonth() + 1}/${dueDate.getDate()}/${dueDate.getFullYear()}`
-            : null}
-        </td>
-        <td className="desktop-view">
-          {props.links.map((link, i) =>
-            link.length > 1 ? (
-              <a key={i} href={link} target="_blank" data-tip={link}>
-                <i className="fa fa-link" aria-hidden="true"></i>
-              </a>
-            ) : null,
-          )}
-        </td>
-        <td className="desktop-view" onClick={toggleModel}>
-          <i className="fa fa-book" aria-hidden="true"></i>
-        </td>
-      </tr>
+                  })
+                : null}
 
-      <tr className="wbsTaskController desktop-view" id={`controller_${props.id}`}>
-        <td colSpan={15} className="controlTd">
-          {hasPermission(role, 'addTask', roles) ? (
-            <AddTaskModal
-              key={`addTask_${props.id}`}
-              parentNum={props.num}
-              taskId={props.id}
-              projectId={props.projectId}
-              wbsId={props.wbsId}
-              parentId1={props.parentId1}
-              parentId2={props.parentId2}
-              parentId3={props.parentId3}
-              mother={props.mother}
-              level={props.level}
-              openChild={e => openChild(props.num, props.id)}
-            />
-          ) : null}
-          <EditTaskModal
-            key={`editTask_${props.id}`}
-            parentNum={props.num}
-            taskId={props.id}
-            projectId={props.projectId}
-            wbsId={props.wbsId}
-            parentId1={props.parentId1}
-            parentId2={props.parentId2}
-            parentId3={props.parentId3}
-            mother={props.mother}
-            level={props.level}
-          />
+              {props.resources.length > 2 ? (
+                <a
+                  className="name resourceMoreToggle"
+                  onClick={() => toggleMoreResources(`res-${props.id}`)}
+                >
+                  <span className="dot">{props.resources.length - 2}+</span>
+                </a>
+              ) : null}
 
-          {hasPermission(role, 'deleteTask', roles) ? (
-            <>
-              <Button
-                color="danger"
-                size="sm"
-                className="controlBtn controlBtn_remove"
-                onClick={() => showUpDeleteModal()}
-              >
-                Remove
-              </Button>
+              <div id={`res-${props.id}`} className="resourceMore">
+                {props.resources
+                  ? props.resources.map((elm, i) => {
+                      if (i >= 2) {
+                        if (!elm.profilePic) {
+                          return (
+                            <a
+                              data-tip={elm.name}
+                              className="name"
+                              key={i}
+                              href={`/userprofile/${elm.userID}`}
+                              target="_blank"
+                            >
+                              <span className="dot">{elm.name.substring(0, 2)}</span>
+                            </a>
+                          );
+                        }
+                        return (
+                          <a
+                            data-tip={elm.name}
+                            className="name"
+                            key={i}
+                            href={`/userprofile/${elm.userID}`}
+                            target="_blank"
+                          >
+                            <img className="img-circle" src={elm.profilePic} />
+                          </a>
+                        );
+                      }
+                    })
+                  : null}
+              </div>
+            </td>
+            <td>
+              {props.isAssigned ? (
+                <i data-tip="Assigned" className="fa fa-check-square" aria-hidden="true"></i>
+              ) : (
+                <i data-tip="Not Assigned" className="fa fa-square-o" aria-hidden="true"></i>
+              )}
+            </td>
+            <td className="desktop-view">
+              {props.status === 'Started' || props.status === 'Active' ? (
+                <i data-tip="Started" className="fa fa-pause" aria-hidden="true"></i>
+              ) : (
+                <i data-tip="Not Started" className="fa fa-play" aria-hidden="true"></i>
+              )}
+            </td>
+            <td
+              className="desktop-view"
+              data-tip={`Hours-Best-case: ${parseFloat(props.hoursBest / 8).toFixed(2)} day(s)`}
+            >
+              {props.hoursBest}
+            </td>
+            <td
+              className="desktop-view"
+              data-tip={`Hours-Worst-case: ${parseFloat(props.hoursWorst / 8).toFixed(2)} day(s)`}
+            >
+              {props.hoursWorst}
+            </td>
+            <td
+              className="desktop-view"
+              data-tip={`Hours-Most-case: ${parseFloat(props.hoursMost / 8).toFixed(2)} day(s)`}
+            >
+              {props.hoursMost}
+            </td>
+            <td
+              className="desktop-view"
+              data-tip={`Estimated Hours: ${parseFloat(props.estimatedHours / 8).toFixed(
+                2,
+              )} day(s)`}
+            >
+              {parseFloat(props.estimatedHours).toFixed(2)}
+            </td>
+            <td className="desktop-view">
+              {startedDate.getFullYear() !== 1969
+                ? `${startedDate.getMonth() +
+                    1}/${startedDate.getDate()}/${startedDate.getFullYear()}`
+                : null}
+              <br />
+            </td>
+            <td className="desktop-view">
+              {dueDate.getFullYear() !== 1969
+                ? `${dueDate.getMonth() + 1}/${dueDate.getDate()}/${dueDate.getFullYear()}`
+                : null}
+            </td>
+            <td className="desktop-view">
+              {props.links.map((link, i) =>
+                link.length > 1 ? (
+                  <a key={i} href={link} target="_blank" data-tip={link}>
+                    <i className="fa fa-link" aria-hidden="true"></i>
+                  </a>
+                ) : null,
+              )}
+            </td>
+            <td className="desktop-view" onClick={toggleModel}>
+              <i className="fa fa-book" aria-hidden="true"></i>
+            </td>
+          </tr>
 
-              <Dropdown
-                direction="up"
-                isOpen={dropdownOpen}
-                toggle={toggle}
-                style={{ float: 'left' }}
-              >
-                <DropdownToggle caret caret color="primary" size="sm">
-                  Move
-                </DropdownToggle>
-                <DropdownMenu>
-                  {props.siblings.map((item, i) => {
-                    if (item.num !== props.num) {
-                      return (
-                        <DropdownItem key={i} onClick={e => onMove(props.num, item.num)}>
-                          {item.num.split('.0')[0]}
-                        </DropdownItem>
-                      );
-                    } else {
-                      passCurrentNum = true;
-                    }
-                  })}
-                </DropdownMenu>
-              </Dropdown>
-
-              <Button
-                color="secondary"
-                size="sm"
-                className="margin-left"
-                onClick={() => onCopy(props.id)}
-              >
-                {isCopied ? 'Copied' : 'Copy'}
-              </Button>
-            </>
-          ) : null}
-
-          <Modal isOpen={modal} toggle={toggleModel}>
-            <ModalBody>
-              <h6>WHY THIS TASK IS IMPORTANT:</h6>
-              <Editor
-                init={{
-                  menubar: false,
-                  toolbar: false,
-                  branding: false,
-                  min_height: 80,
-                  max_height: 300,
-                  autoresize_bottom_margin: 1,
-                }}
-                disabled={true}
-                value={props.whyInfo}
+          <tr className="wbsTaskController desktop-view" id={`controller_${props.id}`}>
+            <td colSpan={15} className="controlTd">
+              {hasPermission(role, 'addTask', roles) ? (
+                <AddTaskModal
+                  key={`addTask_${props.id}`}
+                  parentNum={props.num}
+                  taskId={props.id}
+                  projectId={props.projectId}
+                  wbsId={props.wbsId}
+                  parentId1={props.parentId1}
+                  parentId2={props.parentId2}
+                  parentId3={props.parentId3}
+                  mother={props.mother}
+                  level={props.level}
+                  openChild={e => openChild(props.num, props.id)}
+                />
+              ) : null}
+              <EditTaskModal
+                key={`editTask_${props.id}`}
+                parentNum={props.num}
+                taskId={props.id}
+                projectId={props.projectId}
+                wbsId={props.wbsId}
+                parentId1={props.parentId1}
+                parentId2={props.parentId2}
+                parentId3={props.parentId3}
+                mother={props.mother}
+                level={props.level}
               />
 
-              <h6>THE DESIGN INTENT:</h6>
-              <Editor
-                init={{
-                  menubar: false,
-                  toolbar: false,
-                  branding: false,
-                  min_height: 80,
-                  max_height: 300,
-                  autoresize_bottom_margin: 1,
-                }}
-                disabled={true}
-                value={props.intentInfo}
-              />
+              {hasPermission(role, 'deleteTask', roles) ? (
+                <>
+                  <Button
+                    color="danger"
+                    size="sm"
+                    className="controlBtn controlBtn_remove"
+                    onClick={() => showUpDeleteModal()}
+                  >
+                    Remove
+                  </Button>
 
-              <h6>ENDSTATE:</h6>
-              <Editor
-                init={{
-                  menubar: false,
-                  toolbar: false,
-                  branding: false,
-                  min_height: 80,
-                  max_height: 300,
-                  autoresize_bottom_margin: 1,
-                }}
-                disabled={true}
-                value={props.endstateInfo}
-              />
-            </ModalBody>
-          </Modal>
+                  <Dropdown
+                    direction="up"
+                    isOpen={dropdownOpen}
+                    toggle={toggle}
+                    style={{ float: 'left' }}
+                  >
+                    <DropdownToggle caret caret color="primary" size="sm">
+                      Move
+                    </DropdownToggle>
+                    <DropdownMenu>
+                      {props.siblings.map((item, i) => {
+                        if (item.num !== props.num) {
+                          return (
+                            <DropdownItem key={i} onClick={e => onMove(props.num, item.num)}>
+                              {item.num.split('.0')[0]}
+                            </DropdownItem>
+                          );
+                        } else {
+                          passCurrentNum = true;
+                        }
+                      })}
+                    </DropdownMenu>
+                  </Dropdown>
 
-          <ModalDelete
-            isOpen={modalDelete}
-            closeModal={() => {
-              setModalDelete(false);
-            }}
-            confirmModal={() => deleteTask(props.id, props.mother)}
-            modalMessage={props.state.popupEditor.currPopup.popupContent || ''}
-            modalTitle={Message.CONFIRM_DELETION}
-          />
-        </td>
-      </tr>
-    </React.Fragment>
+                  <Button
+                    color="secondary"
+                    size="sm"
+                    className="margin-left"
+                    onClick={() => onCopy(props.id)}
+                  >
+                    {isCopied ? 'Copied' : 'Copy'}
+                  </Button>
+                </>
+              ) : null}
+
+              <Modal isOpen={modal} toggle={toggleModel}>
+                <ModalBody>
+                  <h6>WHY THIS TASK IS IMPORTANT:</h6>
+                  <Editor
+                    init={{
+                      menubar: false,
+                      toolbar: false,
+                      branding: false,
+                      min_height: 80,
+                      max_height: 300,
+                      autoresize_bottom_margin: 1,
+                    }}
+                    disabled={true}
+                    value={props.whyInfo}
+                  />
+
+                  <h6>THE DESIGN INTENT:</h6>
+                  <Editor
+                    init={{
+                      menubar: false,
+                      toolbar: false,
+                      branding: false,
+                      min_height: 80,
+                      max_height: 300,
+                      autoresize_bottom_margin: 1,
+                    }}
+                    disabled={true}
+                    value={props.intentInfo}
+                  />
+
+                  <h6>ENDSTATE:</h6>
+                  <Editor
+                    init={{
+                      menubar: false,
+                      toolbar: false,
+                      branding: false,
+                      min_height: 80,
+                      max_height: 300,
+                      autoresize_bottom_margin: 1,
+                    }}
+                    disabled={true}
+                    value={props.endstateInfo}
+                  />
+                </ModalBody>
+              </Modal>
+
+              <ModalDelete
+                isOpen={modalDelete}
+                closeModal={() => {
+                  setModalDelete(false);
+                }}
+                confirmModal={() => deleteTask(props.id, props.mother)}
+                modalMessage={props.state.popupEditor.currPopup.popupContent || ''}
+                modalTitle={Message.CONFIRM_DELETION}
+              />
+            </td>
+          </tr>
+        </React.Fragment>
+      ) : null}
+    </>
   );
 };
 const mapStateToProps = state => {

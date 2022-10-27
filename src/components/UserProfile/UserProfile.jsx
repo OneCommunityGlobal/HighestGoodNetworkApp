@@ -37,6 +37,9 @@ import { ENDPOINTS } from 'utils/URL';
 import ActiveCell from 'components/UserManagement/ActiveCell';
 import axios from 'axios';
 import hasPermission from 'utils/permissions';
+import ActiveInactiveConfirmationPopup from '../UserManagement/ActiveInactiveConfirmationPopup';
+import { updateUserStatus } from '../../actions/userManagement';
+import { UserStatus } from '../../utils/enums';
 
 const UserProfile = props => {
   /* Constant values */
@@ -62,6 +65,7 @@ const UserProfile = props => {
   const [modalTitle, setModalTitle] = useState('');
   const [modalMessage, setModalMessage] = useState('');
   const [shouldRefresh, setShouldRefresh] = useState(false);
+  const [activeInactivePopupOpen, setActiveInactivePopupOpen] = useState(false);
   //const [isValid, setIsValid] = useState(true)
 
   /* useEffect functions */
@@ -272,6 +276,20 @@ const UserProfile = props => {
     });
   };
 
+  const setActiveInactive = isActive => {
+    setActiveInactivePopupOpen(false);
+    setUserProfile({
+      ...userProfile,
+      isActive: !userProfile.isActive,
+      endDate: userProfile.isActive ? moment(new Date()).format('YYYY-MM-DD') : undefined,
+    });
+    updateUserStatus(userProfile, isActive ? UserStatus.Active : UserStatus.InActive, undefined);
+  };
+
+  const activeInactivePopupClose = () => {
+    setActiveInactivePopupOpen(false);
+  };
+
   /**
    *
    * UserProfile.jsx and its subsomponents are being refactored to avoid the use of this monolithic function.
@@ -339,6 +357,13 @@ const UserProfile = props => {
 
   return (
     <div>
+      <ActiveInactiveConfirmationPopup
+        isActive={userProfile.isActive}
+        fullName={userProfile.firstName + ' ' + userProfile.lastName}
+        open={activeInactivePopupOpen}
+        setActiveInactive={setActiveInactive}
+        onClose={activeInactivePopupClose}
+      />
       {showModal && (
         <UserProfileModal
           isOpen={showModal}
@@ -409,15 +434,7 @@ const UserProfile = props => {
                     isActive={userProfile.isActive}
                     user={userProfile}
                     onClick={() => {
-                      setChanged(true);
-                      setUserProfile({
-                        ...userProfile,
-                        isActive: !userProfile.isActive,
-                        endDate:
-                          !userProfile.isActive === false
-                            ? moment(new Date()).format('YYYY-MM-DD')
-                            : undefined,
-                      });
+                      setActiveInactivePopupOpen(true);
                     }}
                   />
                   &nbsp;
@@ -448,6 +465,7 @@ const UserProfile = props => {
               setUserProfile={setUserProfile}
               role={requestorRole}
               canEdit={canEdit}
+              handleSubmit={handleSubmit}
             />
           </Col>
         </Row>
@@ -556,7 +574,7 @@ const UserProfile = props => {
                   setChanged={setChanged}
                   isUserSelf={isUserSelf}
                   role={requestorRole}
-                  canEdit={canEdit}
+                  canEdit={hasPermission(requestorRole, 'editUserProfile')}
                 />
               </TabPane>
               <TabPane tabId="3">
@@ -565,7 +583,7 @@ const UserProfile = props => {
                   teamsData={props?.allTeams?.allTeamsData || []}
                   onAssignTeam={onAssignTeam}
                   onDeleteteam={onDeleteTeam}
-                  edit={canEdit}
+                  edit={hasPermission(requestorRole, 'editUserProfile')}
                   role={requestorRole}
                   roles={roles}
                 />
@@ -576,7 +594,7 @@ const UserProfile = props => {
                   projectsData={props?.allProjects?.projects || []}
                   onAssignProject={onAssignProject}
                   onDeleteProject={onDeleteProject}
-                  edit={canEdit}
+                  edit={hasPermission(requestorRole, 'editUserProfile')}
                   role={requestorRole}
                 />
               </TabPane>
@@ -595,40 +613,44 @@ const UserProfile = props => {
         <Row>
           <Col md="4"></Col>
           <Col md="8">
-            {hasPermission(requestorRole, 'resetPasswordOthers', roles) &&
-              canEdit &&
-              !isUserSelf && <ResetPasswordButton className="mr-1" user={userProfile} />}
-            {isUserSelf && (
-              <div className="profileEditButtonContainer">
-                <Link to={`/updatepassword/${userProfile._id}`}>
-                  <Button className="mr-1" color="primary">
-                    {' '}
-                    Update Password
-                  </Button>
-                </Link>
-              </div>
-            )}
-            {canEdit && (
-              <>
-                <span
-                  onClick={() => {
-                    setUserProfile(originalUserProfile);
-                    setChanged(false);
-                  }}
-                  className="btn btn-outline-danger mr-1"
-                >
-                  Cancel
-                </span>
-                <SaveButton
-                  className="mr-1"
-                  handleSubmit={handleSubmit}
-                  disabled={
-                    !formValid.firstName || !formValid.lastName || !formValid.email || !changed
-                  }
-                  userProfile={userProfile}
-                />
-              </>
-            )}
+            <div className="profileEditButtonContainer">
+              {hasPermission(requestorRole, 'resetPasswordOthers', roles) &&
+                canEdit &&
+                !isUserSelf && (
+                  <ResetPasswordButton className="mr-1 btn-bottom" user={userProfile} />
+                )}
+              {isUserSelf &&
+                (activeTab == '1' || hasPermission(requestorRole, 'editUserProfile', roles)) && (
+                  <Link to={`/updatepassword/${userProfile._id}`}>
+                    <Button className="mr-1 btn-bottom" color="primary">
+                      {' '}
+                      Update Password
+                    </Button>
+                  </Link>
+                )}
+              {canEdit &&
+                (activeTab == '1' || hasPermission(requestorRole, 'editUserProfile', roles)) && (
+                  <>
+                    <SaveButton
+                      className="mr-1 btn-bottom"
+                      handleSubmit={handleSubmit}
+                      disabled={
+                        !formValid.firstName || !formValid.lastName || !formValid.email || !changed
+                      }
+                      userProfile={userProfile}
+                    />
+                    <span
+                      onClick={() => {
+                        setUserProfile(originalUserProfile);
+                        setChanged(false);
+                      }}
+                      className="btn btn-outline-danger mr-1 btn-bottom"
+                    >
+                      Cancel
+                    </span>
+                  </>
+                )}
+            </div>
           </Col>
         </Row>
       </Container>

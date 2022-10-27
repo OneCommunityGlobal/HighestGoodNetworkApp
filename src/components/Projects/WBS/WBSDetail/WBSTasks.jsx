@@ -24,8 +24,8 @@ const WBSTasks = props => {
   const wbsId = props.match.params.wbsId;
   const projectId = props.match.params.projectId;
   const wbsName = props.match.params.wbsName;
-  const [isShowImport, setIsShowImport] = useState(false);
 
+  const [isShowImport, setIsShowImport] = useState(false);
   const [selectedId, setSelectedId] = useState(null);
   const [filterState, setFilterState] = useState('all');
 
@@ -115,15 +115,27 @@ const WBSTasks = props => {
   const filterTasks = (allTaskItems, filter) => {
     if (filter === 'all') {
       return allTaskItems;
-    } else if (filter === 'open') {
+    } else if (filter === 'assigned') {
+      return allTaskItems.filter(taskItem => {
+        if (taskItem.isAssigned === true) {
+          return taskItem;
+        }
+      });
+    } else if (filter === 'unassigned') {
+      return allTaskItems.filter(taskItem => {
+        if (taskItem.isAssigned === false) {
+          return taskItem;
+        }
+      });
+    } else if (filter === 'active') {
       return allTaskItems.filter(taskItem => {
         if (taskItem.status === 'Active' || taskItem.status === 'Started') {
           return taskItem;
         }
       });
-    } else if (filter === 'close') {
+    } else if (filter === 'inactive') {
       return allTaskItems.filter(taskItem => {
-        if (taskItem.status === 'Complete' || taskItem.status === 'Not Started') {
+        if (taskItem.status === 'Not Started') {
           return taskItem;
         }
       });
@@ -143,7 +155,6 @@ const WBSTasks = props => {
                 <i className="fa fa-chevron-circle-left" aria-hidden="true"></i>
               </button>
             </NavItem>
-
             <div id="member_project__name">{wbsName}</div>
           </ol>
         </nav>
@@ -166,14 +177,23 @@ const WBSTasks = props => {
         </Button>
 
         <div className="toggle-all">
-          <Button color="light" size="sm" onClick={() => setFilterState('open')}>
-            Open
-          </Button>
-          <Button color="dark" size="sm" onClick={() => setFilterState('close')}>
-            Close
-          </Button>
-          <Button color="grey" size="sm" onClick={() => setFilterState('all')}>
+          <Button color="primary" size="sm" onClick={() => setFilterState('all')}>
             All
+          </Button>
+          <Button color="secondary" size="sm" onClick={() => setFilterState('assigned')}>
+            Assigned
+          </Button>
+          <Button color="success" size="sm" onClick={() => setFilterState('unassigned')}>
+            Unassigned
+          </Button>
+          <Button color="info" size="sm" onClick={() => setFilterState('active')}>
+            Active
+          </Button>
+          <Button color="warning" size="sm" onClick={() => setFilterState('inactive')}>
+            Inactive
+          </Button>
+          <Button color="danger" size="sm" onClick={() => setFilterState('complete')}>
+            Complete
           </Button>
         </div>
 

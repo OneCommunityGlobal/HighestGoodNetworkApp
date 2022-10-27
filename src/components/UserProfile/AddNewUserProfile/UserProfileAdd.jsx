@@ -62,6 +62,8 @@ class AddUserProfile extends Component {
         privacySettings: { blueSquares: true, email: true, phoneNumber: true },
         jobTitle: '',
         googleDoc: '',
+        timeZone: '',
+        location: '',
         showphone: true,
       },
       formValid: {},
@@ -452,7 +454,14 @@ class AddUserProfile extends Component {
             response.data.results.length
           ) {
             let timezone = response.data.results[0].annotations.timezone.name;
-            this.setState({ ...this.state, timeZoneFilter: timezone });
+            this.setState({
+              ...this.state,
+              timeZoneFilter: timezone,
+              userProfile: {
+                ...this.state.userProfile,
+                timeZone: timezone,
+              },
+            });
           } else {
             alert('Invalid location or ' + response.data.status.message);
           }
@@ -509,8 +518,8 @@ class AddUserProfile extends Component {
       email: email,
       privacySettings: privacySettings,
       collaborationPreference: collaborationPreference,
-      timeZone,
-      location,
+      timeZone: timeZone,
+      location: location,
     };
 
     this.setState({ formSubmitted: true });

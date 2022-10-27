@@ -14,7 +14,7 @@ import { weeklySummariesReportReducer } from './weeklySummariesReportReducer';
 // import { actionItemsReducer } from './actionItemsReducer'
 // import { notificationsReducer } from './notificationsReducer'
 import { allProjectsReducer } from './allProjectsReducer';
-import { projectByIdReducer } from './projectByIdReducer';
+import { projectReportReducer } from './projectReportReducer';
 import { userProjectsReducer } from './userProjectsReducer';
 import { projectMembershipReducer } from './projectMembershipReducer';
 import { allTeamsReducer, allUserTeamsReducer } from './allTeamsReducer';
@@ -33,6 +33,7 @@ import { teamUsersReducer } from './teamsTeamMembersReducer';
 import { badgeReducer } from './badgeReducer';
 import { popupEditorReducer } from './popupEditorReducer';
 import { timeZoneAPIReducer } from './timezoneApiReducer';
+import { teamMemberTasksReducer } from 'components/TeamMemberTasks/reducer';
 import { roleReducer } from './roleReducer';
 
 export default combineReducers({
@@ -52,7 +53,7 @@ export default combineReducers({
   //	actionItems: actionItemsReducer,
   //	notifications: notificationsReducer,
   allProjects: allProjectsReducer,
-  project: projectByIdReducer,
+  projectReport: projectReportReducer,
   userProjects: userProjectsReducer,
   projectMembers: projectMembershipReducer,
   managingTeams: managingTeamsReducer,
@@ -73,5 +74,6 @@ export default combineReducers({
   badge: badgeReducer,
   popupEditor: popupEditorReducer,
   timeZoneAPI: timeZoneAPIReducer,
+  teamMemberTasks: teamMemberTasksReducer,
   role: roleReducer,
 });

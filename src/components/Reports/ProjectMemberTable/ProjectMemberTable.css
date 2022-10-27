@@ -1,0 +1,28 @@
+.project-member-table {
+  height: 100%;
+}
+
+.project-member-table-title {
+  text-align: start;
+  margin-bottom: 12px;
+}
+
+.reports-table-head {
+  background-color: #eee7f8;
+  margin-bottom: 16px;
+  border-radius: 4px;
+  min-height: 32px;
+  padding: 8px 16px;
+}
+
+.project-member-table-row {
+  display: grid;
+  grid-auto-flow: column;
+  grid-template-columns: 1fr 4fr 4fr;
+  column-gap: 4px;
+  min-height: 42px;
+  align-items: center;
+  justify-items: start;
+  padding: 0 16px;
+  border-bottom: 3px solid #f8f7f8;
+}

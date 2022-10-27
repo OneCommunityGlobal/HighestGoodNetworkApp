@@ -11,10 +11,17 @@ import DeleteModal from './DeleteModal';
 import { useDispatch } from 'react-redux';
 import { editTimeEntry, postTimeEntry } from '../../actions/timeEntries';
 import hasPermission from 'utils/permissions';
+import { ENDPOINTS } from 'utils/URL';
+import axios from 'axios';
+import { useEffect } from 'react';
 
 const TimeEntry = ({ data, displayYear, userProfile }) => {
   const [modal, setModal] = useState(false);
+  const [projectName, setProjectName] = useState('');
+  const [taskName, setTaskName] = useState('');
+
   const toggle = () => setModal(modal => !modal);
+
   const dateOfWork = moment(data.dateOfWork);
   const { user } = useSelector(state => state.auth);
   const { roles } = useSelector(state => state.role);
@@ -27,6 +34,25 @@ const TimeEntry = ({ data, displayYear, userProfile }) => {
   const role = user.role;
 
   const dispatch = useDispatch();
+
+  useEffect(() => {
+    axios
+      .get(ENDPOINTS.PROJECT_BY_ID(data.projectId))
+      .then(res => {
+        setProjectName(res?.data?.projectName || '');
+      })
+      .catch(err => console.log(err));
+  }, []);
+
+  useEffect(() => {
+    axios
+      // Note: Here taskId is stored in projectId since no taskId field in timeEntry schema
+      .get(ENDPOINTS.GET_TASK(data.projectId))
+      .then(res => {
+        setTaskName(res?.data?.taskName || '');
+      })
+      .catch(err => console.log(err));
+  }, []);
 
   const toggleTangibility = () => {
     const newData = {
@@ -55,7 +81,7 @@ const TimeEntry = ({ data, displayYear, userProfile }) => {
             {data.hours}h {data.minutes}m
           </h4>
           <div className="text-muted">Project/Task:</div>
-          <h6> {data.projectName} </h6>
+          <h6> {projectName || taskName} </h6>
           <span className="text-muted">Tangible:&nbsp;</span>
           <input
             type="checkbox"

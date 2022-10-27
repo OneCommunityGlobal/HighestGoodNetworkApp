@@ -943,9 +943,7 @@ class UserProfileEdit extends Component {
                           value={userProfile.weeklyComittedHours}
                           onChange={this.handleUserProfile}
                           placeholder="weeklyCommittedHours"
-                          invalid={
-                            !hasPermission(requestorRole, 'editUserProfile', this.props.role.roles)
-                          }
+                          invalid={/*!hasPermission(requestorRole, 'editUserProfile')*/ true}
                         />
                       </Col>
                     </Row>

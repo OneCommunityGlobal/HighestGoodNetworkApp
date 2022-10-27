@@ -18,17 +18,20 @@ import UserManagement from './components/UserManagement';
 import Members from './components/Projects/Members';
 import WBS from './components/Projects/WBS';
 import WBSDetail from './components/Projects/WBS/WBSDetail';
+import SingleTask from './components/Projects/WBS/SingleTask';
+import SameFolderTasks from 'components/Projects/WBS/SameFolderTasks';
 import WeeklySummariesReport from './components/WeeklySummariesReport';
 import Admin from './components/Admin';
 import 'react-toastify/dist/ReactToastify.css';
 import { UserRole } from './utils/enums';
 import ForgotPassword from './components/Login/ForgotPassword';
-import PeopleReport from './components/Reports/PeopleReport';
-import ProjectReport from './components/Reports/ProjectReport';
-import TeamReport from './components/Reports/TeamReport';
+import { PeopleReport } from './components/Reports/PeopleReport';
+import { ProjectReport } from './components/Reports/ProjectReport';
+import { TeamReport } from './components/Reports/TeamReport';
 import Inventory from './components/Inventory';
 import BadgeManagement from './components/Badge/BadgeManagement';
 import AutoUpdate from 'components/AutoUpdate';
+import { TaskEditSuggestions } from 'components/TaskEditSuggestions/TaskEditSuggestions'
 import PermissionsManagement from 'components/PermissionsManagement/PermissionsManagement';
 import UserRoleTab from 'components/PermissionsManagement/UserRoleTab';
 
@@ -49,6 +52,7 @@ export default (
       <ProtectedRoute path="/peoplereport/:userId" component={PeopleReport} />
       <ProtectedRoute path="/projectreport/:projectId" component={ProjectReport} />
       <ProtectedRoute path="/teamreport/:teamId" component={TeamReport} />
+      <ProtectedRoute path="/taskeditsuggestions" component={TaskEditSuggestions} />
 
       <ProtectedRoute
         path="/inventory/:projectId"
@@ -75,6 +79,8 @@ export default (
       />
       <ProtectedRoute path="/project/wbs/:projectId" component={WBS} />
       <ProtectedRoute path="/wbs/tasks/:wbsId/:projectId" component={WBSDetail} />
+      <ProtectedRoute path="/wbs/tasks/:taskId" component={SingleTask} />
+      <ProtectedRoute path="/wbs/samefoldertasks/:taskId" component={SameFolderTasks} />
       <ProtectedRoute
         path="/usermanagement"
         exact

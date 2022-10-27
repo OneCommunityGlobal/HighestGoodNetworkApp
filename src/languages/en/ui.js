@@ -47,3 +47,5 @@ export const TOTAL_TEAMS = 'Teams';
 export const ACTIVE_TEAMS = 'Active Teams';
 export const ADMIN = 'Admin';
 export const POPUP_MANAGEMENT = 'Popup Management';
+export const CANCEL = 'Delete Final Day';
+export const SET_FINAL_DAY = 'Set Final Day';

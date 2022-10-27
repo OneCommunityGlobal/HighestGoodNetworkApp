@@ -12,7 +12,6 @@
 }
 
 .badge_image_md > img {
-  border-radius: 50%;
   height: 115px;
   width: 115px;
   margin: 2px;
@@ -88,8 +87,8 @@
 
 .badge_featured_container {
   display: flex;
-  flex-wrap: none;
-  overflow-y: none;
+  flex-wrap: nowrap;
+  overflow-y: hidden;
 }
 
 .badge_md_image_container {
@@ -130,10 +129,12 @@
   text-align: left;
 }
 
-@media (max-width: 1199px) {
+#badgeCard {
+  min-width: 475px;
+}
+
+@media screen and (max-width: 1199px) {
   .badge_featured_container {
-    flex-wrap: none;
-    overflow-y: hidden;
     overflow-x: scroll;
   }
 }

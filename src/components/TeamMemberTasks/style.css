@@ -5,3 +5,72 @@
 .team-member-tasks h1 {
   color: black;
 }
+
+.team-member-tasks-bell {
+  color: red;
+  cursor: pointer;
+}
+
+.comitted-hours-circle {
+  padding: 0.75rem;
+}
+
+.team-member-tasks .team-member-tasks-headers {
+  vertical-align: middle;
+}
+
+.team-member-tasks .team-member-tasks-subtable {
+  margin: 0;
+  text-align: center;
+}
+
+.team-task-progress {
+  width: 35%;
+}
+
+.task-break {
+  border-bottom: 1px solid lightgray;
+}
+
+.task-break:last-of-type {
+  border-bottom: none;
+}
+
+.task-align {
+  text-align: left;
+}
+
+.team-member-tasks-user-name {
+  width: 70%;
+}
+
+.team-clocks {
+  display: flex;
+  justify-content: space-around;
+}
+
+.team-clocks-header {
+  height: 73.5px;
+  align-items: center;
+}
+
+.circle-border {
+  border: 3px solid gray;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  font-size: 15px;
+  font-weight: bold;
+  font-family: Arial, Helvetica, sans-serif;
+  margin-right: 20px;
+}
+
+.circle-border:active {
+  transform: scale(0.95);
+  box-shadow: 1px 1px 15px 1px rgba(0, 0, 0, 0.15)
+}
+
+.header-box {
+  display: flex;
+  justify-content: space-between;
+}
