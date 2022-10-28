@@ -24,6 +24,22 @@ import { getAllUserProfile } from 'actions/userManagement';
 import { fetchAllTasks } from 'actions/task';
 import { deleteSelectedTask } from './reducer';
 
+const TaskButton = task => {
+  if (task.task.status === 'Complete') {
+    return (
+      <td>
+        <button className="complete-task-button">Complete</button>
+      </td>
+    );
+  } else {
+    return (
+      <td>
+        <button className="uncomplete-task-button">Mark as Done</button>
+      </td>
+    );
+  }
+};
+
 const TeamMemberTasks = props => {
   const [isTimeLogActive, setIsTimeLogActive] = useState(0);
   const [timeLogOpen, setTimeLogOpen] = useState(false);
