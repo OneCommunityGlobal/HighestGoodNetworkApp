@@ -55,11 +55,13 @@ export const Header = props => {
       props.getHeaderData(props.auth.user.userid);
       props.getTimerData(props.auth.user.userid);
     }
+  }, [props.auth.isAuthenticated]);
+
+  useEffect(() => {
     if (roles.length === 0) {
       props.getAllRoles();
     }
-  }, [props.auth.isAuthenticated]);
-
+  }, []);
   const roles = props.role?.roles;
 
   const toggle = () => {
