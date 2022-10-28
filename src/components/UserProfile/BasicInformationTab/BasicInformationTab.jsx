@@ -471,11 +471,10 @@ const BasicInformationTab = props => {
                 disabled={!canEdit}
                 canEdit={canEdit}
               >
-                <option value="Administrator">Administrator</option>
-                <option value="Volunteer">Volunteer</option>
-                <option value="Manager">Manager</option>
-                <option value="Core Team">Core Team</option>
-                <option value="Mentor">Mentor</option>
+                {roles.map(({ roleName }) => {
+                  if (roleName === 'Owner') return;
+                  return <option value={roleName}>{roleName}</option>;
+                })}
                 {hasPermission(role, 'addDeleteEditOwners', roles) && (
                   <option value="Owner">Owner</option>
                 )}
@@ -564,19 +563,15 @@ const BasicInformationTab = props => {
       <Row style={{ marginBottom: '10px' }}>
         <Col>
           <Label>
-            {
-            userProfile.endDate
-            ? 'End Date ' + userProfile.endDate.toLocaleString().split('T')[0]
-            : 'End Date '+ 'N/A'}
-            </Label>
-          
+            {userProfile.endDate
+              ? 'End Date ' + userProfile.endDate.toLocaleString().split('T')[0]
+              : 'End Date ' + 'N/A'}
+          </Label>
         </Col>
         <Col md="6">
           {canEdit && <SetUpFinalDayButton isBigBtn={true} userProfile={userProfile} />}
         </Col>
-      </Row >
-      
-      
+      </Row>
     </div>
   );
 };

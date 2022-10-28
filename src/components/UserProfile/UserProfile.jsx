@@ -48,7 +48,12 @@ const UserProfile = props => {
     lastName: true,
     email: true,
   };
-  const { roles } = props.role;
+  // const { roles } = props?.userProjects;
+  // const roles = props?.userProjects;
+  const roles = props?.role.roles;
+
+  console.log(roles, 'akla');
+
   /* Hooks */
   const [showLoading, setShowLoading] = useState(true);
   const [userProfile, setUserProfile] = useState(undefined);
@@ -574,7 +579,7 @@ const UserProfile = props => {
                   setChanged={setChanged}
                   isUserSelf={isUserSelf}
                   role={requestorRole}
-                  canEdit={hasPermission(requestorRole, 'editUserProfile')}
+                  canEdit={hasPermission(requestorRole, 'editUserProfile', roles)}
                 />
               </TabPane>
               <TabPane tabId="3">
@@ -583,7 +588,7 @@ const UserProfile = props => {
                   teamsData={props?.allTeams?.allTeamsData || []}
                   onAssignTeam={onAssignTeam}
                   onDeleteteam={onDeleteTeam}
-                  edit={hasPermission(requestorRole, 'editUserProfile')}
+                  edit={hasPermission(requestorRole, 'editUserProfile', roles)}
                   role={requestorRole}
                   roles={roles}
                 />
@@ -594,7 +599,7 @@ const UserProfile = props => {
                   projectsData={props?.allProjects?.projects || []}
                   onAssignProject={onAssignProject}
                   onDeleteProject={onDeleteProject}
-                  edit={hasPermission(requestorRole, 'editUserProfile')}
+                  edit={hasPermission(requestorRole, 'editUserProfile', roles)}
                   role={requestorRole}
                 />
               </TabPane>

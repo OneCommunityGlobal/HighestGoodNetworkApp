@@ -230,11 +230,10 @@ class AddUserProfile extends Component {
                         defaultValue="Volunteer"
                         onChange={this.handleUserProfile}
                       >
-                        <option value="Administrator">Administrator</option>
-                        <option value="Volunteer">Volunteer</option>
-                        <option value="Manager">Manager</option>
-                        <option value="Core Team">Core Team</option>
-                        <option value="Mentor">Mentor</option>
+                        {this.props.role.roles.map(({ roleName }) => {
+                          if (roleName === 'Owner') return;
+                          return <option value={roleName}>{roleName}</option>;
+                        })}
                         {hasPermission(
                           this.props.auth.user.role,
                           'addDeleteEditOwners',
