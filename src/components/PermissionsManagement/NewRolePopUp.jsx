@@ -5,7 +5,7 @@ import { permissionLabel } from './UserRoleTab';
 import { toast } from 'react-toastify';
 import { connect } from 'react-redux';
 import { addNewRole, getAllRoles } from '../../actions/role';
-import { commonBackEndPermissions } from 'utils/associatedPermissions';
+import { commonBackEndPermissions, permissionFrontToBack } from 'utils/associatedPermissions';
 
 const CreateNewRolePopup = ({ toggle, addNewRole }) => {
   const [permissionsChecked, setPermissionsChecked] = useState([]);
