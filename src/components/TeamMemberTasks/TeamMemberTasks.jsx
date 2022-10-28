@@ -20,6 +20,22 @@ import { fetchAllManagingTeams } from '../../actions/team';
 import EffortBar from 'components/Timelog/EffortBar';
 import TimeEntry from 'components/Timelog/TimeEntry';
 
+const TaskButton = task => {
+  if (task.task.status === 'Complete') {
+    return (
+      <td>
+        <button className="complete-task-button">Complete</button>
+      </td>
+    );
+  } else {
+    return (
+      <td>
+        <button className="uncomplete-task-button">Mark as Done</button>
+      </td>
+    );
+  }
+};
+
 const TeamMemberTasks = props => {
   const [isTimeLogActive, setIsTimeLogActive] = useState(0);
   const [timeLogOpen, setTimeLogOpen] = useState(false);
@@ -215,6 +231,11 @@ const TeamMemberTasks = props => {
                                 </div>
                               </td>
                             )}
+                            {userRole === 'Administrator' ? (
+                              <td>
+                                <TaskButton task={task}></TaskButton>
+                              </td>
+                            ) : null}
                           </tr>
                         ),
                     )}
@@ -342,6 +363,7 @@ const TeamMemberTasks = props => {
                   <tr>
                     <th>Tasks(s)</th>
                     <th className="team-task-progress">Progress</th>
+                    {userRole === 'Administrator' ? <th>Status</th> : null}
                   </tr>
                 </thead>
               </Table>

@@ -67,10 +67,18 @@
 
 .circle-border:active {
   transform: scale(0.95);
-  box-shadow: 1px 1px 15px 1px rgba(0, 0, 0, 0.15)
+  box-shadow: 1px 1px 15px 1px rgba(0, 0, 0, 0.15);
 }
 
 .header-box {
   display: flex;
   justify-content: space-between;
+}
+
+.complete-task-button {
+  background-color: lightgreen;
+}
+
+.uncomplete-task-button {
+  background-color: lightcoral;
 }
