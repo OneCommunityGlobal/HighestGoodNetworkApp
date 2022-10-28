@@ -82,7 +82,3 @@
 .uncomplete-task-button {
   background-color: lightcoral;
 }
-
-.markAsDoneButton:hover {
-  cursor: pointer;
-}
