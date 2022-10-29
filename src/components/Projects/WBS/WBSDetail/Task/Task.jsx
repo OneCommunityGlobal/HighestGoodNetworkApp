@@ -165,6 +165,16 @@ const Task = props => {
                 mother={props.mother}
                 level={props.level}
               />
+              {hasPermission(role, 'deleteTask') ? (
+                <Button
+                  color="danger"
+                  size="sm"
+                  className="controlBtn"
+                  onClick={() => showUpDeleteModal()}
+                >
+                Remove
+                </Button>
+              ) :null}
             </td>
             <td
               id={`r_${props.num}_${props.id}`}
