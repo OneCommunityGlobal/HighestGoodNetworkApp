@@ -26,24 +26,23 @@ const getRounded = (number) => {
   return Math.round(number * 100) / 100;
 };
 
-export const peopleTasksPieChartViewData = ({ userTask, teamMemberTasks, userProfile, userProjects }) => {
+export const peopleTasksPieChartViewData = ({ userTask, allProjects }) => {
   const tasksWithLoggedHoursById = {};
   const displayedTasksWithLoggedHoursById = {};
   const projectsWithLoggedHoursById = {};
   const tasksLegend = {};
   const displayedTasksLegend = {};
   const projectsWithLoggedHoursLegend = {};
-  const currentUserTasks = teamMemberTasks?.usersWithTasks?.find(({ personId }) => personId === userProfile._id)?.tasks;
   const tasksWithLoggedHours = userTask?.filter(({ hoursLogged }) => hoursLogged);
 
   tasksWithLoggedHours.forEach(({ _id, hoursLogged, taskName }) => {
     tasksWithLoggedHoursById[_id] = hoursLogged;
     tasksLegend[_id] = [taskName, getRounded(hoursLogged)];
 
-    const currentTask = currentUserTasks?.find((task) => task._id === _id);
+    const currentTask = userTask?.find((task) => task._id === _id);
 
     if (currentTask) {
-      const currentProjectName = userProjects?.projects?.find(({ projectId }) => projectId === currentTask.projectId)?.projectName;
+      const currentProjectName = allProjects?.projects?.find(({ _id }) => _id === currentTask.projectId)?.projectName;
       const savedProjectWithLoggedHours = projectsWithLoggedHoursById[currentTask.projectId];
 
       projectsWithLoggedHoursById[currentTask.projectId] = savedProjectWithLoggedHours ? savedProjectWithLoggedHours + hoursLogged : hoursLogged;
