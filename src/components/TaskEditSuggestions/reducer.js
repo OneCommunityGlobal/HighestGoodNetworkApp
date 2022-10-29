@@ -1,8 +1,11 @@
+import { actions } from "react-table";
+
 const initialState = {
   isLoading: false,
   taskEditSuggestions: [],
   userSortDirection: null,
-  dateSuggestedSortDirection: "desc"
+  dateSuggestedSortDirection: "desc",
+  count: 0
 };
 
 export const taskEditSuggestionsReducer = (state = initialState, action) => {
@@ -10,11 +13,15 @@ export const taskEditSuggestionsReducer = (state = initialState, action) => {
     case "FETCH_TASK_EDIT_SUGGESTIONS_BEGIN":
       return { ...state, isLoading: true } ;
     case "FETCH_TASK_EDIT_SUGGESTIONS_SUCESS":
-      return { ...state, isLoading: false, taskEditSuggestions: [...action.payload].sort((tes1, tes2) => tes2.dateSuggested.localeCompare(tes1.dateSuggested)) };
+      const fetchedTaskEditSuggestions = [...action.payload];
+      return { ...state, isLoading: false, count: fetchedTaskEditSuggestions.length, taskEditSuggestions: fetchedTaskEditSuggestions.sort((tes1, tes2) => tes2.dateSuggested.localeCompare(tes1.dateSuggested)) };
     case "FETCH_TASK_EDIT_SUGGESTIONS_ERROR":
       return { ...state, isLoading: false };
     case "REJECT_TASK_EDIT_SUGGESTION_SUCCESS":
-      return { ...state, taskEditSuggestions: [...state.taskEditSuggestions].filter(tes => tes._id !== action.payload) };
+      const filteredTaskEditSuggestions = [...state.taskEditSuggestions].filter(tes => tes._id !== action.payload);
+      return { ...state, taskEditSuggestions: filteredTaskEditSuggestions, count: filteredTaskEditSuggestions.length };
+    case "FETCH_TASK_EDIT_SUGGESTIONS_COUNT_SUCESS":
+      return { ...state, count: action.payload };
     case "TOGGLE_DATE_SUGGESTED_SORT_DIRECTION":
       if (state.dateSuggestedSortDirection == null || state.dateSuggestedSortDirection == "asc") {
         return { ...state,

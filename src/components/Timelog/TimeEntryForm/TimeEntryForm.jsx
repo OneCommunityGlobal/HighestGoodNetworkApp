@@ -127,7 +127,7 @@ const TimeEntryForm = props => {
   useEffect(() => {
     if (isOpen && edit) {
       setFormDataBeforeEdit(inputs);
-    } 
+    }
   }, [isOpen]);
 
   const openModal = () =>
@@ -150,6 +150,7 @@ const TimeEntryForm = props => {
       await dispatch(getUserProjects(userId));
     };
     fetchProjects(userId);
+    return () => fetchProjects(userId);
   }, [userId, dispatch]);
 
   useEffect(() => {
@@ -259,24 +260,27 @@ const TimeEntryForm = props => {
     setErrors(result);
     return _.isEmpty(result);
   };
-
   //Update hoursByCategory when submitting new time entry
   const updateHoursByCategory = async (userProfile, timeEntry, hours, minutes) => {
     const { hoursByCategory } = userProfile;
     const { projectId, isTangible, personId } = timeEntry;
     if (isTangible !== 'true') return;
-
-    //Get selected project category
-    const selectedProject = projects.filter(project => project._id === projectId);
-    const projectCategory = selectedProject[0].category.toLowerCase();
-
     //Format hours && minutes
     const volunteerTime = parseFloat(hours) + parseFloat(minutes) / 60;
 
-    // update tangible hours by category
-    const isFindCategory = Object.keys(hoursByCategory).find(key => key === projectCategory);
+    //This is get to know which project or task is selected
+    const foundProject = projects.find(project => project._id === projectId);
+    const foundTask = tasks.find(task => task._id === projectId);
+
+    //Get category
+    const category = foundProject
+      ? foundProject.category.toLowerCase()
+      : foundTask.classification.toLowerCase();
+
+    //update hours
+    const isFindCategory = Object.keys(hoursByCategory).find(key => key === category);
     if (isFindCategory) {
-      hoursByCategory[projectCategory] += volunteerTime;
+      hoursByCategory[category] += volunteerTime;
     } else {
       hoursByCategory['unassigned'] += volunteerTime;
     }
@@ -293,26 +297,80 @@ const TimeEntryForm = props => {
   //Update hoursByCategory when editing old time entry
   const editHoursByCategory = async (userProfile, timeEntry, hours, minutes) => {
     const { hoursByCategory } = userProfile;
-    const { projectId } = formDataBeforeEdit;
-    //hours before edit
-    const oldHours =
-      parseFloat(formDataBeforeEdit.hours) + parseFloat(formDataBeforeEdit.minutes) / 60;
-    //hours after edit
-    const newHours = parseFloat(hours) + parseFloat(minutes) / 60;
-    if (oldHours === newHours) return;
+    const { projectId: currProjectId, isTangible: currIsTangible } = timeEntry;
+    const {
+      projectId: oldProjectId,
+      isTangible,
+      hours: oldHours,
+      minutes: oldMinutes,
+    } = formDataBeforeEdit;
+    let category;
+    const oldIsTangible = isTangible.toString();
 
-    const difference = newHours - oldHours;
+    //hours before && after edit
+    const oldEntryTime = parseFloat(oldHours) + parseFloat(oldMinutes) / 60;
+    const currEntryTime = parseFloat(hours) + parseFloat(minutes) / 60;
+    const timeDifference = currEntryTime - oldEntryTime;
 
-    const selectedProject = projects.filter(project => project._id === projectId);
-    const projectCategory = selectedProject[0]?.category.toLowerCase();
+    //No hours needs to be updated
+    if (
+      oldEntryTime === currEntryTime &&
+      oldProjectId === currProjectId &&
+      oldIsTangible === currIsTangible
+    ) {
+      return;
+    }
 
-    const isFindCategory = Object.keys(hoursByCategory).find(key => key === projectCategory);
-    if (timeEntry.isTangible === 'true') {
+    //if time entry keeps intangible before and after edit, means we don't need update tangible hours
+    if (oldIsTangible === 'false' && currIsTangible === 'false') return;
+
+    //found project or task
+    const foundProject = projects.find(project => project._id === currProjectId);
+    const foundTask = tasks.find(task => task._id === currProjectId);
+
+    category = foundProject
+      ? foundProject.category.toLowerCase()
+      : foundTask?.classification.toLowerCase();
+    const isFindCategory = Object.keys(hoursByCategory).find(key => key === category);
+
+    //if change timeEntry from intangible to tangible, we need add hours on categories
+    if (oldIsTangible === 'false' && currIsTangible === 'true') {
       isFindCategory
-        ? (hoursByCategory[projectCategory] += difference)
-        : (hoursByCategory['unassigned'] += difference);
-    } else {
-      hoursByCategory[projectCategory] -= oldHours;
+        ? (hoursByCategory[category] += currEntryTime)
+        : (hoursByCategory['unassigned'] += currEntryTime);
+    }
+
+    //if change timeEntry from tangible to intangible, we need deduct hours on categories
+    if (oldIsTangible === 'true' && currIsTangible === 'false') {
+      isFindCategory
+        ? (hoursByCategory[category] -= currEntryTime)
+        : (hoursByCategory['unassigned'] -= currEntryTime);
+    }
+
+    //if timeEntry is tangible before and after edit
+    if (oldIsTangible === 'true' && currIsTangible === 'true') {
+      //if project didn't change, add timeDifference on category
+      if (oldProjectId === currProjectId) {
+        isFindCategory
+          ? (hoursByCategory[category] += timeDifference)
+          : (hoursByCategory['unassigned'] += timeDifference);
+      } else {
+        const foundOldProject = projects.find(project => project._id === oldProjectId);
+        const foundOldTask = tasks.find(task => task._id === oldProjectId);
+
+        const oldCategory = foundOldProject
+          ? foundOldProject.category.toLowerCase()
+          : foundOldTask.classification.toLowerCase();
+
+        const isFindOldCategory = Object.keys(hoursByCategory).find(key => key === category);
+        isFindOldCategory
+          ? (hoursByCategory[oldCategory] -= oldEntryTime)
+          : (hoursByCategory['unassigned'] -= oldEntryTime);
+
+        isFindCategory
+          ? (hoursByCategory[category] += currEntryTime)
+          : (hoursByCategory['unassigned'] += currEntryTime);
+      }
     }
 
     //update database
@@ -328,7 +386,7 @@ const TimeEntryForm = props => {
     //Validation and variable initialization
     if (event) event.preventDefault();
     if (isSubmitting) return;
-
+    console.log('submitting');
     const hours = inputs.hours || 0;
     const minutes = inputs.minutes || 0;
     const isTimeModified = edit && (data.hours !== hours || data.minutes !== minutes);
@@ -357,7 +415,6 @@ const TimeEntryForm = props => {
     setSubmitting(true);
 
     let timeEntryStatus;
-
     if (edit) {
       if (!reminder.notice) {
         editHoursByCategory(userProfile, timeEntry, hours, minutes);

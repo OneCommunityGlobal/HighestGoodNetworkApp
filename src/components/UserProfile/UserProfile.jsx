@@ -53,9 +53,6 @@ const UserProfile = props => {
     lastName: true,
     email: true,
   };
-  // const { roles } = props?.userProjects;
-  // const roles = props?.userProjects;
-  const roles = props?.role.roles;
 
   /* Hooks */
   const [showLoading, setShowLoading] = useState(true);
@@ -286,11 +283,11 @@ const UserProfile = props => {
       setShowModal(false);
       setUserProfile({
         ...userProfile,
-        infringements: userProfile.infringements.concat(newBlueSquare),
+        infringments: userProfile.infringments.concat(newBlueSquare),
       });
       setModalTitle('Blue Square');
     } else if (operation === 'update') {
-      const currentBlueSquares = [...userProfile.infringements];
+      const currentBlueSquares = [...userProfile.infringments];
       if (dateStamp != null) {
         currentBlueSquares.find(blueSquare => blueSquare._id === id).date = dateStamp;
       }
@@ -299,14 +296,14 @@ const UserProfile = props => {
       }
 
       setShowModal(false);
-      setUserProfile({ ...userProfile, infringements: currentBlueSquares });
+      setUserProfile({ ...userProfile, infringments: currentBlueSquares });
     } else if (operation === 'delete') {
       const newInfringements = [];
-      userProfile.infringements.forEach(infringement => {
-        if (infringement._id !== id) newInfringements.push(infringement);
+      userProfile.infringments.forEach(infringment => {
+        if (infringment._id !== id) newInfringements.push(infringment);
       });
 
-      setUserProfile({ ...userProfile, infringements: newInfringements });
+      setUserProfile({ ...userProfile, infringments: newInfringements });
       setShowModal(false);
     }
     setBlueSquareChanged(true);
@@ -409,17 +406,16 @@ const UserProfile = props => {
 
   const { userId: targetUserId } = props.match ? props.match.params : { userId: undefined };
   const { userid: requestorId, role: requestorRole } = props.auth.user;
-  const userPermissions = props.auth.user?.permissions?.frontPermissions;
 
   const isUserSelf = targetUserId === requestorId;
   // const isUserAdmin = requestorRole === 'Administrator';
   // const canEdit = hasPermission(requestorRole, 'editUserProfile') || isUserSelf;
   let canEdit;
-  if (userProfile.role !== 'Owner') {
-    canEdit = hasPermission(requestorRole, 'editUserProfile', roles, userPermissions) || isUserSelf;
+
+  if (requestorRole !== 'Owner') {
+    canEdit = hasPermission(requestorRole, 'editUserProfile') || isUserSelf;
   } else {
-    canEdit =
-      hasPermission(requestorRole, 'addDeleteEditOwners', roles, userPermissions) || isUserSelf;
+    canEdit = hasPermission(requestorRole, 'addDeleteEditOwners') || isUserSelf;
   }
 
   return (
@@ -444,7 +440,6 @@ const UserProfile = props => {
           id={id}
           handleLinkModel={props.handleLinkModel}
           role={requestorRole}
-          userPermissions={userPermissions}
           //setIsValid={setIsValid(true)}
         />
       )}
@@ -568,7 +563,6 @@ const UserProfile = props => {
               role={requestorRole}
               canEdit={canEdit}
               handleSubmit={handleSubmit}
-              userPermissions={userPermissions}
             />
           </Col>
         </Row>
@@ -582,7 +576,6 @@ const UserProfile = props => {
                 updateLink={updateLink}
                 handleLinkModel={props.handleLinkModel}
                 role={requestorRole}
-                userPermissions={userPermissions}
                 canEdit={canEdit}
               />
               {/* <BlueSquareLayout
@@ -593,9 +586,7 @@ const UserProfile = props => {
                 isUserSelf={isUserSelf}
                 role={requestorRole}
                 canEdit={canEdit}
-                roles={roles}
-                userPermissions={userPermissions}
-              /> */}
+              />
             </div>
           </Col>
           <Col md="8">
@@ -669,8 +660,6 @@ const UserProfile = props => {
                   isUserSelf={isUserSelf}
                   setShouldRefresh={setShouldRefresh}
                   canEdit={canEdit}
-                  roles={roles}
-                  userPermissions={userPermissions}
                 />
               </TabPane>
               <TabPane tabId="2">
@@ -680,7 +669,7 @@ const UserProfile = props => {
                   setChanged={setChanged}
                   isUserSelf={isUserSelf}
                   role={requestorRole}
-                  canEdit={hasPermission(requestorRole, 'editUserProfile', roles, userPermissions)}
+                  canEdit={hasPermission(requestorRole, 'editUserProfile')}
                 />
               </TabPane>
               <TabPane tabId="3">
@@ -689,9 +678,8 @@ const UserProfile = props => {
                   teamsData={props?.allTeams?.allTeamsData || []}
                   onAssignTeam={onAssignTeam}
                   onDeleteteam={onDeleteTeam}
-                  edit={hasPermission(requestorRole, 'editUserProfile', roles, userPermissions)}
+                  edit={hasPermission(requestorRole, 'editUserProfile')}
                   role={requestorRole}
-                  roles={roles}
                 />
               </TabPane>
               <TabPane tabId="4">
@@ -700,9 +688,8 @@ const UserProfile = props => {
                   projectsData={props?.allProjects?.projects || []}
                   onAssignProject={onAssignProject}
                   onDeleteProject={onDeleteProject}
-                  edit={hasPermission(requestorRole, 'editUserProfile', roles, userPermissions)}
+                  edit={hasPermission(requestorRole, 'editUserProfile')}
                   role={requestorRole}
-                  userPermissions={userPermissions}
                 />
               </TabPane>
               <TabPane tabId="5">
@@ -711,8 +698,6 @@ const UserProfile = props => {
                   setUserProfile={setUserProfile}
                   setChanged={setChanged}
                   role={requestorRole}
-                  roles={roles}
-                  userPermissions={userPermissions}
                 />
               </TabPane>
             </TabContent>
@@ -722,47 +707,38 @@ const UserProfile = props => {
           <Col md="4"></Col>
           <Col md="8">
             <div className="profileEditButtonContainer">
-              {hasPermission(requestorRole, 'resetPasswordOthers', roles, userPermissions) &&
-                canEdit &&
-                !isUserSelf && (
-                  <ResetPasswordButton className="mr-1 btn-bottom" user={userProfile} />
-                )}
-              {isUserSelf &&
-                (activeTab == '1' ||
-                  hasPermission(requestorRole, 'editUserProfile', roles, userPermissions)) && (
-                  <Link to={`/updatepassword/${userProfile._id}`}>
-                    <Button className="mr-1 btn-bottom" color="primary">
-                      {' '}
-                      Update Password
-                    </Button>
-                  </Link>
-                )}
-              {canEdit &&
-                (activeTab == '1' ||
-                  hasPermission(requestorRole, 'editUserProfile', roles, userPermissions)) && (
-                  <>
-                    <SaveButton
-                      className="mr-1 btn-bottom"
-                      handleSubmit={handleSubmit}
-                      disabled={
-                        !formValid.firstName || !formValid.lastName || !formValid.email || !changed
-                      }
-                      userProfile={userProfile}
-                    />
-                    <span
-                      onClick={() => {
-                        setUserProfile(originalUserProfile);
-                        setChanged(false);
-                      }}
-                      className="btn btn-outline-danger mr-1 btn-bottom"
-                    >
-                      Cancel
-                    </span>
-                  </>
-                )}
-              <Button outline onClick={() => loadUserProfile()}>
-                Refresh
-              </Button>
+              {hasPermission(requestorRole, 'resetPasswordOthers') && canEdit && !isUserSelf && (
+                <ResetPasswordButton className="mr-1 btn-bottom" user={userProfile} />
+              )}
+              {isUserSelf && (activeTab == '1' || hasPermission(requestorRole, 'editUserProfile')) && (
+                <Link to={`/updatepassword/${userProfile._id}`}>
+                  <Button className="mr-1 btn-bottom" color="primary">
+                    {' '}
+                    Update Password
+                  </Button>
+                </Link>
+              )}
+              {canEdit && (activeTab == '1' || hasPermission(requestorRole, 'editUserProfile')) && (
+                <>
+                  <SaveButton
+                    className="mr-1 btn-bottom"
+                    handleSubmit={handleSubmit}
+                    disabled={
+                      !formValid.firstName || !formValid.lastName || !formValid.email || !changed
+                    }
+                    userProfile={userProfile}
+                  />
+                  <span
+                    onClick={() => {
+                      setUserProfile(originalUserProfile);
+                      setChanged(false);
+                    }}
+                    className="btn btn-outline-danger mr-1 btn-bottom"
+                  >
+                    Cancel
+                  </span>
+                </>
+              )}
             </div>
           </Col>
         </Row>
