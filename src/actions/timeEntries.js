@@ -73,7 +73,7 @@ export const editTimeEntry = (timeEntryId, timeEntry, oldDateOfWork) => {
     try {
       const res = await axios.put(url, timeEntry);
       dispatch(updateTimeEntries(timeEntry, oldDateOfWork));
-      return res.status;
+      return res.status
     } catch (e) {
       return e.response.status;
     }
