@@ -10,10 +10,10 @@ import hasPermission from '../../utils/permissions';
  * @param {function} props.setChanged
  * @returns
  */
-const TimeEntryEditHistory = (props) => {
+const TimeEntryEditHistory = props => {
   const editHistory = [...props.userProfile.timeEntryEditHistory].reverse();
 
-  const secondsToHms = (seconds) => {
+  const secondsToHms = seconds => {
     let h = new String(Math.floor(seconds / 3600));
     let m = new String(Math.floor((seconds % 3600) / 60));
     let s = new String(Math.floor((seconds % 3600) % 60));
@@ -23,11 +23,11 @@ const TimeEntryEditHistory = (props) => {
     return `${h}:${m}:${s}`;
   };
 
-  const deleteEdit = async (id) => {
+  const deleteEdit = async id => {
     const newUserProfile = { ...props.userProfile };
 
     newUserProfile.timeEntryEditHistory = newUserProfile.timeEntryEditHistory.filter(
-      (item) => item._id !== id,
+      item => item._id !== id,
     );
 
     props.setUserProfile(newUserProfile);
@@ -59,10 +59,14 @@ const TimeEntryEditHistory = (props) => {
           </tr>
         </thead>
         <tbody>
-          {editHistory.map((item) => {
+          {editHistory.map(item => {
             return (
               <tr key={`edit-history-${item._id}`}>
-                <td>{moment(item.date).tz('America/Los_Angeles').format('YYYY-MM-DD hh:mm:ss')}</td>
+                <td>
+                  {moment(item.date)
+                    .tz('America/Los_Angeles')
+                    .format('YYYY-MM-DD hh:mm:ss')}
+                </td>
                 <td>{secondsToHms(item.initialSeconds)}</td>
                 <td>{secondsToHms(item.newSeconds)}</td>
                 {hasPermission(props.role, 'deleteTimeEntryOthers') && (

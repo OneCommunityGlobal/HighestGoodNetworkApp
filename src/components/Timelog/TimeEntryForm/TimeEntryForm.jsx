@@ -75,6 +75,7 @@ const TimeEntryForm = props => {
   const [isInfoModalVisible, setInfoModalVisible] = useState(false);
   const [projects, setProjects] = useState([]);
   const [tasks, setTasks] = useState([]);
+  const [formDataBeforeEdit, setFormDataBeforeEdit] = useState({});
 
   const fromTimer = !_.isEmpty(timer);
   const { userProfile, currentUserRole } = useSelector(getTimeEntryFormData);
@@ -117,6 +118,15 @@ const TimeEntryForm = props => {
       })
       .catch(err => console.log(err));
   }, []);
+
+  //grab form data before editing
+  useEffect(() => {
+    if (isOpen && edit) {
+      setFormDataBeforeEdit(inputs);
+    } else {
+      setFormDataBeforeEdit({});
+    }
+  }, [isOpen]);
 
   const openModal = () =>
     setReminder(reminder => ({
@@ -248,36 +258,70 @@ const TimeEntryForm = props => {
     return _.isEmpty(result);
   };
 
-  const updateHoursByCategory = async(userProfile, timeEntry, hours, minutes) => {
-    const { hoursByCategory } = userProfile
-    const { projectId, isTangible, personId } = timeEntry
+  //Update hoursByCategory when submitting new time entry
+  const updateHoursByCategory = async (userProfile, timeEntry, hours, minutes) => {
+    const { hoursByCategory } = userProfile;
+    const { projectId, isTangible, personId } = timeEntry;
+    if (isTangible !== 'true') return;
 
     //Get selected project category
-    const selectedProject = projects.filter((project) => project._id === projectId)
-    const projectCategory = selectedProject[0].category.toLowerCase()
+    const selectedProject = projects.filter(project => project._id === projectId);
+    console.log(selectedProject);
+    const projectCategory = selectedProject[0].category.toLowerCase();
 
     //Format hours && minutes
-    const volunteerTime = parseFloat(hours) + parseFloat(minutes) / 60
+    const volunteerTime = parseFloat(hours) + parseFloat(minutes) / 60;
 
     // update tangible hours by category
-    const isFindCategory = Object.keys(hoursByCategory).find(key => key === projectCategory)
-    if (isTangible === "true") {
-      if (isFindCategory) {
-        hoursByCategory[projectCategory] += volunteerTime
-      } else {
-        hoursByCategory['unassigned'] += volunteerTime
-      }
-      userProfile.totalTangibleHrs += volunteerTime
+    const isFindCategory = Object.keys(hoursByCategory).find(key => key === projectCategory);
+    if (isFindCategory) {
+      hoursByCategory[projectCategory] += volunteerTime;
+    } else {
+      hoursByCategory['unassigned'] += volunteerTime;
     }
 
     //update database
     try {
       const url = ENDPOINTS.USER_PROFILE(personId);
-      await axios.put(url, userProfile)
+      await axios.put(url, userProfile);
     } catch (error) {
-      console.log(error)
+      console.log(error);
     }
-  }
+  };
+
+  //Update hoursByCategory when editing old time entry
+  const editHoursByCategory = async (userProfile, timeEntry, hours, minutes) => {
+    const { hoursByCategory } = userProfile;
+    const { projectId } = formDataBeforeEdit;
+    //hours before edit
+    const oldHours =
+      parseFloat(formDataBeforeEdit.hours) + parseFloat(formDataBeforeEdit.minutes) / 60;
+    //hours after edit
+    const newHours = parseFloat(hours) + parseFloat(minutes) / 60;
+    if (oldHours === newHours) return;
+
+    const difference = newHours - oldHours;
+
+    const selectedProject = projects.filter(project => project._id === projectId);
+    const projectCategory = selectedProject[0]?.category.toLowerCase();
+
+    const isFindCategory = Object.keys(hoursByCategory).find(key => key === projectCategory);
+    if (timeEntry.isTangible === 'true') {
+      isFindCategory
+        ? (hoursByCategory[projectCategory] += difference)
+        : (hoursByCategory['unassigned'] += difference);
+    } else {
+      hoursByCategory[projectCategory] -= oldHours;
+    }
+
+    //update database
+    try {
+      const url = ENDPOINTS.USER_PROFILE(timeEntry.personId);
+      await axios.put(url, userProfile);
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   const handleSubmit = async event => {
     //Validation and variable initialization
@@ -306,8 +350,7 @@ const TimeEntryForm = props => {
       timeEntry.timeSpent = `${hours}:${minutes}:00`;
     }
 
-    //Update userprofile hoursByCategory 
-    updateHoursByCategory(userProfile, timeEntry, hours, minutes)
+    //Update userprofile hoursByCategory
 
     //Send the time entry to the server
     setSubmitting(true);
@@ -316,9 +359,11 @@ const TimeEntryForm = props => {
 
     if (edit) {
       if (!reminder.notice) {
+        editHoursByCategory(userProfile, timeEntry, hours, minutes);
         timeEntryStatus = await dispatch(editTimeEntry(data._id, timeEntry, data.dateOfWork));
       }
     } else {
+      updateHoursByCategory(userProfile, timeEntry, hours, minutes);
       timeEntryStatus = await dispatch(postTimeEntry(timeEntry));
     }
     setSubmitting(false);
@@ -330,7 +375,7 @@ const TimeEntryForm = props => {
       );
       return;
     }
-    console.log(timeEntry)
+    console.log(timeEntry);
     //Clear the form and clean up.
     if (fromTimer) {
       const timerStatus = await dispatch(stopTimer(userId));

@@ -155,6 +155,15 @@ const ViewTab = props => {
     return hours;
   };
 
+  //This function is return totalTangibleHours which is the sum of all the tangible categories
+  const sumOfCategoryHours = () => {
+    const {hoursByCategory} = userProfile
+    const hours = Object.values(hoursByCategory).reduce((prev,curr) => (
+      prev + curr
+    ), 0)
+    setTotalTangibleHours(hours.toFixed(2))
+  }
+
   useEffect(() => {
     //Get Total Tangible Hours this week
     const startOfWeek = moment()
@@ -187,7 +196,7 @@ const ViewTab = props => {
         const timeEntries = res.data;
         const output = calculateTotalHrsForPeriod(timeEntries);
         setTotalIntangibleHours(output.totalIntangibleHrs.toFixed(2));
-        setTotalTangibleHours(output.totalTangibleHrs.toFixed(2));
+        sumOfCategoryHours()
       })
       .catch(err => {
         console.log(err.message);
@@ -308,6 +317,7 @@ const ViewTab = props => {
                             [key]: e.target.value,
                           },
                         });
+                        setChanged(true)
                       }}
                       placeholder={`Total Tangible ${capitalize(key)} Hours`}
                     />
