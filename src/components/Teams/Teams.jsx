@@ -48,7 +48,7 @@ class Teams extends React.PureComponent {
     // debugger;
     const { allTeams, fetching } = this.props.state.allTeamsData;
     const requestorRole = this.props.state.auth.user.role;
-    const userPermissions = this.props.auth.user?.permissions?.frontPermissions;
+    const userPermissions = this.props.state.auth.user?.permissions?.frontPermissions;
     const { roles } = this.props.state.role;
 
     const teamTable = this.teamTableElements(allTeams, requestorRole, roles, userPermissions);

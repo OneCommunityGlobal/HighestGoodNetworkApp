@@ -172,7 +172,7 @@ class UserManagement extends React.PureComponent {
               onResetClick={that.onResetClick}
               user={user}
               role={this.props.state.auth.user.role}
-              userPermissions={this.props.auth.user?.permissions?.frontPermisssion}
+              userPermissions={this.props.state.auth.user?.permissions?.frontPermisssion}
               roles={rolesPermissions}
             />
           );
