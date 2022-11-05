@@ -37,3 +37,19 @@
 .user__auto-complete:hover {
   background: #1d62f0;
 }
+
+.user-permissions-pop-up__title {
+  padding-top: 0.5rem;
+  font-size: 1.2rem;
+}
+
+.permissions-management--flex {
+  display: flex;
+  justify-content: space-between;
+  flex-direction: row-reverse;
+}
+
+.permissions-management__button {
+  height: 56px;
+  width: 220px;
+}

@@ -36,55 +36,66 @@ const PermissionsManagement = ({ getAllRoles, roles }) => {
       <div className="permissions-management__header">
         <h1 className="permissions-management__title">User Roles:</h1>
 
-        <Button type="button" color="primary" onClick={() => togglePopUpNewRole()}>
+        <Button
+          className="permissions-management__button"
+          type="button"
+          color="primary"
+          onClick={() => togglePopUpNewRole()}
+        >
           Add New Role
         </Button>
-        <Button
-          color="primary"
-          type="button"
-          onClick={() => {
-            togglePopUpUserPermissions();
-          }}
-        >
-          Manage Users Permissions
-        </Button>
       </div>
-      <Modal isOpen={isNewRolePopUpOpen} toggle={togglePopUpNewRole} id="modal-content__new-role">
-        <ModalHeader
-          toggle={togglePopUpNewRole}
-          cssModule={{ 'modal-title': 'w-100 text-center my-auto' }}
-        >
-          Create New Role
-        </ModalHeader>
-        <ModalBody id="modal-body_new-role--padding">
-          <CreateNewRolePopup toggle={togglePopUpNewRole} />
-        </ModalBody>
-      </Modal>
+      <div className="permissions-management--flex">
+        <div>
+          <Button
+            color="primary"
+            className="permissions-management__button"
+            type="button"
+            onClick={() => {
+              togglePopUpUserPermissions();
+            }}
+          >
+            Manage User Permissions
+          </Button>
+        </div>
+        <Modal isOpen={isNewRolePopUpOpen} toggle={togglePopUpNewRole} id="modal-content__new-role">
+          <ModalHeader
+            toggle={togglePopUpNewRole}
+            cssModule={{ 'modal-title': 'w-100 text-center my-auto' }}
+          >
+            Create New Role
+          </ModalHeader>
+          <ModalBody id="modal-body_new-role--padding">
+            <CreateNewRolePopup toggle={togglePopUpNewRole} />
+          </ModalBody>
+        </Modal>
 
-      <Modal
-        isOpen={isUserPermissionsOpen}
-        toggle={togglePopUpUserPermissions}
-        id="modal-content__new-role"
-      >
-        <ModalHeader
+        <Modal
+          isOpen={isUserPermissionsOpen}
           toggle={togglePopUpUserPermissions}
-          cssModule={{ 'modal-title': 'w-100 text-center my-auto' }}
+          id="modal-content__new-role"
         >
-          Manage User Permissions
-        </ModalHeader>
-        <ModalBody id="modal-body_new-role--padding">
-          <UserPermissionsPopUp toggle={togglePopUpUserPermissions} />
-        </ModalBody>
-      </Modal>
-
-      {roleNames?.map(roleName => {
-        let roleNameLC = roleName.toLowerCase().replace(' ', '-');
-        return (
-          <p key={roleName}>
-            <a href={`/permissionsmanagement/${roleNameLC}`}>{roleName}</a>
-          </p>
-        );
-      })}
+          <ModalHeader
+            toggle={togglePopUpUserPermissions}
+            cssModule={{ 'modal-title': 'w-100 text-center my-auto' }}
+          >
+            Manage User Permissions
+          </ModalHeader>
+          <ModalBody id="modal-body_new-role--padding">
+            <UserPermissionsPopUp toggle={togglePopUpUserPermissions} />
+          </ModalBody>
+        </Modal>
+        <div>
+          {roleNames?.map(roleName => {
+            let roleNameLC = roleName.toLowerCase().replace(' ', '-');
+            return (
+              <p key={roleName}>
+                <a href={`/permissionsmanagement/${roleNameLC}`}>{roleName}</a>
+              </p>
+            );
+          })}
+        </div>
+      </div>
     </div>
   );
 };
@@ -96,7 +107,7 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = dispatch => ({
   getAllRoles: () => dispatch(getAllRoles()),
-  updateUserProfile: () => dispatch(updateUserProfile),
+  updateUserProfile: data => dispatch(updateUserProfile(data)),
   getAllUsers: () => dispatch(getAllUserProfile),
 });
 
