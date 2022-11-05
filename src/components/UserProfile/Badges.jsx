@@ -60,6 +60,7 @@ const Badges = (props) => {
                   firstName={props.userProfile.firstName}
                   lastName={props.userProfile.lastName}
                   close={toggle}
+                  userProfile={props.userProfile}
                   setUserProfile={props.setUserProfile}
                   handleSubmit={props.handleSubmit}
                 />

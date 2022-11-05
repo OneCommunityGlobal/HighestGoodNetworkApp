@@ -236,14 +236,18 @@ const BadgeReport = (props) => {
     await props.changeBadgesByUserID(props.userId, newBadgeCollection);
     await props.getUserProfile(props.userId);
     
-    props.setUserProfile(prevProfile => {
-      return {...prevProfile, badgeCollection: sortBadges }
-    });
-    props.handleSubmit();
+    try {
+      const newUserProfile = { ...props.userProfile, badgeCollection: sortBadges };
+      props.setUserProfile(newUserProfile);
+      props.handleSubmit();
+    } catch(e) {
+      toast.error('Unfortunately, something went wrong with updating the user profile.');
+      console.log('Error getting/updating userprofile');
+    }
     //close the modal
     props.close();
-    //Reload the view profile page with updated bages
-    window.location.reload();
+    //Reload the view profile page with updated bages 
+    //window.location.reload(); //This is unnecessary, as the handlesubmit now properly updates the user profile with need for a forced refresh
   };
 
   return (
