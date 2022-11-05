@@ -21,6 +21,7 @@ import hasPermission from 'utils/permissions';
 const Task = props => {
   const [role] = useState(props.state ? props.state.auth.user.role : null);
   const { roles } = props.state.role;
+  const userPermissions = props.state.auth.user?.permissions?.frontPermissions;
   useEffect(() => {
     setIsCopied(false);
   }, [1]);
@@ -409,7 +410,7 @@ const Task = props => {
 
           <tr className="wbsTaskController desktop-view" id={`controller_${props.id}`}>
             <td colSpan={15} className="controlTd">
-              {hasPermission(role, 'addTask', roles) ? (
+              {hasPermission(role, 'addTask', roles, userPermissions) ? (
                 <AddTaskModal
                   key={`addTask_${props.id}`}
                   parentNum={props.num}
@@ -437,7 +438,7 @@ const Task = props => {
                 level={props.level}
               />
 
-              {hasPermission(role, 'deleteTask', roles) ? (
+              {hasPermission(role, 'deleteTask', roles, userPermissions) ? (
                 <>
                   <Button
                     color="danger"
@@ -454,7 +455,7 @@ const Task = props => {
                     toggle={toggle}
                     style={{ float: 'left' }}
                   >
-                    <DropdownToggle caret caret color="primary" size="sm">
+                    <DropdownToggle caret color="primary" size="sm">
                       Move
                     </DropdownToggle>
                     <DropdownMenu>

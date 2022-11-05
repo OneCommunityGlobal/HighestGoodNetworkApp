@@ -7,6 +7,10 @@ export default {
     user: {
       userid: '5edf141c78f1380017b829a6',
       role: 'Administrator',
+      permissions: {
+        frontPermissions: [],
+        backPermissions: []
+      },
       expiryTimestamp: dt.toISOString(),
       iat: 1596944165,
     },
@@ -99,6 +103,10 @@ export default {
       },
     ],
     role: 'Administrator',
+    permissions: {
+      frontPermissions: [],
+      backPermissions: []
+    },
     firstName: 'Dev',
     lastName: 'Admin',
     email: 'devadmin@hgn.net',

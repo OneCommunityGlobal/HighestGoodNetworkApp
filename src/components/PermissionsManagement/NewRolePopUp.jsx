@@ -6,6 +6,7 @@ import { toast } from 'react-toastify';
 import { connect } from 'react-redux';
 import { addNewRole, getAllRoles } from '../../actions/role';
 import { commonBackEndPermissions, permissionFrontToBack } from 'utils/associatedPermissions';
+import { useEffect } from 'react';
 
 const CreateNewRolePopup = ({ toggle, addNewRole }) => {
   const [permissionsChecked, setPermissionsChecked] = useState([]);
@@ -29,6 +30,7 @@ const CreateNewRolePopup = ({ toggle, addNewRole }) => {
         permissions: permissionsChecked,
         permissionsBackEnd,
       };
+      console.log(newRoleObject);
       await addNewRole(newRoleObject);
       toast.success('Role created successfully');
 
@@ -38,11 +40,13 @@ const CreateNewRolePopup = ({ toggle, addNewRole }) => {
 
   const handleChange = e => {
     const actualValue = e.target.value;
+
     setPermissionsChecked(previous => {
       const isAlreadyChecked = previous.some(perm => perm === actualValue);
       const unCheckPermission = previous.filter(perm => perm !== actualValue);
       return isAlreadyChecked ? unCheckPermission : [...previous, actualValue];
     });
+    console.log(permissionsChecked);
   };
 
   return (
@@ -80,8 +84,8 @@ const CreateNewRolePopup = ({ toggle, addNewRole }) => {
           );
         })}
       </FormGroup>
-      <Button type="submit" id="createRole">
-        Create New Role
+      <Button type="submit" id="createRole" color="primary" size="lg" block>
+        Create
       </Button>
     </Form>
   );

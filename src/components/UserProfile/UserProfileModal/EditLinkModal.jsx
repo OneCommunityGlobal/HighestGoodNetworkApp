@@ -17,6 +17,7 @@ import { useSelector } from 'react-redux';
 const EditLinkModal = props => {
   const { isOpen, closeModal, updateLink, userProfile, setChanged, role } = props;
   const { roles } = useSelector(state => state.role);
+  const userPermissions = useSelector(state => state.auth.user?.permissions?.frontPermissions);
   const [linkName, setLinkName] = useState('');
   const [linkURL, setLinkURL] = useState('');
 
@@ -91,7 +92,7 @@ const EditLinkModal = props => {
         <ModalHeader toggle={closeModal}>Edit Links</ModalHeader>
         <ModalBody>
           <div>
-            {hasPermission(role, 'adminLinks', roles) && (
+            {hasPermission(role, 'adminLinks', roles, userPermissions) && (
               <CardBody>
                 <Card>
                   <Label style={{ display: 'flex', margin: '5px' }}>Admin Links:</Label>

@@ -238,6 +238,7 @@ class AddUserProfile extends Component {
                           this.props.auth.user.role,
                           'addDeleteEditOwners',
                           this.props.role.roles,
+                          this.props.auth.user?.permissions?.frontPermissions,
                         ) && <option value="Owner">Owner</option>}
                       </Input>
                     </FormGroup>

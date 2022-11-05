@@ -14,6 +14,7 @@ const Project = props => {
   const [active, setActive] = useState(props.active);
   const [firstLoad, setFirstLoad] = useState(true);
   const role = props.auth.user.role;
+  const userPermissions = props.auth.user?.permissions?.frontPermissions;
   const { roles } = props.role;
 
   const updateActive = () => {
@@ -42,7 +43,7 @@ const Project = props => {
         <div>{props.index + 1}</div>
       </th>
       <td className="projects__name--input">
-        {hasPermission(role, 'editProject', roles) ? (
+        {hasPermission(role, 'editProject', roles, userPermissions) ? (
           <input
             type="text"
             className="form-control"
@@ -55,7 +56,7 @@ const Project = props => {
         )}
       </td>
       <td className="projects__category--input">
-        {hasPermission(role, 'editProject', roles) ? (
+        {hasPermission(role, 'editProject', roles, userPermissions) ? (
           <select
             value={category}
             onChange={e => {
@@ -80,7 +81,7 @@ const Project = props => {
       </td>
       <td
         className="projects__active--input"
-        onClick={hasPermission(role, 'editProject', roles) ? updateActive : null}
+        onClick={hasPermission(role, 'editProject', roles, userPermissions) ? updateActive : null}
       >
         {props.active ? (
           <div className="isActive">
@@ -117,7 +118,7 @@ const Project = props => {
         </NavItem>
       </td>
 
-      {hasPermission(role, 'deleteProject', roles) ? (
+      {hasPermission(role, 'deleteProject', roles, userPermissions) ? (
         <td>
           <button
             type="button"

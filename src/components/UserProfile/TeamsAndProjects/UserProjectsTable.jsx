@@ -7,6 +7,7 @@ import { useSelector } from 'react-redux';
 const UserProjectsTable = React.memo(props => {
   //const [addProjectPopupOpen, showProjectPopup] = useState(false);
   const { roles } = useSelector(state => state.role);
+  const userPermissions = useSelector(state => state.auth.user?.permissions?.frontPermissions);
   return (
     <div className="projecttable-container">
       <div className="container">
@@ -23,7 +24,7 @@ const UserProjectsTable = React.memo(props => {
           </Col>
           {props.edit && props.role && (
             <Col md="5">
-              {hasPermission(props.role, 'assignUserInProject', roles) ? (
+              {hasPermission(props.role, 'assignUserInProject', roles, userPermissions) ? (
                 <Button
                   className="btn-addproject"
                   color="primary"
@@ -47,7 +48,9 @@ const UserProjectsTable = React.memo(props => {
               <tr>
                 <th>#</th>
                 <th>Project Name</th>
-                {hasPermission(props.role, 'assignUserInProject', roles) ? <th>{}</th> : null}
+                {hasPermission(props.role, 'assignUserInProject', roles, userPermissions) ? (
+                  <th>{}</th>
+                ) : null}
               </tr>
             )}
           </thead>
@@ -61,7 +64,14 @@ const UserProjectsTable = React.memo(props => {
                     <td>
                       <Button
                         color="danger"
-                        disabled={!hasPermission(props.role, 'unassignUserInProject', roles)}
+                        disabled={
+                          !hasPermission(
+                            props.role,
+                            'unassignUserInProject',
+                            roles,
+                            userPermissions,
+                          )
+                        }
                         onClick={e => {
                           props.onDeleteClicK(project._id);
                         }}

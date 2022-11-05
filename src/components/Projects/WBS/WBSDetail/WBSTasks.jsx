@@ -24,6 +24,7 @@ const WBSTasks = props => {
   const wbsId = props.match.params.wbsId;
   const projectId = props.match.params.projectId;
   const wbsName = props.match.params.wbsName;
+  const userPermissions = props.state.auth.user?.permissions?.frontPermissions;
 
   const [isShowImport, setIsShowImport] = useState(false);
   const [selectedId, setSelectedId] = useState(null);
@@ -159,7 +160,7 @@ const WBSTasks = props => {
           </ol>
         </nav>
 
-        {hasPermission(props.state.auth.user.role, 'addTask', roles) ? (
+        {hasPermission(props.state.auth.user.role, 'addTask', roles, userPermissions) ? (
           <AddTaskModal
             key="task_modal_null"
             parentNum={null}

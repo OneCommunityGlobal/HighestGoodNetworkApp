@@ -255,7 +255,11 @@ const BadgeReport = props => {
             <th>Name</th>
             <th style={{ width: '110px' }}>Modified</th>
             <th style={{ width: '90px' }}>Count</th>
-            {hasPermission(props.role, 'deleteOwnBadge', roles) ? <th>Delete</th> : []}
+            {hasPermission(props.role, 'deleteOwnBadge', roles, props.permissionsUser) ? (
+              <th>Delete</th>
+            ) : (
+              []
+            )}
             <th style={{ width: '70px' }}>Featured</th>
           </tr>
         </thead>
@@ -292,7 +296,12 @@ const BadgeReport = props => {
                     : value.lastModified.toLocaleString().substring(0, 10)}
                 </td>
                 <td>
-                  {hasPermission(props.role, 'modifyOwnBadgeAmount', roles) ? (
+                  {hasPermission(
+                    props.role,
+                    'modifyOwnBadgeAmount',
+                    roles,
+                    props.permissionsUser,
+                  ) ? (
                     <Input
                       type="number"
                       value={Math.round(value.count)}
@@ -306,7 +315,7 @@ const BadgeReport = props => {
                     Math.round(value.count)
                   )}
                 </td>
-                {hasPermission(props.role, 'deleteOwnBadge', roles) ? (
+                {hasPermission(props.role, 'deleteOwnBadge', roles, props.permissionsUser) ? (
                   <td>
                     <button
                       type="button"

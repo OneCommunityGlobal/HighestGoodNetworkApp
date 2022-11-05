@@ -36,7 +36,12 @@ const TeamMembersPopup = React.memo(props => {
       <Modal isOpen={props.open} toggle={closePopup}>
         <ModalHeader toggle={closePopup}>{`Members of ${props.selectedTeamName}`}</ModalHeader>
         <ModalBody style={{ textAlign: 'center' }}>
-          {hasPermission(props.requestorRole, 'assignTeamToUser', props.roles) && (
+          {hasPermission(
+            props.requestorRole,
+            'assignTeamToUser',
+            props.roles,
+            props.userPermissions,
+          ) && (
             <div className="input-group-prepend" style={{ marginBottom: '10px' }}>
               <MembersAutoComplete
                 userProfileData={props.usersdata}
@@ -60,9 +65,12 @@ const TeamMembersPopup = React.memo(props => {
                 <tr>
                   <th>#</th>
                   <th>User Name</th>
-                  {hasPermission(props.requestorRole, 'assignTeamToUser', props.roles) && (
-                    <th> </th>
-                  )}
+                  {hasPermission(
+                    props.requestorRole,
+                    'assignTeamToUser',
+                    props.roles,
+                    props.userPermissions,
+                  ) && <th> </th>}
                 </tr>
               </thead>
               <tbody>
@@ -71,7 +79,12 @@ const TeamMembersPopup = React.memo(props => {
                     <tr key={`team_member_${index}`}>
                       <td>{index + 1}</td>
                       <td>{`${user.firstName} ${user.lastName}`}</td>
-                      {hasPermission(props.requestorRole, 'assignTeamToUser', props.roles) && (
+                      {hasPermission(
+                        props.requestorRole,
+                        'assignTeamToUser',
+                        props.roles,
+                        props.userPermissions,
+                      ) && (
                         <td>
                           <Button
                             color="danger"

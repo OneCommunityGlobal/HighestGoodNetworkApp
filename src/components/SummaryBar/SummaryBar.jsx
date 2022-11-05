@@ -34,6 +34,8 @@ const SummaryBar = props => {
   const { asUser, role } = props;
   const { firstName, lastName, email, _id } = useSelector(state => state.userProfile);
   const authenticateUser = useSelector(state => state.auth.user);
+  const userPermissions = useSelector(state => state.auth.user?.permissions?.frontPermissions);
+
   const authenticateUserId = authenticateUser ? authenticateUser.userid : '';
   const matchUser = asUser == authenticateUserId ? true : false;
 
@@ -236,7 +238,7 @@ const SummaryBar = props => {
             {!weeklySummary ? (
               <div className="border-red col-4 bg--white-smoke no-gutters" align="center">
                 <div className="py-1"> </div>
-                {matchUser || hasPermission(role, 'toggleSubmitForm', roles) ? (
+                {matchUser || hasPermission(role, 'toggleSubmitForm', roles, userPermissions) ? (
                   <p
                     className={'summary-toggle large_text_summary text--black text-danger'}
                     align="center"

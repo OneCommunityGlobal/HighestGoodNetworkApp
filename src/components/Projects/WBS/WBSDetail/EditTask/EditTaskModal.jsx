@@ -16,6 +16,7 @@ import { ENDPOINTS } from 'utils/URL';
 
 const EditTaskModal = props => {
   const [role] = useState(props.auth ? props.auth.user.role : null);
+  const userPermissions = props.auth.user?.permissions?.frontPermissions;
   const { roles } = props.role;
 
   const { members } = props.projectMembers;
@@ -267,13 +268,13 @@ const EditTaskModal = props => {
     <div className="controlBtn">
       <Modal isOpen={modal} toggle={toggle}>
         <ModalHeader toggle={toggle}>
-          {hasPermission(role, 'editTask', roles) ? 'Edit' : 'View'}
+          {hasPermission(role, 'editTask', roles, userPermissions) ? 'Edit' : 'View'}
         </ModalHeader>
         <ModalBody>
           <ReactTooltip />
           <table
             className={`table table-bordered ${
-              hasPermission(role, 'editTask', roles) ? null : 'disable-div'
+              hasPermission(role, 'editTask', roles, userPermissions) ? null : 'disable-div'
             }`}
           >
             <tbody>
@@ -613,7 +614,7 @@ const EditTaskModal = props => {
           </table>
         </ModalBody>
 
-        {hasPermission(role, 'editTask', roles) ? (
+        {hasPermission(role, 'editTask', roles, userPermissions) ? (
           <ModalFooter>
             {taskName !== '' && startedDate !== '' && dueDate !== '' ? (
               <Button color="primary" onClick={updateTask}>
@@ -627,7 +628,7 @@ const EditTaskModal = props => {
         ) : null}
       </Modal>
       <Button color="primary" size="sm" onClick={toggle}>
-        {hasPermission(role, 'editTask', roles) ? 'Edit' : 'View'}
+        {hasPermission(role, 'editTask', roles, userPermissions) ? 'Edit' : 'View'}
       </Button>
     </div>
   );

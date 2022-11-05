@@ -5,9 +5,9 @@ import './UserRoleTab.css';
 
 export const permissionLabel = {
   seeWeeklySummaryReports: 'See Weekly Summary Reports Tab',
-  seeUserManagement: 'See User Management Tab',
-  seeBadgeManagement: 'See Badge Management Tab',
-  seePopupManagement: 'See Popup Management Tab',
+  seeUserManagement: 'See User Management Tab (delete and update users)',
+  seeBadgeManagement: 'See Badge Management Tab (create badges)',
+  seePopupManagement: 'See Popup Management Tab (create and update popups)',
   seeProjectManagement: 'See Project Management Tab',
   seeTeamsManagement: 'See Teams Management Tab',
   deleteOwnBadge: 'Delete Badge',

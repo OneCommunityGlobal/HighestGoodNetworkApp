@@ -15,9 +15,6 @@
   gap: 10px;
 }
 
-.user-role-tab__permission > p {
-  min-width: 290px;
-}
 .user-role-tab__permission > button {
   width: 38px;
 }

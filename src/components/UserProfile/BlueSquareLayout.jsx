@@ -14,6 +14,7 @@ const BlueSquareLayout = props => {
     role,
     canEdit,
     roles,
+    userPermissions,
   } = props;
 
   const { privacySettings, infringments } = userProfile;
@@ -38,6 +39,7 @@ const BlueSquareLayout = props => {
           handleBlueSquare={handleBlueSquare}
           role={role}
           roles={roles}
+          userPermissions={userPermissions}
         />
       </div>
     );
@@ -54,6 +56,7 @@ const BlueSquareLayout = props => {
             handleBlueSquare={handleBlueSquare}
             role={role}
             roles={roles}
+            userPermissions={userPermissions}
           />
         </div>
       )}

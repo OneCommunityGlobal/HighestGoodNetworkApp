@@ -38,7 +38,7 @@ const ProjectTableHeader = props => {
       <th scope="col" id="projects__wbs">
         {WBS}
       </th>
-      {hasPermission(props.role, 'deleteProject', props.roles) ? (
+      {hasPermission(props.role, 'deleteProject', props.roles, props.userPermissions) ? (
         <th scope="col" id="projects__delete">
           {DELETE}
         </th>

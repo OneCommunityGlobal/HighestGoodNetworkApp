@@ -50,7 +50,6 @@ import TeamMemberTasks from 'components/TeamMemberTasks';
 class Timelog extends Component {
   constructor(props) {
     super(props);
-
     this.toggle = this.toggle.bind(this);
     this.showSummary = this.showSummary.bind(this);
     this.changeTab = this.changeTab.bind(this);
@@ -64,6 +63,7 @@ class Timelog extends Component {
         this.props.auth.user.role,
         'disabledDataTimelog',
         this.props.role.roles,
+        this.props.auth.user?.permissions?.frontPermissions,
       )
         ? false
         : true,
@@ -247,6 +247,7 @@ class Timelog extends Component {
         ? this.props.match.params.userId
         : this.props.asUser || this.props.auth.user.userid;
     const role = this.props.auth.user.role;
+    const userPermissions = this.props.auth.user?.permissions?.frontPermissions;
 
     const isOwner = this.props.auth.user.userid === userId;
     const fullName = `${this.props.userProfile.firstName} ${this.props.userProfile.lastName}`;
@@ -400,7 +401,12 @@ class Timelog extends Component {
                             </div>
                           </div>
                         ) : (
-                          hasPermission(role, 'addTimeEntryOthers', this.props.role.roles) && (
+                          hasPermission(
+                            role,
+                            'addTimeEntryOthers',
+                            this.props.role.roles,
+                            userPermissions,
+                          ) && (
                             <div className="float-right">
                               <div>
                                 <Button color="warning" onClick={this.toggle}>
@@ -417,7 +423,12 @@ class Timelog extends Component {
                             <Button onClick={this.openInfo} color="primary">
                               Close
                             </Button>
-                            {hasPermission(role, 'editTimelogInfo', this.props.role.roles) ? (
+                            {hasPermission(
+                              role,
+                              'editTimelogInfo',
+                              this.props.role.roles,
+                              userPermissions,
+                            ) ? (
                               <Button onClick={this.openInfo} color="secondary">
                                 Edit
                               </Button>

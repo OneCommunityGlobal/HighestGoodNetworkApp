@@ -81,6 +81,7 @@ const TimeEntryForm = props => {
   const fromTimer = !_.isEmpty(timer);
   const { userProfile, currentUserRole } = useSelector(getTimeEntryFormData);
   const roles = useSelector(state => state.role.roles);
+  const userPermissions = useSelector(state => state.auth.user?.permissions?.frontPermissions);
 
   const dispatch = useDispatch();
 
@@ -233,7 +234,7 @@ const TimeEntryForm = props => {
     }
 
     if (
-      !hasPermission(currentUserRole, 'addTimeEntryOthers', roles) &&
+      !hasPermission(currentUserRole, 'addTimeEntryOthers', roles, userPermissions) &&
       data.isTangible &&
       isTimeModified &&
       reminder.editNotice
@@ -441,8 +442,12 @@ const TimeEntryForm = props => {
           <Form>
             <FormGroup>
               <Label for="dateOfWork">Date</Label>
-              {hasPermission(currentUserRole, 'changeIntangibleTimeEntryDate', roles) &&
-              !fromTimer ? (
+              {hasPermission(
+                currentUserRole,
+                'changeIntangibleTimeEntryDate',
+                roles,
+                userPermissions,
+              ) && !fromTimer ? (
                 <Input
                   type="date"
                   name="dateOfWork"
@@ -556,7 +561,8 @@ const TimeEntryForm = props => {
                   checked={inputs.isTangible}
                   onChange={handleCheckboxChange}
                   disabled={
-                    !hasPermission(currentUserRole, 'toggleTangibleTime', roles) && !data.isTangible
+                    !hasPermission(currentUserRole, 'toggleTangibleTime', roles, userPermissions) &&
+                    !data.isTangible
                   }
                 />
                 Tangible&nbsp;

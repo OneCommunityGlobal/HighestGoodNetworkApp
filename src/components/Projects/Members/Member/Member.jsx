@@ -10,6 +10,7 @@ import hasPermission from 'utils/permissions';
 
 const Member = props => {
   const [role] = useState(props.state ? props.state.auth.user.role : null);
+  const userPermissions = props.state.auth.user?.permissions?.frontPermissions;
   const { roles } = props.state.role;
   return (
     <React.Fragment>
@@ -18,13 +19,13 @@ const Member = props => {
           <div>{props.index + 1}</div>
         </th>
         <td className="members__name">
-          {hasPermission(role, 'seeUserProfileInProjects', roles) ? (
+          {hasPermission(role, 'seeUserProfileInProjects', roles, userPermissions) ? (
             <a href={`/userprofile/${props.uid}`}>{props.fullName}</a>
           ) : (
             props.fullName
           )}
         </td>
-        {hasPermission(role, 'unassignUserInProject', roles) ? (
+        {hasPermission(role, 'unassignUserInProject', roles, userPermissions) ? (
           <td className="members__assign">
             <button
               className="btn btn-outline-danger btn-sm"

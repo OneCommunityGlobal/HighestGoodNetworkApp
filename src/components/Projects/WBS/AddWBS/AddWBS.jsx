@@ -10,6 +10,7 @@ import hasPermission from 'utils/permissions';
 
 const AddWBS = props => {
   const [role] = useState(props.state ? props.state.auth.user.role : null);
+  const userPermissions = props.state.auth.user?.permissions?.frontPermissions;
   const [showAddButton, setShowAddButton] = useState(false);
   const [newName, setNewName] = useState('');
   const { roles } = props.state.role;
@@ -25,7 +26,7 @@ const AddWBS = props => {
 
   return (
     <>
-      {hasPermission(role, 'addWbs', roles) ? (
+      {hasPermission(role, 'addWbs', roles, userPermissions) ? (
         <div className="input-group" id="new_project">
           <div className="input-group-prepend">
             <span className="input-group-text">Add new WBS</span>

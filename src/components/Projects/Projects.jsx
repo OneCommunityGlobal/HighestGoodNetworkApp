@@ -121,6 +121,7 @@ export class Projects extends Component {
     }
 
     const role = this.props.state.auth.user.role;
+    const userPermissions = this.props.state.auth.user?.permissions?.frontPermissions;
 
     const { roles } = this.props.state.role;
 
@@ -159,13 +160,13 @@ export class Projects extends Component {
             onClick={this.toggleProjectInfoModal}
           />
           <Overview numberOfProjects={numberOfProjects} numberOfActive={numberOfActive} />
-          {hasPermission(role, 'addProject', roles) ? (
+          {hasPermission(role, 'addProject', roles, userPermissions) ? (
             <AddProject addNewProject={this.addProject} />
           ) : null}
 
           <table className="table table-bordered table-responsive-sm">
             <thead>
-              <ProjectTableHeader role={role} roles={roles} />
+              <ProjectTableHeader role={role} roles={roles} userPermissions={userPermissions} />
             </thead>
             <tbody>{ProjectsList}</tbody>
           </table>

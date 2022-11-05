@@ -6,6 +6,7 @@ import { useSelector } from 'react-redux';
 
 const UserTeamsTable = props => {
   const { roles } = useSelector(state => state.role);
+  const userPermissions = useSelector(state => state.auth.user?.permissions?.frontPermissions);
   return (
     // debugger;
     <div className="teamtable-container">
@@ -23,7 +24,7 @@ const UserTeamsTable = props => {
           </Col>
           {props.edit && props.role && (
             <Col md="5">
-              {hasPermission(props.role, 'assignTeamToUser', roles) ? (
+              {hasPermission(props.role, 'assignTeamToUser', roles, userPermissions) ? (
                 <Button
                   className="btn-addteam"
                   color="primary"
@@ -47,7 +48,9 @@ const UserTeamsTable = props => {
               <tr>
                 <th>#</th>
                 <th>Team Name</th>
-                {hasPermission(props.role, 'assignTeamToUser', roles) ? <th>{}</th> : null}
+                {hasPermission(props.role, 'assignTeamToUser', roles, userPermissions) ? (
+                  <th>{}</th>
+                ) : null}
               </tr>
             )}
           </thead>
@@ -60,7 +63,9 @@ const UserTeamsTable = props => {
                   {props.edit && props.role && (
                     <td>
                       <Button
-                        disabled={!hasPermission(props.role, 'assignTeamToUser', roles)}
+                        disabled={
+                          !hasPermission(props.role, 'assignTeamToUser', roles, userPermissions)
+                        }
                         color="danger"
                         onClick={e => {
                           props.onDeleteClick(team._id);

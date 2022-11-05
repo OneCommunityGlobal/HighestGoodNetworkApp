@@ -44,7 +44,7 @@ import hasPermission from '../../utils/permissions';
 export const Header = props => {
   const [isOpen, setIsOpen] = useState(false);
   const [logoutPopup, setLogoutPopup] = useState(false);
-
+  const userPermissions = props.auth.user?.permissions?.frontPermissions;
   useEffect(() => {
     if (props.auth.isAuthenticated) {
       console.log(
@@ -106,7 +106,7 @@ export const Header = props => {
                   <DropdownItem tag={Link} to="/reports">
                     {REPORTS}
                   </DropdownItem>
-                  {hasPermission(user.role, 'seeWeeklySummaryReports', roles) ? (
+                  {hasPermission(user.role, 'seeWeeklySummaryReports', roles, userPermissions) ? (
                     <DropdownItem tag={Link} to="/weeklysummariesreport">
                       {WEEKLY_SUMMARIES_REPORT}
                     </DropdownItem>
@@ -125,41 +125,41 @@ export const Header = props => {
                   </i>
                 </NavLink>
               </NavItem>
-              {(hasPermission(user.role, 'seeUserManagement', roles) ||
-                hasPermission(user.role, 'seeBadgeManagement', roles) ||
-                hasPermission(user.role, 'seeProjectManagement', roles) ||
-                hasPermission(user.role, 'seeTeamsManagement', roles) ||
-                hasPermission(user.role, 'seePopupManagement', roles)) && (
+              {(hasPermission(user.role, 'seeUserManagement', roles, userPermissions) ||
+                hasPermission(user.role, 'seeBadgeManagement', roles, userPermissions) ||
+                hasPermission(user.role, 'seeProjectManagement', roles, userPermissions) ||
+                hasPermission(user.role, 'seeTeamsManagement', roles, userPermissions) ||
+                hasPermission(user.role, 'seePopupManagement', roles, userPermissions)) && (
                 <UncontrolledDropdown nav inNavbar>
                   <DropdownToggle nav caret>
                     {OTHER_LINKS}
                   </DropdownToggle>
                   <DropdownMenu>
-                    {hasPermission(user.role, 'seeUserManagement', roles) ? (
+                    {hasPermission(user.role, 'seeUserManagement', roles, userPermissions) ? (
                       <DropdownItem tag={Link} to="/usermanagement">
                         {USER_MANAGEMENT}
                       </DropdownItem>
                     ) : (
                       <React.Fragment></React.Fragment>
                     )}
-                    {hasPermission(user.role, 'seeBadgeManagement', roles) ? (
+                    {hasPermission(user.role, 'seeBadgeManagement', roles, userPermissions) ? (
                       <DropdownItem tag={Link} to="/badgemanagement">
                         {BADGE_MANAGEMENT}
                       </DropdownItem>
                     ) : (
                       <React.Fragment></React.Fragment>
                     )}
-                    {hasPermission(user.role, 'seeProjectManagement', roles) && (
+                    {hasPermission(user.role, 'seeProjectManagement', roles, userPermissions) && (
                       <DropdownItem tag={Link} to="/projects">
                         {PROJECTS}
                       </DropdownItem>
                     )}
-                    {hasPermission(user.role, 'seeTeamsManagement', roles) && (
+                    {hasPermission(user.role, 'seeTeamsManagement', roles, userPermissions) && (
                       <DropdownItem tag={Link} to="/teams">
                         {TEAMS}
                       </DropdownItem>
                     )}
-                    {hasPermission(user.role, 'seePopupManagement', roles) ? (
+                    {hasPermission(user.role, 'seePopupManagement', roles, userPermissions) ? (
                       <>
                         <DropdownItem divider />
                         <DropdownItem tag={Link} to={`/admin/`}>
@@ -167,7 +167,12 @@ export const Header = props => {
                         </DropdownItem>
                       </>
                     ) : null}
-                    {hasPermission(user.role, 'seePermissionsManagement', roles) && (
+                    {hasPermission(
+                      user.role,
+                      'seePermissionsManagement',
+                      roles,
+                      userPermissions,
+                    ) && (
                       <DropdownItem tag={Link} to="/permissionsmanagement">
                         {PERMISSIONS_MANAGEMENT}
                       </DropdownItem>

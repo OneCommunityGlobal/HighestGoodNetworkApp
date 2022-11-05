@@ -79,7 +79,12 @@ const UserTableData = React.memo(props => {
       <td>
         <span className="usermanagement-actions-cell">
           {props.user.role === 'Owner' &&
-          !hasPermission(props.role, 'addDeleteEditOwners', props.roles) ? null : (
+          !hasPermission(
+            props.role,
+            'addDeleteEditOwners',
+            props.roles,
+            props.userPermissions,
+          ) ? null : (
             <button
               type="button"
               className="btn btn-outline-danger btn-sm"

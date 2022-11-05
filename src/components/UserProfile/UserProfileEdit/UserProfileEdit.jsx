@@ -551,6 +551,8 @@ class UserProfileEdit extends Component {
       ? this.props.match.params
       : { userId: undefined };
     const { userid: requestorId, role: requestorRole } = this.props.auth.user;
+    const userPermissions = this.props.auth.user?.permissions?.frontPermissions;
+
     // console.log(this.props.allTeams);
 
     const {
@@ -610,10 +612,16 @@ class UserProfileEdit extends Component {
     let canEditFields;
     if (userProfile.role !== 'Owner') {
       canEditFields =
-        hasPermission(requestorRole, 'editUserProfile', this.props.role.roles) || isUserSelf;
+        hasPermission(requestorRole, 'editUserProfile', this.props.role.roles, userPermissions) ||
+        isUserSelf;
     } else {
       canEditFields =
-        hasPermission(requestorRole, 'addDeleteEditOwners', this.props.role.roles) || isUserSelf;
+        hasPermission(
+          requestorRole,
+          'addDeleteEditOwners',
+          this.props.role.roles,
+          userPermissions,
+        ) || isUserSelf;
     }
 
     const weeklyHoursReducer = (acc, val) =>
@@ -659,6 +667,7 @@ class UserProfileEdit extends Component {
             handleSubmit={this.handleSubmit}
             role={requestorRole}
             roles={this.props.role.roles}
+            userPermissions={userPermissions}
           />
         )}
 
@@ -961,7 +970,12 @@ class UserProfileEdit extends Component {
                           onChange={this.handleUserProfile}
                           placeholder="totalCommittedHours"
                           invalid={
-                            !hasPermission(requestorRole, 'editUserProfile', this.props.role.roles)
+                            !hasPermission(
+                              requestorRole,
+                              'editUserProfile',
+                              this.props.role.roles,
+                              userPermissions,
+                            )
                           }
                         />
                       </Col>

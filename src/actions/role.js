@@ -28,7 +28,6 @@ export const getAllRoles = () => async (dispatch) => {
   return dispatch(fetchAllRoles(data))
 }
 
-
 export const addNewRole = (newRole) => {
   return async (dispatch) => {
     let role = {}
@@ -56,15 +55,11 @@ export const updateRole = (roleId, updatedRole) => {
   };
 }
 
-
-
 export const setRoleStart = () => {
   return {
     type: types.FETCH_ROLES_START,
   };
 };
-
-
 
 export const setRoleError = (payload) => {
   return {

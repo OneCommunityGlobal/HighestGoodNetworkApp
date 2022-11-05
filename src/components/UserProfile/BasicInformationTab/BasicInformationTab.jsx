@@ -299,6 +299,7 @@ const BasicInformationTab = props => {
     role,
     canEdit,
     roles,
+    userPermissions,
   } = props;
   const [timeZoneFilter, setTimeZoneFilter] = useState('');
   const [location, setLocation] = useState('');
@@ -475,7 +476,7 @@ const BasicInformationTab = props => {
                   if (roleName === 'Owner') return;
                   return <option value={roleName}>{roleName}</option>;
                 })}
-                {hasPermission(role, 'addDeleteEditOwners', roles) && (
+                {hasPermission(role, 'addDeleteEditOwners', roles, userPermissions) && (
                   <option value="Owner">Owner</option>
                 )}
               </select>

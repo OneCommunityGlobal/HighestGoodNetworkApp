@@ -24,6 +24,7 @@ const TimeEntry = ({ data, displayYear, userProfile }) => {
 
   const dateOfWork = moment(data.dateOfWork);
   const { user } = useSelector(state => state.auth);
+  const userPermissions = user?.permissions?.frontPermissions;
   const { roles } = useSelector(state => state.role);
 
   const isOwner = data.personId === user.userid;
@@ -87,7 +88,7 @@ const TimeEntry = ({ data, displayYear, userProfile }) => {
             type="checkbox"
             name="isTangible"
             checked={data.isTangible}
-            disabled={!hasPermission(role, 'toggleTangibleTime', roles)}
+            disabled={!hasPermission(role, 'toggleTangibleTime', roles, userPermissions)}
             onChange={() => toggleTangibility(data)}
           />
         </Col>
@@ -95,7 +96,8 @@ const TimeEntry = ({ data, displayYear, userProfile }) => {
           <div className="text-muted">Notes:</div>
           {ReactHtmlParser(data.notes)}
           <div className="buttons">
-            {(hasPermission(role, 'editTimeEntry', roles) || (isOwner && isSameDay)) && (
+            {(hasPermission(role, 'editTimeEntry', roles, userPermissions) ||
+              (isOwner && isSameDay)) && (
               <span>
                 <FontAwesomeIcon
                   icon={faEdit}
@@ -113,7 +115,7 @@ const TimeEntry = ({ data, displayYear, userProfile }) => {
                 />
               </span>
             )}
-            {(hasPermission(role, 'deleteTimeEntry', roles) ||
+            {(hasPermission(role, 'deleteTimeEntry', roles, userPermissions) ||
               (!data.isTangible && isOwner && isSameDay)) && (
               <DeleteModal timeEntry={data} userProfile={userProfile} />
             )}
