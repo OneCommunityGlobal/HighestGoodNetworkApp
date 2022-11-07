@@ -31,7 +31,7 @@ import { TeamReport } from './components/Reports/TeamReport';
 import Inventory from './components/Inventory';
 import BadgeManagement from './components/Badge/BadgeManagement';
 import AutoUpdate from 'components/AutoUpdate';
-import { TaskEditSuggestions } from 'components/TaskEditSuggestions/TaskEditSuggestions'
+import { TaskEditSuggestions } from 'components/TaskEditSuggestions/TaskEditSuggestions';
 
 export default (
   <React.Fragment>
@@ -67,12 +67,18 @@ export default (
         path="/weeklysummariesreport"
         exact
         component={WeeklySummariesReport}
-        allowedRoles={[UserRole.Administrator, UserRole.Manager, UserRole.CoreTeam, UserRole.Owner, UserRole.Mentor]}
+        allowedRoles={[
+          UserRole.Administrator,
+          UserRole.Manager,
+          UserRole.CoreTeam,
+          UserRole.Owner,
+          UserRole.Mentor,
+        ]}
       />
-      <ProtectedRoute 
-        path="/projects" 
-        exact 
-        component={Projects} 
+      <ProtectedRoute
+        path="/projects"
+        exact
+        component={Projects}
         allowedRoles={[UserRole.Administrator, UserRole.Owner]}
       />
       <ProtectedRoute path="/project/wbs/:projectId" component={WBS} />
@@ -91,9 +97,10 @@ export default (
         component={BadgeManagement}
         allowedRoles={[UserRole.Administrator, UserRole.Owner]}
       />
-      <ProtectedRoute path="/teams" 
-        exact 
-        component={Teams} 
+      <ProtectedRoute
+        path="/teams"
+        exact
+        component={Teams}
         allowedRoles={[UserRole.Administrator, UserRole.Owner]}
       />
       <ProtectedRoute path="/project/members/:projectId" component={Members} />

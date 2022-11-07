@@ -6,7 +6,7 @@ import { getTimeEntriesForWeek, getTimeEntriesForPeriod } from '../../actions/ti
 import { getUserProjects } from '../../actions/userProjects';
 import UserProfile from './UserProfile';
 
-const mapStateToProps = (state) => ({
+const mapStateToProps = state => ({
   auth: state.auth,
   userProfile: state.userProfile,
   user: _.get(state, 'user', {}),
