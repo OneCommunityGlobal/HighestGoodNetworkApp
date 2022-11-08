@@ -1,0 +1,55 @@
+.permissions-management {
+  padding: 0.5rem 1rem;
+  max-width: 1140px;
+  margin: 0 auto;
+}
+
+.permissions-management__header {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  padding-bottom: 1rem;
+}
+
+.createRole__alert {
+  margin-top: 0.4rem;
+}
+
+#modal-content__new-role {
+  width: 100%;
+  max-width: 700px;
+}
+
+#modal-body_new-role--padding {
+  padding: 1.5rem 3rem;
+}
+
+.dropdown__user-perms {
+  max-height: 420px;
+  width: '100%';
+  overflow-y: auto;
+}
+
+.user__auto-complete {
+  cursor: pointer;
+  padding: 5px;
+}
+.user__auto-complete:hover {
+  background: #1d62f0;
+}
+
+.user-permissions-pop-up__title {
+  padding-top: 0.5rem;
+  font-size: 1.2rem;
+}
+
+.permissions-management--flex {
+  display: flex;
+  justify-content: space-between;
+  flex-direction: row-reverse;
+}
+
+.permissions-management__button {
+  height: 56px;
+  width: 220px;
+}
