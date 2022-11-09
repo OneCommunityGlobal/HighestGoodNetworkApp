@@ -123,9 +123,7 @@ const TimeEntryForm = props => {
   useEffect(() => {
     if (isOpen && edit) {
       setFormDataBeforeEdit(inputs);
-    } else {
-      setFormDataBeforeEdit({});
-    }
+    } 
   }, [isOpen]);
 
   const openModal = () =>
@@ -266,7 +264,6 @@ const TimeEntryForm = props => {
 
     //Get selected project category
     const selectedProject = projects.filter(project => project._id === projectId);
-    console.log(selectedProject);
     const projectCategory = selectedProject[0].category.toLowerCase();
 
     //Format hours && minutes
