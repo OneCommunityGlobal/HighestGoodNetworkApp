@@ -19,22 +19,10 @@ import { getcolor } from '../../utils/effortColors';
 import { fetchAllManagingTeams } from '../../actions/team';
 import EffortBar from 'components/Timelog/EffortBar';
 import TimeEntry from 'components/Timelog/TimeEntry';
-
-const TaskButton = task => {
-  if (task.task.status === 'Complete') {
-    return (
-      <td>
-        <button className="complete-task-button">Complete</button>
-      </td>
-    );
-  } else {
-    return (
-      <td>
-        <button className="uncomplete-task-button">Mark as Done</button>
-      </td>
-    );
-  }
-};
+import { updateTask } from 'actions/task';
+import { getAllUserProfile } from 'actions/userManagement';
+import { fetchAllTasks } from 'actions/task';
+import { deleteSelectedTask } from './reducer';
 
 const TeamMemberTasks = props => {
   const [isTimeLogActive, setIsTimeLogActive] = useState(0);
@@ -141,6 +129,55 @@ const TeamMemberTasks = props => {
             .map(task => task.estimatedHours - task.hoursLogged)
             .reduce((previousValue, currentValue) => previousValue + currentValue, 0);
         }
+
+        const TaskButton = task => {
+          if (task.task.status !== 'Complete') {
+            return (
+              <td>
+                <h3
+                  onClick={() => markAsDone(task)}
+                  style={{ color: 'red' }}
+                  data-toggle="tooltip"
+                  data-placement="top"
+                  title="MARK AS DONE. MARKING THIS AS DONE WOULD REMOVE THE TASK PERMANENTLY."
+                  className="markAsDoneButton"
+                >
+                  X
+                </h3>
+              </td>
+            );
+          } else {
+            return <td></td>;
+          }
+        };
+
+        const markAsDone = async task => {
+          console.log('task before', task.task);
+          task.task.status = 'Complete';
+          const updatedTask = {
+            taskName: task.task.taskName,
+            priority: task.task.priority,
+            resources: task.task.resources,
+            isAssigned: task.task.isAssigned,
+            status: task.task.status,
+            hoursBest: parseFloat(task.task.hoursBest),
+            hoursWorst: parseFloat(task.task.hoursWorst),
+            hoursMost: parseFloat(task.task.hoursMost),
+            estimatedHours: parseFloat(task.task.hoursEstimate),
+            startedDatetime: task.task.startedDate,
+            dueDatetime: task.task.dueDate,
+            links: task.task.links,
+            whyInfo: task.task.whyInfo,
+            intentInfo: task.task.intentInfo,
+            endstateInfo: task.task.endstateInfo,
+            classification: task.task.classification,
+          };
+          await updateTask(String(task.task._id), updatedTask);
+          await deleteSelectedTask(task.wbsId);
+          await dispatch(getAllUserProfile());
+          await fetchAllTasks();
+        };
+
         return (
           <tr key={user.personId}>
             {/* green if member has met committed hours for the week, red if not */}
