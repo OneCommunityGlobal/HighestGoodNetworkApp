@@ -1,5 +1,5 @@
 import React from "react";
-import { connect } from 'react-redux';
+import { connect, useSelector } from 'react-redux';
 import { useState, useEffect } from "react";
 import ReactTooltip from "react-tooltip";
 import axios from 'axios';
@@ -15,6 +15,8 @@ import hasPermission from "utils/permissions";
 const SingleTask = (props) => {
   const taskId = props.match.params.taskId;
   const { user } = props.auth;
+  const userPermissions = props.auth.user?.permissions?.frontPermissions;
+  const roles = useSelector(state => state.role.roles);
   const [task, setTask] = useState({});
   const [modal, setModal] = useState(false);
   const toggleModel = () => setModal(!modal);
@@ -35,7 +37,7 @@ const SingleTask = (props) => {
     <React.Fragment>
       <ReactTooltip />
       <div className="container-single-task">
-        {hasPermission(user.role, 'seeProjectManagement') && (
+        {hasPermission(user.role, 'seeProjectManagement', roles, userPermissions) && (
           <nav aria-label="breadcrumb">
             <ol className="breadcrumb">
               <NavItem tag={Link} to={`/wbs/samefoldertasks/${taskId}`}>

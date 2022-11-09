@@ -6,7 +6,7 @@ import configureStore from 'redux-mock-store';
 import moment from 'moment-timezone';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
-import { authMock, userProfileMock, timeEntryMock, userProjectMock } from '../mockStates';
+import { authMock, userProfileMock, timeEntryMock, userProjectMock, rolesMock } from '../mockStates';
 import { renderWithProvider } from '../utils';
 import TimeEntry from '../../components/Timelog/TimeEntry';
 
@@ -28,6 +28,7 @@ describe('<TimeEntry />', () => {
       auth: authMock,
       userProjects: userProjectMock,
       userProfile: userProfileMock,
+      role: rolesMock.role
     });
     renderWithProvider(<TimeEntry data={data} displayYear />, {
       store,

@@ -3,6 +3,7 @@ import '../../Teams/Team.css';
 import './PeopleReport.css';
 import { Button, Dropdown, DropdownButton } from 'react-bootstrap'
 import { connect } from 'react-redux'
+import { FiUser } from 'react-icons/fi';
 import { getUserProfile, getUserTask } from '../../../actions/userProfile';
 import { getUserProjects } from '../../../actions/userProjects'
 import _ from 'lodash'
@@ -14,10 +15,8 @@ import { getTimeEntriesForPeriod } from '../../../actions/timeEntries'
 import InfringmentsViz from '../InfringmentsViz'
 import TimeEntriesViz from '../TimeEntriesViz'
 import PeopleTableDetails from '../PeopleTableDetails'
-import { ReportHeader } from "../sharedComponents/ReportHeader";
 import { ReportPage } from "../sharedComponents/ReportPage";
 import { getPeopleReportData } from "./selectors";
-import { ReportBlock } from '../sharedComponents/ReportBlock';
 import { PeopleTasksPieChart } from './components';
 
 class PeopleReport extends Component {
@@ -461,8 +460,12 @@ class PeopleReport extends Component {
     }
 
     const renderProfileInfo = () => (
-      <ReportHeader src={this.state.userProfile.profilePic} isActive={isActive}>
-        <h1 className="heading">{`${firstName} ${lastName}`}</h1>
+      <ReportPage.ReportHeader
+        src={this.state.userProfile.profilePic}
+        avatar={this.state.userProfile.profilePic ? undefined : <FiUser />}
+        isActive={isActive}
+        name={`${firstName} ${lastName}`}
+      >
 
         <div className="stats">
           <div>
@@ -474,34 +477,34 @@ class PeopleReport extends Component {
             <p>End Date</p>
           </div>
         </div>
-      </ReportHeader>
+      </ReportPage.ReportHeader>
     )
 
     return (
       <ReportPage renderProfile={renderProfileInfo}>
 
         <div className='people-report-time-logs-wrapper'>
-          <ReportBlock firstColor='#ff5e82' secondColor='#e25cb2' className='people-report-time-log-block'>
+          <ReportPage.ReportBlock firstColor='#ff5e82' secondColor='#e25cb2' className='people-report-time-log-block'>
             <h3>{weeklyComittedHours}</h3>
             <p>Weekly Committed Hours</p>
-          </ReportBlock>
-          <ReportBlock firstColor='#b368d2' secondColor='#831ec4' className='people-report-time-log-block'>
+          </ReportPage.ReportBlock>
+          <ReportPage.ReportBlock firstColor='#b368d2' secondColor='#831ec4' className='people-report-time-log-block'>
             <h3>{this.props.tangibleHoursReportedThisWeek}</h3>
             <p>Hours Logged This Week</p>
-          </ReportBlock>
-          <ReportBlock firstColor='#64b7ff' secondColor='#928aef' className='people-report-time-log-block'>
+          </ReportPage.ReportBlock>
+          <ReportPage.ReportBlock firstColor='#64b7ff' secondColor='#928aef' className='people-report-time-log-block'>
             <h3>{infringments.length}</h3>
             <p>Blue squares</p>
-          </ReportBlock>
-          <ReportBlock firstColor='#ffdb56' secondColor='#ff9145' className='people-report-time-log-block'>
+          </ReportPage.ReportBlock>
+          <ReportPage.ReportBlock firstColor='#ffdb56' secondColor='#ff9145' className='people-report-time-log-block'>
             <h3>{totalTangibleHrsRound}</h3>
             <p>Total Hours Logged</p>
-          </ReportBlock>
+          </ReportPage.ReportBlock>
         </div>
 
         <PeopleTasksPieChart />
 
-        <ReportBlock>
+        <ReportPage.ReportBlock>
           <div className="intro_date">
             <h4>Tasks contributed</h4>
           </div>
@@ -522,7 +525,7 @@ class PeopleReport extends Component {
             </table>
 
           </div>
-        </ReportBlock>
+        </ReportPage.ReportBlock>
       </ReportPage>
     )
   }

@@ -55,7 +55,12 @@ const TimeEntryEditHistory = props => {
               <br />
               (HH:MM:SS)
             </th>
-            {hasPermission(props.role, 'deleteTimeEntryOthers') && <th></th>}
+            {hasPermission(
+              props.role,
+              'deleteTimeEntryOthers',
+              props.roles,
+              props.userPermissions,
+            ) && <th></th>}
           </tr>
         </thead>
         <tbody>
@@ -69,7 +74,12 @@ const TimeEntryEditHistory = props => {
                 </td>
                 <td>{secondsToHms(item.initialSeconds)}</td>
                 <td>{secondsToHms(item.newSeconds)}</td>
-                {hasPermission(props.role, 'deleteTimeEntryOthers') && (
+                {hasPermission(
+                  props.role,
+                  'deleteTimeEntryOthers',
+                  props.roles,
+                  props.userPermissions,
+                ) && (
                   <td>
                     <Button variant="danger" onClick={() => deleteEdit(item._id)}>
                       Delete&nbsp;Edit
