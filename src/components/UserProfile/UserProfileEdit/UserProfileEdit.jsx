@@ -425,12 +425,12 @@ class UserProfileEdit extends Component {
         showModal: false,
         userProfile: {
           ...this.state.userProfile,
-          infringments: prevState.userProfile.infringments.concat(newBlueSquare),
+          infringements: prevState.userProfile.infringements.concat(newBlueSquare),
         },
       }));
     } else if (kind === 'update') {
       this.setState(() => {
-        const currentBlueSquares = this.state.userProfile.infringments;
+        const currentBlueSquares = this.state.userProfile.infringements;
         if (dateStamp != null) {
           currentBlueSquares.find(blueSquare => blueSquare._id === id).date = dateStamp;
         }
@@ -441,13 +441,13 @@ class UserProfileEdit extends Component {
           showModal: false,
           userProfile: {
             ...this.state.userProfile,
-            infringments: currentBlueSquares,
+            infringements: currentBlueSquares,
           },
         };
       });
     } else if (kind === 'delete') {
       this.setState(() => {
-        const currentBlueSquares = this.state.userProfile.infringments.filter(blueSquare => {
+        const currentBlueSquares = this.state.userProfile.infringements.filter(blueSquare => {
           if (blueSquare._id !== id) {
             return blueSquare;
           }
@@ -456,7 +456,7 @@ class UserProfileEdit extends Component {
           showModal: false,
           userProfile: {
             ...this.state.userProfile,
-            infringments: currentBlueSquares,
+            infringements: currentBlueSquares,
           },
         };
       });
@@ -602,7 +602,7 @@ class UserProfileEdit extends Component {
       jobTitle = '',
       personalLinks,
       adminLinks,
-      infringments,
+      infringements,
       privacySettings,
     } = userProfile;
 
@@ -729,7 +729,7 @@ class UserProfileEdit extends Component {
                   </div>
 
                   <BlueSquare
-                    blueSquares={infringments}
+                    blueSquares={infringements}
                     handleBlueSquare={this.handleBlueSquare}
                     role={requestorRole}
                   />

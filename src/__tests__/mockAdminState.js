@@ -54,7 +54,7 @@ export default {
     emailPubliclyAccessible: true,
     phoneNumberPubliclyAccessible: true,
     badgeCollection: [],
-    infringments: [
+    infringements: [
       {
         _id: '5ee5caf08b333c03b836b9a8',
         date: '2020-06-14',
