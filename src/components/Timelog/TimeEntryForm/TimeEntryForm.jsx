@@ -21,6 +21,8 @@ import ReactTooltip from 'react-tooltip';
 import { postTimeEntry, editTimeEntry } from '../../../actions/timeEntries';
 import { getUserProjects } from '../../../actions/userProjects';
 import { getUserProfile } from 'actions/userProfile';
+import { getAllRoles } from 'actions/role';
+
 import { stopTimer } from '../../../actions/timer';
 import AboutModal from './AboutModal';
 import TangibleInfoModal from './TangibleInfoModal';
@@ -79,6 +81,8 @@ const TimeEntryForm = props => {
 
   const fromTimer = !_.isEmpty(timer);
   const { userProfile, currentUserRole } = useSelector(getTimeEntryFormData);
+  const roles = useSelector(state => state.role.roles);
+  const userPermissions = useSelector(state => state.auth.user?.permissions?.frontPermissions);
 
   const dispatch = useDispatch();
 
@@ -238,7 +242,7 @@ const TimeEntryForm = props => {
     }
 
     if (
-      !hasPermission(currentUserRole, 'addTimeEntryOthers') &&
+      !hasPermission(currentUserRole, 'addTimeEntryOthers', roles, userPermissions) &&
       data.isTangible &&
       isTimeModified &&
       reminder.editNotice
@@ -514,7 +518,12 @@ const TimeEntryForm = props => {
           <Form>
             <FormGroup>
               <Label for="dateOfWork">Date</Label>
-              {hasPermission(currentUserRole, 'changeIntangibleTimeEntryDate') && !fromTimer ? (
+              {hasPermission(
+                currentUserRole,
+                'changeIntangibleTimeEntryDate',
+                roles,
+                userPermissions,
+              ) && !fromTimer ? (
                 <Input
                   type="date"
                   name="dateOfWork"
@@ -628,7 +637,8 @@ const TimeEntryForm = props => {
                   checked={inputs.isTangible}
                   onChange={handleCheckboxChange}
                   disabled={
-                    !hasPermission(currentUserRole, 'toggleTangibleTime') && !data.isTangible
+                    !hasPermission(currentUserRole, 'toggleTangibleTime', roles, userPermissions) &&
+                    !data.isTangible
                   }
                 />
                 Tangible&nbsp;
