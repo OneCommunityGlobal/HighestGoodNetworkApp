@@ -613,7 +613,7 @@ const EditTaskModal = props => {
             </tbody>
           </table>
         </ModalBody>
-        {(
+        {(hasPermission(role, 'editTask') || hasPermission(role, 'suggestTask')) ? (
           <ModalFooter>
             {taskName !== '' && startedDate !== '' && dueDate !== '' ? (
               <Button color="primary" onClick={updateTask}>
@@ -624,7 +624,7 @@ const EditTaskModal = props => {
               Cancel
             </Button>
           </ModalFooter>
-        )}
+        ): null }
       </Modal>
       <Button color="primary" size="sm" onClick={toggle}>
         {hasPermission(role, 'editTask', roles, userPermissions) ? 'Edit' : 'View'}

@@ -4,7 +4,7 @@ import { getHeaderData } from '../../actions/authActions';
 import { getTimerData } from '../../actions/timer';
 import { getAllRoles } from '../../actions/role';
 import { Link } from 'react-router-dom';
-import { connect } from 'react-redux';
+import { connect, useDispatch } from 'react-redux';
 import Timer from '../Timer/Timer';
 import {
   LOGO,
@@ -40,6 +40,7 @@ import {
 import { Logout } from '../Logout/Logout';
 import './Header.css';
 import hasPermission from '../../utils/permissions';
+import { fetchTaskEditSuggestionCount } from 'components/TaskEditSuggestions/thunks';
 
 export const Header = props => {
   const [isOpen, setIsOpen] = useState(false);
@@ -60,7 +61,7 @@ export const Header = props => {
       props.getHeaderData(props.auth.user.userid);
       props.getTimerData(props.auth.user.userid);
     }
-  }, [props.auth.isAuthenticated]);
+  }, []);
 
   // useEffect(() => {
   //   props.getHeaderData(props.auth.user.userid);
@@ -83,8 +84,6 @@ export const Header = props => {
     setLogoutPopup(true);
   };
 
-  const { isAuthenticated, user, firstName, profilePic } = props.auth;
-
   return (
     <div className="header-wrapper">
       <Navbar className="py-3 mb-3" color="dark" dark expand="lg">
@@ -99,6 +98,13 @@ export const Header = props => {
         {isAuthenticated && (
           <Collapse isOpen={isOpen} navbar>
             <Nav className="ml-auto" navbar>
+              {hasPermission(user.role, 'editTask') && <NavItem>
+                <NavLink tag={Link} to="/taskeditsuggestions">
+                  <div className="redBackGroupHeader">
+                    <span>{props.taskEditSuggestionCount}</span>
+                  </div>
+                </NavLink>
+              </NavItem>}
               <NavItem>
                 <NavLink tag={Link} to="/dashboard">
                   {DASHBOARD}
