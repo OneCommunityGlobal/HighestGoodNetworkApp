@@ -58,6 +58,7 @@ class AddUserProfile extends Component {
         email: '',
         phoneNumber: null,
         weeklyCommittedHours: 10,
+        collaborationPreference: 'Zoom',
         role: 'Volunteer',
         privacySettings: { blueSquares: true, email: true, phoneNumber: true },
         jobTitle: '',
