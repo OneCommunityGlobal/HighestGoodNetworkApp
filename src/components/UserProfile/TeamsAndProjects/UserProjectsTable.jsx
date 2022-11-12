@@ -7,6 +7,36 @@ import { useSelector } from 'react-redux';
 const UserProjectsTable = React.memo(props => {
   //const [addProjectPopupOpen, showProjectPopup] = useState(false);
   const { roles } = useSelector(state => state.role);
+  const userProjects = props.userProjectsById;
+  const userTasks = props.userTasks;
+
+  const tasksLevel1 = [];
+  const tasksLevel2 = [];
+  const tasksLevel3 = [];
+  const tasksLevel4 = [];
+
+  const levelTasks = {
+    1: task => tasksLevel1.push(task),
+    2: task => tasksLevel2.push(task),
+    3: task => tasksLevel3.push(task),
+    4: task => tasksLevel4.push(task),
+  };
+
+  const tasksByProject = userProjects?.map(project => {
+    userTasks?.forEach(task => {
+      console.log(task, 'workee');
+      if (task.projectId.includes(project._id)) {
+        const level = task.level;
+        levelTasks[level](task);
+      }
+    });
+    const tasks = { tasksLevel1, tasksLevel2, tasksLevel3, tasksLevel4 };
+    return { ...project, tasks };
+  });
+
+  console.log(tasksByProject, 'heree');
+  console.log(userProjects, 'he2ree');
+
   const userPermissions = useSelector(state => state.auth.user?.permissions?.frontPermissions);
   return (
     <div className="projecttable-container">
@@ -56,31 +86,63 @@ const UserProjectsTable = React.memo(props => {
           </thead>
           <tbody>
             {props.userProjectsById.length > 0 ? (
-              props.userProjectsById.map((project, index) => (
-                <tr key={index}>
-                  <td>{index + 1}</td>
-                  <td>{`${project.projectName}`}</td>
-                  {props.edit && props.role && (
-                    <td>
-                      <Button
-                        color="danger"
-                        disabled={
-                          !hasPermission(
-                            props.role,
-                            'unassignUserInProject',
-                            roles,
-                            userPermissions,
-                          )
-                        }
-                        onClick={e => {
-                          props.onDeleteClicK(project._id);
-                        }}
-                      >
-                        Delete
-                      </Button>
-                    </td>
-                  )}
-                </tr>
+              tasksByProject.map((project, index) => (
+                <>
+                  <tr key={index}>
+                    <td>{index + 1}</td>
+                    <td>{`${project.projectName}`}</td>
+                    {props.edit && props.role && (
+                      <td>
+                        <Button
+                          color="danger"
+                          disabled={
+                            !hasPermission(
+                              props.role,
+                              'unassignUserInProject',
+                              roles,
+                              userPermissions,
+                            )
+                          }
+                          onClick={e => {
+                            props.onDeleteClicK(project._id);
+                          }}
+                        >
+                          Delete
+                        </Button>
+                      </td>
+                    )}
+                  </tr>
+                  {Object.entries(project.tasks).map(([level, tasks]) => {
+                    return tasks.map(task => {
+                      return (
+                        <tr key={task._id}>
+                          <td>{task.num} task</td>
+                          <td>{`${task.taskName}`}</td>
+                          {props.edit && props.role && (
+                            <td>
+                              <Button
+                                color="danger"
+                                disabled={
+                                  !hasPermission(
+                                    props.role,
+                                    'unassignUserInProject',
+                                    roles,
+                                    userPermissions,
+                                  )
+                                }
+                                onClick={e => {
+                                  //delete task
+                                }}
+                              >
+                                Delete
+                              </Button>
+                            </td>
+                          )}
+                        </tr>
+                      );
+                    });
+                  })}
+                </>
               ))
             ) : (
               <></>

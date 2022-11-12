@@ -14,6 +14,7 @@ const mapStateToProps = state => ({
   allProjects: _.get(state, 'allProjects'),
   allTeams: state,
   role: state.role,
+  taskItems: state.tasks.taskItems,
 });
 
 export default connect(mapStateToProps, {

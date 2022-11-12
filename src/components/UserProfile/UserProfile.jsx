@@ -69,6 +69,7 @@ const UserProfile = props => {
   const [modalMessage, setModalMessage] = useState('');
   const [shouldRefresh, setShouldRefresh] = useState(false);
   const [activeInactivePopupOpen, setActiveInactivePopupOpen] = useState(false);
+  const [tasks, setTasks] = useState();
   //const [isValid, setIsValid] = useState(true)
 
   /* useEffect functions */
@@ -86,6 +87,7 @@ const UserProfile = props => {
     setShowLoading(true);
     loadUserProfile();
     setChanged(false);
+    loadUserTasks();
   }, [props?.match?.params?.userId]);
 
   useEffect(() => {
@@ -93,6 +95,16 @@ const UserProfile = props => {
     setBlueSquareChanged(false);
     handleSubmit();
   }, [blueSquareChanged]);
+
+  const loadUserTasks = () => {
+    const userId = props?.match?.params?.userId;
+    axios
+      .get(ENDPOINTS.TASKS_BY_USERID(userId))
+      .then(res => {
+        setTasks(res?.data || []);
+      })
+      .catch(err => console.log(err));
+  };
 
   const loadUserProfile = async () => {
     const userId = props?.match?.params?.userId;
@@ -601,6 +613,7 @@ const UserProfile = props => {
               <TabPane tabId="4">
                 <ProjectsTab
                   userProjects={userProfile.projects || []}
+                  userTasks={tasks}
                   projectsData={props?.allProjects?.projects || []}
                   onAssignProject={onAssignProject}
                   onDeleteProject={onDeleteProject}
