@@ -6,6 +6,7 @@ import React, { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
 import { Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import { Button, Dropdown, DropdownItem, DropdownToggle, DropdownMenu } from 'reactstrap';
+import { BsFillCaretDownFill, BsFillCaretUpFill } from "react-icons/bs";
 import AddTaskModal from '../AddTask/AddTaskModal';
 import EditTaskModal from '../EditTask/EditTaskModal';
 import { moveTasks, fetchAllTasks, deleteTask, copyTask } from '../../../../../actions/task.js';
@@ -27,6 +28,7 @@ const Task = (props) => {
   // modal
   const [modal, setModal] = useState(false);
   const [modalDelete, setModalDelete] = useState(false);
+  const [controllerRow, setControllerRow] = useState(false);
   const toggleModel = () => setModal(!modal);
 
   const startedDate = new Date(props.startedDatetime);
@@ -38,9 +40,11 @@ const Task = (props) => {
   const [isCopied, setIsCopied] = useState(false);
   let passCurrentNum = false;
 
-  let controllerToggle = true;
+  /* let controllerToggle = true;
   const selectTask = (id) => {
     if (controllerToggle) {
+      console.log('--------in task.jsx hit----------');
+      console.log('--------mother: ', props.mother);
       document.getElementById(id).style.background = '#effff2';
       document.getElementById(`controller_${id}`).style.display = 'contents';
       controllerToggle = false;
@@ -51,7 +55,7 @@ const Task = (props) => {
     }
 
     props.selectTask(id);
-  };
+  }; */
 
   const toggleGroups = (num, id, level) => {
     if (!isLoad) {
@@ -147,35 +151,17 @@ const Task = (props) => {
               } tag_color_lv_${props.level}`}
             ></td>
             <td>
-              <EditTaskModal
-                key={`editTask_${props.id}`}
-                parentNum={props.num}
-                taskId={props.id}
-                projectId={props.projectId}
-                wbsId={props.wbsId}
-                parentId1={props.parentId1}
-                parentId2={props.parentId2}
-                parentId3={props.parentId3}
-                mother={props.mother}
-                level={props.level}
-              />
-              {hasPermission(role, 'deleteTask') ? (
-                <Button
-                  color="danger"
-                  size="sm"
-                  className="controlBtn"
-                  onClick={() => showUpDeleteModal()}
-                >
-                Remove
-                </Button>
-              ) :null}
+              <Button color="primary" size="sm" onClick={() => setControllerRow(!controllerRow)}>
+                <span className='action-edit-btn'>EDIT</span>
+                {controllerRow ? <BsFillCaretUpFill/>: <BsFillCaretDownFill />}
+              </Button>
             </td>
             <td
               id={`r_${props.num}_${props.id}`}
               scope="row"
               className="taskNum"
               onClick={() => {
-                selectTask(props.id);
+                /* selectTask(props.id); */
                 toggleGroups(props.num, props.id, props.level);
               }}
             >
@@ -408,7 +394,8 @@ const Task = (props) => {
               <i className="fa fa-book" aria-hidden="true"></i>
             </td>
           </tr>
-    
+          {/* TODO    */}     
+          {controllerRow ? (          
           <tr className="wbsTaskController desktop-view" id={`controller_${props.id}`}>
             <td colSpan={15} className="controlTd">
               {hasPermission(role, 'addTask') ? (
@@ -444,7 +431,7 @@ const Task = (props) => {
                   <Button
                     color="danger"
                     size="sm"
-                    className="controlBtn controlBtn_remove"
+                    className="controlBtn"
                     onClick={() => showUpDeleteModal()}
                   >
                     Remove
@@ -542,6 +529,7 @@ const Task = (props) => {
               />
             </td>
           </tr>
+          ):null}
         </React.Fragment>
       ) : null}
     </>
