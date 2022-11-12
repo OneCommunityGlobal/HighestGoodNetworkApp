@@ -60,7 +60,7 @@
 }
 
 .wbsTaskController {
-  display: none;
+  display: contents;
 }
 .wbsTask {
   line-height: 14px;
@@ -132,6 +132,9 @@
 .task-link {
   font-size: 10px;
   float: left;
+}
+.action-edit-btn {
+  padding-right: 5px;
 }
 
 @media only screen and (max-width: 600px) {
