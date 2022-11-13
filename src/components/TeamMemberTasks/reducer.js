@@ -45,7 +45,12 @@ export const teamMemberTasksReducer = (state = initialState, action) => {
       return state;
   }
 };
-
+/*
 export const deleteSelectedTask = async wbsId => {
   await axios.post(`${ApiEndpoint}/task/wbs/del/${wbsId}`);
+};
+*/
+
+export const deleteSelectedTask = async (taskId, taskMother) => {
+  await axios.post(`${ApiEndpoint}/task/del/${taskId}/${taskMother}`);
 };
