@@ -176,7 +176,7 @@ const TeamMemberTasks = props => {
             classification: task.task.classification,
           };
           await updateTask(String(task.task._id), updatedTask);
-          await deleteSelectedTask(task.wbsId);
+          await deleteSelectedTask(task.task._id, task.task.mother);
           await dispatch(getAllUserProfile());
           await fetchAllTasks();
         };
