@@ -9,6 +9,7 @@ import {
   PAUSE,
   RESUME,
   USER_RESUME_DATE,
+  Management
 } from '../../languages/en/ui';
 
 /**
@@ -37,7 +38,15 @@ const UserTableHeader = React.memo((props) => {
       </th>
       <th scope="col" id="usermanagement_pause" id="user_pause">
         {' '}
-        {PAUSE + ' / ' + RESUME}
+        {PAUSE }
+      </th>
+      <th scope="col" id="usermanagement_finalday" id="user_finalDay">
+        {' '}
+        {Management}
+      </th>
+      <th scope="col" id="usermanagement_finalDay" id="user_finalDay">
+        {' '}
+        {SET_FINAL_DAY + ' / ' + CANCEL}
       </th>
       <th scope="col" id="usermanagement_resume_date">
         {USER_RESUME_DATE}

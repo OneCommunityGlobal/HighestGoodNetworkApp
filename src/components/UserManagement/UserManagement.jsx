@@ -5,7 +5,7 @@
  * List the users in the application for administrator.
  *****************************************************************/
 import React from 'react';
-import { getAllUserProfile, updateUserStatus, deleteUser } from '../../actions/userManagement';
+import { getAllUserProfile, updateUserStatus, updateUserFinalDayStatusu,deleteUser} from '../../actions/userManagement';
 import { connect } from 'react-redux';
 import Loading from '../common/Loading';
 import UserTableHeader from './UserTableHeader';
@@ -16,10 +16,11 @@ import './usermanagement.css';
 import UserSearchPanel from './UserSearchPanel';
 import NewUserPopup from './NewUserPopup';
 import ActivationDatePopup from './ActivationDatePopup';
-import { UserStatus, UserDeleteType } from '../../utils/enums';
+import { UserStatus, UserDeleteType, FinalDay } from '../../utils/enums';
 import DeleteUserPopup from './DeleteUserPopup';
 import ActiveInactiveConfirmationPopup from './ActiveInactiveConfirmationPopup';
 import { Container } from 'reactstrap';
+import SetUpFinalDayPopUp from './SetUpFinalDayPopUp';
 
 class UserManagement extends React.PureComponent {
   filteredUserDataCount = 0;
@@ -36,15 +37,17 @@ class UserManagement extends React.PureComponent {
       selectedPage: 1,
       pageSize: 10,
       isActive: undefined,
+      isSet : undefined,
       activationDateOpen: false,
       deletePopupOpen: false,
       isPaused: false,
+      finalDayDateOpen : false,
     };
   }
 
   componentDidMount() {
     // Initiating the user profile fetch action.
-    this.props.getAllUserProfile();
+    getAllUserProfile();
   }
 
   render() {
@@ -99,6 +102,7 @@ class UserManagement extends React.PureComponent {
    * 2. Popup to show the profile creation (new user)
    * 3. Popup to choose the delete option upon clicking delete button.
    * 4. Popup to confirm the action of setting a user active or inactive upon the status column click.
+   * 5. Popup to show the last day selection
    */
   popupElements = () => {
     return (
@@ -128,6 +132,11 @@ class UserManagement extends React.PureComponent {
           open={this.state.activeInactivePopupOpen}
           setActiveInactive={this.setActiveInactive}
           onClose={this.activeInactivePopupClose}
+        />
+        <SetUpFinalDayPopUp
+            open={this.state.finalDayDateOpen}
+            onClose={this.setUpFinalDayPopupClose}
+            onSave={this.deactiveUser}
         />
       </React.Fragment>
     );
@@ -161,12 +170,15 @@ class UserManagement extends React.PureComponent {
               key={'user_' + index}
               index={index}
               isActive={user.isActive}
+              isSet = {user.isSet}
               resetLoading={
                 this.state.selectedUser &&
                 this.state.selectedUser._id === user._id &&
-                this.state.activationDateOpen
+                this.state.activationDateOpen &&
+                this.state.finalDayDateOpen
               }
               onPauseResumeClick={that.onPauseResumeClick}
+              onFinalDayClick = {that.onFinalDayClick}
               onDeleteClick={that.onDeleteButtonClick}
               onActiveInactiveClick={that.onActiveInactiveClick}
               onResetClick={that.onResetClick}
@@ -233,6 +245,22 @@ class UserManagement extends React.PureComponent {
     }
   };
 
+   /**
+   * Call back on Set Final day or Delete final button click to trigger the action to update user endate
+   */
+
+  onFinalDayClick = (user, status) => {
+    console.log(status);
+    if (status === FinalDay.NotSetFinalDay) {
+      this.props.updateUserFinalDayStatusu(user,"Active",undefined, FinalDay.NotSetFinalDay);
+    } else {
+      this.setState({
+        finalDayDateOpen: true,
+        selectedUser: user,
+      });
+    }
+  };
+
   /**
    * call back function to close the activation date popup
    */
@@ -243,12 +271,32 @@ class UserManagement extends React.PureComponent {
   };
 
   /**
+   * call back function to close the final date popup
+   */
+  setUpFinalDayPopupClose = () => {
+    this.setState({
+      finalDayDateOpen: false,
+    });
+  };
+
+  /**
    * Call back on Pause confirmation button click to trigger the action to update user status
    */
   pauseUser = reActivationDate => {
     this.props.updateUserStatus(this.state.selectedUser, UserStatus.InActive, reActivationDate);
     this.setState({
       activationDateOpen: false,
+      selectedUser: undefined,
+    });
+  };
+
+  /**
+   * Call back on Save confirmation button click to trigger the action to update user status
+   */
+  deactiveUser = (finalDayDate) => {
+    this.props.updateUserFinalDayStatusu(this.state.selectedUser, "Active", finalDayDate, FinalDay.FinalDay);
+    this.setState({
+      finalDayDateOpen: false,
       selectedUser: undefined,
     });
   };
@@ -448,6 +496,6 @@ class UserManagement extends React.PureComponent {
 const mapStateToProps = state => {
   return { state };
 };
-export default connect(mapStateToProps, { getAllUserProfile, updateUserStatus, deleteUser })(
+export default connect(mapStateToProps, { getAllUserProfile, updateUserStatus,updateUserFinalDayStatusu, deleteUser })(
   UserManagement,
 );

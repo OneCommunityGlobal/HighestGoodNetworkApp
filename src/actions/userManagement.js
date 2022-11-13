@@ -7,7 +7,7 @@ import {
   USER_PROFILE_DELETE,
 } from '../constants/userManagement';
 import { ENDPOINTS } from '../utils/URL';
-import { UserStatus } from '../utils/enums';
+import { FinalDay, UserStatus } from '../utils/enums';
 import moment from 'moment';
 
 /**
@@ -149,6 +149,28 @@ export const updateUserFinalDayStatus = (user, status, finalDayDate) => {
   return async (dispatch) => {
     updateProfilePromise.then((res) => {
       dispatch(userProfileUpdateAction(userProfile)); 
+    });
+  };
+};
+
+export const updateUserFinalDayStatusu = (user, status, finalDayDate,isSet) => {
+  const userProfile = Object.assign({}, user);
+  userProfile.endDate = finalDayDate;
+  userProfile.isActive = status === "Active";
+  userProfile.isSet = isSet ==="FinalDay";
+  const patchData = { status: status, endDate: finalDayDate, isSet : isSet };
+  if (finalDayDate === undefined) {
+    patchData.endDate = undefined;
+    userProfile.endDate = undefined;
+  }else {
+    userProfile.endDate = moment(finalDayDate).format('YYYY-MM-DD');
+    patchData.endDate = moment(finalDayDate).format('YYYY-MM-DD');
+  }
+
+  const updateProfilePromise = axios.patch(ENDPOINTS.USER_PROFILE(user._id), patchData);
+  return async (dispatch) => {
+    updateProfilePromise.then((res) => {
+      dispatch(userProfileUpdateAction(userProfile));
     });
   };
 };
