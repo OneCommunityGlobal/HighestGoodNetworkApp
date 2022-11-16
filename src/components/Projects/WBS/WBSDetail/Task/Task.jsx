@@ -44,8 +44,6 @@ const Task = props => {
   let controllerToggle = true;
   const selectTask = id => {
     if (controllerToggle) {
-      console.log('--------in task.jsx hit----------');
-      console.log('--------mother: ', props.mother);
       document.getElementById(id).style.background = '#effff2';
       document.getElementById(`controller_${id}`).style.display = 'contents';
       controllerToggle = false;
