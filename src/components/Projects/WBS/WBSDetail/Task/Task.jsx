@@ -40,11 +40,12 @@ const Task = (props) => {
   const [isCopied, setIsCopied] = useState(false);
   let passCurrentNum = false;
 
+  //----This was the old method of display task actions by click on the task # - it was bit wonky and 
+  //----not the proper way to conditionally render something in React
+
   /* let controllerToggle = true;
   const selectTask = (id) => {
     if (controllerToggle) {
-      console.log('--------in task.jsx hit----------');
-      console.log('--------mother: ', props.mother);
       document.getElementById(id).style.background = '#effff2';
       document.getElementById(`controller_${id}`).style.display = 'contents';
       controllerToggle = false;
@@ -394,7 +395,7 @@ const Task = (props) => {
               <i className="fa fa-book" aria-hidden="true"></i>
             </td>
           </tr>
-          {/* TODO    */}     
+             
           {controllerRow ? (          
           <tr className="wbsTaskController desktop-view" id={`controller_${props.id}`}>
             <td colSpan={15} className="controlTd">
