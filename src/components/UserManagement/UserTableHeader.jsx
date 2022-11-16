@@ -44,10 +44,6 @@ const UserTableHeader = React.memo((props) => {
         {' '}
         {Management}
       </th>
-      <th scope="col" id="usermanagement_finalDay" id="user_finalDay">
-        {' '}
-        {SET_FINAL_DAY + ' / ' + CANCEL}
-      </th>
       <th scope="col" id="usermanagement_resume_date">
         {USER_RESUME_DATE}
       </th>
