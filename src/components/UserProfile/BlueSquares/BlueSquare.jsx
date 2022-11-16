@@ -1,7 +1,8 @@
 import React from 'react';
 import './BlueSquare.css';
 import hasPermission from 'utils/permissions';
-const BlueSquare = ({ blueSquares, handleBlueSquare, role }) => {
+
+const BlueSquare = ({ blueSquares, handleBlueSquare, role, roles, userPermissions }) => {
   return (
     <div className="blueSquareContainer">
       <div className="blueSquares">
@@ -14,16 +15,20 @@ const BlueSquare = ({ blueSquares, handleBlueSquare, role }) => {
             className="blueSquareButton"
             onClick={() => {
               if (!blueSquare._id) {
-                handleBlueSquare(hasPermission(role, 'handleBlueSquare'), 'message', 'none');
-              } else if (hasPermission(role, 'handleBlueSquare')) {
                 handleBlueSquare(
-                  hasPermission(role, 'handleBlueSquare'),
+                  hasPermission(role, 'handleBlueSquare', roles, userPermissions),
+                  'message',
+                  'none',
+                );
+              } else if (hasPermission(role, 'handleBlueSquare', roles, userPermissions)) {
+                handleBlueSquare(
+                  hasPermission(role, 'handleBlueSquare', roles, userPermissions),
                   'modBlueSquare',
                   blueSquare._id,
                 );
               } else {
                 handleBlueSquare(
-                  !hasPermission(role, 'handleBlueSquare'),
+                  !hasPermission(role, 'handleBlueSquare', roles, userPermissions),
                   'viewBlueSquare',
                   blueSquare._id,
                 );
@@ -37,7 +42,9 @@ const BlueSquare = ({ blueSquares, handleBlueSquare, role }) => {
           </div>
         ))}
       </div>
-      {(hasPermission(role, 'editUserProfile') || hasPermission(role, 'assignOnlyBlueSquares')) && (
+
+      {(hasPermission(role, 'editUserProfile', roles, userPermissions) ||
+        hasPermission(role, 'assignOnlyBlueSquares', roles, userPermissions)) && (
         <div
           onClick={() => {
             handleBlueSquare(true, 'addBlueSquare', '');
