@@ -31,14 +31,10 @@ import { TeamReport } from './components/Reports/TeamReport';
 import Inventory from './components/Inventory';
 import BadgeManagement from './components/Badge/BadgeManagement';
 import AutoUpdate from 'components/AutoUpdate';
-<<<<<<< HEAD
 import { TaskEditSuggestions } from 'components/TaskEditSuggestions/TaskEditSuggestions';
-=======
-import { TaskEditSuggestions } from 'components/TaskEditSuggestions/TaskEditSuggestions'
+import { RoutePermissions } from 'utils/routePermissions';
 import PermissionsManagement from 'components/PermissionsManagement/PermissionsManagement';
 import UserRoleTab from 'components/PermissionsManagement/UserRoleTab';
-import { RoutePermissions } from 'utils/routePermissions';
->>>>>>> development
 
 export default (
   <React.Fragment>
@@ -63,20 +59,17 @@ export default (
         path="/inventory/:projectId"
         component={Inventory}
         routePermissions={RoutePermissions.inventoryProject}
-
       />
       <ProtectedRoute
         path="/inventory/:projectId/wbs/:wbsId"
         component={Inventory}
         routePermissions={RoutePermissions.inventoryProjectWbs}
-
       />
 
       <ProtectedRoute
         path="/weeklysummariesreport"
         exact
         component={WeeklySummariesReport}
-<<<<<<< HEAD
         allowedRoles={[
           UserRole.Administrator,
           UserRole.Manager,
@@ -90,16 +83,13 @@ export default (
         exact
         component={Projects}
         allowedRoles={[UserRole.Administrator, UserRole.Owner]}
-=======
         routePermissions={RoutePermissions.weeklySummariesReport}
-
       />
-      <ProtectedRoute 
-        path="/projects" 
-        exact 
-        component={Projects} 
+      <ProtectedRoute
+        path="/projects"
+        exact
+        component={Projects}
         routePermissions={RoutePermissions.projects}
->>>>>>> development
       />
       <ProtectedRoute path="/project/wbs/:projectId" component={WBS} />
       <ProtectedRoute path="/wbs/tasks/:wbsId/:projectId" component={WBSDetail} />
@@ -129,18 +119,17 @@ export default (
         component={UserRoleTab}
         routePermissions={RoutePermissions.permissionsManagementRole}
       />
-<<<<<<< HEAD
       <ProtectedRoute
         path="/teams"
         exact
         component={Teams}
         allowedRoles={[UserRole.Administrator, UserRole.Owner]}
-=======
-      <ProtectedRoute path="/teams" 
-        exact 
-        component={Teams} 
+      />
+      <ProtectedRoute
+        path="/teams"
+        exact
+        component={Teams}
         routePermissions={RoutePermissions.teams}
->>>>>>> development
       />
       <ProtectedRoute path="/project/members/:projectId" component={Members} />
 
