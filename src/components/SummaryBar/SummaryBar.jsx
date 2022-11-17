@@ -32,10 +32,16 @@ import { ApiEndpoint } from 'utils/URL';
 import hasPermission from 'utils/permissions';
 
 const SummaryBar = props => {
+const SummaryBar = props => {
   const { asUser, role } = props;
   const [userProfile, setUserProfile] = useState(undefined);
   const [tasks, setTasks] = useState(undefined);
   const authenticateUser = useSelector(state => state.auth.user);
+  const authenticateUserId = authenticateUser ? authenticateUser.userid : '';
+  const { firstName, lastName, email, _id } = useSelector(state => state.userProfile);
+  const authenticateUser = useSelector(state => state.auth.user);
+  const userPermissions = useSelector(state => state.auth.user?.permissions?.frontPermissions);
+
   const authenticateUserId = authenticateUser ? authenticateUser.userid : '';
   const matchUser = asUser == authenticateUserId ? true : false;
   const timeEntries = useSelector(state => {

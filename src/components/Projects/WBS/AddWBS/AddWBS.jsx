@@ -8,12 +8,14 @@ import { connect } from 'react-redux';
 import { addNewWBS } from './../../../../actions/wbs';
 import hasPermission from 'utils/permissions';
 
-const AddWBS = (props) => {
+const AddWBS = props => {
   const [role] = useState(props.state ? props.state.auth.user.role : null);
+  const userPermissions = props.state.auth.user?.permissions?.frontPermissions;
   const [showAddButton, setShowAddButton] = useState(false);
   const [newName, setNewName] = useState('');
+  const { roles } = props.state.role;
 
-  const changeNewName = (newName) => {
+  const changeNewName = newName => {
     if (newName.length !== 0) {
       setShowAddButton(true);
     } else {
@@ -24,7 +26,7 @@ const AddWBS = (props) => {
 
   return (
     <>
-      {hasPermission(role, 'addWbs') ? (
+      {hasPermission(role, 'addWbs', roles, userPermissions) ? (
         <div className="input-group" id="new_project">
           <div className="input-group-prepend">
             <span className="input-group-text">Add new WBS</span>
@@ -35,14 +37,14 @@ const AddWBS = (props) => {
             className="form-control"
             aria-label="WBS WBS"
             placeholder="WBS Name"
-            onChange={(e) => changeNewName(e.target.value)}
+            onChange={e => changeNewName(e.target.value)}
           />
           <div className="input-group-append">
             {showAddButton ? (
               <button
                 className="btn btn-outline-primary"
                 type="button"
-                onClick={(e) => props.addNewWBS(newName, props.projectId)}
+                onClick={e => props.addNewWBS(newName, props.projectId)}
               >
                 <i className="fa fa-plus" aria-hidden="true"></i>
               </button>
@@ -53,7 +55,7 @@ const AddWBS = (props) => {
     </>
   );
 };
-const mapStateToProps = (state) => {
+const mapStateToProps = state => {
   return { state };
 };
 export default connect(mapStateToProps, { addNewWBS })(AddWBS);
