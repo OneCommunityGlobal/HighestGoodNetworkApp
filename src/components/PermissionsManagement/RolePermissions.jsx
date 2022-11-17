@@ -66,18 +66,17 @@ function RolePermissions(props) {
             </p>
             {permissions.includes(permission) ? (
               <Button color="danger" onClick={() => onRemovePermission(permission)}>
-                -
+                Delete
               </Button>
             ) : (
               <Button color="success" onClick={() => onAddPermission(permission)}>
-                +
+                Add
               </Button>
             )}
           </li>
         ))}
       </ul>
-
-      <Button className="mr-1" color="primary" onClick={() => updateInfo()}>
+      <Button className="mr-1" block color="primary" onClick={() => updateInfo()}>
         Save
       </Button>
     </>
