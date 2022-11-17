@@ -53,7 +53,7 @@ const PermissionsManagement = ({ getAllRoles, roles }) => {
           color="success"
           onClick={() => togglePopUpNewRole()}
         >
-          Create New Role
+          Add New Role
         </Button>
         <Button
           color="primary"
