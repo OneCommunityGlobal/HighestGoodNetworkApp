@@ -33,21 +33,14 @@ import hasPermission from 'utils/permissions';
 
 const SummaryBar = props => {
   const { asUser, role } = props;
-<<<<<<< HEAD
-  const { firstName, lastName, email, _id } = useSelector(state => state.userProfile);
-=======
   const [userProfile, setUserProfile] = useState(undefined);
   const [tasks, setTasks] = useState(undefined);
->>>>>>> development
   const authenticateUser = useSelector(state => state.auth.user);
   const authenticateUserId = authenticateUser ? authenticateUser.userid : '';
   const { firstName, lastName, email, _id } = useSelector(state => state.userProfile);
   const userPermissions = useSelector(state => state.auth.user?.permissions?.frontPermissions);
 
-<<<<<<< HEAD
-=======
   const matchUser = asUser == authenticateUserId ? true : false;
->>>>>>> development
   const timeEntries = useSelector(state => {
     let timeEntries = state?.timeEntries?.weeks;
     if (timeEntries) {
@@ -111,54 +104,24 @@ const SummaryBar = props => {
   //   }
   // });
 
-<<<<<<< HEAD
-  const weeklyComittedHours = useSelector(state => state.userProfile.weeklyComittedHours);
-  const weeklySummary = useSelector(state => {
-    let summaries = state.userProfile?.weeklySummaries;
-    if (summaries && Array.isArray(summaries) && summaries[0] && summaries[0].summary) {
-      return summaries[0].summary;
-    } else {
-      return '';
-    }
-  });
-
-  const infringements = useSelector(state => {
-    if (state.userProfile && state.userProfile.infringements) {
-      return state.userProfile.infringements.length;
-=======
-  //Get infringment count from userProfile
+  //Get infringement count from userProfile
   const getInfringements = user => {
-    if (user && user.infringments) {
-      return user.infringments.length;
->>>>>>> development
+    if (user && user.infringements) {
+      return user.infringements.length;
     } else {
       return 0;
     }
   };
 
-<<<<<<< HEAD
-  const badges = useSelector(state => {
-    if (state.userProfile && state.userProfile.badgeCollection) {
-      return state.userProfile.badgeCollection.length;
-=======
   //Get badges count from userProfile
   const getBadges = user => {
     if (user && user.badgeCollection) {
       return user.badgeCollection.length;
->>>>>>> development
     } else {
       return 0;
     }
   };
 
-<<<<<<< HEAD
-  let tasks = useSelector(state => {
-    if (state.tasks && state.tasks.taskItems) {
-      return state.tasks.taskItems.length;
-    } else {
-      return 0;
-    }
-=======
   // const getTasks = user => {
   //   if (user && user.tasks) {
   //     return state.tasks.taskItems.length;
@@ -169,7 +132,6 @@ const SummaryBar = props => {
 
   const getState = useSelector(state => {
     return state;
->>>>>>> development
   });
 
   const initialInfo = {
