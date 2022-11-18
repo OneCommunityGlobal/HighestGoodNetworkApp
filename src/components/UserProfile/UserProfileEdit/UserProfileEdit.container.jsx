@@ -11,7 +11,7 @@ import {
 
 import UserProfileEdit from './UserProfileEdit';
 
-const mapStateToProps = (state) => ({
+const mapStateToProps = state => ({
   auth: state.auth,
   userProfile: _.get(state, 'userProfile'),
   user: _.get(state, 'user', {}),
@@ -19,6 +19,7 @@ const mapStateToProps = (state) => ({
   userProjects: state.userProjects,
   allProjects: _.get(state, 'allProjects'),
   allTeams: state,
+  role: state.role,
   state,
 });
 

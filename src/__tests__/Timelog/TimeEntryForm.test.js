@@ -4,7 +4,7 @@ import userEvent from '@testing-library/user-event';
 import thunk from 'redux-thunk';
 import configureStore from 'redux-mock-store';
 import moment from 'moment-timezone';
-import { authMock, userProfileMock, timeEntryMock, userProjectMock } from '../mockStates';
+import { authMock, userProfileMock, timeEntryMock, userProjectMock, rolesMock } from '../mockStates';
 import { renderWithProvider, renderWithRouterMatch } from '../utils';
 import TimeEntryForm from '../../components/Timelog/TimeEntryForm';
 import * as actions from '../../actions/timeEntries';
@@ -20,14 +20,18 @@ describe('<TimeEntryForm />', () => {
   let store;
   let toggle;
   let userProfile;
+  let role
   const data = timeEntryMock.weeks[0][0];
   beforeEach(() => {
     store = mockStore({
       auth: authMock,
       userProjects: userProjectMock,
       userProfile: userProfileMock,
+      role: rolesMock.role
     });
     userProfile = jest.fn();
+    role = jest.fn();
+
     toggle = jest.fn();
     store.dispatch = jest.fn();
     renderWithProvider(
@@ -128,6 +132,7 @@ describe('<TimeEntryFormEdit />', () => {
       auth: authMock,
       userProjects: userProjectMock,
       userProfile: userProfileMock,
+      role: rolesMock
     });
     userProfile = jest.fn();
     toggle = jest.fn();

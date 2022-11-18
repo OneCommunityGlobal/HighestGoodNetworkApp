@@ -311,7 +311,6 @@ class UserProfileEdit extends Component {
     }
     const filesizeKB = file.size / 1024;
     // console.log(filesizeKB);
-
     if (filesizeKB > 50) {
       imageUploadError = `\nThe file you are trying to upload exceeds the maximum size of 50KB. You can either 
 														choose a different file, or use an online file compressor.`;
@@ -552,6 +551,8 @@ class UserProfileEdit extends Component {
       ? this.props.match.params
       : { userId: undefined };
     const { userid: requestorId, role: requestorRole } = this.props.auth.user;
+    const userPermissions = this.props.auth.user?.permissions?.frontPermissions;
+
     // console.log(this.props.allTeams);
 
     const {
@@ -610,9 +611,17 @@ class UserProfileEdit extends Component {
     // const isUserAdmin = requestorRole === 'Administrator';
     let canEditFields;
     if (userProfile.role !== 'Owner') {
-      canEditFields = hasPermission(requestorRole, 'editUserProfile') || isUserSelf;
+      canEditFields =
+        hasPermission(requestorRole, 'editUserProfile', this.props.role.roles, userPermissions) ||
+        isUserSelf;
     } else {
-      canEditFields = hasPermission(requestorRole, 'addDeleteEditOwners') || isUserSelf;
+      canEditFields =
+        hasPermission(
+          requestorRole,
+          'addDeleteEditOwners',
+          this.props.role.roles,
+          userPermissions,
+        ) || isUserSelf;
     }
 
     const weeklyHoursReducer = (acc, val) =>
@@ -657,6 +666,8 @@ class UserProfileEdit extends Component {
             handleLinkModel={this.handleLinkModel}
             handleSubmit={this.handleSubmit}
             role={requestorRole}
+            roles={this.props.role.roles}
+            userPermissions={userPermissions}
           />
         )}
 
@@ -732,6 +743,7 @@ class UserProfileEdit extends Component {
                     blueSquares={infringements}
                     handleBlueSquare={this.handleBlueSquare}
                     role={requestorRole}
+                    roles={this.props.role.roles}
                   />
                 </div>
               </Col>
@@ -957,7 +969,14 @@ class UserProfileEdit extends Component {
                           value={userProfile.totalComittedHours}
                           onChange={this.handleUserProfile}
                           placeholder="totalCommittedHours"
-                          invalid={!hasPermission(requestorRole, 'editUserProfile')}
+                          invalid={
+                            !hasPermission(
+                              requestorRole,
+                              'editUserProfile',
+                              this.props.role.roles,
+                              userPermissions,
+                            )
+                          }
                         />
                       </Col>
                     </Row>

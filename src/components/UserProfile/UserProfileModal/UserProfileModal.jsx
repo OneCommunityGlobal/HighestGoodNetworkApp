@@ -26,8 +26,9 @@ const UserProfileModal = props => {
     userProfile,
     id,
     role,
+    roles,
+    userPermissions,
   } = props;
-
   let blueSquare = [
     {
       date: 'ERROR',
@@ -156,7 +157,7 @@ const UserProfileModal = props => {
       <ModalBody>
         {type === 'updateLink' && (
           <div>
-            {hasPermission(role, 'editUserProfile') && (
+            {hasPermission(role, 'editUserProfile', roles, userPermissions) && (
               <CardBody>
                 <Card>
                   <Label style={{ display: 'flex', margin: '5px' }}>Admin Links:</Label>
