@@ -59,7 +59,7 @@ const SummaryBar = props => {
     try {
       const response = await axios.get(ENDPOINTS.USER_PROFILE(userId));
       const newUserProfile = response.data;
-      console.log('User Profile loaded');
+      console.log('User Profile loaded', newUserProfile);
       setUserProfile(newUserProfile);
     } catch (err) {
       console.log('User Profile not loaded.');
@@ -224,7 +224,7 @@ const SummaryBar = props => {
     const badges = getBadges(userProfile);
     console.log(tasks);
     const { firstName, lastName, email, _id } = userProfile;
-    let totalEffort = parseInt(userProfile.tangibleHoursReportedThisWeek);
+    let totalEffort = parseFloat(userProfile.tangibleHoursReportedThisWeek);
     const weeklyComittedHours = userProfile.weeklyComittedHours;
     const weeklySummary = getWeeklySummary(userProfile);
     return (
