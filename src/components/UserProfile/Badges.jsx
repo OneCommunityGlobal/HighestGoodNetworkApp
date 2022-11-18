@@ -17,14 +17,15 @@ import BadgeReport from '../Badge/BadgeReport';
 import AssignBadgePopup from './AssignBadgePopup';
 import { clearSelected } from 'actions/badgeManagement';
 
-const Badges = (props) => {
+const Badges = props => {
   const [isOpen, setOpen] = useState(false);
   const [isAssignOpen, setAssignOpen] = useState(false);
+  const permissionsUser = props.userProfile?.permissions?.frontPermissions;
 
   const toggle = () => setOpen(!isOpen);
 
   const assignToggle = () => {
-    setAssignOpen((isAssignOpen) => !isAssignOpen);
+    setAssignOpen(isAssignOpen => !isAssignOpen);
   };
 
   useEffect(() => {
@@ -35,7 +36,7 @@ const Badges = (props) => {
 
   return (
     <>
-      <Card id='badgeCard' style={{ backgroundColor: '#f6f6f3', marginTop: 20, marginBottom: 20}}>
+      <Card id="badgeCard" style={{ backgroundColor: '#f6f6f3', marginTop: 20, marginBottom: 20 }}>
         <CardBody>
           <CardTitle
             style={{
@@ -43,7 +44,7 @@ const Badges = (props) => {
               fontSize: 18,
               color: '#285739',
               marginBottom: 15,
-              minWidth: 446
+              minWidth: 446,
             }}
           >
             Featured Badges <i className="fa fa-info-circle" id="FeaturedBadgeInfo" />
@@ -62,6 +63,7 @@ const Badges = (props) => {
                   close={toggle}
                   setUserProfile={props.setUserProfile}
                   handleSubmit={props.handleSubmit}
+                  permissionsUser={permissionsUser}
                 />
               </ModalBody>
             </Modal>
@@ -85,7 +87,7 @@ const Badges = (props) => {
               </>
             )}
           </CardTitle>
-          <FeaturedBadges badges={props.userProfile.badgeCollection}  />
+          <FeaturedBadges badges={props.userProfile.badgeCollection} />
           <CardText
             style={{
               fontWeight: 'bold',
@@ -140,11 +142,11 @@ const Badges = (props) => {
   );
 };
 
-const mapDispatchToProps = (dispatch) => ({
+const mapDispatchToProps = dispatch => ({
   clearSelected: () => dispatch(clearSelected()),
 });
 
-const mapStateToProps = (state) => ({
+const mapStateToProps = state => ({
   allBadgeData: state?.badge?.allBadgeData,
 });
 

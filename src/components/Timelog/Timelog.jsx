@@ -26,7 +26,7 @@ import {
 } from 'reactstrap';
 
 import classnames from 'classnames';
-import { connect } from 'react-redux';
+import { connect, useSelector } from 'react-redux';
 import moment from 'moment';
 import _ from 'lodash';
 import ReactTooltip from 'react-tooltip';
@@ -34,6 +34,7 @@ import ReactTooltip from 'react-tooltip';
 import { getTimeEntriesForWeek, getTimeEntriesForPeriod } from '../../actions/timeEntries';
 import { getUserProfile, updateUserProfile, getUserTask } from '../../actions/userProfile';
 import { getUserProjects } from '../../actions/userProjects';
+import { getAllRoles } from '../../actions/role';
 import TimeEntryForm from './TimeEntryForm';
 import TimeEntry from './TimeEntry';
 import EffortBar from './EffortBar';
@@ -58,7 +59,14 @@ class Timelog extends Component {
     //renderViewingTimeEntriesFrom
     this.renderViewingTimeEntriesFrom = this.renderViewingTimeEntriesFrom.bind(this);
     this.data = {
-      disabled: !hasPermission(this.props.auth.user.role, 'disabledDataTimelog') ? false : true,
+      disabled: !hasPermission(
+        this.props.auth.user.role,
+        'disabledDataTimelog',
+        this.props.role.roles,
+        this.props.auth.user?.permissions?.frontPermissions,
+      )
+        ? false
+        : true,
       isTangible: false,
     };
     this.userProfile = this.props.userProfile;
@@ -73,13 +81,13 @@ class Timelog extends Component {
     toDate: this.endOfWeek(0),
     in: false,
     information: '',
-    isTimeEntriesLoading: true,
+    isTimeEntriesLoading: false,
   };
 
   state = this.initialState;
 
   async componentDidMount() {
-    const userId = this.props?.match?.params?.userId || this.props.auth.user.userid;
+    const userId = this.props?.match?.params?.userId || this.props.asUser;
     await this.props.getUserProfile(userId);
     this.userProfile = this.props.userProfile;
     await this.props.getUserTask(userId);
@@ -89,6 +97,7 @@ class Timelog extends Component {
     await this.props.getTimeEntriesForWeek(userId, 2);
     await this.props.getTimeEntriesForPeriod(userId, this.state.fromDate, this.state.toDate);
     await this.props.getUserProjects(userId);
+    await this.props.getAllRoles();
     this.setState({ isTimeEntriesLoading: false });
   }
 
@@ -104,7 +113,7 @@ class Timelog extends Component {
 
       const userId =
         this.props.match?.params?.userId || this.props.asUser || this.props.auth.user.userid;
-
+      console.log('User id in Timelog: ', userId);
       await this.props.getUserProfile(userId);
 
       this.userProfile = this.props.userProfile;
@@ -118,6 +127,7 @@ class Timelog extends Component {
         this.props.getTimeEntriesForWeek(userId, 2),
         this.props.getTimeEntriesForPeriod(userId, this.state.fromDate, this.state.toDate),
         this.props.getUserProjects(userId),
+        this.props.getAllRoles(),
         this.props.getUserTask(userId),
       ]);
     }
@@ -237,9 +247,10 @@ class Timelog extends Component {
         ? this.props.match.params.userId
         : this.props.asUser || this.props.auth.user.userid;
     const role = this.props.auth.user.role;
+    const userPermissions = this.props.auth.user?.permissions?.frontPermissions;
+
     const isOwner = this.props.auth.user.userid === userId;
     const fullName = `${this.props.userProfile.firstName} ${this.props.userProfile.lastName}`;
-
     let projects = [];
     if (!_.isEmpty(this.props.userProjects.projects)) {
       projects = this.props.userProjects.projects;
@@ -390,7 +401,12 @@ class Timelog extends Component {
                             </div>
                           </div>
                         ) : (
-                          hasPermission(role, 'addTimeEntryOthers') && (
+                          hasPermission(
+                            role,
+                            'addTimeEntryOthers',
+                            this.props.role.roles,
+                            userPermissions,
+                          ) && (
                             <div className="float-right">
                               <div>
                                 <Button color="warning" onClick={this.toggle}>
@@ -407,7 +423,12 @@ class Timelog extends Component {
                             <Button onClick={this.openInfo} color="primary">
                               Close
                             </Button>
-                            {hasPermission(role, 'editTimelogInfo') ? (
+                            {hasPermission(
+                              role,
+                              'editTimelogInfo',
+                              this.props.role.roles,
+                              userPermissions,
+                            ) ? (
                               <Button onClick={this.openInfo} color="secondary">
                                 Edit
                               </Button>
@@ -421,6 +442,7 @@ class Timelog extends Component {
                           toggle={this.toggle}
                           isOpen={this.state.modal}
                           userProfile={this.userProfile}
+                          roles={this.props.role.roles}
                         />
                         <ReactTooltip id="registerTip" place="bottom" effect="solid">
                           Click this icon to learn about the timelog.
@@ -585,6 +607,7 @@ const mapStateToProps = state => ({
   userProfile: state.userProfile,
   timeEntries: state.timeEntries,
   userProjects: state.userProjects,
+  role: state.role,
   userTask: state.userTask,
 });
 
@@ -595,4 +618,5 @@ export default connect(mapStateToProps, {
   getUserProfile,
   getUserTask,
   updateUserProfile,
+  getAllRoles,
 })(Timelog);

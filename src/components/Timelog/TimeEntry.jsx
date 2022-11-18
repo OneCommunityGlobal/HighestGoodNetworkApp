@@ -17,16 +17,21 @@ import { useEffect } from 'react';
 
 const TimeEntry = ({ data, displayYear, userProfile }) => {
   const [modal, setModal] = useState(false);
-  const [projectName, setProjectName] = useState("");
-  const [taskName, setTaskName] = useState("");
+  const [projectName, setProjectName] = useState('');
+  const [taskName, setTaskName] = useState('');
 
-  const toggle = () => setModal((modal) => !modal);
+  const toggle = () => setModal(modal => !modal);
 
   const dateOfWork = moment(data.dateOfWork);
-  const { user } = useSelector((state) => state.auth);
-  const isOwner = data.personId === user.userid;
+  const { user } = useSelector(state => state.auth);
+  const userPermissions = user?.permissions?.frontPermissions;
+  const { roles } = useSelector(state => state.role);
 
-  const isSameDay = moment().tz('America/Los_Angeles').format('YYYY-MM-DD') === data.dateOfWork;
+  const isOwner = data.personId === user.userid;
+  const isSameDay =
+    moment()
+      .tz('America/Los_Angeles')
+      .format('YYYY-MM-DD') === data.dateOfWork;
   const role = user.role;
 
   const dispatch = useDispatch();
@@ -34,18 +39,18 @@ const TimeEntry = ({ data, displayYear, userProfile }) => {
   useEffect(() => {
     axios
       .get(ENDPOINTS.PROJECT_BY_ID(data.projectId))
-      .then((res) => {
-        setProjectName(res?.data?.projectName || "")
+      .then(res => {
+        setProjectName(res?.data?.projectName || '');
       })
       .catch(err => console.log(err));
-  }, [])
+  }, []);
 
   useEffect(() => {
     axios
       // Note: Here taskId is stored in projectId since no taskId field in timeEntry schema
       .get(ENDPOINTS.GET_TASK(data.projectId))
-      .then((res) => {
-        setTaskName(res?.data?.taskName || "")
+      .then(res => {
+        setTaskName(res?.data?.taskName || '');
       })
       .catch(err => console.log(err));
   }, []);
@@ -83,7 +88,7 @@ const TimeEntry = ({ data, displayYear, userProfile }) => {
             type="checkbox"
             name="isTangible"
             checked={data.isTangible}
-            disabled={!hasPermission(role, 'toggleTangibleTime')}
+            disabled={!hasPermission(role, 'toggleTangibleTime', roles, userPermissions)}
             onChange={() => toggleTangibility(data)}
           />
         </Col>
@@ -91,7 +96,8 @@ const TimeEntry = ({ data, displayYear, userProfile }) => {
           <div className="text-muted">Notes:</div>
           {ReactHtmlParser(data.notes)}
           <div className="buttons">
-            {(hasPermission(role, 'editTimeEntry') || (isOwner && isSameDay)) && (
+            {(hasPermission(role, 'editTimeEntry', roles, userPermissions) ||
+              (isOwner && isSameDay)) && (
               <span>
                 <FontAwesomeIcon
                   icon={faEdit}
@@ -109,7 +115,8 @@ const TimeEntry = ({ data, displayYear, userProfile }) => {
                 />
               </span>
             )}
-            {(hasPermission(role, 'deleteTimeEntry') || (!data.isTangible && isOwner && isSameDay)) && (
+            {(hasPermission(role, 'deleteTimeEntry', roles, userPermissions) ||
+              (!data.isTangible && isOwner && isSameDay)) && (
               <DeleteModal timeEntry={data} userProfile={userProfile} />
             )}
           </div>

@@ -63,6 +63,7 @@ const Badge = props => {
     }
   }, [props.userProfile.badgeCollection, totalBadge]);
 
+  const permissionsUser = props.userProfile?.permissions?.frontPermissions;
   return (
     <>
       <Card style={{ backgroundColor: '#fafafa', borderRadius: 0 }} id="badgesearned">
@@ -95,6 +96,7 @@ const Badge = props => {
                 lastName={props.userProfile.lastName}
                 role={props.role}
                 close={toggle}
+                permissionsUser={permissionsUser}
               />
             </ModalBody>
           </Modal>
