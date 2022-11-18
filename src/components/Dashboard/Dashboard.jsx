@@ -1,10 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Alert, Row, Col, Container } from 'reactstrap';
-import { Link } from 'react-router-dom';
+import { Row, Col, Container } from 'reactstrap';
 import Leaderboard from '../LeaderBoard';
 import WeeklySummary from '../WeeklySummary/WeeklySummary';
 import Badge from '../Badge';
-import TeamMemberTasks from '../TeamMemberTasks/TeamMemberTasks';
 import Timelog from '../Timelog/Timelog';
 import SummaryBar from '../SummaryBar/SummaryBar';
 import PopUpBar from '../PopUpBar';
@@ -32,7 +30,7 @@ export const Dashboard = props => {
   }, []);
 
   useEffect(() => {
-    if (props.match.params && props.match.params.userid && userId != props.match.params.userId) {
+    if (props.match.params && props.match.params.userId && userId != props.match.params.userId) {
       userId = props.match.params.userId;
       getUserProfile(userId);
     }
