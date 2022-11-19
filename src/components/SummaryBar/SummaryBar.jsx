@@ -225,7 +225,7 @@ const SummaryBar = props => {
     console.log(tasks);
     const { firstName, lastName, email, _id } = userProfile;
     let totalEffort = parseFloat(userProfile.tangibleHoursReportedThisWeek);
-    const weeklyCommittedHours = userProfile.weeklyCommittedHours;
+    const weeklyCommittedHours = userProfile.weeklyComittedHours;
     const weeklySummary = getWeeklySummary(userProfile);
     return (
       <Container fluid className="px-lg-0 bg--bar">
