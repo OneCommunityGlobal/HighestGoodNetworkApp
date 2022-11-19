@@ -5,24 +5,24 @@ import DropDownSearchBox from './DropDownSearchBox';
 /**
  * The header row of the user table.
  */
-const UserTableSearchHeader = React.memo((props) => {
-  const onFirstNameSearch = (text) => {
+const UserTableSearchHeader = React.memo(props => {
+  const onFirstNameSearch = text => {
     props.onFirstNameSearch(text);
   };
 
-  const onLastNameSearch = (text) => {
+  const onLastNameSearch = text => {
     props.onLastNameSearch(text);
   };
 
-  const onRoleSearch = (text) => {
+  const onRoleSearch = text => {
     props.onRoleSearch(text);
   };
 
-  const onEmailSearch = (text) => {
+  const onEmailSearch = text => {
     props.onEmailSearch(text);
   };
 
-  const onWeeklyHrsSearch = (text) => {
+  const onWeeklyHrsSearch = text => {
     props.onWeeklyHrsSearch(text);
   };
 

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import ResetPasswordButton from './ResetPasswordButton';
-import { DELETE, PAUSE, RESUME,SET_FINAL_DAY, CANCEL } from '../../languages/en/ui';
-import { UserStatus,FinalDay } from '../../utils/enums';
+import { DELETE, PAUSE, RESUME, SET_FINAL_DAY, CANCEL } from '../../languages/en/ui';
+import { UserStatus, FinalDay } from '../../utils/enums';
 import { useHistory } from 'react-router-dom';
 import ActiveCell from './ActiveCell';
 import hasPermission from 'utils/permissions';
@@ -72,17 +72,17 @@ const UserTableData = React.memo(props => {
       </td>
       <td>
         <button
-            type="button"
-            className={`btn btn-outline-${props.isSet? 'warning' : 'success'} btn-sm`}
-            onClick={(e) => {
-              props.onFinalDayClick(
-                props.user,
-                props.isSet ? FinalDay.NotSetFinalDay :  FinalDay.FinalDay,
-                );
-        }}
-          >
-            { props.isSet? CANCEL : SET_FINAL_DAY}
-          </button>
+          type="button"
+          className={`btn btn-outline-${props.isSet ? 'warning' : 'success'} btn-sm`}
+          onClick={e => {
+            props.onFinalDayClick(
+              props.user,
+              props.isSet ? FinalDay.NotSetFinalDay : FinalDay.FinalDay,
+            );
+          }}
+        >
+          {props.isSet ? CANCEL : SET_FINAL_DAY}
+        </button>
       </td>
       <td>
         {props.user.isActive === false && props.user.reactivationDate

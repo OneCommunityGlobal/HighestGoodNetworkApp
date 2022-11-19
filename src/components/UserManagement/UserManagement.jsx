@@ -5,7 +5,12 @@
  * List the users in the application for administrator.
  *****************************************************************/
 import React from 'react';
-import { getAllUserProfile, updateUserStatus, updateUserFinalDayStatusu,deleteUser} from '../../actions/userManagement';
+import {
+  getAllUserProfile,
+  updateUserStatus,
+  updateUserFinalDayStatusIsSet,
+  deleteUser,
+} from '../../actions/userManagement';
 import { connect } from 'react-redux';
 import Loading from '../common/Loading';
 import UserTableHeader from './UserTableHeader';
@@ -37,11 +42,11 @@ class UserManagement extends React.PureComponent {
       selectedPage: 1,
       pageSize: 10,
       isActive: undefined,
-      isSet : undefined,
+      isSet: undefined,
       activationDateOpen: false,
       deletePopupOpen: false,
       isPaused: false,
-      finalDayDateOpen : false,
+      finalDayDateOpen: false,
     };
   }
 
@@ -134,9 +139,9 @@ class UserManagement extends React.PureComponent {
           onClose={this.activeInactivePopupClose}
         />
         <SetUpFinalDayPopUp
-            open={this.state.finalDayDateOpen}
-            onClose={this.setUpFinalDayPopupClose}
-            onSave={this.deactiveUser}
+          open={this.state.finalDayDateOpen}
+          onClose={this.setUpFinalDayPopupClose}
+          onSave={this.deactiveUser}
         />
       </React.Fragment>
     );
@@ -170,7 +175,7 @@ class UserManagement extends React.PureComponent {
               key={'user_' + index}
               index={index}
               isActive={user.isActive}
-              isSet = {user.isSet}
+              isSet={user.isSet}
               resetLoading={
                 this.state.selectedUser &&
                 this.state.selectedUser._id === user._id &&
@@ -178,7 +183,7 @@ class UserManagement extends React.PureComponent {
                 this.state.finalDayDateOpen
               }
               onPauseResumeClick={that.onPauseResumeClick}
-              onFinalDayClick = {that.onFinalDayClick}
+              onFinalDayClick={that.onFinalDayClick}
               onDeleteClick={that.onDeleteButtonClick}
               onActiveInactiveClick={that.onActiveInactiveClick}
               onResetClick={that.onResetClick}
@@ -245,14 +250,14 @@ class UserManagement extends React.PureComponent {
     }
   };
 
-   /**
+  /**
    * Call back on Set Final day or Delete final button click to trigger the action to update user endate
    */
 
   onFinalDayClick = (user, status) => {
     console.log(status);
     if (status === FinalDay.NotSetFinalDay) {
-      this.props.updateUserFinalDayStatusu(user,"Active",undefined, FinalDay.NotSetFinalDay);
+      this.props.updateUserFinalDayStatusIsSet(user, 'Active', undefined, FinalDay.NotSetFinalDay);
     } else {
       this.setState({
         finalDayDateOpen: true,
@@ -293,8 +298,13 @@ class UserManagement extends React.PureComponent {
   /**
    * Call back on Save confirmation button click to trigger the action to update user status
    */
-  deactiveUser = (finalDayDate) => {
-    this.props.updateUserFinalDayStatusu(this.state.selectedUser, "Active", finalDayDate, FinalDay.FinalDay);
+  deactiveUser = finalDayDate => {
+    this.props.updateUserFinalDayStatusIsSet(
+      this.state.selectedUser,
+      'Active',
+      finalDayDate,
+      FinalDay.FinalDay,
+    );
     this.setState({
       finalDayDateOpen: false,
       selectedUser: undefined,
@@ -496,6 +506,9 @@ class UserManagement extends React.PureComponent {
 const mapStateToProps = state => {
   return { state };
 };
-export default connect(mapStateToProps, { getAllUserProfile, updateUserStatus,updateUserFinalDayStatusu, deleteUser })(
-  UserManagement,
-);
+export default connect(mapStateToProps, {
+  getAllUserProfile,
+  updateUserStatus,
+  updateUserFinalDayStatusIsSet,
+  deleteUser,
+})(UserManagement);

@@ -5,11 +5,10 @@ import {
   LAST_NAME,
   ROLE,
   EMAIL,
-  WEEKLY_COMMITTED_HRS,
+  WKLY_COMMITTED_HRS,
   PAUSE,
-  RESUME,
   USER_RESUME_DATE,
-  Management
+  MANAGE_FINAL_DAY
 } from '../../languages/en/ui';
 
 /**
@@ -34,15 +33,13 @@ const UserTableHeader = React.memo((props) => {
         {EMAIL}
       </th>
       <th scope="col" id="usermanagement_hrs">
-        {WEEKLY_COMMITTED_HRS}
+        {WKLY_COMMITTED_HRS}
       </th>
-      <th scope="col" id="usermanagement_pause" id="user_pause">
-        {' '}
+      <th scope="col" id="usermanagement_pause">
         {PAUSE }
       </th>
-      <th scope="col" id="usermanagement_finalday" id="user_finalDay">
-        {' '}
-        {Management}
+      <th scope="col" id="usermanagement_finalday">
+        {MANAGE_FINAL_DAY}
       </th>
       <th scope="col" id="usermanagement_resume_date">
         {USER_RESUME_DATE}

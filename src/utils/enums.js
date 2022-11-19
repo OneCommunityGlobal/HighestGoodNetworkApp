@@ -1,5 +1,3 @@
-import { unset } from "lodash";
-
 /**
  * Enum representing the different status of a user
  */
@@ -29,7 +27,7 @@ export const UserDeleteType = {
   Inactive: 'Inactive',
 };
 
-export const UserFinalDayStatus ={
-  Set :' Set',
-  Unset : 'Unset',
-}
+export const UserFinalDayStatus = {
+  Set: ' Set',
+  Unset: 'Unset',
+};
