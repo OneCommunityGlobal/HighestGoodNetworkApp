@@ -2,7 +2,7 @@
 /* eslint-disable no-trailing-spaces */
 /* eslint-disable no-plusplus */
 /* eslint-disable indent */
-import { faBell, faCircle, faClock } from '@fortawesome/free-solid-svg-icons';
+import { faBell, faCircle, faClock, faTimes } from '@fortawesome/free-solid-svg-icons';
 import { Table, Progress } from 'reactstrap';
 import _ from 'lodash';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -142,7 +142,7 @@ const TeamMemberTasks = props => {
                   title="MARK AS DONE. MARKING THIS AS DONE WOULD REMOVE THE TASK PERMANENTLY."
                   className="markAsDoneButton"
                 >
-                  X
+                  <FontAwesomeIcon icon={faTimes} />
                 </h3>
               </td>
             );
@@ -217,65 +217,63 @@ const TeamMemberTasks = props => {
                 </tbody>
               </Table>
             </td>
-            <td>
-              <Table borderless className="team-member-tasks-subtable">
-                <tbody>
-                  {user.tasks &&
-                    user.tasks.map(
-                      (task, index) =>
-                        task.wbsId &&
-                        task.projectId && (
-                          <tr key={`${task._id}${index}`} className="task-break">
-                            <td className="task-align">
-                              <p>
-                                <Link to={task.projectId ? `/wbs/tasks/${task._id}` : '/'}>
-                                  <span>{`${task.num} ${task.taskName}`} </span>
-                                </Link>
-                                {task.taskNotifications.length > 0 && (
-                                  <FontAwesomeIcon
-                                    className="team-member-tasks-bell"
-                                    icon={faBell}
-                                    onClick={() => {
-                                      handleOpenTaskNotificationModal(
-                                        user.personId,
-                                        task,
-                                        task.taskNotifications,
-                                      );
-                                    }}
-                                  />
-                                )}
-                              </p>
-                            </td>
-                            {task.hoursLogged != null && task.estimatedHours != null && (
-                              <td className="team-task-progress">
-                                <div>
-                                  <span>
-                                    {`${parseFloat(task.hoursLogged.toFixed(2))}
+            <Table borderless className="team-member-tasks-subtable">
+              <tbody>
+                {user.tasks &&
+                  user.tasks.map(
+                    (task, index) =>
+                      task.wbsId &&
+                      task.projectId && (
+                        <tr key={`${task._id}${index}`} className="task-break">
+                          <td className="task-align">
+                            <p>
+                              <Link to={task.projectId ? `/wbs/tasks/${task._id}` : '/'}>
+                                <span>{`${task.num} ${task.taskName}`} </span>
+                              </Link>
+                              {task.taskNotifications.length > 0 && (
+                                <FontAwesomeIcon
+                                  className="team-member-tasks-bell"
+                                  icon={faBell}
+                                  onClick={() => {
+                                    handleOpenTaskNotificationModal(
+                                      user.personId,
+                                      task,
+                                      task.taskNotifications,
+                                    );
+                                  }}
+                                />
+                              )}
+                            </p>
+                          </td>
+                          {task.hoursLogged != null && task.estimatedHours != null && (
+                            <td className="team-task-progress">
+                              <div>
+                                <span>
+                                  {`${parseFloat(task.hoursLogged.toFixed(2))}
                                   of 
                                 ${parseFloat(task.estimatedHours.toFixed(2))}`}
-                                  </span>
-                                  <Progress
-                                    color={
-                                      task.hoursLogged > task.estimatedHours
-                                        ? getcolor(0)
-                                        : getcolor(task.estimatedHours - task.hoursLogged)
-                                    }
-                                    value={(task.hoursLogged / task.estimatedHours) * 100}
-                                  />
-                                </div>
-                              </td>
-                            )}
-                            {userRole === 'Administrator' ? (
-                              <td>
-                                <TaskButton task={task}></TaskButton>
-                              </td>
-                            ) : null}
-                          </tr>
-                        ),
-                    )}
-                </tbody>
-              </Table>
-            </td>
+                                </span>
+                                <Progress
+                                  color={
+                                    task.hoursLogged > task.estimatedHours
+                                      ? getcolor(0)
+                                      : getcolor(task.estimatedHours - task.hoursLogged)
+                                  }
+                                  value={(task.hoursLogged / task.estimatedHours) * 100}
+                                />
+                              </div>
+                            </td>
+                          )}
+                          {userRole === 'Administrator' ? (
+                            <td>
+                              <TaskButton task={task}></TaskButton>
+                            </td>
+                          ) : null}
+                        </tr>
+                      ),
+                  )}
+              </tbody>
+            </Table>
           </tr>
         );
       });
