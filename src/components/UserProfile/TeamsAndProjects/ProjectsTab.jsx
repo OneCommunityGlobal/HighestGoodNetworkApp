@@ -12,6 +12,8 @@ const ProjectsTab = props => {
     edit,
     role,
     userTasks,
+    userId,
+    updateTask,
   } = props;
   const [addProjectPopupOpen, setaddProjectPopupOpen] = useState(false);
   const [renderedOn, setRenderedOn] = useState(0);
@@ -50,6 +52,8 @@ const ProjectsTab = props => {
         renderedOn={renderedOn}
         edit={edit}
         role={role}
+        updateTask={updateTask}
+        userId={userId}
       />
     </React.Fragment>
   );

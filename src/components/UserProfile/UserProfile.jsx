@@ -165,6 +165,16 @@ const UserProfile = props => {
     setChanged(true);
   };
 
+  const onUpdateTask = (taskId, updatedTask, tasksUpdated) => {
+    // [taskId, updatedTask]
+    // for (let i = 0; i < tasksUpdated.length; i += 1) {
+    //   const taskUpdated = tasksUpdated[i];
+    //   props.updateTask(taskUpdated.taskId, taskUpdated.taskObject);
+    // }
+    props.updateTask(taskId, updatedTask);
+    loadUserTasks();
+  };
+
   const handleImageUpload = async evt => {
     if (evt) evt.preventDefault();
     const file = evt.target.files[0];
@@ -620,6 +630,8 @@ const UserProfile = props => {
                   edit={hasPermission(requestorRole, 'editUserProfile', roles, userPermissions)}
                   role={requestorRole}
                   userPermissions={userPermissions}
+                  userId={props.match.params.userId}
+                  updateTask={onUpdateTask}
                 />
               </TabPane>
               <TabPane tabId="5">

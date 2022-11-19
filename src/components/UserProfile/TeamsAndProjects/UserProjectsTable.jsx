@@ -7,68 +7,132 @@ import { useSelector } from 'react-redux';
 const UserProjectsTable = React.memo(props => {
   //const [addProjectPopupOpen, showProjectPopup] = useState(false);
   const { roles } = useSelector(state => state.role);
+  const userPermissions = useSelector(state => state.auth.user?.permissions?.frontPermissions);
+
   const userProjects = props.userProjectsById;
   const userTasks = props.userTasks;
 
-  const tasksLevel1 = [];
-  const tasksLevel2 = [];
-  const tasksLevel3 = [];
-  const tasksLevel4 = [];
-
-  const levelTasks = {
-    1: task => tasksLevel1.push(task),
-    2: task => tasksLevel2.push(task),
-    3: task => tasksLevel3.push(task),
-    4: task => tasksLevel4.push(task),
-  };
-
+  const sortedTasksByNumber = userTasks?.sort((a, b) => {
+    const enumerate_list_a = a.num.split('.');
+    const enumerate_list_b = b.num.split('.');
+    const enumerate_a = [...enumerate_list_a, 0, 0, 0, 0].slice(0, 4);
+    const enumerate_b = [...enumerate_list_b, 0, 0, 0, 0].slice(0, 4);
+    return (
+      +enumerate_a[0] - +enumerate_b[0] ||
+      +enumerate_a[1] - +enumerate_b[1] ||
+      +enumerate_a[2] - +enumerate_b[2] ||
+      +enumerate_a[3] - +enumerate_b[3]
+    );
+  });
   const tasksByProject = userProjects?.map(project => {
-    userTasks?.forEach(task => {
-      console.log(task, 'workee');
+    const tasks = [];
+    sortedTasksByNumber?.forEach(task => {
       if (task.projectId.includes(project._id)) {
-        const level = task.level;
-        levelTasks[level](task);
+        tasks.push(task);
       }
     });
-    const tasks = { tasksLevel1, tasksLevel2, tasksLevel3, tasksLevel4 };
     return { ...project, tasks };
   });
+  console.log(tasksByProject);
 
-  console.log(tasksByProject, 'heree');
-  console.log(userProjects, 'he2ree');
+  const removeTaskFromUser = task => {
+    const newResources = task.resources.filter(user => user.userID != props.userId);
+    const updatedTask = { ...task, resources: newResources };
+    props.updateTask(task._id, updatedTask);
+  };
 
-  const userPermissions = useSelector(state => state.auth.user?.permissions?.frontPermissions);
   return (
-    <div className="projecttable-container">
-      <div className="container">
-        <div className="row">
+    <>
+      <div className="projecttable-container">
+        <div className="container">
+          <div className="row">
+            <Col
+              md={props.edit ? '7' : '12'}
+              style={{
+                backgroundColor: ' #e9ecef',
+                border: '1px solid #ced4da',
+                marginBottom: '10px',
+              }}
+            >
+              <span className="projects-span">Projects</span>
+            </Col>
+            {props.edit && props.role && (
+              <Col md="5">
+                {hasPermission(props.role, 'assignUserInProject', roles, userPermissions) ? (
+                  <Button
+                    className="btn-addproject"
+                    color="primary"
+                    onClick={() => {
+                      props.onButtonClick();
+                    }}
+                  >
+                    Assign Project
+                  </Button>
+                ) : (
+                  <></>
+                )}
+              </Col>
+            )}
+          </div>
+        </div>
+        <div style={{ maxHeight: '300px', overflow: 'auto' }}>
+          <table className="table table-bordered table-responsive-sm">
+            <thead>
+              {props.role && (
+                <tr>
+                  <th>#</th>
+                  <th>Project Name</th>
+                  {hasPermission(props.role, 'assignUserInProject', roles, userPermissions) ? (
+                    <th>{}</th>
+                  ) : null}
+                </tr>
+              )}
+            </thead>
+            <tbody>
+              {props.userProjectsById.length > 0 ? (
+                tasksByProject.map((project, index) => (
+                  <>
+                    <tr key={index}>
+                      <td>{index + 1}</td>
+                      <td>{`${project.projectName}`}</td>
+                      {props.edit && props.role && (
+                        <td style={{ width: '103px' }}>
+                          <Button
+                            color="danger"
+                            //change perms
+                            disabled={
+                              !hasPermission(props.role, 'editTask', roles, userPermissions)
+                            }
+                            onClick={e => {
+                              props.onDeleteClicK(project._id);
+                            }}
+                          >
+                            Delete
+                          </Button>
+                        </td>
+                      )}
+                    </tr>
+                  </>
+                ))
+              ) : (
+                <></>
+              )}
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div className="projecttable-container">
+        <div>
           <Col
-            md={props.edit ? '7' : '12'}
+            md={'12'}
             style={{
               backgroundColor: ' #e9ecef',
               border: '1px solid #ced4da',
               marginBottom: '10px',
             }}
           >
-            <span className="projects-span">Projects</span>
+            <span className="projects-span">Tasks</span>
           </Col>
-          {props.edit && props.role && (
-            <Col md="5">
-              {hasPermission(props.role, 'assignUserInProject', roles, userPermissions) ? (
-                <Button
-                  className="btn-addproject"
-                  color="primary"
-                  onClick={() => {
-                    props.onButtonClick();
-                  }}
-                >
-                  Assign Project
-                </Button>
-              ) : (
-                <></>
-              )}
-            </Col>
-          )}
         </div>
       </div>
       <div style={{ maxHeight: '300px', overflow: 'auto' }}>
@@ -77,7 +141,7 @@ const UserProjectsTable = React.memo(props => {
             {props.role && (
               <tr>
                 <th>#</th>
-                <th>Project Name</th>
+                <th>Task Name</th>
                 {hasPermission(props.role, 'assignUserInProject', roles, userPermissions) ? (
                   <th>{}</th>
                 ) : null}
@@ -86,61 +150,33 @@ const UserProjectsTable = React.memo(props => {
           </thead>
           <tbody>
             {props.userProjectsById.length > 0 ? (
-              tasksByProject.map((project, index) => (
+              tasksByProject.map(project => (
                 <>
-                  <tr key={index}>
-                    <td>{index + 1}</td>
-                    <td>{`${project.projectName}`}</td>
-                    {props.edit && props.role && (
-                      <td>
-                        <Button
-                          color="danger"
-                          disabled={
-                            !hasPermission(
-                              props.role,
-                              'unassignUserInProject',
-                              roles,
-                              userPermissions,
-                            )
-                          }
-                          onClick={e => {
-                            props.onDeleteClicK(project._id);
-                          }}
-                        >
-                          Delete
-                        </Button>
-                      </td>
-                    )}
-                  </tr>
-                  {Object.entries(project.tasks).map(([level, tasks]) => {
-                    return tasks.map(task => {
-                      return (
-                        <tr key={task._id}>
-                          <td>{task.num} task</td>
-                          <td>{`${task.taskName}`}</td>
-                          {props.edit && props.role && (
-                            <td>
-                              <Button
-                                color="danger"
-                                disabled={
-                                  !hasPermission(
-                                    props.role,
-                                    'unassignUserInProject',
-                                    roles,
-                                    userPermissions,
-                                  )
-                                }
-                                onClick={e => {
-                                  //delete task
-                                }}
-                              >
-                                Delete
-                              </Button>
-                            </td>
-                          )}
-                        </tr>
-                      );
-                    });
+                  {project.tasks.map(task => {
+                    return (
+                      <tr key={task._id}>
+                        <td>{task.num}</td>
+                        <td>{`${task.taskName}`}</td>
+                        {props.edit && props.role && (
+                          <td>
+                            <Button
+                              color="danger"
+                              disabled={
+                                !hasPermission(
+                                  props.role,
+                                  'unassignUserInProject',
+                                  roles,
+                                  userPermissions,
+                                )
+                              }
+                              onClick={e => removeTaskFromUser(task)}
+                            >
+                              Delete
+                            </Button>
+                          </td>
+                        )}
+                      </tr>
+                    );
                   })}
                 </>
               ))
@@ -150,7 +186,8 @@ const UserProjectsTable = React.memo(props => {
           </tbody>
         </table>
       </div>
-    </div>
+    </>
   );
 });
+
 export default UserProjectsTable;
