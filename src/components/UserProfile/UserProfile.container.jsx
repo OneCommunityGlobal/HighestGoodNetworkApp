@@ -6,13 +6,14 @@ import { getTimeEntriesForWeek, getTimeEntriesForPeriod } from '../../actions/ti
 import { getUserProjects } from '../../actions/userProjects';
 import UserProfile from './UserProfile';
 
-const mapStateToProps = (state) => ({
+const mapStateToProps = state => ({
   auth: state.auth,
   userProfile: state.userProfile,
   user: _.get(state, 'user', {}),
   userProjects: state.userProjects,
   allProjects: _.get(state, 'allProjects'),
   allTeams: state,
+  role: state.role,
 });
 
 export default connect(mapStateToProps, {

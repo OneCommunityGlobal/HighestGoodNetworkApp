@@ -8,8 +8,10 @@ import { connect } from 'react-redux';
 import { assignProject } from './../../../../actions/projectMembers';
 import hasPermission from 'utils/permissions';
 
-const Member = (props) => {
+const Member = props => {
   const [role] = useState(props.state ? props.state.auth.user.role : null);
+  const userPermissions = props.state.auth.user?.permissions?.frontPermissions;
+  const { roles } = props.state.role;
   return (
     <React.Fragment>
       <tr className="members__tr">
@@ -17,18 +19,18 @@ const Member = (props) => {
           <div>{props.index + 1}</div>
         </th>
         <td className="members__name">
-          {hasPermission(role, 'seeUserProfileInProjects') ? (
-          <a href={`/userprofile/${props.uid}`}>{props.fullName}</a>
+          {hasPermission(role, 'seeUserProfileInProjects', roles, userPermissions) ? (
+            <a href={`/userprofile/${props.uid}`}>{props.fullName}</a>
           ) : (
             props.fullName
           )}
         </td>
-        {hasPermission(role, 'unassignUserInProject',) ? (
+        {hasPermission(role, 'unassignUserInProject', roles, userPermissions) ? (
           <td className="members__assign">
             <button
               className="btn btn-outline-danger btn-sm"
               type="button"
-              onClick={(e) =>
+              onClick={e =>
                 props.assignProject(
                   props.projectId,
                   props.uid,
@@ -46,7 +48,7 @@ const Member = (props) => {
     </React.Fragment>
   );
 };
-const mapStateToProps = (state) => {
+const mapStateToProps = state => {
   return { state };
 };
 export default connect(mapStateToProps, { assignProject })(Member);
