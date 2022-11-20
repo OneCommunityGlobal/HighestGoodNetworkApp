@@ -29,6 +29,7 @@ const LeaderBoard = ({
   organizationData,
   timeEntries,
   asUser,
+  setLeaderData,
 }) => {
   const userId = asUser ? asUser : loggedInUser.userId;
 
@@ -38,6 +39,7 @@ const LeaderBoard = ({
   }, [timeEntries]);
 
   useEffect(() => {
+    setLeaderData(leaderBoardData);
     try {
       if (window.screen.width < 540) {
         const scrollWindow = document.getElementById('leaderboard');
@@ -51,7 +53,7 @@ const LeaderBoard = ({
         }
       }
     } catch {}
-  }, []);
+  }, [leaderBoardData]);
 
   const [isOpen, setOpen] = useState(false);
 

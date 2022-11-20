@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-
 import {
   Container,
   Row,
@@ -32,7 +31,7 @@ import { ApiEndpoint } from 'utils/URL';
 import hasPermission from 'utils/permissions';
 
 const SummaryBar = props => {
-  const { asUser, role } = props;
+  const { asUser, role, leaderData } = props;
   const [userProfile, setUserProfile] = useState(undefined);
   const [tasks, setTasks] = useState(undefined);
   const authenticateUser = useSelector(state => state.auth.user);
@@ -219,12 +218,12 @@ const SummaryBar = props => {
     }
   };
 
-  if (userProfile !== undefined) {
+  if (userProfile !== undefined && leaderData !== undefined) {
     const infringements = getInfringements(userProfile);
     const badges = getBadges(userProfile);
     console.log(tasks);
     const { firstName, lastName, email, _id } = userProfile;
-    let totalEffort = parseFloat(userProfile.tangibleHoursReportedThisWeek);
+    let totalEffort = parseFloat(leaderData.find(x => x.personId === asUser).tangibletime);
     const weeklyCommittedHours = userProfile.weeklyComittedHours;
     const weeklySummary = getWeeklySummary(userProfile);
     return (
