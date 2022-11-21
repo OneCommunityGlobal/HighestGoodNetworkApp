@@ -19,6 +19,7 @@ describe('Dashboard ', () => {
       timeEntries: mockState.timeEntries,
       userProjects: mockState.userProjects,
       weeklySummaries: mockState.weeklySummaries,
+      role: mockState.role,
     });
     store.dispatch = jest.fn();
     //check what props should be being passed seems the getUserProfile isnt there see if your using renderWithRouterMatch correctly

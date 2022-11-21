@@ -55,14 +55,14 @@ const LeaderBoard = ({
 
   const [isOpen, setOpen] = useState(false);
 
-  const toggle = () => setOpen((isOpen) => !isOpen);
+  const toggle = () => setOpen(isOpen => !isOpen);
 
   // add state hook for the popup the personal's dashboard from leaderboard
   const [isDashboardOpen, setIsDashboardOpen] = useState(false);
-  const dashboardToggle = (item) => setIsDashboardOpen(item.personId);
+  const dashboardToggle = item => setIsDashboardOpen(item.personId);
   const dashboardClose = () => setIsDashboardOpen(false);
-  
-  const showDashboard = (item) => {
+
+  const showDashboard = item => {
     dashboardClose();
     window.open(
       `/dashboard/${item.personId}`,
@@ -198,25 +198,23 @@ const LeaderBoard = ({
             </tr>
             {leaderBoardData.map((item, key) => (
               <tr key={key}>
-                <td
-                  className="align-middle"
-                  onClick={() => dashboardToggle(item)}
-                >
-
-                <div>
-                  <Modal isOpen={isDashboardOpen === item.personId} toggle={dashboardToggle}>
-                    <ModalHeader toggle={dashboardToggle}>Jump to personal Dashboard</ModalHeader>
+                <td className="align-middle" onClick={() => dashboardToggle(item)}>
+                  <div>
+                    <Modal isOpen={isDashboardOpen === item.personId} toggle={dashboardToggle}>
+                      <ModalHeader toggle={dashboardToggle}>Jump to personal Dashboard</ModalHeader>
                       <ModalBody>
-                        <p>
-                          Are you sure you wish to view this {item.name} dashboard?
-                        </p>
+                        <p>Are you sure you wish to view this {item.name} dashboard?</p>
                       </ModalBody>
                       <ModalFooter>
-                        <Button variant="primary" onClick={() => showDashboard(item)}>Ok</Button>{' '}
-                        <Button variant="secondary" onClick={dashboardToggle}>Cancel</Button>
+                        <Button variant="primary" onClick={() => showDashboard(item)}>
+                          Ok
+                        </Button>{' '}
+                        <Button variant="secondary" onClick={dashboardToggle}>
+                          Cancel
+                        </Button>
                       </ModalFooter>
-                  </Modal>
-                </div>
+                    </Modal>
+                  </div>
 
                   {/* <Link to={`/dashboard/${item.personId}`}> */}
                   <div
