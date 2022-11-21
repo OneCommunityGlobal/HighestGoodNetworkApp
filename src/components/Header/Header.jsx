@@ -52,9 +52,20 @@ export const Header = props => {
         props.auth.isAuthenticated,
         props.auth.user.userid,
       );
+      console.log(
+        'header.js: props.auth.isAuthenticated',
+        props.auth.isAuthenticated,
+        props.auth.user.userid,
+      );
       props.getHeaderData(props.auth.user.userid);
       props.getTimerData(props.auth.user.userid);
     }
+  }, [props.auth.isAuthenticated]);
+
+  // useEffect(() => {
+  //   props.getHeaderData(props.auth.user.userid);
+  //   props.getTimerData(props.auth.user.userid);
+  // }, [props.auth]);
   }, [props.auth.isAuthenticated]);
 
   useEffect(() => {
@@ -125,6 +136,51 @@ export const Header = props => {
                   </i>
                 </NavLink>
               </NavItem>
+              {(hasPermission(user.role, 'seeUserManagement') ||
+                hasPermission(user.role, 'seeBadgeManagement') ||
+                hasPermission(user.role, 'seeProjectManagement') ||
+                hasPermission(user.role, 'seeTeamsManagement') ||
+                hasPermission(user.role, 'seePopupManagement')) && (
+                <UncontrolledDropdown nav inNavbar>
+                  <DropdownToggle nav caret>
+                    {OTHER_LINKS}
+                  </DropdownToggle>
+                  <DropdownMenu>
+                    {hasPermission(user.role, 'seeUserManagement') ? (
+                      <DropdownItem tag={Link} to="/usermanagement">
+                        {USER_MANAGEMENT}
+                      </DropdownItem>
+                    ) : (
+                      <React.Fragment></React.Fragment>
+                    )}
+                    {hasPermission(user.role, 'seeBadgeManagement') ? (
+                      <DropdownItem tag={Link} to="/badgemanagement">
+                        {BADGE_MANAGEMENT}
+                      </DropdownItem>
+                    ) : (
+                      <React.Fragment></React.Fragment>
+                    )}
+                    {hasPermission(user.role, 'seeProjectManagement') && (
+                      <DropdownItem tag={Link} to="/projects">
+                        {PROJECTS}
+                      </DropdownItem>
+                    )}
+                    {hasPermission(user.role, 'seeTeamsManagement') && (
+                      <DropdownItem tag={Link} to="/teams">
+                        {TEAMS}
+                      </DropdownItem>
+                    )}
+                    {hasPermission(user.role, 'seePopupManagement') ? (
+                      <>
+                        <DropdownItem divider />
+                        <DropdownItem tag={Link} to={`/admin/`}>
+                          {POPUP_MANAGEMENT}
+                        </DropdownItem>
+                      </>
+                    ) : null}
+                  </DropdownMenu>
+                </UncontrolledDropdown>
+              )}
               {(hasPermission(user.role, 'seeUserManagement', roles, userPermissions) ||
                 hasPermission(user.role, 'seeBadgeManagement', roles, userPermissions) ||
                 hasPermission(user.role, 'seeProjectManagement', roles, userPermissions) ||
