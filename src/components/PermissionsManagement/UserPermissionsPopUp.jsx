@@ -21,7 +21,6 @@ const UserPermissionsPopUp = ({ allUserProfiles, toggle, getAllUsers }) => {
   //no onchange, always change this state;
   const onChangeCheck = data => {
     const actualValue = data;
-    console.log(actualValue);
 
     setActualUserProfile(previous => {
       const permissionsUser = previous.permissions;
@@ -50,7 +49,6 @@ const UserPermissionsPopUp = ({ allUserProfiles, toggle, getAllUsers }) => {
         frontPermissions: actualPermissionsFront,
         backPermissions: permissionsBackEnd,
       };
-      console.log(newPermissionsObject);
       return { ...previous, permissions: newPermissionsObject };
     });
   };
@@ -63,8 +61,6 @@ const UserPermissionsPopUp = ({ allUserProfiles, toggle, getAllUsers }) => {
   };
   useEffect(() => {
     getAllUsers();
-
-    console.log(actualUserProfile);
   }, [actualUserProfile]);
 
   const isPermissionChecked = permission =>
@@ -75,10 +71,8 @@ const UserPermissionsPopUp = ({ allUserProfiles, toggle, getAllUsers }) => {
     const userId = actualUserProfile?._id;
 
     const url = ENDPOINTS.USER_PROFILE(userId);
-    console.log(actualUserProfile, 'here1');
     const allUserInfo = await axios.get(url).then(res => res.data);
     const newUserInfo = { ...allUserInfo, ...actualUserProfile };
-    console.log(newUserInfo, 'here2');
 
     await axios
       .put(url, newUserInfo)
@@ -87,9 +81,14 @@ const UserPermissionsPopUp = ({ allUserProfiles, toggle, getAllUsers }) => {
       })
       .catch(err => console.log(err));
     getAllUsers();
-    console.log(newUserInfo, '2');
 
-    toast.success('Permission has been updated successfully');
+    const SUCCESS_MESSAGE = `
+        Permission has been updated successfully. Be sure to tell them that you are changing these
+        permissions and for that they need to log out and log back in for their new permissions take
+        place.`;
+    toast.success(SUCCESS_MESSAGE, {
+      autoClose: 10000,
+    });
   };
 
   return (
