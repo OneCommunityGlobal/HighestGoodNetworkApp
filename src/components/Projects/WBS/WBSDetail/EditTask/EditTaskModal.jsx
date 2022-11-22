@@ -253,7 +253,7 @@ const EditTaskModal = props => {
       classification,
     };
 
-    props.updateTask(props.taskId, updatedTask);
+    props.updateTask(props.taskId, updatedTask, hasPermission(role, 'editTask'));
     setTimeout(() => {
       props.fetchAllTasks(props.wbsId);
     }, 4000);
@@ -273,9 +273,9 @@ const EditTaskModal = props => {
         <ModalBody>
           <ReactTooltip />
           <table
-            className={`table table-bordered ${
-              hasPermission(role, 'editTask', roles, userPermissions) ? null : 'disable-div'
-            }`}
+            className={`table table-bordered`
+            // ${hasPermission(role, 'editTask', roles, userPermission) ? null : 'disable-div'}`
+            }
           >
             <tbody>
               <tr>
@@ -613,8 +613,7 @@ const EditTaskModal = props => {
             </tbody>
           </table>
         </ModalBody>
-
-        {hasPermission(role, 'editTask', roles, userPermissions) ? (
+        {(
           <ModalFooter>
             {taskName !== '' && startedDate !== '' && dueDate !== '' ? (
               <Button color="primary" onClick={updateTask}>
@@ -625,7 +624,7 @@ const EditTaskModal = props => {
               Cancel
             </Button>
           </ModalFooter>
-        ) : null}
+        )}
       </Modal>
       <Button color="primary" size="sm" onClick={toggle}>
         {hasPermission(role, 'editTask', roles, userPermissions) ? 'Edit' : 'View'}

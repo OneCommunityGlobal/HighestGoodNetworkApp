@@ -5,7 +5,10 @@ export const UserStatus = {
   Active: 'Active',
   InActive: 'Inactive',
 };
-
+export const FinalDay = {
+  FinalDay: 'FinalDay',
+  NotSetFinalDay: 'NotSetFinalDay',
+};
 /**
  * Enum representing the different roles of a user
  */
@@ -22,4 +25,9 @@ export const UserDeleteType = {
   HardDelete: 'delete',
   SoftDelete: 'archive',
   Inactive: 'Inactive',
+};
+
+export const UserFinalDayStatus = {
+  Set: ' Set',
+  Unset: 'Unset',
 };
