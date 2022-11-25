@@ -1,7 +1,7 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 import mockAdminState from '../../__tests__/mockAdminState';
-import Leaderboard from './Leaderboard';
+import Leaderboard from './LeaderBoard';
 
 describe('Leaderboard page structure', () => {
   let mountedLeaderboard, props;
@@ -43,15 +43,15 @@ describe('Leaderboard page structure', () => {
         leaderBoardItems.containsMatchingElement(
           <td>
             <span title="Total time">{lbData[i].totaltime}</span>
-          </td>,
-        ),
+          </td>
+        )
       ).toBeTruthy();
       expect(
         leaderBoardItems.containsMatchingElement(
           <td>
             <span title="Tangible time">{lbData[i].tangibletime}</span>
-          </td>,
-        ),
+          </td>
+        )
       ).toBeTruthy();
     }
   });

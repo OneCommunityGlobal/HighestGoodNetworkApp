@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Row, Col, Container } from 'reactstrap';
-import Leaderboard from '../LeaderBoard';
+import LeaderBoard from '../LeaderBoard';
 import WeeklySummary from '../WeeklySummary/WeeklySummary';
 import Badge from '../Badge';
 import Timelog from '../Timelog/Timelog';
@@ -58,8 +58,7 @@ export const Dashboard = props => {
               className="mt-3 mb-5 text-center"
               onClick={toggle}
               onKeyDown={toggle}
-              tabIndex="0"
-            >
+              tabIndex="0">
               <WeeklySummary isPopup asUser={userId} />
             </div>
           </div>
@@ -67,7 +66,7 @@ export const Dashboard = props => {
       </Row>
       <Row>
         <Col lg={{ size: 5 }} className="order-sm-12">
-          <Leaderboard asUser={userId} setLeaderData={setLeaderData} />
+          <LeaderBoard asUser={userId} setLeaderData={setLeaderData} />
         </Col>
         <Col lg={{ size: 7 }} className="left-col-dashboard order-sm-1">
           {popup ? (
@@ -89,9 +88,9 @@ export const Dashboard = props => {
 };
 
 const mapStateToProps = state => ({
-  auth: state.auth,
+  auth: state.auth
 });
 
 export default connect(mapStateToProps, {
-  getTimeZoneAPIKey,
+  getTimeZoneAPIKey
 })(Dashboard);

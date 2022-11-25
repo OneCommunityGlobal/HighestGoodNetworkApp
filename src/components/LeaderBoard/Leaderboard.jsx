@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
-import './Leaderboard.css';
+import './LeaderBoard.css';
 import _ from 'lodash';
 import { Link } from 'react-router-dom';
 import { Table, Progress, Modal, ModalBody, ModalFooter, ModalHeader, Button } from 'reactstrap';
@@ -29,7 +29,7 @@ const LeaderBoard = ({
   organizationData,
   timeEntries,
   asUser,
-  setLeaderData,
+  setLeaderData
 }) => {
   const userId = asUser ? asUser : loggedInUser.userId;
 
@@ -69,7 +69,7 @@ const LeaderBoard = ({
     window.open(
       `/dashboard/${item.personId}`,
       'Popup',
-      'toolbar=no, location=no, statusbar=no, menubar=no, scrollbars=1, resizable=0, width=580, height=600, top=30',
+      'toolbar=no, location=no, statusbar=no, menubar=no, scrollbars=1, resizable=0, width=580, height=600, top=30'
     );
   };
 
@@ -176,7 +176,7 @@ const LeaderBoard = ({
                       width: 15,
                       height: 15,
                       borderRadius: 7.5,
-                      margin: 'auto',
+                      margin: 'auto'
                     }}
                   />
                 </Link>
@@ -228,7 +228,7 @@ const LeaderBoard = ({
                       height: 15,
                       borderRadius: 7.5,
                       margin: 'auto',
-                      verticalAlign: 'middle',
+                      verticalAlign: 'middle'
                     }}
                   />
                   {/* </Link> */}
@@ -244,8 +244,7 @@ const LeaderBoard = ({
                 <td className="align-middle">
                   <Link
                     to={`/timelog/${item.personId}`}
-                    title={`TangibleEffort: ${item.tangibletime} hours`}
-                  >
+                    title={`TangibleEffort: ${item.tangibletime} hours`}>
                     <Progress value={item.barprogress} color={item.barcolor} />
                   </Link>
                 </td>
