@@ -138,6 +138,11 @@ const ViewTab = props => {
   const [totalTangibleHoursThisWeek, setTotalTangibleHoursThisWeek] = useState(0);
   const [totalIntangibleHours, setTotalIntangibleHours] = useState(0);
   const [totalTangibleHours, setTotalTangibleHours] = useState(0);
+  const { hoursByCategory } = userProfile;
+
+  useEffect(() => {
+    sumOfCategoryHours();
+  }, [hoursByCategory]);
 
   const calculateTotalHrsForPeriod = timeEntries => {
     let hours = { totalTangibleHrs: 0, totalIntangibleHrs: 0 };
@@ -157,12 +162,9 @@ const ViewTab = props => {
 
   //This function is return totalTangibleHours which is the sum of all the tangible categories
   const sumOfCategoryHours = () => {
-    const {hoursByCategory} = userProfile
-    const hours = Object.values(hoursByCategory).reduce((prev,curr) => (
-      prev + curr
-    ), 0)
-    setTotalTangibleHours(hours.toFixed(2))
-  }
+    const hours = Object.values(hoursByCategory).reduce((prev, curr) => prev + curr, 0);
+    setTotalTangibleHours(hours.toFixed(2));
+  };
 
   useEffect(() => {
     //Get Total Tangible Hours this week
@@ -196,7 +198,7 @@ const ViewTab = props => {
         const timeEntries = res.data;
         const output = calculateTotalHrsForPeriod(timeEntries);
         setTotalIntangibleHours(output.totalIntangibleHrs.toFixed(2));
-        sumOfCategoryHours()
+        sumOfCategoryHours();
       })
       .catch(err => {
         console.log(err.message);
@@ -317,7 +319,7 @@ const ViewTab = props => {
                             [key]: e.target.value,
                           },
                         });
-                        setChanged(true)
+                        setChanged(true);
                       }}
                       placeholder={`Total Tangible ${capitalize(key)} Hours`}
                     />

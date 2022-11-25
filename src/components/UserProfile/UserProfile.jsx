@@ -664,6 +664,9 @@ const UserProfile = props => {
                     </span>
                   </>
                 )}
+              <Button outline onClick={() => loadUserProfile()}>
+                Refresh
+              </Button>
             </div>
           </Col>
         </Row>
