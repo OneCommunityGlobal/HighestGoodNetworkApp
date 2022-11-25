@@ -20,7 +20,7 @@ const userProfileMockData = {
   firstName: 'John',
   lastName: 'Doe',
   email: '',
-  infringments: [{ _id: '1', date: '2020-01-01', description: 'a' }],
+  infringements: [{ _id: '1', date: '2020-01-01', description: 'a' }],
   adminLinks: [{ Name: 'admin', Link: 'https://www.google.com/' }],
   personalLinks: [{ Name: 'personal', Link: 'https://www.google.com/' }],
   profilePic: '',
@@ -65,9 +65,9 @@ describe('UserProfile Redux related actions', () => {
       expect(userProfileSlice()).toHaveProperty('profilePic', '');
     });
 
-    it('should fetch infringments, and put it in the store', async () => {
+    it('should fetch infringements, and put it in the store', async () => {
       await store.dispatch(getUserProfile('1234'));
-      expect(userProfileSlice().infringments).toHaveProperty([0], {
+      expect(userProfileSlice().infringements).toHaveProperty([0], {
         _id: '1',
         date: '2020-01-01',
         description: 'a',
