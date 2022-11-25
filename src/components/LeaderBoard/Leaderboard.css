@@ -1,6 +1,6 @@
 /* Small devices (landscape phones, 544px and up) */
 @media (max-width: 544px) {
-  .leaderboard {
+  .LeaderBoard {
     font-size: 0.7rem;
   } /*1rem = 16px*/
 

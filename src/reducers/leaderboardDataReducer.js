@@ -1,4 +1,4 @@
-export const leaderboardDataReducer = (leaderBoardData = [], action) => {
+export const LeaderBoardDataReducer = (leaderBoardData = [], action) => {
   if (action.type === 'GET_LEADERBOARD_DATA') {
     return action.payload;
   }

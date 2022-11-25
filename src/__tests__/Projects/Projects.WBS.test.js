@@ -13,7 +13,7 @@ import routes from '../../routes';
 
 const projectWBSUrl = ENDPOINTS.WBS('5ad91ec3590b19002asacd26');
 const userProfileUrl = ENDPOINTS.USER_PROFILE(mockState.auth.user.userid);
-const leaderboardUrl = ENDPOINTS.LEADER_BOARD(mockState.auth.user.userid);
+const LeaderBoardUrl = ENDPOINTS.LEADER_BOARD(mockState.auth.user.userid);
 const timerUrl = ENDPOINTS.TIMER(mockState.auth.user.userid);
 const userProjectsUrl = ENDPOINTS.USER_PROJECTS(mockState.auth.user.userid);
 let deleteWBSCalled = false;
@@ -27,9 +27,9 @@ const server = setupServer(
         {
           wbsName: 'Fake WBS',
           isActive: true,
-          _id: '5ad91ec3590b19002asacd26',
-        },
-      ]),
+          _id: '5ad91ec3590b19002asacd26'
+        }
+      ])
     );
   }),
   rest.post(projectWBSUrl, (req, res, ctx) => {
@@ -40,9 +40,9 @@ const server = setupServer(
         {
           wbsName: 'Fake WBS 2',
           isActive: true,
-          _id: '5ad91ec3590b19002asacd24',
-        },
-      ]),
+          _id: '5ad91ec3590b19002asacd24'
+        }
+      ])
     );
   }),
   rest.delete(projectWBSUrl, (req, res, ctx) => {
@@ -56,7 +56,7 @@ const server = setupServer(
   rest.get(userProfileUrl, (req, res, ctx) => {
     return res(ctx.status(200), ctx.json({}));
   }),
-  rest.get(leaderboardUrl, (req, res, ctx) => {
+  rest.get(LeaderBoardUrl, (req, res, ctx) => {
     return res(
       ctx.status(200),
       ctx.json([
@@ -75,9 +75,9 @@ const server = setupServer(
           tangibletimewidth: 100,
           intangibletimewidth: 0,
           tangiblebarcolor: 'orange',
-          totaltime: 6,
-        },
-      ]),
+          totaltime: 6
+        }
+      ])
     );
   }),
   rest.get(timerUrl, (req, res, ctx) => {
@@ -85,10 +85,10 @@ const server = setupServer(
   }),
   rest.get('*', (req, res, ctx) => {
     console.error(
-      `Please add request handler for ${req.url.toString()} in your MSW server requests.`,
+      `Please add request handler for ${req.url.toString()} in your MSW server requests.`
     );
     return res(ctx.status(500), ctx.json({ error: 'You must add request handler.' }));
-  }),
+  })
 );
 
 beforeAll(() => server.listen());
@@ -96,7 +96,7 @@ afterAll(() => server.close());
 afterEach(() => server.resetHandlers());
 
 function sleep(ms) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
+  return new Promise(resolve => setTimeout(resolve, ms));
 }
 
 describe('Project WBS behavior', () => {

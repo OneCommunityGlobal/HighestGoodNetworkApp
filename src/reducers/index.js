@@ -8,7 +8,7 @@ import { allUserProfilesReducer } from './allUserProfilesReducer';
 // import { dashboardDataReducer } from './dashboardDataReducer'
 // import { weeklyDashboardDataReducer } from './weeklyDashboardDataReducer'
 // import { monthlyDashboardDataReducer } from './monthlyDashboardDataReducer'
-import { leaderboardDataReducer, orgDataReducer } from './leaderboardDataReducer';
+import { LeaderBoardDataReducer, orgDataReducer } from './LeaderBoardDataReducer';
 import { weeklySummariesReducer } from './weeklySummariesReducer';
 import { weeklySummariesReportReducer } from './weeklySummariesReportReducer';
 // import { actionItemsReducer } from './actionItemsReducer'
@@ -45,7 +45,7 @@ export default combineReducers({
   // userTeamMembers: userTeamMembersReducer,
   // userProjectMembers: userProjectMembersReducer,
   // dashboardData: dashboardDataReducer,
-  leaderBoardData: leaderboardDataReducer,
+  leaderBoardData: LeaderBoardDataReducer,
   orgData: orgDataReducer,
   weeklySummaries: weeklySummariesReducer,
   weeklySummariesReport: weeklySummariesReportReducer,
@@ -77,5 +77,5 @@ export default combineReducers({
   timeZoneAPI: timeZoneAPIReducer,
   teamMemberTasks: teamMemberTasksReducer,
   taskEditSuggestions: taskEditSuggestionsReducer,
-  role: roleReducer,
+  role: roleReducer
 });

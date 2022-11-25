@@ -14,7 +14,7 @@ import '@testing-library/jest-dom/extend-expect';
 
 //mock the child components to test that they are indeed there
 
-jest.mock('../LeaderBoard', () => () => <div data-testid="leaderboard"></div>);
+jest.mock('../LeaderBoard', () => () => <div data-testid="LeaderBoard"></div>);
 
 jest.mock('../WeeklySummary/WeeklySummaryModal', () => () => (
   <div data-testid="weeklysummary"></div>
@@ -34,9 +34,9 @@ import { Dashboard } from './Dashboard.jsx';
 //     dashBoardMountedPage = render(<Dashboard />);
 //     });
 
-//   it('should render a leaderboard', async () => {
-//     const leaderboard = await dashBoardMountedPage.queryByTestId('leaderboard');
-//     expect(leaderboard).toBeTruthy();
+//   it('should render a LeaderBoard', async () => {
+//     const LeaderBoard = await dashBoardMountedPage.queryByTestId('LeaderBoard');
+//     expect(LeaderBoard).toBeTruthy();
 //   });
 
 //   it('should render a weekly summary', async () => {

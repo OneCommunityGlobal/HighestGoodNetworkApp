@@ -36,8 +36,8 @@ export const Dashboard = props => {
       getUserProfile(userId);
     }
   }, [props.match]);
-  let getUrl = window.location;
-  let baseUrl = getUrl.protocol + '//' + getUrl.host + '/' + getUrl.pathname.split('/')[1];
+  // let getUrl = window.location;
+  // let baseUrl = getUrl.protocol + '//' + getUrl.host + '/' + getUrl.pathname.split('/')[1];
 
   return (
     <Container fluid>

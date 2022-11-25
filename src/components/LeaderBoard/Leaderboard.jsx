@@ -22,7 +22,7 @@ function useDeepEffect(effectFunc, deps) {
 }
 
 const LeaderBoard = ({
-  getLeaderboardData,
+  getLeaderBoardData,
   getOrgData,
   leaderBoardData,
   loggedInUser,
@@ -34,7 +34,7 @@ const LeaderBoard = ({
   const userId = asUser ? asUser : loggedInUser.userId;
 
   useDeepEffect(() => {
-    getLeaderboardData(userId);
+    getLeaderBoardData(userId);
     getOrgData();
   }, [timeEntries]);
 
@@ -42,7 +42,7 @@ const LeaderBoard = ({
     setLeaderData(leaderBoardData);
     try {
       if (window.screen.width < 540) {
-        const scrollWindow = document.getElementById('leaderboard');
+        const scrollWindow = document.getElementById('LeaderBoard');
         if (scrollWindow) {
           const elem = document.getElementById(`id${userId}`); //
 
@@ -59,7 +59,7 @@ const LeaderBoard = ({
 
   const toggle = () => setOpen(isOpen => !isOpen);
 
-  // add state hook for the popup the personal's dashboard from leaderboard
+  // add state hook for the popup the personal's dashboard from LeaderBoard
   const [isDashboardOpen, setIsDashboardOpen] = useState(false);
   const dashboardToggle = item => setIsDashboardOpen(item.personId);
   const dashboardClose = () => setIsDashboardOpen(false);
@@ -76,16 +76,16 @@ const LeaderBoard = ({
   return (
     <div>
       <h3>
-        Leaderboard&nbsp;&nbsp;
+        LeaderBoard&nbsp;&nbsp;
         <i
           data-toggle="tooltip"
           data-placement="right"
-          title="Click to refresh the leaderboard"
+          title="Click to refresh the LeaderBoard"
           style={{ fontSize: 24, cursor: 'pointer' }}
           aria-hidden="true"
           className="fa fa-refresh"
           onClick={() => {
-            getLeaderboardData(userId);
+            getLeaderBoardData(userId);
           }}
         />
         &nbsp;&nbsp;
@@ -99,12 +99,12 @@ const LeaderBoard = ({
           onClick={toggle}
         />
       </h3>
-      <span className="leaderboard">
+      <span className="LeaderBoard">
         <Modal isOpen={isOpen} toggle={toggle}>
-          <ModalHeader toggle={toggle}>Leaderboard Info</ModalHeader>
+          <ModalHeader toggle={toggle}>LeaderBoard Info</ModalHeader>
           <ModalBody>
             <p>
-              This is the One Community Leaderboard! It is used to show how much tangible and total
+              This is the One Community LeaderBoard! It is used to show how much tangible and total
               time you’ve contributed, whether or not you’ve achieved your total committed hours for
               the week, and (in the case of teams) where your completed hours for the week rank you
               compared to other team members. It can also be used to access key areas of this
@@ -145,8 +145,8 @@ const LeaderBoard = ({
           </ModalFooter>
         </Modal>
       </span>
-      <div id="leaderboard" className="my-custom-scrollbar table-wrapper-scroll-y">
-        <Table className="leaderboard table-fixed">
+      <div id="LeaderBoard" className="my-custom-scrollbar table-wrapper-scroll-y">
+        <Table className="LeaderBoard table-fixed">
           <thead>
             <tr>
               <th>Status</th>

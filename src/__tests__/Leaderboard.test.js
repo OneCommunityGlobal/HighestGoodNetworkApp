@@ -105,7 +105,7 @@ describe('LeaderBoard structure', () => {
   //     mountedLeaderBoard = renderWithRouterMatch(routes , {initialState: mockState, route: rt, history: hist});
   // });
 
-  // ERRORS OUT says managingTeams underfined check the leaderboard and see what that is
+  // ERRORS OUT says managingTeams underfined check the LeaderBoard and see what that is
   // mockstate may need to be updated on line 97
 
   // it('should be rendered with the correct table headers', async () => {
@@ -122,7 +122,7 @@ describe('LeaderBoard structure', () => {
 
   // });
 
-  it('should have requested user data from server and have loaded that data into the leaderboard', async () => {
+  it('should have requested user data from server and have loaded that data into the LeaderBoard', async () => {
     //TEST FAILING NEED TO FIX
     // await waitFor(()=>{
     //   expect(requestedLeaderBoard).toBe(true);
@@ -139,7 +139,7 @@ describe('LeaderBoard structure', () => {
     // await sleep(20);
   });
 
-  it('should have refreshed user data from server and have loaded that data into the leaderboard', async () => {
+  it('should have refreshed user data from server and have loaded that data into the LeaderBoard', async () => {
     //TEST FAILING NEED TO FIX
     // await waitFor(()=>{
     //   expect(requestedLeaderBoard).toBe(true);
@@ -153,7 +153,7 @@ describe('LeaderBoard structure', () => {
     //   expect(screen.getAllByText('6')[1]).toBeTruthy();
     //   expect(screen.getByText('105')).toBeTruthy();
     // });
-    // let refresh = screen.getByTitle('Click to refresh the leaderboard');
+    // let refresh = screen.getByTitle('Click to refresh the LeaderBoard');
     // refreshed = true;
     // fireEvent.click(refresh);
     // //Check for name, intangible and total time created by our MSW Server to have been loaded onto the page

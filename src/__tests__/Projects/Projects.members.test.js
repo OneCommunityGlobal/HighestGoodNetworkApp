@@ -14,7 +14,7 @@ import routes from '../../routes';
 const projectMembersUrl = ENDPOINTS.PROJECT_MEMBER('5ad91ec3590b19002asacd26');
 const searchUsersUrl = ENDPOINTS.USER_PROFILES;
 const userProfileUrl = ENDPOINTS.USER_PROFILE(mockState.auth.user.userid);
-const leaderboardUrl = ENDPOINTS.LEADER_BOARD(mockState.auth.user.userid);
+const LeaderBoardUrl = ENDPOINTS.LEADER_BOARD(mockState.auth.user.userid);
 const timerUrl = ENDPOINTS.TIMER(mockState.auth.user.userid);
 const userProjectsUrl = ENDPOINTS.USER_PROJECTS(mockState.auth.user.userid);
 let deleteMemberCalled = false;
@@ -37,9 +37,9 @@ const server = setupServer(
         {
           firstName: 'Fake',
           lastName: 'Volunteer',
-          _id: '5ad91ec3590b19002asacd26',
-        },
-      ]),
+          _id: '5ad91ec3590b19002asacd26'
+        }
+      ])
     );
   }),
   rest.post(projectMembersUrl, (req, res, ctx) => {
@@ -64,7 +64,7 @@ const server = setupServer(
           firstName: 'Test',
           lastName: 'Admin',
           email: 'onecommunityglobal@gmail.com',
-          reactivationDate: '2020-09-12T00:00:00.000Z',
+          reactivationDate: '2020-09-12T00:00:00.000Z'
         },
         {
           isActive: false,
@@ -75,9 +75,9 @@ const server = setupServer(
           firstName: 'Fake',
           lastName: 'Volunteer',
           email: 'onecommunityglobal@gmail.com',
-          reactivationDate: '2020-09-12T00:00:00.000Z',
-        },
-      ]),
+          reactivationDate: '2020-09-12T00:00:00.000Z'
+        }
+      ])
     );
   }),
   rest.get(userProjectsUrl, (req, res, ctx) => {
@@ -86,7 +86,7 @@ const server = setupServer(
   rest.get(userProfileUrl, (req, res, ctx) => {
     return res(ctx.status(200), ctx.json({}));
   }),
-  rest.get(leaderboardUrl, (req, res, ctx) => {
+  rest.get(LeaderBoardUrl, (req, res, ctx) => {
     return res(
       ctx.status(200),
       ctx.json([
@@ -105,9 +105,9 @@ const server = setupServer(
           tangibletimewidth: 100,
           intangibletimewidth: 0,
           tangiblebarcolor: 'orange',
-          totaltime: 6,
-        },
-      ]),
+          totaltime: 6
+        }
+      ])
     );
   }),
   rest.get(timerUrl, (req, res, ctx) => {
@@ -118,10 +118,10 @@ const server = setupServer(
   }),
   rest.get('*', (req, res, ctx) => {
     console.error(
-      `Please add request handler for ${req.url.toString()} in your MSW server requests.`,
+      `Please add request handler for ${req.url.toString()} in your MSW server requests.`
     );
     return res(ctx.status(500), ctx.json({ error: 'You must add request handler.' }));
-  }),
+  })
 );
 
 beforeAll(() => server.listen());
@@ -129,7 +129,7 @@ afterAll(() => server.close());
 afterEach(() => server.resetHandlers());
 
 function sleep(ms) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
+  return new Promise(resolve => setTimeout(resolve, ms));
 }
 
 describe('Project Members behavior', () => {
@@ -141,7 +141,7 @@ describe('Project Members behavior', () => {
     projectMemMountedPage = renderWithRouterMatch(routes, {
       initialState: mockState,
       route: rt,
-      history: hist,
+      history: hist
     });
     await waitFor(() => expect(screen.getByRole('table')).toBeTruthy());
 
@@ -154,7 +154,7 @@ describe('Project Members behavior', () => {
     projectMemMountedPage = renderWithRouterMatch(routes, {
       initialState: mockState,
       route: rt,
-      history: hist,
+      history: hist
     });
     await waitFor(() => expect(screen.getByRole('table')).toBeTruthy());
     let table = within(screen.getByRole('table'));
@@ -171,7 +171,7 @@ describe('Project Members behavior', () => {
     projectMemMountedPage = renderWithRouterMatch(routes, {
       initialState: mockState,
       route: rt,
-      history: hist,
+      history: hist
     });
     await waitFor(() => expect(screen.getByPlaceholderText('Name')).toBeTruthy());
     fireEvent.change(screen.getByPlaceholderText('Name'), { target: { value: 'a' } });
@@ -187,7 +187,7 @@ describe('Project Members behavior', () => {
     projectMemMountedPage = renderWithRouterMatch(routes, {
       initialState: mockState,
       route: rt,
-      history: hist,
+      history: hist
     });
     fireEvent.click(screen.getByText('All'));
     await waitFor(() => expect(screen.getAllByRole('table').length).toBe(2));
@@ -195,8 +195,8 @@ describe('Project Members behavior', () => {
     await waitFor(() =>
       expect(screen.getByText('Test Admin').closest('a')).toHaveAttribute(
         'href',
-        '/userprofile/5c4cc2109487b0003924f1e3',
-      ),
+        '/userprofile/5c4cc2109487b0003924f1e3'
+      )
     );
   });
 
@@ -206,7 +206,7 @@ describe('Project Members behavior', () => {
     projectMemMountedPage = renderWithRouterMatch(routes, {
       initialState: mockState,
       route: rt,
-      history: hist,
+      history: hist
     });
     fireEvent.click(screen.getByText('All'));
     let tables;
@@ -226,7 +226,7 @@ describe('Project Members behavior', () => {
     projectMemMountedPage = renderWithRouterMatch(routes, {
       initialState: mockState,
       route: rt,
-      history: hist,
+      history: hist
     });
     fireEvent.click(screen.getByText('All'));
     let tables;

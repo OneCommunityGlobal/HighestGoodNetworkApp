@@ -5,5 +5,5 @@ import { ApiEndpoint } from '../utils/URL';
 const ApiUri = `${ApiEndpoint}/dashboard`;
 
 export function getLeaderBoardData(userId) {
-  return httpService.get(`${ApiUri}/leaderboard/${userId}`);
+  return httpService.get(`${ApiUri}/LeaderBoard/${userId}`);
 }
