@@ -4,7 +4,7 @@
 // import _ from 'lodash'
 // import ShowSaveWarning from "../common/ShowSaveWarning"
 
-// class Renderinfringement extends Form {
+// class RenderInfringement extends Form {
 //     constructor(props) {
 //         super(props);
 //         this.state = {
@@ -34,15 +34,15 @@
 
 //       doSubmit = ()=> {
 //           (this.state.index >= 0)?
-//           this.props.handleinfringement(this.state.data,"edit", this.state.index):
-//           this.props.handleinfringement(this.state.data,"create")
+//           this.props.handleInfringement(this.state.data,"edit", this.state.index):
+//           this.props.handleInfringement(this.state.data,"create")
 //           this.toggle()
 //       }
 //     render() {
 
 //         let {date, description}  = this.state.data;
 //         let {isUserAdmin, index} = this.state;
-//         let {handleinfringement} = this.props
+//         let {handleInfringement} = this.props
 //         let isEmpty = !(!!date && !! description);
 //         let className = isEmpty? "fa fa-square": "fa fa-square infringement";
 //         let tooltip = !isEmpty ? `Date: ${date} \nDescription: ${description}`: ""
@@ -75,7 +75,7 @@
 
 //             </div>
 //             <div className="row ml-1">
-//             {!isEmpty && <span className="fa fa-trash" onClick = {()=>handleinfringement(this.state.data,"delete",index )}/> }
+//             {!isEmpty && <span className="fa fa-trash" onClick = {()=>handleInfringement(this.state.data,"delete",index )}/> }
 //             </div>
 //             </React.Fragment> }
 //             </div>
@@ -84,4 +84,4 @@
 //     }
 // }
 
-// export default Renderinfringement;
+// export default RenderInfringement;
