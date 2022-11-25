@@ -21,7 +21,7 @@ let passwordUpdated = false;
 mockState.auth.isAuthenticated = false;
 
 function sleep(ms) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
+  return new Promise(resolve => setTimeout(resolve, ms));
 }
 
 const server = setupServer(
@@ -39,7 +39,7 @@ const server = setupServer(
   rest.get('http://*/hash.txt', (req, res, ctx) => {
     return res(ctx.status(200), ctx.json({}));
   }),
-  //Leaderboard Data in case user gets to dashboard.
+  //LeaderBoard Data in case user gets to dashboard.
   rest.get('http://localhost:4500/api/dashboard/*', (req, res, ctx) => {
     return res(
       ctx.status(200),
@@ -59,9 +59,9 @@ const server = setupServer(
           tangibletimewidth: 100,
           intangibletimewidth: 0,
           tangiblebarcolor: 'orange',
-          totaltime: 6,
-        },
-      ]),
+          totaltime: 6
+        }
+      ])
     );
   }),
   rest.get(userProjectsUrl, (req, res, ctx) => {
@@ -71,9 +71,9 @@ const server = setupServer(
         {
           isActive: true,
           _id: '5ad91ec3590b19002acfcd26',
-          projectName: 'HG Fake Project',
-        },
-      ]),
+          projectName: 'HG Fake Project'
+        }
+      ])
     );
   }),
   rest.get(timerUrl, (req, res, ctx) => {
@@ -82,10 +82,10 @@ const server = setupServer(
   //Any other requests error out
   rest.get('*', (req, res, ctx) => {
     console.error(
-      `Please add request handler for ${req.url.toString()} in your MSW server requests.`,
+      `Please add request handler for ${req.url.toString()} in your MSW server requests.`
     );
     return res(ctx.status(500), ctx.json({ error: 'You must add request handler.' }));
-  }),
+  })
 );
 
 beforeAll(() => server.listen());
@@ -100,7 +100,7 @@ describe('Force Password Update behaviour', () => {
     fPUMountedPage = renderWithRouterMatch(routes, {
       initialState: mockState,
       route: rt,
-      history: hist,
+      history: hist
     });
   });
 
@@ -109,7 +109,7 @@ describe('Force Password Update behaviour', () => {
       '"New Password" should be at least 8 characters long and must include at least one uppercase letter, one lowercase letter, and one number or special character';
     //No number or special char
     fireEvent.change(screen.getByLabelText('New Password:'), {
-      target: { value: 'newPassword' },
+      target: { value: 'newPassword' }
     });
 
     await waitFor(() => {
@@ -119,7 +119,7 @@ describe('Force Password Update behaviour', () => {
 
     //No capatalized char
     fireEvent.change(screen.getByLabelText('New Password:'), {
-      target: { value: 'newpassword8' },
+      target: { value: 'newpassword8' }
     });
 
     await waitFor(() => {
@@ -129,7 +129,7 @@ describe('Force Password Update behaviour', () => {
 
     //Not long enough
     fireEvent.change(screen.getByLabelText('New Password:'), {
-      target: { value: 'word8' },
+      target: { value: 'word8' }
     });
 
     await waitFor(() => {
@@ -140,11 +140,11 @@ describe('Force Password Update behaviour', () => {
 
   it('should pop up an error if passwords dont match', async () => {
     fireEvent.change(screen.getByLabelText('New Password:'), {
-      target: { value: 'newPassword8' },
+      target: { value: 'newPassword8' }
     });
 
     fireEvent.change(screen.getByLabelText('Confirm Password:'), {
-      target: { value: 'Password8' },
+      target: { value: 'Password8' }
     });
 
     fireEvent.click(screen.getByText('Submit'));
@@ -158,11 +158,11 @@ describe('Force Password Update behaviour', () => {
     //const pushSpy = jest.spyOn(history, 'replace');
     const history = { replace: jest.fn() };
     fireEvent.change(screen.getByLabelText('New Password:'), {
-      target: { value: 'newPassword8' },
+      target: { value: 'newPassword8' }
     });
 
     fireEvent.change(screen.getByLabelText('Confirm Password:'), {
-      target: { value: 'newPassword8' },
+      target: { value: 'newPassword8' }
     });
 
     fireEvent.click(screen.getByText('Submit'));
@@ -171,8 +171,8 @@ describe('Force Password Update behaviour', () => {
       expect(passwordUpdated).toBeTruthy();
       fireEvent.click(
         screen.getByText(
-          'You will now be directed to the login page where you can login with your new password.',
-        ),
+          'You will now be directed to the login page where you can login with your new password.'
+        )
       );
     });
     /*
@@ -190,7 +190,7 @@ describe('Force Password Update page structure', () => {
       auth: { isAuthenticated: true },
       errors: {},
       clearErrors: clearErrors,
-      forcePasswordUpdate: fPU,
+      forcePasswordUpdate: fPU
     };
     const { asFragment } = render(<ForcePasswordUpdate {...props} />);
     expect(asFragment()).toMatchSnapshot();

@@ -2,11 +2,11 @@ import httpService from '../services/httpService';
 import { ENDPOINTS } from '../utils/URL';
 import {
   getOrgData as getOrgDataActionCreator,
-  getLeaderBoardData as getLeaderBoardDataActionCreator,
+  getLeaderBoardData as getLeaderBoardDataActionCreator
 } from '../constants/leaderBoardData';
 
-export const getLeaderboardData = userId => {
-  //console.log('getLeaderboardData function')
+export const getLeaderBoardData = userId => {
+  //console.log('getLeaderBoardData function')
 
   return async dispatch => {
     const url = ENDPOINTS.LEADER_BOARD(userId);
@@ -20,7 +20,7 @@ export const getLeaderboardData = userId => {
 };
 
 export const getOrgData = () => {
-  //console.log('getLeaderboardData function')
+  //console.log('getLeaderBoardData function')
 
   return async dispatch => {
     const url = ENDPOINTS.ORG_DATA;

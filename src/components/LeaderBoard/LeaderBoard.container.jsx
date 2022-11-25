@@ -1,6 +1,6 @@
-import { getLeaderboardData, getOrgData } from '../../actions/leaderBoardData';
+import { getLeaderBoardData, getOrgData } from '../../actions/leaderBoardData';
 import { connect } from 'react-redux';
-import Leaderboard from './LeaderBoard';
+import LeaderBoard from './LeaderBoard';
 import { getcolor, getprogress } from '../../utils/effortColors';
 import _ from 'lodash';
 
@@ -52,4 +52,4 @@ const mapStateToProps = state => {
     timeEntries: _.get(state, 'timeEntries', {})
   };
 };
-export default connect(mapStateToProps, { getLeaderboardData, getOrgData })(Leaderboard);
+export default connect(mapStateToProps, { getLeaderBoardData, getOrgData })(LeaderBoard);

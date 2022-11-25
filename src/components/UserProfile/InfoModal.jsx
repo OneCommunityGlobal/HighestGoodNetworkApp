@@ -30,7 +30,7 @@ const InfoModal = ({ isOpen, toggle }) => (
           </li>
           <li>
             Teams: This shows any teams you are a member of. You will see all other members of your
-            team in the Leaderboard on the Time Log page and have access to their Profiles and Time
+            team in the LeaderBoard on the Time Log page and have access to their Profiles and Time
             Logs from there.
           </li>
           <li>Projects: This shows all the projects and tasks you are assigned to.</li>

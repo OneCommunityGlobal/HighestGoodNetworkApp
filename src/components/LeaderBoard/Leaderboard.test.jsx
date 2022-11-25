@@ -1,32 +1,32 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 import mockAdminState from '../../__tests__/mockAdminState';
-import Leaderboard from './LeaderBoard';
+import LeaderBoard from './LeaderBoard';
 
-describe('Leaderboard page structure', () => {
-  let mountedLeaderboard, props;
+describe('LeaderBoard page structure', () => {
+  let mountedLeaderBoard, props;
   beforeEach(() => {
     props = mockAdminState;
     props.organizationData = { weeklyCommittedHours: 0, tangibletime: 0, totaltime: 0 };
-    props.getLeaderboardData = jest.fn();
+    props.getLeaderBoardData = jest.fn();
     props.loggedInUser = jest.fn();
-    mountedLeaderboard = shallow(<Leaderboard {...props} />);
+    mountedLeaderBoard = shallow(<LeaderBoard {...props} />);
   });
 
   it('should be rendered with a table', () => {
-    const table = mountedLeaderboard.find('Table');
+    const table = mountedLeaderBoard.find('Table');
     expect(table.length).toBe(1);
   });
 
   it('should be rendered with 5 Headers', () => {
-    const tableHeader = mountedLeaderboard.find('thead');
+    const tableHeader = mountedLeaderBoard.find('thead');
     expect(tableHeader.length).toBe(1);
     const tableHeads = tableHeader.find('th');
     expect(tableHeads.length).toBe(5);
   });
 
-  it('should be rendered with mock Leaderboard data', () => {
-    const leaderBoardBody = mountedLeaderboard.find('tbody');
+  it('should be rendered with mock LeaderBoard data', () => {
+    const leaderBoardBody = mountedLeaderBoard.find('tbody');
     const leaderBoardItems = leaderBoardBody.find('tr');
     let lbData = mockAdminState.leaderBoardData;
     const lBLength = lbData.length;

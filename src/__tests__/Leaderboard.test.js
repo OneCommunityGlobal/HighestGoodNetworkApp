@@ -1,5 +1,5 @@
 import React from 'react';
-// import Leaderboard from '../components/Leaderboard';
+// import LeaderBoard from '../components/LeaderBoard';
 import { renderWithProvider, renderWithRouterMatch } from './utils.js';
 import '@testing-library/jest-dom/extend-expect';
 import mockState from './mockAdminState.js';
@@ -38,9 +38,9 @@ const server = setupServer(
             tangibletimewidth: 100,
             intangibletimewidth: 0,
             tangiblebarcolor: 'orange',
-            totaltime: 15,
-          },
-        ]),
+            totaltime: 15
+          }
+        ])
       );
     } else {
       return res(
@@ -61,9 +61,9 @@ const server = setupServer(
             tangibletimewidth: 100,
             intangibletimewidth: 0,
             tangiblebarcolor: 'orange',
-            totaltime: 15,
-          },
-        ]),
+            totaltime: 15
+          }
+        ])
       );
     }
   }),
@@ -81,10 +81,10 @@ const server = setupServer(
   }),
   rest.get('*', (req, res, ctx) => {
     console.error(
-      `Please add request handler for ${req.url.toString()} in your MSW server requests.`,
+      `Please add request handler for ${req.url.toString()} in your MSW server requests.`
     );
     return res(ctx.status(500), ctx.json({ error: 'You must add request handler.' }));
-  }),
+  })
 );
 
 beforeAll(() => server.listen());
@@ -92,17 +92,17 @@ afterAll(() => server.close());
 afterEach(() => server.resetHandlers());
 
 function sleep(ms) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
+  return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-describe('Leaderboard structure', () => {
+describe('LeaderBoard structure', () => {
   //TESTS ARE FAILING
-  // let mountedLeaderboard, rt, hist;
+  // let mountedLeaderBoard, rt, hist;
   // beforeEach(()=> {
-  //     //used dashboard as it has the Leaderboard as a subcomponent
+  //     //used dashboard as it has the LeaderBoard as a subcomponent
   //     rt = '/dashboard'
   //     hist = createMemoryHistory({ initialEntries: [rt] });
-  //     mountedLeaderboard = renderWithRouterMatch(routes , {initialState: mockState, route: rt, history: hist});
+  //     mountedLeaderBoard = renderWithRouterMatch(routes , {initialState: mockState, route: rt, history: hist});
   // });
 
   // ERRORS OUT says managingTeams underfined check the leaderboard and see what that is
