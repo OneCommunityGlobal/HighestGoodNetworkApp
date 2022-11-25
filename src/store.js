@@ -9,7 +9,7 @@ const middleware = [thunk];
 const intialState = {};
 const devTools = window.__REDUX_DEVTOOLS_EXTENSION__
   ? window.__REDUX_DEVTOOLS_EXTENSION__()
-  : (f) => f;
+  : f => f;
 
 const persistConfig = {
   key: 'root',
