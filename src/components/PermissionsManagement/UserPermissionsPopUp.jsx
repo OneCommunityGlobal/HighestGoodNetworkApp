@@ -172,7 +172,7 @@ const UserPermissionsPopUp = ({ allUserProfiles, toggle, getAllUsers }) => {
                     onClick={e => onChangeCheck(key)}
                     disabled={actualUserProfile ? false : true}
                   >
-                    -
+                    Delete
                   </Button>
                 ) : (
                   <Button
@@ -181,7 +181,7 @@ const UserPermissionsPopUp = ({ allUserProfiles, toggle, getAllUsers }) => {
                     onClick={e => onChangeCheck(key)}
                     disabled={actualUserProfile ? false : true}
                   >
-                    +
+                    Add
                   </Button>
                 )}
               </li>

@@ -34,30 +34,39 @@ const PermissionsManagement = ({ getAllRoles, roles }) => {
   return (
     <div className="permissions-management">
       <div className="permissions-management__header">
-        <h1 className="permissions-management__title">User Roles:</h1>
-
+        <h1 className="permissions-management__title">User Roles</h1>
+        <div className="role-name-container">
+          {roleNames?.map(roleName => {
+            let roleNameLC = roleName.toLowerCase().replace(' ', '-');
+            return (
+              <p key={roleName} className="role-name">
+                <a href={`/permissionsmanagement/${roleNameLC}`} className="role-name-link">
+                  {roleName}
+                </a>
+              </p>
+            );
+          })}
+        </div>
         <Button
           className="permissions-management__button"
           type="button"
-          color="primary"
+          color="success"
           onClick={() => togglePopUpNewRole()}
         >
           Add New Role
         </Button>
+        <Button
+          color="primary"
+          className="permissions-management__button"
+          type="button"
+          onClick={() => {
+            togglePopUpUserPermissions();
+          }}
+        >
+          Manage User Permissions
+        </Button>
       </div>
       <div className="permissions-management--flex">
-        <div>
-          <Button
-            color="primary"
-            className="permissions-management__button"
-            type="button"
-            onClick={() => {
-              togglePopUpUserPermissions();
-            }}
-          >
-            Manage User Permissions
-          </Button>
-        </div>
         <Modal isOpen={isNewRolePopUpOpen} toggle={togglePopUpNewRole} id="modal-content__new-role">
           <ModalHeader
             toggle={togglePopUpNewRole}
@@ -85,16 +94,6 @@ const PermissionsManagement = ({ getAllRoles, roles }) => {
             <UserPermissionsPopUp toggle={togglePopUpUserPermissions} />
           </ModalBody>
         </Modal>
-        <div>
-          {roleNames?.map(roleName => {
-            let roleNameLC = roleName.toLowerCase().replace(' ', '-');
-            return (
-              <p key={roleName}>
-                <a href={`/permissionsmanagement/${roleNameLC}`}>{roleName}</a>
-              </p>
-            );
-          })}
-        </div>
       </div>
     </div>
   );

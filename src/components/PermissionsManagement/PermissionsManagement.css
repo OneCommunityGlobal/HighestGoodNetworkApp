@@ -1,14 +1,21 @@
 .permissions-management {
-  padding: 0.5rem 1rem;
-  max-width: 1140px;
-  margin: 0 auto;
+  padding: 1.5rem 3rem;
+  width: 40%;
+  min-width: 400px;
+  margin: 1.5rem auto;
+  border: 1px solid lightgrey;
+  box-shadow: 6px 6px 18px 2px rgb(158, 158, 158);
 }
 
 .permissions-management__header {
   display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  padding-bottom: 1rem;
+  flex-direction: column;
+  row-gap: 1rem;
+  align-items: center;
+}
+
+.permissions-management__title {
+  font-size: 1.8rem;
 }
 
 .createRole__alert {
@@ -50,6 +57,31 @@
 }
 
 .permissions-management__button {
-  height: 56px;
-  width: 220px;
+  width: 100%;
+}
+
+.role-name-container {
+  width: 100%;
+}
+
+.role-name {
+  text-align: center;
+  border-bottom: 1px solid lightgrey;
+  margin-bottom: 0;
+  padding: 0.5rem 0;
+  font-size: 1.2rem;
+  font-weight: 500;
+}
+
+.role-name-link {
+  color: black;
+  transition: all 0.2s ease-in-out;
+  transform: scale(1);
+}
+
+.role-name-link:hover {
+  display: inline-block;
+  text-decoration: none;
+  transform: scale(1.1);
+  transition: all 0.2 ease-in-out;
 }
