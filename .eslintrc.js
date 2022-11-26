@@ -1,33 +1,24 @@
 module.exports = {
   env: {
     browser: true,
-    es6: true,
-    node: true,
+    es2021: true,
+    jest: true,
   },
-  extends: ['plugin:react/recommended', 'airbnb'],
-  globals: {
-    Atomics: 'readonly',
-    SharedArrayBuffer: 'readonly',
-  },
-  parser: 'babel-eslint',
+  extends: ['eslint:recommended', 'plugin:react/recommended', 'plugin:prettier/recommended'],
   parserOptions: {
     ecmaFeatures: {
       jsx: true,
     },
-    ecmaVersion: 2018,
+    ecmaVersion: 12,
     sourceType: 'module',
   },
-  plugins: ['react', 'testing-library'],
+  plugins: ['react'],
   rules: {
-    'react/jsx-filename-extension': [1, { extensions: ['.js', '.jsx'] }],
-    'no-underscore-dangle': 'off',
+    'react/react-in-jsx-scope': 'off',
   },
-  overrides: [
-    {
-      files: ['**/*.test.js', '**/*.test.jsx'],
-      env: {
-        jest: true,
-      },
+  settings: {
+    react: {
+      version: 'detect',
     },
-  ],
+  },
 };
