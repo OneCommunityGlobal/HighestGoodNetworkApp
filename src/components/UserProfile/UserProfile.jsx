@@ -40,6 +40,7 @@ import hasPermission from 'utils/permissions';
 import ActiveInactiveConfirmationPopup from '../UserManagement/ActiveInactiveConfirmationPopup';
 import { updateUserStatus } from '../../actions/userManagement';
 import { UserStatus } from '../../utils/enums';
+import parse from 'html-react-parser';
 
 const UserProfile = props => {
   /* Constant values */
@@ -54,6 +55,8 @@ const UserProfile = props => {
 
   /* Hooks */
   const [showLoading, setShowLoading] = useState(true);
+  const [showSummaries, setShowSummaries] = useState(false);
+  const [summaries, setSummaries] = useState(undefined);
   const [userProfile, setUserProfile] = useState(undefined);
   const [originalUserProfile, setOriginalUserProfile] = useState(undefined);
   const [id, setId] = useState('');
@@ -73,6 +76,7 @@ const UserProfile = props => {
 
   /* useEffect functions */
   useEffect(() => {
+    getTeamMembersWeeklySummary();
     loadUserProfile();
   }, []);
 
@@ -107,6 +111,44 @@ const UserProfile = props => {
       setShowLoading(false);
     } catch (err) {
       setShowLoading(false);
+    }
+  };
+
+  const getWeeklySummary = async userId => {
+    try {
+      const response = await axios.get(ENDPOINTS.USER_PROFILE(userId));
+      const user = response.data;
+      let summaries = user.weeklySummaries;
+      if (summaries && Array.isArray(summaries) && summaries[0] && summaries[0].summary) {
+        return summaries[0].summary;
+      } else {
+        return '';
+      }
+    } catch (err) {
+      setShowLoading(false);
+    }
+  };
+
+  const getTeamMembersWeeklySummary = async () => {
+    const userId = props?.match?.params?.userId;
+
+    if (!userId) return;
+
+    try {
+      const response = await axios.get(ENDPOINTS.LEADER_BOARD(userId));
+      const leaderBoardData = response.data;
+      const allSummaries = [];
+
+      for (let i = 0; i < leaderBoardData.length; i++) {
+        const toAppend = await getWeeklySummary(leaderBoardData[i].personId);
+        allSummaries.push([leaderBoardData[i].name, toAppend]);
+      }
+      console.log('allSummaries:', allSummaries);
+      setSummaries(allSummaries);
+      return;
+    } catch (err) {
+      console.log('Could not load leaderBoard data.', err);
+      return;
     }
   };
 
@@ -425,6 +467,12 @@ const UserProfile = props => {
               <h5 style={{ display: 'inline-block', marginRight: 10 }}>
                 {`${firstName} ${lastName}`}
               </h5>
+              <Button
+                onClick={() => setShowSummaries(!showSummaries)}
+                className="btn--dark-sea-green float-right"
+              >
+                View Weekly Summaries
+              </Button>
               <i
                 data-toggle="tooltip"
                 data-placement="right"
@@ -466,6 +514,27 @@ const UserProfile = props => {
                 </span>
               </p>
             </div>
+            {showSummaries && summaries === undefined ? <div>Loading</div> : <div></div>}
+            {showSummaries && summaries !== undefined ? (
+              <div>
+                {summaries.map((summary, key) => (
+                  <div key={key}>
+                    {summary[1].length > 0 ? (
+                      <div>
+                        <h3 className="green">{`${summary[0]}'s summary:`}</h3>
+                        <p>{parse(summary[1])}</p>
+                      </div>
+                    ) : (
+                      <div>
+                        <h3 className="red">{`${summary[0]} has not submitted a summary this week.`}</h3>
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div></div>
+            )}
             <Badges
               userProfile={userProfile}
               setUserProfile={setUserProfile}
@@ -489,7 +558,7 @@ const UserProfile = props => {
                 userPermissions={userPermissions}
                 canEdit={canEdit}
               />
-              <BlueSquareLayout
+              {/* <BlueSquareLayout
                 userProfile={userProfile}
                 handleUserProfile={handleUserProfile}
                 handleSaveError={props.handleSaveError}
@@ -499,7 +568,7 @@ const UserProfile = props => {
                 canEdit={canEdit}
                 roles={roles}
                 userPermissions={userPermissions}
-              />
+              /> */}
             </div>
           </Col>
           <Col md="8">

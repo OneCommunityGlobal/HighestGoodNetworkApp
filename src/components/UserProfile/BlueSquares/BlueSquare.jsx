@@ -6,41 +6,45 @@ const BlueSquare = ({ blueSquares, handleBlueSquare, role, roles, userPermission
   return (
     <div className="blueSquareContainer">
       <div className="blueSquares">
-        {blueSquares.map((blueSquare, index) => (
-          <div
-            key={index}
-            role="button"
-            id="wrapper"
-            data-testid="blueSquare"
-            className="blueSquareButton"
-            onClick={() => {
-              if (!blueSquare._id) {
-                handleBlueSquare(
-                  hasPermission(role, 'handleBlueSquare', roles, userPermissions),
-                  'message',
-                  'none',
-                );
-              } else if (hasPermission(role, 'handleBlueSquare', roles, userPermissions)) {
-                handleBlueSquare(
-                  hasPermission(role, 'handleBlueSquare', roles, userPermissions),
-                  'modBlueSquare',
-                  blueSquare._id,
-                );
-              } else {
-                handleBlueSquare(
-                  !hasPermission(role, 'handleBlueSquare', roles, userPermissions),
-                  'viewBlueSquare',
-                  blueSquare._id,
-                );
-              }
-            }}
-          >
-            <div className="report" data-testid="report">
-              <div className="title">{blueSquare.date}</div>
-              <div className="summary">{blueSquare.description}</div>
+        {blueSquares ? (
+          blueSquares.map((blueSquare, index) => (
+            <div
+              key={index}
+              role="button"
+              id="wrapper"
+              data-testid="blueSquare"
+              className="blueSquareButton"
+              onClick={() => {
+                if (!blueSquare._id) {
+                  handleBlueSquare(
+                    hasPermission(role, 'handleBlueSquare', roles, userPermissions),
+                    'message',
+                    'none',
+                  );
+                } else if (hasPermission(role, 'handleBlueSquare', roles, userPermissions)) {
+                  handleBlueSquare(
+                    hasPermission(role, 'handleBlueSquare', roles, userPermissions),
+                    'modBlueSquare',
+                    blueSquare._id,
+                  );
+                } else {
+                  handleBlueSquare(
+                    !hasPermission(role, 'handleBlueSquare', roles, userPermissions),
+                    'viewBlueSquare',
+                    blueSquare._id,
+                  );
+                }
+              }}
+            >
+              <div className="report" data-testid="report">
+                <div className="title">{blueSquare.date}</div>
+                <div className="summary">{blueSquare.description}</div>
+              </div>
             </div>
-          </div>
-        ))}
+          ))
+        ) : (
+          <div>No Blue Squares! Yay!</div>
+        )}
       </div>
 
       {(hasPermission(role, 'editUserProfile', roles, userPermissions) ||
