@@ -29,7 +29,7 @@ import './projects.css';
 import { connect } from 'react-redux';
 import Loading from '../common/Loading';
 import { PROJECT_DELETE_POPUP_ID } from './../../constants/popupId';
-import hasPermission from '../../utils/permissions'
+import hasPermission from '../../utils/permissions';
 
 export class Projects extends Component {
   constructor(props) {
@@ -111,7 +111,7 @@ export class Projects extends Component {
     let { projects, status, fetching, fetched } = this.props.state.allProjects;
 
     let numberOfProjects = projects.length;
-    let numberOfActive = projects.filter((project) => project.isActive).length;
+    let numberOfActive = projects.filter(project => project.isActive).length;
 
     let showModalMsg = false;
     //console.log("STATUS ", status, "trackModelMsg ", trackModelMsg);
@@ -121,6 +121,9 @@ export class Projects extends Component {
     }
 
     const role = this.props.state.auth.user.role;
+    const userPermissions = this.props.state.auth.user?.permissions?.frontPermissions;
+
+    const { roles } = this.props.state.role;
 
     // Display project lists
     let ProjectsList = [];
@@ -157,13 +160,13 @@ export class Projects extends Component {
             onClick={this.toggleProjectInfoModal}
           />
           <Overview numberOfProjects={numberOfProjects} numberOfActive={numberOfActive} />
-          {hasPermission(role, 'addProject') ? 
-          <AddProject addNewProject={this.addProject} />
-          : null}
-          
+          {hasPermission(role, 'addProject', roles, userPermissions) ? (
+            <AddProject addNewProject={this.addProject} />
+          ) : null}
+
           <table className="table table-bordered table-responsive-sm">
             <thead>
-              <ProjectTableHeader role={role} />
+              <ProjectTableHeader role={role} roles={roles} userPermissions={userPermissions} />
             </thead>
             <tbody>{ProjectsList}</tbody>
           </table>
@@ -200,7 +203,7 @@ export class Projects extends Component {
   }
 }
 
-const mapStateToProps = (state) => {
+const mapStateToProps = state => {
   return { state };
 };
 export default connect(mapStateToProps, {

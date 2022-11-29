@@ -6,9 +6,7 @@ import { NavItem } from 'reactstrap';
 import { connect } from 'react-redux';
 import hasPermission from 'utils/permissions';
 
-const Project = (props) => {
-  console.log(props.auth.user.role);
-
+const Project = props => {
   const [originName] = useState(props.name);
   const [originCategory] = useState(props.category);
   const [name, setName] = useState(props.name);
@@ -16,6 +14,8 @@ const Project = (props) => {
   const [active, setActive] = useState(props.active);
   const [firstLoad, setFirstLoad] = useState(true);
   const role = props.auth.user.role;
+  const userPermissions = props.auth.user?.permissions?.frontPermissions;
+  const { roles } = props.role;
 
   const updateActive = () => {
     props.onClickActive(props.projectId, name, category, active);
@@ -43,20 +43,23 @@ const Project = (props) => {
         <div>{props.index + 1}</div>
       </th>
       <td className="projects__name--input">
-        {hasPermission(role, 'editProject') ?(
-        <input
-          type="text"
-          className="form-control"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          onBlur={updateProject}
-        /> ) : (name)}
+        {hasPermission(role, 'editProject', roles, userPermissions) ? (
+          <input
+            type="text"
+            className="form-control"
+            value={name}
+            onChange={e => setName(e.target.value)}
+            onBlur={updateProject}
+          />
+        ) : (
+          name
+        )}
       </td>
       <td className="projects__category--input">
-        {hasPermission(role, 'editProject') ? (
+        {hasPermission(role, 'editProject', roles, userPermissions) ? (
           <select
             value={category}
-            onChange={(e) => {
+            onChange={e => {
               setCategory(e.target.value);
             }}
           >
@@ -76,7 +79,10 @@ const Project = (props) => {
           category
         )}
       </td>
-      <td className="projects__active--input" onClick={hasPermission(role, 'editProject') ? updateActive : null}>
+      <td
+        className="projects__active--input"
+        onClick={hasPermission(role, 'editProject', roles, userPermissions) ? updateActive : null}
+      >
         {props.active ? (
           <div className="isActive">
             <i className="fa fa-circle" aria-hidden="true"></i>
@@ -112,12 +118,12 @@ const Project = (props) => {
         </NavItem>
       </td>
 
-      {hasPermission(role, 'deleteProject') ? (
+      {hasPermission(role, 'deleteProject', roles, userPermissions) ? (
         <td>
           <button
             type="button"
             className="btn btn-outline-danger"
-            onClick={(e) => props.onClickDelete(props.projectId, props.active, props.name)}
+            onClick={e => props.onClickDelete(props.projectId, props.active, props.name)}
           >
             {DELETE}
           </button>
@@ -126,5 +132,5 @@ const Project = (props) => {
     </tr>
   );
 };
-const mapStateToProps = (state) => state;
+const mapStateToProps = state => state;
 export default connect(mapStateToProps)(Project);

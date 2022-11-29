@@ -1,10 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Alert, Row, Col, Container } from 'reactstrap';
-import { Link } from 'react-router-dom';
+import { Row, Col, Container } from 'reactstrap';
 import Leaderboard from '../LeaderBoard';
 import WeeklySummary from '../WeeklySummary/WeeklySummary';
 import Badge from '../Badge';
-import TeamMemberTasks from '../TeamMemberTasks/TeamMemberTasks';
 import Timelog from '../Timelog/Timelog';
 import SummaryBar from '../SummaryBar/SummaryBar';
 import PopUpBar from '../PopUpBar';
@@ -15,6 +13,7 @@ import { getTimeZoneAPIKey } from '../../actions/timezoneAPIActions';
 
 export const Dashboard = props => {
   const [popup, setPopup] = useState(false);
+  const [leaderData, setLeaderData] = useState(null);
   let userId = props.match.params.userId ? props.match.params.userId : props.auth.user.userid;
 
   const toggle = () => {
@@ -32,7 +31,7 @@ export const Dashboard = props => {
   }, []);
 
   useEffect(() => {
-    if (props.match.params && props.match.params.userid && userId != props.match.params.userId) {
+    if (props.match.params && props.match.params.userId && userId != props.match.params.userId) {
       userId = props.match.params.userId;
       getUserProfile(userId);
     }
@@ -43,7 +42,12 @@ export const Dashboard = props => {
   return (
     <Container fluid>
       <PopUpBar />
-      <SummaryBar asUser={userId} toggleSubmitForm={toggle} role={props.auth.user.role} />
+      <SummaryBar
+        asUser={userId}
+        toggleSubmitForm={toggle}
+        role={props.auth.user.role}
+        leaderData={leaderData}
+      />
 
       <Row>
         <Col lg={{ size: 7 }}>&nbsp;</Col>
@@ -63,7 +67,7 @@ export const Dashboard = props => {
       </Row>
       <Row>
         <Col lg={{ size: 5 }} className="order-sm-12">
-          <Leaderboard asUser={userId} />
+          <Leaderboard asUser={userId} setLeaderData={setLeaderData} />
         </Col>
         <Col lg={{ size: 7 }} className="left-col-dashboard order-sm-1">
           {popup ? (

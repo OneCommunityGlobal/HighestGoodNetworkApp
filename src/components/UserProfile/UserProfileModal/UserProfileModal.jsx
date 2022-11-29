@@ -14,7 +14,7 @@ import {
 } from 'reactstrap';
 import hasPermission from 'utils/permissions';
 
-const UserProfileModal = (props) => {
+const UserProfileModal = props => {
   const {
     isOpen,
     closeModal,
@@ -25,9 +25,10 @@ const UserProfileModal = (props) => {
     type,
     userProfile,
     id,
-    role
+    role,
+    roles,
+    userPermissions,
   } = props;
-
   let blueSquare = [
     {
       date: 'ERROR',
@@ -38,7 +39,7 @@ const UserProfileModal = (props) => {
 
   if (type === 'modBlueSquare' || type === 'viewBlueSquare') {
     if (id.length > 0) {
-      blueSquare = userProfile.infringments.filter((blueSquare) => blueSquare._id === id);
+      blueSquare = userProfile.infringements.filter(blueSquare => blueSquare._id === id);
     }
   }
 
@@ -123,7 +124,7 @@ const UserProfileModal = (props) => {
     userProfile.adminLinks,
   );
 
-  const handleChange = (event) => {
+  const handleChange = event => {
     event.preventDefault();
 
     if (event.target.id === 'linkName') {
@@ -156,7 +157,7 @@ const UserProfileModal = (props) => {
       <ModalBody>
         {type === 'updateLink' && (
           <div>
-            {hasPermission(role, 'editUserProfile') && (
+            {hasPermission(role, 'editUserProfile', roles, userPermissions) && (
               <CardBody>
                 <Card>
                   <Label style={{ display: 'flex', margin: '5px' }}>Admin Links:</Label>
@@ -170,7 +171,7 @@ const UserProfileModal = (props) => {
                         <input
                           className="customInput"
                           value={link.Name}
-                          onChange={(e) =>
+                          onChange={e =>
                             dispatchAdminLinks({
                               type: 'updateName',
                               value: e.target.value,
@@ -181,7 +182,7 @@ const UserProfileModal = (props) => {
                         <input
                           className="customInput"
                           value={link.Link}
-                          onChange={(e) =>
+                          onChange={e =>
                             dispatchAdminLinks({
                               type: 'updateLink',
                               value: e.target.value,
@@ -208,13 +209,13 @@ const UserProfileModal = (props) => {
                         className="customEdit"
                         id="linkName"
                         placeholder="enter name"
-                        onChange={(e) => setAdminLinkName(e.target.value)}
+                        onChange={e => setAdminLinkName(e.target.value)}
                       />
                       <input
                         className="customEdit"
                         id="linkURL"
                         placeholder="enter link"
-                        onChange={(e) => setAdminLinkURL(e.target.value.trim())}
+                        onChange={e => setAdminLinkURL(e.target.value.trim())}
                       />
                       <button
                         className="addButton"
@@ -245,7 +246,7 @@ const UserProfileModal = (props) => {
                       <input
                         className="customInput"
                         value={link.Name}
-                        onChange={(e) =>
+                        onChange={e =>
                           dispatchPersonalLinks({
                             type: 'updateName',
                             value: e.target.value,
@@ -256,7 +257,7 @@ const UserProfileModal = (props) => {
                       <input
                         className="customInput"
                         value={link.Link}
-                        onChange={(e) =>
+                        onChange={e =>
                           dispatchPersonalLinks({
                             type: 'updateLink',
                             value: e.target.value,
@@ -285,13 +286,13 @@ const UserProfileModal = (props) => {
                       className="customEdit"
                       id="linkName"
                       placeholder="enter name"
-                      onChange={(e) => setLinkName(e.target.value)}
+                      onChange={e => setLinkName(e.target.value)}
                     />
                     <input
                       className="customEdit"
                       id="linkURL"
                       placeholder="enter link"
-                      onChange={(e) => setLinkURL(e.target.value.trim())}
+                      onChange={e => setLinkURL(e.target.value.trim())}
                     />
                     <button
                       className="addButton"
@@ -329,12 +330,12 @@ const UserProfileModal = (props) => {
           <>
             <FormGroup>
               <Label for="date">Date</Label>
-              <Input type="date" onChange={(e) => setDateStamp(e.target.value)} value={dateStamp} />
+              <Input type="date" onChange={e => setDateStamp(e.target.value)} value={dateStamp} />
             </FormGroup>
 
             <FormGroup>
               <Label for="report">Summary</Label>
-              <Input type="textarea" onChange={(e) => setSummary(e.target.value)} value={summary} />
+              <Input type="textarea" onChange={e => setSummary(e.target.value)} value={summary} />
             </FormGroup>
           </>
         )}

@@ -35,6 +35,7 @@ import { popupEditorReducer } from './popupEditorReducer';
 import { timeZoneAPIReducer } from './timezoneApiReducer';
 import { teamMemberTasksReducer } from 'components/TeamMemberTasks/reducer';
 import { taskEditSuggestionsReducer } from 'components/TaskEditSuggestions/reducer';
+import { roleReducer } from './roleReducer';
 
 export default combineReducers({
   auth: authReducer,
@@ -75,5 +76,6 @@ export default combineReducers({
   popupEditor: popupEditorReducer,
   timeZoneAPI: timeZoneAPIReducer,
   teamMemberTasks: teamMemberTasksReducer,
-  taskEditSuggestions: taskEditSuggestionsReducer
+  taskEditSuggestions: taskEditSuggestionsReducer,
+  role: roleReducer,
 });

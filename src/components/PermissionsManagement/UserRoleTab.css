@@ -1,0 +1,31 @@
+.userRoleTab__container {
+  padding: 0.5rem 1rem;
+  width: 50%;
+  min-width: 400px;
+  margin: 0 auto;
+}
+.user-role-tab__permission-list {
+  display: flex;
+  flex-direction: column;
+  padding-left: 0;
+}
+.user-role-tab__permission {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid lightgrey;
+}
+
+.user-role-tab__permission > button {
+  padding: 0 0.5rem;
+  min-width: 80px;
+}
+
+.user-role-tab__permission > p {
+  margin: 0;
+}
+
+/* .mr-1 {
+  margin: 1.5rem 0;
+} */

@@ -10,9 +10,9 @@ import {
   InputGroupText,
   Input,
 } from 'reactstrap';
-import parse from 'html-react-parser';
+import ReactHtmlParser from 'react-html-parser';
 
-const ModalExample = (props) => {
+const ModalExample = props => {
   const {
     isOpen,
     closeModal,
@@ -30,7 +30,7 @@ const ModalExample = (props) => {
 
   const toggle = () => setModal(!modal);
 
-  const handleChange = (event) => {
+  const handleChange = event => {
     event.preventDefault();
 
     if (event.target.id === 'linkName') {
@@ -69,7 +69,7 @@ const ModalExample = (props) => {
             </InputGroup>
           </>
         ) : (
-          parse(modalMessage)
+          ReactHtmlParser(modalMessage)
         )}
       </ModalBody>
       <ModalFooter>

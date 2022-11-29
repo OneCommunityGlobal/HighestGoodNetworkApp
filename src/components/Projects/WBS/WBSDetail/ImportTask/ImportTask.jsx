@@ -10,9 +10,9 @@ import { importTask, fetchAllTasks } from './../../../../../actions/task';
 import readXlsxFile from 'read-excel-file';
 import { getPopupById } from './../../../../../actions/popupEditorAction';
 import { TASK_IMPORT_POPUP_ID } from './../../../../../constants/popupId';
-import parse from 'html-react-parser';
+import ReactHtmlParser from 'react-html-parser';
 
-const ImportTask = (props) => {
+const ImportTask = props => {
   const [isDone, setIsDone] = useState(0);
   // modal
   const [modal, setModal] = useState(false);
@@ -27,7 +27,7 @@ const ImportTask = (props) => {
     props.getPopupById(TASK_IMPORT_POPUP_ID);
   }, [1]);
 
-  const handleFileRead = async (rows) => {
+  const handleFileRead = async rows => {
     setIsDone(1);
     const tmpList = [];
     await rows.forEach((rowArr, i) => {
@@ -74,8 +74,8 @@ const ImportTask = (props) => {
     }, 1000);
   };
 
-  const handleFileChosen = (file) => {
-    readXlsxFile(file).then((rows) => {
+  const handleFileChosen = file => {
+    readXlsxFile(file).then(rows => {
       handleFileRead(rows);
     });
   };
@@ -85,7 +85,7 @@ const ImportTask = (props) => {
   const foundUserData = [];
 
   const newTask = (num, taskName, level, rowArr) => {
-    const indexFoundUser = foundUser.findIndex((user) => user === rowArr[9]);
+    const indexFoundUser = foundUser.findIndex(user => user === rowArr[9]);
     if (indexFoundUser >= 0) {
       rowArr[9] = foundUserData[indexFoundUser];
     } else {
@@ -146,7 +146,9 @@ const ImportTask = (props) => {
             <tbody>
               <tr>
                 <td scope="col">
-                  <p id="instruction">{parse(props.popupEditor.currPopup.popupContent) || ''}</p>
+                  <p id="instruction">
+                    {ReactHtmlParser(props.popupEditor.currPopup.popupContent) || ''}
+                  </p>
                 </td>
               </tr>
               {isDone === 0 ? (
@@ -156,7 +158,7 @@ const ImportTask = (props) => {
                       type="file"
                       id="file"
                       accept=".xlsx"
-                      onChange={(e) => handleFileChosen(e.target.files[0])}
+                      onChange={e => handleFileChosen(e.target.files[0])}
                     />
                   </td>
                 </tr>
@@ -221,7 +223,7 @@ const ImportTask = (props) => {
   );
 };
 
-const mapStateToProps = (state) => {
+const mapStateToProps = state => {
   return state;
 };
 export default connect(mapStateToProps, { importTask, fetchAllTasks, getPopupById })(ImportTask);

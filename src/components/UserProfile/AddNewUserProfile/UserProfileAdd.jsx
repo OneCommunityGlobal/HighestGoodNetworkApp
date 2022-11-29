@@ -58,6 +58,7 @@ class AddUserProfile extends Component {
         email: '',
         phoneNumber: null,
         weeklyCommittedHours: 10,
+        collaborationPreference: 'Zoom',
         role: 'Volunteer',
         privacySettings: { blueSquares: true, email: true, phoneNumber: true },
         jobTitle: '',
@@ -230,14 +231,16 @@ class AddUserProfile extends Component {
                         defaultValue="Volunteer"
                         onChange={this.handleUserProfile}
                       >
-                        <option value="Administrator">Administrator</option>
-                        <option value="Volunteer">Volunteer</option>
-                        <option value="Manager">Manager</option>
-                        <option value="Core Team">Core Team</option>
-                        <option value="Mentor">Mentor</option>
-                        {hasPermission(this.props.auth.user.role, 'addDeleteEditOwners') && (
-                          <option value="Owner">Owner</option>
-                        )}
+                        {this.props.role.roles.map(({ roleName }) => {
+                          if (roleName === 'Owner') return;
+                          return <option value={roleName}>{roleName}</option>;
+                        })}
+                        {hasPermission(
+                          this.props.auth.user.role,
+                          'addDeleteEditOwners',
+                          this.props.role.roles,
+                          this.props.auth.user?.permissions?.frontPermissions,
+                        ) && <option value="Owner">Owner</option>}
                       </Input>
                     </FormGroup>
                   </Col>
@@ -833,6 +836,7 @@ const mapStateToProps = state => ({
   allProjects: _.get(state, 'allProjects'),
   allTeams: state,
   timeZoneKey: state.timeZoneAPI.userAPIKey,
+  role: state.role,
   state,
 });
 

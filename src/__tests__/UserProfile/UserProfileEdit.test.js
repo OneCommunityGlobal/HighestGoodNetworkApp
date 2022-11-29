@@ -11,6 +11,7 @@ import {
   userProjectMock,
   allProjectsMock,
   allTeamsMock,
+  rolesMock
 } from '../mockStates';
 import { renderWithRouterMatch } from '../utils';
 import UserProfileEdit from '../../components/UserProfile/UserProfileEdit/UserProfileEdit.container';
@@ -34,13 +35,14 @@ describe('user profile page', () => {
       userProjects: userProjectMock,
       allProjects: allProjectsMock,
       allTeams: allTeamsMock,
+      role: rolesMock.role
       // state: {
       //   authMoc  k, userProfileMock, timeEntryMock, userProjectMock, allProjectsMock, allTeamsMock,
       // },
     });
     store.dispatch = jest.fn();
     renderWithRouterMatch(
-      <Route path="/userprofileedit/:userId">{(props) => <UserProfileEdit {...props} />}</Route>,
+      <Route path="/userprofileedit/:userId">{props => <UserProfileEdit {...props} />}</Route>,
       {
         route: `/userprofileedit/${userId}`,
         store,
@@ -74,7 +76,7 @@ describe('user profile page', () => {
 
     it('should render multiple bluesquares', () => {
       expect(screen.getAllByRole('button', { name: /\d\d\d\d-\d\d-\d\d/i })).toHaveLength(
-        userProfileMock.infringments.length,
+        userProfileMock.infringements.length,
       );
     });
     it('should render a email field', () => {
@@ -147,6 +149,7 @@ describe('user profile page', () => {
     });
     it('should trigger addBlueSquare when admin click on + button', async () => {
       userEvent.click(screen.getByText('+'));
+
       expect(screen.getByRole('button', { name: 'Submit' })).toBeInTheDocument();
     });
     it('should trigger addBlueSquare when admin click on random blue square', async () => {
