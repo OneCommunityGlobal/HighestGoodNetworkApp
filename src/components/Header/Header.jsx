@@ -66,7 +66,7 @@ export const Header = props => {
   //   props.getHeaderData(props.auth.user.userid);
   //   props.getTimerData(props.auth.user.userid);
   // }, [props.auth]);
-  }, [props.auth.isAuthenticated]);
+  //}, [props.auth.isAuthenticated]);
 
   useEffect(() => {
     if (roles.length === 0) {
