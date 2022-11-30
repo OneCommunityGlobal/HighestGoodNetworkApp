@@ -15,7 +15,7 @@ export const TaskEditSuggestions = () => {
 
   const { isLoading, taskEditSuggestions, userSortDirection, dateSuggestedSortDirection, userRole } = useSelector(getTaskEditSuggestionsData);
 
-  const isUserPermitted = hasPermission(userRole, 'editTask');
+  // const isUserPermitted = hasPermission(userRole, 'editTask');
 
   const dispatch = useDispatch();
   useEffect(() => {dispatch(fetchTaskEditSuggestions())}, []);
