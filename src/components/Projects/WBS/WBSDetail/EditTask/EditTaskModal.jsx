@@ -253,7 +253,7 @@ const EditTaskModal = props => {
       classification,
     };
 
-    props.updateTask(props.taskId, updatedTask, hasPermission(role, 'editTask'));
+    props.updateTask(props.taskId, updatedTask, hasPermission(role, 'editTask', roles, userPermissions));
     setTimeout(() => {
       props.fetchAllTasks(props.wbsId);
     }, 4000);
@@ -613,7 +613,7 @@ const EditTaskModal = props => {
             </tbody>
           </table>
         </ModalBody>
-        {(hasPermission(role, 'editTask') || hasPermission(role, 'suggestTask')) ? (
+        {(hasPermission(role, 'editTask', roles, userPermissions) || hasPermission(role, 'suggestTask', roles, userPermissions)) ? (
           <ModalFooter>
             {taskName !== '' && startedDate !== '' && dueDate !== '' ? (
               <Button color="primary" onClick={updateTask}>
