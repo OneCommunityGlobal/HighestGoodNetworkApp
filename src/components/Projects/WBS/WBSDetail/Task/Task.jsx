@@ -2,11 +2,11 @@
  * Component: TAK
  * Author: Henry Ng - 21/03/20
  ********************************************************************************/
-import React, { useEffect, useState } from 'react';
+import React, { createRef, useEffect, useState } from 'react';
 import { connect } from 'react-redux';
 import { Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import { Button, Dropdown, DropdownItem, DropdownToggle, DropdownMenu } from 'reactstrap';
-import { BsFillCaretDownFill, BsFillCaretUpFill } from "react-icons/bs";
+import { BsFillCaretDownFill, BsFillCaretUpFill } from 'react-icons/bs';
 import AddTaskModal from '../AddTask/AddTaskModal';
 import EditTaskModal from '../EditTask/EditTaskModal';
 import { moveTasks, fetchAllTasks, deleteTask, copyTask } from '../../../../../actions/task.js';
@@ -39,10 +39,17 @@ const Task = props => {
   const toggle = () => setDropdownOpen(prevState => !prevState);
   const [isOpen, setIsOpen] = useState(false);
   const [isCopied, setIsCopied] = useState(false);
+  const [tableColNum, setTableColNum] = useState(16);
+  const tableRowRef = createRef();
+  useEffect(() => {
+    if (tableRowRef.current) {
+      const spanColNum = tableRowRef.current.cells.length;
+      setTableColNum(spanColNum);
+    }
+  }, []);
   let passCurrentNum = false;
 
-
-  //----This was the old method of display task actions by click on the task # - it was bit wonky and 
+  //----This was the old method of display task actions by click on the task # - it was bit wonky and
   //----not the proper way to conditionally render something in React
 
   /* let controllerToggle = true;
@@ -145,6 +152,7 @@ const Task = props => {
       {props.id ? (
         <React.Fragment>
           <tr
+            ref={tableRowRef}
             key={props.key}
             className={`num_${props.num?.split('.').join('')} wbsTask  ${
               props.isNew ? 'newTask' : ''
@@ -160,8 +168,8 @@ const Task = props => {
             ></td>
             <td>
               <Button color="primary" size="sm" onClick={() => setControllerRow(!controllerRow)}>
-                <span className='action-edit-btn'>EDIT</span>
-                {controllerRow ? <BsFillCaretUpFill/>: <BsFillCaretDownFill />}
+                <span className="action-edit-btn">EDIT</span>
+                {controllerRow ? <BsFillCaretUpFill /> : <BsFillCaretDownFill />}
               </Button>
             </td>
             <td
@@ -406,13 +414,26 @@ const Task = props => {
             </td>
           </tr>
 
-             
-          {controllerRow ? (          
-          <tr className="wbsTaskController desktop-view" id={`controller_${props.id}`}>
-            <td colSpan={15} className="controlTd">
-              {hasPermission(role, 'addTask', roles, userPermissions) ? (
-                <AddTaskModal
-                  key={`addTask_${props.id}`}
+          {controllerRow ? (
+            <tr className="wbsTaskController desktop-view" id={`controller_${props.id}`}>
+              <td colSpan={tableColNum} className="controlTd">
+                {hasPermission(role, 'addTask', roles, userPermissions) ? (
+                  <AddTaskModal
+                    key={`addTask_${props.id}`}
+                    parentNum={props.num}
+                    taskId={props.id}
+                    projectId={props.projectId}
+                    wbsId={props.wbsId}
+                    parentId1={props.parentId1}
+                    parentId2={props.parentId2}
+                    parentId3={props.parentId3}
+                    mother={props.mother}
+                    level={props.level}
+                    openChild={e => openChild(props.num, props.id)}
+                  />
+                ) : null}
+                <EditTaskModal
+                  key={`editTask_${props.id}`}
                   parentNum={props.num}
                   taskId={props.id}
                   projectId={props.projectId}
@@ -422,126 +443,112 @@ const Task = props => {
                   parentId3={props.parentId3}
                   mother={props.mother}
                   level={props.level}
-                  openChild={e => openChild(props.num, props.id)}
                 />
-              ) : null}
-              <EditTaskModal
-                key={`editTask_${props.id}`}
-                parentNum={props.num}
-                taskId={props.id}
-                projectId={props.projectId}
-                wbsId={props.wbsId}
-                parentId1={props.parentId1}
-                parentId2={props.parentId2}
-                parentId3={props.parentId3}
-                mother={props.mother}
-                level={props.level}
-              />
 
-              {hasPermission(role, 'deleteTask', roles, userPermissions) ? (
-                <>
-                  <Button
-                    color="danger"
-                    size="sm"
-                    className="controlBtn"
-                    onClick={() => showUpDeleteModal()}
-                  >
-                    Remove
-                  </Button>
+                {hasPermission(role, 'deleteTask', roles, userPermissions) ? (
+                  <>
+                    <Button
+                      color="danger"
+                      size="sm"
+                      className="controlBtn"
+                      onClick={() => showUpDeleteModal()}
+                    >
+                      Remove
+                    </Button>
 
-                  <Dropdown
-                    direction="up"
-                    isOpen={dropdownOpen}
-                    toggle={toggle}
-                    style={{ float: 'left' }}
-                  >
-                    <DropdownToggle caret color="primary" size="sm">
-                      Move
-                    </DropdownToggle>
-                    <DropdownMenu>
-                      {props.siblings.map((item, i) => {
-                        if (item.num !== props.num) {
-                          return (
-                            <DropdownItem key={i} onClick={e => onMove(props.num, item.num)}>
-                              {item.num.split('.0')[0]}
-                            </DropdownItem>
-                          );
-                        } else {
-                          passCurrentNum = true;
-                        }
-                      })}
-                    </DropdownMenu>
-                  </Dropdown>
+                    <Dropdown
+                      direction="up"
+                      isOpen={dropdownOpen}
+                      toggle={toggle}
+                      style={{ float: 'left' }}
+                    >
+                      <DropdownToggle caret color="primary" size="sm">
+                        Move
+                      </DropdownToggle>
+                      <DropdownMenu>
+                        {props.siblings.map((item, i) => {
+                          if (item.num !== props.num) {
+                            return (
+                              <DropdownItem key={i} onClick={e => onMove(props.num, item.num)}>
+                                {item.num.split('.0')[0]}
+                              </DropdownItem>
+                            );
+                          } else {
+                            passCurrentNum = true;
+                          }
+                        })}
+                      </DropdownMenu>
+                    </Dropdown>
 
-                  <Button
-                    color="secondary"
-                    size="sm"
-                    className="margin-left"
-                    onClick={() => onCopy(props.id)}
-                  >
-                    {isCopied ? 'Copied' : 'Copy'}
-                  </Button>
-                </>
-              ) : null}
+                    <Button
+                      color="secondary"
+                      size="sm"
+                      className="margin-left"
+                      onClick={() => onCopy(props.id)}
+                    >
+                      {isCopied ? 'Copied' : 'Copy'}
+                    </Button>
+                  </>
+                ) : null}
 
-              <Modal isOpen={modal} toggle={toggleModel}>
-                <ModalBody>
-                  <h6>WHY THIS TASK IS IMPORTANT:</h6>
-                  <Editor
-                    init={{
-                      menubar: false,
-                      toolbar: false,
-                      branding: false,
-                      min_height: 80,
-                      max_height: 300,
-                      autoresize_bottom_margin: 1,
-                    }}
-                    disabled={true}
-                    value={props.whyInfo}
-                  />
+                <Modal isOpen={modal} toggle={toggleModel}>
+                  <ModalBody>
+                    <h6>WHY THIS TASK IS IMPORTANT:</h6>
+                    <Editor
+                      init={{
+                        menubar: false,
+                        toolbar: false,
+                        branding: false,
+                        min_height: 80,
+                        max_height: 300,
+                        autoresize_bottom_margin: 1,
+                      }}
+                      disabled={true}
+                      value={props.whyInfo}
+                    />
 
-                  <h6>THE DESIGN INTENT:</h6>
-                  <Editor
-                    init={{
-                      menubar: false,
-                      toolbar: false,
-                      branding: false,
-                      min_height: 80,
-                      max_height: 300,
-                      autoresize_bottom_margin: 1,
-                    }}
-                    disabled={true}
-                    value={props.intentInfo}
-                  />
+                    <h6>THE DESIGN INTENT:</h6>
+                    <Editor
+                      init={{
+                        menubar: false,
+                        toolbar: false,
+                        branding: false,
+                        min_height: 80,
+                        max_height: 300,
+                        autoresize_bottom_margin: 1,
+                      }}
+                      disabled={true}
+                      value={props.intentInfo}
+                    />
 
-                  <h6>ENDSTATE:</h6>
-                  <Editor
-                    init={{
-                      menubar: false,
-                      toolbar: false,
-                      branding: false,
-                      min_height: 80,
-                      max_height: 300,
-                      autoresize_bottom_margin: 1,
-                    }}
-                    disabled={true}
-                    value={props.endstateInfo}
-                  />
-                </ModalBody>
-              </Modal>
+                    <h6>ENDSTATE:</h6>
+                    <Editor
+                      init={{
+                        menubar: false,
+                        toolbar: false,
+                        branding: false,
+                        min_height: 80,
+                        max_height: 300,
+                        autoresize_bottom_margin: 1,
+                      }}
+                      disabled={true}
+                      value={props.endstateInfo}
+                    />
+                  </ModalBody>
+                </Modal>
 
-              <ModalDelete
-                isOpen={modalDelete}
-                closeModal={() => {
-                  setModalDelete(false);
-                }}
-                confirmModal={() => deleteTask(props.id, props.mother)}
-                modalMessage={props.state.popupEditor.currPopup.popupContent || ''}
-                modalTitle={Message.CONFIRM_DELETION}
-              />
-            </td>
-          </tr>
-          ):null}
+                <ModalDelete
+                  isOpen={modalDelete}
+                  closeModal={() => {
+                    setModalDelete(false);
+                  }}
+                  confirmModal={() => deleteTask(props.id, props.mother)}
+                  modalMessage={props.state.popupEditor.currPopup.popupContent || ''}
+                  modalTitle={Message.CONFIRM_DELETION}
+                />
+              </td>
+            </tr>
+          ) : null}
         </React.Fragment>
       ) : null}
     </>
