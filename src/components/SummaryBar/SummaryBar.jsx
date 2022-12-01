@@ -221,7 +221,7 @@ const SummaryBar = props => {
   if (userProfile !== undefined && leaderData !== undefined) {
     const infringements = getInfringements(userProfile);
     const badges = getBadges(userProfile);
-    console.log(tasks);
+    console.log('leaderData:', leaderData);
     const { firstName, lastName, email, _id } = userProfile;
     let totalEffort = parseFloat(leaderData.find(x => x.personId === asUser).tangibletime);
     const weeklyCommittedHours = userProfile.weeklyComittedHours;
