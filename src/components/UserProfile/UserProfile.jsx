@@ -224,11 +224,11 @@ const UserProfile = props => {
       setShowModal(false);
       setUserProfile({
         ...userProfile,
-        infringements: userProfile.infringements.concat(newBlueSquare),
+        infringments: userProfile.infringments.concat(newBlueSquare),
       });
       setModalTitle('Blue Square');
     } else if (operation === 'update') {
-      const currentBlueSquares = [...userProfile.infringements];
+      const currentBlueSquares = [...userProfile.infringments];
       if (dateStamp != null) {
         currentBlueSquares.find(blueSquare => blueSquare._id === id).date = dateStamp;
       }
@@ -237,14 +237,14 @@ const UserProfile = props => {
       }
 
       setShowModal(false);
-      setUserProfile({ ...userProfile, infringements: currentBlueSquares });
+      setUserProfile({ ...userProfile, infringments: currentBlueSquares });
     } else if (operation === 'delete') {
       const newInfringements = [];
-      userProfile.infringements.forEach(infringement => {
-        if (infringement._id !== id) newInfringements.push(infringement);
+      userProfile.infringments.forEach(infringment => {
+        if (infringment._id !== id) newInfringements.push(infringment);
       });
 
-      setUserProfile({ ...userProfile, infringements: newInfringements });
+      setUserProfile({ ...userProfile, infringments: newInfringements });
       setShowModal(false);
     }
     setBlueSquareChanged(true);

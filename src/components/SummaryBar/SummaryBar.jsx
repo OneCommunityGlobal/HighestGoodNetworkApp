@@ -103,10 +103,10 @@ const SummaryBar = props => {
   //   }
   // });
 
-  //Get infringement count from userProfile
+  //Get infringment count from userProfile
   const getInfringements = user => {
-    if (user && user.infringements) {
-      return user.infringements.length;
+    if (user && user.infringments) {
+      return user.infringments.length;
     } else {
       return 0;
     }
