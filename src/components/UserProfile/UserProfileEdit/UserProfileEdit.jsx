@@ -424,12 +424,12 @@ class UserProfileEdit extends Component {
         showModal: false,
         userProfile: {
           ...this.state.userProfile,
-          infringements: prevState.userProfile.infringements.concat(newBlueSquare),
+          infringments: prevState.userProfile.infringments.concat(newBlueSquare),
         },
       }));
     } else if (kind === 'update') {
       this.setState(() => {
-        const currentBlueSquares = this.state.userProfile.infringements;
+        const currentBlueSquares = this.state.userProfile.infringments;
         if (dateStamp != null) {
           currentBlueSquares.find(blueSquare => blueSquare._id === id).date = dateStamp;
         }
@@ -440,13 +440,13 @@ class UserProfileEdit extends Component {
           showModal: false,
           userProfile: {
             ...this.state.userProfile,
-            infringements: currentBlueSquares,
+            infringments: currentBlueSquares,
           },
         };
       });
     } else if (kind === 'delete') {
       this.setState(() => {
-        const currentBlueSquares = this.state.userProfile.infringements.filter(blueSquare => {
+        const currentBlueSquares = this.state.userProfile.infringments.filter(blueSquare => {
           if (blueSquare._id !== id) {
             return blueSquare;
           }
@@ -455,7 +455,7 @@ class UserProfileEdit extends Component {
           showModal: false,
           userProfile: {
             ...this.state.userProfile,
-            infringements: currentBlueSquares,
+            infringments: currentBlueSquares,
           },
         };
       });
@@ -603,7 +603,7 @@ class UserProfileEdit extends Component {
       jobTitle = '',
       personalLinks,
       adminLinks,
-      infringements,
+      infringments,
       privacySettings,
     } = userProfile;
 
@@ -740,7 +740,7 @@ class UserProfileEdit extends Component {
                   </div>
 
                   <BlueSquare
-                    blueSquares={infringements}
+                    blueSquares={infringments}
                     handleBlueSquare={this.handleBlueSquare}
                     role={requestorRole}
                     roles={this.props.role.roles}
