@@ -3,9 +3,10 @@ const hasPermission = (role, action, roles, userPermissions) => {
   if (role && roles && roles.length != 0 ) {
     const roleIndex = roles?.findIndex(({roleName}) => roleName === role )
 
-    const permissions = roles[roleIndex].permissions
-    
-
+    const permissions = [];
+    if (roleIndex !== -1) {
+      permissions = roles[roleIndex].permissions;
+    }
 
     let isAllowed;
   if(userPermissions && userPermissions?.includes(action)){
