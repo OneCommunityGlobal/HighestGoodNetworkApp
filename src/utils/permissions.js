@@ -1,30 +1,21 @@
 const hasPermission = (role, action, roles, userPermissions) => {
+  if (role && roles && roles.length != 0) {
+    const roleIndex = roles?.findIndex(({ roleName }) => roleName === role);
 
-  if (role && roles && roles.length != 0 ) {
-    const roleIndex = roles?.findIndex(({roleName}) => roleName === role )
-
-    const permissions = roles[roleIndex].permissions
-    
-
+    const permissions = roles[roleIndex]?.permissions;
 
     let isAllowed;
-  if(userPermissions && userPermissions?.includes(action)){
-      isAllowed =  true
+    if (userPermissions && userPermissions.includes(action)) {
+      isAllowed = true;
+    } else if (permissions?.includes(action)) {
+      isAllowed = true;
+    } else {
+      isAllowed = false;
     }
-    else if (permissions?.includes(action)){
-        isAllowed = true
-    }
-    else{
-        isAllowed = false;
-    }
- 
 
-    return isAllowed
+    return isAllowed;
   }
-  return false
-}
-
+  return false;
+};
 
 export default hasPermission;
-
-
