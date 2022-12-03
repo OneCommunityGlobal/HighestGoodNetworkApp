@@ -1,7 +1,7 @@
 import { fetchTeamMembersTask } from 'actions/task';
 import { fetchTeamMembersTaskSuccess } from 'components/TeamMemberTasks/actions';
 import axios from 'axios';
-import { ApiEndpoint } from 'utils/URL';
+import { ENDPOINTS } from 'utils/URL';
 
 const initialState = {
   isLoading: false,
@@ -52,5 +52,5 @@ export const deleteSelectedTask = async wbsId => {
 */
 
 export const deleteSelectedTask = async (taskId, taskMother) => {
-  await axios.post(`${ApiEndpoint}/task/del/${taskId}/${taskMother}`);
+  await axios.post(ENDPOINTS.DELETE_SELECTED_TASK);
 };
