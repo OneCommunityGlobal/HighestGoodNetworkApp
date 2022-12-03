@@ -268,7 +268,7 @@ const TeamMemberTasks = props => {
                                 </div>
                               </td>
                             )}
-                            {userRole === 'Administrator' ? (
+                            {userRole === 'Administrator' || 'Owner' ? (
                               <td>
                                 <TaskButton task={task}></TaskButton>
                               </td>
@@ -400,7 +400,7 @@ const TeamMemberTasks = props => {
                   <tr>
                     <th>Tasks(s)</th>
                     <th className="team-task-progress">Progress</th>
-                    {userRole === 'Administrator' ? <th>Status</th> : null}
+                    {userRole === 'Administrator' || 'Owner' ? <th>Status</th> : null}
                   </tr>
                 </thead>
               </Table>

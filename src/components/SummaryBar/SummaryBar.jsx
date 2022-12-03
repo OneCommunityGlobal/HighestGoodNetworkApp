@@ -31,6 +31,7 @@ import { ApiEndpoint } from 'utils/URL';
 import hasPermission from 'utils/permissions';
 
 const SummaryBar = props => {
+  console.log('props', props);
   const { asUser, role, leaderData } = props;
   const [userProfile, setUserProfile] = useState(undefined);
   const [tasks, setTasks] = useState(undefined);
