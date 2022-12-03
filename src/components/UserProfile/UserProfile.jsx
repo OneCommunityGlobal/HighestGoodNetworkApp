@@ -56,6 +56,7 @@ const UserProfile = props => {
   const [showLoading, setShowLoading] = useState(true);
   const [userProfile, setUserProfile] = useState(undefined);
   const [originalUserProfile, setOriginalUserProfile] = useState(undefined);
+  const [originalTasks, setOriginalTasks] = useState(undefined);
   const [id, setId] = useState('');
   const [activeTab, setActiveTab] = useState('1');
   const [infoModal, setInfoModal] = useState(false);
@@ -70,6 +71,7 @@ const UserProfile = props => {
   const [shouldRefresh, setShouldRefresh] = useState(false);
   const [activeInactivePopupOpen, setActiveInactivePopupOpen] = useState(false);
   const [tasks, setTasks] = useState();
+  const [updatedTasks, setUpdatedTasks] = useState([])
   //const [isValid, setIsValid] = useState(true)
 
   /* useEffect functions */
@@ -96,12 +98,13 @@ const UserProfile = props => {
     handleSubmit();
   }, [blueSquareChanged]);
 
-  const loadUserTasks = () => {
+  const loadUserTasks = async () => {
     const userId = props?.match?.params?.userId;
     axios
       .get(ENDPOINTS.TASKS_BY_USERID(userId))
       .then(res => {
         setTasks(res?.data || []);
+        setOriginalTasks(res.data)
       })
       .catch(err => console.log(err));
   };
@@ -164,15 +167,16 @@ const UserProfile = props => {
     setUserProfile(newUserProfile);
     setChanged(true);
   };
+  console.log(tasks)
 
   const onUpdateTask = (taskId, updatedTask, tasksUpdated) => {
-    // [taskId, updatedTask]
-    // for (let i = 0; i < tasksUpdated.length; i += 1) {
-    //   const taskUpdated = tasksUpdated[i];
-    //   props.updateTask(taskUpdated.taskId, taskUpdated.taskObject);
-    // }
-    props.updateTask(taskId, updatedTask);
-    loadUserTasks();
+    const newTask = {
+      updatedTask,
+      taskId
+    }
+    setTasks((tasks) => tasks.filter(task => task._id != taskId))
+    setUpdatedTasks((tasks)=> [...tasks, newTask])
+    setChanged(true)
   };
 
   const handleImageUpload = async evt => {
@@ -276,6 +280,12 @@ const UserProfile = props => {
     try {
       await props.updateUserProfile(props.match.params.userId, userProfile);
       await loadUserProfile();
+      for (let i = 0; i < updatedTasks.length; i += 1) {
+        const updatedTask = updatedTasks[i];
+        await props.updateTask(updatedTask.taskId, updatedTask.updatedTask);
+      }
+       await loadUserTasks();
+
       setShowSaveWarning(false);
     } catch (err) {
       alert('An error occurred while attempting to save this profile.');
@@ -681,6 +691,7 @@ const UserProfile = props => {
                     <span
                       onClick={() => {
                         setUserProfile(originalUserProfile);
+                        setTasks(originalTasks)
                         setChanged(false);
                       }}
                       className="btn btn-outline-danger mr-1 btn-bottom"

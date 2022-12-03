@@ -33,7 +33,6 @@ const UserProjectsTable = React.memo(props => {
     });
     return { ...project, tasks };
   });
-  console.log(tasksByProject);
 
   const removeTaskFromUser = task => {
     const newResources = task.resources.filter(user => user.userID != props.userId);
@@ -91,8 +90,7 @@ const UserProjectsTable = React.memo(props => {
             <tbody>
               {props.userProjectsById.length > 0 ? (
                 tasksByProject.map((project, index) => (
-                  <>
-                    <tr key={index}>
+                    <tr key={project._id}>
                       <td>{index + 1}</td>
                       <td>{`${project.projectName}`}</td>
                       {props.edit && props.role && (
@@ -112,7 +110,6 @@ const UserProjectsTable = React.memo(props => {
                         </td>
                       )}
                     </tr>
-                  </>
                 ))
               ) : (
                 <></>
@@ -140,7 +137,7 @@ const UserProjectsTable = React.memo(props => {
           <thead>
             {props.role && (
               <tr>
-                <th>#</th>
+                <th style={{width: '70px'}}>#</th>
                 <th>Task Name</th>
                 {hasPermission(props.role, 'assignUserInProject', roles, userPermissions) ? (
                   <th>{}</th>
@@ -148,14 +145,13 @@ const UserProjectsTable = React.memo(props => {
               </tr>
             )}
           </thead>
-          <tbody>
+          <tbody >
             {props.userProjectsById.length > 0 ? (
-              tasksByProject.map(project => (
-                <>
-                  {project.tasks.map(task => {
+              tasksByProject.map(project => 
+                  project.tasks.map(task => {
                     return (
                       <tr key={task._id}>
-                        <td>{task.num}</td>
+                        <td >{task.num}</td>
                         <td>{`${task.taskName}`}</td>
                         {props.edit && props.role && (
                           <td>
@@ -177,9 +173,8 @@ const UserProjectsTable = React.memo(props => {
                         )}
                       </tr>
                     );
-                  })}
-                </>
-              ))
+                  })
+                  )
             ) : (
               <></>
             )}
