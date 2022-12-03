@@ -25,11 +25,13 @@
 }
 
 .team-task-progress {
-  width: 35%;
+  width: 100%;
 }
 
 .task-break {
   border-bottom: 1px solid lightgray;
+  display: grid;
+  grid-template-columns: 1.5fr 1fr 1fr;
 }
 
 .task-break:last-of-type {
@@ -85,4 +87,9 @@
 
 .markAsDoneButton:hover {
   cursor: pointer;
+}
+
+.bottom-halt-task {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
 }

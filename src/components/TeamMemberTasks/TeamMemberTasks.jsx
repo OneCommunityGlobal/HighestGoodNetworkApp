@@ -2,7 +2,7 @@
 /* eslint-disable no-trailing-spaces */
 /* eslint-disable no-plusplus */
 /* eslint-disable indent */
-import { faBell, faCircle, faClock } from '@fortawesome/free-solid-svg-icons';
+import { faBell, faCircle, faClock, faTimes } from '@fortawesome/free-solid-svg-icons';
 import { Table, Progress } from 'reactstrap';
 import _ from 'lodash';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
