@@ -7,23 +7,17 @@ const hasPermission = (role, action, roles, userPermissions) => {
     }
 
     let isAllowed;
-  if(userPermissions && userPermissions?.includes(action)){
-      isAllowed =  true
+    if (userPermissions && userPermissions.includes(action)) {
+      isAllowed = true;
+    } else if (permissions?.includes(action)) {
+      isAllowed = true;
+    } else {
+      isAllowed = false;
     }
-    else if (permissions?.includes(action)){
-        isAllowed = true
-    }
-    else{
-        isAllowed = false;
-    }
- 
 
-    return isAllowed
+    return isAllowed;
   }
-  return false
-}
-
+  return false;
+};
 
 export default hasPermission;
-
-

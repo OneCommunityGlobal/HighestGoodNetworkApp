@@ -23,6 +23,14 @@ export const rejectTaskEditSuggestionHTTP = async ( taskEditSuggestionId ) => {
   try {
     await axios.delete(ENDPOINTS.REJECT_TASK_EDIT_SUGGESTION(taskEditSuggestionId));
   } catch (error) {
-    'reject task edit suggestion http error\n' + error
+    console.log('reject task edit suggestion http error ' + error);
   }
 };
+
+export const getTaskEditSuggestionCountHTTP = async () => {
+  try {
+    return await axios.get(`${ENDPOINTS.TASK_EDIT_SUGGESTION()}?count=true`);
+  } catch (error) {
+    console.log('get task edit suggestion count http error: ' + error);
+  }
+}
