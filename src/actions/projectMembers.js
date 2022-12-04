@@ -1,13 +1,112 @@
-/*********************************************************************************
+/* eslint-disable function-paren-newline */
+/* eslint-disable implicit-arrow-linebreak */
+/** *******************************************************************************
  * Action: MEMBER MEMBERSHIP
  * Author: Henry Ng - 02/03/20
- ********************************************************************************/
+ ******************************************************************************* */
 import axios from 'axios';
-import * as types from './../constants/projectMembership';
+import * as types from '../constants/projectMembership';
 import { ENDPOINTS } from '../utils/URL';
-/*******************************************
+
+/** *****************************************
+ * PLAIN OBJ ACTIONS
+ ****************************************** */
+
+/**
+ * Set a flag that fetching Members
+ */
+export const setMemberStart = () => ({
+  type: types.FETCH_MEMBERS_START,
+});
+
+/**
+ * set Members in store
+ * @param payload : Members []
+ */
+export const setMembers = (members) => ({
+  type: types.RECEIVE_MEMBERS,
+  members,
+});
+
+/**
+ * Error when setting project
+ * @param payload : error status code
+ */
+export const setMembersError = (err) => ({
+  type: types.FETCH_MEMBERS_ERROR,
+  err,
+});
+
+/**
+ * Set a flag that finding Members
+ */
+export const findUsersStart = () =>
+  // console.log("find user start");
+
+  ({
+    type: types.FIND_USERS_START,
+  });
+
+/**
+ * set Users in store
+ * @param payload : Users []
+ */
+export const foundUsers = (users) =>
+  // console.log("foundUsers");
+  ({
+    type: types.FOUND_USERS,
+    users,
+  });
+
+/**
+ * Error when setting project
+ * @param payload : error status code
+ */
+export const findUsersError = (err) => ({
+  type: types.FIND_USERS_ERROR,
+  err,
+});
+
+/**
+ * add new member to project
+ * @param member : {}
+ */
+export const assignNewMember = (member) =>
+  // console.log("new member", member);
+  ({
+    type: types.ADD_NEW_MEMBER,
+    member,
+  });
+
+/**
+ * remove a member from project
+ * @param userId : _id
+ */
+export const deleteMember = (userId) => ({
+  type: types.DELETE_MEMBER,
+  userId,
+});
+
+/**
+ * remove found user after assign
+ * @param userId : _id
+ */
+export const removeFoundUser = (userId) => ({
+  type: types.REMOVE_FOUND_USER,
+  userId,
+});
+
+/**
+ * Error when add new member
+ * @param payload : error status code
+ */
+export const addNewMemberError = (err) => ({
+  type: types.ADD_NEW_MEMBER_ERROR,
+  err,
+});
+/** *****************************************
  * ACTION CREATORS
- *******************************************/
+ ****************************************** */
 
 export const getAllUserProfiles = () => {
   const request = axios.get(ENDPOINTS.USER_PROFILES);
@@ -16,13 +115,14 @@ export const getAllUserProfiles = () => {
     request
       .then((res) => {
         let users = res.data;
-        let members = getState().projectMembers.members;
+        const { members } = getState().projectMembers;
         users = users.map((user) => {
           if (!members.find((member) => member._id === user._id)) {
-            return (user = { ...user, assigned: false });
-          } else {
-            return (user = { ...user, assigned: true });
+            const toReturn = { ...user, assigned: false };
+            return toReturn;
           }
+          const toReturn = { ...user, assigned: true };
+          return toReturn;
         });
         // console.log(users);
         dispatch(foundUsers(users));
@@ -38,9 +138,9 @@ export const getAllUserProfiles = () => {
  * Call API to find a user profile
  */
 export const findUserProfiles = (keyword) => {
-  //console.log(ENDPOINTS.USER_PROFILES, keyword);
+  // console.log(ENDPOINTS.USER_PROFILES, keyword);
   const request = axios.get(ENDPOINTS.USER_PROFILES);
-  //console.log(request);
+  // console.log(request);
 
   return async (dispatch, getState) => {
     await dispatch(findUsersStart());
@@ -49,15 +149,16 @@ export const findUserProfiles = (keyword) => {
         // console.log("FOUND USER ", res);
         if (keyword.trim() !== '') {
           let users = res.data.filter((user) =>
-            (user.firstName + ' ' + user.lastName).toLowerCase().includes(keyword.toLowerCase()),
+            `${user.firstName} ${user.lastName}`.toLowerCase().includes(keyword.toLowerCase()),
           );
-          let members = getState().projectMembers.members;
+          const { members } = getState().projectMembers;
           users = users.map((user) => {
             if (!members.find((member) => member._id === user._id)) {
-              return (user = { ...user, assigned: false });
-            } else {
-              return (user = { ...user, assigned: true });
+              const toReturn = { ...user, assigned: false };
+              return toReturn;
             }
+            const toReturn = { ...user, assigned: true };
+            return toReturn;
           });
           // console.log(users);
           dispatch(foundUsers(users));
@@ -86,7 +187,7 @@ export const fetchAllMembers = (projectId) => {
         dispatch(setMembers(res.data));
       })
       .catch((err) => {
-        //console.log("Error", err);
+        // console.log("Error", err);
         dispatch(setMembersError(err));
       });
   };
@@ -97,7 +198,7 @@ export const fetchAllMembers = (projectId) => {
  */
 export const assignProject = (projectId, userId, operation, firstName, lastName) => {
   const request = axios.post(ENDPOINTS.PROJECT_MEMBER(projectId), {
-    projectId: projectId,
+    projectId,
     users: [
       {
         userId,
@@ -108,8 +209,7 @@ export const assignProject = (projectId, userId, operation, firstName, lastName)
 
   return async (dispatch) => {
     request
-      .then((res) => {
-        //console.log("RES", res);
+      .then(() => {
         if (operation === 'Assign') {
           dispatch(
             assignNewMember({
@@ -124,122 +224,8 @@ export const assignProject = (projectId, userId, operation, firstName, lastName)
         }
       })
       .catch((err) => {
-        //console.log("Error", err);
+        // console.log("Error", err);
         dispatch(addNewMemberError(err));
       });
-  };
-};
-
-/*******************************************
- * PLAIN OBJ ACTIONS
- *******************************************/
-
-/**
- * Set a flag that fetching Members
- */
-export const setMemberStart = () => {
-  return {
-    type: types.FETCH_MEMBERS_START,
-  };
-};
-
-/**
- * set Members in store
- * @param payload : Members []
- */
-export const setMembers = (members) => {
-  return {
-    type: types.RECEIVE_MEMBERS,
-    members,
-  };
-};
-
-/**
- * Error when setting project
- * @param payload : error status code
- */
-export const setMembersError = (err) => {
-  return {
-    type: types.FETCH_MEMBERS_ERROR,
-    err,
-  };
-};
-
-/**
- * Set a flag that finding Members
- */
-export const findUsersStart = () => {
-  // console.log("find user start");
-
-  return {
-    type: types.FIND_USERS_START,
-  };
-};
-
-/**
- * set Users in store
- * @param payload : Users []
- */
-export const foundUsers = (users) => {
-  // console.log("foundUsers");
-  return {
-    type: types.FOUND_USERS,
-    users,
-  };
-};
-
-/**
- * Error when setting project
- * @param payload : error status code
- */
-export const findUsersError = (err) => {
-  return {
-    type: types.FIND_USERS_ERROR,
-    err,
-  };
-};
-
-/**
- * add new member to project
- * @param member : {}
- */
-export const assignNewMember = (member) => {
-  // console.log("new member", member);
-  return {
-    type: types.ADD_NEW_MEMBER,
-    member,
-  };
-};
-
-/**
- * remove a member from project
- * @param userId : _id
- */
-export const deleteMember = (userId) => {
-  return {
-    type: types.DELETE_MEMBER,
-    userId,
-  };
-};
-
-/**
- * remove found user after assign
- * @param userId : _id
- */
-export const removeFoundUser = (userId) => {
-  return {
-    type: types.REMOVE_FOUND_USER,
-    userId,
-  };
-};
-
-/**
- * Error when add new member
- * @param payload : error status code
- */
-export const addNewMemberError = (err) => {
-  return {
-    type: types.ADD_NEW_MEMBER_ERROR,
-    err,
   };
 };

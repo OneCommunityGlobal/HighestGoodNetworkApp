@@ -1,16 +1,16 @@
-import { getLeaderboardData, getOrgData } from '../../actions/leaderBoardData';
+import { getLeaderBoardData, getOrgData } from '../../actions/leaderBoardData';
 import { connect } from 'react-redux';
 import Leaderboard from './Leaderboard';
 import { getcolor, getprogress } from '../../utils/effortColors';
 import _ from 'lodash';
 
-const mapStateToProps = (state) => {
+const mapStateToProps = state => {
   let leaderBoardData = _.get(state, 'leaderBoardData', []);
 
   if (leaderBoardData.length) {
     let maxTotal = _.maxBy(leaderBoardData, 'totaltime_hrs').totaltime_hrs || 10;
 
-    leaderBoardData = leaderBoardData.map((element) => {
+    leaderBoardData = leaderBoardData.map(element => {
       element.didMeetWeeklyCommitment =
         element.totaltangibletime_hrs >= element.weeklyComittedHours ? true : false;
 
@@ -52,4 +52,4 @@ const mapStateToProps = (state) => {
     timeEntries: _.get(state, 'timeEntries', {}),
   };
 };
-export default connect(mapStateToProps, { getLeaderboardData, getOrgData })(Leaderboard);
+export default connect(mapStateToProps, { getLeaderBoardData, getOrgData })(Leaderboard);

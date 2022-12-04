@@ -19,7 +19,7 @@ import {
  * set allteams in store
  * @param payload : allteams []
  */
-export const teamMembersFectchACtion = (payload) => ({
+export const teamMembersFetchAction = (payload) => ({
   type: RECEIVE_ALL_USER_TEAMS,
   payload,
 });
@@ -110,11 +110,11 @@ export const getAllUserTeams = () => {
   return async (dispatch) => {
     userTeamsPromise
       .then((res) => {
-        dispatch(teamMembersFectchACtion(res.data));
+        dispatch(teamMembersFetchAction(res.data));
         // console.log("getAllUserTeams: res:", res.data)
       })
       .catch(() => {
-        dispatch(teamMembersFectchACtion(undefined));
+        dispatch(teamMembersFetchAction(undefined));
       });
   };
 };

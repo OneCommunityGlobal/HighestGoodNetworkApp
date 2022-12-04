@@ -8,7 +8,7 @@ export function clearUserProfile() {
 }
 
 export function getUserTeamMembers(userId) {
-  const request = httpService.get(`${APIEndpoint}/userprofile/teammembers/${userId}`);
+  const request = httpService.get(`${APIEndpoint}/userprofile/teamMembers/${userId}`);
 
   return (dispatch) => {
     request.then(({ data }) => {
@@ -48,7 +48,7 @@ export function getDashboardData(userId) {
 
 export function getWeeklyDashboardData(userId, fromDate, toDate) {
   const request = httpService.get(
-    `${APIEndpoint}/dashboard/weeklydata/${userId}/${fromDate}/${toDate}`,
+    `${APIEndpoint}/dashboard/weeklyData/${userId}/${fromDate}/${toDate}`,
   );
 
   return (dispatch) => {
@@ -63,7 +63,7 @@ export function getWeeklyDashboardData(userId, fromDate, toDate) {
 
 export function getMonthlyDashboardData(userId, fromDate, toDate) {
   const request = httpService.get(
-    `${APIEndpoint}/dashboard/monthlydata/${userId}/${fromDate}/${toDate}`,
+    `${APIEndpoint}/dashboard/monthlyData/${userId}/${fromDate}/${toDate}`,
   );
 
   return (dispatch) => {
@@ -76,8 +76,8 @@ export function getMonthlyDashboardData(userId, fromDate, toDate) {
   };
 }
 
-export function getLeaderboardData(userId) {
-  const request = httpService.get(`${APIEndpoint}/dashboard/leaderboard/${userId}`);
+export function getLeaderBoardData(userId) {
+  const request = httpService.get(`${APIEndpoint}/dashboard/leaderBoard/${userId}`);
 
   return (dispatch) => {
     request.then(({ data }) => {

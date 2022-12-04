@@ -4,6 +4,6 @@ import { ApiEndpoint } from '../utils/URL';
 // const ApiEndpoint = `https://hgn-rest-dev.herokuapp.com/api/dashboard`;
 const ApiUri = `${ApiEndpoint}/dashboard`;
 
-export function getLeaderboardData(userId) {
+export function getLeaderBoardData(userId) {
   return httpService.get(`${ApiUri}/leaderboard/${userId}`);
 }

@@ -9,7 +9,7 @@ import { ENDPOINTS } from '../utils/URL';
  * number === 2 week before last
  */
 export const getTimeEntriesForWeek = (userId, offset) => {
-  //TODO: Environment variable for server timezone
+  // TODO: Environment variable for server timezone
 
   const fromDate = moment()
     .tz('America/Los_Angeles')
@@ -24,11 +24,11 @@ export const getTimeEntriesForWeek = (userId, offset) => {
     .format('YYYY-MM-DD');
 
   const url = ENDPOINTS.TIME_ENTRIES_PERIOD(userId, fromDate, toDate);
-  return async dispatch => {
+  return async (dispatch) => {
     let loggedOut = false;
-    const res = await axios.get(url).catch(error => {
+    const res = await axios.get(url).catch((error) => {
       if (error.status === 401) {
-        //logout error
+        // logout error
         loggedOut = true;
       }
     });
@@ -40,11 +40,11 @@ export const getTimeEntriesForWeek = (userId, offset) => {
 
 export const getTimeEntriesForPeriod = (userId, fromDate, toDate) => {
   const url = ENDPOINTS.TIME_ENTRIES_PERIOD(userId, fromDate, toDate);
-  return async dispatch => {
+  return async (dispatch) => {
     let loggedOut = false;
-    const res = await axios.get(url).catch(error => {
+    const res = await axios.get(url).catch((error) => {
       if (error.status === 401) {
-        //logout error
+        // logout error
         loggedOut = true;
       }
     });
@@ -54,9 +54,9 @@ export const getTimeEntriesForPeriod = (userId, fromDate, toDate) => {
   };
 };
 
-export const postTimeEntry = timeEntry => {
+export const postTimeEntry = (timeEntry) => {
   const url = ENDPOINTS.TIME_ENTRY();
-  return async dispatch => {
+  return async (dispatch) => {
     try {
       const res = await axios.post(url, timeEntry);
       dispatch(updateTimeEntries(timeEntry));
@@ -69,7 +69,7 @@ export const postTimeEntry = timeEntry => {
 
 export const editTimeEntry = (timeEntryId, timeEntry, oldDateOfWork) => {
   const url = ENDPOINTS.TIME_ENTRY_CHANGE(timeEntryId);
-  return async dispatch => {
+  return async (dispatch) => {
     try {
       const res = await axios.put(url, timeEntry);
       dispatch(updateTimeEntries(timeEntry, oldDateOfWork));
@@ -80,9 +80,9 @@ export const editTimeEntry = (timeEntryId, timeEntry, oldDateOfWork) => {
   };
 };
 
-export const deleteTimeEntry = timeEntry => {
+export const deleteTimeEntry = (timeEntry) => {
   const url = ENDPOINTS.TIME_ENTRY_CHANGE(timeEntry._id);
-  return async dispatch => {
+  return async (dispatch) => {
     try {
       const res = await axios.delete(url);
       dispatch(updateTimeEntries(timeEntry));
@@ -96,7 +96,7 @@ export const deleteTimeEntry = timeEntry => {
 const updateTimeEntries = (timeEntry, oldDateOfWork) => {
   const startOfWeek = moment().startOf('week');
 
-  return async dispatch => {
+  return async (dispatch) => {
     if (oldDateOfWork) {
       const oldOffset = Math.ceil(startOfWeek.diff(oldDateOfWork, 'week', true));
       dispatch(getTimeEntriesForWeek(timeEntry.personId, oldOffset));
@@ -116,7 +116,7 @@ export const setTimeEntriesForWeek = (data, offset) => ({
   offset,
 });
 
-export const setTimeEntriesForPeriod = data => ({
+export const setTimeEntriesForPeriod = (data) => ({
   type: GET_TIME_ENTRIES_PERIOD,
   payload: data,
 });

@@ -1,3 +1,7 @@
+/* eslint-disable no-constant-condition */
+/* eslint-disable arrow-parens */
+/* eslint-disable no-plusplus */
+/* eslint-disable no-param-reassign */
 import axios from 'axios';
 import {
   GET_ALL_BADGE_DATA,
@@ -12,28 +16,26 @@ import {
 } from '../constants/badge';
 import { ENDPOINTS } from '../utils/URL';
 
-const getAllBadges = (allBadges) => ({
+const getAllBadges = allBadges => ({
   type: GET_ALL_BADGE_DATA,
   allBadges,
 });
 
-export const fetchAllBadges = () => async (dispatch) => {
+export const fetchAllBadges = () => async dispatch => {
   const { data } = await axios.get(ENDPOINTS.BADGE());
   dispatch(getAllBadges(data));
 };
 
-export const closeAlert = () => {
-  return (dispatch) => {
-    dispatch(gotCloseAlert());
-  };
+export const closeAlert = () => dispatch => {
+  dispatch(CLOSE_ALERT());
 };
 
-export const addSelectBadge = (badgeId) => ({
+export const addSelectBadge = badgeId => ({
   type: ADD_SELECT_BADGE,
   badgeId,
 });
 
-export const removeSelectBadge = (badgeId) => ({
+export const removeSelectBadge = badgeId => ({
   type: REMOVE_SELECT_BADGE,
   badgeId,
 });
@@ -46,12 +48,12 @@ export const clearSelected = () => ({
   type: CLEAR_SELECTED,
 });
 
-export const getFirstName = (firstName) => ({
+export const getFirstName = firstName => ({
   type: GET_FIRST_NAME,
   firstName,
 });
 
-export const getLastName = (lastName) => ({
+export const getLastName = lastName => ({
   type: GET_LAST_NAME,
   lastName,
 });
@@ -64,191 +66,182 @@ export const getMessage = (message, color) => ({
 
 export const gotCloseAlert = () => ({ type: CLOSE_ALERT });
 
-export const validateBadges = (firstName, lastName) => {
-  return async (dispatch) => {
-    if (!firstName || !lastName) {
-      dispatch(
-        getMessage(
-          'The Name Find function does not work without entering first and last name. Nice try though.',
-          'danger',
-        ),
-      );
-      setTimeout(() => {
-        dispatch(closeAlert());
-      }, 6000);
-      return;
-    }
-  };
+export const validateBadges = (firstName, lastName) => async dispatch => {
+  if (!firstName || !lastName) {
+    dispatch(
+      getMessage(
+        'The Name Find function does not work without entering first and last name. Nice try though.',
+        'danger',
+      ),
+    );
+    setTimeout(() => {
+      dispatch(closeAlert());
+    }, 6000);
+  }
 };
 
-export const assignBadges = (firstName, lastName, selectedBadges) => {
-  return async (dispatch) => {
-    if (selectedBadges.length === 0) {
-      dispatch(
-        getMessage(
-          "Um no, that didn 't work. Badge Select Function must include actual selection of badges to work. Better luck next time! ",
-          'danger',
-        ),
-      );
-      setTimeout(() => {
-        dispatch(closeAlert());
-      }, 6000);
-      return;
-    }
+export const assignBadges = (firstName, lastName, selectedBadges) => async dispatch => {
+  if (selectedBadges.length === 0) {
+    dispatch(
+      getMessage(
+        "Um no, that didn't work. Badge Select Function must include actual selection of badges to work. Better luck next time! ",
+        'danger',
+      ),
+    );
+    setTimeout(() => {
+      dispatch(closeAlert());
+    }, 6000);
+    return;
+  }
 
-    const userAssigned = firstName + ' ' + lastName;
+  const userAssigned = `${firstName} ${lastName}`;
 
-    const res = await axios.get(ENDPOINTS.USER_PROFILE_BY_NAME(userAssigned));
-    if (res.data.length === 0) {
-      dispatch(
-        getMessage(
-          "Can't find that user. Step 1 to getting badges: Be in the system. Not in the system? No badges for you! ",
-          'danger',
-        ),
-      );
-      setTimeout(() => {
-        dispatch(closeAlert());
-      }, 6000);
-      return;
-    }
-    const badgeCollection = res.data[0].badgeCollection;
-    const UserToBeAssigned = res.data[0]._id;
+  const res = await axios.get(ENDPOINTS.USER_PROFILE_BY_NAME(userAssigned));
+  if (res.data.length === 0) {
+    dispatch(
+      getMessage(
+        "Can't find that user. Step 1 to getting badges: Be in the system. Not in the system? No badges for you! ",
+        'danger',
+      ),
+    );
+    setTimeout(() => {
+      dispatch(closeAlert());
+    }, 6000);
+    return;
+  }
+  const { badgeCollection } = res.data[0];
+  const UserToBeAssigned = res.data[0]._id;
 
-    selectedBadges.forEach((badgeId) => {
-      let included = false;
-      badgeCollection.forEach((badgeObj) => {
-        if (badgeId === badgeObj.badge) {
-          badgeObj.count++;
-          badgeObj.lastModified = Date.now();
-          included = true;
-        }
-      });
-      if (!included) {
-        badgeCollection.push({ badge: badgeId, count: 1, lastModified: Date.now() });
+  selectedBadges.forEach(badgeId => {
+    let included = false;
+    badgeCollection.forEach(badgeObj => {
+      if (badgeId === badgeObj.badge) {
+        badgeObj.count++;
+        badgeObj.lastModified = Date.now();
+        included = true;
       }
     });
-
-    const url = ENDPOINTS.BADGE_ASSIGN(UserToBeAssigned);
-    try {
-      await axios.put(url, { badgeCollection, newBadges: selectedBadges.length });
-      dispatch(
-        getMessage(
-          "Awesomesauce! Not only have you increased a person's badges, you've also proportionally increased their life happiness!",
-          'success',
-        ),
-      );
-      setTimeout(() => {
-        dispatch(closeAlert());
-      }, 6000);
-    } catch (e) {
-      dispatch(getMessage('Opps, something wrong!', 'danger'));
-      setTimeout(() => {
-        dispatch(closeAlert());
-      }, 6000);
+    if (!included) {
+      badgeCollection.push({ badge: badgeId, count: 1, lastModified: Date.now() });
     }
-  };
+  });
+
+  const url = ENDPOINTS.BADGE_ASSIGN(UserToBeAssigned);
+  try {
+    await axios.put(url, { badgeCollection, newBadges: selectedBadges.length });
+    dispatch(
+      getMessage(
+        "Awesome sauce! Not only have you increased a person's badges, you've also proportionally increased their life happiness!",
+        'success',
+      ),
+    );
+    setTimeout(() => {
+      dispatch(closeAlert());
+    }, 6000);
+  } catch (e) {
+    dispatch(getMessage('Oops, something wrong!', 'danger'));
+    setTimeout(() => {
+      dispatch(closeAlert());
+    }, 6000);
+  }
 };
 
-export const assignBadgesByUserID = (userId, selectedBadges) => {
-  return async (dispatch) => {
-    if (selectedBadges.length === 0) {
-      dispatch(
-        getMessage(
-          "Um no, that didn 't work. Badge Select Function must include actual selection of badges to work. Better luck next time! ",
-          'danger',
-        ),
-      );
-      setTimeout(() => {
-        dispatch(closeAlert());
-      }, 6000);
-      return;
-    }
+export const assignBadgesByUserID = (userId, selectedBadges) => async dispatch => {
+  if (selectedBadges.length === 0) {
+    dispatch(
+      getMessage(
+        "Um no, that didn't work. Badge Select Function must include actual selection of badges to work. Better luck next time! ",
+        'danger',
+      ),
+    );
+    setTimeout(() => {
+      dispatch(closeAlert());
+    }, 6000);
+    return;
+  }
 
-    const res = await axios.get(ENDPOINTS.USER_PROFILE(userId));
-    if (res.data.length === 0) {
-      dispatch(
-        getMessage(
-          "Can't find that user. Step 1 to getting badges: Be in the system. Not in the system? No badges for you! ",
-          'danger',
-        ),
-      );
-      setTimeout(() => {
-        dispatch(closeAlert());
-      }, 6000);
-      return;
-    }
-    const badgeCollection = res.data.badgeCollection;
+  const res = await axios.get(ENDPOINTS.USER_PROFILE(userId));
+  if (res.data.length === 0) {
+    dispatch(
+      getMessage(
+        "Can't find that user. Step 1 to getting badges: Be in the system. Not in the system? No badges for you! ",
+        'danger',
+      ),
+    );
+    setTimeout(() => {
+      dispatch(closeAlert());
+    }, 6000);
+    return;
+  }
+  const { badgeCollection } = res.data;
 
-    for (let i = 0; i < badgeCollection.length; i++) {
-      badgeCollection[i].badge = badgeCollection[i].badge._id;
-    }
+  for (let i = 0; i < badgeCollection.length; i++) {
+    badgeCollection[i].badge = badgeCollection[i].badge._id;
+  }
 
-    selectedBadges.forEach((badgeId) => {
-      let included = false;
-      badgeCollection.forEach((badgeObj) => {
-        if (badgeId === badgeObj.badge) {
-          badgeObj.count++;
-          badgeObj.lastModified = Date.now();
-          included = true;
-        }
-      });
-      if (!included) {
-        badgeCollection.push({ badge: badgeId, count: 1, lastModified: Date.now() });
+  selectedBadges.forEach(badgeId => {
+    let included = false;
+    badgeCollection.forEach(badgeObj => {
+      if (badgeId === badgeObj.badge) {
+        badgeObj.count++;
+        badgeObj.lastModified = Date.now();
+        included = true;
       }
     });
-
-    const userToBeAssignedBadge = res.data._id;
-    const url = ENDPOINTS.BADGE_ASSIGN(userToBeAssignedBadge);
-
-    try {
-      await axios.put(url, { badgeCollection, newBadges: selectedBadges.length });
-      dispatch(
-        getMessage(
-          "Awesomesauce! Not only have you increased a person's badges, you've also proportionally increased their life happiness!",
-          'success',
-        ),
-      );
-      setTimeout(() => {
-        dispatch(closeAlert());
-      }, 6000);
-    } catch (e) {
-      dispatch(getMessage('Opps, something wrong!', 'danger'));
-      setTimeout(() => {
-        dispatch(closeAlert());
-      }, 6000);
+    if (!included) {
+      badgeCollection.push({ badge: badgeId, count: 1, lastModified: Date.now() });
     }
-  };
+  });
+
+  const userToBeAssignedBadge = res.data._id;
+  const url = ENDPOINTS.BADGE_ASSIGN(userToBeAssignedBadge);
+
+  try {
+    await axios.put(url, { badgeCollection, newBadges: selectedBadges.length });
+    dispatch(
+      getMessage(
+        "Awesome sauce! Not only have you increased a person's badges, you've also proportionally increased their life happiness!",
+        'success',
+      ),
+    );
+    setTimeout(() => {
+      dispatch(closeAlert());
+    }, 6000);
+  } catch (e) {
+    dispatch(getMessage('Oops, something wrong!', 'danger'));
+    setTimeout(() => {
+      dispatch(closeAlert());
+    }, 6000);
+  }
 };
 
-export const changeBadgesByUserID = (userId, badgeCollection) => {
-  return async (dispatch) => {
-    const url = ENDPOINTS.BADGE_ASSIGN(userId);
-    try {
-      await axios.put(url, { badgeCollection, newBadges: 0 });
-      dispatch(
-        getMessage(
-          "Awesomesauce! Not only have you increased a person's badges, you've also proportionally increased their life happiness!",
-          'success',
-        ),
-      );
-      setTimeout(() => {
-        dispatch(closeAlert());
-      }, 6000);
-    } catch (e) {
-      dispatch(getMessage('Opps, something wrong!', 'danger'));
-      setTimeout(() => {
-        dispatch(closeAlert());
-      }, 6000);
-    }
-  };
+export const changeBadgesByUserID = (userId, badgeCollection) => async dispatch => {
+  const url = ENDPOINTS.BADGE_ASSIGN(userId);
+  try {
+    await axios.put(url, { badgeCollection, newBadges: 0 });
+    dispatch(
+      getMessage(
+        "Awesome sauce! Not only have you increased a person's badges, you've also proportionally increased their life happiness!",
+        'success',
+      ),
+    );
+    setTimeout(() => {
+      dispatch(closeAlert());
+    }, 6000);
+  } catch (e) {
+    dispatch(getMessage('Oops, something wrong!', 'danger'));
+    setTimeout(() => {
+      dispatch(closeAlert());
+    }, 6000);
+  }
 };
 
-export const createNewBadge = (newBadge) => async (dispatch) => {
+export const createNewBadge = newBadge => async dispatch => {
   try {
     await axios.post(ENDPOINTS.BADGE(), newBadge);
     dispatch(
       getMessage(
-        'Awesomesauce! You have successfully uploaded a new badge to the system!',
+        'Awesome sauce! You have successfully uploaded a new badge to the system!',
         'success',
       ),
     );
@@ -263,7 +256,7 @@ export const createNewBadge = (newBadge) => async (dispatch) => {
         dispatch(closeAlert());
       }, 6000);
     } else {
-      dispatch(getMessage('Opps, something wrong!', 'danger'));
+      dispatch(getMessage('Oops, something wrong!', 'danger'));
       setTimeout(() => {
         dispatch(closeAlert());
       }, 6000);
@@ -271,11 +264,14 @@ export const createNewBadge = (newBadge) => async (dispatch) => {
   }
 };
 
-export const updateBadge = (badgeId, badgeData) => async (dispatch) => {
+export const updateBadge = (badgeId, badgeData) => async dispatch => {
   try {
     await axios.put(ENDPOINTS.BADGE_BY_ID(badgeId), badgeData);
     dispatch(
-      getMessage('Awesomesauce! You have successfully updated the badge to the system!', 'success'),
+      getMessage(
+        'Awesome sauce! You have successfully updated the badge to the system!',
+        'success',
+      ),
     );
     setTimeout(() => {
       dispatch(closeAlert());
@@ -288,7 +284,7 @@ export const updateBadge = (badgeId, badgeData) => async (dispatch) => {
         dispatch(closeAlert());
       }, 6000);
     } else {
-      dispatch(getMessage('Opps, something wrong!', 'danger'));
+      dispatch(getMessage('Oops, something wrong!', 'danger'));
       setTimeout(() => {
         dispatch(closeAlert());
       }, 6000);
@@ -296,7 +292,7 @@ export const updateBadge = (badgeId, badgeData) => async (dispatch) => {
   }
 };
 
-export const deleteBadge = (badgeId) => async (dispatch) => {
+export const deleteBadge = badgeId => async dispatch => {
   try {
     const res = await axios.delete(ENDPOINTS.BADGE_BY_ID(badgeId));
     dispatch(getMessage(res.data.message, 'success'));

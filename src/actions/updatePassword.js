@@ -2,11 +2,11 @@ import axios from 'axios';
 import { GET_ERRORS } from '../constants/errors';
 import { ENDPOINTS } from '../utils/URL';
 
-export const updatePassword = (userId, newpasswordData) => {
+export const updatePassword = (userId, newPasswordData) => {
   const url = ENDPOINTS.UPDATE_PASSWORD(userId);
   return async (dispatch) => {
     try {
-      const res = await axios.patch(url, newpasswordData);
+      const res = await axios.patch(url, newPasswordData);
       return res.status;
     } catch (e) {
       dispatch({

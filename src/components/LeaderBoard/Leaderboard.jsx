@@ -22,7 +22,7 @@ function useDeepEffect(effectFunc, deps) {
 }
 
 const LeaderBoard = ({
-  getLeaderboardData,
+  getLeaderBoardData,
   getOrgData,
   leaderBoardData,
   loggedInUser,
@@ -34,7 +34,7 @@ const LeaderBoard = ({
   const userId = asUser ? asUser : loggedInUser.userId;
 
   useDeepEffect(() => {
-    getLeaderboardData(userId);
+    getLeaderBoardData(userId);
     getOrgData();
   }, [timeEntries]);
 
@@ -85,7 +85,7 @@ const LeaderBoard = ({
           aria-hidden="true"
           className="fa fa-refresh"
           onClick={() => {
-            getLeaderboardData(userId);
+            getLeaderBoardData(userId);
           }}
         />
         &nbsp;&nbsp;

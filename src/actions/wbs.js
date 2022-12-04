@@ -1,7 +1,7 @@
-/*********************************************************************************
+/** *******************************************************************************
  * Action: WBS
  * Author: Henry Ng - 03/20/20
- ********************************************************************************/
+ ******************************************************************************* */
 import axios from 'axios';
 import * as types from '../constants/WBS';
 import { ENDPOINTS } from '../utils/URL';
@@ -26,9 +26,9 @@ export const addNewWBS = (wbsName, projectId) => {
     await dispatch(
       postNewWBS(
         {
-          _id: _id,
-          wbsName: wbsName,
-          isActive: isActive,
+          _id,
+          wbsName,
+          isActive,
         },
         status,
       ),
@@ -73,45 +73,35 @@ export const fetchAllWBS = (projectId) => {
 /**
  * Set a flag that fetching WBS
  */
-export const setWBSStart = () => {
-  return {
-    type: types.FETCH_WBS_START,
-  };
-};
+export const setWBSStart = () => ({
+  type: types.FETCH_WBS_START,
+});
 
 /**
  * set WBS in store
  * @param payload : WBS []
  */
-export const setWBS = (WBSItems) => {
-  return {
-    type: types.RECEIVE_WBS,
-    WBSItems,
-  };
-};
+export const setWBS = (WBSItems) => ({
+  type: types.RECEIVE_WBS,
+  WBSItems,
+});
 
 /**
  * Error when setting project
  * @param payload : error status code
  */
-export const setWBSError = (err) => {
-  return {
-    type: types.FETCH_WBS_ERROR,
-    err,
-  };
-};
+export const setWBSError = (err) => ({
+  type: types.FETCH_WBS_ERROR,
+  err,
+});
 
-export const removeWBS = (wbsId) => {
-  return {
-    type: types.DELETE_WBS,
-    wbsId,
-  };
-};
+export const removeWBS = (wbsId) => ({
+  type: types.DELETE_WBS,
+  wbsId,
+});
 
-export const postNewWBS = (wbs, status) => {
-  return {
-    type: types.ADD_NEW_WBS,
-    wbs,
-    status,
-  };
-};
+export const postNewWBS = (wbs, status) => ({
+  type: types.ADD_NEW_WBS,
+  wbs,
+  status,
+});
