@@ -79,10 +79,10 @@ const UserProjectsTable = React.memo(props => {
             <thead>
               {props.role && (
                 <tr>
-                  <th>#</th>
+                  <th style={{width: '70px'}}>#</th>
                   <th>Project Name</th>
                   {hasPermission(props.role, 'assignUserInProject', roles, userPermissions) ? (
-                    <th>{}</th>
+                    <th style={{width: '100px'}}>{}</th>
                   ) : null}
                 </tr>
               )}
@@ -140,7 +140,7 @@ const UserProjectsTable = React.memo(props => {
                 <th style={{width: '70px'}}>#</th>
                 <th>Task Name</th>
                 {hasPermission(props.role, 'assignUserInProject', roles, userPermissions) ? (
-                  <th>{}</th>
+                  <th style={{width: '100px'}}>{}</th>
                 ) : null}
               </tr>
             )}
