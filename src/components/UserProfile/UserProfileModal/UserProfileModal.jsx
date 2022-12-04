@@ -39,7 +39,7 @@ const UserProfileModal = props => {
 
   if (type === 'modBlueSquare' || type === 'viewBlueSquare') {
     if (id.length > 0) {
-      blueSquare = userProfile.infringments.filter(blueSquare => blueSquare._id === id);
+      blueSquare = userProfile.infringements.filter(blueSquare => blueSquare._id === id);
     }
   }
 

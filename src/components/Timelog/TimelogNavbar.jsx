@@ -13,17 +13,17 @@ import {
 import { useSelector } from 'react-redux';
 
 const TimelogNavbar = ({ userId }) => {
-  const { firstName, lastName } = useSelector((state) => state.userProfile);
+  const { firstName, lastName } = useSelector(state => state.userProfile);
   const [collapsed, setCollapsed] = useState(true);
 
   const toggleNavbar = () => setCollapsed(!collapsed);
 
-  const timeEntries = useSelector((state) => state.timeEntries.weeks[0]);
+  const timeEntries = useSelector(state => state.timeEntries.weeks[0]);
   const reducer = (total, entry) => total + parseInt(entry.hours) + parseInt(entry.minutes) / 60;
   const totalEffort = timeEntries.reduce(reducer, 0);
-  const weeklyComittedHours = useSelector((state) => state.userProfile.weeklyComittedHours);
+  const weeklyComittedHours = useSelector(state => state.userProfile.weeklyComittedHours);
 
-  const getBarColor = (hours) => {
+  const getBarColor = hours => {
     if (hours < 5) {
       return 'red';
     }
@@ -45,7 +45,7 @@ const TimelogNavbar = ({ userId }) => {
     return 'purple';
   };
 
-  const getBarValue = (hours) => {
+  const getBarValue = hours => {
     if (hours <= 40) {
       return hours * 2;
     }

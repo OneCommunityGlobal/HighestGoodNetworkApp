@@ -40,7 +40,7 @@ export const ENDPOINTS = {
   TASKS_UPDATE: `${APIEndpoint}/tasks/update`,
   TASKS_BY_USERID: (members) => `${APIEndpoint}/tasks/userProfile?members=${members}`,
   TASKS_BY_userID: (userId) => `${APIEndpoint}/tasks/userProfile/${userId}`,
-  TASK_DEL: (taskId) => `${APIEndpoint}/task/del/${taskId}`,
+  TASK_DEL: (taskId,motherId) => `${APIEndpoint}/task/del/${taskId}/${motherId}`,
   GET_TASK: (taskId) => `${APIEndpoint}/task/${taskId}`,
   TASK_UPDATE: (taskId) => `${APIEndpoint}/task/update/${taskId}`,
   GET_USER_BY_NAME: (name) => `${APIEndpoint}/userprofile/name/${name}`,
@@ -62,6 +62,9 @@ export const ENDPOINTS = {
   TEAM_MEMBER_TASKS: (userId) => `${ENDPOINTS.APIEndpoint()}/user/${userId}/teams/tasks`,
   CREATE_OR_UPDATE_TASK_NOTIFICATION: (taskId) => `${ENDPOINTS.APIEndpoint()}/task/${taskId}/tasknotification`,
   DELETE_TASK_NOTIFICATION: (taskNotificationId) => `${APIEndpoint}/tasknotification/${taskNotificationId}`,
+
+  TASK_EDIT_SUGGESTION: () => `${APIEndpoint}/taskeditsuggestion`,
+  REJECT_TASK_EDIT_SUGGESTION: (taskEditSuggestionId) => `${ENDPOINTS.TASK_EDIT_SUGGESTION()}/${taskEditSuggestionId}`,
 
   TIMEZONE_KEY: `${APIEndpoint}/timezone`,
   GEOCODE_URI: (location, key) =>

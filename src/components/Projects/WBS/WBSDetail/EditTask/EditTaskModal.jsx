@@ -253,7 +253,7 @@ const EditTaskModal = props => {
       classification,
     };
 
-    props.updateTask(props.taskId, updatedTask);
+    props.updateTask(props.taskId, updatedTask, hasPermission(role, 'editTask', roles, userPermissions));
     setTimeout(() => {
       props.fetchAllTasks(props.wbsId);
     }, 4000);
@@ -268,14 +268,16 @@ const EditTaskModal = props => {
     <div className="controlBtn">
       <Modal isOpen={modal} toggle={toggle}>
         <ModalHeader toggle={toggle}>
-          {hasPermission(role, 'editTask', roles, userPermissions) ? 'Edit' : 'View'}
+          {hasPermission(role, 'editTask', roles, userPermissions) 
+            ? 'Edit' 
+            : (hasPermission(role, 'suggestTask', roles, userPermissions)) ? 'Suggest': 'View'}
         </ModalHeader>
         <ModalBody>
           <ReactTooltip />
           <table
-            className={`table table-bordered ${
-              hasPermission(role, 'editTask', roles, userPermissions) ? null : 'disable-div'
-            }`}
+            className={`table table-bordered 
+            ${(hasPermission(role, 'editTask', roles, userPermissions) || hasPermission(role, 'suggestTask', roles, userPermissions)) ? null : 'disable-div'}`
+            }
           >
             <tbody>
               <tr>
@@ -613,8 +615,7 @@ const EditTaskModal = props => {
             </tbody>
           </table>
         </ModalBody>
-
-        {hasPermission(role, 'editTask', roles, userPermissions) ? (
+        {(hasPermission(role, 'editTask', roles, userPermissions) || hasPermission(role, 'suggestTask', roles, userPermissions)) ? (
           <ModalFooter>
             {taskName !== '' && startedDate !== '' && dueDate !== '' ? (
               <Button color="primary" onClick={updateTask}>
@@ -625,10 +626,12 @@ const EditTaskModal = props => {
               Cancel
             </Button>
           </ModalFooter>
-        ) : null}
+        ): null }
       </Modal>
       <Button color="primary" size="sm" onClick={toggle}>
-        {hasPermission(role, 'editTask', roles, userPermissions) ? 'Edit' : 'View'}
+        {hasPermission(role, 'editTask', roles, userPermissions)
+          ? 'Edit' 
+          : (hasPermission(role, 'suggestTask', roles, userPermissions) ? 'Suggest' : 'View') }
       </Button>
     </div>
   );

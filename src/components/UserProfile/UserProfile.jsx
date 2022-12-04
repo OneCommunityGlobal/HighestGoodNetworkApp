@@ -250,11 +250,11 @@ const UserProfile = props => {
       setShowModal(false);
       setUserProfile({
         ...userProfile,
-        infringments: userProfile.infringments.concat(newBlueSquare),
+        infringements: userProfile.infringements.concat(newBlueSquare),
       });
       setModalTitle('Blue Square');
     } else if (operation === 'update') {
-      const currentBlueSquares = [...userProfile.infringments];
+      const currentBlueSquares = [...userProfile.infringements];
       if (dateStamp != null) {
         currentBlueSquares.find(blueSquare => blueSquare._id === id).date = dateStamp;
       }
@@ -263,14 +263,14 @@ const UserProfile = props => {
       }
 
       setShowModal(false);
-      setUserProfile({ ...userProfile, infringments: currentBlueSquares });
+      setUserProfile({ ...userProfile, infringements: currentBlueSquares });
     } else if (operation === 'delete') {
       const newInfringements = [];
-      userProfile.infringments.forEach(infringment => {
-        if (infringment._id !== id) newInfringements.push(infringment);
+      userProfile.infringements.forEach(infringement => {
+        if (infringement._id !== id) newInfringements.push(infringement);
       });
 
-      setUserProfile({ ...userProfile, infringments: newInfringements });
+      setUserProfile({ ...userProfile, infringements: newInfringements });
       setShowModal(false);
     }
     setBlueSquareChanged(true);
@@ -700,6 +700,9 @@ const UserProfile = props => {
                     </span>
                   </>
                 )}
+              <Button outline onClick={() => loadUserProfile()}>
+                Refresh
+              </Button>
             </div>
           </Col>
         </Row>

@@ -42,7 +42,7 @@ describe('user profile page', () => {
     });
     store.dispatch = jest.fn();
     renderWithRouterMatch(
-      <Route path="/userprofileedit/:userId">{(props) => <UserProfileEdit {...props} />}</Route>,
+      <Route path="/userprofileedit/:userId">{props => <UserProfileEdit {...props} />}</Route>,
       {
         route: `/userprofileedit/${userId}`,
         store,
@@ -76,7 +76,7 @@ describe('user profile page', () => {
 
     it('should render multiple bluesquares', () => {
       expect(screen.getAllByRole('button', { name: /\d\d\d\d-\d\d-\d\d/i })).toHaveLength(
-        userProfileMock.infringments.length,
+        userProfileMock.infringements.length,
       );
     });
     it('should render a email field', () => {
