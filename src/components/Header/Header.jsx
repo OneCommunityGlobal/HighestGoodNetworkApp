@@ -4,7 +4,7 @@ import { getHeaderData } from '../../actions/authActions';
 import { getTimerData } from '../../actions/timer';
 import { getAllRoles } from '../../actions/role';
 import { Link } from 'react-router-dom';
-import { connect } from 'react-redux';
+import { connect, useDispatch } from 'react-redux';
 import Timer from '../Timer/Timer';
 import {
   LOGO,
@@ -40,10 +40,15 @@ import {
 import { Logout } from '../Logout/Logout';
 import './Header.css';
 import hasPermission from '../../utils/permissions';
+import { fetchTaskEditSuggestionCount } from 'components/TaskEditSuggestions/thunks';
 
 export const Header = props => {
   const [isOpen, setIsOpen] = useState(false);
   const [logoutPopup, setLogoutPopup] = useState(false);
+  const { isAuthenticated, user, firstName, profilePic } = props.auth;
+
+  const dispatch = useDispatch();
+
   const userPermissions = props.auth.user?.permissions?.frontPermissions;
   useEffect(() => {
     if (props.auth.isAuthenticated) {
@@ -83,8 +88,6 @@ export const Header = props => {
     setLogoutPopup(true);
   };
 
-  const { isAuthenticated, user, firstName, profilePic } = props.auth;
-
   return (
     <div className="header-wrapper">
       <Navbar className="py-3 mb-3" color="dark" dark expand="lg">
@@ -99,6 +102,13 @@ export const Header = props => {
         {isAuthenticated && (
           <Collapse isOpen={isOpen} navbar>
             <Nav className="ml-auto" navbar>
+              {hasPermission(user.role, 'editTask', roles, userPermissions) && <NavItem>
+                <NavLink tag={Link} to="/taskeditsuggestions">
+                  <div className="redBackGroupHeader">
+                    <span>{props.taskEditSuggestionCount}</span>
+                  </div>
+                </NavLink>
+              </NavItem>}
               <NavItem>
                 <NavLink tag={Link} to="/dashboard">
                   {DASHBOARD}
@@ -277,6 +287,7 @@ export const Header = props => {
 const mapStateToProps = state => ({
   auth: state.auth,
   userProfile: state.userProfile,
+  taskEditSuggestionCount: state.taskEditSuggestions.count,
   role: state.role,
 });
 export default connect(mapStateToProps, {
