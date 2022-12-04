@@ -169,7 +169,7 @@ const UserProfile = props => {
   };
   console.log(tasks)
 
-  const onUpdateTask = (taskId, updatedTask, tasksUpdated) => {
+  const onUpdateTask = (taskId, updatedTask) => {
     const newTask = {
       updatedTask,
       taskId
