@@ -1,9 +1,9 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
-import Form from '../common/Form';
 import Joi from 'joi';
 import { toast } from 'react-toastify';
+import Form from '../common/Form';
 import { updatePassword } from '../../actions/updatePassword';
 import { logoutUser } from '../../actions/authActions';
 import { clearErrors } from '../../actions/errorsActions';
@@ -29,7 +29,9 @@ class UpdatePassword extends Form {
   }
 
   schema = {
-    currentpassword: Joi.string().required().label('Current Password'),
+    currentpassword: Joi.string()
+      .required()
+      .label('Current Password'),
     newpassword: Joi.string()
       .regex(/(?=^.{8,}$)((?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$/)
       .required()
@@ -42,7 +44,8 @@ class UpdatePassword extends Form {
           },
           string: {
             regex: {
-              base: 'should be at least 8 characters long and must include at least one uppercase letter, one lowercase letter, and one number or special character',
+              base:
+                'should be at least 8 characters long and must include at least one uppercase letter, one lowercase letter, and one number or special character',
             },
           },
         },
@@ -58,8 +61,8 @@ class UpdatePassword extends Form {
     const { currentpassword, newpassword, confirmnewpassword } = {
       ...this.state.data,
     };
-    let userId = this.props.match.params.userId;
-    let data = { currentpassword, newpassword, confirmnewpassword };
+    const { userId } = this.props.match.params;
+    const data = { currentpassword, newpassword, confirmnewpassword };
 
     const status = await this.props.updatePassword(userId, data);
     if (status === 200) {
@@ -73,8 +76,8 @@ class UpdatePassword extends Form {
         },
       );
     } else if (status === 400) {
-      let { errors } = this.state;
-      errors['currentpassword'] = this.props.errors.error;
+      const { errors } = this.state;
+      errors.currentpassword = this.props.errors.error;
       this.setState({ errors });
     } else {
       toast.error('Something went wrong. Please contact your administrator.');
