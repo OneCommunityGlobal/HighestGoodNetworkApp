@@ -167,7 +167,6 @@ const UserProfile = props => {
     setUserProfile(newUserProfile);
     setChanged(true);
   };
-  console.log(tasks)
 
   const onUpdateTask = (taskId, updatedTask) => {
     const newTask = {
@@ -277,19 +276,24 @@ const UserProfile = props => {
   };
 
   const handleSubmit = async () => {
+    for (let i = 0; i < updatedTasks.length; i += 1) {
+      const updatedTask = updatedTasks[i];
+      const url = ENDPOINTS.TASK_UPDATE(updatedTask.taskId);
+      axios
+        .put(url, updatedTask.updatedTask)
+        .catch(err => console.log(err));
+    }
     try {
       await props.updateUserProfile(props.match.params.userId, userProfile);
       await loadUserProfile();
-      for (let i = 0; i < updatedTasks.length; i += 1) {
-        const updatedTask = updatedTasks[i];
-        await props.updateTask(updatedTask.taskId, updatedTask.updatedTask);
-      }
+
        await loadUserTasks();
 
       setShowSaveWarning(false);
     } catch (err) {
       alert('An error occurred while attempting to save this profile.');
     }
+    
     setShouldRefresh(true);
   };
 
