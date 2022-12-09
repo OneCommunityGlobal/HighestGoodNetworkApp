@@ -330,7 +330,7 @@ const TimeEntryForm = props => {
 
     category = foundProject
       ? foundProject.category.toLowerCase()
-      : foundTask.classification.toLowerCase();
+      : foundTask?.classification.toLowerCase();
     const isFindCategory = Object.keys(hoursByCategory).find(key => key === category);
 
     //if change timeEntry from intangible to tangible, we need add hours on categories
