@@ -40,6 +40,7 @@ import hasPermission from 'utils/permissions';
 import ActiveInactiveConfirmationPopup from '../UserManagement/ActiveInactiveConfirmationPopup';
 import { updateUserStatus } from '../../actions/userManagement';
 import { UserStatus } from '../../utils/enums';
+import { faSleigh } from '@fortawesome/free-solid-svg-icons';
 
 const UserProfile = props => {
   /* Constant values */
@@ -250,15 +251,24 @@ const UserProfile = props => {
     setBlueSquareChanged(true);
   };
 
+
+  // THE ERROR IS BEEN GENERATED HERE ON THIS FUNCTION WHEN TEH USER TRY TO SAVE THE PROFILE
   const handleSubmit = async () => {
     try {
       await props.updateUserProfile(props.match.params.userId, userProfile);
       await loadUserProfile();
       setShowSaveWarning(false);
+      
     } catch (err) {
+      
       alert('An error occurred while attempting to save this profile.');
+      
     }
     setShouldRefresh(true);
+    setChanged(false)
+    
+    
+    
   };
 
   const toggleInfoModal = () => {
