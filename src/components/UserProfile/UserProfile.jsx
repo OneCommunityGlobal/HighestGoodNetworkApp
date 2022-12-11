@@ -10,7 +10,10 @@ import {
   NavItem,
   NavLink,
   Button,
+  FormGroup,
+  Label,
 } from 'reactstrap';
+import Select from 'react-select';
 import Image from 'react-bootstrap/Image';
 import { Link } from 'react-router-dom';
 import classnames from 'classnames';
@@ -72,6 +75,8 @@ const UserProfile = props => {
   const [modalMessage, setModalMessage] = useState('');
   const [shouldRefresh, setShouldRefresh] = useState(false);
   const [activeInactivePopupOpen, setActiveInactivePopupOpen] = useState(false);
+  const [summarySelected, setSummarySelected] = useState(null);
+  const [summaryName, setSummaryName] = useState('');
   //const [isValid, setIsValid] = useState(true)
 
   /* useEffect functions */
@@ -116,13 +121,15 @@ const UserProfile = props => {
 
   const getWeeklySummary = async userId => {
     try {
+      setSummarySelected('');
       const response = await axios.get(ENDPOINTS.USER_PROFILE(userId));
       const user = response.data;
       let summaries = user.weeklySummaries;
       if (summaries && Array.isArray(summaries) && summaries[0] && summaries[0].summary) {
-        return summaries[0].summary;
+        setSummarySelected(summaries[0].summary);
+        return true;
       } else {
-        return '';
+        return false;
       }
     } catch (err) {
       setShowLoading(false);
@@ -140,8 +147,16 @@ const UserProfile = props => {
       const allSummaries = [];
 
       for (let i = 0; i < leaderBoardData.length; i++) {
-        const toAppend = await getWeeklySummary(leaderBoardData[i].personId);
-        allSummaries.push([leaderBoardData[i].name, toAppend]);
+        // const toAppend = await getWeeklySummary(leaderBoardData[i].personId);
+        // const options = [
+        //   { value: 'chocolate', label: 'Chocolate' },
+        //   { value: 'strawberry', label: 'Strawberry' },
+        //   { value: 'vanilla', label: 'Vanilla' },
+        // ];
+        allSummaries.push({
+          value: [leaderBoardData[i].name, leaderBoardData[i].personId],
+          label: `View ${leaderBoardData[i].name}'s summary.`,
+        });
       }
       console.log('allSummaries:', allSummaries);
       setSummaries(allSummaries);
@@ -467,12 +482,6 @@ const UserProfile = props => {
               <h5 style={{ display: 'inline-block', marginRight: 10 }}>
                 {`${firstName} ${lastName}`}
               </h5>
-              <Button
-                onClick={() => setShowSummaries(!showSummaries)}
-                className="btn--dark-sea-green float-right"
-              >
-                View Weekly Summaries
-              </Button>
               <i
                 data-toggle="tooltip"
                 data-placement="right"
@@ -514,27 +523,6 @@ const UserProfile = props => {
                 </span>
               </p>
             </div>
-            {showSummaries && summaries === undefined ? <div>Loading</div> : <div></div>}
-            {showSummaries && summaries !== undefined ? (
-              <div>
-                {summaries.map((summary, key) => (
-                  <div key={key}>
-                    {summary[1].length > 0 ? (
-                      <div>
-                        <h3 className="green">{`${summary[0]}'s summary:`}</h3>
-                        <p>{parse(summary[1])}</p>
-                      </div>
-                    ) : (
-                      <div>
-                        <h3 className="red">{`${summary[0]} has not submitted a summary this week.`}</h3>
-                      </div>
-                    )}
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <div></div>
-            )}
             <Badges
               userProfile={userProfile}
               setUserProfile={setUserProfile}
@@ -543,6 +531,35 @@ const UserProfile = props => {
               handleSubmit={handleSubmit}
               userPermissions={userPermissions}
             />
+            <Button
+              onClick={() => setShowSummaries(!showSummaries)}
+              color="primary"
+              className="view-user-summary"
+            >
+              View Weekly Summaries
+            </Button>
+            {showSummaries && summaries === undefined ? <div>Loading</div> : <div></div>}
+            {showSummaries && summaries !== undefined ? (
+              <div>
+                <Select
+                  options={summaries}
+                  onChange={e => {
+                    getWeeklySummary(e.value[1]);
+                    setSummaryName(e.value[0]);
+                  }}
+                />
+              </div>
+            ) : (
+              <div></div>
+            )}
+            {summarySelected && showSummaries ? (
+              <div>
+                <h5>Viewing {summaryName}'s summary.</h5>
+                {parse(summarySelected)}
+              </div>
+            ) : (
+              <div></div>
+            )}
           </Col>
         </Row>
         <Row>
