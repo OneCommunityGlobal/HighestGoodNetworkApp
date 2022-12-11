@@ -1,4 +1,3 @@
-import React, { useEffect } from 'react';
 import RolePermissions from './RolePermissions';
 import { connect } from 'react-redux';
 import './UserRoleTab.css';

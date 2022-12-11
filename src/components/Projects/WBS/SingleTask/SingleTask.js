@@ -1,18 +1,18 @@
-import React from "react";
+import React from 'react';
 import { connect, useSelector } from 'react-redux';
-import { useState, useEffect } from "react";
-import ReactTooltip from "react-tooltip";
+import { useState, useEffect } from 'react';
+import ReactTooltip from 'react-tooltip';
 import axios from 'axios';
-import { NavItem, Button } from "reactstrap";
-import { Modal, ModalBody, } from 'reactstrap';
+import { NavItem, Button } from 'reactstrap';
+import { Modal, ModalBody } from 'reactstrap';
 import { Editor } from '@tinymce/tinymce-react';
-import { Link } from "react-router-dom";
+import { Link } from 'react-router-dom';
 import { ENDPOINTS } from 'utils/URL';
-import { getUserProfile } from "actions/userProfile";
-import EditTaskModal from "../WBSDetail/EditTask/EditTaskModal";
-import hasPermission from "utils/permissions";
+import { getUserProfile } from 'actions/userProfile';
+import EditTaskModal from '../WBSDetail/EditTask/EditTaskModal';
+import hasPermission from 'utils/permissions';
 
-const SingleTask = (props) => {
+const SingleTask = props => {
   const taskId = props.match.params.taskId;
   const { user } = props.auth;
   const userPermissions = props.auth.user?.permissions?.frontPermissions;
@@ -25,15 +25,15 @@ const SingleTask = (props) => {
     const fetchTaskData = async () => {
       try {
         const res = await axios.get(ENDPOINTS.GET_TASK(taskId));
-        setTask(res?.data || {})
+        setTask(res?.data || {});
       } catch (error) {
         console.log(error);
       }
-    }
+    };
     fetchTaskData();
   }, []);
 
-  return ( 
+  return (
     <React.Fragment>
       <ReactTooltip />
       <div className="container-single-task">
@@ -45,7 +45,9 @@ const SingleTask = (props) => {
                   <i className="fa fa-chevron-circle-left" aria-hidden="true"></i>
                 </Button>
               </NavItem>
-              <div id="single_task_name">See tasks in the same folder as "{task.taskName}"</div>
+              <div id="single_task_name">
+                See tasks in the same folder as &quot{task.taskName}&quot
+              </div>
             </ol>
           </nav>
         )}
@@ -87,7 +89,7 @@ const SingleTask = (props) => {
                 <i className="fa fa-clock-o" aria-hidden="true"></i>
               </th>
               <th className="desktop-view" scope="col" data-tip="Hours-Logged">
-              <i className="fa fa-hourglass-end" aria-hidden="true"></i>
+                <i className="fa fa-hourglass-end" aria-hidden="true"></i>
               </th>
               <th className="desktop-view" scope="col" data-tip="Start Date">
                 <i className="fa fa-calendar-check-o" aria-hidden="true"></i> Start
@@ -122,7 +124,7 @@ const SingleTask = (props) => {
               <td>{task.taskName}</td>
               <td>{task.priority}</td>
               <td className="desktop-view">
-                {task?.resources && 
+                {task?.resources &&
                   task.resources.map((elem, i) => {
                     try {
                       if (elem.profilePic) {
@@ -133,6 +135,7 @@ const SingleTask = (props) => {
                             className="name"
                             href={`/userprofile/${elem.userID}`}
                             target="_blank"
+                            rel="noreferrer"
                           >
                             <img className="img-circle" src={elem.profilePic} />
                           </a>
@@ -145,14 +148,16 @@ const SingleTask = (props) => {
                             className="name"
                             href={`/userprofile/${elem.userID}`}
                             target="_blank"
+                            rel="noreferrer"
                           >
                             <span className="dot">{elem.name.substring(0, 2)}</span>
                           </a>
                         );
                       }
-                    } catch (err) {}
-                  })
-                }
+                    } catch (err) {
+                      console.log(err);
+                    }
+                  })}
               </td>
               <td>
                 {task.isAssigned ? (
@@ -167,8 +172,8 @@ const SingleTask = (props) => {
               <td>{task.hoursMost}</td>
               <td>{parseFloat(task.estimatedHours).toFixed(2)}</td>
               <td>{parseFloat(task.hoursLogged).toFixed(2)}</td>
-              <td>{task.startedDatetime ? task.startedDatetime.slice(0,10) : "N/A" }</td>
-              <td>{task.dueDatetime ? task.dueDatetime.slice(0,10) : "N/A"}</td>
+              <td>{task.startedDatetime ? task.startedDatetime.slice(0, 10) : 'N/A'}</td>
+              <td>{task.dueDatetime ? task.dueDatetime.slice(0, 10) : 'N/A'}</td>
               <td>{task.links}</td>
               <td className="desktop-view" onClick={toggleModel}>
                 <i className="fa fa-book" aria-hidden="true"></i>
@@ -223,12 +228,10 @@ const SingleTask = (props) => {
           />
         </ModalBody>
       </Modal>
-      
     </React.Fragment>
   );
-
-}
-const mapStateToProps = (state) => state;
+};
+const mapStateToProps = state => state;
 export default connect(mapStateToProps, {
   getUserProfile,
-}) (SingleTask);
+})(SingleTask);

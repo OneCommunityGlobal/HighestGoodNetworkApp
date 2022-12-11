@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import React, { useEffect, useState } from 'react';
 import { Button, Dropdown, Form, Input } from 'reactstrap';
 import { toast } from 'react-toastify';

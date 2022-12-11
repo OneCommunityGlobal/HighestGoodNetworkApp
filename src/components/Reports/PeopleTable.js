@@ -1,10 +1,10 @@
 import React from 'react';
 import '../Teams/Team.css';
-import { Link } from 'react-router-dom'
-import './reports.css'
-import moment from 'moment'
+import { Link } from 'react-router-dom';
+import './reports.css';
+import moment from 'moment';
 
-const PeopleTable=props=>{
+const PeopleTable = props => {
   let PeopleList = [];
   if (props.userProfiles.length > 0) {
     PeopleList = props.userProfiles.map((person, index) => (
@@ -19,7 +19,7 @@ const PeopleTable=props=>{
         </td>
         <td
           className="teams__active--input"
-          onClick={(e) => {
+          onClick={e => {
             person.onStatusClick(person.firstName, person._id, person.isActive);
           }}
         >
@@ -33,12 +33,8 @@ const PeopleTable=props=>{
             </div>
           )}
         </td>
-        <td>
-          {moment(person.createdDate).format('MM/DD/YYYY')}
-        </td>
-        <td>
-          {moment(person.endDate).format('MM/DD/YYYY') || "N/A" }
-        </td>
+        <td>{moment(person.createdDate).format('MM/DD/YYYY')}</td>
+        <td>{moment(person.endDate).format('MM/DD/YYYY') || 'N/A'}</td>
         {/* <td>
           {person.blueSquares||"N/A"}
         </td> */}
@@ -48,23 +44,24 @@ const PeopleTable=props=>{
 
   return (
     <table className="center">
-    <table className="table table-bordered table-responsive-sm" >
-    <thead>
-    <tr>
-      <th scope="col" id="projects__order">#</th>
-      <th scope="col">Person Name</th>
-      <th scope="col" id="projects__active">Active</th>
-      <th scope="col">Start Date</th>
-      <th scope="col">End Date</th>
-      {/* <th scope="col">Blue Squares</th> */}
-    </tr>
-    </thead>
-    <tbody>
-    {PeopleList}
-    </tbody>
-  </table>
+      <table className="table table-bordered table-responsive-sm">
+        <thead>
+          <tr>
+            <th scope="col" id="projects__order">
+              #
+            </th>
+            <th scope="col">Person Name</th>
+            <th scope="col" id="projects__active">
+              Active
+            </th>
+            <th scope="col">Start Date</th>
+            <th scope="col">End Date</th>
+            {/* <th scope="col">Blue Squares</th> */}
+          </tr>
+        </thead>
+        <tbody>{PeopleList}</tbody>
       </table>
-    
+    </table>
   );
 };
 export default PeopleTable;

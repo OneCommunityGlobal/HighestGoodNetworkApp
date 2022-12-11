@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import React, { useEffect } from 'react';
 import { useState } from 'react';
 import { Button, Modal, ModalBody, ModalHeader } from 'reactstrap';

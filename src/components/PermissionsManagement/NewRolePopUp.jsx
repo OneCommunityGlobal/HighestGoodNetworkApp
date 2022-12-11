@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import React, { useState } from 'react';
 import { FormCheck } from 'react-bootstrap';
 import { Alert, Button, Form, FormGroup, Input, Label } from 'reactstrap';
