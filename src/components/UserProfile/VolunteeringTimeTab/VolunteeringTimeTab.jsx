@@ -316,7 +316,7 @@ const ViewTab = props => {
                           ...userProfile,
                           hoursByCategory: {
                             ...userProfile.hoursByCategory,
-                            [key]: e.target.value,
+                            [key]: Number(e.target.value),
                           },
                         });
                         setChanged(true);
