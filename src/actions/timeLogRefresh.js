@@ -1,23 +1,9 @@
+import axios from 'axios';
 import { ENDPOINTS } from '../utils/URL';
 import { SET_TIMELOG_REFRESH } from '../constants/timeLogRefresh';
-import axios from 'axios';
 
-export const getTimeData = (userId) => {
-  const url = ENDPOINTS.TIME(userId);
-  return async (dispatch) => {
-    try {
-      const res = await axios.get(url);
-      if (res.status === 200) {
-        dispatch(setTimer({ isWorking: res.data.isWorking, seconds: res.data.seconds }));
-      } else {
-        dispatch(setTimer({ isWorking: false, seconds: 0 }));
-      }
-    } catch (e) {
-      dispatch(setTimer({ isWorking: false, seconds: 0 }));
-    }
-  };
-};
 
+//refresh time
 export const refreshTime = async (userId) => {
   const url = ENDPOINTS.TIME(userId);
 
