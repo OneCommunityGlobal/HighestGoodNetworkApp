@@ -7,6 +7,7 @@ import './Timer.css';
 import axios from 'axios';
 import { ENDPOINTS } from '../../utils/URL';
 
+
 const Timer = () => {
   const data = {
     disabled: window.screenX <= 500,
