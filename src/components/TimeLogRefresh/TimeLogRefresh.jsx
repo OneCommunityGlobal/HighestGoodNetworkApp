@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from 'react';
-
 import './Timer.css';
 import { Badge } from 'reactstrap'
 
 
- const currentTime = () => {
+export const currentTime = () => {
   const locale = 'en';
   // Save the current date to be able to trigger an update
   const [today, setDate] = useState(new Date()); 
@@ -34,16 +33,16 @@ import { Badge } from 'reactstrap'
   };
 };
 
-export const TimeLogRefresh = () => {
+ const TimeLogRefresh = () => {
   const { date, time } = currentTime();
 
   return (
-    <div className="timer">
-    <Badge>{currentTime} </Badge>
+    <div style={{ zIndex: 2 }}className="timer">
+    <Badge className="mr-1">{date}{time}</Badge>
     </div>
   );
 };
 
 
-
+export default TimeLogRefresh;
 

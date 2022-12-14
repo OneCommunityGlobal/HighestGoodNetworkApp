@@ -1,5 +1,5 @@
-import { SET_TIMELOG_REFRESH } from '../constants/timeLogRefresh';
+// import { SET_TIMELOG_REFRESH } from '../constants/timeLogRefresh';
 
-const initialState = {
-  // How do I set currenttime as initial state?
-}
+// const initialState = {
+//   // How do I set currenttime as initial state?
+// }
