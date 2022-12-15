@@ -111,8 +111,7 @@ class Timelog extends Component {
     ) {
       this.setState(this.initialState);
 
-      const userId =
-        this.props.match?.params?.userId || this.props.asUser || this.props.auth.user.userid;
+      const userId = this.props.asUser;
       console.log('User id in Timelog: ', userId);
       await this.props.getUserProfile(userId);
 
