@@ -173,7 +173,14 @@ const UserProfile = props => {
       updatedTask,
       taskId
     }
-    setTasks((tasks) => tasks.filter(task => task._id != taskId))
+    
+    setTasks((tasks)=>  {
+      console.log(tasks)
+      const tasksWithoutTheUpdated = [...tasks]
+      const taskIndex = tasks.findIndex(task => task._id === taskId)
+      tasksWithoutTheUpdated[taskIndex] = updatedTask
+      return tasksWithoutTheUpdated
+    })
     setUpdatedTasks((tasks)=> [...tasks, newTask])
     setChanged(true)
   };
@@ -287,13 +294,12 @@ const UserProfile = props => {
       await props.updateUserProfile(props.match.params.userId, userProfile);
       await loadUserProfile();
 
-       await loadUserTasks();
+      await loadUserTasks();
 
       setShowSaveWarning(false);
     } catch (err) {
       alert('An error occurred while attempting to save this profile.');
     }
-    
     setShouldRefresh(true);
   };
 
