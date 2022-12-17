@@ -44,6 +44,7 @@ import ActiveInactiveConfirmationPopup from '../UserManagement/ActiveInactiveCon
 import { updateUserStatus } from '../../actions/userManagement';
 import { UserStatus } from '../../utils/enums';
 import parse from 'html-react-parser';
+import { sub } from 'date-fns';
 
 const UserProfile = props => {
   /* Constant values */
@@ -77,6 +78,7 @@ const UserProfile = props => {
   const [activeInactivePopupOpen, setActiveInactivePopupOpen] = useState(false);
   const [summarySelected, setSummarySelected] = useState(null);
   const [summaryName, setSummaryName] = useState('');
+  const [submittedSummary, setSubmittedSummary] = useState(false);
   //const [isValid, setIsValid] = useState(true)
 
   /* useEffect functions */
@@ -122,13 +124,16 @@ const UserProfile = props => {
   const getWeeklySummary = async userId => {
     try {
       setSummarySelected('');
+      setSubmittedSummary(false);
       const response = await axios.get(ENDPOINTS.USER_PROFILE(userId));
       const user = response.data;
       let summaries = user.weeklySummaries;
       if (summaries && Array.isArray(summaries) && summaries[0] && summaries[0].summary) {
         setSummarySelected(summaries[0].summary);
-        return true;
+        setSubmittedSummary(true);
       } else {
+        setSummarySelected('loading');
+        setSubmittedSummary(false);
         return false;
       }
     } catch (err) {
@@ -479,9 +484,16 @@ const UserProfile = props => {
                   Please click on "Save changes" to save the changes you have made.{' '}
                 </Alert>
               )}
-              <h5 style={{ display: 'inline-block', marginRight: 10 }}>
-                {`${firstName} ${lastName}`}
-              </h5>
+              <div className="row">
+                <h5 className="column">{`${firstName} ${lastName}`}</h5>
+                <Button
+                  onClick={() => setShowSummaries(!showSummaries)}
+                  color="primary"
+                  className="team-weekly-summary"
+                >
+                  Team Weekly Summaries
+                </Button>
+              </div>
               <i
                 data-toggle="tooltip"
                 data-placement="right"
@@ -523,21 +535,6 @@ const UserProfile = props => {
                 </span>
               </p>
             </div>
-            <Badges
-              userProfile={userProfile}
-              setUserProfile={setUserProfile}
-              role={requestorRole}
-              canEdit={canEdit}
-              handleSubmit={handleSubmit}
-              userPermissions={userPermissions}
-            />
-            <Button
-              onClick={() => setShowSummaries(!showSummaries)}
-              color="primary"
-              className="view-user-summary"
-            >
-              View Weekly Summaries
-            </Button>
             {showSummaries && summaries === undefined ? <div>Loading</div> : <div></div>}
             {showSummaries && summaries !== undefined ? (
               <div>
@@ -552,7 +549,12 @@ const UserProfile = props => {
             ) : (
               <div></div>
             )}
-            {summarySelected && showSummaries ? (
+            {summarySelected === 'loading' && showSummaries && !submittedSummary ? (
+              <h5>User has not submitted a summary for this week.</h5>
+            ) : (
+              <div></div>
+            )}
+            {summarySelected && showSummaries && submittedSummary ? (
               <div>
                 <h5>Viewing {summaryName}'s summary.</h5>
                 {parse(summarySelected)}
@@ -560,6 +562,14 @@ const UserProfile = props => {
             ) : (
               <div></div>
             )}
+            <Badges
+              userProfile={userProfile}
+              setUserProfile={setUserProfile}
+              role={requestorRole}
+              canEdit={canEdit}
+              handleSubmit={handleSubmit}
+              userPermissions={userPermissions}
+            />
           </Col>
         </Row>
         <Row>

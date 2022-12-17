@@ -10,10 +10,17 @@
   background-color: white;
 }
 
+.row {
+  display: flex;
+}
 
+.column {
+  flex: 50%;
+}
 
-.view-user-summary {
-  left: 50%;
+.team-weekly-summary {
+  width: 50%;
+  flex: 50%;
 }
 
 .red {
