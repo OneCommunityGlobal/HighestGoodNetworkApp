@@ -310,7 +310,7 @@ const ViewTab = props => {
                       type="number"
                       id={`${key}Hours`}
                       step=".01"
-                      value={parseFloat(userProfile.hoursByCategory[key]).toFixed(2)}
+                      value={parseFloat(userProfile.hoursByCategory[key])?.toFixed(2)}
                       onChange={e => {
                         setUserProfile({
                           ...userProfile,
@@ -324,7 +324,7 @@ const ViewTab = props => {
                       placeholder={`Total Tangible ${capitalize(key)} Hours`}
                     />
                   ) : (
-                    <p>{userProfile.hoursByCategory[key].toFixed(2)}</p>
+                    <p>{userProfile.hoursByCategory[key]?.toFixed(2)}</p>
                   )}
                 </Col>
               </Row>
