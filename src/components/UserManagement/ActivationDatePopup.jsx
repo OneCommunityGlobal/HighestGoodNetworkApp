@@ -16,6 +16,9 @@ const ActivationDatePopup = React.memo((props) => {
     if (Date.parse(activationDate) > Date.now()) {
       props.onPause(activationDate);
       toast.success('Your Changes were saved successfully.');
+      setTimeout(function(){
+        window.location.reload();
+     }, 5000);
     } else {
       setDateError(true);
     }

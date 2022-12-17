@@ -6,7 +6,7 @@ const BlueSquare = ({ blueSquares, handleBlueSquare, role, roles, userPermission
   return (
     <div className="blueSquareContainer">
       <div className="blueSquares">
-        {blueSquares.map((blueSquare, index) => (
+        {blueSquares ? (blueSquares.map((blueSquare, index) => (
           <div
             key={index}
             role="button"
@@ -40,7 +40,7 @@ const BlueSquare = ({ blueSquares, handleBlueSquare, role, roles, userPermission
               <div className="summary">{blueSquare.description}</div>
             </div>
           </div>
-        ))}
+        ))) : null}
       </div>
 
       {(hasPermission(role, 'editUserProfile', roles, userPermissions) ||
