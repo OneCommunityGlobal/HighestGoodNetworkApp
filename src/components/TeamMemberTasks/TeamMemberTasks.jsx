@@ -142,7 +142,9 @@ const TeamMemberTasks = props => {
                   style={{ color: 'red' }}
                   data-toggle="tooltip"
                   data-placement="top"
-                  title="MARK AS DONE. MARKING THIS AS DONE WOULD REMOVE THE TASK PERMANENTLY."
+                  title="WAIT!! Are you sure you want to DELETE this and not just RESOLVE it? Deleting it means you'll remove it from the related WBS too.
+
+                  If you don't know why this matters, you should just RESOLVE it."
                   className="markAsDoneButton"
                 >
                   X
