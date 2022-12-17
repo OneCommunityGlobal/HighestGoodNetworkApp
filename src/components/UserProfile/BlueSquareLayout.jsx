@@ -35,7 +35,7 @@ const BlueSquareLayout = props => {
         </div>
 
         <BlueSquare
-          blueSquares={userProfile?.infringments || userProfile?.infringements}
+          blueSquares={userProfile?.infringements}
           handleBlueSquare={handleBlueSquare}
           role={role}
           roles={roles}
@@ -52,7 +52,7 @@ const BlueSquareLayout = props => {
         <div>
           <p>BLUE SQUARES</p>
           <BlueSquare
-            blueSquares={userProfile?.infringments || userProfile?.infringments}
+            blueSquares={userProfile?.infringements}
             handleBlueSquare={handleBlueSquare}
             role={role}
           />

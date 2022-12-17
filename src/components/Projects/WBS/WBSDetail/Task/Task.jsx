@@ -49,8 +49,11 @@ const Task = props => {
   }, []);
   let passCurrentNum = false;
 
-  let controllerToggle = true;
-  const selectTask = id => {
+  //----This was the old method of display task actions by click on the task # - it was bit wonky and
+  //----not the proper way to conditionally render something in React
+
+  /* let controllerToggle = true;
+  const selectTask = (id) => {
     if (controllerToggle) {
       document.getElementById(id).style.background = '#effff2';
       document.getElementById(`controller_${id}`).style.display = 'contents';
@@ -62,7 +65,7 @@ const Task = props => {
     }
 
     props.selectTask(id);
-  };
+  }; */
 
   const toggleGroups = (num, id, level) => {
     if (!isLoad) {
@@ -438,87 +441,86 @@ const Task = props => {
                     Remove
                   </Button>
 
-                  <Dropdown
-                    direction="up"
-                    isOpen={dropdownOpen}
-                    toggle={toggle}
-                    style={{ float: 'left' }}
-                  >
-                    <DropdownToggle caret color="primary" size="sm">
-                      Move
-                    </DropdownToggle>
-                    <DropdownMenu>
-                      {props.siblings.map((item, i) => {
-                        if (item.num !== props.num) {
-                          return (
-                            <DropdownItem key={i} onClick={e => onMove(props.num, item.num)}>
-                              {item.num.split('.0')[0]}
-                            </DropdownItem>
-                          );
-                        } else {
-                          passCurrentNum = true;
-                        }
-                      })}
-                    </DropdownMenu>
-                  </Dropdown>
+                    <Dropdown
+                      direction="up"
+                      isOpen={dropdownOpen}
+                      toggle={toggle}
+                      style={{ float: 'left' }}
+                    >
+                      <DropdownToggle caret color="primary" size="sm">
+                        Move
+                      </DropdownToggle>
+                      <DropdownMenu>
+                        {props.siblings.map((item, i) => {
+                          if (item.num !== props.num) {
+                            return (
+                              <DropdownItem key={i} onClick={e => onMove(props.num, item.num)}>
+                                {item.num.split('.0')[0]}
+                              </DropdownItem>
+                            );
+                          } else {
+                            passCurrentNum = true;
+                          }
+                        })}
+                      </DropdownMenu>
+                    </Dropdown>
 
-                  <Button
-                    color="secondary"
-                    size="sm"
-                    className="margin-left"
-                    onClick={() => onCopy(props.id)}
-                  >
-                    {isCopied ? 'Copied' : 'Copy'}
-                  </Button>
-                </>
-              ) : null}
+                    <Button
+                      color="secondary"
+                      size="sm"
+                      className="margin-left"
+                      onClick={() => onCopy(props.id)}
+                    >
+                      {isCopied ? 'Copied' : 'Copy'}
+                    </Button>
+                  </>
+                ) : null}
 
-              <Modal isOpen={modal} toggle={toggleModel}>
-                <ModalBody>
-                  <h6>WHY THIS TASK IS IMPORTANT:</h6>
-                  <Editor
-                    init={{
-                      menubar: false,
-                      toolbar: false,
-                      branding: false,
-                      min_height: 80,
-                      max_height: 300,
-                      autoresize_bottom_margin: 1,
-                    }}
-                    disabled={true}
-                    value={props.whyInfo}
-                  />
+                <Modal isOpen={modal} toggle={toggleModel}>
+                  <ModalBody>
+                    <h6>WHY THIS TASK IS IMPORTANT:</h6>
+                    <Editor
+                      init={{
+                        menubar: false,
+                        toolbar: false,
+                        branding: false,
+                        min_height: 80,
+                        max_height: 300,
+                        autoresize_bottom_margin: 1,
+                      }}
+                      disabled={true}
+                      value={props.whyInfo}
+                    />
 
-                  <h6>THE DESIGN INTENT:</h6>
-                  <Editor
-                    init={{
-                      menubar: false,
-                      toolbar: false,
-                      branding: false,
-                      min_height: 80,
-                      max_height: 300,
-                      autoresize_bottom_margin: 1,
-                    }}
-                    disabled={true}
-                    value={props.intentInfo}
-                  />
+                    <h6>THE DESIGN INTENT:</h6>
+                    <Editor
+                      init={{
+                        menubar: false,
+                        toolbar: false,
+                        branding: false,
+                        min_height: 80,
+                        max_height: 300,
+                        autoresize_bottom_margin: 1,
+                      }}
+                      disabled={true}
+                      value={props.intentInfo}
+                    />
 
-                  <h6>ENDSTATE:</h6>
-                  <Editor
-                    init={{
-                      menubar: false,
-                      toolbar: false,
-                      branding: false,
-                      min_height: 80,
-                      max_height: 300,
-                      autoresize_bottom_margin: 1,
-                    }}
-                    disabled={true}
-                    value={props.endstateInfo}
-                  />
-                </ModalBody>
-              </Modal>
-
+                    <h6>ENDSTATE:</h6>
+                    <Editor
+                      init={{
+                        menubar: false,
+                        toolbar: false,
+                        branding: false,
+                        min_height: 80,
+                        max_height: 300,
+                        autoresize_bottom_margin: 1,
+                      }}
+                      disabled={true}
+                      value={props.endstateInfo}
+                    />
+                  </ModalBody>
+                </Modal>
               <ModalDelete
                 isOpen={modalDelete}
                 closeModal={() => {

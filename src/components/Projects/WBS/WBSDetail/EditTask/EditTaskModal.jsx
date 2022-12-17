@@ -268,13 +268,15 @@ const EditTaskModal = props => {
     <div className="controlBtn">
       <Modal isOpen={modal} toggle={toggle}>
         <ModalHeader toggle={toggle}>
-          {hasPermission(role, 'editTask', roles, userPermissions) ? 'Edit' : 'View'}
+          {hasPermission(role, 'editTask', roles, userPermissions) 
+            ? 'Edit' 
+            : (hasPermission(role, 'suggestTask', roles, userPermissions)) ? 'Suggest': 'View'}
         </ModalHeader>
         <ModalBody>
           <ReactTooltip />
           <table
-            className={`table table-bordered`
-            // ${hasPermission(role, 'editTask', roles, userPermission) ? null : 'disable-div'}`
+            className={`table table-bordered 
+            ${(hasPermission(role, 'editTask', roles, userPermissions) || hasPermission(role, 'suggestTask', roles, userPermissions)) ? null : 'disable-div'}`
             }
           >
             <tbody>
@@ -627,7 +629,9 @@ const EditTaskModal = props => {
         ): null }
       </Modal>
       <Button color="primary" size="sm" onClick={toggle}>
-        {hasPermission(role, 'editTask', roles, userPermissions) ? 'Edit' : 'View'}
+        {hasPermission(role, 'editTask', roles, userPermissions)
+          ? 'Edit' 
+          : (hasPermission(role, 'suggestTask', roles, userPermissions) ? 'Suggest' : 'View') }
       </Button>
     </div>
   );

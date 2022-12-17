@@ -56,6 +56,7 @@ const UserProfile = props => {
   const [showLoading, setShowLoading] = useState(true);
   const [userProfile, setUserProfile] = useState(undefined);
   const [originalUserProfile, setOriginalUserProfile] = useState(undefined);
+  const [originalTasks, setOriginalTasks] = useState(undefined);
   const [id, setId] = useState('');
   const [activeTab, setActiveTab] = useState('1');
   const [infoModal, setInfoModal] = useState(false);
@@ -69,6 +70,8 @@ const UserProfile = props => {
   const [modalMessage, setModalMessage] = useState('');
   const [shouldRefresh, setShouldRefresh] = useState(false);
   const [activeInactivePopupOpen, setActiveInactivePopupOpen] = useState(false);
+  const [tasks, setTasks] = useState();
+  const [updatedTasks, setUpdatedTasks] = useState([])
   //const [isValid, setIsValid] = useState(true)
 
   /* useEffect functions */
@@ -86,6 +89,7 @@ const UserProfile = props => {
     setShowLoading(true);
     loadUserProfile();
     setChanged(false);
+    loadUserTasks();
   }, [props?.match?.params?.userId]);
 
   useEffect(() => {
@@ -93,6 +97,17 @@ const UserProfile = props => {
     setBlueSquareChanged(false);
     handleSubmit();
   }, [blueSquareChanged]);
+
+  const loadUserTasks = async () => {
+    const userId = props?.match?.params?.userId;
+    axios
+      .get(ENDPOINTS.TASKS_BY_USERID(userId))
+      .then(res => {
+        setTasks(res?.data || []);
+        setOriginalTasks(res.data)
+      })
+      .catch(err => console.log(err));
+  };
 
   const loadUserProfile = async () => {
     const userId = props?.match?.params?.userId;
@@ -151,6 +166,16 @@ const UserProfile = props => {
     }
     setUserProfile(newUserProfile);
     setChanged(true);
+  };
+
+  const onUpdateTask = (taskId, updatedTask) => {
+    const newTask = {
+      updatedTask,
+      taskId
+    }
+    setTasks((tasks) => tasks.filter(task => task._id != taskId))
+    setUpdatedTasks((tasks)=> [...tasks, newTask])
+    setChanged(true)
   };
 
   const handleImageUpload = async evt => {
@@ -251,13 +276,24 @@ const UserProfile = props => {
   };
 
   const handleSubmit = async () => {
+    for (let i = 0; i < updatedTasks.length; i += 1) {
+      const updatedTask = updatedTasks[i];
+      const url = ENDPOINTS.TASK_UPDATE(updatedTask.taskId);
+      axios
+        .put(url, updatedTask.updatedTask)
+        .catch(err => console.log(err));
+    }
     try {
       await props.updateUserProfile(props.match.params.userId, userProfile);
       await loadUserProfile();
+
+       await loadUserTasks();
+
       setShowSaveWarning(false);
     } catch (err) {
       alert('An error occurred while attempting to save this profile.');
     }
+    
     setShouldRefresh(true);
   };
 
@@ -601,12 +637,15 @@ const UserProfile = props => {
               <TabPane tabId="4">
                 <ProjectsTab
                   userProjects={userProfile.projects || []}
+                  userTasks={tasks}
                   projectsData={props?.allProjects?.projects || []}
                   onAssignProject={onAssignProject}
                   onDeleteProject={onDeleteProject}
                   edit={hasPermission(requestorRole, 'editUserProfile', roles, userPermissions)}
                   role={requestorRole}
                   userPermissions={userPermissions}
+                  userId={props.match.params.userId}
+                  updateTask={onUpdateTask}
                 />
               </TabPane>
               <TabPane tabId="5">
@@ -656,6 +695,7 @@ const UserProfile = props => {
                     <span
                       onClick={() => {
                         setUserProfile(originalUserProfile);
+                        setTasks(originalTasks)
                         setChanged(false);
                       }}
                       className="btn btn-outline-danger mr-1 btn-bottom"

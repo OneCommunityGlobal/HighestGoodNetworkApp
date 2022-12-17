@@ -46,24 +46,17 @@ export const Header = props => {
   console.log('props', props);
   const [isOpen, setIsOpen] = useState(false);
   const [logoutPopup, setLogoutPopup] = useState(false);
+  const { isAuthenticated, user, firstName, profilePic } = props.auth;
+
+  const dispatch = useDispatch();
+
   const userPermissions = props.auth.user?.permissions?.frontPermissions;
   useEffect(() => {
     if (props.auth.isAuthenticated) {
-      console.log(
-        'header.js: props.auth.isAuthenticated',
-        props.auth.isAuthenticated,
-        props.auth.user.userid,
-      );
       props.getHeaderData(props.auth.user.userid);
       props.getTimerData(props.auth.user.userid);
     }
   }, []);
-
-  // useEffect(() => {
-  //   props.getHeaderData(props.auth.user.userid);
-  //   props.getTimerData(props.auth.user.userid);
-  // }, [props.auth]);
-  //}, [props.auth.isAuthenticated]);
 
   useEffect(() => {
     if (roles.length === 0) {
@@ -321,6 +314,7 @@ export const Header = props => {
 const mapStateToProps = state => ({
   auth: state.auth,
   userProfile: state.userProfile,
+  taskEditSuggestionCount: state.taskEditSuggestions.count,
   role: state.role,
 });
 export default connect(mapStateToProps, {

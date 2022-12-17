@@ -37,7 +37,6 @@ export const ENDPOINTS = {
   TASK: wbsId => `${APIEndpoint}/task/${wbsId}`,
   TASK_IMPORT: wbsId => `${APIEndpoint}/task/import/${wbsId}`,
   TASK_WBS: wbsId => `${APIEndpoint}/task/wbs/del/${wbsId}`,
-  TASKS_UPDATE: `${APIEndpoint}/tasks/update`,
   TASKS_BY_USERID: members => `${APIEndpoint}/tasks/userProfile?members=${members}`,
   TASKS_BY_userID: userId => `${APIEndpoint}/tasks/userProfile/${userId}`,
   TASK_DEL: (taskId, motherId) => `${APIEndpoint}/task/del/${taskId}/${motherId}`,
