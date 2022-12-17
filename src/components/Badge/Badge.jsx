@@ -63,10 +63,6 @@ const Badge = props => {
     }
   }, [props.userProfile.badgeCollection, totalBadge]);
 
-  const toggleTypes = () => {
-    setOpenTypes(isOpenTypes => !isOpenTypes);
-  };
-
   useEffect(() => {
     const userId = props.userId;
     console.log('This is userId', userId);

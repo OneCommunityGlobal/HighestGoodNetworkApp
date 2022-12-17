@@ -8,7 +8,7 @@ import React from 'react';
 import {
   getAllUserProfile,
   updateUserStatus,
-  updateUserFinalDayStatusIsSet,
+  updateUserFinalDayStatus as updateUserFinalDayStatusIsSet,
   deleteUser,
 } from '../../actions/userManagement';
 import { connect } from 'react-redux';
