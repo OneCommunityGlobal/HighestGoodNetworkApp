@@ -699,12 +699,15 @@ const UserProfile = props => {
               <TabPane tabId="4">
                 <ProjectsTab
                   userProjects={userProfile.projects || []}
+                  userTasks={tasks}
                   projectsData={props?.allProjects?.projects || []}
                   onAssignProject={onAssignProject}
                   onDeleteProject={onDeleteProject}
                   edit={hasPermission(requestorRole, 'editUserProfile', roles, userPermissions)}
                   role={requestorRole}
                   userPermissions={userPermissions}
+                  userId={props.match.params.userId}
+                  updateTask={onUpdateTask}
                 />
               </TabPane>
               <TabPane tabId="5">
