@@ -40,6 +40,7 @@ import hasPermission from 'utils/permissions';
 import ActiveInactiveConfirmationPopup from '../UserManagement/ActiveInactiveConfirmationPopup';
 import { updateUserStatus } from '../../actions/userManagement';
 import { UserStatus } from '../../utils/enums';
+import { faSleigh } from '@fortawesome/free-solid-svg-icons';
 
 const UserProfile = props => {
   /* Constant values */
@@ -301,6 +302,7 @@ const UserProfile = props => {
       alert('An error occurred while attempting to save this profile.');
     }
     setShouldRefresh(true);
+    setChanged(false);
   };
 
   const toggleInfoModal = () => {
