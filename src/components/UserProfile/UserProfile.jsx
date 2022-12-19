@@ -254,7 +254,7 @@ const UserProfile = props => {
       });
       setModalTitle('Blue Square');
     } else if (operation === 'update') {
-      const currentBlueSquares = [...userProfile?.infringements] || [];
+      let currentBlueSquares = [...userProfile?.infringements] || [];
       if (dateStamp != null && currentBlueSquares !== []) {
         currentBlueSquares.find(blueSquare => blueSquare._id === id).date = dateStamp;
       }
