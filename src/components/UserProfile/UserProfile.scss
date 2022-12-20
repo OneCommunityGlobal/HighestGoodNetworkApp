@@ -10,6 +10,32 @@
   background-color: white;
 }
 
+.row {
+  display: flex;
+}
+
+.column {
+  flex: 50%;
+}
+
+.team-weekly-summary {
+  width: 50%;
+  flex: 50%;
+}
+
+.view-user-summary {
+  left: 50%;
+}
+
+.red {
+  color: grey;
+}
+
+.green {
+  color: green;
+}
+ 
+
 .emp-profile {
   padding: 3%;
   margin-top: 3%;

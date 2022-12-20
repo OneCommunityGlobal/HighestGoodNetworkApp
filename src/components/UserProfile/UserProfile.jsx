@@ -40,6 +40,8 @@ import hasPermission from 'utils/permissions';
 import ActiveInactiveConfirmationPopup from '../UserManagement/ActiveInactiveConfirmationPopup';
 import { updateUserStatus } from '../../actions/userManagement';
 import { UserStatus } from '../../utils/enums';
+import Select from 'react-select';
+import parse from 'html-react-parser';
 import { faSleigh } from '@fortawesome/free-solid-svg-icons';
 
 const UserProfile = props => {
@@ -72,11 +74,17 @@ const UserProfile = props => {
   const [shouldRefresh, setShouldRefresh] = useState(false);
   const [activeInactivePopupOpen, setActiveInactivePopupOpen] = useState(false);
   const [tasks, setTasks] = useState();
-  const [updatedTasks, setUpdatedTasks] = useState([])
+  const [updatedTasks, setUpdatedTasks] = useState([]);
+  const [submittedSummary, setSubmittedSummary] = useState(false);
+  const [summarySelected, setSummarySelected] = useState(null);
+  const [summaryName, setSummaryName] = useState('');
+  const [showSummaries, setShowSummaries] = useState(false);
+  const [summaries, setSummaries] = useState(undefined);
   //const [isValid, setIsValid] = useState(true)
 
   /* useEffect functions */
   useEffect(() => {
+    getTeamMembersWeeklySummary();
     loadUserProfile();
   }, []);
 
@@ -105,7 +113,7 @@ const UserProfile = props => {
       .get(ENDPOINTS.TASKS_BY_USERID(userId))
       .then(res => {
         setTasks(res?.data || []);
-        setOriginalTasks(res.data)
+        setOriginalTasks(res.data);
       })
       .catch(err => console.log(err));
   };
@@ -123,6 +131,52 @@ const UserProfile = props => {
       setShowLoading(false);
     } catch (err) {
       setShowLoading(false);
+    }
+  };
+
+  const getWeeklySummary = async userId => {
+    try {
+      setSummarySelected('');
+      setSubmittedSummary(false);
+      setSummarySelected('');
+      const response = await axios.get(ENDPOINTS.USER_PROFILE(userId));
+      const user = response.data;
+      let summaries = user.weeklySummaries;
+      if (summaries && Array.isArray(summaries) && summaries.length >= 3) {
+        setSummarySelected([summaries[0].summary, summaries[1].summary, summaries[2].summary]);
+        setSubmittedSummary(true);
+      } else {
+        setSummarySelected('loading');
+        setSubmittedSummary(false);
+        return false;
+      }
+    } catch (err) {
+      setShowLoading(false);
+    }
+  };
+
+  const getTeamMembersWeeklySummary = async () => {
+    const userId = props?.match?.params?.userId;
+
+    if (!userId) return;
+
+    try {
+      const response = await axios.get(ENDPOINTS.LEADER_BOARD(userId));
+      const leaderBoardData = response.data;
+      const allSummaries = [];
+
+      for (let i = 0; i < leaderBoardData.length; i++) {
+        allSummaries.push({
+          value: [leaderBoardData[i].name, leaderBoardData[i].personId],
+          label: `View ${leaderBoardData[i].name}'s summary.`,
+        });
+      }
+      console.log('allSummaries:', allSummaries);
+      setSummaries(allSummaries);
+      return;
+    } catch (err) {
+      console.log('Could not load leaderBoard data.', err);
+      return;
     }
   };
 
@@ -172,11 +226,11 @@ const UserProfile = props => {
   const onUpdateTask = (taskId, updatedTask) => {
     const newTask = {
       updatedTask,
-      taskId
-    }
-    setTasks((tasks) => tasks.filter(task => task._id != taskId))
-    setUpdatedTasks((tasks)=> [...tasks, newTask])
-    setChanged(true)
+      taskId,
+    };
+    setTasks(tasks => tasks.filter(task => task._id != taskId));
+    setUpdatedTasks(tasks => [...tasks, newTask]);
+    setChanged(true);
   };
 
   const handleImageUpload = async evt => {
@@ -280,21 +334,19 @@ const UserProfile = props => {
     for (let i = 0; i < updatedTasks.length; i += 1) {
       const updatedTask = updatedTasks[i];
       const url = ENDPOINTS.TASK_UPDATE(updatedTask.taskId);
-      axios
-        .put(url, updatedTask.updatedTask)
-        .catch(err => console.log(err));
+      axios.put(url, updatedTask.updatedTask).catch(err => console.log(err));
     }
     try {
       await props.updateUserProfile(props.match.params.userId, userProfile);
       await loadUserProfile();
 
-       await loadUserTasks();
+      await loadUserTasks();
 
       setShowSaveWarning(false);
     } catch (err) {
       alert('An error occurred while attempting to save this profile.');
     }
-    
+
     setShouldRefresh(true);
     setChanged(false);
   };
@@ -512,6 +564,68 @@ const UserProfile = props => {
               handleSubmit={handleSubmit}
               userPermissions={userPermissions}
             />
+            <Button
+              onClick={() => setShowSummaries(!showSummaries)}
+              color="primary"
+              className="view-user-summary"
+            >
+              View Weekly Summaries
+            </Button>
+            {showSummaries && summaries === undefined ? <div>Loading</div> : <div></div>}
+            {showSummaries && summaries !== undefined ? (
+              <div>
+                <Select
+                  options={summaries}
+                  onChange={e => {
+                    getWeeklySummary(e.value[1]);
+                    setSummaryName(e.value[0]);
+                  }}
+                />
+              </div>
+            ) : (
+              <div></div>
+            )}
+            {summarySelected === 'loading' && showSummaries && !submittedSummary ? (
+              <h5>User has not submitted a summary for this week.</h5>
+            ) : (
+              <div></div>
+            )}
+            {summarySelected && showSummaries && submittedSummary ? (
+              <div>
+                {summarySelected[0].length > 0 ? (
+                  <div>
+                    <h5>Viewing {summaryName}'s current week's summary.</h5>
+                    <p>{parse(summarySelected[0])}</p>
+                  </div>
+                ) : (
+                  <div>
+                    <h5>{summaryName} did not submit a summary this week.</h5>
+                  </div>
+                )}
+                {summarySelected[1].length > 0 ? (
+                  <div>
+                    <h5>Viewing {summaryName}'s last week's summary.</h5>
+                    <p>{parse(summarySelected[1])}</p>
+                  </div>
+                ) : (
+                  <div>
+                    <h5>{summaryName} did not submit a summary last week.</h5>
+                  </div>
+                )}
+                {summarySelected[2].length > 0 ? (
+                  <div>
+                    <h5>Viewing {summaryName}'s the week before last summary.</h5>
+                    <p>{parse(summarySelected[2])}</p>
+                  </div>
+                ) : (
+                  <div>
+                    <h5>{summaryName} did not submit a summary the week before last.</h5>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <div></div>
+            )}
           </Col>
         </Row>
         <Row>
@@ -697,7 +811,7 @@ const UserProfile = props => {
                     <span
                       onClick={() => {
                         setUserProfile(originalUserProfile);
-                        setTasks(originalTasks)
+                        setTasks(originalTasks);
                         setChanged(false);
                       }}
                       className="btn btn-outline-danger mr-1 btn-bottom"
