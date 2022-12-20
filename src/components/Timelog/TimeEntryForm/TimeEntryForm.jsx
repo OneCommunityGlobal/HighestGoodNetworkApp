@@ -390,7 +390,7 @@ const TimeEntryForm = props => {
     const hours = inputs.hours || 0;
     const minutes = inputs.minutes || 0;
     const isTimeModified = edit && (data.hours !== hours || data.minutes !== minutes);
-//Shaun comment- does date need to be added here for validation?
+    const today = new Date();
     if (!validateForm(isTimeModified)) return;
 
     //Construct the timeEntry object
@@ -405,7 +405,7 @@ const TimeEntryForm = props => {
     if (edit) {
       timeEntry.hours = hours;
       timeEntry.minutes = minutes;
-      //Shaun comment - does date need to be added to this conditional? Or as separate conditional?
+      today= dateOfWork;
     } else {
       timeEntry.timeSpent = `${hours}:${minutes}:00`;
     }
