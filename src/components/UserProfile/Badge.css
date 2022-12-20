@@ -2,6 +2,8 @@
   background-color: #c9d6c6 !important;
   border-color: #285739 !important;
   color: #285739 !important;
+  /*Spacing between buttons*/
+  margin-right: 10px;
 }
 
 .badge_image_sm > img {
@@ -87,8 +89,11 @@
 
 .badge_featured_container {
   display: flex;
-  flex-wrap: nowrap;
+  /*Wrap on overflow*/
+  flex-wrap: wrap;
   overflow-y: hidden;
+  /*center align content*/
+  justify-content: space-around;
 }
 
 .badge_md_image_container {
@@ -129,8 +134,21 @@
   text-align: left;
 }
 
+/*Aligns the title and the buttons*/
+.badge-header{
+  display:flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+/*Title to occupy more width than buttons*/
+.badge-header-title{
+  flex: 3;
+}
+
+/*To match width of iphone 12 Pro*/
 #badgeCard {
-  min-width: 475px;
+  min-width: 390px;
 }
 
 @media screen and (max-width: 1199px) {
