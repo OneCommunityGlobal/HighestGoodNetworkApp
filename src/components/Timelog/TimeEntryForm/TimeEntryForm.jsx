@@ -31,6 +31,7 @@ import axios from 'axios';
 import { ENDPOINTS } from '../../../utils/URL';
 import hasPermission from 'utils/permissions';
 import { getTimeEntryFormData } from './selectors';
+import { isToday } from 'date-fns/esm';
 
 /**
  * Modal used to submit and edit tangible and intangible time entries.
@@ -399,17 +400,17 @@ const TimeEntryForm = props => {
       dateOfWork: inputs.dateOfWork,
       projectId: inputs.projectId,
       notes: inputs.notes,
-      isTangible: inputs.isTangible.toString(),
+      isTangible: inputs.isTangible.toString()
     };
 
     if (edit) {
       timeEntry.hours = hours;
       timeEntry.minutes = minutes;
-      //today= dateOfWork;
+    
     } else {
       timeEntry.timeSpent = `${hours}:${minutes}:00`;
     }
-
+  
     //Update userprofile hoursByCategory
 
     //Send the time entry to the server
