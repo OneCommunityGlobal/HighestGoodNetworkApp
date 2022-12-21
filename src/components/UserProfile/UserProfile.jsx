@@ -250,15 +250,15 @@ const UserProfile = props => {
       setShowModal(false);
       setUserProfile({
         ...userProfile,
-        infringements: userProfile.infringements.concat(newBlueSquare),
+        infringements: userProfile.infringements?.concat(newBlueSquare),
       });
       setModalTitle('Blue Square');
     } else if (operation === 'update') {
-      const currentBlueSquares = [...userProfile.infringements];
-      if (dateStamp != null) {
+      let currentBlueSquares = [...userProfile?.infringements] || [];
+      if (dateStamp != null && currentBlueSquares !== []) {
         currentBlueSquares.find(blueSquare => blueSquare._id === id).date = dateStamp;
       }
-      if (summary != null) {
+      if (summary != null && currentBlueSquares !== []) {
         currentBlueSquares.find(blueSquare => blueSquare._id === id).description = summary;
       }
 
@@ -266,7 +266,7 @@ const UserProfile = props => {
       setUserProfile({ ...userProfile, infringements: currentBlueSquares });
     } else if (operation === 'delete') {
       const newInfringements = [];
-      userProfile.infringements.forEach(infringement => {
+      userProfile.infringements?.forEach(infringement => {
         if (infringement._id !== id) newInfringements.push(infringement);
       });
 
