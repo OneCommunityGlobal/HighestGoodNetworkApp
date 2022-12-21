@@ -80,6 +80,17 @@ const AddTaskModal = (props) => {
   const [endstateInfo, setEndstateInfo] = useState('');
 
   // Classification
+  const classificationOptions = [
+    {value:"Food",label:"Food"},
+    {value:"Energy",label:"Energy"},
+    {value:"Housing",label:"Housing"},
+    {value:"Education",label:"Education"},
+    {value:"Soceity",label:"Soceity"},
+    {value:"Economics",label:"Economics"},
+    {value:"Stewardship",label:"Stewardship"},
+    {value:"Other",label:"Other"}
+  ]
+  const [projectCategory, setProjectCategory] = useState('');
   const [classification, setClassification] = useState('');
 
   // Warning
@@ -340,6 +351,13 @@ const AddTaskModal = (props) => {
 
   useEffect(() => {}, [tasks]);
 
+  useEffect(() =>{
+    const res = props.allProjects.projects.filter(obj => obj._id === props.projectId)[0];
+    if (res){
+      setProjectCategory(res.category);
+    }
+  })
+
   getNewNum();
 
   return (
@@ -584,11 +602,11 @@ const AddTaskModal = (props) => {
               <tr>
                 <td scope="col">Classification</td>
                 <td scope="col">
-                  <input
-                    type="text"
-                    value={classification}
-                    onChange={(e) => setClassification(e.target.value)}
-                  />
+                  <select defaultValue={projectCategory} onChange={e => setClassification(e.target.value)}>
+                    {classificationOptions.map(cla =>{
+                      return <option value={cla.value} key={cla.value}>{cla.label}</option>
+                    })}
+                  </select>
                 </td>
               </tr>
               <tr>
