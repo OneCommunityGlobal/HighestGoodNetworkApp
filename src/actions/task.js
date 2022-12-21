@@ -3,15 +3,20 @@
  * Author: Henry Ng - 03/20/20
  ********************************************************************************/
 import axios from 'axios';
-import { fetchTeamMembersTaskSuccess, fetchTeamMembersTaskBegin, fetchTeamMembersTaskError } from 'components/TeamMemberTasks/actions';
+import {
+  fetchTeamMembersTaskSuccess,
+  fetchTeamMembersTaskBegin,
+  fetchTeamMembersTaskError,
+} from 'components/TeamMemberTasks/actions';
 import * as types from '../constants/task';
 import { ENDPOINTS } from '../utils/URL';
 import { createOrUpdateTaskNotificationHTTP } from './taskNotification';
 import { createTaskEditSuggestionHTTP } from 'components/TaskEditSuggestions/service';
 
-const selectFetchTeamMembersTaskData = (state) => state.auth.user.userid;
-const selectUserId = (state) => state.auth.user.userid;
-const selectUpdateTaskData = (state, taskId) => state.tasks.taskItems.find(({_id}) => _id === taskId);
+const selectFetchTeamMembersTaskData = state => state.auth.user.userid;
+const selectUserId = state => state.auth.user.userid;
+const selectUpdateTaskData = (state, taskId) =>
+  state.tasks.taskItems.find(({ _id }) => _id === taskId);
 
 export const fetchTeamMembersTask = () => async (dispatch, getState) => {
   try {
@@ -26,11 +31,14 @@ export const fetchTeamMembersTask = () => async (dispatch, getState) => {
 };
 
 // TODO: TeamMemberTasks.jsx dispatch
-export const deleteTaskNotification = (userId, taskId, taskNotificationId) => async (dispatch, getState) => {
+export const deleteTaskNotification = (userId, taskId, taskNotificationId) => async (
+  dispatch,
+  getState,
+) => {
   try {
     //dispatch(deleteTaskNotificationBegin());
     const res = await axios.delete(ENDPOINTS.DELETE_TASK_NOTIFICATION(taskNotificationId));
-    dispatch(deleteTaskNotificationSuccess({userId, taskId, taskNotificationId}));
+    dispatch(deleteTaskNotificationSuccess({ userId, taskId, taskNotificationId }));
   } catch (error) {
     //dispatch(deleteTaskNotificationError());
   }
@@ -46,6 +54,7 @@ export const addNewTask = (newTask, wbsId) => async (dispatch, getState) => {
     _id = res.data._id;
     status = res.status;
     task = res.data;
+    console.log(task);
     const userIds = task.resources.map(resource => resource.userID);
     await createOrUpdateTaskNotificationHTTP(task._id, {}, userIds);
   } catch (error) {
@@ -80,7 +89,7 @@ export const updateTask = (taskId, updatedTask, hasPermission) => async (dispatc
 
 export const importTask = (newTask, wbsId) => {
   const url = ENDPOINTS.TASK_IMPORT(wbsId);
-  return async (dispatch) => {
+  return async dispatch => {
     let status = 200;
     let _id = null;
     let task = {};
@@ -106,7 +115,7 @@ export const importTask = (newTask, wbsId) => {
 
 export const updateNumList = (wbsId, list) => {
   const url = ENDPOINTS.TASKS_UPDATE + '/num';
-  return async (dispatch) => {
+  return async dispatch => {
     let status = 200;
     try {
       const res = await axios.put(url, { wbsId, nums: list });
@@ -120,7 +129,7 @@ export const updateNumList = (wbsId, list) => {
 
 export const moveTasks = (wbsId, fromNum, toNum) => {
   const url = ENDPOINTS.MOVE_TASKS(wbsId);
-  return async (dispatch) => {
+  return async dispatch => {
     try {
       const res = await axios.put(url, { fromNum, toNum });
     } catch (err) {}
@@ -129,7 +138,7 @@ export const moveTasks = (wbsId, fromNum, toNum) => {
 };
 
 export const fetchAllTasks = (wbsId, level = 0, mother = null) => {
-  return async (dispatch) => {
+  return async dispatch => {
     await dispatch(setTasksStart());
     try {
       const request = await axios.get(ENDPOINTS.TASKS(wbsId, level === -1 ? 1 : level + 1, mother));
@@ -143,7 +152,7 @@ export const fetchAllTasks = (wbsId, level = 0, mother = null) => {
 
 export const deleteTask = (taskId, mother) => {
   const url = ENDPOINTS.TASK_DEL(taskId, mother);
-  return async (dispatch) => {
+  return async dispatch => {
     let status = 200;
     try {
       const res = await axios.post(url);
@@ -155,8 +164,8 @@ export const deleteTask = (taskId, mother) => {
   };
 };
 
-export const copyTask = (taskId) => {
-  return async (dispatch) => {
+export const copyTask = taskId => {
+  return async dispatch => {
     await dispatch(saveTmpTask(taskId));
   };
 };
@@ -187,7 +196,7 @@ export const setTasks = (taskItems, level, mother) => {
  * Error when setting project
  * @param payload : error status code
  */
-export const setTasksError = (err) => {
+export const setTasksError = err => {
   return {
     type: types.FETCH_TASKS_ERROR,
     err,
@@ -219,7 +228,7 @@ export const swapTasks = (tasks, status) => {
   };
 };
 
-export const updateNums = (updatedList) => {
+export const updateNums = updatedList => {
   console.log('updated list', updatedList);
   return {
     type: types.UPDATE_NUMS,
@@ -235,7 +244,7 @@ export const removeTask = (taskId, status) => {
   };
 };
 
-export const saveTmpTask = (taskId) => {
+export const saveTmpTask = taskId => {
   return {
     type: types.COPY_TASK,
     taskId,

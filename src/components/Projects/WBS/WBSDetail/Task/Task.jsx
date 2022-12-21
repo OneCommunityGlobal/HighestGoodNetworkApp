@@ -26,6 +26,8 @@ const Task = props => {
   useEffect(() => {
     setIsCopied(false);
   }, [1]);
+
+  // console.log('TASKS ===>>>', props);
   // modal
   const [modal, setModal] = useState(false);
   const [modalDelete, setModalDelete] = useState(false);
@@ -177,7 +179,7 @@ const Task = props => {
               scope="row"
               className="taskNum"
               onClick={() => {
-                /* selectTask(props.id); */
+                /*selectTask(props.id);*/
                 toggleGroups(props.num, props.id, props.level);
               }}
             >
@@ -430,6 +432,7 @@ const Task = props => {
                     mother={props.mother}
                     level={props.level}
                     openChild={e => openChild(props.num, props.id)}
+                    hasPermission={true}
                   />
                 ) : null}
                 <EditTaskModal
