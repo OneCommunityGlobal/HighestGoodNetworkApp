@@ -83,6 +83,7 @@ const SummaryBar = props => {
   useEffect(() => {
     loadUserProfile();
     getUserTask();
+    // getWeeklySummary();
   }, []);
 
   const calculateTotalTime = (data, isTangible) => {
