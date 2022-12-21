@@ -390,7 +390,7 @@ const TimeEntryForm = props => {
     const hours = inputs.hours || 0;
     const minutes = inputs.minutes || 0;
     const isTimeModified = edit && (data.hours !== hours || data.minutes !== minutes);
-    const today = new Date();
+    //const today = new Date();
     if (!validateForm(isTimeModified)) return;
 
     //Construct the timeEntry object
@@ -405,7 +405,7 @@ const TimeEntryForm = props => {
     if (edit) {
       timeEntry.hours = hours;
       timeEntry.minutes = minutes;
-      today= dateOfWork;
+      //today= dateOfWork;
     } else {
       timeEntry.timeSpent = `${hours}:${minutes}:00`;
     }
