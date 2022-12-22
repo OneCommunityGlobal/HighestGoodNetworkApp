@@ -39,7 +39,7 @@ const UserProfileModal = props => {
 
   if (type === 'modBlueSquare' || type === 'viewBlueSquare') {
     if (id.length > 0) {
-      blueSquare = userProfile.infringements.filter(blueSquare => blueSquare._id === id);
+      blueSquare = userProfile.infringements?.filter(blueSquare => blueSquare._id === id);
     }
   }
 
@@ -345,12 +345,12 @@ const UserProfileModal = props => {
             <FormGroup>
               <Label for="date">
                 Date:
-                {blueSquare[0].date}
+                {blueSquare[0]?.date}
               </Label>
             </FormGroup>
             <FormGroup>
               <Label for="description">Summary</Label>
-              <Label>{blueSquare[0].description}</Label>
+              <Label>{blueSquare[0]?.description}</Label>
             </FormGroup>
           </>
         )}
