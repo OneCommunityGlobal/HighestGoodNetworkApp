@@ -265,13 +265,12 @@ const UserProfile = props => {
       setShowModal(false);
       setUserProfile({ ...userProfile, infringments: currentBlueSquares });
     } else if (operation === 'delete') {
-      const newInfringements = [];
-      userProfile.infringements?.forEach(infringement => {
-        if (infringement._id !== id) newInfringements.push(infringement);
-      });
-
-      setUserProfile({ ...userProfile, infringments: newInfringements });
-      setShowModal(false);
+      let newInfringements = [...userProfile?.infringements] || [];
+      if (newInfringements !== []) {
+        newInfringements = newInfringements.filter(infringement => infringement._id !== id)
+        setUserProfile({ ...userProfile, infringements: newInfringements });
+        setShowModal(false);
+      }
     }
     setBlueSquareChanged(true);
   };
