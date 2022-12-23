@@ -212,7 +212,16 @@ const SummaryBar = props => {
 
   const getWeeklySummary = user => {
     let summaries = user.weeklySummaries;
-    if (summaries && Array.isArray(summaries) && summaries[0] && summaries[0].summary) {
+    const timeNow = new Date();
+    const latestSummaryDueDate = new Date(summaries[0].dueDate);
+
+    if (
+      summaries &&
+      Array.isArray(summaries) &&
+      summaries[0] &&
+      summaries[0].summary &&
+      timeNow < latestSummaryDueDate
+    ) {
       return summaries[0].summary;
     } else {
       return '';
