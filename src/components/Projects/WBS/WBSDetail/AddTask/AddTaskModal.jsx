@@ -369,6 +369,7 @@ const AddTaskModal = props => {
     const res = props.allProjects.projects.filter(obj => obj._id === props.projectId)[0];
     if (res){
       setProjectCategory(res.category);
+      setClassification(res.category);
     }
   })
 
