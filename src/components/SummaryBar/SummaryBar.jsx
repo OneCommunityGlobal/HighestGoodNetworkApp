@@ -29,6 +29,7 @@ import { ENDPOINTS } from 'utils/URL';
 import axios from 'axios';
 import { ApiEndpoint } from 'utils/URL';
 import hasPermission from 'utils/permissions';
+import { getcolor, getprogress } from '../../utils/effortColors';
 
 const SummaryBar = props => {
   const { asUser, role, leaderData } = props;
@@ -169,38 +170,6 @@ const SummaryBar = props => {
   //   await this.props.getWeeklySummaries(this.props.currentUser.userid);
   //   const { weeklySummariesCount } = this.props.summaries;}
 
-  const getBarColor = hours => {
-    if (hours < 5) {
-      return 'red';
-    }
-    if (hours < 10) {
-      return 'orange';
-    }
-    if (hours < 20) {
-      return 'green';
-    }
-    if (hours < 30) {
-      return 'blue';
-    }
-    if (hours < 40) {
-      return 'indigo';
-    }
-    if (hours < 50) {
-      return 'violet';
-    }
-    return 'purple';
-  };
-
-  const getBarValue = hours => {
-    if (hours <= 40) {
-      return hours * 2;
-    }
-    if (hours <= 50) {
-      return (hours - 40) * 1.5 + 80;
-    }
-    return ((hours - 50) * 5) / 40 + 95;
-  };
-
   const onTaskClick = () => {
     window.location.hash = '#tasks';
   };
@@ -289,8 +258,8 @@ const SummaryBar = props => {
                   <div className="text--black align-items-center med_text_summary">
                     Current Week : {totalEffort.toFixed(2)} / {weeklyCommittedHours}
                     <Progress
-                      value={getBarValue(totalEffort)}
-                      className={getBarColor(totalEffort)}
+                      value={getprogress(totalEffort,weeklyCommittedHours)}
+                      color={getcolor(totalEffort,weeklyCommittedHours)}
                       striped={totalEffort < weeklyCommittedHours}
                     />
                   </div>

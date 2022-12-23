@@ -116,8 +116,8 @@ const LeaderBoard = ({
                 system, how many volunteer hours they are collectively committed to, and how many
                 tangible and total hours they have completed. The color and length of that bar
                 changes based on what percentage of the total committed hours for the week have been
-                completed: >10%: Red, 10-50%: Orange, 50-60% hrs: Green, 60-70%: Blue, 70-80%:
-                Indigo, 80-100%: Violet, and More than 100%: Purple.
+                completed: 0-20%: Red, 20-40%: Orange, 40-60% hrs: Green, 60-80%: Blue, 80-100%:
+                Indigo, and Equal or More than 100%: Purple.
               </li>
               <li>
                 The red/green dot shows whether or not a person has completed their “tangible” hours
@@ -130,7 +130,7 @@ const LeaderBoard = ({
                 completed hours for the week rank you compared to other people on your team.
                 Clicking a person’s time bar will take you to the time log section on their/your
                 dashboard. This bar also changes color based on how many tangible hours you have
-                completed: >5 hrs: Red, 5-10 hrs: Orange, 10-20 hrs: Green, 20-30 hrs: Blue, 30-40
+                completed: 5 hrs: Red, 5-10 hrs: Orange, 10-20 hrs: Green, 20-30 hrs: Blue, 30-40
                 hrs: Indigo, 40-50 hrs: Violet, and 50+ hrs: Purple
               </li>
               <li>Clicking a person’s name will lead to their/your profile page.</li>
