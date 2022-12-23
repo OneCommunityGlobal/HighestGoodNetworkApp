@@ -176,8 +176,9 @@ class AddUserProfile extends Component {
                   <Col md="6">
                     <FormGroup>
                     <PhoneInput
-                        country="US
+                        country="US"
                         regions={['america','europe','asia','oceania','africa']}
+                        limitMaxLength= 'true'
                         value={phoneNumber}
                         onChange={phone => this.phoneChange(phone)}
                       />
