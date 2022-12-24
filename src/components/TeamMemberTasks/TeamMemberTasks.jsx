@@ -15,7 +15,7 @@ import { TaskDifferenceModal } from './components/TaskDifferenceModal';
 import { getTeamMemberTasksData } from './selectors';
 import { getUserProfile } from '../../actions/userProfile';
 import './style.css';
-import { getcolor, getprogress } from '../../utils/effortColors';
+import { getProgressColor, getProgressValue } from '../../utils/effortColors';
 import { fetchAllManagingTeams } from '../../actions/team';
 import EffortBar from 'components/Timelog/EffortBar';
 import TimeEntry from 'components/Timelog/TimeEntry';
@@ -202,8 +202,8 @@ const TeamMemberTasks = props => {
                                 ${parseFloat(task.estimatedHours.toFixed(2))}`}
                                   </span>
                                   <Progress
-                                    color = {getcolor(task.hoursLogged,task.estimatedHours)}
-                                    value = {getprogress(task.hoursLogged,task.estimatedHours)}
+                                    color = {getProgressColor(task.hoursLogged,task.estimatedHours)}
+                                    value = {getProgressValue(task.hoursLogged,task.estimatedHours)}
                                   />
                                 </div>
                               </td>

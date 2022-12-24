@@ -22,8 +22,8 @@ const mapStateToProps = (state) => {
 
       element.intangibletimewidth = _.round((element.totalintangibletime_hrs * 100) / maxTotal, 0);
 
-      element.barcolor = getcolor(element.totaltangibletime_hrs,element.weeklyComittedHours);
-      element.barprogress = getprogress(element.totaltangibletime_hrs,element.weeklyComittedHours);
+      element.barcolor = getcolor(element.totaltangibletime_hrs);
+      element.barprogress = getprogress(element.totaltangibletime_hrs);
       element.totaltime = _.round(element.totaltime_hrs, 2);
 
       return element;
@@ -38,11 +38,11 @@ const mapStateToProps = (state) => {
   orgData.intangibletime = _.round(orgData.totalintangibletime_hrs, 2);
   orgData.weeklyComittedHours = _.round(orgData.totalWeeklyComittedHours, 2);
 
-  //const tenPTotalOrgTime = orgData.weeklyComittedHours * 0.1;
-  //const orgTangibleColorTime = orgData.totaltime < tenPTotalOrgTime * 2 ? 0 : 5;
+  const tenPTotalOrgTime = orgData.weeklyComittedHours * 0.1;
+  const orgTangibleColorTime = orgData.totaltime < tenPTotalOrgTime * 2 ? 0 : 5;
 
-  orgData.barcolor = getcolor(orgData.totaltime,orgData.totalWeeklyComittedHours);
-  orgData.barprogress = getprogress(orgData.totaltime,orgData.totalWeeklyComittedHours);
+  orgData.barcolor = getcolor(orgTangibleColorTime);
+  orgData.barprogress = getprogress(orgTangibleColorTime);
 
   return {
     isAuthenticated: _.get(state, 'auth.isAuthenticated', false),

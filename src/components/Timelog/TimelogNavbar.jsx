@@ -11,7 +11,7 @@ import {
   NavLink,
 } from 'reactstrap';
 import { useSelector } from 'react-redux';
-import { getcolor, getprogress } from '../../utils/effortColors';
+import { getProgressColor, getProgressValue } from '../../utils/effortColors';
 
 const TimelogNavbar = ({ userId }) => {
   const { firstName, lastName } = useSelector(state => state.userProfile);
@@ -39,8 +39,8 @@ const TimelogNavbar = ({ userId }) => {
                 Current Week : {totalEffort.toFixed(2)} / {weeklyComittedHours}
               </div>
               <Progress
-                value={getprogress(totalEffort,weeklyComittedHours)}
-                color={getcolor(totalEffort,weeklyComittedHours)}
+                value={getProgressValue(totalEffort,weeklyComittedHours)}
+                color={getProgressColor(totalEffort,weeklyComittedHours)}
                 striped={totalEffort < weeklyComittedHours}
               />
             </NavItem>

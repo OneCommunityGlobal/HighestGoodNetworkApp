@@ -29,7 +29,7 @@ import { ENDPOINTS } from 'utils/URL';
 import axios from 'axios';
 import { ApiEndpoint } from 'utils/URL';
 import hasPermission from 'utils/permissions';
-import { getcolor, getprogress } from '../../utils/effortColors';
+import { getProgressColor, getProgressValue } from '../../utils/effortColors';
 
 const SummaryBar = props => {
   const { asUser, role, leaderData } = props;
@@ -258,8 +258,8 @@ const SummaryBar = props => {
                   <div className="text--black align-items-center med_text_summary">
                     Current Week : {totalEffort.toFixed(2)} / {weeklyCommittedHours}
                     <Progress
-                      value={getprogress(totalEffort,weeklyCommittedHours)}
-                      color={getcolor(totalEffort,weeklyCommittedHours)}
+                      value={getProgressValue(totalEffort,weeklyCommittedHours)}
+                      color={getProgressColor(totalEffort,weeklyCommittedHours)}
                       striped={totalEffort < weeklyCommittedHours}
                     />
                   </div>
