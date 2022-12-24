@@ -91,7 +91,7 @@ const AddTaskModal = (props) => {
     {value:"Other",label:"Other"}
   ]
   const [projectCategory, setProjectCategory] = useState('');
-  const [classification, setClassification] = useState('');
+  const [classification, setClassification] = useState('Housing');
 
   // Warning
   const [dateWarning, setDateWarning] = useState(false);
@@ -337,7 +337,7 @@ const AddTaskModal = (props) => {
       endstateInfo: endstateInfo,
       classification,
     };
-
+    
     props.addNewTask(newTask, props.wbsId);
 
     setTimeout(() => {
@@ -353,10 +353,15 @@ const AddTaskModal = (props) => {
 
   useEffect(() =>{
     const res = props.allProjects.projects.filter(obj => obj._id === props.projectId)[0];
+
     if (res){
       setProjectCategory(res.category);
+      if (props.level === 1){
+        setClassification(res.category)
+      }
     }
   })
+
 
   getNewNum();
 
@@ -602,7 +607,7 @@ const AddTaskModal = (props) => {
               <tr>
                 <td scope="col">Classification</td>
                 <td scope="col">
-                  <select defaultValue={projectCategory} onChange={e => setClassification(e.target.value)}>
+                  <select value={classification} onChange={e => setClassification(e.target.value)} >
                     {classificationOptions.map(cla =>{
                       return <option value={cla.value} key={cla.value}>{cla.label}</option>
                     })}
