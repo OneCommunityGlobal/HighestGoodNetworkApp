@@ -11,10 +11,10 @@ import {
 } from 'reactstrap';
 import BadgeHistory from './BadgeHistory';
 
-const OldBadges = (props) => {
+const OldBadges = props => {
   const [isOpen, setOpen] = useState(false);
 
-  const toggle = () => setOpen((isOpen) => !isOpen);
+  const toggle = () => setOpen(isOpen => !isOpen);
 
   return (
     <>
@@ -54,7 +54,7 @@ const OldBadges = (props) => {
           times you've earned the same badge! Do your Happy Dance you Champion!!
         </p>
         <p className="badge_info_icon_text">
-          No badges in this area? Uh, in that cases, everything said above is a bit premature. Sorry
+          No badges in this area? Uh, in that case, everything said above is a bit premature. Sorry
           about that... Everyone must start somewhere, and in your case, that somewhere is with the
           big empty, desolate, bare and barren badge box below (BEDBABBBB). If we had a BEDBABBBB
           badge, you'd earn it, but we don't, so this area is blank.

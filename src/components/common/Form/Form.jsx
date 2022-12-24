@@ -277,7 +277,7 @@ class Form extends Component {
     const schema = { [name]: this.schema[name] };
     let refs = schema[name]._refs;
     if (refs) {
-      refs.forEach((ref) => {
+      refs.forEach(ref => {
         schema[ref] = this.schema[ref];
         obj[ref] = this.state.data[ref];
       });
@@ -292,17 +292,17 @@ class Form extends Component {
     const options = { abortEarly: false };
     const { error } = Joi.validate(this.state.data, this.schema, options);
     if (!error) return null;
-    error.details.forEach((element) => {
+    error.details.forEach(element => {
       errors[element.path[0]] = element.message;
     });
 
     const messages = _.groupBy(error.details, 'path[0]');
-    Object.keys(messages).forEach((key) => {
-      errors[key] = messages[key].map((item) => item.message).join('. ');
+    Object.keys(messages).forEach(key => {
+      errors[key] = messages[key].map(item => item.message).join('. ');
     });
     return errors;
   };
-  handleSubmit = (e) => {
+  handleSubmit = e => {
     e.preventDefault();
     e.stopPropagation();
     const errors = this.validateForm();
@@ -317,7 +317,7 @@ class Form extends Component {
         {label}
       </button>
     );
-  }
+  };
 
   renderRichTextEditor({ name, ...rest }) {
     const { data, errors } = { ...this.state };
@@ -325,12 +325,12 @@ class Form extends Component {
       <TinyMCEEditor
         name={name}
         value={data[name]}
-        onChange={(e) => this.handleRichTextEditor(e)}
+        onChange={e => this.handleRichTextEditor(e)}
         error={errors[name]}
         {...rest}
       />
     );
-  }
+  };
 
   renderDropDown({ name, label, options, ...rest }) {
     const { data, errors } = { ...this.state };
@@ -340,12 +340,12 @@ class Form extends Component {
         label={label}
         options={options}
         value={data[name]}
-        onChange={(e) => this.handleInput(e)}
+        onChange={e => this.handleInput(e)}
         error={errors[name]}
         {...rest}
       />
     );
-  }
+  };
 
   renderInput({ name, label, type = 'text', ...rest }) {
     let { data, errors } = { ...this.state };
@@ -353,26 +353,26 @@ class Form extends Component {
       <Input
         name={name}
         type={type}
-        onChange={(e) => this.handleInput(e)}
+        onChange={e => this.handleInput(e)}
         value={data[name]}
         label={label}
         error={errors[name]}
         {...rest}
       />
     );
-  }
+  };
   renderRadio({ name, label, type = 'text', ...rest }) {
     let { data, errors } = { ...this.state };
     return (
       <Radio
         name={name}
         value={data[name]}
-        onChange={(e) => this.handleInput(e)}
+        onChange={e => this.handleInput(e)}
         error={errors[name]}
         {...rest}
       />
     );
-  }
+  };
 
   renderFileUpload({ name, ...rest }) {
     let { errors } = { ...this.state };
@@ -380,26 +380,26 @@ class Form extends Component {
     return (
       <FileUpload name={name} onUpload={this.handleFileUpload} {...rest} error={errors[name]} />
     );
-  }
+  };
 
   renderCheckboxCollection({ collectionName, ...rest }) {
     let { errors } = { ...this.state };
     return <CheckboxCollection error={errors[collectionName]} {...rest} />;
-  }
+  };
 
   renderImage({ name, label, ...rest }) {
     let { data, errors } = { ...this.state };
     return (
       <Image
         name={name}
-        onChange={(e) => this.handleInput(e)}
+        onChange={e => this.handleInput(e)}
         value={data[name]}
         label={label}
         error={errors[name]}
         {...rest}
       />
     );
-  }
+  };
 
   renderLink({ label, to, className }) {
     return (
@@ -407,7 +407,7 @@ class Form extends Component {
         {label}
       </Link>
     );
-  }
-}
+  };
+};
 
 export default Form;
