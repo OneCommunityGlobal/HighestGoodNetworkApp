@@ -44,6 +44,9 @@ const PauseAndResumeButton = (props) => {
       updateUserStatus(user, status, Date.now())(dispatch);
       setIsActive(status);
       toast.success('Your Changes were saved successfully.');
+      setTimeout(function(){
+        window.location.reload();
+     }, 5000);
     } else {
       setActivationDateOpen(true);
     }

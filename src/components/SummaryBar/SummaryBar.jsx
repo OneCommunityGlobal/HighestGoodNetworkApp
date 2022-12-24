@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-
 import {
   Container,
   Row,
@@ -32,7 +31,7 @@ import { ApiEndpoint } from 'utils/URL';
 import hasPermission from 'utils/permissions';
 
 const SummaryBar = props => {
-  const { asUser, role } = props;
+  const { asUser, role, leaderData } = props;
   const [userProfile, setUserProfile] = useState(undefined);
   const [tasks, setTasks] = useState(undefined);
   const authenticateUser = useSelector(state => state.auth.user);
@@ -104,10 +103,10 @@ const SummaryBar = props => {
   //   }
   // });
 
-  //Get infringment count from userProfile
+  //Get infringement count from userProfile
   const getInfringements = user => {
-    if (user && user.infringments) {
-      return user.infringments.length;
+    if (user && user.infringements) {
+      return user.infringements.length;
     } else {
       return 0;
     }
@@ -212,20 +211,29 @@ const SummaryBar = props => {
 
   const getWeeklySummary = user => {
     let summaries = user.weeklySummaries;
-    if (summaries && Array.isArray(summaries) && summaries[0] && summaries[0].summary) {
+    const timeNow = new Date();
+    const latestSummaryDueDate = new Date(summaries[0].dueDate);
+
+    if (
+      summaries &&
+      Array.isArray(summaries) &&
+      summaries[0] &&
+      summaries[0].summary &&
+      timeNow < latestSummaryDueDate
+    ) {
       return summaries[0].summary;
     } else {
       return '';
     }
   };
 
-  if (userProfile !== undefined) {
+  if (userProfile !== undefined && leaderData !== undefined) {
     const infringements = getInfringements(userProfile);
     const badges = getBadges(userProfile);
     console.log(tasks);
     const { firstName, lastName, email, _id } = userProfile;
-    let totalEffort = parseFloat(userProfile.tangibleHoursReportedThisWeek);
-    const weeklyComittedHours = userProfile.weeklyComittedHours;
+    let totalEffort = parseFloat(leaderData.find(x => x.personId === asUser).tangibletime);
+    const weeklyCommittedHours = userProfile.weeklyComittedHours;
     const weeklySummary = getWeeklySummary(userProfile);
     return (
       <Container fluid className="px-lg-0 bg--bar">
@@ -250,7 +258,7 @@ const SummaryBar = props => {
           </Col>
           <Col className="col-lg-3 col-12 no-gutters">
             <Row className="no-gutters">
-              {totalEffort < weeklyComittedHours && (
+              {totalEffort < weeklyCommittedHours && (
                 <div className="border-red col-4 bg--white-smoke" align="center">
                   <div className="py-1"> </div>
                   <p className="large_text_summary text--black text-danger" align="center">
@@ -262,7 +270,7 @@ const SummaryBar = props => {
                   <div className="py-2"> </div>
                 </div>
               )}
-              {totalEffort >= weeklyComittedHours && (
+              {totalEffort >= weeklyCommittedHours && (
                 <div className="border-green col-4 bg--dark-green" align="center">
                   <div className="py-1"> </div>
                   <p className="large_text_summary text--black" align="center">
@@ -279,11 +287,11 @@ const SummaryBar = props => {
               >
                 <div className="align-items-center" id="timelogweeklychart">
                   <div className="text--black align-items-center med_text_summary">
-                    Current Week : {totalEffort.toFixed(2)} / {weeklyComittedHours}
+                    Current Week : {totalEffort.toFixed(2)} / {weeklyCommittedHours}
                     <Progress
                       value={getBarValue(totalEffort)}
                       className={getBarColor(totalEffort)}
-                      striped={totalEffort < weeklyComittedHours}
+                      striped={totalEffort < weeklyCommittedHours}
                     />
                   </div>
                 </div>

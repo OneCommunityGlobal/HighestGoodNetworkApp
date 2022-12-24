@@ -15,13 +15,13 @@ import moment from 'moment';
  */
 export const getAllUserProfile = () => {
   const userProfilesPromise = axios.get(ENDPOINTS.USER_PROFILES);
-  return async (dispatch) => {
+  return async dispatch => {
     await dispatch(userProfilesFetchStartAction());
     userProfilesPromise
-      .then((res) => {
+      .then(res => {
         dispatch(userProfilesFetchCompleteACtion(res.data));
       })
-      .catch((err) => {
+      .catch(err => {
         dispatch(userProfilesFetchErrorAction());
       });
   };
@@ -34,7 +34,7 @@ export const getAllUserProfile = () => {
  */
 export const updateUserStatus = (user, status, reactivationDate) => {
   const userProfile = Object.assign({}, user);
-  userProfile.isActive = (status === UserStatus.Active);
+  userProfile.isActive = status === UserStatus.Active;
   userProfile.reactivationDate = reactivationDate;
   const patchData = { status: status, reactivationDate: reactivationDate };
   if (status === UserStatus.InActive) {
@@ -46,8 +46,8 @@ export const updateUserStatus = (user, status, reactivationDate) => {
   }
 
   const updateProfilePromise = axios.patch(ENDPOINTS.USER_PROFILE(user._id), patchData);
-  return async (dispatch) => {
-    updateProfilePromise.then((res) => {
+  return async dispatch => {
+    updateProfilePromise.then(res => {
       dispatch(userProfileUpdateAction(userProfile));
     });
   };
@@ -63,12 +63,12 @@ export const deleteUser = (user, option) => {
   const deleteProfilePromise = axios.delete(ENDPOINTS.USER_PROFILE(user._id), {
     data: requestData,
   });
-  return async (dispatch) => {
+  return async dispatch => {
     deleteProfilePromise
-      .then((res) => {
+      .then(res => {
         dispatch(userProfileDeleteAction(user));
       })
-      .catch((err) => {
+      .catch(err => {
         dispatch(userProfileDeleteAction(user));
       });
   };
@@ -87,7 +87,7 @@ export const userProfilesFetchStartAction = () => {
  * set Projects in store
  * @param payload : projects []
  */
-export const userProfilesFetchCompleteACtion = (payload) => {
+export const userProfilesFetchCompleteACtion = payload => {
   return {
     type: RECEIVE_ALL_USER_PROFILES,
     payload,
@@ -98,7 +98,7 @@ export const userProfilesFetchCompleteACtion = (payload) => {
  * Error when setting the user profiles list
  * @param payload : error status code
  */
-export const userProfilesFetchErrorAction = (payload) => {
+export const userProfilesFetchErrorAction = payload => {
   return {
     type: FETCH_USER_PROFILES_ERROR,
     payload,
@@ -109,7 +109,7 @@ export const userProfilesFetchErrorAction = (payload) => {
  * Action for Updating an user profile
  * @param {*} user : the updated user
  */
-export const userProfileUpdateAction = (user) => {
+export const userProfileUpdateAction = user => {
   return {
     type: USER_PROFILE_UPDATE,
     user,
@@ -120,7 +120,7 @@ export const userProfileUpdateAction = (user) => {
  * Delete user profile action
  * @param {*} user : the deleted user
  */
-export const userProfileDeleteAction = (user) => {
+export const userProfileDeleteAction = user => {
   return {
     type: USER_PROFILE_DELETE,
     user,
@@ -135,20 +135,42 @@ export const userProfileDeleteAction = (user) => {
 export const updateUserFinalDayStatus = (user, status, finalDayDate) => {
   const userProfile = Object.assign({}, user);
   userProfile.endDate = finalDayDate;
-  userProfile.isActive = status === "Active";
+  userProfile.isActive = status === 'Active';
   const patchData = { status: status, endDate: finalDayDate };
   if (finalDayDate === undefined) {
     patchData.endDate = undefined;
     userProfile.endDate = undefined;
-  }else {
+  } else {
     userProfile.endDate = moment(finalDayDate).format('YYYY-MM-DD');
     patchData.endDate = moment(finalDayDate).format('YYYY-MM-DD');
   }
 
   const updateProfilePromise = axios.patch(ENDPOINTS.USER_PROFILE(user._id), patchData);
-  return async (dispatch) => {
-    updateProfilePromise.then((res) => {
-      dispatch(userProfileUpdateAction(userProfile)); 
+  return async dispatch => {
+    updateProfilePromise.then(res => {
+      dispatch(userProfileUpdateAction(userProfile));
+    });
+  };
+};
+
+export const updateUserFinalDayStatusIsSet = (user, status, finalDayDate, isSet) => {
+  const userProfile = Object.assign({}, user);
+  userProfile.endDate = finalDayDate;
+  userProfile.isActive = status === 'Active';
+  userProfile.isSet = isSet === 'FinalDay';
+  const patchData = { status: status, endDate: finalDayDate, isSet: isSet };
+  if (finalDayDate === undefined) {
+    patchData.endDate = undefined;
+    userProfile.endDate = undefined;
+  } else {
+    userProfile.endDate = moment(finalDayDate).format('YYYY-MM-DD');
+    patchData.endDate = moment(finalDayDate).format('YYYY-MM-DD');
+  }
+
+  const updateProfilePromise = axios.patch(ENDPOINTS.USER_PROFILE(user._id), patchData);
+  return async dispatch => {
+    updateProfilePromise.then(res => {
+      dispatch(userProfileUpdateAction(userProfile));
     });
   };
 };

@@ -122,7 +122,7 @@ const TotalTangibleHours = props => {
     />
   );
   */
-  return <p>{props.userProfile.totalTangibleHrs}</p>;
+  return <p>{props.userProfile.totalTangibleHrs.toFixed(2)}</p>;
 };
 
 /**
@@ -135,9 +135,39 @@ const TotalTangibleHours = props => {
  */
 const ViewTab = props => {
   const { userProfile, setUserProfile, setChanged, role, canEdit } = props;
+  const [totalTangibleHoursThisWeek, setTotalTangibleHoursThisWeek] = useState(0);
+  const [totalIntangibleHours, setTotalIntangibleHours] = useState(0);
+  const [totalTangibleHours, setTotalTangibleHours] = useState(0);
+  const { hoursByCategory } = userProfile;
 
-  const [totalTangibleHoursThisWeek, setTotalTangibleHoursThisWeek] = useState('Loading...');
   useEffect(() => {
+    sumOfCategoryHours();
+  }, [hoursByCategory]);
+
+  const calculateTotalHrsForPeriod = timeEntries => {
+    let hours = { totalTangibleHrs: 0, totalIntangibleHrs: 0 };
+    if (timeEntries.length < 1) return hours;
+
+    for (let i = 0; i < timeEntries.length; i++) {
+      const timeEntry = timeEntries[i];
+      if (timeEntry.isTangible) {
+        hours.totalTangibleHrs += parseFloat(timeEntry.hours) + parseFloat(timeEntry.minutes) / 60;
+      } else {
+        hours.totalIntangibleHrs +=
+          parseFloat(timeEntry.hours) + parseFloat(timeEntry.minutes) / 60;
+      }
+    }
+    return hours;
+  };
+
+  //This function is return totalTangibleHours which is the sum of all the tangible categories
+  const sumOfCategoryHours = () => {
+    const hours = Object.values(hoursByCategory).reduce((prev, curr) => prev + curr, 0);
+    setTotalTangibleHours(hours.toFixed(2));
+  };
+
+  useEffect(() => {
+    //Get Total Tangible Hours this week
     const startOfWeek = moment()
       .tz('America/Los_Angeles')
       .startOf('week')
@@ -146,20 +176,33 @@ const ViewTab = props => {
       .tz('America/Los_Angeles')
       .endOf('week')
       .format('YYYY-MM-DD');
+
     axios
       .get(ENDPOINTS.TIME_ENTRIES_PERIOD(userProfile._id, startOfWeek, endOfWeek))
       .then(res => {
-        let output = 0;
-        for (let i = 0; i < res.data.length; i++) {
-          const timeEntry = res.data[i];
-          if (timeEntry.isTangible === true) {
-            output += parseFloat(timeEntry.hours) + parseFloat(timeEntry.minutes) / 60;
-          }
-        }
-
-        setTotalTangibleHoursThisWeek(output.toFixed(2));
+        const timeEntries = res.data;
+        const output = calculateTotalHrsForPeriod(timeEntries);
+        setTotalTangibleHoursThisWeek(output.totalTangibleHrs.toFixed(2));
       })
-      .catch(err => {});
+      .catch(err => {
+        console.log(err.message);
+      });
+
+    //Get total tangible & intangible hours
+    const createdDate = moment(userProfile.createdDate).format('YYYY-MM-DD');
+    const today = moment().format('YYYY-MM-DD');
+
+    axios
+      .get(ENDPOINTS.TIME_ENTRIES_PERIOD(userProfile._id, createdDate, today))
+      .then(res => {
+        const timeEntries = res.data;
+        const output = calculateTotalHrsForPeriod(timeEntries);
+        setTotalIntangibleHours(output.totalIntangibleHrs.toFixed(2));
+        sumOfCategoryHours();
+      })
+      .catch(err => {
+        console.log(err.message);
+      });
   }, []);
 
   return (
@@ -231,24 +274,25 @@ const ViewTab = props => {
           />
         </Col>
       </Row>
-
+      <Row>
+        <Col md="6">
+          <Label>Total Intangible Hours </Label>
+        </Col>
+        <Col md="6">
+          <p>{totalIntangibleHours}</p>
+        </Col>
+      </Row>
       <Row>
         <Col md="6">
           <Label>Total Tangible Hours </Label>
         </Col>
         <Col md="6">
-          <TotalTangibleHours
-            userProfile={userProfile}
-            setUserProfile={setUserProfile}
-            setChanged={setChanged}
-            canEdit={canEdit}
-            role={role}
-          />
+          <p>{totalTangibleHours}</p>
         </Col>
       </Row>
 
       {props?.userProfile?.hoursByCategory
-        ? Object.keys(props.userProfile.hoursByCategory).map(key => (
+        ? Object.keys(userProfile.hoursByCategory).map(key => (
             <React.Fragment key={'hours-by-category-' + key}>
               <Row>
                 <Col md="6">
@@ -257,7 +301,7 @@ const ViewTab = props => {
                       <>Total Tangible {capitalize(key)} Hours</>
                     ) : (
                       <>Total Unassigned Category Hours</>
-                    )}{' '}
+                    )}
                   </Label>
                 </Col>
                 <Col md="6">
@@ -265,20 +309,22 @@ const ViewTab = props => {
                     <Input
                       type="number"
                       id={`${key}Hours`}
-                      value={props.userProfile.hoursByCategory[key]}
+                      step=".01"
+                      value={parseFloat(userProfile.hoursByCategory[key])?.toFixed(2)}
                       onChange={e => {
                         setUserProfile({
-                          ...props.userProfile,
+                          ...userProfile,
                           hoursByCategory: {
-                            ...props.userProfile.hoursByCategory,
-                            [key]: e.target.value,
+                            ...userProfile.hoursByCategory,
+                            [key]: Number(e.target.value),
                           },
                         });
+                        setChanged(true);
                       }}
                       placeholder={`Total Tangible ${capitalize(key)} Hours`}
                     />
                   ) : (
-                    <p>{props.userProfile.hoursByCategory[key]}</p>
+                    <p>{userProfile.hoursByCategory[key]?.toFixed(2)}</p>
                   )}
                 </Col>
               </Row>

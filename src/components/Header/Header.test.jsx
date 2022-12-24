@@ -4,7 +4,7 @@ import { Header } from './Header';
 import mockAdminState from '../../__tests__/mockAdminState';
 import { getHeaderData } from '../../actions/authActions';
 
-describe('Header page structure', () => {
+xdescribe('Header page structure', () => {
   let mountedHeader, props;
   beforeEach(() => {
     props = mockAdminState;
@@ -34,7 +34,7 @@ describe('Header page structure', () => {
   }); 
 });
 
-describe('UnAuthenticated Header page structure', () => {
+xdescribe('UnAuthenticated Header page structure', () => {
   let mountedHeader, props;
   beforeEach(() => {
     props = { auth: { isAuthenticated: false } };

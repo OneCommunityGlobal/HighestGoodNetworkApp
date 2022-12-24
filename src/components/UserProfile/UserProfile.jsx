@@ -40,6 +40,7 @@ import hasPermission from 'utils/permissions';
 import ActiveInactiveConfirmationPopup from '../UserManagement/ActiveInactiveConfirmationPopup';
 import { updateUserStatus } from '../../actions/userManagement';
 import { UserStatus } from '../../utils/enums';
+import { faSleigh } from '@fortawesome/free-solid-svg-icons';
 
 const UserProfile = props => {
   /* Constant values */
@@ -56,6 +57,7 @@ const UserProfile = props => {
   const [showLoading, setShowLoading] = useState(true);
   const [userProfile, setUserProfile] = useState(undefined);
   const [originalUserProfile, setOriginalUserProfile] = useState(undefined);
+  const [originalTasks, setOriginalTasks] = useState(undefined);
   const [id, setId] = useState('');
   const [activeTab, setActiveTab] = useState('1');
   const [infoModal, setInfoModal] = useState(false);
@@ -69,6 +71,8 @@ const UserProfile = props => {
   const [modalMessage, setModalMessage] = useState('');
   const [shouldRefresh, setShouldRefresh] = useState(false);
   const [activeInactivePopupOpen, setActiveInactivePopupOpen] = useState(false);
+  const [tasks, setTasks] = useState();
+  const [updatedTasks, setUpdatedTasks] = useState([])
   //const [isValid, setIsValid] = useState(true)
 
   /* useEffect functions */
@@ -86,6 +90,7 @@ const UserProfile = props => {
     setShowLoading(true);
     loadUserProfile();
     setChanged(false);
+    loadUserTasks();
   }, [props?.match?.params?.userId]);
 
   useEffect(() => {
@@ -93,6 +98,17 @@ const UserProfile = props => {
     setBlueSquareChanged(false);
     handleSubmit();
   }, [blueSquareChanged]);
+
+  const loadUserTasks = async () => {
+    const userId = props?.match?.params?.userId;
+    axios
+      .get(ENDPOINTS.TASKS_BY_USERID(userId))
+      .then(res => {
+        setTasks(res?.data || []);
+        setOriginalTasks(res.data)
+      })
+      .catch(err => console.log(err));
+  };
 
   const loadUserProfile = async () => {
     const userId = props?.match?.params?.userId;
@@ -151,6 +167,16 @@ const UserProfile = props => {
     }
     setUserProfile(newUserProfile);
     setChanged(true);
+  };
+
+  const onUpdateTask = (taskId, updatedTask) => {
+    const newTask = {
+      updatedTask,
+      taskId
+    }
+    setTasks((tasks) => tasks.filter(task => task._id != taskId))
+    setUpdatedTasks((tasks)=> [...tasks, newTask])
+    setChanged(true)
   };
 
   const handleImageUpload = async evt => {
@@ -224,41 +250,52 @@ const UserProfile = props => {
       setShowModal(false);
       setUserProfile({
         ...userProfile,
-        infringments: userProfile.infringments.concat(newBlueSquare),
+        infringements: userProfile.infringements?.concat(newBlueSquare),
       });
       setModalTitle('Blue Square');
     } else if (operation === 'update') {
-      const currentBlueSquares = [...userProfile.infringments];
-      if (dateStamp != null) {
+      let currentBlueSquares = [...userProfile?.infringements] || [];
+      if (dateStamp != null && currentBlueSquares !== []) {
         currentBlueSquares.find(blueSquare => blueSquare._id === id).date = dateStamp;
       }
-      if (summary != null) {
+      if (summary != null && currentBlueSquares !== []) {
         currentBlueSquares.find(blueSquare => blueSquare._id === id).description = summary;
       }
 
       setShowModal(false);
-      setUserProfile({ ...userProfile, infringments: currentBlueSquares });
+      setUserProfile({ ...userProfile, infringements: currentBlueSquares });
     } else if (operation === 'delete') {
-      const newInfringements = [];
-      userProfile.infringments.forEach(infringment => {
-        if (infringment._id !== id) newInfringements.push(infringment);
-      });
-
-      setUserProfile({ ...userProfile, infringments: newInfringements });
-      setShowModal(false);
+      let newInfringements = [...userProfile?.infringements] || [];
+      if (newInfringements !== []) {
+        newInfringements = newInfringements.filter(infringement => infringement._id !== id)
+        setUserProfile({ ...userProfile, infringements: newInfringements });
+        setShowModal(false);
+      }
     }
     setBlueSquareChanged(true);
   };
 
   const handleSubmit = async () => {
+    for (let i = 0; i < updatedTasks.length; i += 1) {
+      const updatedTask = updatedTasks[i];
+      const url = ENDPOINTS.TASK_UPDATE(updatedTask.taskId);
+      axios
+        .put(url, updatedTask.updatedTask)
+        .catch(err => console.log(err));
+    }
     try {
       await props.updateUserProfile(props.match.params.userId, userProfile);
       await loadUserProfile();
+
+       await loadUserTasks();
+
       setShowSaveWarning(false);
     } catch (err) {
       alert('An error occurred while attempting to save this profile.');
     }
+    
     setShouldRefresh(true);
+    setChanged(false);
   };
 
   const toggleInfoModal = () => {
@@ -601,12 +638,15 @@ const UserProfile = props => {
               <TabPane tabId="4">
                 <ProjectsTab
                   userProjects={userProfile.projects || []}
+                  userTasks={tasks}
                   projectsData={props?.allProjects?.projects || []}
                   onAssignProject={onAssignProject}
                   onDeleteProject={onDeleteProject}
                   edit={hasPermission(requestorRole, 'editUserProfile', roles, userPermissions)}
                   role={requestorRole}
                   userPermissions={userPermissions}
+                  userId={props.match.params.userId}
+                  updateTask={onUpdateTask}
                 />
               </TabPane>
               <TabPane tabId="5">
@@ -656,6 +696,7 @@ const UserProfile = props => {
                     <span
                       onClick={() => {
                         setUserProfile(originalUserProfile);
+                        setTasks(originalTasks)
                         setChanged(false);
                       }}
                       className="btn btn-outline-danger mr-1 btn-bottom"
@@ -664,6 +705,9 @@ const UserProfile = props => {
                     </span>
                   </>
                 )}
+              <Button outline onClick={() => loadUserProfile()}>
+                Refresh
+              </Button>
             </div>
           </Col>
         </Row>

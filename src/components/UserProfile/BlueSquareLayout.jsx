@@ -12,12 +12,12 @@ const BlueSquareLayout = props => {
     handleBlueSquare,
     isUserSelf,
     role,
-    canEdit,
     roles,
     userPermissions,
+    canEdit,
   } = props;
 
-  const { privacySettings, infringments } = userProfile;
+  const { privacySettings } = userProfile;
 
   if (canEdit) {
     return (
@@ -35,7 +35,7 @@ const BlueSquareLayout = props => {
         </div>
 
         <BlueSquare
-          blueSquares={infringments}
+          blueSquares={userProfile?.infringements}
           handleBlueSquare={handleBlueSquare}
           role={role}
           roles={roles}
@@ -52,11 +52,9 @@ const BlueSquareLayout = props => {
         <div>
           <p>BLUE SQUARES</p>
           <BlueSquare
-            blueSquares={infringments}
+            blueSquares={userProfile?.infringements}
             handleBlueSquare={handleBlueSquare}
             role={role}
-            roles={roles}
-            userPermissions={userPermissions}
           />
         </div>
       )}
