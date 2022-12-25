@@ -14,6 +14,7 @@ import { getTimeZoneAPIKey } from '../../actions/timezoneAPIActions';
 export const Dashboard = props => {
   const [popup, setPopup] = useState(false);
   const [leaderData, setLeaderData] = useState(null);
+  const [weeklySummariesCount, setCount] = useState(undefined);
   let userId = props.match.params.userId ? props.match.params.userId : props.auth.user.userid;
 
   const toggle = () => {
@@ -47,6 +48,7 @@ export const Dashboard = props => {
         toggleSubmitForm={toggle}
         role={props.auth.user.role}
         leaderData={leaderData}
+        setCount={setCount}
       />
 
       <Row>
@@ -73,7 +75,7 @@ export const Dashboard = props => {
           {popup ? (
             <div className="my-2">
               <div id="weeklySum">
-                <WeeklySummary asUser={userId} />
+                <WeeklySummary asUser={userId} weeklySummariesCount={weeklySummariesCount} />
               </div>
             </div>
           ) : null}

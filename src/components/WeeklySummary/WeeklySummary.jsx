@@ -32,6 +32,7 @@ import { toast } from 'react-toastify';
 import { WeeklySummaryContentTooltip, MediaURLTooltip } from './WeeklySummaryTooltips';
 import classnames from 'classnames';
 import { getUserProfile } from 'actions/userProfile';
+import { ENDPOINTS } from 'utils/URL';
 
 // Need this export here in order for automated testing to work.
 export class WeeklySummary extends Component {
@@ -44,7 +45,10 @@ export class WeeklySummary extends Component {
       weeklySummariesCount: 0,
       mediaConfirm: false,
     },
-    dueDate: moment().tz('America/Los_Angeles').endOf('week').toISOString(),
+    dueDate: moment()
+      .tz('America/Los_Angeles')
+      .endOf('week')
+      .toISOString(),
     dueDateLastWeek: moment()
       .tz('America/Los_Angeles')
       .endOf('week')
@@ -114,7 +118,23 @@ export class WeeklySummary extends Component {
     return moment(dueDate).isBetween(fromDate, toDate, undefined, '[]');
   };
 
-  toggleTab = (tab) => {
+  // Similar to UserProfile component function
+  // Loads component depending on asUser passed as prop
+  loadUserProfile = async () => {
+    const userId = this.props.asUser;
+    if (!userId) return;
+
+    try {
+      const response = await axios.get(ENDPOINTS.USER_PROFILE(userId));
+      const newUserProfile = response.data;
+      console.log('User Profile loaded', newUserProfile);
+      setUserProfile(newUserProfile);
+    } catch (err) {
+      console.log('User Profile not loaded.');
+    }
+  };
+
+  toggleTab = tab => {
     const activeTab = this.state.activeTab;
     if (activeTab !== tab) {
       this.setState({ activeTab: tab });
@@ -124,12 +144,27 @@ export class WeeklySummary extends Component {
   // Minimum word count of 50 (handle words that also use non-ASCII characters by counting whitespace rather than word character sequences).
   regexPattern = new RegExp(/^\s*(?:\S+(?:\s+|$)){50,}$/);
   schema = {
-    mediaUrl: Joi.string().trim().uri().required().label('Media URL'),
-    summary: Joi.string().allow('').regex(this.regexPattern).label('Minimum 50 words'), // Allow empty string OR the minimum word count of 50.
-    summaryLastWeek: Joi.string().allow('').regex(this.regexPattern).label('Minimum 50 words'),
-    summaryBeforeLast: Joi.string().allow('').regex(this.regexPattern).label('Minimum 50 words'),
+    mediaUrl: Joi.string()
+      .trim()
+      .uri()
+      .required()
+      .label('Media URL'),
+    summary: Joi.string()
+      .allow('')
+      .regex(this.regexPattern)
+      .label('Minimum 50 words'), // Allow empty string OR the minimum word count of 50.
+    summaryLastWeek: Joi.string()
+      .allow('')
+      .regex(this.regexPattern)
+      .label('Minimum 50 words'),
+    summaryBeforeLast: Joi.string()
+      .allow('')
+      .regex(this.regexPattern)
+      .label('Minimum 50 words'),
     weeklySummariesCount: Joi.optional(),
-    mediaConfirm: Joi.boolean().invalid(false).label('Media Confirm'),
+    mediaConfirm: Joi.boolean()
+      .invalid(false)
+      .label('Media Confirm'),
   };
 
   validate = () => {
@@ -156,7 +191,7 @@ export class WeeklySummary extends Component {
     return error ? error.details[0].message : null;
   };
 
-  handleInputChange = (event) => {
+  handleInputChange = event => {
     event.persist();
     const { name, value } = event.target;
 
@@ -183,7 +218,7 @@ export class WeeklySummary extends Component {
     this.setState({ formElements, errors });
   };
 
-  handleCheckboxChange = (event) => {
+  handleCheckboxChange = event => {
     event.persist();
     const { name, checked } = event.target;
 
@@ -197,7 +232,7 @@ export class WeeklySummary extends Component {
     this.setState({ formElements, errors });
   };
 
-  handleSave = async (event) => {
+  handleSave = async event => {
     event.preventDefault();
     // Providing a custom toast id to prevent duplicate.
     const toastIdOnSave = 'toast-on-save';
@@ -259,7 +294,7 @@ export class WeeklySummary extends Component {
     const summariesLabels = {
       summary: 'This Week',
       summaryLastWeek: this.doesDateBelongToWeek(dueDateLastWeek, 1)
-        ? 'Last Week'
+        ? this.doesDateBelongToWeek(dueDateLastWeek, 1)
         : moment(dueDateLastWeek).format('YYYY-MMM-DD'),
       summaryBeforeLast: this.doesDateBelongToWeek(dueDateBeforeLast, 2)
         ? 'Week Before Last'
@@ -295,7 +330,7 @@ export class WeeklySummary extends Component {
     return (
       <Container fluid={this.props.isModal ? true : false} className="bg--white-smoke py-3 mb-5">
         <h3>Weekly Summaries</h3>
-        <div>Total submitted: {formElements.weeklySummariesCount}</div>
+        <div>Total submitted: {this.props.weeklySummariesCount}</div>
 
         <Form className="mt-4">
           <Nav tabs>
@@ -450,12 +485,12 @@ const mapStateToProps = ({ auth, weeklySummaries }) => ({
   fetchError: weeklySummaries.fetchError,
 });
 
-const mapDispatchToProps = (dispatch) => {
+const mapDispatchToProps = dispatch => {
   return {
     getWeeklySummaries: getWeeklySummaries,
     updateWeeklySummaries: updateWeeklySummaries,
-    getWeeklySummaries: (userId) => getWeeklySummaries(userId)(dispatch),
-    getUserProfile: (userId) => getUserProfile(userId)(dispatch),
+    getWeeklySummaries: userId => getWeeklySummaries(userId)(dispatch),
+    getUserProfile: userId => getUserProfile(userId)(dispatch),
   };
 };
 

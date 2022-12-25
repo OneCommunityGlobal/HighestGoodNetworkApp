@@ -60,6 +60,7 @@ const SummaryBar = props => {
       const newUserProfile = response.data;
       console.log('User Profile loaded', newUserProfile);
       setUserProfile(newUserProfile);
+      props.setCount(newUserProfile.weeklySummariesCount);
     } catch (err) {
       console.log('User Profile not loaded.');
     }
