@@ -349,19 +349,15 @@ const AddTaskModal = (props) => {
     }, 1000);
   };
 
-  useEffect(() => {}, [tasks]);
-
-  useEffect(() =>{
-    const res = props.allProjects.projects.filter(obj => obj._id === props.projectId)[0];
-
-    if (res){
-      setProjectCategory(res.category);
-      if (props.level === 1){
-        setClassification(res.category)
-      }
+  useEffect(() => {
+    if (props.level >= 1) {
+      const classificationMother = props.tasks.taskItems.find(({ _id }) => _id === props.taskId)
+        .classification;
+        if(classificationMother){
+          setClassification(classificationMother);
+        }
     }
-  })
-
+  }, [props.level]);
 
   getNewNum();
 
