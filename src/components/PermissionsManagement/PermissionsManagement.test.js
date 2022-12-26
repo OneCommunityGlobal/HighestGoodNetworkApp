@@ -44,6 +44,5 @@ describe('permissions management page structure', () => {
       expect(screen.getByRole('button', { name: 'Close' })).toBeInTheDocument();
       expect(screen.getByRole('textbox')).toBeInTheDocument();
     });
-
   });
 });

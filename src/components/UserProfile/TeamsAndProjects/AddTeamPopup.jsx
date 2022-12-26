@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Input, Alert } from 'reactstrap';
 import AddTeamsAutoComplete from './AddTeamsAutoComplete';
 
-const AddTeamPopup = React.memo((props) => {
+const AddTeamPopup = React.memo(props => {
   const closePopup = () => {
     props.onClose();
   };
@@ -11,14 +11,14 @@ const AddTeamPopup = React.memo((props) => {
   const [isValidTeam, onValidation] = useState(true);
 
   const onAssignTeam = () => {
-    if (selectedTeam && !props.userTeamsById.some((x) => x._id === selectedTeam._id)) {
+    if (selectedTeam && !props.userTeamsById.some(x => x._id === selectedTeam._id)) {
       props.onSelectAssignTeam(selectedTeam);
       onSelectTeam(undefined);
     } else {
       onValidation(false);
     }
   };
-  const selectTeam = (team) => {
+  const selectTeam = team => {
     onSelectTeam(team);
     onValidation(true);
   };

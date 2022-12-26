@@ -22,7 +22,7 @@ const Teamdataheader = () => (
 );
 
 const Teamtabledata = ({ teammembers, edit, handleTeam }) => {
-  const handleDelete = (e) => {
+  const handleDelete = e => {
     const id = e.target.getAttribute('data-item');
     handleTeam('delete', id);
   };
@@ -53,17 +53,17 @@ Teamtabledata.propTypes = {
   edit: PropTypes.bool.isRequired,
   handleTeam: PropTypes.func.isRequired,
 };
-const Teams = React.memo((props) => {
+const Teams = React.memo(props => {
   const [addNewTeamModal, setAddNewTeamModal] = useState(false);
   const [remainedTeams, setRemainedTeams] = useState([]);
   const [teams, setTeams] = useState(props.teamsdata);
   useEffect(() => {
-    const teamsId = props.allTeams.map((team) => {
+    const teamsId = props.allTeams.map(team => {
       const { _id, teamName } = team;
       return { _id, teamName };
     });
     setRemainedTeams(
-      teamsId.filter((team) => {
+      teamsId.filter(team => {
         for (let i = 0; i < props.teamsdata.length; i += 1) {
           if (team._id === props.teamsdata[i]._id) {
             return false;
@@ -101,7 +101,7 @@ const Teams = React.memo((props) => {
           </tr>
         </thead>
         <tbody>
-          {props.teamsdata.map((team) => (
+          {props.teamsdata.map(team => (
             <Teamtabledata
               key={team._id}
               teammembers={team}

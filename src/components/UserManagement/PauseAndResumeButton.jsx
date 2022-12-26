@@ -13,7 +13,7 @@ import { toast } from 'react-toastify';
  * @param {*} props.userProfile
  * @returns
  */
-const PauseAndResumeButton = (props) => {
+const PauseAndResumeButton = props => {
   const [activationDateOpen, setActivationDateOpen] = useState(false);
   const [isActive, setIsActive] = useState(true);
 
@@ -30,7 +30,7 @@ const PauseAndResumeButton = (props) => {
   /**
    * Call back on Pause confirmation button click to trigger the action to update user status
    */
-  const pauseUser = (reActivationDate) => {
+  const pauseUser = reActivationDate => {
     updateUserStatus(props.userProfile, UserStatus.InActive, reActivationDate)(dispatch);
     setIsActive(false);
     setActivationDateOpen(false);
@@ -44,9 +44,9 @@ const PauseAndResumeButton = (props) => {
       updateUserStatus(user, status, Date.now())(dispatch);
       setIsActive(status);
       toast.success('Your Changes were saved successfully.');
-      setTimeout(function(){
+      setTimeout(function() {
         window.location.reload();
-     }, 5000);
+      }, 5000);
     } else {
       setActivationDateOpen(true);
     }
@@ -65,7 +65,7 @@ const PauseAndResumeButton = (props) => {
         className={`btn btn-outline-${isActive ? 'warning' : 'success'} ${
           props.isBigBtn ? '' : 'btn-sm'
         }  mr-1`}
-        onClick={(e) => {
+        onClick={e => {
           onPauseResumeClick(props.userProfile, isActive ? UserStatus.InActive : UserStatus.Active);
         }}
       >
