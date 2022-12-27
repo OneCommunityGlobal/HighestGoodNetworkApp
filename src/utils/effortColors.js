@@ -1,4 +1,6 @@
 import _ from 'lodash';
+
+//For progress bar that shows the percentage of the completion
 export const getProgressColor = (effort,commit) => {
   let color = 'white';
   let percentage = 0;
@@ -15,6 +17,7 @@ export const getProgressColor = (effort,commit) => {
   return color;
 };
 
+//For (progress) bar that is designed for the exact hours in LEADERBOARD
 export const getcolor = (effort) => {
   let color = 'super-awesome'; //purple
   if (_.inRange(effort, 0, 5)) color = 'danger'; //red
@@ -26,6 +29,7 @@ export const getcolor = (effort) => {
   return color;
 };
 
+//For progress bar that shows the percentage of the completion
 export const getProgressValue = (effort,commit) => {
   let percentage = 0;
   if (commit>0){
@@ -35,6 +39,7 @@ export const getProgressValue = (effort,commit) => {
   return percentage;
 };
 
+//For (progress) bar that is designed for the exact hours in LEADERBOARD
 export const getprogress = (effort) => {
   let progress = 92;
   if (_.inRange(effort, 0, 5)) progress = 5 + Math.round(5 * (effort / 5));
@@ -48,5 +53,3 @@ export const getprogress = (effort) => {
 
   return progress;
 };
-
-export default {getProgressColor,getcolor};
