@@ -15,7 +15,7 @@ import { TaskDifferenceModal } from './components/TaskDifferenceModal';
 import { getTeamMemberTasksData } from './selectors';
 import { getUserProfile } from '../../actions/userProfile';
 import './style.css';
-import { getcolor } from '../../utils/effortColors';
+import { getProgressColor, getProgressValue } from '../../utils/effortColors';
 import { fetchAllManagingTeams } from '../../actions/team';
 import EffortBar from 'components/Timelog/EffortBar';
 import TimeEntry from 'components/Timelog/TimeEntry';
@@ -90,7 +90,7 @@ const TeamMemberTasks = props => {
         //conditional variable for moving current user up front.
         let moveCurrentUserFront = false;
 
-        console.log('filteredMembers', filteredMembers);
+        //console.log('filteredMembers', filteredMembers);
 
         //Does the user has at least one task with project Id and task id assigned. Then set the current user up front.
         for (const task of currentUser.tasks) {
@@ -207,12 +207,8 @@ const TeamMemberTasks = props => {
                                 ${parseFloat(task.estimatedHours.toFixed(2))}`}
                                   </span>
                                   <Progress
-                                    color={
-                                      task.hoursLogged > task.estimatedHours
-                                        ? getcolor(0)
-                                        : getcolor(task.estimatedHours - task.hoursLogged)
-                                    }
-                                    value={(task.hoursLogged / task.estimatedHours) * 100}
+                                    color = {getProgressColor(task.hoursLogged,task.estimatedHours)}
+                                    value = {getProgressValue(task.hoursLogged,task.estimatedHours)}
                                   />
                                 </div>
                               </td>
