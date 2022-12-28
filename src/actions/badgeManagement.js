@@ -12,28 +12,28 @@ import {
 } from '../constants/badge';
 import { ENDPOINTS } from '../utils/URL';
 
-const getAllBadges = (allBadges) => ({
+const getAllBadges = allBadges => ({
   type: GET_ALL_BADGE_DATA,
   allBadges,
 });
 
-export const fetchAllBadges = () => async (dispatch) => {
+export const fetchAllBadges = () => async dispatch => {
   const { data } = await axios.get(ENDPOINTS.BADGE());
   dispatch(getAllBadges(data));
 };
 
 export const closeAlert = () => {
-  return (dispatch) => {
+  return dispatch => {
     dispatch(gotCloseAlert());
   };
 };
 
-export const addSelectBadge = (badgeId) => ({
+export const addSelectBadge = badgeId => ({
   type: ADD_SELECT_BADGE,
   badgeId,
 });
 
-export const removeSelectBadge = (badgeId) => ({
+export const removeSelectBadge = badgeId => ({
   type: REMOVE_SELECT_BADGE,
   badgeId,
 });
@@ -46,12 +46,12 @@ export const clearSelected = () => ({
   type: CLEAR_SELECTED,
 });
 
-export const getFirstName = (firstName) => ({
+export const getFirstName = firstName => ({
   type: GET_FIRST_NAME,
   firstName,
 });
 
-export const getLastName = (lastName) => ({
+export const getLastName = lastName => ({
   type: GET_LAST_NAME,
   lastName,
 });
@@ -65,7 +65,7 @@ export const getMessage = (message, color) => ({
 export const gotCloseAlert = () => ({ type: CLOSE_ALERT });
 
 export const validateBadges = (firstName, lastName) => {
-  return async (dispatch) => {
+  return async dispatch => {
     if (!firstName || !lastName) {
       dispatch(
         getMessage(
@@ -82,7 +82,7 @@ export const validateBadges = (firstName, lastName) => {
 };
 
 export const assignBadges = (firstName, lastName, selectedBadges) => {
-  return async (dispatch) => {
+  return async dispatch => {
     if (selectedBadges.length === 0) {
       dispatch(
         getMessage(
@@ -113,18 +113,30 @@ export const assignBadges = (firstName, lastName, selectedBadges) => {
     }
     const badgeCollection = res.data[0].badgeCollection;
     const UserToBeAssigned = res.data[0]._id;
+    const earnedDate = badgeCollection[0].earnedDate;
 
-    selectedBadges.forEach((badgeId) => {
+    selectedBadges.forEach(badgeId => {
       let included = false;
-      badgeCollection.forEach((badgeObj) => {
+      badgeCollection.forEach(badgeObj => {
         if (badgeId === badgeObj.badge) {
           badgeObj.count++;
           badgeObj.lastModified = Date.now();
+          badgeObj.earnedDate = [{ date: Date.now() }];
           included = true;
         }
       });
       if (!included) {
-        badgeCollection.push({ badge: badgeId, count: 1, lastModified: Date.now() });
+        let array = [];
+        let tati = {
+          date: Date.now(),
+        };
+        array.push(Date.now());
+        badgeCollection.push({
+          badge: badgeId,
+          count: 1,
+          lastModified: Date.now(),
+          earnedDate: array,
+        });
       }
     });
 
@@ -150,7 +162,7 @@ export const assignBadges = (firstName, lastName, selectedBadges) => {
 };
 
 export const assignBadgesByUserID = (userId, selectedBadges) => {
-  return async (dispatch) => {
+  return async dispatch => {
     if (selectedBadges.length === 0) {
       dispatch(
         getMessage(
@@ -178,22 +190,32 @@ export const assignBadgesByUserID = (userId, selectedBadges) => {
       return;
     }
     const badgeCollection = res.data.badgeCollection;
+    const earnedDate = res.data.badgeCollection[0].earnedDate;
 
     for (let i = 0; i < badgeCollection.length; i++) {
       badgeCollection[i].badge = badgeCollection[i].badge._id;
     }
 
-    selectedBadges.forEach((badgeId) => {
+    selectedBadges.forEach(badgeId => {
       let included = false;
-      badgeCollection.forEach((badgeObj) => {
+      // earnedDate.push(Date.now());
+      badgeCollection.forEach(badgeObj => {
         if (badgeId === badgeObj.badge) {
           badgeObj.count++;
           badgeObj.lastModified = Date.now();
+          badgeObj.earnedDate = [...earnedDate, Date.now()];
           included = true;
         }
       });
       if (!included) {
-        badgeCollection.push({ badge: badgeId, count: 1, lastModified: Date.now() });
+        let array = [];
+        array.push(Date.now());
+        badgeCollection.push({
+          badge: badgeId,
+          count: 1,
+          lastModified: Date.now(),
+          earnedDate: array,
+        });
       }
     });
 
@@ -221,7 +243,7 @@ export const assignBadgesByUserID = (userId, selectedBadges) => {
 };
 
 export const changeBadgesByUserID = (userId, badgeCollection) => {
-  return async (dispatch) => {
+  return async dispatch => {
     const url = ENDPOINTS.BADGE_ASSIGN(userId);
     try {
       await axios.put(url, { badgeCollection, newBadges: 0 });
@@ -243,7 +265,7 @@ export const changeBadgesByUserID = (userId, badgeCollection) => {
   };
 };
 
-export const createNewBadge = (newBadge) => async (dispatch) => {
+export const createNewBadge = newBadge => async dispatch => {
   try {
     await axios.post(ENDPOINTS.BADGE(), newBadge);
     dispatch(
@@ -271,7 +293,7 @@ export const createNewBadge = (newBadge) => async (dispatch) => {
   }
 };
 
-export const updateBadge = (badgeId, badgeData) => async (dispatch) => {
+export const updateBadge = (badgeId, badgeData) => async dispatch => {
   try {
     await axios.put(ENDPOINTS.BADGE_BY_ID(badgeId), badgeData);
     dispatch(
@@ -296,7 +318,7 @@ export const updateBadge = (badgeId, badgeData) => async (dispatch) => {
   }
 };
 
-export const deleteBadge = (badgeId) => async (dispatch) => {
+export const deleteBadge = badgeId => async dispatch => {
   try {
     const res = await axios.delete(ENDPOINTS.BADGE_BY_ID(badgeId));
     dispatch(getMessage(res.data.message, 'success'));
