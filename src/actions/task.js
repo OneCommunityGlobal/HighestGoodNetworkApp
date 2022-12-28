@@ -54,7 +54,6 @@ export const addNewTask = (newTask, wbsId) => async (dispatch, getState) => {
     _id = res.data._id;
     status = res.status;
     task = res.data;
-    console.log(task);
     const userIds = task.resources.map(resource => resource.userID);
     await createOrUpdateTaskNotificationHTTP(task._id, {}, userIds);
   } catch (error) {
