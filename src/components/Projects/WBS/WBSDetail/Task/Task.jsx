@@ -26,8 +26,6 @@ const Task = props => {
   useEffect(() => {
     setIsCopied(false);
   }, [1]);
-
-  // console.log('TASKS ===>>>', props);
   // modal
   const [modal, setModal] = useState(false);
   const [modalDelete, setModalDelete] = useState(false);
