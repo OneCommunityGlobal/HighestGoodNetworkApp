@@ -6,6 +6,13 @@ import { useHistory } from 'react-router-dom';
 import ActiveCell from './ActiveCell';
 import hasPermission from 'utils/permissions';
 
+const breakpoints = {
+  mobile: 320,
+  mobileLandscape: 480,
+  tablet: 768,
+  tabletLandscape: 1024
+}
+
 /**
  * The body row of the user table
  */
