@@ -1,4 +1,23 @@
 import _ from 'lodash';
+
+//For progress bar that shows the percentage of the completion
+export const getProgressColor = (effort,commit) => {
+  let color = 'white';
+  let percentage = 0;
+  if (commit>0){
+    percentage = Math.round(effort*100/commit);
+  }
+  if (_.inRange(percentage, 0, 20)) color = 'danger'; //red
+  if (_.inRange(percentage, 20, 40)) color = 'orange'; //orange
+  if (_.inRange(percentage, 40, 60)) color = 'success'; //green
+  if (_.inRange(percentage, 60, 80)) color = 'primary'; //blue
+  if (_.inRange(percentage, 80, 100)) color = 'super'; //indigo
+  //if (_.inRange(percentage, 40, 50)) color = 'awesome'; //violet
+  if (percentage >= 100) color = 'super-awesome'; //purple
+  return color;
+};
+
+//For (progress) bar that is designed for the exact hours in LEADERBOARD
 export const getcolor = (effort) => {
   let color = 'super-awesome'; //purple
   if (_.inRange(effort, 0, 5)) color = 'danger'; //red
@@ -10,6 +29,17 @@ export const getcolor = (effort) => {
   return color;
 };
 
+//For progress bar that shows the percentage of the completion
+export const getProgressValue = (effort,commit) => {
+  let percentage = 0;
+  if (commit>0){
+    percentage = Math.round(effort*100/commit)
+    if (percentage>100) percentage = 100;
+  }
+  return percentage;
+};
+
+//For (progress) bar that is designed for the exact hours in LEADERBOARD
 export const getprogress = (effort) => {
   let progress = 92;
   if (_.inRange(effort, 0, 5)) progress = 5 + Math.round(5 * (effort / 5));
@@ -23,5 +53,3 @@ export const getprogress = (effort) => {
 
   return progress;
 };
-
-export default getcolor;
