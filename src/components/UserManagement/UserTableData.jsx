@@ -5,13 +5,8 @@ import { UserStatus, FinalDay } from '../../utils/enums';
 import { useHistory } from 'react-router-dom';
 import ActiveCell from './ActiveCell';
 import hasPermission from 'utils/permissions';
+import { useMediaQuery } from 'react-responsive';
 
-const breakpoints = {
-  mobile: 320,
-  mobileLandscape: 480,
-  tablet: 768,
-  tabletLandscape: 1024
-}
 
 /**
  * The body row of the user table
@@ -19,7 +14,7 @@ const breakpoints = {
 const UserTableData = React.memo(props => {
   const [isChanging, onReset] = useState(false);
   const history = useHistory();
-
+  const isTablet = useMediaQuery({ query: '(max-width: 768px)' })
   /**
    * reset the changing state upon rerender with new isActive status
    */
@@ -28,6 +23,8 @@ const UserTableData = React.memo(props => {
   }, [props.isActive, props.resetLoading]);
 
   return (
+
+  <div> {isTablet &&
     <tr className="usermanagement__tr" id={`tr_user_${props.index}`}>
       <td className="usermanagement__active--input">
         <ActiveCell
@@ -122,6 +119,8 @@ const UserTableData = React.memo(props => {
         </span>
       </td>
     </tr>
+    }
+  </div>  
   );
 });
 
