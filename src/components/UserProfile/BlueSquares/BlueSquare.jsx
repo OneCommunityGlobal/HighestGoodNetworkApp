@@ -6,7 +6,8 @@ const BlueSquare = ({ blueSquares, handleBlueSquare, role, roles, userPermission
   return (
     <div className="blueSquareContainer">
       <div className="blueSquares">
-        {blueSquares ? (blueSquares.map((blueSquare, index) => (
+        {blueSquares ? (blueSquares.sort((a,b)=> a.date > b.date ? 1 : -1)
+        .map((blueSquare, index) => (
           <div
             key={index}
             role="button"
