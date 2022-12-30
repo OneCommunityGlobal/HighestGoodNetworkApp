@@ -118,19 +118,35 @@ export const assignBadges = (firstName, lastName, selectedBadges) => {
     selectedBadges.forEach(badgeId => {
       let included = false;
       badgeCollection.forEach(badgeObj => {
+        const today = new Date();
+        const yyyy = today.getFullYear();
+        let mm = today.getMonth();
+        let dd = today.getDate();
+
+        if (mm < 10) mm = '0' + mm;
+        if (dd < 10) dd = '0' + dd;
+
+        const formatedDate = dd + '/' + mm + '/' + yyyy;
         if (badgeId === badgeObj.badge) {
           badgeObj.count++;
           badgeObj.lastModified = Date.now();
-          badgeObj.earnedDate = [{ date: Date.now() }];
+          badgeObj.earnedDate = [...earnedDate, formatedDate];
           included = true;
         }
       });
       if (!included) {
+        const today = new Date();
+        const yyyy = today.getFullYear();
+        let mm = today.getMonth();
+        let dd = today.getDate();
+
+        if (mm < 10) mm = '0' + mm;
+        if (dd < 10) dd = '0' + dd;
+
+        const formatedDate = dd + '/' + mm + '/' + yyyy;
         let array = [];
-        let tati = {
-          date: Date.now(),
-        };
-        array.push(Date.now());
+
+        array.push(formatedDate);
         badgeCollection.push({
           badge: badgeId,
           count: 1,
@@ -198,18 +214,36 @@ export const assignBadgesByUserID = (userId, selectedBadges) => {
 
     selectedBadges.forEach(badgeId => {
       let included = false;
-      // earnedDate.push(Date.now());
+
       badgeCollection.forEach(badgeObj => {
+        const today = new Date();
+        const yyyy = today.getFullYear();
+        let mm = today.getMonth();
+        let dd = today.getDate();
+
+        if (mm < 10) mm = '0' + mm;
+        if (dd < 10) dd = '0' + dd;
+
+        const formatedDate = dd + '/' + mm + '/' + yyyy;
         if (badgeId === badgeObj.badge) {
           badgeObj.count++;
           badgeObj.lastModified = Date.now();
-          badgeObj.earnedDate = [...earnedDate, Date.now()];
+          badgeObj.earnedDate = [...earnedDate, formatedDate];
           included = true;
         }
       });
       if (!included) {
+        const today = new Date();
+        const yyyy = today.getFullYear();
+        let mm = today.getMonth();
+        let dd = today.getDate();
+
+        if (mm < 10) mm = '0' + mm;
+        if (dd < 10) dd = '0' + dd;
+
+        const formatedDate = dd + '/' + mm + '/' + yyyy;
         let array = [];
-        array.push(Date.now());
+        array.push(formatedDate);
         badgeCollection.push({
           badge: badgeId,
           count: 1,

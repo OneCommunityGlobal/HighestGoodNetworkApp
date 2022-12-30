@@ -15,6 +15,7 @@ import {
   ModalFooter,
   FormGroup,
 } from 'reactstrap';
+import { Dropdown, DropdownButton } from 'react-bootstrap';
 import pdfMake from 'pdfmake/build/pdfmake';
 import pdfFonts from 'pdfmake/build/vfs_fonts';
 import htmlToPdfmake from 'html-to-pdfmake';
@@ -31,6 +32,7 @@ const BadgeReport = props => {
   let [numFeatured, setNumFeatured] = useState(0);
   let [showModal, setShowModal] = useState(false);
   let [badgeToDelete, setBadgeToDelete] = useState(null);
+  const [earnedDate, setEarnedDate] = useState(props.badges.slice() || []);
   const { roles } = props.state.role;
 
   async function imageToUri(url, callback) {
@@ -245,6 +247,12 @@ const BadgeReport = props => {
     //Reload the view profile page with updated bages
     window.location.reload();
   };
+  console.log(props.badges[1].earnedDate.length);
+  let arr = [];
+  for (let i = 0; i < props.badges.length; i++) {
+    arr.push(props.badges[i].earnedDate[0]);
+  }
+  console.log('new array earned ==>', sortBadges);
 
   return (
     <div>
@@ -260,6 +268,7 @@ const BadgeReport = props => {
             ) : (
               []
             )}
+            <th style={{ width: '70px' }}>Earned Dates</th>
             <th style={{ width: '70px' }}>Featured</th>
           </tr>
         </thead>
@@ -328,6 +337,19 @@ const BadgeReport = props => {
                 ) : (
                   []
                 )}
+                <td>
+                  <Dropdown>
+                    <Dropdown.Toggle variant="secondary" id="dropdown-basic">
+                      Earned Dates
+                    </Dropdown.Toggle>
+
+                    <Dropdown.Menu>
+                      {value.earnedDate.map((item, i) => (
+                        <Dropdown.Item key={i}>{item}</Dropdown.Item>
+                      ))}
+                    </Dropdown.Menu>
+                  </Dropdown>
+                </td>
                 <td style={{ textAlign: 'center' }}>
                   <FormGroup check inline>
                     <Input
