@@ -207,7 +207,7 @@ const TeamMemberTasks = props => {
                                 ${parseFloat(task.estimatedHours.toFixed(2))}`}
                                   </span>
                                   <Progress
-                                    color = {getProgressColor(task.hoursLogged,task.estimatedHours)}
+                                    color = {getProgressColor(task.hoursLogged,task.estimatedHours,true)}
                                     value = {getProgressValue(task.hoursLogged,task.estimatedHours)}
                                   />
                                 </div>
