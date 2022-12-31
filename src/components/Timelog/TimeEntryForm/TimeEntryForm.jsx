@@ -200,8 +200,14 @@ const TimeEntryForm = props => {
       result.dateOfWork = 'Date is required';
     } else {
       const date = moment(inputs.dateOfWork);
+      const today = moment(moment().tz('America/Los_Angeles').format('YYYY-MM-DD'));
       if (!date.isValid()) {
         result.dateOfWork = 'Invalid date';
+      }
+      // Admin/Owner can add time entries for any dates. Other roles cannot. 
+      // Editing details of past date is possible for any role.
+      else if (currentUserRole !== 'Owner' && !edit && today.diff(date, 'days') != 0) {
+        result.dateOfWork = 'Invalid date. Please refresh the page.';
       }
     }
 
@@ -386,7 +392,7 @@ const TimeEntryForm = props => {
     //Validation and variable initialization
     if (event) event.preventDefault();
     if (isSubmitting) return;
-    console.log('submitting');
+    // console.log('submitting');
     const hours = inputs.hours || 0;
     const minutes = inputs.minutes || 0;
     const isTimeModified = edit && (data.hours !== hours || data.minutes !== minutes);
