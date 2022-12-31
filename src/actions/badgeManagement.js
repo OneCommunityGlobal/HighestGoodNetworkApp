@@ -120,7 +120,7 @@ export const assignBadges = (firstName, lastName, selectedBadges) => {
       badgeCollection.forEach(badgeObj => {
         const today = new Date();
         const yyyy = today.getFullYear();
-        let mm = today.getMonth();
+        let mm = today.getMonth() + 1;
         let dd = today.getDate();
 
         if (mm < 10) mm = '0' + mm;
@@ -218,13 +218,14 @@ export const assignBadgesByUserID = (userId, selectedBadges) => {
       badgeCollection.forEach(badgeObj => {
         const today = new Date();
         const yyyy = today.getFullYear();
-        let mm = today.getMonth();
+        let mm = today.getMonth() + 1;
         let dd = today.getDate();
 
         if (mm < 10) mm = '0' + mm;
         if (dd < 10) dd = '0' + dd;
 
         const formatedDate = dd + '/' + mm + '/' + yyyy;
+
         if (badgeId === badgeObj.badge) {
           badgeObj.count++;
           badgeObj.lastModified = Date.now();
@@ -235,7 +236,7 @@ export const assignBadgesByUserID = (userId, selectedBadges) => {
       if (!included) {
         const today = new Date();
         const yyyy = today.getFullYear();
-        let mm = today.getMonth();
+        let mm = today.getMonth() + 1;
         let dd = today.getDate();
 
         if (mm < 10) mm = '0' + mm;
