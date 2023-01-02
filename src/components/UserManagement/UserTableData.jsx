@@ -5,7 +5,7 @@ import { UserStatus, FinalDay } from '../../utils/enums';
 import { useHistory } from 'react-router-dom';
 import ActiveCell from './ActiveCell';
 import hasPermission from 'utils/permissions';
-import { useMediaQuery } from 'react-responsive';
+import Table from 'react-bootstrap/Table';
 
 
 /**
@@ -14,7 +14,7 @@ import { useMediaQuery } from 'react-responsive';
 const UserTableData = React.memo(props => {
   const [isChanging, onReset] = useState(false);
   const history = useHistory();
-  const isTablet = useMediaQuery({ query: '(max-width: 768px)' })
+  
   /**
    * reset the changing state upon rerender with new isActive status
    */
@@ -23,8 +23,6 @@ const UserTableData = React.memo(props => {
   }, [props.isActive, props.resetLoading]);
 
   return (
-
-  <div> {isTablet &&
     <tr className="usermanagement__tr" id={`tr_user_${props.index}`}>
       <td className="usermanagement__active--input">
         <ActiveCell
@@ -118,9 +116,7 @@ const UserTableData = React.memo(props => {
           <ResetPasswordButton user={props.user} isSmallButton />
         </span>
       </td>
-    </tr>
-    }
-  </div>  
+    </tr> 
   );
 });
 
