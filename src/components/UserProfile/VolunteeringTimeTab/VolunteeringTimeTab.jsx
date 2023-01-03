@@ -138,11 +138,15 @@ const ViewTab = props => {
   const [totalTangibleHoursThisWeek, setTotalTangibleHoursThisWeek] = useState(0);
   const [totalIntangibleHours, setTotalIntangibleHours] = useState(0);
   const [totalTangibleHours, setTotalTangibleHours] = useState(0);
-  const { hoursByCategory } = userProfile;
+  const { hoursByCategory, totalIntangibleHrs } = userProfile;
 
   useEffect(() => {
     sumOfCategoryHours();
   }, [hoursByCategory]);
+
+  useEffect(() => {
+    setTotalIntangibleHours(totalIntangibleHrs);
+  }, [totalIntangibleHrs]);
 
   const calculateTotalHrsForPeriod = timeEntries => {
     let hours = { totalTangibleHrs: 0, totalIntangibleHrs: 0 };
@@ -196,8 +200,7 @@ const ViewTab = props => {
       .get(ENDPOINTS.TIME_ENTRIES_PERIOD(userProfile._id, createdDate, today))
       .then(res => {
         const timeEntries = res.data;
-        const output = calculateTotalHrsForPeriod(timeEntries);
-        setTotalIntangibleHours(output.totalIntangibleHrs.toFixed(2));
+        setTotalIntangibleHours(userProfile.totalIntangibleHrs.toFixed(2));
         sumOfCategoryHours();
       })
       .catch(err => {
@@ -279,7 +282,24 @@ const ViewTab = props => {
           <Label>Total Intangible Hours </Label>
         </Col>
         <Col md="6">
-          <p>{totalIntangibleHours}</p>
+          {canEdit ? (
+            <Input
+              type="number"
+              id="intangibleHours"
+              step=".01"
+              value={parseFloat(userProfile.totalIntangibleHrs)?.toFixed(2)}
+              onChange={e => {
+                setUserProfile({
+                  ...userProfile,
+                  totalIntangibleHrs: Number(e.target.value),
+                });
+                setChanged(true);
+              }}
+              placeholder={`Total Intangible Hours`}
+            />
+          ) : (
+            <p>{totalIntangibleHours}</p>
+          )}
         </Col>
       </Row>
       <Row>

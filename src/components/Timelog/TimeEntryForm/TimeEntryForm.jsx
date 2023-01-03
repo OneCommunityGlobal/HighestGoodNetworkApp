@@ -264,25 +264,29 @@ const TimeEntryForm = props => {
   const updateHoursByCategory = async (userProfile, timeEntry, hours, minutes) => {
     const { hoursByCategory } = userProfile;
     const { projectId, isTangible, personId } = timeEntry;
-    if (isTangible !== 'true') return;
     //Format hours && minutes
     const volunteerTime = parseFloat(hours) + parseFloat(minutes) / 60;
 
-    //This is get to know which project or task is selected
-    const foundProject = projects.find(project => project._id === projectId);
-    const foundTask = tasks.find(task => task._id === projectId);
-
-    //Get category
-    const category = foundProject
-      ? foundProject.category.toLowerCase()
-      : foundTask.classification.toLowerCase();
-
-    //update hours
-    const isFindCategory = Object.keys(hoursByCategory).find(key => key === category);
-    if (isFindCategory) {
-      hoursByCategory[category] += volunteerTime;
+    //log  hours to intangible time entry
+    if (isTangible !== 'true') {
+      userProfile.totalIntangibleHrs += volunteerTime;
     } else {
-      hoursByCategory['unassigned'] += volunteerTime;
+      //This is get to know which project or task is selected
+      const foundProject = projects.find(project => project._id === projectId);
+      const foundTask = tasks.find(task => task._id === projectId);
+
+      //Get category
+      const category = foundProject
+        ? foundProject.category.toLowerCase()
+        : foundTask.classification.toLowerCase();
+
+      //update hours
+      const isFindCategory = Object.keys(hoursByCategory).find(key => key === category);
+      if (isFindCategory) {
+        hoursByCategory[category] += volunteerTime;
+      } else {
+        hoursByCategory['unassigned'] += volunteerTime;
+      }
     }
 
     //update database
@@ -322,7 +326,9 @@ const TimeEntryForm = props => {
     }
 
     //if time entry keeps intangible before and after edit, means we don't need update tangible hours
-    if (oldIsTangible === 'false' && currIsTangible === 'false') return;
+    if (oldIsTangible === 'false' && currIsTangible === 'false') {
+      userProfile.totalIntangibleHrs += timeDifference;
+    }
 
     //found project or task
     const foundProject = projects.find(project => project._id === currProjectId);
@@ -335,6 +341,7 @@ const TimeEntryForm = props => {
 
     //if change timeEntry from intangible to tangible, we need add hours on categories
     if (oldIsTangible === 'false' && currIsTangible === 'true') {
+      userProfile.totalIntangibleHrs -= currEntryTime;
       isFindCategory
         ? (hoursByCategory[category] += currEntryTime)
         : (hoursByCategory['unassigned'] += currEntryTime);
@@ -342,6 +349,7 @@ const TimeEntryForm = props => {
 
     //if change timeEntry from tangible to intangible, we need deduct hours on categories
     if (oldIsTangible === 'true' && currIsTangible === 'false') {
+      userProfile.totalIntangibleHrs += currEntryTime;
       isFindCategory
         ? (hoursByCategory[category] -= currEntryTime)
         : (hoursByCategory['unassigned'] -= currEntryTime);
