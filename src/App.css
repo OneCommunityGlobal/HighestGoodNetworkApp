@@ -76,3 +76,13 @@ body,
 .bg--dark-sea-green {
   background-color: #c9d6c6;
 }
+
+.bg-bright-red {
+  background-color: #FF3300 !important;
+  /*  bright-red */
+}
+
+.bg-almost-red {
+  background-color: #CC3366 !important;
+  /*  90%to100%-red */
+}
