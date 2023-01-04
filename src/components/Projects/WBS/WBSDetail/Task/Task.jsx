@@ -9,7 +9,7 @@ import { Button, Dropdown, DropdownItem, DropdownToggle, DropdownMenu } from 're
 import { BsFillCaretDownFill, BsFillCaretUpFill } from 'react-icons/bs';
 import AddTaskModal from '../AddTask/AddTaskModal';
 import EditTaskModal from '../EditTask/EditTaskModal';
-import { moveTasks, fetchAllTasks, deleteTask, copyTask } from '../../../../../actions/task.js';
+import { moveTasks, fetchAllTasks, deleteTask, copyTask,deleteChildrenTasks } from '../../../../../actions/task.js';
 import './tagcolor.css';
 import './task.css';
 import { Editor } from '@tinymce/tinymce-react';
@@ -125,7 +125,10 @@ const Task = props => {
     props.getPopupById(TASK_DELETE_POPUP_ID);
   };
 
-  const deleteTask = (taskId, mother) => {
+  const deleteTask = async (taskId, mother) => {
+    if (mother !== null) {
+      props.deleteChildrenTasks(mother);
+    }
     props.deleteTask(taskId, mother);
     props.fetchAllTasks(props.wbsId, -1);
     setTimeout(() => {
@@ -564,4 +567,5 @@ export default connect(mapStateToProps, {
   deleteTask,
   copyTask,
   getPopupById,
+  deleteChildrenTasks
 })(Task);
