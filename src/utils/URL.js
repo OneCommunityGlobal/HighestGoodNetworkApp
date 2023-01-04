@@ -42,6 +42,7 @@ export const ENDPOINTS = {
   TASKS_BY_userID: (userId) => `${APIEndpoint}/tasks/userProfile/${userId}`,
   TASK_DEL: (taskId,motherId) => `${APIEndpoint}/task/del/${taskId}/${motherId}`,
   GET_TASK: (taskId) => `${APIEndpoint}/task/${taskId}`,
+  DELETE_CHILDREN: taskId => `${APIEndpoint}/task/delete/children/${taskId}`,
   TASK_UPDATE: (taskId) => `${APIEndpoint}/task/update/${taskId}`,
   GET_USER_BY_NAME: (name) => `${APIEndpoint}/userprofile/name/${name}`,
   FIX_TASKS: (wbsId) => `${APIEndpoint}/tasks/${wbsId}`,
