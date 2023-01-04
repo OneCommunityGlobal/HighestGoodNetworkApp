@@ -308,10 +308,15 @@ const AddTaskModal = props => {
 
   //FUNCTION TO UPDATE TASK MOTHER
   const updateTaskMother = () => {
+    let qtd = 0;
     if (props.taskId) {
+      if (props.childrenQtd >= 0) {
+        qtd = props.childrenQtd + 1;
+      }
       const updatedTask = {
         resources: resourceItems,
         hasChild: true,
+        childrenQtd: qtd,
       };
       props.updateTask(props.taskId, updatedTask, props.hasPermission);
     } else {
