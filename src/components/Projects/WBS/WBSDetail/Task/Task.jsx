@@ -427,6 +427,7 @@ const Task = props => {
                     taskId={props.id}
                     projectId={props.projectId}
                     wbsId={props.wbsId}
+                    childrenQtd={props.childrenQtd}
                     parentId1={props.parentId1}
                     parentId2={props.parentId2}
                     parentId3={props.parentId3}
