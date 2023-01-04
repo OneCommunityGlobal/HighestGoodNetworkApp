@@ -284,6 +284,7 @@ const WBSTasks = props => {
                 drag={dragTask}
                 deleteTask={deleteTask}
                 hasChildren={task.hasChild}
+                childrenQtd={task.childrenQtd}
                 siblings={props.state.tasks.taskItems.filter(item => item.mother === task.mother)}
                 taskId={task.taskId}
                 whyInfo={task.whyInfo}
