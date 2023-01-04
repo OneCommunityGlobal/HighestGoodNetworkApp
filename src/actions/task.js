@@ -85,7 +85,14 @@ export const updateTask = (taskId, updatedTask, hasPermission) => async (dispatc
   // TODO: DISPATCH TO TASKEDITSUGGESETIONS REDUCER TO UPDATE STATE
   await dispatch(putUpdatedTask(updatedTask, taskId, status));
 };
-
+export const deleteChildrenTasks = taskId => async (dispatch, getState) => {
+  let status = 200;
+  try {
+    await axios.post(ENDPOINTS.DELETE_CHILDREN(taskId));
+  } catch (error) {
+    console.log(error);
+  }
+};
 export const importTask = (newTask, wbsId) => {
   const url = ENDPOINTS.TASK_IMPORT(wbsId);
   return async dispatch => {
