@@ -1,5 +1,5 @@
 import _ from 'lodash';
-export const getcolor = (effort) => {
+export const getcolor = effort => {
   let color = 'super-awesome'; //purple
   if (_.inRange(effort, 0, 5)) color = 'danger'; //red
   if (_.inRange(effort, 5, 10)) color = 'orange'; //orange
@@ -10,7 +10,7 @@ export const getcolor = (effort) => {
   return color;
 };
 
-export const getprogress = (effort) => {
+export const getprogress = effort => {
   let progress = 92;
   if (_.inRange(effort, 0, 5)) progress = 5 + Math.round(5 * (effort / 5));
   else if (_.inRange(effort, 5, 10)) progress = 12 + Math.round(5 * ((effort - 5) / 5));
