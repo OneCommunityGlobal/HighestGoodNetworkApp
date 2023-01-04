@@ -254,6 +254,7 @@ export class WeeklySummary extends Component {
       });
       this.props.getUserProfile(this.props.currentUser.userid);
       this.props.getWeeklySummaries(this.props.asUser || this.props.currentUser.userid);
+      this.props.setSubmittedSummary(true);
     } else {
       toast.error('✘ The data could not be saved!', {
         toastId: toastIdOnSave,

@@ -15,7 +15,7 @@ import { TaskDifferenceModal } from './components/TaskDifferenceModal';
 import { getTeamMemberTasksData } from './selectors';
 import { getUserProfile } from '../../actions/userProfile';
 import './style.css';
-import { getcolor } from '../../utils/effortColors';
+import { getProgressColor, getProgressValue } from '../../utils/effortColors';
 import { fetchAllManagingTeams } from '../../actions/team';
 import EffortBar from 'components/Timelog/EffortBar';
 import TimeEntry from 'components/Timelog/TimeEntry';
@@ -90,7 +90,7 @@ const TeamMemberTasks = props => {
         //conditional variable for moving current user up front.
         let moveCurrentUserFront = false;
 
-        console.log('filteredMembers', filteredMembers);
+        //console.log('filteredMembers', filteredMembers);
 
         //Does the user has at least one task with project Id and task id assigned. Then set the current user up front.
         for (const task of currentUser.tasks) {
@@ -111,6 +111,7 @@ const TeamMemberTasks = props => {
       teamsList = filteredMembers.map((user, index) => {
         let totalHoursLogged = 0;
         let totalHoursRemaining = 0;
+        const thisWeekHours = user.totaltangibletime_hrs;
 
         if (user.tasks) {
           user.tasks = user.tasks.map(task => {
@@ -147,8 +148,8 @@ const TeamMemberTasks = props => {
                     </td>
                     <td className="team-clocks">
                       <u>{user.weeklyComittedHours ? user.weeklyComittedHours : 0}</u> /
-                      <font color="green"> {Math.round(totalHoursLogged)}</font> /
-                      <font color="red"> {Math.round(totalHoursRemaining)}</font>
+                      <font color="green"> {thisWeekHours?thisWeekHours.toFixed(1):0}</font> /
+                      <font color="red"> {totalHoursRemaining?totalHoursRemaining.toFixed(1):0}</font>
                     </td>
                   </tr>
                   <tr>
@@ -207,12 +208,8 @@ const TeamMemberTasks = props => {
                                 ${parseFloat(task.estimatedHours.toFixed(2))}`}
                                   </span>
                                   <Progress
-                                    color={
-                                      task.hoursLogged > task.estimatedHours
-                                        ? getcolor(0)
-                                        : getcolor(task.estimatedHours - task.hoursLogged)
-                                    }
-                                    value={(task.hoursLogged / task.estimatedHours) * 100}
+                                    color = {getProgressColor(task.hoursLogged,task.estimatedHours,true)}
+                                    value = {getProgressValue(task.hoursLogged,task.estimatedHours)}
                                   />
                                 </div>
                               </td>
@@ -326,7 +323,7 @@ const TeamMemberTasks = props => {
                       <FontAwesomeIcon
                         style={{ color: 'green' }}
                         icon={faClock}
-                        title="Weekly Completed Hours"
+                        title="Total Hours Completed this Week"
                       />
                       /
                       <FontAwesomeIcon
