@@ -113,7 +113,6 @@ class Timelog extends Component {
 
       const userId =
         this.props.match?.params?.userId || this.props.asUser || this.props.auth.user.userid;
-      console.log('User id in Timelog: ', userId);
       await this.props.getUserProfile(userId);
 
       this.userProfile = this.props.userProfile;
@@ -268,10 +267,12 @@ class Timelog extends Component {
     );
 
     let tasks = [];
+
     if (!_.isEmpty(this.props.userTask)) {
       tasks = this.props.userTask;
     }
-    const taskOptions = tasks.map(task => (
+    const activeTasks = tasks.filter(task => task.resources.some((resource) => resource.userID === userId && !resource.completedTask))
+    const taskOptions = activeTasks.map(task => (
       <option value={task._id} key={task._id}>
         {task.taskName}
       </option>
