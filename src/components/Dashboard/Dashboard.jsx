@@ -15,6 +15,7 @@ export const Dashboard = props => {
   const [popup, setPopup] = useState(false);
   const [leaderData, setLeaderData] = useState(null);
   const [submittedSummary, setSubmittedSummary] = useState(false);
+  const [userProfile, setUserProfile] = useState(undefined);
   let userId = props.match.params.userId ? props.match.params.userId : props.auth.user.userid;
 
   const toggle = () => {
@@ -44,6 +45,8 @@ export const Dashboard = props => {
     <Container fluid>
       <PopUpBar />
       <SummaryBar
+        userProfile={userProfile}
+        setUserProfile={setUserProfile}
         asUser={userId}
         toggleSubmitForm={toggle}
         role={props.auth.user.role}
@@ -80,7 +83,7 @@ export const Dashboard = props => {
           ) : null}
           <div className="my-2">
             <a name="wsummary"></a>
-            <Timelog isDashboard asUser={userId} />
+            <Timelog isDashboard asUser={userId} userProfile={userProfile} />
           </div>
           <Badge userId={userId} role={props.auth.user.role} />
         </Col>

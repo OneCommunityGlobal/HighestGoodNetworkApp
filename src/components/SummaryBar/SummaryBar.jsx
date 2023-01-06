@@ -32,8 +32,7 @@ import hasPermission from 'utils/permissions';
 import { getProgressColor, getProgressValue } from '../../utils/effortColors';
 
 const SummaryBar = props => {
-  const { asUser, role, leaderData } = props;
-  const [userProfile, setUserProfile] = useState(undefined);
+  const { asUser, role, leaderData, userProfile, setUserProfile } = props;
   const [tasks, setTasks] = useState(undefined);
   const authenticateUser = useSelector(state => state.auth.user);
   const authenticateUserId = authenticateUser ? authenticateUser.userid : '';
@@ -258,8 +257,8 @@ const SummaryBar = props => {
                   <div className="text--black align-items-center med_text_summary">
                     Current Week : {totalEffort.toFixed(2)} / {weeklyCommittedHours}
                     <Progress
-                      value={getProgressValue(totalEffort,weeklyCommittedHours)}
-                      color={getProgressColor(totalEffort,weeklyCommittedHours)}
+                      value={getProgressValue(totalEffort, weeklyCommittedHours)}
+                      color={getProgressColor(totalEffort, weeklyCommittedHours)}
                       striped={totalEffort < weeklyCommittedHours}
                     />
                   </div>
