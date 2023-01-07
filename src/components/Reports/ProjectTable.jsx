@@ -2,7 +2,7 @@ import React from 'react';
 import './reports.css';
 import { Link } from 'react-router-dom';
 
-const ProjectTable = (props) => {
+const ProjectTable = props => {
   // Display project lists
   let ProjectsList = [];
   if (props.projects.length > 0) {
@@ -33,20 +33,21 @@ const ProjectTable = (props) => {
 
   return (
     <table class="center">
-    <table className="table table-bordered table-responsive-sm">
-      <thead>
-    <tr>
-      <th scope="col" id="projects__order">#</th>
-      <th scope="col">Project Name</th>
-      <th scope="col" id="projects__active">Active</th>
-    </tr>
-    </thead>
-      <tbody>
-  {ProjectsList}
-  </tbody>
-  </table>
-  </table>
-  )
-  }
+      <table className="table table-bordered table-responsive-sm">
+        <thead>
+          <tr>
+            <th scope="col" id="projects__order">
+              #
+            </th>
+            <th scope="col">Project Name</th>
+            <th scope="col" id="projects__active">
+              Active
+            </th>
+          </tr>
+        </thead>
+        <tbody>{ProjectsList}</tbody>
+      </table>
+    </table>
+  );
+};
 export default ProjectTable;
-  

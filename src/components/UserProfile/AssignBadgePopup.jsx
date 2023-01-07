@@ -10,10 +10,10 @@ import {
 import { ENDPOINTS } from 'utils/URL';
 import axios from 'axios';
 
-const AssignBadgePopup = (props) => {
+const AssignBadgePopup = props => {
   const [searchedName, setSearchedName] = useState('');
 
-  const onSearch = (text) => {
+  const onSearch = text => {
     setSearchedName(text);
   };
 
@@ -32,8 +32,8 @@ const AssignBadgePopup = (props) => {
     props.close();
   };
 
-  const filterBadges = (allBadges) => {
-    let filteredList = allBadges.filter((badge) => {
+  const filterBadges = allBadges => {
+    let filteredList = allBadges.filter(badge => {
       if (badge.badgeName.toLowerCase().indexOf(searchedName.toLowerCase()) > -1) {
         return badge;
       }
@@ -49,7 +49,7 @@ const AssignBadgePopup = (props) => {
         type="text"
         className="form-control assign_badge_search_box"
         placeholder="Search Badge Name"
-        onChange={(e) => {
+        onChange={e => {
           onSearch(e.target.value);
         }}
       />
@@ -94,11 +94,11 @@ const AssignBadgePopup = (props) => {
   );
 };
 
-const mapStateToProps = (state) => ({
+const mapStateToProps = state => ({
   selectedBadges: state.badge.selectedBadges,
 });
 
-const mapDispatchToProps = (dispatch) => {
+const mapDispatchToProps = dispatch => {
   return {
     assignBadgesByUserID: (userId, selectedBadge) =>
       assignBadgesByUserID(userId, selectedBadge)(dispatch),

@@ -9,11 +9,9 @@
 }
 
 @media (min-width: 1180px) {
-
   .wbs-and-members-blocks-wrapper {
     grid-auto-flow: column;
     grid-template-columns: 1fr 1fr;
     column-gap: 40px;
   }
-
 }

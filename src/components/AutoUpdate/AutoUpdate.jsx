@@ -21,26 +21,26 @@ const AutoUpdate = () => {
 
   useEffect(() => {
     fetch(hashRequest, requestParams)
-      .then((response) => {
-        response.text().then((text) => {
+      .then(response => {
+        response.text().then(text => {
           setHash(text);
         });
       })
-      .catch((err) => {});
+      .catch(err => {});
   }, []);
 
   useEffect(() => {
     if (hash !== undefined) {
       const interval = setInterval(() => {
         fetch(hashRequest, requestParams)
-          .then((response) => {
-            response.text().then((text) => {
+          .then(response => {
+            response.text().then(text => {
               if (text !== hash) {
                 setUpdated(true);
               }
             });
           })
-          .catch((err) => {});
+          .catch(err => {});
       }, 5 * MINUTE);
 
       return () => clearInterval(interval);

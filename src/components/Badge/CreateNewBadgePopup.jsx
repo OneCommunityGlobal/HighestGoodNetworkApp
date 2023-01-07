@@ -14,7 +14,7 @@ import './Badge.css';
 import { createNewBadge, closeAlert } from '../../actions/badgeManagement';
 import { badgeTypes } from './BadgeTypes';
 
-const CreateNewBadgePopup = (props) => {
+const CreateNewBadgePopup = props => {
   const [badgeName, setBadgeName] = useState('');
   const [imageUrl, setImageUrl] = useState('');
   const [description, setDescription] = useState('');
@@ -39,7 +39,7 @@ const CreateNewBadgePopup = (props) => {
     displayTypeRelatedFields(type);
   }, []);
 
-  const validRanking = (ranking) => {
+  const validRanking = ranking => {
     const pattern = /^[0-9]*$/;
     return pattern.test(ranking);
   };
@@ -59,7 +59,7 @@ const CreateNewBadgePopup = (props) => {
     setShowPeople(false);
   };
 
-  const displayTypeRelatedFields = (targetType) => {
+  const displayTypeRelatedFields = targetType => {
     resetTypeFieldDisplay();
     switch (targetType) {
       case 'No Infringement Streak':
@@ -88,7 +88,7 @@ const CreateNewBadgePopup = (props) => {
     props.toggle();
   };
 
-  const handleChange = (event) => {
+  const handleChange = event => {
     switch (event.target.id) {
       case 'badgeName':
         setBadgeName(event.target.value);
@@ -395,16 +395,16 @@ const CreateNewBadgePopup = (props) => {
   );
 };
 
-const mapStateToProps = (state) => ({
+const mapStateToProps = state => ({
   allProjects: state.allProjects.projects,
   message: state.badge.message,
   alertVisible: state.badge.alertVisible,
   color: state.badge.color,
 });
 
-const mapDispatchToProps = (dispatch) => ({
+const mapDispatchToProps = dispatch => ({
   fetchAllProjects: () => dispatch(fetchAllProjects()),
-  createNewBadge: (newBadge) => dispatch(createNewBadge(newBadge)),
+  createNewBadge: newBadge => dispatch(createNewBadge(newBadge)),
   closeAlert: () => dispatch(closeAlert()),
 });
 

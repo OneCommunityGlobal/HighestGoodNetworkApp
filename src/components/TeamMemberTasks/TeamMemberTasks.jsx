@@ -169,15 +169,15 @@ const TeamMemberTasks = props => {
               <Table borderless className="team-member-tasks-subtable">
                 <tbody>
                   {user.tasks &&
-                    user.tasks.map(
-                      (task, index) =>{
-                        let isActiveTaskForUser = true
-                        if (task?.resources) {
-                          isActiveTaskForUser = !task.resources?.find(resource => resource.userID === user.personId).completedTask
-                        }
-                        if (task.wbsId &&
-                        task.projectId && isActiveTaskForUser ) {
-                          return (
+                    user.tasks.map((task, index) => {
+                      let isActiveTaskForUser = true;
+                      if (task?.resources) {
+                        isActiveTaskForUser = !task.resources?.find(
+                          resource => resource.userID === user.personId,
+                        ).completedTask;
+                      }
+                      if (task.wbsId && task.projectId && isActiveTaskForUser) {
+                        return (
                           <tr key={`${task._id}${index}`} className="task-break">
                             <td className="task-align">
                               <p>
@@ -215,8 +215,9 @@ const TeamMemberTasks = props => {
                               </td>
                             )}
                           </tr>
-                        )}
-                                  })}
+                        );
+                      }
+                    })}
                 </tbody>
               </Table>
             </td>

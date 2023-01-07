@@ -29,19 +29,20 @@ export const PeopleTasksPieChart = () => {
     <div className="people-pie-charts-wrapper">
       {showProjectsPieChart && (
         <ReportPage.ReportBlock>
-          <h5 className="people-pie-charts-header">Projects With Completed Hours</h5>
+          <h5 className="people-pie-charts-header">Projects with committed hours</h5>
           <PieChart
             pieChartId={'projectsPieChart'}
-            data={projectsWithLoggedHoursById}       
+            data={projectsWithLoggedHoursById}
             dataLegend={projectsWithLoggedHoursLegend}
             dataLegendHeader="Hours"
-
           />
         </ReportPage.ReportBlock>
       )}
       {showTasksPieChart && (
         <ReportPage.ReportBlock>
-          <h5 className="people-pie-charts-header">Tasks With Completed Hours</h5>
+          <h5 className="people-pie-charts-header">{`${
+            showViewAllTasksButton ? 'Last t' : 'T'
+          }asks with committed hours`}</h5>
           <PieChart
             pieChartId={'tasksPieChart'}
             data={displayedTasksWithLoggedHoursById}
