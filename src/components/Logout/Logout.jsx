@@ -4,7 +4,7 @@ import { useDispatch } from 'react-redux';
 import { logoutUser } from '../../actions/authActions';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 
-export const Logout = (props) => {
+export const Logout = props => {
   const dispatch = useDispatch();
 
   const closePopup = () => {
@@ -22,9 +22,7 @@ export const Logout = (props) => {
       <ModalHeader toggle={closePopup}>Are you sure you want to logout?</ModalHeader>
       <ModalBody>
         <div>
-          <p>
-          Don't forget to log your time before logout!
-          </p>
+          <p>Don't forget to log your time before logout!</p>
         </div>
       </ModalBody>
       <ModalFooter>

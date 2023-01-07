@@ -4,7 +4,7 @@ import { ENDPOINTS } from '../utils/URL';
 
 export const updatePassword = (userId, newpasswordData) => {
   const url = ENDPOINTS.UPDATE_PASSWORD(userId);
-  return async (dispatch) => {
+  return async dispatch => {
     try {
       const res = await axios.patch(url, newpasswordData);
       return res.status;
@@ -18,9 +18,9 @@ export const updatePassword = (userId, newpasswordData) => {
   };
 };
 
-export const forcePasswordUpdate = (data) => {
+export const forcePasswordUpdate = data => {
   const url = ENDPOINTS.FORCE_PASSWORD;
-  return async (dispatch) => {
+  return async dispatch => {
     try {
       const res = await axios.patch(url, data);
       return res.status;

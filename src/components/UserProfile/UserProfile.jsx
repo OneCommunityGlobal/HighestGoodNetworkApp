@@ -72,7 +72,7 @@ const UserProfile = props => {
   const [shouldRefresh, setShouldRefresh] = useState(false);
   const [activeInactivePopupOpen, setActiveInactivePopupOpen] = useState(false);
   const [tasks, setTasks] = useState();
-  const [updatedTasks, setUpdatedTasks] = useState([])
+  const [updatedTasks, setUpdatedTasks] = useState([]);
   //const [isValid, setIsValid] = useState(true)
 
   /* useEffect functions */
@@ -105,7 +105,7 @@ const UserProfile = props => {
       .get(ENDPOINTS.TASKS_BY_USERID(userId))
       .then(res => {
         setTasks(res?.data || []);
-        setOriginalTasks(res.data)
+        setOriginalTasks(res.data);
       })
       .catch(err => console.log(err));
   };
@@ -172,18 +172,18 @@ const UserProfile = props => {
   const onUpdateTask = (taskId, updatedTask) => {
     const newTask = {
       updatedTask,
-      taskId
-    }
-    
-    setTasks((tasks)=>  {
-      console.log(tasks)
-      const tasksWithoutTheUpdated = [...tasks]
-      const taskIndex = tasks.findIndex(task => task._id === taskId)
-      tasksWithoutTheUpdated[taskIndex] = updatedTask
-      return tasksWithoutTheUpdated
-    })
-    setUpdatedTasks((tasks)=> [...tasks, newTask])
-    setChanged(true)
+      taskId,
+    };
+
+    setTasks(tasks => {
+      console.log(tasks);
+      const tasksWithoutTheUpdated = [...tasks];
+      const taskIndex = tasks.findIndex(task => task._id === taskId);
+      tasksWithoutTheUpdated[taskIndex] = updatedTask;
+      return tasksWithoutTheUpdated;
+    });
+    setUpdatedTasks(tasks => [...tasks, newTask]);
+    setChanged(true);
   };
 
   const handleImageUpload = async evt => {
@@ -274,7 +274,7 @@ const UserProfile = props => {
     } else if (operation === 'delete') {
       let newInfringements = [...userProfile?.infringements] || [];
       if (newInfringements !== []) {
-        newInfringements = newInfringements.filter(infringement => infringement._id !== id)
+        newInfringements = newInfringements.filter(infringement => infringement._id !== id);
         setUserProfile({ ...userProfile, infringements: newInfringements });
         setShowModal(false);
       }
@@ -286,9 +286,7 @@ const UserProfile = props => {
     for (let i = 0; i < updatedTasks.length; i += 1) {
       const updatedTask = updatedTasks[i];
       const url = ENDPOINTS.TASK_UPDATE(updatedTask.taskId);
-      axios
-        .put(url, updatedTask.updatedTask)
-        .catch(err => console.log(err));
+      axios.put(url, updatedTask.updatedTask).catch(err => console.log(err));
     }
     try {
       await props.updateUserProfile(props.match.params.userId, userProfile);
@@ -702,7 +700,7 @@ const UserProfile = props => {
                     <span
                       onClick={() => {
                         setUserProfile(originalUserProfile);
-                        setTasks(originalTasks)
+                        setTasks(originalTasks);
                         setChanged(false);
                       }}
                       className="btn btn-outline-danger mr-1 btn-bottom"

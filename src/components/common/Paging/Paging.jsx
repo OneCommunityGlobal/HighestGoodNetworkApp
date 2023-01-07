@@ -1,18 +1,21 @@
-import React, { useState } from "react";
-import { FiChevronLeft, FiChevronRight } from "react-icons/fi";
+import React, { useState } from 'react';
+import { FiChevronLeft, FiChevronRight } from 'react-icons/fi';
 import classnames from 'classnames';
-import './Paging.css'
+import './Paging.css';
 
 export const Paging = ({ maxElemPerPage = 6, totalElementsCount, children }) => {
-
   const [currentPage, setCurrentPage] = useState(1);
 
   const pagesCount = Math.ceil(totalElementsCount / maxElemPerPage);
 
-  const renderPageNumberButton = (pageNumber) => <div onClick={
-    () => setCurrentPage(pageNumber)} className={classnames('page-index-button', { 'active-button': pageNumber === currentPage })}>
-    {pageNumber}
-  </div>
+  const renderPageNumberButton = pageNumber => (
+    <div
+      onClick={() => setCurrentPage(pageNumber)}
+      className={classnames('page-index-button', { 'active-button': pageNumber === currentPage })}
+    >
+      {pageNumber}
+    </div>
+  );
 
   const renderPageIndexes = () => {
     const indexesButtons = [];
@@ -22,11 +25,7 @@ export const Paging = ({ maxElemPerPage = 6, totalElementsCount, children }) => 
         indexesButtons.push(renderPageNumberButton(i));
       }
 
-      return (
-        <div className='pagination-buttons'>
-          {indexesButtons}
-        </div>
-      )
+      return <div className="pagination-buttons">{indexesButtons}</div>;
     }
 
     if (currentPage <= 5) {
@@ -35,12 +34,12 @@ export const Paging = ({ maxElemPerPage = 6, totalElementsCount, children }) => 
       }
 
       return (
-        <div className='pagination-buttons'>
+        <div className="pagination-buttons">
           {indexesButtons}
           ...
           <div>{renderPageNumberButton(pagesCount)}</div>
         </div>
-      )
+      );
     }
 
     if (currentPage > pagesCount - 5) {
@@ -48,12 +47,12 @@ export const Paging = ({ maxElemPerPage = 6, totalElementsCount, children }) => 
         indexesButtons.push(renderPageNumberButton(i));
       }
       return (
-        <div className='pagination-buttons'>
+        <div className="pagination-buttons">
           {renderPageNumberButton(1)}
           ...
           {indexesButtons}
         </div>
-      )
+      );
     }
 
     for (let i = currentPage - 1; i <= currentPage + 2; i++) {
@@ -61,38 +60,48 @@ export const Paging = ({ maxElemPerPage = 6, totalElementsCount, children }) => 
     }
 
     return (
-      <div className='pagination-buttons'>
+      <div className="pagination-buttons">
         {renderPageNumberButton(1)}
         ...
         {indexesButtons}
         ...
         {renderPageNumberButton(pagesCount)}
       </div>
-    )
-  }
+    );
+  };
 
   const handlePrevArrowClick = () => {
     if (currentPage > 1) {
       setCurrentPage(currentPage - 1);
     }
-  }
+  };
 
   const handleNextArrowClick = () => {
     if (currentPage < pagesCount) {
       setCurrentPage(currentPage + 1);
     }
-  }
+  };
 
   return (
-    <div className='paging-wrapper'>
-      {React.cloneElement(children, { skip: maxElemPerPage * (currentPage - 1), take: maxElemPerPage })}
+    <div className="paging-wrapper">
+      {React.cloneElement(children, {
+        skip: maxElemPerPage * (currentPage - 1),
+        take: maxElemPerPage,
+      })}
 
-      {(totalElementsCount > maxElemPerPage) && <div className="pagination-buttons-wrapper">
-        <FiChevronLeft className={classnames('page-index-button', { 'disabled': currentPage === 1 })} onClick={handlePrevArrowClick} />
-        {renderPageIndexes()}
-        <FiChevronRight className={classnames('page-index-button', { 'disabled': currentPage === pagesCount })} onClick={handleNextArrowClick} />
-      </div>
-      }
+      {totalElementsCount > maxElemPerPage && (
+        <div className="pagination-buttons-wrapper">
+          <FiChevronLeft
+            className={classnames('page-index-button', { disabled: currentPage === 1 })}
+            onClick={handlePrevArrowClick}
+          />
+          {renderPageIndexes()}
+          <FiChevronRight
+            className={classnames('page-index-button', { disabled: currentPage === pagesCount })}
+            onClick={handleNextArrowClick}
+          />
+        </div>
+      )}
     </div>
-  )
-}
+  );
+};

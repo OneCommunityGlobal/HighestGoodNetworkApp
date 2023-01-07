@@ -8,7 +8,7 @@ import { ENDPOINTS } from '../utils/URL';
 
 export const addNewWBS = (wbsName, projectId) => {
   const url = ENDPOINTS.WBS(projectId);
-  return async (dispatch) => {
+  return async dispatch => {
     let status = 200;
     let _id = null;
 
@@ -36,9 +36,9 @@ export const addNewWBS = (wbsName, projectId) => {
   };
 };
 
-export const deleteWBS = (wbsId) => {
+export const deleteWBS = wbsId => {
   const request = axios.delete(ENDPOINTS.WBS(wbsId));
-  return async (dispatch) => {
+  return async dispatch => {
     try {
       axios.post(ENDPOINTS.TASK_WBS(wbsId));
     } catch (err) {
@@ -46,25 +46,25 @@ export const deleteWBS = (wbsId) => {
     }
 
     request
-      .then((res) => {
+      .then(res => {
         dispatch(removeWBS(wbsId));
       })
-      .catch((err) => {
+      .catch(err => {
         dispatch(setWBSError(err));
       });
   };
 };
 
-export const fetchAllWBS = (projectId) => {
+export const fetchAllWBS = projectId => {
   const request = axios.get(ENDPOINTS.WBS(projectId));
 
-  return async (dispatch) => {
+  return async dispatch => {
     await dispatch(setWBSStart());
     request
-      .then((res) => {
+      .then(res => {
         dispatch(setWBS(res.data));
       })
-      .catch((err) => {
+      .catch(err => {
         dispatch(setWBSError(err));
       });
   };
@@ -83,7 +83,7 @@ export const setWBSStart = () => {
  * set WBS in store
  * @param payload : WBS []
  */
-export const setWBS = (WBSItems) => {
+export const setWBS = WBSItems => {
   return {
     type: types.RECEIVE_WBS,
     WBSItems,
@@ -94,14 +94,14 @@ export const setWBS = (WBSItems) => {
  * Error when setting project
  * @param payload : error status code
  */
-export const setWBSError = (err) => {
+export const setWBSError = err => {
   return {
     type: types.FETCH_WBS_ERROR,
     err,
   };
 };
 
-export const removeWBS = (wbsId) => {
+export const removeWBS = wbsId => {
   return {
     type: types.DELETE_WBS,
     wbsId,

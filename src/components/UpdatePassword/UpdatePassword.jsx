@@ -29,7 +29,9 @@ class UpdatePassword extends Form {
   }
 
   schema = {
-    currentpassword: Joi.string().required().label('Current Password'),
+    currentpassword: Joi.string()
+      .required()
+      .label('Current Password'),
     newpassword: Joi.string()
       .regex(/(?=^.{8,}$)((?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$/)
       .required()
@@ -42,7 +44,8 @@ class UpdatePassword extends Form {
           },
           string: {
             regex: {
-              base: 'should be at least 8 characters long and must include at least one uppercase letter, one lowercase letter, and one number or special character',
+              base:
+                'should be at least 8 characters long and must include at least one uppercase letter, one lowercase letter, and one number or special character',
             },
           },
         },
@@ -86,7 +89,7 @@ class UpdatePassword extends Form {
       <div className="container mt-5">
         <h2>Change Password</h2>
 
-        <form className="col-md-6 xs-12" onSubmit={(e) => this.handleSubmit(e)}>
+        <form className="col-md-6 xs-12" onSubmit={e => this.handleSubmit(e)}>
           {this.renderInput({
             name: 'currentpassword',
             label: 'Current Password:',
@@ -110,7 +113,7 @@ class UpdatePassword extends Form {
   }
 }
 
-const mapStateToProps = (state) => ({
+const mapStateToProps = state => ({
   errors: state.errors,
 });
 

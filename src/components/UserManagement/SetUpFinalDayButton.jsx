@@ -12,40 +12,40 @@ import { toast } from 'react-toastify';
  * @param {*} props.userProfile.isSet
  * @returns
  */
-const SetUpFinalDayButton = (props) => {
-  const[isSet, setIsSet] = useState(false);  
-  const[finalDayDateOpen, setFinalDayDateOpen] = useState(false);
+const SetUpFinalDayButton = props => {
+  const [isSet, setIsSet] = useState(false);
+  const [finalDayDateOpen, setFinalDayDateOpen] = useState(false);
   const dispatch = useDispatch();
 
   useEffect(() => {
     if (props.userProfile?.endDate !== undefined) setIsSet(true);
   }, []);
-  
+
   const onFinalDayClick = (user, status) => {
     if (isSet) {
-      updateUserFinalDayStatus(props.userProfile,"Active",undefined)(dispatch)
+      updateUserFinalDayStatus(props.userProfile, 'Active', undefined)(dispatch);
       setIsSet(!isSet);
-      toast.success("This user's final day has been delete.");
-      setTimeout(function(){
+      toast.success("This user's final day has been deleted.");
+      setTimeout(function() {
         window.location.reload();
-     }, 5000);
+      }, 5000);
     } else {
       setFinalDayDateOpen(true);
-    } 
+    }
   };
 
   const setUpFinalDayPopupClose = () => {
     setFinalDayDateOpen(false);
   };
-    
-  const deactiveUser = (finalDayDate) => {
-    updateUserFinalDayStatus(props.userProfile, "Active", finalDayDate)(dispatch);
+
+  const deactiveUser = finalDayDate => {
+    updateUserFinalDayStatus(props.userProfile, 'Active', finalDayDate)(dispatch);
     setIsSet(true);
     setFinalDayDateOpen(false);
     toast.success("This user's final day has been set.");
-    setTimeout(function(){
+    setTimeout(function() {
       window.location.reload();
-   }, 5000);
+    }, 5000);
   };
 
   return (
@@ -61,13 +61,13 @@ const SetUpFinalDayButton = (props) => {
         className={`btn btn-outline-${isSet ? 'warning' : 'success'} ${
           props.isBigBtn ? '' : 'btn-sm'
         }  mr-1`}
-        onClick={(e) => {
+        onClick={e => {
           onFinalDayClick(props.userProfile, isSet);
         }}
       >
         {isSet ? CANCEL : SET_FINAL_DAY}
-      </Button>  
-    </React.Fragment> 
+      </Button>
+    </React.Fragment>
   );
 };
 export default SetUpFinalDayButton;

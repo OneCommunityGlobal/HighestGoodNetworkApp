@@ -5,21 +5,20 @@ import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Input, Alert } from
 /**
  * Modal popup to show the user profile in create mode
  */
-const SetUpFinalDayPopUp= React.memo((props) => {
- 
+const SetUpFinalDayPopUp = React.memo(props => {
   const [finalDayDate, onDateChange] = useState(Date.now());
   const [dateError, setDateError] = useState(false);
 
-  const closePopup = (e) => {
+  const closePopup = e => {
     props.onClose();
   };
-  
+
   const deactiveUser = () => {
     if (moment().isBefore(moment(finalDayDate))) {
       props.onSave(finalDayDate);
     } else {
       setDateError(true);
-    } 
+    }
   };
 
   return (
@@ -31,7 +30,7 @@ const SetUpFinalDayPopUp= React.memo((props) => {
           name="inactiveDate"
           id="inactiveDate"
           value={finalDayDate}
-          onChange={(event) => {
+          onChange={event => {
             setDateError(false);
             onDateChange(event.target.value);
           }}
@@ -41,7 +40,7 @@ const SetUpFinalDayPopUp= React.memo((props) => {
       </ModalBody>
       <ModalFooter>
         <Button color="primary" onClick={deactiveUser}>
-          Save 
+          Save
         </Button>
         <Button color="secondary" onClick={closePopup}>
           Close

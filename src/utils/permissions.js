@@ -1,6 +1,6 @@
 const hasPermission = (role, action, roles, userPermissions) => {
-  if (role && roles && roles.length != 0 ) {
-    const roleIndex = roles?.findIndex(({roleName}) => roleName === role )
+  if (role && roles && roles.length != 0) {
+    const roleIndex = roles?.findIndex(({ roleName }) => roleName === role);
     let permissions = [];
     if (roleIndex !== -1) {
       permissions = roles[roleIndex].permissions;

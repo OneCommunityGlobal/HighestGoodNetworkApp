@@ -8,13 +8,13 @@ import {
   WKLY_COMMITTED_HRS,
   PAUSE,
   USER_RESUME_DATE,
-  MANAGE_FINAL_DAY
+  MANAGE_FINAL_DAY,
 } from '../../languages/en/ui';
 
 /**
  * The header row of the user table.
  */
-const UserTableHeader = React.memo((props) => {
+const UserTableHeader = React.memo(props => {
   return (
     <tr>
       <th scope="col" id="usermanagement_active">
@@ -36,7 +36,7 @@ const UserTableHeader = React.memo((props) => {
         {WKLY_COMMITTED_HRS}
       </th>
       <th scope="col" id="usermanagement_pause">
-        {PAUSE }
+        {PAUSE}
       </th>
       <th scope="col" id="usermanagement_finalday">
         {MANAGE_FINAL_DAY}
