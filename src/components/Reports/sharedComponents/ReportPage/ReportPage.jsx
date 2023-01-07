@@ -1,3 +1,4 @@
+/* eslint-disable import/named */
 /* eslint-disable import/prefer-default-export */
 /* eslint-disable react/prop-types */
 /* eslint-disable react/react-in-jsx-scope */

@@ -1,3 +1,5 @@
+/* eslint-disable import/no-named-as-default */
+/* eslint-disable import/no-named-as-default-member */
 /* eslint-disable jsx-a11y/label-has-associated-control */
 /* eslint-disable jsx-a11y/img-redundant-alt */
 /* eslint-disable import/no-unresolved */
@@ -28,8 +30,6 @@ import ReportTableSearchPanel from './ReportTableSearchPanel';
 import { getUserProfile, getUserTask } from '../../actions/userProfile';
 import httpService from '../../services/httpService';
 import { ENDPOINTS } from '../../utils/URL';
-import DatePicker from 'react-datepicker';
-import 'react-datepicker/dist/react-datepicker.css';
 import 'react-datepicker/dist/react-datepicker.css';
 import './reportsPage.css';
 import projectsImage from './images/Projects.svg';
@@ -122,14 +122,14 @@ class ReportsPage extends Component {
   /**
    * callback for search
    */
-  onWildCardSearch = searchText => {
+  onWildCardSearch = (searchText) => {
     this.setState({
       wildCardSearchText: searchText,
     });
   };
 
-  filteredProjectList = projects => {
-    const filteredList = projects.filter(project => {
+  filteredProjectList = (projects) => {
+    const filteredList = projects.filter((project) => {
       // Applying the search filters before creating each team table data element
       if (
         (project.projectName
@@ -149,8 +149,8 @@ class ReportsPage extends Component {
     return filteredList;
   };
 
-  filteredTeamList = allTeams => {
-    const filteredList = allTeams?.filter(team => {
+  filteredTeamList = (allTeams) => {
+    const filteredList = allTeams?.filter((team) => {
       // Applying the search filters before creating each team table data element
       if (
         (team.teamName
@@ -168,8 +168,8 @@ class ReportsPage extends Component {
     return filteredList;
   };
 
-  filteredPeopleList = userProfiles => {
-    const filteredList = userProfiles.filter(userProfile => {
+  filteredPeopleList = (userProfiles) => {
+    const filteredList = userProfiles.filter((userProfile) => {
       // Applying the search filters before creating each team table data element
       if (
         (userProfile.firstName
@@ -216,7 +216,7 @@ class ReportsPage extends Component {
   }
 
   showProjectTable() {
-    this.setState(prevState => ({
+    this.setState((prevState) => ({
       showProjects: !prevState.showProjects,
       showPeople: false,
       showTeams: false,
@@ -224,7 +224,7 @@ class ReportsPage extends Component {
   }
 
   showTeamsTable() {
-    this.setState(prevState => ({
+    this.setState((prevState) => ({
       showProjects: false,
       showPeople: false,
       showTeams: !prevState.showTeams,
@@ -232,7 +232,7 @@ class ReportsPage extends Component {
   }
 
   showPeopleTable() {
-    this.setState(prevState => ({
+    this.setState((prevState) => ({
       showProjects: false,
       showPeople: !prevState.showPeople,
       showTeams: false,
@@ -240,7 +240,7 @@ class ReportsPage extends Component {
   }
 
   showTasksTable() {
-    this.setState(prevState => ({
+    this.setState((prevState) => ({
       showProjects: false,
       showPeople: false,
       showTeams: false,

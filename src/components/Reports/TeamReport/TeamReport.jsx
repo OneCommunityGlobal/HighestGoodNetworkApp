@@ -1,3 +1,4 @@
+/* eslint-disable import/named */
 /* eslint-disable jsx-a11y/label-has-associated-control */
 /* eslint-disable no-unused-vars */
 /* eslint-disable react/prefer-stateless-function */
@@ -24,8 +25,7 @@ import { ReportPage } from '../sharedComponents/ReportPage';
 import UserLoginPrivileges from './components/UserLoginPrivileges';
 import LoginPrivilegesSimulation from './components/TestComponents/LoginPrivilegesSimulation';
 
-export const TeamReport = ({ match }) => {
-
+export function TeamReport({ match }) {
   const dispatch = useDispatch();
   const { team } = useSelector(getTeamReportData);
 
@@ -55,20 +55,32 @@ export const TeamReport = ({ match }) => {
 
   return (
     <ReportPage
-      contentClassName='team-report-blocks'
+      contentClassName="team-report-blocks"
       renderProfile={
-        () =>
+        () => (
           <ReportPage.ReportHeader isActive={team.isActive} avatar={<FiUsers />} name={team.teamName}>
             <div>
               <h5>{moment(team.createdDatetime).format('YYYY-MM-DD')}</h5>
               <p>Created Date</p>
             </div>
           </ReportPage.ReportHeader>
-      }>
-      <ReportPage.ReportBlock className='team-report-main-info-wrapper'>
-        <div className='team-report-main-info'>
-          <div><span className='team-report-star'>&#9733;</span> Team ID: {team._id}</div>
-          <div className='update-date'>Last updated: {moment(team.modifiedDatetime).format('YYYY-MM-DD')}</div>
+        )
+}
+    >
+      <ReportPage.ReportBlock className="team-report-main-info-wrapper">
+        <div className="team-report-main-info d-flex align-items-center flex-row justify-content-between">
+          <div>
+            <span className="team-report-star">&#9733;</span>
+            {' '}
+            Team ID:
+            {' '}
+            {team._id}
+          </div>
+          <LoginPrivilegesSimulation />
+          <div className="update-date">
+            Last updated:
+            {moment(team.modifiedDatetime).format('YYYY-MM-DD')}
+          </div>
         </div>
       </ReportPage.ReportBlock>
       <UserLoginPrivileges handleInputChange={handleInputChange} selectedInput={selectedInput} />
@@ -105,8 +117,8 @@ export const TeamReport = ({ match }) => {
             </div>
           </div>
         </div>
-        <table class="table tableHeader">
-          <thead class="table table-hover">
+        <table className="table tableHeader">
+          <thead className="table table-hover">
             <tr>
               <td className="tableHeader"><strong>All</strong></td>
               <td className="tableHeader"><strong>Team</strong></td>
@@ -122,56 +134,56 @@ export const TeamReport = ({ match }) => {
           </thead>
           <tbody className="table">
             <tr>
-              <td class="table-white"><input type="checkbox" /></td>
-              <td class="table-white"><strong>Team A</strong></td>
-              <td class="table-white">Priority</td>
-              <td class="table-white">{isActive ? <span>Started</span> : <span>Not Started</span>}</td>
-              <td class="table-white">@@@</td>
-              <td class="table-white">{isActive ? <BsCheckLg /> : <BsXLg />}</td>
-              <td class="table-white">{isInactive ? <BsCheckLg /> : <BsXLg />}</td>
-              <td class="table-white">15.5</td>
-              <td class="table-white">12/28/2022</td>
-              <td class="table-white">12/31/2022</td>
+              <td><input type="checkbox" /></td>
+              <td><strong>Team A</strong></td>
+              <td>Priority</td>
+              <td>{isActive ? <span>Started</span> : <span>Not Started</span>}</td>
+              <td>@@@</td>
+              <td>{isActive ? <BsCheckLg /> : <BsXLg />}</td>
+              <td>{isInactive ? <BsCheckLg /> : <BsXLg />}</td>
+              <td>15.5</td>
+              <td>12/28/2022</td>
+              <td>12/31/2022</td>
             </tr>
             <tr>
-              <td class="table-white"><input type="checkbox" /></td>
-              <td class="table-white"><strong>Team B</strong></td>
-              <td class="table-white">Priority</td>
-              <td class="table-white">{isActive ? <span>Started</span> : <span>Not Started</span>}</td>
-              <td class="table-white">@@@</td>
-              <td class="table-white">{isInactive ? <BsCheckLg /> : <BsXLg />}</td>
-              <td class="table-white">{isActive ? <BsCheckLg /> : <BsXLg />}</td>
-              <td class="table-white">15.5</td>
-              <td class="table-white">12/28/2022</td>
-              <td class="table-white">12/31/2022</td>
+              <td><input type="checkbox" /></td>
+              <td><strong>Team B</strong></td>
+              <td>Priority</td>
+              <td>{isActive ? <span>Started</span> : <span>Not Started</span>}</td>
+              <td>@@@</td>
+              <td>{isInactive ? <BsCheckLg /> : <BsXLg />}</td>
+              <td>{isActive ? <BsCheckLg /> : <BsXLg />}</td>
+              <td>15.5</td>
+              <td>12/28/2022</td>
+              <td>12/31/2022</td>
             </tr>
             <tr>
-              <td class="table-white"><input type="checkbox" /></td>
-              <td class="table-white"><strong>Team C</strong></td>
-              <td class="table-white">Priority</td>
-              <td class="table-white">{isInactive ? <span>Started</span> : <span>Not Started</span>}</td>
-              <td class="table-white">@@@</td>
-              <td class="table-white">{isActive ? <BsCheckLg /> : <BsXLg />}</td>
-              <td class="table-white">{isActive ? <BsCheckLg /> : <BsXLg />}</td>
-              <td class="table-white">15.5</td>
-              <td class="table-white">12/28/2022</td>
-              <td class="table-white">12/31/2022</td>
+              <td><input type="checkbox" /></td>
+              <td><strong>Team C</strong></td>
+              <td>Priority</td>
+              <td>{isInactive ? <span>Started</span> : <span>Not Started</span>}</td>
+              <td>@@@</td>
+              <td>{isActive ? <BsCheckLg /> : <BsXLg />}</td>
+              <td>{isActive ? <BsCheckLg /> : <BsXLg />}</td>
+              <td>15.5</td>
+              <td>12/28/2022</td>
+              <td>12/31/2022</td>
             </tr>
             <tr>
-              <td class="table-white"><input type="checkbox" /></td>
-              <td class="table-white"><strong>Team D</strong></td>
-              <td class="table-white">Priority</td>
-              <td class="table-white">{isActive ? <span>Started</span> : <span>Not Started</span>}</td>
-              <td class="table-white">@@@</td>
-              <td class="table-white">{isInactive ? <BsCheckLg /> : <BsXLg />}</td>
-              <td class="table-white">{isInactive ? <BsCheckLg /> : <BsXLg />}</td>
-              <td class="table-white">15.5</td>
-              <td class="table-white">12/28/2022</td>
-              <td class="table-white">12/31/2022</td>
+              <td><input type="checkbox" /></td>
+              <td><strong>Team D</strong></td>
+              <td>Priority</td>
+              <td>{isActive ? <span>Started</span> : <span>Not Started</span>}</td>
+              <td>@@@</td>
+              <td>{isInactive ? <BsCheckLg /> : <BsXLg />}</td>
+              <td>{isInactive ? <BsCheckLg /> : <BsXLg />}</td>
+              <td>15.5</td>
+              <td>12/28/2022</td>
+              <td>12/31/2022</td>
             </tr>
           </tbody>
         </table>
       </ReportPage.ReportBlock>
     </ReportPage>
   );
-};
+}

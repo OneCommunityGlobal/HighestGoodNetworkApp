@@ -26,7 +26,7 @@ function PeopleTable(props) {
         </td>
         <td
           className="teams__active--input"
-          onClick={e => {
+          onClick={(e) => {
             person.onStatusClick(person.firstName, person._id, person.isActive);
           }}
         >
