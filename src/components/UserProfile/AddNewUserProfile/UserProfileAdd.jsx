@@ -37,7 +37,6 @@ import { fetchAllProjects } from 'actions/projects';
 
 import PhoneInput from 'react-phone-input-2';
 import 'react-phone-input-2/lib/style.css';
-
 import classnames from 'classnames';
 import TimeZoneDropDown from '../TimeZoneDropDown';
 import { getUserTimeZone } from 'services/timezoneApiService';
@@ -176,8 +175,10 @@ class AddUserProfile extends Component {
                   </Col>
                   <Col md="6">
                     <FormGroup>
-                      <PhoneInput
-                        country={'us'}
+                    <PhoneInput
+                        country="US"
+                        regions={['america','europe','asia','oceania','africa']}
+                        limitMaxLength= 'true'
                         value={phoneNumber}
                         onChange={phone => this.phoneChange(phone)}
                       />

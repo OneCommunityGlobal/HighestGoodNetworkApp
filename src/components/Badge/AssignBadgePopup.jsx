@@ -2,15 +2,15 @@ import React, { useState } from 'react';
 import { Table, Button, UncontrolledTooltip } from 'reactstrap';
 import AssignTableRow from './AssignTableRow';
 
-const AssignBadgePopup = (props) => {
+const AssignBadgePopup = props => {
   const [searchedName, setSearchedName] = useState('');
 
-  const onSearch = (text) => {
+  const onSearch = text => {
     setSearchedName(text);
   };
 
-  const filterBadges = (allBadges) => {
-    let filteredList = allBadges.filter((badge) => {
+  const filterBadges = allBadges => {
+    let filteredList = allBadges.filter(badge => {
       if (badge.badgeName.toLowerCase().indexOf(searchedName.toLowerCase()) > -1) {
         return badge;
       }
@@ -26,7 +26,7 @@ const AssignBadgePopup = (props) => {
         type="text"
         className="form-control assign_badge_search_box"
         placeholder="Search Badge Name"
-        onChange={(e) => {
+        onChange={e => {
           onSearch(e.target.value);
         }}
       />

@@ -26,6 +26,7 @@ import DeleteUserPopup from './DeleteUserPopup';
 import ActiveInactiveConfirmationPopup from './ActiveInactiveConfirmationPopup';
 import { Container } from 'reactstrap';
 import SetUpFinalDayPopUp from './SetUpFinalDayPopUp';
+import { Table } from 'react-bootstrap';
 
 class UserManagement extends React.PureComponent {
   filteredUserDataCount = 0;
@@ -73,7 +74,7 @@ class UserManagement extends React.PureComponent {
               onNewUserClick={this.onNewUserClick}
             />
             <div className="table-responsive">
-              <table className="table table-bordered">
+              <Table className="table table-bordered noWrap">
                 <thead>
                   <UserTableHeader />
                   <UserTableSearchHeader
@@ -86,7 +87,7 @@ class UserManagement extends React.PureComponent {
                   />
                 </thead>
                 <tbody>{userTable}</tbody>
-              </table>
+              </Table>
             </div>
             <UserTableFooter
               datacount={this.filteredUserDataCount}

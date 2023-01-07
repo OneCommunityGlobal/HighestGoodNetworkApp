@@ -31,7 +31,7 @@ xdescribe('Header page structure', () => {
   it('should be rendered with at least one img', () => {
     const img = mountedHeader.find('img');
     expect(img.length).toBeGreaterThan(0);
-  }); 
+  });
 });
 
 xdescribe('UnAuthenticated Header page structure', () => {
@@ -49,12 +49,12 @@ xdescribe('UnAuthenticated Header page structure', () => {
     expect(navBar.length).toBe(1);
   });
 
-   it('should be rendered with no navLinks', () => {
+  it('should be rendered with no navLinks', () => {
     const navLinks = mountedHeader.find('NavLink');
     expect(navLinks.length).toBe(0);
   });
 
-   it('should be rendered with no dropdown items', () => {
+  it('should be rendered with no dropdown items', () => {
     const dropDownItems = mountedHeader.find('DropdownItem');
     expect(dropDownItems.length).toBe(0);
   });
