@@ -68,7 +68,7 @@ export function TeamReport({ match }) {
 }
     >
       <ReportPage.ReportBlock className="team-report-main-info-wrapper">
-        <div className="team-report-main-info d-flex align-items-center flex-row justify-content-between">
+        <div className="team-report-main-info-id">
           <div>
             <span className="team-report-star">&#9733;</span>
             {' '}
@@ -76,7 +76,12 @@ export function TeamReport({ match }) {
             {' '}
             {team._id}
           </div>
-          <LoginPrivilegesSimulation />
+          {/*
+          This LoginPrivilegesSimulation component will be removed once the backend team link the login privileges.
+          It is just to simulate the toggle between the login privileges. The logic is
+          inside the userLoginPrivileges.jsx file.
+          */}
+          <LoginPrivilegesSimulation selectedInput={selectedInput} handleInputChange={handleInputChange} />
           <div className="update-date">
             Last updated:
             {moment(team.modifiedDatetime).format('YYYY-MM-DD')}
