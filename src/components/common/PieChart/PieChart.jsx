@@ -57,29 +57,17 @@ export const PieChart = ({ data, dataLegend, pieChartId, dataLegendHeader }) => 
               {dataLegend[key].map(legendPart => (
                 <div className="data-legend-info-part">{legendPart}</div>
               ))}
-<<<<<<< HEAD
             </div>
           </div>
         ))}
-       
-      {Object.keys(dataLegend).map(key => (
-          <div key={key} className="pie-chart-legend-item">
-            
-            <div className="data-legend-info">Total Hours Worked
-              
-                <div className="data-legend-info-part">10</div>
-              
-=======
->>>>>>> e420aff3d615d4adf4052f1f8d08e288ff6aed7a
+          <div className="pie-chart-legend-item">
+            <div className="data-legend-info">
+              Total Hours Worked:
+              <div className="data-legend-info-part">10</div>
             </div>
           </div>
-        ))}
       </div>
       
     </div>
-<<<<<<< HEAD
-    
-=======
->>>>>>> e420aff3d615d4adf4052f1f8d08e288ff6aed7a
   );
 };
