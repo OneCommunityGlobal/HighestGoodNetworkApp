@@ -3,6 +3,7 @@ import * as d3 from 'd3/dist/d3.min';
 import { CHART_RADIUS, CHART_SIZE } from './constants';
 import { generateArrayOfUniqColors } from './colorsGenerator';
 import './PieChart.css';
+import { PeopleTasksPieChart } from 'components/Reports/PeopleReport/components';
 
 export const PieChart = ({ data, dataLegend, pieChartId, dataLegendHeader }) => {
   const getCreateSvgPie = () => {
@@ -50,6 +51,7 @@ export const PieChart = ({ data, dataLegend, pieChartId, dataLegendHeader }) => 
           <div>Name</div>
           <div>{dataLegendHeader}</div>
         </div>
+        {/*Values for Name Header entered here*/}
         {Object.keys(dataLegend).map(key => (
           <div key={key} className="pie-chart-legend-item">
             <div className="data-legend-color" style={{ backgroundColor: color(key) }} />
@@ -60,14 +62,16 @@ export const PieChart = ({ data, dataLegend, pieChartId, dataLegendHeader }) => 
             </div>
           </div>
         ))}
-          <div className="pie-chart-legend-item">
-            <div className="data-legend-info">
-              Total Hours Worked:
-              <div className="data-legend-info-part">10</div>
+        {/*Values for Hours Header entered here*/}
+        <div className="pie-chart-legend-item">
+          <div className="data-legend-info">
+            Total Hours Worked:
+            <div className="data-legend-info-part">
+              {/*Total Hours need to be inserted here*/}
             </div>
           </div>
+        </div>
       </div>
-      
     </div>
   );
 };

@@ -24,6 +24,12 @@ export const PeopleTasksPieChart = () => {
     return null;
   }
 
+  // const totalHours = () => {
+  //   const weekStart = 0;
+  //   let hoursWorked = tasksWithLoggedHoursById;
+  //   const totalHours = weekStart + hoursWorked;
+  // }
+
 
   return (
     <div className="people-pie-charts-wrapper">
