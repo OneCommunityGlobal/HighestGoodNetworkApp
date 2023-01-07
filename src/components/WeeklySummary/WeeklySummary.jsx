@@ -294,7 +294,7 @@ export class WeeklySummary extends Component {
     const summariesLabels = {
       summary: 'This Week',
       summaryLastWeek: this.doesDateBelongToWeek(dueDateLastWeek, 1)
-        ? this.doesDateBelongToWeek(dueDateLastWeek, 1)
+        ? 'Last Week'
         : moment(dueDateLastWeek).format('YYYY-MMM-DD'),
       summaryBeforeLast: this.doesDateBelongToWeek(dueDateBeforeLast, 2)
         ? 'Week Before Last'
