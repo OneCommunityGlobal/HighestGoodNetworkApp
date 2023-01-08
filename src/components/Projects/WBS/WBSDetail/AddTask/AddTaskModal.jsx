@@ -10,7 +10,7 @@ import 'react-day-picker/lib/style.css';
 import dateFnsFormat from 'date-fns/format';
 import { Editor } from '@tinymce/tinymce-react';
 
-const AddTaskModal = (props) => {
+const AddTaskModal = props => {
   const tasks = props.tasks.taskItems;
   const [members] = useState(props.projectMembers || props.projectMembers.members);
   let foundedMembers = [];
@@ -81,16 +81,17 @@ const AddTaskModal = (props) => {
 
   // Classification
   const classificationOptions = [
-    {value:"Food",label:"Food"},
-    {value:"Energy",label:"Energy"},
-    {value:"Housing",label:"Housing"},
-    {value:"Education",label:"Education"},
-    {value:"Soceity",label:"Soceity"},
-    {value:"Economics",label:"Economics"},
-    {value:"Stewardship",label:"Stewardship"},
-    {value:"Other",label:"Other"}
-  ]
-  const [classification, setClassification] = useState('Housing');
+    { value: 'Food', label: 'Food' },
+    { value: 'Energy', label: 'Energy' },
+    { value: 'Housing', label: 'Housing' },
+    { value: 'Education', label: 'Education' },
+    { value: 'Soceity', label: 'Soceity' },
+    { value: 'Economics', label: 'Economics' },
+    { value: 'Stewardship', label: 'Stewardship' },
+    { value: 'Other', label: 'Other' },
+  ];
+  const [projectCategory, setProjectCategory] = useState('');
+  const [classification, setClassification] = useState('');
 
   // Warning
   const [dateWarning, setDateWarning] = useState(false);
@@ -99,11 +100,11 @@ const AddTaskModal = (props) => {
   const getNewNum = () => {
     if (tasks.length > 0) {
       if (props.taskId) {
-        const childTasks = tasks.filter((task) => task.mother === props.taskId);
+        const childTasks = tasks.filter(task => task.mother === props.taskId);
         newNum = `${props.parentNum !== null ? props.parentNum + '.' : ''}${childTasks.length + 1}`;
         newNum = newNum.replace(/.0/g, '');
       } else {
-        newNum = tasks.filter((task) => task.level === 1).length + 1 + '';
+        newNum = tasks.filter(task => task.level === 1).length + 1 + '';
       }
     }
   };
@@ -147,8 +148,8 @@ const AddTaskModal = (props) => {
     setfoundMembersHTML(html);
   };
 
-  const removeResource = (userID) => {
-    var removeIndex = resourceItems.map((item) => item.userID).indexOf(userID);
+  const removeResource = userID => {
+    var removeIndex = resourceItems.map(item => item.userID).indexOf(userID);
     setResourceItems([
       ...resourceItems.slice(0, removeIndex),
       ...resourceItems.slice(removeIndex + 1),
@@ -178,7 +179,7 @@ const AddTaskModal = (props) => {
     setLinks([...links, link]);
   };
 
-  const removeLink = (index) => {
+  const removeLink = index => {
     setLinks([...links.slice(0, index), ...links.slice(index + 1)]);
   };
 
@@ -220,7 +221,7 @@ const AddTaskModal = (props) => {
     parentId3 = props.taskId;
   }
 
-  const changeDateStart = (startDate) => {
+  const changeDateStart = startDate => {
     setStartedDate(startDate);
     if (dueDate) {
       if (startDate > dueDate) {
@@ -231,7 +232,7 @@ const AddTaskModal = (props) => {
     }
   };
 
-  const changeDateEnd = (dueDate) => {
+  const changeDateEnd = dueDate => {
     setDueDate(dueDate);
     if (startedDate) {
       if (dueDate < startedDate) {
@@ -336,7 +337,7 @@ const AddTaskModal = (props) => {
       endstateInfo: endstateInfo,
       classification,
     };
-    
+
     props.addNewTask(newTask, props.wbsId);
 
     setTimeout(() => {
@@ -348,20 +349,14 @@ const AddTaskModal = (props) => {
     }, 1000);
   };
 
-  useEffect(() => {
-    if (props.level >= 1) {
-      const classificationMother = props.tasks.taskItems.find(({ _id }) => _id === props.taskId)
-        .classification;
-        if(classificationMother){
-          setClassification(classificationMother);
-        }
-    }
-    else {
-      const res = props.allProjects.projects.filter(obj => obj._id === props.projectId)[0];
-      setClassification(res.category);
+  useEffect(() => {}, [tasks]);
 
+  useEffect(() => {
+    const res = props.allProjects.projects.filter(obj => obj._id === props.projectId)[0];
+    if (res) {
+      setProjectCategory(res.category);
     }
-  }, [props.level]);
+  });
 
   getNewNum();
 
@@ -404,8 +399,8 @@ const AddTaskModal = (props) => {
                   <input
                     type="text"
                     className="task-name"
-                    onChange={(e) => setTaskName(e.target.value)}
-                    onKeyPress={(e) => setTaskName(e.target.value)}
+                    onChange={e => setTaskName(e.target.value)}
+                    onKeyPress={e => setTaskName(e.target.value)}
                     value={taskName}
                   />
                 </td>
@@ -413,7 +408,7 @@ const AddTaskModal = (props) => {
               <tr>
                 <td scope="col">Priority</td>
                 <td scope="col">
-                  <select id="priority" onChange={(e) => setPriority(e.target.value)}>
+                  <select id="priority" onChange={e => setPriority(e.target.value)}>
                     <option value="Primary">Primary</option>
                     <option value="Secondary">Secondary</option>
                     <option value="Tertiary">Tertiary</option>
@@ -430,8 +425,8 @@ const AddTaskModal = (props) => {
                       placeholder="Name"
                       className="task-resouces-input"
                       data-tip="Input a name"
-                      onChange={(e) => setMemberName(e.target.value)}
-                      onKeyPress={(e) => setMemberName(e.target.value)}
+                      onChange={e => setMemberName(e.target.value)}
+                      onKeyPress={e => setMemberName(e.target.value)}
                     />
                     <button
                       className="task-resouces-btn"
@@ -452,7 +447,7 @@ const AddTaskModal = (props) => {
                           <a
                             key={`res_${i}`}
                             data-tip={elm.name}
-                            onClick={(e) => removeResource(elm.userID, e.target)}
+                            onClick={e => removeResource(elm.userID, e.target)}
                           >
                             <span className="dot">{elm.name.substring(0, 2)}</span>
                           </a>
@@ -462,7 +457,7 @@ const AddTaskModal = (props) => {
                         <a
                           key={`res_${i}`}
                           data-tip={elm.name}
-                          onClick={(e) => removeResource(elm.userID, e.target)}
+                          onClick={e => removeResource(elm.userID, e.target)}
                         >
                           <img className="img-circle" src={elm.profilePic} />
                         </a>
@@ -476,7 +471,7 @@ const AddTaskModal = (props) => {
                 <td scope="col">
                   <select
                     id="Assigned"
-                    onChange={(e) => setAssigned(e.target.value === 'true' ? true : false)}
+                    onChange={e => setAssigned(e.target.value === 'true' ? true : false)}
                   >
                     <option value="true">Yes</option>
                     <option value="false">No</option>
@@ -486,7 +481,7 @@ const AddTaskModal = (props) => {
               <tr>
                 <td scope="col">Status</td>
                 <td scope="col">
-                  <select id="Status" onChange={(e) => setStatus(e.target.value)}>
+                  <select id="Status" onChange={e => setStatus(e.target.value)}>
                     <option value="Not Started">Not Started</option>
                     <option value="Started">Started</option>
                   </select>
@@ -502,7 +497,7 @@ const AddTaskModal = (props) => {
                     min="0"
                     max="500"
                     value={hoursBest}
-                    onChange={(e) => setHoursBest(e.target.value)}
+                    onChange={e => setHoursBest(e.target.value)}
                     onBlur={() => calHoursEstimate()}
                   />
                   <div className="warning">
@@ -522,7 +517,7 @@ const AddTaskModal = (props) => {
                     min={hoursBest}
                     max="500"
                     value={hoursWorst}
-                    onChange={(e) => setHoursWorst(e.target.value)}
+                    onChange={e => setHoursWorst(e.target.value)}
                     onBlur={() => calHoursEstimate('hoursWorst')}
                   />
                   <div className="warning">
@@ -542,7 +537,7 @@ const AddTaskModal = (props) => {
                     min="0"
                     max="500"
                     value={hoursMost}
-                    onChange={(e) => setHoursMost(e.target.value)}
+                    onChange={e => setHoursMost(e.target.value)}
                     onBlur={() => calHoursEstimate('hoursMost')}
                   />
                   <div className="warning">
@@ -562,7 +557,7 @@ const AddTaskModal = (props) => {
                     min="0"
                     max="500"
                     value={hoursEstimate}
-                    onChange={(e) => setHoursEstimate(e.target.value)}
+                    onChange={e => setHoursEstimate(e.target.value)}
                   />
                 </td>
               </tr>
@@ -577,7 +572,7 @@ const AddTaskModal = (props) => {
                       placeholder="Link"
                       className="task-resouces-input"
                       data-tip="Add a link"
-                      onChange={(e) => setLink(e.target.value)}
+                      onChange={e => setLink(e.target.value)}
                     />
                     <button
                       className="task-resouces-btn"
@@ -607,9 +602,16 @@ const AddTaskModal = (props) => {
               <tr>
                 <td scope="col">Classification</td>
                 <td scope="col">
-                  <select value={classification} onChange={e => setClassification(e.target.value)} >
-                    {classificationOptions.map(cla =>{
-                      return <option value={cla.value} key={cla.value}>{cla.label}</option>
+                  <select
+                    defaultValue={projectCategory}
+                    onChange={e => setClassification(e.target.value)}
+                  >
+                    {classificationOptions.map(cla => {
+                      return (
+                        <option value={cla.value} key={cla.value}>
+                          {cla.label}
+                        </option>
+                      );
                     })}
                   </select>
                 </td>
@@ -634,7 +636,7 @@ const AddTaskModal = (props) => {
                     className="why-info"
                     className="form-control"
                     value={whyInfo}
-                    onEditorChange={(content) => setWhyInfo(content)}
+                    onEditorChange={content => setWhyInfo(content)}
                   />
                 </td>
               </tr>
@@ -658,7 +660,7 @@ const AddTaskModal = (props) => {
                     className="intent-info"
                     className="form-control"
                     value={intentInfo}
-                    onEditorChange={(content) => setIntentInfo(content)}
+                    onEditorChange={content => setIntentInfo(content)}
                   />
                 </td>
               </tr>
@@ -682,7 +684,7 @@ const AddTaskModal = (props) => {
                     className="endstate-info"
                     className="form-control"
                     value={endstateInfo}
-                    onEditorChange={(content) => setEndstateInfo(content)}
+                    onEditorChange={content => setEndstateInfo(content)}
                   />
                 </td>
               </tr>
@@ -740,7 +742,7 @@ const AddTaskModal = (props) => {
   );
 };
 
-const mapStateToProps = (state) => {
+const mapStateToProps = state => {
   return state;
 };
 export default connect(mapStateToProps, {
