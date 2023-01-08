@@ -90,7 +90,6 @@ const AddTaskModal = (props) => {
     {value:"Stewardship",label:"Stewardship"},
     {value:"Other",label:"Other"}
   ]
-  const [projectCategory, setProjectCategory] = useState('');
   const [classification, setClassification] = useState('Housing');
 
   // Warning
@@ -356,6 +355,11 @@ const AddTaskModal = (props) => {
         if(classificationMother){
           setClassification(classificationMother);
         }
+    }
+    else {
+      const res = props.allProjects.projects.filter(obj => obj._id === props.projectId)[0];
+      setClassification(res.category);
+
     }
   }, [props.level]);
 
