@@ -17,7 +17,9 @@ class DropDownSearchBox extends React.PureComponent {
         style={{ padding: '0 0 0 6px', cursor: 'pointer', width: this.props.width }}
         className={this.props.className}
       >
-        <option value={''} style={{ color: '#9b9b9b' }}>{this.props.placeholder}</option>
+        <option value={''} style={{ color: '#9b9b9b' }}>
+          {this.props.placeholder}
+        </option>
         {this.props.items.map((item, index) => {
           return (
             <option value={item} key={'search-dropdown-' + index}>
@@ -29,7 +31,7 @@ class DropDownSearchBox extends React.PureComponent {
     );
   }
 
-  onSelectionChange = (event) => {
+  onSelectionChange = event => {
     this.props.searchCallback(event.target.value);
     this.setState({
       selectedValue: event.target.value,

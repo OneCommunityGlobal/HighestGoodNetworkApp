@@ -119,6 +119,7 @@ const ImportTask = props => {
       hoursBest: `${rowArr[12]}`,
       hoursWorst: `${rowArr[13]}`,
       hoursMost: `${rowArr[14]}`,
+      hoursLogged: "0",
       estimatedHours: `${rowArr[15]}`,
       startedDatetime: null,
       dueDatetime: null,

@@ -2,11 +2,11 @@ import { ENDPOINTS } from '../utils/URL';
 import axios from 'axios';
 import { GET_PROJECT_BY_ID } from '../constants/project';
 
-export const getProjectDetail = (projectId) => {
+export const getProjectDetail = projectId => {
   const url = ENDPOINTS.PROJECT_BY_ID(projectId);
-  return async (dispatch) => {
+  return async dispatch => {
     let loggedOut = false;
-    const res = await axios.get(url).catch((error) => {
+    const res = await axios.get(url).catch(error => {
       if (error.status === 401) {
         loggedOut = true;
       }
@@ -17,7 +17,7 @@ export const getProjectDetail = (projectId) => {
   };
 };
 
-export const setProjectDetail = (data) => ({
+export const setProjectDetail = data => ({
   type: GET_PROJECT_BY_ID,
   payload: data,
 });

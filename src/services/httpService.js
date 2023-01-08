@@ -4,7 +4,7 @@ import logService from './logService';
 
 axios.defaults.headers.post['Content-Type'] = 'application/json';
 
-axios.interceptors.response.use(null, (error) => {
+axios.interceptors.response.use(null, error => {
   if (!(error.response && error.response.status >= 400 && error.response.status <= 500)) {
     logService.logError(error);
     toast.error('Unexpected error');

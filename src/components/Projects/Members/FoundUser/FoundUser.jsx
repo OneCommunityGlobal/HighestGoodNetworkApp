@@ -7,7 +7,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { assignProject } from './../../../../actions/projectMembers';
 
-const FoundUser = (props) => {
+const FoundUser = props => {
   return (
     <React.Fragment>
       <tr className="members__tr">
@@ -23,7 +23,7 @@ const FoundUser = (props) => {
             <button
               className="btn btn-outline-primary btn-sm"
               type="button"
-              onClick={(e) =>
+              onClick={e =>
                 props.assignProject(
                   props.projectId,
                   props.uid,
@@ -41,7 +41,7 @@ const FoundUser = (props) => {
     </React.Fragment>
   );
 };
-const mapStateToProps = (state) => {
+const mapStateToProps = state => {
   return { state };
 };
 export default connect(mapStateToProps, { assignProject })(FoundUser);

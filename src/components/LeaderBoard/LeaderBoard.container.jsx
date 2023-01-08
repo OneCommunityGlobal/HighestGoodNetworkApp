@@ -1,16 +1,16 @@
 import { getLeaderboardData, getOrgData } from '../../actions/leaderBoardData';
 import { connect } from 'react-redux';
 import Leaderboard from './Leaderboard';
-import { getcolor, getprogress } from '../../utils/effortColors';
+import { getcolor, getprogress, getProgressValue } from '../../utils/effortColors';
 import _ from 'lodash';
 
-const mapStateToProps = (state) => {
+const mapStateToProps = state => {
   let leaderBoardData = _.get(state, 'leaderBoardData', []);
 
   if (leaderBoardData.length) {
     let maxTotal = _.maxBy(leaderBoardData, 'totaltime_hrs').totaltime_hrs || 10;
 
-    leaderBoardData = leaderBoardData.map((element) => {
+    leaderBoardData = leaderBoardData.map(element => {
       element.didMeetWeeklyCommitment =
         element.totaltangibletime_hrs >= element.weeklyComittedHours ? true : false;
 
@@ -23,7 +23,7 @@ const mapStateToProps = (state) => {
       element.intangibletimewidth = _.round((element.totalintangibletime_hrs * 100) / maxTotal, 0);
 
       element.barcolor = getcolor(element.totaltangibletime_hrs);
-      element.barprogress = getprogress(element.totaltangibletime_hrs);
+      element.barprogress = getProgressValue(element.totaltangibletime_hrs,40);
       element.totaltime = _.round(element.totaltime_hrs, 2);
 
       return element;

@@ -7,7 +7,7 @@ import ReactHtmlParser from 'react-html-parser';
 const FormattedReport = ({ summaries, weekIndex }) => {
   const emails = [];
 
-  summaries.forEach((summary) => {
+  summaries.forEach(summary => {
     if (summary.email !== undefined && summary.email !== null) {
       emails.push(summary.email);
     }
@@ -19,13 +19,13 @@ const FormattedReport = ({ summaries, weekIndex }) => {
   while (emailString.includes(',')) emailString = emailString.replace(',', '\n');
   while (emailString.includes('\n')) emailString = emailString.replace('\n', ', ');
 
-  const alphabetize = (summaries) => {
+  const alphabetize = summaries => {
     return summaries.sort((a, b) =>
       `${a.firstName} ${a.lastName}`.localeCompare(`${b.firstName} ${b.lastname}`),
     );
   };
 
-  const getMediaUrlLink = (summary) => {
+  const getMediaUrlLink = summary => {
     if (summary.mediaUrl) {
       return (
         <a href={summary.mediaUrl} target="_blank" rel="noopener noreferrer">
@@ -37,7 +37,7 @@ const FormattedReport = ({ summaries, weekIndex }) => {
     }
   };
 
-  const getWeeklySummaryMessage = (summary) => {
+  const getWeeklySummaryMessage = summary => {
     if (!summary)
       return (
         <p>
@@ -70,7 +70,7 @@ const FormattedReport = ({ summaries, weekIndex }) => {
     );
   };
 
-  const getTotalValidWeeklySummaries = (summary) => {
+  const getTotalValidWeeklySummaries = summary => {
     return (
       <p style={summary.weeklySummariesCount === 8 ? { color: 'blue' } : {}}>
         <b>Total Valid Weekly Summaries:</b>{' '}
