@@ -118,7 +118,6 @@ export class WeeklySummary extends Component {
     return moment(dueDate).isBetween(fromDate, toDate, undefined, '[]');
   };
 
-
   // Similar to UserProfile component function
   // Loads component depending on asUser passed as prop
   loadUserProfile = async () => {
@@ -294,12 +293,15 @@ export class WeeklySummary extends Component {
       dueDateBeforeLast,
     } = this.state;
     const summariesLabels = {
-      summary: 'This Week',
-      summaryLastWeek: this.doesDateBelongToWeek(dueDateLastWeek, 1)
-        ? 'Last Week'
+      summary: 'New Summary',
+      summaryLastWeek: this.doesDateBelongToWeek(dueDateLastWeek, 0)
+        ? 'Current Week'
         : moment(dueDateLastWeek).format('YYYY-MMM-DD'),
-      summaryBeforeLast: this.doesDateBelongToWeek(dueDateBeforeLast, 2)
-        ? 'Week Before Last'
+      summaryBeforeLast: this.doesDateBelongToWeek(dueDateBeforeLast, 1)
+        ? 'Last Week'
+        : moment(dueDateBeforeLast).format('YYYY-MMM-DD'),
+      summaryTwoWeeksAgo: this.doesDateBelongToWeek(dueDateBeforeLast, 2)
+        ? 'Two weeks ago'
         : moment(dueDateBeforeLast).format('YYYY-MMM-DD'),
     };
 
