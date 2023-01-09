@@ -86,7 +86,7 @@ const SummaryBar = props => {
     getUserTask();
     // getWeeklySummary();
   }, []);
-  }, [leaderData]);
+ 
 
 
   const calculateTotalTime = (data, isTangible) => {
