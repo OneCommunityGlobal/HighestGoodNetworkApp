@@ -9,5 +9,5 @@ export const RoutePermissions = {
   badgeManagement: 'seeBadgeManagement',
   permissionsManagement: 'seePermissionsManagement',
   permissionsManagementRole: 'seePermissionsManagement',
-  teams:'seeTeamsManagement',
-} 
+  teams: 'seeTeamsManagement',
+};

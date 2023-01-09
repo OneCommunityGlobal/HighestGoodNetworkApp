@@ -19,7 +19,7 @@ import BadgeTableFilter from './BadgeTableFilter';
 import EditBadgePopup from './EditBadgePopup';
 import DeleteBadgePopup from './DeleteBadgePopup';
 
-const BadgeDevelopmentTable = (props) => {
+const BadgeDevelopmentTable = props => {
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [type, setType] = useState('');
@@ -31,7 +31,7 @@ const BadgeDevelopmentTable = (props) => {
   const [editBadgeValues, setEditBadgeValues] = useState('');
   const [editPopup, setEditPopup] = useState(false);
 
-  const detailsText = (badegValue) => {
+  const detailsText = badegValue => {
     let returnText = '';
     if (badegValue.type) {
       switch (badegValue.type) {
@@ -71,7 +71,7 @@ const BadgeDevelopmentTable = (props) => {
     return returnText;
   };
 
-  const onEditButtonClick = (badgeValues) => {
+  const onEditButtonClick = badgeValues => {
     setEditBadgeValues(badgeValues);
     setEditPopup(true);
   };
@@ -82,19 +82,19 @@ const BadgeDevelopmentTable = (props) => {
     setDeleteName(badgeName);
   };
 
-  const onBadgeNameSearch = (text) => {
+  const onBadgeNameSearch = text => {
     setName(text);
   };
 
-  const onBadgeDescriptionSearch = (text) => {
+  const onBadgeDescriptionSearch = text => {
     setDescription(text);
   };
 
-  const onBadgeTypeSearch = (text) => {
+  const onBadgeTypeSearch = text => {
     setType(text);
   };
 
-  const onBadgeRankingSort = (order) => {
+  const onBadgeRankingSort = order => {
     setOrder(order);
   };
 
@@ -105,8 +105,8 @@ const BadgeDevelopmentTable = (props) => {
     setOrder('');
   };
 
-  const filterBadges = (allBadges) => {
-    let filteredList = allBadges.filter((badge) => {
+  const filterBadges = allBadges => {
+    let filteredList = allBadges.filter(badge => {
       if (
         badge.badgeName.toLowerCase().indexOf(name.toLowerCase()) > -1 &&
         badge.description.toLowerCase().indexOf(description.toLowerCase()) > -1 &&
@@ -158,7 +158,7 @@ const BadgeDevelopmentTable = (props) => {
           />
         </thead>
         <tbody>
-          {filteredBadges.map((value) => (
+          {filteredBadges.map(value => (
             <tr key={value._id}>
               <td className="badge_image_sm">
                 {' '}
@@ -229,14 +229,14 @@ const BadgeDevelopmentTable = (props) => {
   );
 };
 
-const mapStateToProps = (state) => ({
+const mapStateToProps = state => ({
   message: state.badge.message,
   alertVisible: state.badge.alertVisible,
   color: state.badge.color,
 });
 
-const mapDispatchToProps = (dispatch) => ({
-  deleteBadge: (badgeId) => dispatch(deleteBadge(badgeId)),
+const mapDispatchToProps = dispatch => ({
+  deleteBadge: badgeId => dispatch(deleteBadge(badgeId)),
   closeAlert: () => dispatch(closeAlert()),
 });
 

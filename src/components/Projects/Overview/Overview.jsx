@@ -6,7 +6,7 @@
 import React from 'react';
 import { PROJECTS, ACTIVE_PROJECTS } from './../../../languages/en/ui';
 
-const Overview = (props) => {
+const Overview = props => {
   return (
     <div className="projects__overview--top">
       <div className="card" id="card_project">
