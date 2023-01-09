@@ -43,6 +43,17 @@ export const PieChart = ({ data, dataLegend, pieChartId, dataLegendHeader }) => 
     };
   }, [data]);
 
+    {/* Created variable totalling sum of hours worked to be input in pie char */}
+  let hoursCompleted = document.getElementsByClassName('data-legend-info-part');
+
+    let totalHoursCompleted = [];
+
+    for (let i = 0; i < hoursCompleted.length; i++) {
+      const hours = hoursCompleted[i].innerHTML;
+        totalHoursCompleted.push(Number(hours));
+    }
+
+
   return (
     <div className="pie-chart-wrapper">
       <div id={`pie-chart-container-${pieChartId}`} className="pie-chart" />
@@ -63,12 +74,14 @@ export const PieChart = ({ data, dataLegend, pieChartId, dataLegendHeader }) => 
           </div>
         ))}
         {/*Values for Hours Header entered here*/}
+        
         <div className="pie-chart-legend-item">
           <div className="data-legend-info">
             Total Hours Worked:
             <div className="data-legend-info-part">
-              {/*Total Hours need to be inserted here*/}
+              {totalHoursCompleted}
             </div>
+        
           </div>
         </div>
       </div>
