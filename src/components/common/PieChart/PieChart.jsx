@@ -53,6 +53,11 @@ export const PieChart = ({ data, dataLegend, pieChartId, dataLegendHeader }) => 
         totalHoursCompleted.push(Number(hours));
     }
 
+  let sum = 0;
+  
+   for (let i = 0; i <totalHoursCompleted.length; i++) {
+    sum += totalHoursCompleted[i];
+   }
 
   return (
     <div className="pie-chart-wrapper">
@@ -79,7 +84,7 @@ export const PieChart = ({ data, dataLegend, pieChartId, dataLegendHeader }) => 
           <div className="data-legend-info">
             Total Hours Worked:
             <div className="data-legend-info-part">
-              {totalHoursCompleted}
+              {sum}
             </div>
         
           </div>
