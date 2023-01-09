@@ -39,7 +39,7 @@ export const allUserTeamsReducer = (allTeams = userTeamsInitial, action) => {
       });
 
     case types.USER_TEAMS_UPDATE:
-      const index = allTeams.allTeams.findIndex((team) => team._id === action.team._id);
+      const index = allTeams.allTeams.findIndex(team => team._id === action.team._id);
       return updateObject(allTeams, {
         allTeams: Object.assign([
           ...allTeams.allTeams.slice(0, index),
@@ -53,7 +53,7 @@ export const allUserTeamsReducer = (allTeams = userTeamsInitial, action) => {
 
     case types.TEAMS_DELETE:
       return updateObject(allTeams, {
-        allTeams: Object.assign(allTeams.allTeams.filter((item) => item._id !== action.team)),
+        allTeams: Object.assign(allTeams.allTeams.filter(item => item._id !== action.team)),
         fetching: false,
         fetched: true,
         status: '200',
@@ -61,7 +61,7 @@ export const allUserTeamsReducer = (allTeams = userTeamsInitial, action) => {
 
     case types.UPDATE_TEAM:
       const teams = Object.assign([...allTeams.allTeams]);
-      const updatedTeam = teams.find((team) => team._id === action.teamId);
+      const updatedTeam = teams.find(team => team._id === action.teamId);
       updatedTeam.isActive = action.isActive;
       updatedTeam.teamName = action.teamName;
       return updateObject(allTeams, {

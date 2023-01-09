@@ -57,15 +57,15 @@ class UserTeamProjectContainer extends React.PureComponent {
     );
   }
 
-  onSelectDeleteTeam = (teamId) => {
+  onSelectDeleteTeam = teamId => {
     this.props.onDeleteteam(teamId);
   };
 
-  onSelectDeleteProject = (projectId) => {
+  onSelectDeleteProject = projectId => {
     this.props.onDeleteProject(projectId);
   };
 
-  onSelectAssignTeam = (team) => {
+  onSelectAssignTeam = team => {
     this.props.onAssignTeam(team);
     this.setState({
       renderedOn: Date.now(),
@@ -73,7 +73,7 @@ class UserTeamProjectContainer extends React.PureComponent {
     });
   };
 
-  onSelectAssignProject = (project) => {
+  onSelectAssignProject = project => {
     this.props.onAssignProject(project);
     this.setState({
       renderedOn: Date.now(),

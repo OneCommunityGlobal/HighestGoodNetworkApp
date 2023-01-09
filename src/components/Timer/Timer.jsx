@@ -15,10 +15,10 @@ const Timer = () => {
     //How does the screen position of the element influence tangability?
     //This has been changed as part of a hotfix.
   };
-  const userId = useSelector((state) => state.auth.user.userid);
-  const userProfile = useSelector((state) => state.auth.user);
-  const pausedAt = useSelector((state) => state.timer?.seconds);
-  const isWorking = useSelector((state) => state.timer?.isWorking);
+  const userId = useSelector(state => state.auth.user.userid);
+  const userProfile = useSelector(state => state.auth.user);
+  const pausedAt = useSelector(state => state.timer?.seconds);
+  const isWorking = useSelector(state => state.timer?.isWorking);
   const dispatch = useDispatch();
   const alert = {
     va: true,
@@ -30,7 +30,7 @@ const Timer = () => {
   let intervalMin = null;
   let intervalThreeMin = null;
 
-  const toggle = () => setModal((modal) => !modal);
+  const toggle = () => setModal(modal => !modal);
 
   const reset = async () => {
     setSeconds(0);
@@ -111,7 +111,7 @@ const Timer = () => {
         clearInterval(intervalThreeMin);
       }
       intervalSec = setInterval(() => {
-        setSeconds((seconds) => seconds + 1);
+        setSeconds(seconds => seconds + 1);
       }, 1000);
 
       intervalMin = setInterval(handleUpdate, 60000);
@@ -186,6 +186,6 @@ const Timer = () => {
   );
 };
 
-const padZero = (number) => `0${number}`.slice(-2);
+const padZero = number => `0${number}`.slice(-2);
 
 export default Timer;

@@ -2259,7 +2259,7 @@ export const timeZones = [
 
 const timeZoneMap = {};
 
-timeZones.forEach((timeZone) => {
+timeZones.forEach(timeZone => {
   const newTimeZone = { ...timeZone };
   delete newTimeZone['name'];
   timeZoneMap[timeZone.name] = newTimeZone;

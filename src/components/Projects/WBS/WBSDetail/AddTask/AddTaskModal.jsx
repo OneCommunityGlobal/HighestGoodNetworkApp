@@ -101,7 +101,6 @@ const AddTaskModal = props => {
     if (tasks.length > 0) {
       if (props.taskId) {
         const childTasks = tasks.filter(task => task.mother === props.taskId);
-
         newNum = `${props.parentNum !== null ? props.parentNum + '.' : ''}${childTasks.length + 1}`;
         newNum = newNum.replace(/.0/g, '');
       } else {

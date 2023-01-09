@@ -1,19 +1,29 @@
 import _ from 'lodash';
 
 //For progress bar that shows the percentage of the completion
-export const getProgressColor = (effort,commit) => {
+//Set 'invert' to true when used for the bars of TASK
+export const getProgressColor = (effort,commit,invert=false) => {
   let color = 'white';
   let percentage = 0;
   if (commit>0){
     percentage = Math.round(effort*100/commit);
   }
-  if (_.inRange(percentage, 0, 20)) color = 'danger'; //red
-  if (_.inRange(percentage, 20, 40)) color = 'orange'; //orange
-  if (_.inRange(percentage, 40, 60)) color = 'success'; //green
-  if (_.inRange(percentage, 60, 80)) color = 'primary'; //blue
-  if (_.inRange(percentage, 80, 100)) color = 'super'; //indigo
-  //if (_.inRange(percentage, 40, 50)) color = 'awesome'; //violet
-  if (percentage >= 100) color = 'super-awesome'; //purple
+  if (!invert){
+    if (_.inRange(percentage, 0, 20)) color = 'danger'; //red
+    if (_.inRange(percentage, 20, 40)) color = 'orange'; //orange
+    if (_.inRange(percentage, 40, 60)) color = 'success'; //green
+    if (_.inRange(percentage, 60, 80)) color = 'primary'; //blue
+    if (_.inRange(percentage, 80, 100)) color = 'super'; //indigo
+    if (percentage >= 100) color = 'super-awesome'; //purple
+  }else{
+    if (_.inRange(percentage, 0, 20)) color =  'super-awesome'; //purple 
+    if (_.inRange(percentage, 20, 40)) color = 'super'; //indigo
+    if (_.inRange(percentage, 40, 60)) color = 'primary'; //blue
+    if (_.inRange(percentage, 60, 80)) color = 'success'; //green
+    if (_.inRange(percentage, 80, 90)) color = 'orange'; //orange
+    if (_.inRange(percentage, 90, 100)) color = 'almost-red'; 
+    if (percentage >= 100) color = color = 'bright-red'; //bright red
+  }
   return color;
 };
 

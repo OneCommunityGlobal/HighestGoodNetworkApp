@@ -6,10 +6,10 @@ import AssignBadge from './AssignBadge';
 import BadgeDevelopment from './BadgeDevelopment';
 import { fetchAllBadges } from '../../actions/badgeManagement';
 
-const BadgeManagement = (props) => {
+const BadgeManagement = props => {
   const [activeTab, setActiveTab] = useState('1');
 
-  const toggle = (tab) => {
+  const toggle = tab => {
     if (activeTab !== tab) setActiveTab(tab);
   };
 
@@ -57,9 +57,9 @@ const BadgeManagement = (props) => {
   );
 };
 
-const mapStateToProps = (state) => ({ allBadgeData: state.badge.allBadgeData });
+const mapStateToProps = state => ({ allBadgeData: state.badge.allBadgeData });
 
-const mapDispatchToProps = (dispatch) => ({
+const mapDispatchToProps = dispatch => ({
   fetchAllBadges: () => dispatch(fetchAllBadges()),
 });
 

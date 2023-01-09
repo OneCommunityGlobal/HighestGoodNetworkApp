@@ -36,7 +36,8 @@ export class ForcePasswordUpdate extends Form {
         language: {
           string: {
             regex: {
-              base: 'should be at least 8 characters long and must include at least one uppercase letter, one lowercase letter, and one number or special character',
+              base:
+                'should be at least 8 characters long and must include at least one uppercase letter, one lowercase letter, and one number or special character',
             },
           },
         },
@@ -78,7 +79,7 @@ export class ForcePasswordUpdate extends Form {
       <div className="container mt-5">
         <h2>Change Password</h2>
 
-        <form className="col-md-6 xs-12" onSubmit={(e) => this.handleSubmit(e)}>
+        <form className="col-md-6 xs-12" onSubmit={e => this.handleSubmit(e)}>
           {this.renderInput({
             name: 'newpassword',
             label: 'New Password:',
@@ -97,7 +98,7 @@ export class ForcePasswordUpdate extends Form {
   }
 }
 
-const mapStateToProps = (state) => ({
+const mapStateToProps = state => ({
   errors: state.errors,
 });
 
