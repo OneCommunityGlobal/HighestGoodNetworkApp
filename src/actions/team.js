@@ -13,7 +13,7 @@ import {
 export function getUserTeamMembers1(userId) {
   const request = httpService.get(ENDPOINTS.USER_TEAM(userId));
 
-  return (dispatch) => {
+  return dispatch => {
     request.then(({ data }) => {
       console.log('data', data);
       dispatch({
@@ -24,9 +24,9 @@ export function getUserTeamMembers1(userId) {
   };
 }
 
-export const getUserTeamMembers = (userId) => {
+export const getUserTeamMembers = userId => {
   const url = ENDPOINTS.USER_TEAM(userId);
-  return async (dispatch) => {
+  return async dispatch => {
     const res = await httpService.get(url);
   };
 };
@@ -36,12 +36,12 @@ export const fetchAllManagingTeams = (userId, managingTeams) => {
   let allMembers = [];
   const teamMembersPromises = [];
   const memberTimeEntriesPromises = [];
-  managingTeams.forEach((team) => {
+  managingTeams.forEach(team => {
     // req = await httpService.get(ENDPOINTS.TEAM_MEMBERS(team._id));
     teamMembersPromises.push(httpService.get(ENDPOINTS.TEAM_MEMBERS(team._id)));
   });
 
-  Promise.all(teamMembersPromises).then((data) => {
+  Promise.all(teamMembersPromises).then(data => {
     for (let i = 0; i < managingTeams.length; i++) {
       allManagingTeams[i] = {
         ...managingTeams[i],
@@ -51,17 +51,21 @@ export const fetchAllManagingTeams = (userId, managingTeams) => {
     }
     console.log('allManagingTeams:', allManagingTeams);
     const uniqueMembers = _.uniqBy(allMembers, '_id');
-    uniqueMembers.forEach(async (member) => {
-      const fromDate = moment().startOf('week').subtract(0, 'weeks');
-      const toDate = moment().endOf('week').subtract(0, 'weeks');
+    uniqueMembers.forEach(async member => {
+      const fromDate = moment()
+        .startOf('week')
+        .subtract(0, 'weeks');
+      const toDate = moment()
+        .endOf('week')
+        .subtract(0, 'weeks');
       memberTimeEntriesPromises.push(
         httpService
           .get(ENDPOINTS.TIME_ENTRIES_PERIOD(member._id, fromDate, toDate))
-          .catch((err) => {}),
+          .catch(err => {}),
       );
     });
 
-    Promise.all(memberTimeEntriesPromises).then((data) => {
+    Promise.all(memberTimeEntriesPromises).then(data => {
       // console.log('After time entries: ', data);
       // console.log('uniqueMemberTimeEntries: ', uniqueMemberTimeEntries);
       for (let i = 0; i < uniqueMembers.length; i++) {
@@ -74,7 +78,7 @@ export const fetchAllManagingTeams = (userId, managingTeams) => {
       for (let i = 0; i < allManagingTeams.length; i++) {
         for (let j = 0; j < allManagingTeams[i].members.length; j++) {
           const memberDataWithTimeEntries = uniqueMembers.find(
-            (member) => member._id === allManagingTeams[i].members[j]._id,
+            member => member._id === allManagingTeams[i].members[j]._id,
           );
           allManagingTeams[i].members[j] = memberDataWithTimeEntries;
         }
@@ -84,7 +88,7 @@ export const fetchAllManagingTeams = (userId, managingTeams) => {
     });
   });
 
-  return async (dispatch) => {
+  return async dispatch => {
     await dispatch(setTeamsStart());
     try {
       dispatch(setTeams(allManagingTeams));
@@ -99,21 +103,21 @@ const setTeamsStart = () => ({
   type: FETCH_TEAMS_START,
 });
 
-const setTeams = (payload) => ({
+const setTeams = payload => ({
   type: RECEIVE_TEAMS,
   payload,
 });
 
-const setTeamsError = (payload) => ({
+const setTeamsError = payload => ({
   type: FETCH_TEAMS_ERROR,
   payload,
 });
 
-export const getTeamDetail = (teamId) => {
+export const getTeamDetail = teamId => {
   const url = ENDPOINTS.TEAM_BY_ID(teamId);
-  return async (dispatch) => {
+  return async dispatch => {
     let loggedOut = false;
-    const res = await axios.get(url).catch((error) => {
+    const res = await axios.get(url).catch(error => {
       if (error.status === 401) {
         //logout error
         loggedOut = true;
@@ -126,7 +130,7 @@ export const getTeamDetail = (teamId) => {
   };
 };
 
-export const setTeamDetail = (data) => ({
+export const setTeamDetail = data => ({
   type: GET_TEAM_BY_ID,
   payload: data,
 });

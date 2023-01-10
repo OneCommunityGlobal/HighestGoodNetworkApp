@@ -271,7 +271,9 @@ class Timelog extends Component {
     if (!_.isEmpty(this.props.userTask)) {
       tasks = this.props.userTask;
     }
-    const activeTasks = tasks.filter(task => task.resources.some((resource) => resource.userID === userId && !resource.completedTask))
+    const activeTasks = tasks.filter(task =>
+      task.resources.some(resource => resource.userID === userId && !resource.completedTask),
+    );
     const taskOptions = activeTasks.map(task => (
       <option value={task._id} key={task._id}>
         {task.taskName}

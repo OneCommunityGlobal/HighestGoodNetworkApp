@@ -3,7 +3,7 @@ import React from 'react';
 const Radio = ({ name, label, options, error, value, ...rest }) => {
   return (
     <div className="form-group">
-      {options.map((item) => (
+      {options.map(item => (
         <div className="form-check form-check-inline" key={item.value}>
           <input
             type="radio"

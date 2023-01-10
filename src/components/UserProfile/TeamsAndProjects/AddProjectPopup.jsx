@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Input, Alert } from 'reactstrap';
 import AddProjectsAutoComplete from './AddProjectsAutoComplete';
 
-const AddProjectPopup = React.memo((props) => {
+const AddProjectPopup = React.memo(props => {
   const closePopup = () => {
     props.onClose();
   };
@@ -11,7 +11,7 @@ const AddProjectPopup = React.memo((props) => {
   const [isValidProject, onValidation] = useState(true);
 
   const onAssignProject = () => {
-    if (selectedProject && !props.userProjectsById.some((x) => x._id === selectedProject._id)) {
+    if (selectedProject && !props.userProjectsById.some(x => x._id === selectedProject._id)) {
       props.onSelectAssignProject(selectedProject);
       onSelectProject(undefined);
     } else {
@@ -19,7 +19,7 @@ const AddProjectPopup = React.memo((props) => {
     }
   };
 
-  const selectProject = (project) => {
+  const selectProject = project => {
     onSelectProject(project);
     onValidation(true);
   };

@@ -14,11 +14,11 @@ export const getAllUserProfiles = () => {
   return async (dispatch, getState) => {
     await dispatch(findUsersStart());
     request
-      .then((res) => {
+      .then(res => {
         let users = res.data;
         let members = getState().projectMembers.members;
-        users = users.map((user) => {
-          if (!members.find((member) => member._id === user._id)) {
+        users = users.map(user => {
+          if (!members.find(member => member._id === user._id)) {
             return (user = { ...user, assigned: false });
           } else {
             return (user = { ...user, assigned: true });
@@ -27,7 +27,7 @@ export const getAllUserProfiles = () => {
         // console.log(users);
         dispatch(foundUsers(users));
       })
-      .catch((err) => {
+      .catch(err => {
         // console.log("Error", err);
         dispatch(findUsersError(err));
       });
@@ -37,7 +37,7 @@ export const getAllUserProfiles = () => {
 /**
  * Call API to find a user profile
  */
-export const findUserProfiles = (keyword) => {
+export const findUserProfiles = keyword => {
   //console.log(ENDPOINTS.USER_PROFILES, keyword);
   const request = axios.get(ENDPOINTS.USER_PROFILES);
   //console.log(request);
@@ -45,15 +45,15 @@ export const findUserProfiles = (keyword) => {
   return async (dispatch, getState) => {
     await dispatch(findUsersStart());
     request
-      .then((res) => {
+      .then(res => {
         // console.log("FOUND USER ", res);
         if (keyword.trim() !== '') {
-          let users = res.data.filter((user) =>
+          let users = res.data.filter(user =>
             (user.firstName + ' ' + user.lastName).toLowerCase().includes(keyword.toLowerCase()),
           );
           let members = getState().projectMembers.members;
-          users = users.map((user) => {
-            if (!members.find((member) => member._id === user._id)) {
+          users = users.map(user => {
+            if (!members.find(member => member._id === user._id)) {
               return (user = { ...user, assigned: false });
             } else {
               return (user = { ...user, assigned: true });
@@ -65,7 +65,7 @@ export const findUserProfiles = (keyword) => {
           dispatch(foundUsers([]));
         }
       })
-      .catch((err) => {
+      .catch(err => {
         // console.log("Error", err);
         dispatch(findUsersError(err));
       });
@@ -75,17 +75,17 @@ export const findUserProfiles = (keyword) => {
 /**
  * Call API to get all members
  */
-export const fetchAllMembers = (projectId) => {
+export const fetchAllMembers = projectId => {
   const request = axios.get(ENDPOINTS.PROJECT_MEMBER(projectId));
-  return async (dispatch) => {
+  return async dispatch => {
     await dispatch(setMemberStart());
     await dispatch(foundUsers([]));
     request
-      .then((res) => {
+      .then(res => {
         // console.log("RES", res);
         dispatch(setMembers(res.data));
       })
-      .catch((err) => {
+      .catch(err => {
         //console.log("Error", err);
         dispatch(setMembersError(err));
       });
@@ -106,9 +106,9 @@ export const assignProject = (projectId, userId, operation, firstName, lastName)
     ],
   });
 
-  return async (dispatch) => {
+  return async dispatch => {
     request
-      .then((res) => {
+      .then(res => {
         //console.log("RES", res);
         if (operation === 'Assign') {
           dispatch(
@@ -123,7 +123,7 @@ export const assignProject = (projectId, userId, operation, firstName, lastName)
           dispatch(deleteMember(userId));
         }
       })
-      .catch((err) => {
+      .catch(err => {
         //console.log("Error", err);
         dispatch(addNewMemberError(err));
       });
@@ -147,7 +147,7 @@ export const setMemberStart = () => {
  * set Members in store
  * @param payload : Members []
  */
-export const setMembers = (members) => {
+export const setMembers = members => {
   return {
     type: types.RECEIVE_MEMBERS,
     members,
@@ -158,7 +158,7 @@ export const setMembers = (members) => {
  * Error when setting project
  * @param payload : error status code
  */
-export const setMembersError = (err) => {
+export const setMembersError = err => {
   return {
     type: types.FETCH_MEMBERS_ERROR,
     err,
@@ -180,7 +180,7 @@ export const findUsersStart = () => {
  * set Users in store
  * @param payload : Users []
  */
-export const foundUsers = (users) => {
+export const foundUsers = users => {
   // console.log("foundUsers");
   return {
     type: types.FOUND_USERS,
@@ -192,7 +192,7 @@ export const foundUsers = (users) => {
  * Error when setting project
  * @param payload : error status code
  */
-export const findUsersError = (err) => {
+export const findUsersError = err => {
   return {
     type: types.FIND_USERS_ERROR,
     err,
@@ -203,7 +203,7 @@ export const findUsersError = (err) => {
  * add new member to project
  * @param member : {}
  */
-export const assignNewMember = (member) => {
+export const assignNewMember = member => {
   // console.log("new member", member);
   return {
     type: types.ADD_NEW_MEMBER,
@@ -215,7 +215,7 @@ export const assignNewMember = (member) => {
  * remove a member from project
  * @param userId : _id
  */
-export const deleteMember = (userId) => {
+export const deleteMember = userId => {
   return {
     type: types.DELETE_MEMBER,
     userId,
@@ -226,7 +226,7 @@ export const deleteMember = (userId) => {
  * remove found user after assign
  * @param userId : _id
  */
-export const removeFoundUser = (userId) => {
+export const removeFoundUser = userId => {
   return {
     type: types.REMOVE_FOUND_USER,
     userId,
@@ -237,7 +237,7 @@ export const removeFoundUser = (userId) => {
  * Error when add new member
  * @param payload : error status code
  */
-export const addNewMemberError = (err) => {
+export const addNewMemberError = err => {
   return {
     type: types.ADD_NEW_MEMBER_ERROR,
     err,

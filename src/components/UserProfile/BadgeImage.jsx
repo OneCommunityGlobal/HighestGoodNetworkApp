@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import { Card, CardTitle, CardBody, CardImg, CardText, Popover } from 'reactstrap';
 
-const BadgeImage = (props) => {
+const BadgeImage = props => {
   const [isOpen, setOpen] = useState(false);
 
-  const toggle = () => setOpen((isOpen) => !isOpen);
+  const toggle = () => setOpen(isOpen => !isOpen);
 
   return (
     <>

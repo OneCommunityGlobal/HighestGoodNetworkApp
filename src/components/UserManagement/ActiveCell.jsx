@@ -4,7 +4,7 @@
  * @param {int} props.index Used when rendering this component using the .map function
  * @param {func} props.onClick
  */
-const ActiveCell = (props) => {
+const ActiveCell = props => {
   return (
     <span
       style={{ fontSize: '1.5rem' }}

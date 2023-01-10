@@ -84,7 +84,7 @@ const UserPermissionsPopUp = ({ allUserProfiles, toggle, getAllUsers }) => {
 
     const SUCCESS_MESSAGE = `
         Permission has been updated successfully. Be sure to tell them that you are changing these
-        permissions and for that they need to log out and log back in for their new permissions take
+        permissions and for that they need to log out and log back in for their new permissions to take
         place.`;
     toast.success(SUCCESS_MESSAGE, {
       autoClose: 10000,

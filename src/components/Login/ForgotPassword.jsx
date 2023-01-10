@@ -27,7 +27,7 @@ const ForgotPassword = React.memo(() => {
             history.push('/login');
           }, 1000);
         })
-        .catch((error) => {
+        .catch(error => {
           toast.error(
             `Well bummer, your entries don't match what is in our system. Don't give up though, you can do this!`,
           );
@@ -43,7 +43,7 @@ const ForgotPassword = React.memo(() => {
           type="text"
           placeholder="Enter your email ID"
           value={email}
-          onChange={(e) => {
+          onChange={e => {
             onEmailChange(e.target.value);
           }}
         />
@@ -53,7 +53,7 @@ const ForgotPassword = React.memo(() => {
           type="text"
           placeholder="Enter your first name"
           value={firstName}
-          onChange={(e) => {
+          onChange={e => {
             setFirstName(e.target.value);
           }}
         />
@@ -63,7 +63,7 @@ const ForgotPassword = React.memo(() => {
           type="text"
           placeholder="Enter your last name"
           value={lastName}
-          onChange={(e) => {
+          onChange={e => {
             setLastName(e.target.value);
           }}
         />
