@@ -3,7 +3,6 @@ import * as d3 from 'd3/dist/d3.min';
 import { CHART_RADIUS, CHART_SIZE } from './constants';
 import { generateArrayOfUniqColors } from './colorsGenerator';
 import './PieChart.css';
-import { PeopleTasksPieChart } from 'components/Reports/PeopleReport/components';
 
 export const PieChart = ({ data, dataLegend, pieChartId, dataLegendHeader }) => {
   const getCreateSvgPie = () => {
@@ -14,7 +13,11 @@ export const PieChart = ({ data, dataLegend, pieChartId, dataLegendHeader }) => 
       .attr('width', CHART_SIZE)
       .attr('height', CHART_SIZE)
       .append('g')
-      .attr('transform', `translate(${CHART_SIZE / 2},${CHART_SIZE / 2})`);
+      .attr('transform', `translate(${CHART_SIZE / 2},${CHART_SIZE / 2})`)
+      .append('text')
+      .attr('text-anchor', 'middle')
+      .text(sum);
+      
   };
 
   const color = d3.scaleOrdinal().range(generateArrayOfUniqColors(Object.keys(data).length));
@@ -43,21 +46,23 @@ export const PieChart = ({ data, dataLegend, pieChartId, dataLegendHeader }) => 
     };
   }, [data]);
 
-    {/* Created variable totalling sum of hours worked to be input in pie char */}
+  {
+    /* Variable totalling sum of hours worked to be input in pie chart */
+  }
   let hoursCompleted = document.getElementsByClassName('data-legend-info-part');
 
-    let totalHoursCompleted = [];
+  let totalHoursCompleted = [];
 
-    for (let i = 0; i < hoursCompleted.length; i++) {
-      const hours = hoursCompleted[i].innerHTML;
-        totalHoursCompleted.push(Number(hours));
-    }
+  for (let i = 0; i < hoursCompleted.length; i++) {
+    const hours = hoursCompleted[i];
+    totalHoursCompleted.push(Number(hours));
+  }
 
   let sum = 0;
-  
-   for (let i = 0; i <totalHoursCompleted.length; i++) {
+
+  for (let i = 0; i < totalHoursCompleted.length; i++) {
     sum += totalHoursCompleted[i];
-   }
+  }
 
   return (
     <div className="pie-chart-wrapper">
@@ -79,14 +84,11 @@ export const PieChart = ({ data, dataLegend, pieChartId, dataLegendHeader }) => 
           </div>
         ))}
         {/*Values for Hours Header entered here*/}
-        
+
         <div className="pie-chart-legend-item">
           <div className="data-legend-info">
             Total Hours Worked:
-            <div className="data-legend-info-part">
-              {sum}
-            </div>
-        
+            <div className="data-legend-info-part">{sum}</div>
           </div>
         </div>
       </div>
