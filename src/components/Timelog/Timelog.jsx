@@ -81,7 +81,7 @@ class Timelog extends Component {
     toDate: this.endOfWeek(0),
     in: false,
     information: '',
-    isTimeEntriesLoading: false,
+    isTimeEntriesLoading: true,
   };
 
   state = this.initialState;
