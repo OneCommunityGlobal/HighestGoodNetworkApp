@@ -13,12 +13,14 @@ export const PieChart = ({ data, dataLegend, pieChartId, dataLegendHeader }) => 
       .attr('width', CHART_SIZE)
       .attr('height', CHART_SIZE)
       .append('g')
-      .attr('transform', `translate(${CHART_SIZE / 2},${CHART_SIZE / 2})`)
+      .attr('transform', `translate(${CHART_SIZE / 2},${CHART_SIZE / 2})`)  
       .append('text')
       .attr('text-anchor', 'middle')
-      .text(sum);
-      
+      .text(sum);   
   };
+
+
+  
 
   const color = d3.scaleOrdinal().range(generateArrayOfUniqColors(Object.keys(data).length));
 
@@ -49,13 +51,13 @@ export const PieChart = ({ data, dataLegend, pieChartId, dataLegendHeader }) => 
   {
     /* Variable totalling sum of hours worked to be input in pie chart */
   }
-  let hoursCompleted = document.getElementsByClassName('data-legend-info-part');
+  let hoursCompleted = document.getElementsByClassName('data-legend-info-part').toString;
 
   let totalHoursCompleted = [];
 
   for (let i = 0; i < hoursCompleted.length; i++) {
     const hours = hoursCompleted[i];
-    totalHoursCompleted.push(Number(hours));
+    totalHoursCompleted.push(parseInt(hours));
   }
 
   let sum = 0;
@@ -63,7 +65,7 @@ export const PieChart = ({ data, dataLegend, pieChartId, dataLegendHeader }) => 
   for (let i = 0; i < totalHoursCompleted.length; i++) {
     sum += totalHoursCompleted[i];
   }
-
+console.log(totalHoursCompleted, hoursCompleted, sum);
   return (
     <div className="pie-chart-wrapper">
       <div id={`pie-chart-container-${pieChartId}`} className="pie-chart" />
