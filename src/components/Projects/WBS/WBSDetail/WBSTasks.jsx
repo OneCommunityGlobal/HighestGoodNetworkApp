@@ -140,12 +140,6 @@ const WBSTasks = props => {
           return taskItem;
         }
       });
-    }else if (filter === 'complete') {
-      return allTaskItems.filter(taskItem => {
-        if (taskItem.status === 'Complete') {
-          return taskItem;
-        }
-      });
     }
   };
 
