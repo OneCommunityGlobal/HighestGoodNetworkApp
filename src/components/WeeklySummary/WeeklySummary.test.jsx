@@ -53,7 +53,7 @@ describe('WeeklySummary page', () => {
       render(<WeeklySummary {...props} />);
     });
 
-    it('should display 3 tabs even when the user summaries related fields have not been initialized in the database', () => {
+    it('should display 4 tabs even when the user summaries related fields have not been initialized in the database', () => {
       props = {
         currentUser: { userid: '1' },
         getWeeklySummaries: jest.fn(),
@@ -65,12 +65,12 @@ describe('WeeklySummary page', () => {
       render(<WeeklySummary {...props} />);
 
       const li = screen.getAllByRole('listitem');
-      expect(li.length).toEqual(3);
+      expect(li.length).toEqual(4);
     });
 
-    it('should have 3 tab', () => {
+    it('should have 4 tab', () => {
       const li = screen.getAllByRole('listitem');
-      expect(li.length).toEqual(3);
+      expect(li.length).toEqual(4);
     });
 
     it('should have first tab set to "active" by default', () => {
@@ -123,7 +123,7 @@ describe('WeeklySummary page', () => {
       render(<WeeklySummary {...props} />);
     });
 
-    const testTooltip = async (testId) => {
+    const testTooltip = async testId => {
       const tooltipIcon = await waitFor(() => screen.getByTestId(testId));
       expect(screen.queryByRole('tooltip')).not.toBeInTheDocument();
       userEvent.hover(tooltipIcon);
