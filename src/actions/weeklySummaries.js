@@ -14,7 +14,7 @@ export const fetchWeeklySummariesBegin = () => ({
  *
  * @param {array} weeklySummariesData An array of weekly summaries data.
  */
-export const fetchWeeklySummariesSuccess = (weeklySummariesData) => ({
+export const fetchWeeklySummariesSuccess = weeklySummariesData => ({
   type: actions.FETCH_WEEKLY_SUMMARIES_SUCCESS,
   payload: { weeklySummariesData },
 });
@@ -24,7 +24,7 @@ export const fetchWeeklySummariesSuccess = (weeklySummariesData) => ({
  *
  * @param {Object} error The error object.
  */
-export const fetchWeeklySummariesError = (error) => ({
+export const fetchWeeklySummariesError = error => ({
   type: actions.FETCH_WEEKLY_SUMMARIES_ERROR,
   payload: { error },
 });
@@ -34,9 +34,9 @@ export const fetchWeeklySummariesError = (error) => ({
  *
  * @param {ObjectId} userId The user id.
  */
-export const getWeeklySummaries = (userId) => {
+export const getWeeklySummaries = userId => {
   const url = ENDPOINTS.USER_PROFILE(userId);
-  return async (dispatch) => {
+  return async dispatch => {
     dispatch(fetchWeeklySummariesBegin());
     try {
       const response = await axios.get(url);

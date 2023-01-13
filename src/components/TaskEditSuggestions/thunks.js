@@ -1,9 +1,20 @@
-import { fetchTaskEditSuggestionsBegin, fetchTaskEditSuggestionsError, fetchTaskEditSuggestionsSuccess, rejectTaskEditSuggestionSuccess, fetchTaskEditSuggestionCountSuccess } from "./actions";
-import { ENDPOINTS } from "utils/URL";
-import { getTaskEditSuggestionsHTTP, rejectTaskEditSuggestionHTTP, getTaskEditSuggestionCountHTTP } from "./service";
+import {
+  fetchTaskEditSuggestionsBegin,
+  fetchTaskEditSuggestionsError,
+  fetchTaskEditSuggestionsSuccess,
+  rejectTaskEditSuggestionSuccess,
+  fetchTaskEditSuggestionCountSuccess,
+} from './actions';
+import { ENDPOINTS } from 'utils/URL';
+import {
+  getTaskEditSuggestionsHTTP,
+  rejectTaskEditSuggestionHTTP,
+  getTaskEditSuggestionCountHTTP,
+} from './service';
 
-const selectFetchTeamMembersTaskData = (state) => state.auth.user.userid;
-const selectUpdateTaskData = (state, taskId) => state.tasks.taskItems.find(({_id}) => _id === taskId);
+const selectFetchTeamMembersTaskData = state => state.auth.user.userid;
+const selectUpdateTaskData = (state, taskId) =>
+  state.tasks.taskItems.find(({ _id }) => _id === taskId);
 
 export const fetchTaskEditSuggestions = () => async (dispatch, getState) => {
   try {
@@ -15,7 +26,7 @@ export const fetchTaskEditSuggestions = () => async (dispatch, getState) => {
   }
 };
 
-export const rejectTaskEditSuggestion = (taskEditSuggestionId) => async (dispatch, getState) => {
+export const rejectTaskEditSuggestion = taskEditSuggestionId => async (dispatch, getState) => {
   try {
     // dispatch(rejectTaskEditSuggestionBegin());
     await rejectTaskEditSuggestionHTTP(taskEditSuggestionId);
@@ -33,4 +44,4 @@ export const fetchTaskEditSuggestionCount = () => async (dispatch, getState) => 
   } catch (error) {
     console.log('fetch task edit suggestion count thunk error\n' + error);
   }
-}
+};

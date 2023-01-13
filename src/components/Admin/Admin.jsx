@@ -4,7 +4,7 @@ import PopupText from './PopupText/';
 import { fetchAllPopupEditor } from './../../actions/popupEditorAction';
 import './style.css';
 
-const Admin = (props) => {
+const Admin = props => {
   useEffect(() => {
     console.log('props', props);
     props.fetchAllPopupEditor();
@@ -15,7 +15,7 @@ const Admin = (props) => {
 
   const search = () => {
     if (keyword.length > 0) {
-      setData(data.filter((d) => d.title.includes(keyword) || d.content.includes(keyword)));
+      setData(data.filter(d => d.title.includes(keyword) || d.content.includes(keyword)));
     }
   };
 
@@ -30,7 +30,7 @@ const Admin = (props) => {
           <input
             type="text"
             className="form-control"
-            onChange={(e) => setKeyword(e.target.value)}
+            onChange={e => setKeyword(e.target.value)}
             value={keyword}
           />
           <div className="input-group-append">
@@ -47,4 +47,4 @@ const Admin = (props) => {
     </>
   );
 };
-export default connect((state) => state, { fetchAllPopupEditor })(Admin);
+export default connect(state => state, { fetchAllPopupEditor })(Admin);

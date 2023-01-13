@@ -26,11 +26,11 @@ const filterAndSort = (tasks, level) => {
   });
 };
 
-const sortByNum = (tasks) => {
+const sortByNum = tasks => {
   const appendTasks = [];
 
   tasks.forEach((task, i) => {
-    let numChildren = tasks.filter((item) => item.mother === task.taskId).length;
+    let numChildren = tasks.filter(item => item.mother === task.taskId).length;
     if (numChildren > 0) {
       task.hasChildren = true;
     } else {
@@ -70,7 +70,7 @@ export const taskReducer = (allTasks = allTasksInital, action) => {
           error: 'none',
         };
       } else {
-        const motherIndex = allTasks.taskItems.findIndex((item) => item._id === action.mother);
+        const motherIndex = allTasks.taskItems.findIndex(item => item._id === action.mother);
         return {
           ...allTasks,
           taskItems: [
@@ -84,9 +84,7 @@ export const taskReducer = (allTasks = allTasksInital, action) => {
         };
       }
     case types.ADD_NEW_TASK:
-      const motherIndex = allTasks.taskItems.findIndex(
-        (item) => item._id === action.newTask.mother,
-      );
+      const motherIndex = allTasks.taskItems.findIndex(item => item._id === action.newTask.mother);
       const index = motherIndex + 1;
       return {
         ...allTasks,
@@ -99,7 +97,7 @@ export const taskReducer = (allTasks = allTasksInital, action) => {
         error: 'none',
       };
     case types.DELETE_TASK:
-      let delIndexStart = allTasks.taskItems.findIndex((task) => task._id === action.taskId);
+      let delIndexStart = allTasks.taskItems.findIndex(task => task._id === action.taskId);
       let delIndexEnd = delIndexStart;
       allTasks.taskItems.forEach((task, index) => {
         if (task.parentId3 === action.taskId) {
@@ -123,9 +121,9 @@ export const taskReducer = (allTasks = allTasksInital, action) => {
         error: 'none',
       };
     case types.UPDATE_TASK:
-      let updIndexStart = allTasks.taskItems.findIndex((task) => task._id === action.taskId);
+      let updIndexStart = allTasks.taskItems.findIndex(task => task._id === action.taskId);
       let updIndexEnd = updIndexStart;
-      let updatedTask = allTasks.taskItems.filter((task) => task._id === action.taskId)[0];
+      let updatedTask = allTasks.taskItems.filter(task => task._id === action.taskId)[0];
       updatedTask = { ...updatedTask, ...action.updatedTask };
       return {
         ...allTasks,
@@ -139,11 +137,11 @@ export const taskReducer = (allTasks = allTasksInital, action) => {
         error: 'none',
       };
     case types.COPY_TASK:
-      const copiedIndex = allTasks.taskItems.findIndex((item) => item._id === action.taskId);
+      const copiedIndex = allTasks.taskItems.findIndex(item => item._id === action.taskId);
       console.log(allTasks.taskItems[copiedIndex]);
       return { ...allTasks, copiedTask: allTasks.taskItems[copiedIndex] };
     case fetchTeamMembersTaskSuccess.type:
-      return { ...allTasks, ...action.tasks} // change that when there will be backend
+      return { ...allTasks, ...action.tasks }; // change that when there will be backend
     default:
       return allTasks;
   }

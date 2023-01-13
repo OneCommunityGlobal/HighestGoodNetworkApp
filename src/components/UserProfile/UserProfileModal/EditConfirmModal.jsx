@@ -3,7 +3,7 @@ import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import { useHistory } from 'react-router-dom';
 import PropTypes from 'prop-types';
 
-const EditConfirmModal = (props) => {
+const EditConfirmModal = props => {
   const { isOpen, closeModal, modalTitle, modalMessage, userProfile } = props;
   const history = useHistory();
   const toggle = () => {

@@ -1,12 +1,12 @@
 import React from 'react';
 const NUMBER_OF_PAGE_LINK = 5;
 
-const UserTableFooter = React.memo((props) => {
-  const onSelectPageSize = (pageSize) => {
+const UserTableFooter = React.memo(props => {
+  const onSelectPageSize = pageSize => {
     props.onSelectPageSize(parseInt(pageSize));
   };
 
-  const onPageSelect = (page) => {
+  const onPageSelect = page => {
     props.onPageSelect(page);
   };
 
@@ -24,7 +24,7 @@ const UserTableFooter = React.memo((props) => {
             <button
               type="button"
               className="btn btn-default"
-              onClick={(e) => {
+              onClick={e => {
                 if (props.selectedPage > 1) {
                   props.onPageSelect(props.selectedPage - 1);
                 }
@@ -41,7 +41,7 @@ const UserTableFooter = React.memo((props) => {
             <button
               type="button"
               className="btn btn-default"
-              onClick={(e) => {
+              onClick={e => {
                 if (props.selectedPage <= parseInt(props.datacount / props.pageSize)) {
                   props.onPageSelect(props.selectedPage + 1);
                 }
@@ -59,7 +59,7 @@ const UserTableFooter = React.memo((props) => {
 /**
  * The page size dropdown stateless component
  */
-const PageSizeDropDown = React.memo((props) => {
+const PageSizeDropDown = React.memo(props => {
   return (
     <div className="col-md-2 col-sm-2 col-xs-2">
       <div className="pull-right">
@@ -67,7 +67,7 @@ const PageSizeDropDown = React.memo((props) => {
           <select
             id="ember739"
             className="changePageSize form-control ember-view"
-            onChange={(e) => {
+            onChange={e => {
               props.onSelectPageSize(parseInt(e.target.value));
             }}
           >
@@ -84,7 +84,7 @@ const PageSizeDropDown = React.memo((props) => {
 /**
  * Stateless component to display the page summary labels.
  */
-const PageSummaryLabel = React.memo((props) => {
+const PageSummaryLabel = React.memo(props => {
   return (
     <div
       id="user_table_footer"
@@ -100,8 +100,8 @@ const PageSummaryLabel = React.memo((props) => {
 /**
  * Stateless component to display page links.
  */
-const PageLinks = React.memo((props) => {
-  const onPageSelect = (pageNo) => {
+const PageLinks = React.memo(props => {
+  const onPageSelect = pageNo => {
     props.onPageSelect(pageNo);
   };
 
@@ -140,12 +140,12 @@ const PageLinks = React.memo((props) => {
 /**
  * Single page lin item
  */
-const PageLinkItem = React.memo((props) => {
+const PageLinkItem = React.memo(props => {
   return (
     <button
       style={{ fontWeight: props.isSelected ? 'bold' : 'normal' }}
       className="page-no-link link-button"
-      onClick={(e) => {
+      onClick={e => {
         e.preventDefault();
         props.onPageSelect(props.pageNo);
       }}

@@ -122,7 +122,7 @@ const Badge = props => {
         </p>
         <p className="badge_info_icon_text">
           There are many things in life to be proud of. Some are even worth bragging about. If your
-          number here is large, it definitely falls into the later category.
+          number here is large, it definitely falls into the latter category.
         </p>
       </UncontrolledTooltip>
       <UncontrolledTooltip

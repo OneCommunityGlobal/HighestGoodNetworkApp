@@ -6,7 +6,6 @@ import { NewModal } from 'components/common/NewModal';
 import './PeopleTasksPieChart.css';
 
 export const PeopleTasksPieChart = () => {
-
   const {
     tasksWithLoggedHoursById,
     showTasksPieChart,
@@ -16,38 +15,58 @@ export const PeopleTasksPieChart = () => {
     projectsWithLoggedHoursLegend,
     displayedTasksWithLoggedHoursById,
     displayedTasksLegend,
-    showViewAllTasksButton
+    showViewAllTasksButton,
   } = useSelector(peopleTasksPieChartViewData);
 
-  const showAllTasks = () => {
-
-  }
-
+  const showAllTasks = () => {};
 
   if (!showTasksPieChart && !showProjectsPieChart) {
     return null;
   }
 
   return (
-    <div className='people-pie-charts-wrapper'>
+    <div className="people-pie-charts-wrapper">
       {showProjectsPieChart && (
         <ReportPage.ReportBlock>
-          <h5 className='people-pie-charts-header'>Projects with committed hours</h5>
-          <PieChart pieChartId={'projectsPieChart'} data={projectsWithLoggedHoursById} dataLegend={projectsWithLoggedHoursLegend} dataLegendHeader="Hours" />
+          <h5 className="people-pie-charts-header">Projects with committed hours</h5>
+          <PieChart
+            pieChartId={'projectsPieChart'}
+            data={projectsWithLoggedHoursById}
+            dataLegend={projectsWithLoggedHoursLegend}
+            dataLegendHeader="Hours"
+          />
         </ReportPage.ReportBlock>
       )}
       {showTasksPieChart && (
         <ReportPage.ReportBlock>
-          <h5 className='people-pie-charts-header'>{`${showViewAllTasksButton ? 'Last t' : 'T'}asks with committed hours`}</h5>
-          <PieChart pieChartId={'tasksPieChart'} data={displayedTasksWithLoggedHoursById} dataLegend={displayedTasksLegend} dataLegendHeader="Hours" />
+          <h5 className="people-pie-charts-header">{`${
+            showViewAllTasksButton ? 'Last t' : 'T'
+          }asks with committed hours`}</h5>
+          <PieChart
+            pieChartId={'tasksPieChart'}
+            data={displayedTasksWithLoggedHoursById}
+            dataLegend={displayedTasksLegend}
+            dataLegendHeader="Hours"
+          />
           {showViewAllTasksButton && (
-            <NewModal header={"Tasks with committed hours"} trigger={() => <div onClick={showAllTasks} className='show-all-tasks-button'>View all</div>}>
-              <PieChart pieChartId={'allTasksPieChart'} data={tasksWithLoggedHoursById} dataLegend={tasksLegend} dataLegendHeader="Hours" />
+            <NewModal
+              header={'Tasks with committed hours'}
+              trigger={() => (
+                <div onClick={showAllTasks} className="show-all-tasks-button">
+                  View all
+                </div>
+              )}
+            >
+              <PieChart
+                pieChartId={'allTasksPieChart'}
+                data={tasksWithLoggedHoursById}
+                dataLegend={tasksLegend}
+                dataLegendHeader="Hours"
+              />
             </NewModal>
           )}
         </ReportPage.ReportBlock>
       )}
-    </div >
-  )
-
-}
+    </div>
+  );
+};

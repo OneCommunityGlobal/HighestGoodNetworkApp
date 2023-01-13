@@ -86,7 +86,7 @@ export const assignBadges = (firstName, lastName, selectedBadges) => {
     if (selectedBadges.length === 0) {
       dispatch(
         getMessage(
-          "Um no, that didn 't work. Badge Select Function must include actual selection of badges to work. Better luck next time! ",
+          'Um no, that didn\'t work. Badge Select Function must include actual selection of badges to work. Better luck next time!',
           'danger',
         ),
       );
@@ -102,7 +102,7 @@ export const assignBadges = (firstName, lastName, selectedBadges) => {
     if (res.data.length === 0) {
       dispatch(
         getMessage(
-          "Can't find that user. Step 1 to getting badges: Be in the system. Not in the system? No badges for you! ",
+          'Can\'t find that user. Step 1 to getting badges: Be in the system. Not in the system? No badges for you!',
           'danger',
         ),
       );
@@ -133,7 +133,7 @@ export const assignBadges = (firstName, lastName, selectedBadges) => {
       await axios.put(url, { badgeCollection, newBadges: selectedBadges.length });
       dispatch(
         getMessage(
-          "Awesomesauce! Not only have you increased a person's badges, you've also proportionally increased their life happiness!",
+          'Awesomesauce! Not only have you increased a person\'s badges, you\'ve also proportionally increased their life happiness!',
           'success',
         ),
       );
@@ -141,7 +141,7 @@ export const assignBadges = (firstName, lastName, selectedBadges) => {
         dispatch(closeAlert());
       }, 6000);
     } catch (e) {
-      dispatch(getMessage('Opps, something wrong!', 'danger'));
+      dispatch(getMessage('Oops, something is wrong!', 'danger'));
       setTimeout(() => {
         dispatch(closeAlert());
       }, 6000);
@@ -154,7 +154,7 @@ export const assignBadgesByUserID = (userId, selectedBadges) => {
     if (selectedBadges.length === 0) {
       dispatch(
         getMessage(
-          "Um no, that didn 't work. Badge Select Function must include actual selection of badges to work. Better luck next time! ",
+          'Um no, that didn\'t work. Badge Select Function must include actual selection of badges to work. Better luck next time!',
           'danger',
         ),
       );
@@ -168,7 +168,7 @@ export const assignBadgesByUserID = (userId, selectedBadges) => {
     if (res.data.length === 0) {
       dispatch(
         getMessage(
-          "Can't find that user. Step 1 to getting badges: Be in the system. Not in the system? No badges for you! ",
+          'Can\'t find that user. Step 1 to getting badges: Be in the system. Not in the system? No badges for you!',
           'danger',
         ),
       );
@@ -204,7 +204,7 @@ export const assignBadgesByUserID = (userId, selectedBadges) => {
       await axios.put(url, { badgeCollection, newBadges: selectedBadges.length });
       dispatch(
         getMessage(
-          "Awesomesauce! Not only have you increased a person's badges, you've also proportionally increased their life happiness!",
+          'Awesomesauce! Not only have you increased a person\'s badges, you\'ve also proportionally increased their life happiness!',
           'success',
         ),
       );
@@ -212,7 +212,7 @@ export const assignBadgesByUserID = (userId, selectedBadges) => {
         dispatch(closeAlert());
       }, 6000);
     } catch (e) {
-      dispatch(getMessage('Opps, something wrong!', 'danger'));
+      dispatch(getMessage('Oops, something is wrong!', 'danger'));
       setTimeout(() => {
         dispatch(closeAlert());
       }, 6000);
@@ -227,7 +227,7 @@ export const changeBadgesByUserID = (userId, badgeCollection) => {
       await axios.put(url, { badgeCollection, newBadges: 0 });
       dispatch(
         getMessage(
-          "Awesomesauce! Not only have you increased a person's badges, you've also proportionally increased their life happiness!",
+          'Awesomesauce! Not only have you increased a person\'s badges, you\'ve also proportionally increased their life happiness!',
           'success',
         ),
       );
@@ -235,7 +235,7 @@ export const changeBadgesByUserID = (userId, badgeCollection) => {
         dispatch(closeAlert());
       }, 6000);
     } catch (e) {
-      dispatch(getMessage('Opps, something wrong!', 'danger'));
+      dispatch(getMessage('Oops, something is wrong!', 'danger'));
       setTimeout(() => {
         dispatch(closeAlert());
       }, 6000);
@@ -263,7 +263,7 @@ export const createNewBadge = (newBadge) => async (dispatch) => {
         dispatch(closeAlert());
       }, 6000);
     } else {
-      dispatch(getMessage('Opps, something wrong!', 'danger'));
+      dispatch(getMessage('Oops, something is wrong!', 'danger'));
       setTimeout(() => {
         dispatch(closeAlert());
       }, 6000);
@@ -288,7 +288,7 @@ export const updateBadge = (badgeId, badgeData) => async (dispatch) => {
         dispatch(closeAlert());
       }, 6000);
     } else {
-      dispatch(getMessage('Opps, something wrong!', 'danger'));
+      dispatch(getMessage('Oops, something is wrong!', 'danger'));
       setTimeout(() => {
         dispatch(closeAlert());
       }, 6000);
@@ -311,7 +311,7 @@ export const deleteBadge = (badgeId) => async (dispatch) => {
         dispatch(closeAlert());
       }, 6000);
     } else {
-      dispatch(getMessage('Opps, something wrong!', 'danger'));
+      dispatch(getMessage('Oops, something is wrong!', 'danger'));
       setTimeout(() => {
         dispatch(closeAlert());
       }, 6000);

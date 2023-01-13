@@ -26,7 +26,7 @@ import {
 import { getAllUserProfile } from '../../actions/userManagement';
 import Autosuggest from 'react-autosuggest';
 
-const AssignBadge = (props) => {
+const AssignBadge = props => {
   const [isOpen, setOpen] = useState(false);
   const [firstSuggestions, setFirstSuggestions] = useState([]);
   const [lastSuggestions, setLastSuggestions] = useState([]);
@@ -37,21 +37,21 @@ const AssignBadge = (props) => {
     props.closeAlert();
   }, []);
 
-  const activeUsers = props.allUserProfiles.filter((profile) => profile.isActive === true);
+  const activeUsers = props.allUserProfiles.filter(profile => profile.isActive === true);
 
-  const escapeRegexCharacters = (str) => str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const escapeRegexCharacters = str => str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
-  const getSuggestions = (value) => {
+  const getSuggestions = value => {
     const escapedValue = escapeRegexCharacters(value.trim());
     const regex = new RegExp('^' + escapedValue, 'i');
-    return activeUsers.filter((user) => regex.test(user.firstName) || regex.test(user.lastName));
+    return activeUsers.filter(user => regex.test(user.firstName) || regex.test(user.lastName));
   };
 
-  const getSuggestionFirst = (suggestion) => suggestion.firstName;
+  const getSuggestionFirst = suggestion => suggestion.firstName;
 
-  const getSuggestionLast = (suggestion) => suggestion.lastName;
+  const getSuggestionLast = suggestion => suggestion.lastName;
 
-  const renderSuggestion = (suggestion) => {
+  const renderSuggestion = suggestion => {
     return (
       <div>
         {suggestion.firstName} {suggestion.lastName}
@@ -95,11 +95,11 @@ const AssignBadge = (props) => {
     const { firstName, lastName, selectedBadges } = props;
     if (isOpen) {
       props.assignBadges(firstName, lastName, selectedBadges);
-      setOpen((isOpen) => !isOpen);
+      setOpen(isOpen => !isOpen);
       props.clearNameAndSelected();
     } else {
       if (firstName && lastName) {
-        setOpen((isOpen) => !isOpen);
+        setOpen(isOpen => !isOpen);
       } else {
         props.validateBadges(firstName, lastName);
       }
@@ -189,7 +189,7 @@ const AssignBadge = (props) => {
   );
 };
 
-const mapStateToProps = (state) => ({
+const mapStateToProps = state => ({
   selectedBadges: state.badge.selectedBadges,
   firstName: state.badge.firstName,
   lastName: state.badge.lastName,
@@ -199,9 +199,9 @@ const mapStateToProps = (state) => ({
   allUserProfiles: state.allUserProfiles.userProfiles,
 });
 
-const mapDispatchToProps = (dispatch) => ({
-  getFirstName: (firstName) => dispatch(getFirstName(firstName)),
-  getLastName: (lastName) => dispatch(getLastName(lastName)),
+const mapDispatchToProps = dispatch => ({
+  getFirstName: firstName => dispatch(getFirstName(firstName)),
+  getLastName: lastName => dispatch(getLastName(lastName)),
   getAllUserProfile: () => dispatch(getAllUserProfile()),
   clearNameAndSelected: () => dispatch(clearNameAndSelected()),
   assignBadges: (fisrtName, lastName, selectedBadge) =>
