@@ -75,12 +75,13 @@ const UserRoleTab = props => {
   }
   return (
     <div className="userRoleTab__container">
-      <a href="/permissionsmanagement">Back to permissions management</a>
-
+      <a href="/permissionsmanagement" className="userRoleTab_backBtn">
+        Back
+      </a>
       <RolePermissions
         role={roleName}
         roleId={roleId}
-        header={`${roleName} Permissions (Total):`}
+        header={`${roleName} Permissions:`}
         permissionsList={permissionsList}
         permissions={permissions}
       />
