@@ -35,7 +35,7 @@ const TeamMemberTasks = props => {
   }, []);
 
   const userRole = props.auth.user.role;
-  const userId = props.auth.user.userid;
+  const userId = props.asUser;
 
   const handleOpenTaskNotificationModal = (userId, task, taskNotifications = []) => {
     setCurrentUserId(userId);
@@ -148,8 +148,11 @@ const TeamMemberTasks = props => {
                     </td>
                     <td className="team-clocks">
                       <u>{user.weeklyComittedHours ? user.weeklyComittedHours : 0}</u> /
-                      <font color="green"> {thisWeekHours?thisWeekHours.toFixed(1):0}</font> /
-                      <font color="red"> {totalHoursRemaining?totalHoursRemaining.toFixed(1):0}</font>
+                      <font color="green"> {thisWeekHours ? thisWeekHours.toFixed(1) : 0}</font> /
+                      <font color="red">
+                        {' '}
+                        {totalHoursRemaining ? totalHoursRemaining.toFixed(1) : 0}
+                      </font>
                     </td>
                   </tr>
                   <tr>
@@ -208,8 +211,12 @@ const TeamMemberTasks = props => {
                                 ${parseFloat(task.estimatedHours.toFixed(2))}`}
                                   </span>
                                   <Progress
-                                    color = {getProgressColor(task.hoursLogged,task.estimatedHours,true)}
-                                    value = {getProgressValue(task.hoursLogged,task.estimatedHours)}
+                                    color={getProgressColor(
+                                      task.hoursLogged,
+                                      task.estimatedHours,
+                                      true,
+                                    )}
+                                    value={getProgressValue(task.hoursLogged, task.estimatedHours)}
                                   />
                                 </div>
                               </td>
