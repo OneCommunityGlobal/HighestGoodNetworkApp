@@ -81,17 +81,17 @@ const AddTaskModal = props => {
 
   // Classification
   const classificationOptions = [
-    { value: 'Food', label: 'Food' },
-    { value: 'Energy', label: 'Energy' },
-    { value: 'Housing', label: 'Housing' },
-    { value: 'Education', label: 'Education' },
-    { value: 'Soceity', label: 'Soceity' },
-    { value: 'Economics', label: 'Economics' },
-    { value: 'Stewardship', label: 'Stewardship' },
-    { value: 'Other', label: 'Other' },
-  ];
-  const [projectCategory, setProjectCategory] = useState('');
-  const [classification, setClassification] = useState('');
+
+    {value:"Food",label:"Food"},
+    {value:"Energy",label:"Energy"},
+    {value:"Housing",label:"Housing"},
+    {value:"Education",label:"Education"},
+    {value:"Soceity",label:"Soceity"},
+    {value:"Economics",label:"Economics"},
+    {value:"Stewardship",label:"Stewardship"},
+    {value:"Other",label:"Other"}
+  ]
+  const [classification, setClassification] = useState('Housing');
 
   // Warning
   const [dateWarning, setDateWarning] = useState(false);
@@ -337,7 +337,7 @@ const AddTaskModal = props => {
       endstateInfo: endstateInfo,
       classification,
     };
-
+    
     props.addNewTask(newTask, props.wbsId);
 
     setTimeout(() => {
@@ -349,14 +349,20 @@ const AddTaskModal = props => {
     }, 1000);
   };
 
-  useEffect(() => {}, [tasks]);
-
   useEffect(() => {
-    const res = props.allProjects.projects.filter(obj => obj._id === props.projectId)[0];
-    if (res) {
-      setProjectCategory(res.category);
+    if (props.level >= 1) {
+      const classificationMother = props.tasks.taskItems.find(({ _id }) => _id === props.taskId)
+        .classification;
+        if(classificationMother){
+          setClassification(classificationMother);
+        }
     }
-  });
+    else {
+      const res = props.allProjects.projects.filter(obj => obj._id === props.projectId)[0];
+      setClassification(res.category);
+    }
+  }, [props.level]);
+
 
   getNewNum();
 
@@ -602,16 +608,9 @@ const AddTaskModal = props => {
               <tr>
                 <td scope="col">Classification</td>
                 <td scope="col">
-                  <select
-                    defaultValue={projectCategory}
-                    onChange={e => setClassification(e.target.value)}
-                  >
-                    {classificationOptions.map(cla => {
-                      return (
-                        <option value={cla.value} key={cla.value}>
-                          {cla.label}
-                        </option>
-                      );
+                  <select value={classification} onChange={e => setClassification(e.target.value)} >
+                    {classificationOptions.map(cla =>{
+                      return <option value={cla.value} key={cla.value}>{cla.label}</option>
                     })}
                   </select>
                 </td>
