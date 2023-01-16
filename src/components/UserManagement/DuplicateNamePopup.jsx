@@ -19,14 +19,14 @@ const DuplicateNamePopup = React.memo(props => {
           <Button
             color="primary btn-danger"
             onClick={() => {
-              props.setAllowDuplicateName(true);
-              closePopup();
+              props.createUserProfile(true);
+              props.onClose();
             }}
           >
             Yes
           </Button>
           <DivSpacer />
-          <Button color="primary btn-warning" onClick={closePopup}>
+          <Button color="primary btn-warning" onClick={() => props.onClose()}>
             No
           </Button>
           <DivSpacer />

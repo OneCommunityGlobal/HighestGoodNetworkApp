@@ -33,6 +33,7 @@ const NewUserPopup = React.memo(props => {
           isAddNewUser={true}
           history={history}
           userCreated={userCreated}
+          userProfiles={props.userProfiles}
         />
 
         {/* Nested Modal that triggers when a first and last name user already exists */}

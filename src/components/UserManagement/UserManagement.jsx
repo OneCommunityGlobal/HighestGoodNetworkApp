@@ -120,6 +120,7 @@ class UserManagement extends React.PureComponent {
         />
         <NewUserPopup
           open={this.state.newUserPopupOpen}
+          userProfiles={this.props.state.allUserProfiles}
           onUserPopupClose={this.onUserPopupClose}
           userCreated={this.userCreated}
         />

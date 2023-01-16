@@ -48,7 +48,7 @@ class AddUserProfile extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      allowsDuplicateName: false,
+      userProfiles: this.props.userProfiles,
       popupOpen: false,
       weeklyCommittedHours: 10,
       teams: [],
@@ -82,12 +82,6 @@ class AddUserProfile extends Component {
     };
   }
 
-  setAllowDuplicateName = value => {
-    this.setState({
-      allowsDuplicateName: value,
-    });
-  };
-
   popupClose = () => {
     this.setState({
       popupOpen: false,
@@ -107,9 +101,10 @@ class AddUserProfile extends Component {
     return (
       <StickyContainer>
         <DuplicateNamePopup
-          setAllowDuplicateName={this.setAllowDuplicateName}
           open={this.state.popupOpen}
-          onClose={this.popupClose}
+          popupClose={this.popupClose}
+          onClose={this.props.closePopup}
+          createUserProfile={this.createUserProfile}
         />
         <Container className="emp-profile">
           <Row>
@@ -403,7 +398,12 @@ class AddUserProfile extends Component {
             {/* <Col></Col> */}
             <Col md="12">
               <div className="w-50 pt-4 mx-auto">
-                <Button color="primary" block size="lg" onClick={this.createUserProfile}>
+                <Button
+                  color="primary"
+                  block
+                  size="lg"
+                  onClick={() => this.createUserProfile(false)}
+                >
                   Create
                 </Button>
               </div>
@@ -508,7 +508,21 @@ class AddUserProfile extends Component {
     }
   };
 
-  createUserProfile = () => {
+  checkIfDuplicate = (firstName, lastName) => {
+    console.log('userProfiles:', this.state.userProfiles);
+    let { userProfiles } = this.state.userProfiles;
+
+    const duplicates = userProfiles.filter(user => {
+      return (
+        user.firstName.toLowerCase() == firstName.toLowerCase() &&
+        user.lastName.toLowerCase() == lastName.toLowerCase()
+      );
+    });
+    if (duplicates) return true;
+    else return false;
+  };
+
+  createUserProfile = allowsDuplicateName => {
     let that = this;
     const {
       firstName,
@@ -542,10 +556,17 @@ class AddUserProfile extends Component {
       collaborationPreference: collaborationPreference,
       timeZone: timeZone,
       location: location,
-      allowsDuplicateName: this.state.allowsDuplicateName,
+      allowsDuplicateName: allowsDuplicateName,
     };
 
     this.setState({ formSubmitted: true });
+
+    if (this.checkIfDuplicate(userData.firstName, userData.lastName) && !allowsDuplicateName) {
+      this.setState({
+        popupOpen: true,
+      });
+      return;
+    }
 
     if (googleDoc) {
       userData.adminLinks.push({ Name: 'Google Doc', Link: googleDoc });
@@ -592,10 +613,6 @@ class AddUserProfile extends Component {
                     },
                   });
                   break;
-                case 'name':
-                  this.setState({
-                    popupOpen: true,
-                  });
               }
             }
             toast.error(
