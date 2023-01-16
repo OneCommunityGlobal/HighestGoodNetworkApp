@@ -290,6 +290,7 @@ const UserProfile = props => {
     }
     try {
       await props.updateUserProfile(props.match.params.userId, userProfile);
+      props.refreshToken(userProfile._id);
       await loadUserProfile();
 
       await loadUserTasks();
