@@ -3,7 +3,14 @@ import React, { useState, useCallback } from 'react';
 import useWebSocket, { ReadyState } from 'react-use-websocket';
 import config from '../../../src/config.json';
 import './NewTimer.css';
-import { BsXLg, BsAlarmFill, BsPauseFill, BsPlayFill } from 'react-icons/bs';
+import {
+  BsXLg,
+  BsAlarmFill,
+  BsPlusCircleFill,
+  BsFillPlayCircleFill,
+  BsStopCircleFill,
+  BsPauseCircleFill,
+} from 'react-icons/bs';
 import { ENDPOINTS } from '../../utils/URL';
 import TimeEntryForm from '../Timelog/TimeEntryForm';
 import { useSelector } from 'react-redux';
@@ -63,6 +70,7 @@ export const NewTimer = () => {
     SWITCH_MODE: 'SWITCH_MODE',
     SET_GOAL: 'SET_GOAL=',
     ADD_GOAL: 'ADD_GOAL=',
+    REMOVE_GOAL: 'REMOVE_GOAL=',
     ACK_FORCED: 'ACK_FORCED',
   };
 
@@ -73,15 +81,13 @@ export const NewTimer = () => {
   so we concat the action with the time
   */
   const handleStart = useCallback(() => sendMessage(action.START_TIMER), []);
-  const handleStop = useCallback(() => {
-    sendMessage(action.STOP_TIMER);
-    setLogModal(true);
-  }, []);
+  const handleStop = useCallback(() => sendMessage(action.STOP_TIMER), []);
   const handlePause = useCallback(() => sendMessage(action.PAUSE_TIMER), []);
   const handleClear = useCallback(() => sendMessage(action.CLEAR_TIMER), []);
   const handleSwitch = useCallback(() => sendMessage(action.SWITCH_MODE), []);
   const handleSetGoal = useCallback(time => sendMessage(action.SET_GOAL.concat(time)), []);
   const handleAddGoal = useCallback(time => sendMessage(action.ADD_GOAL.concat(time)), []);
+  const handleRemoveGoal = useCallback(time => sendMessage(action.REMOVE_GOAL.concat(time)), []);
   const handleAckForced = useCallback(() => sendMessage(action.ACK_FORCED), []);
   const toggleModal = () => setLogModal(modal => !modal);
   const toggleTimer = () => setShowTimer(timer => !timer);
@@ -94,7 +100,7 @@ export const NewTimer = () => {
   then we get the hours and minutes from the time
   */
   const timeToLog = moment.duration(
-    message ? (message.countdown ? message.goal - message.time : message.time) : 0,
+    message ? (message.countdown ? message.goal - previewTimer : previewTimer) : 0,
   );
   const hours = timeToLog.hours();
   const minutes = timeToLog.minutes();
@@ -108,13 +114,34 @@ export const NewTimer = () => {
   */
   return (
     <div className="timer-container">
-      <div className="toggle" id="toggle">
-        <BsAlarmFill className="transition-color btn-white" fontSize="2rem" onClick={toggleTimer} />
-        <div className="indicator">
-          {message && message.paused ? <BsPauseFill /> : <BsPlayFill />}
-        </div>
-      </div>
+      <BsAlarmFill className="transition-color btn-white" fontSize="2rem" onClick={toggleTimer} />
       <div className="preview">{moment.utc(previewTimer).format('HH:mm:ss')}</div>
+      <div className="add-btn">
+        <BsPlusCircleFill
+          className="btn-white transition-color"
+          fontSize="1.5rem"
+          onClick={() => handleAddGoal(1000 * 60 * 15)}
+        />
+        <span>15 min</span>
+      </div>
+      {message?.paused ? (
+        <BsFillPlayCircleFill
+          className="btn-white transition-color"
+          fontSize="1.5rem"
+          onClick={handleStart}
+        />
+      ) : (
+        <BsPauseCircleFill
+          className="btn-white transition-color"
+          fontSize="1.5rem"
+          onClick={handlePause}
+        />
+      )}
+      <BsStopCircleFill
+        className="btn-white transition-color"
+        fontSize="1.5rem"
+        onClick={() => setLogModal(true)}
+      />
       <Modal isOpen={inacModal} toggle={() => setInacModal(!inacModal)} centered={true}>
         <ModalHeader toggle={() => setInacModal(!inacModal)}>Timer Paused</ModalHeader>
         <ModalBody>
@@ -137,7 +164,7 @@ export const NewTimer = () => {
       <div className={`timer ${!showTimer && 'hide-me'}`}>
         <div className="timer-content">
           <BsXLg className="transition-color btn-white cross" onClick={toggleTimer} />
-          <SwitchTimer message={message} handleSwitch={handleSwitch} />
+          {/* <SwitchTimer message={message} handleSwitch={handleSwitch} /> */}
           {readyState === ReadyState.OPEN && message && !message?.error ? (
             message?.countdown ? (
               <Countdown
@@ -147,7 +174,10 @@ export const NewTimer = () => {
                 handleStop={handleStop}
                 handleSetGoal={handleSetGoal}
                 handleAddGoal={handleAddGoal}
+                handleRemoveGoal={handleRemoveGoal}
                 setPreviewTimer={setPreviewTimer}
+                handleClear={handleClear}
+                toggleModal={() => setLogModal(true)}
               />
             ) : (
               <Stopwatch
@@ -173,6 +203,9 @@ export const NewTimer = () => {
             data={data}
             userProfile={userProfile}
             resetTimer={handleClear}
+            handleStop={handleStop}
+            handleAddGoal={handleAddGoal}
+            goal={message?.goal}
           />
         )}
       </div>

@@ -22,6 +22,7 @@ import { postTimeEntry, editTimeEntry } from '../../../actions/timeEntries';
 import { getUserProjects } from '../../../actions/userProjects';
 import { getUserProfile } from 'actions/userProfile';
 import { getAllRoles } from 'actions/role';
+import { BiPlus } from 'react-icons/bi';
 
 import { stopTimer } from '../../../actions/timer';
 import AboutModal from './AboutModal';
@@ -31,6 +32,8 @@ import axios from 'axios';
 import { ENDPOINTS } from '../../../utils/URL';
 import hasPermission from 'utils/permissions';
 import { getTimeEntryFormData } from './selectors';
+
+import './TimeEntryForm.css';
 
 /**
  * Modal used to submit and edit tangible and intangible time entries.
@@ -47,7 +50,18 @@ import { getTimeEntryFormData } from './selectors';
  * @returns
  */
 const TimeEntryForm = props => {
-  const { userId, edit, data, isOpen, toggle, timer, resetTimer } = props;
+  const {
+    userId,
+    edit,
+    data,
+    isOpen,
+    toggle,
+    timer,
+    resetTimer,
+    handleStop,
+    handleAddGoal,
+    goal,
+  } = props;
 
   const initialFormValues = {
     dateOfWork: moment()
@@ -66,6 +80,15 @@ const TimeEntryForm = props => {
     remind: '',
     wordCount: data && data.notes && data.notes.split(' ').length > 10 ? 10 : 0,
     editNotice: true,
+  };
+
+  /*
+   * Here we just check if the amount of time that we are going to add will surpass the
+   * maximum allowed time on backend that its 10 hours
+   * */
+  const shouldDisableAddBtn = mins => {
+    const amount = moment.duration(goal ?? 0, 'milliseconds').add(mins, 'minutes');
+    return amount.asHours() > 10 ? true : false;
   };
 
   const [isSubmitting, setSubmitting] = useState(false);
@@ -601,6 +624,32 @@ const TimeEntryForm = props => {
           </ReactTooltip>
         </ModalHeader>
         <ModalBody>
+          <div className="add-timer-container">
+            <button
+              className="transtion-color"
+              onClick={() => handleAddGoal(1000 * 60 * 15)}
+              disabled={shouldDisableAddBtn(15)}
+            >
+              <BiPlus fontSize="1rem" />
+              <span>15 min</span>
+            </button>
+            <button
+              className="transtion-color"
+              onClick={() => handleAddGoal(1000 * 60 * 30)}
+              disabled={shouldDisableAddBtn(30)}
+            >
+              <BiPlus fontSize="1rem" />
+              <span>30 min</span>
+            </button>
+            <button
+              className="transtion-color"
+              onClick={() => handleAddGoal(1000 * 60 * 60)}
+              disabled={shouldDisableAddBtn(60)}
+            >
+              <BiPlus fontSize="1rem" />
+              <span>60 min</span>
+            </button>
+          </div>
           <Form>
             <FormGroup>
               <Label for="dateOfWork">Date</Label>
@@ -767,6 +816,9 @@ TimeEntryForm.propTypes = {
   data: PropTypes.any.isRequired,
   userProfile: PropTypes.any.isRequired,
   resetTimer: PropTypes.func.isRequired,
+  handleStop: PropTypes.func.isRequired,
+  handleAddGoal: PropTypes.func.isRequired,
+  goal: PropTypes.number.isRequired,
 };
 
 export default TimeEntryForm;

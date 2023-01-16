@@ -1,35 +1,37 @@
 .timer-container {
   position: relative;
-  display: block;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
   z-index: 30;
-}
-
-.timer-container .toggle {
-  position: relative;
-}
-
-.toggle .indicator {
-  position: absolute;
-  top: -1rem;
-  right: -1rem;
-  color: white;
-  height: 1rem;
-  width: 1rem;
+  user-select: none;
+  -moz-user-select: none;
 }
 
 .timer-container .preview {
-  position: absolute;
-  top: 0;
-  right: -7.5rem;
   font-size: 1.2rem;
   font-weight: bold;
+  width: 100px;
   background-color: rgba(82, 92, 102, 1);
   color: white;
   border-radius: 0.5rem;
   padding: 0.25rem 0.75rem;
 }
 
-.hide-me {
+.timer-container .add-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  color: white;
+}
+
+@media (max-width: 768px) {
+  .timer-container .add-btn span {
+    display: none;
+  }
+}
+
+.timer-container .hide-me {
   display: none;
 }
 
@@ -45,6 +47,12 @@
   overflow: hidden;
 }
 
+@media (min-width: 1550px) {
+  .timer {
+    left: -6rem;
+  }
+}
+
 .timer-content {
   position: relative;
   padding: 1rem;
@@ -55,8 +63,6 @@
   margin-top: auto;
   gap: 1rem;
   color: white;
-  user-select: none;
-  -moz-user-select: none;
 }
 
 .timer .timer-status {
