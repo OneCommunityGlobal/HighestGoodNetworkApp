@@ -509,7 +509,6 @@ class AddUserProfile extends Component {
   };
 
   checkIfDuplicate = (firstName, lastName) => {
-    console.log('userProfiles:', this.state.userProfiles);
     let { userProfiles } = this.state.userProfiles;
 
     const duplicates = userProfiles.filter(user => {
@@ -561,20 +560,13 @@ class AddUserProfile extends Component {
 
     this.setState({ formSubmitted: true });
 
-    if (this.checkIfDuplicate(userData.firstName, userData.lastName) && !allowsDuplicateName) {
-      this.setState({
-        popupOpen: true,
-      });
-      return;
-    }
-
     if (googleDoc) {
       userData.adminLinks.push({ Name: 'Google Doc', Link: googleDoc });
     }
     if (this.fieldsAreValid()) {
       this.setState({ showphone: false });
       if (!email.match(patt)) {
-        toast.error('Email is not valid,Please include @ followed by .com format');
+        toast.error('Email is not valid. Please include @ followed by .com format');
       } else {
         createUser(userData)
           .then(res => {
@@ -613,6 +605,16 @@ class AddUserProfile extends Component {
                     },
                   });
                   break;
+                case 'name':
+                  if (
+                    this.checkIfDuplicate(userData.firstName, userData.lastName) &&
+                    !allowsDuplicateName
+                  ) {
+                    this.setState({
+                      popupOpen: true,
+                    });
+                    return;
+                  }
               }
             }
             toast.error(
