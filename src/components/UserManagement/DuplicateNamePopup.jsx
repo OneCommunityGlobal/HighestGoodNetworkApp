@@ -15,9 +15,17 @@ const DuplicateNamePopup = React.memo(props => {
       <ModalBody>
         <p>There is already a user with the same name.</p>
         <p>Do you wish to proceed and have duplicate names?</p>
-        <div style={{ textAlign: 'center', paddingTop: '10px' }}>
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'space-evenly',
+            textAlign: 'center',
+            paddingTop: '10px',
+          }}
+        >
           <Button
             color="primary btn-danger"
+            style={{ width: '30%' }}
             onClick={() => {
               props.createUserProfile(true);
               props.onClose();
@@ -26,7 +34,11 @@ const DuplicateNamePopup = React.memo(props => {
             Yes
           </Button>
           <DivSpacer />
-          <Button color="primary btn-warning" onClick={() => props.onClose()}>
+          <Button
+            color="primary btn-warning"
+            style={{ width: '30%' }}
+            onClick={() => props.onClose()}
+          >
             No
           </Button>
           <DivSpacer />
