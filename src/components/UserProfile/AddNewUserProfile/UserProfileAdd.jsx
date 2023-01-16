@@ -16,7 +16,7 @@ import {
   NavLink,
   Nav,
 } from 'reactstrap';
-
+import DuplicateNamePopup from 'components/UserManagement/DuplicateNamePopup';
 import ToggleSwitch from '../UserProfileEdit/ToggleSwitch';
 import './UserProfileAdd.scss';
 import { createUser, resetPassword } from '../../../services/userProfileService';
@@ -41,12 +41,15 @@ import classnames from 'classnames';
 import TimeZoneDropDown from '../TimeZoneDropDown';
 import { getUserTimeZone } from 'services/timezoneApiService';
 import hasPermission from 'utils/permissions';
+import NewUserPopup from 'components/UserManagement/NewUserPopup';
 
 const patt = RegExp(/^([\w.%+-]+)@([\w-]+\.)+([\w]{2,})$/i);
 class AddUserProfile extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      allowsDuplicateName: false,
+      popupOpen: false,
       weeklyCommittedHours: 10,
       teams: [],
       projects: [],
@@ -79,6 +82,18 @@ class AddUserProfile extends Component {
     };
   }
 
+  setAllowDuplicateName = value => {
+    this.setState({
+      allowsDuplicateName: value,
+    });
+  };
+
+  popupClose = () => {
+    this.setState({
+      popupOpen: false,
+    });
+  };
+
   componentDidMount() {
     this.state.showphone = true;
     this.onCreateNewUser();
@@ -91,6 +106,11 @@ class AddUserProfile extends Component {
       this.state.userProfile.phoneNumber.length === 0;
     return (
       <StickyContainer>
+        <DuplicateNamePopup
+          setAllowDuplicateName={this.setAllowDuplicateName}
+          open={this.state.popupOpen}
+          onClose={this.popupClose}
+        />
         <Container className="emp-profile">
           <Row>
             <Col md="12">
@@ -175,10 +195,10 @@ class AddUserProfile extends Component {
                   </Col>
                   <Col md="6">
                     <FormGroup>
-                    <PhoneInput
+                      <PhoneInput
                         country="US"
-                        regions={['america','europe','asia','oceania','africa']}
-                        limitMaxLength= 'true'
+                        regions={['america', 'europe', 'asia', 'oceania', 'africa']}
+                        limitMaxLength="true"
                         value={phoneNumber}
                         onChange={phone => this.phoneChange(phone)}
                       />
@@ -522,6 +542,7 @@ class AddUserProfile extends Component {
       collaborationPreference: collaborationPreference,
       timeZone: timeZone,
       location: location,
+      allowsDuplicateName: this.state.allowsDuplicateName,
     };
 
     this.setState({ formSubmitted: true });
@@ -571,6 +592,10 @@ class AddUserProfile extends Component {
                     },
                   });
                   break;
+                case 'name':
+                  this.setState({
+                    popupOpen: true,
+                  });
               }
             }
             toast.error(
