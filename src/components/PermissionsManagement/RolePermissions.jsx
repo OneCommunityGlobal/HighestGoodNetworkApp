@@ -66,7 +66,7 @@ function RolePermissions(props) {
     setPermissions(previous => [...previous, permission]);
   };
 
-  const updateInfo = () => {
+  const updateInfo = async () => {
     const permissionsObjectName = permissions.map(perm => {
       return getKeyByValue(permissionLabel, perm);
     });
@@ -84,7 +84,8 @@ function RolePermissions(props) {
       roleId: id,
     };
     try {
-      props.updateRole(id, updatedRole);
+      await props.updateRole(id, updatedRole);
+      history.push('/permissionsmanagement');
       toast.success('Role updated successfully');
       setChanged(false);
     } catch (error) {
