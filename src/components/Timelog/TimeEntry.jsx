@@ -157,7 +157,12 @@ const TimeEntry = ({ data, displayYear, userProfile }) => {
             )}
             {(hasPermission(role, 'deleteTimeEntry', roles, userPermissions) ||
               (!data.isTangible && isOwner && isSameDay)) && (
-              <DeleteModal timeEntry={data} userProfile={userProfile} />
+              <DeleteModal
+                timeEntry={data}
+                userProfile={userProfile}
+                projectCategory={projectCategory}
+                taskClassification={taskClassification}
+              />
             )}
           </div>
         </Col>
