@@ -15,9 +15,10 @@ import '../../Teams/Team.css';
 import './ProjectReport.css';
 
 export const ProjectReport = ({ match }) => {
-
   const dispatch = useDispatch();
-  const { wbs, projectMembers, isActive, projectName, wbsTasksID, isLoading } = useSelector(projectReportViewData);
+  const { wbs, projectMembers, isActive, projectName, wbsTasksID, isLoading } = useSelector(
+    projectReportViewData,
+  );
 
   useEffect(() => {
     if (match) {
@@ -28,14 +29,18 @@ export const ProjectReport = ({ match }) => {
   }, []);
 
   return (
-    <ReportPage renderProfile={() => <ReportPage.ReportHeader isActive={isActive} avatar={<FiBox />} name={projectName} />}>
-      <div className='wbs-and-members-blocks-wrapper'>
-        <ReportPage.ReportBlock className='wbs-and-members-blocks'>
+    <ReportPage
+      renderProfile={() => (
+        <ReportPage.ReportHeader isActive={isActive} avatar={<FiBox />} name={projectName} />
+      )}
+    >
+      <div className="wbs-and-members-blocks-wrapper">
+        <ReportPage.ReportBlock className="wbs-and-members-blocks">
           <Paging totalElementsCount={wbs.WBSItems.length}>
             <WbsTable wbs={wbs} />
           </Paging>
         </ReportPage.ReportBlock>
-        <ReportPage.ReportBlock className='wbs-and-members-blocks'>
+        <ReportPage.ReportBlock className="wbs-and-members-blocks">
           <Paging totalElementsCount={projectMembers.members.length}>
             <ProjectMemberTable projectMembers={projectMembers} />
           </Paging>
@@ -44,6 +49,6 @@ export const ProjectReport = ({ match }) => {
       <ReportPage.ReportBlock>
         <TasksTable WbsTasksID={wbsTasksID} />
       </ReportPage.ReportBlock>
-    </ReportPage >
+    </ReportPage>
   );
 };

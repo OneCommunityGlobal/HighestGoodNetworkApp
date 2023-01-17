@@ -5,12 +5,12 @@ const APIEndpoint = ApiEndpoint;
 
 export function clearUserProfile() {
   return { type: 'CLEAR_USER_PROFILE' };
-}
+};
 
 export function getUserTeamMembers(userId) {
   const request = httpService.get(`${APIEndpoint}/userprofile/teammembers/${userId}`);
 
-  return (dispatch) => {
+  return dispatch => {
     request.then(({ data }) => {
       dispatch({
         type: 'GET_USER_TEAM_MEMBERS',
@@ -18,12 +18,12 @@ export function getUserTeamMembers(userId) {
       });
     });
   };
-}
+};
 
 export function getUserProjectMembers(projectId) {
   const request = httpService.get(`${APIEndpoint}/userprofile/project/${projectId}`);
 
-  return (dispatch) => {
+  return dispatch => {
     request.then(({ data }) => {
       dispatch({
         type: 'GET_USER_PROJECT_MEMBERS',
@@ -31,12 +31,12 @@ export function getUserProjectMembers(projectId) {
       });
     });
   };
-}
+};
 
 export function getDashboardData(userId) {
   const request = httpService.get(`${APIEndpoint}/dashboard/${userId}`);
 
-  return (dispatch) => {
+  return dispatch => {
     request.then(({ data }) => {
       dispatch({
         type: 'GET_DASHBOARD_DATA',
@@ -44,14 +44,14 @@ export function getDashboardData(userId) {
       });
     });
   };
-}
+};
 
 export function getWeeklyDashboardData(userId, fromDate, toDate) {
   const request = httpService.get(
     `${APIEndpoint}/dashboard/weeklydata/${userId}/${fromDate}/${toDate}`,
   );
 
-  return (dispatch) => {
+  return dispatch => {
     request.then(({ data }) => {
       dispatch({
         type: 'GET_WEEKLY_DASHBOARD_DATA',
@@ -59,14 +59,14 @@ export function getWeeklyDashboardData(userId, fromDate, toDate) {
       });
     });
   };
-}
+};
 
 export function getMonthlyDashboardData(userId, fromDate, toDate) {
   const request = httpService.get(
     `${APIEndpoint}/dashboard/monthlydata/${userId}/${fromDate}/${toDate}`,
   );
 
-  return (dispatch) => {
+  return dispatch => {
     request.then(({ data }) => {
       dispatch({
         type: 'GET_MONTHLY_DASHBOARD_DATA',
@@ -74,12 +74,12 @@ export function getMonthlyDashboardData(userId, fromDate, toDate) {
       });
     });
   };
-}
+};
 
 export function getLeaderboardData(userId) {
   const request = httpService.get(`${APIEndpoint}/dashboard/leaderboard/${userId}`);
 
-  return (dispatch) => {
+  return dispatch => {
     request.then(({ data }) => {
       dispatch({
         type: 'GET_LEADERBOARD_DATA',
@@ -87,12 +87,12 @@ export function getLeaderboardData(userId) {
       });
     });
   };
-}
+};
 
 export function getActionItems(userId) {
   const request = httpService.get(`${APIEndpoint}/actionItem/user/${userId}`);
 
-  return (dispatch) => {
+  return dispatch => {
     request.then(({ data }) => {
       dispatch({
         type: 'GET_ACTION_ITEMS',
@@ -100,12 +100,12 @@ export function getActionItems(userId) {
       });
     });
   };
-}
+};
 
 export function getNotifications(userId) {
   const request = httpService.get(`${APIEndpoint}/notification/user/${userId}`);
 
-  return (dispatch) => {
+  return dispatch => {
     request.then(({ data }) => {
       dispatch({
         type: 'GET_NOTIFICATIONS',
@@ -113,12 +113,12 @@ export function getNotifications(userId) {
       });
     });
   };
-}
+};
 
 export function getAllProjects() {
   const request = httpService.get(`${APIEndpoint}/projects`);
 
-  return (dispatch) => {
+  return dispatch => {
     request.then(({ data }) => {
       dispatch({
         type: 'GET_ALL_PROJECTS',
@@ -126,12 +126,12 @@ export function getAllProjects() {
       });
     });
   };
-}
+};
 
 export function getProjectById(projectId) {
   const request = httpService.get(`${APIEndpoint}/project/${projectId}`);
 
-  return (dispatch) => {
+  return dispatch => {
     request.then(({ data }) => {
       dispatch({
         type: 'GET_PROJECT_BY_ID',
@@ -139,12 +139,12 @@ export function getProjectById(projectId) {
       });
     });
   };
-}
+};
 
 export function getProjectsByUser(userId) {
   const request = httpService.get(`${APIEndpoint}/projects/user/${userId}`);
 
-  return (dispatch) => {
+  return dispatch => {
     request.then(({ data }) => {
       dispatch({
         type: 'GET_PROJECTS_BY_USER',
@@ -152,12 +152,12 @@ export function getProjectsByUser(userId) {
       });
     });
   };
-}
+};
 
 export function getProjectMembership(projectId) {
   const request = httpService.get(`${APIEndpoint}/project/${projectId}/users`);
 
-  return (dispatch) => {
+  return dispatch => {
     request.then(({ data }) => {
       dispatch({
         type: 'GET_PROJECT_MEMBERSHIP',
@@ -165,11 +165,11 @@ export function getProjectMembership(projectId) {
       });
     });
   };
-}
+};
 
 export function getAllTeams() {
   const request = httpService.get(`${APIEndpoint}/team`);
-  return (dispatch) => {
+  return dispatch => {
     request.then(({ data }) => {
       dispatch({
         type: 'GET_ALL_TEAMS',
@@ -177,12 +177,12 @@ export function getAllTeams() {
       });
     });
   };
-}
+};
 
 export function getTeamById(teamId) {
   const request = httpService.get(`${APIEndpoint}/team/${teamId}`);
 
-  return (dispatch) => {
+  return dispatch => {
     request.then(({ data }) => {
       dispatch({
         type: 'GET_TEAM_BY_ID',
@@ -190,12 +190,12 @@ export function getTeamById(teamId) {
       });
     });
   };
-}
+};
 
 export function getTeamMembership(teamId) {
   const request = httpService.get(`${APIEndpoint}/team/${teamId}/users`);
 
-  return (dispatch) => {
+  return dispatch => {
     request.then(({ data }) => {
       dispatch({
         type: 'GET_TEAM_MEMBERSHIP',
@@ -203,12 +203,12 @@ export function getTeamMembership(teamId) {
       });
     });
   };
-}
+};
 
 export function getAllTimeEntries() {
   const request = httpService.get(`${APIEndpoint}/TimeEntry`);
 
-  return (dispatch) => {
+  return dispatch => {
     request.then(({ data }) => {
       dispatch({
         type: 'GET_ALL_TIME_ENTRIES',
@@ -216,12 +216,12 @@ export function getAllTimeEntries() {
       });
     });
   };
-}
+};
 
 export function getTimeEntryForSpecifiedPeriod(userId, fromDate, toDate) {
   const request = httpService.get(`${APIEndpoint}/TimeEntry/user/${userId}/${fromDate}/${toDate}`);
 
-  return (dispatch) => {
+  return dispatch => {
     request.then(({ data }) => {
       dispatch({
         type: 'GET_TIME_ENTRY_FOR_SPECIFIED_PERIOD',
@@ -229,14 +229,14 @@ export function getTimeEntryForSpecifiedPeriod(userId, fromDate, toDate) {
       });
     });
   };
-}
+};
 
 export function getTimeEntryForSpecifiedProject(projectId, fromDate, toDate) {
   const request = httpService.get(
     `${APIEndpoint}/TimeEntry/projects/${projectId}/${fromDate}/${toDate}`,
   );
 
-  return (dispatch) => {
+  return dispatch => {
     request.then(({ data }) => {
       dispatch({
         type: 'GET_TIME_ENTRY_FOR_SPECIFIED_PROJECT',
@@ -244,14 +244,14 @@ export function getTimeEntryForSpecifiedProject(projectId, fromDate, toDate) {
       });
     });
   };
-}
+};
 
 export function postTimeEntry(timeEntryObj) {
   const request = httpService.post(`${APIEndpoint}/TimeEntry`, timeEntryObj);
-  return (dispatch) => {
+  return dispatch => {
     request.then(
-      (response) => dispatch({ type: 'REQUEST_SUCCEEDED', payload: response }),
-      (error) => dispatch({ type: 'REQUEST_FAILED', error }),
+      response => dispatch({ type: 'REQUEST_SUCCEEDED', payload: response }),
+      error => dispatch({ type: 'REQUEST_FAILED', error }),
     );
   };
-}
+};

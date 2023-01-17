@@ -5,12 +5,12 @@
  ********************************************************************************/
 import React, { useState } from 'react';
 
-const AddProject = (props) => {
+const AddProject = props => {
   const [showAddButton, setShowAddButton] = useState(false);
   const [newName, setNewName] = useState('');
   const [newCategory, setNewCategory] = useState('Unspecified');
 
-  const changeNewName = (newName) => {
+  const changeNewName = newName => {
     if (newName.length !== 0) {
       setShowAddButton(true);
     } else {
@@ -29,10 +29,10 @@ const AddProject = (props) => {
         className="form-control"
         aria-label="New Project"
         placeholder="Project Name (required) type to add."
-        onChange={(e) => changeNewName(e.target.value)}
+        onChange={e => changeNewName(e.target.value)}
       />
       <div className="input-group-append">
-        <select onChange={(e) => setNewCategory(e.target.value)}>
+        <select onChange={e => setNewCategory(e.target.value)}>
           <option default value="Unspecified">
             Select Category
           </option>
@@ -51,7 +51,7 @@ const AddProject = (props) => {
           <button
             className="btn btn-outline-primary"
             type="button"
-            onClick={(e) => props.addNewProject(newName, newCategory)}
+            onClick={e => props.addNewProject(newName, newCategory)}
           >
             <i className="fa fa-plus" aria-hidden="true"></i>
           </button>

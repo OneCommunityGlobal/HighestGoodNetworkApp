@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import BadgeImage from './BadgeImage';
 
-const FeaturedBadges = (props) => {
+const FeaturedBadges = props => {
   let [filteredBadges, setFilteredBadges] = useState([]);
-  const filterBadges = (allBadges) => {
+  const filterBadges = allBadges => {
     let filteredList = allBadges || [];
 
     filteredList = filteredList.sort((a, b) => {

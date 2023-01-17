@@ -641,7 +641,7 @@ class UserProfileEdit extends Component {
       return (
         <Col>
           <Row className={styleProfile.profileContainer}>
-            <Label>Sorry, you do not have permison to edit this profile.</Label>
+            <Label>Sorry, you do not have permission to edit this profile.</Label>
           </Row>
         </Col>
       );

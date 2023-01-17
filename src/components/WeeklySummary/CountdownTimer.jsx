@@ -31,7 +31,7 @@ export function CountdownTimer({ date }) {
 
   useEffect(() => () => clearTimeout(timer));
 
-  const addLeadingZeros = (interval) => {
+  const addLeadingZeros = interval => {
     let tli = String(timeLeft[interval]);
     while (tli.length < 2) {
       tli = `0${tli}`;
@@ -39,7 +39,7 @@ export function CountdownTimer({ date }) {
     return tli;
   };
 
-  const pluralOrSingle = (interval) => {
+  const pluralOrSingle = interval => {
     let tempInterval = interval;
     if (timeLeft[interval] === 1 && interval === 'Days') tempInterval = 'Day';
     else if (timeLeft[interval] === 1 && interval === 'Hours') tempInterval = 'Hour';
@@ -65,7 +65,7 @@ export function CountdownTimer({ date }) {
   return (
     <div className="countdown">
       {!_.isEmpty(timeLeft)
-        ? Object.keys(timeLeft).map((interval) => (
+        ? Object.keys(timeLeft).map(interval => (
             <span key={interval} className="countdown__col">
               <span className="countdown__col__element">
                 <strong>{addLeadingZeros(interval)}</strong> <span>{pluralOrSingle(interval)}</span>

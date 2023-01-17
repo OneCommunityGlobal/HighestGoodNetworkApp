@@ -1,7 +1,7 @@
 import React from 'react';
 
 const CheckboxCollection = ({ items, error, pathName, isChecked, onChange, ...rest }) => {
-  const getCheckBox = (element) => (
+  const getCheckBox = element => (
     <div className={`form-check`} key={element._id}>
       <input
         {...rest}
@@ -12,7 +12,7 @@ const CheckboxCollection = ({ items, error, pathName, isChecked, onChange, ...re
         type="checkbox"
         checked={isChecked(element._id)}
         {...rest}
-        onChange={(e) => onChange(e)}
+        onChange={e => onChange(e)}
       />
       <label className="form-check-label" htmlFor={element[pathName]}>
         {element[pathName]}
@@ -22,7 +22,7 @@ const CheckboxCollection = ({ items, error, pathName, isChecked, onChange, ...re
 
   return (
     <div className="form-group">
-      {items.map((item) => getCheckBox(item))}
+      {items.map(item => getCheckBox(item))}
       {error && <div className="alert alert-danger mt-1">{error}</div>}
     </div>
   );

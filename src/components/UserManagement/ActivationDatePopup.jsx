@@ -5,20 +5,20 @@ import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Input, Alert } from
 /**
  * Modal popup to show the user profile in create mode
  */
-const ActivationDatePopup = React.memo((props) => {
+const ActivationDatePopup = React.memo(props => {
   const [activationDate, onDateChange] = useState(Date.now());
   const [dateError, setDateError] = useState(false);
 
-  const closePopup = (e) => {
+  const closePopup = e => {
     props.onClose();
   };
   const pauseUser = () => {
     if (Date.parse(activationDate) > Date.now()) {
       props.onPause(activationDate);
       toast.success('Your Changes were saved successfully.');
-      setTimeout(function(){
+      setTimeout(function() {
         window.location.reload();
-     }, 5000);
+      }, 5000);
     } else {
       setDateError(true);
     }
@@ -33,7 +33,7 @@ const ActivationDatePopup = React.memo((props) => {
           name="pauseUntilDate"
           id="pauseUntilDate"
           value={activationDate}
-          onChange={(event) => {
+          onChange={event => {
             setDateError(false);
             onDateChange(event.target.value);
           }}

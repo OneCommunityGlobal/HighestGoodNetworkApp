@@ -7,13 +7,13 @@ import axios from 'axios';
 import { ENDPOINTS } from './../../../utils/URL';
 import './style.css';
 
-const PopupText = (props) => {
+const PopupText = props => {
   const [content, setContent] = useState(props.content);
   const [displaySave, setDisplaySave] = useState(true);
   const [pressed, setPressed] = useState(2);
   const [isPopup, setIsPopup] = useState(false);
 
-  const save = (id) => {
+  const save = id => {
     setDisplaySave(false);
     props.updatePopupEditor(id, content, props.title);
     setTimeout(() => {
@@ -28,7 +28,7 @@ const PopupText = (props) => {
     }
   };
 
-  const getBackupData = async (popupId) => {
+  const getBackupData = async popupId => {
     const request = await axios.get(ENDPOINTS.POPUP_EDITOR_BACKUP_BY_ID(popupId));
     setContent(request.data.popupContent);
   };
@@ -67,7 +67,7 @@ const PopupText = (props) => {
               autoresize_bottom_margin: 1,
             }}
             value={content}
-            onEditorChange={(content) => setContent(content)}
+            onEditorChange={content => setContent(content)}
           />
         </div>
 
@@ -112,4 +112,4 @@ const PopupText = (props) => {
     </div>
   );
 };
-export default connect((state) => state, { updatePopupEditor, backupPopupEditor })(PopupText);
+export default connect(state => state, { updatePopupEditor, backupPopupEditor })(PopupText);
