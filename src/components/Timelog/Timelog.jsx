@@ -56,6 +56,7 @@ class Timelog extends Component {
     this.handleInputChange = this.handleInputChange.bind(this);
     this.handleSearch = this.handleSearch.bind(this);
     this.openInfo = this.openInfo.bind(this);
+    this.calculateTotalTime = this.calculateTotalTime.bind(this);
     //renderViewingTimeEntriesFrom
     this.renderViewingTimeEntriesFrom = this.renderViewingTimeEntriesFrom.bind(this);
     this.data = {
@@ -81,6 +82,7 @@ class Timelog extends Component {
     toDate: this.endOfWeek(0),
     in: false,
     information: '',
+    currentWeekEffort : 0,
     isTimeEntriesLoading: true,
   };
 
@@ -206,10 +208,24 @@ class Timelog extends Component {
       .format('YYYY-MM-DD');
   }
 
+  calculateTotalTime(data, isTangible) {
+    const filteredData = data.filter(
+      entry =>
+        entry.isTangible === isTangible &&
+        (this.state.projectsSelected.includes('all') || this.state.projectsSelected.includes(entry.projectId)),
+    );
+
+    const reducer = (total, entry) => total + parseInt(entry.hours) + parseInt(entry.minutes) / 60;
+    return filteredData.reduce(reducer, 0);
+  };
+
   generateTimeEntries(data) {
     let filteredData = data;
     if (!this.state.projectsSelected.includes('all')) {
       filteredData = data.filter(entry => this.state.projectsSelected.includes(entry.projectId));
+    }
+    else {
+      this.state.currentWeekEffort = this.calculateTotalTime(data, true);
     }
 
     return filteredData.map(entry => (
@@ -249,6 +265,7 @@ class Timelog extends Component {
     const userPermissions = this.props.auth.user?.permissions?.frontPermissions;
 
     const isOwner = this.props.auth.user.userid === userId;
+    const leaderData = [{ personId : userId, tangibletime : this.state.currentWeekEffort}]
     const fullName = `${this.props.userProfile.firstName} ${this.props.userProfile.lastName}`;
     let projects = [];
     if (!_.isEmpty(this.props.userProjects.projects)) {
@@ -283,13 +300,26 @@ class Timelog extends Component {
 
     return (
       <div>
-        {!this.props.isDashboard ? (
-          <Container fluid>
-            <SummaryBar toggleSubmitForm={() => this.showSummary(isOwner)} role={role} />
-          </Container>
-        ) : (
-          ''
-        )}
+        {
+          !this.props.isDashboard ? 
+          (this.state.isTimeEntriesLoading ? (
+              'Loading...'
+            ) : 
+            (
+              <Container fluid>
+                <SummaryBar asUser={userId} 
+                            toggleSubmitForm={() => this.showSummary(isOwner)} 
+                            role={role} 
+                            leaderData={leaderData}/>
+                <br/>
+              </Container>
+            )
+          ) 
+          : 
+          (
+            ''
+          )
+        }
         {this.state.isTimeEntriesLoading ? (
           <Loading />
         ) : (
