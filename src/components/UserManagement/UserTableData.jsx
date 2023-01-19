@@ -22,6 +22,14 @@ const UserTableData = React.memo(props => {
     onReset(false);
   }, [props.isActive, props.resetLoading]);
 
+  function handleClickName(event) {
+    e.preventDefault();
+            
+    event.ctrlKey 
+      ? window.open(`/userprofile/${props.user._id}`, "_blank")
+      : history.push(`/userprofile/${props.user._id}`);
+  }
+
   return (
     <tr className="usermanagement__tr" id={`tr_user_${props.index}`}>
       <td className="usermanagement__active--input">
@@ -35,10 +43,7 @@ const UserTableData = React.memo(props => {
       <td>
         <a
           href={`/userprofile/${props.user._id}`}
-          onClick={e => {
-            e.preventDefault();
-            history.push('/userprofile/' + props.user._id);
-          }}
+          onClick={handleClickName}
         >
           {props.user.firstName}
         </a>
@@ -46,10 +51,7 @@ const UserTableData = React.memo(props => {
       <td>
         <a
           href={`/userprofile/${props.user._id}`}
-          onClick={e => {
-            e.preventDefault();
-            history.push('/userprofile/' + props.user._id);
-          }}
+          onClick={handleClickName}
         >
           {props.user.lastName}
         </a>
