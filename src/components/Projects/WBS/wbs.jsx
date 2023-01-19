@@ -11,7 +11,7 @@ import { NavItem } from 'reactstrap';
 import AddWBS from './AddWBS';
 import WBSItem from './WBSItem/WBSItem';
 
-const WBS = (props) => {
+const WBS = props => {
   const projectId = props.match.params.projectId;
 
   useEffect(() => {
@@ -66,7 +66,7 @@ const WBS = (props) => {
   );
 };
 
-const mapStateToProps = (state) => {
+const mapStateToProps = state => {
   return { state };
 };
 export default connect(mapStateToProps, { addNewWBS, fetchAllWBS })(WBS);

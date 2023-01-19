@@ -7,7 +7,7 @@ const getUserProfileOptions = {
   },
 };
 
-getUserProfile.__setValue = (option) => {
+getUserProfile.__setValue = option => {
   getUserProfile_result = getUserProfileOptions[option];
 };
 

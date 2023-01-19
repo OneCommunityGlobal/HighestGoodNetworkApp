@@ -135,14 +135,14 @@
 }
 
 /*Aligns the title and the buttons*/
-.badge-header{
-  display:flex;
+.badge-header {
+  display: flex;
   flex-wrap: wrap;
   gap: 5px;
 }
 
 /*Title to occupy more width than buttons*/
-.badge-header-title{
+.badge-header-title {
   flex: 3;
 }
 

@@ -14,8 +14,8 @@ import { CLOSE } from '../../languages/en/ui';
 /**
  * Modal popup to delete the user profile
  */
-const DeleteUserPopup = React.memo((props) => {
-  const closePopup = (e) => {
+const DeleteUserPopup = React.memo(props => {
+  const closePopup = e => {
     props.onClose();
   };
 
