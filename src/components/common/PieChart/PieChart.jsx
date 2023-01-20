@@ -51,21 +51,29 @@ export const PieChart = ({ data, dataLegend, pieChartId, dataLegendHeader }) => 
   {
     /* Variable totalling sum of hours worked to be input in pie chart */
   }
-  let hoursCompleted = document.getElementsByClassName('data-legend-info-part').toString;
+  let hoursCompleted = document.getElementsByClassName(Number('data-legend-info-part'));
+
+  console.log(hoursCompleted)
 
   let totalHoursCompleted = [];
 
   for (let i = 0; i < hoursCompleted.length; i++) {
     const hours = hoursCompleted[i];
-    totalHoursCompleted.push(parseInt(hours));
+    totalHoursCompleted.push(parseFloat(hours));
   }
+
+  console.log(totalHoursCompleted)
+
 
   let sum = 0;
 
-  for (let i = 0; i < totalHoursCompleted.length; i++) {
-    sum += totalHoursCompleted[i];
-  }
-console.log(totalHoursCompleted, hoursCompleted, sum);
+   for (let i = 0; i < totalHoursCompleted.length; i++) {
+     sum += totalHoursCompleted[i];
+   }
+
+console.log(sum);
+
+
   return (
     <div className="pie-chart-wrapper">
       <div id={`pie-chart-container-${pieChartId}`} className="pie-chart" />
