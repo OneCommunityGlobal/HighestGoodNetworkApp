@@ -4,11 +4,11 @@
 // import _ from 'lodash'
 // import ShowSaveWarning from "../common/ShowSaveWarning"
 
-// class RenderInfringment extends Form {
+// class RenderInfringement extends Form {
 //     constructor(props) {
 //         super(props);
 //         this.state = {
-//             data: {...props.infringment},
+//             data: {...props.infringement},
 //             isUserAdmin: props.isUserAdmin,
 //             modal: false,
 //             index: props.index,
@@ -34,15 +34,15 @@
 
 //       doSubmit = ()=> {
 //           (this.state.index >= 0)?
-//           this.props.handleInfringment(this.state.data,"edit", this.state.index):
-//           this.props.handleInfringment(this.state.data,"create")
+//           this.props.handleInfringement(this.state.data,"edit", this.state.index):
+//           this.props.handleInfringement(this.state.data,"create")
 //           this.toggle()
 //       }
 //     render() {
 
 //         let {date, description}  = this.state.data;
 //         let {isUserAdmin, index} = this.state;
-//         let {handleInfringment} = this.props
+//         let {handleInfringement} = this.props
 //         let isEmpty = !(!!date && !! description);
 //         let className = isEmpty? "fa fa-square": "fa fa-square infringement";
 //         let tooltip = !isEmpty ? `Date: ${date} \nDescription: ${description}`: ""
@@ -59,7 +59,7 @@
 //         <div className="row ml-1">
 //         <span className="fa fa-pencil" onClick={this.toggle}/>
 //          <Modal isOpen={this.state.modal} toggle={this.toggle} >
-//           <ModalHeader toggle={this.toggle}>Infringment</ModalHeader>
+//           <ModalHeader toggle={this.toggle}>Infringement</ModalHeader>
 //           <form onSubmit={e => this.handleSubmit(e)}>
 //           <ModalBody>
 //           {this.isStateChanged() && <ShowSaveWarning/>}
@@ -75,7 +75,7 @@
 
 //             </div>
 //             <div className="row ml-1">
-//             {!isEmpty && <span className="fa fa-trash" onClick = {()=>handleInfringment(this.state.data,"delete",index )}/> }
+//             {!isEmpty && <span className="fa fa-trash" onClick = {()=>handleInfringement(this.state.data,"delete",index )}/> }
 //             </div>
 //             </React.Fragment> }
 //             </div>
@@ -84,4 +84,4 @@
 //     }
 // }
 
-// export default RenderInfringment;
+// export default RenderInfringement;

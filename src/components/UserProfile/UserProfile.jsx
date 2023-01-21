@@ -270,7 +270,7 @@ const UserProfile = props => {
       }
 
       setShowModal(false);
-      setUserProfile({ ...userProfile, infringments: currentBlueSquares });
+      setUserProfile({ ...userProfile, infringements: currentBlueSquares });
     } else if (operation === 'delete') {
       let newInfringements = [...userProfile?.infringements] || [];
       if (newInfringements !== []) {
