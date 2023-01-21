@@ -31,6 +31,9 @@ import moment from 'moment';
 import _ from 'lodash';
 import ReactTooltip from 'react-tooltip';
 
+import ActiveCell from 'components/UserManagement/ActiveCell';
+import { ProfileNavDot } from 'components/UserManagement/ProfileNavDot';
+import TeamMemberTasks from 'components/TeamMemberTasks';
 import { getTimeEntriesForWeek, getTimeEntriesForPeriod } from '../../actions/timeEntries';
 import { getUserProfile, updateUserProfile, getUserTask } from '../../actions/userProfile';
 import { getUserProjects } from '../../actions/userProjects';
@@ -40,12 +43,8 @@ import TimeEntry from './TimeEntry';
 import EffortBar from './EffortBar';
 import SummaryBar from '../SummaryBar/SummaryBar';
 import WeeklySummary from '../WeeklySummary/WeeklySummary';
-import ActiveCell from 'components/UserManagement/ActiveCell';
-import { ProfileNavDot } from 'components/UserManagement/ProfileNavDot';
 import Loading from '../common/Loading';
 import hasPermission from '../../utils/permissions';
-
-import TeamMemberTasks from 'components/TeamMemberTasks';
 
 class Timelog extends Component {
   constructor(props) {
@@ -57,7 +56,7 @@ class Timelog extends Component {
     this.handleSearch = this.handleSearch.bind(this);
     this.openInfo = this.openInfo.bind(this);
     this.calculateTotalTime = this.calculateTotalTime.bind(this);
-    //renderViewingTimeEntriesFrom
+
     this.renderViewingTimeEntriesFrom = this.renderViewingTimeEntriesFrom.bind(this);
     this.data = {
       disabled: !hasPermission(
@@ -82,7 +81,7 @@ class Timelog extends Component {
     toDate: this.endOfWeek(0),
     in: false,
     information: '',
-    currentWeekEffort : 0,
+    currentWeekEffort: 0,
     isTimeEntriesLoading: true,
   };
 
@@ -104,17 +103,16 @@ class Timelog extends Component {
   }
 
   async componentDidUpdate(prevProps) {
-    //Don't run function on first render
+    // Don't run function on first render
     if (!this.props.match) return;
 
     if (
-      prevProps.match?.params?.userId !== this.props.match.params.userId ||
-      prevProps.asUser !== this.props.asUser
+      prevProps.match?.params?.userId !== this.props.match.params.userId
+      || prevProps.asUser !== this.props.asUser
     ) {
       this.setState(this.initialState);
 
-      const userId =
-        this.props.match?.params?.userId || this.props.asUser || this.props.auth.user.userid;
+      const userId = this.props.match?.params?.userId || this.props.asUser || this.props.auth.user.userid;
       await this.props.getUserProfile(userId);
 
       this.userProfile = this.props.userProfile;
@@ -146,7 +144,7 @@ class Timelog extends Component {
         summary: !this.state.summary,
       });
       setTimeout(() => {
-        let elem = document.getElementById('weeklySum');
+        const elem = document.getElementById('weeklySum');
         if (elem) {
           elem.scrollIntoView();
         }
@@ -181,15 +179,14 @@ class Timelog extends Component {
 
   handleSearch(e) {
     e.preventDefault();
-    const userId =
-      this.props.match && this.props.match.params.userId
-        ? this.props.match.params.userId
-        : this.props.asUser || this.props.auth.user.userid;
+    const userId = this.props.match && this.props.match.params.userId
+      ? this.props.match.params.userId
+      : this.props.asUser || this.props.auth.user.userid;
     this.props.getTimeEntriesForPeriod(userId, this.state.fromDate, this.state.toDate);
   }
 
-  //startOfWeek returns the date of the start of the week based on offset. Offset is the number of weeks before.
-  //For example, if offset is 0, returns the start of this week. If offset is 1, returns the start of last week.
+  // startOfWeek returns the date of the start of the week based on offset. Offset is the number of weeks before.
+  // For example, if offset is 0, returns the start of this week. If offset is 1, returns the start of last week.
   startOfWeek(offset) {
     return moment()
       .tz('America/Los_Angeles')
@@ -198,8 +195,8 @@ class Timelog extends Component {
       .format('YYYY-MM-DD');
   }
 
-  //endOfWeek returns the date of the end of the week based on offset. Offset is the number of weeks before.
-  //For example, if offset is 0, returns the end of this week. If offset is 1, returns the end of last week.
+  // endOfWeek returns the date of the end of the week based on offset. Offset is the number of weeks before.
+  // For example, if offset is 0, returns the end of this week. If offset is 1, returns the end of last week.
   endOfWeek(offset) {
     return moment()
       .tz('America/Los_Angeles')
@@ -210,25 +207,21 @@ class Timelog extends Component {
 
   calculateTotalTime(data, isTangible) {
     const filteredData = data.filter(
-      entry =>
-        entry.isTangible === isTangible &&
-        (this.state.projectsSelected.includes('all') || this.state.projectsSelected.includes(entry.projectId)),
+      (entry) => entry.isTangible === isTangible,
     );
 
     const reducer = (total, entry) => total + parseInt(entry.hours) + parseInt(entry.minutes) / 60;
     return filteredData.reduce(reducer, 0);
-  };
+  }
 
   generateTimeEntries(data) {
-    let filteredData = data;
     if (!this.state.projectsSelected.includes('all')) {
-      filteredData = data.filter(entry => this.state.projectsSelected.includes(entry.projectId));
-    }
-    else {
+      data = data.filter((entry) => this.state.projectsSelected.includes(entry.projectId));
+    } else {
       this.state.currentWeekEffort = this.calculateTotalTime(data, true);
     }
 
-    return filteredData.map(entry => (
+    return data.map((entry) => (
       <TimeEntry data={entry} displayYear={false} key={entry._id} userProfile={this.userProfile} />
     ));
   }
@@ -236,16 +229,18 @@ class Timelog extends Component {
   renderViewingTimeEntriesFrom() {
     if (this.state.activeTab === 0) {
       return <></>;
-    } else if (this.state.activeTab === 4) {
+    } 
+    else if (this.state.activeTab === 4) {
       return (
         <p className="ml-1">
           Viewing time Entries from <b>{this.state.fromDate}</b> to <b>{this.state.toDate}</b>
         </p>
       );
-    } else {
+    } 
+    else {
       return (
         <p className="ml-1">
-          Viewing time Entries from <b>{this.startOfWeek(this.state.activeTab - 1)}</b> to{' '}
+            Viewing time Entries from <b>{this.startOfWeek(this.state.activeTab - 1)}</b> to{' '}
           <b>{this.endOfWeek(this.state.activeTab - 1)}</b>
         </p>
       );
@@ -257,24 +252,24 @@ class Timelog extends Component {
     const lastWeekEntries = this.generateTimeEntries(this.props.timeEntries.weeks[1]);
     const beforeLastEntries = this.generateTimeEntries(this.props.timeEntries.weeks[2]);
     const periodEntries = this.generateTimeEntries(this.props.timeEntries.period);
-    const userId =
-      this.props.match && this.props.match.params.userId
-        ? this.props.match.params.userId
-        : this.props.asUser || this.props.auth.user.userid;
-    const role = this.props.auth.user.role;
+    const userId = this.props.match && this.props.match.params.userId
+      ? this.props.match.params.userId
+      : this.props.asUser || this.props.auth.user.userid;
+    const { role } = this.props.auth.user;
     const userPermissions = this.props.auth.user?.permissions?.frontPermissions;
 
     const isOwner = this.props.auth.user.userid === userId;
-    const leaderData = [{ personId : userId, tangibletime : this.state.currentWeekEffort}]
+    const leaderData = [{ personId: userId, tangibletime: this.state.currentWeekEffort }];
     const fullName = `${this.props.userProfile.firstName} ${this.props.userProfile.lastName}`;
     let projects = [];
     if (!_.isEmpty(this.props.userProjects.projects)) {
       projects = this.props.userProjects.projects;
     }
-    const projectOrTaskOptions = projects.map(project => (
+    const projectOrTaskOptions = projects.map((project) => (
       <option value={project.projectId} key={project.projectId}>
         {' '}
-        {project.projectName}{' '}
+        {project.projectName}
+        {' '}
       </option>
     ));
     projectOrTaskOptions.unshift(
@@ -301,22 +296,23 @@ class Timelog extends Component {
     return (
       <div>
         {
-          !this.props.isDashboard ? 
-          (this.state.isTimeEntriesLoading ? (
+          !this.props.isDashboard
+            ? (this.state.isTimeEntriesLoading ? (
               'Loading...'
-            ) : 
-            (
+            )
+            : (
               <Container fluid>
-                <SummaryBar asUser={userId} 
-                            toggleSubmitForm={() => this.showSummary(isOwner)} 
-                            role={role} 
-                            leaderData={leaderData}/>
-                <br/>
+                <SummaryBar
+                  asUser={userId}
+                  toggleSubmitForm={() => this.showSummary(isOwner)}
+                  role={role}
+                  leaderData={leaderData}
+                />
+                <br />
               </Container>
             )
-          ) 
-          : 
-          (
+          )
+          : (
             ''
           )
         }
@@ -350,10 +346,9 @@ class Timelog extends Component {
                             isActive={this.props.userProfile.isActive}
                             user={this.props.userProfile}
                             onClick={() => {
-                              const userId =
-                                this.props.match?.params?.userId ||
-                                this.props.asUser ||
-                                this.props.auth.user.userid;
+                              const userId = this.props.match?.params?.userId
+                                || this.props.asUser
+                                || this.props.auth.user.userid;
                               this.props.updateUserProfile(userId, {
                                 ...this.props.userProfile,
                                 isActive: !this.props.userProfile.isActive,
@@ -366,9 +361,9 @@ class Timelog extends Component {
                           />
                           <ProfileNavDot
                             userId={
-                              this.props.match?.params?.userId ||
-                              this.props.asUser ||
-                              this.props.auth.user.userid
+                              this.props.match?.params?.userId
+                              || this.props.asUser
+                              || this.props.auth.user.userid
                             }
                           />
                         </CardTitle>
@@ -393,21 +388,28 @@ class Timelog extends Component {
                               </Button>
                               <ReactTooltip id="timeEntryTip" place="bottom" effect="solid">
                                 Clicking this button only allows for “Intangible Time” to be added
-                                to your time log.{' '}
+                                to your time log.
+                                {' '}
                                 <u>
-                                  You can manually log Intangible Time but it doesn’t <br />
+                                  You can manually log Intangible Time but it doesn’t
+                                  {' '}
+                                  <br />
                                   count towards your weekly time commitment.
                                 </u>
                                 <br />
                                 <br />
                                 “Tangible Time” is the default for logging time using the timer at
                                 the top of the app. It represents all work done on assigned action
-                                items <br />
+                                items
+                                {' '}
+                                <br />
                                 and is what counts towards a person’s weekly volunteer time
                                 commitment. The only way for a volunteer to log Tangible Time is by
                                 using the clock
                                 <br />
-                                in/out timer. <br />
+                                in/out timer.
+                                {' '}
+                                <br />
                                 <br />
                                 Intangible Time is almost always used only by the management team.
                                 It is used for weekly Monday night management team calls, monthly
@@ -415,8 +417,11 @@ class Timelog extends Component {
                                 <br />
                                 team reviews and Welcome Team Calls, and non-action-item related
                                 research, classes, and other learning, meetings, etc. that benefit
-                                or relate to <br />
-                                the project but aren’t related to a specific action item on the{' '}
+                                or relate to
+                                {' '}
+                                <br />
+                                the project but aren’t related to a specific action item on the
+                                {' '}
                                 <a href="https://www.tinyurl.com/oc-os-wbs">
                                   One Community Work Breakdown Structure.
                                 </a>
@@ -424,7 +429,9 @@ class Timelog extends Component {
                                 <br />
                                 Intangible Time may also be logged by a volunteer when in the field
                                 or for other reasons when the timer wasn’t able to be used. In these
-                                cases, the <br />
+                                cases, the
+                                {' '}
+                                <br />
                                 volunteer will use this button to log time as “intangible time” and
                                 then request that an Admin manually change the log from Intangible
                                 to Tangible.
@@ -465,7 +472,7 @@ class Timelog extends Component {
                               <Button onClick={this.openInfo} color="secondary">
                                 Edit
                               </Button>
-                            ) : null}
+                              ) : null}
                           </ModalFooter>
                         </Modal>
                         <TimeEntryForm
@@ -582,7 +589,7 @@ class Timelog extends Component {
                       {this.state.activeTab === 0 ? (
                         <></>
                       ) : (
-                        <Form inline className="mb-2">
+                        <Form className="mb-2">
                           <FormGroup>
                             <Label for="projectSelected" className="mr-1 ml-1 mb-1 align-top">
                               Filter Entries by Project and Task:
@@ -593,14 +600,12 @@ class Timelog extends Component {
                               id="projectSelected"
                               value={this.state.projectsSelected}
                               title="Ctrl + Click to select multiple projects and tasks to filter."
-                              onChange={e =>
-                                this.setState({
-                                  projectsSelected: Array.from(
-                                    e.target.selectedOptions,
-                                    option => option.value,
-                                  ),
-                                })
-                              }
+                              onChange={(e) => this.setState({
+                                projectsSelected: Array.from(
+                                  e.target.selectedOptions,
+                                  (option) => option.value,
+                                ),
+                              })}
                               multiple
                             >
                               {projectOrTaskOptions}
@@ -617,7 +622,7 @@ class Timelog extends Component {
                           projectsSelected={this.state.projectsSelected}
                         />
                       )}
-                      <TabPane tabId={0}>{<TeamMemberTasks asUser={this.props.asUser} />}</TabPane>
+                      <TabPane tabId={0}><TeamMemberTasks asUser={this.props.asUser} /></TabPane>
                       <TabPane tabId={1}>{currentWeekEntries}</TabPane>
                       <TabPane tabId={2}>{lastWeekEntries}</TabPane>
                       <TabPane tabId={3}>{beforeLastEntries}</TabPane>
@@ -635,7 +640,7 @@ class Timelog extends Component {
   }
 }
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state) => ({
   auth: state.auth,
   userProfile: state.userProfile,
   timeEntries: state.timeEntries,
