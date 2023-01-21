@@ -88,14 +88,14 @@ export class WeeklySummary extends Component {
       ? this.state.dueDate
       : dueDateThisWeek;
     const dueDateLastWeek =
-      (weeklySummaries && weeklySummaries[1] && weeklySummaries[1].dueDate) ||
+      // (weeklySummaries && weeklySummaries[1] && weeklySummaries[1].dueDate) ||
       this.state.dueDateLastWeek;
     const dueDateBeforeLast =
-      (weeklySummaries && weeklySummaries[2] && weeklySummaries[2].dueDate) ||
+      // (weeklySummaries && weeklySummaries[2] && weeklySummaries[2].dueDate) ||
       this.state.dueDateBeforeLast;
     const dueDateThreeWeeksAgo =
-      (weeklySummaries && weeklySummaries[3] && weeklySummaries[3].dueDate) ||
-      this.state.dueDateBeforeLast;
+      // (weeklySummaries && weeklySummaries[3] && weeklySummaries[3].dueDate) ||
+      this.state.dueDateThreeWeeksAgo;
 
     this.setState({
       formElements: {
