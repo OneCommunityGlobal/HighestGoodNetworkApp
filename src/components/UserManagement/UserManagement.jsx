@@ -70,6 +70,7 @@ class UserManagement extends React.PureComponent {
             {this.popupElements()}
             <UserSearchPanel
               onSearch={this.onWildCardSearch}
+              searchText={this.state.wildCardSearchText}
               onActiveFiter={this.onActiveFiter}
               onNewUserClick={this.onNewUserClick}
             />
@@ -232,9 +233,12 @@ class UserManagement extends React.PureComponent {
    * reload user list and close user creation popup
    */
   userCreated = () => {
+    const text = this.state.wildCardSearchText;
     this.props.getAllUserProfile();
+    console.log('text:', text);
     this.setState({
       newUserPopupOpen: false,
+      wildCardSearchText: text,
     });
   };
 

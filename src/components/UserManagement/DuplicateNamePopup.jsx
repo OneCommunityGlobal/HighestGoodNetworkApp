@@ -10,8 +10,8 @@ const DuplicateNamePopup = React.memo(props => {
   };
 
   return (
-    <Modal isOpen={props.open} toggle={closePopup}>
-      <ModalHeader toggle={closePopup}>Duplicate Names</ModalHeader>
+    <Modal isOpen={props.open} toggle={() => props.popupClose()}>
+      <ModalHeader toggle={() => props.popupClose()}>Duplicate Names</ModalHeader>
       <ModalBody>
         <p>There is already a user with the same name.</p>
         <p>Do you wish to proceed and have duplicate names?</p>
