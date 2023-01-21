@@ -25,7 +25,7 @@ const DuplicateNamePopup = React.memo(props => {
           >
             Confirm
           </Button>
-          <Button onClick={() => props.onClose()}>Cancel</Button>
+          <Button onClick={() => props.popupClose()}>Cancel</Button>
         </ModalFooter>
       </ModalBody>
     </Modal>
