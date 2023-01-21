@@ -107,12 +107,13 @@ class Timelog extends Component {
     if (!this.props.match) return;
 
     if (
-      prevProps.match?.params?.userId !== this.props.match.params.userId
-      || prevProps.asUser !== this.props.asUser
+      prevProps.match?.params?.userId !== this.props.match.params.userId ||
+      prevProps.asUser !== this.props.asUser
     ) {
       this.setState(this.initialState);
 
-      const userId = this.props.match?.params?.userId || this.props.asUser || this.props.auth.user.userid;
+      const userId =
+        this.props.match?.params?.userId || this.props.asUser || this.props.auth.user.userid;
       await this.props.getUserProfile(userId);
 
       this.userProfile = this.props.userProfile;
@@ -179,9 +180,10 @@ class Timelog extends Component {
 
   handleSearch(e) {
     e.preventDefault();
-    const userId = this.props.match && this.props.match.params.userId
-      ? this.props.match.params.userId
-      : this.props.asUser || this.props.auth.user.userid;
+    const userId =
+      this.props.match && this.props.match.params.userId
+        ? this.props.match.params.userId
+        : this.props.asUser || this.props.auth.user.userid;
     this.props.getTimeEntriesForPeriod(userId, this.state.fromDate, this.state.toDate);
   }
 
@@ -206,9 +208,7 @@ class Timelog extends Component {
   }
 
   calculateTotalTime(data, isTangible) {
-    const filteredData = data.filter(
-      (entry) => entry.isTangible === isTangible,
-    );
+    const filteredData = data.filter(entry => entry.isTangible === isTangible);
 
     const reducer = (total, entry) => total + parseInt(entry.hours) + parseInt(entry.minutes) / 60;
     return filteredData.reduce(reducer, 0);
@@ -216,12 +216,12 @@ class Timelog extends Component {
 
   generateTimeEntries(data) {
     if (!this.state.projectsSelected.includes('all')) {
-      data = data.filter((entry) => this.state.projectsSelected.includes(entry.projectId));
+      data = data.filter(entry => this.state.projectsSelected.includes(entry.projectId));
     } else {
       this.state.currentWeekEffort = this.calculateTotalTime(data, true);
     }
 
-    return data.map((entry) => (
+    return data.map(entry => (
       <TimeEntry data={entry} displayYear={false} key={entry._id} userProfile={this.userProfile} />
     ));
   }
@@ -229,18 +229,16 @@ class Timelog extends Component {
   renderViewingTimeEntriesFrom() {
     if (this.state.activeTab === 0) {
       return <></>;
-    } 
-    else if (this.state.activeTab === 4) {
+    } else if (this.state.activeTab === 4) {
       return (
         <p className="ml-1">
           Viewing time Entries from <b>{this.state.fromDate}</b> to <b>{this.state.toDate}</b>
         </p>
       );
-    } 
-    else {
+    } else {
       return (
         <p className="ml-1">
-            Viewing time Entries from <b>{this.startOfWeek(this.state.activeTab - 1)}</b> to{' '}
+          Viewing time Entries from <b>{this.startOfWeek(this.state.activeTab - 1)}</b> to{' '}
           <b>{this.endOfWeek(this.state.activeTab - 1)}</b>
         </p>
       );
@@ -252,9 +250,10 @@ class Timelog extends Component {
     const lastWeekEntries = this.generateTimeEntries(this.props.timeEntries.weeks[1]);
     const beforeLastEntries = this.generateTimeEntries(this.props.timeEntries.weeks[2]);
     const periodEntries = this.generateTimeEntries(this.props.timeEntries.period);
-    const userId = this.props.match && this.props.match.params.userId
-      ? this.props.match.params.userId
-      : this.props.asUser || this.props.auth.user.userid;
+    const userId =
+      this.props.match && this.props.match.params.userId
+        ? this.props.match.params.userId
+        : this.props.asUser || this.props.auth.user.userid;
     const { role } = this.props.auth.user;
     const userPermissions = this.props.auth.user?.permissions?.frontPermissions;
 
@@ -265,11 +264,10 @@ class Timelog extends Component {
     if (!_.isEmpty(this.props.userProjects.projects)) {
       projects = this.props.userProjects.projects;
     }
-    const projectOrTaskOptions = projects.map((project) => (
+    const projectOrTaskOptions = projects.map(project => (
       <option value={project.projectId} key={project.projectId}>
         {' '}
-        {project.projectName}
-        {' '}
+        {project.projectName}{' '}
       </option>
     ));
     projectOrTaskOptions.unshift(
@@ -295,27 +293,23 @@ class Timelog extends Component {
 
     return (
       <div>
-        {
-          !this.props.isDashboard
-            ? (this.state.isTimeEntriesLoading ? (
-              'Loading...'
-            )
-            : (
-              <Container fluid>
-                <SummaryBar
-                  asUser={userId}
-                  toggleSubmitForm={() => this.showSummary(isOwner)}
-                  role={role}
-                  leaderData={leaderData}
-                />
-                <br />
-              </Container>
-            )
+        {!this.props.isDashboard ? (
+          this.state.isTimeEntriesLoading ? (
+            'Loading...'
+          ) : (
+            <Container fluid>
+              <SummaryBar
+                asUser={userId}
+                toggleSubmitForm={() => this.showSummary(isOwner)}
+                role={role}
+                leaderData={leaderData}
+              />
+              <br />
+            </Container>
           )
-          : (
-            ''
-          )
-        }
+        ) : (
+          ''
+        )}
         {this.state.isTimeEntriesLoading ? (
           <Loading />
         ) : (
@@ -346,9 +340,10 @@ class Timelog extends Component {
                             isActive={this.props.userProfile.isActive}
                             user={this.props.userProfile}
                             onClick={() => {
-                              const userId = this.props.match?.params?.userId
-                                || this.props.asUser
-                                || this.props.auth.user.userid;
+                              const userId =
+                                this.props.match?.params?.userId ||
+                                this.props.asUser ||
+                                this.props.auth.user.userid;
                               this.props.updateUserProfile(userId, {
                                 ...this.props.userProfile,
                                 isActive: !this.props.userProfile.isActive,
@@ -361,9 +356,9 @@ class Timelog extends Component {
                           />
                           <ProfileNavDot
                             userId={
-                              this.props.match?.params?.userId
-                              || this.props.asUser
-                              || this.props.auth.user.userid
+                              this.props.match?.params?.userId ||
+                              this.props.asUser ||
+                              this.props.auth.user.userid
                             }
                           />
                         </CardTitle>
@@ -388,8 +383,7 @@ class Timelog extends Component {
                               </Button>
                               <ReactTooltip id="timeEntryTip" place="bottom" effect="solid">
                                 Clicking this button only allows for “Intangible Time” to be added
-                                to your time log.
-                                {' '}
+                                to your time log.{' '}
                                 <u>
                                   You can manually log Intangible Time but it doesn’t
                                   {' '}
@@ -472,7 +466,7 @@ class Timelog extends Component {
                               <Button onClick={this.openInfo} color="secondary">
                                 Edit
                               </Button>
-                              ) : null}
+                            ) : null}
                           </ModalFooter>
                         </Modal>
                         <TimeEntryForm
@@ -600,12 +594,14 @@ class Timelog extends Component {
                               id="projectSelected"
                               value={this.state.projectsSelected}
                               title="Ctrl + Click to select multiple projects and tasks to filter."
-                              onChange={(e) => this.setState({
-                                projectsSelected: Array.from(
-                                  e.target.selectedOptions,
-                                  (option) => option.value,
-                                ),
-                              })}
+                              onChange={e =>
+                                this.setState({
+                                  projectsSelected: Array.from(
+                                    e.target.selectedOptions,
+                                    option => option.value,
+                                  ),
+                                })
+                              }
                               multiple
                             >
                               {projectOrTaskOptions}
@@ -622,7 +618,9 @@ class Timelog extends Component {
                           projectsSelected={this.state.projectsSelected}
                         />
                       )}
-                      <TabPane tabId={0}><TeamMemberTasks asUser={this.props.asUser} /></TabPane>
+                      <TabPane tabId={0}>
+                        <TeamMemberTasks asUser={this.props.asUser} />
+                      </TabPane>
                       <TabPane tabId={1}>{currentWeekEntries}</TabPane>
                       <TabPane tabId={2}>{lastWeekEntries}</TabPane>
                       <TabPane tabId={3}>{beforeLastEntries}</TabPane>
@@ -640,7 +638,7 @@ class Timelog extends Component {
   }
 }
 
-const mapStateToProps = (state) => ({
+const mapStateToProps = state => ({
   auth: state.auth,
   userProfile: state.userProfile,
   timeEntries: state.timeEntries,
