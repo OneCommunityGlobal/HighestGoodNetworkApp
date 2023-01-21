@@ -40,7 +40,7 @@ export class WeeklySummary extends Component {
     formElements: {
       summary: '',
       summaryLastWeek: '',
-      summaryBeforeLast: '',
+      summaryTwoWeeksAgo: '',
       summaryThreeWeeksAgo: '',
       mediaUrl: '',
       weeklySummariesCount: 0,
@@ -77,7 +77,7 @@ export class WeeklySummary extends Component {
     const summary = (weeklySummaries && weeklySummaries[0] && weeklySummaries[0].summary) || '';
     const summaryLastWeek =
       (weeklySummaries && weeklySummaries[1] && weeklySummaries[1].summary) || '';
-    const summaryBeforeLast =
+    const summaryTwoWeeksAgo =
       (weeklySummaries && weeklySummaries[2] && weeklySummaries[2].summary) || '';
     const summaryThreeWeeksAgo =
       (weeklySummaries && weeklySummaries[3] && weeklySummaries[3].summary) || '';
@@ -101,7 +101,7 @@ export class WeeklySummary extends Component {
       formElements: {
         summary,
         summaryLastWeek,
-        summaryBeforeLast,
+        summaryTwoWeeksAgo,
         summaryThreeWeeksAgo,
         mediaUrl: mediaUrl || '',
         weeklySummariesCount: weeklySummariesCount || 0,
@@ -170,7 +170,7 @@ export class WeeklySummary extends Component {
       .allow('')
       .regex(this.regexPattern)
       .label('Minimum 50 words'),
-    summaryBeforeLast: Joi.string()
+    summaryTwoWeeksAgo: Joi.string()
       .allow('')
       .regex(this.regexPattern)
       .label('Minimum 50 words'),
@@ -264,7 +264,7 @@ export class WeeklySummary extends Component {
         { summary: this.state.formElements.summary, dueDate: this.state.dueDate },
         { summary: this.state.formElements.summaryLastWeek, dueDate: this.state.dueDateLastWeek },
         {
-          summary: this.state.formElements.summaryBeforeLast,
+          summary: this.state.formElements.summaryTwoWeeksAgo,
           dueDate: this.state.dueDateBeforeLast,
         },
         {
@@ -319,7 +319,7 @@ export class WeeklySummary extends Component {
       summaryLastWeek: this.doesDateBelongToWeek(dueDateLastWeek, 1)
         ? 'Last Week'
         : moment(dueDateLastWeek).format('YYYY-MMM-DD'),
-      summaryBeforeLast: this.doesDateBelongToWeek(dueDateBeforeLast, 2)
+      summaryTwoWeeksAgo: this.doesDateBelongToWeek(dueDateBeforeLast, 2)
         ? 'Two weeks ago'
         : moment(dueDateBeforeLast).format('YYYY-MMM-DD'),
       summaryThreeWeeksAgo: this.doesDateBelongToWeek(dueDateBeforeLast, 3)
@@ -411,7 +411,7 @@ export class WeeklySummary extends Component {
                       </FormGroup>
                       {(errors.summary ||
                         errors.summaryLastWeek ||
-                        errors.summaryBeforeLast ||
+                        errors.summaryTwoWeeksAgo ||
                         errors.summaryThreeWeeksAgo) && (
                         <Alert color="danger">
                           The summary must contain a minimum of 50 words.
