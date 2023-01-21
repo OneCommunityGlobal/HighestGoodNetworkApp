@@ -3,7 +3,7 @@ import * as d3 from 'd3/dist/d3.min'
 import {Button, Modal} from 'react-bootstrap'
 import './PeopleReport/PeopleReport.css';
 
-const InfringmentsViz = ({infringments, fromDate, toDate}) =>{
+const InfringementsViz = ({infringements, fromDate, toDate}) =>{
   const [show, setShow] = React.useState(false)
   const [modalShow, setModalShow] = React.useState(false)
   const [focusedInf, setFocusedInf] = React.useState({})
@@ -192,21 +192,21 @@ const InfringmentsViz = ({infringments, fromDate, toDate}) =>{
         let value = []
         let maxSquareCount = 0
 
-        //aggregate infringments
-        for (let i = 0; i < infringments.length; i++) {
-          if (infringments[i].date in dict){
-            dict[infringments[i].date].ids.push(infringments[i]._id)
-            dict[infringments[i].date].count+=1
-            dict[infringments[i].date].des.push(infringments[i].description)
+        //aggregate infringements
+        for (let i = 0; i < infringements.length; i++) {
+          if (infringements[i].date in dict){
+            dict[infringements[i].date].ids.push(infringements[i]._id)
+            dict[infringements[i].date].count+=1
+            dict[infringements[i].date].des.push(infringements[i].description)
           }else{
-            dict[infringments[i].date]={ids:[infringments[i]._id],count:1,des:[infringments[i].description]}
+            dict[infringements[i].date]={ids:[infringements[i]._id],count:1,des:[infringements[i].description]}
           }
         }
 
-        //filter infringments by date
+        //filter infringements by date
         if ((fromDate == '') || (toDate == '')){ //condition no longer needed
           for (var key in dict) {
-              value.push({date: d3.timeParse("%Y-%m-%d")(key.toString()),des:dict[key].des,count:dict[key].count,type: 'Infringment',ids: dict[key].ids})
+              value.push({date: d3.timeParse("%Y-%m-%d")(key.toString()),des:dict[key].des,count:dict[key].count,type: 'Infringement',ids: dict[key].ids})
               if(dict[key].count > maxSquareCount){
                 maxSquareCount = dict[key].count 
               }
@@ -216,7 +216,7 @@ const InfringmentsViz = ({infringments, fromDate, toDate}) =>{
           let counter = 0
           for (var key in dict) {
             if((Date.parse(fromDate) <= Date.parse(key.toString())) & (Date.parse(key.toString()) <= Date.parse(toDate))){
-              value.push({id: counter,date: d3.timeParse("%Y-%m-%d")(key.toString()),des:dict[key].des,count:dict[key].count,type: 'Infringment',ids: dict[key].ids})
+              value.push({id: counter,date: d3.timeParse("%Y-%m-%d")(key.toString()),des:dict[key].des,count:dict[key].count,type: 'Infringement',ids: dict[key].ids})
               if(dict[key].count > maxSquareCount){
                 maxSquareCount = dict[key].count 
               }
@@ -233,12 +233,12 @@ const InfringmentsViz = ({infringments, fromDate, toDate}) =>{
 
   return (
     <div>
-          <Button onClick={() => setShow(!show)} aria-expanded={show}>Show Infringments Graph</Button>
+          <Button onClick={() => setShow(!show)} aria-expanded={show}>Show Infringements Graph</Button>
           <div id="infplot"></div>
 
           <Modal size="lg" show={modalShow} onHide={handleModalClose}>
             <Modal.Header closeButton>
-              <Modal.Title>{focusedInf.date ? focusedInf.date.toString() : "Infringment"}</Modal.Title>
+              <Modal.Title>{focusedInf.date ? focusedInf.date.toString() : "Infringement"}</Modal.Title>
             </Modal.Header>
             <Modal.Body>
               <table id="inf">
@@ -269,4 +269,4 @@ const InfringmentsViz = ({infringments, fromDate, toDate}) =>{
 
 }
 
-export default InfringmentsViz
+export default InfringementsViz

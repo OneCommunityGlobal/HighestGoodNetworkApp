@@ -76,7 +76,7 @@ describe('user profile page', () => {
 
     it('should render multiple bluesquares', () => {
       expect(screen.getAllByRole('button', { name: /\d\d\d\d-\d\d-\d\d/i })).toHaveLength(
-        userProfileMock.infringments.length,
+        userProfileMock.infringements.length,
       );
     });
     it('should render a email field', () => {

@@ -2,7 +2,7 @@ export const getPeopleReportData = (state) => ({
   auth: state.auth,
   userProfile: state.userProfile,
   userTask: state.userTask,
-  infringments: state.userProfile.infringments,
+  infringements: state.userProfile.infringements,
   user: _.get(state, 'user', {}),
   timeEntries: state.timeEntries,
   userProjects: state.userProjects,

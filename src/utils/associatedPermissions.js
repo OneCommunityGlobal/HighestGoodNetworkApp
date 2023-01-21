@@ -47,7 +47,7 @@ const associatedPermissions =
       seePermissionsManagement: ['']
     }
 
-export const commonBackEndPermissions = ['infringmentAuthorizer','getTimeZoneAPIKey','checkLeadTeamOfXplus']
+export const commonBackEndPermissions = ['infringementAuthorizer','getTimeZoneAPIKey','checkLeadTeamOfXplus']
 
 // receive a permission front-end [key] => return the array back-end, but in form of strings, putting a flat.
 

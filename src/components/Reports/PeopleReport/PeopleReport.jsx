@@ -12,7 +12,7 @@ import moment from 'moment'
 import "react-input-range/lib/css/index.css"
 import Collapse from 'react-bootstrap/Collapse'
 import { getTimeEntriesForPeriod } from '../../../actions/timeEntries'
-import InfringmentsViz from '../InfringmentsViz'
+import InfringementsViz from '../InfringementsViz'
 import TimeEntriesViz from '../TimeEntriesViz'
 import PeopleTableDetails from '../PeopleTableDetails'
 import { ReportPage } from "../sharedComponents/ReportPage";
@@ -28,7 +28,7 @@ class PeopleReport extends Component {
       userProjects: {},
       userId: '',
       isLoading: true,
-      infringments: {},
+      infringements: {},
       isAssigned: "",
       isActive: "",
       priority: '',
@@ -81,7 +81,7 @@ class PeopleReport extends Component {
         },
         allClassification:
           [...Array.from(new Set(this.props.userTask.map((item) => item.classification)))],
-        infringments: this.props.userProfile.infringments,
+        infringements: this.props.userProfile.infringements,
         timeEntries: {
           ...this.props.timeEntries,
         },
@@ -231,7 +231,7 @@ class PeopleReport extends Component {
   render() {
     const {
       userProfile,
-      infringments,
+      infringements,
       userTask,
       userProjects,
       isActive,
@@ -301,7 +301,7 @@ class PeopleReport extends Component {
         </DropdownButton>
       )
     };
-    const ShowInfringmentsCollapse = props => {
+    const ShowInfringementsCollapse = props => {
       const [open, setOpen] = useState(false);
       return (
         <div>
@@ -334,17 +334,17 @@ class PeopleReport extends Component {
       )
     }
 
-    const Infringments = props => {
+    const Infringements = props => {
       let BlueSquare = []
       let dict = {}
 
-      //aggregate infringments
-      for (let i = 0; i < props.infringments.length; i++) {
-        if (props.infringments[i].date in dict) {
-          dict[props.infringments[i].date].count += 1
-          dict[props.infringments[i].date].des.push(props.infringments[i].description)
+      //aggregate infringements
+      for (let i = 0; i < props.infringements.length; i++) {
+        if (props.infringements[i].date in dict) {
+          dict[props.infringements[i].date].count += 1
+          dict[props.infringements[i].date].des.push(props.infringements[i].description)
         } else {
-          dict[props.infringments[i].date] = { count: 1, des: [props.infringments[i].description] }
+          dict[props.infringements[i].date] = { count: 1, des: [props.infringements[i].description] }
         }
       }
 
@@ -354,8 +354,8 @@ class PeopleReport extends Component {
         startdateStr = startdate.toString()
 
       }
-      if (props.infringments.length > 0) {
-        BlueSquare = props.infringments.map((current, index) => (
+      if (props.infringements.length > 0) {
+        BlueSquare = props.infringements.map((current, index) => (
           <tr className="teams__tr">
             <td>{index + 1}
             </td>
@@ -493,7 +493,7 @@ class PeopleReport extends Component {
             <p>Hours Logged This Week</p>
           </ReportPage.ReportBlock>
           <ReportPage.ReportBlock firstColor='#64b7ff' secondColor='#928aef' className='people-report-time-log-block'>
-            <h3>{infringments.length}</h3>
+            <h3>{infringements.length}</h3>
             <p>Blue squares</p>
           </ReportPage.ReportBlock>
           <ReportPage.ReportBlock firstColor='#ffdb56' secondColor='#ff9145' className='people-report-time-log-block'>
@@ -515,9 +515,9 @@ class PeopleReport extends Component {
 
             <table>
               <UserProject userProjects={userProjects} />
-              <Infringments infringments={infringments} fromDate={fromDate} toDate={toDate} timeEntries={timeEntries} />
+              <Infringements infringements={infringements} fromDate={fromDate} toDate={toDate} timeEntries={timeEntries} />
               <div className='visualizationDiv'>
-                <InfringmentsViz infringments={infringments} fromDate={fromDate} toDate={toDate} />
+                <InfringementsViz infringements={infringements} fromDate={fromDate} toDate={toDate} />
               </div>
               <div className='visualizationDiv'>
                 <TimeEntriesViz timeEntries={timeEntries} fromDate={fromDate} toDate={toDate} />
