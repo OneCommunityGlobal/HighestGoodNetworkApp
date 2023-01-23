@@ -11,6 +11,7 @@ import {
   BsStopCircleFill,
   BsPauseCircleFill,
 } from 'react-icons/bs';
+import { AiFillMinusCircle } from 'react-icons/ai';
 import { ENDPOINTS } from '../../utils/URL';
 import TimeEntryForm from '../Timelog/TimeEntryForm';
 import { useSelector } from 'react-redux';
@@ -121,6 +122,11 @@ export const NewTimer = () => {
           className="btn-white transition-color"
           fontSize="1.5rem"
           onClick={() => handleAddGoal(1000 * 60 * 15)}
+        />
+        <AiFillMinusCircle
+          className="btn-white transition-color"
+          fontSize="1.7rem"
+          onClick={() => handleRemoveGoal(1000 * 60 * 15)}
         />
         <span>15 min</span>
       </div>
