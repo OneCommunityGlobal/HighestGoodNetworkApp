@@ -71,7 +71,7 @@ class Timelog extends Component {
     };
     this.userProfile = this.props.userProfile;
   }
-
+  
   initialState = {
     modal: false,
     summary: false,
@@ -209,7 +209,7 @@ class Timelog extends Component {
 
   calculateTotalTime(data, isTangible) {
     const filteredData = data.filter(entry => entry.isTangible === isTangible);
-
+    
     const reducer = (total, entry) => total + parseInt(entry.hours) + parseInt(entry.minutes) / 60;
     return filteredData.reduce(reducer, 0);
   }
@@ -217,8 +217,6 @@ class Timelog extends Component {
   generateTimeEntries(data) {
     if (!this.state.projectsSelected.includes('all')) {
       data = data.filter(entry => this.state.projectsSelected.includes(entry.projectId));
-    } else {
-      this.state.currentWeekEffort = this.calculateTotalTime(data, true);
     }
 
     return data.map(entry => (
@@ -247,6 +245,7 @@ class Timelog extends Component {
 
   render() {
     const currentWeekEntries = this.generateTimeEntries(this.props.timeEntries.weeks[0]);
+    this.state.currentWeekEffort = this.calculateTotalTime(this.props.timeEntries.weeks[0], true);
     const lastWeekEntries = this.generateTimeEntries(this.props.timeEntries.weeks[1]);
     const beforeLastEntries = this.generateTimeEntries(this.props.timeEntries.weeks[2]);
     const periodEntries = this.generateTimeEntries(this.props.timeEntries.period);
