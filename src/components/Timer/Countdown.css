@@ -18,19 +18,31 @@
   gap: 0.5rem;
 }
 
+.content .time {
+  position: relative;
+}
+
 .content .time-value {
   font-weight: bolder;
   font-size: 2.5rem;
-  line-height: 1;
 }
 
-.content .labels {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+.content .label {
   font-size: 0.7rem;
   text-transform: uppercase;
   font-weight: bolder;
+}
+
+.label.hours {
+  position: absolute;
+  bottom: 0px;
+  left: 5px;
+}
+
+.label.mins {
+  position: absolute;
+  bottom: 0px;
+  right: -1px;
 }
 
 .timer .bottom {

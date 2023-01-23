@@ -182,12 +182,10 @@ const Countdown = ({
           })}
         >
           <div className="content">
-            <div>
+            <div className="time">
               <div className="time-value">{moment.utc(time).format('HH:mm')}</div>
-              <div className="labels">
-                <span>hours</span>
-                <span>minutes</span>
-              </div>
+              <span className="label hours">hours</span>
+              <span className="label mins">minutes</span>
             </div>
             {running ? (
               <div className="goal">
