@@ -504,7 +504,7 @@ const TimeEntryForm = props => {
     }
 
     if (isOpen) toggle();
-    if (fromTimer) clearForm();
+    if (fromTimer) clearAll();
     setReminder(initialReminder);
 
     if (!props.edit) setInputs(initialFormValues);
@@ -566,7 +566,8 @@ const TimeEntryForm = props => {
    * Resets the project/task and notes fields of the form without resetting hours and minutes.
    * @param {*} closed If true, the form closes after being cleared.
    */
-  const clearForm = closed => {
+  const clearAll = closed => {
+    resetTimer();
     const newInputs = {
       ...inputs,
       notes: '',
@@ -794,8 +795,8 @@ const TimeEntryForm = props => {
         </ModalBody>
         <ModalFooter>
           <small className="mr-auto">* All the fields are required</small>
-          <Button onClick={clearForm} color="danger">
-            Clear Form
+          <Button onClick={clearAll} color="danger">
+            Clear All
           </Button>
           {/* <Button color="primary" disabled={isSubmitting || (data.hours === inputs.hours && data.minutes === inputs.minutes && data.notes === inputs.notes)} onClick={handleSubmit}> */}
           <Button color="primary" onClick={handleSubmit}>
