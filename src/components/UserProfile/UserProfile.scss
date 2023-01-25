@@ -212,15 +212,18 @@
   }
 
   .profile-functions-list:nth-child(1n){
+    margin-top: 16px;
     border-top: 2px solid #0275d8;
   }
 
   .list-item {
     display: flex;
-    padding: 12px 0;
+    margin: 4px 0;
+    padding: 8px 0;
     border-bottom: 1px solid #212529;
 
     font-weight: bold;
+    cursor: pointer;
   }
 
   .whoSection {
