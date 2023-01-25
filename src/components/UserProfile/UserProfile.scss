@@ -1,3 +1,7 @@
+.desktop-profile-page {
+  z-index: -100;
+}
+
 .profileContainer {
   display: flex;
   flex-direction: row;
@@ -125,19 +129,7 @@
   font-weight: 600;
   color: #6c757d;
   cursor: pointer;
-  // margin-left: 5%;
-
-  // &:hover {
-  //   text-decoration: none;
-  // }
 }
-
-// .profileEditButtonContainer {
-//   position: absolute;
-//   display: flex;
-//   right: 1%;
-//   justify-content: flex-end;
-// }
 
 .btn-bottom {
   margin-top: 2px;
@@ -188,9 +180,47 @@
   margin: 5px;
 }
 
-@media only screen and (max-width: 750px) {
+.profile-functions-tablet {
+    display: none;
+}
+
+@media only screen and (max-width: 767px) {
   .profileContainer {
     justify-content: space-around;
+  }
+
+  .profile-work {
+    padding: 0;
+
+    p {
+      margin: 0;
+    }
+  }
+
+  .profile-functions-desktop {
+    display: none;
+  }
+
+  .profile-functions-tablet {
+    display: block;
+  }
+
+  .profile-functions-list {
+    display: flex;
+    flex-direction: column;
+    padding: 0;
+  }
+
+  .profile-functions-list:nth-child(1n){
+    border-top: 2px solid #0275d8;
+  }
+
+  .list-item {
+    display: flex;
+    padding: 12px 0;
+    border-bottom: 1px solid #212529;
+
+    font-weight: bold;
   }
 
   .whoSection {

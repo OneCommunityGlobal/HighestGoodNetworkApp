@@ -6,6 +6,7 @@ import {
   Container,
   TabContent,
   TabPane,
+  List,
   Nav,
   NavItem,
   NavLink,
@@ -403,7 +404,7 @@ const UserProfile = props => {
   }
 
   return (
-    <div>
+    <div className="desktop-profile-page">
       <ActiveInactiveConfirmationPopup
         isActive={userProfile.isActive}
         fullName={userProfile.firstName + ' ' + userProfile.lastName}
@@ -544,7 +545,7 @@ const UserProfile = props => {
               />
             </div>
           </Col>
-          <Col md="8">
+          <Col md="8" className="profile-functions-desktop">
             <div className="profile-tabs">
               <Nav tabs>
                 <NavItem>
@@ -665,6 +666,25 @@ const UserProfile = props => {
                 />
               </TabPane>
             </TabContent>
+          </Col>
+          <Col md="8" className="profile-functions-tablet">
+              <List className="profile-functions-list">
+                <li className="list-item">
+                  Basic Information
+                </li>
+                <li className="list-item">
+                  Volunteering Times
+                </li>
+                <li className="list-item">
+                  Teams
+                </li>
+                <li className="list-item">
+                  Projects
+                </li>
+                <li className="list-item">
+                  Edit History
+                </li>
+              </List>
           </Col>
         </Row>
         <Row>
