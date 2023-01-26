@@ -573,6 +573,15 @@ class AddUserProfile extends Component {
             if (res.data.warning) {
               toast.warn(res.data.warning);
             } else {
+              if (
+                this.checkIfDuplicate(userData.firstName, userData.lastName) &&
+                !allowsDuplicateName
+              ) {
+                this.setState({
+                  popupOpen: true,
+                });
+                return;
+              }
               toast.success('User profile created.');
             }
             this.props.userCreated();
