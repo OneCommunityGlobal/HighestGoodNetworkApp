@@ -103,6 +103,30 @@ function RolePermissions(props) {
     }
   };
 
+  const renderAddDeleteBtn = permission => {
+    if (props.userRole === 'Owner') {
+      return permissions.includes(permission) ? (
+        <Button
+          color="danger"
+          onClick={() => {
+            onRemovePermission(permission), setChanged(true);
+          }}
+        >
+          Delete
+        </Button>
+      ) : (
+        <Button
+          color="success"
+          onClick={() => {
+            onAddPermission(permission), setChanged(true);
+          }}
+        >
+          Add
+        </Button>
+      );
+    }
+  };
+
   return (
     <>
       {changed ? (
@@ -116,21 +140,25 @@ function RolePermissions(props) {
         <div className="user-role-tab_role-name-container">
           <div className="role-name-group">
             <h1 className="user-role-tab_h1">Role Name: {roleName}</h1>
-            <FontAwesomeIcon
-              icon={faEdit}
-              size="lg"
-              className="user-role-tab_icon edit-icon"
-              onClick={toggleEditRoleNameModal}
-            />
+            {props.userRole === 'Owner' && (
+              <FontAwesomeIcon
+                icon={faEdit}
+                size="lg"
+                className="user-role-tab_icon edit-icon"
+                onClick={toggleEditRoleNameModal}
+              />
+            )}
           </div>
-          <div className="role_name-btn-group">
-            <Button className="btn_save" color="success" onClick={() => updateInfo()}>
-              Save
-            </Button>
-            <Button color="danger" onClick={toggleDeleteRoleModal}>
-              Delete Role
-            </Button>
-          </div>
+          {props.userRole === 'Owner' && (
+            <div className="role_name-btn-group">
+              <Button className="btn_save" color="success" onClick={() => updateInfo()}>
+                Save
+              </Button>
+              <Button color="danger" onClick={toggleDeleteRoleModal}>
+                Delete Role
+              </Button>
+            </div>
+          )}
           <Modal isOpen={editRoleNameModal} toggle={toggleEditRoleNameModal}>
             <ModalHeader>Edit Role Name</ModalHeader>
             <ModalBody>
@@ -172,6 +200,7 @@ function RolePermissions(props) {
                 onClick={() => {
                   onRemovePermission(permission), setChanged(true);
                 }}
+                disabled={props.userRole !== 'Owner' ? true : false}
               >
                 Delete
               </Button>
@@ -181,6 +210,7 @@ function RolePermissions(props) {
                 onClick={() => {
                   onAddPermission(permission), setChanged(true);
                 }}
+                disabled={props.userRole !== 'Owner' ? true : false}
               >
                 Add
               </Button>

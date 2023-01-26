@@ -5,11 +5,11 @@ import CreateNewRolePopup from './NewRolePopUp';
 import './PermissionsManagement.css';
 import { connect } from 'react-redux';
 import { getAllRoles } from '../../actions/role';
-import { updateUserProfile } from 'actions/userProfile';
+import { updateUserProfile, getUserProfile } from 'actions/userProfile';
 import { getAllUserProfile } from 'actions/userManagement';
 import UserPermissionsPopUp from './UserPermissionsPopUp';
 
-const PermissionsManagement = ({ getAllRoles, roles }) => {
+const PermissionsManagement = ({ getAllRoles, roles, auth, getUserRole, userProfile }) => {
   const [isNewRolePopUpOpen, setIsNewRolePopUpOpen] = useState(false);
   const [isUserPermissionsOpen, setIsUserPermissionsOpen] = useState(false);
 
@@ -23,6 +23,7 @@ const PermissionsManagement = ({ getAllRoles, roles }) => {
 
   useEffect(() => {
     getAllRoles();
+    getUserRole(auth?.user.userid);
   }, []);
 
   const togglePopUpUserPermissions = () => {
@@ -47,24 +48,28 @@ const PermissionsManagement = ({ getAllRoles, roles }) => {
             );
           })}
         </div>
-        <Button
-          className="permissions-management__button"
-          type="button"
-          color="success"
-          onClick={() => togglePopUpNewRole()}
-        >
-          Add New Role
-        </Button>
-        <Button
-          color="primary"
-          className="permissions-management__button"
-          type="button"
-          onClick={() => {
-            togglePopUpUserPermissions();
-          }}
-        >
-          Manage User Permissions
-        </Button>
+        {userProfile.role === 'Owner' && (
+          <>
+            <Button
+              className="permissions-management__button"
+              type="button"
+              color="success"
+              onClick={() => togglePopUpNewRole()}
+            >
+              Add New Role
+            </Button>
+            <Button
+              color="primary"
+              className="permissions-management__button"
+              type="button"
+              onClick={() => {
+                togglePopUpUserPermissions();
+              }}
+            >
+              Manage User Permissions
+            </Button>
+          </>
+        )}
       </div>
       <div className="permissions-management--flex">
         <Modal isOpen={isNewRolePopUpOpen} toggle={togglePopUpNewRole} id="modal-content__new-role">
@@ -102,12 +107,15 @@ const PermissionsManagement = ({ getAllRoles, roles }) => {
 // export default PermissionsManagement;
 const mapStateToProps = state => ({
   roles: state.role.roles,
+  auth: state.auth,
+  userProfile: state.userProfile,
 });
 
 const mapDispatchToProps = dispatch => ({
   getAllRoles: () => dispatch(getAllRoles()),
   updateUserProfile: data => dispatch(updateUserProfile(data)),
   getAllUsers: () => dispatch(getAllUserProfile),
+  getUserRole: id => dispatch(getUserProfile(id)),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(PermissionsManagement);

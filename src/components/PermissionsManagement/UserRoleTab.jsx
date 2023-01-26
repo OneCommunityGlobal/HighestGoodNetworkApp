@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import RolePermissions from './RolePermissions';
 import { connect } from 'react-redux';
 import './UserRoleTab.css';
+import { getUserProfile } from 'actions/userProfile';
 
 export const permissionLabel = {
   seeWeeklySummaryReports: 'See Weekly Summary Reports Tab',
@@ -47,6 +48,10 @@ export const permissionLabel = {
 };
 
 const UserRoleTab = props => {
+  useEffect(() => {
+    props.getUserRole(props.auth?.user.userid);
+  }, []);
+
   const roleNames = props.roles.map(role => role.roleName);
   const userRoleParamsURL = props.match.params.userRole;
   const roleIndex = roleNames.findIndex(
@@ -79,6 +84,7 @@ const UserRoleTab = props => {
         Back
       </a>
       <RolePermissions
+        userRole={props.userProfile.role}
         role={roleName}
         roleId={roleId}
         header={`${roleName} Permissions:`}
@@ -90,10 +96,15 @@ const UserRoleTab = props => {
 };
 
 // export default UserRoleTab;
-const mapStateToProps = state => ({ roles: state.role.roles });
+const mapStateToProps = state => ({
+  roles: state.role.roles,
+  auth: state.auth,
+  userProfile: state.userProfile,
+});
 
 const mapDispatchToProps = dispatch => ({
   getAllRoles: () => dispatch(getAllRoles()),
+  getUserRole: id => dispatch(getUserProfile(id)),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(UserRoleTab);
