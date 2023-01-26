@@ -48,7 +48,7 @@ const PermissionsManagement = ({ getAllRoles, roles, auth, getUserRole, userProf
             );
           })}
         </div>
-        {userProfile.role === 'Owner' && (
+        {userProfile?.role === 'Owner' && (
           <>
             <Button
               className="permissions-management__button"

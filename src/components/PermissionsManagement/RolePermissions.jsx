@@ -103,30 +103,6 @@ function RolePermissions(props) {
     }
   };
 
-  const renderAddDeleteBtn = permission => {
-    if (props.userRole === 'Owner') {
-      return permissions.includes(permission) ? (
-        <Button
-          color="danger"
-          onClick={() => {
-            onRemovePermission(permission), setChanged(true);
-          }}
-        >
-          Delete
-        </Button>
-      ) : (
-        <Button
-          color="success"
-          onClick={() => {
-            onAddPermission(permission), setChanged(true);
-          }}
-        >
-          Add
-        </Button>
-      );
-    }
-  };
-
   return (
     <>
       {changed ? (
@@ -140,7 +116,7 @@ function RolePermissions(props) {
         <div className="user-role-tab_role-name-container">
           <div className="role-name-group">
             <h1 className="user-role-tab_h1">Role Name: {roleName}</h1>
-            {props.userRole === 'Owner' && (
+            {props?.userRole === 'Owner' && (
               <FontAwesomeIcon
                 icon={faEdit}
                 size="lg"
@@ -149,7 +125,7 @@ function RolePermissions(props) {
               />
             )}
           </div>
-          {props.userRole === 'Owner' && (
+          {props?.userRole === 'Owner' && (
             <div className="role_name-btn-group">
               <Button className="btn_save" color="success" onClick={() => updateInfo()}>
                 Save
@@ -200,7 +176,7 @@ function RolePermissions(props) {
                 onClick={() => {
                   onRemovePermission(permission), setChanged(true);
                 }}
-                disabled={props.userRole !== 'Owner' ? true : false}
+                disabled={props?.userRole !== 'Owner' ? true : false}
               >
                 Delete
               </Button>
@@ -210,7 +186,7 @@ function RolePermissions(props) {
                 onClick={() => {
                   onAddPermission(permission), setChanged(true);
                 }}
-                disabled={props.userRole !== 'Owner' ? true : false}
+                disabled={props?.userRole !== 'Owner' ? true : false}
               >
                 Add
               </Button>
