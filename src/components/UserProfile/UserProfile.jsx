@@ -411,7 +411,7 @@ const UserProfile = props => {
   }
 
   return (
-    <div className="desktop-profile-page">
+    <div>
       <ActiveInactiveConfirmationPopup
         isActive={userProfile.isActive}
         fullName={userProfile.firstName + ' ' + userProfile.lastName}
@@ -735,12 +735,12 @@ const UserProfile = props => {
                                 }}
                                 className="btn btn-outline-danger mr-1 btn-bottom"
                               >
-                                Cancel
+                                X
                               </span>
                             </>
                           )}
                         <Button outline onClick={() => loadUserProfile()}>
-                          Refresh
+                          <i class="fa fa-refresh" aria-hidden="true"></i>
                         </Button>
                       </div>
                   </Row>
@@ -784,12 +784,12 @@ const UserProfile = props => {
                                 }}
                                 className="btn btn-outline-danger mr-1 btn-bottom"
                               >
-                                Cancel
+                                X
                               </span>
                             </>
                           )}
                         <Button outline onClick={() => loadUserProfile()}>
-                          Refresh
+                          <i class="fa fa-refresh" aria-hidden="true"></i>
                         </Button>
                       </div>
                   </Row>
@@ -834,12 +834,12 @@ const UserProfile = props => {
                                 }}
                                 className="btn btn-outline-danger mr-1 btn-bottom"
                               >
-                                Cancel
+                                X
                               </span>
                             </>
                           )}
                         <Button outline onClick={() => loadUserProfile()}>
-                          Refresh
+                          <i class="fa fa-refresh" aria-hidden="true"></i>
                         </Button>
                       </div>
                   </Row>
@@ -887,12 +887,12 @@ const UserProfile = props => {
                                 }}
                                 className="btn btn-outline-danger mr-1 btn-bottom"
                               >
-                                Cancel
+                                X
                               </span>
                             </>
                           )}
                         <Button outline onClick={() => loadUserProfile()}>
-                          Refresh
+                          <i class="fa fa-refresh" aria-hidden="true"></i>
                         </Button>
                       </div>
                   </Row>
@@ -914,7 +914,7 @@ const UserProfile = props => {
                   />
                 </ModalBody>
                 <ModalFooter>
-                  <Row>
+                  <Row >
                       <div className="profileEditButtonContainer">
                         {canEdit &&
                           (activeTab == '1' ||
@@ -936,18 +936,67 @@ const UserProfile = props => {
                                 }}
                                 className="btn btn-outline-danger mr-1 btn-bottom"
                               >
-                                Cancel
+                                X
                               </span>
                             </>
                           )}
                         <Button outline onClick={() => loadUserProfile()}>
-                          Refresh
+                          <i class="fa fa-refresh" aria-hidden="true"></i>
                         </Button>
                       </div>
                   </Row>
                 </ModalFooter>
               </Modal>
             </List>
+          </Col>
+        </Row>
+        <Row>
+          <Col md="4"></Col>
+          <Col md="8" className="desktop-panel">
+            <div className="profileEditButtonContainer">
+              {hasPermission(requestorRole, 'resetPasswordOthers', roles, userPermissions) &&
+                canEdit &&
+                !isUserSelf && (
+                  <ResetPasswordButton className="mr-1 btn-bottom" user={userProfile} />
+                )}
+              {isUserSelf &&
+                (activeTab == '1' ||
+                  hasPermission(requestorRole, 'editUserProfile', roles, userPermissions)) && (
+                  <Link to={`/updatepassword/${userProfile._id}`}>
+                    <Button className="mr-1 btn-bottom" color="primary">
+                      {' '}
+                      Update Password
+                    </Button>
+                  </Link>
+                )}
+              {canEdit &&
+                (activeTab == '1' ||
+                  hasPermission(requestorRole, 'editUserProfile', roles, userPermissions)) && (
+                  <>
+                    <SaveButton
+                      className="mr-1 btn-bottom"
+                      handleSubmit={handleSubmit}
+                      disabled={
+                        !formValid.firstName || !formValid.lastName || !formValid.email || !changed
+                      }
+                      userProfile={userProfile}
+                    />
+                    <span
+                      onClick={() => {
+                        setUserProfile(originalUserProfile);
+                        setTasks(originalTasks);
+                        setChanged(false);
+                      }}
+                      className="btn btn-outline-danger mr-1 btn-bottom"
+                    >
+                      Cancel
+                    </span>
+                  </>
+                )}
+              <Button outline onClick={() => loadUserProfile()}>
+                Refresh
+              </Button>
+            </div>
           </Col>
         </Row>
       </Container>
