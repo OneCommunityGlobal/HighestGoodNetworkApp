@@ -45,7 +45,7 @@ import hasPermission from 'utils/permissions';
 import ActiveInactiveConfirmationPopup from '../UserManagement/ActiveInactiveConfirmationPopup';
 import { updateUserStatus } from '../../actions/userManagement';
 import { UserStatus } from '../../utils/enums';
-import { faSleigh } from '@fortawesome/free-solid-svg-icons';
+import { faSleigh, faCamera } from '@fortawesome/free-solid-svg-icons';
 
 const UserProfile = props => {
   /* Constant values */
@@ -450,7 +450,7 @@ const UserProfile = props => {
                 className="profilePicture"
               />
               {canEdit ? (
-                <div className="file btn btn-lg btn-primary">
+                <div className="image-button file btn btn-lg btn-primary">
                   Change Photo
                   <Input
                     style={{ width: '100%', height: '100%', zIndex: '2' }}
@@ -676,9 +676,9 @@ const UserProfile = props => {
           </Col>
           <Col md="8" className="profile-functions-tablet">
             <List className="profile-functions-list">
-              <li className="list-item" onClick={() => toggle('Basic Information')}>
+              <Button className="list-button" onClick={() => toggle('Basic Information')} color="primary">
                 Basic Information
-              </li>
+              </Button>
               <Modal isOpen={menuModal === 'Basic Information'} toggle={toggle} fullscreen>
                 <ModalHeader toggle={toggle}>Basic Information</ModalHeader>
                 <ModalBody>
@@ -746,9 +746,9 @@ const UserProfile = props => {
                   </Row>
                 </ModalFooter>
               </Modal>
-              <li className="list-item" onClick={() => toggle('Volunteering Times')}>
+              <Button className="list-button" onClick={() => toggle('Volunteering Times')} color="secondary">
                 Volunteering Times
-              </li>
+              </Button>
               <Modal isOpen={menuModal === 'Volunteering Times'} toggle={toggle} fullscreen>
                 <ModalHeader toggle={toggle}>Volunteering Times</ModalHeader>
                 <ModalBody>
@@ -764,21 +764,6 @@ const UserProfile = props => {
                 <ModalFooter>
                   <Row>
                       <div className="profileEditButtonContainer">
-                        {hasPermission(requestorRole, 'resetPasswordOthers', roles, userPermissions) &&
-                          canEdit &&
-                          !isUserSelf && (
-                            <ResetPasswordButton className="mr-1 btn-bottom" user={userProfile} />
-                          )}
-                        {isUserSelf &&
-                          (activeTab == '1' ||
-                            hasPermission(requestorRole, 'editUserProfile', roles, userPermissions)) && (
-                            <Link to={`/updatepassword/${userProfile._id}`}>
-                              <Button className="mr-1 btn-bottom" color="primary">
-                                {' '}
-                                Update Password
-                              </Button>
-                            </Link>
-                          )}
                         {canEdit &&
                           (activeTab == '1' ||
                             hasPermission(requestorRole, 'editUserProfile', roles, userPermissions)) && (
@@ -810,9 +795,9 @@ const UserProfile = props => {
                   </Row>
                 </ModalFooter>
               </Modal>
-              <li className="list-item" onClick={() => toggle('Teams')}>
+              <Button className="list-button" onClick={() => toggle('Teams')} color="secondary">
                 Teams
-              </li>
+              </Button>
               <Modal isOpen={menuModal === 'Teams'} toggle={toggle} fullscreen>
                 <ModalHeader toggle={toggle}>Teams</ModalHeader>
                 <ModalBody>
@@ -829,21 +814,6 @@ const UserProfile = props => {
                 <ModalFooter>
                   <Row>
                       <div className="profileEditButtonContainer">
-                        {hasPermission(requestorRole, 'resetPasswordOthers', roles, userPermissions) &&
-                          canEdit &&
-                          !isUserSelf && (
-                            <ResetPasswordButton className="mr-1 btn-bottom" user={userProfile} />
-                          )}
-                        {isUserSelf &&
-                          (activeTab == '1' ||
-                            hasPermission(requestorRole, 'editUserProfile', roles, userPermissions)) && (
-                            <Link to={`/updatepassword/${userProfile._id}`}>
-                              <Button className="mr-1 btn-bottom" color="primary">
-                                {' '}
-                                Update Password
-                              </Button>
-                            </Link>
-                          )}
                         {canEdit &&
                           (activeTab == '1' ||
                             hasPermission(requestorRole, 'editUserProfile', roles, userPermissions)) && (
@@ -875,9 +845,9 @@ const UserProfile = props => {
                   </Row>
                 </ModalFooter>
               </Modal>
-              <li className="list-item" onClick={() => toggle('Projects')}>
+              <Button className="list-button" onClick={() => toggle('Projects')} color="secondary">
                 Projects
-              </li>
+              </Button>
               <Modal isOpen={menuModal === 'Projects'} toggle={toggle} fullscreen>
                 <ModalHeader toggle={toggle}>Projects</ModalHeader>
                 <ModalBody>
@@ -897,21 +867,6 @@ const UserProfile = props => {
                 <ModalFooter>
                   <Row>
                       <div className="profileEditButtonContainer">
-                        {hasPermission(requestorRole, 'resetPasswordOthers', roles, userPermissions) &&
-                          canEdit &&
-                          !isUserSelf && (
-                            <ResetPasswordButton className="mr-1 btn-bottom" user={userProfile} />
-                          )}
-                        {isUserSelf &&
-                          (activeTab == '1' ||
-                            hasPermission(requestorRole, 'editUserProfile', roles, userPermissions)) && (
-                            <Link to={`/updatepassword/${userProfile._id}`}>
-                              <Button className="mr-1 btn-bottom" color="primary">
-                                {' '}
-                                Update Password
-                              </Button>
-                            </Link>
-                          )}
                         {canEdit &&
                           (activeTab == '1' ||
                             hasPermission(requestorRole, 'editUserProfile', roles, userPermissions)) && (
@@ -943,9 +898,9 @@ const UserProfile = props => {
                   </Row>
                 </ModalFooter>
               </Modal>
-              <li className="list-item" onClick={() => toggle('Edit History')}>
+              <Button className="list-button" onClick={() => toggle('Edit History')} color="secondary">
                 Edit History
-              </li>
+              </Button>
               <Modal isOpen={menuModal === 'Edit History'} toggle={toggle} fullscreen>
                 <ModalHeader toggle={toggle}>Edit History</ModalHeader>
                 <ModalBody>
@@ -961,21 +916,6 @@ const UserProfile = props => {
                 <ModalFooter>
                   <Row>
                       <div className="profileEditButtonContainer">
-                        {hasPermission(requestorRole, 'resetPasswordOthers', roles, userPermissions) &&
-                          canEdit &&
-                          !isUserSelf && (
-                            <ResetPasswordButton className="mr-1 btn-bottom" user={userProfile} />
-                          )}
-                        {isUserSelf &&
-                          (activeTab == '1' ||
-                            hasPermission(requestorRole, 'editUserProfile', roles, userPermissions)) && (
-                            <Link to={`/updatepassword/${userProfile._id}`}>
-                              <Button className="mr-1 btn-bottom" color="primary">
-                                {' '}
-                                Update Password
-                              </Button>
-                            </Link>
-                          )}
                         {canEdit &&
                           (activeTab == '1' ||
                             hasPermission(requestorRole, 'editUserProfile', roles, userPermissions)) && (
