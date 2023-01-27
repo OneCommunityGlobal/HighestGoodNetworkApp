@@ -506,7 +506,7 @@ const EditTaskModal = props => {
                 </td>
               </tr>
               <tr>
-                <td scope="col">Classification</td>
+                <td scope="col">Category</td>
                 <td scope="col">
                   <select value={classification} onChange={e => setClassification(e.target.value)}>
                     <option value="Food">Food</option>
