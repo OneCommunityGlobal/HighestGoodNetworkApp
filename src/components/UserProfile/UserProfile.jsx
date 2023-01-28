@@ -301,6 +301,7 @@ const UserProfile = props => {
     }
     setShouldRefresh(true);
     setChanged(false);
+    window.location.reload();
   };
 
   const toggleInfoModal = () => {
