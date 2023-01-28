@@ -297,9 +297,15 @@ const SummaryBar = props => {
                     {weeklySummary || props.submittedSummary ? (
                       'You have submitted your weekly summary.'
                     ) : (
-                      <span className="summary-toggle" onClick={props.toggleSubmitForm}>
-                        You still need to complete the weekly summary. Click here to submit it.
-                      </span>
+                          matchUser ? (
+                            <span className="summary-toggle" onClick={props.toggleSubmitForm}>
+                            You still need to complete the weekly summary. Click here to submit it.
+                            </span>
+                          ) : (
+                            <span className="summary-toggle">
+                            You still need to complete the weekly summary. Click here to submit it.
+                            </span>
+                          )
                     )}
                   </font>
                 </div>
@@ -341,12 +347,12 @@ const SummaryBar = props => {
                   </div>
                 </Link> 
                 :
-                <Link>
+                <div>
                   <img className="sum_img" src={bluesquare_icon} alt="" />
                   <div className="redBackgroup">
                     <span>{infringements}</span>
                   </div>
-                </Link>
+                </div>
                 }
               </div>
               &nbsp;&nbsp;
