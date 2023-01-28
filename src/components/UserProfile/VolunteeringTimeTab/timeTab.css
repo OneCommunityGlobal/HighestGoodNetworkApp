@@ -1,0 +1,12 @@
+.row {
+  align-items: center;
+}
+
+.col-md-6 > label {
+  margin-bottom: 0;
+}
+
+.col-md-6 > p {
+  margin-bottom: 0;
+  padding: 8px 0;
+}

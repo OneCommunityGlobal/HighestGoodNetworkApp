@@ -5,6 +5,7 @@ import { capitalize } from 'lodash';
 import style from '../UserProfileEdit/ToggleSwitch/ToggleSwitch.module.scss';
 import { ENDPOINTS } from 'utils/URL';
 import axios from 'axios';
+import './timeTab.css';
 
 const StartDate = props => {
   if (!props.canEdit) {
@@ -287,6 +288,7 @@ const ViewTab = props => {
               type="number"
               id="intangibleHours"
               step=".01"
+              min="0"
               value={parseFloat(userProfile.totalIntangibleHrs)?.toFixed(2)}
               onChange={e => {
                 setUserProfile({
@@ -330,6 +332,7 @@ const ViewTab = props => {
                       type="number"
                       id={`${key}Hours`}
                       step=".01"
+                      min="0"
                       value={parseFloat(userProfile.hoursByCategory[key])?.toFixed(2)}
                       onChange={e => {
                         setUserProfile({
