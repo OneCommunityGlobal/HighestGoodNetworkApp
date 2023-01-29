@@ -90,40 +90,16 @@ const WeeklyCommitedHours = props => {
       type="number"
       name="weeklyComittedHours"
       id="weeklyComittedHours"
+      min="0"
       data-testid="weeklyCommittedHours"
       value={props.userProfile.weeklyComittedHours}
       onChange={e => {
-        props.setUserProfile({ ...props.userProfile, weeklyComittedHours: e.target.value });
+        props.setUserProfile({ ...props.userProfile, weeklyComittedHours: Number(e.target.value) });
         props.setChanged(true);
       }}
       placeholder="Weekly Committed Hours"
     />
   );
-};
-
-const TotalTangibleHours = props => {
-  //isUserAdmin is currently a value of Undefined. Therefore, !props.isUserAdmin is set to true all the time.
-  //Therefore, I have chosen to comment out the other return statement section as it is not being rendered.
-  /*
-  if (!props.isUserAdmin) {
-    return <p>{props.userProfile.totalTangibleHrs}</p>;
-  }
-  return (
-    <Input
-      type="number"
-      name="totalTangibleHours"
-      id="totalTangibleHours"
-      value={props.userProfile.totalTangibleHrs}
-      onChange={e => {
-        props.setUserProfile({ ...props.userProfile, totalTangibleHrs: e.target.value });
-        props.setChanged(true);
-      }}
-      placeholder="Total Tangible Time Logged"
-      invalid={!props.isUserAdmin}
-    />
-  );
-  */
-  return <p>{props.userProfile.totalTangibleHrs.toFixed(2)}</p>;
 };
 
 /**
@@ -137,17 +113,12 @@ const TotalTangibleHours = props => {
 const ViewTab = props => {
   const { userProfile, setUserProfile, setChanged, role, canEdit } = props;
   const [totalTangibleHoursThisWeek, setTotalTangibleHoursThisWeek] = useState(0);
-  const [totalIntangibleHours, setTotalIntangibleHours] = useState(0);
   const [totalTangibleHours, setTotalTangibleHours] = useState(0);
   const { hoursByCategory, totalIntangibleHrs } = userProfile;
 
   useEffect(() => {
     sumOfCategoryHours();
   }, [hoursByCategory]);
-
-  useEffect(() => {
-    setTotalIntangibleHours(totalIntangibleHrs);
-  }, [totalIntangibleHrs]);
 
   const calculateTotalHrsForPeriod = timeEntries => {
     let hours = { totalTangibleHrs: 0, totalIntangibleHrs: 0 };
@@ -201,7 +172,6 @@ const ViewTab = props => {
       .get(ENDPOINTS.TIME_ENTRIES_PERIOD(userProfile._id, createdDate, today))
       .then(res => {
         const timeEntries = res.data;
-        setTotalIntangibleHours(userProfile.totalIntangibleHrs.toFixed(2));
         sumOfCategoryHours();
       })
       .catch(err => {
@@ -209,11 +179,28 @@ const ViewTab = props => {
       });
   }, []);
 
+  const roundToTwo = num => {
+    return +(Math.round(num * 100) / 100);
+  };
+
+  const handleOnChangeHours = (e, key) => {
+    let value = e.target.value;
+    if (!value) value = 0;
+    setUserProfile({
+      ...userProfile,
+      hoursByCategory: {
+        ...userProfile.hoursByCategory,
+        [key]: Number(value),
+      },
+    });
+    setChanged(true);
+  };
+  console.log(hoursByCategory);
   return (
     <div data-testid="volunteering-time-tab">
-      <Row>
+      <Row className="volunteering-time-row">
         <Col md="6">
-          <Label>Start Date</Label>
+          <Label className="hours-label">Start Date</Label>
         </Col>
         <Col md="6">
           <StartDate
@@ -226,9 +213,9 @@ const ViewTab = props => {
         </Col>
       </Row>
 
-      <Row>
+      <Row className="volunteering-time-row">
         <Col md="6">
-          <Label>End Date</Label>
+          <Label className="hours-label">End Date</Label>
         </Col>
         <Col md="6">
           <EndDate
@@ -241,18 +228,18 @@ const ViewTab = props => {
         </Col>
       </Row>
 
-      <Row>
+      <Row className="volunteering-time-row">
         <Col md="6">
-          <Label>Total Tangible Hours This Week</Label>
+          <Label className="hours-label">Total Tangible Hours This Week</Label>
         </Col>
         <Col md="6">
-          <p>{totalTangibleHoursThisWeek}</p>
+          <p className="hours-totalTangible-thisWeek">{totalTangibleHoursThisWeek}</p>
         </Col>
       </Row>
 
-      <Row>
+      <Row className="volunteering-time-row">
         <Col md="6">
-          <Label>Weekly Summary Required </Label>
+          <Label className="hours-label">Weekly Summary Required </Label>
         </Col>
         <Col md="6">
           <WeeklySummaryReqd
@@ -264,9 +251,9 @@ const ViewTab = props => {
           />
         </Col>
       </Row>
-      <Row>
+      <Row className="volunteering-time-row">
         <Col md="6">
-          <Label>Weekly Committed Hours </Label>
+          <Label className="hours-label">Weekly Committed Hours </Label>
         </Col>
         <Col md="6">
           <WeeklyCommitedHours
@@ -278,9 +265,9 @@ const ViewTab = props => {
           />
         </Col>
       </Row>
-      <Row>
+      <Row className="volunteering-time-row">
         <Col md="6">
-          <Label>Total Intangible Hours </Label>
+          <Label className="hours-label">Total Intangible Hours </Label>
         </Col>
         <Col md="6">
           {canEdit ? (
@@ -289,7 +276,7 @@ const ViewTab = props => {
               id="intangibleHours"
               step=".01"
               min="0"
-              value={parseFloat(userProfile.totalIntangibleHrs)?.toFixed(2)}
+              value={roundToTwo(userProfile.totalIntangibleHrs)}
               onChange={e => {
                 setUserProfile({
                   ...userProfile,
@@ -300,25 +287,25 @@ const ViewTab = props => {
               placeholder={`Total Intangible Hours`}
             />
           ) : (
-            <p>{totalIntangibleHours}</p>
+            <p>{userProfile.totalIntangibleHrs}</p>
           )}
         </Col>
       </Row>
-      <Row>
+      <Row className="volunteering-time-row">
         <Col md="6">
-          <Label>Total Tangible Hours </Label>
+          <Label className="hours-label">Total Tangible Hours </Label>
         </Col>
         <Col md="6">
-          <p>{totalTangibleHours}</p>
+          <p className="hours-totalTangible">{totalTangibleHours}</p>
         </Col>
       </Row>
 
       {props?.userProfile?.hoursByCategory
         ? Object.keys(userProfile.hoursByCategory).map(key => (
             <React.Fragment key={'hours-by-category-' + key}>
-              <Row>
+              <Row className="volunteering-time-row">
                 <Col md="6">
-                  <Label>
+                  <Label className="hours-label">
                     {key !== 'unassigned' ? (
                       <>Total Tangible {capitalize(key)} Hours</>
                     ) : (
@@ -330,20 +317,12 @@ const ViewTab = props => {
                   {canEdit ? (
                     <Input
                       type="number"
+                      pattern="^\d*\.?\d{0,2}$"
                       id={`${key}Hours`}
                       step=".01"
                       min="0"
-                      value={parseFloat(userProfile.hoursByCategory[key])?.toFixed(2)}
-                      onChange={e => {
-                        setUserProfile({
-                          ...userProfile,
-                          hoursByCategory: {
-                            ...userProfile.hoursByCategory,
-                            [key]: Number(e.target.value),
-                          },
-                        });
-                        setChanged(true);
-                      }}
+                      value={roundToTwo(userProfile.hoursByCategory[key])}
+                      onChange={e => handleOnChangeHours(e, key)}
                       placeholder={`Total Tangible ${capitalize(key)} Hours`}
                     />
                   ) : (

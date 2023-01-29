@@ -1,12 +1,18 @@
-.row {
+.volunteering-time-row {
   align-items: center;
 }
 
-.col-md-6 > label {
+.volunteering-time-row .col-md-6 > p {
+  margin-bottom: 0;
+  padding: 8px 0;
+}
+
+.col-md-6 .hours-label {
   margin-bottom: 0;
 }
 
-.col-md-6 > p {
+.col-md-6 .hours-totalTangible,
+.col-md-6 .hours-totalTangible-thisWeek {
   margin-bottom: 0;
   padding: 8px 0;
 }
