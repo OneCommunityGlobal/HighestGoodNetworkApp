@@ -29,11 +29,16 @@ const WBSTasks = props => {
   const [isShowImport, setIsShowImport] = useState(false);
   const [selectedId, setSelectedId] = useState(null);
   const [filterState, setFilterState] = useState('all');
+  const [openAll, setOpenAll] = useState('');
 
   useEffect(() => {
     props.fetchAllTasks(wbsId, 0);
+    props.fetchAllTasks(wbsId, 1);
+    props.fetchAllTasks(wbsId, 2);
+    props.fetchAllTasks(wbsId, 3);
     props.fetchAllMembers(projectId);
-    setIsShowImport(true);
+    setTimeout(() => setIsShowImport(true), 1000);
+    setTimeout(() => setOpenAll(false), 1000);
   }, [wbsId, projectId]);
 
   const refresh = () => {
@@ -41,9 +46,36 @@ const WBSTasks = props => {
     props.fetchAllTasks(wbsId, -1);
     setTimeout(() => {
       props.fetchAllTasks(wbsId, 0);
+      props.fetchAllTasks(wbsId, 1);
+      props.fetchAllTasks(wbsId, 2);
+      props.fetchAllTasks(wbsId, 3);
+    }, 100);
+    setTimeout(() => setIsShowImport(true), 1500);
+    setTimeout(() => AutoOpenAll(false), 1500);
+  };
 
-      setTimeout(() => setIsShowImport(true), 1000);
-    }, 1000);
+  useEffect(() => {
+    AutoOpenAll(openAll);
+  }, [openAll]);
+
+  const AutoOpenAll = openflag => {
+    if (openflag) {
+      //console.log('open the folder');
+      for (let i = 2; i < 5; i++) {
+        const subItems = [...document.getElementsByClassName(`lv_${i}`)];
+        for (let i = 0; i < subItems.length; i++) {
+          subItems[i].style.display = 'table-row';
+        }
+      }
+    } else {
+      //console.log('close the folder');
+      for (let i = 2; i < 5; i++) {
+        const subItems = [...document.getElementsByClassName(`lv_${i}`)];
+        for (let i = 0; i < subItems.length; i++) {
+          subItems[i].style.display = 'none';
+        }
+      }
+    }
   };
 
   const selectTaskFunc = id => {
@@ -140,7 +172,7 @@ const WBSTasks = props => {
           return taskItem;
         }
       });
-    }else if (filter === 'complete') {
+    } else if (filter === 'complete') {
       return allTaskItems.filter(taskItem => {
         if (taskItem.status === 'Complete') {
           return taskItem;
@@ -149,7 +181,10 @@ const WBSTasks = props => {
     }
   };
 
-  let filteredTasks = filterTasks(props.state.tasks.taskItems, filterState);
+  const LoadTasks = props.state.tasks.taskItems
+    .slice(0)
+    .sort((a, b) => a.num.split('.').join('') - b.num.split('.').join(''));
+  const filteredTasks = filterTasks(LoadTasks, filterState);
 
   return (
     <React.Fragment>
@@ -179,12 +214,26 @@ const WBSTasks = props => {
         {props.state.tasks.taskItems.length === 0 && isShowImport === true ? (
           <ImportTask wbsId={wbsId} projectId={projectId} />
         ) : null}
-        <Button color="primary" className="btn-success" size="sm" onClick={() => refresh()}>
+        <Button
+          color="primary"
+          className="btn-success"
+          size="sm"
+          onClick={() => {
+            refresh();
+          }}
+        >
           Refresh{' '}
         </Button>
 
         <div className="toggle-all">
-          <Button color="primary" size="sm" onClick={() => setFilterState('all')}>
+          <Button
+            color="primary"
+            size="sm"
+            onClick={() => {
+              setFilterState('all');
+              setOpenAll(!openAll);
+            }}
+          >
             All
           </Button>
           <Button color="secondary" size="sm" onClick={() => setFilterState('assigned')}>
@@ -285,7 +334,7 @@ const WBSTasks = props => {
                 parentId2={task.parentId2}
                 parentId3={task.parentId3}
                 mother={task.mother}
-                isOpen={true}
+                isOpen={openAll}
                 drop={dropTask}
                 drag={dragTask}
                 deleteTask={deleteTask}
