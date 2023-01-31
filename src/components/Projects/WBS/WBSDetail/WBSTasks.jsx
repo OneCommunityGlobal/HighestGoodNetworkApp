@@ -29,29 +29,29 @@ const WBSTasks = props => {
   const [isShowImport, setIsShowImport] = useState(false);
   const [selectedId, setSelectedId] = useState(null);
   const [filterState, setFilterState] = useState('all');
-  const [openAll, setOpenAll] = useState('');
+  const [openAll, setOpenAll] = useState(false);
+
+  const load = async()=>{
+    await props.fetchAllTasks(wbsId, 0);
+    await props.fetchAllTasks(wbsId, 1);
+    await props.fetchAllTasks(wbsId, 2);
+    await props.fetchAllTasks(wbsId, 3);
+    AutoOpenAll(false);
+  }
 
   useEffect(() => {
-    props.fetchAllTasks(wbsId, 0);
-    props.fetchAllTasks(wbsId, 1);
-    props.fetchAllTasks(wbsId, 2);
-    props.fetchAllTasks(wbsId, 3);
+    load().then(setOpenAll(false));
     props.fetchAllMembers(projectId);
     setTimeout(() => setIsShowImport(true), 1000);
-    setTimeout(() => setOpenAll(false), 1000);
   }, [wbsId, projectId]);
 
   const refresh = () => {
     setIsShowImport(false);
     props.fetchAllTasks(wbsId, -1);
     setTimeout(() => {
-      props.fetchAllTasks(wbsId, 0);
-      props.fetchAllTasks(wbsId, 1);
-      props.fetchAllTasks(wbsId, 2);
-      props.fetchAllTasks(wbsId, 3);
+      load().then(setOpenAll(false));
     }, 100);
-    setTimeout(() => setIsShowImport(true), 1500);
-    setTimeout(() => AutoOpenAll(false), 1500);
+    setTimeout(() => setIsShowImport(true), 1000);
   };
 
   useEffect(() => {
