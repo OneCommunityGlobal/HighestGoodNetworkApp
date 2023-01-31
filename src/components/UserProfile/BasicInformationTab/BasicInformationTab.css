@@ -18,4 +18,8 @@
   .rows {
     margin-bottom: 10px;
   }
+
+  label {
+    font-weight: bold;
+  }
 }
