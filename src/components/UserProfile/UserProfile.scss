@@ -181,7 +181,7 @@
 }
 
 .profile-functions-tablet {
-    display: none;
+  display: none;
 }
 
 @media only screen and (max-width: 767px) {
@@ -191,7 +191,7 @@
     padding: 0;
   }
 
-  .emp-profile { 
+  .emp-profile {
     margin: 0;
     padding: 0;
   }
@@ -218,7 +218,7 @@
     padding: 0;
   }
 
-  .profile-functions-list{
+  .profile-functions-list {
     margin-top: 16px;
     border-top: 2px solid #0275d8;
   }
@@ -232,12 +232,12 @@
     text-decoration: none;
   }
 
-  .list-button:nth-child(1){
+  .list-button:nth-child(1) {
     margin-top: 16px;
   }
 
   .desktop-panel {
-    display:none;
+    display: none;
   }
 
   .whoSection {

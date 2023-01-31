@@ -1,20 +1,20 @@
-.basic-info-tab-tablet {
+.volunteering-time-tab-tablet {
   display: none;
 }
 
 @media (max-width: 767px) {
-  .basic-info-tab-desktop {
+  .volunteering-time-tab-desktop {
     display: none;
   }
 
-  .basic-info-tab-tablet {
+  .volunteering-time-tab-tablet {
     display: block;
   }
 
   .cols {
     margin-bottom: 10px;
   }
-
+  
   .rows {
     margin-bottom: 10px;
   }

@@ -273,7 +273,7 @@ const TimeZoneDifference = props => {
     return (
       <>
         <Col>
-          <p style={{ fontWeight: "bold"}} >{signedOffset} hours</p>
+          <p style={{ fontWeight: 'bold' }}>{signedOffset} hours</p>
         </Col>
       </>
     );
@@ -282,7 +282,7 @@ const TimeZoneDifference = props => {
   return (
     <>
       <Col>
-        <p style={{ fontWeight: "bold"}} >This is your own profile page</p>
+        <p style={{ fontWeight: 'bold' }}>This is your own profile page</p>
       </Col>
     </>
   );
@@ -738,28 +738,25 @@ const BasicInformationTab = props => {
             <Col>
               <Label>Location</Label>
             </Col>
-            
-              <Col className="cols">
-                
-                  <Input
-                    onChange={e => {
-                      setLocation(e.target.value);
-                      setUserProfile({ ...userProfile, location: e.target.value });
-                      setChanged(true);
-                    }}
-                    value={userProfile.location}
-                    style={{ marginBottom: "10px"}}
-                  />
 
-                  <div>
-                    <Button color="secondary" block size="sm" onClick={onClickGetTimeZone}>
-                      Get Time Zone
-                    </Button>
-                  </div>
+            <Col className="cols">
+              <Input
+                onChange={e => {
+                  setLocation(e.target.value);
+                  setUserProfile({ ...userProfile, location: e.target.value });
+                  setChanged(true);
+                }}
+                value={userProfile.location}
+                style={{ marginBottom: '10px' }}
+              />
 
-              </Col>
+              <div>
+                <Button color="secondary" block size="sm" onClick={onClickGetTimeZone}>
+                  Get Time Zone
+                </Button>
+              </div>
             </Col>
-          
+          </Col>
         )}
         <Col className="cols">
           <Col>
@@ -795,7 +792,7 @@ const BasicInformationTab = props => {
         <hr />
         <Col className="cols">
           <Col>
-            <Label style={{fontWeight: "bold"}}>Status</Label>
+            <Label style={{ fontWeight: 'bold' }}>Status</Label>
           </Col>
           <Col md="6">
             <Label>
@@ -811,7 +808,7 @@ const BasicInformationTab = props => {
         </Col>
         <Col>
           <Col>
-            <Label style={{fontWeight: "bold"}}>
+            <Label style={{ fontWeight: 'bold' }}>
               {userProfile.endDate
                 ? 'End Date ' + userProfile.endDate.toLocaleString().split('T')[0]
                 : 'End Date ' + 'N/A'}

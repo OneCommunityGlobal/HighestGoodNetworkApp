@@ -5,6 +5,7 @@ import { capitalize } from 'lodash';
 import style from '../UserProfileEdit/ToggleSwitch/ToggleSwitch.module.scss';
 import { ENDPOINTS } from 'utils/URL';
 import axios from 'axios';
+import styles from './VolunteeringTimeTab.css';
 
 const StartDate = props => {
   if (!props.canEdit) {
@@ -59,7 +60,7 @@ const WeeklySummaryReqd = props => {
     return <p>{props.userProfile.weeklySummaryNotReq ? 'Not Required' : 'Required'}</p>;
   }
   return (
-    <div className={style.switchContainer}>
+    <div className={style.switchContainer} style={{justifyContent: 'left', marginBottom: '10px'}}>
       Required
       <input
         id="weeklySummaryNotReqd"
@@ -206,93 +207,94 @@ const ViewTab = props => {
   }, []);
 
   return (
-    <div data-testid="volunteering-time-tab">
-      <Row>
-        <Col md="6">
-          <Label>Start Date</Label>
-        </Col>
-        <Col md="6">
-          <StartDate
-            role={role}
-            userProfile={userProfile}
-            setUserProfile={setUserProfile}
-            setChanged={setChanged}
-            canEdit={canEdit}
-          />
-        </Col>
-      </Row>
+    <div>
+      <div data-testid="volunteering-time-tab" className="volunteering-time-tab-desktop">
+        <Row>
+          <Col md="6">
+            <Label>Start Date</Label>
+          </Col>
+          <Col md="6">
+            <StartDate
+              role={role}
+              userProfile={userProfile}
+              setUserProfile={setUserProfile}
+              setChanged={setChanged}
+              canEdit={canEdit}
+            />
+          </Col>
+        </Row>
 
-      <Row>
-        <Col md="6">
-          <Label>End Date</Label>
-        </Col>
-        <Col md="6">
-          <EndDate
-            role={role}
-            userProfile={userProfile}
-            setUserProfile={setUserProfile}
-            setChanged={setChanged}
-            canEdit={canEdit}
-          />
-        </Col>
-      </Row>
+        <Row>
+          <Col md="6">
+            <Label>End Date</Label>
+          </Col>
+          <Col md="6">
+            <EndDate
+              role={role}
+              userProfile={userProfile}
+              setUserProfile={setUserProfile}
+              setChanged={setChanged}
+              canEdit={canEdit}
+            />
+          </Col>
+        </Row>
 
-      <Row>
-        <Col md="6">
-          <Label>Total Tangible Hours This Week</Label>
-        </Col>
-        <Col md="6">
-          <p>{totalTangibleHoursThisWeek}</p>
-        </Col>
-      </Row>
+        <Row>
+          <Col md="6">
+            <Label>Total Tangible Hours This Week</Label>
+          </Col>
+          <Col md="6">
+            <p>{totalTangibleHoursThisWeek}</p>
+          </Col>
+        </Row>
 
-      <Row>
-        <Col md="6">
-          <Label>Weekly Summary Required </Label>
-        </Col>
-        <Col md="6">
-          <WeeklySummaryReqd
-            role={role}
-            userProfile={userProfile}
-            setUserProfile={setUserProfile}
-            setChanged={setChanged}
-            canEdit={canEdit}
-          />
-        </Col>
-      </Row>
-      <Row>
-        <Col md="6">
-          <Label>Weekly Committed Hours </Label>
-        </Col>
-        <Col md="6">
-          <WeeklyCommitedHours
-            role={role}
-            userProfile={userProfile}
-            setUserProfile={setUserProfile}
-            setChanged={setChanged}
-            canEdit={canEdit}
-          />
-        </Col>
-      </Row>
-      <Row>
-        <Col md="6">
-          <Label>Total Intangible Hours </Label>
-        </Col>
-        <Col md="6">
-          <p>{totalIntangibleHours}</p>
-        </Col>
-      </Row>
-      <Row>
-        <Col md="6">
-          <Label>Total Tangible Hours </Label>
-        </Col>
-        <Col md="6">
-          <p>{totalTangibleHours}</p>
-        </Col>
-      </Row>
+        <Row>
+          <Col md="6">
+            <Label>Weekly Summary Required </Label>
+          </Col>
+          <Col md="6">
+            <WeeklySummaryReqd
+              role={role}
+              userProfile={userProfile}
+              setUserProfile={setUserProfile}
+              setChanged={setChanged}
+              canEdit={canEdit}
+            />
+          </Col>
+        </Row>
+        <Row>
+          <Col md="6">
+            <Label>Weekly Committed Hours </Label>
+          </Col>
+          <Col md="6">
+            <WeeklyCommitedHours
+              role={role}
+              userProfile={userProfile}
+              setUserProfile={setUserProfile}
+              setChanged={setChanged}
+              canEdit={canEdit}
+            />
+          </Col>
+        </Row>
+        <Row>
+          <Col md="6">
+            <Label>Total Intangible Hours </Label>
+          </Col>
+          <Col md="6">
+            <p>{totalIntangibleHours}</p>
+          </Col>
+        </Row>
+        <Row>
+          <Col md="6">
+            <Label>Total Tangible Hours </Label>
+          </Col>
+          <Col md="6">
+            <p>{totalTangibleHours}</p>
+          </Col>
+        </Row>
 
-      {props?.userProfile?.hoursByCategory
-        ? Object.keys(userProfile.hoursByCategory).map(key => (
+        {props?.userProfile?.hoursByCategory
+          ? Object.keys(userProfile.hoursByCategory).map(key => (
             <React.Fragment key={'hours-by-category-' + key}>
               <Row>
                 <Col md="6">
@@ -331,7 +333,135 @@ const ViewTab = props => {
             </React.Fragment>
           ))
         : []}
+      </div>
+      <div data-testid="volunteering-time-tab" className="volunteering-time-tab-tablet">
+        <Col>
+          <Col md="6">
+            <Label>Start Date</Label>
+          </Col>
+          <Col md="6">
+            <StartDate
+              role={role}
+              userProfile={userProfile}
+              setUserProfile={setUserProfile}
+              setChanged={setChanged}
+              canEdit={canEdit}
+            />
+          </Col>
+        </Col>
+
+        <Col>
+          <Col md="6">
+            <Label>End Date</Label>
+          </Col>
+          <Col md="6">
+            <EndDate
+              role={role}
+              userProfile={userProfile}
+              setUserProfile={setUserProfile}
+              setChanged={setChanged}
+              canEdit={canEdit}
+            />
+          </Col>
+        </Col>
+
+        <Col>
+          <Col md="6">
+            <Label>Total Tangible Hours This Week</Label>
+          </Col>
+          <Col md="6">
+            <p>{totalTangibleHoursThisWeek}</p>
+          </Col>
+        </Col>
+
+        <Col>
+          <Col md="6">
+            <Label>Weekly Summary Required </Label>
+          </Col>
+          <Col md="6">
+            <WeeklySummaryReqd
+              role={role}
+              userProfile={userProfile}
+              setUserProfile={setUserProfile}
+              setChanged={setChanged}
+              canEdit={canEdit}
+            />
+          </Col>
+        </Col>
+        <Col>
+          <Col md="6">
+            <Label>Weekly Committed Hours </Label>
+          </Col>
+          <Col md="6">
+            <WeeklyCommitedHours
+              role={role}
+              userProfile={userProfile}
+              setUserProfile={setUserProfile}
+              setChanged={setChanged}
+              canEdit={canEdit}
+            />
+          </Col>
+        </Col>
+        <Col>
+          <Col md="6">
+            <Label>Total Intangible Hours </Label>
+          </Col>
+          <Col md="6">
+            <p>{totalIntangibleHours}</p>
+          </Col>
+        </Col>
+        <Col>
+          <Col md="6">
+            <Label>Total Tangible Hours </Label>
+          </Col>
+          <Col md="6">
+            <p>{totalTangibleHours}</p>
+          </Col>
+        </Col>
+
+        {props?.userProfile?.hoursByCategory
+          ? Object.keys(userProfile.hoursByCategory).map(key => (
+            <React.Fragment key={'hours-by-category-' + key}>
+              <Col>
+                <Col md="6">
+                  <Label>
+                    {key !== 'unassigned' ? (
+                      <>Total Tangible {capitalize(key)} Hours</>
+                    ) : (
+                      <>Total Unassigned Category Hours</>
+                    )}
+                  </Label>
+                </Col>
+                <Col md="6">
+                  {canEdit ? (
+                    <Input
+                      type="number"
+                      id={`${key}Hours`}
+                      step=".01"
+                      value={parseFloat(userProfile.hoursByCategory[key])?.toFixed(2)}
+                      onChange={e => {
+                        setUserProfile({
+                          ...userProfile,
+                          hoursByCategory: {
+                            ...userProfile.hoursByCategory,
+                            [key]: Number(e.target.value),
+                          },
+                        });
+                        setChanged(true);
+                      }}
+                      placeholder={`Total Tangible ${capitalize(key)} Hours`}
+                    />
+                  ) : (
+                    <p>{userProfile.hoursByCategory[key]?.toFixed(2)}</p>
+                  )}
+                </Col>
+              </Col>
+            </React.Fragment>
+          ))
+        : []}
+      </div>
     </div>
+    
   );
 };
 
