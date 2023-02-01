@@ -32,10 +32,8 @@ const WBSTasks = props => {
   const [openAll, setOpenAll] = useState(false);
 
   const load = async()=>{
-    await props.fetchAllTasks(wbsId, 0);
-    await props.fetchAllTasks(wbsId, 1);
-    await props.fetchAllTasks(wbsId, 2);
-    await props.fetchAllTasks(wbsId, 3);
+    const le = [0,1,2,3,4];
+    await Promise.all(le.map(l => props.fetchAllTasks(wbsId, l)));
     AutoOpenAll(false);
   }
 
