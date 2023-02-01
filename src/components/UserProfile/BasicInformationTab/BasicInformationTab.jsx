@@ -273,7 +273,7 @@ const TimeZoneDifference = props => {
     return (
       <>
         <Col>
-          <p>{signedOffset} hours</p>
+          <p style={{ fontWeight: 'bold' }}>{signedOffset} hours</p>
         </Col>
       </>
     );
@@ -795,7 +795,7 @@ const BasicInformationTab = props => {
             <Label style={{ fontWeight: 'bold' }}>Status</Label>
           </Col>
           <Col md="6">
-            <Label style={{ fontWeight: 'normal' }}>
+            <Label>
               {userProfile.isActive
                 ? 'Active'
                 : userProfile.reactivationDate
