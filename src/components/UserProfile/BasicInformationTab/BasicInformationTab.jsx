@@ -273,7 +273,7 @@ const TimeZoneDifference = props => {
     return (
       <>
         <Col>
-          <p style={{ fontWeight: 'bold' }}>{signedOffset} hours</p>
+          <p>{signedOffset} hours</p>
         </Col>
       </>
     );
@@ -282,7 +282,7 @@ const TimeZoneDifference = props => {
   return (
     <>
       <Col>
-        <p style={{ fontWeight: 'bold' }}>This is your own profile page</p>
+        <p>This is your own profile page</p>
       </Col>
     </>
   );
@@ -792,10 +792,10 @@ const BasicInformationTab = props => {
         <hr />
         <Col className="cols">
           <Col>
-            <Label style={{ fontWeight: 'bold' }}>Status</Label>
+            <Label>Status</Label>
           </Col>
           <Col md="6">
-            <Label>
+            <Label style={{ fontWeight: 'normal' }}>
               {userProfile.isActive
                 ? 'Active'
                 : userProfile.reactivationDate
@@ -808,7 +808,7 @@ const BasicInformationTab = props => {
         </Col>
         <Col>
           <Col>
-            <Label style={{ fontWeight: 'bold' }}>
+            <Label>
               {userProfile.endDate
                 ? 'End Date ' + userProfile.endDate.toLocaleString().split('T')[0]
                 : 'End Date ' + 'N/A'}
