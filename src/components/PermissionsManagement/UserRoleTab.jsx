@@ -80,7 +80,7 @@ const UserRoleTab = props => {
   }
   return (
     <div className="userRoleTab__container">
-      <a href="/permissionsmanagement" className="userRoleTab_backBtn">
+      <a href="/permissionsmanagement" className="userRoleTab__backBtn">
         Back
       </a>
       <RolePermissions
