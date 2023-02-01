@@ -1,0 +1,13 @@
+.tablet {
+  display: none;
+}
+
+@media (max-width: 767px) {
+  .desktop {
+    display: none;
+  }
+
+  .tablet {
+    display: block;
+  }
+}
