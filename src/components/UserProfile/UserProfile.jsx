@@ -71,7 +71,7 @@ const UserProfile = props => {
   const [blueSquareChanged, setBlueSquareChanged] = useState(false);
   const [showSaveWarning, setShowSaveWarning] = useState(true);
   const [type, setType] = useState('');
-  const [menuModal, setMenuModal] = useState('');
+  const [menuModalTabletScreen, setMenuModalTabletScreen] = useState('');
   const [showModal, setShowModal] = useState(false);
   const [modalTitle, setModalTitle] = useState('');
   const [modalMessage, setModalMessage] = useState('');
@@ -309,7 +309,7 @@ const UserProfile = props => {
     setChanged(false);
   };
 
-  const toggle = modalName => setMenuModal(modalName);
+  const toggle = modalName => setMenuModalTabletScreen(modalName);
 
   const toggleInfoModal = () => {
     setInfoModal(!infoModal);
@@ -683,7 +683,7 @@ const UserProfile = props => {
               >
                 Basic Information
               </Button>
-              <Modal isOpen={menuModal === 'Basic Information'} toggle={toggle} fullscreen>
+              <Modal isOpen={menuModalTabletScreen === 'Basic Information'} toggle={toggle} fullscreen>
                 <ModalHeader toggle={toggle}>Basic Information</ModalHeader>
                 <ModalBody>
                   <BasicInformationTab
@@ -775,7 +775,7 @@ const UserProfile = props => {
               >
                 Volunteering Times
               </Button>
-              <Modal isOpen={menuModal === 'Volunteering Times'} toggle={toggle} fullscreen>
+              <Modal isOpen={menuModalTabletScreen === 'Volunteering Times'} toggle={toggle} fullscreen>
                 <ModalHeader toggle={toggle}>Volunteering Times</ModalHeader>
                 <ModalBody>
                   <VolunteeringTimeTab
@@ -837,7 +837,7 @@ const UserProfile = props => {
               <Button className="list-button" onClick={() => toggle('Teams')} color="secondary">
                 Teams
               </Button>
-              <Modal isOpen={menuModal === 'Teams'} toggle={toggle} fullscreen>
+              <Modal isOpen={menuModalTabletScreen === 'Teams'} toggle={toggle} fullscreen>
                 <ModalHeader toggle={toggle}>Teams</ModalHeader>
                 <ModalBody>
                   <TeamsTab
@@ -895,7 +895,7 @@ const UserProfile = props => {
               <Button className="list-button" onClick={() => toggle('Projects')} color="secondary">
                 Projects
               </Button>
-              <Modal isOpen={menuModal === 'Projects'} toggle={toggle} fullscreen>
+              <Modal isOpen={menuModalTabletScreen === 'Projects'} toggle={toggle} fullscreen>
                 <ModalHeader toggle={toggle}>Projects</ModalHeader>
                 <ModalBody>
                   <ProjectsTab
@@ -960,7 +960,7 @@ const UserProfile = props => {
               >
                 Edit History
               </Button>
-              <Modal isOpen={menuModal === 'Edit History'} toggle={toggle} fullscreen>
+              <Modal isOpen={menuModalTabletScreen === 'Edit History'} toggle={toggle} fullscreen>
                 <ModalHeader toggle={toggle}>Edit History</ModalHeader>
                 <ModalBody>
                   <TimeEntryEditHistory
