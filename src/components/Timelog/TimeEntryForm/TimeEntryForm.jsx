@@ -204,9 +204,9 @@ const TimeEntryForm = props => {
       if (!date.isValid()) {
         result.dateOfWork = 'Invalid date';
       }
-      // Admin/Owner can add time entries for any dates. Other roles cannot. 
+      // Administrator/Owner can add time entries for any dates. Other roles cannot. 
       // Editing details of past date is possible for any role.
-      else if (currentUserRole !== 'Owner' && !edit && today.diff(date, 'days') != 0) {
+      else if (currentUserRole !== 'Administrator' && currentUserRole !== 'Owner' && !edit && today.diff(date, 'days') !== 0) {
         result.dateOfWork = 'Invalid date. Please refresh the page.';
       }
     }
