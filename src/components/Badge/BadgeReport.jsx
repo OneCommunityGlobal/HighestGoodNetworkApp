@@ -248,105 +248,107 @@ const BadgeReport = props => {
 
   return (
     <div>
-      <Table>
-        <thead>
-          <tr>
-            <th style={{ width: '93px' }}>Badge</th>
-            <th>Name</th>
-            <th style={{ width: '110px' }}>Modified</th>
-            <th style={{ width: '90px' }}>Count</th>
-            {hasPermission(props.role, 'deleteOwnBadge', roles, props.permissionsUser) ? (
-              <th>Delete</th>
-            ) : (
-              []
-            )}
-            <th style={{ width: '70px' }}>Featured</th>
-          </tr>
-        </thead>
-        <tbody>
-          {sortBadges &&
-            sortBadges.map((value, index) => (
-              <tr key={index}>
-                <td className="badge_image_sm">
-                  {' '}
-                  <img src={value.badge.imageUrl} id={'popover_' + index.toString()} />
-                </td>
-                <UncontrolledPopover trigger="hover" target={'popover_' + index.toString()}>
-                  <Card className="text-center">
-                    <CardImg className="badge_image_lg" src={value?.badge?.imageUrl} />
-                    <CardBody>
-                      <CardTitle
-                        style={{
-                          fontWeight: 'bold',
-                          fontSize: 18,
-                          color: '#285739',
-                          marginBottom: 15,
-                        }}
-                      >
-                        {value.badge?.badgeName}
-                      </CardTitle>
-                      <CardText>{value.badge?.description}</CardText>
-                    </CardBody>
-                  </Card>
-                </UncontrolledPopover>
-                <td>{value.badge.badgeName}</td>
-                <td>
-                  {typeof value.lastModified == 'string'
-                    ? value.lastModified.substring(0, 10)
-                    : value.lastModified.toLocaleString().substring(0, 10)}
-                </td>
-                <td>
-                  {hasPermission(
-                    props.role,
-                    'modifyOwnBadgeAmount',
-                    roles,
-                    props.permissionsUser,
-                  ) ? (
-                    <Input
-                      type="number"
-                      value={Math.round(value.count)}
-                      min={0}
-                      step={1}
-                      onChange={e => {
-                        countChange(value, index, e.target.value);
-                      }}
-                    ></Input>
-                  ) : (
-                    Math.round(value.count)
-                  )}
-                </td>
-                {hasPermission(props.role, 'deleteOwnBadge', roles, props.permissionsUser) ? (
-                  <td>
-                    <button
-                      type="button"
-                      className="btn btn-outline-danger"
-                      onClick={e => handleDeleteBadge(index)}
-                    >
-                      Delete
-                    </button>
+      <div style={{ overflowY: 'scroll', height: '75vh'}}>
+        <Table>
+          <thead>
+            <tr>
+              <th style={{ width: '93px' }}>Badge</th>
+              <th>Name</th>
+              <th style={{ width: '110px' }}>Modified</th>
+              <th style={{ width: '90px' }}>Count</th>
+              {hasPermission(props.role, 'deleteOwnBadge', roles, props.permissionsUser) ? (
+                <th>Delete</th>
+              ) : (
+                []
+              )}
+              <th style={{ width: '70px' }}>Featured</th>
+            </tr>
+          </thead>
+          <tbody>
+            {sortBadges &&
+              sortBadges.map((value, index) => (
+                <tr key={index}>
+                  <td className="badge_image_sm">
+                    {' '}
+                    <img src={value.badge.imageUrl} id={'popover_' + index.toString()} />
                   </td>
-                ) : (
-                  []
-                )}
-                <td style={{ textAlign: 'center' }}>
-                  <FormGroup check inline>
-                    <Input
-                      /* alternative to using the formgroup
-                      style={{ position: 'static' }} 
-                      */
-                      type="checkbox"
-                      id={value.badge._id}
-                      checked={value.featured}
-                      onChange={e => {
-                        featuredChange(value, index, e);
-                      }}
-                    />
-                  </FormGroup>
-                </td>
-              </tr>
-            ))}
-        </tbody>
-      </Table>
+                  <UncontrolledPopover trigger="hover" target={'popover_' + index.toString()}>
+                    <Card className="text-center">
+                      <CardImg className="badge_image_lg" src={value?.badge?.imageUrl} />
+                      <CardBody>
+                        <CardTitle
+                          style={{
+                            fontWeight: 'bold',
+                            fontSize: 18,
+                            color: '#285739',
+                            marginBottom: 15,
+                          }}
+                        >
+                          {value.badge?.badgeName}
+                        </CardTitle>
+                        <CardText>{value.badge?.description}</CardText>
+                      </CardBody>
+                    </Card>
+                  </UncontrolledPopover>
+                  <td>{value.badge.badgeName}</td>
+                  <td>
+                    {typeof value.lastModified == 'string'
+                      ? value.lastModified.substring(0, 10)
+                      : value.lastModified.toLocaleString().substring(0, 10)}
+                  </td>
+                  <td>
+                    {hasPermission(
+                      props.role,
+                      'modifyOwnBadgeAmount',
+                      roles,
+                      props.permissionsUser,
+                    ) ? (
+                      <Input
+                        type="number"
+                        value={Math.round(value.count)}
+                        min={0}
+                        step={1}
+                        onChange={e => {
+                          countChange(value, index, e.target.value);
+                        }}
+                      ></Input>
+                    ) : (
+                      Math.round(value.count)
+                    )}
+                  </td>
+                  {hasPermission(props.role, 'deleteOwnBadge', roles, props.permissionsUser) ? (
+                    <td>
+                      <button
+                        type="button"
+                        className="btn btn-outline-danger"
+                        onClick={e => handleDeleteBadge(index)}
+                      >
+                        Delete
+                      </button>
+                    </td>
+                  ) : (
+                    []
+                  )}
+                  <td style={{ textAlign: 'center' }}>
+                    <FormGroup check inline>
+                      <Input
+                        /* alternative to using the formgroup
+                        style={{ position: 'static' }} 
+                        */
+                        type="checkbox"
+                        id={value.badge._id}
+                        checked={value.featured}
+                        onChange={e => {
+                          featuredChange(value, index, e);
+                        }}
+                      />
+                    </FormGroup>
+                  </td>
+                </tr>
+              ))}
+          </tbody>
+        </Table>
+      </div>
       <Button
         className="btn--dark-sea-green float-right"
         style={{ margin: 5 }}
