@@ -517,7 +517,8 @@ class AddUserProfile extends Component {
         user.lastName.toLowerCase() == lastName.toLowerCase()
       );
     });
-    if (duplicates) return true;
+
+    if (duplicates.length > 0) return true;
     else return false;
   };
 
