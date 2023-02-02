@@ -555,7 +555,7 @@ function AddTaskModal(props) {
                         className="form-check-input"
                         type="radio"
                         id="notStarted"
-                        name="notStarted"
+                        name="started"
                         value="false"
                         onChange={e => setStatus(e.target.value === 'false')}
                       />
