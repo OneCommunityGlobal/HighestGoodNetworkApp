@@ -322,9 +322,10 @@ export class WeeklySummary extends Component {
       summaryTwoWeeksAgo: this.doesDateBelongToWeek(dueDateBeforeLast, 2)
         ? 'Two weeks ago'
         : moment(dueDateBeforeLast).format('YYYY-MMM-DD'),
-      summaryThreeWeeksAgo: this.doesDateBelongToWeek(dueDateBeforeLast, 3)
-        ? 'Three weeks ago'
-        : moment(dueDateBeforeLast).format('YYYY-MMM-DD'),
+      summaryThreeWeeksAgo: 'Three weeks ago',
+      // this.doesDateBelongToWeek(dueDateBeforeLast, 3)
+      //   ? 'Three weeks ago'
+      //   : moment(dueDateBeforeLast).format('YYYY-MMM-DD'),
     };
 
     if (fetchError) {
