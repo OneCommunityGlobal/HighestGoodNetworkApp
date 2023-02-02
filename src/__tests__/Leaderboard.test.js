@@ -26,7 +26,7 @@ const server = setupServer(
           {
             personId: 'abdefghijklmnop',
             name: 'Fake Admin',
-            weeklyComittedHours: 10,
+            weeklycommittedHours: 10,
             totaltime_hrs: 105,
             totaltangibletime_hrs: 6,
             totalintangibletime_hrs: 99,
@@ -49,7 +49,7 @@ const server = setupServer(
           {
             personId: 'abdefghijklmnop',
             name: 'Fake Admin',
-            weeklyComittedHours: 10,
+            weeklycommittedHours: 10,
             totaltime_hrs: 125,
             totaltangibletime_hrs: 60,
             totalintangibletime_hrs: 99,
@@ -92,7 +92,7 @@ afterAll(() => server.close());
 afterEach(() => server.resetHandlers());
 
 function sleep(ms) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
+  return new Promise(resolve => setTimeout(resolve, ms));
 }
 
 describe('Leaderboard structure', () => {

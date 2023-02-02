@@ -21,7 +21,7 @@ let passwordUpdated = false;
 mockState.auth.isAuthenticated = false;
 
 function sleep(ms) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
+  return new Promise(resolve => setTimeout(resolve, ms));
 }
 
 const server = setupServer(
@@ -47,7 +47,7 @@ const server = setupServer(
         {
           personId: '5edf141c78f1380017b829a6',
           name: 'Dev Admin',
-          weeklyComittedHours: 10,
+          weeklycommittedHours: 10,
           totaltime_hrs: 6,
           totaltangibletime_hrs: 6,
           totalintangibletime_hrs: 0,

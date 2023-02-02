@@ -57,7 +57,7 @@ const server = setupServer(
       ctx.json([
         {
           isActive: false,
-          weeklyComittedHours: 0,
+          weeklycommittedHours: 0,
           createdDate: '2019-01-26T20:24:48.672Z',
           _id: '5c4cc2109487b0003924f1e3',
           role: 'Administrator',
@@ -68,7 +68,7 @@ const server = setupServer(
         },
         {
           isActive: false,
-          weeklyComittedHours: 0,
+          weeklycommittedHours: 0,
           createdDate: '2019-01-26T20:24:48.672Z',
           _id: 'ad91ec3590b19002asacd26',
           role: 'Administrator',
@@ -93,7 +93,7 @@ const server = setupServer(
         {
           personId: '5edf141c78f1380017b829a6',
           name: 'Dev Admin',
-          weeklyComittedHours: 10,
+          weeklycommittedHours: 10,
           totaltime_hrs: 6,
           totaltangibletime_hrs: 6,
           totalintangibletime_hrs: 0,
@@ -129,7 +129,7 @@ afterAll(() => server.close());
 afterEach(() => server.resetHandlers());
 
 function sleep(ms) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
+  return new Promise(resolve => setTimeout(resolve, ms));
 }
 
 describe('Project Members behavior', () => {

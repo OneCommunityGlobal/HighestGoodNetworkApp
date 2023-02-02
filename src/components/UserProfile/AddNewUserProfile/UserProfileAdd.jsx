@@ -175,10 +175,10 @@ class AddUserProfile extends Component {
                   </Col>
                   <Col md="6">
                     <FormGroup>
-                    <PhoneInput
+                      <PhoneInput
                         country="US"
-                        regions={['america','europe','asia','oceania','africa']}
-                        limitMaxLength= 'true'
+                        regions={['america', 'europe', 'asia', 'oceania', 'africa']}
+                        limitMaxLength="true"
                         value={phoneNumber}
                         onChange={phone => this.phoneChange(phone)}
                       />
@@ -512,7 +512,9 @@ class AddUserProfile extends Component {
       jobTitle: jobTitle,
       phoneNumber: phoneNumber,
       bio: '',
-      weeklyComittedHours: that.state.userProfile.weeklyCommittedHours,
+      weeklycommittedHours: that.state.userProfile.weeklyCommittedHours
+        ? that.state.userProfile.weeklyCommittedHours
+        : that.state.userProfile.weeklyCommitedHours,
       personalLinks: [],
       adminLinks: [],
       teams: this.state.teams,

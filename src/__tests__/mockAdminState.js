@@ -21,7 +21,7 @@ export default {
   userProfile: {
     isActive: true,
     phoneNumber: ['1112223333'],
-    weeklyComittedHours: 10,
+    weeklycommittedHours: 10,
     teams: [
       {
         _id: '5a849147592ca46b43db272c',
@@ -165,7 +165,7 @@ export default {
     userProfiles: [
       {
         isActive: true,
-        weeklyComittedHours: 0,
+        weeklycommittedHours: 0,
         _id: '5c4cc2109487b0003924f1e3',
         role: 'Administrator',
         firstName: 'Test',
@@ -174,7 +174,7 @@ export default {
       },
       {
         isActive: true,
-        weeklyComittedHours: 20,
+        weeklycommittedHours: 20,
         _id: '5e2cc6df7a91aaf820510a55',
         role: 'Volunteer',
         firstName: 'Sidd',
@@ -183,7 +183,7 @@ export default {
       },
       {
         isActive: true,
-        weeklyComittedHours: 10,
+        weeklycommittedHours: 10,
         _id: '5ede6be453a0480017164a5b',
         role: 'Administrator',
         firstName: 'Nithesh',
@@ -192,7 +192,7 @@ export default {
       },
       {
         isActive: true,
-        weeklyComittedHours: 10,
+        weeklycommittedHours: 10,
         _id: '5edf141c78f1380017b829a6',
         role: 'Administrator',
         firstName: 'Dev',
@@ -201,7 +201,7 @@ export default {
       },
       {
         isActive: true,
-        weeklyComittedHours: 15,
+        weeklycommittedHours: 15,
         _id: '5f20d19160bd1734f069dadb',
         role: 'Administrator',
         firstName: 'Jerry',
@@ -210,7 +210,7 @@ export default {
       },
       {
         isActive: false,
-        weeklyComittedHours: 0,
+        weeklycommittedHours: 0,
         _id: '5be0952c633dae0016081b4b',
         role: 'Administrator',
         firstName: 'Tyler',
@@ -219,7 +219,7 @@ export default {
       },
       {
         isActive: true,
-        weeklyComittedHours: 0,
+        weeklycommittedHours: 0,
         _id: '5bef421d908c1b0038d06dbd',
         role: 'Administrator',
         firstName: 'Adam',
@@ -228,7 +228,7 @@ export default {
       },
       {
         isActive: true,
-        weeklyComittedHours: 2,
+        weeklycommittedHours: 2,
         _id: '5e2a76cb0441c30039a6909a',
         role: 'Volunteer',
         firstName: 'Test',
@@ -237,7 +237,7 @@ export default {
       },
       {
         isActive: false,
-        weeklyComittedHours: 10,
+        weeklycommittedHours: 10,
         _id: '5ef771cf612d522c54f9b637',
         role: 'Volunteer',
         firstName: 'Testing',
@@ -246,7 +246,7 @@ export default {
       },
       {
         isActive: false,
-        weeklyComittedHours: 3,
+        weeklycommittedHours: 3,
         _id: '5eff58c34c9f52001786f031',
         role: 'Volunteer',
         firstName: 'Test',
@@ -255,7 +255,7 @@ export default {
       },
       {
         isActive: false,
-        weeklyComittedHours: 0,
+        weeklycommittedHours: 0,
         _id: '5b3013287275b6002e3b2de4',
         role: 'Volunteer',
         firstName: 'Dipti',
@@ -264,7 +264,7 @@ export default {
       },
       {
         isActive: false,
-        weeklyComittedHours: 0,
+        weeklycommittedHours: 0,
         _id: '5b3013087275b6002e3b2de3',
         role: 'Volunteer',
         firstName: 'Dehua',
@@ -273,7 +273,7 @@ export default {
       },
       {
         isActive: false,
-        weeklyComittedHours: 0,
+        weeklycommittedHours: 0,
         _id: '5b3013847275b6002e3b2de7',
         role: 'Volunteer',
         firstName: 'Michael',
@@ -282,7 +282,7 @@ export default {
       },
       {
         isActive: true,
-        weeklyComittedHours: 10,
+        weeklycommittedHours: 10,
         _id: '5e9fa3d9b5dc3c2e48c10989',
         role: 'Manager',
         firstName: 'Alvaro',
@@ -291,7 +291,7 @@ export default {
       },
       {
         isActive: false,
-        weeklyComittedHours: 0,
+        weeklycommittedHours: 0,
         _id: '5b3013f57275b6002e3b2dea',
         role: 'Volunteer',
         firstName: 'Mike',
@@ -300,7 +300,7 @@ export default {
       },
       {
         isActive: false,
-        weeklyComittedHours: 0,
+        weeklycommittedHours: 0,
         _id: '5ae0badeb3f1241c28c9b4e3',
         role: 'Volunteer',
         firstName: 'Swathy',
@@ -309,7 +309,7 @@ export default {
       },
       {
         isActive: false,
-        weeklyComittedHours: 0,
+        weeklycommittedHours: 0,
         _id: '5b30136d7275b6002e3b2de6',
         role: 'Volunteer',
         firstName: 'Michael',
@@ -318,7 +318,7 @@ export default {
       },
       {
         isActive: false,
-        weeklyComittedHours: 0,
+        weeklycommittedHours: 0,
         _id: '5b3013c47275b6002e3b2de9',
         role: 'Volunteer',
         firstName: 'Yun',
@@ -327,7 +327,7 @@ export default {
       },
       {
         isActive: true,
-        weeklyComittedHours: 10,
+        weeklycommittedHours: 10,
         _id: '5ea5ba581446e1164098fa7b',
         role: 'Manager',
         firstName: 'New',
@@ -336,7 +336,7 @@ export default {
       },
       {
         isActive: true,
-        weeklyComittedHours: 15,
+        weeklycommittedHours: 15,
         _id: '5f20d18660bd1734f069dada',
         role: 'Manager',
         firstName: 'Jerry',
@@ -345,7 +345,7 @@ export default {
       },
       {
         isActive: false,
-        weeklyComittedHours: 0,
+        weeklycommittedHours: 0,
         _id: '5b0585ffd68f7f002dbcf4de',
         role: 'Administrator',
         firstName: 'Sowmya',
@@ -354,7 +354,7 @@ export default {
       },
       {
         isActive: false,
-        weeklyComittedHours: 0,
+        weeklycommittedHours: 0,
         _id: '5be0964d633dae0016081b4c',
         role: 'Administrator',
         firstName: 'Jordan',
@@ -363,7 +363,7 @@ export default {
       },
       {
         isActive: false,
-        weeklyComittedHours: 20,
+        weeklycommittedHours: 20,
         _id: '5ae0afcab3f1241c28c9b4e2',
         role: 'Administrator',
         firstName: 'Shubhra',
@@ -372,7 +372,7 @@ export default {
       },
       {
         isActive: true,
-        weeklyComittedHours: 10,
+        weeklycommittedHours: 10,
         _id: '5eddbcd353a0480017164a57',
         role: 'Administrator',
         firstName: 'Admin',
@@ -381,7 +381,7 @@ export default {
       },
       {
         isActive: false,
-        weeklyComittedHours: 10,
+        weeklycommittedHours: 10,
         _id: '5eddc35953a0480017164a58',
         role: 'Administrator',
         firstName: 'AdminTest',
@@ -390,7 +390,7 @@ export default {
       },
       {
         isActive: false,
-        weeklyComittedHours: 16,
+        weeklycommittedHours: 16,
         _id: '5e1a685add8cea0ea3420141',
         role: 'Administrator',
         firstName: 'Henry',
@@ -399,7 +399,7 @@ export default {
       },
       {
         isActive: false,
-        weeklyComittedHours: 0,
+        weeklycommittedHours: 0,
         _id: '5bad2979e168140090176793',
         role: 'Volunteer',
         firstName: 'Emilio',
@@ -408,7 +408,7 @@ export default {
       },
       {
         isActive: false,
-        weeklyComittedHours: 0,
+        weeklycommittedHours: 0,
         _id: '5bec67ee0df8050016d2e21c',
         role: 'Volunteer',
         firstName: 'Ram',
@@ -417,7 +417,7 @@ export default {
       },
       {
         isActive: false,
-        weeklyComittedHours: 0,
+        weeklycommittedHours: 0,
         _id: '5bc4f3d1476a8e009034264c',
         role: 'Core Team',
         firstName: 'Sara',
@@ -426,7 +426,7 @@ export default {
       },
       {
         isActive: true,
-        weeklyComittedHours: 30,
+        weeklycommittedHours: 30,
         _id: '5ab1713bba0e82002b182206',
         role: 'Administrator',
         firstName: 'Jae',
@@ -435,7 +435,7 @@ export default {
       },
       {
         isActive: true,
-        weeklyComittedHours: 20,
+        weeklycommittedHours: 20,
         _id: '5e28bdaab9ec7807f278aea3',
         role: 'Manager',
         firstName: 'Rafel',
@@ -444,7 +444,7 @@ export default {
       },
       {
         isActive: false,
-        weeklyComittedHours: 0,
+        weeklycommittedHours: 0,
         _id: '5bad3c06e168140090176794',
         role: 'Administrator',
         firstName: 'Aishwaryasads',
@@ -453,7 +453,7 @@ export default {
       },
       {
         isActive: false,
-        weeklyComittedHours: 0,
+        weeklycommittedHours: 0,
         _id: '5bc4f438476a8e009034264d',
         role: 'Core Team',
         firstName: 'Bear',
@@ -462,7 +462,7 @@ export default {
       },
       {
         isActive: true,
-        weeklyComittedHours: 10,
+        weeklycommittedHours: 10,
         _id: '5edda90b53a0480017164a4e',
         role: 'Administrator',
         firstName: 'Nithesh',
@@ -471,7 +471,7 @@ export default {
       },
       {
         isActive: false,
-        weeklyComittedHours: 0,
+        weeklycommittedHours: 0,
         _id: '5baac381e16814009017678c',
         role: 'Volunteer',
         firstName: 'Jae',
@@ -480,7 +480,7 @@ export default {
       },
       {
         isActive: false,
-        weeklyComittedHours: 0,
+        weeklycommittedHours: 0,
         _id: '5ef2bf59b4c1a9648d685b0d',
         role: 'Core Team',
         firstName: 'Ada',
@@ -489,7 +489,7 @@ export default {
       },
       {
         isActive: true,
-        weeklyComittedHours: 10,
+        weeklycommittedHours: 10,
         _id: '5ec95665c77af83f146f339b',
         role: 'Administrator',
         firstName: 'Andon',
@@ -498,7 +498,7 @@ export default {
       },
       {
         isActive: false,
-        weeklyComittedHours: 0,
+        weeklycommittedHours: 0,
         _id: '5bd77898a41ad772b60d2d3a',
         firstName: 'TimeArchiveAccount',
         lastName: 'TimeArchiveAccount',
@@ -507,7 +507,7 @@ export default {
       },
       {
         isActive: true,
-        weeklyComittedHours: 5,
+        weeklycommittedHours: 5,
         _id: '5f150b7599b77700174e69fb',
         role: 'Volunteer',
         firstName: 'Nithesh',
@@ -516,7 +516,7 @@ export default {
       },
       {
         isActive: false,
-        weeklyComittedHours: 0,
+        weeklycommittedHours: 0,
         _id: '5b3013a57275b6002e3b2de8',
         role: 'Volunteer',
         firstName: 'Lucas',
@@ -525,7 +525,7 @@ export default {
       },
       {
         isActive: true,
-        weeklyComittedHours: 0,
+        weeklycommittedHours: 0,
         _id: '5c63038e2b88c00039ed79e6',
         role: 'Volunteer',
         firstName: 'Test',
@@ -534,7 +534,7 @@ export default {
       },
       {
         isActive: true,
-        weeklyComittedHours: 10,
+        weeklycommittedHours: 10,
         _id: '5eb2c7e9f0eb3233382d232e',
         role: 'Administrator',
         firstName: 'NewAdmin',
@@ -543,7 +543,7 @@ export default {
       },
       {
         isActive: false,
-        weeklyComittedHours: 10,
+        weeklycommittedHours: 10,
         _id: '5ea5ed991446e1164098fa7c',
         role: 'Administrator',
         firstName: 'New',
@@ -552,7 +552,7 @@ export default {
       },
       {
         isActive: true,
-        weeklyComittedHours: 10,
+        weeklycommittedHours: 10,
         _id: '5ea5b0d81446e1164098fa7a',
         role: 'Manager',
         firstName: 'Test',
@@ -561,7 +561,7 @@ export default {
       },
       {
         isActive: true,
-        weeklyComittedHours: 5,
+        weeklycommittedHours: 5,
         _id: '5ee257d03f0d66001704f8aa',
         role: 'Volunteer',
         firstName: 'Dev',
@@ -570,7 +570,7 @@ export default {
       },
       {
         isActive: true,
-        weeklyComittedHours: 10,
+        weeklycommittedHours: 10,
         _id: '5eecff1e80d46831c828ed86',
         role: 'Volunteer',
         firstName: 'Adam',
@@ -579,7 +579,7 @@ export default {
       },
       {
         isActive: true,
-        weeklyComittedHours: 15,
+        weeklycommittedHours: 15,
         _id: '5f20d17260bd1734f069dad9',
         role: 'Volunteer',
         firstName: 'Jerry',
@@ -588,7 +588,7 @@ export default {
       },
       {
         isActive: true,
-        weeklyComittedHours: 10,
+        weeklycommittedHours: 10,
         _id: '5e115150c472127fee9ed87d',
         role: 'Administrator',
         firstName: 'Tengxiao',
@@ -597,7 +597,7 @@ export default {
       },
       {
         isActive: false,
-        weeklyComittedHours: 20,
+        weeklycommittedHours: 20,
         _id: '5e16ba934ef6251c89149096',
         role: 'Manager',
         firstName: 'Ron',
@@ -606,7 +606,7 @@ export default {
       },
       {
         isActive: true,
-        weeklyComittedHours: 20,
+        weeklycommittedHours: 20,
         _id: '5e2e3d3d51ddad1693d79279',
         role: 'Volunteer',
         firstName: 'Simon',
@@ -615,7 +615,7 @@ export default {
       },
       {
         isActive: true,
-        weeklyComittedHours: 20,
+        weeklycommittedHours: 20,
         _id: '5e66cdf5336b3af7f2466d2b',
         role: 'Administrator',
         firstName: 'Wen',
@@ -624,7 +624,7 @@ export default {
       },
       {
         isActive: true,
-        weeklyComittedHours: 15,
+        weeklycommittedHours: 15,
         _id: '5f1fb5d9974f146edcfa741b',
         role: 'Manager',
         firstName: 'Jerry',
@@ -633,7 +633,7 @@ export default {
       },
       {
         isActive: true,
-        weeklyComittedHours: 0,
+        weeklycommittedHours: 0,
         _id: '5bde804fb2d9e00016c47fd1',
         role: 'Volunteer',
         firstName: 'sddf',
@@ -642,7 +642,7 @@ export default {
       },
       {
         isActive: false,
-        weeklyComittedHours: 0,
+        weeklycommittedHours: 0,
         _id: '5beca51d3d07ed00166deaa1',
         role: 'Volunteer',
         firstName: 'ram2',
@@ -651,7 +651,7 @@ export default {
       },
       {
         isActive: true,
-        weeklyComittedHours: 20,
+        weeklycommittedHours: 20,
         _id: '5e2cc7087a91aaf820510a56',
         role: 'Volunteer',
         firstName: 'Dev',
@@ -660,7 +660,7 @@ export default {
       },
       {
         isActive: true,
-        weeklyComittedHours: 20,
+        weeklycommittedHours: 20,
         _id: '5e9fa2fbb3acfb7f9a4d1d8c',
         role: 'Volunteer',
         firstName: 'Alvaro',
@@ -674,7 +674,7 @@ export default {
     {
       personId: '5edf141c78f1380017b829a6',
       name: 'Dev Admin',
-      weeklyComittedHours: 10,
+      weeklycommittedHours: 10,
       totaltime_hrs: 6,
       totaltangibletime_hrs: 6,
       totalintangibletime_hrs: 0,
@@ -691,7 +691,7 @@ export default {
     {
       personId: '5bef421d908c1b0038d06dbd',
       name: 'Adam Capdeville',
-      weeklyComittedHours: 0,
+      weeklycommittedHours: 0,
       totaltime_hrs: 0,
       totaltangibletime_hrs: 0,
       totalintangibletime_hrs: 0,
@@ -708,7 +708,7 @@ export default {
     {
       personId: '5eecff1e80d46831c828ed86',
       name: 'Adam Volunteer',
-      weeklyComittedHours: 10,
+      weeklycommittedHours: 10,
       totaltime_hrs: 0,
       totaltangibletime_hrs: 0,
       totalintangibletime_hrs: 0,
@@ -725,7 +725,7 @@ export default {
     {
       personId: '5eddbcd353a0480017164a57',
       name: 'Admin New',
-      weeklyComittedHours: 10,
+      weeklycommittedHours: 10,
       totaltime_hrs: 0,
       totaltangibletime_hrs: 0,
       totalintangibletime_hrs: 0,
@@ -742,7 +742,7 @@ export default {
     {
       personId: '5e9fa3d9b5dc3c2e48c10989',
       name: 'Alvaro Hernández',
-      weeklyComittedHours: 10,
+      weeklycommittedHours: 10,
       totaltime_hrs: 0,
       totaltangibletime_hrs: 0,
       totalintangibletime_hrs: 0,
@@ -759,7 +759,7 @@ export default {
     {
       personId: '5e9fa2fbb3acfb7f9a4d1d8c',
       name: 'Alvaro user1',
-      weeklyComittedHours: 20,
+      weeklycommittedHours: 20,
       totaltime_hrs: 0,
       totaltangibletime_hrs: 0,
       totalintangibletime_hrs: 0,
@@ -776,7 +776,7 @@ export default {
     {
       personId: '5ec95665c77af83f146f339b',
       name: 'Andon Testing',
-      weeklyComittedHours: 10,
+      weeklycommittedHours: 10,
       totaltime_hrs: 0,
       totaltangibletime_hrs: 0,
       totalintangibletime_hrs: 0,
@@ -793,7 +793,7 @@ export default {
     {
       personId: '5ee257d03f0d66001704f8aa',
       name: 'Dev Volunteer',
-      weeklyComittedHours: 5,
+      weeklycommittedHours: 5,
       totaltime_hrs: 0,
       totaltangibletime_hrs: 0,
       totalintangibletime_hrs: 0,
@@ -810,7 +810,7 @@ export default {
     {
       personId: '5e2cc7087a91aaf820510a56',
       name: 'Dev user1',
-      weeklyComittedHours: 20,
+      weeklycommittedHours: 20,
       totaltime_hrs: 0,
       totaltangibletime_hrs: 0,
       totalintangibletime_hrs: 0,
@@ -827,7 +827,7 @@ export default {
     {
       personId: '5ab1713bba0e82002b182206',
       name: 'Jae Sabol',
-      weeklyComittedHours: 30,
+      weeklycommittedHours: 30,
       totaltime_hrs: 0,
       totaltangibletime_hrs: 0,
       totalintangibletime_hrs: 0,
@@ -844,7 +844,7 @@ export default {
     {
       personId: '5f20d19160bd1734f069dadb',
       name: 'Jerry Administrator',
-      weeklyComittedHours: 15,
+      weeklycommittedHours: 15,
       totaltime_hrs: 0,
       totaltangibletime_hrs: 0,
       totalintangibletime_hrs: 0,
@@ -861,7 +861,7 @@ export default {
     {
       personId: '5f20d18660bd1734f069dada',
       name: 'Jerry Manager',
-      weeklyComittedHours: 15,
+      weeklycommittedHours: 15,
       totaltime_hrs: 0,
       totaltangibletime_hrs: 0,
       totalintangibletime_hrs: 0,
@@ -878,7 +878,7 @@ export default {
     {
       personId: '5f20d17260bd1734f069dad9',
       name: 'Jerry Volunteer',
-      weeklyComittedHours: 15,
+      weeklycommittedHours: 15,
       totaltime_hrs: 0,
       totaltangibletime_hrs: 0,
       totalintangibletime_hrs: 0,
@@ -895,7 +895,7 @@ export default {
     {
       personId: '5f1fb5d9974f146edcfa741b',
       name: 'Jerry Zhang',
-      weeklyComittedHours: 15,
+      weeklycommittedHours: 15,
       totaltime_hrs: 0,
       totaltangibletime_hrs: 0,
       totalintangibletime_hrs: 0,
@@ -912,7 +912,7 @@ export default {
     {
       personId: '5f31dcb9a1a909eadee0eecb',
       name: 'Jun Hao',
-      weeklyComittedHours: 20,
+      weeklycommittedHours: 20,
       totaltime_hrs: 0,
       totaltangibletime_hrs: 0,
       totalintangibletime_hrs: 0,
@@ -929,7 +929,7 @@ export default {
     {
       personId: '5ea5ba581446e1164098fa7b',
       name: 'New Manager',
-      weeklyComittedHours: 10,
+      weeklycommittedHours: 10,
       totaltime_hrs: 0,
       totaltangibletime_hrs: 0,
       totalintangibletime_hrs: 0,
@@ -946,7 +946,7 @@ export default {
     {
       personId: '5eb2c7e9f0eb3233382d232e',
       name: 'NewAdmin User',
-      weeklyComittedHours: 10,
+      weeklycommittedHours: 10,
       totaltime_hrs: 0,
       totaltangibletime_hrs: 0,
       totalintangibletime_hrs: 0,
@@ -963,7 +963,7 @@ export default {
     {
       personId: '5ede6be453a0480017164a5b',
       name: 'Nithesh Admin',
-      weeklyComittedHours: 10,
+      weeklycommittedHours: 10,
       totaltime_hrs: 0,
       totaltangibletime_hrs: 0,
       totalintangibletime_hrs: 0,
@@ -980,7 +980,7 @@ export default {
     {
       personId: '5edda90b53a0480017164a4e',
       name: 'Nithesh TEK',
-      weeklyComittedHours: 10,
+      weeklycommittedHours: 10,
       totaltime_hrs: 0,
       totaltangibletime_hrs: 0,
       totalintangibletime_hrs: 0,
@@ -997,7 +997,7 @@ export default {
     {
       personId: '5f150b7599b77700174e69fb',
       name: 'Nithesh Train',
-      weeklyComittedHours: 5,
+      weeklycommittedHours: 5,
       totaltime_hrs: 0,
       totaltangibletime_hrs: 0,
       totalintangibletime_hrs: 0,
@@ -1014,7 +1014,7 @@ export default {
     {
       personId: '5e28bdaab9ec7807f278aea3',
       name: 'Rafel Sabol',
-      weeklyComittedHours: 20,
+      weeklycommittedHours: 20,
       totaltime_hrs: 0,
       totaltangibletime_hrs: 0,
       totalintangibletime_hrs: 0,
@@ -1031,7 +1031,7 @@ export default {
     {
       personId: '5e2cc6df7a91aaf820510a55',
       name: 'Sidd Admin',
-      weeklyComittedHours: 20,
+      weeklycommittedHours: 20,
       totaltime_hrs: 0,
       totaltangibletime_hrs: 0,
       totalintangibletime_hrs: 0,
@@ -1048,7 +1048,7 @@ export default {
     {
       personId: '5e2e3d3d51ddad1693d79279',
       name: 'Simon Xiong',
-      weeklyComittedHours: 20,
+      weeklycommittedHours: 20,
       totaltime_hrs: 0,
       totaltangibletime_hrs: 0,
       totalintangibletime_hrs: 0,
@@ -1065,7 +1065,7 @@ export default {
     {
       personId: '5e115150c472127fee9ed87d',
       name: 'Tengxiao Wang',
-      weeklyComittedHours: 10,
+      weeklycommittedHours: 10,
       totaltime_hrs: 0,
       totaltangibletime_hrs: 0,
       totalintangibletime_hrs: 0,
@@ -1082,7 +1082,7 @@ export default {
     {
       personId: '5c4cc2109487b0003924f1e3',
       name: 'Test Admin',
-      weeklyComittedHours: 0,
+      weeklycommittedHours: 0,
       totaltime_hrs: 0,
       totaltangibletime_hrs: 0,
       totalintangibletime_hrs: 0,
@@ -1099,7 +1099,7 @@ export default {
     {
       personId: '5e2a76cb0441c30039a6909a',
       name: 'Test Cat',
-      weeklyComittedHours: 2,
+      weeklycommittedHours: 2,
       totaltime_hrs: 0,
       totaltangibletime_hrs: 0,
       totalintangibletime_hrs: 0,
@@ -1116,7 +1116,7 @@ export default {
     {
       personId: '5c63038e2b88c00039ed79e6',
       name: 'Test User',
-      weeklyComittedHours: 0,
+      weeklycommittedHours: 0,
       totaltime_hrs: 0,
       totaltangibletime_hrs: 0,
       totalintangibletime_hrs: 0,
@@ -1133,7 +1133,7 @@ export default {
     {
       personId: '5ea5b0d81446e1164098fa7a',
       name: 'Test User99',
-      weeklyComittedHours: 10,
+      weeklycommittedHours: 10,
       totaltime_hrs: 0,
       totaltangibletime_hrs: 0,
       totalintangibletime_hrs: 0,
@@ -1150,7 +1150,7 @@ export default {
     {
       personId: '5e66cdf5336b3af7f2466d2b',
       name: 'Wen Zhang',
-      weeklyComittedHours: 20,
+      weeklycommittedHours: 20,
       totaltime_hrs: 0,
       totaltangibletime_hrs: 0,
       totalintangibletime_hrs: 0,
@@ -1167,7 +1167,7 @@ export default {
     {
       personId: '5bde804fb2d9e00016c47fd1',
       name: 'sddf fsdfsdf',
-      weeklyComittedHours: 0,
+      weeklycommittedHours: 0,
       totaltime_hrs: 0,
       totaltangibletime_hrs: 0,
       totalintangibletime_hrs: 0,

@@ -105,7 +105,7 @@ const server = setupServer(
         {
           personId: '5edf141c78f1380017b829a6',
           name: 'Dev Admin',
-          weeklyComittedHours: 10,
+          weeklycommittedHours: 10,
           totaltime_hrs: 6,
           totaltangibletime_hrs: 6,
           totalintangibletime_hrs: 0,
@@ -141,7 +141,7 @@ afterAll(() => server.close());
 afterEach(() => server.resetHandlers());
 
 function sleep(ms) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
+  return new Promise(resolve => setTimeout(resolve, ms));
 }
 
 describe('Projects behavior', () => {

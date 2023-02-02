@@ -12,7 +12,7 @@ const userProfileMockData = {
   isActive: true,
   phoneNumber: [''],
   jobTitle: [''],
-  weeklyComittedHours: 0,
+  weeklycommittedHours: 0,
   teams: [],
   projects: [{ _id: '1', projectName: 'name' }],
   _id: '1234',
@@ -60,7 +60,7 @@ describe('UserProfile Redux related actions', () => {
       expect(userProfileSlice()).toHaveProperty('email', '');
       expect(userProfileSlice()).toHaveProperty('firstName', 'John');
       expect(userProfileSlice()).toHaveProperty('lastName', 'Doe');
-      expect(userProfileSlice()).toHaveProperty('weeklyComittedHours', 0);
+      expect(userProfileSlice()).toHaveProperty('weeklycommittedHours', 0);
       expect(userProfileSlice()).toHaveProperty('teams', []);
       expect(userProfileSlice()).toHaveProperty('profilePic', '');
     });

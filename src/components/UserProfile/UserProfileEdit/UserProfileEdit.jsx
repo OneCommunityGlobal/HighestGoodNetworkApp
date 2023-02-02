@@ -256,19 +256,19 @@ class UserProfileEdit extends Component {
           },
         });
         break;
-      case 'totalComittedHours':
+      case 'totalCommitedHours':
         this.setState({
           userProfile: {
             ...userProfile,
-            totalComittedHours: event.target.value,
+            totalCommitedHours: event.target.value,
           },
         });
         break;
-      case 'weeklyComittedHours':
+      case 'weeklyCommitedHours':
         this.setState({
           userProfile: {
             ...userProfile,
-            weeklyComittedHours: event.target.value,
+            weeklyCommitedHours: event.target.value,
           },
         });
         break;
@@ -946,10 +946,10 @@ class UserProfileEdit extends Component {
                       <Col md="6">
                         <Input
                           type="number"
-                          name="weeklyComittedHours"
-                          id="weeklyComittedHours"
+                          name="weeklyCommitedHours"
+                          id="weeklyCommitedHours"
                           className={styleProfile.profileText}
-                          value={userProfile.weeklyComittedHours}
+                          value={userProfile.weeklyCommitedHours}
                           onChange={this.handleUserProfile}
                           placeholder="weeklyCommittedHours"
                           invalid={/*!hasPermission(requestorRole, 'editUserProfile')*/ true}
@@ -963,10 +963,10 @@ class UserProfileEdit extends Component {
                       <Col md="6">
                         <Input
                           type="number"
-                          name="totalComittedHours"
-                          id="totalComittedHours"
+                          name="totalCommitedHours"
+                          id="totalCommitedHours"
                           className={styleProfile.profileText}
-                          value={userProfile.totalComittedHours}
+                          value={userProfile.totalCommitedHours}
                           onChange={this.handleUserProfile}
                           placeholder="totalCommittedHours"
                           invalid={
