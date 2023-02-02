@@ -790,11 +790,10 @@ const BasicInformationTab = props => {
           />
         </Col>
         <hr />
-        <Col className="cols">
-          <Col>
+        <Row xs="2" style={{ marginLeft: '1rem' }}>         
+          <Col style={{ alignItems: 'center', justifyContent: 'center'}}>
             <Label>Status</Label>
-          </Col>
-          <Col md="6">
+            <div>
             <Label style={{ fontWeight: 'normal' }}>
               {userProfile.isActive
                 ? 'Active'
@@ -804,20 +803,17 @@ const BasicInformationTab = props => {
             </Label>
             &nbsp;
             {canEdit && <PauseAndResumeButton isBigBtn={true} userProfile={userProfile} />}
+            </div>
           </Col>
-        </Col>
-        <Col>
           <Col>
             <Label>
               {userProfile.endDate
                 ? 'End Date ' + userProfile.endDate.toLocaleString().split('T')[0]
                 : 'End Date ' + 'N/A'}
             </Label>
-          </Col>
-          <Col md="6">
             {canEdit && <SetUpFinalDayButton isBigBtn={true} userProfile={userProfile} />}
           </Col>
-        </Col>
+        </Row>
       </div>
     </div>
   );

@@ -282,36 +282,34 @@ const UserProjectsTable = React.memo(props => {
       </div>
       <div className="tablet">
         <div className="projecttable-container">
-          <div className="container">
-            <div className="row">
-              <Col
-                md={props.edit ? '7' : '12'}
-                style={{
-                  backgroundColor: ' #e9ecef',
-                  border: '1px solid #ced4da',
-                  marginBottom: '10px',
-                }}
-              >
-                <span className="projects-span">Projects</span>
+          <div style={{ display: 'flex', flexDirection: 'column' }}>
+            <Col
+              md={props.edit ? '7' : '12'}
+              style={{
+                backgroundColor: ' #e9ecef',
+                border: '1px solid #ced4da',
+                marginBottom: '10px',
+              }}
+            >
+              <span className="projects-span">Projects</span>
+            </Col>
+            {props.edit && props.role && (
+              <Col md="5" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+                {hasPermission(props.role, 'assignUserInProject', roles, userPermissions) ? (
+                  <Button
+                    className="btn-addproject"
+                    color="primary"
+                    onClick={() => {
+                      props.onButtonClick();
+                    }}
+                  >
+                    Assign Project
+                  </Button>
+                ) : (
+                  <></>
+                )}
               </Col>
-              {props.edit && props.role && (
-                <Col md="5">
-                  {hasPermission(props.role, 'assignUserInProject', roles, userPermissions) ? (
-                    <Button
-                      className="btn-addproject"
-                      color="primary"
-                      onClick={() => {
-                        props.onButtonClick();
-                      }}
-                    >
-                      Assign Project
-                    </Button>
-                  ) : (
-                    <></>
-                  )}
-                </Col>
-              )}
-            </div>
+            )}
           </div>
           <div style={{ maxHeight: '300px', overflow: 'auto' }}>
             <table className="table table-bordered">
@@ -334,17 +332,19 @@ const UserProjectsTable = React.memo(props => {
                       <td>{`${project.projectName}`}</td>
                       {props.edit && props.role && (
                         <td style={{ width: '103px' }}>
-                          <Button
-                            color="danger"
-                            disabled={
-                              !hasPermission(props.role, 'editTask', roles, userPermissions)
-                            }
-                            onClick={e => {
-                              props.onDeleteClicK(project._id);
-                            }}
-                          >
-                            Delete
-                          </Button>
+                          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                            <Button
+                              color="danger"
+                              disabled={
+                                !hasPermission(props.role, 'editTask', roles, userPermissions)
+                              }
+                              onClick={e => {
+                                props.onDeleteClicK(project._id);
+                              }}
+                            >
+                              Delete
+                            </Button>
+                          </div>
                         </td>
                       )}
                     </tr>
@@ -419,21 +419,23 @@ const UserProjectsTable = React.memo(props => {
                         <td>{`${task.taskName}`}</td>
                         {!isCompletedTask && props.edit && props.role && (
                           <td>
-                            <Button
-                              color="danger"
-                              style={{ width: '72px' }}
-                              disabled={
-                                !hasPermission(
-                                  props.role,
-                                  'unassignUserInProject',
-                                  roles,
-                                  userPermissions,
-                                )
-                              }
-                              onClick={e => removeOrAddTaskFromUser(task, 'remove')}
-                            >
-                              Delete
-                            </Button>
+                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                              <Button
+                                color="danger"
+                                style={{ width: '72px' }}
+                                disabled={
+                                  !hasPermission(
+                                    props.role,
+                                    'unassignUserInProject',
+                                    roles,
+                                    userPermissions,
+                                  )
+                                }
+                                onClick={e => removeOrAddTaskFromUser(task, 'remove')}
+                              >
+                                Delete
+                              </Button>
+                            </div>
                           </td>
                         )}
                         {isCompletedTask && props.edit && props.role && (

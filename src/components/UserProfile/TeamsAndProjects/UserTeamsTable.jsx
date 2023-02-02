@@ -86,8 +86,7 @@ const UserTeamsTable = props => {
         </div>
       </div>
       <div className="teamtable-container tablet">
-        <div className="container">
-          <div className="row">
+          <div style={{ display: 'flex', flexDirection: 'column' }}>
             <Col
               md={props.edit ? '7' : '12'}
               style={{
@@ -99,7 +98,7 @@ const UserTeamsTable = props => {
               <span className="teams-span">Teams</span>
             </Col>
             {props.edit && props.role && (
-              <Col md="5">
+              <Col md="5" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
                 {hasPermission(props.role, 'assignTeamToUser', roles, userPermissions) ? (
                   <Button
                     className="btn-addteam"
@@ -112,10 +111,9 @@ const UserTeamsTable = props => {
                   </Button>
                 ) : (
                   <></>
-                )}
-              </Col>
-            )}
-          </div>
+              )}
+            </Col>
+          )}
         </div>
         <div style={{ maxHeight: '300px', overflow: 'auto' }}>
           <table className="table table-bordered">
@@ -138,17 +136,19 @@ const UserTeamsTable = props => {
                     <td>{`${team.teamName}`}</td>
                     {props.edit && props.role && (
                       <td>
-                        <Button
-                          disabled={
-                            !hasPermission(props.role, 'assignTeamToUser', roles, userPermissions)
-                          }
-                          color="danger"
-                          onClick={e => {
-                            props.onDeleteClick(team._id);
-                          }}
-                        >
-                          Delete
-                        </Button>
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                          <Button
+                            disabled={
+                              !hasPermission(props.role, 'assignTeamToUser', roles, userPermissions)
+                            }
+                            color="danger"
+                            onClick={e => {
+                              props.onDeleteClick(team._id);
+                            }}
+                          >
+                            Delete
+                          </Button>
+                        </div>
                       </td>
                     )}
                   </tr>
