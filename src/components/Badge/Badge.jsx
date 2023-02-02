@@ -67,7 +67,6 @@ const Badge = props => {
   }, [props.userProfile.badgeCollection, totalBadge]);
 
   const permissionsUser = props.userProfile?.permissions?.frontPermissions;
-  console.log('ALL USER BADGE ==>', props.userProfile.badgeCollection);
   return (
     <>
       <Container>
