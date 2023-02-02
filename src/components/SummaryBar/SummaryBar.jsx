@@ -202,9 +202,9 @@ const SummaryBar = props => {
     console.log(tasks);
     const { firstName, lastName, email, _id } = userProfile;
     let totalEffort = parseFloat(leaderData.find(x => x.personId === asUser).tangibletime);
-    const weeklyCommittedHours = userProfile.weeklycommittedHours
+    const weeklyCommittedHours = userProfile.weeklyCommittedHours
       ? userProfile.weeklyCommittedHours
-      : userProfile.weeklyComitedHours;
+      : userProfile.weeklyComittedHours;
     const weeklySummary = getWeeklySummary(userProfile);
     return (
       <Container fluid className="px-lg-0 bg--bar">
