@@ -163,6 +163,11 @@
   font-size: 1rem;
 }
 
+.disabled-bar{
+  opacity: 0.4;
+  filter: alpha(opacity=40); /* msie */
+}
+
 /* XLarge devices (landscape phones, 544px and down) */
 @media (max-width: 1200px) {
   .med_text_summary {
