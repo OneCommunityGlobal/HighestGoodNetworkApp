@@ -683,7 +683,7 @@ const UserProfile = props => {
               >
                 Basic Information
               </Button>
-              <Modal isOpen={menuModalTabletScreen === 'Basic Information'} toggle={toggle} fullscreen>
+              <Modal isOpen={menuModalTabletScreen === 'Basic Information'} toggle={toggle}>
                 <ModalHeader toggle={toggle}>Basic Information</ModalHeader>
                 <ModalBody>
                   <BasicInformationTab
@@ -762,7 +762,7 @@ const UserProfile = props => {
                           </>
                         )}
                       <Button outline onClick={() => loadUserProfile()}>
-                        <i class="fa fa-refresh" aria-hidden="true"></i>
+                        <i className="fa fa-refresh" aria-hidden="true"></i>
                       </Button>
                     </div>
                   </Row>
@@ -775,7 +775,7 @@ const UserProfile = props => {
               >
                 Volunteering Times
               </Button>
-              <Modal isOpen={menuModalTabletScreen === 'Volunteering Times'} toggle={toggle} fullscreen>
+              <Modal isOpen={menuModalTabletScreen === 'Volunteering Times'} toggle={toggle}>
                 <ModalHeader toggle={toggle}>Volunteering Times</ModalHeader>
                 <ModalBody>
                   <VolunteeringTimeTab
@@ -828,7 +828,7 @@ const UserProfile = props => {
                           </>
                         )}
                       <Button outline onClick={() => loadUserProfile()}>
-                        <i class="fa fa-refresh" aria-hidden="true"></i>
+                        <i className="fa fa-refresh" aria-hidden="true"></i>
                       </Button>
                     </div>
                   </Row>
@@ -837,7 +837,7 @@ const UserProfile = props => {
               <Button className="list-button" onClick={() => toggle('Teams')} color="secondary">
                 Teams
               </Button>
-              <Modal isOpen={menuModalTabletScreen === 'Teams'} toggle={toggle} fullscreen>
+              <Modal isOpen={menuModalTabletScreen === 'Teams'} toggle={toggle}>
                 <ModalHeader toggle={toggle}>Teams</ModalHeader>
                 <ModalBody>
                   <TeamsTab
@@ -886,7 +886,7 @@ const UserProfile = props => {
                           </>
                         )}
                       <Button outline onClick={() => loadUserProfile()}>
-                        <i class="fa fa-refresh" aria-hidden="true"></i>
+                        <i className="fa fa-refresh" aria-hidden="true"></i>
                       </Button>
                     </div>
                   </Row>
@@ -895,7 +895,7 @@ const UserProfile = props => {
               <Button className="list-button" onClick={() => toggle('Projects')} color="secondary">
                 Projects
               </Button>
-              <Modal isOpen={menuModalTabletScreen === 'Projects'} toggle={toggle} fullscreen>
+              <Modal isOpen={menuModalTabletScreen === 'Projects'} toggle={toggle}>
                 <ModalHeader toggle={toggle}>Projects</ModalHeader>
                 <ModalBody>
                   <ProjectsTab
@@ -947,7 +947,7 @@ const UserProfile = props => {
                           </>
                         )}
                       <Button outline onClick={() => loadUserProfile()}>
-                        <i class="fa fa-refresh" aria-hidden="true"></i>
+                        <i className="fa fa-refresh" aria-hidden="true"></i>
                       </Button>
                     </div>
                   </Row>
@@ -960,7 +960,7 @@ const UserProfile = props => {
               >
                 Edit History
               </Button>
-              <Modal isOpen={menuModalTabletScreen === 'Edit History'} toggle={toggle} fullscreen>
+              <Modal isOpen={menuModalTabletScreen === 'Edit History'} toggle={toggle}>
                 <ModalHeader toggle={toggle}>Edit History</ModalHeader>
                 <ModalBody>
                   <TimeEntryEditHistory
@@ -1008,7 +1008,7 @@ const UserProfile = props => {
                           </>
                         )}
                       <Button outline onClick={() => loadUserProfile()}>
-                        <i class="fa fa-refresh" aria-hidden="true"></i>
+                        <i className="fa fa-refresh" aria-hidden="true"></i>
                       </Button>
                     </div>
                   </Row>
