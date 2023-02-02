@@ -547,7 +547,7 @@ function AddTaskModal(props) {
                         onChange={e => setStatus(e.target.value === 'true')}
                       />
                       <label className="form-check-label" htmlFor="started">
-                        Yes
+                        Started
                       </label>
                     </div>
                     <div className="form-check form-check-inline">
@@ -560,7 +560,7 @@ function AddTaskModal(props) {
                         onChange={e => setStatus(e.target.value === 'false')}
                       />
                       <label className="form-check-label" htmlFor="notStarted">
-                        No
+                        Not Started
                       </label>
                     </div>
                   </div>
