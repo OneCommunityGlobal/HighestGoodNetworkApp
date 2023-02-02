@@ -247,13 +247,7 @@ const BadgeReport = props => {
     //Reload the view profile page with updated bages
     window.location.reload();
   };
-  console.log(props.badges[1].earnedDate.length);
-  let arr = [];
-  for (let i = 0; i < props.badges.length; i++) {
-    arr.push(props.badges[i].earnedDate[0]);
-  }
-  console.log('new array earned ==>', sortBadges);
-
+  
   return (
     <div>
       <Table>
