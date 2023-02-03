@@ -37,7 +37,7 @@ const AssignTableRow = props => {
       </td>
       <td>{props.badge.badgeName}</td>
       <td>
-        <CustomInput type="checkbox" onChange={handleCheckBoxChange} id={props.badge._id} />
+        <CustomInput type="checkbox" onChange={handleCheckBoxChange} id={props.badge._id}/>
       </td>
     </tr>
   );

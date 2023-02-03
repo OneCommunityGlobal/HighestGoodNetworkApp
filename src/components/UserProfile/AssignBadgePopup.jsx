@@ -70,7 +70,7 @@ const AssignBadgePopup = props => {
             <tr>
               <th>Badge</th>
               <th>Name</th>
-              <th>
+              <th style={{ zIndex: '10' }}>
                 <i className="fa fa-info-circle" id="SelectInfo" />
                 <UncontrolledTooltip
                   placement="right"
@@ -91,7 +91,7 @@ const AssignBadgePopup = props => {
           </thead>
           <tbody>
             {filteredBadges.map((value, index) => (
-              <AssignTableRow badge={value} index={index} key={index} />
+              <AssignTableRow badge={value} index={index} key={index}/>
             ))}
           </tbody>
         </Table>

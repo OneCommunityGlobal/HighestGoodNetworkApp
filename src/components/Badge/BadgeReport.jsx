@@ -250,8 +250,8 @@ const BadgeReport = props => {
     <div>
       <div style={{ overflowY: 'scroll', height: '75vh'}}>
         <Table>
-          <thead>
-            <tr>
+          <thead style={{zIndex: '10'}}>
+            <tr style={{zIndex: '10'}}>
               <th style={{ width: '93px' }}>Badge</th>
               <th>Name</th>
               <th style={{ width: '110px' }}>Modified</th>
@@ -261,7 +261,7 @@ const BadgeReport = props => {
               ) : (
                 []
               )}
-              <th style={{ width: '70px' }}>Featured</th>
+              <th style={{ width: '70px', zIndex: '1' }}>Featured</th>
             </tr>
           </thead>
           <tbody>
@@ -330,7 +330,7 @@ const BadgeReport = props => {
                     []
                   )}
                   <td style={{ textAlign: 'center' }}>
-                    <FormGroup check inline>
+                    <FormGroup check inline style={{ zIndex: '0' }}>
                       <Input
                         /* alternative to using the formgroup
                         style={{ position: 'static' }} 
