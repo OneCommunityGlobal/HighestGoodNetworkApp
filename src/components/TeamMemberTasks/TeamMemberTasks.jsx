@@ -2,7 +2,7 @@
 /* eslint-disable no-trailing-spaces */
 /* eslint-disable no-plusplus */
 /* eslint-disable indent */
-import { faBell, faCircle, faClock } from '@fortawesome/free-solid-svg-icons';
+import { faBell, faCircle, faClock, faCheck } from '@fortawesome/free-solid-svg-icons';
 import { Table, Progress } from 'reactstrap';
 import _ from 'lodash';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -28,6 +28,9 @@ const TeamMemberTasks = props => {
   const [currentTask, setCurrentTask] = useState();
   const [currentUserId, setCurrentUserId] = useState();
   const { isLoading, usersWithTasks } = useSelector(getTeamMemberTasksData);
+  const [tasks, setTasks] = useState();
+  const [updatedTasks, setUpdatedTasks] = useState([]);
+  const [showMarkAsDoneModal, setMarkAsDoneModal] = useState(false);
 
   const dispatch = useDispatch();
   useEffect(() => {
@@ -37,11 +40,79 @@ const TeamMemberTasks = props => {
   const userRole = props.auth.user.role;
   const userId = props.auth.user.userid;
 
+  const onUpdateTask = (taskId, updatedTask) => {
+    const newTask = {
+      updatedTask,
+      taskId,
+    };
+
+    setTasks(tasks => {
+      console.log(tasks);
+      const tasksWithoutTheUpdated = [...tasks];
+      const taskIndex = tasks.findIndex(task => task._id === taskId);
+      tasksWithoutTheUpdated[taskIndex] = updatedTask;
+      return tasksWithoutTheUpdated;
+    });
+    setUpdatedTasks(tasks => [...tasks, newTask]);
+    setChanged(true);
+  };
+
+  const removeOrAddTaskFromUser = (task, method) => {
+    const resources = [...task.resources];
+    const newResources = resources?.map(resource => {
+      let newResource = { ...resource };
+      if (resource.userID === props.userId) {
+        if (method === 'remove') {
+          newResource = {
+            ...resource,
+            completedTask: true,
+          };
+        } else if (method === 'add') {
+          newResource = {
+            ...resource,
+            completedTask: false,
+          };
+        }
+      }
+      return newResource;
+    });
+
+    const updatedTask = { ...task, resources: newResources };
+    props.updateTask(task._id, updatedTask, method);
+  };
+
+  const handleSubmit = async () => {
+    for (let i = 0; i < updatedTasks.length; i += 1) {
+      const updatedTask = updatedTasks[i];
+      const url = ENDPOINTS.TASK_UPDATE(updatedTask.taskId);
+      axios.put(url, updatedTask.updatedTask).catch(err => console.log(err));
+    }
+    try {
+      await props.updateUserProfile(props.match.params.userId, userProfile);
+      await props.refreshToken(userProfile._id);
+      await loadUserProfile();
+
+      await loadUserTasks();
+
+      setShowSaveWarning(false);
+    } catch (err) {
+      alert('An error occurred while attempting to save this profile.');
+    }
+    setShouldRefresh(true);
+    setChanged(false);
+  };
+
   const handleOpenTaskNotificationModal = (userId, task, taskNotifications = []) => {
     setCurrentUserId(userId);
     setCurrentTask(task);
     setCurrentTaskNotifications(taskNotifications);
     setTaskNotificationModal(!showTaskNotificationModal);
+  };
+
+  const handleMarkAsDoneModal = (userId, task) => {
+    setCurrentUserId(userId);
+    setCurrentTask(task);
+    setMarkAsDoneModal(!showTaskNotificationModal);
   };
 
   const handleTaskNotificationRead = (userId, taskId, taskNotificationId) => {
@@ -148,8 +219,11 @@ const TeamMemberTasks = props => {
                     </td>
                     <td className="team-clocks">
                       <u>{user.weeklyComittedHours ? user.weeklyComittedHours : 0}</u> /
-                      <font color="green"> {thisWeekHours?thisWeekHours.toFixed(1):0}</font> /
-                      <font color="red"> {totalHoursRemaining?totalHoursRemaining.toFixed(1):0}</font>
+                      <font color="green"> {thisWeekHours ? thisWeekHours.toFixed(1) : 0}</font> /
+                      <font color="red">
+                        {' '}
+                        {totalHoursRemaining ? totalHoursRemaining.toFixed(1) : 0}
+                      </font>
                     </td>
                   </tr>
                   <tr>
@@ -185,17 +259,26 @@ const TeamMemberTasks = props => {
                                   <span>{`${task.num} ${task.taskName}`} </span>
                                 </Link>
                                 {task.taskNotifications.length > 0 && (
-                                  <FontAwesomeIcon
-                                    className="team-member-tasks-bell"
-                                    icon={faBell}
-                                    onClick={() => {
-                                      handleOpenTaskNotificationModal(
-                                        user.personId,
-                                        task,
-                                        task.taskNotifications,
-                                      );
-                                    }}
-                                  />
+                                  <div>
+                                    <FontAwesomeIcon
+                                      className="team-member-tasks-bell"
+                                      icon={faBell}
+                                      onClick={() => {
+                                        handleOpenTaskNotificationModal(
+                                          user.personId,
+                                          task,
+                                          task.taskNotifications,
+                                        );
+                                      }}
+                                    />
+                                    <FontAwesomeIcon
+                                      className="team-member-tasks-done"
+                                      icon={faCheck}
+                                      onClick={() => {
+                                        handleMarkAsDoneModal(user.personId, task);
+                                      }}
+                                    />
+                                  </div>
                                 )}
                               </p>
                             </td>
@@ -208,8 +291,12 @@ const TeamMemberTasks = props => {
                                 ${parseFloat(task.estimatedHours.toFixed(2))}`}
                                   </span>
                                   <Progress
-                                    color = {getProgressColor(task.hoursLogged,task.estimatedHours,true)}
-                                    value = {getProgressValue(task.hoursLogged,task.estimatedHours)}
+                                    color={getProgressColor(
+                                      task.hoursLogged,
+                                      task.estimatedHours,
+                                      true,
+                                    )}
+                                    value={getProgressValue(task.hoursLogged, task.estimatedHours)}
                                   />
                                 </div>
                               </td>
@@ -303,6 +390,13 @@ const TeamMemberTasks = props => {
         userId={currentUserId}
         toggle={handleOpenTaskNotificationModal}
         onApprove={handleTaskNotificationRead}
+        loggedInUserId={props.auth.user.userid}
+      />
+      <TaskDifferenceModal
+        isOpen={showMarkAsDoneModal}
+        task={currentTask}
+        userId={currentUserId}
+        toggle={handleMarkAsDoneModal}
         loggedInUserId={props.auth.user.userid}
       />
       <Table>

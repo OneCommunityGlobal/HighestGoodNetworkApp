@@ -65,6 +65,7 @@ const UserProjectsTable = React.memo(props => {
 
   useEffect(() => {
     setFilteredTasks(() => filterTasksByUserTaskSituation(actualType));
+    console.log('userTasks:', userTasks);
   }, [sortedTasksByNumber, actualType]);
 
   const removeOrAddTaskFromUser = (task, method) => {
