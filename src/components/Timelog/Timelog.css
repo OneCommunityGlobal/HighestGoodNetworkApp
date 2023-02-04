@@ -51,3 +51,13 @@
     width: 100%;
   }
 }
+
+#projectSelected {
+  max-width: 100%;
+}
+
+#projectSelected option {
+  overflow:hidden; 
+  white-space:nowrap; 
+  text-overflow:ellipsis;
+}
