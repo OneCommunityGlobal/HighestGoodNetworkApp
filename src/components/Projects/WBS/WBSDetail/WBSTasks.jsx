@@ -30,11 +30,13 @@ const WBSTasks = props => {
   const [selectedId, setSelectedId] = useState(null);
   const [filterState, setFilterState] = useState('all');
   const [openAll, setOpenAll] = useState(false);
+  const [loadAll, setLoadAll] = useState(false);
 
   const load = async()=>{
-    const le = [0,1,2,3,4];
-    await Promise.all(le.map(l => props.fetchAllTasks(wbsId, l)));
+    const levelList = [0,1,2,3,4];
+    await Promise.all(levelList.map(level => props.fetchAllTasks(wbsId, level)));
     AutoOpenAll(false);
+    setLoadAll(true);
   }
 
   useEffect(() => {
@@ -44,6 +46,7 @@ const WBSTasks = props => {
   }, [wbsId, projectId]);
 
   const refresh = () => {
+    setLoadAll(false);
     setIsShowImport(false);
     props.fetchAllTasks(wbsId, -1);
     setTimeout(() => {
@@ -222,6 +225,10 @@ const WBSTasks = props => {
         >
           Refresh{' '}
         </Button>
+
+        {loadAll === false? (
+        <Button color="warning" size="sm">  Task Loading......  </Button>
+        ) : null}
 
         <div className="toggle-all">
           <Button
