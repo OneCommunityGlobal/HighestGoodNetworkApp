@@ -99,7 +99,7 @@ const server = setupServer(
           totalintangibletime_hrs: 0,
           percentagespentintangible: 100,
           didMeetWeeklyCommitment: false,
-          weeklycommited: 10,
+          weeklycommitted: 10,
           tangibletime: 6,
           intangibletime: 0,
           tangibletimewidth: 100,

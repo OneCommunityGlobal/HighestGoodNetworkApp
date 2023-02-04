@@ -51,7 +51,7 @@ describe('UserProfile Redux related actions', () => {
       expect(userProfileSlice().privacySettings).toHaveProperty('blueSquares', true);
     });
 
-    it('should fetch general info : _id, role, phoneNumber, jobTitle, email, firstName, lastName, weeklyCommitedHours, teams and profilePic from the userProfile, and put it in the store', async () => {
+    it('should fetch general info : _id, role, phoneNumber, jobTitle, email, firstName, lastName, weeklyCommittedHours, teams and profilePic from the userProfile, and put it in the store', async () => {
       await store.dispatch(getUserProfile('1234'));
       expect(userProfileSlice()).toHaveProperty('_id', '1234');
       expect(userProfileSlice()).toHaveProperty('role', 'Administrator');

@@ -14,7 +14,7 @@ const mapStateToProps = state => {
       element.didMeetWeeklyCommitment =
         element.totaltangibletime_hrs >= element.weeklycommittedHours ? true : false;
 
-      element.weeklycommited = _.round(element.weeklycommittedHours, 2);
+      element.weeklycommitted = _.round(element.weeklycommittedHours, 2);
       element.tangibletime = _.round(element.totaltangibletime_hrs, 2);
       element.intangibletime = _.round(element.totalintangibletime_hrs, 2);
 
