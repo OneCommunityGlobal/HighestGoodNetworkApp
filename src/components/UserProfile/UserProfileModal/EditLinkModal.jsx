@@ -265,7 +265,6 @@ const EditLinkModal = props => {
             Cancel
           </Button>
         </ModalFooter>
-        /
       </Modal>
     </React.Fragment>
   );
