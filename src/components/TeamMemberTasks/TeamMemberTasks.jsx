@@ -19,6 +19,9 @@ import { getProgressColor, getProgressValue } from '../../utils/effortColors';
 import { fetchAllManagingTeams } from '../../actions/team';
 import EffortBar from 'components/Timelog/EffortBar';
 import TimeEntry from 'components/Timelog/TimeEntry';
+import TaskCompletedModal from './components/TaskCompletedModal';
+import { ENDPOINTS } from 'utils/URL';
+import axios from 'axios';
 
 const TeamMemberTasks = props => {
   const [isTimeLogActive, setIsTimeLogActive] = useState(0);
@@ -40,6 +43,20 @@ const TeamMemberTasks = props => {
   const userRole = props.auth.user.role;
   const userId = props.auth.user.userid;
 
+  const closeMarkAsDone = () => {
+    setMarkAsDoneModal(false);
+  };
+
+  const loadUserTasks = async id => {
+    const userId = id;
+    axios
+      .get(ENDPOINTS.TASKS_BY_USERID(userId))
+      .then(res => {
+        setTasks(res?.data || []);
+      })
+      .catch(err => console.log(err));
+  };
+
   const onUpdateTask = (taskId, updatedTask) => {
     const newTask = {
       updatedTask,
@@ -54,52 +71,14 @@ const TeamMemberTasks = props => {
       return tasksWithoutTheUpdated;
     });
     setUpdatedTasks(tasks => [...tasks, newTask]);
-    setChanged(true);
   };
 
-  const removeOrAddTaskFromUser = (task, method) => {
-    const resources = [...task.resources];
-    const newResources = resources?.map(resource => {
-      let newResource = { ...resource };
-      if (resource.userID === props.userId) {
-        if (method === 'remove') {
-          newResource = {
-            ...resource,
-            completedTask: true,
-          };
-        } else if (method === 'add') {
-          newResource = {
-            ...resource,
-            completedTask: false,
-          };
-        }
-      }
-      return newResource;
-    });
-
-    const updatedTask = { ...task, resources: newResources };
-    props.updateTask(task._id, updatedTask, method);
-  };
-
-  const handleSubmit = async () => {
+  const submitTasks = async () => {
     for (let i = 0; i < updatedTasks.length; i += 1) {
       const updatedTask = updatedTasks[i];
       const url = ENDPOINTS.TASK_UPDATE(updatedTask.taskId);
       axios.put(url, updatedTask.updatedTask).catch(err => console.log(err));
     }
-    try {
-      await props.updateUserProfile(props.match.params.userId, userProfile);
-      await props.refreshToken(userProfile._id);
-      await loadUserProfile();
-
-      await loadUserTasks();
-
-      setShowSaveWarning(false);
-    } catch (err) {
-      alert('An error occurred while attempting to save this profile.');
-    }
-    setShouldRefresh(true);
-    setChanged(false);
   };
 
   const handleOpenTaskNotificationModal = (userId, task, taskNotifications = []) => {
@@ -112,7 +91,7 @@ const TeamMemberTasks = props => {
   const handleMarkAsDoneModal = (userId, task) => {
     setCurrentUserId(userId);
     setCurrentTask(task);
-    setMarkAsDoneModal(!showTaskNotificationModal);
+    setMarkAsDoneModal(true);
   };
 
   const handleTaskNotificationRead = (userId, taskId, taskNotificationId) => {
@@ -392,12 +371,14 @@ const TeamMemberTasks = props => {
         onApprove={handleTaskNotificationRead}
         loggedInUserId={props.auth.user.userid}
       />
-      <TaskDifferenceModal
+      <TaskCompletedModal
         isOpen={showMarkAsDoneModal}
-        task={currentTask}
+        loadUserTasks={loadUserTasks}
+        submitTasks={submitTasks}
+        popupClose={closeMarkAsDone}
+        updateTask={onUpdateTask}
         userId={currentUserId}
-        toggle={handleMarkAsDoneModal}
-        loggedInUserId={props.auth.user.userid}
+        task={currentTask}
       />
       <Table>
         <thead>
