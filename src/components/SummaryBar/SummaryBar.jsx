@@ -34,11 +34,13 @@ import { getProgressColor, getProgressValue } from '../../utils/effortColors';
 const SummaryBar = props => {
   const { asUser, role, leaderData } = props;
   const [userProfile, setUserProfile] = useState(undefined);
+  const [infringements, setInfringements] = useState(0);
+  const [badges, setBadges] = useState(0);
+
   const [tasks, setTasks] = useState(undefined);
   const authenticateUser = useSelector(state => state.auth.user);
   const authenticateUserId = authenticateUser ? authenticateUser.userid : '';
   const { firstName, lastName, email, _id } = useSelector(state => state.userProfile);
-  const userPermissions = useSelector(state => state.auth.user?.permissions?.frontPermissions);
 
   const matchUser = asUser == authenticateUserId ? true : false;
   const timeEntries = useSelector(state => {
@@ -83,33 +85,21 @@ const SummaryBar = props => {
     getUserTask();
   }, [leaderData]);
 
+  useEffect(() => {
+    setInfringements(getInfringements());
+    setBadges(getBadges());
+  }, [userProfile]);
 
 
   //Get infringement count from userProfile
-  const getInfringements = user => {
-    if (user && user.infringements) {
-      return user.infringements.length;
-    } else {
-      return 0;
-    }
+  const getInfringements = () => {
+    return (userProfile && userProfile.infringements) ? userProfile.infringements.length : 0;
   };
 
   //Get badges count from userProfile
-  const getBadges = user => {
-    if (user && user.badgeCollection) {
-      return user.badgeCollection.length;
-    } else {
-      return 0;
-    }
+  const getBadges = () => {
+    return (userProfile && userProfile.badgeCollection) ? userProfile.badgeCollection.length : 0;
   };
-
-  // const getTasks = user => {
-  //   if (user && user.tasks) {
-  //     return state.tasks.taskItems.length;
-  //   } else {
-  //     return 0;
-  //   }
-  // };
 
   const getState = useSelector(state => {
     return state;
@@ -147,10 +137,6 @@ const SummaryBar = props => {
     openReport();
   };
 
-  // async componentDidMount() {
-  //   await this.props.getWeeklySummaries(this.props.currentUser.userid);
-  //   const { weeklySummariesCount } = this.props.summaries;}
-
   const onTaskClick = () => {
     window.location.hash = '#tasks';
   };
@@ -176,16 +162,14 @@ const SummaryBar = props => {
       return '';
     }
   };
-
+ 
   if (userProfile !== undefined && leaderData !== undefined) {
-    const infringements = getInfringements(userProfile);
-    const badges = getBadges(userProfile);
-    const { firstName, lastName, email, _id } = userProfile;
+    const { firstName, lastName, _id } = userProfile;
     let totalEffort = parseFloat(leaderData.find(x => x.personId === asUser).tangibletime);
     const weeklyCommittedHours = userProfile.weeklyComittedHours;
     const weeklySummary = getWeeklySummary(userProfile);
     return (
-      <Container fluid className={matchUser ? "px-lg-0 bg--bar" : "px-lg-0 bg--bar disabled-bar"}>
+      <Container fluid className={(matchUser || hasPermission(role, 'toggleSubmitForm')) ? "px-lg-0 bg--bar" : "px-lg-0 bg--bar disabled-bar"}>
         <Row className="no-gutters row-eq-height">
           <Col
             className="d-flex justify-content-center align-items-center col-lg-2 col-12 text-list"
