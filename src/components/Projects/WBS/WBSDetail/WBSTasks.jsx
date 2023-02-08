@@ -184,7 +184,17 @@ const WBSTasks = props => {
 
   const LoadTasks = props.state.tasks.taskItems
     .slice(0)
-    .sort((a, b) => a.num.split('.').join('') - b.num.split('.').join(''));
+    .sort((a, b) => {
+      var former = a.num.split('.');
+      var latter = b.num.split('.');
+      for(var i = 0; i< 4; i++){
+        var _former = +former[i] || 0;
+        var _latter = +latter[i] || 0;
+        if(_former === _latter) continue;
+        else return _former > _latter ? 1: -1
+      }
+      return 0;
+    });
   const filteredTasks = filterTasks(LoadTasks, filterState);
 
   return (
