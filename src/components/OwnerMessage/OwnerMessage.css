@@ -1,0 +1,16 @@
+.message-container {
+  display: flex;
+  align-items: center;
+}
+
+.message {
+  font-size: 16px;
+  color: white;
+  margin-right: 1rem;
+}
+
+@media (min-width: 1024px) {
+  .message-container {
+    margin-left: 3rem;
+  }
+}

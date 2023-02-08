@@ -1,5 +1,6 @@
 .header-wrapper {
   height: 83px;
+  white-space: nowrap;
 }
 
 .redBackGroupHeader {

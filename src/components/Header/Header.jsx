@@ -6,6 +6,7 @@ import { getAllRoles } from '../../actions/role';
 import { Link } from 'react-router-dom';
 import { connect, useDispatch } from 'react-redux';
 import Timer from '../Timer/Timer';
+import OwnerMessage from '../OwnerMessage/OwnerMessage';
 import {
   LOGO,
   DASHBOARD,
@@ -82,6 +83,7 @@ export const Header = props => {
          */}
         {logoutPopup && <Logout open={logoutPopup} setLogoutPopup={setLogoutPopup} />}
         {isAuthenticated && <Timer />}
+        {isAuthenticated && <OwnerMessage props={props}/>}
         <NavbarToggler onClick={toggle} />
         {isAuthenticated && (
           <Collapse isOpen={isOpen} navbar>
