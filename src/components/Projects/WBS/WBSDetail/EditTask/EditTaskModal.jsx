@@ -71,8 +71,8 @@ const EditTaskModal = props => {
   // links
   const [links, setLinks] = useState(thisTask?.links);
 
-  // Classification
-  const [classification, setClassification] = useState(thisTask?.classification);
+  // Category
+  const [category, setCategory] = useState(thisTask?.category);
 
   // Why info (Why is this task important)
   const [whyInfo, setWhyInfo] = useState(thisTask?.whyInfo);
@@ -100,7 +100,7 @@ const EditTaskModal = props => {
     setHoursMost(thisTask?.hoursMost);
     setHoursEstimate(thisTask?.estimatedHours);
     setLinks(thisTask?.links);
-    setClassification(thisTask?.classification);
+    setCategory(thisTask?.category);
     setWhyInfo(thisTask?.whyInfo);
     setIntentInfo(thisTask?.intentInfo);
     setEndstateInfo(thisTask?.endstateInfo);
@@ -250,7 +250,7 @@ const EditTaskModal = props => {
       whyInfo,
       intentInfo,
       endstateInfo,
-      classification,
+      category,
     };
 
     props.updateTask(
@@ -508,7 +508,7 @@ const EditTaskModal = props => {
               <tr>
                 <td scope="col">Category</td>
                 <td scope="col">
-                  <select value={classification} onChange={e => setClassification(e.target.value)}>
+                  <select value={category} onChange={e => setCategory(e.target.value)}>
                     <option value="Food">Food</option>
                     <option value="Energy">Energy</option>
                     <option value="Housing">Housing</option>
