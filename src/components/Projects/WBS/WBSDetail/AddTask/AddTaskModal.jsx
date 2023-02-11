@@ -375,6 +375,8 @@ const AddTaskModal = props => {
     if (res){
       setProjectCategory(res.category);
       setClassification(res.category);
+      }
+     },[]);
   useEffect(() => {
     if (props.level >= 1) {
       const classificationMother = props.tasks.taskItems.find(({ _id }) => _id === props.taskId)
