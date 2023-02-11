@@ -2,9 +2,9 @@ import axios from 'axios';
 import { SET_TIMER } from '../constants/timer';
 import { ENDPOINTS } from '../utils/URL';
 
-export const getTimerData = (userId) => {
+export const getTimerData = userId => {
   const url = ENDPOINTS.TIMER(userId);
-  return async (dispatch) => {
+  return async dispatch => {
     try {
       const res = await axios.get(url);
       if (res.status === 200) {
@@ -36,7 +36,7 @@ export const startTimer = async (userId, seconds) => {
   }
 };
 
-export const updateTimer = async (userId) => {
+export const updateTimer = async userId => {
   const url = ENDPOINTS.TIMER(userId);
 
   try {
@@ -61,10 +61,10 @@ export const pauseTimer = async (userId, seconds) => {
   }
 };
 
-export const stopTimer = (userId) => {
+export const stopTimer = userId => {
   const url = ENDPOINTS.TIMER(userId);
 
-  return async (dispatch) => {
+  return async dispatch => {
     try {
       const res = await axios.put(url, {
         pausedAt: 0,
@@ -78,7 +78,7 @@ export const stopTimer = (userId) => {
   };
 };
 
-export const setTimer = (data) => ({
+export const setTimer = data => ({
   type: SET_TIMER,
   payload: data,
 });

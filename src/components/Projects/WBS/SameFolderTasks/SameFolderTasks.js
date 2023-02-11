@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { connect, useSelector } from 'react-redux';
 import { ENDPOINTS } from 'utils/URL';
+
 import EditTaskModal from '../WBSDetail/EditTask/EditTaskModal';
 import ModalDelete from '../../../common/Modal';
 import { Button } from 'reactstrap';
@@ -10,11 +11,13 @@ import { deleteTask, fetchAllTasks } from '../../../../actions/task';
 import * as Message from '../../../../languages/en/messages';
 import { getPopupById } from '../../../../actions/popupEditorAction';
 import { TASK_DELETE_POPUP_ID } from '../../../../constants/popupId';
+
 const SameFolderTasks = props => {
   const taskId = props.match.params.taskId;
 
   const [task, setTask] = useState({});
   const [wbsId, setWBSId] = useState('');
+
   const [allTasks, setAllTasks] = useState([]);
   const [WBS, setWBS] = useState({});
   const [loading, setLoading] = useState(false);
@@ -32,7 +35,6 @@ const SameFolderTasks = props => {
         console.log(error);
       }
     };
-
     fetchTaskData();
   }, []);
 
@@ -45,6 +47,7 @@ const SameFolderTasks = props => {
         console.log(error);
       }
     };
+
     fetchAllTasks();
     fetchWBSData();
   }, [wbsId]);
@@ -245,3 +248,24 @@ export default connect(mapStateToProps, {
   deleteTask,
   getPopupById,
 })(SameFolderTasks);
+    fetchWBSData();
+  }, [wbsId]);
+
+  let projectId = WBS.projectId;
+  let wbsName = WBS.wbsName;
+
+  if (task.mother === null || task.mother === taskId) {
+    return (
+      <div className="App">
+        <p>There are no other tasks in this task's folder.</p>
+        <a href={`/wbs/tasks/${wbsId}/${projectId}/${wbsName}`}>
+          Click here to visit the source WBS ({wbsName}) that contains this task
+        </a>
+      </div>
+    );
+  } else {
+    return <p>the same folder tasks </p>;
+  }
+};
+
+export default SameFolderTasks;

@@ -81,6 +81,7 @@ const AddTaskModal = props => {
 
   // Classification
   const classificationOptions = [
+
     {value:"Food",label:"Food"},
     {value:"Energy",label:"Energy"},
     {value:"Housing",label:"Housing"},
@@ -90,8 +91,7 @@ const AddTaskModal = props => {
     {value:"Stewardship",label:"Stewardship"},
     {value:"Other",label:"Other"}
   ]
-  const [projectCategory, setProjectCategory] = useState('');
-  const [classification, setClassification] = useState('');
+  const [classification, setClassification] = useState('Housing');
 
   // Warning
   const [dateWarning, setDateWarning] = useState(false);
@@ -101,7 +101,6 @@ const AddTaskModal = props => {
     if (tasks.length > 0) {
       if (props.taskId) {
         const childTasks = tasks.filter(task => task.mother === props.taskId);
-
         newNum = `${props.parentNum !== null ? props.parentNum + '.' : ''}${childTasks.length + 1}`;
         newNum = newNum.replace(/.0/g, '');
       } else {
@@ -355,7 +354,7 @@ const AddTaskModal = props => {
       endstateInfo: endstateInfo,
       classification,
     };
-
+    
     props.addNewTask(newTask, props.wbsId);
 
     setTimeout(() => {
@@ -368,6 +367,7 @@ const AddTaskModal = props => {
     toggle();
   };
 
+
   useEffect(() => {}, [tasks]);
 
   useEffect(() =>{
@@ -375,8 +375,20 @@ const AddTaskModal = props => {
     if (res){
       setProjectCategory(res.category);
       setClassification(res.category);
+  useEffect(() => {
+    if (props.level >= 1) {
+      const classificationMother = props.tasks.taskItems.find(({ _id }) => _id === props.taskId)
+        .classification;
+        if(classificationMother){
+          setClassification(classificationMother);
+        }
     }
-  })
+    else {
+      const res = props.allProjects.projects.filter(obj => obj._id === props.projectId)[0];
+      setClassification(res.category);
+    }
+  }, [props.level]);
+
 
   getNewNum();
 
@@ -622,7 +634,7 @@ const AddTaskModal = props => {
               <tr>
                 <td scope="col">Classification</td>
                 <td scope="col">
-                  <select defaultValue={projectCategory} onChange={e => setClassification(e.target.value)}>
+                  <select value={classification} onChange={e => setClassification(e.target.value)} >
                     {classificationOptions.map(cla =>{
                       return <option value={cla.value} key={cla.value}>{cla.label}</option>
                     })}

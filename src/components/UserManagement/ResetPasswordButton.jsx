@@ -48,13 +48,13 @@ class ResetPasswordButton extends React.PureComponent {
   resetPassword = (newPassword, confimrPassword) => {
     let userData = { newpassword: newPassword, confirmnewpassword: confimrPassword };
     resetPassword(this.props.user._id, userData)
-      .then((res) => {
+      .then(res => {
         toast.success('Password reset action has been completed.');
         this.setState({
           resetPopupOpen: false,
         });
       })
-      .catch((error) => {
+      .catch(error => {
         toast.error('Password reset failed ! Please try again with a strong password.');
       });
   };
