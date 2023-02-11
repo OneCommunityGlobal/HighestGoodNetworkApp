@@ -3,21 +3,42 @@ import { Link, useHistory } from 'react-router-dom';
 import { Button, Input, Alert } from 'reactstrap';
 import { toast } from 'react-toastify';
 import { forgotPassword } from '../../services/authorizationService';
+import Joi from 'joi';
 
 const ForgotPassword = React.memo(() => {
-  const [email, onEmailChange] = useState('');
-  const [firstName, setFirstName] = useState('');
-  const [lastName, setLastName] = useState('');
-  const [message, setMessage] = useState({ success: true, msg: '' });
+  const [message, setMessage] = useState({});
   const history = useHistory();
+  const [user, setUser] = useState({
+    firstName: '',
+    lastName: '',
+    email: '',
+  });
+
+  const schema = {
+    firstName: Joi.string().required(),
+    lastName: Joi.string().required(),
+    email: Joi.string()
+      .email()
+      .required(),
+  };
 
   const onForgotPassword = () => {
-    if (email === '') {
-      setMessage({ success: false, msg: 'Please enter the email id.' });
-    } else if (firstName === '' || lastName === '') {
-      setMessage({ success: false, msg: 'Please enter your full name.' });
+    const result = Joi.validate(user, schema, { abortEarly: false });
+    const { error } = result;
+    if (error) {
+      const errorData = {};
+      for (let item of error.details) {
+        const name = item.path[0];
+        const message = item.message;
+        errorData[name] = message;
+      }
+      setMessage(errorData);
     } else {
-      const forgotPasswordData = { email: email, firstName: firstName, lastName: lastName };
+      const forgotPasswordData = {
+        email: user.email,
+        firstName: user.firstName,
+        lastName: user.lastName,
+      };
       forgotPassword(forgotPasswordData)
         .then(() => {
           toast.success(
@@ -35,6 +56,29 @@ const ForgotPassword = React.memo(() => {
     }
   };
 
+  const validateInput = (name, value) => {
+    const obj = { [name]: value };
+    const subSchema = { [name]: schema[name] };
+    const vaildateResult = Joi.validate(obj, subSchema);
+    const { error } = vaildateResult;
+    return error ? error.details[0].message : null;
+  };
+
+  const handleInput = e => {
+    const { name, value } = e.target;
+    let errorData = { ...message };
+    const errorMessage = validateInput(name, value);
+    if (errorMessage) {
+      errorData[name] = errorMessage;
+    } else {
+      delete errorData[name];
+    }
+    let userData = { ...user };
+    userData[name] = value;
+    setUser(userData);
+    setMessage(errorData);
+  };
+
   return (
     <div className="container mt-5">
       <form className="col-md-6 xs-12">
@@ -42,35 +86,32 @@ const ForgotPassword = React.memo(() => {
         <Input
           type="text"
           placeholder="Enter your email ID"
-          value={email}
-          onChange={e => {
-            onEmailChange(e.target.value);
-          }}
+          name="email"
+          value={user.email}
+          onChange={handleInput}
         />
+        {message.email && <div className="alert alert-danger">{message.email}</div>}
 
         <label>First Name</label>
         <Input
           type="text"
           placeholder="Enter your first name"
-          value={firstName}
-          onChange={e => {
-            setFirstName(e.target.value);
-          }}
+          name="firstName"
+          value={user.firstName}
+          onChange={handleInput}
         />
+        {message.firstName && <div className="alert alert-danger">{message.firstName}</div>}
 
         <label>Last Name</label>
         <Input
           type="text"
           placeholder="Enter your last name"
-          value={lastName}
-          onChange={e => {
-            setLastName(e.target.value);
-          }}
+          name="lastName"
+          value={user.lastName}
+          onChange={handleInput}
         />
+        {message.lastName && <div className="alert alert-danger">{message.lastName}</div>}
 
-        {message.msg !== '' && (
-          <Alert color={message.success ? 'success' : 'danger'}>{message.msg}</Alert>
-        )}
         <div style={{ marginTop: '40px' }}>
           <Button color="primary" onClick={onForgotPassword}>
             Submit
