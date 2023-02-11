@@ -25,6 +25,7 @@ const Task = props => {
   const userPermissions = props.state.auth.user?.permissions?.frontPermissions;
   useEffect(() => {
     setIsCopied(false);
+    console.log('props.filteredTasks:', props.filteredTasks);
   }, [1]);
   // modal
   const [modal, setModal] = useState(false);
@@ -90,6 +91,11 @@ const Task = props => {
     }
 
     setIsOpen(!isOpen);
+  };
+
+  const getParentCategory = id => {
+    let parentCategory = props.filteredTasks.find(task => task._id === id);
+    return parentCategory.taskName;
   };
 
   const openChild = (num, id) => {
@@ -218,7 +224,7 @@ const Task = props => {
                         aria-hidden="true"
                       ></i>
                     ) : null}{' '}
-                    {props.name}
+                    {getParentCategory(props.mother) + '/' + props.name}
                   </span>
                 </div>
               ) : null}
@@ -237,7 +243,7 @@ const Task = props => {
                         aria-hidden="true"
                       ></i>
                     ) : null}{' '}
-                    {props.name}
+                    {getParentCategory(props.mother) + '/' + props.name}
                   </span>
                 </div>
               ) : null}
@@ -256,7 +262,7 @@ const Task = props => {
                         aria-hidden="true"
                       ></i>
                     ) : null}{' '}
-                    {props.name}
+                    {getParentCategory(props.mother) + '/' + props.name}
                   </span>
                 </div>
               ) : null}

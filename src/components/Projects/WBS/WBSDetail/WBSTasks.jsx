@@ -140,7 +140,7 @@ const WBSTasks = props => {
           return taskItem;
         }
       });
-    }else if (filter === 'complete') {
+    } else if (filter === 'complete') {
       return allTaskItems.filter(taskItem => {
         if (taskItem.status === 'Complete') {
           return taskItem;
@@ -295,6 +295,7 @@ const WBSTasks = props => {
                 whyInfo={task.whyInfo}
                 intentInfo={task.intentInfo}
                 endstateInfo={task.endstateInfo}
+                filteredTasks={filteredTasks}
               />
             ))}
           </tbody>
