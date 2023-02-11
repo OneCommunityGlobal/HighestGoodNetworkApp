@@ -1,49 +1,91 @@
 import React, { useState, useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import axios from 'axios';
+import { ENDPOINTS } from '../../utils/URL';
+import { toast } from 'react-toastify';
 
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
-
-import styles from './OwnerMessage.css'
-
+import styles from './OwnerMessage.css';
+import logo from './assets/logo.svg';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEdit, faTrashAlt } from '@fortawesome/free-regular-svg-icons';
+import { getMessage } from 'actions/badgeManagement';
 
 export default function OwnerMessage({props}) {
-  const { isAuthenticated, user, firstName, profilePic } = props.auth;
+  const { user } = props.auth;
 
+  const [ownerMessageId, setOwnerMessageId] = useState('')
   const [newMessage, setNewMessage] = useState('');
-  const [message, setMessage] = useState('Edit message');
+  const [displayingMessage, setDisplayingMessage] = useState('');
   const [modal, setModal] = useState(false);
   const [modalDeleteWarning, setModalDeleteWarning] = useState(false);
 
   const toggle = () => setModal(!modal);
   const toggleDeleteWarning = () => setModalDeleteWarning(!modalDeleteWarning);
 
-  function handleCreateMessage() {
-    setMessage(newMessage);
-    toggle();
+  async function handleMessage() {
+    const ownerMessage = {
+      newMessage: newMessage
+    }
+
+    if(displayingMessage === '') {
+      await axios.post(ENDPOINTS.OWNERMESSAGE(), ownerMessage)
+      .then(console.log(ownerMessage))
+      setDisplayingMessage(newMessage);
+      toast.success('Message successfully created!');
+      toggle();
+    } else {
+      axios.put(ENDPOINTS.OWNERMESSAGE_BY_ID(ownerMessageId), ownerMessage)
+      setDisplayingMessage(newMessage);
+      toast.success('Message successfully updated!');
+      toggle();
+    }
   }
 
-  function handleDeleteMessage() {
-    setMessage('');
+  async function handleDeleteMessage() {
+    await axios.delete(ENDPOINTS.OWNERMESSAGE());
     toggleDeleteWarning();
+    setDisplayingMessage('');
   }
+
+  async function getMessage() {
+    const { data } = await axios.get(ENDPOINTS.OWNERMESSAGE());
+    if(data[0]) {
+      const message = data[0].message;
+      const id = data[0]._id;
+      setDisplayingMessage(message);
+      setOwnerMessageId(id);
+    } else {
+      return;
+    }
+  }
+
+ useEffect(() => {
+    getMessage()
+  }, [])
 
   return(
     <div className="message-container">
-      <span className="message">{message}</span>
-      <FontAwesomeIcon
-        icon={faEdit}
-        size="md"
-        className="mr-3 text-primary"
-        onClick={toggle}
-      />
-      <FontAwesomeIcon
-        icon={faTrashAlt}
-        size="md"
-        className="mr-3 text-danger"
-        onClick={toggleDeleteWarning}
-      />
+      {
+      displayingMessage ? (<span className="message">{displayingMessage}</span>) : (<img src={logo} width="100" height="50"/>)
+      }
+
+      {
+        user.role == 'Owner' && (
+          <div>
+            <FontAwesomeIcon
+              icon={faEdit}
+              className="mr-3 text-primary"
+              onClick={toggle}
+            />
+            <FontAwesomeIcon
+              icon={faTrashAlt}
+              className="mr-3 text-danger"
+              onClick={toggleDeleteWarning}
+            />
+          </div>
+        )
+      }
+
 
       <Modal isOpen={modal} toggle={toggle}>
         <ModalHeader toggle={toggle}>Create message</ModalHeader>
@@ -58,7 +100,7 @@ export default function OwnerMessage({props}) {
           <Button color="secondary" onClick={toggle}>
             Cancel
           </Button>
-          <Button color="primary" onClick={handleCreateMessage}>
+          <Button color="primary" onClick={handleMessage}>
             Create
           </Button>{' '}
         </ModalFooter>
