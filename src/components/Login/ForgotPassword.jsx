@@ -15,8 +15,12 @@ const ForgotPassword = React.memo(() => {
   });
 
   const schema = {
-    firstName: Joi.string().required(),
-    lastName: Joi.string().required(),
+    firstName: Joi.string()
+      .trim()
+      .required(),
+    lastName: Joi.string()
+      .trim()
+      .required(),
     email: Joi.string()
       .email()
       .required(),
@@ -71,9 +75,23 @@ const ForgotPassword = React.memo(() => {
         },
       );
     } else if (name === 'firstName') {
-      vaildateResult = Joi.validate({ [name]: value }, { firstName: Joi.string().required() });
+      vaildateResult = Joi.validate(
+        { [name]: value },
+        {
+          firstName: Joi.string()
+            .trim()
+            .required(),
+        },
+      );
     } else if (name === 'lastName') {
-      vaildateResult = Joi.validate({ [name]: value }, { lastName: Joi.string().required() });
+      vaildateResult = Joi.validate(
+        { [name]: value },
+        {
+          lastName: Joi.string()
+            .trim()
+            .required(),
+        },
+      );
     }
     const { error } = vaildateResult;
     const errorMessage = error ? error.details[0].message : null;
