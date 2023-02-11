@@ -55,7 +55,7 @@ const ForgotPassword = React.memo(() => {
         });
     }
   };
-
+/*
   const validateInput = (name, value) => {
     const obj = { [name]: value };
     const subSchema = { [name]: schema[name] };
@@ -63,11 +63,14 @@ const ForgotPassword = React.memo(() => {
     const { error } = vaildateResult;
     return error ? error.details[0].message : null;
   };
+  */
 
   const handleInput = e => {
     const { name, value } = e.target;
     let errorData = { ...message };
-    const errorMessage = validateInput(name, value);
+    const vaildateResult = Joi.validate({ [name]: value }, { [name]: schema[name] });
+    const { error } = vaildateResult;
+    const errorMessage = error ? error.details[0].message : null;
     if (errorMessage) {
       errorData[name] = errorMessage;
     } else {
