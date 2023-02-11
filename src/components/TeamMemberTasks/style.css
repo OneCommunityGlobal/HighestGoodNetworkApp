@@ -6,6 +6,10 @@
 }
 
 /******** team member tasks container ********/
+.loading-animation {
+  margin: 0 auto;
+}
+
 .team-member-container {
   display: grid;
   grid-template-columns: 1fr 3fr 3fr 10fr;
@@ -68,33 +72,27 @@
   border-bottom: 0;
 }
 
-/* 24 48 72 hours btn */
-.circle-border {
-  border: 3px solid gray;
+/******** btn-group ********/
+.hours-btn {
+  border: 0;
+  padding: 0.3rem 1rem;
   border-radius: 8px;
-  width: 50px;
-  height: 50px;
   font-size: 15px;
   font-weight: bold;
   font-family: Arial, Helvetica, sans-serif;
   margin-right: 20px;
   color: white;
-  /* box-shadow: 3px 1px 5px 1px rgb(166, 161, 161); */
+  box-shadow: 3px 2px 4px 0px rgb(110, 108, 108);
 }
 
-.show-more-btn {
-  border: 0;
-  border-radius: 50%;
-  background-color: darkgrey;
-  grid-column: 4/5;
-  justify-self: center;
+.hours-btn:hover {
+  transform: scale(1.05);
 }
 
-.circle-border:hover {
-  transform: scale(1.1);
+.hours-btn:active {
+  transform: scale(1);
 }
 
-.circle-border:active {
-  transform: scale(0.95);
-  box-shadow: 1px 1px 15px 1px rgba(0, 0, 0, 0.15);
+.btn-clear-timelogs {
+  color: rgb(85, 83, 83);
 }

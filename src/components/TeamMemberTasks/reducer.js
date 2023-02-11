@@ -17,6 +17,10 @@ export const teamMemberTasksReducer = (state = initialState, action) => {
     // TODO:
     //   1. check structure of usersWithTasks to find what id is called for user, task, and taskNotification
     //   2. check what taskNotification looks like when there is no taskNotification - is it an empty array? empty object? something else?
+    case 'DATA_LOADING':
+      return { ...state, isLoading: true };
+    case 'FINISH_LOADING':
+      return { ...state, isLoading: false };
     case 'DELETE_TASK_NOTIFICATION_SUCCESS':
       return {
         ...state,

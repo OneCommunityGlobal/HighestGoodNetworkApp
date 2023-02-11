@@ -1,12 +1,10 @@
-import React, { useState } from 'react';
-import { faCircle, faArrowUp, faArrowDown } from '@fortawesome/free-solid-svg-icons';
+import React from 'react';
+import { faCircle } from '@fortawesome/free-solid-svg-icons';
 import { Link } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import TaskAndProgressBar from './TaskAndProgressBar';
 
 const TeamMember = ({ user }) => {
-  const [isOpen, setIsOpen] = useState(false);
-
   let totalHoursLogged = 0;
   let totalHoursRemaining = 0;
   let activeTasks = [];
@@ -49,23 +47,12 @@ const TeamMember = ({ user }) => {
         <font color="red">{totalHoursRemaining ? totalHoursRemaining.toFixed(1) : 0}</font>
       </div>
       <div className="team-member-tasks-list">
-        {activeTasks.slice(0, isOpen ? activeTasks.length : 1).map((task, index) => {
-          // let isActiveTaskForUser = true;
-          // if (task?.resources) {
-          //   isActiveTaskForUser = !task.resources?.find(
-          //     resource => resource.userID === user.personId,
-          //   ).completedTask;
-          // }
+        {activeTasks.map((task, index) => {
           if (task.wbsId && task.projectId) {
             return <TaskAndProgressBar task={task} user={user} key={task._id} />;
           }
         })}
       </div>
-      {activeTasks.length > 1 && (
-        <button type="button" className="show-more-btn" onClick={() => setIsOpen(!isOpen)}>
-          <FontAwesomeIcon icon={isOpen ? faArrowUp : faArrowDown} style={{ color: 'white' }} />
-        </button>
-      )}
     </div>
   );
 };

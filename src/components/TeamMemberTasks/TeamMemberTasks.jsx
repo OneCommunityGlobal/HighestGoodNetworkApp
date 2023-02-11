@@ -14,6 +14,7 @@ import { getUserProfile } from '../../actions/userProfile';
 import { fetchAllManagingTeams } from '../../actions/team';
 import { getTeamMemberTasksData } from './selectors';
 import { getTimeEntriesForPeriod } from '../../actions/timeEntries';
+import { dataLoading, finishLoading } from './actions';
 import TeamMemberTimeEntry from './TeamMemberTimeEntry';
 import TeamMember from './TeamMember';
 import moment from 'moment';
@@ -29,19 +30,14 @@ const TeamMemberTasks = props => {
   const [teamList, setTeamList] = useState([]);
   const [timeEntriesList, setTimeEntriesList] = useState([]);
   const [timeEntriesActive, setTimeEntriesActive] = useState(false);
+  const [selectedPeriod, setSelectedPeriod] = useState();
   const { isLoading, usersWithTasks } = useSelector(getTeamMemberTasksData);
-  const timeEntriesForPeriod = useSelector(state => state.timeEntries.period);
   const dispatch = useDispatch();
-  let newList;
 
   useEffect(() => {
     dispatch(fetchTeamMembersTask());
     renderTeamsList();
   }, []);
-
-  // useEffect(() => {
-  //   setTimeEntriesList(...timeEntriesForPeriod);
-  // }, [timeEntriesForPeriod]);
 
   const handleOpenTaskNotificationModal = (userId, task, taskNotifications = []) => {
     setCurrentUserId(userId);
@@ -55,29 +51,35 @@ const TeamMemberTasks = props => {
     handleOpenTaskNotificationModal();
   };
 
-  const displayTimeEntriesForPeriod = async () => {
-    const result = getTimeEntriesForPeriod();
-    setTimeEntriesActive(true);
-  };
-
-  const getTimeEntriesForPeriod = async () => {
-    newList = [];
+  const getTimeEntriesForPeriod = async period => {
+    if (selectedPeriod === period && timeEntriesList.length > 0) {
+      setTimeEntriesActive(true);
+      return;
+    }
+    setSelectedPeriod(period);
+    let newList = [];
     const fromDate = moment()
       .tz('America/Los_Angeles')
-      .subtract(1, 'day')
+      .subtract(period, 'hours')
       .format('YYYY-MM-DD');
 
     const toDate = moment()
       .tz('America/Los_Angeles')
       .format('YYYY-MM-DD');
 
-    for (const user of teamList) {
+    dispatch(dataLoading());
+
+    const requests = teamList.map(async user => {
       const url = ENDPOINTS.TIME_ENTRIES_PERIOD(user.personId, fromDate, toDate);
-      const res = await axios.get(url);
-      if (res.data.length > 0) newList.push(...res.data);
+      return axios.get(url);
+    });
+    const responses = await Promise.all(requests);
+    for (const response of responses) {
+      if (response.data.length > 0) newList.push(...response.data);
     }
-    await Promise.all(newList);
-    setTimeEntriesList([...newList]);
+
+    setTimeEntriesList(newList);
+    dispatch(finishLoading());
     setTimeEntriesActive(true);
   };
 
@@ -142,32 +144,38 @@ const TeamMemberTasks = props => {
     <div className="container team-member-tasks">
       <header className="header-box">
         <h1>Team Member Tasks</h1>
-        <div>
-          <button type="button" onClick={() => setTimeEntriesActive(false)}>
-            Close timelogs
+        <div className="header-box_btn-group">
+          <button
+            type="button"
+            className="hours-btn btn-clear-timelogs"
+            onClick={() => setTimeEntriesActive(false)}
+          >
+            Clear Timelogs
           </button>
           <button
             type="button"
-            className="circle-border btn-24"
+            className="hours-btn btn-24"
             title="Timelogs submitted in the past 24 hours"
             style={{ backgroundColor: '#3498db' }}
-            onClick={() => getTimeEntriesForPeriod()}
+            onClick={() => getTimeEntriesForPeriod(24)}
           >
             24h
           </button>
           <button
             type="button"
-            className="circle-border btn-48"
+            className="hours-btn btn-48"
             title="Timelogs submitted in the past 48 hours"
             style={{ backgroundColor: '#c0392b' }}
+            onClick={() => getTimeEntriesForPeriod(48)}
           >
             48h
           </button>
           <button
             type="button"
-            className="circle-border btn-72"
+            className="hours-btn btn-72"
             title="Timelogs submitted in the past 72 hours"
             style={{ backgroundColor: '#27ae60' }}
+            onClick={() => getTimeEntriesForPeriod(72)}
           >
             72h
           </button>
@@ -205,7 +213,7 @@ const TeamMemberTasks = props => {
         </ul>
         <div>
           {isLoading ? (
-            <Loading />
+            <Loading className="loading-animation" />
           ) : (
             teamList.map(user => {
               if (!timeEntriesActive) {
