@@ -81,7 +81,6 @@ const SummaryBar = props => {
   useEffect(() => {
     loadUserProfile();
     getUserTask();
-  }, []);
   }, [leaderData]);
 
 
