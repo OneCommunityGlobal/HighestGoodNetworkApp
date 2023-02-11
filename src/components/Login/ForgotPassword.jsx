@@ -14,13 +14,13 @@ const ForgotPassword = React.memo(() => {
     email: '',
   });
 
-  const schema = Joi.object({
+  const schema = {
     firstName: Joi.string().required(),
     lastName: Joi.string().required(),
     email: Joi.string()
       .email()
       .required(),
-  });
+  };
 
   const onForgotPassword = () => {
     const result = Joi.validate(user, schema, { abortEarly: false });
@@ -59,11 +59,17 @@ const ForgotPassword = React.memo(() => {
   const handleInput = e => {
     const { name, value } = e.target;
     let errorData = { ...message };
-    const propertyToValidate = { [name]: value };
-    const schemaOfProperty = Joi.object({ [name]: schema.extract(name) });
-    const { error } = schemaOfProperty.validate(propertyToValidate);
+    var vaildateResult = {};
+    if(name==='email'){
+      vaildateResult = Joi.validate({ [name]: value }, {email: Joi.string().email().required()});
+    }else if(name==='firstName'){
+      vaildateResult = Joi.validate({ [name]: value }, {firstName: Joi.string().required()});
+    }else if(name==='lastName'){
+      vaildateResult = Joi.validate({ [name]: value }, {lastName: Joi.string().required()});
+    }
+    console.log(vaildateResult);
     //const vaildateResult = Joi.validate({ [name]: value }, { [name]: schema[name] });
-    //const { error } = vaildateResult;
+    const { error } = vaildateResult;
     const errorMessage = error ? error.details[0].message : null;
     if (errorMessage) {
       errorData[name] = errorMessage;
