@@ -143,7 +143,7 @@ const UserProfile = props => {
       const user = response.data;
       let summaries = user.weeklySummaries;
       if (summaries && Array.isArray(summaries) && summaries[0] && summaries[0].summary) {
-        setSummarySelected(summaries[0].summary);
+        setSummarySelected([summaries[0].summary, summaries[1].summary, summaries[2].summary]);
         setSubmittedSummary(true);
       } else {
         setSummarySelected('loading');
@@ -593,15 +593,34 @@ const UserProfile = props => {
             ) : (
               <div></div>
             )}
-            {summarySelected === 'loading' && showSummaries && !submittedSummary ? (
-              <h5>User has not submitted a summary for this week.</h5>
-            ) : (
-              <div></div>
-            )}
             {summarySelected && showSummaries && submittedSummary ? (
               <div>
-                <h5>Viewing {summaryName}'s summary.</h5>
-                {parse(summarySelected)}
+                {summarySelected[0] != '' ? (
+                  <div>
+                    <h5>Viewing {summaryName}'s summary.</h5>
+                    {parse(summarySelected[0])}
+                  </div>
+                ) : (
+                  <h5>{summaryName} did not submit a submit a summary for this week.</h5>
+                )}
+
+                {summarySelected[1] != '' ? (
+                  <div>
+                    <h5>Viewing {summaryName}'s last week's summary.</h5>
+                    {parse(summarySelected[1])}
+                  </div>
+                ) : (
+                  <h5>{summaryName} did not submit a submit a summary for last week.</h5>
+                )}
+
+                {summarySelected[2] != '' ? (
+                  <div>
+                    <h5>Viewing {summaryName}'s summary from two weeks ago.</h5>
+                    {parse(summarySelected[2])}
+                  </div>
+                ) : (
+                  <h5>{summaryName} did not submit a submit a summary two weeks ago.</h5>
+                )}
               </div>
             ) : (
               <div></div>
