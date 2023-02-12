@@ -95,7 +95,8 @@ const Task = props => {
 
   const getParentCategory = id => {
     let parentCategory = props.filteredTasks.find(task => task._id === id);
-    return parentCategory.taskName;
+    if (parentCategory) return parentCategory.taskName;
+    else return '';
   };
 
   const openChild = (num, id) => {
