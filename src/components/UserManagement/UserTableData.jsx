@@ -5,6 +5,8 @@ import { UserStatus, FinalDay } from '../../utils/enums';
 import { useHistory } from 'react-router-dom';
 import ActiveCell from './ActiveCell';
 import hasPermission from 'utils/permissions';
+import Table from 'react-bootstrap/Table';
+
 
 /**
  * The body row of the user table
@@ -12,7 +14,7 @@ import hasPermission from 'utils/permissions';
 const UserTableData = React.memo(props => {
   const [isChanging, onReset] = useState(false);
   const history = useHistory();
-
+  
   /**
    * reset the changing state upon rerender with new isActive status
    */
@@ -33,10 +35,6 @@ const UserTableData = React.memo(props => {
       <td>
         <a
           href={`/userprofile/${props.user._id}`}
-          onClick={e => {
-            e.preventDefault();
-            history.push('/userprofile/' + props.user._id);
-          }}
         >
           {props.user.firstName}
         </a>
@@ -44,10 +42,6 @@ const UserTableData = React.memo(props => {
       <td>
         <a
           href={`/userprofile/${props.user._id}`}
-          onClick={e => {
-            e.preventDefault();
-            history.push('/userprofile/' + props.user._id);
-          }}
         >
           {props.user.lastName}
         </a>
@@ -114,7 +108,7 @@ const UserTableData = React.memo(props => {
           <ResetPasswordButton user={props.user} isSmallButton />
         </span>
       </td>
-    </tr>
+    </tr> 
   );
 });
 

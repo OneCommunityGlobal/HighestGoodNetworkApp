@@ -4,7 +4,7 @@ import { SEARCH } from '../../languages/en/ui';
 /**
  * The search panel stateless component for  Rreport grid
  */
-const ReportTableSearchPanel = (props) => {
+const ReportTableSearchPanel = props => {
   return (
     <div className="input-group" id="new_team">
       <div className="input-group-prepend" style={{ marginLeft: '10px' }}>
@@ -17,7 +17,7 @@ const ReportTableSearchPanel = (props) => {
         aria-label="Search"
         placeholder="Search Text"
         id="team-profiles-wild-card-search"
-        onChange={(e) => {
+        onChange={e => {
           props.onSearch(e.target.value);
         }}
       />

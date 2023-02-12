@@ -74,7 +74,7 @@ export const Header = props => {
 
   return (
     <div className="header-wrapper">
-      <Navbar className="py-3 mb-3" color="dark" dark expand="lg">
+      <Navbar className="py-3 mb-3" color="dark" dark expand="lg" style={{ zIndex:'10' }}>
         {/**
          * <NavbarBrand tag={Link} to="/" className="d-none d-md-block">
           {LOGO}
@@ -86,13 +86,15 @@ export const Header = props => {
         {isAuthenticated && (
           <Collapse isOpen={isOpen} navbar>
             <Nav className="ml-auto" navbar>
-              {hasPermission(user.role, 'editTask', roles, userPermissions) && <NavItem>
-                <NavLink tag={Link} to="/taskeditsuggestions">
-                  <div className="redBackGroupHeader">
-                    <span>{props.taskEditSuggestionCount}</span>
-                  </div>
-                </NavLink>
-              </NavItem>}
+              {hasPermission(user.role, 'editTask', roles, userPermissions) && (
+                <NavItem>
+                  <NavLink tag={Link} to="/taskeditsuggestions">
+                    <div className="redBackGroupHeader">
+                      <span>{props.taskEditSuggestionCount}</span>
+                    </div>
+                  </NavLink>
+                </NavItem>
+              )}
               <NavItem>
                 <NavLink tag={Link} to="/dashboard">
                   {DASHBOARD}

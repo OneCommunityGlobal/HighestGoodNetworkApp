@@ -16,7 +16,6 @@ const BlueSquareLayout = props => {
     userPermissions,
     canEdit,
   } = props;
-
   const { privacySettings } = userProfile;
 
   if (canEdit) {
@@ -55,6 +54,8 @@ const BlueSquareLayout = props => {
             blueSquares={userProfile?.infringements}
             handleBlueSquare={handleBlueSquare}
             role={role}
+            userPermissions={userPermissions}
+            roles={roles}
           />
         </div>
       )}

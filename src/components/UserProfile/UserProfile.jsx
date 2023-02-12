@@ -77,6 +77,8 @@ const UserProfile = props => {
   const [modalMessage, setModalMessage] = useState('');
   const [shouldRefresh, setShouldRefresh] = useState(false);
   const [activeInactivePopupOpen, setActiveInactivePopupOpen] = useState(false);
+  const [tasks, setTasks] = useState();
+  const [updatedTasks, setUpdatedTasks] = useState([]);
   const [summarySelected, setSummarySelected] = useState(null);
   const [summaryName, setSummaryName] = useState('');
   const [submittedSummary, setSubmittedSummary] = useState(false);
@@ -105,6 +107,17 @@ const UserProfile = props => {
     setBlueSquareChanged(false);
     handleSubmit();
   }, [blueSquareChanged]);
+
+  const loadUserTasks = async () => {
+    const userId = props?.match?.params?.userId;
+    axios
+      .get(ENDPOINTS.TASKS_BY_USERID(userId))
+      .then(res => {
+        setTasks(res?.data || []);
+        setOriginalTasks(res.data);
+      })
+      .catch(err => console.log(err));
+  };
 
   const loadUserProfile = async () => {
     const userId = props?.match?.params?.userId;
@@ -216,6 +229,23 @@ const UserProfile = props => {
     setChanged(true);
   };
 
+  const onUpdateTask = (taskId, updatedTask) => {
+    const newTask = {
+      updatedTask,
+      taskId,
+    };
+
+    setTasks(tasks => {
+      console.log(tasks);
+      const tasksWithoutTheUpdated = [...tasks];
+      const taskIndex = tasks.findIndex(task => task._id === taskId);
+      tasksWithoutTheUpdated[taskIndex] = updatedTask;
+      return tasksWithoutTheUpdated;
+    });
+    setUpdatedTasks(tasks => [...tasks, newTask]);
+    setChanged(true);
+  };
+
   const handleImageUpload = async evt => {
     if (evt) evt.preventDefault();
     const file = evt.target.files[0];
@@ -287,42 +317,54 @@ const UserProfile = props => {
       setShowModal(false);
       setUserProfile({
         ...userProfile,
-        infringements: userProfile.infringements.concat(newBlueSquare),
+        infringements: userProfile.infringements?.concat(newBlueSquare),
       });
       setModalTitle('Blue Square');
     } else if (operation === 'update') {
-      const currentBlueSquares = [...userProfile.infringements];
-      if (dateStamp != null) {
+      let currentBlueSquares = [...userProfile?.infringements] || [];
+      if (dateStamp != null && currentBlueSquares !== []) {
         currentBlueSquares.find(blueSquare => blueSquare._id === id).date = dateStamp;
       }
-      if (summary != null) {
+      if (summary != null && currentBlueSquares !== []) {
         currentBlueSquares.find(blueSquare => blueSquare._id === id).description = summary;
       }
 
       setShowModal(false);
       setUserProfile({ ...userProfile, infringements: currentBlueSquares });
     } else if (operation === 'delete') {
-      const newInfringements = [];
-      userProfile.infringements.forEach(infringement => {
-        if (infringement._id !== id) newInfringements.push(infringement);
-      });
-
-      setUserProfile({ ...userProfile, infringements: newInfringements });
-      setShowModal(false);
+      let newInfringements = [...userProfile?.infringements] || [];
+      if (newInfringements !== []) {
+        newInfringements = newInfringements.filter(infringement => infringement._id !== id);
+        setUserProfile({ ...userProfile, infringements: newInfringements });
+        setShowModal(false);
+      }
     }
     setBlueSquareChanged(true);
   };
 
   const handleSubmit = async () => {
+    for (let i = 0; i < updatedTasks.length; i += 1) {
+      const updatedTask = updatedTasks[i];
+      const url = ENDPOINTS.TASK_UPDATE(updatedTask.taskId);
+      axios.put(url, updatedTask.updatedTask).catch(err => console.log(err));
+    }
     try {
       await props.updateUserProfile(props.match.params.userId, userProfile);
+
+      if (userProfile._id === props.auth.user.userid && props.auth.user.role !== userProfile.role) {
+        await props.refreshToken(userProfile._id);
+      }
       await loadUserProfile();
+
+      await loadUserTasks();
+
       setShowSaveWarning(false);
     } catch (err) {
       alert('An error occurred while attempting to save this profile.');
     }
     setShouldRefresh(true);
     setChanged(false);
+    window.location.reload();
   };
 
   const toggleInfoModal = () => {
@@ -757,6 +799,7 @@ const UserProfile = props => {
                     <span
                       onClick={() => {
                         setUserProfile(originalUserProfile);
+                        setTasks(originalTasks);
                         setChanged(false);
                       }}
                       className="btn btn-outline-danger mr-1 btn-bottom"

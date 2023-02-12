@@ -7,7 +7,7 @@ export const WbsTable = ({ wbs, skip, take }) => {
   if (wbs.fetched) {
     if (wbs.WBSItems.length > 0) {
       WbsList = wbs.WBSItems.slice(skip, skip + take).map((item, index) => (
-        <div className='wbs-table-row' id={'tr_' + item._id} key={item._id}>
+        <div className="wbs-table-row" id={'tr_' + item._id} key={item._id}>
           <div>{skip + index + 1}</div>
           <div>{item.wbsName}</div>
           <div className="projects__active--input">
@@ -29,20 +29,14 @@ export const WbsTable = ({ wbs, skip, take }) => {
 
   return (
     <div>
-      <h5 className='wbs-table-title'>WBS</h5>
-      <div className='reports-table-head wbs-table-row'>
-        <div id="projects__order">
-          #
-        </div>
+      <h5 className="wbs-table-title">WBS</h5>
+      <div className="reports-table-head wbs-table-row">
+        <div id="projects__order">#</div>
         <div>Name</div>
-        <div id="projects__active">
-          Active
-        </div>
-        <div id="projects__active">
-          ID
-        </div>
+        <div id="projects__active">Active</div>
+        <div id="projects__active">ID</div>
       </div>
       <div>{WbsList.length > 0 ? WbsList : <Stub />}</div>
-    </div >
+    </div>
   );
 };

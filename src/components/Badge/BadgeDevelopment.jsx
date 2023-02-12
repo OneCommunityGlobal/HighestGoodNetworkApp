@@ -3,11 +3,11 @@ import { Button, Modal, ModalHeader, ModalBody } from 'reactstrap';
 import BadgeDevelopmentTable from './BadgeDevelopmentTable';
 import CreateNewBadgePopup from './CreateNewBadgePopup';
 
-const BadgeDevelopment = (props) => {
+const BadgeDevelopment = props => {
   const [isCreateNewBadgePopupOpen, setCreateNewBadgePopupOpen] = useState(false);
 
   const toggle = () =>
-    setCreateNewBadgePopupOpen((isCreateNewBadgePopupOpen) => !isCreateNewBadgePopupOpen);
+    setCreateNewBadgePopupOpen(isCreateNewBadgePopupOpen => !isCreateNewBadgePopupOpen);
 
   return (
     <div>
