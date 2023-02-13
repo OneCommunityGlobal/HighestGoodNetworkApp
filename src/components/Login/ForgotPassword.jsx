@@ -14,16 +14,61 @@ const ForgotPassword = React.memo(() => {
     email: '',
   });
 
+  const firstNameSchema = Joi.string()
+    .trim()
+    .required()
+    .error(errors => {
+      errors.forEach(err => {
+        switch (err.type) {
+          case 'any.empty':
+            err.message = 'Last name should not be empty.';
+            break;
+          default:
+            err.message = 'Please enter a valid last name.';
+            break;
+        }
+      });
+      return errors;
+    });
+  const lastNameSchema = Joi.string()
+    .trim()
+    .required()
+    .error(errors => {
+      errors.forEach(err => {
+        switch (err.type) {
+          case 'any.empty':
+            err.message = 'First name should not be empty.';
+            break;
+          default:
+            err.message = 'Please enter a valid first name.';
+            break;
+        }
+      });
+      return errors;
+    });
+  //Joi.string().email({ minDomainSegments: 2 })
+  const emailSchema = Joi.string()
+    .email()
+    .regex(/^\S+@\S+.\S/)
+    .required()
+    .error(errors => {
+      errors.forEach(err => {
+        switch (err.type) {
+          case 'any.empty':
+            err.message = 'Email should not be empty';
+            break;
+          default:
+            err.message = 'Please enter a valid email address.';
+            break;
+        }
+      });
+      return errors;
+    });
+
   const schema = {
-    firstName: Joi.string()
-      .trim()
-      .required(),
-    lastName: Joi.string()
-      .trim()
-      .required(),
-    email: Joi.string()
-      .email()
-      .required(),
+    firstName: firstNameSchema,
+    lastName: lastNameSchema,
+    email: emailSchema,
   };
 
   const onForgotPassword = () => {
@@ -63,37 +108,16 @@ const ForgotPassword = React.memo(() => {
   const handleInput = e => {
     const { name, value } = e.target;
     let errorData = { ...message };
-    //use schema.extract instead if joi package is updated
-    var vaildateResult = {};
+
+    var validateResult = {};
     if (name === 'email') {
-      vaildateResult = Joi.validate(
-        { [name]: value },
-        {
-          email: Joi.string()
-            .email()
-            .required(),
-        },
-      );
+      validateResult = Joi.validate({ [name]: value }, { email: emailSchema });
     } else if (name === 'firstName') {
-      vaildateResult = Joi.validate(
-        { [name]: value },
-        {
-          firstName: Joi.string()
-            .trim()
-            .required(),
-        },
-      );
+      validateResult = Joi.validate({ [name]: value }, { firstName: firstNameSchema });
     } else if (name === 'lastName') {
-      vaildateResult = Joi.validate(
-        { [name]: value },
-        {
-          lastName: Joi.string()
-            .trim()
-            .required(),
-        },
-      );
+      validateResult = Joi.validate({ [name]: value }, { lastName: lastNameSchema });
     }
-    const { error } = vaildateResult;
+    const { error } = validateResult;
     const errorMessage = error ? error.details[0].message : null;
     if (errorMessage) {
       errorData[name] = errorMessage;
