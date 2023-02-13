@@ -74,7 +74,7 @@ export const Header = props => {
 
   return (
     <div className="header-wrapper">
-      <Navbar className="py-3 mb-3" color="dark" dark expand="lg">
+      <Navbar className="py-3 mb-3" color="dark" dark expand="lg" style={{ zIndex:'10' }}>
         {/**
          * <NavbarBrand tag={Link} to="/" className="d-none d-md-block">
           {LOGO}
