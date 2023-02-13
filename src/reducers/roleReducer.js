@@ -19,10 +19,13 @@ export const roleReducer = (state = initialState, action) => {
 
     case types.UPDATE_ROLE:
       const roleUpdated = action.payload;
-      const indexRoleUpdated = state.roles.findIndex(
-        role => role.roleName === roleUpdated.roleName,
-      );
+      const indexRoleUpdated = state.roles.findIndex(role => role._id === roleUpdated.roleId);
       const rolesCopy = state.roles;
+
+      if (roleUpdated.roleName !== rolesCopy[indexRoleUpdated].roleName) {
+        rolesCopy[indexRoleUpdated].roleName = roleUpdated.roleName;
+      }
+
       rolesCopy[indexRoleUpdated].permissions = roleUpdated.permissions;
       return { ...state, roles: rolesCopy };
 

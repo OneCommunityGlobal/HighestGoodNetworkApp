@@ -290,6 +290,10 @@ const UserProfile = props => {
     }
     try {
       await props.updateUserProfile(props.match.params.userId, userProfile);
+
+        if (userProfile._id === props.auth.user.userid && props.auth.user.role !== userProfile.role) {
+          await props.refreshToken(userProfile._id);
+        }
       await loadUserProfile();
       await loadUserTasks();
     } catch (err) {
@@ -297,6 +301,7 @@ const UserProfile = props => {
     }
     setShouldRefresh(true);
     setChanged(false);
+    window.location.reload();
   };
 
   const toggleInfoModal = () => {

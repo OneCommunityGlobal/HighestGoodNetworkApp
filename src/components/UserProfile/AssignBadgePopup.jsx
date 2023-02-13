@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Table, Button, UncontrolledTooltip } from 'reactstrap';
 import { connect } from 'react-redux';
 import AssignTableRow from '../Badge/AssignTableRow';
@@ -12,6 +12,7 @@ import axios from 'axios';
 
 const AssignBadgePopup = props => {
   const [searchedName, setSearchedName] = useState('');
+  const [badgeList, setBadgeList] = useState([]);
 
   const onSearch = text => {
     setSearchedName(text);
@@ -31,6 +32,16 @@ const AssignBadgePopup = props => {
     props.handleSubmit();
     props.close();
   };
+  useEffect(() => {
+    loadAllBadges();
+  }, []);
+
+  const loadAllBadges = async () => {
+    try {
+      const response = await axios.get(ENDPOINTS.BADGE());
+      setBadgeList(response.data);
+    } catch (error) {}
+  };
 
   const filterBadges = allBadges => {
     let filteredList = allBadges.filter(badge => {
@@ -41,7 +52,7 @@ const AssignBadgePopup = props => {
     return filteredList;
   };
 
-  let filteredBadges = filterBadges(props.allBadgeData);
+  let filteredBadges = filterBadges(badgeList);
 
   return (
     <div>
