@@ -49,7 +49,7 @@ const ForgotPassword = React.memo(() => {
   //Joi.string().email({ minDomainSegments: 2 })
   const emailSchema = Joi.string()
     .email()
-    .regex(/^\S+@\S+.\S/)
+    .regex(/^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]+$/)
     .required()
     .error(errors => {
       errors.forEach(err => {
