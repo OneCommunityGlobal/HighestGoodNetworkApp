@@ -83,7 +83,7 @@ export const Header = props => {
          */}
         {logoutPopup && <Logout open={logoutPopup} setLogoutPopup={setLogoutPopup} />}
         {isAuthenticated && <Timer />}
-        {isAuthenticated && <OwnerMessage props={props}/>}
+        {isAuthenticated && <OwnerMessage />}
         <NavbarToggler onClick={toggle} />
         {isAuthenticated && (
           <Collapse isOpen={isOpen} navbar>

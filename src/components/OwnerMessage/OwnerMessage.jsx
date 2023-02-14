@@ -8,65 +8,55 @@ import styles from './OwnerMessage.css';
 import logo from './assets/logo.svg';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEdit, faTrashAlt } from '@fortawesome/free-regular-svg-icons';
-import { getMessage } from 'actions/badgeManagement';
 
-export default function OwnerMessage({props}) {
-  const { user } = props.auth;
+import { connect } from 'react-redux';
+import { getOwnerMessage, createOwnerMessage, updateOwnerMessage, deleteOwnerMessage } from '../../actions/ownerMessageAction';
 
-  const [ownerMessageId, setOwnerMessageId] = useState('')
+function OwnerMessage({ auth, getOwnerMessage, ownerMessage, ownerMessageId, createOwnerMessage, updateOwnerMessage, deleteOwnerMessage }) {
+  const { user } = auth;
+
+  const [message, setMessage] = useState(null);
   const [newMessage, setNewMessage] = useState('');
-  const [displayingMessage, setDisplayingMessage] = useState('');
   const [modal, setModal] = useState(false);
   const [modalDeleteWarning, setModalDeleteWarning] = useState(false);
 
   const toggle = () => setModal(!modal);
   const toggleDeleteWarning = () => setModalDeleteWarning(!modalDeleteWarning);
 
+  useEffect(() => {
+    getOwnerMessage();
+    setMessage(ownerMessage);
+  }, []);
+
   async function handleMessage() {
     const ownerMessage = {
-      newMessage: newMessage
+      newMessage: newMessage,
     }
 
-    if(displayingMessage === '') {
-      await axios.post(ENDPOINTS.OWNERMESSAGE(), ownerMessage)
-      .then(console.log(ownerMessage))
-      setDisplayingMessage(newMessage);
-      toast.success('Message successfully created!');
+    if(message === null) {
+      createOwnerMessage(ownerMessage);
       toggle();
+      toast.success('Message created!');
+      setMessage(newMessage);
     } else {
-      axios.put(ENDPOINTS.OWNERMESSAGE_BY_ID(ownerMessageId), ownerMessage)
-      setDisplayingMessage(newMessage);
-      toast.success('Message successfully updated!');
+      updateOwnerMessage(ownerMessageId, ownerMessage);
       toggle();
+      toast.success('Message updated!');
+      setMessage(newMessage);
     }
   }
 
   async function handleDeleteMessage() {
-    await axios.delete(ENDPOINTS.OWNERMESSAGE());
+    deleteOwnerMessage();
     toggleDeleteWarning();
-    setDisplayingMessage('');
+    toast.error('Message deleted!');
+    setMessage(null);
   }
-
-  async function getMessage() {
-    const { data } = await axios.get(ENDPOINTS.OWNERMESSAGE());
-    if(data[0]) {
-      const message = data[0].message;
-      const id = data[0]._id;
-      setDisplayingMessage(message);
-      setOwnerMessageId(id);
-    } else {
-      return;
-    }
-  }
-
- useEffect(() => {
-    getMessage()
-  }, [])
 
   return(
     <div className="message-container">
       {
-      displayingMessage ? (<span className="message">{displayingMessage}</span>) : (<img src={logo} width="100" height="50"/>)
+      message ? (<span className="message">{message}</span>) : (<img src={logo} width="100" height="50"/>)
       }
 
       {
@@ -101,8 +91,8 @@ export default function OwnerMessage({props}) {
             Cancel
           </Button>
           <Button color="primary" onClick={handleMessage}>
-            Create
-          </Button>{' '}
+            {message ? 'Update' : 'Create'}
+          </Button>
         </ModalFooter>
       </Modal>
       <Modal isOpen={modalDeleteWarning} toggle={toggleDeleteWarning}>
@@ -121,3 +111,19 @@ export default function OwnerMessage({props}) {
     </div>
   );
 }
+
+const mapStateToProps = state => (
+  {
+  auth: state.auth,
+  ownerMessage: state.ownerMessage[0] ? state.ownerMessage[0].message : null,
+  ownerMessageId: state.ownerMessage[0] ? state.ownerMessage[0]._id : null,
+});
+
+const mapDispatchToProps = dispatch => ({
+  getOwnerMessage: () => dispatch(getOwnerMessage()),
+  createOwnerMessage: (ownerMessage) => dispatch(createOwnerMessage(ownerMessage)),
+  updateOwnerMessage: (ownerMessageId, ownerMessage) => dispatch(updateOwnerMessage(ownerMessageId, ownerMessage)),
+  deleteOwnerMessage: () => dispatch(deleteOwnerMessage())
+})
+
+export default connect(mapStateToProps, mapDispatchToProps)(OwnerMessage);

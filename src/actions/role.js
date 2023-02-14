@@ -22,6 +22,7 @@ export const modifyRole = payload => {
     payload,
   };
 };
+
 export const getAllRoles = () => async dispatch => {
   const URL = ENDPOINTS.ROLES();
   const { data } = await axios.get(URL);
