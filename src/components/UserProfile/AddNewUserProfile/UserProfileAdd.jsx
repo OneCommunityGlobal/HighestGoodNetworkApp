@@ -24,7 +24,7 @@ import { toast } from 'react-toastify';
 import TeamsTab from '../TeamsAndProjects/TeamsTab';
 import ProjectsTab from '../TeamsAndProjects/ProjectsTab';
 import { connect } from 'react-redux';
-import _ from 'lodash';
+import { get } from 'lodash';
 import { getUserProfile, updateUserProfile, clearUserProfile } from '../../../actions/userProfile';
 import {
   getAllUserTeams,
@@ -175,10 +175,10 @@ class AddUserProfile extends Component {
                   </Col>
                   <Col md="6">
                     <FormGroup>
-                    <PhoneInput
+                      <PhoneInput
                         country="US"
-                        regions={['america','europe','asia','oceania','africa']}
-                        limitMaxLength= 'true'
+                        regions={['america', 'europe', 'asia', 'oceania', 'africa']}
+                        limitMaxLength="true"
                         value={phoneNumber}
                         onChange={phone => this.phoneChange(phone)}
                       />
@@ -834,7 +834,7 @@ class AddUserProfile extends Component {
 const mapStateToProps = state => ({
   auth: state.auth,
   userProjects: state.userProjects,
-  allProjects: _.get(state, 'allProjects'),
+  allProjects: get(state, 'allProjects'),
   allTeams: state,
   timeZoneKey: state.timeZoneAPI.userAPIKey,
   role: state.role,

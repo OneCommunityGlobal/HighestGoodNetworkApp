@@ -1,6 +1,6 @@
 import React, { useState, Component } from 'react';
 import Joi from 'joi';
-import _ from 'lodash';
+import { cloneDeep, isEqual, groupBy } from 'lodash';
 import Input from '../Input';
 import Dropdown from '../Dropdown';
 import Radio from '../Radio/';
@@ -74,7 +74,7 @@ import CheckboxCollection from '../CheckboxCollection';
     setErrors(errors);
   }; 
   
-  const isStateChanged = () => !_.isEqual(data, {});
+  const isStateChanged = () => !isEqual(data, {});
 
   const validateProperty = (name, value) => {
     const obj = { [name]: value };
@@ -100,7 +100,7 @@ import CheckboxCollection from '../CheckboxCollection';
       errors[element.path[0]] = element.message;
     });
 
-    const messages = _.groupBy(error.details, 'path[0]');
+    const messages = groupBy(error.details, 'path[0]');
     Object.keys(messages).forEach((key) => {
       errors[key] = messages[key].map((item) => item.message).join('. ');
     });
@@ -214,7 +214,7 @@ class Form extends Component {
     errors: {},
   };
 
-  resetForm = () => this.setState(_.cloneDeep(this.initialState));
+  resetForm = () => this.setState(cloneDeep(this.initialState));
 
   handleInput = ({ currentTarget: input }) => {
     this.handleState(input.name, input.value);
@@ -270,7 +270,7 @@ class Form extends Component {
     this.setState({ data, errors });
   };
 
-  isStateChanged = () => !_.isEqual(this.state.data, this.initialState.data);
+  isStateChanged = () => !isEqual(this.state.data, this.initialState.data);
 
   validateProperty = (name, value) => {
     const obj = { [name]: value };
@@ -296,7 +296,7 @@ class Form extends Component {
       errors[element.path[0]] = element.message;
     });
 
-    const messages = _.groupBy(error.details, 'path[0]');
+    const messages = groupBy(error.details, 'path[0]');
     Object.keys(messages).forEach(key => {
       errors[key] = messages[key].map(item => item.message).join('. ');
     });
@@ -317,7 +317,7 @@ class Form extends Component {
         {label}
       </button>
     );
-  };
+  }
 
   renderRichTextEditor({ name, ...rest }) {
     const { data, errors } = { ...this.state };
@@ -330,7 +330,7 @@ class Form extends Component {
         {...rest}
       />
     );
-  };
+  }
 
   renderDropDown({ name, label, options, ...rest }) {
     const { data, errors } = { ...this.state };
@@ -345,7 +345,7 @@ class Form extends Component {
         {...rest}
       />
     );
-  };
+  }
 
   renderInput({ name, label, type = 'text', ...rest }) {
     let { data, errors } = { ...this.state };
@@ -360,7 +360,7 @@ class Form extends Component {
         {...rest}
       />
     );
-  };
+  }
   renderRadio({ name, label, type = 'text', ...rest }) {
     let { data, errors } = { ...this.state };
     return (
@@ -372,7 +372,7 @@ class Form extends Component {
         {...rest}
       />
     );
-  };
+  }
 
   renderFileUpload({ name, ...rest }) {
     let { errors } = { ...this.state };
@@ -380,12 +380,12 @@ class Form extends Component {
     return (
       <FileUpload name={name} onUpload={this.handleFileUpload} {...rest} error={errors[name]} />
     );
-  };
+  }
 
   renderCheckboxCollection({ collectionName, ...rest }) {
     let { errors } = { ...this.state };
     return <CheckboxCollection error={errors[collectionName]} {...rest} />;
-  };
+  }
 
   renderImage({ name, label, ...rest }) {
     let { data, errors } = { ...this.state };
@@ -399,7 +399,7 @@ class Form extends Component {
         {...rest}
       />
     );
-  };
+  }
 
   renderLink({ label, to, className }) {
     return (
@@ -407,7 +407,7 @@ class Form extends Component {
         {label}
       </Link>
     );
-  };
-};
+  }
+}
 
 export default Form;

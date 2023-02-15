@@ -4,7 +4,6 @@
 /* eslint-disable indent */
 import { faBell, faCircle, faClock } from '@fortawesome/free-solid-svg-icons';
 import { Table, Progress } from 'reactstrap';
-import _ from 'lodash';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { fetchTeamMembersTask, deleteTaskNotification } from 'actions/task';
 import React, { useEffect, useState } from 'react';
@@ -148,8 +147,11 @@ const TeamMemberTasks = props => {
                     </td>
                     <td className="team-clocks">
                       <u>{user.weeklyComittedHours ? user.weeklyComittedHours : 0}</u> /
-                      <font color="green"> {thisWeekHours?thisWeekHours.toFixed(1):0}</font> /
-                      <font color="red"> {totalHoursRemaining?totalHoursRemaining.toFixed(1):0}</font>
+                      <font color="green"> {thisWeekHours ? thisWeekHours.toFixed(1) : 0}</font> /
+                      <font color="red">
+                        {' '}
+                        {totalHoursRemaining ? totalHoursRemaining.toFixed(1) : 0}
+                      </font>
                     </td>
                   </tr>
                   <tr>
@@ -208,8 +210,12 @@ const TeamMemberTasks = props => {
                                 ${parseFloat(task.estimatedHours.toFixed(2))}`}
                                   </span>
                                   <Progress
-                                    color = {getProgressColor(task.hoursLogged,task.estimatedHours,true)}
-                                    value = {getProgressValue(task.hoursLogged,task.estimatedHours)}
+                                    color={getProgressColor(
+                                      task.hoursLogged,
+                                      task.estimatedHours,
+                                      true,
+                                    )}
+                                    value={getProgressValue(task.hoursLogged, task.estimatedHours)}
                                   />
                                 </div>
                               </td>

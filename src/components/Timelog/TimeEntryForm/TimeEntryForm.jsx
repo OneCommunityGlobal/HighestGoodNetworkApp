@@ -15,7 +15,7 @@ import {
   ModalFooter,
 } from 'reactstrap';
 import moment from 'moment-timezone';
-import _ from 'lodash';
+import { isEmpty } from 'lodash';
 import { Editor } from '@tinymce/tinymce-react';
 import ReactTooltip from 'react-tooltip';
 import { postTimeEntry, editTimeEntry } from '../../../actions/timeEntries';
@@ -79,7 +79,7 @@ const TimeEntryForm = props => {
   const [tasks, setTasks] = useState([]);
   const [formDataBeforeEdit, setFormDataBeforeEdit] = useState({});
 
-  const fromTimer = !_.isEmpty(timer);
+  const fromTimer = !isEmpty(timer);
   const { userProfile, currentUserRole } = useSelector(getTimeEntryFormData);
   const roles = useSelector(state => state.role.roles);
   const userPermissions = useSelector(state => state.auth.user?.permissions?.frontPermissions);
@@ -273,7 +273,7 @@ const TimeEntryForm = props => {
     }
 
     setErrors(result);
-    return _.isEmpty(result);
+    return isEmpty(result);
   };
   //Update hoursByCategory when submitting new time entry
   const updateHoursByCategory = async (userProfile, timeEntry, hours, minutes) => {
