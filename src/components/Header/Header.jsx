@@ -75,7 +75,7 @@ export const Header = props => {
 
   return (
     <div className="header-wrapper">
-      <Navbar className="py-3 mb-3" color="dark" dark expand="lg">
+      <Navbar className="py-3 mb-3 navbar" color="dark" dark expand="lg">
         {/**
          * <NavbarBrand tag={Link} to="/" className="d-none d-md-block">
           {LOGO}
@@ -87,7 +87,7 @@ export const Header = props => {
         <NavbarToggler onClick={toggle} />
         {isAuthenticated && (
           <Collapse isOpen={isOpen} navbar>
-            <Nav className="ml-auto" navbar>
+            <Nav className="ml-auto test" navbar>
               {hasPermission(user.role, 'editTask', roles, userPermissions) && (
                 <NavItem>
                   <NavLink tag={Link} to="/taskeditsuggestions">

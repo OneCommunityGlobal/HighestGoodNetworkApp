@@ -5,7 +5,7 @@ import { toast } from 'react-toastify';
 
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import styles from './OwnerMessage.css';
-import logo from './assets/logo.svg';
+import image from './assets/image.png';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEdit, faTrashAlt } from '@fortawesome/free-regular-svg-icons';
 
@@ -33,7 +33,7 @@ function OwnerMessage({ auth, getOwnerMessage, ownerMessage, ownerMessageId, cre
       newMessage: newMessage,
     }
 
-    if(message === null) {
+    if(newMessage) {
       createOwnerMessage(ownerMessage);
       toggle();
       toast.success('Message created!');
@@ -56,12 +56,12 @@ function OwnerMessage({ auth, getOwnerMessage, ownerMessage, ownerMessageId, cre
   return(
     <div className="message-container">
       {
-      message ? (<span className="message">{message}</span>) : (<img src={logo} width="100" height="50"/>)
+      message ? (<span className="message">{message}</span>) : (<img src={image} className="image" />)
       }
 
       {
         user.role == 'Owner' && (
-          <div>
+          <div className="icons-wrapper">
             <FontAwesomeIcon
               icon={faEdit}
               className="mr-3 text-primary"
@@ -79,11 +79,18 @@ function OwnerMessage({ auth, getOwnerMessage, ownerMessage, ownerMessageId, cre
 
       <Modal isOpen={modal} toggle={toggle}>
         <ModalHeader toggle={toggle}>Create message</ModalHeader>
-        <ModalBody>
+        <ModalBody className="modal-body">
+          <p>Write a message:</p>
           <textarea 
           cols="30" 
           rows="10" 
+          placeholder="write your message here..."
           onChange={event => setNewMessage(event.target.value)}
+          />
+          <p>or upload a picture:</p>
+          <input
+          type="file"
+          onChange={() => {}}
           />
         </ModalBody>
         <ModalFooter>
@@ -112,11 +119,10 @@ function OwnerMessage({ auth, getOwnerMessage, ownerMessage, ownerMessageId, cre
   );
 }
 
-const mapStateToProps = state => (
-  {
+const mapStateToProps = state => ({
   auth: state.auth,
-  ownerMessage: state.ownerMessage[0] ? state.ownerMessage[0].message : null,
-  ownerMessageId: state.ownerMessage[0] ? state.ownerMessage[0]._id : null,
+  ownerMessage: state.ownerMessage[0] && state.ownerMessage[0].message,
+  ownerMessageId: state.ownerMessage[0] && state.ownerMessage[0]._id,
 });
 
 const mapDispatchToProps = dispatch => ({

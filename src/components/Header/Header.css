@@ -1,6 +1,10 @@
 .header-wrapper {
-  height: 83px;
+  height: 82px;
   white-space: nowrap;
+}
+
+.navbar {
+  z-index: 100;
 }
 
 .redBackGroupHeader {
