@@ -1,4 +1,17 @@
-import React, { useState, useEffect, useRef } from 'react';
+/* eslint-disable no-unsafe-optional-chaining */
+/* eslint-disable react/no-unescaped-entities */
+/* eslint-disable no-undef */
+/* eslint-disable jsx-a11y/click-events-have-key-events */
+/* eslint-disable react/jsx-one-expression-per-line */
+/* eslint-disable react/destructuring-assignment */
+/* eslint-disable react/prop-types */
+/* eslint-disable no-console */
+/* eslint-disable no-shadow */
+/* eslint-disable no-plusplus */
+/* eslint-disable no-tabs */
+/* eslint-disable no-alert */
+/* eslint-disable jsx-a11y/no-static-element-interactions */
+import React, { useState, useEffect } from 'react';
 import {
   Row,
   Input,
@@ -10,8 +23,6 @@ import {
   NavItem,
   NavLink,
   Button,
-  FormGroup,
-  Label,
 } from 'reactstrap';
 import Select from 'react-select';
 import Image from 'react-bootstrap/Image';
@@ -19,7 +30,12 @@ import { Link } from 'react-router-dom';
 import classnames from 'classnames';
 import moment from 'moment';
 import Alert from 'reactstrap/lib/Alert';
-
+import axios from 'axios';
+import parse from 'html-react-parser';
+import hasPermission from '../../utils/permissions';
+import ActiveCell from '../UserManagement/ActiveCell';
+import { ENDPOINTS } from '../../utils/URL';
+// import { ENDPOINTS } from 'utils/URL';
 import Loading from '../common/Loading';
 import UserProfileModal from './UserProfileModal';
 import './UserProfile.scss';
@@ -30,24 +46,16 @@ import BasicInformationTab from './BasicInformationTab/BasicInformationTab';
 import VolunteeringTimeTab from './VolunteeringTimeTab/VolunteeringTimeTab';
 import SaveButton from './UserProfileEdit/SaveButton';
 import UserLinkLayout from './UserLinkLayout';
-import BlueSquareLayout from './BlueSquareLayout';
 import TabToolTips from './ToolTips/TabToolTips';
 import BasicToolTips from './ToolTips/BasicTabTips';
 import ResetPasswordButton from '../UserManagement/ResetPasswordButton';
 import Badges from './Badges';
-import TimeEntryEditHistory from './TimeEntryEditHistory.jsx';
-import { ENDPOINTS } from 'utils/URL';
-import ActiveCell from 'components/UserManagement/ActiveCell';
-import axios from 'axios';
-import hasPermission from 'utils/permissions';
+import TimeEntryEditHistory from './TimeEntryEditHistory';
 import ActiveInactiveConfirmationPopup from '../UserManagement/ActiveInactiveConfirmationPopup';
 import { updateUserStatus } from '../../actions/userManagement';
 import { UserStatus } from '../../utils/enums';
-import parse from 'html-react-parser';
-import { sub } from 'date-fns';
-import { faSleigh } from '@fortawesome/free-solid-svg-icons';
 
-const UserProfile = props => {
+function UserProfile(props) {
   /* Constant values */
   const initialFormValid = {
     firstName: true,
@@ -60,11 +68,10 @@ const UserProfile = props => {
 
   /* Hooks */
   const [showLoading, setShowLoading] = useState(true);
-  const [showSummaries, setShowSummaries] = useState(false);
+  const [showSelect, setShowSelect] = useState(false);
   const [summaries, setSummaries] = useState(undefined);
   const [userProfile, setUserProfile] = useState(undefined);
   const [originalUserProfile, setOriginalUserProfile] = useState(undefined);
-  const [id, setId] = useState('');
   const [activeTab, setActiveTab] = useState('1');
   const [infoModal, setInfoModal] = useState(false);
   const [formValid, setFormValid] = useState(initialFormValid);
@@ -81,32 +88,8 @@ const UserProfile = props => {
   const [updatedTasks, setUpdatedTasks] = useState([]);
   const [summarySelected, setSummarySelected] = useState(null);
   const [summaryName, setSummaryName] = useState('');
-  const [submittedSummary, setSubmittedSummary] = useState(false);
-  //const [isValid, setIsValid] = useState(true)
-
-  /* useEffect functions */
-  useEffect(() => {
-    getTeamMembersWeeklySummary();
-    loadUserProfile();
-  }, []);
-
-  useEffect(() => {
-    if (!shouldRefresh) return;
-    setShouldRefresh(false);
-    loadUserProfile();
-  }, [shouldRefresh]);
-
-  useEffect(() => {
-    setShowLoading(true);
-    loadUserProfile();
-    setChanged(false);
-  }, [props?.match?.params?.userId]);
-
-  useEffect(() => {
-    if (!blueSquareChanged) return;
-    setBlueSquareChanged(false);
-    handleSubmit();
-  }, [blueSquareChanged]);
+  const [showSummary, setShowSummary] = useState(false);
+  // const [isValid, setIsValid] = useState(true)
 
   const loadUserTasks = async () => {
     const userId = props?.match?.params?.userId;
@@ -138,17 +121,24 @@ const UserProfile = props => {
   const getWeeklySummary = async userId => {
     try {
       setSummarySelected('');
-      setSubmittedSummary(false);
+      setShowSummary(false);
       const response = await axios.get(ENDPOINTS.USER_PROFILE(userId));
       const user = response.data;
-      let summaries = user.weeklySummaries;
-      if (summaries && Array.isArray(summaries) && summaries[0] && summaries[0].summary) {
+      const summaries = user.weeklySummaries;
+      console.log('summaryName:', summaryName);
+      console.log('summaries:', summaries);
+      if (summaries && Array.isArray(summaries) && summaries.length >= 3) {
         setSummarySelected([summaries[0].summary, summaries[1].summary, summaries[2].summary]);
-        setSubmittedSummary(true);
+        setShowSummary(true);
+      } else if (summaries && Array.isArray(summaries) && summaries.length === 2) {
+        setSummarySelected([summaries[0].summary, summaries[1].summary, '']);
+        setShowSummary(true);
+      } else if (summaries && Array.isArray(summaries) && summaries.length === 1) {
+        setSummarySelected([summaries[0].summary, '', '']);
+        setShowSummary(true);
       } else {
-        setSummarySelected('loading');
-        setSubmittedSummary(false);
-        return false;
+        setSummarySelected(['', '', '']);
+        setShowSummary(true);
       }
     } catch (err) {
       setShowLoading(false);
@@ -182,7 +172,6 @@ const UserProfile = props => {
       return;
     } catch (err) {
       console.log('Could not load leaderBoard data.', err);
-      return;
     }
   };
 
@@ -249,30 +238,30 @@ const UserProfile = props => {
   const handleImageUpload = async evt => {
     if (evt) evt.preventDefault();
     const file = evt.target.files[0];
-    if (typeof file != 'undefined') {
+    if (typeof file !== 'undefined') {
       const filesizeKB = file.size / 1024;
       const allowedTypes = ['image/png', 'image/jpeg', 'image/jpg'];
       const allowedTypesString = `File type not permitted. Allowed types are ${allowedTypes
         .toString()
         .replaceAll(',', ', ')}`;
 
-      //Input validation: file type
+      // Input validation: file type
       if (!allowedTypes.includes(file.type)) {
         setType('image');
-        //setIsValid(false)
+        // setIsValid(false)
         setShowModal(true);
         setModalTitle('Profile Pic Error');
         setModalMessage(allowedTypesString);
         return;
       }
 
-      //Input validation: file size.
+      // Input validation: file size.
       if (filesizeKB > 50) {
         const errorMessage = `The file you are trying to upload exceeds the maximum size of 50KB. You can either
 														choose a different file, or use an online file compressor.`;
 
         setType('image');
-        //setIsValid(false)
+        // setIsValid(false)
         setShowModal(true);
         setModalTitle('Profile Pic Error');
         setModalMessage(errorMessage);
@@ -289,20 +278,20 @@ const UserProfile = props => {
     }
   };
 
-  const handleBlueSquare = (status = true, type = 'message', blueSquareID = '') => {
-    setType(type);
-    setShowModal(status);
+  // const handleBlueSquare = (status = true, type = 'message', blueSquareID = '') => {
+  //   setType(type);
+  //   setShowModal(status);
 
-    if (type === 'addBlueSquare') {
-      setModalTitle('Blue Square');
-    } else if (type === 'viewBlueSquare' || type === 'modBlueSquare') {
-      setModalTitle('Blue Square');
-      setId(blueSquareID);
-    } else if (blueSquareID === 'none') {
-      setModalTitle('Save & Refresh');
-      setModalMessage('');
-    }
-  };
+  //   if (type === 'addBlueSquare') {
+  //     setModalTitle('Blue Square');
+  //   } else if (type === 'viewBlueSquare' || type === 'modBlueSquare') {
+  //     setModalTitle('Blue Square');
+  //     setId(blueSquareID);
+  //   } else if (blueSquareID === 'none') {
+  //     setModalTitle('Save & Refresh');
+  //     setModalMessage('');
+  //   }
+  // };
 
   /**
    * Modifies the userProfile's infringements using a predefined operation
@@ -321,7 +310,7 @@ const UserProfile = props => {
       });
       setModalTitle('Blue Square');
     } else if (operation === 'update') {
-      let currentBlueSquares = [...userProfile?.infringements] || [];
+      const currentBlueSquares = [...userProfile?.infringements] || [];
       if (dateStamp != null && currentBlueSquares !== []) {
         currentBlueSquares.find(blueSquare => blueSquare._id === id).date = dateStamp;
       }
@@ -399,10 +388,36 @@ const UserProfile = props => {
     setActiveInactivePopupOpen(false);
   };
 
+  /* useEffect functions */
+  useEffect(() => {
+    getTeamMembersWeeklySummary();
+    loadUserProfile();
+  }, []);
+
+  useEffect(() => {
+    if (!shouldRefresh) return;
+    setShouldRefresh(false);
+    loadUserProfile();
+  }, [shouldRefresh]);
+
+  useEffect(() => {
+    setShowLoading(true);
+    loadUserProfile();
+    setChanged(false);
+  }, [props?.match?.params?.userId]);
+
+  useEffect(() => {
+    if (!blueSquareChanged) return;
+    setBlueSquareChanged(false);
+    handleSubmit();
+  }, [blueSquareChanged]);
+
   /**
    *
-   * UserProfile.jsx and its subsomponents are being refactored to avoid the use of this monolithic function.
-   * Please pass userProfile, setUserProfile, and setChanged as props to subcomponents and modify state that way.
+   * UserProfile.jsx and its subsomponents are being refactored to avoid the
+   * use of this monolithic function.
+   * Please pass userProfile, setUserProfile, and setChanged as props to subcomponents and
+   * modify state that way.
    * This function is being kept here until the refactoring is complete.
    */
   const handleUserProfile = event => {
@@ -435,6 +450,8 @@ const UserProfile = props => {
             blueSquares: !userProfile.privacySettings?.blueSquares,
           },
         });
+        break;
+      default:
         break;
     }
   };
@@ -470,7 +487,7 @@ const UserProfile = props => {
     <div>
       <ActiveInactiveConfirmationPopup
         isActive={userProfile.isActive}
-        fullName={userProfile.firstName + ' ' + userProfile.lastName}
+        fullName={`${userProfile.firstName} ${userProfile.lastName}`}
         open={activeInactivePopupOpen}
         setActiveInactive={setActiveInactive}
         onClose={activeInactivePopupClose}
@@ -489,7 +506,7 @@ const UserProfile = props => {
           handleLinkModel={props.handleLinkModel}
           role={requestorRole}
           userPermissions={userPermissions}
-          //setIsValid={setIsValid(true)}
+          // setIsValid={setIsValid(true)}
         />
       )}
       <TabToolTips />
@@ -530,13 +547,6 @@ const UserProfile = props => {
               )}
               <div className="row">
                 <h5 className="column">{`${firstName} ${lastName}`}</h5>
-                <Button
-                  onClick={() => setShowSummaries(!showSummaries)}
-                  color="primary"
-                  className="team-weekly-summary"
-                >
-                  Team Weekly Summaries
-                </Button>
               </div>
               <i
                 data-toggle="tooltip"
@@ -569,6 +579,9 @@ const UserProfile = props => {
                   onClick={() => props.history.push(`/timelog/${targetUserId}`)}
                 />
               )}
+              <Button onClick={() => setShowSelect(!showSelect)} color="primary" size="sm">
+                Team Weekly Summaries
+              </Button>
               <h6>{jobTitle}</h6>
               <p className="proile-rating">
                 From : <span>{moment(userProfile.createdDate).format('YYYY-MM-DD')}</span>
@@ -579,43 +592,50 @@ const UserProfile = props => {
                 </span>
               </p>
             </div>
-            {showSummaries && summaries === undefined ? <div>Loading</div> : <div></div>}
-            {showSummaries && summaries !== undefined ? (
+            {showSelect && summaries === undefined ? <div>Loading</div> : <div />}
+            {showSelect && summaries !== undefined ? (
               <div>
                 <Select
                   options={summaries}
                   onChange={e => {
-                    getWeeklySummary(e.value[1]);
                     setSummaryName(e.value[0]);
+                    getWeeklySummary(e.value[1]);
                   }}
                 />
               </div>
             ) : (
-              <div></div>
+              <div />
             )}
-            {summarySelected && showSummaries && submittedSummary ? (
+            {summarySelected && showSelect && showSummary ? (
               <div>
-                {summarySelected[0] != '' ? (
+                {summarySelected[0] !== '' ? (
                   <div>
-                    <h5>Viewing {summaryName}'s summary.</h5>
+                    <h5>
+                      Viewing
+                      {summaryName}&apos s summary.
+                    </h5>
                     {parse(summarySelected[0])}
                   </div>
                 ) : (
                   <h5>{summaryName} did not submit a submit a summary for this week.</h5>
                 )}
 
-                {summarySelected[1] != '' ? (
+                {summarySelected[1] !== '' ? (
                   <div>
-                    <h5>Viewing {summaryName}'s last week's summary.</h5>
+                    <h5>
+                      Viewing
+                      {summaryName}
+                      's last week &aposs summary.
+                    </h5>
                     {parse(summarySelected[1])}
                   </div>
                 ) : (
                   <h5>{summaryName} did not submit a submit a summary for last week.</h5>
                 )}
 
-                {summarySelected[2] != '' ? (
+                {summarySelected[2] !== '' ? (
                   <div>
-                    <h5>Viewing {summaryName}'s summary from two weeks ago.</h5>
+                    <h5>Viewing {summaryName}&apos s summary from two weeks ago.</h5>
                     {parse(summarySelected[2])}
                   </div>
                 ) : (
@@ -623,7 +643,7 @@ const UserProfile = props => {
                 )}
               </div>
             ) : (
-              <div></div>
+              <div />
             )}
             <Badges
               userProfile={userProfile}
@@ -785,7 +805,7 @@ const UserProfile = props => {
           </Col>
         </Row>
         <Row>
-          <Col md="4"></Col>
+          <Col md="4" />
           <Col md="8">
             <div className="profileEditButtonContainer">
               {hasPermission(requestorRole, 'resetPasswordOthers', roles, userPermissions) &&
@@ -794,7 +814,7 @@ const UserProfile = props => {
                   <ResetPasswordButton className="mr-1 btn-bottom" user={userProfile} />
                 )}
               {isUserSelf &&
-                (activeTab == '1' ||
+                (activeTab === '1' ||
                   hasPermission(requestorRole, 'editUserProfile', roles, userPermissions)) && (
                   <Link to={`/updatepassword/${userProfile._id}`}>
                     <Button className="mr-1 btn-bottom" color="primary">
@@ -804,7 +824,7 @@ const UserProfile = props => {
                   </Link>
                 )}
               {canEdit &&
-                (activeTab == '1' ||
+                (activeTab === '1' ||
                   hasPermission(requestorRole, 'editUserProfile', roles, userPermissions)) && (
                   <>
                     <SaveButton
@@ -836,6 +856,6 @@ const UserProfile = props => {
       </Container>
     </div>
   );
-};
+}
 
 export default UserProfile;
