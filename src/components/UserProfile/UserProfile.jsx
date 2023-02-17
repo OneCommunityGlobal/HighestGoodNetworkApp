@@ -1,3 +1,4 @@
+/* eslint-disable arrow-parens */
 /* eslint-disable no-unsafe-optional-chaining */
 /* eslint-disable react/no-unescaped-entities */
 /* eslint-disable no-undef */
@@ -78,7 +79,6 @@ function UserProfile(props) {
   const [formValid, setFormValid] = useState(initialFormValid);
   const [changed, setChanged] = useState(false);
   const [blueSquareChanged, setBlueSquareChanged] = useState(false);
-  const [showSaveWarning, setShowSaveWarning] = useState(true);
   const [type, setType] = useState('');
   const [showModal, setShowModal] = useState(false);
   const [modalTitle, setModalTitle] = useState('');
@@ -463,7 +463,9 @@ function UserProfile(props) {
     );
   }
 
-  const { firstName, lastName, profilePic, jobTitle = '' } = userProfile;
+  const {
+    firstName, lastName, profilePic, jobTitle = '',
+  } = userProfile;
 
   const { userId: targetUserId } = props.match ? props.match.params : { userId: undefined };
   const { userid: requestorId, role: requestorRole } = props.auth.user;
@@ -476,8 +478,7 @@ function UserProfile(props) {
   if (userProfile.role !== 'Owner') {
     canEdit = hasPermission(requestorRole, 'editUserProfile', roles, userPermissions) || isUserSelf;
   } else {
-    canEdit =
-      hasPermission(requestorRole, 'addDeleteEditOwners', roles, userPermissions) || isUserSelf;
+    canEdit = hasPermission(requestorRole, 'addDeleteEditOwners', roles, userPermissions) || isUserSelf;
   }
 
   return (
@@ -805,24 +806,24 @@ function UserProfile(props) {
           <Col md="4" />
           <Col md="8">
             <div className="profileEditButtonContainer">
-              {hasPermission(requestorRole, 'resetPasswordOthers', roles, userPermissions) &&
-                canEdit &&
-                !isUserSelf && (
+              {hasPermission(requestorRole, 'resetPasswordOthers', roles, userPermissions)
+                && canEdit
+                && !isUserSelf && (
                   <ResetPasswordButton className="mr-1 btn-bottom" user={userProfile} />
-                )}
-              {isUserSelf &&
-                (activeTab === '1' ||
-                  hasPermission(requestorRole, 'editUserProfile', roles, userPermissions)) && (
+              )}
+              {isUserSelf
+                && (activeTab === '1'
+                  || hasPermission(requestorRole, 'editUserProfile', roles, userPermissions)) && (
                   <Link to={`/updatepassword/${userProfile._id}`}>
                     <Button className="mr-1 btn-bottom" color="primary">
                       {' '}
                       Update Password
                     </Button>
                   </Link>
-                )}
-              {canEdit &&
-                (activeTab === '1' ||
-                  hasPermission(requestorRole, 'editUserProfile', roles, userPermissions)) && (
+              )}
+              {canEdit
+                && (activeTab === '1'
+                  || hasPermission(requestorRole, 'editUserProfile', roles, userPermissions)) && (
                   <>
                     <SaveButton
                       className="mr-1 btn-bottom"
@@ -843,7 +844,7 @@ function UserProfile(props) {
                       Cancel
                     </span>
                   </>
-                )}
+              )}
               <Button outline onClick={() => loadUserProfile()}>
                 Refresh
               </Button>
