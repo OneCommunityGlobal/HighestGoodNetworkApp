@@ -537,7 +537,7 @@ function UserProfile(props) {
           </Col>
           <Col md="8">
             <div className="profile-head">
-              {changed && showSaveWarning && (
+              {changed && (
                 <Alert color="warning">
                   Please click on "Save changes" to save the changes you have made.{' '}
                 </Alert>
