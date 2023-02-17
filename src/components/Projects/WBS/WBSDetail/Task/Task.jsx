@@ -25,7 +25,6 @@ const Task = props => {
   const userPermissions = props.state.auth.user?.permissions?.frontPermissions;
   useEffect(() => {
     setIsCopied(false);
-    console.log('props.filteredTasks:', props.filteredTasks);
   }, [1]);
   // modal
   const [modal, setModal] = useState(false);
