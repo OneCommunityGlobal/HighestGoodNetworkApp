@@ -1,7 +1,7 @@
 import React from 'react';
 import './PopUpBar.css';
 
-const PopUpBar = (props) => {
+const PopUpBar = props => {
   const { auth, userProfile } = props;
   const { firstName, lastName, _id } = userProfile;
   const { user } = auth;
