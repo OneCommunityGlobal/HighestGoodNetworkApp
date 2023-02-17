@@ -463,9 +463,7 @@ function UserProfile(props) {
     );
   }
 
-  const {
-    firstName, lastName, profilePic, jobTitle = '',
-  } = userProfile;
+  const { firstName, lastName, profilePic, jobTitle = '' } = userProfile;
 
   const { userId: targetUserId } = props.match ? props.match.params : { userId: undefined };
   const { userid: requestorId, role: requestorRole } = props.auth.user;
@@ -478,7 +476,8 @@ function UserProfile(props) {
   if (userProfile.role !== 'Owner') {
     canEdit = hasPermission(requestorRole, 'editUserProfile', roles, userPermissions) || isUserSelf;
   } else {
-    canEdit = hasPermission(requestorRole, 'addDeleteEditOwners', roles, userPermissions) || isUserSelf;
+    canEdit =
+      hasPermission(requestorRole, 'addDeleteEditOwners', roles, userPermissions) || isUserSelf;
   }
 
   return (
@@ -577,7 +576,15 @@ function UserProfile(props) {
                   onClick={() => props.history.push(`/timelog/${targetUserId}`)}
                 />
               )}
-              <Button onClick={() => setShowSelect(!showSelect)} color="primary" size="sm">
+              <Button
+                onClick={() => {
+                  setShowSelect(!showSelect);
+                  setSummarySelected(null);
+                  setSummaryName(null);
+                }}
+                color="primary"
+                size="sm"
+              >
                 Team Weekly Summaries
               </Button>
               <h6>{jobTitle}</h6>
@@ -806,24 +813,24 @@ function UserProfile(props) {
           <Col md="4" />
           <Col md="8">
             <div className="profileEditButtonContainer">
-              {hasPermission(requestorRole, 'resetPasswordOthers', roles, userPermissions)
-                && canEdit
-                && !isUserSelf && (
+              {hasPermission(requestorRole, 'resetPasswordOthers', roles, userPermissions) &&
+                canEdit &&
+                !isUserSelf && (
                   <ResetPasswordButton className="mr-1 btn-bottom" user={userProfile} />
-              )}
-              {isUserSelf
-                && (activeTab === '1'
-                  || hasPermission(requestorRole, 'editUserProfile', roles, userPermissions)) && (
+                )}
+              {isUserSelf &&
+                (activeTab === '1' ||
+                  hasPermission(requestorRole, 'editUserProfile', roles, userPermissions)) && (
                   <Link to={`/updatepassword/${userProfile._id}`}>
                     <Button className="mr-1 btn-bottom" color="primary">
                       {' '}
                       Update Password
                     </Button>
                   </Link>
-              )}
-              {canEdit
-                && (activeTab === '1'
-                  || hasPermission(requestorRole, 'editUserProfile', roles, userPermissions)) && (
+                )}
+              {canEdit &&
+                (activeTab === '1' ||
+                  hasPermission(requestorRole, 'editUserProfile', roles, userPermissions)) && (
                   <>
                     <SaveButton
                       className="mr-1 btn-bottom"
@@ -844,7 +851,7 @@ function UserProfile(props) {
                       Cancel
                     </span>
                   </>
-              )}
+                )}
               <Button outline onClick={() => loadUserProfile()}>
                 Refresh
               </Button>
