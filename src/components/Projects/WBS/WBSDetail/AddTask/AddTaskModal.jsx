@@ -36,7 +36,6 @@ import { DUE_DATE_MUST_GREATER_THAN_START_DATE } from '../../../../../languages/
 import 'react-day-picker/lib/style.css';
 import TagsSearch from './components/TagsSearch';
 // This import must be deleted after conecting the database to the component
-import FakeData from './Data.json';
 
 function AddTaskModal(props) {
   const tasks = props.tasks.taskItems;
@@ -448,7 +447,12 @@ function AddTaskModal(props) {
                 <td scope="col">Resources</td>
                 <td scope="col">
                   <div>
-                    <TagsSearch data={FakeData} placeholder="Add resources" />
+                    <TagsSearch 
+                      placeholder="Add resources" 
+                      members={members.members} 
+                      addResources={addResources} 
+                      removeResource={removeResource}
+                      />
                     <input
                       type="text"
                       aria-label="Search user"

@@ -12,15 +12,24 @@ import React, { useState } from 'react';
 import TagSent from './TagSent';
 import './TagsSearch.css';
 
-function TagsSearch({ data, placeholder }) {
+function TagsSearch({ placeholder, members, addResources, removeResource }) {
   const [tags, setTags] = useState([]);
   const [isHidden, setIsHidden] = useState(false);
   const [filteredData, setFilteredData] = useState([]);
   const [selectedIndex, setSelectedIndex] = useState(0);
+  const [taskMembers, setTaskMembers] = useState([])
 
   // Se tiver como usar a tag aqui no lugar de indexToRemove seria melhor
   // Pq se tiver outro component com o msm numero eles podem ser filtrados ao mesmo tempo
   const removeTags = indexToRemove => {
+    const membersIdToRemove = taskMembers.map((member) => {
+      if(`${member.firstName} ${member.lastName}` === tags[indexToRemove]){
+        return member._id;
+      }
+    })
+    removeResource(membersIdToRemove);
+    setTaskMembers(taskMembers.filter((member) => 
+      `${member.firstName} ${member.lastName}` !== tags[indexToRemove]));
     setTags(tags.filter((_, index) => index !== indexToRemove));
   };
 
@@ -33,15 +42,21 @@ function TagsSearch({ data, placeholder }) {
 
   const handleClick = event => {
     setTags([...tags, event.target.innerText]);
+    const newMember = members.map(member =>{ 
+      if(`${member.firstName} ${member.lastName}` == event.target.innerText) {
+        setTaskMembers([...taskMembers, member]);
+        addResources(member._id, member.firstName, member.lastName);
+      }});
+    
     event.target.value = '';
     setIsHidden(!isHidden);
   };
 
   const handleFilter = event => {
     const searchWord = event.target.value;
-    const noRepeatTags = data.filter(e => !tags.includes(e.name));
-    const newFilter = noRepeatTags.filter(value =>
-      value.name.toLowerCase().includes(searchWord.toLowerCase()),
+    // const noRepeatTags = members.filter(e => !tags.includes(e.firstName));
+    const newFilter = members.filter(member =>
+      `${member.firstName} ${member.lastName}`.toLowerCase().includes(searchWord.toLowerCase()),
     );
     if (searchWord === '') {
       setFilteredData([]);
@@ -71,7 +86,7 @@ function TagsSearch({ data, placeholder }) {
               }`}
             >
               {filteredData.slice(0, 10).map((value, index) => (
-                <a href={value.link} key={value.name} className="text-decoration-none w-100">
+                <a href={value.link} key={value._id} className="text-decoration-none w-100">
                   <li
                     className={
                       index === selectedIndex
@@ -80,7 +95,7 @@ function TagsSearch({ data, placeholder }) {
                     }
                     onClick={handleClick}
                   >
-                    {value.name}
+                    {value.firstName + ' ' + value.lastName}
                   </li>
                 </a>
               ))}
