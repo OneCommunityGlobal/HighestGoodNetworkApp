@@ -54,6 +54,7 @@ import TimeEntryEditHistory from './TimeEntryEditHistory';
 import ActiveInactiveConfirmationPopup from '../UserManagement/ActiveInactiveConfirmationPopup';
 import { updateUserStatus } from '../../actions/userManagement';
 import { UserStatus } from '../../utils/enums';
+import BlueSquareLayout from './BlueSquareLayout';
 
 function UserProfile(props) {
   /* Constant values */
@@ -278,20 +279,20 @@ function UserProfile(props) {
     }
   };
 
-  // const handleBlueSquare = (status = true, type = 'message', blueSquareID = '') => {
-  //   setType(type);
-  //   setShowModal(status);
+  const handleBlueSquare = (status = true, type = 'message', blueSquareID = '') => {
+    setType(type);
+    setShowModal(status);
 
-  //   if (type === 'addBlueSquare') {
-  //     setModalTitle('Blue Square');
-  //   } else if (type === 'viewBlueSquare' || type === 'modBlueSquare') {
-  //     setModalTitle('Blue Square');
-  //     setId(blueSquareID);
-  //   } else if (blueSquareID === 'none') {
-  //     setModalTitle('Save & Refresh');
-  //     setModalMessage('');
-  //   }
-  // };
+    if (type === 'addBlueSquare') {
+      setModalTitle('Blue Square');
+    } else if (type === 'viewBlueSquare' || type === 'modBlueSquare') {
+      setModalTitle('Blue Square');
+      setId(blueSquareID);
+    } else if (blueSquareID === 'none') {
+      setModalTitle('Save & Refresh');
+      setModalMessage('');
+    }
+  };
 
   /**
    * Modifies the userProfile's infringements using a predefined operation
@@ -664,7 +665,7 @@ function UserProfile(props) {
                 userPermissions={userPermissions}
                 canEdit={canEdit}
               />
-              {/* <BlueSquareLayout
+              <BlueSquareLayout
                 userProfile={userProfile}
                 handleUserProfile={handleUserProfile}
                 handleSaveError={props.handleSaveError}
@@ -674,7 +675,7 @@ function UserProfile(props) {
                 canEdit={canEdit}
                 roles={roles}
                 userPermissions={userPermissions}
-              /> */}
+              />
             </div>
           </Col>
           <Col md="8">
