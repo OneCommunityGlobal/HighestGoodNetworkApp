@@ -106,31 +106,35 @@ function RolePermissions(props) {
   return (
     <>
       {changed ? (
-        <Alert color="warning" className="user-role-tab_alert">
+        <Alert color="warning" className="user-role-tab__alert ">
           You have unsaved changes! Please click <strong>Save</strong> button to save changes!
         </Alert>
       ) : (
         <></>
       )}
-      <header className="user-role-tab_header-container">
-        <div className="user-role-tab_role-name-container">
-          <div className="role-name-group">
-            <h1 className="user-role-tab_h1">Role Name: {roleName}</h1>
-            <FontAwesomeIcon
-              icon={faEdit}
-              size="lg"
-              className="user-role-tab_icon edit-icon"
-              onClick={toggleEditRoleNameModal}
-            />
+      <header>
+        <div className="user-role-tab__name-container">
+          <div className="name-container__role-name">
+            <h1 className="user-role-tab__h1">Role Name: {roleName}</h1>
+            {props?.userRole === 'Owner' && (
+              <FontAwesomeIcon
+                icon={faEdit}
+                size="lg"
+                className="user-role-tab__icon edit-icon"
+                onClick={toggleEditRoleNameModal}
+              />
+            )}
           </div>
-          <div className="role_name-btn-group">
-            <Button className="btn_save" color="success" onClick={() => updateInfo()}>
-              Save
-            </Button>
-            <Button color="danger" onClick={toggleDeleteRoleModal}>
-              Delete Role
-            </Button>
-          </div>
+          {props?.userRole === 'Owner' && (
+            <div className="name-container__btns">
+              <Button className="btn_save" color="success" onClick={() => updateInfo()}>
+                Save
+              </Button>
+              <Button color="danger" onClick={toggleDeleteRoleModal}>
+                Delete Role
+              </Button>
+            </div>
+          )}
           <Modal isOpen={editRoleNameModal} toggle={toggleEditRoleNameModal}>
             <ModalHeader>Edit Role Name</ModalHeader>
             <ModalBody>
@@ -158,11 +162,11 @@ function RolePermissions(props) {
             </ModalFooter>
           </Modal>
         </div>
-        <h2 className="user-role-tab_h2">Permission List</h2>
+        <h2 className="user-role-tab__h2">Permission List</h2>
       </header>
-      <ul className="user-role-tab__permission-list">
+      <ul className="user-role-tab__permissionList">
         {props.permissionsList.map(permission => (
-          <li className="user-role-tab__permission" key={permission}>
+          <li className="user-role-tab__permissions" key={permission}>
             <p style={{ color: permissions.includes(permission) ? 'green' : 'red' }}>
               {permission}
             </p>
@@ -172,6 +176,7 @@ function RolePermissions(props) {
                 onClick={() => {
                   onRemovePermission(permission), setChanged(true);
                 }}
+                disabled={props?.userRole !== 'Owner' ? true : false}
               >
                 Delete
               </Button>
@@ -181,6 +186,7 @@ function RolePermissions(props) {
                 onClick={() => {
                   onAddPermission(permission), setChanged(true);
                 }}
+                disabled={props?.userRole !== 'Owner' ? true : false}
               >
                 Add
               </Button>
@@ -193,7 +199,7 @@ function RolePermissions(props) {
           <FontAwesomeIcon
             icon={faExclamationTriangle}
             size="lg"
-            className="user-role-tab_icon warning-icon"
+            className="user-role-tab__icon warning-icon"
           />
           Delete {roleName} Role
         </ModalHeader>

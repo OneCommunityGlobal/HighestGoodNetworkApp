@@ -5,7 +5,7 @@
   margin: 0 auto;
 }
 
-a.userRoleTab_backBtn {
+.userRoleTab__backBtn {
   -webkit-appearance: button;
   -moz-appearance: button;
   appearance: button;
@@ -16,50 +16,50 @@ a.userRoleTab_backBtn {
   border-radius: 0.5rem;
 }
 
-.user-role-tab__permission-list {
+.user-role-tab__permissionList {
   display: flex;
   flex-direction: column;
   padding-left: 0;
 }
 
-.user-role-tab_role-name-container {
+.user-role-tab__name-container {
   display: flex;
   align-items: center;
   justify-content: space-between;
 }
 
-.role-name-group {
+.name-container__role-name {
   display: flex;
   align-items: center;
 }
 
-.role_name-btn-group {
+.name-container__btns {
   display: flex;
   flex-direction: column;
   row-gap: 1rem;
 }
 
-.role_name-btn-group > button {
+.name-container__btns > button {
   min-width: 80px;
   border-radius: 4px;
 }
 
-.user-role-tab_alert {
+.user-role-tab__alert {
   margin: 1rem 0;
 }
 
-.user-role-tab_h1 {
+.user-role-tab__h1 {
   font-size: 1.8rem;
   margin-right: 1rem;
   margin-bottom: 0;
 }
 
-.user-role-tab_h2 {
+.user-role-tab__h2 {
   font-size: 1.5rem;
   text-align: center;
 }
 
-.user-role-tab__permission {
+.user-role-tab__permissions {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -67,16 +67,16 @@ a.userRoleTab_backBtn {
   border-bottom: 1px solid lightgrey;
 }
 
-.user-role-tab__permission > button {
+.user-role-tab__permissions > button {
   padding: 0 0.5rem;
   min-width: 80px;
 }
 
-.user-role-tab__permission > p {
+.user-role-tab__permissions > p {
   margin: 0;
 }
 
-.user-role-tab_icon {
+.user-role-tab__icon {
   color: grey;
   cursor: pointer;
 }

@@ -58,13 +58,13 @@ const Project = props => {
       <td className="projects__category--input">
         {hasPermission(role, 'editProject', roles, userPermissions) ? (
           <select
-            value={category}
+            value={props.category}
             onChange={e => {
               setCategory(e.target.value);
             }}
           >
             <option default value="Unspecified">
-              Select Category
+              {category}
             </option>
             <option value="Food">Food</option>
             <option value="Energy">Energy</option>

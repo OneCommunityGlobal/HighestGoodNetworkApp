@@ -19,13 +19,13 @@ const DeleteModal = ({ timeEntry, userProfile }) => {
 
     dispatch(deleteTimeEntry(timeEntry));
     const newHour = (
-      userProfile.totalComittedHours -
+      userProfile.totalcommittedHours -
       timeEntry.hours -
       timeEntry.minutes / 60
     ).toFixed(2);
     const updatedUserProfile = {
       ...userProfile,
-      totalComittedHours: parseInt(newHour, 10),
+      totalcommittedHours: parseInt(newHour, 10),
     };
     dispatch(updateUserProfile(userProfile._id, updatedUserProfile));
   };

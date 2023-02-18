@@ -9,6 +9,7 @@ export const ENDPOINTS = {
   USER_PROFILES: `${APIEndpoint}/userprofile/`,
   USER_PROFILE_BY_NAME: userName => `${APIEndpoint}/userProfile/name/${userName}`,
   USER_TEAM: userId => `${APIEndpoint}/userprofile/teammembers/${userId}`,
+  USER_REFRESH_TOKEN: userId => `${APIEndpoint}/refreshToken/${userId}`,
   LOGIN: `${APIEndpoint}/login`,
   PROJECTS: `${APIEndpoint}/projects`,
   TEAM: `${APIEndpoint}/team`,
