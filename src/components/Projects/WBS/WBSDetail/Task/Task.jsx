@@ -447,11 +447,26 @@ function Task(props) {
               <i className="fa fa-book" aria-hidden="true" />
             </td>
           </tr>
-          <tr className="wbsTaskController desktop-view" id={`controller_${props.id}`}>
-            <td colSpan={15} className="controlTd">
-              {hasPermission(role, 'addTask', roles, userPermissions) ? (
-                <AddTaskModal
-                  key={`addTask_${props.id}`}
+          {controllerRow ? (
+            <tr className="wbsTaskController desktop-view" id={`controller_${props.id}`}>
+              <td colSpan={tableColNum} className="controlTd">
+                {hasPermission(role, 'addTask', roles, userPermissions) ? (
+                  <AddTaskModal
+                    key={`addTask_${props.id}`}
+                    parentNum={props.num}
+                    taskId={props.id}
+                    projectId={props.projectId}
+                    wbsId={props.wbsId}
+                    parentId1={props.parentId1}
+                    parentId2={props.parentId2}
+                    parentId3={props.parentId3}
+                    mother={props.mother}
+                    level={props.level}
+                    openChild={e => openChild(props.num, props.id)}
+                  />
+                ) : null}
+                <EditTaskModal
+                  key={`editTask_${props.id}`}
                   parentNum={props.num}
                   taskId={props.id}
                   projectId={props.projectId}
@@ -462,109 +477,111 @@ function Task(props) {
                   mother={props.mother}
                   level={props.level}
                 />
-              ) : null}
 
-              {hasPermission(role, 'deleteTask', roles, userPermissions) ? (
-                <>
-                  <Button
-                    color="danger"
-                    size="sm"
-                    className="controlBtn"
-                    onClick={() => showUpDeleteModal()}
-                  >
-                    Remove
-                  </Button>
+                {hasPermission(role, 'deleteTask', roles, userPermissions) ? (
+                  <>
+                    <Button
+                      color="danger"
+                      size="sm"
+                      className="controlBtn"
+                      onClick={() => showUpDeleteModal()}
+                    >
+                      Remove
+                    </Button>
 
-                  <Dropdown
-                    direction="up"
-                    isOpen={dropdownOpen}
-                    toggle={toggle}
-                    style={{ float: 'left' }}
-                  >
-                    <DropdownToggle caret color="primary" size="sm">
-                      Move
-                    </DropdownToggle>
-                    <DropdownMenu>
-                      {props.siblings.map((item, i) => {
-                        if (item.num !== props.num) {
-                          return (
-                            <DropdownItem key={i} onClick={(e) => onMove(props.num, item.num)}>
-                              {item.num.split('.0')[0]}
-                            </DropdownItem>
-                          );
-                        }
-                        passCurrentNum = true;
-                      })}
-                    </DropdownMenu>
-                  </Dropdown>
+                    <Dropdown
+                      direction="up"
+                      isOpen={dropdownOpen}
+                      toggle={toggle}
+                      style={{ float: 'left' }}
+                    >
+                      <DropdownToggle caret color="primary" size="sm">
+                        Move
+                      </DropdownToggle>
+                      <DropdownMenu>
+                        {props.siblings.map((item, i) => {
+                          if (item.num !== props.num) {
+                            return (
+                              <DropdownItem key={i} onClick={e => onMove(props.num, item.num)}>
+                                {item.num.split('.0')[0]}
+                              </DropdownItem>
+                            );
+                          } else {
+                            passCurrentNum = true;
+                          }
+                        })}
+                      </DropdownMenu>
+                    </Dropdown>
 
-                  <Button
-                    color="secondary"
-                    size="sm"
-                    className="margin-left"
-                    onClick={() => onCopy(props.id)}
-                  >
-                    {isCopied ? 'Copied' : 'Copy'}
-                  </Button>
-                </>
-              ) : null}
+                    <Button
+                      color="secondary"
+                      size="sm"
+                      className="margin-left"
+                      onClick={() => onCopy(props.id)}
+                    >
+                      {isCopied ? 'Copied' : 'Copy'}
+                    </Button>
+                  </>
+                ) : null}
 
-              <Modal isOpen={modal} toggle={toggleModel}>
-                <ModalBody>
-                  <h6>WHY THIS TASK IS IMPORTANT:</h6>
-                  <Editor
-                    init={{
-                      menubar: false,
-                      toolbar: false,
-                      branding: false,
-                      min_height: 80,
-                      max_height: 300,
-                      autoresize_bottom_margin: 1,
-                    }}
-                    disabled
-                    value={props.whyInfo}
-                  />
+                <Modal isOpen={modal} toggle={toggleModel}>
+                  <ModalBody>
+                    <h6>WHY THIS TASK IS IMPORTANT:</h6>
+                    <Editor
+                      init={{
+                        menubar: false,
+                        toolbar: false,
+                        branding: false,
+                        min_height: 80,
+                        max_height: 300,
+                        autoresize_bottom_margin: 1,
+                      }}
+                      disabled={true}
+                      value={props.whyInfo}
+                    />
 
-                  <h6>THE DESIGN INTENT:</h6>
-                  <Editor
-                    init={{
-                      menubar: false,
-                      toolbar: false,
-                      branding: false,
-                      min_height: 80,
-                      max_height: 300,
-                      autoresize_bottom_margin: 1,
-                    }}
-                    disabled
-                    value={props.intentInfo}
-                  />
+                    <h6>THE DESIGN INTENT:</h6>
+                    <Editor
+                      init={{
+                        menubar: false,
+                        toolbar: false,
+                        branding: false,
+                        min_height: 80,
+                        max_height: 300,
+                        autoresize_bottom_margin: 1,
+                      }}
+                      disabled={true}
+                      value={props.intentInfo}
+                    />
 
-                  <h6>ENDSTATE:</h6>
-                  <Editor
-                    init={{
-                      menubar: false,
-                      toolbar: false,
-                      branding: false,
-                      min_height: 80,
-                      max_height: 300,
-                      autoresize_bottom_margin: 1,
-                    }}
-                    disabled
-                    value={props.endstateInfo}
-                  />
-                </ModalBody>
-              </Modal>
-              <ModalDelete
-                isOpen={modalDelete}
-                closeModal={() => {
-                  setModalDelete(false);
-                }}
-                confirmModal={() => deleteTask(props.id, props.mother)}
-                modalMessage={props.state.popupEditor.currPopup.popupContent || ''}
-                modalTitle={Message.CONFIRM_DELETION}
-              />
-            </td>
-          </tr>
+                    <h6>ENDSTATE:</h6>
+                    <Editor
+                      init={{
+                        menubar: false,
+                        toolbar: false,
+                        branding: false,
+                        min_height: 80,
+                        max_height: 300,
+                        autoresize_bottom_margin: 1,
+                      }}
+                      disabled={true}
+                      value={props.endstateInfo}
+                    />
+                  </ModalBody>
+                </Modal>
+
+                <ModalDelete
+                  isOpen={modalDelete}
+                  closeModal={() => {
+                    setModalDelete(false);
+                  }}
+                  confirmModal={() => deleteTask(props.id, props.mother)}
+                  modalMessage={props.state.popupEditor.currPopup.popupContent || ''}
+                  modalTitle={Message.CONFIRM_DELETION}
+                />
+              </td>
+            </tr>
+          ) : null}
         </>
       ) : null}
     </>
