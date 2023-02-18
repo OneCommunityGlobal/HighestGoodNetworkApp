@@ -254,6 +254,7 @@ const TeamMemberTasks = props => {
                                     <FontAwesomeIcon
                                       className="team-member-tasks-done"
                                       icon={faCheck}
+                                      title="Mark as Done"
                                       onClick={() => {
                                         handleMarkAsDoneModal(user.personId, task);
                                       }}
