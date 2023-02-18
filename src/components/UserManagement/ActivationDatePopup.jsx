@@ -1,3 +1,4 @@
+import moment from 'moment';
 import React, { useState } from 'react';
 import { toast } from 'react-toastify';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Input, Alert } from 'reactstrap';
@@ -13,7 +14,7 @@ const ActivationDatePopup = React.memo(props => {
     props.onClose();
   };
   const pauseUser = () => {
-    if (Date.parse(activationDate) > Date.now()) {
+    if (moment().isBefore(moment(activationDate))) {
       props.onPause(activationDate);
       toast.success('Your Changes were saved successfully.');
       setTimeout(function() {

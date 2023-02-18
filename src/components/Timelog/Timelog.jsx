@@ -24,6 +24,7 @@ import {
   ModalBody,
   ModalFooter,
 } from 'reactstrap';
+import './Timelog.css';
 
 import classnames from 'classnames';
 import { connect, useSelector } from 'react-redux';

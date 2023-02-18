@@ -228,7 +228,7 @@ class PeopleReport extends Component {
       toDate,
       timeEntries,
     } = this.state;
-    const { firstName, lastName, weeklyComittedHours, totalTangibleHrs } = userProfile;
+    const { firstName, lastName, weeklycommittedHours, totalTangibleHrs } = userProfile;
 
     var totalTangibleHrsRound = 0;
     if (totalTangibleHrs) {
@@ -458,7 +458,7 @@ class PeopleReport extends Component {
             secondColor="#e25cb2"
             className="people-report-time-log-block"
           >
-            <h3>{weeklyComittedHours}</h3>
+            <h3>{weeklycommittedHours}</h3>
             <p>Weekly Committed Hours</p>
           </ReportPage.ReportBlock>
           <ReportPage.ReportBlock

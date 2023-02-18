@@ -1,56 +1,31 @@
 import React from 'react';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
-import { useEffect } from 'react';
 
 /**
  * Modal popup to delete the user profile
  */
-const TaskCompletedModal = React.memo(props => {
-  useEffect(() => {
-    props.loadUserTasks(props.userId);
-  });
-
-  const removeOrAddTaskFromUser = (task, method) => {
-    const resources = [...task.resources];
-    const newResources = resources?.map(resource => {
-      let newResource = { ...resource };
-      if (resource.userID === props.userId) {
-        if (method === 'remove') {
-          newResource = {
-            ...resource,
-            completedTask: true,
-          };
-        } else if (method === 'add') {
-          newResource = {
-            ...resource,
-            completedTask: false,
-          };
-        }
-      }
-      return newResource;
-    });
-
-    const updatedTask = { ...task, resources: newResources };
-    props.updateTask(task._id, updatedTask, method);
+const DuplicateNamePopup = React.memo(props => {
+  const closePopup = e => {
+    props.onClose();
   };
 
   return (
-    <Modal isOpen={props.isOpen} toggle={() => props.popupClose()}>
-      <ModalHeader toggle={() => props.popupClose()}>Mark as Completed</ModalHeader>
+    <Modal isOpen={props.open} toggle={() => props.popupClose()}>
+      <ModalHeader toggle={() => props.popupClose()}>Duplicate Names</ModalHeader>
       <ModalBody>
-        <p>Are you sure you want to mark this task as Completed?</p>
+        <p>There is already a user with the same name.</p>
+        <p>Do you wish to proceed and have duplicate names?</p>
         <ModalFooter>
           <Button
             color="primary"
             onClick={() => {
-              removeOrAddTaskFromUser(props.task, 'remove');
-              props.submitTasks();
-              props.popupClose();
+              props.createUserProfile(true);
+              props.onClose();
             }}
           >
             Confirm
           </Button>
-          <Button onClick={() => props.popupClose()}>Cancel</Button>
+          <Button onClick={() => props.popupClose()}>Change name</Button>
         </ModalFooter>
       </ModalBody>
     </Modal>
@@ -61,4 +36,4 @@ const DivSpacer = React.memo(() => {
   return <div style={{ padding: '5px' }}></div>;
 });
 
-export default TaskCompletedModal;
+export default DuplicateNamePopup;

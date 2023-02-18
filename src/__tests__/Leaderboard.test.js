@@ -26,13 +26,13 @@ const server = setupServer(
           {
             personId: 'abdefghijklmnop',
             name: 'Fake Admin',
-            weeklyComittedHours: 10,
+            weeklycommittedHours: 10,
             totaltime_hrs: 105,
             totaltangibletime_hrs: 6,
             totalintangibletime_hrs: 99,
             percentagespentintangible: 100,
             didMeetWeeklyCommitment: false,
-            weeklycommited: 10,
+            weeklycommitted: 10,
             tangibletime: 6,
             intangibletime: 9,
             tangibletimewidth: 100,
@@ -49,13 +49,13 @@ const server = setupServer(
           {
             personId: 'abdefghijklmnop',
             name: 'Fake Admin',
-            weeklyComittedHours: 10,
+            weeklycommittedHours: 10,
             totaltime_hrs: 125,
             totaltangibletime_hrs: 60,
             totalintangibletime_hrs: 99,
             percentagespentintangible: 100,
             didMeetWeeklyCommitment: false,
-            weeklycommited: 10,
+            weeklycommitted: 10,
             tangibletime: 60,
             intangibletime: 9,
             tangibletimewidth: 100,
@@ -92,7 +92,7 @@ afterAll(() => server.close());
 afterEach(() => server.resetHandlers());
 
 function sleep(ms) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
+  return new Promise(resolve => setTimeout(resolve, ms));
 }
 
 describe('Leaderboard structure', () => {
