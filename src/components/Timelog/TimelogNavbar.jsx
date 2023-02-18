@@ -22,7 +22,7 @@ const TimelogNavbar = ({ userId }) => {
   const timeEntries = useSelector(state => state.timeEntries.weeks[0]);
   const reducer = (total, entry) => total + parseInt(entry.hours) + parseInt(entry.minutes) / 60;
   const totalEffort = timeEntries.reduce(reducer, 0);
-  const weeklyComittedHours = useSelector(state => state.userProfile.weeklyComittedHours);
+  const weeklycommittedHours = useSelector(state => state.userProfile.weeklycommittedHours);
 
   return (
     <div>
@@ -36,12 +36,12 @@ const TimelogNavbar = ({ userId }) => {
           <Nav navbar className="navbar-nav w-100">
             <NavItem className="nav-item navbar-text w-80" id="timelogweeklychart">
               <div>
-                Current Week : {totalEffort.toFixed(2)} / {weeklyComittedHours}
+                Current Week : {totalEffort.toFixed(2)} / {weeklycommittedHours}
               </div>
               <Progress
-                value={getProgressValue(totalEffort,weeklyComittedHours)}
-                color={getProgressColor(totalEffort,weeklyComittedHours)}
-                striped={totalEffort < weeklyComittedHours}
+                value={getProgressValue(totalEffort, weeklycommittedHours)}
+                color={getProgressColor(totalEffort, weeklycommittedHours)}
+                striped={totalEffort < weeklycommittedHours}
               />
             </NavItem>
             <NavItem className="mt-3">

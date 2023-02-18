@@ -130,10 +130,11 @@ const TeamMemberTasks = props => {
           <tr key={user.personId}>
             {/* green if member has met committed hours for the week, red if not */}
             <td>
-              <div className="comitted-hours-circle">
+              <div className="committed-hours-circle">
                 <FontAwesomeIcon
                   style={{
-                    color: user.totaltangibletime_hrs >= user.weeklyComittedHours ? 'green' : 'red',
+                    color:
+                      user.totaltangibletime_hrs >= user.weeklycommittedHours ? 'green' : 'red',
                   }}
                   icon={faCircle}
                 />
@@ -147,9 +148,12 @@ const TeamMemberTasks = props => {
                       <Link to={`/userprofile/${user.personId}`}>{`${user.name}`}</Link>
                     </td>
                     <td className="team-clocks">
-                      <u>{user.weeklyComittedHours ? user.weeklyComittedHours : 0}</u> /
-                      <font color="green"> {thisWeekHours?thisWeekHours.toFixed(1):0}</font> /
-                      <font color="red"> {totalHoursRemaining?totalHoursRemaining.toFixed(1):0}</font>
+                      <u>{user.weeklycommittedHours ? user.weeklycommittedHours : 0}</u> /
+                      <font color="green"> {thisWeekHours ? thisWeekHours.toFixed(1) : 0}</font> /
+                      <font color="red">
+                        {' '}
+                        {totalHoursRemaining ? totalHoursRemaining.toFixed(1) : 0}
+                      </font>
                     </td>
                   </tr>
                   <tr>
@@ -208,8 +212,12 @@ const TeamMemberTasks = props => {
                                 ${parseFloat(task.estimatedHours.toFixed(2))}`}
                                   </span>
                                   <Progress
-                                    color = {getProgressColor(task.hoursLogged,task.estimatedHours,true)}
-                                    value = {getProgressValue(task.hoursLogged,task.estimatedHours)}
+                                    color={getProgressColor(
+                                      task.hoursLogged,
+                                      task.estimatedHours,
+                                      true,
+                                    )}
+                                    value={getProgressValue(task.hoursLogged, task.estimatedHours)}
                                   />
                                 </div>
                               </td>
