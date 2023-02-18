@@ -74,6 +74,7 @@ const TeamMemberTasks = props => {
       return axios.get(url);
     });
     const responses = await Promise.all(requests);
+    console.log(responses);
     for (const response of responses) {
       if (response.data.length > 0) newList.push(...response.data);
     }
@@ -150,7 +151,7 @@ const TeamMemberTasks = props => {
             className="hours-btn btn-clear-timelogs"
             onClick={() => setTimeEntriesActive(false)}
           >
-            Clear Timelogs
+            Hide Timelogs
           </button>
           <button
             type="button"
