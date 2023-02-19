@@ -55,6 +55,7 @@ const SummaryBar = props => {
   const [tasks, setTasks] = useState(undefined);
   const authenticateUser = useSelector(state => state.auth.user);
   const gsUserprofile = useSelector(state => state.userProfile);
+  const gsUserTasks = useSelector(state => state.userTask);
   const authenticateUserId = authenticateUser ? authenticateUser.userid : '';
 
   const matchUser = asUser == authenticateUserId ? true : false;
@@ -96,8 +97,14 @@ const SummaryBar = props => {
   };
 
   useEffect(() => {
-    loadUserProfile();
-    getUserTask();
+    // Fetch user profile only if the selected timelog is of different user
+    if (!matchUser) {
+      loadUserProfile();
+      getUserTask();
+    } else {
+      setUserProfile(gsUserprofile);
+      setTasks(gsUserTasks.length);
+    }
   }, [leaderData]);
 
   useEffect(() => {
