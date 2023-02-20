@@ -12,9 +12,9 @@ const mapStateToProps = state => {
 
     leaderBoardData = leaderBoardData.map(element => {
       element.didMeetWeeklyCommitment =
-        element.totaltangibletime_hrs >= element.weeklyComittedHours ? true : false;
+        element.totaltangibletime_hrs >= element.weeklycommittedHours ? true : false;
 
-      element.weeklycommited = round(element.weeklyComittedHours, 2);
+      element.weeklycommitted = round(element.weeklycommittedHours, 2);
       element.tangibletime = round(element.totaltangibletime_hrs, 2);
       element.intangibletime = round(element.totalintangibletime_hrs, 2);
 
@@ -36,9 +36,9 @@ const mapStateToProps = state => {
   orgData.tangibletime = round(orgData.totaltangibletime_hrs, 2);
   orgData.totaltime = round(orgData.totaltime_hrs, 2);
   orgData.intangibletime = round(orgData.totalintangibletime_hrs, 2);
-  orgData.weeklyComittedHours = round(orgData.totalWeeklyComittedHours, 2);
+  orgData.weeklycommittedHours = round(orgData.totalWeeklycommittedHours, 2);
 
-  const tenPTotalOrgTime = orgData.weeklyComittedHours * 0.1;
+  const tenPTotalOrgTime = orgData.weeklycommittedHours * 0.1;
   const orgTangibleColorTime = orgData.totaltime < tenPTotalOrgTime * 2 ? 0 : 5;
 
   orgData.barcolor = getcolor(orgTangibleColorTime);

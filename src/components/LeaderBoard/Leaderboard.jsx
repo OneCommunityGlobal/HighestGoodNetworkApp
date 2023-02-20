@@ -168,10 +168,10 @@ const LeaderBoard = ({
               <td className="align-middle">
                 <Link to={`/dashboard/`}>
                   <div
-                    title={`Weekly Committed: ${organizationData.weeklyComittedHours} hours`}
+                    title={`Weekly Committed: ${organizationData.weeklycommittedHours} hours`}
                     style={{
                       backgroundColor:
-                        organizationData.tangibletime >= organizationData.weeklyComittedHours
+                        organizationData.tangibletime >= organizationData.weeklycommittedHours
                           ? 'green'
                           : 'red',
                       width: 15,
@@ -195,7 +195,7 @@ const LeaderBoard = ({
               </td>
               <td className="align-middle">
                 <span title="Tangible + Intangible time = Total time">
-                  {organizationData.totaltime} of {organizationData.weeklyComittedHours}
+                  {organizationData.totaltime} of {organizationData.weeklycommittedHours}
                 </span>
               </td>
             </tr>
@@ -221,10 +221,10 @@ const LeaderBoard = ({
 
                   {/* <Link to={`/dashboard/${item.personId}`}> */}
                   <div
-                    title={`Weekly Committed: ${item.weeklyComittedHours} hours`}
+                    title={`Weekly Committed: ${item.weeklycommittedHours} hours`}
                     style={{
                       backgroundColor:
-                        item.tangibletime >= item.weeklyComittedHours ? 'green' : 'red',
+                        item.tangibletime >= item.weeklycommittedHours ? 'green' : 'red',
                       width: 15,
                       height: 15,
                       borderRadius: 7.5,

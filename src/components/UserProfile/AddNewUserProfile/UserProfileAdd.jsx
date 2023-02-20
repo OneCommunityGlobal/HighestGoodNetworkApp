@@ -512,7 +512,9 @@ class AddUserProfile extends Component {
       jobTitle: jobTitle,
       phoneNumber: phoneNumber,
       bio: '',
-      weeklyComittedHours: that.state.userProfile.weeklyCommittedHours,
+      weeklycommittedHours: that.state.userProfile.weeklyCommittedHours
+        ? that.state.userProfile.weeklyCommittedHours
+        : that.state.userProfile.weeklyCommittedHours,
       personalLinks: [],
       adminLinks: [],
       teams: this.state.teams,
