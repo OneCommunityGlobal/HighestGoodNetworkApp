@@ -9,7 +9,13 @@ import { Button, Dropdown, DropdownItem, DropdownToggle, DropdownMenu } from 're
 import { BsFillCaretDownFill, BsFillCaretUpFill } from 'react-icons/bs';
 import AddTaskModal from '../AddTask/AddTaskModal';
 import EditTaskModal from '../EditTask/EditTaskModal';
-import { moveTasks, fetchAllTasks, deleteTask, copyTask } from '../../../../../actions/task.js';
+import {
+  moveTasks,
+  fetchAllTasks,
+  deleteTask,
+  copyTask,
+  deleteChildrenTasks,
+} from '../../../../../actions/task.js';
 import './tagcolor.css';
 import './task.css';
 import { Editor } from '@tinymce/tinymce-react';
@@ -121,6 +127,9 @@ const Task = props => {
   };
 
   const deleteTask = (taskId, mother) => {
+    if (mother !== null) {
+      props.deleteChildrenTasks(mother);
+    }
     props.deleteTask(taskId, mother);
     props.fetchAllTasks(props.wbsId, -1);
     setTimeout(() => {
@@ -142,6 +151,7 @@ const Task = props => {
     props.copyTask(id);
   };
 
+  console.log('PROPS >>>', props);
   return (
     <>
       {props.id ? (
@@ -423,8 +433,10 @@ const Task = props => {
                     parentId2={props.parentId2}
                     parentId3={props.parentId3}
                     mother={props.mother}
+                    childrenQty={props.childrenQty}
                     level={props.level}
                     openChild={e => openChild(props.num, props.id)}
+                    hasPermission={true}
                   />
                 ) : null}
                 <EditTaskModal
@@ -558,4 +570,5 @@ export default connect(mapStateToProps, {
   deleteTask,
   copyTask,
   getPopupById,
+  deleteChildrenTasks,
 })(Task);

@@ -32,12 +32,12 @@ const WBSTasks = props => {
   const [openAll, setOpenAll] = useState(false);
   const [loadAll, setLoadAll] = useState(false);
 
-  const load = async()=>{
-    const levelList = [0,1,2,3,4];
+  const load = async () => {
+    const levelList = [0, 1, 2, 3, 4];
     await Promise.all(levelList.map(level => props.fetchAllTasks(wbsId, level)));
     AutoOpenAll(false);
     setLoadAll(true);
-  }
+  };
 
   useEffect(() => {
     load().then(setOpenAll(false));
@@ -182,19 +182,17 @@ const WBSTasks = props => {
     }
   };
 
-  const LoadTasks = props.state.tasks.taskItems
-    .slice(0)
-    .sort((a, b) => {
-      var former = a.num.split('.');
-      var latter = b.num.split('.');
-      for(var i = 0; i< 4; i++){
-        var _former = +former[i] || 0;
-        var _latter = +latter[i] || 0;
-        if(_former === _latter) continue;
-        else return _former > _latter ? 1: -1
-      }
-      return 0;
-    });
+  const LoadTasks = props.state.tasks.taskItems.slice(0).sort((a, b) => {
+    var former = a.num.split('.');
+    var latter = b.num.split('.');
+    for (var i = 0; i < 4; i++) {
+      var _former = +former[i] || 0;
+      var _latter = +latter[i] || 0;
+      if (_former === _latter) continue;
+      else return _former > _latter ? 1 : -1;
+    }
+    return 0;
+  });
   const filteredTasks = filterTasks(LoadTasks, filterState);
 
   return (
@@ -236,8 +234,11 @@ const WBSTasks = props => {
           Refresh{' '}
         </Button>
 
-        {loadAll === false? (
-        <Button color="warning" size="sm">  Task Loading......  </Button>
+        {loadAll === false ? (
+          <Button color="warning" size="sm">
+            {' '}
+            Task Loading......{' '}
+          </Button>
         ) : null}
 
         <div className="toggle-all">
@@ -359,6 +360,7 @@ const WBSTasks = props => {
                 whyInfo={task.whyInfo}
                 intentInfo={task.intentInfo}
                 endstateInfo={task.endstateInfo}
+                childrenQty={task.childrenQty}
               />
             ))}
           </tbody>
