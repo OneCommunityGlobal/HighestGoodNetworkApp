@@ -250,7 +250,7 @@ const BadgeReport = props => {
   
   return (
     <div>
-      <Table>
+      <Table responsive>
         <thead>
           <tr>
             <th style={{ width: '93px' }}>Badge</th>
