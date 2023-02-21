@@ -1,7 +1,12 @@
 .message-container {
   display: flex;
   align-items: center;
-  margin-left: 20%;
+}
+
+img {
+  max-width: 400px;
+  height: 50px;
+  border-radius: 4px;
 }
 
 .message {
@@ -11,7 +16,14 @@
 }
 
 .icons-wrapper {
-  margin-left: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: .5rem;
+  padding: .5rem;
+  margin-left: 1rem;
+  border-radius: 4px;
+  background-color: #e2e3e5;
 }
 
 .modal-body {
@@ -19,25 +31,12 @@
   flex-direction: column;
 }
 
-textarea {
-  width: 100%;
-  height: 150px;
-  padding: 12px 20px;
-  box-sizing: border-box;
-  border: 2px solid #ccc;
-  border-radius: 4px;
-  background-color: #f8f8f8;
+.paragraph {
+  margin-top: 1rem;
 }
 
-@media (min-width: 1024px) {
+@media(max-width: 860px) {
   .message-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
-
-  img {
-    max-width: 400px;
-    height: 50px;
+    display: none;
   }
 }

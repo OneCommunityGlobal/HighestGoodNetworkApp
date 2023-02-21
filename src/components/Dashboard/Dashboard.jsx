@@ -50,7 +50,7 @@ export const Dashboard = props => {
         leaderData={leaderData}
       />
 
-      <Row>
+      <Row >
         <Col lg={{ size: 7 }}>&nbsp;</Col>
         <Col lg={{ size: 5 }}>
           <div className="row justify-content-center">

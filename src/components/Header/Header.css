@@ -1,10 +1,23 @@
 .header-wrapper {
   height: 82px;
   white-space: nowrap;
+  margin-bottom: 1rem;
 }
 
 .navbar {
   z-index: 100;
+}
+
+.timer-message-section {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  margin-right: 5rem;
+}
+
+.nav-links {
+  align-items: center;
 }
 
 .redBackGroupHeader {
@@ -22,4 +35,30 @@
   max-width: 39px;
   font-size: 1rem;
   min-width: 29px;
+}
+
+@media(max-width: 1200px) {
+  .header-wrapper {
+    height: 72px;
+    margin-bottom: 10px;
+  }
+
+  .timer-message-section {
+    display: flex;
+    gap: 3rem;
+    width: 0;
+    margin-right: 0;
+  }
+}
+
+@media(max-width: 860px) {
+  .header-wrapper {
+    height: 72px;
+    margin-bottom: 0;
+  }
+  .timer-message-section {
+    display: flex;
+    width: 0;
+    margin-right: 0;
+  }
 }

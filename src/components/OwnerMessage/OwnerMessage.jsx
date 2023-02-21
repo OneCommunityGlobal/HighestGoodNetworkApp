@@ -3,7 +3,7 @@ import axios from 'axios';
 import { ENDPOINTS } from '../../utils/URL';
 import { toast } from 'react-toastify';
 
-import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
+import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Label, Input } from 'reactstrap';
 import styles from './OwnerMessage.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEdit, faTrashAlt } from '@fortawesome/free-regular-svg-icons';
@@ -18,11 +18,13 @@ function OwnerMessage({ auth, getOwnerMessage, ownerMessage, ownerMessageId, cre
   const [newMessage, setNewMessage] = useState('');
   const [modal, setModal] = useState(false);
   const [modalDeleteWarning, setModalDeleteWarning] = useState(false);
+  const [modalWrongPictureFormatWarning, setModalWrongPictureFormatWarning] = useState(false);
 
   const isImage = (/;base64/g);
 
   const toggle = () => setModal(!modal);
   const toggleDeleteWarning = () => setModalDeleteWarning(!modalDeleteWarning);
+  const toggleWrongPictureFormatWarning = () => setModalWrongPictureFormatWarning(!modalWrongPictureFormatWarning);
 
   useEffect(() => {
     getOwnerMessage();
@@ -33,19 +35,13 @@ function OwnerMessage({ auth, getOwnerMessage, ownerMessage, ownerMessageId, cre
     if (event) event.preventDefault();
     const file = event.target.files[0];
     if (typeof file != 'undefined') {
-      const filesizeKB = file.size / 1024;
       const imageType = (/jpg|jpeg|png/g);
       const validFormats = imageType.test(file.name);
 
       //Input validation: file type
       if  (!validFormats) {
-        alert('Please insert a valid image! It can be only png, jpg or jpeg.')
-        return;
-      }
-
-      //Input validation: file size.
-      if (filesizeKB > 1000) {
-        alert('The file you are trying to upload exceeds the maximum size of 1 MB. You can either choose a different file, or use an online file compressor.')
+        toggle();
+        toggleWrongPictureFormatWarning();
         return;
       }
 
@@ -93,13 +89,15 @@ function OwnerMessage({ auth, getOwnerMessage, ownerMessage, ownerMessageId, cre
           <div className="icons-wrapper">
             <FontAwesomeIcon
               icon={faEdit}
-              className="mr-3 text-primary"
+              className=" text-primary"
               onClick={toggle}
+              size={16}
             />
             <FontAwesomeIcon
               icon={faTrashAlt}
-              className="mr-3 text-danger"
+              className="text-danger"
               onClick={toggleDeleteWarning}
+              size={16}
             />
           </div>
         )
@@ -110,16 +108,20 @@ function OwnerMessage({ auth, getOwnerMessage, ownerMessage, ownerMessageId, cre
         <ModalHeader toggle={toggle}>Create message</ModalHeader>
         <ModalBody className="modal-body">
           <p>Write a message:</p>
-          <textarea 
-          cols="30" 
-          rows="10" 
-          placeholder="write your message here..."
-          onChange={event => setNewMessage(event.target.value)}
+          <Input
+            id="text-area"
+            name="text"
+            type="textarea"
+            placeholder="Write your message here..."
+            onChange={event => setNewMessage(event.target.value)}
           />
-          <p>or upload a picture:</p>
-          <input
-          type="file"
-          onChange={handleImageUpload}
+          <p className="paragraph">or upload a picture:</p>
+          <Input
+            id="image"
+            name="file"
+            type="file"
+            label="Choose Image"
+            onChange={handleImageUpload}
           />
         </ModalBody>
         <ModalFooter>
@@ -141,6 +143,17 @@ function OwnerMessage({ auth, getOwnerMessage, ownerMessage, ownerMessageId, cre
           </Button>
           <Button color="danger" onClick={handleDeleteMessage}>
             Delete
+          </Button>
+        </ModalFooter>
+      </Modal>
+      <Modal isOpen={modalWrongPictureFormatWarning} toggle={toggleWrongPictureFormatWarning}>
+        <ModalBody>
+          <strong>Please insert a valid image!</strong>
+          <span>Only .jpg, .jpeg and .png formats are accepted.</span>
+        </ModalBody>
+        <ModalFooter>
+          <Button color="danger" onClick={toggleWrongPictureFormatWarning}>
+            Close
           </Button>
         </ModalFooter>
       </Modal>
