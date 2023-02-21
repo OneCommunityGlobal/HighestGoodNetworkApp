@@ -33,8 +33,6 @@ const SingleTask = props => {
     fetchTaskData();
   }, []);
 
-  console.log(task);
-
   return (
     <React.Fragment>
       <ReactTooltip />
