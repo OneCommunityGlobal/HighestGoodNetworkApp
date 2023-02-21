@@ -5,7 +5,6 @@ import { toast } from 'react-toastify';
 
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import styles from './OwnerMessage.css';
-import image from './assets/image.png';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEdit, faTrashAlt } from '@fortawesome/free-regular-svg-icons';
 
@@ -20,6 +19,8 @@ function OwnerMessage({ auth, getOwnerMessage, ownerMessage, ownerMessageId, cre
   const [modal, setModal] = useState(false);
   const [modalDeleteWarning, setModalDeleteWarning] = useState(false);
 
+  const isImage = (/;base64/g);
+
   const toggle = () => setModal(!modal);
   const toggleDeleteWarning = () => setModalDeleteWarning(!modalDeleteWarning);
 
@@ -27,6 +28,34 @@ function OwnerMessage({ auth, getOwnerMessage, ownerMessage, ownerMessageId, cre
     getOwnerMessage();
     setMessage(ownerMessage);
   }, []);
+
+  const handleImageUpload = async event => {
+    if (event) event.preventDefault();
+    const file = event.target.files[0];
+    if (typeof file != 'undefined') {
+      const filesizeKB = file.size / 1024;
+      const imageType = (/jpg|jpeg|png/g);
+      const validFormats = imageType.test(file.name);
+
+      //Input validation: file type
+      if  (!validFormats) {
+        alert('Please insert a valid image! It can be only png, jpg or jpeg.')
+        return;
+      }
+
+      //Input validation: file size.
+      if (filesizeKB > 1000) {
+        alert('The file you are trying to upload exceeds the maximum size of 1 MB. You can either choose a different file, or use an online file compressor.')
+        return;
+      }
+
+      const fileReader = new FileReader();
+      fileReader.readAsDataURL(file);
+      fileReader.onloadend = () => {
+        setNewMessage(fileReader.result);
+      };
+    }
+  };
 
   async function handleMessage() {
     const ownerMessage = {
@@ -56,7 +85,7 @@ function OwnerMessage({ auth, getOwnerMessage, ownerMessage, ownerMessageId, cre
   return(
     <div className="message-container">
       {
-      message ? (<span className="message">{message}</span>) : (<img src={image} className="image" />)
+      isImage.test(message) ? <img src={message} alt="" /> : <span className="message">{message}</span>
       }
 
       {
@@ -90,7 +119,7 @@ function OwnerMessage({ auth, getOwnerMessage, ownerMessage, ownerMessageId, cre
           <p>or upload a picture:</p>
           <input
           type="file"
-          onChange={() => {}}
+          onChange={handleImageUpload}
           />
         </ModalBody>
         <ModalFooter>
@@ -121,8 +150,8 @@ function OwnerMessage({ auth, getOwnerMessage, ownerMessage, ownerMessageId, cre
 
 const mapStateToProps = state => ({
   auth: state.auth,
-  ownerMessage: state.ownerMessage[0] && state.ownerMessage[0].message,
-  ownerMessageId: state.ownerMessage[0] && state.ownerMessage[0]._id,
+  ownerMessage: state.ownerMessage[0] ? state.ownerMessage[0].message : null,
+  ownerMessageId: state.ownerMessage[0] ? state.ownerMessage[0]._id : null,
 });
 
 const mapDispatchToProps = dispatch => ({
