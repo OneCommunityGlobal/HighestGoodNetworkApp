@@ -150,8 +150,6 @@ const Task = props => {
     setIsCopied(true);
     props.copyTask(id);
   };
-
-  console.log('PROPS >>>', props);
   return (
     <>
       {props.id ? (
