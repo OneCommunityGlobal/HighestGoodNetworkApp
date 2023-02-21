@@ -82,7 +82,9 @@ export const Header = props => {
         </NavbarBrand>
          */}
         {logoutPopup && <Logout open={logoutPopup} setLogoutPopup={setLogoutPopup} />}
-        <div className="timer-message-section">
+        <div className="timer-message-section"
+        style={user.role == 'Owner' ? { marginRight: '6rem'} : { marginRight: '10rem'}}
+        >
           {isAuthenticated && <Timer/>}
           {isAuthenticated && <OwnerMessage />}
         </div>
