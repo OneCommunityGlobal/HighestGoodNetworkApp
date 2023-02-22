@@ -267,7 +267,7 @@ const TeamMemberTasks = props => {
                                 </div>
                               </td>
                             )}
-                            {userRole === 'Administrator' || 'Owner' ? (
+                            {userRole === 'Administrator' ? (
                               <td>
                                 <TaskButton task={task}></TaskButton>
                               </td>
