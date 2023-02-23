@@ -117,9 +117,15 @@ class Timelog extends Component {
     if (role === 'Administrator' || role === 'Manager' || role === "'Mentor'" || role === 'Owner') {
       this.setState({ activeTab: 0 });
     }
+    
     const UserHaveTask = doesUserHaveTaskWithWBS(this.userTask);
-    console.log('now');
-    console.log(this.userTask)
+    /* To set the Task tab as defatult this.userTask is being watched.
+    Accounts with no tasks assigned to it return an empty array.
+    Accounts assigned with tasks with no wbs return and empty array.
+    Accounts assigned with tasks with wbs return an array with that wbs data.
+    The problem: even after unassigning tasks the array keeps the wbs data.
+    That breaks this feature. Necessary to check if this array should keep data or be reset when unassinging tasks.*/
+
     if (UserHaveTask) {
       this.setState({ activeTab: 0 });
     }
