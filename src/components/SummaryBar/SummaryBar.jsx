@@ -182,7 +182,9 @@ const SummaryBar = props => {
     const badges = getBadges(userProfile);
     const { firstName, lastName, email, _id } = userProfile;
     let totalEffort = parseFloat(leaderData.find(x => x.personId === asUser).tangibletime);
-    const weeklyCommittedHours = userProfile.weeklyComittedHours;
+    const weeklyCommittedHours = userProfile.weeklyCommittedHours
+      ? userProfile.weeklyCommittedHours
+      : userProfile.weeklyComittedHours;
     const weeklySummary = getWeeklySummary(userProfile);
     return (
       <Container fluid className={matchUser ? "px-lg-0 bg--bar" : "px-lg-0 bg--bar disabled-bar"}>
@@ -238,8 +240,8 @@ const SummaryBar = props => {
                   <div className="text--black align-items-center med_text_summary">
                     Current Week : {totalEffort.toFixed(2)} / {weeklyCommittedHours}
                     <Progress
-                      value={getProgressValue(totalEffort,weeklyCommittedHours)}
-                      color={getProgressColor(totalEffort,weeklyCommittedHours)}
+                      value={getProgressValue(totalEffort, weeklyCommittedHours)}
+                      color={getProgressColor(totalEffort, weeklyCommittedHours)}
                       striped={totalEffort < weeklyCommittedHours}
                     />
                   </div>

@@ -47,7 +47,7 @@ describe('User Table Data', () => {
       expect(screen.getByText(userProfileMock.email)).toBeInTheDocument();
     });
     it('should render the correct weekly committed hrs', () => {
-      expect(screen.getByText(`${userProfileMock.weeklyComittedHours}`)).toBeInTheDocument();
+      expect(screen.getByText(`${userProfileMock.weeklycommittedHours}`)).toBeInTheDocument();
     });
     it('should render a `Pause` button', () => {
       expect(screen.getByRole('button', { name: /pause/i })).toBeInTheDocument();

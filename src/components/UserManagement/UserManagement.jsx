@@ -207,7 +207,7 @@ class UserManagement extends React.PureComponent {
           user.role.toLowerCase().indexOf(this.state.roleSearchText.toLowerCase()) > -1 &&
           user.email.toLowerCase().indexOf(this.state.emailSearchText.toLowerCase()) > -1 &&
           (this.state.weeklyHrsSearchText === '' ||
-            user.weeklyComittedHours === Number(this.state.weeklyHrsSearchText)) &&
+            user.weeklycommittedHours === Number(this.state.weeklyHrsSearchText)) &&
           (this.state.isActive === undefined || user.isActive === this.state.isActive) &&
           (this.state.isPaused === false || user.reactivationDate) &&
           this.state.wildCardSearchText === '') ||
@@ -217,7 +217,7 @@ class UserManagement extends React.PureComponent {
             user.lastName.toLowerCase().indexOf(this.state.wildCardSearchText.toLowerCase()) > -1 ||
             user.role.toLowerCase().indexOf(this.state.wildCardSearchText.toLowerCase()) > -1 ||
             user.email.toLowerCase().indexOf(this.state.wildCardSearchText.toLowerCase()) > -1 ||
-            user.weeklyComittedHours === Number(this.state.wildCardSearchText)))
+            user.weeklycommittedHours === Number(this.state.wildCardSearchText)))
       ) {
         return user;
       }

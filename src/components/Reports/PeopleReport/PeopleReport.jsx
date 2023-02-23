@@ -238,7 +238,7 @@ class PeopleReport extends Component {
       fromDate,
       toDate,
       timeEntries,
-    } = this.state
+    } = this.state;
     const { firstName, lastName, weeklycommittedHours, totalTangibleHrs } = userProfile;
 
     var totalTangibleHrsRound = 0

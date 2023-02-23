@@ -48,13 +48,13 @@ const server = setupServer(
         {
           personId: '5edf141c78f1380017b829a6',
           name: 'Dev Admin',
-          weeklyComittedHours: 10,
+          weeklycommittedHours: 10,
           totaltime_hrs: 6,
           totaltangibletime_hrs: 6,
           totalintangibletime_hrs: 0,
           percentagespentintangible: 100,
           didMeetWeeklyCommitment: false,
-          weeklycommited: 10,
+          weeklycommitted: 10,
           tangibletime: 6,
           intangibletime: 0,
           tangibletimewidth: 100,
@@ -80,7 +80,7 @@ afterAll(() => server.close());
 afterEach(() => server.resetHandlers());
 
 function sleep(ms) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
+  return new Promise(resolve => setTimeout(resolve, ms));
 }
 
 mockState.auth.isAuthenticated = false;
@@ -88,9 +88,9 @@ mockState.auth.isAuthenticated = false;
 describe('Login behavior', () => {
   let loginMountedPage;
 
- it('should perform correct redirection if user tries to access a proctected route from some other location', async () => {
-  jest.setTimeout(10000)  
-  const rt = '/updatepassword/5edf141c78f1380017b829a6';
+  it('should perform correct redirection if user tries to access a proctected route from some other location', async () => {
+    jest.setTimeout(10000);
+    const rt = '/updatepassword/5edf141c78f1380017b829a6';
     const hist = createMemoryHistory({ initialEntries: [rt] });
     loginMountedPage = renderWithRouterMatch(routes, {
       initialState: mockState,
@@ -111,7 +111,7 @@ describe('Login behavior', () => {
     await waitFor(() => {
       expect(screen.getByLabelText('Current Password:')).toBeTruthy();
     });
-  }); 
+  });
 
   it('should redirect to dashboard if no previous redirection', async () => {
     //TEST FAILING NEED TO FIX

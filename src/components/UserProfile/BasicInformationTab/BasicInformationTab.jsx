@@ -554,7 +554,7 @@ const BasicInformationTab = props => {
             {userProfile.isActive
               ? 'Active'
               : userProfile.reactivationDate
-              ? 'Paused until ' + moment(userProfile.reactivationDate).format('YYYY-MM-DD')
+              ? 'Paused through ' + moment(userProfile.reactivationDate).format('MM-DD-YYYY')
               : 'Inactive'}
           </Label>
           &nbsp;

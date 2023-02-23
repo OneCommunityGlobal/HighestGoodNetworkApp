@@ -452,7 +452,7 @@ export const userProfileMock = {
   isActive: true,
   totalTangibleHrs: 15,
   phoneNumber: ['1112223333'],
-  weeklyComittedHours: 10,
+  weeklycommittedHours: 10,
   teams: [
     {
       _id: '5a849147592ca46b43db272c',
@@ -700,7 +700,7 @@ export const allUserProfilesMock = {
   userProfiles: [
     {
       isActive: true,
-      weeklyComittedHours: 0,
+      weeklycommittedHours: 0,
       _id: '5c4cc2109487b0003924f1e3',
       role: 'Administrator',
       firstName: 'Test',
@@ -709,7 +709,7 @@ export const allUserProfilesMock = {
     },
     {
       isActive: true,
-      weeklyComittedHours: 20,
+      weeklycommittedHours: 20,
       _id: '5e2cc6df7a91aaf820510a55',
       role: 'Volunteer',
       firstName: 'Sidd',
@@ -718,7 +718,7 @@ export const allUserProfilesMock = {
     },
     {
       isActive: true,
-      weeklyComittedHours: 10,
+      weeklycommittedHours: 10,
       _id: '5ede6be453a0480017164a5b',
       role: 'Administrator',
       firstName: 'Nithesh',
@@ -727,7 +727,7 @@ export const allUserProfilesMock = {
     },
     {
       isActive: true,
-      weeklyComittedHours: 10,
+      weeklycommittedHours: 10,
       _id: '5edf141c78f1380017b829a6',
       role: 'Administrator',
       firstName: 'Dev',
@@ -736,7 +736,7 @@ export const allUserProfilesMock = {
     },
     {
       isActive: true,
-      weeklyComittedHours: 15,
+      weeklycommittedHours: 15,
       _id: '5f20d19160bd1734f069dadb',
       role: 'Administrator',
       firstName: 'Jerry',
@@ -745,7 +745,7 @@ export const allUserProfilesMock = {
     },
     {
       isActive: true,
-      weeklyComittedHours: 0,
+      weeklycommittedHours: 0,
       _id: '5be0952c633dae0016081b4b',
       role: 'Administrator',
       firstName: 'Tyler',
@@ -754,7 +754,7 @@ export const allUserProfilesMock = {
     },
     {
       isActive: true,
-      weeklyComittedHours: 0,
+      weeklycommittedHours: 0,
       _id: '5bef421d908c1b0038d06dbd',
       role: 'Administrator',
       firstName: 'Adam',
@@ -763,7 +763,7 @@ export const allUserProfilesMock = {
     },
     {
       isActive: true,
-      weeklyComittedHours: 2,
+      weeklycommittedHours: 2,
       _id: '5e2a76cb0441c30039a6909a',
       role: 'Volunteer',
       firstName: 'Test',
@@ -772,7 +772,7 @@ export const allUserProfilesMock = {
     },
     {
       isActive: true,
-      weeklyComittedHours: 10,
+      weeklycommittedHours: 10,
       _id: '5ef771cf612d522c54f9b637',
       role: 'Volunteer',
       firstName: 'Testing',
@@ -781,7 +781,7 @@ export const allUserProfilesMock = {
     },
     {
       isActive: true,
-      weeklyComittedHours: 3,
+      weeklycommittedHours: 3,
       _id: '5eff58c34c9f52001786f031',
       role: 'Volunteer',
       firstName: 'Test',
@@ -790,7 +790,7 @@ export const allUserProfilesMock = {
     },
     {
       isActive: false,
-      weeklyComittedHours: 0,
+      weeklycommittedHours: 0,
       _id: '5b3013287275b6002e3b2de4',
       role: 'Volunteer',
       firstName: 'Dipti',
@@ -799,7 +799,7 @@ export const allUserProfilesMock = {
     },
     {
       isActive: false,
-      weeklyComittedHours: 0,
+      weeklycommittedHours: 0,
       _id: '5b3013087275b6002e3b2de3',
       role: 'Volunteer',
       firstName: 'Dehua',
@@ -808,7 +808,7 @@ export const allUserProfilesMock = {
     },
     {
       isActive: true,
-      weeklyComittedHours: 15,
+      weeklycommittedHours: 15,
       _id: '5f421a54552a840017149d32',
       role: 'Volunteer',
       firstName: 'Cheryl',
@@ -817,7 +817,7 @@ export const allUserProfilesMock = {
     },
     {
       isActive: false,
-      weeklyComittedHours: 0,
+      weeklycommittedHours: 0,
       _id: '5b3013847275b6002e3b2de7',
       role: 'Volunteer',
       firstName: 'Michael',
@@ -826,7 +826,7 @@ export const allUserProfilesMock = {
     },
     {
       isActive: true,
-      weeklyComittedHours: 20,
+      weeklycommittedHours: 20,
       _id: '5f31dcb9a1a909eadee0eecb',
       role: 'Volunteer',
       firstName: 'Jun',
@@ -835,7 +835,7 @@ export const allUserProfilesMock = {
     },
     {
       isActive: true,
-      weeklyComittedHours: 10,
+      weeklycommittedHours: 10,
       _id: '5e9fa3d9b5dc3c2e48c10989',
       role: 'Manager',
       firstName: 'Alvaro',
@@ -844,7 +844,7 @@ export const allUserProfilesMock = {
     },
     {
       isActive: false,
-      weeklyComittedHours: 0,
+      weeklycommittedHours: 0,
       _id: '5b3013f57275b6002e3b2dea',
       role: 'Volunteer',
       firstName: 'Mike',
@@ -853,7 +853,7 @@ export const allUserProfilesMock = {
     },
     {
       isActive: false,
-      weeklyComittedHours: 0,
+      weeklycommittedHours: 0,
       _id: '5ae0badeb3f1241c28c9b4e3',
       role: 'Volunteer',
       firstName: 'Swathy',
@@ -862,7 +862,7 @@ export const allUserProfilesMock = {
     },
     {
       isActive: false,
-      weeklyComittedHours: 0,
+      weeklycommittedHours: 0,
       _id: '5b30136d7275b6002e3b2de6',
       role: 'Volunteer',
       firstName: 'Michael',
@@ -871,7 +871,7 @@ export const allUserProfilesMock = {
     },
     {
       isActive: false,
-      weeklyComittedHours: 0,
+      weeklycommittedHours: 0,
       _id: '5b3013c47275b6002e3b2de9',
       role: 'Volunteer',
       firstName: 'Yun',
@@ -880,7 +880,7 @@ export const allUserProfilesMock = {
     },
     {
       isActive: true,
-      weeklyComittedHours: 10,
+      weeklycommittedHours: 10,
       _id: '5ea5ba581446e1164098fa7b',
       role: 'Manager',
       firstName: 'New',
@@ -889,7 +889,7 @@ export const allUserProfilesMock = {
     },
     {
       isActive: true,
-      weeklyComittedHours: 15,
+      weeklycommittedHours: 15,
       _id: '5f20d18660bd1734f069dada',
       role: 'Manager',
       firstName: 'Jerry',
@@ -898,7 +898,7 @@ export const allUserProfilesMock = {
     },
     {
       isActive: false,
-      weeklyComittedHours: 0,
+      weeklycommittedHours: 0,
       _id: '5b0585ffd68f7f002dbcf4de',
       role: 'Administrator',
       firstName: 'Sowmya',
@@ -907,7 +907,7 @@ export const allUserProfilesMock = {
     },
     {
       isActive: false,
-      weeklyComittedHours: 0,
+      weeklycommittedHours: 0,
       _id: '5be0964d633dae0016081b4c',
       role: 'Administrator',
       firstName: 'Jordan',
@@ -916,7 +916,7 @@ export const allUserProfilesMock = {
     },
     {
       isActive: false,
-      weeklyComittedHours: 20,
+      weeklycommittedHours: 20,
       _id: '5ae0afcab3f1241c28c9b4e2',
       role: 'Administrator',
       firstName: 'Shubhra',
@@ -925,7 +925,7 @@ export const allUserProfilesMock = {
     },
     {
       isActive: true,
-      weeklyComittedHours: 10,
+      weeklycommittedHours: 10,
       _id: '5eddbcd353a0480017164a57',
       role: 'Administrator',
       firstName: 'Admin',
@@ -934,7 +934,7 @@ export const allUserProfilesMock = {
     },
     {
       isActive: false,
-      weeklyComittedHours: 10,
+      weeklycommittedHours: 10,
       _id: '5eddc35953a0480017164a58',
       role: 'Administrator',
       firstName: 'AdminTest',
@@ -943,7 +943,7 @@ export const allUserProfilesMock = {
     },
     {
       isActive: false,
-      weeklyComittedHours: 16,
+      weeklycommittedHours: 16,
       _id: '5e1a685add8cea0ea3420141',
       role: 'Administrator',
       firstName: 'Henry',
@@ -952,7 +952,7 @@ export const allUserProfilesMock = {
     },
     {
       isActive: false,
-      weeklyComittedHours: 0,
+      weeklycommittedHours: 0,
       _id: '5bad2979e168140090176793',
       role: 'Volunteer',
       firstName: 'Emilio',
@@ -961,7 +961,7 @@ export const allUserProfilesMock = {
     },
     {
       isActive: false,
-      weeklyComittedHours: 0,
+      weeklycommittedHours: 0,
       _id: '5bec67ee0df8050016d2e21c',
       role: 'Volunteer',
       firstName: 'Ram',
@@ -970,7 +970,7 @@ export const allUserProfilesMock = {
     },
     {
       isActive: false,
-      weeklyComittedHours: 0,
+      weeklycommittedHours: 0,
       _id: '5bc4f3d1476a8e009034264c',
       role: 'Core Team',
       firstName: 'Sara',
@@ -979,7 +979,7 @@ export const allUserProfilesMock = {
     },
     {
       isActive: true,
-      weeklyComittedHours: 30,
+      weeklycommittedHours: 30,
       _id: '5ab1713bba0e82002b182206',
       role: 'Administrator',
       firstName: 'Jae',
@@ -988,7 +988,7 @@ export const allUserProfilesMock = {
     },
     {
       isActive: true,
-      weeklyComittedHours: 20,
+      weeklycommittedHours: 20,
       _id: '5e28bdaab9ec7807f278aea3',
       role: 'Manager',
       firstName: 'Rafel',
