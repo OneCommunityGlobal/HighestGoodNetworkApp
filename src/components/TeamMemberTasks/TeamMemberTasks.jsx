@@ -29,16 +29,29 @@ const TeamMemberTasks = props => {
   const [showTaskNotificationModal, setTaskNotificationModal] = useState(false);
   const [currentTaskNotifications, setCurrentTaskNotifications] = useState([]);
   const [currentTask, setCurrentTask] = useState();
-  const [currentUserId, setCurrentUserId] = useState();
+  const [currentUserId, setCurrentUserId] = useState('');
   const { isLoading, usersWithTasks } = useSelector(getTeamMemberTasksData);
   const [tasks, setTasks] = useState();
   const [updatedTasks, setUpdatedTasks] = useState([]);
   const [showMarkAsDoneModal, setMarkAsDoneModal] = useState(false);
+  const [clickedToShowModal, setClickedToShowModal] = useState(false);
 
   const dispatch = useDispatch();
   useEffect(() => {
     dispatch(fetchTeamMembersTask());
   }, []);
+
+  useEffect(() => {
+    console.log('currentUserId:', currentUserId);
+    if (clickedToShowModal) {
+      setMarkAsDoneModal(true);
+    }
+  }, [currentUserId]);
+
+  useEffect(() => {
+    submitTasks();
+    dispatch(fetchTeamMembersTask());
+  }, [updatedTasks]);
 
   const userRole = props.auth.user.role;
   const userId = props.auth.user.userid;
@@ -47,22 +60,12 @@ const TeamMemberTasks = props => {
     setMarkAsDoneModal(false);
   };
 
-  const loadUserTasks = async id => {
-    const userId = id;
-    axios
-      .get(ENDPOINTS.TASKS_BY_USERID(userId))
-      .then(res => {
-        setTasks(res?.data || []);
-      })
-      .catch(err => console.log(err));
-  };
-
   const onUpdateTask = (taskId, updatedTask) => {
     const newTask = {
       updatedTask,
       taskId,
     };
-
+    console.log('updatedTask:', updatedTask);
     setTasks(tasks => {
       console.log(tasks);
       const tasksWithoutTheUpdated = [...tasks];
@@ -91,7 +94,7 @@ const TeamMemberTasks = props => {
   const handleMarkAsDoneModal = (userId, task) => {
     setCurrentUserId(userId);
     setCurrentTask(task);
-    setMarkAsDoneModal(true);
+    setClickedToShowModal(true);
   };
 
   const handleTaskNotificationRead = (userId, taskId, taskNotificationId) => {
@@ -373,15 +376,22 @@ const TeamMemberTasks = props => {
         onApprove={handleTaskNotificationRead}
         loggedInUserId={props.auth.user.userid}
       />
-      <TaskCompletedModal
-        isOpen={showMarkAsDoneModal}
-        loadUserTasks={loadUserTasks}
-        submitTasks={submitTasks}
-        popupClose={closeMarkAsDone}
-        updateTask={onUpdateTask}
-        userId={currentUserId}
-        task={currentTask}
-      />
+      {currentUserId != '' && (
+        <TaskCompletedModal
+          isOpen={showMarkAsDoneModal}
+          updatedTasks={updatedTasks}
+          setUpdatedTasks={setUpdatedTasks}
+          setTasks={setTasks}
+          tasks={tasks}
+          submitTasks={submitTasks}
+          popupClose={closeMarkAsDone}
+          updateTask={onUpdateTask}
+          userId={currentUserId}
+          task={currentTask}
+          setCurrentUserId={setCurrentUserId}
+          setClickedToShowModal={setClickedToShowModal}
+        />
+      )}
       <Table>
         <thead>
           <tr>
