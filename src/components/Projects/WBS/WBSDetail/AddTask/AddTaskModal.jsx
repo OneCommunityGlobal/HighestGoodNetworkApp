@@ -447,12 +447,12 @@ function AddTaskModal(props) {
                 <td scope="col">Resources</td>
                 <td scope="col">
                   <div>
-                    <TagsSearch 
-                      placeholder="Add resources" 
-                      members={members.members} 
-                      addResources={addResources} 
+                    <TagsSearch
+                      placeholder="Add resources"
+                      members={members.members}
+                      addResources={addResources}
                       removeResource={removeResource}
-                      />
+                    />
                     <input
                       type="text"
                       aria-label="Search user"
@@ -576,10 +576,10 @@ function AddTaskModal(props) {
               </tr>
               <tr>
                 <td scope="col" data-tip="Hours - Best-case">
-                  <h5>Hours</h5>
+                  Hours
                 </td>
-                <td scope="col" data-tip="Hours - Best-case">
-                  <div className=" d-inline py-2">
+                <td scope="col" data-tip="Hours - Best-case" className="w-100">
+                  <div className="d-inline py-2">
                     <label htmlFor="bestCase" className="text-nowrap mr-2 w-25 mr-4">
                       Best-case
                     </label>
@@ -591,6 +591,7 @@ function AddTaskModal(props) {
                       onChange={e => setHoursBest(e.target.value)}
                       onBlur={() => calHoursEstimate()}
                       id="bestCase"
+                      className="w-25"
                     />
                     <div className="warning">
                       {hoursWarning
@@ -598,7 +599,7 @@ function AddTaskModal(props) {
                         : ''}
                     </div>
                   </div>
-                  <div className=" d-inline py-2">
+                  <div className="d-inline py-2">
                     <label htmlFor="worstCase" className="text-nowrap mr-2  w-25 mr-4">
                       Worst-case
                     </label>
@@ -609,6 +610,7 @@ function AddTaskModal(props) {
                       value={hoursWorst}
                       onChange={e => setHoursWorst(e.target.value)}
                       onBlur={() => calHoursEstimate('hoursWorst')}
+                      className="w-25"
                     />
                     <div className="warning">
                       {hoursWarning
@@ -616,8 +618,8 @@ function AddTaskModal(props) {
                         : ''}
                     </div>
                   </div>
-                  <div className=" d-inline py-2">
-                    <label htmlFor="mostCase" className="text-nowrap mr-2  w-25 mr-4">
+                  <div className="d-inline py-2">
+                    <label htmlFor="mostCase" className="text-nowrap mr-2 w-25 mr-4">
                       Most-case
                     </label>
                     <input
@@ -627,6 +629,7 @@ function AddTaskModal(props) {
                       value={hoursMost}
                       onChange={e => setHoursMost(e.target.value)}
                       onBlur={() => calHoursEstimate('hoursMost')}
+                      className="w-25"
                     />
                     <div className="warning">
                       {hoursWarning
@@ -634,7 +637,7 @@ function AddTaskModal(props) {
                         : ''}
                     </div>
                   </div>
-                  <div className=" d-inline py-2">
+                  <div className="d-inline py-2">
                     <label htmlFor="Estimated" className="text-nowrap mr-2  w-25 mr-4">
                       Estimated
                     </label>
@@ -644,6 +647,7 @@ function AddTaskModal(props) {
                       max="500"
                       value={hoursEstimate}
                       onChange={e => setHoursEstimate(e.target.value)}
+                      className="w-25"
                     />
                   </div>
                 </td>
