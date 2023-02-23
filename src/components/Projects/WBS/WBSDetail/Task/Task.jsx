@@ -456,7 +456,7 @@ const Task = props => {
                       toggle={toggle}
                       style={{ float: 'left' }}
                     >
-                      <DropdownToggle caret caret color="primary" size="sm">
+                      <DropdownToggle caret color="primary" size="sm">
                         Move
                       </DropdownToggle>
                       <DropdownMenu>
