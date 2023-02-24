@@ -191,7 +191,6 @@ const SummaryBar = props => {
   if (userProfile !== undefined && leaderData !== undefined) {
     const infringements = getInfringements(userProfile);
     const badges = getBadges(userProfile);
-    const { firstName, lastName, email, _id } = userProfile;
     let totalEffort = parseFloat(leaderData.find(x => x.personId === asUser).tangibletime);
     const weeklyCommittedHours = userProfile.weeklyCommittedHours
       ? userProfile.weeklyCommittedHours
@@ -227,7 +226,7 @@ const SummaryBar = props => {
           </Col>
           <Col className="col-lg-3 col-12 no-gutters">
             <Row className="no-gutters">
-              {totalEffort < userProfile.weeklyComittedHours && (
+              {totalEffort < weeklyCommittedHours && (
                 <div className="border-red col-4 bg--white-smoke" align="center">
                   <div className="py-1"> </div>
                   <p className="large_text_summary text--black text-danger" align="center">
@@ -239,7 +238,7 @@ const SummaryBar = props => {
                   <div className="py-2"> </div>
                 </div>
               )}
-              {totalEffort >= userProfile.weeklyComittedHours && (
+              {totalEffort >= weeklyCommittedHours && (
                 <div className="border-green col-4 bg--dark-green" align="center">
                   <div className="py-1"> </div>
                   <p className="large_text_summary text--black" align="center">
@@ -256,11 +255,11 @@ const SummaryBar = props => {
               >
                 <div className="align-items-center" id="timelogweeklychart">
                   <div className="text--black align-items-center med_text_summary">
-                    Current Week : {totalEffort.toFixed(2)} / {userProfile.weeklyComittedHours}
+                    Current Week : {totalEffort.toFixed(2)} / {weeklyCommittedHours}
                     <Progress
-                      value={getProgressValue(totalEffort, userProfile.weeklyComittedHours)}
-                      color={getProgressColor(totalEffort, userProfile.weeklyComittedHours)}
-                      striped={totalEffort < userProfile.weeklyComittedHours}
+                      value={getProgressValue(totalEffort, weeklyCommittedHours)}
+                      color={getProgressColor(totalEffort, weeklyCommittedHours)}
+                      striped={totalEffort < weeklyCommittedHours}
                     />
                   </div>
                 </div>
