@@ -20,13 +20,10 @@ import PeopleTable from './PeopleTable';
 import ProjectTable from './ProjectTable';
 import { getAllUserProfile } from '../../actions/userManagement';
 import { fetchAllTasks } from '../../actions/task';
-import moment from 'moment';
-import { Container } from 'reactstrap';
 import ReportTableSearchPanel from './ReportTableSearchPanel';
 import { getUserProfile, getUserTask } from '../../actions/userProfile';
 import httpService from '../../services/httpService';
 import { ENDPOINTS } from '../../utils/URL';
-import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 
 class ReportsPage extends Component {
