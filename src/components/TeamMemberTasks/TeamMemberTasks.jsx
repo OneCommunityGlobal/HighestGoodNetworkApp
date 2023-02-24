@@ -242,28 +242,26 @@ const TeamMemberTasks = props => {
                                   <span>{`${task.num} ${task.taskName}`} </span>
                                 </Link>
                                 {task.taskNotifications.length > 0 && (
-                                  <div>
-                                    <FontAwesomeIcon
-                                      className="team-member-tasks-bell"
-                                      icon={faBell}
-                                      onClick={() => {
-                                        handleOpenTaskNotificationModal(
-                                          user.personId,
-                                          task,
-                                          task.taskNotifications,
-                                        );
-                                      }}
-                                    />
-                                    <FontAwesomeIcon
-                                      className="team-member-tasks-done"
-                                      icon={faCheck}
-                                      title="Mark as Done"
-                                      onClick={() => {
-                                        handleMarkAsDoneModal(user.personId, task);
-                                      }}
-                                    />
-                                  </div>
+                                  <FontAwesomeIcon
+                                    className="team-member-tasks-bell"
+                                    icon={faBell}
+                                    onClick={() => {
+                                      handleOpenTaskNotificationModal(
+                                        user.personId,
+                                        task,
+                                        task.taskNotifications,
+                                      );
+                                    }}
+                                  />
                                 )}
+                                <FontAwesomeIcon
+                                  className="team-member-tasks-done"
+                                  icon={faCheck}
+                                  title="Mark as Done"
+                                  onClick={() => {
+                                    handleMarkAsDoneModal(user.personId, task);
+                                  }}
+                                />
                               </p>
                             </td>
                             {task.hoursLogged != null && task.estimatedHours != null && (
