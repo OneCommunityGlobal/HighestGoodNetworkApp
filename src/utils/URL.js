@@ -9,6 +9,7 @@ export const ENDPOINTS = {
   USER_PROFILES: `${APIEndpoint}/userprofile/`,
   USER_PROFILE_BY_NAME: userName => `${APIEndpoint}/userProfile/name/${userName}`,
   USER_TEAM: userId => `${APIEndpoint}/userprofile/teammembers/${userId}`,
+  USER_REFRESH_TOKEN: userId => `${APIEndpoint}/refreshToken/${userId}`,
   LOGIN: `${APIEndpoint}/login`,
   PROJECTS: `${APIEndpoint}/projects`,
   TEAM: `${APIEndpoint}/team`,
@@ -37,6 +38,7 @@ export const ENDPOINTS = {
   TASK: wbsId => `${APIEndpoint}/task/${wbsId}`,
   TASK_IMPORT: wbsId => `${APIEndpoint}/task/import/${wbsId}`,
   TASK_WBS: wbsId => `${APIEndpoint}/task/wbs/del/${wbsId}`,
+  TASKS_UPDATE: `${APIEndpoint}/tasks/update`,
   TASKS_BY_USERID: members => `${APIEndpoint}/tasks/userProfile?members=${members}`,
   TASKS_BY_userID: userId => `${APIEndpoint}/tasks/userProfile/${userId}`,
   TASK_DEL: (taskId, motherId) => `${APIEndpoint}/task/del/${taskId}/${motherId}`,
@@ -53,7 +55,6 @@ export const ENDPOINTS = {
 
   TEAM_MEMBERS: teamId => `${APIEndpoint}/team/${teamId}/users`,
   TEAM_BY_ID: teamId => `${APIEndpoint}/team/${teamId}`,
-  DELETE_SELECTED_TASK: (taskId, taskMother) => `${ApiEndpoint}/task/del/${taskId}/${taskMother}`,
   USER_UNREAD_TASK_NOTIFICATIONS: userId => `${APIEndpoint}/tasknotification/user/${userId}`,
   BADGE: () => `${APIEndpoint}/badge`,
   BADGE_ASSIGN: userId => `${APIEndpoint}/badge/assign/${userId}`,

@@ -6,14 +6,12 @@ import htmlToPdfmake from 'html-to-pdfmake';
 import moment from 'moment-timezone';
 import { Button } from 'reactstrap';
 
-
-
 const GeneratePdfReport = ({ summaries, weekIndex, weekDates }) => {
   const generateFormattedReport = () => {
     pdfMake.vfs = pdfFonts.pdfMake.vfs;
     //Replace any style copied into the weekly summary message.
-    let styleRegex = /<style([\S\s]*?)>([\S\s]*?)<\/style>/gmi;
-    let styleInlineRegex = /style="([\S\s]*?)"/gmi;
+    let styleRegex = /<style([\S\s]*?)>([\S\s]*?)<\/style>/gim;
+    let styleInlineRegex = /style="([\S\s]*?)"/gim;
     const emails = [];
 
     let wsReport = `<h1>Weekly Summaries Report</h1>
@@ -28,14 +26,14 @@ const GeneratePdfReport = ({ summaries, weekIndex, weekDates }) => {
       `${a.firstName} ${a.lastName}`.localeCompare(`${b.firstName} ${b.lastname}`),
     );
 
-    summaries.forEach((eachSummary) => {
+    summaries.forEach(eachSummary => {
       const {
         firstName,
         lastName,
         weeklySummaries,
         mediaUrl,
         weeklySummariesCount,
-        weeklyComittedHours,
+        weeklycommittedHours,
         totalSeconds,
       } = eachSummary;
 
@@ -60,7 +58,9 @@ const GeneratePdfReport = ({ summaries, weekIndex, weekDates }) => {
           )
             .tz('America/Los_Angeles')
             .format('YYYY-MMM-DD')}</b>):</div>
-                                  <div data-pdfmake="{&quot;margin&quot;:[20,0,20,0]}">${summary.replace(styleRegex, "").replace(styleInlineRegex, "")}</div>`;
+                                  <div data-pdfmake="{&quot;margin&quot;:[20,0,20,0]}">${summary
+                                    .replace(styleRegex, '')
+                                    .replace(styleInlineRegex, '')}</div>`;
         } else if (eachSummary.weeklySummaryNotReq === true) {
           weeklySummaryMessage = weeklySummaryNotRequiredMessage;
         }
@@ -73,9 +73,9 @@ const GeneratePdfReport = ({ summaries, weekIndex, weekDates }) => {
         totalValidWeeklySummaries === 8 ? 'text-decoration: underline; color: red;' : ''
       }"><b>Total valid weekly summaries:</b> ${totalValidWeeklySummaries}</div>
       ${
-        hoursLogged >= weeklyComittedHours
-          ? `<div><b>Hours logged:</b> ${hoursLogged} / ${weeklyComittedHours} </div>`
-          : `<div style="color: red;"><b>Hours logged:</b> ${hoursLogged} / ${weeklyComittedHours}</div>`
+        hoursLogged >= weeklycommittedHours
+          ? `<div><b>Hours logged:</b> ${hoursLogged} / ${weeklycommittedHours} </div>`
+          : `<div style="color: red;"><b>Hours logged:</b> ${hoursLogged} / ${weeklycommittedHours}</div>`
       }
       ${weeklySummaryMessage}
       <div style="color:#DEE2E6; margin:10px 0px 20px 0px; text-align:center;">_______________________________________________________________________________________________</div>`;

@@ -3,7 +3,7 @@ import TextSearchBox from '../UserManagement/TextSearchBox';
 import DropDownSearchBox from '../UserManagement/DropDownSearchBox';
 import { Button } from 'reactstrap';
 
-const BadgeTableFilter = (props) => {
+const BadgeTableFilter = props => {
   const badgeTypes = [
     'No Infringement Streak',
     'Minimum Hours Multiple',
@@ -14,20 +14,20 @@ const BadgeTableFilter = (props) => {
     'Total Hrs in Category',
     'Custom',
   ];
-  const onBadgeNameSearch = (text) => {
+  const onBadgeNameSearch = text => {
     props.onBadgeNameSearch(text);
   };
 
   const orders = ['Ascending', 'Descending'];
 
-  const onBadgeDescriptionSearch = (text) => {
+  const onBadgeDescriptionSearch = text => {
     props.onBadgeDescriptionSearch(text);
   };
 
-  const onBadgeTypeSearch = (text) => {
+  const onBadgeTypeSearch = text => {
     props.onBadgeTypeSearch(text);
   };
-  const onBadgeRankingSort = (order) => {
+  const onBadgeRankingSort = order => {
     props.onBadgeRankingSort(order);
   };
 

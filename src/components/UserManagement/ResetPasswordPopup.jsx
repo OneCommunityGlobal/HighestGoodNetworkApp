@@ -14,11 +14,11 @@ import {
 /**
  * Modal popup to show the reset password action
  */
-const ResetPasswordPopup = React.memo((props) => {
+const ResetPasswordPopup = React.memo(props => {
   const [newPassword, onNewPasswordChange] = useState({ password: '', isValid: false });
   const [confirmPassword, onConfirmPasswordChange] = useState({ password: '', isValid: false });
   const [errorMessage, setError] = useState('');
-  const closePopup = (e) => {
+  const closePopup = e => {
     props.onClose();
   };
 
@@ -41,7 +41,7 @@ const ResetPasswordPopup = React.memo((props) => {
     }
   };
 
-  const isValidPassword = (password) => {
+  const isValidPassword = password => {
     const regex = new RegExp('^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])(?=.{8,})');
     return regex.test(password);
   };
@@ -57,7 +57,7 @@ const ResetPasswordPopup = React.memo((props) => {
             name="newpassword"
             id="newpassword"
             value={newPassword.password}
-            onChange={(event) => {
+            onChange={event => {
               onNewPasswordChange({
                 password: event.target.value,
                 isValid: isValidPassword(event.target.value),
@@ -73,7 +73,7 @@ const ResetPasswordPopup = React.memo((props) => {
             name="confirmpassword"
             id="confirmpassword"
             value={confirmPassword.password}
-            onChange={(event) => {
+            onChange={event => {
               onConfirmPasswordChange({
                 password: event.target.value,
                 isValid: isValidPassword(event.target.value),

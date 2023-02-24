@@ -29,6 +29,7 @@ import { ENDPOINTS } from 'utils/URL';
 import axios from 'axios';
 import { ApiEndpoint } from 'utils/URL';
 import hasPermission from 'utils/permissions';
+import { getProgressColor, getProgressValue } from '../../utils/effortColors';
 
 const SummaryBar = props => {
   console.log('props', props);
@@ -59,7 +60,6 @@ const SummaryBar = props => {
     try {
       const response = await axios.get(ENDPOINTS.USER_PROFILE(userId));
       const newUserProfile = response.data;
-      console.log('User Profile loaded', newUserProfile);
       setUserProfile(newUserProfile);
     } catch (err) {
       console.log('User Profile not loaded.');
@@ -73,8 +73,6 @@ const SummaryBar = props => {
     try {
       const response = await axios.get(ENDPOINTS.TASKS_BY_USERID(userId));
       const newUserTasks = response.data;
-      console.log('User Tasks loaded');
-      console.log(newUserTasks.length);
       setTasks(newUserTasks.length);
     } catch (err) {
       console.log('User Tasks not loaded.');
@@ -84,25 +82,9 @@ const SummaryBar = props => {
   useEffect(() => {
     loadUserProfile();
     getUserTask();
-  }, []);
+  }, [leaderData]);
 
-  const calculateTotalTime = (data, isTangible) => {
-    const filteredData = data.filter(entry => entry.isTangible === isTangible);
 
-    const reducer = (total, entry) => total + parseInt(entry.hours) + parseInt(entry.minutes) / 60;
-    return filteredData.reduce(reducer, 0);
-  };
-  // const weeklySummary = useSelector(state => {
-  //   let summaries = state.userProfile?.weeklySummaries;
-  //   if (summaries && Array.isArray(summaries) && summaries[0] && summaries[0].summary) {
-  //     console.log('Yes weeklySummary');
-  //     console.log(summaries[0].summary);
-  //     return summaries[0].summary;
-  //   } else {
-  //     console.log('No weeklySummary');
-  //     return '';
-  //   }
-  // });
 
   //Get infringement count from userProfile
   const getInfringements = user => {
@@ -170,38 +152,6 @@ const SummaryBar = props => {
   //   await this.props.getWeeklySummaries(this.props.currentUser.userid);
   //   const { weeklySummariesCount } = this.props.summaries;}
 
-  const getBarColor = hours => {
-    if (hours < 5) {
-      return 'red';
-    }
-    if (hours < 10) {
-      return 'orange';
-    }
-    if (hours < 20) {
-      return 'green';
-    }
-    if (hours < 30) {
-      return 'blue';
-    }
-    if (hours < 40) {
-      return 'indigo';
-    }
-    if (hours < 50) {
-      return 'violet';
-    }
-    return 'purple';
-  };
-
-  const getBarValue = hours => {
-    if (hours <= 40) {
-      return hours * 2;
-    }
-    if (hours <= 50) {
-      return (hours - 40) * 1.5 + 80;
-    }
-    return ((hours - 50) * 5) / 40 + 95;
-  };
-
   const onTaskClick = () => {
     window.location.hash = '#tasks';
   };
@@ -231,13 +181,14 @@ const SummaryBar = props => {
   if (userProfile !== undefined && leaderData !== undefined) {
     const infringements = getInfringements(userProfile);
     const badges = getBadges(userProfile);
-    console.log(tasks);
     const { firstName, lastName, email, _id } = userProfile;
     let totalEffort = parseFloat(leaderData.find(x => x.personId === asUser).tangibletime);
-    const weeklyCommittedHours = userProfile.weeklyComittedHours;
+    const weeklyCommittedHours = userProfile.weeklyCommittedHours
+      ? userProfile.weeklyCommittedHours
+      : userProfile.weeklyComittedHours;
     const weeklySummary = getWeeklySummary(userProfile);
     return (
-      <Container fluid className="px-lg-0 bg--bar">
+      <Container fluid className={matchUser ? "px-lg-0 bg--bar" : "px-lg-0 bg--bar disabled-bar"}>
         <Row className="no-gutters row-eq-height">
           <Col
             className="d-flex justify-content-center align-items-center col-lg-2 col-12 text-list"
@@ -290,8 +241,8 @@ const SummaryBar = props => {
                   <div className="text--black align-items-center med_text_summary">
                     Current Week : {totalEffort.toFixed(2)} / {weeklyCommittedHours}
                     <Progress
-                      value={getBarValue(totalEffort)}
-                      className={getBarColor(totalEffort)}
+                      value={getProgressValue(totalEffort, weeklyCommittedHours)}
+                      color={getProgressColor(totalEffort, weeklyCommittedHours)}
                       striped={totalEffort < weeklyCommittedHours}
                     />
                   </div>
@@ -340,36 +291,30 @@ const SummaryBar = props => {
                 </div>
               )}
 
-              {/* <div className="border-green col-sm-4 bg--dark-green" align="center">
-                <div className="py-1"> </div>
-                <h1 align="center">✓</h1>
-                <font size="3">SUMMARY</font>
-                <div className="py-2"> </div>
-              </div> */}
               <div
                 className="col-8 border-black bg--white-smoke d-flex align-items-center"
                 align="center"
               >
                 <div className="m-auto p-2">
                   <font className="text--black med_text_summary align-middle" size="3">
-                    {!weeklySummary ? (
-                      <span className="summary-toggle" onClick={props.toggleSubmitForm}>
-                        You still need to complete the weekly summary. Click here to submit it.
-                      </span>
-                    ) : (
+                    {weeklySummary || props.submittedSummary ? (
                       'You have submitted your weekly summary.'
+                    ) : (
+                          matchUser ? (
+                            <span className="summary-toggle" onClick={props.toggleSubmitForm}>
+                            You still need to complete the weekly summary. Click here to submit it.
+                            </span>
+                          ) : (
+                            <span className="summary-toggle">
+                            You still need to complete the weekly summary. Click here to submit it.
+                            </span>
+                          )
                     )}
                   </font>
                 </div>
               </div>
             </Row>
           </Col>
-          {/* {isSubmitted && (<font className="text--black" align="center" size="3">
-              You have completed weekly summary.
-            </font>)}
-            {!isSubmitted && (<font className="text--black" align="center" size="3">
-              You still need to complete the weekly summary.
-            </font>)} */}
 
           <Col className="m-auto mt-2 col-lg-4 col-12 badge-list">
             <div className="d-flex justify-content-around no-gutters">
@@ -378,31 +323,48 @@ const SummaryBar = props => {
                 <div className="redBackgroup">
                   <span>{tasks}</span>
                 </div>
-
+                {matchUser ?
                 <img className="sum_img" src={task_icon} alt="" onClick={onTaskClick}></img>
+                :
+                <img className="sum_img" src={task_icon} alt=""></img>
+                }
               </div>
               &nbsp;&nbsp;
               <div className="image_frame">
-                <img className="sum_img" src={badges_icon} alt="" onClick={onBadgeClick} />
+                {matchUser ?
+                <img className="sum_img" src={badges_icon} alt="" onClick={onBadgeClick} /> 
+                :
+                <img className="sum_img" src={badges_icon} alt="" />}
                 <div className="redBackgroup">
                   <span>{badges}</span>
                 </div>
               </div>
               &nbsp;&nbsp;
               <div className="image_frame">
+                {
+                matchUser ?
                 <Link to={`/userprofile/${_id}#bluesquare`}>
                   <img className="sum_img" src={bluesquare_icon} alt="" />
                   <div className="redBackgroup">
                     <span>{infringements}</span>
                   </div>
-                </Link>
+                </Link> 
+                :
+                <div>
+                  <img className="sum_img" src={bluesquare_icon} alt="" />
+                  <div className="redBackgroup">
+                    <span>{infringements}</span>
+                  </div>
+                </div>
+                }
               </div>
               &nbsp;&nbsp;
               <div className="image_frame">
+                {matchUser ?
                 <img className="sum_img" src={report_icon} alt="" onClick={openReport} />
-                {/* <div className="blackBackgroup">
-                <i className="fa fa-exclamation" aria-hidden="true" />
-              </div> */}
+                :
+                <img className="sum_img" src={report_icon} alt="" />
+                }
               </div>
             </div>
           </Col>

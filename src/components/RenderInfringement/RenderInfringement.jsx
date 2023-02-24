@@ -59,7 +59,7 @@
 //         <div className="row ml-1">
 //         <span className="fa fa-pencil" onClick={this.toggle}/>
 //          <Modal isOpen={this.state.modal} toggle={this.toggle} >
-//           <ModalHeader toggle={this.toggle}>infringement</ModalHeader>
+//           <ModalHeader toggle={this.toggle}>Infringement</ModalHeader>
 //           <form onSubmit={e => this.handleSubmit(e)}>
 //           <ModalBody>
 //           {this.isStateChanged() && <ShowSaveWarning/>}

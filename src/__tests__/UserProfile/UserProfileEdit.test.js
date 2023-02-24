@@ -42,7 +42,7 @@ describe('user profile page', () => {
     });
     store.dispatch = jest.fn();
     renderWithRouterMatch(
-      <Route path="/userprofileedit/:userId">{props => <UserProfileEdit {...props} />}</Route>,
+      <Route path="/userprofileedit/:userId">{(props) => <UserProfileEdit {...props} />}</Route>,
       {
         route: `/userprofileedit/${userId}`,
         store,

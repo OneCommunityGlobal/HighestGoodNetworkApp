@@ -61,11 +61,12 @@ function Task(props) {
   const dueDate = new Date(props.dueDatetime);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [isLoad, setIsLoad] = useState(false);
-  const toggle = () => setDropdownOpen((prevState) => !prevState);
-  const [isOpen, setIsOpen] = useState(false);
+  const toggle = () => setDropdownOpen(prevState => !prevState);
+  const [isOpen, setIsOpen] = useState(props.isOpen);
   const [isCopied, setIsCopied] = useState(false);
   const [tableColNum, setTableColNum] = useState(16);
   const tableRowRef = createRef();
+
   useEffect(() => {
     if (tableRowRef.current) {
       const spanColNum = tableRowRef.current.cells.length;
@@ -92,28 +93,22 @@ function Task(props) {
     props.selectTask(id);
   }; */
 
-  const toggleGroups = (num, id, level) => {
-    if (!isLoad) {
-      props.fetchAllTasks(props.wbsId, level, props.id);
-      setIsLoad(true);
-    }
-
+  const toggleGroups = id => {
     if (isOpen) {
       const allItems = [
-        ...document.getElementsByClassName(`parentId1_${props.id}`),
-        ...document.getElementsByClassName(`parentId2_${props.id}`),
-        ...document.getElementsByClassName(`parentId3_${props.id}`),
+        ...document.getElementsByClassName(`parentId1_${id}`),
+        ...document.getElementsByClassName(`parentId2_${id}`),
+        ...document.getElementsByClassName(`parentId3_${id}`),
       ];
       for (let i = 0; i < allItems.length; i++) {
         allItems[i].style.display = 'none';
       }
     } else {
-      const allItems = [...document.getElementsByClassName(`mother_${props.id}`)];
+      const allItems = [...document.getElementsByClassName(`mother_${id}`)];
       for (let i = 0; i < allItems.length; i++) {
         allItems[i].style.display = 'table-row';
       }
     }
-
     setIsOpen(!isOpen);
   };
 
@@ -203,7 +198,7 @@ function Task(props) {
               className="taskNum"
               onClick={() => {
                 /* selectTask(props.id); */
-                toggleGroups(props.num, props.id, props.level);
+                toggleGroups(props.id);
               }}
             >
               {props.num.split('.0').join('')}
@@ -212,7 +207,7 @@ function Task(props) {
               {props.level === 1 ? (
                 <div className="level-space-1" data-tip="Level 1">
                   <span
-                    onClick={(e) => toggleGroups(props.num, props.id, props.level)}
+                    onClick={e => toggleGroups(props.id)}
                     id={`task_name_${props.id}`}
                     className={props.hasChildren ? 'has_children' : ''}
                   >
@@ -232,7 +227,7 @@ function Task(props) {
               {props.level === 2 ? (
                 <div className="level-space-2" data-tip="Level 2">
                   <span
-                    onClick={(e) => toggleGroups(props.num, props.id, props.level)}
+                    onClick={e => toggleGroups(props.id)}
                     id={`task_name_${props.id}`}
                     className={props.hasChildren ? 'has_children' : ''}
                   >
@@ -252,7 +247,7 @@ function Task(props) {
               {props.level === 3 ? (
                 <div className="level-space-3" data-tip="Level 3">
                   <span
-                    onClick={(e) => toggleGroups(props.num, props.id, props.level)}
+                    onClick={e => toggleGroups(props.id)}
                     id={`task_name_${props.id}`}
                     className={props.hasChildren ? 'has_children' : ''}
                   >
@@ -272,7 +267,7 @@ function Task(props) {
               {props.level === 4 ? (
                 <div className="level-space-4" data-tip="Level 4">
                   <span
-                    onClick={(e) => toggleGroups(props.num, props.id, props.level)}
+                    onClick={e => toggleGroups(props.id)}
                     id={`task_name_${props.id}`}
                     className={props.hasChildren ? 'has_children' : ''}
                   >
