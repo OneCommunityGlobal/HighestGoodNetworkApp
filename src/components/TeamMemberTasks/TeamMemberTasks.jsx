@@ -42,7 +42,6 @@ const TeamMemberTasks = props => {
   }, []);
 
   useEffect(() => {
-    console.log('currentUserId:', currentUserId);
     if (clickedToShowModal) {
       setMarkAsDoneModal(true);
     }
@@ -65,9 +64,7 @@ const TeamMemberTasks = props => {
       updatedTask,
       taskId,
     };
-    console.log('updatedTask:', updatedTask);
     setTasks(tasks => {
-      console.log(tasks);
       const tasksWithoutTheUpdated = [...tasks];
       const taskIndex = tasks.findIndex(task => task._id === taskId);
       tasksWithoutTheUpdated[taskIndex] = updatedTask;

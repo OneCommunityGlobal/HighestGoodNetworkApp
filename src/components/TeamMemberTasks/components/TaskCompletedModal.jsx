@@ -17,7 +17,6 @@ const TaskCompletedModal = React.memo(props => {
     axios
       .get(ENDPOINTS.TASKS_BY_USERID(userId))
       .then(res => {
-        console.log('res.data', res.data);
         props.setTasks(res?.data || []);
       })
       .catch(err => console.log(err));
@@ -41,11 +40,7 @@ const TaskCompletedModal = React.memo(props => {
   };
 
   useEffect(() => {
-    console.log('UseEffect!');
     loadUserTasks(props.userId);
-    console.log('props.userId:', props.userId);
-    console.log('props.tasks:', props.tasks);
-    console.log('props.task', props.task);
   }, [props.userID, props.tasks]);
 
   return (
