@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import TaskAndProgressBar from './TaskAndProgressBar';
 
-const TeamMember = ({ user }) => {
+const TeamMember = ({ user, handleOpenTaskNotificationModal }) => {
   let totalHoursLogged = 0;
   let totalHoursRemaining = 0;
   let activeTasks = [];
@@ -49,7 +49,14 @@ const TeamMember = ({ user }) => {
       <div className="team-member-tasks-list">
         {activeTasks.map((task, index) => {
           if (task.wbsId && task.projectId) {
-            return <TaskAndProgressBar task={task} user={user} key={task._id} />;
+            return (
+              <TaskAndProgressBar
+                task={task}
+                user={user}
+                key={task._id}
+                handleOpenTaskNotificationModal={handleOpenTaskNotificationModal}
+              />
+            );
           }
         })}
       </div>

@@ -40,6 +40,7 @@ const TeamMemberTasks = props => {
   }, []);
 
   const handleOpenTaskNotificationModal = (userId, task, taskNotifications = []) => {
+    console.log(task);
     setCurrentUserId(userId);
     setCurrentTask(task);
     setCurrentTaskNotifications(taskNotifications);
@@ -218,11 +219,21 @@ const TeamMemberTasks = props => {
           ) : (
             teamList.map(user => {
               if (!timeEntriesActive) {
-                return <TeamMember user={user} key={user.personId} />;
+                return (
+                  <TeamMember
+                    user={user}
+                    key={user.personId}
+                    handleOpenTaskNotificationModal={handleOpenTaskNotificationModal}
+                  />
+                );
               } else {
                 return (
                   <>
-                    <TeamMember user={user} key={user.personId} />
+                    <TeamMember
+                      user={user}
+                      key={user.personId}
+                      handleOpenTaskNotificationModal={handleOpenTaskNotificationModal}
+                    />
                     {timeEntriesList
                       .filter(timeEntry => timeEntry.personId === user.personId)
                       .map(timeEntry => (

@@ -96,3 +96,11 @@
 .btn-clear-timelogs {
   color: rgb(85, 83, 83);
 }
+
+@media (max-width: 1620px) {
+  .header-box_btn-group {
+    display: flex;
+    flex-direction: column;
+    row-gap: 0.4rem;
+  }
+}

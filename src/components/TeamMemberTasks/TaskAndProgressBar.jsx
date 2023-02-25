@@ -5,7 +5,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBell } from '@fortawesome/free-solid-svg-icons';
 import { Link } from 'react-router-dom';
 
-const TaskAndProgressBar = ({ task, user }) => {
+const TaskAndProgressBar = ({ task, user, handleOpenTaskNotificationModal }) => {
   return (
     <div className="team-member-task">
       <p className="team-member-task-name">
