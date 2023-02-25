@@ -94,8 +94,6 @@ const TeamMemberTasks = props => {
         //conditional variable for moving current user up front.
         let moveCurrentUserFront = false
 
-        //console.log('filteredMembers', filteredMembers);
-
         //Does the user has at least one task with project Id and task id assigned. Then set the current user up front.
         for (const task of currentUser.tasks) {
           if (task.wbsId && task.projectId) {
@@ -153,7 +151,6 @@ const TeamMemberTasks = props => {
         }
 
         const markAsDone = async task => {
-          console.log('task before', task.task)
           task.task.status = 'Complete'
           const updatedTask = {
             taskName: task.task.taskName,
