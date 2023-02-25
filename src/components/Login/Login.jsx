@@ -159,19 +159,22 @@ export class Login extends Form {
             label: 'Password:',
             type: 'password',
           })}
-          {this.renderButton('Submit')}
-          <Link to="forgotpassword">
-            <span
-              style={{
-                color: 'blue',
-                textDecorationLine: 'underline',
-                marginLeft: '240px',
-                cursor: 'pointer',
-              }}
-            >
-              forgot password?
-            </span>
-          </Link>
+          <div>
+            {this.renderButton('Submit')}
+            <Link to="forgotpassword">
+              <span
+                style={{
+                  color: 'blue',
+                  textDecorationLine: 'underline',
+                  lineHeight: '50px',
+                  float: 'right',
+                  cursor: 'pointer',
+                }}
+              >
+                forgot password?
+              </span>
+            </Link>
+          </div>
         </form>
       </div>
     );

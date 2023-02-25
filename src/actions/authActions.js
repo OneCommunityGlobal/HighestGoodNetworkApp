@@ -8,10 +8,10 @@ import { SET_CURRENT_USER, SET_HEADER_DATA } from '../constants/auth';
 
 const { tokenKey } = config;
 
-export const loginUser = (credentials) => (dispatch) => {
+export const loginUser = credentials => dispatch => {
   return httpService
     .post(ENDPOINTS.LOGIN, credentials)
-    .then((res) => {
+    .then(res => {
       if (res.data.new) {
         dispatch(setCurrentUser({ new: true, userId: res.data.userId }));
       } else {
@@ -21,7 +21,7 @@ export const loginUser = (credentials) => (dispatch) => {
         dispatch(setCurrentUser(decoded));
       }
     })
-    .catch((err) => {
+    .catch(err => {
       if (err.response && err.response.status === 403) {
         const errors = { email: err.response.data.message };
         dispatch({
@@ -32,9 +32,9 @@ export const loginUser = (credentials) => (dispatch) => {
     });
 };
 
-export const getHeaderData = (userId) => {
+export const getHeaderData = userId => {
   const url = ENDPOINTS.USER_PROFILE(userId);
-  return async (dispatch) => {
+  return async dispatch => {
     const res = await axios.get(url);
     console.log('userrprofie', res);
 
@@ -47,18 +47,31 @@ export const getHeaderData = (userId) => {
   };
 };
 
-export const logoutUser = () => (dispatch) => {
+export const logoutUser = () => dispatch => {
   localStorage.removeItem(tokenKey);
   httpService.setjwt(false);
   dispatch(setCurrentUser(null));
 };
 
-export const setCurrentUser = (decoded) => ({
+export const refreshToken = userId => {
+  return async dispatch => {
+    const res = await axios.get(ENDPOINTS.USER_REFRESH_TOKEN(userId));
+    if (res.status === 200) {
+      localStorage.setItem(tokenKey, res.data.refreshToken);
+      httpService.setjwt(res.data.refreshToken);
+      const decoded = jwtDecode(res.data.refreshToken);
+      dispatch(setCurrentUser(decoded));
+    }
+    return res.status;
+  };
+};
+
+export const setCurrentUser = decoded => ({
   type: SET_CURRENT_USER,
   payload: decoded,
 });
 
-export const setHeaderData = (data) => ({
+export const setHeaderData = data => ({
   type: SET_HEADER_DATA,
   payload: data,
 });
