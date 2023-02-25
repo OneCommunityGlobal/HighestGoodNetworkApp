@@ -87,6 +87,12 @@ const Task = props => {
     setIsOpen(!isOpen);
   };
 
+  const getParentCategory = id => {
+    let parentCategory = props.filteredTasks.find(task => task._id === id);
+    if (parentCategory) return parentCategory.taskName;
+    else return '';
+  };
+
   const openChild = (num, id) => {
     const allItems = document.getElementsByClassName(`wbsTask`);
     for (let i = 0; i < allItems.length; i++) {
@@ -213,7 +219,7 @@ const Task = props => {
                         aria-hidden="true"
                       ></i>
                     ) : null}{' '}
-                    {props.name}
+                    {getParentCategory(props.mother) + '/' + props.name}
                   </span>
                 </div>
               ) : null}
@@ -232,7 +238,7 @@ const Task = props => {
                         aria-hidden="true"
                       ></i>
                     ) : null}{' '}
-                    {props.name}
+                    {getParentCategory(props.mother) + '/' + props.name}
                   </span>
                 </div>
               ) : null}
@@ -251,7 +257,7 @@ const Task = props => {
                         aria-hidden="true"
                       ></i>
                     ) : null}{' '}
-                    {props.name}
+                    {getParentCategory(props.mother) + '/' + props.name}
                   </span>
                 </div>
               ) : null}
