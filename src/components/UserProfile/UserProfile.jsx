@@ -295,10 +295,7 @@ const UserProfile = props => {
           await props.refreshToken(userProfile._id);
         }
       await loadUserProfile();
-
       await loadUserTasks();
-
-      setShowSaveWarning(false);
     } catch (err) {
       alert('An error occurred while attempting to save this profile.');
     }
@@ -309,7 +306,6 @@ const UserProfile = props => {
 
   const toggleInfoModal = () => {
     setInfoModal(!infoModal);
-    setShowSaveWarning(false);
   };
 
   const toggleTab = tab => {

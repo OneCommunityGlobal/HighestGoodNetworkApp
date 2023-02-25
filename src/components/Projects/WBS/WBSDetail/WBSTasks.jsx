@@ -362,6 +362,8 @@ const WBSTasks = props => {
                 intentInfo={task.intentInfo}
                 endstateInfo={task.endstateInfo}
                 childrenQty={task.childrenQty}
+                filteredTasks={filteredTasks}
+
               />
             ))}
           </tbody>

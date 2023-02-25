@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
 import {
   Container,
-  Row, 
+  Row,
   Col,
   Card,
   CardText,
@@ -69,48 +69,48 @@ const Badge = props => {
   const permissionsUser = props.userProfile?.permissions?.frontPermissions;
   return (
     <>
-    <Container>
-      <Row>
-        <Col md={12}>
-          <Card style={{ backgroundColor: '#fafafa', borderRadius: 0 }} id="badgesearned">
-            <CardHeader tag="h3">
-              Badges <i className="fa fa-info-circle" id="BadgeInfo" onClick={toggleTypes} />
-            </CardHeader>
-            <CardBody>
-              <NewBadges badges={props.userProfile.badgeCollection || []} />
-              <OldBadges badges={props.userProfile.badgeCollection || []} />
-              <CardText
-                style={{
-                  fontWeight: 'bold',
-                  fontSize: 18,
-                  color: '#285739',
-                }}
-              >
-                Bravo! You Earned {totalBadge} Badges!{' '}
-                <i className="fa fa-info-circle" id="CountInfo" />
-              </CardText>
-              <Button className="btn--dark-sea-green float-right" onClick={toggle}>
-                Badge Report
-              </Button>
-              <Modal size={'lg'} isOpen={isOpen} toggle={toggle}>
-                <ModalHeader toggle={toggle}>Full View of Badge History</ModalHeader>
-                <ModalBody>
-                  <BadgeReport
-                    badges={props.userProfile.badgeCollection || []}
-                    userId={props.userId}
-                    firstName={props.userProfile.firstName}
-                    lastName={props.userProfile.lastName}
-                    role={props.role}
-                    close={toggle}
-                    permissionsUser={permissionsUser}
-                  />
-                </ModalBody>
-              </Modal>
-            </CardBody>
-          </Card>
-        </Col>
-      </Row>
-    </Container>
+      <Container>
+        <Row>
+          <Col md={12}>
+            <Card style={{ backgroundColor: '#fafafa', borderRadius: 0 }} id="badgesearned">
+              <CardHeader tag="h3">
+                Badges <i className="fa fa-info-circle" id="BadgeInfo" onClick={toggleTypes} />
+              </CardHeader>
+              <CardBody>
+                <NewBadges badges={props.userProfile.badgeCollection || []} />
+                <OldBadges badges={props.userProfile.badgeCollection || []} />
+                <CardText
+                  style={{
+                    fontWeight: 'bold',
+                    fontSize: 18,
+                    color: '#285739',
+                  }}
+                >
+                  Bravo! You Earned {totalBadge} Badges!{' '}
+                  <i className="fa fa-info-circle" id="CountInfo" />
+                </CardText>
+                <Button className="btn--dark-sea-green float-right" onClick={toggle}>
+                  Badge Report
+                </Button>
+                <Modal size={'lg'} isOpen={isOpen} toggle={toggle}>
+                  <ModalHeader toggle={toggle}>Full View of Badge History</ModalHeader>
+                  <ModalBody>
+                    <BadgeReport
+                      badges={props.userProfile.badgeCollection || []}
+                      userId={props.userId}
+                      firstName={props.userProfile.firstName}
+                      lastName={props.userProfile.lastName}
+                      role={props.role}
+                      close={toggle}
+                      permissionsUser={permissionsUser}
+                    />
+                  </ModalBody>
+                </Modal>
+              </CardBody>
+            </Card>
+          </Col>
+        </Row>
+      </Container>
       <UncontrolledTooltip
         placement="auto"
         target="CountInfo"
@@ -148,7 +148,7 @@ const Badge = props => {
             each category.
           </p>
           <p className="badge_info_icon_text">
-            Hour Multiple: If you earn a multiple of your weekly comitted hours you can earn a
+            Hour Multiple: If you earn a multiple of your weekly committed hours you can earn a
             corresponding badge for that!
           </p>
           <p className="badge_info_icon_text">
