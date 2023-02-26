@@ -58,6 +58,7 @@ const TeamMemberTasks = props => {
       return;
     }
     setSelectedPeriod(period);
+    setTimeEntriesActive(true);
     let newList = [];
     const fromDate = moment()
       .tz('America/Los_Angeles')
@@ -82,7 +83,7 @@ const TeamMemberTasks = props => {
 
     setTimeEntriesList(newList);
     dispatch(finishLoading());
-    setTimeEntriesActive(true);
+    // setTimeEntriesActive(true);
   };
 
   const renderTeamsList = () => {
@@ -149,13 +150,6 @@ const TeamMemberTasks = props => {
         <div className="header-box_btn-group">
           <button
             type="button"
-            className="hours-btn btn-clear-timelogs"
-            onClick={() => setTimeEntriesActive(false)}
-          >
-            Hide Timelogs
-          </button>
-          <button
-            type="button"
             className="hours-btn btn-24"
             title="Timelogs submitted in the past 24 hours"
             style={{ backgroundColor: '#3498db' }}
@@ -181,6 +175,16 @@ const TeamMemberTasks = props => {
           >
             72h
           </button>
+          {(timeEntriesActive || selectedPeriod) && (
+            <button
+              type="button"
+              className="hours-btn btn-clear-timelogs"
+              onClick={() => setTimeEntriesActive(!timeEntriesActive)}
+              disabled={!selectedPeriod}
+            >
+              {timeEntriesActive ? 'Hide Timelogs' : 'Show Timelogs'}
+            </button>
+          )}
         </div>
       </header>
       <TaskDifferenceModal
