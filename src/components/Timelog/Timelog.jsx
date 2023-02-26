@@ -89,7 +89,7 @@ class Timelog extends Component {
   state = this.initialState;
 
   async componentDidMount() {
-    const userId = this.props?.match?.params?.userId || this.props.asUser;
+    const userId = this.props.asUser;
     await this.props.getUserProfile(userId);
     this.userProfile = this.props.userProfile;
     await this.props.getUserTask(userId);
