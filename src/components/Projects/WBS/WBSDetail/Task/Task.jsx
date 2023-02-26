@@ -148,6 +148,25 @@ const Task = props => {
     props.copyTask(id);
   };
 
+  // Pass the filteredTasks to Task, then find all children
+  // if any of the children is found then return True
+  // else
+  // If true, then show the open folder icon
+  const checkIfChildRendered = mother => {
+    if (mother === null) {
+      return false;
+    }
+    console.log('mother', mother);
+    const children = props.filteredTasks.filter(task => task.mother == mother);
+    console.log('children', children);
+    for (const child of children) {
+      if (document.getElementById('task_name_' + child._id)) {
+        return true;
+      }
+    }
+    return false;
+  };
+
   return (
     <>
       {props.id ? (
@@ -196,7 +215,9 @@ const Task = props => {
                     {props.hasChildren ? (
                       <i
                         data-tip="Not Started"
-                        className={`fa fa-folder${isOpen ? '-open' : ''}`}
+                        className={`fa fa-folder${
+                          isOpen && checkIfChildRendered(props.taskId) ? '-open' : ''
+                        }`}
                         aria-hidden="true"
                       ></i>
                     ) : null}{' '}
@@ -215,7 +236,9 @@ const Task = props => {
                     {props.hasChildren ? (
                       <i
                         data-tip="Not Started"
-                        className={`fa fa-folder${isOpen ? '-open' : ''}`}
+                        className={`fa fa-folder${
+                          isOpen && checkIfChildRendered(props.taskId) ? '-open' : ''
+                        }`}
                         aria-hidden="true"
                       ></i>
                     ) : null}{' '}
@@ -234,7 +257,9 @@ const Task = props => {
                     {props.hasChildren ? (
                       <i
                         data-tip="Not Started"
-                        className={`fa fa-folder${isOpen ? '-open' : ''}`}
+                        className={`fa fa-folder${
+                          isOpen && checkIfChildRendered(props.taskId) ? '-open' : ''
+                        }`}
                         aria-hidden="true"
                       ></i>
                     ) : null}{' '}
@@ -253,7 +278,9 @@ const Task = props => {
                     {props.hasChildren ? (
                       <i
                         data-tip="Not Started"
-                        className={`fa fa-folder${isOpen ? '-open' : ''}`}
+                        className={`fa fa-folder${
+                          isOpen && checkIfChildRendered(props.taskId) ? '-open' : ''
+                        }`}
                         aria-hidden="true"
                       ></i>
                     ) : null}{' '}
