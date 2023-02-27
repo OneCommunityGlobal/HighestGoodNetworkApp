@@ -24,6 +24,7 @@ import {
   ModalBody,
   ModalFooter,
 } from 'reactstrap';
+import './Timelog.css';
 
 import classnames from 'classnames';
 import { connect, useSelector } from 'react-redux';
@@ -31,6 +32,9 @@ import moment from 'moment';
 import _ from 'lodash';
 import ReactTooltip from 'react-tooltip';
 
+import ActiveCell from 'components/UserManagement/ActiveCell';
+import { ProfileNavDot } from 'components/UserManagement/ProfileNavDot';
+import TeamMemberTasks from 'components/TeamMemberTasks';
 import { getTimeEntriesForWeek, getTimeEntriesForPeriod } from '../../actions/timeEntries';
 import { getUserProfile, updateUserProfile, getUserTask } from '../../actions/userProfile';
 import { getUserProjects } from '../../actions/userProjects';
@@ -40,12 +44,8 @@ import TimeEntry from './TimeEntry';
 import EffortBar from './EffortBar';
 import SummaryBar from '../SummaryBar/SummaryBar';
 import WeeklySummary from '../WeeklySummary/WeeklySummary';
-import ActiveCell from 'components/UserManagement/ActiveCell';
-import { ProfileNavDot } from 'components/UserManagement/ProfileNavDot';
 import Loading from '../common/Loading';
 import hasPermission from '../../utils/permissions';
-
-import TeamMemberTasks from 'components/TeamMemberTasks';
 
 const doesUserHaveTaskWithWBS = tasks => {
   let check = false;
@@ -67,7 +67,8 @@ class Timelog extends Component {
     this.handleInputChange = this.handleInputChange.bind(this);
     this.handleSearch = this.handleSearch.bind(this);
     this.openInfo = this.openInfo.bind(this);
-    //renderViewingTimeEntriesFrom
+    this.calculateTotalTime = this.calculateTotalTime.bind(this);
+
     this.renderViewingTimeEntriesFrom = this.renderViewingTimeEntriesFrom.bind(this);
     this.data = {
       disabled: !hasPermission(
@@ -82,7 +83,7 @@ class Timelog extends Component {
     };
     this.userProfile = this.props.userProfile;
   }
-
+  
   initialState = {
     modal: false,
     summary: false,
@@ -92,13 +93,14 @@ class Timelog extends Component {
     toDate: this.endOfWeek(0),
     in: false,
     information: '',
-    isTimeEntriesLoading: false,
+    currentWeekEffort: 0,
+    isTimeEntriesLoading: true,
   };
 
   state = this.initialState;
 
   async componentDidMount() {
-    const userId = this.props?.match?.params?.userId || this.props.asUser;
+    const userId = this.props.asUser;
     await this.props.getUserProfile(userId);
     this.userProfile = this.props.userProfile;
     await this.props.getUserTask(userId);
@@ -122,7 +124,7 @@ class Timelog extends Component {
   }
 
   async componentDidUpdate(prevProps) {
-    //Don't run function on first render
+    // Don't run function on first render
     if (!this.props.match) return;
 
     if (
@@ -133,7 +135,6 @@ class Timelog extends Component {
 
       const userId =
         this.props.match?.params?.userId || this.props.asUser || this.props.auth.user.userid;
-      console.log('User id in Timelog: ', userId);
       await this.props.getUserProfile(userId);
 
       this.userProfile = this.props.userProfile;
@@ -165,7 +166,7 @@ class Timelog extends Component {
         summary: !this.state.summary,
       });
       setTimeout(() => {
-        let elem = document.getElementById('weeklySum');
+        const elem = document.getElementById('weeklySum');
         if (elem) {
           elem.scrollIntoView();
         }
@@ -207,8 +208,8 @@ class Timelog extends Component {
     this.props.getTimeEntriesForPeriod(userId, this.state.fromDate, this.state.toDate);
   }
 
-  //startOfWeek returns the date of the start of the week based on offset. Offset is the number of weeks before.
-  //For example, if offset is 0, returns the start of this week. If offset is 1, returns the start of last week.
+  // startOfWeek returns the date of the start of the week based on offset. Offset is the number of weeks before.
+  // For example, if offset is 0, returns the start of this week. If offset is 1, returns the start of last week.
   startOfWeek(offset) {
     return moment()
       .tz('America/Los_Angeles')
@@ -217,8 +218,8 @@ class Timelog extends Component {
       .format('YYYY-MM-DD');
   }
 
-  //endOfWeek returns the date of the end of the week based on offset. Offset is the number of weeks before.
-  //For example, if offset is 0, returns the end of this week. If offset is 1, returns the end of last week.
+  // endOfWeek returns the date of the end of the week based on offset. Offset is the number of weeks before.
+  // For example, if offset is 0, returns the end of this week. If offset is 1, returns the end of last week.
   endOfWeek(offset) {
     return moment()
       .tz('America/Los_Angeles')
@@ -227,13 +228,19 @@ class Timelog extends Component {
       .format('YYYY-MM-DD');
   }
 
+  calculateTotalTime(data, isTangible) {
+    const filteredData = data.filter(entry => entry.isTangible === isTangible);
+    
+    const reducer = (total, entry) => total + parseInt(entry.hours) + parseInt(entry.minutes) / 60;
+    return filteredData.reduce(reducer, 0);
+  }
+
   generateTimeEntries(data) {
-    let filteredData = data;
     if (!this.state.projectsSelected.includes('all')) {
-      filteredData = data.filter(entry => this.state.projectsSelected.includes(entry.projectId));
+      data = data.filter(entry => this.state.projectsSelected.includes(entry.projectId));
     }
 
-    return filteredData.map(entry => (
+    return data.map(entry => (
       <TimeEntry data={entry} displayYear={false} key={entry._id} userProfile={this.userProfile} />
     ));
   }
@@ -259,6 +266,7 @@ class Timelog extends Component {
 
   render() {
     const currentWeekEntries = this.generateTimeEntries(this.props.timeEntries.weeks[0]);
+    this.state.currentWeekEffort = this.calculateTotalTime(this.props.timeEntries.weeks[0], true);
     const lastWeekEntries = this.generateTimeEntries(this.props.timeEntries.weeks[1]);
     const beforeLastEntries = this.generateTimeEntries(this.props.timeEntries.weeks[2]);
     const periodEntries = this.generateTimeEntries(this.props.timeEntries.period);
@@ -266,10 +274,11 @@ class Timelog extends Component {
       this.props.match && this.props.match.params.userId
         ? this.props.match.params.userId
         : this.props.asUser || this.props.auth.user.userid;
-    const role = this.props.auth.user.role;
+    const { role } = this.props.auth.user;
     const userPermissions = this.props.auth.user?.permissions?.frontPermissions;
 
     const isOwner = this.props.auth.user.userid === userId;
+    const leaderData = [{ personId: userId, tangibletime: this.state.currentWeekEffort }];
     const fullName = `${this.props.userProfile.firstName} ${this.props.userProfile.lastName}`;
     let projects = [];
     if (!_.isEmpty(this.props.userProjects.projects)) {
@@ -288,10 +297,14 @@ class Timelog extends Component {
     );
 
     let tasks = [];
+
     if (!_.isEmpty(this.props.userTask)) {
       tasks = this.props.userTask;
     }
-    const taskOptions = tasks.map(task => (
+    const activeTasks = tasks.filter(task =>
+      task.resources.some(resource => resource.userID === userId && !resource.completedTask),
+    );
+    const taskOptions = activeTasks.map(task => (
       <option value={task._id} key={task._id}>
         {task.taskName}
       </option>
@@ -301,9 +314,19 @@ class Timelog extends Component {
     return (
       <div>
         {!this.props.isDashboard ? (
-          <Container fluid>
-            <SummaryBar toggleSubmitForm={() => this.showSummary(isOwner)} role={role} />
-          </Container>
+          this.state.isTimeEntriesLoading ? (
+            'Loading...'
+          ) : (
+            <Container fluid>
+              <SummaryBar
+                asUser={userId}
+                toggleSubmitForm={() => this.showSummary(isOwner)}
+                role={role}
+                leaderData={leaderData}
+              />
+              <br />
+            </Container>
+          )
         ) : (
           ''
         )}
@@ -382,19 +405,25 @@ class Timelog extends Component {
                                 Clicking this button only allows for “Intangible Time” to be added
                                 to your time log.{' '}
                                 <u>
-                                  You can manually log Intangible Time but it doesn’t <br />
+                                  You can manually log Intangible Time but it doesn’t
+                                  {' '}
+                                  <br />
                                   count towards your weekly time commitment.
                                 </u>
                                 <br />
                                 <br />
                                 “Tangible Time” is the default for logging time using the timer at
                                 the top of the app. It represents all work done on assigned action
-                                items <br />
+                                items
+                                {' '}
+                                <br />
                                 and is what counts towards a person’s weekly volunteer time
                                 commitment. The only way for a volunteer to log Tangible Time is by
                                 using the clock
                                 <br />
-                                in/out timer. <br />
+                                in/out timer.
+                                {' '}
+                                <br />
                                 <br />
                                 Intangible Time is almost always used only by the management team.
                                 It is used for weekly Monday night management team calls, monthly
@@ -402,8 +431,11 @@ class Timelog extends Component {
                                 <br />
                                 team reviews and Welcome Team Calls, and non-action-item related
                                 research, classes, and other learning, meetings, etc. that benefit
-                                or relate to <br />
-                                the project but aren’t related to a specific action item on the{' '}
+                                or relate to
+                                {' '}
+                                <br />
+                                the project but aren’t related to a specific action item on the
+                                {' '}
                                 <a href="https://www.tinyurl.com/oc-os-wbs">
                                   One Community Work Breakdown Structure.
                                 </a>
@@ -411,7 +443,9 @@ class Timelog extends Component {
                                 <br />
                                 Intangible Time may also be logged by a volunteer when in the field
                                 or for other reasons when the timer wasn’t able to be used. In these
-                                cases, the <br />
+                                cases, the
+                                {' '}
+                                <br />
                                 volunteer will use this button to log time as “intangible time” and
                                 then request that an Admin manually change the log from Intangible
                                 to Tangible.
@@ -569,7 +603,7 @@ class Timelog extends Component {
                       {this.state.activeTab === 0 ? (
                         <></>
                       ) : (
-                        <Form inline className="mb-2">
+                        <Form className="mb-2">
                           <FormGroup>
                             <Label for="projectSelected" className="mr-1 ml-1 mb-1 align-top">
                               Filter Entries by Project and Task:
@@ -603,7 +637,9 @@ class Timelog extends Component {
                           projectsSelected={this.state.projectsSelected}
                         />
                       )}
-                      <TabPane tabId={0}>{<TeamMemberTasks asUser={this.props.asUser} />}</TabPane>
+                      <TabPane tabId={0}>
+                        <TeamMemberTasks asUser={this.props.asUser} />
+                      </TabPane>
                       <TabPane tabId={1}>{currentWeekEntries}</TabPane>
                       <TabPane tabId={2}>{lastWeekEntries}</TabPane>
                       <TabPane tabId={3}>{beforeLastEntries}</TabPane>
