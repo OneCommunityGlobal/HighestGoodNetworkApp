@@ -4,13 +4,13 @@ import { SEARCH, SHOW, CREATE_NEW_USER } from '../../languages/en/ui';
 /**
  * The search panel stateless component for user management grid
  */
-const UserSearchPanel = (props) => {
+const UserSearchPanel = props => {
   return (
     <div className="input-group" id="new_usermanagement">
       <button
         type="button"
         className="btn btn-info"
-        onClick={(e) => {
+        onClick={e => {
           props.onNewUserClick();
         }}
       >
@@ -25,7 +25,7 @@ const UserSearchPanel = (props) => {
         aria-label="Search"
         placeholder="Search Text"
         id="user-profiles-wild-card-search"
-        onChange={(e) => {
+        onChange={e => {
           props.onSearch(e.target.value);
         }}
       />
@@ -33,7 +33,7 @@ const UserSearchPanel = (props) => {
         <span className="input-group-text">{SHOW}</span>
         <select
           id="active-filter-dropdown"
-          onChange={(e) => {
+          onChange={e => {
             props.onActiveFiter(e.target.value);
           }}
         >

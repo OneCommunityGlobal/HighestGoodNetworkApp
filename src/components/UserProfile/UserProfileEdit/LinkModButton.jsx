@@ -4,7 +4,7 @@ import EditLinkModal from '../UserProfileModal/EditLinkModal';
 // import styleEdit from './UserProfileEdit.module.scss';
 import './UserProfileEdit.scss';
 
-const LinkModButton = (props) => {
+const LinkModButton = props => {
   const { updateLink, userProfile, setChanged } = props;
   const [modal, setModal] = useState(false);
   //const handleLinkModel = () => {};

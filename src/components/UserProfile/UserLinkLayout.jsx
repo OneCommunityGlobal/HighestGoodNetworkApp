@@ -2,7 +2,7 @@ import React from 'react';
 import UserLinks from './UserLinks';
 import LinkModButton from './UserProfileEdit/LinkModButton';
 
-const UserLinkLayout = (props) => {
+const UserLinkLayout = props => {
   const { isUserSelf, userProfile, updateLink, handleLinkModel, setChanged, role } = props;
 
   const { adminLinks, personalLinks } = userProfile;
@@ -18,16 +18,8 @@ const UserLinkLayout = (props) => {
           role={props.role}
         />
       ) : null}
-      <UserLinks
-        linkSection="user"
-        links={personalLinks}
-        handleLinkModel={handleLinkModel}
-      />
-      <UserLinks
-        linkSection="user"
-        links={adminLinks}
-        handleLinkModel={handleLinkModel}
-      />
+      <UserLinks linkSection="user" links={personalLinks} handleLinkModel={handleLinkModel} />
+      <UserLinks linkSection="user" links={adminLinks} handleLinkModel={handleLinkModel} />
     </div>
   );
 };

@@ -9,7 +9,7 @@ const getCurrentUseroptions = {
   },
 };
 
-getCurrentUser.__setValue = (option) => {
+getCurrentUser.__setValue = option => {
   getCurrentUser_result = getCurrentUseroptions[option];
 };
 

@@ -111,6 +111,7 @@ const TeamMemberTasks = props => {
       teamsList = filteredMembers.map((user, index) => {
         let totalHoursLogged = 0;
         let totalHoursRemaining = 0;
+        const thisWeekHours = user.totaltangibletime_hrs;
 
         if (user.tasks) {
           user.tasks = user.tasks.map(task => {
@@ -129,10 +130,11 @@ const TeamMemberTasks = props => {
           <tr key={user.personId}>
             {/* green if member has met committed hours for the week, red if not */}
             <td>
-              <div className="comitted-hours-circle">
+              <div className="committed-hours-circle">
                 <FontAwesomeIcon
                   style={{
-                    color: user.totaltangibletime_hrs >= user.weeklyComittedHours ? 'green' : 'red',
+                    color:
+                      user.totaltangibletime_hrs >= user.weeklycommittedHours ? 'green' : 'red',
                   }}
                   icon={faCircle}
                 />
@@ -146,9 +148,12 @@ const TeamMemberTasks = props => {
                       <Link to={`/userprofile/${user.personId}`}>{`${user.name}`}</Link>
                     </td>
                     <td className="team-clocks">
-                      <u>{user.weeklyComittedHours ? user.weeklyComittedHours : 0}</u> /
-                      <font color="green"> {Math.round(totalHoursLogged)}</font> /
-                      <font color="red"> {Math.round(totalHoursRemaining)}</font>
+                      <u>{user.weeklycommittedHours ? user.weeklycommittedHours : 0}</u> /
+                      <font color="green"> {thisWeekHours ? thisWeekHours.toFixed(1) : 0}</font> /
+                      <font color="red">
+                        {' '}
+                        {totalHoursRemaining ? totalHoursRemaining.toFixed(1) : 0}
+                      </font>
                     </td>
                   </tr>
                   <tr>
@@ -168,15 +173,15 @@ const TeamMemberTasks = props => {
               <Table borderless className="team-member-tasks-subtable">
                 <tbody>
                   {user.tasks &&
-                    user.tasks.map(
-                      (task, index) =>{
-                        let isActiveTaskForUser = true
-                        if (task?.resources) {
-                          isActiveTaskForUser = !task.resources?.find(resource => resource.userID === user.personId).completedTask
-                        }
-                        if (task.wbsId &&
-                        task.projectId && isActiveTaskForUser ) {
-                          return (
+                    user.tasks.map((task, index) => {
+                      let isActiveTaskForUser = true;
+                      if (task?.resources) {
+                        isActiveTaskForUser = !task.resources?.find(
+                          resource => resource.userID === user.personId,
+                        ).completedTask;
+                      }
+                      if (task.wbsId && task.projectId && isActiveTaskForUser) {
+                        return (
                           <tr key={`${task._id}${index}`} className="task-break">
                             <td className="task-align">
                               <p>
@@ -207,15 +212,20 @@ const TeamMemberTasks = props => {
                                 ${parseFloat(task.estimatedHours.toFixed(2))}`}
                                   </span>
                                   <Progress
-                                    color = {getProgressColor(task.hoursLogged,task.estimatedHours)}
-                                    value = {getProgressValue(task.hoursLogged,task.estimatedHours)}
+                                    color={getProgressColor(
+                                      task.hoursLogged,
+                                      task.estimatedHours,
+                                      true,
+                                    )}
+                                    value={getProgressValue(task.hoursLogged, task.estimatedHours)}
                                   />
                                 </div>
                               </td>
                             )}
                           </tr>
-                        )}
-                                  })}
+                        );
+                      }
+                    })}
                 </tbody>
               </Table>
             </td>
@@ -321,7 +331,7 @@ const TeamMemberTasks = props => {
                       <FontAwesomeIcon
                         style={{ color: 'green' }}
                         icon={faClock}
-                        title="Weekly Completed Hours"
+                        title="Total Hours Completed this Week"
                       />
                       /
                       <FontAwesomeIcon

@@ -91,6 +91,20 @@ const TimeEntryForm = props => {
     setTangibleInfoModalVisibleModalVisible(!isTangibleInfoModalVisible);
   };
 
+  const filterTasks = (tasks, id) => {
+    let result = [];
+    for (let i = 0; i < tasks.length; i++) {
+      let resourcesLength = tasks[i].resources.length;
+      for (let j = 0; j < resourcesLength; j++) {
+        if (tasks[i].resources[j].completedTask === false && tasks[i].resources[j].userID === id) {
+          result.push(tasks[i]);
+          break;
+        }
+      }
+    }
+    return result;
+  };
+
   useEffect(() => {
     //this to make sure that the form is cleared before closing
     if (close && inputs.projectId == '') {
@@ -118,7 +132,8 @@ const TimeEntryForm = props => {
     axios
       .get(ENDPOINTS.TASKS_BY_USERID(userId))
       .then(res => {
-        setTasks(res?.data || []);
+        let activeTasks = filterTasks(res?.data, userId);
+        setTasks(activeTasks || []);
       })
       .catch(err => console.log(err));
   }, []);

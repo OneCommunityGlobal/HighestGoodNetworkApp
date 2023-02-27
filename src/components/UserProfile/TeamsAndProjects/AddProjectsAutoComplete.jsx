@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Dropdown, Input } from 'reactstrap';
 import './TeamsAndProjects.css';
 
-const AddProjectsAutoComplete = React.memo((props) => {
+const AddProjectsAutoComplete = React.memo(props => {
   const [searchText, onInputChange] = useState('');
   const [isOpen, toggle] = useState(false);
 
@@ -21,7 +21,7 @@ const AddProjectsAutoComplete = React.memo((props) => {
       <Input
         type="text"
         value={searchText}
-        onChange={(e) => {
+        onChange={e => {
           onInputChange(e.target.value);
           toggle(true);
         }}
@@ -36,13 +36,13 @@ const AddProjectsAutoComplete = React.memo((props) => {
           style={{ marginTop: '0px', width: '100%' }}
         >
           {props.projectsData
-            .filter((project) => {
+            .filter(project => {
               if (project.projectName.toLowerCase().indexOf(searchText.toLowerCase()) > -1) {
                 return project;
               }
             })
             .slice(0, 10)
-            .map((item) => (
+            .map(item => (
               <div
                 className="project-auto-complete"
                 onClick={() => {
