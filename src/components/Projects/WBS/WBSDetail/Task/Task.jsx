@@ -112,6 +112,12 @@ function Task(props) {
     setIsOpen(!isOpen);
   };
 
+  const getParentCategory = id => {
+    let parentCategory = props.filteredTasks.find(task => task._id === id);
+    if (parentCategory) return parentCategory.taskName;
+    else return '';
+  };
+
   const openChild = (num, id) => {
     const allItems = document.getElementsByClassName('wbsTask');
     for (let i = 0; i < allItems.length; i++) {
@@ -237,10 +243,11 @@ function Task(props) {
                         data-tip="Not Started"
                         className={`fa fa-folder${isOpen ? '-open' : ''}`}
                         aria-hidden="true"
-                      />
-                    ) : null}
-                    {' '}
-                    {props.name}
+
+                      ></i>
+                    ) : null}{' '}
+                    {getParentCategory(props.mother) + '/' + props.name}
+
                   </span>
                 </div>
               ) : null}
@@ -257,10 +264,11 @@ function Task(props) {
                         data-tip="Not Started"
                         className={`fa fa-folder${isOpen ? '-open' : ''}`}
                         aria-hidden="true"
-                      />
-                    ) : null}
-                    {' '}
-                    {props.name}
+
+                      ></i>
+                    ) : null}{' '}
+                    {getParentCategory(props.mother) + '/' + props.name}
+
                   </span>
                 </div>
               ) : null}
@@ -277,10 +285,11 @@ function Task(props) {
                         data-tip="Not Started"
                         className={`fa fa-folder${isOpen ? '-open' : ''}`}
                         aria-hidden="true"
-                      />
-                    ) : null}
-                    {' '}
-                    {props.name}
+
+                      ></i>
+                    ) : null}{' '}
+                    {getParentCategory(props.mother) + '/' + props.name}
+
                   </span>
                 </div>
               ) : null}

@@ -359,6 +359,7 @@ const WBSTasks = props => {
                 whyInfo={task.whyInfo}
                 intentInfo={task.intentInfo}
                 endstateInfo={task.endstateInfo}
+                filteredTasks={filteredTasks}
               />
             ))}
           </tbody>
