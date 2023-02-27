@@ -98,7 +98,7 @@ const SummaryBar = props => {
 
   useEffect(() => {
     // Fetch user profile only if the selected timelog is of different user
-    if (!matchUser) {
+    if (!matchUser || gsUserprofile._id != asUser) {
       loadUserProfile();
       getUserTask();
     } else {
@@ -192,19 +192,12 @@ const SummaryBar = props => {
     const infringements = getInfringements(userProfile);
     const badges = getBadges(userProfile);
     let totalEffort = parseFloat(leaderData.find(x => x.personId === asUser).tangibletime);
-    const weeklyCommittedHours = userProfile.weeklyCommittedHours
-      ? userProfile.weeklyCommittedHours
+    const weeklyCommittedHours = userProfile.weeklycommittedHours
+      ? userProfile.weeklycommittedHours
       : userProfile.weeklyComittedHours;
     const weeklySummary = getWeeklySummary(userProfile);
     return (
-      <Container
-        fluid
-        className={
-          matchUser || hasPermission(role, 'toggleSubmitForm')
-            ? 'px-lg-0 bg--bar'
-            : 'px-lg-0 bg--bar disabled-bar'
-        }
-      >
+      <Container fluid className={matchUser ? 'px-lg-0 bg--bar' : 'px-lg-0 bg--bar disabled-bar'}>
         <Row className="no-gutters row-eq-height">
           <Col
             className="d-flex justify-content-center align-items-center col-lg-2 col-12 text-list"
@@ -218,7 +211,6 @@ const SummaryBar = props => {
               <CardTitle className="text--black align-middle" tag="h3">
                 <div>
                   {userProfile.firstName + ' '}
-                  {/* <br className="name-linebreak" /> */}
                   {userProfile.lastName}
                 </div>
               </CardTitle>
@@ -272,7 +264,7 @@ const SummaryBar = props => {
               {!weeklySummary ? (
                 <div className="border-red col-4 bg--white-smoke no-gutters" align="center">
                   <div className="py-1"> </div>
-                  {matchUser || hasPermission(role, 'toggleSubmitForm') ? (
+                  {matchUser ? (
                     <p
                       className={'summary-toggle large_text_summary text--black text-danger'}
                       align="center"

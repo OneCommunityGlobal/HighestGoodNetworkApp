@@ -90,16 +90,19 @@ class Timelog extends Component {
 
   async componentDidMount() {
     const userId = this.props?.match?.params?.userId || this.props.asUser;
-    await this.props.getUserProfile(userId);
+    const isOwner = this.props.auth.user.userid === this.props.asUser;
+    if (!isOwner || this.props.userProfile) {
+      await this.props.getUserProfile(userId);
+      await this.props.getUserTask(userId);
+      await this.props.getTimeEntriesForWeek(userId, 0);
+      await this.props.getTimeEntriesForWeek(userId, 1);
+      await this.props.getTimeEntriesForWeek(userId, 2);
+      await this.props.getTimeEntriesForPeriod(userId, this.state.fromDate, this.state.toDate);
+      await this.props.getUserProjects(userId);
+      await this.props.getAllRoles();
+    }
     this.userProfile = this.props.userProfile;
-    await this.props.getUserTask(userId);
     this.userTask = this.props.userTask;
-    await this.props.getTimeEntriesForWeek(userId, 0);
-    await this.props.getTimeEntriesForWeek(userId, 1);
-    await this.props.getTimeEntriesForWeek(userId, 2);
-    await this.props.getTimeEntriesForPeriod(userId, this.state.fromDate, this.state.toDate);
-    await this.props.getUserProjects(userId);
-    await this.props.getAllRoles();
     this.setState({ isTimeEntriesLoading: false });
   }
 
