@@ -31,6 +31,7 @@ const WBSTasks = props => {
   const [filterState, setFilterState] = useState('all');
   const [openAll, setOpenAll] = useState(false);
   const [loadAll, setLoadAll] = useState(false);
+  const [isDeleted, setIsDeleted] = useState(false);
 
   const load = async () => {
     const levelList = [0, 1, 2, 3, 4];
@@ -58,6 +59,13 @@ const WBSTasks = props => {
   useEffect(() => {
     AutoOpenAll(openAll);
   }, [openAll]);
+
+  useEffect(() => {
+    if (isDeleted) {
+      refresh();
+    }
+    setIsDeleted(false);
+  }, [isDeleted]);
 
   const AutoOpenAll = openflag => {
     if (openflag) {
@@ -139,11 +147,9 @@ const WBSTasks = props => {
     //props.updateNumList(wbsId, list);*/
   };
 
-  const deleteTask = taskId => {
-    props.deleteTask(taskId);
-    setTimeout(() => {
-      props.fetchAllTasks(wbsId);
-    }, 4000);
+  const deleteWBSTask = (taskId, mother) => {
+    props.deleteTask(taskId, mother);
+    setIsDeleted(true);
   };
 
   const filterTasks = (allTaskItems, filter) => {
@@ -235,7 +241,9 @@ const WBSTasks = props => {
         </Button>
 
         {loadAll === false ? (
+
           <Button color="warning" size="sm" className="ml-3">
+
             {' '}
             Task Loading......{' '}
           </Button>
@@ -354,7 +362,7 @@ const WBSTasks = props => {
                 isOpen={openAll}
                 drop={dropTask}
                 drag={dragTask}
-                deleteTask={deleteTask}
+                deleteWBSTask={deleteWBSTask}
                 hasChildren={task.hasChild}
                 siblings={props.state.tasks.taskItems.filter(item => item.mother === task.mother)}
                 taskId={task.taskId}

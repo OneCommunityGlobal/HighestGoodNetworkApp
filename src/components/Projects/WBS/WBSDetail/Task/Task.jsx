@@ -132,6 +132,7 @@ const Task = props => {
     props.getPopupById(TASK_DELETE_POPUP_ID);
   };
 
+
   const deleteTask = (taskId, mother) => {
     if (mother !== null) {
       props.deleteChildrenTasks(mother);
@@ -141,6 +142,10 @@ const Task = props => {
     setTimeout(() => {
       props.fetchAllTasks(props.wbsId, 0);
     }, 2000);
+
+  const deleteOneTask = (taskId, mother) => {
+    props.deleteWBSTask(taskId, mother);
+
   };
 
   const onMove = (from, to) => {
@@ -553,7 +558,7 @@ const Task = props => {
                   closeModal={() => {
                     setModalDelete(false);
                   }}
-                  confirmModal={() => deleteTask(props.id, props.mother)}
+                  confirmModal={() => deleteOneTask(props.id, props.mother)}
                   modalMessage={props.state.popupEditor.currPopup.popupContent || ''}
                   modalTitle={Message.CONFIRM_DELETION}
                 />

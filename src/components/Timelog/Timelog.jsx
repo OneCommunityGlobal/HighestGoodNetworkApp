@@ -47,6 +47,17 @@ import WeeklySummary from '../WeeklySummary/WeeklySummary';
 import Loading from '../common/Loading';
 import hasPermission from '../../utils/permissions';
 
+const doesUserHaveTaskWithWBS = tasks => {
+  let check = false;
+  for (let task of tasks) {
+    if (task.wbsId) {
+      check = true;
+      break;
+    }
+  }
+  return check;
+};
+
 class Timelog extends Component {
   constructor(props) {
     super(props);
@@ -89,7 +100,7 @@ class Timelog extends Component {
   state = this.initialState;
 
   async componentDidMount() {
-    const userId = this.props?.match?.params?.userId || this.props.asUser;
+    const userId = this.props.asUser;
     await this.props.getUserProfile(userId);
     this.userProfile = this.props.userProfile;
     await this.props.getUserTask(userId);
@@ -101,6 +112,23 @@ class Timelog extends Component {
     await this.props.getUserProjects(userId);
     await this.props.getAllRoles();
     this.setState({ isTimeEntriesLoading: false });
+    const role = this.props.auth.user.role;
+    //if user role is admin, manager, mentor or owner then default tab is task. If user have any tasks assigned, default tab is task.
+    if (role === 'Administrator' || role === 'Manager' || role === "'Mentor'" || role === 'Owner') {
+      this.setState({ activeTab: 0 });
+    }
+    
+    const UserHaveTask = doesUserHaveTaskWithWBS(this.userTask);
+    /* To set the Task tab as defatult this.userTask is being watched.
+    Accounts with no tasks assigned to it return an empty array.
+    Accounts assigned with tasks with no wbs return and empty array.
+    Accounts assigned with tasks with wbs return an array with that wbs data.
+    The problem: even after unassigning tasks the array keeps the wbs data.
+    That breaks this feature. Necessary to check if this array should keep data or be reset when unassinging tasks.*/
+
+    if (UserHaveTask) {
+      this.setState({ activeTab: 0 });
+    }
   }
 
   async componentDidUpdate(prevProps) {
