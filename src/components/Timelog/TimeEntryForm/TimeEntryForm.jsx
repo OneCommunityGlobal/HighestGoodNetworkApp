@@ -215,13 +215,22 @@ const TimeEntryForm = props => {
       result.dateOfWork = 'Date is required';
     } else {
       const date = moment(inputs.dateOfWork);
-      const today = moment(moment().tz('America/Los_Angeles').format('YYYY-MM-DD'));
+      const today = moment(
+        moment()
+          .tz('America/Los_Angeles')
+          .format('YYYY-MM-DD'),
+      );
       if (!date.isValid()) {
         result.dateOfWork = 'Invalid date';
       }
-      // Administrator/Owner can add time entries for any dates. Other roles cannot. 
+      // Administrator/Owner can add time entries for any dates. Other roles cannot.
       // Editing details of past date is possible for any role.
-      else if (currentUserRole !== 'Administrator' && currentUserRole !== 'Owner' && !edit && today.diff(date, 'days') !== 0) {
+      else if (
+        currentUserRole !== 'Administrator' &&
+        currentUserRole !== 'Owner' &&
+        !edit &&
+        today.diff(date, 'days') !== 0
+      ) {
         result.dateOfWork = 'Invalid date. Please refresh the page.';
       }
     }
@@ -407,7 +416,6 @@ const TimeEntryForm = props => {
     //Validation and variable initialization
     if (event) event.preventDefault();
     if (isSubmitting) return;
-    // console.log('submitting');
     const hours = inputs.hours || 0;
     const minutes = inputs.minutes || 0;
     const isTimeModified = edit && (data.hours !== hours || data.minutes !== minutes);
@@ -454,7 +462,7 @@ const TimeEntryForm = props => {
       );
       return;
     }
-    console.log(timeEntry);
+
     //Clear the form and clean up.
     if (fromTimer) {
       const timerStatus = await dispatch(stopTimer(userId));
