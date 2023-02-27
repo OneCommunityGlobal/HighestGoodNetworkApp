@@ -13,7 +13,6 @@ import hasPermission from 'utils/permissions';
 
 const SingleTask = props => {
   const taskId = props.match.params.taskId;
-  console.log('TASK ID PARAM', typeof taskId);
   const { user } = props.auth;
   const userPermissions = props.auth.user?.permissions?.frontPermissions;
   const roles = useSelector(state => state.role.roles);
