@@ -8,7 +8,7 @@ export const PieChart = ({ data, dataLegend, pieChartId, dataLegendHeader }) => 
   const [totalHours, setTotalHours] = useState(0);
 
   // create the pie chart
-  const getCreateSvgPie = () => {
+  const getCreateSvgPie = (totalValue) => {
     var svg = d3
       .select(`#pie-chart-container-${pieChartId}`)
       .append('svg')
@@ -20,7 +20,7 @@ export const PieChart = ({ data, dataLegend, pieChartId, dataLegendHeader }) => 
 
     svg.append("text")
       .attr("text-anchor", "middle")
-      .text(totalHours.toFixed(2));
+      .text(totalValue.toFixed(2));
 
     return svg;
   };
@@ -35,7 +35,7 @@ export const PieChart = ({ data, dataLegend, pieChartId, dataLegendHeader }) => 
     let totalValue = data_ready.map(obj => obj.value).reduce((a, c) => { return a + c });
     setTotalHours(totalValue)
 
-    getCreateSvgPie()
+    getCreateSvgPie(totalValue)
       .selectAll('whatever')
       .data(data_ready)
       .join('path')

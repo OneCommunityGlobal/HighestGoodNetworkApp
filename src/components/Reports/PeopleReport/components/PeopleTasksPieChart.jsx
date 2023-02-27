@@ -40,8 +40,8 @@ export const PeopleTasksPieChart = () => {
       {showTasksPieChart && (
         <ReportPage.ReportBlock>
           <h5 className="people-pie-charts-header">{`${
-            showViewAllTasksButton ? 'Last t' : 'T'
-          }asks with committed hours`}</h5>
+            showViewAllTasksButton ? 'Last ' : ''
+          }Tasks With Completed Hours`}</h5>
           <PieChart
             pieChartId={'tasksPieChart'}
             data={displayedTasksWithLoggedHoursById}
