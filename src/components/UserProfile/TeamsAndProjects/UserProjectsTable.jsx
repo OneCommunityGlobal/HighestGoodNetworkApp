@@ -74,6 +74,7 @@ const UserProjectsTable = React.memo(props => {
       let newResource = { ...resource };
       if (resource.userID === props.userId) {
         if (method === 'remove') {
+          task.status="Complete";
           newResource = {
             ...resource,
             completedTask: true,

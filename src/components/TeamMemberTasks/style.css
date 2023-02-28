@@ -11,7 +11,7 @@
   cursor: pointer;
 }
 
-.comitted-hours-circle {
+.committed-hours-circle {
   padding: 0.75rem;
 }
 
@@ -73,4 +73,16 @@
 .header-box {
   display: flex;
   justify-content: space-between;
+}
+
+.complete-task-button {
+  background-color: lightgreen;
+}
+
+.uncomplete-task-button {
+  background-color: lightcoral;
+}
+
+.markAsDoneButton:hover {
+  cursor: pointer;
 }

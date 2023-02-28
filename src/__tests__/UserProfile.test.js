@@ -92,6 +92,7 @@
 //   });
 // });
 
+
 // describe('WeeklySummary Redux related actions', () => {
 //   describe('Fetching the weekly summaries from the server', () => {
 //     it('should fetch mediaUrl, weeklySummaries and weeklySummariesCount from the userProfile and put in the store', async () => {

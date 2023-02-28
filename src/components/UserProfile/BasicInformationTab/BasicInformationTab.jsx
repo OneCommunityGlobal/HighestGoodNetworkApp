@@ -731,6 +731,34 @@ const BasicInformationTab = props => {
               `${userProfile.role}`
             )}
           </Col>
+      </Row>
+      <Row>
+        <Col>
+          <label>Difference in this Time Zone from Your Local</label>
+        </Col>
+        <TimeZoneDifference
+          userProfile={userProfile}
+          setUserProfile={setUserProfile}
+          setChanged={setChanged}
+          isUserSelf={isUserSelf}
+          handleUserProfile={handleUserProfile}
+          formValid={formValid}
+        />
+      </Row>
+      <Row style={{ marginBottom: '10px' }}>
+        <Col>
+          <Label>Status</Label>
+        </Col>
+        <Col md="6">
+          <Label>
+            {userProfile.isActive
+              ? 'Active'
+              : userProfile.reactivationDate
+              ? 'Paused through ' + moment(userProfile.reactivationDate).format('MM-DD-YYYY')
+              : 'Inactive'}
+          </Label>
+          &nbsp;
+          {canEdit && <PauseAndResumeButton isBigBtn={true} userProfile={userProfile} />}
         </Col>
         <hr />
         {canEdit && (
