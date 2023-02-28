@@ -35,7 +35,6 @@ const SummaryBar = props => {
   const [infringements, setInfringements] = useState(0);
   const [badges, setBadges] = useState(0);
   const [totalEffort, setTotalEffort] = useState(0);
-  const initialState = { infringements: 0, badges: 0, totalEffort: 0 };
   const [weeklySummary, setWeeklySummary] = useState([]);
 
   const [tasks, setTasks] = useState(undefined);
@@ -45,14 +44,6 @@ const SummaryBar = props => {
   const authenticateUserId = authenticateUser ? authenticateUser.userid : '';
 
   const matchUser = asUser == authenticateUserId ? true : false;
-  const timeEntries = useSelector(state => {
-    let timeEntries = state?.timeEntries?.weeks;
-    if (timeEntries) {
-      return timeEntries[0];
-    } else {
-      return [];
-    }
-  });
 
   // Similar to UserProfile component function
   // Loads component depending on asUser passed as prop
@@ -175,9 +166,6 @@ const SummaryBar = props => {
   };
 
   if (userProfile !== undefined && leaderData !== undefined) {
-    const infringements = getInfringements(userProfile);
-    const badges = getBadges(userProfile);
-    let totalEffort = parseFloat(leaderData.find(x => x.personId === asUser).tangibletime);
     const weeklyCommittedHours = userProfile.weeklycommittedHours
       ? userProfile.weeklycommittedHours
       : userProfile.weeklyComittedHours;
