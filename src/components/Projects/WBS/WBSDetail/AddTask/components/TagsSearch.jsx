@@ -21,16 +21,11 @@ function TagsSearch({ placeholder, members, addResources, removeResource }) {
 
   // Se tiver como usar a tag aqui no lugar de indexToRemove seria melhor
   // Pq se tiver outro component com o msm numero eles podem ser filtrados ao mesmo tempo
-  const removeTags = indexToRemove => {
-    const membersIdToRemove = taskMembers.map((member) => {
-      if(`${member.firstName} ${member.lastName}` === tags[indexToRemove]){
-        return member._id;
-      }
-    })
-    removeResource(membersIdToRemove);
+  const removeTags = id => {
+    removeResource(id);
     setTaskMembers(taskMembers.filter((member) => 
-      `${member.firstName} ${member.lastName}` !== tags[indexToRemove]));
-    setTags(tags.filter((_, index) => index !== indexToRemove));
+      `${member._id}` !== id));
+    setTags(tags.filter((tag) => tag._id !== id));
   };
 
   const addTags = event => {
@@ -40,8 +35,8 @@ function TagsSearch({ placeholder, members, addResources, removeResource }) {
     }
   };
 
-  const handleClick = event => {
-    setTags([...tags, event.target.innerText]);
+  const handleClick = member => {
+    setTags([...tags, member]);
     const newMember = members.map(member =>{ 
       if(`${member.firstName} ${member.lastName}` == event.target.innerText) {
         setTaskMembers([...taskMembers, member]);
@@ -85,17 +80,17 @@ function TagsSearch({ placeholder, members, addResources, removeResource }) {
                   : 'dropdown-menu d-flex flex-column align-items-start justify-content-start w-auto scrollbar shadow-lg rounded-3 position-absolute top-8 start-0 z-3 bg-light'
               }`}
             >
-              {filteredData.slice(0, 10).map((value, index) => (
-                <a href={value.link} key={value._id} className="text-decoration-none w-100">
+              {filteredData.slice(0, 10).map((member, index) => (
+                <a href={member.link} key={member._id} className="text-decoration-none w-100">
                   <li
                     className={
                       index === selectedIndex
                         ? 'dropdown-item border-bottom fs-6 w-100 p-1'
                         : 'dropdown-item border-bottom fs-6 w-100 p-1'
                     }
-                    onClick={handleClick}
+                    onClick={() => handleClick(member)}
                   >
-                    {value.firstName + ' ' + value.lastName}
+                    {member.firstName + ' ' + member.lastName}
                   </li>
                 </a>
               ))}
@@ -106,9 +101,9 @@ function TagsSearch({ placeholder, members, addResources, removeResource }) {
         </div>
       </div>
       <div className="d-flex flex-wrap align-items-start justify-content-start">
-        {tags.map((tag, index) => (
+        {tags.map((tag) => (
           <ul className="d-flex align-items-start justify-content-start m-0 p-1">
-            <TagSent titleName={tag} key={index} removeTags={() => removeTags(index)} />
+            <TagSent tag={tag} key={Number(tag._id)} removeTags={removeTags} />
           </ul>
         ))}
       </div>
