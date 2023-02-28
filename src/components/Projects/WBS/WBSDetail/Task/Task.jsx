@@ -559,7 +559,7 @@ const Task = props => {
                   closeModal={() => {
                     setModalDelete(false);
                   }}
-                  confirmModal={() => deleteOneTask(props.id, props.mother)}
+                  confirmModal={() => deleteTask(props.id, props.mother)}
                   modalMessage={props.state.popupEditor.currPopup.popupContent || ''}
                   modalTitle={Message.CONFIRM_DELETION}
                 />
