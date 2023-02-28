@@ -731,80 +731,8 @@ const BasicInformationTab = props => {
               `${userProfile.role}`
             )}
           </Col>
-      </Row>
-      <Row>
-        <Col>
-          <label>Difference in this Time Zone from Your Local</label>
         </Col>
-        <TimeZoneDifference
-          userProfile={userProfile}
-          setUserProfile={setUserProfile}
-          setChanged={setChanged}
-          isUserSelf={isUserSelf}
-          handleUserProfile={handleUserProfile}
-          formValid={formValid}
-        />
-      </Row>
-      <Row style={{ marginBottom: '10px' }}>
-        <Col>
-          <Label>Status</Label>
-        </Col>
-        <Col md="6">
-          <Label>
-            {userProfile.isActive
-              ? 'Active'
-              : userProfile.reactivationDate
-              ? 'Paused through ' + moment(userProfile.reactivationDate).format('MM-DD-YYYY')
-              : 'Inactive'}
-          </Label>
-          &nbsp;
-          {canEdit && <PauseAndResumeButton isBigBtn={true} userProfile={userProfile} />}
-        </Col>
-        <hr />
-        {canEdit && (
-          <Col className="cols">
-            <Col>
-              <Label>Location</Label>
-            </Col>
-
-            <Col className="cols">
-              <Input
-                onChange={e => {
-                  setLocation(e.target.value);
-                  setUserProfile({ ...userProfile, location: e.target.value });
-                  setChanged(true);
-                }}
-                value={userProfile.location}
-                style={{ marginBottom: '10px' }}
-              />
-
-              <div>
-                <Button color="secondary" block size="sm" onClick={onClickGetTimeZone}>
-                  Get Time Zone
-                </Button>
-              </div>
-            </Col>
-          </Col>
-        )}
-        <Col className="cols">
-          <Col>
-            <Label>Time Zone</Label>
-          </Col>
-          <Col>
-            {!canEdit && <p>{userProfile.timeZone}</p>}
-            {canEdit && (
-              <TimeZoneDropDown
-                filter={timeZoneFilter}
-                onChange={e => {
-                  setUserProfile({ ...userProfile, timeZone: e.target.value });
-                  setChanged(true);
-                }}
-                selected={userProfile.timeZone}
-              />
-            )}
-          </Col>
-        </Col>
-        <Col className="cols">
+        <Row>
           <Col>
             <label>Difference in this Time Zone from Your Local</label>
           </Col>
@@ -816,31 +744,104 @@ const BasicInformationTab = props => {
             handleUserProfile={handleUserProfile}
             formValid={formValid}
           />
-        </Col>
-        <hr />
-        <Row xs="2" style={{ marginLeft: '1rem' }}>         
-          <Col style={{ alignItems: 'center', justifyContent: 'center'}}>
+        </Row>
+        <Row style={{ marginBottom: '10px' }}>
+          <Col>
             <Label>Status</Label>
-            <div>
-            <Label style={{ fontWeight: 'normal' }}>
+          </Col>
+          <Col md="6">
+            <Label>
               {userProfile.isActive
                 ? 'Active'
                 : userProfile.reactivationDate
-                ? 'Paused until ' + moment(userProfile.reactivationDate).format('YYYY-MM-DD')
+                ? 'Paused through ' + moment(userProfile.reactivationDate).format('MM-DD-YYYY')
                 : 'Inactive'}
             </Label>
             &nbsp;
             {canEdit && <PauseAndResumeButton isBigBtn={true} userProfile={userProfile} />}
-            </div>
           </Col>
-          <Col>
-            <Label>
-              {userProfile.endDate
-                ? 'End Date ' + userProfile.endDate.toLocaleString().split('T')[0]
-                : 'End Date ' + 'N/A'}
-            </Label>
-            {canEdit && <SetUpFinalDayButton isBigBtn={true} userProfile={userProfile} />}
+          <hr />
+          {canEdit && (
+            <Col className="cols">
+              <Col>
+                <Label>Location</Label>
+              </Col>
+
+              <Col className="cols">
+                <Input
+                  onChange={e => {
+                    setLocation(e.target.value);
+                    setUserProfile({ ...userProfile, location: e.target.value });
+                    setChanged(true);
+                  }}
+                  value={userProfile.location}
+                  style={{ marginBottom: '10px' }}
+                />
+
+                <div>
+                  <Button color="secondary" block size="sm" onClick={onClickGetTimeZone}>
+                    Get Time Zone
+                  </Button>
+                </div>
+              </Col>
+            </Col>
+          )}
+          <Col className="cols">
+            <Col>
+              <Label>Time Zone</Label>
+            </Col>
+            <Col>
+              {!canEdit && <p>{userProfile.timeZone}</p>}
+              {canEdit && (
+                <TimeZoneDropDown
+                  filter={timeZoneFilter}
+                  onChange={e => {
+                    setUserProfile({ ...userProfile, timeZone: e.target.value });
+                    setChanged(true);
+                  }}
+                  selected={userProfile.timeZone}
+                />
+              )}
+            </Col>
           </Col>
+          <Col className="cols">
+            <Col>
+              <label>Difference in this Time Zone from Your Local</label>
+            </Col>
+            <TimeZoneDifference
+              userProfile={userProfile}
+              setUserProfile={setUserProfile}
+              setChanged={setChanged}
+              isUserSelf={isUserSelf}
+              handleUserProfile={handleUserProfile}
+              formValid={formValid}
+            />
+          </Col>
+          <hr />
+          <Row xs="2" style={{ marginLeft: '1rem' }}>
+            <Col style={{ alignItems: 'center', justifyContent: 'center' }}>
+              <Label>Status</Label>
+              <div>
+                <Label style={{ fontWeight: 'normal' }}>
+                  {userProfile.isActive
+                    ? 'Active'
+                    : userProfile.reactivationDate
+                    ? 'Paused until ' + moment(userProfile.reactivationDate).format('YYYY-MM-DD')
+                    : 'Inactive'}
+                </Label>
+                &nbsp;
+                {canEdit && <PauseAndResumeButton isBigBtn={true} userProfile={userProfile} />}
+              </div>
+            </Col>
+            <Col>
+              <Label>
+                {userProfile.endDate
+                  ? 'End Date ' + userProfile.endDate.toLocaleString().split('T')[0]
+                  : 'End Date ' + 'N/A'}
+              </Label>
+              {canEdit && <SetUpFinalDayButton isBigBtn={true} userProfile={userProfile} />}
+            </Col>
+          </Row>
         </Row>
       </div>
     </div>
