@@ -1,11 +1,12 @@
 .header-wrapper {
   height: 82px;
-  white-space: nowrap;
+  width: clamp(100vw, .1rem + 1vw ,100%);
   margin-bottom: 1rem;
 }
 
 .navbar {
   z-index: 100;
+  white-space: nowrap;
 }
 
 .timer-message-section {
@@ -36,28 +37,52 @@
   min-width: 29px;
 }
 
-@media(max-width: 1200px) {
+.owner-message-low-resolution {
+  display: none;
+}
+
+@media(max-width: 1400px) {
   .header-wrapper {
-    height: 72px;
-    margin-bottom: 10px;
+    margin-bottom: 5rem;
   }
 
   .timer-message-section {
     display: flex;
-    gap: 3rem;
     width: 0;
     margin-right: 0;
+  }
+
+  .owner-message-high-resolution {
+    display: none;
+  }
+
+  .owner-message-low-resolution {
+    display: block;
+    position: relative;
+    top: -.5rem;
   }
 }
 
 @media(max-width: 860px) {
   .header-wrapper {
     height: 72px;
-    margin-bottom: 0;
-  }
-  .timer-message-section {
-    display: flex;
-    width: 0;
-    margin-right: 0;
   }
 }
+
+
+@media(max-width: 800px) {
+  .header-wrapper {
+    height: 62px;
+    margin-bottom: 4.3rem;
+  }
+
+  .timer-message-section {
+    gap: 3rem;
+  }
+
+  .owner-message-low-resolution {
+    width: 95vw;
+  }
+}
+
+

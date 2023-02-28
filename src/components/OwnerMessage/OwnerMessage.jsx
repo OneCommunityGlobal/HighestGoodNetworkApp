@@ -6,7 +6,7 @@ import { toast } from 'react-toastify';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Label, Input } from 'reactstrap';
 import styles from './OwnerMessage.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEdit, faTrashAlt } from '@fortawesome/free-regular-svg-icons';
+import { faEdit } from '@fortawesome/free-regular-svg-icons';
 
 import { connect } from 'react-redux';
 import { getOwnerMessage, createOwnerMessage, updateOwnerMessage, deleteOwnerMessage } from '../../actions/ownerMessageAction';
@@ -14,7 +14,8 @@ import { getOwnerMessage, createOwnerMessage, updateOwnerMessage, deleteOwnerMes
 function OwnerMessage({ auth, getOwnerMessage, ownerMessage, ownerMessageId, createOwnerMessage, updateOwnerMessage, deleteOwnerMessage }) {
   const { user } = auth;
 
-  const [message, setMessage] = useState(null);
+  const [disableTextInput, setDisableTextInput] = useState(false);
+  const [message, setMessage] = useState('');
   const [newMessage, setNewMessage] = useState('');
   const [modal, setModal] = useState(false);
   const [modalDeleteWarning, setModalDeleteWarning] = useState(false);
@@ -22,16 +23,29 @@ function OwnerMessage({ auth, getOwnerMessage, ownerMessage, ownerMessageId, cre
 
   const isImage = (/;base64/g);
 
-  const toggle = () => setModal(!modal);
-  const toggleDeleteWarning = () => setModalDeleteWarning(!modalDeleteWarning);
-  const toggleWrongPictureFormatWarning = () => setModalWrongPictureFormatWarning(!modalWrongPictureFormatWarning);
+  function toggle() {
+    setModal(!modal);
+    setDisableTextInput(false);
+  } 
+
+  function toggleDeleteWarning() {
+    setModalDeleteWarning(!modalDeleteWarning);
+    setDisableTextInput(false);
+  } 
+
+  function toggleWrongPictureFormatWarning() {
+    setModalWrongPictureFormatWarning(!modalWrongPictureFormatWarning);
+    setDisableTextInput(false);
+  } 
 
   useEffect(() => {
     getOwnerMessage();
-    setMessage(ownerMessage);
+    if (ownerMessage) {
+      setMessage(ownerMessage);
+    }
   }, []);
 
-  const handleImageUpload = async event => {
+  async function handleImageUpload(event) {
     if (event) event.preventDefault();
     const file = event.target.files[0];
     if (typeof file != 'undefined') {
@@ -49,6 +63,7 @@ function OwnerMessage({ auth, getOwnerMessage, ownerMessage, ownerMessageId, cre
       fileReader.readAsDataURL(file);
       fileReader.onloadend = () => {
         setNewMessage(fileReader.result);
+        setDisableTextInput(true);
       };
     }
   };
@@ -58,15 +73,15 @@ function OwnerMessage({ auth, getOwnerMessage, ownerMessage, ownerMessageId, cre
       newMessage: newMessage,
     }
 
-    if(newMessage) {
-      createOwnerMessage(ownerMessage);
-      toggle();
-      toast.success('Message created!');
-      setMessage(newMessage);
-    } else {
+    if(message) {
       updateOwnerMessage(ownerMessageId, ownerMessage);
       toggle();
       toast.success('Message updated!');
+      setMessage(newMessage);
+    } else {
+      createOwnerMessage(ownerMessage);
+      toggle();
+      toast.success('Message created!');
       setMessage(newMessage);
     }
   }
@@ -74,8 +89,9 @@ function OwnerMessage({ auth, getOwnerMessage, ownerMessage, ownerMessageId, cre
   async function handleDeleteMessage() {
     deleteOwnerMessage();
     toggleDeleteWarning();
+    toggle();
     toast.error('Message deleted!');
-    setMessage(null);
+    setMessage('');
   }
 
   return(
@@ -86,18 +102,11 @@ function OwnerMessage({ auth, getOwnerMessage, ownerMessage, ownerMessageId, cre
 
       {
         user.role == 'Owner' && (
-          <div className="icons-wrapper">
+          <div className="icon-wrapper">
             <FontAwesomeIcon
               icon={faEdit}
               className=" text-primary"
               onClick={toggle}
-              size={16}
-            />
-            <FontAwesomeIcon
-              icon={faTrashAlt}
-              className="text-danger"
-              onClick={toggleDeleteWarning}
-              size={16}
             />
           </div>
         )
@@ -109,11 +118,12 @@ function OwnerMessage({ auth, getOwnerMessage, ownerMessage, ownerMessageId, cre
         <ModalBody className="modal-body">
           <p>Write a message:</p>
           <Input
-            id="text-area"
-            name="text"
             type="textarea"
             placeholder="Write your message here..."
             onChange={event => setNewMessage(event.target.value)}
+            maxLength="100"
+            disabled={disableTextInput}
+            className="inputs"
           />
           <p className="paragraph">or upload a picture:</p>
           <Input
@@ -122,11 +132,15 @@ function OwnerMessage({ auth, getOwnerMessage, ownerMessage, ownerMessageId, cre
             type="file"
             label="Choose Image"
             onChange={handleImageUpload}
+            className="inputs"
           />
         </ModalBody>
         <ModalFooter>
           <Button color="secondary" onClick={toggle}>
             Cancel
+          </Button>
+          <Button color="danger" onClick={toggleDeleteWarning} style={message ? {display: 'block'} : {display: 'none'}}>
+            Delete
           </Button>
           <Button color="primary" onClick={handleMessage}>
             {message ? 'Update' : 'Create'}
@@ -162,9 +176,9 @@ function OwnerMessage({ auth, getOwnerMessage, ownerMessage, ownerMessageId, cre
 }
 
 const mapStateToProps = state => ({
-  auth: state.auth,
-  ownerMessage: state.ownerMessage[0] ? state.ownerMessage[0].message : null,
-  ownerMessageId: state.ownerMessage[0] ? state.ownerMessage[0]._id : null,
+  auth: state?.auth,
+  ownerMessage: state?.ownerMessage?.[0]?.message,
+  ownerMessageId: state?.ownerMessage?.[0]?._id,
 });
 
 const mapDispatchToProps = dispatch => ({

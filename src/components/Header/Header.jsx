@@ -75,7 +75,7 @@ export const Header = props => {
 
   return (
     <div className="header-wrapper">
-      <Navbar className="py-3 mb-3 navbar" color="dark" dark expand="xl">
+      <Navbar className="py-3 mb-3 navbar" color="dark" dark expand="lg">
         {/**
          * <NavbarBrand tag={Link} to="/" className="d-none d-md-block">
           {LOGO}
@@ -86,7 +86,10 @@ export const Header = props => {
         style={user.role == 'Owner' ? { marginRight: '6rem'} : { marginRight: '10rem'}}
         >
           {isAuthenticated && <Timer/>}
-          {isAuthenticated && <OwnerMessage />}
+          {isAuthenticated && <div className="owner-message-high-resolution">
+              <OwnerMessage  />
+            </div>
+          }
         </div>
         <NavbarToggler onClick={toggle}/>
         {isAuthenticated && (
@@ -229,6 +232,11 @@ export const Header = props => {
           </Collapse>
         )}
       </Navbar>
+      {
+      isAuthenticated && <div className="owner-message-low-resolution">
+          <OwnerMessage  />
+        </div>
+      }
     </div>
   );
 };

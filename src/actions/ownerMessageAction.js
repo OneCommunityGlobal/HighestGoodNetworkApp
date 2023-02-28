@@ -36,7 +36,7 @@ export const updateOwnerMessageAction = payload => {
 
 export const updateOwnerMessage = (ownerMessageId, ownerMessage) => {
   return async dispatch => {
-    await axios.patch(ENDPOINTS.OWNERMESSAGE_BY_ID(ownerMessageId), ownerMessage)
+    await axios.put(ENDPOINTS.OWNERMESSAGE_BY_ID(ownerMessageId), ownerMessage)
     .then(dispatch(updateOwnerMessageAction(ownerMessage)));
   }
 }

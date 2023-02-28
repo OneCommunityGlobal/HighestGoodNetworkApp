@@ -1,6 +1,12 @@
 .message-container {
   display: flex;
   align-items: center;
+  z-index: 10;
+}
+
+.inputs:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
 }
 
 img {
@@ -10,20 +16,33 @@ img {
 }
 
 .message {
-  font-size: 16px;
+  font-style: italic;
+  white-space: normal;
+  text-align: center;
+  justify-content: center;
   color: white;
-  margin-right: 1rem;
+  margin: 0 1rem;
 }
 
-.icons-wrapper {
+.icon-wrapper {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: .5rem;
   padding: .5rem;
-  margin-left: 1rem;
   border-radius: 4px;
   background-color: #e2e3e5;
+  margin-left: 1rem;
+}
+
+svg {
+  width: 16px;
+  height: 16px;
+  color: black;
+}
+
+svg:hover {
+  cursor: pointer;
+  opacity: 0.6;
 }
 
 .modal-body {
@@ -31,12 +50,17 @@ img {
   flex-direction: column;
 }
 
-.paragraph {
-  margin-top: 1rem;
-}
 
-@media(max-width: 860px) {
+
+@media(max-width: 1400px) {
   .message-container {
-    display: none;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
   }
+
+  .message {
+    color: black;
+  }
+  
 }
