@@ -5,11 +5,11 @@ import React from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTimesCircle } from '@fortawesome/free-solid-svg-icons';
 
-function TagSent({ titleName, removeTags, index }) {
+function TagSent({ tag, removeTags }) {
   return (
-    <li key={index} className="rounded-pill badge bg-primary text-wrap" onClick={removeTags}>
+    <li className="rounded-pill badge bg-primary text-wrap" onClick={() => removeTags(tag._id)}>
       <div className="text-white">
-        <small className="fs-6 mr-1">{titleName}</small>
+        <small className="fs-6 mr-1">{`${tag.firstName} ${tag.lastName}`}</small>
         <FontAwesomeIcon icon={faTimesCircle} />
       </div>
     </li>
