@@ -731,6 +731,7 @@ const BasicInformationTab = props => {
               `${userProfile.role}`
             )}
           </Col>
+        </Col>  
       </Row>
       <Row>
         <Col>
