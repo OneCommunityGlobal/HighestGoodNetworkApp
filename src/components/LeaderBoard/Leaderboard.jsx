@@ -53,7 +53,7 @@ const LeaderBoard = ({
         }
       }
     } catch {}
-  }, []);
+  }, [leaderBoardData]);
 
   const [isOpen, setOpen] = useState(false);
 

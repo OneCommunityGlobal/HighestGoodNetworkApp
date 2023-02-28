@@ -401,7 +401,6 @@ const TimeEntryForm = props => {
     //Validation and variable initialization
     if (event) event.preventDefault();
     if (isSubmitting) return;
-    console.log('submitting');
     const hours = inputs.hours || 0;
     const minutes = inputs.minutes || 0;
     const isTimeModified = edit && (data.hours !== hours || data.minutes !== minutes);
