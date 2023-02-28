@@ -24,28 +24,14 @@ import badges_icon from './badges_icon.png';
 import bluesquare_icon from './bluesquare_icon.png';
 import report_icon from './report_icon.png';
 import httpService from '../../services/httpService';
-import { faWindowMinimize } from '@fortawesome/free-regular-svg-icons';
 import { ENDPOINTS } from 'utils/URL';
 import axios from 'axios';
 import { ApiEndpoint } from 'utils/URL';
-import hasPermission from 'utils/permissions';
 import { getProgressColor, getProgressValue } from '../../utils/effortColors';
-
-const summaryReducer = (summaryState, action) => {
-  switch (action.type) {
-    case 'SET_INFRINGEMENTS':
-      summaryState.infringements = action.infringement;
-    case 'SET_BADGES':
-      summaryState.badges = action.badges;
-    case 'RESET':
-      summaryState = initialState;
-  }
-};
 
 const SummaryBar = props => {
   const { asUser, role, leaderData } = props;
   const [userProfile, setUserProfile] = useState(undefined);
-  const [summaryState, summaryDispatch] = useReducer(summaryReducer);
   const [infringements, setInfringements] = useState(0);
   const [badges, setBadges] = useState(0);
   const [totalEffort, setTotalEffort] = useState(0);
