@@ -142,6 +142,7 @@ const Task = props => {
     setTimeout(() => {
       props.fetchAllTasks(props.wbsId, 0);
     }, 2000);
+  }
 
   const deleteOneTask = (taskId, mother) => {
     props.deleteWBSTask(taskId, mother);
@@ -569,7 +570,6 @@ const Task = props => {
       ) : null}
     </>
   );
-};
 };
 const mapStateToProps = state => {
   return { state };
