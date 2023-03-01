@@ -296,7 +296,7 @@ const TeamMemberTasks = props => {
     <div className="container team-member-tasks">
       <header className="header-box">
         <h1>Team Member Tasks</h1>
-        <div>
+        <div className='hours-btn-container'>
           <button
             type="button"
             className="circle-border"

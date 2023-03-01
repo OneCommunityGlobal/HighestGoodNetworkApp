@@ -55,7 +55,7 @@
   align-items: center;
 }
 
-.circle-border {
+/*.circle-border {
   border: 3px solid gray;
   border-radius: 50%;
   width: 50px;
@@ -64,6 +64,22 @@
   font-weight: bold;
   font-family: Arial, Helvetica, sans-serif;
   margin-right: 20px;
+}*/
+.hours-btn-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  min-width: 165px;
+}
+
+.circle-border {
+  border: 2px solid gray;
+  border-radius: 50%;
+  width: 42px;
+  height: 42px;
+  font-size: 12px;
+  font-weight: bold;
+  font-family: Arial, Helvetica, sans-serif;
 }
 
 .circle-border:active {
@@ -73,6 +89,7 @@
 
 .header-box {
   display: flex;
+  flex-direction: column;
   justify-content: space-between;
 }
 
@@ -91,6 +108,10 @@
 @media only screen and (min-width: 768px) {
   .team-member-tasks h1 {
     font-size: 24px;
+  }
+
+  .header-box {
+    flex-direction: unset;
   }
 }
 
