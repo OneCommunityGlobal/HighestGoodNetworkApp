@@ -446,7 +446,7 @@ const BadgeReport = props => {
                             Options
                           </DropdownToggle>
                           <DropdownMenu>
-                            <DropdownItem style={{ display: 'flex', alignItems: 'center', whiteSpace: 'now-rap', gap: '8px', height: '60px'}}>
+                            <DropdownItem style={{ display: 'flex', alignItems: 'center', whiteSpace: 'now-rap', gap: '8px', height: '60px'}} toggle={false}>
                               <span style={{ fontWeight: 'bold'}}>Count:</span>
                               {hasPermission(
                                 props.role,
@@ -462,13 +462,14 @@ const BadgeReport = props => {
                                   onChange={e => {
                                     countChange(value, index, e.target.value);
                                   }}
+                                  style={{ width: '70px'}}
                                 ></Input>
                               ) : (
                                 Math.round(value.count)
                               )}
                             </DropdownItem>
                             <DropdownItem divider />
-                            <DropdownItem style={{ display: 'flex', alignItems: 'center', whiteSpace: 'now-rap', gap: '8px', height: '60px'}}>
+                            <DropdownItem style={{ display: 'flex', alignItems: 'center', whiteSpace: 'now-rap', gap: '8px', height: '60px'}} toggle={false}>
                               <span style={{ fontWeight: 'bold'}}>Featured:</span>
                               <FormGroup check inline style={{ zIndex: '0' }}>
                                 <Input
