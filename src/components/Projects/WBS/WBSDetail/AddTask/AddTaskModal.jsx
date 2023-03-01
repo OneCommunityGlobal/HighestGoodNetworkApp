@@ -34,8 +34,7 @@ import dateFnsFormat from 'date-fns/format';
 import { fetchAllTasks, addNewTask } from '../../../../../actions/task';
 import { DUE_DATE_MUST_GREATER_THAN_START_DATE } from '../../../../../languages/en/messages';
 import 'react-day-picker/lib/style.css';
-import TagsSearch from './components/TagsSearch';
-// This import must be deleted after conecting the database to the component
+import TagsSearch from '../components/TagsSearch';
 
 function AddTaskModal(props) {
   const tasks = props.tasks.taskItems;
@@ -452,51 +451,8 @@ function AddTaskModal(props) {
                       members={members.members}
                       addResources={addResources}
                       removeResource={removeResource}
+                      resourceItems={resourceItems}
                     />
-                    <input
-                      type="text"
-                      aria-label="Search user"
-                      placeholder="Name"
-                      className="task-resouces-input"
-                      data-tip="Input a name"
-                      onChange={e => setMemberName(e.target.value)}
-                      onKeyPress={e => setMemberName(e.target.value)}
-                    />
-                    <button
-                      className="task-resouces-btn"
-                      type="button"
-                      data-tip="All members"
-                      onClick={findMembers}
-                    >
-                      <i className="fa fa-caret-square-o-down" aria-hidden="true" />
-                    </button>
-                  </div>
-                  <div className="task-reousces-list">
-                    <div>{foundMembersHTML}</div>
-                  </div>
-                  <div className="task-reousces-list">
-                    {resourceItems.map((elm, i) => {
-                      if (!elm.profilePic) {
-                        return (
-                          <a
-                            key={`res_${i}`}
-                            data-tip={elm.name}
-                            onClick={e => removeResource(elm.userID, e.target)}
-                          >
-                            <span className="dot">{elm.name.substring(0, 2)}</span>
-                          </a>
-                        );
-                      }
-                      return (
-                        <a
-                          key={`res_${i}`}
-                          data-tip={elm.name}
-                          onClick={e => removeResource(elm.userID, e.target)}
-                        >
-                          <img className="img-circle" src={elm.profilePic} />
-                        </a>
-                      );
-                    })}
                   </div>
                 </td>
               </tr>

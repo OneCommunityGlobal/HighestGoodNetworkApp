@@ -8,43 +8,22 @@
 /* eslint-disable react/no-array-index-key */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 /* eslint-disable jsx-a11y/no-noninteractive-element-interactions */
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import TagSent from './TagSent';
 import './TagsSearch.css';
 
-function TagsSearch({ placeholder, members, addResources, removeResource }) {
-  const [tags, setTags] = useState([]);
+function TagsSearch({ placeholder, members, addResources, removeResource, resourceItems }) {
   const [isHidden, setIsHidden] = useState(false);
   const [filteredData, setFilteredData] = useState([]);
   const [selectedIndex, setSelectedIndex] = useState(0);
-  const [taskMembers, setTaskMembers] = useState([])
 
-  // Se tiver como usar a tag aqui no lugar de indexToRemove seria melhor
-  // Pq se tiver outro component com o msm numero eles podem ser filtrados ao mesmo tempo
-  const removeTags = id => {
-    removeResource(id);
-    setTaskMembers(taskMembers.filter((member) => 
-      `${member._id}` !== id));
-    setTags(tags.filter((tag) => tag._id !== id));
-  };
-
-  const addTags = event => {
-    if (event.key === 'Enter' && event.target.value !== '') {
-      setTags([...tags, event.target.value]);
-      event.target.value = '';
-    }
-  };
-
-  const handleClick = member => {
-    setTags([...tags, member]);
-    const newMember = members.map(member =>{ 
+  const handleClick = (event) => {
+    members.map(member =>{ 
       if(`${member.firstName} ${member.lastName}` == event.target.innerText) {
-        setTaskMembers([...taskMembers, member]);
         addResources(member._id, member.firstName, member.lastName);
       }});
-    
-    event.target.value = '';
     setIsHidden(!isHidden);
+    event.target.closest('.container-fluid').querySelector('input').value = '';
   };
 
   const handleFilter = event => {
@@ -69,7 +48,6 @@ function TagsSearch({ placeholder, members, addResources, removeResource }) {
             type="text"
             placeholder={placeholder}
             className="border border-dark rounded form-control px-2"
-            onKeyUp={e => (e.key === 'Enter' ? addTags(e) : null)}
             onChange={handleFilter}
           />
           {filteredData.length !== 0 ? (
@@ -88,7 +66,7 @@ function TagsSearch({ placeholder, members, addResources, removeResource }) {
                         ? 'dropdown-item border-bottom fs-6 w-100 p-1'
                         : 'dropdown-item border-bottom fs-6 w-100 p-1'
                     }
-                    onClick={() => handleClick(member)}
+                    onClick={(event) => handleClick(event)}
                   >
                     {member.firstName + ' ' + member.lastName}
                   </li>
@@ -101,9 +79,9 @@ function TagsSearch({ placeholder, members, addResources, removeResource }) {
         </div>
       </div>
       <div className="d-flex flex-wrap align-items-start justify-content-start">
-        {tags.map((tag) => (
-          <ul className="d-flex align-items-start justify-content-start m-0 p-1">
-            <TagSent tag={tag} key={Number(tag._id)} removeTags={removeTags} />
+        {resourceItems?.map((elm, index) => (
+          <ul key={`${elm._id}-${index}`} className="d-flex align-items-start justify-content-start m-0 p-1">
+            <TagSent elm={elm} removeResource={removeResource} />
           </ul>
         ))}
       </div>

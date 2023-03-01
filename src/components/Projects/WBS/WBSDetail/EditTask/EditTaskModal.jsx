@@ -13,13 +13,14 @@ import { Editor } from '@tinymce/tinymce-react';
 import hasPermission from 'utils/permissions';
 import axios from 'axios';
 import { ENDPOINTS } from 'utils/URL';
+import TagsSearch from '../components/TagsSearch';
 
 const EditTaskModal = props => {
   const [role] = useState(props.auth ? props.auth.user.role : null);
   const userPermissions = props.auth.user?.permissions?.frontPermissions;
   const { roles } = props.role;
 
-  const { members } = props.projectMembers;
+  const [members] = useState(props.projectMembers || props.projectMembers.members);
   let foundedMembers = [];
 
   // get this task by id
@@ -111,17 +112,30 @@ const EditTaskModal = props => {
   // helpers for editing the resources of task
   const [foundMembersHTML, setfoundMembersHTML] = useState('');
   const findMembers = () => {
-    foundedMembers = members.filter(user =>
-      `${user.firstName} ${user.lastName}`.toLowerCase().includes(memberName.toLowerCase()),
-    );
-    const html = foundedMembers.map(elm => (
-      <div>
-        <input
-          type="text"
-          className="task-resouces-input"
-          value={`${elm.firstName} ${elm.lastName}`}
-          disabled
-        />
+    const memberList = members.members ? props.projectMembers.members : members;
+    console.log('findMembers', memberList);
+    for (let i = 0; i < memberList.length; i++) {
+      console.log('project members', memberList[i]);
+
+      if (
+        `${memberList[i].firstName} ${memberList[i].lastName}`
+          .toLowerCase()
+          .includes(memberName.toLowerCase())
+      ) {
+        foundedMembers.push(memberList[i]);
+      }
+    }
+
+    const html = foundedMembers.map((elm, i) => (
+      <div key={`found-member-${i}`}>
+        <a href={`/userprofile/${elm._id}`} target="_blank" rel="noreferrer">
+          <input
+            type="text"
+            className="task-resouces-input"
+            value={`${elm.firstName} ${elm.lastName}`}
+            disabled
+          />
+        </a>
         <button
           data-tip="Add this member"
           className="task-resouces-btn"
@@ -326,50 +340,13 @@ const EditTaskModal = props => {
                 <td scope="col">Resources</td>
                 <td scope="col">
                   <div>
-                    <input
-                      type="text"
-                      aria-label="Search user"
-                      placeholder="Name"
-                      className="task-resouces-input"
-                      data-tip="Input a name"
-                      onChange={e => setMemberName(e.target.value)}
-                      onKeyPress={findMembers}
+                    <TagsSearch
+                      placeholder="Add resources"
+                      members={members.members}
+                      addResources={addResources}
+                      removeResource={removeResource}
+                      resourceItems={resourceItems}
                     />
-                    <button
-                      className="task-resouces-btn"
-                      type="button"
-                      data-tip="All members"
-                      onClick={findMembers}
-                    >
-                      <i className="fa fa-caret-square-o-down" aria-hidden="true" />
-                    </button>
-                  </div>
-                  <div className="task-reousces-list">
-                    <div>{foundMembersHTML}</div>
-                  </div>
-                  <div className="task-reousces-list">
-                    {resourceItems?.map((elm, i) => {
-                      if (!elm.profilePic) {
-                        return (
-                          <a
-                            key={`res_${i}`}
-                            data-tip={elm.name}
-                            onClick={e => removeResource(elm.userID, e.target)}
-                          >
-                            <span className="dot">{elm.name.substring(0, 2)}</span>
-                          </a>
-                        );
-                      }
-                      return (
-                        <a
-                          key={`res_${i}`}
-                          data-tip={elm.name}
-                          onClick={e => removeResource(elm.userID, e.target)}
-                        >
-                          <img className="img-circle" src={elm.profilePic} />
-                        </a>
-                      );
-                    })}
                   </div>
                 </td>
               </tr>
