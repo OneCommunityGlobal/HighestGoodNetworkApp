@@ -4,6 +4,7 @@
 
 .team-member-tasks h1 {
   color: black;
+  font-size: 18px;
 }
 
 .team-member-tasks-bell {
@@ -85,4 +86,16 @@
 
 .markAsDoneButton:hover {
   cursor: pointer;
+}
+
+@media only screen and (min-width: 768px) {
+  .team-member-tasks h1 {
+    font-size: 24px;
+  }
+}
+
+@media only screen and (min-width: 768px) {
+  .team-member-tasks h1 {
+    font-size: 28px;
+  }
 }
