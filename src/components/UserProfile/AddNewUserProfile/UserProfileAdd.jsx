@@ -580,8 +580,9 @@ class AddUserProfile extends Component {
               this.setState({
                 popupOpen: true,
               });
-              toast.success('User profile created.');
               return;
+            } else {
+              toast.success('User profile created.');
             }
             this.props.userCreated();
           })
@@ -621,10 +622,7 @@ class AddUserProfile extends Component {
                     this.setState({
                       popupOpen: true,
                     });
-                    return;
                   }
-                  break;
-                default:
                   break;
               }
             }
