@@ -88,10 +88,15 @@ const SummaryBar = props => {
     if (leaderData !== undefined && userProfile !== undefined) {
       setInfringements(getInfringements());
       setBadges(getBadges());
-      setTotalEffort(parseFloat(leaderData.find(x => x.personId === asUser).tangibletime));
+      setTotalEffort(getTangibleTime());
       setWeeklySummary(getWeeklySummary(userProfile));
     }
   }, [userProfile, leaderData]);
+
+  const getTangibleTime = () => {
+    const user = leaderData.find(x => x.personId === asUser);
+    return user !== undefined ? parseFloat(user.tangibletime) : 0;
+  };
 
   //Get infringement count from userProfile
   const getInfringements = () => {
