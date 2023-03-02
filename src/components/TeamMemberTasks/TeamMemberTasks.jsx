@@ -244,7 +244,7 @@ const TeamMemberTasks = props => {
                       <Link to={`/userprofile/${user.personId}`}>{`${user.name}`}</Link>
                     </td>
                     <td className="team-clocks">
-                      <u>{user.weeklyComittedHours ? user.weeklycommittedHours : 0}</u> /
+                      <u>{user.weeklycommittedHours ? user.weeklycommittedHours : 0}</u> /
                       <font color="green"> {thisWeekHours ? thisWeekHours.toFixed(1) : 0}</font> /
                       <font color="red">
                         {' '}
