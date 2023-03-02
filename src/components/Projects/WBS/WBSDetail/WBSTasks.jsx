@@ -4,26 +4,26 @@
  ********************************************************************************/
 import React, { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
-import { fetchAllTasks, updateNumList, deleteTask } from './../../../../actions/task';
-import { fetchAllMembers } from './../../../../actions/projectMembers.js';
-import Task from './Task/';
-import AddTaskModal from './AddTask/AddTaskModal';
-import ImportTask from './ImportTask/';
 import { Link } from 'react-router-dom';
 import { NavItem, Button } from 'reactstrap';
-import './wbs.css';
 import ReactTooltip from 'react-tooltip';
 import hasPermission from 'utils/permissions';
+import { fetchAllTasks, updateNumList, deleteTask } from '../../../../actions/task';
+import { fetchAllMembers } from '../../../../actions/projectMembers.js';
+import Task from './Task';
+import AddTaskModal from './AddTask/AddTaskModal';
+import ImportTask from './ImportTask';
+import './wbs.css';
 
-const WBSTasks = props => {
+function WBSTasks(props) {
   // modal
   const [modal, setModal] = useState(false);
   const toggle = () => setModal(!modal);
   const { roles } = props.state.role;
 
-  const wbsId = props.match.params.wbsId;
-  const projectId = props.match.params.projectId;
-  const wbsName = props.match.params.wbsName;
+  const { wbsId } = props.match.params;
+  const { projectId } = props.match.params;
+  const { wbsName } = props.match.params;
   const userPermissions = props.state.auth.user?.permissions?.frontPermissions;
 
   const [isShowImport, setIsShowImport] = useState(false);
@@ -99,21 +99,16 @@ const WBSTasks = props => {
   };
 
   const dropTask = (taskIdTo, parentId) => {
-    console.log('droppppped');
-    console.log('drop', drag, taskIdTo);
-
-    console.log('drop', drag, taskIdTo);
     const tasks = props.state.tasks.taskItems;
 
-    let tasksClass = document.getElementsByClassName('taskDrop');
+    const tasksClass = document.getElementsByClassName('taskDrop');
     for (let i = 0; i < tasks.length; i++) {
       tasksClass[i].style.display = 'none';
     }
 
     const list = [];
-    let target = tasks.find(task => task._id === taskIdTo);
-    let siblings = tasks.filter(task => task.parentId === dragParent);
-    //console.log('sibs', siblings);
+    const target = tasks.find(task => task._id === taskIdTo);
+    const siblings = tasks.filter(task => task.parentId === dragParent);
 
     let modifiedList = false;
     if (dragParent === target._id) {
@@ -128,7 +123,6 @@ const WBSTasks = props => {
         modifiedList = false;
       }
       if (modifiedList) {
-        //console.log('sib', siblings[i]._id, siblings[i + 1].num);
         list.push({
           id: siblings[i]._id,
           num: siblings[i + 1].num,
@@ -142,9 +136,6 @@ const WBSTasks = props => {
         modifiedList = true;
       }
     }
-
-    //console.log(list);
-    //props.updateNumList(wbsId, list);*/
   };
 
   const deleteWBSTask = (taskId, mother) => {
@@ -202,14 +193,14 @@ const WBSTasks = props => {
   const filteredTasks = filterTasks(LoadTasks, filterState);
 
   return (
-    <React.Fragment>
+    <>
       <ReactTooltip />
       <div className="container-tasks">
         <nav aria-label="breadcrumb">
           <ol className="breadcrumb">
             <NavItem tag={Link} to={`/project/wbs/${projectId}`}>
               <button type="button" className="btn btn-secondary">
-                <i className="fa fa-chevron-circle-left" aria-hidden="true"></i>
+                <i className="fa fa-chevron-circle-left" aria-hidden="true" />
               </button>
             </NavItem>
             <div id="member_project__name">{wbsName}</div>
@@ -261,19 +252,44 @@ const WBSTasks = props => {
           >
             All
           </Button>
-          <Button color="secondary" size="sm" onClick={() => setFilterState('assigned')} className="ml-3">
+          <Button
+            color="secondary"
+            size="sm"
+            onClick={() => setFilterState('assigned')}
+            className="ml-2"
+          >
             Assigned
           </Button>
-          <Button color="success" size="sm" onClick={() => setFilterState('unassigned')} className="ml-3">
+          <Button
+            color="success"
+            size="sm"
+            onClick={() => setFilterState('unassigned')}
+            className="ml-2"
+          >
             Unassigned
           </Button>
-          <Button color="info" size="sm" onClick={() => setFilterState('active')} className="ml-3">
+          <Button 
+            color="info" 
+            size="sm" 
+            onClick={() => setFilterState('active')} 
+            className="ml-2"
+          >
             Active
           </Button>
-          <Button color="warning" size="sm" onClick={() => setFilterState('inactive')} className="ml-3">
+          <Button
+            color="warning"
+            size="sm"
+            onClick={() => setFilterState('inactive')}
+            className="ml-2"
+          >
             Inactive
           </Button>
-          <Button color="danger" size="sm" onClick={() => setFilterState('complete')} className="ml-3">
+          <Button
+            color="danger"
+            size="sm"
+            onClick={() => setFilterState('complete')}
+            className="ml-2"
+          >
             Complete
           </Button>
         </div>
@@ -291,46 +307,46 @@ const WBSTasks = props => {
                 Task
               </th>
               <th scope="col" data-tip="Priority">
-                <i className="fa fa-star" aria-hidden="true"></i>
+                <i className="fa fa-star" aria-hidden="true" />
               </th>
               <th className="desktop-view" scope="col" data-tip="Resources">
-                <i className="fa fa-users" aria-hidden="true"></i>
+                <i className="fa fa-users" aria-hidden="true" />
               </th>
               <th scope="col" data-tip="Assigned">
-                <i className="fa fa-user-circle-o" aria-hidden="true"></i>
+                <i className="fa fa-user-circle-o" aria-hidden="true" />
               </th>
               <th className="desktop-view" scope="col" data-tip="Status">
-                <i className="fa fa-tasks" aria-hidden="true"></i>
+                <i className="fa fa-tasks" aria-hidden="true" />
               </th>
               <th className="desktop-view" scope="col" data-tip="Hours-Best">
-                <i className="fa fa-hourglass-start" aria-hidden="true"></i>
+                <i className="fa fa-hourglass-start" aria-hidden="true" />
               </th>
               <th className="desktop-view" scope="col" data-tip="Hours-Worst">
-                <i className="fa fa-hourglass" aria-hidden="true"></i>
+                <i className="fa fa-hourglass" aria-hidden="true" />
               </th>
               <th className="desktop-view" scope="col" data-tip="Hours-Most">
-                <i className="fa fa-hourglass-half" aria-hidden="true"></i>
+                <i className="fa fa-hourglass-half" aria-hidden="true" />
               </th>
               <th className="desktop-view" scope="col" data-tip="Estimated Hours">
-                <i className="fa fa-clock-o" aria-hidden="true"></i>
+                <i className="fa fa-clock-o" aria-hidden="true" />
               </th>
               <th className="desktop-view" scope="col" data-tip="Start Date">
-                <i className="fa fa-calendar-check-o" aria-hidden="true"></i> Start
+                <i className="fa fa-calendar-check-o" aria-hidden="true" /> Start
               </th>
               <th className="desktop-view" scope="col" data-tip="Due Date">
-                <i className="fa fa-calendar-times-o" aria-hidden="true"></i> End
+                <i className="fa fa-calendar-times-o" aria-hidden="true" /> End
               </th>
               <th className="desktop-view" scope="col" data-tip="Links">
-                <i className="fa fa-link" aria-hidden="true"></i>
+                <i className="fa fa-link" aria-hidden="true" />
               </th>
               <th className="desktop-view" scope="col" data-tip="Details">
-                <i className="fa fa-question" aria-hidden="true"></i>
+                <i className="fa fa-question" aria-hidden="true" />
               </th>
             </tr>
           </thead>
           <tbody>
             <tr className="taskDrop">
-              <td colSpan={14}></td>
+              <td colSpan={14} />
             </tr>
 
             {filteredTasks.map((task, i) => (
@@ -354,7 +370,7 @@ const WBSTasks = props => {
                 projectId={projectId}
                 wbsId={wbsId}
                 selectTask={selectTaskFunc}
-                isNew={task.new ? true : false}
+                isNew={!!task.new}
                 parentId1={task.parentId1}
                 parentId2={task.parentId2}
                 parentId3={task.parentId3}
@@ -377,12 +393,12 @@ const WBSTasks = props => {
           </tbody>
         </table>
       </div>
-    </React.Fragment>
+    </>
   );
 };
-const mapStateToProps = state => {
-  return { state };
-};
+
+const mapStateToProps = state => ({ state });
+
 export default connect(mapStateToProps, {
   fetchAllTasks,
   updateNumList,
