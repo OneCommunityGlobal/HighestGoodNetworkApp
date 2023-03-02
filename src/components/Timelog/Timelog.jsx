@@ -83,7 +83,7 @@ class Timelog extends Component {
     };
     this.userProfile = this.props.userProfile;
   }
-
+  
   initialState = {
     modal: false,
     summary: false,
@@ -238,7 +238,7 @@ class Timelog extends Component {
 
   calculateTotalTime(data, isTangible) {
     const filteredData = data.filter(entry => entry.isTangible === isTangible);
-
+    
     const reducer = (total, entry) => total + parseInt(entry.hours) + parseInt(entry.minutes) / 60;
     return filteredData.reduce(reducer, 0);
   }
@@ -413,19 +413,25 @@ class Timelog extends Component {
                                 Clicking this button only allows for “Intangible Time” to be added
                                 to your time log.{' '}
                                 <u>
-                                  You can manually log Intangible Time but it doesn’t <br />
+                                  You can manually log Intangible Time but it doesn’t
+                                  {' '}
+                                  <br />
                                   count towards your weekly time commitment.
                                 </u>
                                 <br />
                                 <br />
                                 “Tangible Time” is the default for logging time using the timer at
                                 the top of the app. It represents all work done on assigned action
-                                items <br />
+                                items
+                                {' '}
+                                <br />
                                 and is what counts towards a person’s weekly volunteer time
                                 commitment. The only way for a volunteer to log Tangible Time is by
                                 using the clock
                                 <br />
-                                in/out timer. <br />
+                                in/out timer.
+                                {' '}
+                                <br />
                                 <br />
                                 Intangible Time is almost always used only by the management team.
                                 It is used for weekly Monday night management team calls, monthly
@@ -433,8 +439,11 @@ class Timelog extends Component {
                                 <br />
                                 team reviews and Welcome Team Calls, and non-action-item related
                                 research, classes, and other learning, meetings, etc. that benefit
-                                or relate to <br />
-                                the project but aren’t related to a specific action item on the{' '}
+                                or relate to
+                                {' '}
+                                <br />
+                                the project but aren’t related to a specific action item on the
+                                {' '}
                                 <a href="https://www.tinyurl.com/oc-os-wbs">
                                   One Community Work Breakdown Structure.
                                 </a>
@@ -442,7 +451,9 @@ class Timelog extends Component {
                                 <br />
                                 Intangible Time may also be logged by a volunteer when in the field
                                 or for other reasons when the timer wasn’t able to be used. In these
-                                cases, the <br />
+                                cases, the
+                                {' '}
+                                <br />
                                 volunteer will use this button to log time as “intangible time” and
                                 then request that an Admin manually change the log from Intangible
                                 to Tangible.
