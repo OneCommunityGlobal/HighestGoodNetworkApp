@@ -241,7 +241,9 @@ const WBSTasks = props => {
         </Button>
 
         {loadAll === false ? (
-          <Button color="warning" size="sm">
+
+          <Button color="warning" size="sm" className="ml-3">
+
             {' '}
             Task Loading......{' '}
           </Button>
@@ -251,6 +253,7 @@ const WBSTasks = props => {
           <Button
             color="primary"
             size="sm"
+            className="ml-3"
             onClick={() => {
               setFilterState('all');
               setOpenAll(!openAll);
@@ -258,19 +261,19 @@ const WBSTasks = props => {
           >
             All
           </Button>
-          <Button color="secondary" size="sm" onClick={() => setFilterState('assigned')}>
+          <Button color="secondary" size="sm" onClick={() => setFilterState('assigned')} className="ml-3">
             Assigned
           </Button>
-          <Button color="success" size="sm" onClick={() => setFilterState('unassigned')}>
+          <Button color="success" size="sm" onClick={() => setFilterState('unassigned')} className="ml-3">
             Unassigned
           </Button>
-          <Button color="info" size="sm" onClick={() => setFilterState('active')}>
+          <Button color="info" size="sm" onClick={() => setFilterState('active')} className="ml-3">
             Active
           </Button>
-          <Button color="warning" size="sm" onClick={() => setFilterState('inactive')}>
+          <Button color="warning" size="sm" onClick={() => setFilterState('inactive')} className="ml-3">
             Inactive
           </Button>
-          <Button color="danger" size="sm" onClick={() => setFilterState('complete')}>
+          <Button color="danger" size="sm" onClick={() => setFilterState('complete')} className="ml-3">
             Complete
           </Button>
         </div>
@@ -366,7 +369,9 @@ const WBSTasks = props => {
                 whyInfo={task.whyInfo}
                 intentInfo={task.intentInfo}
                 endstateInfo={task.endstateInfo}
+                childrenQty={task.childrenQty}
                 filteredTasks={filteredTasks}
+
               />
             ))}
           </tbody>
