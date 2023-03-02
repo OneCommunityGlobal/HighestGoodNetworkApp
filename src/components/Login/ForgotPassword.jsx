@@ -21,7 +21,7 @@ const ForgotPassword = React.memo(() => {
       errors.forEach(err => {
         switch (err.type) {
           case 'any.empty':
-            err.message = 'Last name should not be empty.';
+            err.message = 'First name should not be empty.';
             break;
           default:
             err.message = 'Please enter a valid last name.';
@@ -37,7 +37,7 @@ const ForgotPassword = React.memo(() => {
       errors.forEach(err => {
         switch (err.type) {
           case 'any.empty':
-            err.message = 'First name should not be empty.';
+            err.message = 'Last name should not be empty.';
             break;
           default:
             err.message = 'Please enter a valid first name.';

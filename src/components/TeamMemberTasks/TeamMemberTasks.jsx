@@ -19,6 +19,7 @@ import { getProgressColor, getProgressValue } from '../../utils/effortColors';
 import { fetchAllManagingTeams } from '../../actions/team';
 import EffortBar from 'components/Timelog/EffortBar';
 import TimeEntry from 'components/Timelog/TimeEntry';
+import { updateTask } from 'actions/task';
 import TaskCompletedModal from './components/TaskCompletedModal';
 import { ENDPOINTS } from 'utils/URL';
 import axios from 'axios';
@@ -140,8 +141,6 @@ const TeamMemberTasks = props => {
         //conditional variable for moving current user up front.
         let moveCurrentUserFront = false;
 
-        //console.log('filteredMembers', filteredMembers);
-
         //Does the user has at least one task with project Id and task id assigned. Then set the current user up front.
         for (const task of currentUser.tasks) {
           if (task.wbsId && task.projectId) {
@@ -176,6 +175,54 @@ const TeamMemberTasks = props => {
             .map(task => task.estimatedHours - task.hoursLogged)
             .reduce((previousValue, currentValue) => previousValue + currentValue, 0);
         }
+
+        const TaskButton = task => {
+          if (task.task.status !== 'Complete') {
+            return (
+              <td>
+                <h3
+                  onClick={() => markAsDone(task)}
+                  style={{ color: 'red' }}
+                  data-toggle="tooltip"
+                  data-placement="top"
+                  title="MARK AS DONE. MARKING THIS AS DONE WOULD REMOVE THE TASK PERMANENTLY."
+                  className="markAsDoneButton"
+                >
+                  X
+                </h3>
+              </td>
+            );
+          } else {
+            return <td></td>;
+          }
+        };
+
+        const markAsDone = async task => {
+          task.task.status = 'Complete';
+          const updatedTask = {
+            taskName: task.task.taskName,
+            priority: task.task.priority,
+            resources: task.task.resources,
+            isAssigned: task.task.isAssigned,
+            status: task.task.status,
+            hoursBest: parseFloat(task.task.hoursBest),
+            hoursWorst: parseFloat(task.task.hoursWorst),
+            hoursMost: parseFloat(task.task.hoursMost),
+            estimatedHours: parseFloat(task.task.hoursEstimate),
+            startedDatetime: task.task.startedDate,
+            dueDatetime: task.task.dueDate,
+            links: task.task.links,
+            whyInfo: task.task.whyInfo,
+            intentInfo: task.task.intentInfo,
+            endstateInfo: task.task.endstateInfo,
+            classification: task.task.classification,
+          };
+          await updateTask(String(task.task._id), updatedTask);
+          await deleteSelectedTask(task.task._id, task.task.mother);
+          await dispatch(getAllUserProfile());
+          await fetchAllTasks();
+        };
+
         return (
           <tr key={user.personId}>
             {/* green if member has met committed hours for the week, red if not */}
@@ -280,6 +327,11 @@ const TeamMemberTasks = props => {
                                 </div>
                               </td>
                             )}
+                            {userRole === 'Administrator' ? (
+                              <td>
+                                <TaskButton task={task}></TaskButton>
+                              </td>
+                            ) : null}
                           </tr>
                         );
                       }
@@ -424,6 +476,7 @@ const TeamMemberTasks = props => {
                   <tr>
                     <th>Tasks(s)</th>
                     <th className="team-task-progress">Progress</th>
+                    {userRole === 'Administrator' ? <th>Status</th> : null}
                   </tr>
                 </thead>
               </Table>
