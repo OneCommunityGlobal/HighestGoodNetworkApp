@@ -32,8 +32,4 @@ const DuplicateNamePopup = React.memo(props => {
   );
 });
 
-const DivSpacer = React.memo(() => {
-  return <div style={{ padding: '5px' }}></div>;
-});
-
 export default DuplicateNamePopup;

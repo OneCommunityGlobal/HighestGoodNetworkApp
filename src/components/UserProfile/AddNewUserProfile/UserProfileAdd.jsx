@@ -513,8 +513,8 @@ class AddUserProfile extends Component {
 
     const duplicates = userProfiles.filter(user => {
       return (
-        user.firstName.toLowerCase() == firstName.toLowerCase() &&
-        user.lastName.toLowerCase() == lastName.toLowerCase()
+        user.firstName.toLowerCase() === firstName.toLowerCase() &&
+        user.lastName.toLowerCase() === lastName.toLowerCase()
       );
     });
 
@@ -573,17 +573,15 @@ class AddUserProfile extends Component {
           .then(res => {
             if (res.data.warning) {
               toast.warn(res.data.warning);
-            } else {
-              if (
-                this.checkIfDuplicate(userData.firstName, userData.lastName) &&
-                !allowsDuplicateName
-              ) {
-                this.setState({
-                  popupOpen: true,
-                });
-                return;
-              }
+            } else if (
+              this.checkIfDuplicate(userData.firstName, userData.lastName) &&
+              !allowsDuplicateName
+            ) {
+              this.setState({
+                popupOpen: true,
+              });
               toast.success('User profile created.');
+              return;
             }
             this.props.userCreated();
           })
@@ -625,6 +623,9 @@ class AddUserProfile extends Component {
                     });
                     return;
                   }
+                  break;
+                default:
+                  break;
               }
             }
             toast.error(

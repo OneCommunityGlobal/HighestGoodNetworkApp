@@ -235,7 +235,6 @@ class UserManagement extends React.PureComponent {
   userCreated = () => {
     const text = this.state.wildCardSearchText;
     this.props.getAllUserProfile();
-    console.log('text:', text);
     this.setState({
       newUserPopupOpen: false,
       wildCardSearchText: text,
