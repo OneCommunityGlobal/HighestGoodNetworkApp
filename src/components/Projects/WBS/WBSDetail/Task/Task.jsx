@@ -1,31 +1,3 @@
-/* eslint-disable function-paren-newline */
-/* eslint-disable object-curly-newline */
-/* eslint-disable operator-linebreak */
-/* eslint-disable arrow-parens */
-/* eslint-disable no-confusing-arrow */
-/* eslint-disable implicit-arrow-linebreak */
-/* eslint-disable react/jsx-one-expression-per-line */
-/* eslint-disable indent */
-/* eslint-disable no-use-before-define */
-/* eslint-disable no-shadow */
-/* eslint-disable max-len */
-/* eslint-disable import/no-unresolved */
-/* eslint-disable no-unused-vars */
-/* eslint-disable import/extensions */
-/* eslint-disable array-callback-return */
-/* eslint-disable jsx-a11y/no-noninteractive-element-interactions */
-/* eslint-disable react/jsx-no-useless-fragment */
-/* eslint-disable jsx-a11y/click-events-have-key-events */
-/* eslint-disable consistent-return */
-/* eslint-disable react/no-array-index-key */
-/* eslint-disable jsx-a11y/no-static-element-interactions */
-/* eslint-disable jsx-a11y/scope */
-/* eslint-disable jsx-a11y/anchor-is-valid */
-/* eslint-disable no-empty */
-/* eslint-disable jsx-a11y/alt-text */
-/* eslint-disable react/destructuring-assignment */
-/* eslint-disable react/prop-types */
-/* eslint-disable no-plusplus */
 /** *******************************************************************************
  * Component: TAK
  * Author: Henry Ng - 21/03/20

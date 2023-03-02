@@ -1,16 +1,3 @@
-/* eslint-disable no-plusplus */
-/* eslint-disable arrow-parens */
-/* eslint-disable react/jsx-one-expression-per-line */
-/* eslint-disable react/no-array-index-key */
-/* eslint-disable array-callback-return */
-/* eslint-disable consistent-return */
-/* eslint-disable no-shadow */
-/* eslint-disable no-console */
-/* eslint-disable import/extensions */
-/* eslint-disable import/no-unresolved */
-/* eslint-disable react/destructuring-assignment */
-/* eslint-disable no-unused-vars */
-/* eslint-disable react/prop-types */
 /** *******************************************************************************
  * Component: TASK
  * Author: Henry Ng - 21/03/20 ≢
@@ -114,7 +101,6 @@ function WBSTasks(props) {
     const list = [];
     const target = tasks.find(task => task._id === taskIdTo);
     const siblings = tasks.filter(task => task.parentId === dragParent);
-    // console.log('sibs', siblings);
 
     let modifiedList = false;
     if (dragParent === target._id) {
@@ -129,7 +115,6 @@ function WBSTasks(props) {
         modifiedList = false;
       }
       if (modifiedList) {
-        // console.log('sib', siblings[i]._id, siblings[i + 1].num);
         list.push({
           id: siblings[i]._id,
           num: siblings[i + 1].num,
