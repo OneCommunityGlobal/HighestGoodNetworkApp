@@ -12,8 +12,7 @@ const TaskCompletedModal = React.memo(props => {
     props.popupClose();
   };
 
-  const loadUserTasks = async id => {
-    const userId = id;
+  const loadUserTasks = async userId => {
     axios
       .get(ENDPOINTS.TASKS_BY_USERID(userId))
       .then(res => {
