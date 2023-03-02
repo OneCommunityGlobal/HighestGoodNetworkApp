@@ -1,13 +1,3 @@
-/* eslint-disable function-paren-newline */
-/* eslint-disable implicit-arrow-linebreak */
-/* eslint-disable arrow-parens */
-/* eslint-disable no-unused-vars */
-/* eslint-disable no-param-reassign */
-/* eslint-disable react/prop-types */
-/* eslint-disable max-len */
-/* eslint-disable react/no-array-index-key */
-/* eslint-disable jsx-a11y/click-events-have-key-events */
-/* eslint-disable jsx-a11y/no-noninteractive-element-interactions */
 import React, { useEffect, useState } from 'react';
 import TagSent from './TagSent';
 import './TagsSearch.css';
@@ -28,7 +18,6 @@ function TagsSearch({ placeholder, members, addResources, removeResource, resour
 
   const handleFilter = event => {
     const searchWord = event.target.value;
-    // const noRepeatTags = members.filter(e => !tags.includes(e.firstName));
     const newFilter = members.filter(member =>
       `${member.firstName} ${member.lastName}`.toLowerCase().includes(searchWord.toLowerCase()),
     );

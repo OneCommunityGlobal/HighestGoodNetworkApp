@@ -104,10 +104,6 @@ function WBSTasks(props) {
   };
 
   const dropTask = (taskIdTo, parentId) => {
-    console.log('droppppped');
-    console.log('drop', drag, taskIdTo);
-
-    console.log('drop', drag, taskIdTo);
     const tasks = props.state.tasks.taskItems;
 
     const tasksClass = document.getElementsByClassName('taskDrop');
@@ -147,9 +143,6 @@ function WBSTasks(props) {
         modifiedList = true;
       }
     }
-
-    // console.log(list);
-    // props.updateNumList(wbsId, list);*/
   };
 
   const deleteTask = taskId => {

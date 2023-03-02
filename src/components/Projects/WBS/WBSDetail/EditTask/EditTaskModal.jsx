@@ -201,19 +201,6 @@ const EditTaskModal = props => {
     setLinks([...links.splice(0, index), ...links.splice(index + 1)]);
   };
 
-  // // parent Id
-  // let parentId1 = props.parentId1 ? props.parentId1 : null;
-  // let parentId2 = props.parentId2 ? props.parentId2 : null;
-  // let parentId3 = props.parentId3 ? props.parentId3 : null;
-
-  // if (props.parentId1 === null) {
-  //   parentId1 = props.taskId;
-  // } else if (props.parentId2 === null) {
-  //   parentId2 = props.taskId;
-  // } else if (props.parentId3 === null) {
-  //   parentId3 = props.taskId;
-  // }
-
   // helpers for change start/end date
   const changeDateStart = startDate => {
     setStartedDate(startDate);
@@ -235,6 +222,7 @@ const EditTaskModal = props => {
       }
     }
   };
+  
   // helper for date picker
   const FORMAT = 'MM/dd/yy';
   const formatDate = (date, format, locale) => dateFnsFormat(date, format, { locale });
