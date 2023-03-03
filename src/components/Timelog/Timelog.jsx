@@ -100,8 +100,7 @@ class Timelog extends Component {
   state = this.initialState;
 
   async componentDidMount() {
-    console.log(this.props, "esse foi o print que eu fiz")
-    const userId = this.props.auth.user.userid;
+    const userId = this.props.auth.user.userid; //It was refering to a undefined userid, so i got the id from the store to the state of the component.
     await this.props.getUserProfile(userId);
     this.userProfile = this.props.userProfile;
     await this.props.getUserTask(userId);

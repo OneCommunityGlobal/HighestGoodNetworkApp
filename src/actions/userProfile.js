@@ -11,7 +11,6 @@ import { ENDPOINTS } from '../utils/URL';
 
 export const getUserProfile = userId => {
   const url = ENDPOINTS.USER_PROFILE(userId);
-  console.log(url)
   return async dispatch => {
     let loggedOut = false;
     const res = await axios.get(url).catch(error => {
