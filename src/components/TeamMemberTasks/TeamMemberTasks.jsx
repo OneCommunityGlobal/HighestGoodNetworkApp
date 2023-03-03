@@ -20,6 +20,7 @@ import { fetchAllManagingTeams } from '../../actions/team';
 import EffortBar from 'components/Timelog/EffortBar';
 import TimeEntry from 'components/Timelog/TimeEntry';
 import { updateTask } from 'actions/task';
+import { getAllUserProfile } from 'actions/userManagement';
 import TaskCompletedModal from './components/TaskCompletedModal';
 import { ENDPOINTS } from 'utils/URL';
 import axios from 'axios';
