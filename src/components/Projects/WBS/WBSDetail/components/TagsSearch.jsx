@@ -11,6 +11,7 @@ function TagsSearch({ placeholder, members, addResources, removeResource, resour
     members.map(member =>{ 
       if(`${member.firstName} ${member.lastName}` == event.target.innerText) {
         addResources(member._id, member.firstName, member.lastName);
+        console.log(resourceItems)
       }});
     setIsHidden(!isHidden);
     event.target.closest('.container-fluid').querySelector('input').value = '';
@@ -19,7 +20,9 @@ function TagsSearch({ placeholder, members, addResources, removeResource, resour
   const handleFilter = event => {
     const searchWord = event.target.value;
     const newFilter = members.filter(member =>
-      `${member.firstName} ${member.lastName}`.toLowerCase().includes(searchWord.toLowerCase()),
+      !resourceItems.some(resourceItem =>
+        resourceItem.name === `${member.firstName} ${member.lastName}` 
+      ) && `${member.firstName} ${member.lastName}`.toLowerCase().includes(searchWord.toLowerCase())
     );
     if (searchWord === '') {
       setFilteredData([]);

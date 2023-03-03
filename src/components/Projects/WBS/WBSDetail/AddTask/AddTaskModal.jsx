@@ -440,8 +440,8 @@ function AddTaskModal(props) {
                         type="radio"
                         id="true"
                         name="Assigned"
-                        value="true"
-                        onChange={e => setAssigned(e.target.value === 'true')}
+                        value={true}
+                        onChange={() => setAssigned(true)}
                       />
                       <label className="form-check-label" htmlFor="true">
                         Yes
@@ -453,8 +453,8 @@ function AddTaskModal(props) {
                         type="radio"
                         id="false"
                         name="Assigned"
-                        value="false"
-                        onChange={e => setAssigned(e.target.value === 'false')}
+                        value={false}
+                        onChange={() => setAssigned(false)}
                       />
                       <label className="form-check-label" htmlFor="false">
                         No
@@ -473,8 +473,8 @@ function AddTaskModal(props) {
                         type="radio"
                         id="started"
                         name="started"
-                        value="true"
-                        onChange={e => setStatus(e.target.value === 'true')}
+                        value={true}
+                        onChange={() => setStatus(true)}
                       />
                       <label className="form-check-label" htmlFor="started">
                         Started
@@ -486,8 +486,8 @@ function AddTaskModal(props) {
                         type="radio"
                         id="notStarted"
                         name="started"
-                        value="false"
-                        onChange={e => setStatus(e.target.value === 'false')}
+                        value={false}
+                        onChange={() => setStatus(false)}
                       />
                       <label className="form-check-label" htmlFor="notStarted">
                         Not Started

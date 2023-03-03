@@ -35,7 +35,7 @@ const EditTaskModal = props => {
       }
     };
     fetchTaskData();
-  }, []);
+  }, [props.taskId]);
 
   // modal
   const [modal, setModal] = useState(false);
@@ -53,10 +53,11 @@ const EditTaskModal = props => {
   const [resourceItems, setResourceItems] = useState(thisTask?.resources);
 
   // assigned
-  const [assigned, setAssigned] = useState(thisTask?.assigned);
+  const [assigned, setAssigned] = useState(false);
+
 
   // status
-  const [status, setStatus] = useState(thisTask?.status);
+  const [status, setStatus] = useState('false');
 
   // hour best
   const [hoursBest, setHoursBest] = useState(thisTask?.hoursBest);
@@ -94,8 +95,8 @@ const EditTaskModal = props => {
     setTaskName(thisTask?.taskName);
     setPriority(thisTask?.priority);
     setResourceItems(thisTask?.resources);
-    setAssigned(thisTask?.assigned);
-    setStatus(thisTask?.status);
+    setAssigned(thisTask?.isAssigned || false);
+    setStatus(thisTask?.status || false);
     setHoursBest(thisTask?.hoursBest);
     setHoursWorst(thisTask?.hoursWorst);
     setHoursMost(thisTask?.hoursMost);
@@ -267,6 +268,14 @@ const EditTaskModal = props => {
     }
   };
 
+  const handleAssign = (value) => {
+    setAssigned(value);
+  };
+
+  const handleStatus = (value) => {
+    setStatus(value);
+  };
+
   return (
     <div className="controlBtn">
       <Modal isOpen={modal} toggle={toggle}>
@@ -346,7 +355,8 @@ const EditTaskModal = props => {
                         id="true"
                         name="Assigned"
                         value="true"
-                        onChange={e => setAssigned(e.target.value === 'true')}
+                        onChange={(e) => handleAssign(true)}
+                        checked={assigned}
                       />
                       <label className="form-check-label" htmlFor="true">
                         Yes
@@ -359,7 +369,8 @@ const EditTaskModal = props => {
                         id="false"
                         name="Assigned"
                         value="false"
-                        onChange={e => setAssigned(e.target.value === 'false')}
+                        onChange={(e) => handleAssign(false)}
+                        checked={!assigned}
                       />
                       <label className="form-check-label" htmlFor="false">
                         No
@@ -373,27 +384,29 @@ const EditTaskModal = props => {
                 <td scope="col">
                   <div className="flex-row  d-inline align-items-center">
                     <div className="form-check form-check-inline">
-                      <input
-                        className="form-check-input"
-                        type="radio"
-                        id="started"
-                        name="started"
-                        value="true"
-                        onChange={e => setStatus(e.target.value === 'true')}
-                      />
+                    <input
+                      className="form-check-input"
+                      type="radio"
+                      id="started"
+                      name="started"
+                      value="true"
+                      onChange={(e) => handleStatus('true')}
+                      checked={status === 'true' ? true : false}
+                    />
                       <label className="form-check-label" htmlFor="started">
                         Started
                       </label>
                     </div>
                     <div className="form-check form-check-inline">
-                      <input
-                        className="form-check-input"
-                        type="radio"
-                        id="notStarted"
-                        name="started"
-                        value="false"
-                        onChange={e => setStatus(e.target.value === 'false')}
-                      />
+                    <input
+                      className="form-check-input"
+                      type="radio"
+                      id="notStarted"
+                      name="started"
+                      value="false"
+                      onChange={(e) => handleStatus('false')}
+                      checked={status === 'false' ? true : false}
+                    />
                       <label className="form-check-label" htmlFor="notStarted">
                         Not Started
                       </label>
