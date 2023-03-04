@@ -40,13 +40,45 @@ const TeamMemberTasks = props => {
   const [showMarkAsDoneModal, setMarkAsDoneModal] = useState(false);
   const [clickedToShowModal, setClickedToShowModal] = useState(false);
 
-  const dispatch = useDispatch();
   useEffect(() => {
+    if (clickedToShowModal) {
+      setMarkAsDoneModal(true);
+    }
+  }, [currentUserId]);
+
+  useEffect(() => {
+    submitTasks();
     dispatch(fetchTeamMembersTask());
-  }, []);
+  }, [updatedTasks]);
 
   const userRole = props.auth.user.role;
   const userId = props.auth.user.userid;
+
+  const closeMarkAsDone = () => {
+    setMarkAsDoneModal(false);
+  };
+
+  const onUpdateTask = (taskId, updatedTask) => {
+    const newTask = {
+      updatedTask,
+      taskId,
+    };
+    setTasks(tasks => {
+      const tasksWithoutTheUpdated = [...tasks];
+      const taskIndex = tasks.findIndex(task => task._id === taskId);
+      tasksWithoutTheUpdated[taskIndex] = updatedTask;
+      return tasksWithoutTheUpdated;
+    });
+    setUpdatedTasks(tasks => [...tasks, newTask]);
+  };
+
+  const submitTasks = async () => {
+    for (let i = 0; i < updatedTasks.length; i += 1) {
+      const updatedTask = updatedTasks[i];
+      const url = ENDPOINTS.TASK_UPDATE(updatedTask.taskId);
+      axios.put(url, updatedTask.updatedTask).catch(err => console.log(err));
+    }
+  };
 
   const handleOpenTaskNotificationModal = (userId, task, taskNotifications = []) => {
     setCurrentUserId(userId);
