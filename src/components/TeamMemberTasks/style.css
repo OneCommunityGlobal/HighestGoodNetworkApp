@@ -100,6 +100,9 @@
 }
 
 @media only screen and (max-width: 768px) {
+  .pc-component {
+    display: none;
+  }
   .card-body {
     padding-left: 0 !important;
     padding-right: 0 !important;
@@ -114,27 +117,28 @@
   .team-member-tasks .table td {
     display: block;
     width: 100%;
-    text-align: right;
+    text-align: left !important;
   }
 
   .team-member-tasks .table td::before {
     content: attr(data-label);
-    position: absolute;
-    left: 0;
+    font-size: 20px;
+    font-weight: 500;
+
+    display: block;
+    text-align: left !important;
+  }
+
+  .border-test {
+    border: solid #e9ecef 2px;
+    background: #faf7fc;
+  }
+
+  .spacer {
+    height: 20px;
   }
 }
 
-.border-test {
-  border: solid #333 2px;
-}
-
-.spacer {
-  height: 20px;
-}
-
-.table {
-  border-spacing: 50px;
-}
 @media only screen and (min-width: 768px) {
   .team-member-tasks h1 {
     font-size: 24px;

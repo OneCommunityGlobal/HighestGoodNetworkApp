@@ -375,7 +375,7 @@ const TeamMemberTasks = props => {
         loggedInUserId={props.auth.user.userid}
       />
       <Table>
-        <thead>
+        <thead className='pc-component'>
           <tr>
             {/* Empty column header for hours completed icon */}
             <th />
