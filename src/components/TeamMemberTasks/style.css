@@ -85,15 +85,15 @@
   box-shadow: 3px 2px 4px 0px rgb(110, 108, 108);
 }
 
+.hours-btn:last-child {
+  margin-right: 0px;
+}
+
 .hours-btn:hover {
-  transform: scale(1.05);
+  background-image: linear-gradient(rgb(0 0 0/20%) 0 0);
 }
 
-.hours-btn:active {
-  transform: scale(1);
-}
-
-.btn-clear-timelogs {
+.btn-hide-timelogs {
   color: rgb(85, 83, 83);
 }
 
@@ -102,5 +102,9 @@
     display: flex;
     flex-direction: column;
     row-gap: 0.4rem;
+  }
+
+  .hours-btn {
+    width: 100%;
   }
 }

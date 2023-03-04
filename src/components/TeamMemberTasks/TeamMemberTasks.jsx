@@ -83,7 +83,6 @@ const TeamMemberTasks = props => {
 
     setTimeEntriesList(newList);
     dispatch(finishLoading());
-    // setTimeEntriesActive(true);
   };
 
   const renderTeamsList = () => {
@@ -152,7 +151,10 @@ const TeamMemberTasks = props => {
             type="button"
             className="hours-btn btn-24"
             title="Timelogs submitted in the past 24 hours"
-            style={{ backgroundColor: '#3498db' }}
+            style={{
+              backgroundColor: '#3498db',
+              border: selectedPeriod === 24 ? '3px solid #2F4F4F' : 'none',
+            }}
             onClick={() => getTimeEntriesForPeriod(24)}
           >
             24h
@@ -161,7 +163,10 @@ const TeamMemberTasks = props => {
             type="button"
             className="hours-btn btn-48"
             title="Timelogs submitted in the past 48 hours"
-            style={{ backgroundColor: '#c0392b' }}
+            style={{
+              backgroundColor: '#FF4500',
+              border: selectedPeriod === 48 ? '3px solid #2F4F4F' : 'none',
+            }}
             onClick={() => getTimeEntriesForPeriod(48)}
           >
             48h
@@ -170,7 +175,10 @@ const TeamMemberTasks = props => {
             type="button"
             className="hours-btn btn-72"
             title="Timelogs submitted in the past 72 hours"
-            style={{ backgroundColor: '#27ae60' }}
+            style={{
+              backgroundColor: '#27ae60',
+              border: selectedPeriod === 72 ? '3px solid #2F4F4F' : 'none',
+            }}
             onClick={() => getTimeEntriesForPeriod(72)}
           >
             72h
@@ -178,7 +186,7 @@ const TeamMemberTasks = props => {
           {(timeEntriesActive || selectedPeriod) && (
             <button
               type="button"
-              className="hours-btn btn-clear-timelogs"
+              className="hours-btn btn-hide-timelogs"
               onClick={() => setTimeEntriesActive(!timeEntriesActive)}
               disabled={!selectedPeriod}
             >
@@ -255,7 +263,6 @@ const TeamMemberTasks = props => {
 };
 
 const mapStateToProps = state => ({
-  // timeEntriesForPeriod: state.timeEntries.period,
   auth: state.auth,
   userId: state.userProfile._id,
   managingTeams: state.userProfile.teams,
