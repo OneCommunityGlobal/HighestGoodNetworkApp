@@ -227,8 +227,8 @@ const TeamMemberTasks = props => {
         };
 
         return (
-          <>
-            <tr  className="table-row" key={user.personId}>
+          <div className="table-row">
+            <tr key={user.personId}>
               {/* green if member has met committed hours for the week, red if not */}
               <td>
                 <div className="committed-hours-circle">
@@ -347,9 +347,7 @@ const TeamMemberTasks = props => {
                 </Table>
               </td>
             </tr>
-
-            <tr class="spacer"></tr>
-          </>
+          </div>
         );
       });
     }
