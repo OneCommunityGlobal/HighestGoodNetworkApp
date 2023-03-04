@@ -35,6 +35,10 @@ const TeamMemberTasks = props => {
   const [currentTask, setCurrentTask] = useState();
   const [currentUserId, setCurrentUserId] = useState();
   const { isLoading, usersWithTasks } = useSelector(getTeamMemberTasksData);
+  const [tasks, setTasks] = useState();
+  const [updatedTasks, setUpdatedTasks] = useState([]);
+  const [showMarkAsDoneModal, setMarkAsDoneModal] = useState(false);
+  const [clickedToShowModal, setClickedToShowModal] = useState(false);
 
   const dispatch = useDispatch();
   useEffect(() => {
