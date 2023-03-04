@@ -228,7 +228,7 @@ const TeamMemberTasks = props => {
 
         return (
           <>
-            <tr className="border-test" key={user.personId}>
+            <tr  className="table-row" key={user.personId}>
               {/* green if member has met committed hours for the week, red if not */}
               <td>
                 <div className="committed-hours-circle">
@@ -248,7 +248,7 @@ const TeamMemberTasks = props => {
                       <td data-label="Team Member" className="team-member-tasks-user-name">
                         <Link to={`/userprofile/${user.personId}`}>{`${user.name}`}</Link>
                       </td>
-                      <td data-label="clockas" className="team-clocks">
+                      <td data-label="Time" className="team-clocks">
                         <u>{user.weeklycommittedHours ? user.weeklycommittedHours : 0}</u> /
                         <font color="green"> {thisWeekHours ? thisWeekHours.toFixed(1) : 0}</font> /
                         <font color="red">
@@ -302,6 +302,14 @@ const TeamMemberTasks = props => {
                                       }}
                                     />
                                   )}
+                                  <FontAwesomeIcon
+                                    className="team-member-tasks-done"
+                                    icon={faCheck}
+                                    title="Mark as Done"
+                                    onClick={() => {
+                                      handleMarkAsDoneModal(user.personId, task);
+                                    }}
+                                  />
                                 </p>
                               </td>
                               {task.hoursLogged != null && task.estimatedHours != null && (
@@ -339,6 +347,7 @@ const TeamMemberTasks = props => {
                 </Table>
               </td>
             </tr>
+
             <tr class="spacer"></tr>
           </>
         );
