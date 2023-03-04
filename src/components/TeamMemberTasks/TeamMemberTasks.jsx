@@ -21,6 +21,9 @@ import EffortBar from 'components/Timelog/EffortBar';
 import TimeEntry from 'components/Timelog/TimeEntry';
 import { updateTask } from 'actions/task';
 import { getAllUserProfile } from 'actions/userManagement';
+import TaskCompletedModal from './components/TaskCompletedModal';
+import { ENDPOINTS } from 'utils/URL';
+import axios from 'axios';
 import { fetchAllTasks } from 'actions/task';
 import { deleteSelectedTask } from './reducer';
 
