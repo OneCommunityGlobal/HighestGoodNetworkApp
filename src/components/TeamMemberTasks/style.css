@@ -60,6 +60,8 @@
   justify-content: space-between;
   align-items: center;
   min-width: 165px;
+  max-width: 170px;
+  margin-bottom: 10px;
 }
 
 .circle-border {
