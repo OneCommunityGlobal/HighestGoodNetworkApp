@@ -3,7 +3,7 @@ import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import { connect } from 'react-redux';
 import ReactTooltip from 'react-tooltip';
 import { fetchAllTasks } from './../../../../../actions/task';
-import { addNewTask } from './../../../../../actions/task';
+import { addNewTask, updateTask } from './../../../../../actions/task';
 import { DUE_DATE_MUST_GREATER_THAN_START_DATE } from './../../../../../languages/en/messages';
 import DayPickerInput from 'react-day-picker/DayPickerInput';
 import 'react-day-picker/lib/style.css';
@@ -79,6 +79,7 @@ const AddTaskModal = props => {
   // Endstate info (what it should look like when done)
   const [endstateInfo, setEndstateInfo] = useState('');
 
+
   // Category
   const categoryOptions = [
     { value: 'Food', label: 'Food' },
@@ -90,7 +91,9 @@ const AddTaskModal = props => {
     { value: 'Stewardship', label: 'Stewardship' },
     { value: 'Other', label: 'Other' },
   ];
+
   const [category, setCategory] = useState('Housing');
+
 
   // Warning
   const [dateWarning, setDateWarning] = useState(false);
@@ -305,9 +308,27 @@ const AddTaskModal = props => {
     setIntentInfo(props.tasks.copiedTask.intentInfo);
     setEndstateInfo(props.tasks.copiedTask.endstateInfo);
   };
+  //FUNCTION TO UPDATE TASK MOTHER
+  const updateTaskMother = () => {
+    let qty = 0;
+    if (props.taskId) {
+      if (props.childrenQty >= 0) {
+        qty = props.childrenQty + 1;
+      }
+      const updatedTask = {
+        resources: resourceItems,
+        hasChild: true,
+        childrenQty: qty,
+      };
+      props.updateTask(props.taskId, updatedTask, props.hasPermission);
+    } else {
+      return;
+    }
+  };
 
   const addNewTask = () => {
     setIsLoading(true);
+    updateTaskMother();
 
     const newTask = {
       wbsId: props.wbsId,
@@ -353,6 +374,7 @@ const AddTaskModal = props => {
       const categoryMother = props.tasks.taskItems.find(({ _id }) => _id === props.taskId).category;
       if (categoryMother) {
         setCategory(categoryMother);
+
       }
     } else {
       const res = props.allProjects.projects.filter(obj => obj._id === props.projectId)[0];
@@ -604,6 +626,7 @@ const AddTaskModal = props => {
               <tr>
                 <td scope="col">Category</td>
                 <td scope="col">
+
                   <select value={category} onChange={e => setCategory(e.target.value)}>
                     {categoryOptions.map(cla => {
                       return (
@@ -747,4 +770,5 @@ const mapStateToProps = state => {
 export default connect(mapStateToProps, {
   addNewTask,
   fetchAllTasks,
+  updateTask,
 })(AddTaskModal);

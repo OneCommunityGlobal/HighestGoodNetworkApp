@@ -2,6 +2,7 @@
 /* eslint-disable no-trailing-spaces */
 /* eslint-disable no-plusplus */
 /* eslint-disable indent */
+
 import { faClock } from '@fortawesome/free-solid-svg-icons';
 import _ from 'lodash';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -45,6 +46,12 @@ const TeamMemberTasks = props => {
     setCurrentTask(task);
     setCurrentTaskNotifications(taskNotifications);
     setTaskNotificationModal(!showTaskNotificationModal);
+  };
+
+  const handleMarkAsDoneModal = (userId, task) => {
+    setCurrentUserId(userId);
+    setCurrentTask(task);
+    setClickedToShowModal(true);
   };
 
   const handleTaskNotificationRead = (userId, taskId, taskNotificationId) => {

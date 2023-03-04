@@ -104,3 +104,15 @@
     row-gap: 0.4rem;
   }
 }
+
+.complete-task-button {
+  background-color: lightgreen;
+}
+
+.uncomplete-task-button {
+  background-color: lightcoral;
+}
+
+.markAsDoneButton:hover {
+  cursor: pointer;
+}

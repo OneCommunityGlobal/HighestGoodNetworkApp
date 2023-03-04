@@ -1,5 +1,7 @@
 import { fetchTeamMembersTask } from 'actions/task';
 import { fetchTeamMembersTaskSuccess } from 'components/TeamMemberTasks/actions';
+import axios from 'axios';
+import { ApiEndpoint } from 'utils/URL';
 
 const initialState = {
   isLoading: false,
@@ -46,4 +48,8 @@ export const teamMemberTasksReducer = (state = initialState, action) => {
     default:
       return state;
   }
+};
+
+export const deleteSelectedTask = async (taskId, taskMother) => {
+  await axios.post(`${ApiEndpoint}/task/del/${taskId}/${taskMother}`);
 };
