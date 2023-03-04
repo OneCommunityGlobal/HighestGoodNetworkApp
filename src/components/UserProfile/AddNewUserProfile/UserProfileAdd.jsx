@@ -500,7 +500,7 @@ class AddUserProfile extends Component {
     if (phone === null) {
       toast.error('Phone Number is required');
       return false;
-    } else if (firstLength && lastLength && phone.length > 10) {
+    } else if (firstLength && lastLength && phone.length >= 10) {
       return true;
     } else {
       toast.error('Please fill all the required fields');
