@@ -33,7 +33,7 @@ const GeneratePdfReport = ({ summaries, weekIndex, weekDates }) => {
         weeklySummaries,
         mediaUrl,
         weeklySummariesCount,
-        weeklyComittedHours,
+        weeklycommittedHours,
         totalSeconds,
       } = eachSummary;
 
@@ -73,9 +73,9 @@ const GeneratePdfReport = ({ summaries, weekIndex, weekDates }) => {
         totalValidWeeklySummaries === 8 ? 'text-decoration: underline; color: red;' : ''
       }"><b>Total valid weekly summaries:</b> ${totalValidWeeklySummaries}</div>
       ${
-        hoursLogged >= weeklyComittedHours
-          ? `<div><b>Hours logged:</b> ${hoursLogged} / ${weeklyComittedHours} </div>`
-          : `<div style="color: red;"><b>Hours logged:</b> ${hoursLogged} / ${weeklyComittedHours}</div>`
+        hoursLogged >= weeklycommittedHours
+          ? `<div><b>Hours logged:</b> ${hoursLogged} / ${weeklycommittedHours} </div>`
+          : `<div style="color: red;"><b>Hours logged:</b> ${hoursLogged} / ${weeklycommittedHours}</div>`
       }
       ${weeklySummaryMessage}
       <div style="color:#DEE2E6; margin:10px 0px 20px 0px; text-align:center;">_______________________________________________________________________________________________</div>`;

@@ -11,7 +11,13 @@
   cursor: pointer;
 }
 
-.comitted-hours-circle {
+.team-member-tasks-done {
+  margin-left: 10px;
+  color: green;
+  cursor: pointer;
+}
+
+.committed-hours-circle {
   padding: 0.75rem;
 }
 
@@ -73,4 +79,16 @@
 .header-box {
   display: flex;
   justify-content: space-between;
+}
+
+.complete-task-button {
+  background-color: lightgreen;
+}
+
+.uncomplete-task-button {
+  background-color: lightcoral;
+}
+
+.markAsDoneButton:hover {
+  cursor: pointer;
 }

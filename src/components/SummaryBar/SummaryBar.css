@@ -73,7 +73,7 @@
 }
 
 .redBackgroup {
-  z-index: 10;
+  z-index: 1;
   bottom: 0;
   right: 0;
   position: absolute;
@@ -161,6 +161,11 @@
 
 .med_text_summary {
   font-size: 1rem;
+}
+
+.disabled-bar{
+  opacity: 0.4;
+  filter: alpha(opacity=40); /* msie */
 }
 
 /* XLarge devices (landscape phones, 544px and down) */

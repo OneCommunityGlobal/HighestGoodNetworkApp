@@ -91,7 +91,7 @@ const FormattedReport = ({ summaries, weekIndex }) => {
             key={'summary-' + index}
           >
             <p>
-            <b>Name: </b>
+              <b>Name: </b>
               <Link to={`/userProfile/${summary._id}`} title="View Profile">
                 {summary.firstName} {summary.lastName}
               </Link>
@@ -101,14 +101,14 @@ const FormattedReport = ({ summaries, weekIndex }) => {
               <b>Media URL:</b> {getMediaUrlLink(summary)}
             </p>
             {getTotalValidWeeklySummaries(summary)}
-            {hoursLogged >= summary.weeklyComittedHours && (
+            {hoursLogged >= summary.weeklycommittedHours && (
               <p>
-                <b>Hours logged:</b> {hoursLogged.toFixed(2)} / {summary.weeklyComittedHours}
+                <b>Hours logged:</b> {hoursLogged.toFixed(2)} / {summary.weeklycommittedHours}
               </p>
             )}
-            {hoursLogged < summary.weeklyComittedHours && (
+            {hoursLogged < summary.weeklycommittedHours && (
               <p style={{ color: 'red' }}>
-                <b>Hours logged:</b> {hoursLogged.toFixed(2)} / {summary.weeklyComittedHours}
+                <b>Hours logged:</b> {hoursLogged.toFixed(2)} / {summary.weeklycommittedHours}
               </p>
             )}
             {getWeeklySummaryMessage(summary)}

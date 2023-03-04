@@ -91,6 +91,20 @@ const TimeEntryForm = props => {
     setTangibleInfoModalVisibleModalVisible(!isTangibleInfoModalVisible);
   };
 
+  const filterTasks = (tasks, id) => {
+    let result = [];
+    for (let i = 0; i < tasks.length; i++) {
+      let resourcesLength = tasks[i].resources.length;
+      for (let j = 0; j < resourcesLength; j++) {
+        if (tasks[i].resources[j].completedTask === false && tasks[i].resources[j].userID === id) {
+          result.push(tasks[i]);
+          break;
+        }
+      }
+    }
+    return result;
+  };
+
   useEffect(() => {
     //this to make sure that the form is cleared before closing
     if (close && inputs.projectId == '') {
@@ -118,7 +132,8 @@ const TimeEntryForm = props => {
     axios
       .get(ENDPOINTS.TASKS_BY_USERID(userId))
       .then(res => {
-        setTasks(res?.data || []);
+        let activeTasks = filterTasks(res?.data, userId);
+        setTasks(activeTasks || []);
       })
       .catch(err => console.log(err));
   }, []);
@@ -264,29 +279,25 @@ const TimeEntryForm = props => {
   const updateHoursByCategory = async (userProfile, timeEntry, hours, minutes) => {
     const { hoursByCategory } = userProfile;
     const { projectId, isTangible, personId } = timeEntry;
+    if (isTangible !== 'true') return;
     //Format hours && minutes
     const volunteerTime = parseFloat(hours) + parseFloat(minutes) / 60;
 
-    //log  hours to intangible time entry
-    if (isTangible !== 'true') {
-      userProfile.totalIntangibleHrs += volunteerTime;
+    //This is get to know which project or task is selected
+    const foundProject = projects.find(project => project._id === projectId);
+    const foundTask = tasks.find(task => task._id === projectId);
+
+    //Get category
+    const category = foundProject
+      ? foundProject.category.toLowerCase()
+      : foundTask.classification.toLowerCase();
+
+    //update hours
+    const isFindCategory = Object.keys(hoursByCategory).find(key => key === category);
+    if (isFindCategory) {
+      hoursByCategory[category] += volunteerTime;
     } else {
-      //This is get to know which project or task is selected
-      const foundProject = projects.find(project => project._id === projectId);
-      const foundTask = tasks.find(task => task._id === projectId);
-
-      //Get category
-      const category = foundProject
-        ? foundProject.category.toLowerCase()
-        : foundTask.classification.toLowerCase();
-
-      //update hours
-      const isFindCategory = Object.keys(hoursByCategory).find(key => key === category);
-      if (isFindCategory) {
-        hoursByCategory[category] += volunteerTime;
-      } else {
-        hoursByCategory['unassigned'] += volunteerTime;
-      }
+      hoursByCategory['unassigned'] += volunteerTime;
     }
 
     //update database
@@ -326,9 +337,7 @@ const TimeEntryForm = props => {
     }
 
     //if time entry keeps intangible before and after edit, means we don't need update tangible hours
-    if (oldIsTangible === 'false' && currIsTangible === 'false') {
-      userProfile.totalIntangibleHrs += timeDifference;
-    }
+    if (oldIsTangible === 'false' && currIsTangible === 'false') return;
 
     //found project or task
     const foundProject = projects.find(project => project._id === currProjectId);
@@ -341,7 +350,6 @@ const TimeEntryForm = props => {
 
     //if change timeEntry from intangible to tangible, we need add hours on categories
     if (oldIsTangible === 'false' && currIsTangible === 'true') {
-      userProfile.totalIntangibleHrs -= currEntryTime;
       isFindCategory
         ? (hoursByCategory[category] += currEntryTime)
         : (hoursByCategory['unassigned'] += currEntryTime);
@@ -349,7 +357,6 @@ const TimeEntryForm = props => {
 
     //if change timeEntry from tangible to intangible, we need deduct hours on categories
     if (oldIsTangible === 'true' && currIsTangible === 'false') {
-      userProfile.totalIntangibleHrs += currEntryTime;
       isFindCategory
         ? (hoursByCategory[category] -= currEntryTime)
         : (hoursByCategory['unassigned'] -= currEntryTime);

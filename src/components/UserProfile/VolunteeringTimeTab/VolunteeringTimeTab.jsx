@@ -80,19 +80,19 @@ const WeeklySummaryReqd = props => {
   );
 };
 
-const WeeklyCommitedHours = props => {
+const WeeklyCommittedHours = props => {
   if (!props.canEdit) {
-    return <p>{props.userProfile.weeklyComittedHours}</p>;
+    return <p>{props.userProfile.weeklycommittedHours}</p>;
   }
   return (
     <Input
       type="number"
-      name="weeklyComittedHours"
-      id="weeklyComittedHours"
+      name="weeklycommittedHours"
+      id="weeklycommittedHours"
       data-testid="weeklyCommittedHours"
-      value={props.userProfile.weeklyComittedHours}
+      value={props.userProfile.weeklycommittedHours}
       onChange={e => {
-        props.setUserProfile({ ...props.userProfile, weeklyComittedHours: e.target.value });
+        props.setUserProfile({ ...props.userProfile, weeklycommittedHours: e.target.value });
         props.setChanged(true);
       }}
       placeholder="Weekly Committed Hours"
@@ -138,15 +138,11 @@ const ViewTab = props => {
   const [totalTangibleHoursThisWeek, setTotalTangibleHoursThisWeek] = useState(0);
   const [totalIntangibleHours, setTotalIntangibleHours] = useState(0);
   const [totalTangibleHours, setTotalTangibleHours] = useState(0);
-  const { hoursByCategory, totalIntangibleHrs } = userProfile;
+  const { hoursByCategory } = userProfile;
 
   useEffect(() => {
     sumOfCategoryHours();
   }, [hoursByCategory]);
-
-  useEffect(() => {
-    setTotalIntangibleHours(totalIntangibleHrs);
-  }, [totalIntangibleHrs]);
 
   const calculateTotalHrsForPeriod = timeEntries => {
     let hours = { totalTangibleHrs: 0, totalIntangibleHrs: 0 };
@@ -200,7 +196,8 @@ const ViewTab = props => {
       .get(ENDPOINTS.TIME_ENTRIES_PERIOD(userProfile._id, createdDate, today))
       .then(res => {
         const timeEntries = res.data;
-        setTotalIntangibleHours(userProfile.totalIntangibleHrs.toFixed(2));
+        const output = calculateTotalHrsForPeriod(timeEntries);
+        setTotalIntangibleHours(output.totalIntangibleHrs.toFixed(2));
         sumOfCategoryHours();
       })
       .catch(err => {
@@ -268,7 +265,7 @@ const ViewTab = props => {
           <Label>Weekly Committed Hours </Label>
         </Col>
         <Col md="6">
-          <WeeklyCommitedHours
+          <WeeklyCommittedHours
             role={role}
             userProfile={userProfile}
             setUserProfile={setUserProfile}
@@ -282,24 +279,7 @@ const ViewTab = props => {
           <Label>Total Intangible Hours </Label>
         </Col>
         <Col md="6">
-          {canEdit ? (
-            <Input
-              type="number"
-              id="intangibleHours"
-              step=".01"
-              value={parseFloat(userProfile.totalIntangibleHrs)?.toFixed(2)}
-              onChange={e => {
-                setUserProfile({
-                  ...userProfile,
-                  totalIntangibleHrs: Number(e.target.value),
-                });
-                setChanged(true);
-              }}
-              placeholder={`Total Intangible Hours`}
-            />
-          ) : (
-            <p>{totalIntangibleHours}</p>
-          )}
+          <p>{totalIntangibleHours}</p>
         </Col>
       </Row>
       <Row>
