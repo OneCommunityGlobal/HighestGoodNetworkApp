@@ -2,7 +2,7 @@
 /* eslint-disable no-trailing-spaces */
 /* eslint-disable no-plusplus */
 /* eslint-disable indent */
-import { faBell, faCircle, faClock } from '@fortawesome/free-solid-svg-icons';
+import { faBell, faCircle, faClock, faCheck } from '@fortawesome/free-solid-svg-icons';
 import { Table, Progress } from 'reactstrap';
 import _ from 'lodash';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -375,7 +375,7 @@ const TeamMemberTasks = props => {
         loggedInUserId={props.auth.user.userid}
       />
       <Table>
-        <thead className='pc-component'>
+        <thead className="pc-component">
           <tr>
             {/* Empty column header for hours completed icon */}
             <th />
