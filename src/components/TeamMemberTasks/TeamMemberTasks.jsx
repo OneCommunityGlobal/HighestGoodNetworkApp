@@ -40,6 +40,11 @@ const TeamMemberTasks = props => {
   const [showMarkAsDoneModal, setMarkAsDoneModal] = useState(false);
   const [clickedToShowModal, setClickedToShowModal] = useState(false);
 
+  const dispatch = useDispatch();
+  useEffect(() => {
+    dispatch(fetchTeamMembersTask());
+  }, []);
+
   useEffect(() => {
     if (clickedToShowModal) {
       setMarkAsDoneModal(true);
