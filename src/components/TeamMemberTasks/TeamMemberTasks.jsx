@@ -342,7 +342,6 @@ const TeamMemberTasks = props => {
                 </tbody>
               </Table>
             </td>
-            <div></div>
           </tr>
         );
       });
