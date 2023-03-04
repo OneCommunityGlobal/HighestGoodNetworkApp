@@ -31,13 +31,14 @@ const WBSTasks = props => {
   const [filterState, setFilterState] = useState('all');
   const [openAll, setOpenAll] = useState(false);
   const [loadAll, setLoadAll] = useState(false);
+  const [isDeleted, setIsDeleted] = useState(false);
 
-  const load = async()=>{
-    const levelList = [0,1,2,3,4];
+  const load = async () => {
+    const levelList = [0, 1, 2, 3, 4];
     await Promise.all(levelList.map(level => props.fetchAllTasks(wbsId, level)));
     AutoOpenAll(false);
     setLoadAll(true);
-  }
+  };
 
   useEffect(() => {
     load().then(setOpenAll(false));
@@ -58,6 +59,13 @@ const WBSTasks = props => {
   useEffect(() => {
     AutoOpenAll(openAll);
   }, [openAll]);
+
+  useEffect(() => {
+    if (isDeleted) {
+      refresh();
+    }
+    setIsDeleted(false);
+  }, [isDeleted]);
 
   const AutoOpenAll = openflag => {
     if (openflag) {
@@ -139,11 +147,9 @@ const WBSTasks = props => {
     //props.updateNumList(wbsId, list);*/
   };
 
-  const deleteTask = taskId => {
-    props.deleteTask(taskId);
-    setTimeout(() => {
-      props.fetchAllTasks(wbsId);
-    }, 4000);
+  const deleteWBSTask = (taskId, mother) => {
+    props.deleteTask(taskId, mother);
+    setIsDeleted(true);
   };
 
   const filterTasks = (allTaskItems, filter) => {
@@ -182,19 +188,17 @@ const WBSTasks = props => {
     }
   };
 
-  const LoadTasks = props.state.tasks.taskItems
-    .slice(0)
-    .sort((a, b) => {
-      var former = a.num.split('.');
-      var latter = b.num.split('.');
-      for(var i = 0; i< 4; i++){
-        var _former = +former[i] || 0;
-        var _latter = +latter[i] || 0;
-        if(_former === _latter) continue;
-        else return _former > _latter ? 1: -1
-      }
-      return 0;
-    });
+  const LoadTasks = props.state.tasks.taskItems.slice(0).sort((a, b) => {
+    var former = a.num.split('.');
+    var latter = b.num.split('.');
+    for (var i = 0; i < 4; i++) {
+      var _former = +former[i] || 0;
+      var _latter = +latter[i] || 0;
+      if (_former === _latter) continue;
+      else return _former > _latter ? 1 : -1;
+    }
+    return 0;
+  });
   const filteredTasks = filterTasks(LoadTasks, filterState);
 
   return (
@@ -236,14 +240,20 @@ const WBSTasks = props => {
           Refresh{' '}
         </Button>
 
-        {loadAll === false? (
-        <Button color="warning" size="sm">  Task Loading......  </Button>
+        {loadAll === false ? (
+
+          <Button color="warning" size="sm" className="ml-3">
+
+            {' '}
+            Task Loading......{' '}
+          </Button>
         ) : null}
 
         <div className="toggle-all">
           <Button
             color="primary"
             size="sm"
+            className="ml-3"
             onClick={() => {
               setFilterState('all');
               setOpenAll(!openAll);
@@ -251,19 +261,19 @@ const WBSTasks = props => {
           >
             All
           </Button>
-          <Button color="secondary" size="sm" onClick={() => setFilterState('assigned')}>
+          <Button color="secondary" size="sm" onClick={() => setFilterState('assigned')} className="ml-3">
             Assigned
           </Button>
-          <Button color="success" size="sm" onClick={() => setFilterState('unassigned')}>
+          <Button color="success" size="sm" onClick={() => setFilterState('unassigned')} className="ml-3">
             Unassigned
           </Button>
-          <Button color="info" size="sm" onClick={() => setFilterState('active')}>
+          <Button color="info" size="sm" onClick={() => setFilterState('active')} className="ml-3">
             Active
           </Button>
-          <Button color="warning" size="sm" onClick={() => setFilterState('inactive')}>
+          <Button color="warning" size="sm" onClick={() => setFilterState('inactive')} className="ml-3">
             Inactive
           </Button>
-          <Button color="danger" size="sm" onClick={() => setFilterState('complete')}>
+          <Button color="danger" size="sm" onClick={() => setFilterState('complete')} className="ml-3">
             Complete
           </Button>
         </div>
@@ -352,14 +362,16 @@ const WBSTasks = props => {
                 isOpen={openAll}
                 drop={dropTask}
                 drag={dragTask}
-                deleteTask={deleteTask}
+                deleteWBSTask={deleteWBSTask}
                 hasChildren={task.hasChild}
                 siblings={props.state.tasks.taskItems.filter(item => item.mother === task.mother)}
                 taskId={task.taskId}
                 whyInfo={task.whyInfo}
                 intentInfo={task.intentInfo}
                 endstateInfo={task.endstateInfo}
+                childrenQty={task.childrenQty}
                 filteredTasks={filteredTasks}
+
               />
             ))}
           </tbody>
