@@ -125,6 +125,18 @@
   }
 }
 
+.border-test {
+  border: solid #333 2px;
+}
+
+.spacer {
+  height: 100px;
+  padding: 50px;
+}
+
+.table {
+  border-spacing: 50px;
+}
 @media only screen and (min-width: 768px) {
   .team-member-tasks h1 {
     font-size: 24px;
