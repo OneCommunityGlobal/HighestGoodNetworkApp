@@ -92,6 +92,12 @@ const TeamMemberTasks = props => {
     setTaskNotificationModal(!showTaskNotificationModal);
   };
 
+  const handleMarkAsDoneModal = (userId, task) => {
+    setCurrentUserId(userId);
+    setCurrentTask(task);
+    setClickedToShowModal(true);
+  };
+
   const handleTaskNotificationRead = (userId, taskId, taskNotificationId) => {
     dispatch(deleteTaskNotification(userId, taskId, taskNotificationId));
     handleOpenTaskNotificationModal();
