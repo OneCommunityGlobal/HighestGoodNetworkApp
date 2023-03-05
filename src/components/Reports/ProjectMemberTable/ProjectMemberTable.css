@@ -7,6 +7,16 @@
   margin-bottom: 12px;
 }
 
+.project-member-count-head {
+  text-align: start;
+  margin-bottom: 12px;
+}
+
+#project-member-count {
+  display: inline;
+  margin-right: 20px;
+}
+
 .reports-table-head {
   background-color: #eee7f8;
   margin-bottom: 16px;

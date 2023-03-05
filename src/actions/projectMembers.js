@@ -93,6 +93,33 @@ export const fetchAllMembers = projectId => {
 };
 
 /**
+ * Call API to find active members out of
+ * the members of one project
+ */
+export const getProjectActiveUser = () => {
+  const request = axios.get(ENDPOINTS.USER_PROFILES);
+  return async (dispatch, getState) => {
+    await dispatch(findUsersStart());
+    request
+      .then(res => {
+        let users = res.data;
+        let members = getState().projectMembers.members;
+        const memberList = [];
+        users = users.map(user => {
+          if (members.find(member => member._id === user._id && user.isActive === true)) {
+            memberList.push({ ...user });
+          }
+        });
+        dispatch(foundUsers(memberList));
+      })
+      .catch(err => {
+        //console.log("getProjectActiveUser Error", err);
+        dispatch(findUsersError(err));
+      });
+  };
+};
+
+/**
  * Call API to assign/ unassign project
  */
 export const assignProject = (projectId, userId, operation, firstName, lastName) => {
@@ -181,7 +208,6 @@ export const findUsersStart = () => {
  * @param payload : Users []
  */
 export const foundUsers = users => {
-  // console.log("foundUsers");
   return {
     type: types.FOUND_USERS,
     users,
