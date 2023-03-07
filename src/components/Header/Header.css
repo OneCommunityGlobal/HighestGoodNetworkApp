@@ -14,6 +14,7 @@
   align-items: center;
   justify-content: space-between;
   width: 100%;
+  gap: 1rem;
 }
 
 .nav-links {
@@ -37,51 +38,29 @@
   min-width: 29px;
 }
 
-.owner-message-low-resolution {
-  display: none;
+@media(max-width: 1500px) { 
+  .dashboard-text-link {
+    font-size: 14px;
+  }
 }
 
 @media(max-width: 1400px) {
-  .header-wrapper {
-    margin-bottom: 5rem;
-  }
-
   .timer-message-section {
     display: flex;
     width: 0;
     margin-right: 0;
   }
 
-  .owner-message-high-resolution {
+  .owner-message{
     display: none;
   }
 
-  .owner-message-low-resolution {
-    display: block;
-    position: relative;
-    top: -.5rem;
-  }
+
 }
 
-@media(max-width: 860px) {
+@media(max-width: 1200px) {
   .header-wrapper {
-    height: 72px;
-  }
-}
-
-
-@media(max-width: 800px) {
-  .header-wrapper {
-    height: 62px;
-    margin-bottom: 4.3rem;
-  }
-
-  .timer-message-section {
-    gap: 3rem;
-  }
-
-  .owner-message-low-resolution {
-    width: 95vw;
+    height: 56px;
   }
 }
 

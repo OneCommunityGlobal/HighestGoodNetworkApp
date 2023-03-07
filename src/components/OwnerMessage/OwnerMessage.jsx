@@ -9,9 +9,22 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEdit } from '@fortawesome/free-regular-svg-icons';
 
 import { connect } from 'react-redux';
-import { getOwnerMessage, createOwnerMessage, updateOwnerMessage, deleteOwnerMessage } from '../../actions/ownerMessageAction';
+import {
+  getOwnerMessage,
+  createOwnerMessage,
+  updateOwnerMessage,
+  deleteOwnerMessage,
+} from '../../actions/ownerMessageAction';
 
-function OwnerMessage({ auth, getOwnerMessage, ownerMessage, ownerMessageId, createOwnerMessage, updateOwnerMessage, deleteOwnerMessage }) {
+function OwnerMessage({
+  auth,
+  getOwnerMessage,
+  ownerMessage,
+  ownerMessageId,
+  createOwnerMessage,
+  updateOwnerMessage,
+  deleteOwnerMessage,
+}) {
   const { user } = auth;
 
   const [disableTextInput, setDisableTextInput] = useState(false);
@@ -21,22 +34,22 @@ function OwnerMessage({ auth, getOwnerMessage, ownerMessage, ownerMessageId, cre
   const [modalDeleteWarning, setModalDeleteWarning] = useState(false);
   const [modalWrongPictureFormatWarning, setModalWrongPictureFormatWarning] = useState(false);
 
-  const isImage = (/;base64/g);
+  const isImage = /;base64/g;
 
   function toggle() {
     setModal(!modal);
     setDisableTextInput(false);
-  } 
+  }
 
   function toggleDeleteWarning() {
     setModalDeleteWarning(!modalDeleteWarning);
     setDisableTextInput(false);
-  } 
+  }
 
   function toggleWrongPictureFormatWarning() {
     setModalWrongPictureFormatWarning(!modalWrongPictureFormatWarning);
     setDisableTextInput(false);
-  } 
+  }
 
   useEffect(() => {
     getOwnerMessage();
@@ -49,11 +62,11 @@ function OwnerMessage({ auth, getOwnerMessage, ownerMessage, ownerMessageId, cre
     if (event) event.preventDefault();
     const file = event.target.files[0];
     if (typeof file != 'undefined') {
-      const imageType = (/jpg|jpeg|png/g);
+      const imageType = /jpg|jpeg|png/g;
       const validFormats = imageType.test(file.name);
 
       //Input validation: file type
-      if  (!validFormats) {
+      if (!validFormats) {
         toggle();
         toggleWrongPictureFormatWarning();
         return;
@@ -66,14 +79,14 @@ function OwnerMessage({ auth, getOwnerMessage, ownerMessage, ownerMessageId, cre
         setDisableTextInput(true);
       };
     }
-  };
+  }
 
   async function handleMessage() {
     const ownerMessage = {
       newMessage: newMessage,
-    }
+    };
 
-    if(message) {
+    if (message) {
       updateOwnerMessage(ownerMessageId, ownerMessage);
       toggle();
       toast.success('Message updated!');
@@ -94,24 +107,19 @@ function OwnerMessage({ auth, getOwnerMessage, ownerMessage, ownerMessageId, cre
     setMessage('');
   }
 
-  return(
+  return (
     <div className="message-container">
-      {
-      isImage.test(message) ? <img src={message} alt="" /> : <span className="message">{message}</span>
-      }
+      {isImage.test(message) ? (
+        <img src={message} alt="" />
+      ) : (
+        <span className="message">{message}</span>
+      )}
 
-      {
-        user.role == 'Owner' && (
-          <div className="icon-wrapper">
-            <FontAwesomeIcon
-              icon={faEdit}
-              className=" text-primary"
-              onClick={toggle}
-            />
-          </div>
-        )
-      }
-
+      {user.role == 'Owner' && (
+        <div className="icon-wrapper">
+          <FontAwesomeIcon icon={faEdit} className=" text-primary" onClick={toggle} />
+        </div>
+      )}
 
       <Modal isOpen={modal} toggle={toggle}>
         <ModalHeader toggle={toggle}>Create message</ModalHeader>
@@ -139,7 +147,11 @@ function OwnerMessage({ auth, getOwnerMessage, ownerMessage, ownerMessageId, cre
           <Button color="secondary" onClick={toggle}>
             Cancel
           </Button>
-          <Button color="danger" onClick={toggleDeleteWarning} style={message ? {display: 'block'} : {display: 'none'}}>
+          <Button
+            color="danger"
+            onClick={toggleDeleteWarning}
+            style={message ? { display: 'block' } : { display: 'none' }}
+          >
             Delete
           </Button>
           <Button color="primary" onClick={handleMessage}>
@@ -183,9 +195,10 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = dispatch => ({
   getOwnerMessage: () => dispatch(getOwnerMessage()),
-  createOwnerMessage: (ownerMessage) => dispatch(createOwnerMessage(ownerMessage)),
-  updateOwnerMessage: (ownerMessageId, ownerMessage) => dispatch(updateOwnerMessage(ownerMessageId, ownerMessage)),
-  deleteOwnerMessage: () => dispatch(deleteOwnerMessage())
-})
+  createOwnerMessage: ownerMessage => dispatch(createOwnerMessage(ownerMessage)),
+  updateOwnerMessage: (ownerMessageId, ownerMessage) =>
+    dispatch(updateOwnerMessage(ownerMessageId, ownerMessage)),
+  deleteOwnerMessage: () => dispatch(deleteOwnerMessage()),
+});
 
 export default connect(mapStateToProps, mapDispatchToProps)(OwnerMessage);

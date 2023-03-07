@@ -50,8 +50,6 @@ svg:hover {
   flex-direction: column;
 }
 
-
-
 @media(max-width: 1400px) {
   .message-container {
     align-items: center;
