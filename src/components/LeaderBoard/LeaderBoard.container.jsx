@@ -36,7 +36,7 @@ const mapStateToProps = state => {
   orgData.tangibletime = round(orgData.totaltangibletime_hrs, 2);
   orgData.totaltime = round(orgData.totaltime_hrs, 2);
   orgData.intangibletime = round(orgData.totalintangibletime_hrs, 2);
-  orgData.weeklycommittedHours = round(orgData.totalWeeklycommittedHours, 2);
+  orgData.weeklycommittedHours = round(orgData.totalweeklycommittedHours, 2);
 
   const tenPTotalOrgTime = orgData.weeklycommittedHours * 0.1;
   const orgTangibleColorTime = orgData.totaltime < tenPTotalOrgTime * 2 ? 0 : 5;
