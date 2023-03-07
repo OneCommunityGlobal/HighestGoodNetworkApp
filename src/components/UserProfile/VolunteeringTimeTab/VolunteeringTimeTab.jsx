@@ -17,7 +17,6 @@ const StartDate = props => {
       id="startDate"
       value={moment(props.userProfile.createdDate).format('YYYY-MM-DD')}
       onChange={e => {
-        props.setChanged(true);
         props.setUserProfile({ ...props.userProfile, createdDate: e.target.value });
       }}
       placeholder="Start Date"
@@ -45,7 +44,6 @@ const EndDate = props => {
         props.userProfile.endDate ? props.userProfile.endDate.toLocaleString().split('T')[0] : ''
       }
       onChange={e => {
-        props.setChanged(true);
         props.setUserProfile({ ...props.userProfile, endDate: e.target.value });
       }}
       placeholder="End Date"
@@ -71,7 +69,6 @@ const WeeklySummaryReqd = props => {
             ...props.userProfile,
             weeklySummaryNotReq: !props.userProfile.weeklySummaryNotReq,
           });
-          props.setChanged(true);
         }}
         checked={props.userProfile.weeklySummaryNotReq}
       />
@@ -90,10 +87,9 @@ const WeeklyCommittedHours = props => {
       name="weeklycommittedHours"
       id="weeklycommittedHours"
       data-testid="weeklyCommittedHours"
-      value={props.userProfile.weeklycommittedHours}
+      value={props.userProfile.weeklyComittedHours}
       onChange={e => {
-        props.setUserProfile({ ...props.userProfile, weeklycommittedHours: e.target.value });
-        props.setChanged(true);
+        props.setUserProfile({ ...props.userProfile, weeklyComittedHours: Number(e.target.value) });
       }}
       placeholder="Weekly Committed Hours"
     />
@@ -134,7 +130,7 @@ const TotalTangibleHours = props => {
  * @returns
  */
 const ViewTab = props => {
-  const { userProfile, setUserProfile, setChanged, role, canEdit } = props;
+  const { userProfile, setUserProfile, role, canEdit } = props;
   const [totalTangibleHoursThisWeek, setTotalTangibleHoursThisWeek] = useState(0);
   const [totalIntangibleHours, setTotalIntangibleHours] = useState(0);
   const [totalTangibleHours, setTotalTangibleHours] = useState(0);
@@ -216,7 +212,6 @@ const ViewTab = props => {
             role={role}
             userProfile={userProfile}
             setUserProfile={setUserProfile}
-            setChanged={setChanged}
             canEdit={canEdit}
           />
         </Col>
@@ -231,7 +226,6 @@ const ViewTab = props => {
             role={role}
             userProfile={userProfile}
             setUserProfile={setUserProfile}
-            setChanged={setChanged}
             canEdit={canEdit}
           />
         </Col>
@@ -255,7 +249,6 @@ const ViewTab = props => {
             role={role}
             userProfile={userProfile}
             setUserProfile={setUserProfile}
-            setChanged={setChanged}
             canEdit={canEdit}
           />
         </Col>
@@ -269,7 +262,6 @@ const ViewTab = props => {
             role={role}
             userProfile={userProfile}
             setUserProfile={setUserProfile}
-            setChanged={setChanged}
             canEdit={canEdit}
           />
         </Col>
@@ -319,7 +311,6 @@ const ViewTab = props => {
                             [key]: Number(e.target.value),
                           },
                         });
-                        setChanged(true);
                       }}
                       placeholder={`Total Tangible ${capitalize(key)} Hours`}
                     />
