@@ -262,10 +262,12 @@ const EditTaskModal = props => {
       props.fetchAllTasks(props.wbsId);
     }, 4000);
 
+    // setTimeout(() => {
     if (props.tasks.error === 'none') {
       toggle();
-      window.location.reload();
+      // window.location.reload();
     }
+    // }, 1000);
   };
 
   return (
