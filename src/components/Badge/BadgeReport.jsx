@@ -3,17 +3,22 @@ import { changeBadgesByUserID } from '../../actions/badgeManagement';
 import {
   Table,
   Button,
+  ButtonGroup,
   Input,
   Card,
   CardTitle,
   CardBody,
   CardImg,
   CardText,
-  UncontrolledPopover,
+  DropdownToggle,
   Modal,
   ModalBody,
   ModalFooter,
   FormGroup,
+  UncontrolledDropdown,
+  UncontrolledPopover,
+  DropdownMenu,
+  DropdownItem
 } from 'reactstrap';
 import pdfMake from 'pdfmake/build/pdfmake';
 import pdfFonts from 'pdfmake/build/vfs_fonts';
@@ -24,6 +29,7 @@ import { connect } from 'react-redux';
 import { getUserProfile } from '../../actions/userProfile';
 import { toast } from 'react-toastify';
 import hasPermission from '../../utils/permissions';
+import styles from './BadgeReport.css';
 
 pdfMake.vfs = pdfFonts.pdfMake.vfs;
 const BadgeReport = props => {
@@ -248,145 +254,304 @@ const BadgeReport = props => {
 
   return (
     <div>
-      <Table>
-        <thead>
-          <tr>
-            <th style={{ width: '93px' }}>Badge</th>
-            <th>Name</th>
-            <th style={{ width: '110px' }}>Modified</th>
-            <th style={{ width: '90px' }}>Count</th>
-            {hasPermission(props.role, 'deleteOwnBadge', roles, props.permissionsUser) ? (
-              <th>Delete</th>
-            ) : (
-              []
-            )}
-            <th style={{ width: '70px' }}>Featured</th>
-          </tr>
-        </thead>
-        <tbody>
-          {sortBadges &&
-            sortBadges.map((value, index) => (
-              <tr key={index}>
-                <td className="badge_image_sm">
-                  {' '}
-                  <img src={value.badge.imageUrl} id={'popover_' + index.toString()} />
-                </td>
-                <UncontrolledPopover trigger="hover" target={'popover_' + index.toString()}>
-                  <Card className="text-center">
-                    <CardImg className="badge_image_lg" src={value?.badge?.imageUrl} />
-                    <CardBody>
-                      <CardTitle
-                        style={{
-                          fontWeight: 'bold',
-                          fontSize: 18,
-                          color: '#285739',
-                          marginBottom: 15,
-                        }}
-                      >
-                        {value.badge?.badgeName}
-                      </CardTitle>
-                      <CardText>{value.badge?.description}</CardText>
-                    </CardBody>
-                  </Card>
-                </UncontrolledPopover>
-                <td>{value.badge.badgeName}</td>
-                <td>
-                  {typeof value.lastModified == 'string'
-                    ? value.lastModified.substring(0, 10)
-                    : value.lastModified.toLocaleString().substring(0, 10)}
-                </td>
-                <td>
-                  {hasPermission(
-                    props.role,
-                    'modifyOwnBadgeAmount',
-                    roles,
-                    props.permissionsUser,
-                  ) ? (
-                    <Input
-                      type="number"
-                      value={Math.round(value.count)}
-                      min={0}
-                      step={1}
-                      onChange={e => {
-                        countChange(value, index, e.target.value);
-                      }}
-                    ></Input>
-                  ) : (
-                    Math.round(value.count)
-                  )}
-                </td>
+      <div className="desktop">
+        <div style={{ overflowY: 'scroll', height: '75vh'}}>
+          <Table>
+            <thead style={{zIndex: '10'}}>
+              <tr style={{zIndex: '10'}}>
+                <th style={{ width: '93px' }}>Badge</th>
+                <th>Name</th>
+                <th style={{ width: '110px' }}>Modified</th>
+                <th style={{ width: '90px' }}>Count</th>
                 {hasPermission(props.role, 'deleteOwnBadge', roles, props.permissionsUser) ? (
-                  <td>
-                    <button
-                      type="button"
-                      className="btn btn-outline-danger"
-                      onClick={e => handleDeleteBadge(index)}
-                    >
-                      Delete
-                    </button>
-                  </td>
+                  <th>Delete</th>
                 ) : (
                   []
                 )}
-                <td style={{ textAlign: 'center' }}>
-                  <FormGroup check inline>
-                    <Input
-                      /* alternative to using the formgroup
-                      style={{ position: 'static' }} 
-                      */
-                      type="checkbox"
-                      id={value.badge._id}
-                      checked={value.featured}
-                      onChange={e => {
-                        featuredChange(value, index, e);
-                      }}
-                    />
-                  </FormGroup>
-                </td>
+                <th style={{ width: '70px', zIndex: '1' }}>Featured</th>
               </tr>
-            ))}
-        </tbody>
-      </Table>
-      <Button
-        className="btn--dark-sea-green float-right"
-        style={{ margin: 5 }}
-        onClick={e => {
-          saveChanges();
-        }}
-      >
-        Save Changes
-      </Button>
-      <Button
-        className="btn--dark-sea-green float-right"
-        style={{ margin: 5 }}
-        onClick={pdfDocGenerator}
-      >
-        Export All Badges to PDF
-      </Button>
-      <Button
-        className="btn--dark-sea-green float-right"
-        style={{ margin: 5 }}
-        onClick={pdfFeaturedDocGenerator}
-      >
-        Export Selected/Featured Badges to PDF
-      </Button>
-      <Modal isOpen={showModal}>
-        <ModalBody>
-          <p>Woah, easy tiger! Are you sure you want to delete this badge?</p>
-          <br />
-          <p>
-            Note: Even if you click "Yes, Delete", this won't be fully deleted until you click the
-            "Save Changes" button below.
-          </p>
-        </ModalBody>
-        <ModalFooter>
-          <Button onClick={() => handleCancel()}>Cancel</Button>
-          <Button color="danger" onClick={() => deleteBadge()}>
-            Yes, Delete
+            </thead>
+            <tbody>
+              {sortBadges &&
+                sortBadges.map((value, index) => (
+                  <tr key={index}>
+                    <td className="badge_image_sm">
+                      {' '}
+                      <img src={value.badge.imageUrl} id={'popover_' + index.toString()} />
+                    </td>
+                    <UncontrolledPopover trigger="hover" target={'popover_' + index.toString()}>
+                      <Card className="text-center">
+                        <CardImg className="badge_image_lg" src={value?.badge?.imageUrl} />
+                        <CardBody>
+                          <CardTitle
+                            style={{
+                              fontWeight: 'bold',
+                              fontSize: 18,
+                              color: '#285739',
+                              marginBottom: 15,
+                            }}
+                          >
+                            {value.badge?.badgeName}
+                          </CardTitle>
+                          <CardText>{value.badge?.description}</CardText>
+                        </CardBody>
+                      </Card>
+                    </UncontrolledPopover>
+                    <td>{value.badge.badgeName}</td>
+                    <td>
+                      {typeof value.lastModified == 'string'
+                        ? value.lastModified.substring(0, 10)
+                        : value.lastModified.toLocaleString().substring(0, 10)}
+                    </td>
+                    <td>
+                      {hasPermission(
+                        props.role,
+                        'modifyOwnBadgeAmount',
+                        roles,
+                        props.permissionsUser,
+                      ) ? (
+                        <Input
+                          type="number"
+                          value={Math.round(value.count)}
+                          min={0}
+                          step={1}
+                          onChange={e => {
+                            countChange(value, index, e.target.value);
+                          }}
+                        ></Input>
+                      ) : (
+                        Math.round(value.count)
+                      )}
+                    </td>
+                    {hasPermission(props.role, 'deleteOwnBadge', roles, props.permissionsUser) ? (
+                      <td>
+                        <button
+                          type="button"
+                          className="btn btn-outline-danger"
+                          onClick={e => handleDeleteBadge(index)}
+                        >
+                          Delete
+                        </button>
+                      </td>
+                    ) : (
+                      []
+                    )}
+                    <td style={{ textAlign: 'center' }}>
+                      <FormGroup check inline style={{ zIndex: '0' }}>
+                        <Input
+                          /* alternative to using the formgroup
+                          style={{ position: 'static' }} 
+                          */
+                          type="checkbox"
+                          id={value.badge._id}
+                          checked={value.featured}
+                          onChange={e => {
+                            featuredChange(value, index, e);
+                          }}
+                        />
+                      </FormGroup>
+                    </td>
+                  </tr>
+                ))}
+            </tbody>
+          </Table>
+        </div>
+        <Button
+          className="btn--dark-sea-green float-right"
+          style={{ margin: 5 }}
+          onClick={e => {
+            saveChanges();
+          }}
+        >
+          Save Changes
+        </Button>
+        <Button
+          className="btn--dark-sea-green float-right"
+          style={{ margin: 5 }}
+          onClick={pdfDocGenerator}
+        >
+          Export All Badges to PDF
+        </Button>
+        <Button
+          className="btn--dark-sea-green float-right"
+          style={{ margin: 5 }}
+          onClick={pdfFeaturedDocGenerator}
+        >
+          Export Selected/Featured Badges to PDF
+        </Button>
+        <Modal isOpen={showModal}>
+          <ModalBody>
+            <p>Woah, easy tiger! Are you sure you want to delete this badge?</p>
+            <br />
+            <p>
+              Note: Even if you click "Yes, Delete", this won't be fully deleted until you click the
+              "Save Changes" button below.
+            </p>
+          </ModalBody>
+          <ModalFooter>
+            <Button onClick={() => handleCancel()}>Cancel</Button>
+            <Button color="danger" onClick={() => deleteBadge()}>
+              Yes, Delete
+            </Button>
+          </ModalFooter>
+        </Modal>
+      </div>
+      <div className="tablet">
+        <div style={{ overflow: 'auto', height: '68vh' }}>
+          <Table>
+            <thead style={{zIndex: '10'}}>
+              <tr style={{zIndex: '10'}}>
+                <th style={{ width: '93px' }}>Badge</th>
+                <th>Name</th>
+                <th style={{ width: '110px' }}>Modified</th>
+                <th style={{ width: '100%', zIndex: '10' }}></th>
+              </tr>
+            </thead>
+            <tbody>
+              {sortBadges &&
+                sortBadges.map((value, index) => (
+                  <tr key={index}>
+                    <td className="badge_image_sm">
+                      {' '}
+                      <img src={value.badge.imageUrl} id={'popover_' + index.toString()} />
+                    </td>
+                    <UncontrolledPopover trigger="hover" target={'popover_' + index.toString()}>
+                      <Card className="text-center">
+                        <CardImg className="badge_image_lg" src={value?.badge?.imageUrl} />
+                        <CardBody>
+                          <CardTitle
+                            style={{
+                              fontWeight: 'bold',
+                              fontSize: 18,
+                              color: '#285739',
+                              marginBottom: 15,
+                            }}
+                          >
+                            {value.badge?.badgeName}
+                          </CardTitle>
+                          <CardText>{value.badge?.description}</CardText>
+                        </CardBody>
+                      </Card>
+                    </UncontrolledPopover>
+                    <td>{value.badge.badgeName}</td>
+                    <td>
+                      {typeof value.lastModified == 'string'
+                        ? value.lastModified.substring(0, 10)
+                        : value.lastModified.toLocaleString().substring(0, 10)}
+                    </td>
+                    <td>
+                      <ButtonGroup style={{ marginLeft: '8px' }}>
+                        <UncontrolledDropdown>
+                          <DropdownToggle caret style={{display: 'flex', alignItems:'center', justifyContent:'center', width: '80px'}}>
+                            Options
+                          </DropdownToggle>
+                          <DropdownMenu>
+                            <DropdownItem style={{ display: 'flex', alignItems: 'center', whiteSpace: 'now-rap', gap: '8px', height: '60px'}} toggle={false}>
+                              <span style={{ fontWeight: 'bold'}}>Count:</span>
+                              {hasPermission(
+                                props.role,
+                                'modifyOwnBadgeAmount',
+                                roles,
+                                props.permissionsUser,
+                              ) ? (
+                                <Input
+                                  type="number"
+                                  value={Math.round(value.count)}
+                                  min={0}
+                                  step={1}
+                                  onChange={e => {
+                                    countChange(value, index, e.target.value);
+                                  }}
+                                  style={{ width: '70px'}}
+                                ></Input>
+                              ) : (
+                                Math.round(value.count)
+                              )}
+                            </DropdownItem>
+                            <DropdownItem divider />
+                            <DropdownItem style={{ display: 'flex', alignItems: 'center', whiteSpace: 'now-rap', gap: '8px', height: '60px'}} toggle={false}>
+                              <span style={{ fontWeight: 'bold'}}>Featured:</span>
+                              <FormGroup check inline style={{ zIndex: '0' }}>
+                                <Input
+                                  /* alternative to using the formgroup
+                                  style={{ position: 'static' }} 
+                                  */
+                                  type="checkbox"
+                                  id={value.badge._id}
+                                  checked={value.featured}
+                                  onChange={e => {
+                                    featuredChange(value, index, e);
+                                  }}
+                                />
+                              </FormGroup>
+                            </DropdownItem>
+                            <DropdownItem divider />
+                            <DropdownItem style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '60px'}}>
+                              {hasPermission(props.role, 'deleteOwnBadge', roles, props.permissionsUser) ? (
+                                <button
+                                  type="button"
+                                  className="btn btn-danger"
+                                  onClick={e => handleDeleteBadge(index)}
+                                >
+                                  Delete
+                                </button>
+                              ) : (
+                                []
+                              )}
+                            </DropdownItem>
+                          </DropdownMenu>
+                        </UncontrolledDropdown>
+                      </ButtonGroup>
+                    </td>
+                  </tr>
+                ))}
+            </tbody>
+          </Table>
+        </div>
+        <div style={{ display: 'flex', flexDirection: 'column' }}>
+          <Button
+            className="btn--dark-sea-green float-right"
+            style={{ margin: 5 }}
+            onClick={e => {
+              saveChanges();
+            }}
+          >
+            <span>Save Changes</span> 
           </Button>
-        </ModalFooter>
-      </Modal>
+          <Button
+            className="btn--dark-sea-green float-right"
+            style={{ margin: 5 }}
+            onClick={pdfDocGenerator}
+          >
+            <span>Export All Badges to PDF</span>       
+          </Button>
+          <Button
+            className="btn--dark-sea-green float-right"
+            style={{ margin: 5 }}
+            onClick={pdfFeaturedDocGenerator}
+          >
+            <span>Export Selected/Featured Badges to PDF</span>
+          </Button>               
+        </div>
+        <Modal isOpen={showModal}>
+          <ModalBody>
+            <p>Woah, easy tiger! Are you sure you want to delete this badge?</p>
+            <br />
+            <p>
+              Note: Even if you click "Yes, Delete", this won't be fully deleted until you click the
+              "Save Changes" button below.
+            </p>
+          </ModalBody>
+          <ModalFooter>
+            <Button onClick={() => handleCancel()}>Cancel</Button>
+            <Button color="danger" onClick={() => deleteBadge()}>
+              Yes, Delete
+            </Button>
+          </ModalFooter>
+        </Modal>
+      </div>
     </div>
+
   );
 };
 
