@@ -97,7 +97,6 @@ describe('Login behavior', () => {
     //   route: rt,
     //   history: hist,
     // });
-
     // //This errors out should look into it.
     // fireEvent.change(screen.getByLabelText('Email:'), {
     //   target: { value: 'validEmail@gmail.com' },
@@ -105,9 +104,7 @@ describe('Login behavior', () => {
     // fireEvent.change(screen.getByLabelText('Password:'), {
     //   target: { value: 'validPass' },
     // });
-
     // fireEvent.click(screen.getByText('Submit'));
-
     // await waitFor(() => {
     //   expect(screen.getByLabelText('Current Password:')).toBeTruthy();
     // });
@@ -197,8 +194,5 @@ describe('Login page structure', () => {
       loginUser,
       clearErrors,
     };
-    // THIS ERRORS OUT LOOKS TO BE DUE TO NOT BEING FULLY MOUNTED WITH REDUX MAY NEED TO USE RTL with createMemoryHistory
-    // const { asFragment } = render(<Login {...props} />);
-    // expect(asFragment()).toMatchSnapshot();
   });
 });

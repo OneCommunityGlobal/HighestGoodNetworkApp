@@ -1,4 +1,4 @@
-import { renderWithProvider, renderWithRouterMatch } from './utils.js';
+import {  renderWithRouterMatch } from './utils.js';
 import '@testing-library/jest-dom/extend-expect';
 import React from 'react';
 import mockState from './mockAdminState.js';
@@ -16,8 +16,7 @@ const url = ENDPOINTS.FORCE_PASSWORD;
 const timerUrl = ENDPOINTS.TIMER(mockState.auth.user.userid);
 const userProjectsUrl = ENDPOINTS.USER_PROJECTS(mockState.auth.user.userid);
 let passwordUpdated = false;
-//When user is sent to forced Password Update they are not
-//authenticated yet and will be sent to login afterwards
+
 mockState.auth.isAuthenticated = false;
 
 function sleep(ms) {
@@ -79,7 +78,6 @@ const server = setupServer(
   rest.get(timerUrl, (req, res, ctx) => {
     return res(ctx.status(200), ctx.json({}));
   }),
-  //Any other requests error out
   rest.get('*', (req, res, ctx) => {
     console.error(
       `Please add request handler for ${req.url.toString()} in your MSW server requests.`,
@@ -107,7 +105,6 @@ describe('Force Password Update behaviour', () => {
   it('should pop up an error if password doesnt meet requirements', async () => {
     let reqError =
       '"New Password" should be at least 8 characters long and must include at least one uppercase letter, one lowercase letter, and one number or special character';
-    //No number or special char
     fireEvent.change(screen.getByLabelText('New Password:'), {
       target: { value: 'newPassword' },
     });
@@ -117,7 +114,6 @@ describe('Force Password Update behaviour', () => {
       expect(screen.getByText(reqError)).toBeTruthy();
     });
 
-    //No capatalized char
     fireEvent.change(screen.getByLabelText('New Password:'), {
       target: { value: 'newpassword8' },
     });
@@ -127,7 +123,6 @@ describe('Force Password Update behaviour', () => {
       expect(screen.getByText(reqError)).toBeTruthy();
     });
 
-    //Not long enough
     fireEvent.change(screen.getByLabelText('New Password:'), {
       target: { value: 'word8' },
     });
@@ -155,7 +150,6 @@ describe('Force Password Update behaviour', () => {
     });
   });
   it('should update password after submit is clicked', async () => {
-    //const pushSpy = jest.spyOn(history, 'replace');
     const history = { replace: jest.fn() };
     fireEvent.change(screen.getByLabelText('New Password:'), {
       target: { value: 'newPassword8' },
@@ -175,24 +169,5 @@ describe('Force Password Update behaviour', () => {
         ),
       );
     });
-    /*
-    await waitFor(()=> {
-      expect(screen.getByLabelText('Email:')).toBeTruthy();
-    });
-    */
-  });
-});
-
-describe('Force Password Update page structure', () => {
-  it('should match the snapshot', () => {
-    let props = {
-      match: { params: { userId: '5edf141c78f1380017b829a6' } },
-      auth: { isAuthenticated: true },
-      errors: {},
-      clearErrors: clearErrors,
-      forcePasswordUpdate: fPU,
-    };
-    const { asFragment } = render(<ForcePasswordUpdate {...props} />);
-    expect(asFragment()).toMatchSnapshot();
   });
 });

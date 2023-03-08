@@ -21,7 +21,6 @@ import ReactTooltip from 'react-tooltip';
 import { postTimeEntry, editTimeEntry } from '../../../actions/timeEntries';
 import { getUserProjects } from '../../../actions/userProjects';
 import { getUserProfile } from 'actions/userProfile';
-import { getAllRoles } from 'actions/role';
 import { BiPlus } from 'react-icons/bi';
 
 import { stopTimer } from '../../../actions/timer';
@@ -436,7 +435,6 @@ const TimeEntryForm = props => {
   };
 
   const handleSubmit = async event => {
-    //Validation and variable initialization
     if (event) event.preventDefault();
     if (isSubmitting) return;
     const hours = inputs.hours || 0;
@@ -460,8 +458,6 @@ const TimeEntryForm = props => {
     } else {
       timeEntry.timeSpent = `${hours}:${minutes}:00`;
     }
-
-    //Update userprofile hoursByCategory
 
     //Send the time entry to the server
     setSubmitting(true);
