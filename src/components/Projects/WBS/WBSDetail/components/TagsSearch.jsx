@@ -32,6 +32,17 @@ function TagsSearch({ placeholder, members, addResources, removeResource, resour
     }
   };
 
+  const handleBlur = () => {
+    setTimeout(() => {
+      setIsHidden(true);
+    }, 80);
+  }
+
+  const handleFocus = event => {
+    const value = event.target.value;
+    value !== '' && setIsHidden(false);
+  }
+
   return (
     <div className="container-fluid d-flex flex-column px-0">
       <div className="d-flex flex-column container-fluid mb-1 px-0">
@@ -41,6 +52,8 @@ function TagsSearch({ placeholder, members, addResources, removeResource, resour
             placeholder={placeholder}
             className="border border-dark rounded form-control px-2"
             onChange={handleFilter}
+            onBlur={handleBlur}
+            onFocus={handleFocus}
           />
           {filteredData.length !== 0 ? (
             <ul
