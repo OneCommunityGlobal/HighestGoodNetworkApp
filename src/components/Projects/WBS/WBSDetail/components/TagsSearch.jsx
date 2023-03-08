@@ -11,7 +11,6 @@ function TagsSearch({ placeholder, members, addResources, removeResource, resour
     members.map(member =>{ 
       if(`${member.firstName} ${member.lastName}` == event.target.innerText) {
         addResources(member._id, member.firstName, member.lastName);
-        console.log(resourceItems)
       }});
     setIsHidden(!isHidden);
     event.target.closest('.container-fluid').querySelector('input').value = '';
