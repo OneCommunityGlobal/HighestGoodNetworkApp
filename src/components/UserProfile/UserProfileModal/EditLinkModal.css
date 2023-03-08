@@ -1,0 +1,6 @@
+@media (max-width: 1024px) {
+  .link-fields {
+    display: flex;
+    flex-direction: column;
+  }
+}
