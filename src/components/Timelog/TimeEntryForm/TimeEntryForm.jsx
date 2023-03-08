@@ -15,7 +15,7 @@ import {
   ModalFooter,
 } from 'reactstrap';
 import moment from 'moment-timezone';
-import _ from 'lodash';
+import { isEmpty } from 'lodash';
 import { Editor } from '@tinymce/tinymce-react';
 import ReactTooltip from 'react-tooltip';
 import { postTimeEntry, editTimeEntry } from '../../../actions/timeEntries';
@@ -79,7 +79,7 @@ const TimeEntryForm = props => {
   const [tasks, setTasks] = useState([]);
   const [formDataBeforeEdit, setFormDataBeforeEdit] = useState({});
 
-  const fromTimer = !_.isEmpty(timer);
+  const fromTimer = !isEmpty(timer);
   const { userProfile, currentUserRole } = useSelector(getTimeEntryFormData);
   const roles = useSelector(state => state.role.roles);
   const userPermissions = useSelector(state => state.auth.user?.permissions?.frontPermissions);
@@ -215,8 +215,23 @@ const TimeEntryForm = props => {
       result.dateOfWork = 'Date is required';
     } else {
       const date = moment(inputs.dateOfWork);
+      const today = moment(
+        moment()
+          .tz('America/Los_Angeles')
+          .format('YYYY-MM-DD'),
+      );
       if (!date.isValid()) {
         result.dateOfWork = 'Invalid date';
+      }
+      // Administrator/Owner can add time entries for any dates. Other roles cannot.
+      // Editing details of past date is possible for any role.
+      else if (
+        currentUserRole !== 'Administrator' &&
+        currentUserRole !== 'Owner' &&
+        !edit &&
+        today.diff(date, 'days') !== 0
+      ) {
+        result.dateOfWork = 'Invalid date. Please refresh the page.';
       }
     }
 
@@ -273,7 +288,7 @@ const TimeEntryForm = props => {
     }
 
     setErrors(result);
-    return _.isEmpty(result);
+    return isEmpty(result);
   };
   //Update hoursByCategory when submitting new time entry
   const updateHoursByCategory = async (userProfile, timeEntry, hours, minutes) => {
@@ -401,7 +416,6 @@ const TimeEntryForm = props => {
     //Validation and variable initialization
     if (event) event.preventDefault();
     if (isSubmitting) return;
-    console.log('submitting');
     const hours = inputs.hours || 0;
     const minutes = inputs.minutes || 0;
     const isTimeModified = edit && (data.hours !== hours || data.minutes !== minutes);
@@ -448,7 +462,7 @@ const TimeEntryForm = props => {
       );
       return;
     }
-    console.log(timeEntry);
+
     //Clear the form and clean up.
     if (fromTimer) {
       const timerStatus = await dispatch(stopTimer(userId));

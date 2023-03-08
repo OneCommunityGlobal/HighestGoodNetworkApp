@@ -4,7 +4,6 @@
 /* eslint-disable indent */
 import { faBell, faCircle, faClock, faCheck } from '@fortawesome/free-solid-svg-icons';
 import { Table, Progress } from 'reactstrap';
-import _ from 'lodash';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { fetchTeamMembersTask, deleteTaskNotification } from 'actions/task';
 import React, { useEffect, useState } from 'react';

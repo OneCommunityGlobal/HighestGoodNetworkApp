@@ -1,5 +1,5 @@
 import { connect } from 'react-redux';
-import _ from 'lodash';
+import { get } from 'lodash';
 import { getUserProfile, updateUserProfile, clearUserProfile } from '../../../actions/userProfile';
 
 import {
@@ -15,11 +15,11 @@ import AddUserProfile from './UserProfileAdd';
 
 const mapStateToProps = state => ({
   auth: state.auth,
-  userProfile: _.get(state, 'userProfile'),
-  user: _.get(state, 'user', {}),
+  userProfile: get(state, 'userProfile'),
+  user: get(state, 'user', {}),
   timeEntries: state.timeEntries,
   userProjects: state.userProjects,
-  allProjects: _.get(state, 'allProjects'),
+  allProjects: get(state, 'allProjects'),
   allTeams: state,
   state,
 });

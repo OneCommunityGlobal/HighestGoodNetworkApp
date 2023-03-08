@@ -84,7 +84,7 @@ const Badges = props => {
             </div>
           </div>
         </CardHeader>
-        <CardBody>
+        <CardBody style={{ overflow: 'auto' }}>
           <FeaturedBadges badges={props.userProfile.badgeCollection} />
         </CardBody>
         <CardFooter

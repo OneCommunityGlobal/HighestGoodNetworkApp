@@ -1,4 +1,4 @@
-import _ from 'lodash';
+import { isEmpty } from 'lodash';
 import { SET_CURRENT_USER, SET_HEADER_DATA } from '../constants/auth';
 
 const initialState = {
@@ -21,7 +21,7 @@ export const authReducer = (auth = initialState, action) => {
     } else {
       return {
         ...auth,
-        isAuthenticated: !_.isEmpty(action.payload),
+        isAuthenticated: !isEmpty(action.payload),
         user: action.payload,
       };
     }
