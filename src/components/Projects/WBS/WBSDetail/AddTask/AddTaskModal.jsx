@@ -358,13 +358,11 @@ const AddTaskModal = props => {
 
     props.addNewTask(newTask, props.wbsId);
 
-    // setTimeout(() => {
     setIsLoading(false);
     if (props.tasks.error === 'none') {
       toggle();
       getNewNum();
     }
-    // }, 1000);
   };
 
   useEffect(() => {

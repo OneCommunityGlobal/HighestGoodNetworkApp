@@ -79,17 +79,14 @@ export const updateTask = (taskId, updatedTask, hasPermission) => async (dispatc
     const oldTask = selectUpdateTaskData(state, taskId);
     //dispatch(fetchTeamMembersTaskBegin());
     if (hasPermission) {
-      console.log(`TASK UPDATE ********\n`);
       await axios.put(ENDPOINTS.TASK_UPDATE(taskId), updatedTask);
       const userIds = updatedTask.resources.map(resource => resource.userID);
-      console.log(`TASK NOTI UPDATE ********\n`);
       await createOrUpdateTaskNotificationHTTP(taskId, oldTask, userIds);
     } else {
       await createTaskEditSuggestionHTTP(taskId, selectUserId(state), oldTask, updatedTask);
     }
   } catch (error) {
     //dispatch(fetchTeamMembersTaskError());
-    console.log(`error updatingTask`);
     console.log(error);
     status = 400;
   }
