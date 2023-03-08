@@ -9,7 +9,13 @@ import { Button, Dropdown, DropdownItem, DropdownToggle, DropdownMenu } from 're
 import { BsFillCaretDownFill, BsFillCaretUpFill } from 'react-icons/bs';
 import AddTaskModal from '../AddTask/AddTaskModal';
 import EditTaskModal from '../EditTask/EditTaskModal';
-import { moveTasks, fetchAllTasks, deleteTask, copyTask } from '../../../../../actions/task.js';
+import {
+  moveTasks,
+  fetchAllTasks,
+  deleteTask,
+  copyTask,
+  deleteChildrenTasks,
+} from '../../../../../actions/task.js';
 import './tagcolor.css';
 import './task.css';
 import { Editor } from '@tinymce/tinymce-react';
@@ -37,10 +43,11 @@ const Task = props => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [isLoad, setIsLoad] = useState(false);
   const toggle = () => setDropdownOpen(prevState => !prevState);
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(props.isOpen);
   const [isCopied, setIsCopied] = useState(false);
   const [tableColNum, setTableColNum] = useState(16);
   const tableRowRef = createRef();
+
   useEffect(() => {
     if (tableRowRef.current) {
       const spanColNum = tableRowRef.current.cells.length;
@@ -67,29 +74,29 @@ const Task = props => {
     props.selectTask(id);
   }; */
 
-  const toggleGroups = (num, id, level) => {
-    if (!isLoad) {
-      props.fetchAllTasks(props.wbsId, level, props.id);
-      setIsLoad(true);
-    }
-
+  const toggleGroups = id => {
     if (isOpen) {
       const allItems = [
-        ...document.getElementsByClassName(`parentId1_${props.id}`),
-        ...document.getElementsByClassName(`parentId2_${props.id}`),
-        ...document.getElementsByClassName(`parentId3_${props.id}`),
+        ...document.getElementsByClassName(`parentId1_${id}`),
+        ...document.getElementsByClassName(`parentId2_${id}`),
+        ...document.getElementsByClassName(`parentId3_${id}`),
       ];
       for (let i = 0; i < allItems.length; i++) {
         allItems[i].style.display = 'none';
       }
     } else {
-      const allItems = [...document.getElementsByClassName(`mother_${props.id}`)];
+      const allItems = [...document.getElementsByClassName(`mother_${id}`)];
       for (let i = 0; i < allItems.length; i++) {
         allItems[i].style.display = 'table-row';
       }
     }
-
     setIsOpen(!isOpen);
+  };
+
+  const getParentCategory = id => {
+    let parentCategory = props.filteredTasks.find(task => task._id === id);
+    if (parentCategory) return parentCategory.taskName;
+    else return '';
   };
 
   const openChild = (num, id) => {
@@ -125,12 +132,21 @@ const Task = props => {
     props.getPopupById(TASK_DELETE_POPUP_ID);
   };
 
+
   const deleteTask = (taskId, mother) => {
+    if (mother !== null) {
+      props.deleteChildrenTasks(mother);
+    }
     props.deleteTask(taskId, mother);
     props.fetchAllTasks(props.wbsId, -1);
     setTimeout(() => {
       props.fetchAllTasks(props.wbsId, 0);
     }, 2000);
+  }
+
+  const deleteOneTask = (taskId, mother) => {
+    props.deleteWBSTask(taskId, mother);
+
   };
 
   const onMove = (from, to) => {
@@ -146,7 +162,6 @@ const Task = props => {
     setIsCopied(true);
     props.copyTask(id);
   };
-
   return (
     <>
       {props.id ? (
@@ -178,7 +193,7 @@ const Task = props => {
               className="taskNum"
               onClick={() => {
                 /* selectTask(props.id); */
-                toggleGroups(props.num, props.id, props.level);
+                toggleGroups(props.id);
               }}
             >
               {props.num.split('.0').join('')}
@@ -187,7 +202,7 @@ const Task = props => {
               {props.level === 1 ? (
                 <div className="level-space-1" data-tip="Level 1">
                   <span
-                    onClick={e => toggleGroups(props.num, props.id, props.level)}
+                    onClick={e => toggleGroups(props.id)}
                     id={`task_name_${props.id}`}
                     className={props.hasChildren ? 'has_children' : ''}
                   >
@@ -206,7 +221,7 @@ const Task = props => {
               {props.level === 2 ? (
                 <div className="level-space-2" data-tip="Level 2">
                   <span
-                    onClick={e => toggleGroups(props.num, props.id, props.level)}
+                    onClick={e => toggleGroups(props.id)}
                     id={`task_name_${props.id}`}
                     className={props.hasChildren ? 'has_children' : ''}
                   >
@@ -218,14 +233,14 @@ const Task = props => {
                         aria-hidden="true"
                       ></i>
                     ) : null}{' '}
-                    {props.name}
+                    {getParentCategory(props.mother) + '/' + props.name}
                   </span>
                 </div>
               ) : null}
               {props.level === 3 ? (
                 <div className="level-space-3" data-tip="Level 3">
                   <span
-                    onClick={e => toggleGroups(props.num, props.id, props.level)}
+                    onClick={e => toggleGroups(props.id)}
                     id={`task_name_${props.id}`}
                     className={props.hasChildren ? 'has_children' : ''}
                   >
@@ -237,14 +252,14 @@ const Task = props => {
                         aria-hidden="true"
                       ></i>
                     ) : null}{' '}
-                    {props.name}
+                    {getParentCategory(props.mother) + '/' + props.name}
                   </span>
                 </div>
               ) : null}
               {props.level === 4 ? (
                 <div className="level-space-4" data-tip="Level 4">
                   <span
-                    onClick={e => toggleGroups(props.num, props.id, props.level)}
+                    onClick={e => toggleGroups(props.id)}
                     id={`task_name_${props.id}`}
                     className={props.hasChildren ? 'has_children' : ''}
                   >
@@ -256,7 +271,7 @@ const Task = props => {
                         aria-hidden="true"
                       ></i>
                     ) : null}{' '}
-                    {props.name}
+                    {getParentCategory(props.mother) + '/' + props.name}
                   </span>
                 </div>
               ) : null}
@@ -428,8 +443,10 @@ const Task = props => {
                     parentId2={props.parentId2}
                     parentId3={props.parentId3}
                     mother={props.mother}
+                    childrenQty={props.childrenQty}
                     level={props.level}
                     openChild={e => openChild(props.num, props.id)}
+                    hasPermission={true}
                   />
                 ) : null}
                 <EditTaskModal
@@ -563,4 +580,5 @@ export default connect(mapStateToProps, {
   deleteTask,
   copyTask,
   getPopupById,
+  deleteChildrenTasks,
 })(Task);
