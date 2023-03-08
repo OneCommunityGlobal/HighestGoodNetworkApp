@@ -60,6 +60,9 @@ const UserProfile = props => {
   const [isTeamsEqual, setIsTeamsEqual] = useState(true);
   const [teams, setTeams] = useState([]);
   const [originalTeams, setOriginalTeams] = useState([]);
+  const [isProjectsEqual, setIsProjectsEqual] = useState(true);
+  const [projects, setProjects] = useState([]);
+  const [originalProjects, setOriginalProjects] = useState([]);
   const [id, setId] = useState('');
   const [activeTab, setActiveTab] = useState('1');
   const [infoModal, setInfoModal] = useState(false);
@@ -81,9 +84,10 @@ const UserProfile = props => {
   /* useEffect functions */
   useEffect(() => {
     checkIsTeamsEqual();
-    setUserProfile({ ...userProfile, teams });
-    setOriginalUserProfile({ ...originalUserProfile, teams });
-  }, [teams]);
+    checkIsProjectsEqual();
+    setUserProfile({ ...userProfile, teams, projects });
+    setOriginalUserProfile({ ...originalUserProfile, teams, projects });
+  }, [teams, projects]);
 
   useEffect(() => {
     loadUserProfile();
@@ -109,39 +113,68 @@ const UserProfile = props => {
 
   const checkIsTeamsEqual = () => {
     const originalTeamProperties = [];
-    originalTeams?.map(team => {
+    originalTeams?.forEach(team => {
       for (const [key, value] of Object.entries(team)) {
         if (key == 'teamName') {
           originalTeamProperties.push({ [key]: value });
         }
       }
     });
-    console.log('original team properties', originalTeamProperties);
 
     const teamsProperties = [];
-    teams?.map(team => {
+    teams?.forEach(team => {
       for (const [key, value] of Object.entries(team)) {
         if (key == 'teamName') {
           teamsProperties.push({ [key]: value });
         }
       }
     });
-    console.log('teamsProperties', teamsProperties);
 
     const originalTeamsBeingDisplayed = teamsProperties.filter(
       item =>
         JSON.stringify(item) ===
         JSON.stringify(originalTeamProperties.filter(elem => elem.teamName === item.teamName)[0]),
     );
-    console.log('originalTeamsBeingDisplayed', originalTeamsBeingDisplayed);
 
     const compare =
       originalTeamsBeingDisplayed?.length === originalTeams?.length &&
       originalTeamsBeingDisplayed?.length === teamsProperties?.length;
     setIsTeamsEqual(compare);
   };
-  console.log('originalTeams', originalTeams);
-  console.log('teams', teams);
+
+  const checkIsProjectsEqual = () => {
+    const originalProjectProperties = [];
+    originalProjects?.forEach(project => {
+      for (const [key, value] of Object.entries(project)) {
+        if (key == 'projectName') {
+          originalProjectProperties.push({ [key]: value });
+        }
+      }
+    });
+
+    const projectsProperties = [];
+    projects?.forEach(project => {
+      for (const [key, value] of Object.entries(project)) {
+        if (key == 'projectName') {
+          projectsProperties.push({ [key]: value });
+        }
+      }
+    });
+
+    const originalProjectsBeingDisplayed = projectsProperties.filter(
+      item =>
+        JSON.stringify(item) ===
+        JSON.stringify(
+          originalProjectProperties.filter(elem => elem.projectName === item.projectName)[0],
+        ),
+    );
+
+    const compare =
+      originalProjectsBeingDisplayed?.length === originalProjects?.length &&
+      originalProjectsBeingDisplayed?.length === projectsProperties?.length;
+    setIsProjectsEqual(compare);
+  };
+
   const loadUserTasks = async () => {
     const userId = props?.match?.params?.userId;
     axios
@@ -160,9 +193,11 @@ const UserProfile = props => {
     try {
       const response = await axios.get(ENDPOINTS.USER_PROFILE(userId));
       const newUserProfile = response.data;
-      console.log('new user profile: ', newUserProfile);
+
       setTeams(newUserProfile.teams);
       setOriginalTeams(newUserProfile.teams);
+      setProjects(newUserProfile.projects);
+      setOriginalProjects(newUserProfile.projects);
       setUserProfile({
         ...newUserProfile,
         jobTitle: newUserProfile.jobTitle[0],
@@ -191,11 +226,7 @@ const UserProfile = props => {
       ...prevUser,
       teams: teams,
     }));
-    setOriginalUserProfile({ ...originalUserProfile, teams: newUserProfile?.teams });
   };
-
-  console.log(originalUserProfile);
-  console.log(userProfile);
 
   const onDeleteProject = deletedProjectId => {
     const newUserProfile = { ...userProfile };
@@ -203,8 +234,7 @@ const UserProfile = props => {
       project => project._id !== deletedProjectId,
     );
     newUserProfile.projects = filteredProject;
-
-    setUserProfile(newUserProfile);
+    setProjects(prevProject => prevProject.filter(project => project._id !== deletedProjectId));
   };
 
   const onAssignTeam = assignedTeam => {
@@ -218,7 +248,7 @@ const UserProfile = props => {
     } else {
       newUserProfile.projects = [assignedProject];
     }
-    setUserProfile(newUserProfile);
+    setProjects(prevProjects => [...prevProjects, assignedProject]);
   };
 
   const onUpdateTask = (taskId, updatedTask) => {
@@ -514,7 +544,7 @@ const UserProfile = props => {
           </Col>
           <Col md="8">
             <div className="profile-head">
-              {!isProfileEqual || !isTasksEqual || !isTeamsEqual ? (
+              {!isProfileEqual || !isTasksEqual || !isTeamsEqual || !isProjectsEqual ? (
                 <Alert color="warning">
                   Please click on "Save changes" to save the changes you have made.{' '}
                 </Alert>
@@ -748,7 +778,7 @@ const UserProfile = props => {
                         !formValid.firstName ||
                         !formValid.lastName ||
                         !formValid.email ||
-                        (isProfileEqual && isTasksEqual && isTeamsEqual)
+                        (isProfileEqual && isTasksEqual && isTeamsEqual && isProjectsEqual)
                       }
                       userProfile={userProfile}
                     />
