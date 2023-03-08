@@ -7,6 +7,9 @@ import { ENDPOINTS } from 'utils/URL';
 import axios from 'axios';
 import styles from './VolunteeringTimeTab.css';
 
+const MINIMUM_WEEK_HOURS = 0;
+const MAXIMUM_WEEK_HOURS = 168;
+
 const StartDate = props => {
   if (!props.canEdit) {
     return <p>{moment(props.userProfile.createdDate).format('YYYY-MM-DD')}</p>;
@@ -60,7 +63,7 @@ const WeeklySummaryReqd = props => {
     return <p>{props.userProfile.weeklySummaryNotReq ? 'Not Required' : 'Required'}</p>;
   }
   return (
-    <div className={style.switchContainer} style={{justifyContent: 'left', marginBottom: '10px'}}>
+    <div className={style.switchContainer} style={{ justifyContent: 'left', marginBottom: '10px' }}>
       Required
       <input
         id="weeklySummaryNotReqd"
@@ -85,17 +88,34 @@ const WeeklyCommitedHours = props => {
   if (!props.canEdit) {
     return <p>{props.userProfile.weeklyComittedHours}</p>;
   }
+  const handleChange = e => {
+    // Maximum and minimum constants on lines 9 & 10
+    // Convert value from string into easy number variable
+    const value = parseInt(e.target.value);
+    if (value > MAXIMUM_WEEK_HOURS) {
+      // Check if Value is greater than total hours in one week
+      alert(`You can't commit more than ${MAXIMUM_WEEK_HOURS} hours per week.`);
+    } else if (value < MINIMUM_WEEK_HOURS) {
+      //Check if value is less than minimum hours and set it to minimum hours if needed
+      alert(`You can't commit less than ${MINIMUM_WEEK_HOURS} hours per week.`);
+      props.setUserProfile({ ...props.userProfile, weeklyComittedHours: MINIMUM_WEEK_HOURS });
+      props.setChanged(true);
+    } else {
+      props.setUserProfile({ ...props.userProfile, weeklyComittedHours: value });
+      props.setChanged(true);
+    }
+  };
+
   return (
     <Input
       type="number"
+      min={MINIMUM_WEEK_HOURS}
+      max={MAXIMUM_WEEK_HOURS}
       name="weeklyComittedHours"
       id="weeklyComittedHours"
       data-testid="weeklyCommittedHours"
       value={props.userProfile.weeklyComittedHours}
-      onChange={e => {
-        props.setUserProfile({ ...props.userProfile, weeklyComittedHours: e.target.value });
-        props.setChanged(true);
-      }}
+      onChange={e => handleChange(e)}
       placeholder="Weekly Committed Hours"
     />
   );
@@ -295,44 +315,44 @@ const ViewTab = props => {
 
         {props?.userProfile?.hoursByCategory
           ? Object.keys(userProfile.hoursByCategory).map(key => (
-            <React.Fragment key={'hours-by-category-' + key}>
-              <Row>
-                <Col md="6">
-                  <Label>
-                    {key !== 'unassigned' ? (
-                      <>Total Tangible {capitalize(key)} Hours</>
+              <React.Fragment key={'hours-by-category-' + key}>
+                <Row>
+                  <Col md="6">
+                    <Label>
+                      {key !== 'unassigned' ? (
+                        <>Total Tangible {capitalize(key)} Hours</>
+                      ) : (
+                        <>Total Unassigned Category Hours</>
+                      )}
+                    </Label>
+                  </Col>
+                  <Col md="6">
+                    {canEdit ? (
+                      <Input
+                        type="number"
+                        id={`${key}Hours`}
+                        step=".01"
+                        value={parseFloat(userProfile.hoursByCategory[key])?.toFixed(2)}
+                        onChange={e => {
+                          setUserProfile({
+                            ...userProfile,
+                            hoursByCategory: {
+                              ...userProfile.hoursByCategory,
+                              [key]: Number(e.target.value),
+                            },
+                          });
+                          setChanged(true);
+                        }}
+                        placeholder={`Total Tangible ${capitalize(key)} Hours`}
+                      />
                     ) : (
-                      <>Total Unassigned Category Hours</>
+                      <p>{userProfile.hoursByCategory[key]?.toFixed(2)}</p>
                     )}
-                  </Label>
-                </Col>
-                <Col md="6">
-                  {canEdit ? (
-                    <Input
-                      type="number"
-                      id={`${key}Hours`}
-                      step=".01"
-                      value={parseFloat(userProfile.hoursByCategory[key])?.toFixed(2)}
-                      onChange={e => {
-                        setUserProfile({
-                          ...userProfile,
-                          hoursByCategory: {
-                            ...userProfile.hoursByCategory,
-                            [key]: Number(e.target.value),
-                          },
-                        });
-                        setChanged(true);
-                      }}
-                      placeholder={`Total Tangible ${capitalize(key)} Hours`}
-                    />
-                  ) : (
-                    <p>{userProfile.hoursByCategory[key]?.toFixed(2)}</p>
-                  )}
-                </Col>
-              </Row>
-            </React.Fragment>
-          ))
-        : []}
+                  </Col>
+                </Row>
+              </React.Fragment>
+            ))
+          : []}
       </div>
       <div data-testid="volunteering-time-tab" className="volunteering-time-tab-tablet">
         <Col>
@@ -421,47 +441,46 @@ const ViewTab = props => {
 
         {props?.userProfile?.hoursByCategory
           ? Object.keys(userProfile.hoursByCategory).map(key => (
-            <React.Fragment key={'hours-by-category-' + key}>
-              <Col>
-                <Col md="6">
-                  <Label>
-                    {key !== 'unassigned' ? (
-                      <>Total Tangible {capitalize(key)} Hours</>
+              <React.Fragment key={'hours-by-category-' + key}>
+                <Col>
+                  <Col md="6">
+                    <Label>
+                      {key !== 'unassigned' ? (
+                        <>Total Tangible {capitalize(key)} Hours</>
+                      ) : (
+                        <>Total Unassigned Category Hours</>
+                      )}
+                    </Label>
+                  </Col>
+                  <Col md="6">
+                    {canEdit ? (
+                      <Input
+                        type="number"
+                        id={`${key}Hours`}
+                        step=".01"
+                        value={parseFloat(userProfile.hoursByCategory[key])?.toFixed(2)}
+                        onChange={e => {
+                          setUserProfile({
+                            ...userProfile,
+                            hoursByCategory: {
+                              ...userProfile.hoursByCategory,
+                              [key]: Number(e.target.value),
+                            },
+                          });
+                          setChanged(true);
+                        }}
+                        placeholder={`Total Tangible ${capitalize(key)} Hours`}
+                      />
                     ) : (
-                      <>Total Unassigned Category Hours</>
+                      <p>{userProfile.hoursByCategory[key]?.toFixed(2)}</p>
                     )}
-                  </Label>
+                  </Col>
                 </Col>
-                <Col md="6">
-                  {canEdit ? (
-                    <Input
-                      type="number"
-                      id={`${key}Hours`}
-                      step=".01"
-                      value={parseFloat(userProfile.hoursByCategory[key])?.toFixed(2)}
-                      onChange={e => {
-                        setUserProfile({
-                          ...userProfile,
-                          hoursByCategory: {
-                            ...userProfile.hoursByCategory,
-                            [key]: Number(e.target.value),
-                          },
-                        });
-                        setChanged(true);
-                      }}
-                      placeholder={`Total Tangible ${capitalize(key)} Hours`}
-                    />
-                  ) : (
-                    <p>{userProfile.hoursByCategory[key]?.toFixed(2)}</p>
-                  )}
-                </Col>
-              </Col>
-            </React.Fragment>
-          ))
-        : []}
+              </React.Fragment>
+            ))
+          : []}
       </div>
     </div>
-    
   );
 };
 
