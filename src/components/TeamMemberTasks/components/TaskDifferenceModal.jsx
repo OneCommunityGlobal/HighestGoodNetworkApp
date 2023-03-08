@@ -47,7 +47,7 @@ export const datetimeToDate = datetime => {
   const day = date.getUTCDate();
   const month = date.getUTCMonth() + 1;
   const year = date.getUTCFullYear();
-  return day + '/' + month + '/' + year;
+  return month + '/' + day + '/' + year;
 };
 
 export const TaskDifferenceModal = ({
