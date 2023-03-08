@@ -826,7 +826,7 @@ const UserProfile = props => {
                                 !formValid.firstName ||
                                 !formValid.lastName ||
                                 !formValid.email ||
-                                !changed
+                                (isProfileEqual && isTasksEqual && isTeamsEqual && isProjectsEqual)
                               }
                               userProfile={userProfile}
                             />
@@ -890,7 +890,7 @@ const UserProfile = props => {
                                 !formValid.firstName ||
                                 !formValid.lastName ||
                                 !formValid.email ||
-                                !changed
+                                (isProfileEqual && isTasksEqual && isTeamsEqual && isProjectsEqual)
                               }
                               userProfile={userProfile}
                             />
@@ -947,7 +947,7 @@ const UserProfile = props => {
                                 !formValid.firstName ||
                                 !formValid.lastName ||
                                 !formValid.email ||
-                                !changed
+                                (isProfileEqual && isTasksEqual && isTeamsEqual && isProjectsEqual)
                               }
                               userProfile={userProfile}
                             />
@@ -1007,7 +1007,7 @@ const UserProfile = props => {
                                 !formValid.firstName ||
                                 !formValid.lastName ||
                                 !formValid.email ||
-                                !changed
+                                (isProfileEqual && isTasksEqual && isTeamsEqual && isProjectsEqual)
                               }
                               userProfile={userProfile}
                             />
@@ -1066,7 +1066,7 @@ const UserProfile = props => {
                                 !formValid.firstName ||
                                 !formValid.lastName ||
                                 !formValid.email ||
-                                !changed
+                                (isProfileEqual && isTasksEqual && isTeamsEqual && isProjectsEqual)
                               }
                               userProfile={userProfile}
                             />
