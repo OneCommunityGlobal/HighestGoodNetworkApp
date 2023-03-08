@@ -772,7 +772,6 @@ const UserProfile = props => {
                     role={requestorRole}
                     userProfile={userProfile}
                     setUserProfile={setUserProfile}
-                    setChanged={setChanged}
                     handleUserProfile={handleUserProfile}
                     formValid={formValid}
                     setFormValid={setFormValid}
@@ -835,7 +834,6 @@ const UserProfile = props => {
                               onClick={() => {
                                 setUserProfile(originalUserProfile);
                                 setTasks(originalTasks);
-                                setChanged(false);
                               }}
                               className="btn btn-outline-danger mr-1 btn-bottom"
                             >
@@ -863,7 +861,6 @@ const UserProfile = props => {
                   <VolunteeringTimeTab
                     userProfile={userProfile}
                     setUserProfile={setUserProfile}
-                    setChanged={setChanged}
                     isUserSelf={isUserSelf}
                     role={requestorRole}
                     canEdit={hasPermission(
@@ -901,7 +898,6 @@ const UserProfile = props => {
                               onClick={() => {
                                 setUserProfile(originalUserProfile);
                                 setTasks(originalTasks);
-                                setChanged(false);
                               }}
                               className="btn btn-outline-danger mr-1 btn-bottom"
                             >
@@ -959,7 +955,6 @@ const UserProfile = props => {
                               onClick={() => {
                                 setUserProfile(originalUserProfile);
                                 setTasks(originalTasks);
-                                setChanged(false);
                               }}
                               className="btn btn-outline-danger mr-1 btn-bottom"
                             >
@@ -1020,7 +1015,6 @@ const UserProfile = props => {
                               onClick={() => {
                                 setUserProfile(originalUserProfile);
                                 setTasks(originalTasks);
-                                setChanged(false);
                               }}
                               className="btn btn-outline-danger mr-1 btn-bottom"
                             >
@@ -1048,7 +1042,6 @@ const UserProfile = props => {
                   <TimeEntryEditHistory
                     userProfile={userProfile}
                     setUserProfile={setUserProfile}
-                    setChanged={setChanged}
                     role={requestorRole}
                     roles={roles}
                     userPermissions={userPermissions}
@@ -1081,7 +1074,6 @@ const UserProfile = props => {
                               onClick={() => {
                                 setUserProfile(originalUserProfile);
                                 setTasks(originalTasks);
-                                setChanged(false);
                               }}
                               className="btn btn-outline-danger mr-1 btn-bottom"
                             >

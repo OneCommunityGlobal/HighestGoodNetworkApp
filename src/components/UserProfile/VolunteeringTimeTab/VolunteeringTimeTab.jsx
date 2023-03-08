@@ -112,7 +112,6 @@ const TotalTangibleHours = props => {
       value={props.userProfile.totalTangibleHrs}
       onChange={e => {
         props.setUserProfile({ ...props.userProfile, totalTangibleHrs: e.target.value });
-        props.setChanged(true);
       }}
       placeholder="Total Tangible Time Logged"
       invalid={!props.isUserAdmin}
@@ -335,7 +334,6 @@ const ViewTab = props => {
               role={role}
               userProfile={userProfile}
               setUserProfile={setUserProfile}
-              setChanged={setChanged}
               canEdit={canEdit}
             />
           </Col>
@@ -350,7 +348,6 @@ const ViewTab = props => {
               role={role}
               userProfile={userProfile}
               setUserProfile={setUserProfile}
-              setChanged={setChanged}
               canEdit={canEdit}
             />
           </Col>
@@ -374,7 +371,6 @@ const ViewTab = props => {
               role={role}
               userProfile={userProfile}
               setUserProfile={setUserProfile}
-              setChanged={setChanged}
               canEdit={canEdit}
             />
           </Col>
@@ -388,7 +384,6 @@ const ViewTab = props => {
               role={role}
               userProfile={userProfile}
               setUserProfile={setUserProfile}
-              setChanged={setChanged}
               canEdit={canEdit}
             />
           </Col>
@@ -438,7 +433,6 @@ const ViewTab = props => {
                               [key]: Number(e.target.value),
                             },
                           });
-                          setChanged(true);
                         }}
                         placeholder={`Total Tangible ${capitalize(key)} Hours`}
                       />
