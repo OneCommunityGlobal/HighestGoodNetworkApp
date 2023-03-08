@@ -371,6 +371,7 @@ function AddTaskModal(props) {
             size="small"
             className="btn btn-primary btn-sm margin-left"
             onClick={() => paste()}
+            disabled={hoursWarning}
           >
             Paste
           </button>
@@ -516,9 +517,10 @@ function AddTaskModal(props) {
                       className="w-25"
                     />
                     <div className="warning">
-                      {hoursWarning
-                        ? 'Hours - Best-case < Hours - Most-case < Hours - Most-case'
-                        : ''}
+                      {
+                        hoursWarning ? 
+                        'Hours - Best-case < Hours - Most-case < Hours - Most-case' : ''
+                      }
                     </div>
                   </div>
                   <div className="d-inline py-2">
@@ -732,7 +734,7 @@ function AddTaskModal(props) {
             isLoading ? (
               ' Adding...'
             ) : (
-              <Button color="primary" onClick={toggle && addNewTask}>
+              <Button color="primary" onClick={toggle && addNewTask} disabled={hoursWarning}>
                 Save
               </Button>
             )
