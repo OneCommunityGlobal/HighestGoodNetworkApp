@@ -182,7 +182,6 @@ const BadgeReport = props => {
         newBadges[index].lastModified = new Date(newBadges[index].lastModified);
       }
     });
-    console.log('numFeatured: ', numFeatured);
     setSortBadges(newBadges);
   }, [props.badges]);
 
@@ -193,8 +192,6 @@ const BadgeReport = props => {
   };
 
   const featuredChange = (badge, index, e) => {
-    console.log('numFeatured: ', numFeatured);
-
     let newBadges = sortBadges.slice();
     if ((e.target.checked && numFeatured < 5) || !e.target.checked) {
       let count = 0;
@@ -238,7 +235,7 @@ const BadgeReport = props => {
     for (let i = 0; i < newBadgeCollection.length; i++) {
       newBadgeCollection[i].badge = newBadgeCollection[i].badge._id;
     }
-    console.log(newBadgeCollection);
+
     await props.changeBadgesByUserID(props.userId, newBadgeCollection);
     await props.getUserProfile(props.userId);
 

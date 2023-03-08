@@ -123,7 +123,6 @@ const UserProfile = props => {
     try {
       const response = await axios.get(ENDPOINTS.USER_PROFILE(userId));
       const newUserProfile = response.data;
-      console.log('new user profile: ', newUserProfile);
       setUserProfile(newUserProfile);
       setOriginalUserProfile(newUserProfile);
       setShowLoading(false);
@@ -297,9 +296,9 @@ const UserProfile = props => {
     try {
       await props.updateUserProfile(props.match.params.userId, userProfile);
 
-        if (userProfile._id === props.auth.user.userid && props.auth.user.role !== userProfile.role) {
-          await props.refreshToken(userProfile._id);
-        }
+      if (userProfile._id === props.auth.user.userid && props.auth.user.role !== userProfile.role) {
+        await props.refreshToken(userProfile._id);
+      }
       await loadUserProfile();
       await loadUserTasks();
     } catch (err) {
