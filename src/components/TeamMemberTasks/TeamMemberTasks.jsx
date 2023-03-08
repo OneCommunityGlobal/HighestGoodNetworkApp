@@ -288,7 +288,7 @@ const TeamMemberTasks = props => {
                                 <Link to={task.projectId ? `/wbs/tasks/${task._id}` : '/'}>
                                   <span>{`${task.num} ${task.taskName}`} </span>
                                 </Link>
-                                {task.taskNotifications.length > 0 && (
+                                {task.taskNotifications.length > 1 && (
                                   <FontAwesomeIcon
                                     className="team-member-tasks-bell"
                                     icon={faBell}
