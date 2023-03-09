@@ -12,7 +12,8 @@ import moment from 'moment';
 function PeopleTable(props) {
   let PeopleList = [];
   if (props.userProfiles.length > 0) {
-    PeopleList = props.userProfiles.map((person, index) => (
+    PeopleList = props.userProfiles.sort((a, b) =>
+    a.firstName.localeCompare(b.firstName) ).map((person, index) => (
       <tr className="teams__tr" id={`tr_${person._id}`} key={person._id}>
         <th className="teams__order--input" scope="row">
           <div>{index + 1}</div>

@@ -13,6 +13,7 @@ import {
 import PropTypes from 'prop-types';
 import hasPermission from '../../../utils/permissions';
 import { useSelector } from 'react-redux';
+import styles from './EditLinkModal.css';
 
 const EditLinkModal = props => {
   const { isOpen, closeModal, updateLink, userProfile, setChanged, role } = props;
@@ -94,15 +95,15 @@ const EditLinkModal = props => {
           <div>
             {hasPermission(role, 'adminLinks', roles, userPermissions) && (
               <CardBody>
-                <Card>
+                <Card style={{ padding: '16px' }}>
                   <Label style={{ display: 'flex', margin: '5px' }}>Admin Links:</Label>
-                  <Col>
+                  <div>
                     <div style={{ display: 'flex', margin: '5px' }}>
                       <div className="customTitle">Name</div>
                       <div className="customTitle">Link URL</div>
                     </div>
                     {adminLinks?.map((link, index) => (
-                      <div key={index} style={{ display: 'flex', margin: '5px' }}>
+                      <div key={index} style={{ display: 'flex', margin: '5px' }} className="link-fields">
                         <input
                           className="customInput"
                           value={link.Name}
@@ -140,7 +141,7 @@ const EditLinkModal = props => {
                       <div className="customTitle">+ ADD LINK:</div>
                     </div>
 
-                    <div style={{ display: 'flex', margin: '5px' }}>
+                    <div style={{ display: 'flex', margin: '5px'}} className="link-fields">
                       <input
                         className="customEdit"
                         id="linkName"
@@ -166,20 +167,20 @@ const EditLinkModal = props => {
                         +
                       </button>
                     </div>
-                  </Col>
+                  </div>
                 </Card>
               </CardBody>
             )}
             <CardBody>
-              <Card>
+              <Card style={{ padding: '16px' }}>
                 <Label style={{ display: 'flex', margin: '5px' }}>Personal Links:</Label>
-                <Col>
+                <div>
                   <div style={{ display: 'flex', margin: '5px' }}>
                     <div className="customTitle">Name</div>
                     <div className="customTitle">Link URL</div>
                   </div>
                   {personalLinks.map((link, index) => (
-                    <div key={index} style={{ display: 'flex', margin: '5px' }}>
+                    <div key={index} style={{ display: 'flex', margin: '5px' }} className="link-fields">
                       <input
                         className="customInput"
                         value={link.Name}
@@ -219,7 +220,7 @@ const EditLinkModal = props => {
                     <div className="customTitle">+ ADD LINK:</div>
                   </div>
 
-                  <div style={{ display: 'flex', margin: '5px' }}>
+                  <div style={{ display: 'flex', margin: '5px' }} className="link-fields">
                     <input
                       className="customEdit"
                       id="linkName"
@@ -245,7 +246,7 @@ const EditLinkModal = props => {
                       +
                     </button>
                   </div>
-                </Col>
+                </div>
               </Card>
             </CardBody>
           </div>
@@ -264,7 +265,6 @@ const EditLinkModal = props => {
             Cancel
           </Button>
         </ModalFooter>
-        /
       </Modal>
     </React.Fragment>
   );

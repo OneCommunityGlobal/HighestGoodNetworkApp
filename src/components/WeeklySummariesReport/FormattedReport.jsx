@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import moment from 'moment';
 import 'moment-timezone';
 import ReactHtmlParser from 'react-html-parser';
+import { Link } from 'react-router-dom';
 
 const FormattedReport = ({ summaries, weekIndex }) => {
   const emails = [];
@@ -90,21 +91,24 @@ const FormattedReport = ({ summaries, weekIndex }) => {
             key={'summary-' + index}
           >
             <p>
-              <b>Name:</b> {summary.firstName} {summary.lastName}
+              <b>Name: </b>
+              <Link to={`/userProfile/${summary._id}`} title="View Profile">
+                {summary.firstName} {summary.lastName}
+              </Link>
             </p>
             <p>
               {' '}
               <b>Media URL:</b> {getMediaUrlLink(summary)}
             </p>
             {getTotalValidWeeklySummaries(summary)}
-            {hoursLogged >= summary.weeklyComittedHours && (
+            {hoursLogged >= summary.weeklycommittedHours && (
               <p>
-                <b>Hours logged:</b> {hoursLogged.toFixed(2)} / {summary.weeklyComittedHours}
+                <b>Hours logged:</b> {hoursLogged.toFixed(2)} / {summary.weeklycommittedHours}
               </p>
             )}
-            {hoursLogged < summary.weeklyComittedHours && (
+            {hoursLogged < summary.weeklycommittedHours && (
               <p style={{ color: 'red' }}>
-                <b>Hours logged:</b> {hoursLogged.toFixed(2)} / {summary.weeklyComittedHours}
+                <b>Hours logged:</b> {hoursLogged.toFixed(2)} / {summary.weeklycommittedHours}
               </p>
             )}
             {getWeeklySummaryMessage(summary)}

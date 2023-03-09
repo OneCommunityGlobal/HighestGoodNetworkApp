@@ -1,3 +1,7 @@
+.desktop-profile-page {
+  z-index: -100;
+}
+
 .profileContainer {
     display: flex;
     flex-direction: row;
@@ -125,6 +129,10 @@
     color: #818182;
     font-weight: 600;
     margin-top: 10%;
+    font-size: 12px;
+    color: #818182;
+    font-weight: 600;
+    margin-top: 16px;
 }
 
 .iconContainer {
@@ -144,18 +152,17 @@
     font-weight: 600;
     color: #6c757d;
     cursor: pointer;
-    // margin-left: 5%;
-    // &:hover {
-    //   text-decoration: none;
-    // }
 }
 
-// .profileEditButtonContainer {
-//   position: absolute;
-//   display: flex;
-//   right: 1%;
-//   justify-content: flex-end;
-// }
+  border: none;
+  border-radius: 1.5rem;
+  width: 70%;
+  padding: 2%;
+  font-weight: 600;
+  color: #6c757d;
+  cursor: pointer;
+}
+
 .btn-bottom {
     margin-top: 2px;
     margin-bottom: 2px;
@@ -215,6 +222,74 @@
     .detailSection {
         width: 250px;
     }
+
+.profile-functions-tablet {
+  display: none;
+}
+
+@media only screen and (max-width: 1024px) {
+  .profileContainer {
+    justify-content: space-around;
+    margin: 0;
+    padding: 0;
+  }
+
+  .emp-profile {
+    margin: 0;
+    padding: 0;
+  }
+
+  .profile-work {
+    padding: 0;
+
+    p {
+      margin: 0;
+    }
+  }
+
+  .profile-functions-desktop {
+    display: none;
+  }
+
+  .profile-functions-tablet {
+    display: block;
+  }
+
+  .profile-functions-list {
+    display: flex;
+    flex-direction: column;
+    padding: 0;
+  }
+
+  .profile-functions-list {
+    margin-top: 16px;
+    border-top: 2px solid #0275d8;
+  }
+
+  .list-button {
+    display: flex;
+    margin: 4px 0;
+    padding: 8px 0;
+
+    font-weight: bold;
+    text-decoration: none;
+  }
+
+  .list-button:nth-child(1) {
+    margin-top: 16px;
+  }
+
+  .desktop-panel {
+    display: none;
+  }
+
+  .whoSection {
+    width: 250px;
+  }
+
+  .detailSection {
+    width: 250px;
+  }
 }
 
 @media only screen and (max-height: 650px) {
