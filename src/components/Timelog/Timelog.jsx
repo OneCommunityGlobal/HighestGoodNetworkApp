@@ -29,7 +29,7 @@ import './Timelog.css';
 import classnames from 'classnames';
 import { connect, useSelector } from 'react-redux';
 import moment from 'moment';
-import _ from 'lodash';
+import { isEmpty } from 'lodash';
 import ReactTooltip from 'react-tooltip';
 
 import ActiveCell from 'components/UserManagement/ActiveCell';
@@ -100,24 +100,28 @@ class Timelog extends Component {
   state = this.initialState;
 
   async componentDidMount() {
-    const userId = this.props.asUser;
-    await this.props.getUserProfile(userId);
+    const userId =
+      this.props?.match?.params?.userId || this.props.asUser || this.props.auth.user.userid; //Including fix for "undefined"
+    const isOwner = this.props.auth.user.userid === this.props.asUser;
+    if (!isOwner || this.props.userProfile) {
+      await this.props.getUserProfile(userId);
+      await this.props.getUserTask(userId);
+      await this.props.getTimeEntriesForWeek(userId, 0);
+      await this.props.getTimeEntriesForWeek(userId, 1);
+      await this.props.getTimeEntriesForWeek(userId, 2);
+      await this.props.getTimeEntriesForPeriod(userId, this.state.fromDate, this.state.toDate);
+      await this.props.getUserProjects(userId);
+      await this.props.getAllRoles();
+    }
     this.userProfile = this.props.userProfile;
-    await this.props.getUserTask(userId);
     this.userTask = this.props.userTask;
-    await this.props.getTimeEntriesForWeek(userId, 0);
-    await this.props.getTimeEntriesForWeek(userId, 1);
-    await this.props.getTimeEntriesForWeek(userId, 2);
-    await this.props.getTimeEntriesForPeriod(userId, this.state.fromDate, this.state.toDate);
-    await this.props.getUserProjects(userId);
-    await this.props.getAllRoles();
     this.setState({ isTimeEntriesLoading: false });
     const role = this.props.auth.user.role;
     //if user role is admin, manager, mentor or owner then default tab is task. If user have any tasks assigned, default tab is task.
     if (role === 'Administrator' || role === 'Manager' || role === "'Mentor'" || role === 'Owner') {
       this.setState({ activeTab: 0 });
     }
-    
+
     const UserHaveTask = doesUserHaveTaskWithWBS(this.userTask);
     /* To set the Task tab as defatult this.userTask is being watched.
     Accounts with no tasks assigned to it return an empty array.
@@ -289,7 +293,7 @@ class Timelog extends Component {
     const leaderData = [{ personId: userId, tangibletime: this.state.currentWeekEffort }];
     const fullName = `${this.props.userProfile.firstName} ${this.props.userProfile.lastName}`;
     let projects = [];
-    if (!_.isEmpty(this.props.userProjects.projects)) {
+    if (!isEmpty(this.props.userProjects.projects)) {
       projects = this.props.userProjects.projects;
     }
     const projectOrTaskOptions = projects.map(project => (
@@ -306,7 +310,7 @@ class Timelog extends Component {
 
     let tasks = [];
 
-    if (!_.isEmpty(this.props.userTask)) {
+    if (!isEmpty(this.props.userTask)) {
       tasks = this.props.userTask;
     }
     const activeTasks = tasks.filter(task =>

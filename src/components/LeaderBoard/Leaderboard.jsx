@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import './Leaderboard.css';
-import _ from 'lodash';
+import { isEqual } from 'lodash';
 import { Link } from 'react-router-dom';
 import { Table, Progress, Modal, ModalBody, ModalFooter, ModalHeader, Button } from 'reactstrap';
 
@@ -9,7 +9,7 @@ function useDeepEffect(effectFunc, deps) {
   const prevDeps = useRef(deps);
   useEffect(() => {
     const isSame = prevDeps.current.every((obj, index) => {
-      let isItEqual = _.isEqual(obj, deps[index]);
+      let isItEqual = isEqual(obj, deps[index]);
       return isItEqual;
     });
     if (isFirst.current || !isSame) {

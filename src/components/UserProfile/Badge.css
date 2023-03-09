@@ -156,3 +156,9 @@
     overflow-x: scroll;
   }
 }
+
+@media (max-width: 1024px) {
+  .badge-header {
+    flex-direction: column;
+  }
+}
