@@ -87,6 +87,8 @@ export const Header = props => {
           )}
         </div>
         <NavbarToggler onClick={toggle} />
+        {isAuthenticated && <NewTimer />}
+
         {isAuthenticated && (
           <Collapse isOpen={isOpen} navbar>
             <Nav className="ml-auto nav-links" navbar>

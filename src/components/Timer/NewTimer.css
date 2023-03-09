@@ -47,11 +47,7 @@
   overflow: hidden;
 }
 
-@media (min-width: 1550px) {
-  .timer {
-    left: -6rem;
-  }
-}
+
 
 .timer-content {
   position: relative;
