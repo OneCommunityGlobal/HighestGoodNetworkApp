@@ -17,6 +17,7 @@ import {
   BADGE_MANAGEMENT,
   PROJECTS,
   TEAMS,
+  SUMMARY_MANAGEMENT,
   WELCOME,
   VIEW_PROFILE,
   UPDATE_PASSWORD,
@@ -211,7 +212,12 @@ export const Header = props => {
                           {TEAMS}
                         </DropdownItem>
                       )}
-                      {hasPermission(user.role, 'seePopupManagement', roles, userPermissions) ? (
+                      {hasPermission(user.role, 'seeTeamsManagement', roles, userPermissions) && (
+                      <DropdownItem tag={Link} to="/summarymanagement">
+                        {SUMMARY_MANAGEMENT}
+                      </DropdownItem>
+                    )}
+                    {hasPermission(user.role, 'seePopupManagement', roles, userPermissions) ? (
                         <>
                           <DropdownItem divider />
                           <DropdownItem tag={Link} to={`/admin/`}>
