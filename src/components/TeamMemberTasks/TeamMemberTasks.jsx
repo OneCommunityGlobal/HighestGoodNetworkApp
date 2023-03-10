@@ -243,7 +243,7 @@ const TeamMemberTasks = props => {
               <Table borderless className="team-member-tasks-subtable">
                 <tbody>
                   <tr>
-                    <td data-label="Team Member" className="team-member-tasks-user-name">
+                    <td className="team-member-tasks-user-name">
                       <Link to={`/userprofile/${user.personId}`}>{`${user.name}`}</Link>
                     </td>
                     <td data-label="Time" className="team-clocks">
