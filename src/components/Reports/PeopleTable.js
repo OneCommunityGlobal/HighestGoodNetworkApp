@@ -1,15 +1,10 @@
-/* eslint-disable react/destructuring-assignment */
-/* eslint-disable react/prop-types */
-/* eslint-disable jsx-a11y/click-events-have-key-events */
-/* eslint-disable jsx-a11y/no-noninteractive-element-interactions */
-/* eslint-disable no-unused-vars */
 import React from 'react';
 import '../Teams/Team.css';
 import { Link } from 'react-router-dom';
 import './reports.css';
 import moment from 'moment';
 
-function PeopleTable(props) {
+const PeopleTable = props => {
   let PeopleList = [];
   if (props.userProfiles.length > 0) {
     PeopleList = props.userProfiles.sort((a, b) =>
@@ -20,14 +15,12 @@ function PeopleTable(props) {
         </th>
         <td>
           <Link to={`/peoplereport/${person._id}`} personId={person._id}>
-            {person.firstName}
-            {' '}
-            {person.lastName}
+            {person.firstName} {person.lastName}
           </Link>
         </td>
         <td
           className="teams__active--input"
-          onClick={(e) => {
+          onClick={e => {
             person.onStatusClick(person.firstName, person._id, person.isActive);
           }}
         >
@@ -41,12 +34,8 @@ function PeopleTable(props) {
             </div>
           )}
         </td>
-        <td>
-          {moment(person.createdDate).format('MM/DD/YYYY')}
-        </td>
-        <td>
-          {moment(person.endDate).format('MM/DD/YYYY') || 'N/A' }
-        </td>
+        <td>{moment(person.createdDate).format('MM/DD/YYYY')}</td>
+        <td>{moment(person.endDate).format('MM/DD/YYYY') || 'N/A'}</td>
         {/* <td>
           {person.blueSquares||"N/A"}
         </td> */}
@@ -58,21 +47,22 @@ function PeopleTable(props) {
     <table className="center">
       <table className="table table-bordered table-responsive-sm">
         <thead>
-          <tr className="table-header">
-            <th scope="col" id="projects__order">#</th>
+          <tr>
+            <th scope="col" id="projects__order">
+              #
+            </th>
             <th scope="col">Person Name</th>
-            <th scope="col" id="projects__active">Active</th>
+            <th scope="col" id="projects__active">
+              Active
+            </th>
             <th scope="col">Start Date</th>
             <th scope="col">End Date</th>
             {/* <th scope="col">Blue Squares</th> */}
           </tr>
         </thead>
-        <tbody>
-          {PeopleList}
-        </tbody>
+        <tbody>{PeopleList}</tbody>
       </table>
     </table>
-
   );
-}
+};
 export default PeopleTable;

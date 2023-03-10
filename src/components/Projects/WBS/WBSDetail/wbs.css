@@ -1,153 +1,149 @@
 .container-tasks {
-    margin: 20px;
-    width: calc(100% - 40px);
+  margin: 20px;
+  width: calc(100% - 40px);
 }
 
 .container {
-    overflow: auto;
+  overflow: auto;
 }
 
 .level-space-1 {
-    margin-left: 0px;
+  margin-left: 0px;
 }
 
 .level-space-2 {
-    margin-left: 15px;
+  margin-left: 15px;
 }
 
 .level-space-3 {
-    margin-left: 25px;
+  margin-left: 25px;
 }
 
 .level-space-4 {
-    margin-left: 35px;
+  margin-left: 35px;
 }
 
 .dot {
-    height: 20px;
-    width: 20px;
-    background-color: #bbb;
-    border-radius: 50%;
-    display: inline-block;
-    font-size: 10px;
-    text-align: center;
-    text-transform: uppercase;
+  height: 20px;
+  width: 20px;
+  background-color: #bbb;
+  border-radius: 50%;
+  display: inline-block;
+  font-size: 10px;
+  text-align: center;
+  text-transform: uppercase;
 }
 
 .img-circle {
-    border-radius: 50%;
-    border-radius: 50%;
-    height: 20px;
-    width: 20px;
+  border-radius: 50%;
+  border-radius: 50%;
+  height: 20px;
+  width: 20px;
 }
 
 .task-hour {
-    width: 35px;
+  width: 35px;
 }
 
 .task-resouces-input {
-    width: 80%;
-    float: left;
+  width: 80%;
+  float: left;
 }
-
 .task-resouces-btn {
-    width: 20%;
-    float: right;
+  width: 20%;
+  float: right;
 }
-
 .task-reousces-list {
-    margin-top: 3px;
-    float: left;
-    width: 100%;
+  margin-top: 3px;
+  float: left;
+  width: 100%;
 }
 
 .wbsTaskController {
-    display: contents;
+  display: contents;
 }
-
 .wbsTask {
-    line-height: 14px;
+  line-height: 14px;
 }
 
 .controlBtn {
-    float: left;
-    margin-bottom: 10px;
-    margin-right: 10px;
+  float: left;
+  margin-bottom: 10px;
+  margin-right: 10px;
 }
 
 .controlTd {
-    background-color: #effff2;
+  background-color: #effff2;
 }
 
 .controlBtn_remove {
-    float: right;
+  float: right;
 }
 
 .newTask {
-    background-color: #effff2;
+  background-color: #effff2;
 }
 
 .table td {
-    padding: 0.45rem;
+  padding: 0.45rem;
 }
 
 .taskNum {
-    cursor: context-menu;
-    width: 80px;
+  cursor: context-menu;
+  width: 80px;
 }
 
 .taskName {
-    width: 300px;
+  width: 300px;
 }
 
 .taskDrop {
-    width: 100%;
-    background: #effff2;
-    display: none;
+  width: 100%;
+  background: #effff2;
+  display: none;
 }
 
 .name {
-    margin-right: 2px;
+  margin-right: 2px;
 }
 
 .resourceMoreToggle {
-    cursor: pointer;
-    color: white;
-    font-size: 14px;
+  cursor: pointer;
+  color: white;
+  font-size: 14px;
 }
-
 .resourceMore {
-    display: none;
+  display: none;
 }
 
 .warning {
-    color: red;
-    font-size: 10px;
+  color: red;
+  font-size: 10px;
 }
 
 .toggle-all {
-    float: right;
+  float: right;
 }
-
 .tasks-table {
-    overflow-x: scroll;
-    width: 100% !important;
+  overflow-x: scroll;
+  width: 100% !important;
 }
 
 .task-link {
-    font-size: 10px;
-    float: left;
+  font-size: 10px;
+  float: left;
 }
 
 .action-edit-btn {
-    padding-right: 5px;
+  padding-right: 5px;
 }
 
 @media only screen and (max-width: 600px) {
-    .desktop-view {
-        display: none;
-    }
-    .table td {
-        padding: 5px !important;
-    }
+  .desktop-view {
+    display: none;
+  }
+
+  .table td {
+    padding: 5px !important;
+  }
 }
