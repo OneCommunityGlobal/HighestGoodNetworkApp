@@ -15,9 +15,12 @@ export const ENDPOINTS = {
   TEAM: `${APIEndpoint}/team`,
   TEAM_DATA: teamId => `${APIEndpoint}/team/${teamId}`,
   TEAM_USERS: teamId => `${APIEndpoint}/team/${teamId}/users`,
+  TEAM_MANAGER:teamId => `${APIEndpoint}/team/${teamId}/users`,
   USER_PROJECTS: userId => `${APIEndpoint}/projects/user/${userId}`,
   PROJECT: `${APIEndpoint}/project/`,
   PROJECT_BY_ID: projectId => `${APIEndpoint}/project/${projectId}`,
+  SUMMARY_GROUPS: `${APIEndpoint}/SUMMARY_GROUPS`,
+  SUMMARY_GROUPS_BY_ID: summaryGroupId => `${APIEndpoint}/SUMMARY_GROUPS/${summaryGroupId}`,
 
   PROJECT_MEMBER: projectId => `${APIEndpoint}/project/${projectId}/users`,
   UPDATE_PASSWORD: userId => `${APIEndpoint}/userprofile/${userId}/updatePassword`,

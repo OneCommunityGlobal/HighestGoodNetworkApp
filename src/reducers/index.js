@@ -38,6 +38,7 @@ import { taskEditSuggestionsReducer } from 'components/TaskEditSuggestions/reduc
 import { roleReducer } from './roleReducer';
 import { ownerMessageReducer } from './ownerMessageReducer';
 import { ownerStandardMessageReducer } from './ownerStandardMessageReducer';
+import { summaryGroupReducer } from './allSummaryGroupReducer';
 
 export default combineReducers({
   auth: authReducer,
@@ -81,5 +82,6 @@ export default combineReducers({
   taskEditSuggestions: taskEditSuggestionsReducer,
   role: roleReducer,
   ownerMessage: ownerMessageReducer,
-  ownerStandardMessage: ownerStandardMessageReducer
+  ownerStandardMessage: ownerStandardMessageReducer,
+  allSummaryGroups: summaryGroupReducer,
 });

@@ -14,6 +14,7 @@ import UpdatePassword from './components/UpdatePassword';
 import Header from './components/Header';
 import Projects from './components/Projects';
 import Teams from './components/Teams/Teams';
+import SummaryManagement from 'components/SummaryManagement/SummaryManagement';
 import UserManagement from './components/UserManagement';
 import Members from './components/Projects/Members';
 import WBS from './components/Projects/WBS';
@@ -35,6 +36,7 @@ import { TaskEditSuggestions } from 'components/TaskEditSuggestions/TaskEditSugg
 import { RoutePermissions } from 'utils/routePermissions';
 import PermissionsManagement from 'components/PermissionsManagement/PermissionsManagement';
 import UserRoleTab from 'components/PermissionsManagement/UserRoleTab';
+
 
 export default (
   <React.Fragment>
@@ -130,6 +132,12 @@ export default (
         exact
         component={Teams}
         routePermissions={RoutePermissions.teams}
+      />
+      <ProtectedRoute
+        path="/summarymanagement"
+        exact
+        component={SummaryManagement}
+        allowedRoles={[UserRole.Administrator, UserRole.Owner]}
       />
       <ProtectedRoute path="/project/members/:projectId" component={Members} />
 
