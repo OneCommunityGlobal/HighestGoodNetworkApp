@@ -1,23 +1,22 @@
 .report-page-wrapper {
-    display: grid;
-    grid-template-columns: 1fr 256px;
-    column-gap: 24px;
-    /* height: calc(100% - 83px + 16px); */
-    height: auto;
-    background-color: #faf7fd;
-    margin-top: -16px;
-    padding: 24px 0 0 24px;
+  display: grid;
+  grid-template-columns: 1fr 256px;
+  column-gap: 24px;
+  height: calc(100% - 83px + 16px);
+  background-color: #faf7fd;
+  margin-top: -16px;
+  padding: 24px 0 0 24px;
 }
 
 .report-page-content {
-    display: grid;
-    grid-row-start: 1;
-    row-gap: 32px;
-    padding-bottom: 24px;
+  display: grid;
+  grid-row-start: 1;
+  row-gap: 32px;
+  padding-bottom: 24px;
 }
 
 .report-page-profile {
-    padding: 24px 24px 0 24px;
-    background-color: #f1ebf7;
-    border-top-left-radius: 25px;
+  padding: 24px 24px 0 24px;
+  background-color: #f1ebf7;
+  border-top-left-radius: 25px;
 }

@@ -1,57 +1,23 @@
-* {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-}
-
 .team-report-main-info-wrapper {
-    margin-top: 24px;
-    height: 60px;
-}
-
-.team-report-main-info-id {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    height: 100%;
+  margin-top: 24px;
+  height: 60px;
 }
 
 .team-report-main-info {
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-    min-height: 100%;
-    width: 100%;
-}
-
-.team-report-main-info-title {
-    margin: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 100%;
 }
 
 .team-report-star {
-    color: #996cd3;
+  color: #996cd3;
 }
 
 .update-date {
-    color: #a1a1a1;
+  color: #a1a1a1;
 }
 
 .team-report-blocks {
-    grid-template-rows: 60px 1fr;
-}
-
-.team-chart-wrapper {
-    display: flex;
-    justify-content: space-between;
-    gap: 24px;
-    padding-bottom: 32px;
-}
-
-.team-chart-container {
-    width: 100%;
-    text-align: left;
-}
-
-.tableHeader {
-    background-color: #EEE7F7;
+  grid-template-rows: 60px 1fr;
 }

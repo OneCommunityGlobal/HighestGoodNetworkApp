@@ -1,31 +1,28 @@
-/* eslint-disable react/destructuring-assignment */
-/* eslint-disable react/prop-types */
 import React from 'react';
 import { SEARCH } from '../../languages/en/ui';
-import './reportsPage.css';
 
 /**
  * The search panel stateless component for  Rreport grid
  */
-function ReportTableSearchPanel(props) {
+const ReportTableSearchPanel = props => {
   return (
     <div className="input-group" id="new_team">
-      <div className="input-group-prepend">
+      <div className="input-group-prepend" style={{ marginLeft: '10px' }}>
         <span className="input-group-text">{SEARCH}</span>
       </div>
 
       <input
         type="text"
-        className="form-control search-field-container"
+        className="form-control"
         aria-label="Search"
         placeholder="Search Text"
         id="team-profiles-wild-card-search"
-        onChange={(e) => {
+        onChange={e => {
           props.onSearch(e.target.value);
         }}
       />
     </div>
   );
-}
+};
 
 export default ReportTableSearchPanel;

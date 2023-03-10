@@ -1,15 +1,13 @@
-/* eslint-disable react/destructuring-assignment */
-/* eslint-disable react/prop-types */
 import React from 'react';
 import './reports.css';
 import { Link } from 'react-router-dom';
 
-function ProjectTable(props) {
+const ProjectTable = props => {
   // Display project lists
   let ProjectsList = [];
   if (props.projects.length > 0) {
     ProjectsList = props.projects.map((project, index) => (
-      <tr id={`tr_${project._id}`}>
+      <tr id={'tr_' + project._id}>
         <th scope="row">
           <div>{index + 1}</div>
         </th>
@@ -21,32 +19,35 @@ function ProjectTable(props) {
         <td>
           {project.isActive ? (
             <div className="isActive">
-              <i className="fa fa-circle" aria-hidden="true" />
+              <i className="fa fa-circle" aria-hidden="true"></i>
             </div>
           ) : (
             <div className="isNotActive">
-              <i className="fa fa-circle-o" aria-hidden="true" />
+              <i className="fa fa-circle-o" aria-hidden="true"></i>
             </div>
           )}
         </td>
       </tr>
     ));
   }
+
   return (
-    <table className="center">
+    <table class="center">
       <table className="table table-bordered table-responsive-sm">
         <thead>
-          <tr className="table-header">
-            <th scope="col" id="projects__order">#</th>
+          <tr>
+            <th scope="col" id="projects__order">
+              #
+            </th>
             <th scope="col">Project Name</th>
-            <th scope="col" id="projects__active">Active</th>
+            <th scope="col" id="projects__active">
+              Active
+            </th>
           </tr>
         </thead>
-        <tbody>
-          {ProjectsList}
-        </tbody>
+        <tbody>{ProjectsList}</tbody>
       </table>
     </table>
   );
-}
+};
 export default ProjectTable;
