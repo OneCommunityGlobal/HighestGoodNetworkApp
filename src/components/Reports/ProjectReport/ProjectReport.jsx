@@ -45,7 +45,7 @@ export const ProjectReport = ({ match }) => {
           </Paging>
         </ReportPage.ReportBlock>
         <ReportPage.ReportBlock className="wbs-and-members-blocks">
-          <Paging totalElementsCount={projectMembers.members.length}>
+          <Paging totalElementsCount={projectMembers.foundUsers.length}>
             <ProjectMemberTable projectMembers={projectMembers} />
           </Paging>
         </ReportPage.ReportBlock>

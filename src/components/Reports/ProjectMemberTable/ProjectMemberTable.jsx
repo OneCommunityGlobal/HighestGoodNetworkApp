@@ -26,7 +26,7 @@ export const ProjectMemberTable = ({ projectMembers, skip, take }) => {
       <div className="project-member-count-head">
         <div id="project-member-count">
           <i className="fa fa-circle" aria-hidden="true"></i> ACTIVE:
-          {activeMemberList.length}
+          {projectMembers.foundUsers.length}
         </div>
         <div id="project-member-count">
           <i className="fa fa-circle-o" aria-hidden="true"></i> ALL-TIME:
