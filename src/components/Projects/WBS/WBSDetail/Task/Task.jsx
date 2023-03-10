@@ -429,7 +429,10 @@ const Task = props => {
           </tr>
 
           {controllerRow ? (
-            <tr className="wbsTaskController desktop-view" id={`controller_${props.id}`}>
+            <tr
+              className={`wbsTaskController desktop-view parentId1_${props.parentId1} parentId2_${props.parentId2} parentId3_${props.parentId3}`}
+              id={`controller_${props.id}`}
+            >
               <td colSpan={tableColNum} className="controlTd">
                 {hasPermission(role, 'addTask', roles, userPermissions) ? (
                   <AddTaskModal
