@@ -5,10 +5,6 @@ import { connect } from 'react-redux';
 import { ENDPOINTS } from 'utils/URL';
 import { Table } from 'reactstrap';
 import EditTaskModal from '../WBSDetail/EditTask/EditTaskModal';
-import ModalDelete from '../../../common/Modal';
-import { Button } from 'reactstrap';
-import { deleteTask } from '../../../../actions/task';
-import * as Message from '../../../../languages/en/messages';
 import { getPopupById } from '../../../../actions/popupEditorAction';
 import { TASK_DELETE_POPUP_ID } from '../../../../constants/popupId';
 
@@ -21,9 +17,6 @@ const SameFolderTasks = props => {
   const [allTasks, setAllTasks] = useState([]);
   const [WBS, setWBS] = useState({});
   const [loading, setLoading] = useState(false);
-  const [modalDelete, setModalDelete] = useState(false);
-  const [deleteId, setDeleteId] = useState(0);
-  const [mother, setMother] = useState(0);
 
   useEffect(() => {
     const fetchTaskData = async () => {
@@ -60,19 +53,6 @@ const SameFolderTasks = props => {
     } catch (error) {
       console.log(error);
     }
-  };
-
-  const removeTask = () => {
-    setAllTasks(allTasks.filter(item => item._id != deleteId));
-    props.deleteTask(deleteId, mother);
-    setModalDelete(false);
-  };
-
-  const showUpDeleteModal = (taskId, taskMother, state) => {
-    setModalDelete(state);
-    setDeleteId(taskId);
-    setMother(taskMother);
-    props.getPopupById(TASK_DELETE_POPUP_ID);
   };
   let projectId = WBS.projectId;
   let wbsName = WBS.wbsName;
@@ -166,14 +146,6 @@ const SameFolderTasks = props => {
                           mother={e.mother}
                           level={e.level}
                         />
-                        <Button
-                          size="sm"
-                          type="button"
-                          className="btn btn-danger"
-                          onClick={() => showUpDeleteModal(e._id, e.mother, true)}
-                        >
-                          <i className="fa fa-trash" aria-hidden="true"></i>
-                        </Button>
                       </th>
                       <th>{e.num}</th>
                       <td>{e.taskName}</td>
@@ -242,13 +214,6 @@ const SameFolderTasks = props => {
                 })}
               </tbody>
             </Table>
-            <ModalDelete
-              isOpen={modalDelete}
-              closeModal={() => setModalDelete(false)}
-              confirmModal={() => removeTask()}
-              modalMessage={props.popupEditor.currPopup.popupContent || 'DELETE THIS TASK ?'}
-              modalTitle={Message.CONFIRM_DELETION}
-            />
           </React.Fragment>
         )}
       </div>
@@ -259,6 +224,5 @@ const SameFolderTasks = props => {
 const mapStateToProps = state => state;
 
 export default connect(mapStateToProps, {
-  deleteTask,
   getPopupById,
 })(SameFolderTasks);
