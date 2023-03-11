@@ -85,6 +85,12 @@ const Task = props => {
           childFolders[j].classList.remove('fa-folder-open');
           childFolders[j].classList.add('fa-folder');
         }
+
+        const upArrows = allItems[i].querySelectorAll('.up-arrow');
+        for (let j = 0; j < upArrows.length; j++) {
+          console.log('upArrows[j]', upArrows[j]);
+          upArrows[j].innerHTML = String.fromCharCode(8964);
+        }
       }
     } else {
       const allItems = [...document.getElementsByClassName(`mother_${id}`)];
@@ -183,7 +189,11 @@ const Task = props => {
             <td>
               <Button color="primary" size="sm" onClick={() => setControllerRow(!controllerRow)}>
                 <span className="action-edit-btn">EDIT</span>
-                {controllerRow ? <BsFillCaretUpFill /> : <BsFillCaretDownFill />}
+                {controllerRow ? (
+                  <i className="up-arrow">{String.fromCharCode(8963)}</i>
+                ) : (
+                  <i>{String.fromCharCode(8964)}</i>
+                )}
               </Button>
             </td>
             <td
