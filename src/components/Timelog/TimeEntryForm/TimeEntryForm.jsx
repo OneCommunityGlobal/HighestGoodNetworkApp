@@ -31,6 +31,7 @@ import axios from 'axios';
 import { ENDPOINTS } from '../../../utils/URL';
 import hasPermission from 'utils/permissions';
 import { getTimeEntryFormData } from './selectors';
+import checkNegativeNumber from 'utils/checkNegativeHours';
 
 /**
  * Modal used to submit and edit tangible and intangible time entries.
@@ -380,7 +381,7 @@ const TimeEntryForm = props => {
           : (hoursByCategory['unassigned'] += currEntryTime);
       }
     }
-
+    checkNegativeNumber(userProfile);
     //update database
     try {
       const url = ENDPOINTS.USER_PROFILE(timeEntry.personId);

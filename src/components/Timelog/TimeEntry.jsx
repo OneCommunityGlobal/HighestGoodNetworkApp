@@ -15,6 +15,7 @@ import hasPermission from 'utils/permissions';
 import { ENDPOINTS } from 'utils/URL';
 import axios from 'axios';
 import { useEffect } from 'react';
+import checkNegativeNumber from 'utils/checkNegativeHours';
 
 const TimeEntry = ({ data, displayYear, userProfile }) => {
   const [modal, setModal] = useState(false);
@@ -102,6 +103,7 @@ const TimeEntry = ({ data, displayYear, userProfile }) => {
           : (hoursByCategory['unassigned'] += formattedHours);
       }
     }
+    checkNegativeNumber(userProfile);
     dispatch(updateUserProfile(userProfile._id, userProfile));
   };
 
