@@ -3,7 +3,6 @@ import React from 'react';
 import './ProjectMemberTable.css';
 
 export const ProjectMemberTable = ({ projectMembers, skip, take }) => {
-  //console.log("====projectMembers====",projectMembers);
   let activeMemberList = [];
   if (projectMembers.fetched) {
     if (projectMembers.foundUsers.length > 0) {
