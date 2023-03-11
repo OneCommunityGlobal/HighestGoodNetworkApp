@@ -25,7 +25,6 @@
 }
 
 .container-component-category {
-  /* width: 100%; */
   width: 720px;
   display: flex;
   flex-direction: column;
@@ -87,7 +86,6 @@
   flex-direction: column;
   margin: 8px 0;
   margin-right: 24px;
-  /* align-items: center; */
 }
 
 .date-picker-label {

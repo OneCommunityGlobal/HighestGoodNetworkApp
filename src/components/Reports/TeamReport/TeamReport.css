@@ -55,3 +55,7 @@
 .tableHeader {
   background-color: #EEE7F7;
 }
+
+.table-row {
+  background: white;
+}

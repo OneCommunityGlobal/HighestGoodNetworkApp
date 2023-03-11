@@ -3,13 +3,13 @@ import { ReportPage } from 'components/Reports/sharedComponents/ReportPage';
 import ReportLogs from './ReportLogs';
 import ReportCharts from './ReportCharts';
 
-function UserLoginPrivileges({ selectedInput }) {
+function UserLoginPrivileges({ selectedInput, teamName }) {
   // Check if the user has admin privileges
   if (selectedInput == 'isManager') {
     // Render the component if the user has admin privileges
     return (
       <div className="team-report-main-info">
-        <ReportLogs title="Team" />
+        <ReportLogs title={teamName} />
         {/* Two cards with pie charts with data */}
         <div style={{
           display: 'flex', flexDirection: 'row', gap: '16px',

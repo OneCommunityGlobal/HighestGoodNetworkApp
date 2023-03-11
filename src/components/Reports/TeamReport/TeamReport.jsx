@@ -1,10 +1,20 @@
 import React, { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch, useSelector, connect } from 'react-redux';
 import moment from 'moment';
 import DatePicker from 'react-datepicker';
 import { FiUsers } from 'react-icons/fi';
 import { BsCheckLg, BsXLg } from 'react-icons/bs';
 import { getTeamDetail } from '../../../actions/team';
+import {
+  getAllUserTeams,
+  postNewTeam,
+  deleteTeam,
+  updateTeam,
+  getTeamMembers,
+  deleteTeamMember,
+  addTeamMember,
+} from '../../../actions/allTeamsAction';
+
 import { getTeamReportData } from './selectors';
 import './TeamReport.css';
 import { ReportPage } from '../sharedComponents/ReportPage';
@@ -14,10 +24,19 @@ import LoginPrivilegesSimulation from './components/TestComponents/LoginPrivileg
 export function TeamReport({ match }) {
   const dispatch = useDispatch();
   const { team } = useSelector(getTeamReportData);
+  const [ teamMembers, setTeamMembers ] = useState([]);
+  const [ allTeams, setAllTeams ] = useState([]);
+  console.log(allTeams)
 
   useEffect(() => {
     if (match) {
       dispatch(getTeamDetail(match.params.teamId));
+      dispatch(getTeamMembers(match.params.teamId)).then((result) => {
+        setTeamMembers([...result]);
+      });
+      dispatch(getAllUserTeams()).then((result) => {
+        setAllTeams([...result]);
+      });
     }
   }, []);
 
@@ -36,8 +55,8 @@ export function TeamReport({ match }) {
 
   const isActive = true;
   const isInactive = false;
-  const startDate = new Date('01-01-2010');
-  const endDate = new Date();
+  const [startDate, setStartDate] = useState(new Date('01-01-2010'));
+  const [endDate, setEndDate] = useState(new Date());
 
   return (
     <ReportPage
@@ -66,15 +85,16 @@ export function TeamReport({ match }) {
           This LoginPrivilegesSimulation component will be removed once the backend team link the login privileges.
           It is just to simulate the toggle between the login privileges. The logic is
           inside the userLoginPrivileges.jsx file.
-          */}
-          <LoginPrivilegesSimulation selectedInput={selectedInput} handleInputChange={handleInputChange} />
+*/}
+          {/* <LoginPrivilegesSimulation selectedInput={selectedInput} handleInputChange={handleInputChange} /> */}
+
           <div className="update-date">
             Last updated:
             {moment(team.modifiedDatetime).format('YYYY-MM-DD')}
           </div>
         </div>
       </ReportPage.ReportBlock>
-      <UserLoginPrivileges handleInputChange={handleInputChange} selectedInput={selectedInput} />
+      <UserLoginPrivileges handleInputChange={handleInputChange} selectedInput={selectedInput} teamName={team.teamName}/>
       <ReportPage.ReportBlock>
         <div className="input-group input-group-sm d-flex flex-nowrap justify-content-between">
           <div className="d-flex align-items-center">
@@ -96,7 +116,7 @@ export function TeamReport({ match }) {
               <div id="task_EndDate" className="date-picker-item">
                 <div className="d-flex flex-column">
                   <label htmlFor="search-by-endDate" className="text-left">End Date</label>
-                  <DatePicker selected={endDate} onChange={(date) => setStartDate(date)} className="form-control  w-auto" id="search-by-endDate" />
+                  <DatePicker selected={endDate} onChange={(date) => setEndDate(date)} className="form-control  w-auto" id="search-by-endDate" />
                 </div>
               </div>
               <div className="input-group d-flex align-items-center">
@@ -124,57 +144,36 @@ export function TeamReport({ match }) {
             </tr>
           </thead>
           <tbody className="table">
-            <tr>
-              <td><input type="checkbox" /></td>
-              <td><strong>Team A</strong></td>
-              <td>Priority</td>
-              <td>{isActive ? <span>Started</span> : <span>Not Started</span>}</td>
-              <td>@@@</td>
-              <td>{isActive ? <BsCheckLg /> : <BsXLg />}</td>
-              <td>{isInactive ? <BsCheckLg /> : <BsXLg />}</td>
-              <td>15.5</td>
-              <td>12/28/2022</td>
-              <td>12/31/2022</td>
-            </tr>
-            <tr>
-              <td><input type="checkbox" /></td>
-              <td><strong>Team B</strong></td>
-              <td>Priority</td>
-              <td>{isActive ? <span>Started</span> : <span>Not Started</span>}</td>
-              <td>@@@</td>
-              <td>{isInactive ? <BsCheckLg /> : <BsXLg />}</td>
-              <td>{isActive ? <BsCheckLg /> : <BsXLg />}</td>
-              <td>15.5</td>
-              <td>12/28/2022</td>
-              <td>12/31/2022</td>
-            </tr>
-            <tr>
-              <td><input type="checkbox" /></td>
-              <td><strong>Team C</strong></td>
-              <td>Priority</td>
-              <td>{isInactive ? <span>Started</span> : <span>Not Started</span>}</td>
-              <td>@@@</td>
-              <td>{isActive ? <BsCheckLg /> : <BsXLg />}</td>
-              <td>{isActive ? <BsCheckLg /> : <BsXLg />}</td>
-              <td>15.5</td>
-              <td>12/28/2022</td>
-              <td>12/31/2022</td>
-            </tr>
-            <tr>
-              <td><input type="checkbox" /></td>
-              <td><strong>Team D</strong></td>
-              <td>Priority</td>
-              <td>{isActive ? <span>Started</span> : <span>Not Started</span>}</td>
-              <td>@@@</td>
-              <td>{isInactive ? <BsCheckLg /> : <BsXLg />}</td>
-              <td>{isInactive ? <BsCheckLg /> : <BsXLg />}</td>
-              <td>15.5</td>
-              <td>12/28/2022</td>
-              <td>12/31/2022</td>
-            </tr>
+            {
+              allTeams.map(team => ( 
+                <tr className="table-row">
+                  <td><input type="checkbox" /></td>
+                  <td><strong>{team.teamName}</strong></td>
+                  <td>Priority</td>
+                  <td>{isActive ? <span>Started</span> : <span>Not Started</span>}</td>
+                  <td>@@@</td>
+                  <td>{isActive ? <BsCheckLg /> : <BsXLg />}</td>
+                  <td>{isInactive ? <BsCheckLg /> : <BsXLg />}</td>
+                  <td>15.5</td>
+                  <td>12/28/2022</td>
+                  <td>12/31/2022</td>
+                </tr>
+              ))
+            }
           </tbody>
         </table>
       </ReportPage.ReportBlock>
     </ReportPage>
   );
 }
+
+const mapStateToProps = state => ({ state });
+export default connect(mapStateToProps, {
+  getAllUserTeams,
+  postNewTeam,
+  deleteTeam,
+  updateTeam,
+  getTeamMembers,
+  deleteTeamMember,
+  addTeamMember,
+})(TeamReport);
