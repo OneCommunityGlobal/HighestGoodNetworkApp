@@ -6,7 +6,6 @@ import { connect } from 'react-redux'
 import { FiUser } from 'react-icons/fi';
 import { getUserProfile, getUserTask } from '../../../actions/userProfile';
 import { getUserProjects } from '../../../actions/userProjects'
-import _ from 'lodash'
 import { getWeeklySummaries, updateWeeklySummaries } from '../../../actions/weeklySummaries'
 import moment from 'moment'
 import "react-input-range/lib/css/index.css"

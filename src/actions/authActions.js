@@ -36,7 +36,6 @@ export const getHeaderData = userId => {
   const url = ENDPOINTS.USER_PROFILE(userId);
   return async dispatch => {
     const res = await axios.get(url);
-    console.log('userrprofie', res);
 
     await dispatch(
       setHeaderData({

@@ -425,6 +425,22 @@ const TeamMemberTasks = props => {
         onApprove={handleTaskNotificationRead}
         loggedInUserId={props.auth.user.userid}
       />
+      {currentUserId != '' && (
+        <TaskCompletedModal
+          isOpen={showMarkAsDoneModal}
+          updatedTasks={updatedTasks}
+          setUpdatedTasks={setUpdatedTasks}
+          setTasks={setTasks}
+          tasks={tasks}
+          submitTasks={submitTasks}
+          popupClose={closeMarkAsDone}
+          updateTask={onUpdateTask}
+          userId={currentUserId}
+          task={currentTask}
+          setCurrentUserId={setCurrentUserId}
+          setClickedToShowModal={setClickedToShowModal}
+        />
+      )}
       <Table>
         <thead className="pc-component">
           <tr>
