@@ -38,8 +38,8 @@ const Badges = props => {
     <>
       <Card id="badgeCard" style={{ backgroundColor: '#f6f6f3', marginTop: 20, marginBottom: 20 }}>
         <CardHeader>
-          <div className='badge-header'>
-            <span className='badge-header-title'>
+          <div className="badge-header">
+            <span className="badge-header-title">
               Featured Badges <i className="fa fa-info-circle" id="FeaturedBadgeInfo" />
             </span>
             <div>
@@ -84,15 +84,16 @@ const Badges = props => {
             </div>
           </div>
         </CardHeader>
-        <CardBody>
+        <CardBody style={{ overflow: 'auto' }}>
           <FeaturedBadges badges={props.userProfile.badgeCollection} />
         </CardBody>
-        <CardFooter style={{
-              fontWeight: 'bold',
-              fontSize: 18,
-              color: '#285739',
-            }}
-          >
+        <CardFooter
+          style={{
+            fontWeight: 'bold',
+            fontSize: 18,
+            color: '#285739',
+          }}
+        >
           Bravo! You've earned {props.userProfile.badgeCollection.length} badges!{' '}
           <i className="fa fa-info-circle" id="CountInfo" />
         </CardFooter>

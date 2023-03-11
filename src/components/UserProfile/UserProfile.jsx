@@ -6,6 +6,11 @@ import {
   Container,
   TabContent,
   TabPane,
+  List,
+  Modal,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
   Nav,
   NavItem,
   NavLink,
@@ -40,7 +45,7 @@ import hasPermission from 'utils/permissions';
 import ActiveInactiveConfirmationPopup from '../UserManagement/ActiveInactiveConfirmationPopup';
 import { updateUserStatus } from '../../actions/userManagement';
 import { UserStatus } from '../../utils/enums';
-import { faSleigh } from '@fortawesome/free-solid-svg-icons';
+import { faSleigh, faCamera } from '@fortawesome/free-solid-svg-icons';
 
 const UserProfile = props => {
   /* Constant values */
@@ -66,13 +71,14 @@ const UserProfile = props => {
   const [blueSquareChanged, setBlueSquareChanged] = useState(false);
   const [showSaveWarning, setShowSaveWarning] = useState(true);
   const [type, setType] = useState('');
+  const [menuModalTabletScreen, setMenuModalTabletScreen] = useState('');
   const [showModal, setShowModal] = useState(false);
   const [modalTitle, setModalTitle] = useState('');
   const [modalMessage, setModalMessage] = useState('');
   const [shouldRefresh, setShouldRefresh] = useState(false);
   const [activeInactivePopupOpen, setActiveInactivePopupOpen] = useState(false);
   const [tasks, setTasks] = useState();
-  const [updatedTasks, setUpdatedTasks] = useState([])
+  const [updatedTasks, setUpdatedTasks] = useState([]);
   //const [isValid, setIsValid] = useState(true)
 
   /* useEffect functions */
@@ -105,7 +111,7 @@ const UserProfile = props => {
       .get(ENDPOINTS.TASKS_BY_USERID(userId))
       .then(res => {
         setTasks(res?.data || []);
-        setOriginalTasks(res.data)
+        setOriginalTasks(res.data);
       })
       .catch(err => console.log(err));
   };
@@ -117,7 +123,6 @@ const UserProfile = props => {
     try {
       const response = await axios.get(ENDPOINTS.USER_PROFILE(userId));
       const newUserProfile = response.data;
-      console.log('new user profile: ', newUserProfile);
       setUserProfile(newUserProfile);
       setOriginalUserProfile(newUserProfile);
       setShowLoading(false);
@@ -172,18 +177,18 @@ const UserProfile = props => {
   const onUpdateTask = (taskId, updatedTask) => {
     const newTask = {
       updatedTask,
-      taskId
-    }
-    
-    setTasks((tasks)=>  {
-      console.log(tasks)
-      const tasksWithoutTheUpdated = [...tasks]
-      const taskIndex = tasks.findIndex(task => task._id === taskId)
-      tasksWithoutTheUpdated[taskIndex] = updatedTask
-      return tasksWithoutTheUpdated
-    })
-    setUpdatedTasks((tasks)=> [...tasks, newTask])
-    setChanged(true)
+      taskId,
+    };
+
+    setTasks(tasks => {
+      console.log(tasks);
+      const tasksWithoutTheUpdated = [...tasks];
+      const taskIndex = tasks.findIndex(task => task._id === taskId);
+      tasksWithoutTheUpdated[taskIndex] = updatedTask;
+      return tasksWithoutTheUpdated;
+    });
+    setUpdatedTasks(tasks => [...tasks, newTask]);
+    setChanged(true);
   };
 
   const handleImageUpload = async evt => {
@@ -274,7 +279,7 @@ const UserProfile = props => {
     } else if (operation === 'delete') {
       let newInfringements = [...userProfile?.infringements] || [];
       if (newInfringements !== []) {
-        newInfringements = newInfringements.filter(infringement => infringement._id !== id)
+        newInfringements = newInfringements.filter(infringement => infringement._id !== id);
         setUserProfile({ ...userProfile, infringements: newInfringements });
         setShowModal(false);
       }
@@ -286,27 +291,28 @@ const UserProfile = props => {
     for (let i = 0; i < updatedTasks.length; i += 1) {
       const updatedTask = updatedTasks[i];
       const url = ENDPOINTS.TASK_UPDATE(updatedTask.taskId);
-      axios
-        .put(url, updatedTask.updatedTask)
-        .catch(err => console.log(err));
+      axios.put(url, updatedTask.updatedTask).catch(err => console.log(err));
     }
     try {
       await props.updateUserProfile(props.match.params.userId, userProfile);
+
+      if (userProfile._id === props.auth.user.userid && props.auth.user.role !== userProfile.role) {
+        await props.refreshToken(userProfile._id);
+      }
       await loadUserProfile();
-
       await loadUserTasks();
-
-      setShowSaveWarning(false);
     } catch (err) {
       alert('An error occurred while attempting to save this profile.');
     }
     setShouldRefresh(true);
     setChanged(false);
+    window.location.reload();
   };
+
+  const toggle = modalName => setMenuModalTabletScreen(modalName);
 
   const toggleInfoModal = () => {
     setInfoModal(!infoModal);
-    setShowSaveWarning(false);
   };
 
   const toggleTab = tab => {
@@ -443,7 +449,7 @@ const UserProfile = props => {
                 className="profilePicture"
               />
               {canEdit ? (
-                <div className="file btn btn-lg btn-primary">
+                <div className="image-button file btn btn-lg btn-primary">
                   Change Photo
                   <Input
                     style={{ width: '100%', height: '100%', zIndex: '2' }}
@@ -545,7 +551,7 @@ const UserProfile = props => {
               />
             </div>
           </Col>
-          <Col md="8">
+          <Col md="8" className="profile-functions-desktop">
             <div className="profile-tabs">
               <Nav tabs>
                 <NavItem>
@@ -667,10 +673,352 @@ const UserProfile = props => {
               </TabPane>
             </TabContent>
           </Col>
+          <Col md="8" className="profile-functions-tablet">
+            <List className="profile-functions-list">
+              <Button
+                className="list-button"
+                onClick={() => toggle('Basic Information')}
+                color="primary"
+              >
+                Basic Information
+              </Button>
+              <Modal isOpen={menuModalTabletScreen === 'Basic Information'} toggle={toggle}>
+                <ModalHeader toggle={toggle}>Basic Information</ModalHeader>
+                <ModalBody>
+                  <BasicInformationTab
+                    role={requestorRole}
+                    userProfile={userProfile}
+                    setUserProfile={setUserProfile}
+                    setChanged={setChanged}
+                    handleUserProfile={handleUserProfile}
+                    formValid={formValid}
+                    setFormValid={setFormValid}
+                    isUserSelf={isUserSelf}
+                    setShouldRefresh={setShouldRefresh}
+                    canEdit={canEdit}
+                    roles={roles}
+                    userPermissions={userPermissions}
+                  />
+                </ModalBody>
+                <ModalFooter>
+                  <Row>
+                    <div className="profileEditButtonContainer">
+                      {hasPermission(
+                        requestorRole,
+                        'resetPasswordOthers',
+                        roles,
+                        userPermissions,
+                      ) &&
+                        canEdit &&
+                        !isUserSelf && (
+                          <ResetPasswordButton className="mr-1 btn-bottom" user={userProfile} />
+                        )}
+                      {isUserSelf &&
+                        (activeTab == '1' ||
+                          hasPermission(
+                            requestorRole,
+                            'editUserProfile',
+                            roles,
+                            userPermissions,
+                          )) && (
+                          <Link to={`/updatepassword/${userProfile._id}`}>
+                            <Button className="mr-1 btn-bottom" color="primary">
+                              {' '}
+                              Update Password
+                            </Button>
+                          </Link>
+                        )}
+                      {canEdit &&
+                        (activeTab == '1' ||
+                          hasPermission(
+                            requestorRole,
+                            'editUserProfile',
+                            roles,
+                            userPermissions,
+                          )) && (
+                          <>
+                            <SaveButton
+                              className="mr-1 btn-bottom"
+                              handleSubmit={handleSubmit}
+                              disabled={
+                                !formValid.firstName ||
+                                !formValid.lastName ||
+                                !formValid.email ||
+                                !changed
+                              }
+                              userProfile={userProfile}
+                            />
+                            <span
+                              onClick={() => {
+                                setUserProfile(originalUserProfile);
+                                setTasks(originalTasks);
+                                setChanged(false);
+                              }}
+                              className="btn btn-outline-danger mr-1 btn-bottom"
+                            >
+                              X
+                            </span>
+                          </>
+                        )}
+                      <Button outline onClick={() => loadUserProfile()}>
+                        <i className="fa fa-refresh" aria-hidden="true"></i>
+                      </Button>
+                    </div>
+                  </Row>
+                </ModalFooter>
+              </Modal>
+              <Button
+                className="list-button"
+                onClick={() => toggle('Volunteering Times')}
+                color="secondary"
+              >
+                Volunteering Times
+              </Button>
+              <Modal isOpen={menuModalTabletScreen === 'Volunteering Times'} toggle={toggle}>
+                <ModalHeader toggle={toggle}>Volunteering Times</ModalHeader>
+                <ModalBody>
+                  <VolunteeringTimeTab
+                    userProfile={userProfile}
+                    setUserProfile={setUserProfile}
+                    setChanged={setChanged}
+                    isUserSelf={isUserSelf}
+                    role={requestorRole}
+                    canEdit={hasPermission(
+                      requestorRole,
+                      'editUserProfile',
+                      roles,
+                      userPermissions,
+                    )}
+                  />
+                </ModalBody>
+                <ModalFooter>
+                  <Row>
+                    <div className="profileEditButtonContainer">
+                      {canEdit &&
+                        (activeTab == '1' ||
+                          hasPermission(
+                            requestorRole,
+                            'editUserProfile',
+                            roles,
+                            userPermissions,
+                          )) && (
+                          <>
+                            <SaveButton
+                              className="mr-1 btn-bottom"
+                              handleSubmit={handleSubmit}
+                              disabled={
+                                !formValid.firstName ||
+                                !formValid.lastName ||
+                                !formValid.email ||
+                                !changed
+                              }
+                              userProfile={userProfile}
+                            />
+                            <span
+                              onClick={() => {
+                                setUserProfile(originalUserProfile);
+                                setTasks(originalTasks);
+                                setChanged(false);
+                              }}
+                              className="btn btn-outline-danger mr-1 btn-bottom"
+                            >
+                              X
+                            </span>
+                          </>
+                        )}
+                      <Button outline onClick={() => loadUserProfile()}>
+                        <i className="fa fa-refresh" aria-hidden="true"></i>
+                      </Button>
+                    </div>
+                  </Row>
+                </ModalFooter>
+              </Modal>
+              <Button className="list-button" onClick={() => toggle('Teams')} color="secondary">
+                Teams
+              </Button>
+              <Modal isOpen={menuModalTabletScreen === 'Teams'} toggle={toggle}>
+                <ModalHeader toggle={toggle}>Teams</ModalHeader>
+                <ModalBody>
+                  <TeamsTab
+                    userTeams={userProfile?.teams || []}
+                    teamsData={props?.allTeams?.allTeamsData || []}
+                    onAssignTeam={onAssignTeam}
+                    onDeleteteam={onDeleteTeam}
+                    edit={hasPermission(requestorRole, 'editUserProfile', roles, userPermissions)}
+                    role={requestorRole}
+                    roles={roles}
+                  />
+                </ModalBody>
+                <ModalFooter>
+                  <Row>
+                    <div className="profileEditButtonContainer">
+                      {canEdit &&
+                        (activeTab == '1' ||
+                          hasPermission(
+                            requestorRole,
+                            'editUserProfile',
+                            roles,
+                            userPermissions,
+                          )) && (
+                          <>
+                            <SaveButton
+                              className="mr-1 btn-bottom"
+                              handleSubmit={handleSubmit}
+                              disabled={
+                                !formValid.firstName ||
+                                !formValid.lastName ||
+                                !formValid.email ||
+                                !changed
+                              }
+                              userProfile={userProfile}
+                            />
+                            <span
+                              onClick={() => {
+                                setUserProfile(originalUserProfile);
+                                setTasks(originalTasks);
+                                setChanged(false);
+                              }}
+                              className="btn btn-outline-danger mr-1 btn-bottom"
+                            >
+                              X
+                            </span>
+                          </>
+                        )}
+                      <Button outline onClick={() => loadUserProfile()}>
+                        <i className="fa fa-refresh" aria-hidden="true"></i>
+                      </Button>
+                    </div>
+                  </Row>
+                </ModalFooter>
+              </Modal>
+              <Button className="list-button" onClick={() => toggle('Projects')} color="secondary">
+                Projects
+              </Button>
+              <Modal isOpen={menuModalTabletScreen === 'Projects'} toggle={toggle}>
+                <ModalHeader toggle={toggle}>Projects</ModalHeader>
+                <ModalBody>
+                  <ProjectsTab
+                    userProjects={userProfile.projects || []}
+                    userTasks={tasks}
+                    projectsData={props?.allProjects?.projects || []}
+                    onAssignProject={onAssignProject}
+                    onDeleteProject={onDeleteProject}
+                    edit={hasPermission(requestorRole, 'editUserProfile', roles, userPermissions)}
+                    role={requestorRole}
+                    userPermissions={userPermissions}
+                    userId={props.match.params.userId}
+                    updateTask={onUpdateTask}
+                  />
+                </ModalBody>
+                <ModalFooter>
+                  <Row>
+                    <div className="profileEditButtonContainer">
+                      {canEdit &&
+                        (activeTab == '1' ||
+                          hasPermission(
+                            requestorRole,
+                            'editUserProfile',
+                            roles,
+                            userPermissions,
+                          )) && (
+                          <>
+                            <SaveButton
+                              className="mr-1 btn-bottom"
+                              handleSubmit={handleSubmit}
+                              disabled={
+                                !formValid.firstName ||
+                                !formValid.lastName ||
+                                !formValid.email ||
+                                !changed
+                              }
+                              userProfile={userProfile}
+                            />
+                            <span
+                              onClick={() => {
+                                setUserProfile(originalUserProfile);
+                                setTasks(originalTasks);
+                                setChanged(false);
+                              }}
+                              className="btn btn-outline-danger mr-1 btn-bottom"
+                            >
+                              X
+                            </span>
+                          </>
+                        )}
+                      <Button outline onClick={() => loadUserProfile()}>
+                        <i className="fa fa-refresh" aria-hidden="true"></i>
+                      </Button>
+                    </div>
+                  </Row>
+                </ModalFooter>
+              </Modal>
+              <Button
+                className="list-button"
+                onClick={() => toggle('Edit History')}
+                color="secondary"
+              >
+                Edit History
+              </Button>
+              <Modal isOpen={menuModalTabletScreen === 'Edit History'} toggle={toggle}>
+                <ModalHeader toggle={toggle}>Edit History</ModalHeader>
+                <ModalBody>
+                  <TimeEntryEditHistory
+                    userProfile={userProfile}
+                    setUserProfile={setUserProfile}
+                    setChanged={setChanged}
+                    role={requestorRole}
+                    roles={roles}
+                    userPermissions={userPermissions}
+                  />
+                </ModalBody>
+                <ModalFooter>
+                  <Row>
+                    <div className="profileEditButtonContainer">
+                      {canEdit &&
+                        (activeTab == '1' ||
+                          hasPermission(
+                            requestorRole,
+                            'editUserProfile',
+                            roles,
+                            userPermissions,
+                          )) && (
+                          <>
+                            <SaveButton
+                              className="mr-1 btn-bottom"
+                              handleSubmit={handleSubmit}
+                              disabled={
+                                !formValid.firstName ||
+                                !formValid.lastName ||
+                                !formValid.email ||
+                                !changed
+                              }
+                              userProfile={userProfile}
+                            />
+                            <span
+                              onClick={() => {
+                                setUserProfile(originalUserProfile);
+                                setTasks(originalTasks);
+                                setChanged(false);
+                              }}
+                              className="btn btn-outline-danger mr-1 btn-bottom"
+                            >
+                              X
+                            </span>
+                          </>
+                        )}
+                      <Button outline onClick={() => loadUserProfile()}>
+                        <i className="fa fa-refresh" aria-hidden="true"></i>
+                      </Button>
+                    </div>
+                  </Row>
+                </ModalFooter>
+              </Modal>
+            </List>
+          </Col>
         </Row>
         <Row>
           <Col md="4"></Col>
-          <Col md="8">
+          <Col md="8" className="desktop-panel">
             <div className="profileEditButtonContainer">
               {hasPermission(requestorRole, 'resetPasswordOthers', roles, userPermissions) &&
                 canEdit &&
@@ -702,7 +1050,7 @@ const UserProfile = props => {
                     <span
                       onClick={() => {
                         setUserProfile(originalUserProfile);
-                        setTasks(originalTasks)
+                        setTasks(originalTasks);
                         setChanged(false);
                       }}
                       className="btn btn-outline-danger mr-1 btn-bottom"

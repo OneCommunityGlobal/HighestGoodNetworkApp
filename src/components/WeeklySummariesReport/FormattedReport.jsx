@@ -3,11 +3,12 @@ import PropTypes from 'prop-types';
 import moment from 'moment';
 import 'moment-timezone';
 import ReactHtmlParser from 'react-html-parser';
+import { Link } from 'react-router-dom';
 
 const FormattedReport = ({ summaries, weekIndex }) => {
   const emails = [];
 
-  summaries.forEach((summary) => {
+  summaries.forEach(summary => {
     if (summary.email !== undefined && summary.email !== null) {
       emails.push(summary.email);
     }
@@ -19,13 +20,13 @@ const FormattedReport = ({ summaries, weekIndex }) => {
   while (emailString.includes(',')) emailString = emailString.replace(',', '\n');
   while (emailString.includes('\n')) emailString = emailString.replace('\n', ', ');
 
-  const alphabetize = (summaries) => {
+  const alphabetize = summaries => {
     return summaries.sort((a, b) =>
       `${a.firstName} ${a.lastName}`.localeCompare(`${b.firstName} ${b.lastname}`),
     );
   };
 
-  const getMediaUrlLink = (summary) => {
+  const getMediaUrlLink = summary => {
     if (summary.mediaUrl) {
       return (
         <a href={summary.mediaUrl} target="_blank" rel="noopener noreferrer">
@@ -37,7 +38,7 @@ const FormattedReport = ({ summaries, weekIndex }) => {
     }
   };
 
-  const getWeeklySummaryMessage = (summary) => {
+  const getWeeklySummaryMessage = summary => {
     if (!summary)
       return (
         <p>
@@ -70,7 +71,7 @@ const FormattedReport = ({ summaries, weekIndex }) => {
     );
   };
 
-  const getTotalValidWeeklySummaries = (summary) => {
+  const getTotalValidWeeklySummaries = summary => {
     return (
       <p style={summary.weeklySummariesCount === 8 ? { color: 'blue' } : {}}>
         <b>Total Valid Weekly Summaries:</b>{' '}
@@ -90,21 +91,24 @@ const FormattedReport = ({ summaries, weekIndex }) => {
             key={'summary-' + index}
           >
             <p>
-              <b>Name:</b> {summary.firstName} {summary.lastName}
+              <b>Name: </b>
+              <Link to={`/userProfile/${summary._id}`} title="View Profile">
+                {summary.firstName} {summary.lastName}
+              </Link>
             </p>
             <p>
               {' '}
               <b>Media URL:</b> {getMediaUrlLink(summary)}
             </p>
             {getTotalValidWeeklySummaries(summary)}
-            {hoursLogged >= summary.weeklyComittedHours && (
+            {hoursLogged >= summary.weeklycommittedHours && (
               <p>
-                <b>Hours logged:</b> {hoursLogged.toFixed(2)} / {summary.weeklyComittedHours}
+                <b>Hours logged:</b> {hoursLogged.toFixed(2)} / {summary.weeklycommittedHours}
               </p>
             )}
-            {hoursLogged < summary.weeklyComittedHours && (
+            {hoursLogged < summary.weeklycommittedHours && (
               <p style={{ color: 'red' }}>
-                <b>Hours logged:</b> {hoursLogged.toFixed(2)} / {summary.weeklyComittedHours}
+                <b>Hours logged:</b> {hoursLogged.toFixed(2)} / {summary.weeklycommittedHours}
               </p>
             )}
             {getWeeklySummaryMessage(summary)}

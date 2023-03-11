@@ -29,7 +29,7 @@ export class WeeklySummariesReport extends Component {
     });
   }
 
-  getWeekDates = (weekIndex) => ({
+  getWeekDates = weekIndex => ({
     fromDate: moment()
       .tz('America/Los_Angeles')
       .startOf('week')
@@ -42,7 +42,7 @@ export class WeeklySummariesReport extends Component {
       .format('MMM-DD-YY'),
   });
 
-  toggleTab = (tab) => {
+  toggleTab = tab => {
     const activeTab = this.state.activeTab;
     if (activeTab !== tab) {
       this.setState({ activeTab: tab });

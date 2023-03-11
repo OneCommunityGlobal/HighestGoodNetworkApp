@@ -6,6 +6,7 @@ import style from '../UserProfileEdit/ToggleSwitch/ToggleSwitch.module.scss';
 import { ENDPOINTS } from 'utils/URL';
 import axios from 'axios';
 import './timeTab.css';
+import styles from './VolunteeringTimeTab.css';
 
 const StartDate = props => {
   if (!props.canEdit) {
@@ -60,7 +61,7 @@ const WeeklySummaryReqd = props => {
     return <p>{props.userProfile.weeklySummaryNotReq ? 'Not Required' : 'Required'}</p>;
   }
   return (
-    <div className={style.switchContainer}>
+    <div className={style.switchContainer} style={{justifyContent: 'left', marginBottom: '10px'}}>
       Required
       <input
         id="weeklySummaryNotReqd"
@@ -255,14 +256,14 @@ const ViewTab = props => {
         <Col md="6">
           <Label className="hours-label">Weekly Committed Hours </Label>
         </Col>
-        <Col md="6">
-          <WeeklyCommitedHours
-            role={role}
-            userProfile={userProfile}
-            setUserProfile={setUserProfile}
-            setChanged={setChanged}
-            canEdit={canEdit}
-          />
+
+        <Col>
+          <Col md="6">
+            <Label>Total Tangible Hours This Week</Label>
+          </Col>
+          <Col md="6">
+            <p>{totalTangibleHoursThisWeek}</p>
+          </Col>
         </Col>
       </Row>
       <Row className="volunteering-time-row">
@@ -297,11 +298,11 @@ const ViewTab = props => {
         </Col>
         <Col md="6">
           <p className="hours-totalTangible">{totalTangibleHours}</p>
-        </Col>
-      </Row>
 
-      {props?.userProfile?.hoursByCategory
-        ? Object.keys(userProfile.hoursByCategory).map(key => (
+        </Col>
+
+        {props?.userProfile?.hoursByCategory
+          ? Object.keys(userProfile.hoursByCategory).map(key => (
             <React.Fragment key={'hours-by-category-' + key}>
               <Row className="volunteering-time-row">
                 <Col md="6">
@@ -329,11 +330,13 @@ const ViewTab = props => {
                     <p>{userProfile.hoursByCategory[key]?.toFixed(2)}</p>
                   )}
                 </Col>
-              </Row>
+              </Col>
             </React.Fragment>
           ))
         : []}
+      </div>
     </div>
+    
   );
 };
 

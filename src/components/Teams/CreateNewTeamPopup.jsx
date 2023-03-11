@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Input, Alert } from 'reactstrap';
 
-const CreateNewTeamPopup = React.memo((props) => {
+const CreateNewTeamPopup = React.memo(props => {
   const [newTeam, onNewName] = useState('');
   const closePopup = () => {
     props.onClose();
@@ -22,7 +22,7 @@ const CreateNewTeamPopup = React.memo((props) => {
           id="teamName"
           placeholder="Please enter a new team name"
           value={newTeam}
-          onChange={(e) => {
+          onChange={e => {
             onValidation(true);
             onNewName(e.target.value);
           }}

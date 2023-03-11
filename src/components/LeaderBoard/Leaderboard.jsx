@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import './Leaderboard.css';
-import _ from 'lodash';
+import { isEqual } from 'lodash';
 import { Link } from 'react-router-dom';
 import { Table, Progress, Modal, ModalBody, ModalFooter, ModalHeader, Button } from 'reactstrap';
 
@@ -9,7 +9,7 @@ function useDeepEffect(effectFunc, deps) {
   const prevDeps = useRef(deps);
   useEffect(() => {
     const isSame = prevDeps.current.every((obj, index) => {
-      let isItEqual = _.isEqual(obj, deps[index]);
+      let isItEqual = isEqual(obj, deps[index]);
       return isItEqual;
     });
     if (isFirst.current || !isSame) {
@@ -114,7 +114,7 @@ const LeaderBoard = ({
               <li>
                 The HGN Totals at the top shows how many volunteers are currently active in the
                 system, how many volunteer hours they are collectively committed to, and how many
-                tangible and total hours they have completed. 
+                tangible and total hours they have completed.
                 {/*The color and length of that bar
                 changes based on what percentage of the total committed hours for the week have been
                 completed: 0-20%: Red, 20-40%: Orange, 40-60% hrs: Green, 60-80%: Blue, 80-100%:Indigo, 
@@ -168,10 +168,10 @@ const LeaderBoard = ({
               <td className="align-middle">
                 <Link to={`/dashboard/`}>
                   <div
-                    title={`Weekly Committed: ${organizationData.weeklyComittedHours} hours`}
+                    title={`Weekly Committed: ${organizationData.weeklycommittedHours} hours`}
                     style={{
                       backgroundColor:
-                        organizationData.tangibletime >= organizationData.weeklyComittedHours
+                        organizationData.tangibletime >= organizationData.weeklycommittedHours
                           ? 'green'
                           : 'red',
                       width: 15,
@@ -195,7 +195,7 @@ const LeaderBoard = ({
               </td>
               <td className="align-middle">
                 <span title="Tangible + Intangible time = Total time">
-                  {organizationData.totaltime} of {organizationData.weeklyComittedHours}
+                  {organizationData.totaltime} of {organizationData.weeklycommittedHours}
                 </span>
               </td>
             </tr>
@@ -221,10 +221,10 @@ const LeaderBoard = ({
 
                   {/* <Link to={`/dashboard/${item.personId}`}> */}
                   <div
-                    title={`Weekly Committed: ${item.weeklyComittedHours} hours`}
+                    title={`Weekly Committed: ${item.weeklycommittedHours} hours`}
                     style={{
                       backgroundColor:
-                        item.tangibletime >= item.weeklyComittedHours ? 'green' : 'red',
+                        item.tangibletime >= item.weeklycommittedHours ? 'green' : 'red',
                       width: 15,
                       height: 15,
                       borderRadius: 7.5,
