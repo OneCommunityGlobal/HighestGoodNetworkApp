@@ -170,11 +170,21 @@ const SummaryBar = props => {
     }
   };
 
+  const checkForRoleManagerOrAbove = role => {
+    if(role === "Administrator" || role === "Manager" || role ==="Owner" || role === "Role Master"){
+      return true
+    }
+    return false;
+  }
+
+  const authenticateUserRole = authenticateUser ? authenticateUser.role: '';
+  const isRoleManagerOrAbove = checkForRoleManagerOrAbove(authenticateUserRole);
+
   if (userProfile !== undefined && leaderData !== undefined) {
     const weeklyCommittedHours = userProfile.weeklycommittedHours + (userProfile.missedHours ?? 0);
     const weeklySummary = getWeeklySummary(userProfile);
     return (
-      <Container fluid className={matchUser ? 'px-lg-0 bg--bar' : 'px-lg-0 bg--bar disabled-bar'}>
+      <Container fluid className={matchUser || isRoleManagerOrAbove ? 'px-lg-0 bg--bar' : 'px-lg-0 bg--bar disabled-bar'}>
         <Row className="no-gutters row-eq-height">
           <Col
             className="d-flex justify-content-center align-items-center col-lg-2 col-12 text-list"
@@ -241,7 +251,7 @@ const SummaryBar = props => {
               {!weeklySummary ? (
                 <div className="border-red col-4 bg--white-smoke no-gutters" align="center">
                   <div className="py-1"> </div>
-                  {matchUser ? (
+                  {matchUser || isRoleManagerOrAbove ? (
                     <p
                       className={'summary-toggle large_text_summary text--black text-danger'}
                       align="center"
