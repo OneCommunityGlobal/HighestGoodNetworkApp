@@ -2,9 +2,8 @@
 /* eslint-disable no-trailing-spaces */
 /* eslint-disable no-plusplus */
 /* eslint-disable indent */
-import { faBell, faCircle, faClock } from '@fortawesome/free-solid-svg-icons';
+import { faBell, faCircle, faClock, faCheck } from '@fortawesome/free-solid-svg-icons';
 import { Table, Progress } from 'reactstrap';
-import _ from 'lodash';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { fetchTeamMembersTask, deleteTaskNotification } from 'actions/task';
 import React, { useEffect, useState } from 'react';
@@ -19,6 +18,13 @@ import { getProgressColor, getProgressValue } from '../../utils/effortColors';
 import { fetchAllManagingTeams } from '../../actions/team';
 import EffortBar from 'components/Timelog/EffortBar';
 import TimeEntry from 'components/Timelog/TimeEntry';
+import { updateTask } from 'actions/task';
+import { getAllUserProfile } from 'actions/userManagement';
+import TaskCompletedModal from './components/TaskCompletedModal';
+import { ENDPOINTS } from 'utils/URL';
+import axios from 'axios';
+import { fetchAllTasks } from 'actions/task';
+import { deleteSelectedTask } from './reducer';
 
 const TeamMemberTasks = props => {
   const [isTimeLogActive, setIsTimeLogActive] = useState(0);
@@ -26,22 +32,69 @@ const TeamMemberTasks = props => {
   const [showTaskNotificationModal, setTaskNotificationModal] = useState(false);
   const [currentTaskNotifications, setCurrentTaskNotifications] = useState([]);
   const [currentTask, setCurrentTask] = useState();
-  const [currentUserId, setCurrentUserId] = useState();
+  const [currentUserId, setCurrentUserId] = useState('');
   const { isLoading, usersWithTasks } = useSelector(getTeamMemberTasksData);
+  const [tasks, setTasks] = useState();
+  const [updatedTasks, setUpdatedTasks] = useState([]);
+  const [showMarkAsDoneModal, setMarkAsDoneModal] = useState(false);
+  const [clickedToShowModal, setClickedToShowModal] = useState(false);
 
   const dispatch = useDispatch();
   useEffect(() => {
     dispatch(fetchTeamMembersTask());
   }, []);
 
+  useEffect(() => {
+    if (clickedToShowModal) {
+      setMarkAsDoneModal(true);
+    }
+  }, [currentUserId]);
+
+  useEffect(() => {
+    submitTasks();
+    dispatch(fetchTeamMembersTask());
+  }, [updatedTasks]);
+
   const userRole = props.auth.user.role;
   const userId = props.auth.user.userid;
+
+  const closeMarkAsDone = () => {
+    setMarkAsDoneModal(false);
+  };
+
+  const onUpdateTask = (taskId, updatedTask) => {
+    const newTask = {
+      updatedTask,
+      taskId,
+    };
+    setTasks(tasks => {
+      const tasksWithoutTheUpdated = [...tasks];
+      const taskIndex = tasks.findIndex(task => task._id === taskId);
+      tasksWithoutTheUpdated[taskIndex] = updatedTask;
+      return tasksWithoutTheUpdated;
+    });
+    setUpdatedTasks(tasks => [...tasks, newTask]);
+  };
+
+  const submitTasks = async () => {
+    for (let i = 0; i < updatedTasks.length; i += 1) {
+      const updatedTask = updatedTasks[i];
+      const url = ENDPOINTS.TASK_UPDATE(updatedTask.taskId);
+      axios.put(url, updatedTask.updatedTask).catch(err => console.log(err));
+    }
+  };
 
   const handleOpenTaskNotificationModal = (userId, task, taskNotifications = []) => {
     setCurrentUserId(userId);
     setCurrentTask(task);
     setCurrentTaskNotifications(taskNotifications);
     setTaskNotificationModal(!showTaskNotificationModal);
+  };
+
+  const handleMarkAsDoneModal = (userId, task) => {
+    setCurrentUserId(userId);
+    setCurrentTask(task);
+    setClickedToShowModal(true);
   };
 
   const handleTaskNotificationRead = (userId, taskId, taskNotificationId) => {
@@ -90,8 +143,6 @@ const TeamMemberTasks = props => {
         //conditional variable for moving current user up front.
         let moveCurrentUserFront = false;
 
-        //console.log('filteredMembers', filteredMembers);
-
         //Does the user has at least one task with project Id and task id assigned. Then set the current user up front.
         for (const task of currentUser.tasks) {
           if (task.wbsId && task.projectId) {
@@ -122,12 +173,58 @@ const TeamMemberTasks = props => {
           totalHoursLogged = user.tasks
             .map(task => task.hoursLogged)
             .reduce((previousValue, currentValue) => previousValue + currentValue, 0);
-          for (const task of user.tasks){
-              if(task.status !== 'Complete' && task.isAssigned !== 'false'){
-                          totalHoursRemaining = totalHoursRemaining + (task.estimatedHours - task.hoursLogged );
-                        } 
-             }   
+          totalHoursRemaining = user.tasks
+            .map(task => task.estimatedHours - task.hoursLogged)
+            .reduce((previousValue, currentValue) => previousValue + currentValue, 0);
         }
+
+        const TaskButton = task => {
+          if (task.task.status !== 'Complete') {
+            return (
+              <td>
+                <h3
+                  onClick={() => markAsDone(task)}
+                  style={{ color: 'red' }}
+                  data-toggle="tooltip"
+                  data-placement="top"
+                  title="MARK AS DONE. MARKING THIS AS DONE WOULD REMOVE THE TASK PERMANENTLY."
+                  className="markAsDoneButton"
+                >
+                  X
+                </h3>
+              </td>
+            );
+          } else {
+            return <td></td>;
+          }
+        };
+
+        const markAsDone = async task => {
+          task.task.status = 'Complete';
+          const updatedTask = {
+            taskName: task.task.taskName,
+            priority: task.task.priority,
+            resources: task.task.resources,
+            isAssigned: task.task.isAssigned,
+            status: task.task.status,
+            hoursBest: parseFloat(task.task.hoursBest),
+            hoursWorst: parseFloat(task.task.hoursWorst),
+            hoursMost: parseFloat(task.task.hoursMost),
+            estimatedHours: parseFloat(task.task.hoursEstimate),
+            startedDatetime: task.task.startedDate,
+            dueDatetime: task.task.dueDate,
+            links: task.task.links,
+            whyInfo: task.task.whyInfo,
+            intentInfo: task.task.intentInfo,
+            endstateInfo: task.task.endstateInfo,
+            classification: task.task.classification,
+          };
+          await updateTask(String(task.task._id), updatedTask);
+          await deleteSelectedTask(task.task._id, task.task.mother);
+          await dispatch(getAllUserProfile());
+          await fetchAllTasks();
+        };
+
         return (
           <tr key={user.personId}>
             {/* green if member has met committed hours for the week, red if not */}
@@ -203,6 +300,14 @@ const TeamMemberTasks = props => {
                                     }}
                                   />
                                 )}
+                                <FontAwesomeIcon
+                                  className="team-member-tasks-done"
+                                  icon={faCheck}
+                                  title="Mark as Done"
+                                  onClick={() => {
+                                    handleMarkAsDoneModal(user.personId, task);
+                                  }}
+                                />
                               </p>
                             </td>
                             {task.hoursLogged != null && task.estimatedHours != null && (
@@ -224,6 +329,11 @@ const TeamMemberTasks = props => {
                                 </div>
                               </td>
                             )}
+                            {userRole === 'Administrator' ? (
+                              <td>
+                                <TaskButton task={task}></TaskButton>
+                              </td>
+                            ) : null}
                           </tr>
                         );
                       }
@@ -315,6 +425,22 @@ const TeamMemberTasks = props => {
         onApprove={handleTaskNotificationRead}
         loggedInUserId={props.auth.user.userid}
       />
+      {currentUserId != '' && (
+        <TaskCompletedModal
+          isOpen={showMarkAsDoneModal}
+          updatedTasks={updatedTasks}
+          setUpdatedTasks={setUpdatedTasks}
+          setTasks={setTasks}
+          tasks={tasks}
+          submitTasks={submitTasks}
+          popupClose={closeMarkAsDone}
+          updateTask={onUpdateTask}
+          userId={currentUserId}
+          task={currentTask}
+          setCurrentUserId={setCurrentUserId}
+          setClickedToShowModal={setClickedToShowModal}
+        />
+      )}
       <Table>
         <thead>
           <tr>
@@ -352,6 +478,7 @@ const TeamMemberTasks = props => {
                   <tr>
                     <th>Tasks(s)</th>
                     <th className="team-task-progress">Progress</th>
+                    {userRole === 'Administrator' ? <th>Status</th> : null}
                   </tr>
                 </thead>
               </Table>

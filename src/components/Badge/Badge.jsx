@@ -31,7 +31,6 @@ const Badge = props => {
       let count = 0;
       if (props.userProfile.badgeCollection) {
         props.userProfile.badgeCollection.forEach(badge => {
-          console.log('badge1', badge);
           if (badge?.badge?.badgeName === 'Personal Max' || badge?.badge?.type === 'Personal Max') {
             count += 1;
           } else {
@@ -50,12 +49,9 @@ const Badge = props => {
 
   useEffect(() => {
     const userId = props.userId;
-    console.log('This is userId', userId);
     let count = 0;
     if (props.userProfile.badgeCollection) {
-      console.log('userProfileBadgeCollectionId', props.userProfile._id);
       props.userProfile.badgeCollection.forEach(badge => {
-        console.log('badge2', badge);
         if (badge?.badge?.badgeName === 'Personal Max' || badge?.badge?.type === 'Personal Max') {
           count += 1;
         } else {
