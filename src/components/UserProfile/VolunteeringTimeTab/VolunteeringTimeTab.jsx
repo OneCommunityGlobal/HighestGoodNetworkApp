@@ -255,14 +255,14 @@ const ViewTab = props => {
         <Col md="6">
           <Label className="hours-label">Weekly Committed Hours </Label>
         </Col>
-
-        <Col>
-          <Col md="6">
-            <Label>Total Tangible Hours This Week</Label>
-          </Col>
-          <Col md="6">
-            <p>{totalTangibleHoursThisWeek}</p>
-          </Col>
+        <Col md="6">
+          <WeeklyCommitedHours
+            role={role}
+            userProfile={userProfile}
+            setUserProfile={setUserProfile}
+            setChanged={setChanged}
+            canEdit={canEdit}
+          />
         </Col>
       </Row>
       <Row className="volunteering-time-row">
