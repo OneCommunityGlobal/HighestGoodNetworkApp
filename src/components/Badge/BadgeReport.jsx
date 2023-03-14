@@ -18,7 +18,7 @@ import {
   UncontrolledDropdown,
   UncontrolledPopover,
   DropdownMenu,
-  DropdownItem
+  DropdownItem,
 } from 'reactstrap';
 import pdfMake from 'pdfmake/build/pdfmake';
 import pdfFonts from 'pdfmake/build/vfs_fonts';
@@ -36,7 +36,7 @@ const BadgeReport = props => {
   let [sortBadges, setSortBadges] = useState(props.badges.slice() || []);
   let [numFeatured, setNumFeatured] = useState(0);
   let [showModal, setShowModal] = useState(false);
-  let [badgeToDelete, setBadgeToDelete] = useState(null);
+  let [badgesToDelete, setBadgesToDelete] = useState([]);
   const { roles } = props.state.role;
 
   async function imageToUri(url, callback) {
@@ -187,8 +187,10 @@ const BadgeReport = props => {
 
   const countChange = (badge, index, newValue) => {
     let newBadges = sortBadges.slice();
-    newBadges[index].count = newValue;
-    setSortBadges(newBadges);
+    newBadges[index].count = parseInt(newValue);
+    newValue > 0 || badgesToDelete.includes(index)
+      ? setBadgesToDelete(prevBadges => prevBadges.filter(badge => badge !== index))
+      : setBadgesToDelete(prevBadges => [...prevBadges, index]);
   };
 
   const featuredChange = (badge, index, e) => {
@@ -211,26 +213,39 @@ const BadgeReport = props => {
 
   const handleDeleteBadge = index => {
     setShowModal(true);
-    setBadgeToDelete(index);
+    setBadgesToDelete(index);
   };
 
   const handleCancel = () => {
     setShowModal(false);
-    setBadgeToDelete(null);
+    setBadgesToDelete(null);
+  };
+
+  const handleDeleteAfterSave = () => {
+    let newBadges = sortBadges;
+    let indexToDelete = badgesToDelete;
+    badgesToDelete.forEach(index => {
+      indexToDelete = indexToDelete.filter(index => index !== null);
+      newBadges.splice(indexToDelete[0], 1);
+      indexToDelete = indexToDelete.map(index => (index === 0 ? null : index - 1));
+      indexToDelete.shift();
+    });
+    setSortBadges(newBadges);
   };
 
   const deleteBadge = () => {
     let newBadges = sortBadges.slice();
-    const deletedBadge = newBadges.splice(badgeToDelete, 1);
-    if (deletedBadge[0].featured) {
+    const [deletedBadge] = newBadges.splice(badgesToDelete, 1);
+    if (deletedBadge.featured) {
       setNumFeatured(--numFeatured);
     }
     setSortBadges(newBadges);
     setShowModal(false);
-    setBadgeToDelete(null);
+    setBadgesToDelete([]);
   };
 
   const saveChanges = async () => {
+    badgesToDelete.length > 0 && handleDeleteAfterSave();
     let newBadgeCollection = JSON.parse(JSON.stringify(sortBadges));
     for (let i = 0; i < newBadgeCollection.length; i++) {
       newBadgeCollection[i].badge = newBadgeCollection[i].badge._id;
@@ -252,10 +267,10 @@ const BadgeReport = props => {
   return (
     <div>
       <div className="desktop">
-        <div style={{ overflowY: 'scroll', height: '75vh'}}>
+        <div style={{ overflowY: 'scroll', height: '75vh' }}>
           <Table>
-            <thead style={{zIndex: '10'}}>
-              <tr style={{zIndex: '10'}}>
+            <thead style={{ zIndex: '10' }}>
+              <tr style={{ zIndex: '10' }}>
                 <th style={{ width: '93px' }}>Badge</th>
                 <th>Name</th>
                 <th style={{ width: '110px' }}>Modified</th>
@@ -396,8 +411,8 @@ const BadgeReport = props => {
       <div className="tablet">
         <div style={{ overflow: 'auto', height: '68vh' }}>
           <Table>
-            <thead style={{zIndex: '10'}}>
-              <tr style={{zIndex: '10'}}>
+            <thead style={{ zIndex: '10' }}>
+              <tr style={{ zIndex: '10' }}>
                 <th style={{ width: '93px' }}>Badge</th>
                 <th>Name</th>
                 <th style={{ width: '110px' }}>Modified</th>
@@ -439,12 +454,29 @@ const BadgeReport = props => {
                     <td>
                       <ButtonGroup style={{ marginLeft: '8px' }}>
                         <UncontrolledDropdown>
-                          <DropdownToggle caret style={{display: 'flex', alignItems:'center', justifyContent:'center', width: '80px'}}>
+                          <DropdownToggle
+                            caret
+                            style={{
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              width: '80px',
+                            }}
+                          >
                             Options
                           </DropdownToggle>
                           <DropdownMenu>
-                            <DropdownItem style={{ display: 'flex', alignItems: 'center', whiteSpace: 'now-rap', gap: '8px', height: '60px'}} toggle={false}>
-                              <span style={{ fontWeight: 'bold'}}>Count:</span>
+                            <DropdownItem
+                              style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                whiteSpace: 'now-rap',
+                                gap: '8px',
+                                height: '60px',
+                              }}
+                              toggle={false}
+                            >
+                              <span style={{ fontWeight: 'bold' }}>Count:</span>
                               {hasPermission(
                                 props.role,
                                 'modifyOwnBadgeAmount',
@@ -459,15 +491,24 @@ const BadgeReport = props => {
                                   onChange={e => {
                                     countChange(value, index, e.target.value);
                                   }}
-                                  style={{ width: '70px'}}
+                                  style={{ width: '70px' }}
                                 ></Input>
                               ) : (
                                 Math.round(value.count)
                               )}
                             </DropdownItem>
                             <DropdownItem divider />
-                            <DropdownItem style={{ display: 'flex', alignItems: 'center', whiteSpace: 'now-rap', gap: '8px', height: '60px'}} toggle={false}>
-                              <span style={{ fontWeight: 'bold'}}>Featured:</span>
+                            <DropdownItem
+                              style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                whiteSpace: 'now-rap',
+                                gap: '8px',
+                                height: '60px',
+                              }}
+                              toggle={false}
+                            >
+                              <span style={{ fontWeight: 'bold' }}>Featured:</span>
                               <FormGroup check inline style={{ zIndex: '0' }}>
                                 <Input
                                   /* alternative to using the formgroup
@@ -483,8 +524,20 @@ const BadgeReport = props => {
                               </FormGroup>
                             </DropdownItem>
                             <DropdownItem divider />
-                            <DropdownItem style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '60px'}}>
-                              {hasPermission(props.role, 'deleteOwnBadge', roles, props.permissionsUser) ? (
+                            <DropdownItem
+                              style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                height: '60px',
+                              }}
+                            >
+                              {hasPermission(
+                                props.role,
+                                'deleteOwnBadge',
+                                roles,
+                                props.permissionsUser,
+                              ) ? (
                                 <button
                                   type="button"
                                   className="btn btn-danger"
@@ -513,14 +566,14 @@ const BadgeReport = props => {
               saveChanges();
             }}
           >
-            <span>Save Changes</span> 
+            <span>Save Changes</span>
           </Button>
           <Button
             className="btn--dark-sea-green float-right"
             style={{ margin: 5 }}
             onClick={pdfDocGenerator}
           >
-            <span>Export All Badges to PDF</span>       
+            <span>Export All Badges to PDF</span>
           </Button>
           <Button
             className="btn--dark-sea-green float-right"
@@ -528,7 +581,7 @@ const BadgeReport = props => {
             onClick={pdfFeaturedDocGenerator}
           >
             <span>Export Selected/Featured Badges to PDF</span>
-          </Button>               
+          </Button>
         </div>
         <Modal isOpen={showModal}>
           <ModalBody>
@@ -548,7 +601,6 @@ const BadgeReport = props => {
         </Modal>
       </div>
     </div>
-
   );
 };
 
