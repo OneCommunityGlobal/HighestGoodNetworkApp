@@ -168,6 +168,10 @@
   filter: alpha(opacity=40); /* msie */
 }
 
+.dashboard-fullname{
+  white-space: nowrap; 
+  font-size: 2vw;}
+
 /* XLarge devices (landscape phones, 544px and down) */
 @media (max-width: 1200px) {
   .med_text_summary {
