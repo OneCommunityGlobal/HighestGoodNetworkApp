@@ -218,7 +218,7 @@ const BadgeReport = props => {
 
   const handleCancel = () => {
     setShowModal(false);
-    setBadgesToDelete(null);
+    setBadgesToDelete([]);
   };
 
   const handleDeleteAfterSave = () => {
