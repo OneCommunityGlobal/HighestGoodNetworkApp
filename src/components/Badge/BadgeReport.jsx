@@ -187,10 +187,17 @@ const BadgeReport = props => {
 
   const countChange = (badge, index, newValue) => {
     let newBadges = sortBadges.slice();
-    newBadges[index].count = parseInt(newValue);
-    newValue > 0 || badgesToDelete.includes(index)
-      ? setBadgesToDelete(prevBadges => prevBadges.filter(badge => badge !== index))
-      : setBadgesToDelete(prevBadges => [...prevBadges, index]);
+    let value = newValue.length === 0 ? 0 : parseInt(newValue);
+    newBadges[index].count = newValue.length === 0 ? 0 : parseInt(newValue);
+    if (
+      (value === 0 && badgesToDelete.indexOf(index) === -1) ||
+      (newValue.length === 0 && badgesToDelete.indexOf(index) === -1)
+    ) {
+      setBadgesToDelete(prevBadges => [...prevBadges, index]);
+    }
+    if (value > 0) {
+      setBadgesToDelete(prevBadges => prevBadges.filter(badge => badge !== index));
+    }
   };
 
   const featuredChange = (badge, index, e) => {
