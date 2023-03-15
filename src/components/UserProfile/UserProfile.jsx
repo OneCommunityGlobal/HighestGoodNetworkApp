@@ -294,6 +294,7 @@ const UserProfile = props => {
       axios.put(url, updatedTask.updatedTask).catch(err => console.log(err));
     }
     try {
+      console.log(userProfile)
       await props.updateUserProfile(props.match.params.userId, userProfile);
 
       if (userProfile._id === props.auth.user.userid && props.auth.user.role !== userProfile.role) {
@@ -378,6 +379,12 @@ const UserProfile = props => {
             blueSquares: !userProfile.privacySettings?.blueSquares,
           },
         });
+        case 'shouldBeVisibleOnLeaderboard':
+          setUserProfile({
+            ...userProfile,
+            shouldBeVisible: userProfile?.shouldBeVisible != null ? !userProfile.shouldBeVisible : false
+          })
+          console.log(userProfile.shouldBeVisible)
         break;
     }
   };
