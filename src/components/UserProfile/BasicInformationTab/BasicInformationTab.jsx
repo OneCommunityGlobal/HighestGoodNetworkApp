@@ -200,6 +200,35 @@ const formatPhoneNumber = str => {
   // Unconventional
   return str;
 };
+
+const ShouldBeVisible = props => {
+  const {
+    userProfile,
+    setUserProfile,
+    handleUserProfile,
+    setChanged,
+    isUserSelf,
+    role,
+    canEdit,
+  } = props;
+  if (canEdit) {
+    console.log(userProfile)
+    return (
+      <React.Fragment>
+        <Col>
+          <FormGroup>
+            <ToggleSwitch
+              switchType="shouldBeVisible"
+              state={userProfile?.shouldBeVisible != null ? userProfile.shouldBeVisible : true}
+              handleUserProfile={handleUserProfile}
+            />
+          </FormGroup>
+        </Col>
+      </React.Fragment>
+    );
+  }
+};
+
 const Phone = props => {
   const {
     userProfile,
@@ -333,6 +362,22 @@ const BasicInformationTab = props => {
   return (
     <div>
       <div data-testid="basic-info-tab" className="basic-info-tab-desktop">
+        <Row>
+          <Col>
+            <Label>Leaderboard</Label>
+          </Col>
+          <ShouldBeVisible
+            userProfile={userProfile}
+            setUserProfile={setUserProfile}
+            setFormValid={setFormValid}
+            isUserSelf={isUserSelf}
+            handleUserProfile={handleUserProfile}
+            formValid={formValid}
+            setChanged={setChanged}
+            role={props.role}
+            canEdit={canEdit}
+          />
+        </Row>
         <Row>
           <Col>
             <Label>Name</Label>
@@ -790,19 +835,19 @@ const BasicInformationTab = props => {
           />
         </Col>
         <hr />
-        <Row xs="2" style={{ marginLeft: '1rem' }}>         
-          <Col style={{ alignItems: 'center', justifyContent: 'center'}}>
+        <Row xs="2" style={{ marginLeft: '1rem' }}>
+          <Col style={{ alignItems: 'center', justifyContent: 'center' }}>
             <Label>Status</Label>
             <div>
-            <Label style={{ fontWeight: 'normal' }}>
-              {userProfile.isActive
-                ? 'Active'
-                : userProfile.reactivationDate
-                ? 'Paused until ' + moment(userProfile.reactivationDate).format('YYYY-MM-DD')
-                : 'Inactive'}
-            </Label>
-            &nbsp;
-            {canEdit && <PauseAndResumeButton isBigBtn={true} userProfile={userProfile} />}
+              <Label style={{ fontWeight: 'normal' }}>
+                {userProfile.isActive
+                  ? 'Active'
+                  : userProfile.reactivationDate
+                  ? 'Paused until ' + moment(userProfile.reactivationDate).format('YYYY-MM-DD')
+                  : 'Inactive'}
+              </Label>
+              &nbsp;
+              {canEdit && <PauseAndResumeButton isBigBtn={true} userProfile={userProfile} />}
             </div>
           </Col>
           <Col>
