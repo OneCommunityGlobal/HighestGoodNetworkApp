@@ -88,9 +88,12 @@ const WeeklyCommitedHours = props => {
       name="weeklyComittedHours"
       id="weeklyComittedHours"
       data-testid="weeklyCommittedHours"
-      value={props.userProfile.weeklyComittedHours}
+      value={props.userProfile.weeklycommittedHours}
       onChange={e => {
-        props.setUserProfile({ ...props.userProfile, weeklyComittedHours: Number(e.target.value) });
+        props.setUserProfile({
+          ...props.userProfile,
+          weeklycommittedHours: Number(e.target.value),
+        });
       }}
       placeholder="Weekly Committed Hours"
     />
