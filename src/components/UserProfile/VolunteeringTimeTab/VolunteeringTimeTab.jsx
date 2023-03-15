@@ -80,7 +80,7 @@ const WeeklySummaryReqd = props => {
 
 const WeeklyCommitedHours = props => {
   if (!props.canEdit) {
-    return <p>{props.userProfile.weeklyComittedHours}</p>;
+    return <p>{props.userProfile.weeklycommittedHours}</p>;
   }
   return (
     <Input
