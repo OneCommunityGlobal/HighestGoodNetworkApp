@@ -226,7 +226,7 @@ const TeamMemberTasks = props => {
         };
 
         return (
-          <tr key={user.personId}>
+          <tr className="table-row" key={user.personId}>
             {/* green if member has met committed hours for the week, red if not */}
             <td>
               <div className="committed-hours-circle">
@@ -246,7 +246,7 @@ const TeamMemberTasks = props => {
                     <td className="team-member-tasks-user-name">
                       <Link to={`/userprofile/${user.personId}`}>{`${user.name}`}</Link>
                     </td>
-                    <td className="team-clocks">
+                    <td data-label="Time" className="team-clocks">
                       <u>{user.weeklycommittedHours ? user.weeklycommittedHours : 0}</u> /
                       <font color="green"> {thisWeekHours ? thisWeekHours.toFixed(1) : 0}</font> /
                       <font color="red">
@@ -282,7 +282,7 @@ const TeamMemberTasks = props => {
                       if (task.wbsId && task.projectId && isActiveTaskForUser) {
                         return (
                           <tr key={`${task._id}${index}`} className="task-break">
-                            <td className="task-align">
+                            <td data-label="Task(s)" className="task-align">
                               <p>
                                 <Link to={task.projectId ? `/wbs/tasks/${task._id}` : '/'}>
                                   <span>{`${task.num} ${task.taskName}`} </span>
@@ -311,7 +311,7 @@ const TeamMemberTasks = props => {
                               </p>
                             </td>
                             {task.hoursLogged != null && task.estimatedHours != null && (
-                              <td className="team-task-progress">
+                              <td data-label="Progress" className="team-task-progress">
                                 <div>
                                   <span>
                                     {`${parseFloat(task.hoursLogged.toFixed(2))}
@@ -330,7 +330,7 @@ const TeamMemberTasks = props => {
                               </td>
                             )}
                             {userRole === 'Administrator' ? (
-                              <td>
+                              <td data-label="Status">
                                 <TaskButton task={task}></TaskButton>
                               </td>
                             ) : null}
@@ -353,7 +353,7 @@ const TeamMemberTasks = props => {
     <div className="container team-member-tasks">
       <header className="header-box">
         <h1>Team Member Tasks</h1>
-        <div>
+        <div className="hours-btn-container">
           <button
             type="button"
             className="circle-border"
@@ -442,7 +442,7 @@ const TeamMemberTasks = props => {
         />
       )}
       <Table>
-        <thead>
+        <thead className="pc-component">
           <tr>
             {/* Empty column header for hours completed icon */}
             <th />
@@ -485,6 +485,7 @@ const TeamMemberTasks = props => {
             </th>
           </tr>
         </thead>
+
         <tbody>{isLoading ? <Loading /> : renderTeamsList()}</tbody>
       </Table>
     </div>
