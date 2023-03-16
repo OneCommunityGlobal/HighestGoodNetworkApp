@@ -83,17 +83,17 @@ const WeeklySummaryReqd = props => {
 
 const WeeklyCommitedHours = props => {
   if (!props.canEdit) {
-    return <p>{props.userProfile.weeklyComittedHours}</p>;
+    return <p>{props.userProfile.weeklycommittedHours}</p>;
   }
   return (
     <Input
       type="number"
-      name="weeklyComittedHours"
-      id="weeklyComittedHours"
-      data-testid="weeklyCommittedHours"
-      value={props.userProfile.weeklyComittedHours}
+      name="weeklycommittedHours"
+      id="weeklycommittedHours"
+      data-testid="weeklycommittedHours"
+      value={props.userProfile.weeklycommittedHours}
       onChange={e => {
-        props.setUserProfile({ ...props.userProfile, weeklyComittedHours: e.target.value });
+        props.setUserProfile({ ...props.userProfile, weeklycommittedHours: e.target.value });
         props.setChanged(true);
       }}
       placeholder="Weekly Committed Hours"
