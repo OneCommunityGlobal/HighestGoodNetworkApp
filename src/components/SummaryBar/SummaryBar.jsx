@@ -171,9 +171,7 @@ const SummaryBar = props => {
   };
 
   if (userProfile !== undefined && leaderData !== undefined) {
-    const weeklyCommittedHours = userProfile.weeklycommittedHours
-      ? userProfile.weeklycommittedHours
-      : userProfile.weeklyComittedHours;
+    const weeklyCommittedHours = userProfile.weeklycommittedHours;
     const weeklySummary = getWeeklySummary(userProfile);
     return (
       <Container fluid className={matchUser ? 'px-lg-0 bg--bar' : 'px-lg-0 bg--bar disabled-bar'}>

@@ -84,9 +84,9 @@ const WeeklySummaryReqd = props => {
   );
 };
 
-const WeeklyCommitedHours = props => {
+const WeeklyCommittedHours = props => {
   if (!props.canEdit) {
-    return <p>{props.userProfile.weeklyComittedHours}</p>;
+    return <p>{props.userProfile.weeklycommittedHours}</p>;
   }
   const handleChange = e => {
     // Maximum and minimum constants on lines 9 & 10
@@ -293,7 +293,7 @@ const ViewTab = props => {
             <Label>Weekly Committed Hours </Label>
           </Col>
           <Col md="6">
-            <WeeklyCommitedHours
+            <WeeklyCommittedHours
               role={role}
               userProfile={userProfile}
               setUserProfile={setUserProfile}
@@ -419,7 +419,7 @@ const ViewTab = props => {
             <Label>Weekly Committed Hours </Label>
           </Col>
           <Col md="6">
-            <WeeklyCommitedHours
+            <WeeklyCommittedHours
               role={role}
               userProfile={userProfile}
               setUserProfile={setUserProfile}
