@@ -133,6 +133,13 @@ class Timelog extends Component {
     if (UserHaveTask) {
       this.setState({ activeTab: 0 });
     }
+
+    const isDashboard = this.props.hasOwnProperty('isDashboard');
+
+    if (!isDashboard) {
+      this.setState({ activeTab: 1 });
+    }
+
   }
 
   async componentDidUpdate(prevProps) {
