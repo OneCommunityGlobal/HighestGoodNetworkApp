@@ -7,10 +7,8 @@ import { get, round, maxBy } from 'lodash';
 const mapStateToProps = state => {
   let leaderBoardData = get(state, 'leaderBoardData', []);
 
-  console.log(leaderBoardData);
-
   //filtering users with non zero hours and role different from Mentor
-  //created a temp variable so the prev values won't interfere with the new value.
+  //created a temp variable so the prev values won't interfere with filtering.
   const nonTutorsData = leaderBoardData.filter(element => {
     if (element.weeklycommittedHours > 0 && element.role !== 'Mentor') {
       return element;
