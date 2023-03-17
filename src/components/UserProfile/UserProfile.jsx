@@ -224,23 +224,10 @@ const UserProfile = props => {
   };
 
   const onDeleteTeam = deletedTeamId => {
-    const newUserProfile = { ...userProfile };
-    const filteredTeam = newUserProfile.teams.filter(team => team._id !== deletedTeamId);
-    newUserProfile.teams = filteredTeam;
     setTeams(prevTeams => prevTeams.filter(team => team._id !== deletedTeamId));
-
-    setUserProfile(prevUser => ({
-      ...prevUser,
-      teams: teams,
-    }));
   };
 
   const onDeleteProject = deletedProjectId => {
-    const newUserProfile = { ...userProfile };
-    const filteredProject = newUserProfile.projects.filter(
-      project => project._id !== deletedProjectId,
-    );
-    newUserProfile.projects = filteredProject;
     setProjects(prevProject => prevProject.filter(project => project._id !== deletedProjectId));
   };
 
@@ -249,12 +236,6 @@ const UserProfile = props => {
   };
 
   const onAssignProject = assignedProject => {
-    const newUserProfile = { ...userProfile };
-    if (newUserProfile.projects) {
-      newUserProfile.projects = [...newUserProfile.projects, assignedProject];
-    } else {
-      newUserProfile.projects = [assignedProject];
-    }
     setProjects(prevProjects => [...prevProjects, assignedProject]);
   };
 
