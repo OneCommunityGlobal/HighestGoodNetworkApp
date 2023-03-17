@@ -78,16 +78,16 @@ const WeeklySummaryReqd = props => {
   );
 };
 
-const WeeklyCommitedHours = props => {
+const WeeklyCommittedHours = props => {
   if (!props.canEdit) {
     return <p>{props.userProfile.weeklycommittedHours}</p>;
   }
   return (
     <Input
       type="number"
-      name="weeklyComittedHours"
-      id="weeklyComittedHours"
-      data-testid="weeklyCommittedHours"
+      name="weeklycommittedHours"
+      id="weeklycommittedHours"
+      data-testid="weeklycommittedHours"
       value={props.userProfile.weeklycommittedHours}
       onChange={e => {
         props.setUserProfile({
@@ -262,7 +262,7 @@ const ViewTab = props => {
             <Label>Weekly Committed Hours </Label>
           </Col>
           <Col md="6">
-            <WeeklyCommitedHours
+            <WeeklyCommittedHours
               role={role}
               userProfile={userProfile}
               setUserProfile={setUserProfile}
@@ -383,7 +383,7 @@ const ViewTab = props => {
             <Label>Weekly Committed Hours </Label>
           </Col>
           <Col md="6">
-            <WeeklyCommitedHours
+            <WeeklyCommittedHours
               role={role}
               userProfile={userProfile}
               setUserProfile={setUserProfile}
