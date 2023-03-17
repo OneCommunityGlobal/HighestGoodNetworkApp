@@ -139,11 +139,24 @@
 }
 
 @media only screen and (max-width: 600px) {
-  .desktop-view {
+  /*.desktop-view {
     display: none;
-  }
+  }*/
 
   .table td {
     padding: 5px !important;
+  }
+
+  .toggle-all {
+    width: 100%;
+    float: unset;
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .toggle-all button {
+    padding: 3px !important;
+    font-size: 12px;
+    margin-left: 0 !important;
   }
 }
