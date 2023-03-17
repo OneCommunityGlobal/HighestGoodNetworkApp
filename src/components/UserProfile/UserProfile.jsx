@@ -75,7 +75,6 @@ const UserProfile = props => {
   const [showModal, setShowModal] = useState(false);
   const [modalTitle, setModalTitle] = useState('');
   const [modalMessage, setModalMessage] = useState('');
-  const [shouldRefresh, setShouldRefresh] = useState(false);
   const [activeInactivePopupOpen, setActiveInactivePopupOpen] = useState(false);
   const [tasks, setTasks] = useState();
   const [updatedTasks, setUpdatedTasks] = useState([]);
@@ -85,12 +84,6 @@ const UserProfile = props => {
   useEffect(() => {
     loadUserProfile();
   }, []);
-
-  useEffect(() => {
-    if (!shouldRefresh) return;
-    setShouldRefresh(false);
-    loadUserProfile();
-  }, [shouldRefresh]);
 
   useEffect(() => {
     setShowLoading(true);
@@ -301,12 +294,10 @@ const UserProfile = props => {
       }
       await loadUserProfile();
       await loadUserTasks();
+      setChanged(false);
     } catch (err) {
       alert('An error occurred while attempting to save this profile.');
     }
-    setShouldRefresh(true);
-    setChanged(false);
-    window.location.reload();
   };
 
   const toggle = modalName => setMenuModalTabletScreen(modalName);
@@ -620,7 +611,6 @@ const UserProfile = props => {
                   formValid={formValid}
                   setFormValid={setFormValid}
                   isUserSelf={isUserSelf}
-                  setShouldRefresh={setShouldRefresh}
                   canEdit={canEdit}
                   roles={roles}
                   userPermissions={userPermissions}
@@ -694,7 +684,6 @@ const UserProfile = props => {
                     formValid={formValid}
                     setFormValid={setFormValid}
                     isUserSelf={isUserSelf}
-                    setShouldRefresh={setShouldRefresh}
                     canEdit={canEdit}
                     roles={roles}
                     userPermissions={userPermissions}
