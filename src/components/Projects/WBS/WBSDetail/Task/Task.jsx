@@ -56,6 +56,13 @@ const Task = props => {
   }, []);
   let passCurrentNum = false;
 
+  useEffect(() => {
+    console.log('isOpen', isOpen);
+    const allChildren = [...document.getElementsByClassName(`mother_${props.id}`)];
+    if (allChildren.length > 0 && allChildren[0].style.display === 'table-row') {
+      setIsOpen(true);
+    }
+  }, [isOpen]);
   //----This was the old method of display task actions by click on the task # - it was bit wonky and
   //----not the proper way to conditionally render something in React
 
@@ -75,27 +82,33 @@ const Task = props => {
   }; */
 
   const toggleGroups = id => {
+    const allChildren = [...document.getElementsByClassName(`mother_${id}`)];
     if (isOpen) {
-      const allItems = [
-        ...document.getElementsByClassName(`parentId1_${id}`),
-        ...document.getElementsByClassName(`parentId2_${id}`),
-        ...document.getElementsByClassName(`parentId3_${id}`),
-      ];
-
-      for (let i = 0; i < allItems.length; i++) {
-        allItems[i].style.display = 'none';
-
-        // select all child elements with class fa fa-folder-open and set their class to fa fa-folder
-        const childFolders = allItems[i].querySelectorAll('.fa.fa-folder-open');
-        for (let j = 0; j < childFolders.length; j++) {
-          childFolders[j].classList.remove('fa-folder-open');
-          childFolders[j].classList.add('fa-folder');
+      if (allChildren.length > 0 && allChildren[0].style.display !== 'table-row') {
+        for (let i = 0; i < allChildren.length; i++) {
+          allChildren[i].style.display = 'table-row';
         }
+      } else {
+        const allItems = [
+          ...document.getElementsByClassName(`parentId1_${id}`),
+          ...document.getElementsByClassName(`parentId2_${id}`),
+          ...document.getElementsByClassName(`parentId3_${id}`),
+        ];
 
-        const upArrows = allItems[i].querySelectorAll('.up-arrow');
-        for (let j = 0; j < upArrows.length; j++) {
-          console.log('upArrows[j]', upArrows[j]);
-          upArrows[j].innerHTML = String.fromCharCode(8964);
+        for (let i = 0; i < allItems.length; i++) {
+          allItems[i].style.display = 'none';
+
+          // select all child elements with class fa fa-folder-open and set their class to fa fa-folder
+          const childFolders = allItems[i].querySelectorAll('.fa.fa-folder-open');
+          for (let j = 0; j < childFolders.length; j++) {
+            childFolders[j].classList.remove('fa-folder-open');
+            childFolders[j].classList.add('fa-folder');
+          }
+
+          const upArrows = allItems[i].querySelectorAll('.up-arrow');
+          for (let j = 0; j < upArrows.length; j++) {
+            upArrows[j].innerHTML = String.fromCharCode(8964);
+          }
         }
       }
     } else {
@@ -105,6 +118,22 @@ const Task = props => {
       }
     }
     setIsOpen(!isOpen);
+  };
+
+  const handleSetControllerRow = () => {
+    const EditRendered = document.getElementsByClassName(
+      `wbsTaskController desktop-view parentId1_${props.parentId1} parentId2_${props.parentId2} parentId3_${props.parentId3}`,
+    );
+
+    if (EditRendered.length > 0 && EditRendered[0].style.display === 'none') {
+      setControllerRow(false);
+      setControllerRow(true);
+      for (let i = 0; i < EditRendered.length; i++) {
+        EditRendered[i].style.display = 'table-row';
+      }
+    } else {
+      setControllerRow(!controllerRow);
+    }
   };
 
   const getParentCategory = id => {
@@ -194,7 +223,7 @@ const Task = props => {
               } tag_color_lv_${props.level}`}
             ></td>
             <td>
-              <Button color="primary" size="sm" onClick={() => setControllerRow(!controllerRow)}>
+              <Button color="primary" size="sm" onClick={() => handleSetControllerRow()}>
                 <span className="action-edit-btn">EDIT</span>
                 {controllerRow ? (
                   <i className="up-arrow">{String.fromCharCode(8963)}</i>
