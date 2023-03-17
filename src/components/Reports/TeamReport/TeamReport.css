@@ -59,3 +59,14 @@
 .table-row {
   background: white;
 }
+
+.input-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: .5rem;
+}
+
+.input-wrapper + .input-wrapper {
+  margin-left: 1rem;
+}

@@ -9,7 +9,7 @@ function UserLoginPrivileges({ selectedInput, teamName }) {
     // Render the component if the user has admin privileges
     return (
       <div className="team-report-main-info">
-        <ReportLogs title={teamName} />
+        <ReportLogs title="Team" />
         {/* Two cards with pie charts with data */}
         <div style={{
           display: 'flex', flexDirection: 'row', gap: '16px',
