@@ -95,7 +95,7 @@ const WeeklyCommittedHours = props => {
     if (value > MAXIMUM_WEEK_HOURS) {
       // Check if Value is greater than total hours in one week
       alert(`You can't commit more than ${MAXIMUM_WEEK_HOURS} hours per week.`);
-      if (value === 169) {
+      if (value === MAXIMUM_WEEK_HOURS + 1) {
         props.setUserProfile({ ...props.userProfile, weeklyComittedHours: MAXIMUM_WEEK_HOURS });
         props.setChanged(true);
       } else {
