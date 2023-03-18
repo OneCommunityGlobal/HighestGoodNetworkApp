@@ -14,6 +14,7 @@ const BadgeImage = props => {
             src={props?.badgeData?.imageUrl}
             id={'popover_' + props.time + props.index.toString()}
             alt=""
+            loading="lazy"
           />
         </div>
         {props.count < 100 ? (
