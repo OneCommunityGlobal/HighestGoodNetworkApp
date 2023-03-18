@@ -61,6 +61,7 @@ import ActiveInactiveConfirmationPopup from '../UserManagement/ActiveInactiveCon
 import { updateUserStatus } from '../../actions/userManagement';
 import { UserStatus } from '../../utils/enums';
 import { faSleigh, faCamera } from '@fortawesome/free-solid-svg-icons';
+import BlueSquareLayout from './BlueSquareLayout';
 
 function UserProfile(props) {
   /* Constant values */
@@ -487,6 +488,25 @@ function UserProfile(props) {
       hasPermission(requestorRole, 'addDeleteEditOwners', roles, userPermissions) || isUserSelf;
   }
 
+  const customStyles = {
+    control: (base, state) => ({
+      ...base,
+      border: state.isFocused ? '2px solid #333' : '2px solid #ccc',
+      boxShadow: 'none',
+      '&:hover': {
+        border: state.isFocused ? '2px solid #333' : '2px solid #ccc',
+      },
+    }),
+    dropdownIndicator: base => ({
+      ...base,
+      color: '#333',
+    }),
+    menu: base => ({
+      ...base,
+      zIndex: 9999,
+    }),
+  };
+
   return (
     <div>
       <ActiveInactiveConfirmationPopup
@@ -609,6 +629,7 @@ function UserProfile(props) {
               <div>
                 <Select
                   options={summaries}
+                  styles={customStyles}
                   onChange={e => {
                     setSummaryName(e.value[0]);
                     getWeeklySummary(e.value[1]);
@@ -622,10 +643,7 @@ function UserProfile(props) {
               <div>
                 {summarySelected[0] !== '' ? (
                   <div>
-                    <h5>
-                      Viewing
-                      {summaryName}&apos s summary.
-                    </h5>
+                    <h5>{'Viewing ' + summaryName + "'s summary."}</h5>
                     {parse(summarySelected[0])}
                   </div>
                 ) : (
@@ -634,11 +652,7 @@ function UserProfile(props) {
 
                 {summarySelected[1] !== '' ? (
                   <div>
-                    <h5>
-                      Viewing
-                      {summaryName}
-                      's last week &aposs summary.
-                    </h5>
+                    <h5>{'Viewing ' + summaryName + "'s last week's summary."}</h5>
                     {parse(summarySelected[1])}
                   </div>
                 ) : (
@@ -647,7 +661,7 @@ function UserProfile(props) {
 
                 {summarySelected[2] !== '' ? (
                   <div>
-                    <h5>Viewing {summaryName}&apos s summary from two weeks ago.</h5>
+                    <h5>{'Viewing ' + summaryName + ' summary from two weeks ago.'}</h5>
                     {parse(summarySelected[2])}
                   </div>
                 ) : (
