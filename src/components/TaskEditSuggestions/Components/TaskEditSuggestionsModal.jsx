@@ -1,4 +1,5 @@
 import React from 'react';
+import { connect } from 'react-redux';
 import { Modal, ModalHeader, ModalBody, ModalFooter, Row, Col, Button } from 'reactstrap';
 import {
   resourcesToString,
@@ -8,16 +9,26 @@ import {
   trimParagraphTags,
   datetimeToDate,
 } from 'components/TeamMemberTasks/components/TaskDifferenceModal';
+import { updateTask } from 'actions/task';
 import DiffedText from 'components/TeamMemberTasks/components/DiffedText';
 import { useDispatch } from 'react-redux';
 import { rejectTaskEditSuggestion } from '../thunks';
 
-export const TaskEditSuggestionsModal = ({
+const TaskEditSuggestionsModal = ({
   isTaskEditSuggestionModalOpen,
   taskEditSuggestion,
   handleToggleTaskEditSuggestionModal,
+  updateTask,
 }) => {
   const dispatch = useDispatch();
+
+  const handleApprove = taskEditSuggestion => {
+    const taskId = taskEditSuggestion.taskId;
+    const newTask = taskEditSuggestion.newTask;
+    updateTask(taskId, newTask, true);
+    dispatch(rejectTaskEditSuggestion(taskEditSuggestion._id));
+    handleToggleTaskEditSuggestionModal();
+  };
 
   return (
     <Modal
@@ -209,7 +220,9 @@ export const TaskEditSuggestionsModal = ({
       <ModalFooter>
         <Row>
           <Col>
-            <Button color="success">Approve</Button>
+            <Button color="success" onClick={() => handleApprove(taskEditSuggestion)}>
+              Approve
+            </Button>
           </Col>
           <Col style={{ display: 'flex' }}>
             <Button
@@ -228,3 +241,8 @@ export const TaskEditSuggestionsModal = ({
     </Modal>
   );
 };
+
+const mapStateToProps = state => state;
+export default connect(mapStateToProps, {
+  updateTask,
+})(TaskEditSuggestionsModal);

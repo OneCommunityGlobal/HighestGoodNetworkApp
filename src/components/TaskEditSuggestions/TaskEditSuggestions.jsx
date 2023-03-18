@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector, connect } from 'react-redux';
 import { Container, Table } from 'reactstrap';
 import { TaskEditSuggestionRow } from './Components/TaskEditSuggestionRow';
-import { TaskEditSuggestionsModal } from './Components/TaskEditSuggestionsModal';
+import TaskEditSuggestionsModal from './Components/TaskEditSuggestionsModal';
 import { getTaskEditSuggestionsData } from './selectors';
 import { fetchTaskEditSuggestions } from './thunks';
 import { toggleDateSuggestedSortDirection, toggleUserSortDirection } from './actions';
