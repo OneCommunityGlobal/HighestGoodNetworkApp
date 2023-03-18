@@ -43,6 +43,14 @@ export const deleteTaskNotification = (userId, taskId, taskNotificationId) => as
     //dispatch(deleteTaskNotificationError());
   }
 };
+export const deleteChildrenTasks = taskId => async (dispatch, getState) => {
+  let status = 200;
+  try {
+    await axios.post(ENDPOINTS.DELETE_CHILDREN(taskId));
+  } catch (error) {
+    console.log(error);
+  }
+};
 
 export const addNewTask = (newTask, wbsId) => async (dispatch, getState) => {
   let status = 200;
