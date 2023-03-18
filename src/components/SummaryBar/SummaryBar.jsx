@@ -28,6 +28,7 @@ import { ENDPOINTS } from 'utils/URL';
 import axios from 'axios';
 import { ApiEndpoint } from 'utils/URL';
 import { getProgressColor, getProgressValue } from '../../utils/effortColors';
+import hasPermission from 'utils/permissions';
 
 const SummaryBar = props => {
   const { asUser, role, leaderData } = props;
@@ -41,7 +42,11 @@ const SummaryBar = props => {
   const authenticateUser = useSelector(state => state.auth.user);
   const gsUserprofile = useSelector(state => state.userProfile);
   const gsUserTasks = useSelector(state => state.userTask);
+  const roles = useSelector(state => state.role.roles);
   const authenticateUserId = authenticateUser ? authenticateUser.userid : '';
+  const authenticateUserPermission = authenticateUser
+    ? authenticateUser.permissions?.frontPermissions
+    : [];
 
   const matchUser = asUser == authenticateUserId ? true : false;
 
@@ -170,21 +175,26 @@ const SummaryBar = props => {
     }
   };
 
-  const checkForRoleManagerOrAbove = role => {
-    if(role === "Administrator" || role === "Manager" || role ==="Owner" || role === "Role Master"){
-      return true
-    }
-    return false;
-  }
-
-  const authenticateUserRole = authenticateUser ? authenticateUser.role: '';
-  const isRoleManagerOrAbove = checkForRoleManagerOrAbove(authenticateUserRole);
+  const authenticateUserRole = authenticateUser ? authenticateUser.role : '';
 
   if (userProfile !== undefined && leaderData !== undefined) {
     const weeklyCommittedHours = userProfile.weeklycommittedHours + (userProfile.missedHours ?? 0);
     const weeklySummary = getWeeklySummary(userProfile);
     return (
-      <Container fluid className={matchUser || isRoleManagerOrAbove ? 'px-lg-0 bg--bar' : 'px-lg-0 bg--bar disabled-bar'}>
+      <Container
+        fluid
+        className={
+          matchUser ||
+          hasPermission(
+            authenticateUserRole,
+            'submitWeeklySummaryForOthers',
+            roles,
+            authenticateUserPermission,
+          )
+            ? 'px-lg-0 bg--bar'
+            : 'px-lg-0 bg--bar disabled-bar'
+        }
+      >
         <Row className="no-gutters row-eq-height">
           <Col
             className="d-flex justify-content-center align-items-center col-lg-2 col-12 text-list"
@@ -251,7 +261,13 @@ const SummaryBar = props => {
               {!weeklySummary ? (
                 <div className="border-red col-4 bg--white-smoke no-gutters" align="center">
                   <div className="py-1"> </div>
-                  {matchUser || isRoleManagerOrAbove ? (
+                  {matchUser ||
+                  hasPermission(
+                    authenticateUserRole,
+                    'submitWeeklySummaryForOthers',
+                    roles,
+                    authenticateUserPermission,
+                  ) ? (
                     <p
                       className={'summary-toggle large_text_summary text--black text-danger'}
                       align="center"
