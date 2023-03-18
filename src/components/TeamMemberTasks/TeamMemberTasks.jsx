@@ -1,7 +1,3 @@
-/* eslint-disable max-len */
-/* eslint-disable no-trailing-spaces */
-/* eslint-disable no-plusplus */
-/* eslint-disable indent */
 import { faBell, faCircle, faClock, faCheck } from '@fortawesome/free-solid-svg-icons';
 import { Table, Progress } from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
