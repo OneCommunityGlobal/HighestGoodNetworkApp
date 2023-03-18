@@ -8,8 +8,9 @@ const mapStateToProps = state => {
   let leaderBoardData = get(state, 'leaderBoardData', []);
   let user = get(state, 'userProfile', []);
   let nonTutorsData = [];
-  console.log(leaderBoardData);
-  console.log(user);
+  console.log(user)
+
+
   //filtering users with non zero hours and role different from Mentor
   //created a temp variable so the prev values won't interfere with filtering.
   if (
@@ -61,7 +62,9 @@ const mapStateToProps = state => {
 
   const orgData = get(state, 'orgData', {});
 
-  orgData.name = `HGN Totals: ${leaderBoardData.length} Members`;
+  console.log(orgData)
+
+  orgData.name = `HGN Totals: ${orgData.memberCount} Members`;
   orgData.tangibletime = round(orgData.totaltangibletime_hrs, 2);
   orgData.totaltime = round(orgData.totaltime_hrs, 2);
   orgData.intangibletime = round(orgData.totalintangibletime_hrs, 2);
