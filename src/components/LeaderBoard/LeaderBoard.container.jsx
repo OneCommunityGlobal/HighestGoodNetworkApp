@@ -6,15 +6,32 @@ import { get, round, maxBy } from 'lodash';
 
 const mapStateToProps = state => {
   let leaderBoardData = get(state, 'leaderBoardData', []);
-
+  let user = get(state, 'userProfile', []);
+  let nonTutorsData = [];
+  console.log(leaderBoardData);
+  console.log(user);
   //filtering users with non zero hours and role different from Mentor
   //created a temp variable so the prev values won't interfere with filtering.
-  const nonTutorsData = leaderBoardData.filter(element => {
-    if (element.weeklycommittedHours > 0 && element.role !== 'Mentor') {
-      return element;
-    }
-  });
-  leaderBoardData = nonTutorsData;
+  if (
+    user.role !== 'Administrator' &&
+    user.role !== 'Owner' &&
+    user.role !== 'Mentor' &&
+    user.weeklycommittedHours > 0
+  ) {
+    nonTutorsData = leaderBoardData.filter(element => {
+      if (element.weeklycommittedHours > 0) {
+        return element;
+      }
+    });
+    leaderBoardData = nonTutorsData;
+  } else if (user.role === 'Mentor') {
+    nonTutorsData = leaderBoardData.filter(element => {
+      if (element.weeklycommittedHours > 0 || user._id === element.personId) {
+        return element;
+      }
+    });
+    leaderBoardData = nonTutorsData;
+  }
 
   if (leaderBoardData.length) {
     let maxTotal = maxBy(leaderBoardData, 'totaltime_hrs').totaltime_hrs || 10;
