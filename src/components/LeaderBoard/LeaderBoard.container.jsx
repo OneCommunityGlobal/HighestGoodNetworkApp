@@ -19,14 +19,17 @@ const mapStateToProps = state => {
     user.weeklycommittedHours > 0
   ) {
     nonTutorsData = leaderBoardData.filter(element => {
-      if (element.weeklycommittedHours > 0) {
+      if (element.weeklycommittedHours > 0 && element.role[0] !== 'Mentor') {
         return element;
       }
     });
     leaderBoardData = nonTutorsData;
-  } else if (user.role === 'Mentor') {
+  } else if (user.role[0] === 'Mentor' || user.weeklycommittedHours === 0) {
     nonTutorsData = leaderBoardData.filter(element => {
-      if (element.weeklycommittedHours > 0 || user._id === element.personId) {
+      if (
+        (element.weeklycommittedHours > 0 && element.role[0] !== 'Mentor') ||
+        user._id === element.personId
+      ) {
         return element;
       }
     });
