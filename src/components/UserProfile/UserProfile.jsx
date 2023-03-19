@@ -505,7 +505,6 @@ function UserProfile(props) {
   useEffect(() => {
     setShowLoading(true);
     loadUserProfile();
-    setChanged(false);
   }, [props?.match?.params?.userId]);
 
   useEffect(() => {
