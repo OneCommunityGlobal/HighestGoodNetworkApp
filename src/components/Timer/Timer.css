@@ -1,3 +1,8 @@
+.timer {
+  margin: auto;
+  display:flex;
+}
+
 .timer button {
   min-width: 3.75rem;
   box-shadow: none !important;
@@ -9,7 +14,7 @@
 }
 
 .button-container {
-  display: inline-block;
+  display: flex;
 }
 
 @media (min-width: 1550px) {

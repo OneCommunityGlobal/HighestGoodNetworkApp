@@ -171,9 +171,7 @@ const SummaryBar = props => {
   };
 
   if (userProfile !== undefined && leaderData !== undefined) {
-    const weeklyCommittedHours = userProfile.weeklycommittedHours
-      ? userProfile.weeklycommittedHours
-      : userProfile.weeklyComittedHours;
+    const weeklyCommittedHours = userProfile.weeklycommittedHours;
     const weeklySummary = getWeeklySummary(userProfile);
     return (
       <Container fluid className={matchUser ? 'px-lg-0 bg--bar' : 'px-lg-0 bg--bar disabled-bar'}>
@@ -195,7 +193,7 @@ const SummaryBar = props => {
               </CardTitle>
             </div>
           </Col>
-          <Col className="col-lg-3 col-12 no-gutters">
+          <Col className="d-flex col-lg-3 col-12 no-gutters">
             <Row className="no-gutters">
               {totalEffort < weeklyCommittedHours && (
                 <div className="border-red col-4 bg--white-smoke" align="center">
@@ -238,7 +236,7 @@ const SummaryBar = props => {
             </Row>
           </Col>
 
-          <Col className="col-lg-3 col-12 no-gutters">
+          <Col className="d-flex col-lg-3 col-12 no-gutters">
             <Row className="no-gutters">
               {!weeklySummary ? (
                 <div className="border-red col-4 bg--white-smoke no-gutters" align="center">

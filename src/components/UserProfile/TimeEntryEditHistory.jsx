@@ -7,7 +7,6 @@ import hasPermission from '../../utils/permissions';
  * Shows the dates and times a user has edited their time entries. Admins are given the ability to delete these edits.
  * @param {*} props.userProfile
  * @param {function} props.setUserProfile
- * @param {function} props.setChanged
  * @returns
  */
 const TimeEntryEditHistory = props => {
@@ -31,7 +30,6 @@ const TimeEntryEditHistory = props => {
     );
 
     props.setUserProfile(newUserProfile);
-    props.setChanged(true);
   };
 
   return (

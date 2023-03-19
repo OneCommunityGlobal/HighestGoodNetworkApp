@@ -345,7 +345,7 @@ class Timelog extends Component {
         {this.state.isTimeEntriesLoading ? (
           <Loading />
         ) : (
-          <Container>
+          <Container className="right-padding-temp-fix">
             {this.state.summary ? (
               <div className="my-2">
                 <div id="weeklySum">
@@ -353,8 +353,8 @@ class Timelog extends Component {
                 </div>
               </div>
             ) : null}
-            <Row>
-              <Col md={12}>
+            <Row className="right-padding-temp-fix">
+              <Col className="right-padding-temp-fix" md={12}>
                 <Card>
                   <CardHeader>
                     <Row>
