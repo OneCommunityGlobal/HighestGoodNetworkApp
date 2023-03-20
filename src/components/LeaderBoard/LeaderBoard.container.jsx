@@ -7,16 +7,20 @@ import { get, round, maxBy } from 'lodash';
 const mapStateToProps = state => {
   let leaderBoardData = get(state, 'leaderBoardData', []);
   let user = get(state, 'userProfile', []);
-  let nonTutorsData = [];
-  console.log(user)
 
+  //created an auxiliar variable so the filtering do not interfere with the main variable
+  let nonTutorsData = [];
 
   //filtering users with non zero hours and role different from Mentor
-  //created a temp variable so the prev values won't interfere with filtering.
-  if (
+  if (user.role === 'Administrator' || user.role === 'Owner' || user.role === 'Core Team') {
+    //nothing happens if the user is an administrator, owner or core team, they are able to see all the leaderboard, including members with zero hours and mentor members
+    leaderBoardData = leaderBoardData
+  } else if (
+    //if the user is not an administrator, nor owner, nor mentor, and also not a core team, it will only see the people from the same team, no zero hour members and not mentor members
     user.role !== 'Administrator' &&
     user.role !== 'Owner' &&
     user.role !== 'Mentor' &&
+    user.role !== 'Core Team' &&
     user.weeklycommittedHours > 0
   ) {
     nonTutorsData = leaderBoardData.filter(element => {
@@ -25,7 +29,7 @@ const mapStateToProps = state => {
       }
     });
     leaderBoardData = nonTutorsData;
-  } else if (user.role[0] === 'Mentor' || user.weeklycommittedHours === 0) {
+  } else if (user.role === 'Mentor' || user.weeklycommittedHours === 0) { //if the user is a mentor, or have zero hours, it will be able to see itself and the members from it's team
     nonTutorsData = leaderBoardData.filter(element => {
       if (
         (element.weeklycommittedHours > 0 && element.role[0] !== 'Mentor') ||
@@ -61,8 +65,6 @@ const mapStateToProps = state => {
   }
 
   const orgData = get(state, 'orgData', {});
-
-  console.log(orgData)
 
   orgData.name = `HGN Totals: ${orgData.memberCount} Members`;
   orgData.tangibletime = round(orgData.totaltangibletime_hrs, 2);
