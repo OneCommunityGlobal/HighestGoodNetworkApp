@@ -7,6 +7,7 @@ import { get, round, maxBy } from 'lodash';
 const mapStateToProps = state => {
   let leaderBoardData = get(state, 'leaderBoardData', []);
   let user = get(state, 'userProfile', []);
+  console.log(leaderBoardData)
 
   //created an auxiliar variable so the filtering do not interfere with the main variable
   let nonTutorsData = [];
@@ -24,7 +25,7 @@ const mapStateToProps = state => {
     user.weeklycommittedHours > 0
   ) {
     nonTutorsData = leaderBoardData.filter(element => {
-      if (element.weeklycommittedHours > 0 && element.role[0] !== 'Mentor') {
+      if (element.weeklycommittedHours > 0 && element.role !== 'Mentor') {
         return element;
       }
     });
@@ -32,7 +33,7 @@ const mapStateToProps = state => {
   } else if (user.role === 'Mentor' || user.weeklycommittedHours === 0) { //if the user is a mentor, or have zero hours, it will be able to see itself and the members from it's team
     nonTutorsData = leaderBoardData.filter(element => {
       if (
-        (element.weeklycommittedHours > 0 && element.role[0] !== 'Mentor') ||
+        (element.weeklycommittedHours > 0 && element.role !== 'Mentor') ||
         user._id === element.personId
       ) {
         return element;
