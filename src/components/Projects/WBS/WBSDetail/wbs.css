@@ -139,9 +139,9 @@
 }
 
 @media only screen and (max-width: 600px) {
-  /*.desktop-view {
-    display: none;
-  }*/
+  .container-tasks {
+    overflow: scroll;
+  }
 
   .table td {
     padding: 5px !important;
@@ -152,11 +152,16 @@
     float: unset;
     display: flex;
     justify-content: space-between;
+    margin-bottom: 10px;
   }
 
   .toggle-all button {
     padding: 3px !important;
     font-size: 12px;
+  }
+
+  .toggle-all .ml-3,
+  .toggle-all .mx-3 {
     margin-left: 0 !important;
   }
 }
