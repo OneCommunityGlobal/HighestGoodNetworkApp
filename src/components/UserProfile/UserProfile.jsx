@@ -96,13 +96,6 @@ const UserProfile = props => {
   }, [teams, projects]);
 
   useEffect(() => {
-    checkIsTeamsEqual();
-    checkIsProjectsEqual();
-    setUserProfile({ ...userProfile, teams, projects });
-    setOriginalUserProfile({ ...originalUserProfile, teams, projects });
-  }, [teams, projects]);
-
-  useEffect(() => {
     loadUserProfile();
   }, []);
 
