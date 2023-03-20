@@ -121,8 +121,6 @@ const UserProfile = props => {
       }
     });
 
-    console.log(userProfile);
-
     const teamsProperties = [];
     teams?.forEach(team => {
       for (const [key, value] of Object.entries(team)) {
