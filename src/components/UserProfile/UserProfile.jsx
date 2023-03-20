@@ -62,25 +62,46 @@ const UserProfile = props => {
   const [showLoading, setShowLoading] = useState(true);
   const [userProfile, setUserProfile] = useState(undefined);
   const [originalUserProfile, setOriginalUserProfile] = useState(undefined);
-  const [originalTasks, setOriginalTasks] = useState(undefined);
+  const [originalTasks, setOriginalTasks] = useState([]);
+  const [isTeamsEqual, setIsTeamsEqual] = useState(true);
+  const [teams, setTeams] = useState([]);
+  const [originalTeams, setOriginalTeams] = useState([]);
+  const [isProjectsEqual, setIsProjectsEqual] = useState(true);
+  const [projects, setProjects] = useState([]);
+  const [originalProjects, setOriginalProjects] = useState([]);
   const [id, setId] = useState('');
   const [activeTab, setActiveTab] = useState('1');
   const [infoModal, setInfoModal] = useState(false);
   const [formValid, setFormValid] = useState(initialFormValid);
-  const [changed, setChanged] = useState(false);
   const [blueSquareChanged, setBlueSquareChanged] = useState(false);
-  const [showSaveWarning, setShowSaveWarning] = useState(true);
   const [type, setType] = useState('');
   const [menuModalTabletScreen, setMenuModalTabletScreen] = useState('');
   const [showModal, setShowModal] = useState(false);
   const [modalTitle, setModalTitle] = useState('');
   const [modalMessage, setModalMessage] = useState('');
   const [activeInactivePopupOpen, setActiveInactivePopupOpen] = useState(false);
-  const [tasks, setTasks] = useState();
+  const [tasks, setTasks] = useState([]);
   const [updatedTasks, setUpdatedTasks] = useState([]);
   //const [isValid, setIsValid] = useState(true)
 
+  const isTasksEqual = JSON.stringify(originalTasks) === JSON.stringify(tasks);
+  const isProfileEqual = JSON.stringify(userProfile) === JSON.stringify(originalUserProfile);
+
   /* useEffect functions */
+  useEffect(() => {
+    checkIsTeamsEqual();
+    checkIsProjectsEqual();
+    setUserProfile({ ...userProfile, teams, projects });
+    setOriginalUserProfile({ ...originalUserProfile, teams, projects });
+  }, [teams, projects]);
+
+  useEffect(() => {
+    checkIsTeamsEqual();
+    checkIsProjectsEqual();
+    setUserProfile({ ...userProfile, teams, projects });
+    setOriginalUserProfile({ ...originalUserProfile, teams, projects });
+  }, [teams, projects]);
+
   useEffect(() => {
     loadUserProfile();
   }, []);
@@ -88,7 +109,6 @@ const UserProfile = props => {
   useEffect(() => {
     setShowLoading(true);
     loadUserProfile();
-    setChanged(false);
     loadUserTasks();
   }, [props?.match?.params?.userId]);
 
@@ -97,6 +117,70 @@ const UserProfile = props => {
     setBlueSquareChanged(false);
     handleSubmit();
   }, [blueSquareChanged]);
+
+  const checkIsTeamsEqual = () => {
+    const originalTeamProperties = [];
+    originalTeams?.forEach(team => {
+      for (const [key, value] of Object.entries(team)) {
+        if (key == 'teamName') {
+          originalTeamProperties.push({ [key]: value });
+        }
+      }
+    });
+
+    const teamsProperties = [];
+    teams?.forEach(team => {
+      for (const [key, value] of Object.entries(team)) {
+        if (key == 'teamName') {
+          teamsProperties.push({ [key]: value });
+        }
+      }
+    });
+
+    const originalTeamsBeingDisplayed = teamsProperties.filter(
+      item =>
+        JSON.stringify(item) ===
+        JSON.stringify(originalTeamProperties.filter(elem => elem.teamName === item.teamName)[0]),
+    );
+
+    const compare =
+      originalTeamsBeingDisplayed?.length === originalTeams?.length &&
+      originalTeamsBeingDisplayed?.length === teamsProperties?.length;
+    setIsTeamsEqual(compare);
+  };
+
+  const checkIsProjectsEqual = () => {
+    const originalProjectProperties = [];
+    originalProjects?.forEach(project => {
+      for (const [key, value] of Object.entries(project)) {
+        if (key == 'projectName') {
+          originalProjectProperties.push({ [key]: value });
+        }
+      }
+    });
+
+    const projectsProperties = [];
+    projects?.forEach(project => {
+      for (const [key, value] of Object.entries(project)) {
+        if (key == 'projectName') {
+          projectsProperties.push({ [key]: value });
+        }
+      }
+    });
+
+    const originalProjectsBeingDisplayed = projectsProperties.filter(
+      item =>
+        JSON.stringify(item) ===
+        JSON.stringify(
+          originalProjectProperties.filter(elem => elem.projectName === item.projectName)[0],
+        ),
+    );
+
+    const compare =
+      originalProjectsBeingDisplayed?.length === originalProjects?.length &&
+      originalProjectsBeingDisplayed?.length === projectsProperties?.length;
+    setIsProjectsEqual(compare);
+  };
 
   const loadUserTasks = async () => {
     const userId = props?.match?.params?.userId;
@@ -116,8 +200,23 @@ const UserProfile = props => {
     try {
       const response = await axios.get(ENDPOINTS.USER_PROFILE(userId));
       const newUserProfile = response.data;
-      setUserProfile(newUserProfile);
-      setOriginalUserProfile(newUserProfile);
+
+      setTeams(newUserProfile.teams);
+      setOriginalTeams(newUserProfile.teams);
+      setProjects(newUserProfile.projects);
+      setOriginalProjects(newUserProfile.projects);
+      setUserProfile({
+        ...newUserProfile,
+        jobTitle: newUserProfile.jobTitle[0],
+        phoneNumber: newUserProfile.phoneNumber[0],
+        createdDate: newUserProfile?.createdDate.split('T')[0],
+      });
+      setOriginalUserProfile({
+        ...newUserProfile,
+        jobTitle: newUserProfile.jobTitle[0],
+        phoneNumber: newUserProfile.phoneNumber[0],
+        createdDate: newUserProfile?.createdDate.split('T')[0],
+      });
       setShowLoading(false);
     } catch (err) {
       setShowLoading(false);
@@ -125,46 +224,19 @@ const UserProfile = props => {
   };
 
   const onDeleteTeam = deletedTeamId => {
-    const newUserProfile = { ...userProfile };
-    const filteredTeam = newUserProfile.teams.filter(team => team._id !== deletedTeamId);
-    newUserProfile.teams = filteredTeam;
-
-    setUserProfile(newUserProfile);
-    setChanged(true);
+    setTeams(prevTeams => prevTeams.filter(team => team._id !== deletedTeamId));
   };
 
   const onDeleteProject = deletedProjectId => {
-    const newUserProfile = { ...userProfile };
-    const filteredProject = newUserProfile.projects.filter(
-      project => project._id !== deletedProjectId,
-    );
-    newUserProfile.projects = filteredProject;
-
-    setUserProfile(newUserProfile);
-    setChanged(true);
+    setProjects(prevProject => prevProject.filter(project => project._id !== deletedProjectId));
   };
 
   const onAssignTeam = assignedTeam => {
-    const newUserProfile = { ...userProfile };
-    if (newUserProfile.teams) {
-      newUserProfile.teams.push(assignedTeam);
-    } else {
-      newUserProfile.teams = [assignedTeam];
-    }
-
-    setChanged(true);
-    setUserProfile(newUserProfile);
+    setTeams(prevState => [...prevState, assignedTeam]);
   };
 
   const onAssignProject = assignedProject => {
-    const newUserProfile = { ...userProfile };
-    if (newUserProfile.projects) {
-      newUserProfile.projects.push(assignedProject);
-    } else {
-      newUserProfile.projects = [assignedProject];
-    }
-    setUserProfile(newUserProfile);
-    setChanged(true);
+    setProjects(prevProjects => [...prevProjects, assignedProject]);
   };
 
   const onUpdateTask = (taskId, updatedTask) => {
@@ -174,14 +246,21 @@ const UserProfile = props => {
     };
 
     setTasks(tasks => {
-      console.log(tasks);
       const tasksWithoutTheUpdated = [...tasks];
       const taskIndex = tasks.findIndex(task => task._id === taskId);
       tasksWithoutTheUpdated[taskIndex] = updatedTask;
       return tasksWithoutTheUpdated;
     });
-    setUpdatedTasks(tasks => [...tasks, newTask]);
-    setChanged(true);
+
+    if (updatedTasks.findIndex(task => task.taskId === taskId) !== -1) {
+      const taskIndex = updatedTasks.findIndex(task => task.taskId === taskId);
+      const tasksToUpdate = updatedTasks;
+      tasksToUpdate.splice(taskIndex, 1);
+      tasksToUpdate.splice(taskIndex, 0, newTask);
+      setUpdatedTasks(tasksToUpdate);
+    } else {
+      setUpdatedTasks(tasks => [...tasks, newTask]);
+    }
   };
 
   const handleImageUpload = async evt => {
@@ -221,7 +300,6 @@ const UserProfile = props => {
       const fileReader = new FileReader();
       fileReader.readAsDataURL(file);
       fileReader.onloadend = () => {
-        setChanged(true);
         setUserProfile({ ...userProfile, profilePic: fileReader.result });
       };
     }
@@ -336,12 +414,10 @@ const UserProfile = props => {
   /**
    *
    * UserProfile.jsx and its subsomponents are being refactored to avoid the use of this monolithic function.
-   * Please pass userProfile, setUserProfile, and setChanged as props to subcomponents and modify state that way.
+   * Please pass userProfile and setUserProfile as props to subcomponents and modify state that way.
    * This function is being kept here until the refactoring is complete.
    */
   const handleUserProfile = event => {
-    setChanged(true);
-
     switch (event.target.id) {
       case 'emailPubliclyAccessible':
         setUserProfile({
@@ -457,11 +533,11 @@ const UserProfile = props => {
           </Col>
           <Col md="8">
             <div className="profile-head">
-              {changed && showSaveWarning && (
+              {!isProfileEqual || !isTasksEqual || !isTeamsEqual || !isProjectsEqual ? (
                 <Alert color="warning">
                   Please click on "Save changes" to save the changes you have made.{' '}
                 </Alert>
-              )}
+              ) : null}
               <h5 style={{ display: 'inline-block', marginRight: 10 }}>
                 {`${firstName} ${lastName}`}
               </h5>
@@ -522,7 +598,6 @@ const UserProfile = props => {
               <UserLinkLayout
                 isUserSelf={isUserSelf}
                 userProfile={userProfile}
-                setChanged={setChanged}
                 updateLink={updateLink}
                 handleLinkModel={props.handleLinkModel}
                 role={requestorRole}
@@ -606,7 +681,6 @@ const UserProfile = props => {
                   role={requestorRole}
                   userProfile={userProfile}
                   setUserProfile={setUserProfile}
-                  setChanged={setChanged}
                   handleUserProfile={handleUserProfile}
                   formValid={formValid}
                   setFormValid={setFormValid}
@@ -620,7 +694,6 @@ const UserProfile = props => {
                 <VolunteeringTimeTab
                   userProfile={userProfile}
                   setUserProfile={setUserProfile}
-                  setChanged={setChanged}
                   isUserSelf={isUserSelf}
                   role={requestorRole}
                   canEdit={hasPermission(requestorRole, 'editUserProfile', roles, userPermissions)}
@@ -628,7 +701,7 @@ const UserProfile = props => {
               </TabPane>
               <TabPane tabId="3">
                 <TeamsTab
-                  userTeams={userProfile?.teams || []}
+                  userTeams={teams || []}
                   teamsData={props?.allTeams?.allTeamsData || []}
                   onAssignTeam={onAssignTeam}
                   onDeleteteam={onDeleteTeam}
@@ -655,7 +728,6 @@ const UserProfile = props => {
                 <TimeEntryEditHistory
                   userProfile={userProfile}
                   setUserProfile={setUserProfile}
-                  setChanged={setChanged}
                   role={requestorRole}
                   roles={roles}
                   userPermissions={userPermissions}
@@ -679,7 +751,6 @@ const UserProfile = props => {
                     role={requestorRole}
                     userProfile={userProfile}
                     setUserProfile={setUserProfile}
-                    setChanged={setChanged}
                     handleUserProfile={handleUserProfile}
                     formValid={formValid}
                     setFormValid={setFormValid}
@@ -733,7 +804,7 @@ const UserProfile = props => {
                                 !formValid.firstName ||
                                 !formValid.lastName ||
                                 !formValid.email ||
-                                !changed
+                                (isProfileEqual && isTasksEqual && isTeamsEqual && isProjectsEqual)
                               }
                               userProfile={userProfile}
                             />
@@ -741,7 +812,6 @@ const UserProfile = props => {
                               onClick={() => {
                                 setUserProfile(originalUserProfile);
                                 setTasks(originalTasks);
-                                setChanged(false);
                               }}
                               className="btn btn-outline-danger mr-1 btn-bottom"
                             >
@@ -769,7 +839,6 @@ const UserProfile = props => {
                   <VolunteeringTimeTab
                     userProfile={userProfile}
                     setUserProfile={setUserProfile}
-                    setChanged={setChanged}
                     isUserSelf={isUserSelf}
                     role={requestorRole}
                     canEdit={hasPermission(
@@ -799,7 +868,7 @@ const UserProfile = props => {
                                 !formValid.firstName ||
                                 !formValid.lastName ||
                                 !formValid.email ||
-                                !changed
+                                (isProfileEqual && isTasksEqual && isTeamsEqual && isProjectsEqual)
                               }
                               userProfile={userProfile}
                             />
@@ -807,7 +876,6 @@ const UserProfile = props => {
                               onClick={() => {
                                 setUserProfile(originalUserProfile);
                                 setTasks(originalTasks);
-                                setChanged(false);
                               }}
                               className="btn btn-outline-danger mr-1 btn-bottom"
                             >
@@ -857,7 +925,7 @@ const UserProfile = props => {
                                 !formValid.firstName ||
                                 !formValid.lastName ||
                                 !formValid.email ||
-                                !changed
+                                (isProfileEqual && isTasksEqual && isTeamsEqual && isProjectsEqual)
                               }
                               userProfile={userProfile}
                             />
@@ -865,7 +933,6 @@ const UserProfile = props => {
                               onClick={() => {
                                 setUserProfile(originalUserProfile);
                                 setTasks(originalTasks);
-                                setChanged(false);
                               }}
                               className="btn btn-outline-danger mr-1 btn-bottom"
                             >
@@ -918,7 +985,7 @@ const UserProfile = props => {
                                 !formValid.firstName ||
                                 !formValid.lastName ||
                                 !formValid.email ||
-                                !changed
+                                (isProfileEqual && isTasksEqual && isTeamsEqual && isProjectsEqual)
                               }
                               userProfile={userProfile}
                             />
@@ -926,7 +993,6 @@ const UserProfile = props => {
                               onClick={() => {
                                 setUserProfile(originalUserProfile);
                                 setTasks(originalTasks);
-                                setChanged(false);
                               }}
                               className="btn btn-outline-danger mr-1 btn-bottom"
                             >
@@ -954,7 +1020,6 @@ const UserProfile = props => {
                   <TimeEntryEditHistory
                     userProfile={userProfile}
                     setUserProfile={setUserProfile}
-                    setChanged={setChanged}
                     role={requestorRole}
                     roles={roles}
                     userPermissions={userPermissions}
@@ -979,7 +1044,7 @@ const UserProfile = props => {
                                 !formValid.firstName ||
                                 !formValid.lastName ||
                                 !formValid.email ||
-                                !changed
+                                (isProfileEqual && isTasksEqual && isTeamsEqual && isProjectsEqual)
                               }
                               userProfile={userProfile}
                             />
@@ -987,7 +1052,6 @@ const UserProfile = props => {
                               onClick={() => {
                                 setUserProfile(originalUserProfile);
                                 setTasks(originalTasks);
-                                setChanged(false);
                               }}
                               className="btn btn-outline-danger mr-1 btn-bottom"
                             >
@@ -1032,7 +1096,10 @@ const UserProfile = props => {
                       className="mr-1 btn-bottom"
                       handleSubmit={handleSubmit}
                       disabled={
-                        !formValid.firstName || !formValid.lastName || !formValid.email || !changed
+                        !formValid.firstName ||
+                        !formValid.lastName ||
+                        !formValid.email ||
+                        (isProfileEqual && isTasksEqual && isTeamsEqual && isProjectsEqual)
                       }
                       userProfile={userProfile}
                     />
@@ -1040,7 +1107,7 @@ const UserProfile = props => {
                       onClick={() => {
                         setUserProfile(originalUserProfile);
                         setTasks(originalTasks);
-                        setChanged(false);
+                        setTeams(originalTeams);
                       }}
                       className="btn btn-outline-danger mr-1 btn-bottom"
                     >

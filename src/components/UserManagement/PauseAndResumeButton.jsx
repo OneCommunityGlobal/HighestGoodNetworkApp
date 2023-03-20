@@ -32,6 +32,11 @@ const PauseAndResumeButton = props => {
    */
   const pauseUser = reActivationDate => {
     updateUserStatus(props.userProfile, UserStatus.InActive, reActivationDate)(dispatch);
+    props.setUserProfile(prevUser => ({
+      ...prevUser,
+      reactivationDate: reActivationDate,
+      isActive: false,
+    }));
     setIsActive(false);
     setActivationDateOpen(false);
   };
@@ -44,9 +49,10 @@ const PauseAndResumeButton = props => {
       updateUserStatus(user, status, Date.now())(dispatch);
       setIsActive(status);
       toast.success('Your Changes were saved successfully.');
-      setTimeout(function() {
-        window.location.reload();
-      }, 5000);
+      props.setUserProfile(prevUser => ({
+        ...prevUser,
+        isActive: true,
+      }));
     } else {
       setActivationDateOpen(true);
     }

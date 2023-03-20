@@ -26,9 +26,9 @@ const SetUpFinalDayButton = props => {
       updateUserFinalDayStatus(props.userProfile, 'Active', undefined)(dispatch);
       setIsSet(!isSet);
       toast.success("This user's final day has been deleted.");
-      setTimeout(function() {
-        window.location.reload();
-      }, 5000);
+      let profile = props.userProfile;
+      delete profile.endDate;
+      props.setUserProfile(profile);
     } else {
       setFinalDayDateOpen(true);
     }
@@ -43,9 +43,10 @@ const SetUpFinalDayButton = props => {
     setIsSet(true);
     setFinalDayDateOpen(false);
     toast.success("This user's final day has been set.");
-    setTimeout(function() {
-      window.location.reload();
-    }, 5000);
+    props.setUserProfile(prevUser => ({
+      ...prevUser,
+      endDate: finalDayDate,
+    }));
   };
 
   return (
