@@ -20,16 +20,16 @@ import { getTeamReportData } from './selectors';
 import './TeamReport.css';
 import { ReportPage } from '../sharedComponents/ReportPage';
 import UserLoginPrivileges from './components/UserLoginPrivileges';
-// LoginPrivilegesSimulation causing conflicts
-import LoginPrivilegesSimulation from './components/TestComponents/LoginPrivilegesSimulation';
 
 import Dropdown from 'react-bootstrap/Dropdown';
+import { LoginPrivileges } from './components/LoginPrivileges.jsx';
 
 export function TeamReport({ match }) {
   const dispatch = useDispatch();
   const { team } = useSelector(getTeamReportData);
-  const [ allTeams, setAllTeams ] = useState([]);
   const [ teamMembers, setTeamMembers ] = useState([]);
+  const [ allTeams, setAllTeams ] = useState([]);
+  const [ allTeamsMembers, setAllTeamsMembers ] = useState([]);
   const [ searchParams, setSearchParams ] = useState({
     teamName: '',
     createdAt: moment('01-01-2015', 'MM-DD-YYYY').toDate(),
@@ -37,7 +37,7 @@ export function TeamReport({ match }) {
     isActive: false,
     isInactive: false,
   });
-
+console.log(teamMembers)
   function handleSearchByName(event) {
     event.persist()
 
@@ -73,8 +73,6 @@ export function TeamReport({ match }) {
     } 
   }
   
-
-  // console.log(team)
   function handleSearch() {
     const searchResults = allTeams.filter((team) => {
       const isMatchedName = team.teamName.toLowerCase().includes(searchParams.teamName.toLowerCase());
@@ -118,6 +116,7 @@ export function TeamReport({ match }) {
   useEffect(() => {
     if (match) {
       dispatch(getTeamDetail(match.params.teamId));
+      dispatch(getTeamMembers(match.params.teamId)).then(result => setTeamMembers([...result]));
       dispatch(getAllUserTeams())
       .then((result) => {
         setAllTeams([...result]);
@@ -126,7 +125,7 @@ export function TeamReport({ match }) {
       .then((result) => {
         const allTeamMembersPromises = result.map((team) => dispatch(getTeamMembers(team._id)));
         Promise.all(allTeamMembersPromises).then((results) => {
-          setTeamMembers([...results]);
+          setAllTeamsMembers([...results]);
         });
       });
     }
@@ -163,8 +162,8 @@ export function TeamReport({ match }) {
           This LoginPrivilegesSimulation component will be removed once the backend team link the login privileges.
           It is just to simulate the toggle between the login privileges. The logic is
           inside the userLoginPrivileges.jsx file.
-*/}
-          {/* <LoginPrivilegesSimulation selectedInput={selectedInput} handleInputChange={handleInputChange} /> */}
+          */}
+          <LoginPrivileges selectedInput={selectedInput} handleInputChange={handleInputChange} /> 
 
           <div className="update-date">
             Last updated:
@@ -172,7 +171,12 @@ export function TeamReport({ match }) {
           </div>
         </div>
       </ReportPage.ReportBlock>
-      <UserLoginPrivileges handleInputChange={handleInputChange} selectedInput={selectedInput} teamName={team.teamName}/>
+      <UserLoginPrivileges 
+        handleInputChange={handleInputChange} 
+        selectedInput={selectedInput} 
+        teamName={team.teamName}
+        teamMembers={teamMembers}
+      />
       <ReportPage.ReportBlock>
         <div className="input-group input-group-sm d-flex flex-nowrap justify-content-between">
           <div className="d-flex align-items-center">
@@ -266,9 +270,9 @@ export function TeamReport({ match }) {
                           See
                         </Dropdown.Toggle>
                           <Dropdown.Menu>
-                          {teamMembers[index] ? (
-                            teamMembers[index].length > 1 ? (
-                              teamMembers[index].map((member) => (
+                          {allTeamsMembers[index] ? (
+                            allTeamsMembers[index].length > 1 ? (
+                              allTeamsMembers[index].map((member) => (
                                 <div key={`${team._id}-${member._id}`}>
                                   <Dropdown.Item href="#/action-1">
                                     {member.firstName} {member.lastName}

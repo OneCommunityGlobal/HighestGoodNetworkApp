@@ -1,11 +1,10 @@
 import React from 'react';
-import './LoginPrivilegesSimulation.css';
+import './LoginPrivileges.css';
 
-function LoginPrivilegesSimulation({ selectedInput, handleInputChange }) {
+export function LoginPrivileges({ selectedInput, handleInputChange }) {
   return (
     <form>
-      <div className="container">
-
+      <div className="login-privileges-container">
         <div>
           <input
             type="radio"
@@ -43,5 +42,3 @@ function LoginPrivilegesSimulation({ selectedInput, handleInputChange }) {
     </form>
 );
 }
-
-export default LoginPrivilegesSimulation;

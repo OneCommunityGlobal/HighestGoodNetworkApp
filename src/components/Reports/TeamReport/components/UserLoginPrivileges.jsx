@@ -1,15 +1,33 @@
 import React from 'react';
 import { ReportPage } from 'components/Reports/sharedComponents/ReportPage';
+import TeamReportLogs from './TeamReportLogs';
 import ReportLogs from './ReportLogs';
+import TeamReportCharts from './TeamReportCharts';
 import ReportCharts from './ReportCharts';
 
-function UserLoginPrivileges({ selectedInput, teamName }) {
+function UserLoginPrivileges({ selectedInput, teamName, teamMembers }) {
+  let teamWeeklyCommittedHours = 0;
+  let teamTotalTangibleHours = 0;
+  let teamTotalBlueSquares = 0;
+
+  teamMembers.map(member => {
+    teamWeeklyCommittedHours += member.weeklycommittedHours;
+    teamTotalTangibleHours += member.totalTangibleHrs;
+    teamTotalBlueSquares += member.infringements.length;
+  })
+  
   // Check if the user has admin privileges
   if (selectedInput == 'isManager') {
     // Render the component if the user has admin privileges
     return (
       <div className="team-report-main-info">
-        <ReportLogs title="Team" />
+        <TeamReportLogs 
+          title={teamName} 
+          teamMembers={teamMembers} 
+          teamWeeklyCommittedHours={teamWeeklyCommittedHours} 
+          teamTotalTangibleHours={teamTotalTangibleHours} 
+          teamTotalBlueSquares={teamTotalBlueSquares}
+        />
         {/* Two cards with pie charts with data */}
         <div style={{
           display: 'flex', flexDirection: 'row', gap: '16px',
@@ -19,10 +37,12 @@ function UserLoginPrivileges({ selectedInput, teamName }) {
           otherwise it will render all of them in the first card. */}
 
           <ReportPage.ReportBlock className="team-chart-container">
-            <ReportCharts title="Breakdown of Weekly Hours So Far this Week" pieChartId="chart1" />
-          </ReportPage.ReportBlock>
-          <ReportPage.ReportBlock className="team-chart-container">
-            <ReportCharts title="Hours to Complete Tasks" pieChartId="chart2" />
+            <TeamReportCharts
+              title="Breakdown of Weekly Hours So Far this Week" 
+              pieChartId="chart1" 
+              teamWeeklyCommittedHours={teamWeeklyCommittedHours} 
+              teamTotalTangibleHours={teamTotalTangibleHours} 
+            />
           </ReportPage.ReportBlock>
         </div>
       </div>
@@ -30,7 +50,13 @@ function UserLoginPrivileges({ selectedInput, teamName }) {
   } if (selectedInput == 'isAdmin') {
     return (
       <div className="team-report-main-info">
-        <ReportLogs title="Team" />
+        <TeamReportLogs 
+          title={teamName} 
+          teamMembers={teamMembers} 
+          teamWeeklyCommittedHours={teamWeeklyCommittedHours} 
+          teamTotalTangibleHours={teamTotalTangibleHours} 
+          teamTotalBlueSquares={teamTotalBlueSquares}
+        />
         {/* Two cards with pie charts with data */}
         <div style={{
           display: 'flex', flexDirection: 'row', gap: '16px',
@@ -75,7 +101,13 @@ function UserLoginPrivileges({ selectedInput, teamName }) {
             <ReportCharts title="Hours to Complete Tasks" pieChartId="chart2-3" />
           </ReportPage.ReportBlock>
         </div>
-        <ReportLogs title="Team" />
+        <TeamReportLogs 
+          title={teamName} 
+          teamMembers={teamMembers} 
+          teamWeeklyCommittedHours={teamWeeklyCommittedHours} 
+          teamTotalTangibleHours={teamTotalTangibleHours} 
+          teamTotalBlueSquares={teamTotalBlueSquares}
+        />
         {/* Two cards with pie charts with data */}
         <div style={{
           display: 'flex', flexDirection: 'row', gap: '16px',
