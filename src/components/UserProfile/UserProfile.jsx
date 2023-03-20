@@ -128,6 +128,8 @@ const UserProfile = props => {
       }
     });
 
+    console.log(userProfile);
+
     const teamsProperties = [];
     teams?.forEach(team => {
       for (const [key, value] of Object.entries(team)) {
@@ -372,7 +374,6 @@ const UserProfile = props => {
       }
       await loadUserProfile();
       await loadUserTasks();
-      setChanged(false);
     } catch (err) {
       alert('An error occurred while attempting to save this profile.');
     }
