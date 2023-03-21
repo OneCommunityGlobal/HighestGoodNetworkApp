@@ -20,21 +20,27 @@ const CreateNewRolePopup = ({ toggle, addNewRole }) => {
 
     permissionsBackEnd = [...permissionsBackEnd, ...commonBackEndPermissions].flat();
 
-    if (newRoleName === '') {
+    if (newRoleName === '' || !isValidRole) {
       setIsValidRole(false);
-      toast.error('Please enter a role name');
+      toast.error('Please enter a valid role name');
     } else {
       const newRoleObject = {
         roleName: newRoleName,
         permissions: permissionsChecked,
         permissionsBackEnd,
       };
-      console.log(newRoleObject);
       await addNewRole(newRoleObject);
       toast.success('Role created successfully');
-
       toggle();
     }
+  };
+
+  const handleRoleName = e => {
+    const { value } = e.target;
+    setNewRoleName(value);
+    value.indexOf('?') === -1 && value.indexOf('/') === -1
+      ? setIsValidRole(true)
+      : setIsValidRole(false);
   };
 
   const handleChange = e => {
@@ -45,7 +51,6 @@ const CreateNewRolePopup = ({ toggle, addNewRole }) => {
       const unCheckPermission = previous.filter(perm => perm !== actualValue);
       return isAlreadyChecked ? unCheckPermission : [...previous, actualValue];
     });
-    console.log(permissionsChecked);
   };
 
   return (
@@ -55,14 +60,11 @@ const CreateNewRolePopup = ({ toggle, addNewRole }) => {
         <Input
           placeholder="Please enter a new role name"
           value={newRoleName}
-          onChange={e => {
-            setIsValidRole(true);
-            setNewRoleName(e.target.value);
-          }}
+          onChange={handleRoleName}
         />
         {isValidRole === false ? (
           <Alert className="createRole__alert" color="danger">
-            Please enter a role name.
+            Please enter a valid role name.
           </Alert>
         ) : (
           <></>
