@@ -1,5 +1,6 @@
 .timer {
   margin: auto;
+  display:flex;
 }
 
 .timer button {
@@ -13,13 +14,12 @@
 }
 
 .button-container {
-  display: inline-block;
+  display: flex;
 }
 
 @media (min-width: 1550px) {
   .timer {
     display: flex;
-    margin-left: 40%;
   }
 }
 
