@@ -398,14 +398,15 @@ const UserProfile = props => {
     });
   };
 
-  const setActiveInactive = isActive => {
+  const setActiveInactive = async (isActive) => {
     setActiveInactivePopupOpen(false);
-    setUserProfile({
+    const newUserProfile = {
       ...userProfile,
       isActive: !userProfile.isActive,
       endDate: userProfile.isActive ? moment(new Date()).format('YYYY-MM-DD') : undefined,
-    });
-    updateUserStatus(userProfile, isActive ? UserStatus.Active : UserStatus.InActive, undefined);
+    };
+    await updateUserStatus(newUserProfile, isActive ? UserStatus.Active : UserStatus.InActive, undefined);
+    setShouldRefresh(true);
   };
 
   const activeInactivePopupClose = () => {
