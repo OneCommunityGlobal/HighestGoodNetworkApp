@@ -1,6 +1,7 @@
 import React from 'react';
 import { Button, Col } from 'reactstrap';
 import './TeamsAndProjects.css';
+import ToggleSwitch from '../UserProfileEdit/ToggleSwitch';
 import hasPermission from '../../../utils/permissions';
 import { useSelector } from 'react-redux';
 import styles from './UserTeamsTable.css';
@@ -8,10 +9,25 @@ import styles from './UserTeamsTable.css';
 const UserTeamsTable = props => {
   const { roles } = useSelector(state => state.role);
   const userPermissions = useSelector(state => state.auth.user?.permissions?.frontPermissions);
+  const canEditVisibility = props.role && props.role !== 'Volunteer' && (props.isUserSelf || props.edit);
   return (
     <div>
       <div className="teamtable-container desktop">
         <div className="container">
+          {canEditVisibility && (
+            <div className="row">
+              <Col md='7'>
+              <span className="teams-span">Visibility</span>
+              </Col>
+              <Col md='5'>
+              <ToggleSwitch
+                  switchType="visible"
+                  state={props.isVisible}
+                  handleUserProfile={props.onUserVisibilitySwitch}
+                />
+              </Col>
+            </div>
+          )}
           <div className="row">
             <Col
               md={props.edit ? '7' : '12'}
@@ -87,8 +103,29 @@ const UserTeamsTable = props => {
       </div>
       <div className="teamtable-container tablet">
           <div style={{ display: 'flex', flexDirection: 'column' }}>
+          {canEditVisibility && (
+            <>
+              <Col 
+                md='12' 
+                style={{
+                  backgroundColor: ' #e9ecef',
+                  border: '1px solid #ced4da',
+                  marginBottom: '10px',
+                }}
+              >
+              <span className="teams-span">Visibility</span>
+              </Col>
+              <Col md='12' style={{ display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+                <ToggleSwitch
+                  switchType="visible"
+                  state={props.isVisible}
+                  handleUserProfile={props.onUserVisibilitySwitch}
+                />
+              </Col>
+            </>
+          )}
             <Col
-              md={props.edit ? '7' : '12'}
+              md='12'
               style={{
                 backgroundColor: ' #e9ecef',
                 border: '1px solid #ced4da',
@@ -98,7 +135,7 @@ const UserTeamsTable = props => {
               <span className="teams-span">Teams</span>
             </Col>
             {props.edit && props.role && (
-              <Col md="5" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+              <Col md='12' style={{ display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
                 {hasPermission(props.role, 'assignTeamToUser', roles, userPermissions) ? (
                   <Button
                     className="btn-addteam"
