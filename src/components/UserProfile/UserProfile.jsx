@@ -719,7 +719,7 @@ const UserProfile = props => {
                   roles={roles}
                   onUserVisibilitySwitch={onUserVisibilitySwitch}
                   isVisible={userProfile.isVisible}
-                  isUserSelf={isUserSelf}
+                  canEditVisibility={canEdit && userProfile.role != 'Volunteer'}
                 />
               </TabPane>
               <TabPane tabId="4">
@@ -919,7 +919,7 @@ const UserProfile = props => {
                     roles={roles}
                     handleUserProfile={handleUserProfile}
                     isVisible={userProfile.isVisible}
-                    isUserSelf={isUserSelf}
+                    canEditVisibility={canEdit && userProfile.role != 'Volunteer'}
                   />
                 </ModalBody>
                 <ModalFooter>

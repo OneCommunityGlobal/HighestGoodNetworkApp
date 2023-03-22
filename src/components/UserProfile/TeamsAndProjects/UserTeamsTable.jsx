@@ -9,12 +9,11 @@ import styles from './UserTeamsTable.css';
 const UserTeamsTable = props => {
   const { roles } = useSelector(state => state.role);
   const userPermissions = useSelector(state => state.auth.user?.permissions?.frontPermissions);
-  const canEditVisibility = props.role && props.role !== 'Volunteer' && (props.isUserSelf || props.edit);
   return (
     <div>
       <div className="teamtable-container desktop">
         <div className="container">
-          {canEditVisibility && (
+          {props.canEditVisibility && (
             <div className="row">
               <Col md='7'>
               <span className="teams-span">Visibility</span>
@@ -103,7 +102,7 @@ const UserTeamsTable = props => {
       </div>
       <div className="teamtable-container tablet">
           <div style={{ display: 'flex', flexDirection: 'column' }}>
-          {canEditVisibility && (
+          {props.canEditVisibility && (
             <>
               <Col 
                 md='12' 
