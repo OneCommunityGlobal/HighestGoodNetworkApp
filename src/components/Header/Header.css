@@ -38,9 +38,17 @@
   min-width: 29px;
 }
 
+.owner-message {
+  margin-right: 6rem;
+}
+
 @media(max-width: 1500px) { 
   .dashboard-text-link {
     font-size: 14px;
+  }
+
+  .owner-message {
+    margin-right: 0;
   }
 }
 

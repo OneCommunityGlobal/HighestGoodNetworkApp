@@ -79,7 +79,10 @@ export const ENDPOINTS = {
   ROLES_BY_ID: roleId => `${APIEndpoint}/roles/${roleId}`,
 
   OWNERMESSAGE: () => `${APIEndpoint}/ownerMessage`,
-  OWNERMESSAGE_BY_ID: ownerMessageId => `${APIEndpoint}/ownerMessage/${ownerMessageId}`
+  OWNERMESSAGE_BY_ID: ownerMessageId => `${APIEndpoint}/ownerMessage/${ownerMessageId}`,
+
+  OWNERSTANDARDMESSAGE: () => `${APIEndpoint}/ownerStandardMessage`,
+  OWNERSTANDARDMESSAGE_BY_ID: ownerStandardMessageId => `${APIEndpoint}/ownerStandardMessage/${ownerStandardMessageId}`
 };
 
 export const ApiEndpoint = APIEndpoint;
