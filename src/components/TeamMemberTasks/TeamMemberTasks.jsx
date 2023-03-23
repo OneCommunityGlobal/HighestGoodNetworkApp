@@ -39,9 +39,23 @@ const TeamMemberTasks = props => {
   const [showMarkAsDoneModal, setMarkAsDoneModal] = useState(false);
   const [clickedToShowModal, setClickedToShowModal] = useState(false);
 
+
+
+  const userRole = props.auth.user.role;
+  
+  //moved the userId variable to before the first useEffect so the dispatch function can access it
+  //Make so the userId gets the url param. If the url param is not available, it'll get the asUser passed as a props
+  //If the asUser is not defined, it'll be equal the auth.user.userid from the store
+  const userId = props?.match?.params?.userId || props.asUser ||props.auth.user.userid;
+
   const dispatch = useDispatch();
   useEffect(() => {
-    dispatch(fetchTeamMembersTask());
+    //Passed the userid as argument to fetchTeamMembersTask
+    //the fetchTeamMembersTask has a function inside id that gets the userId from the store, like the last part of the userId variable in this file
+    //so, before it gets from the store, it'll see if the userId is provided.
+    //It works because the userId first looks for the url param. If it gets the param, it will provide it to the userId
+    //after that, fetchTeamMembersTask will look for the team member's tasks of the provided userId
+    dispatch(fetchTeamMembersTask(userId));
   }, []);
 
   useEffect(() => {
@@ -52,11 +66,13 @@ const TeamMemberTasks = props => {
 
   useEffect(() => {
     submitTasks();
-    dispatch(fetchTeamMembersTask());
+    dispatch(fetchTeamMembersTask(userId));
   }, [updatedTasks]);
 
-  const userRole = props.auth.user.role;
-  const userId = props.auth.user.userid;
+  
+
+  console.log(currentUserId)
+
 
   const closeMarkAsDone = () => {
     setMarkAsDoneModal(false);
