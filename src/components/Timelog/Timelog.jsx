@@ -297,7 +297,7 @@ class Timelog extends Component {
       projects = this.props.userProjects.projects;
     }
     const projectOrTaskOptions = projects.map(project => (
-      <option value={project.projectId} key={project.projectId}>
+      <option value={project.projectId} key={project}>
         {' '}
         {project.projectName}{' '}
       </option>

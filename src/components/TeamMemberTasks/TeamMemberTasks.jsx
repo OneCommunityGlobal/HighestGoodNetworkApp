@@ -181,21 +181,23 @@ const TeamMemberTasks = props => {
         const TaskButton = task => {
           if (task.task.status !== 'Complete') {
             return (
-              <td>
-                <h3
-                  onClick={() => markAsDone(task)}
-                  style={{ color: 'red' }}
-                  data-toggle="tooltip"
-                  data-placement="top"
-                  title="MARK AS DONE. MARKING THIS AS DONE WOULD REMOVE THE TASK PERMANENTLY."
-                  className="markAsDoneButton"
-                >
-                  X
-                </h3>
-              </td>
+              <tr>
+                <td>
+                  <h3
+                    onClick={() => markAsDone(task)}
+                    style={{ color: 'red' }}
+                    data-toggle="tooltip"
+                    data-placement="top"
+                    title="MARK AS DONE. MARKING THIS AS DONE WOULD REMOVE THE TASK PERMANENTLY."
+                    className="markAsDoneButton"
+                  >
+                    X
+                  </h3>
+                </td>
+              </tr>
             );
           } else {
-            return <td></td>;
+            return null;
           }
         };
 
@@ -315,7 +317,7 @@ const TeamMemberTasks = props => {
                                 <div>
                                   <span>
                                     {`${parseFloat(task.hoursLogged.toFixed(2))}
-                                  of 
+                                  of
                                 ${parseFloat(task.estimatedHours.toFixed(2))}`}
                                   </span>
                                   <Progress

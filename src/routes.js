@@ -35,10 +35,12 @@ import { TaskEditSuggestions } from 'components/TaskEditSuggestions/TaskEditSugg
 import { RoutePermissions } from 'utils/routePermissions';
 import PermissionsManagement from 'components/PermissionsManagement/PermissionsManagement';
 import UserRoleTab from 'components/PermissionsManagement/UserRoleTab';
+// import OldHeader from './components/OldHeader/OldHeader';
 
 export default (
   <React.Fragment>
     <NewHeader />
+    {/* <OldHeader /> */}
     <AutoUpdate />
     <ToastContainer />
     <Switch>

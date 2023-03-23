@@ -79,5 +79,5 @@ export default combineReducers({
   teamMemberTasks: teamMemberTasksReducer,
   taskEditSuggestions: taskEditSuggestionsReducer,
   role: roleReducer,
-  ownerMessage: ownerMessageReducer
+  ownerMessage: ownerMessageReducer,
 });

@@ -804,17 +804,25 @@ const TimeEntryForm = props => {
   );
 };
 
+TimeEntryForm.defaultProps = {
+  timer: '',
+  resetTimer: () => {},
+  handleStop: () => {},
+  handleAddGoal: () => {},
+  goal: 0,
+};
+
 TimeEntryForm.propTypes = {
   edit: PropTypes.bool.isRequired,
   userId: PropTypes.string.isRequired,
   toggle: PropTypes.func.isRequired,
   isOpen: PropTypes.bool.isRequired,
-  timer: PropTypes.any.isRequired,
+  timer: PropTypes.any,
   data: PropTypes.any.isRequired,
   userProfile: PropTypes.any.isRequired,
-  resetTimer: PropTypes.func.isRequired,
-  handleStop: PropTypes.func.isRequired,
-  handleAddGoal: PropTypes.func.isRequired,
+  resetTimer: PropTypes.func,
+  handleStop: PropTypes.func,
+  handleAddGoal: PropTypes.func,
   goal: PropTypes.number.isRequired,
 };
 
