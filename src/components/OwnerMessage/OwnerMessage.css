@@ -28,15 +28,13 @@ img {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: .5rem;
+  padding: 0.5rem;
   border-radius: 4px;
   background-color: #e2e3e5;
   margin-left: 1rem;
 }
 
 svg {
-  width: 16px;
-  height: 16px;
   color: black;
 }
 
@@ -50,7 +48,7 @@ svg:hover {
   flex-direction: column;
 }
 
-@media(max-width: 1400px) {
+@media (max-width: 1400px) {
   .message-container {
     align-items: center;
     justify-content: center;
@@ -60,5 +58,4 @@ svg:hover {
   .message {
     color: black;
   }
-  
 }
