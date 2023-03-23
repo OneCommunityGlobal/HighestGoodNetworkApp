@@ -100,6 +100,7 @@ class Timelog extends Component {
   state = this.initialState;
 
   async componentDidMount() {
+    console.log(this.props)
     const userId =
       this.props?.match?.params?.userId || this.props.asUser || this.props.auth.user.userid; //Including fix for "undefined"
     const isOwner = this.props.auth.user.userid === this.props.asUser;
