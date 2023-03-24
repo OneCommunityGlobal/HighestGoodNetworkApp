@@ -1,18 +1,3 @@
-/* eslint-disable arrow-parens */
-/* eslint-disable no-unsafe-optional-chaining */
-/* eslint-disable react/no-unescaped-entities */
-/* eslint-disable no-undef */
-/* eslint-disable jsx-a11y/click-events-have-key-events */
-/* eslint-disable react/jsx-one-expression-per-line */
-/* eslint-disable react/destructuring-assignment */
-/* eslint-disable react/prop-types */
-/* eslint-disable no-console */
-/* eslint-disable no-shadow */
-/* eslint-disable no-plusplus */
-/* eslint-disable no-tabs */
-/* eslint-disable no-alert */
-/* eslint-disable jsx-a11y/no-static-element-interactions */
-import React, { useState, useEffect } from 'react';
 import {
   Row,
   Input,
@@ -266,6 +251,7 @@ function UserProfile(props) {
         setSummarySelected(['', '', '']);
         setShowSummary(true);
       }
+      console.log('summarySelected', summarySelected);
     } catch (err) {
       setShowLoading(false);
     }
@@ -733,28 +719,34 @@ function UserProfile(props) {
             )}
             {summarySelected && showSelect && showSummary ? (
               <div>
-                {summarySelected[0] !== '' ? (
+                {summarySelected[0] && summarySelected[0].length > 0 ? (
                   <div>
                     <h5>{'Viewing ' + summaryName + "'s summary."}</h5>
-                    {parse(summarySelected[0])}
+                    {typeof summarySelected[0] === 'string'
+                      ? parse(summarySelected[0])
+                      : summarySelected[0]}
                   </div>
                 ) : (
                   <h5>{summaryName} did not submit a submit a summary for this week.</h5>
                 )}
 
-                {summarySelected[1] !== '' ? (
+                {summarySelected[1] && summarySelected[1].length > 0 ? (
                   <div>
                     <h5>{'Viewing ' + summaryName + "'s last week's summary."}</h5>
-                    {parse(summarySelected[1])}
+                    {typeof summarySelected[1] === 'string'
+                      ? parse(summarySelected[1])
+                      : summarySelected[1]}
                   </div>
                 ) : (
                   <h5>{summaryName} did not submit a submit a summary for last week.</h5>
                 )}
 
-                {summarySelected[2] !== '' ? (
+                {summarySelected[2] && summarySelected[2].length > 0 ? (
                   <div>
                     <h5>{'Viewing ' + summaryName + ' summary from two weeks ago.'}</h5>
-                    {parse(summarySelected[2])}
+                    {typeof summarySelected[2] === 'string'
+                      ? parse(summarySelected[2])
+                      : summarySelected[2]}
                   </div>
                 ) : (
                   <h5>{summaryName} did not submit a submit a summary two weeks ago.</h5>
