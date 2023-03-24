@@ -56,6 +56,12 @@ const Task = props => {
   }, []);
   let passCurrentNum = false;
 
+  useEffect(() => {
+    if (isOpen !== props.isOpen) {
+      setIsOpen(props.isOpen);
+    }
+  }, [props.isOpen]);
+
   //----This was the old method of display task actions by click on the task # - it was bit wonky and
   //----not the proper way to conditionally render something in React
 
@@ -132,7 +138,6 @@ const Task = props => {
     props.getPopupById(TASK_DELETE_POPUP_ID);
   };
 
-
   const deleteTask = (taskId, mother) => {
     if (mother !== null) {
       props.deleteChildrenTasks(mother);
@@ -142,11 +147,10 @@ const Task = props => {
     setTimeout(() => {
       props.fetchAllTasks(props.wbsId, 0);
     }, 2000);
-  }
+  };
 
   const deleteOneTask = (taskId, mother) => {
     props.deleteWBSTask(taskId, mother);
-
   };
 
   const onMove = (from, to) => {

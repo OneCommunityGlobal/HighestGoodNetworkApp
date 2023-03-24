@@ -149,7 +149,6 @@ export const fetchAllTasks = (wbsId, level = 0, mother = null) => {
     await dispatch(setTasksStart());
     try {
       const request = await axios.get(ENDPOINTS.TASKS(wbsId, level === -1 ? 1 : level + 1, mother));
-      //console.log(request.data);
       dispatch(setTasks(request.data, level, mother));
     } catch (err) {
       dispatch(setTasksError(err));
