@@ -40,11 +40,15 @@ export class WeeklySummary extends Component {
       summary: '',
       summaryLastWeek: '',
       summaryBeforeLast: '',
+      summaryThreeWeeksAgo: '',
       mediaUrl: '',
       weeklySummariesCount: 0,
       mediaConfirm: false,
     },
-    dueDate: moment().tz('America/Los_Angeles').endOf('week').toISOString(),
+    dueDate: moment()
+      .tz('America/Los_Angeles')
+      .endOf('week')
+      .toISOString(),
     dueDateLastWeek: moment()
       .tz('America/Los_Angeles')
       .endOf('week')
@@ -54,6 +58,11 @@ export class WeeklySummary extends Component {
       .tz('America/Los_Angeles')
       .endOf('week')
       .subtract(2, 'week')
+      .toISOString(),
+    dueDateThreeWeeksAgo: moment()
+      .tz('America/Los_Angeles')
+      .endOf('week')
+      .subtract(3, 'week')
       .toISOString(),
     activeTab: '1',
     errors: {},
@@ -69,6 +78,8 @@ export class WeeklySummary extends Component {
       (weeklySummaries && weeklySummaries[1] && weeklySummaries[1].summary) || '';
     const summaryBeforeLast =
       (weeklySummaries && weeklySummaries[2] && weeklySummaries[2].summary) || '';
+    const summaryThreeWeeksAgo =
+      (weeklySummaries && weeklySummaries[3] && weeklySummaries[3].summary) || '';
 
     const dueDateThisWeek = weeklySummaries && weeklySummaries[0] && weeklySummaries[0].dueDate;
     // Make sure server dueDate is not before the localtime dueDate.
@@ -81,12 +92,16 @@ export class WeeklySummary extends Component {
     const dueDateBeforeLast =
       (weeklySummaries && weeklySummaries[2] && weeklySummaries[2].dueDate) ||
       this.state.dueDateBeforeLast;
+    const dueDateThreeWeeksAgo =
+      (weeklySummaries && weeklySummaries[3] && weeklySummaries[3].dueDate) ||
+      this.state.dueDateThreeWeeksAgo;
 
     this.setState({
       formElements: {
         summary,
         summaryLastWeek,
         summaryBeforeLast,
+        summaryThreeWeeksAgo,
         mediaUrl: mediaUrl || '',
         weeklySummariesCount: weeklySummariesCount || 0,
         mediaConfirm: false,
@@ -94,6 +109,7 @@ export class WeeklySummary extends Component {
       dueDate,
       dueDateLastWeek,
       dueDateBeforeLast,
+      dueDateThreeWeeksAgo,
       activeTab: '1',
       fetchError: this.props.fetchError,
       loading: this.props.loading,
@@ -114,7 +130,7 @@ export class WeeklySummary extends Component {
     return moment(dueDate).isBetween(fromDate, toDate, undefined, '[]');
   };
 
-  toggleTab = (tab) => {
+  toggleTab = tab => {
     const activeTab = this.state.activeTab;
     if (activeTab !== tab) {
       this.setState({ activeTab: tab });
@@ -124,12 +140,31 @@ export class WeeklySummary extends Component {
   // Minimum word count of 50 (handle words that also use non-ASCII characters by counting whitespace rather than word character sequences).
   regexPattern = new RegExp(/^\s*(?:\S+(?:\s+|$)){50,}$/);
   schema = {
-    mediaUrl: Joi.string().trim().uri().required().label('Media URL'),
-    summary: Joi.string().allow('').regex(this.regexPattern).label('Minimum 50 words'), // Allow empty string OR the minimum word count of 50.
-    summaryLastWeek: Joi.string().allow('').regex(this.regexPattern).label('Minimum 50 words'),
-    summaryBeforeLast: Joi.string().allow('').regex(this.regexPattern).label('Minimum 50 words'),
+    mediaUrl: Joi.string()
+      .trim()
+      .uri()
+      .required()
+      .label('Media URL'),
+    summary: Joi.string()
+      .allow('')
+      .regex(this.regexPattern)
+      .label('Minimum 50 words'), // Allow empty string OR the minimum word count of 50.
+    summaryLastWeek: Joi.string()
+      .allow('')
+      .regex(this.regexPattern)
+      .label('Minimum 50 words'),
+    summaryBeforeLast: Joi.string()
+      .allow('')
+      .regex(this.regexPattern)
+      .label('Minimum 50 words'),
+    summaryThreeWeeksAgo: Joi.string()
+      .allow('')
+      .regex(this.regexPattern)
+      .label('Minimum 50 words'),
     weeklySummariesCount: Joi.optional(),
-    mediaConfirm: Joi.boolean().invalid(false).label('Media Confirm'),
+    mediaConfirm: Joi.boolean()
+      .invalid(false)
+      .label('Media Confirm'),
   };
 
   validate = () => {
@@ -156,7 +191,7 @@ export class WeeklySummary extends Component {
     return error ? error.details[0].message : null;
   };
 
-  handleInputChange = (event) => {
+  handleInputChange = event => {
     event.persist();
     const { name, value } = event.target;
 
@@ -183,7 +218,7 @@ export class WeeklySummary extends Component {
     this.setState({ formElements, errors });
   };
 
-  handleCheckboxChange = (event) => {
+  handleCheckboxChange = event => {
     event.persist();
     const { name, checked } = event.target;
 
@@ -197,7 +232,7 @@ export class WeeklySummary extends Component {
     this.setState({ formElements, errors });
   };
 
-  handleSave = async (event) => {
+  handleSave = async event => {
     event.preventDefault();
     // Providing a custom toast id to prevent duplicate.
     const toastIdOnSave = 'toast-on-save';
@@ -214,6 +249,10 @@ export class WeeklySummary extends Component {
         {
           summary: this.state.formElements.summaryBeforeLast,
           dueDate: this.state.dueDateBeforeLast,
+        },
+        {
+          summary: this.state.formElements.summaryThreeWeeksAgo,
+          dueDate: this.state.dueDateThreeWeeksAgo,
         },
       ],
       weeklySummariesCount: this.state.formElements.weeklySummariesCount,
@@ -236,6 +275,7 @@ export class WeeklySummary extends Component {
       });
       this.props.getUserProfile(this.props.currentUser.userid);
       this.props.getWeeklySummaries(this.props.asUser || this.props.currentUser.userid);
+      this.props.setSubmittedSummary(true);
     } else {
       toast.error('✘ The data could not be saved!', {
         toastId: toastIdOnSave,
@@ -255,6 +295,7 @@ export class WeeklySummary extends Component {
       fetchError,
       dueDateLastWeek,
       dueDateBeforeLast,
+      dueDateThreeWeeksAgo,
     } = this.state;
     const summariesLabels = {
       summary: 'This Week',
@@ -264,6 +305,9 @@ export class WeeklySummary extends Component {
       summaryBeforeLast: this.doesDateBelongToWeek(dueDateBeforeLast, 2)
         ? 'Week Before Last'
         : moment(dueDateBeforeLast).format('YYYY-MMM-DD'),
+      summaryThreeWeeksAgo: this.doesDateBelongToWeek(dueDateThreeWeeksAgo, 3)
+        ? 'Three Weeks Ago'
+        : moment(dueDateThreeWeeksAgo).format('YYYY-MMM-DD'),
     };
 
     if (fetchError) {
@@ -348,7 +392,7 @@ export class WeeklySummary extends Component {
                           onEditorChange={this.handleEditorChange}
                         />
                       </FormGroup>
-                      {(errors.summary || errors.summaryLastWeek || errors.summaryBeforeLast) && (
+                      {(errors.summary || errors.summaryLastWeek || errors.summaryBeforeLast || errors.summaryThreeWeeksAgo) && (
                         <Alert color="danger">
                           The summary must contain a minimum of 50 words.
                         </Alert>
@@ -450,12 +494,12 @@ const mapStateToProps = ({ auth, weeklySummaries }) => ({
   fetchError: weeklySummaries.fetchError,
 });
 
-const mapDispatchToProps = (dispatch) => {
+const mapDispatchToProps = dispatch => {
   return {
     getWeeklySummaries: getWeeklySummaries,
     updateWeeklySummaries: updateWeeklySummaries,
-    getWeeklySummaries: (userId) => getWeeklySummaries(userId)(dispatch),
-    getUserProfile: (userId) => getUserProfile(userId)(dispatch),
+    getWeeklySummaries: userId => getWeeklySummaries(userId)(dispatch),
+    getUserProfile: userId => getUserProfile(userId)(dispatch),
   };
 };
 

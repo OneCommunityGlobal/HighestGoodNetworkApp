@@ -15,7 +15,7 @@ export const fetchAPIKeyBegin = () => ({
  * Action to set API key in store
  * @param {Object} API_KEY User's API Key
  */
-export const fetchAPIKeySuccess = (userAPIKey) => ({
+export const fetchAPIKeySuccess = userAPIKey => ({
   type: actions.RECEIVE_TIMEZONE_KEY,
   payload: { userAPIKey },
 });
@@ -24,7 +24,7 @@ export const fetchAPIKeySuccess = (userAPIKey) => ({
  * Action to set Error if fetching API Key fails
  * @param {Object} error Fetch Error object
  */
-export const fetchAPIKeyError = (error) => ({
+export const fetchAPIKeyError = error => ({
   type: actions.FETCH_TIMEZONE_KEY_ERROR,
   payload: { error },
 });
@@ -35,9 +35,9 @@ export const fetchAPIKeyError = (error) => ({
  */
 export const getTimeZoneAPIKey = () => {
   const url = ENDPOINTS.TIMEZONE_KEY;
-  return async (dispatch) => {
+  return async dispatch => {
     await dispatch(fetchAPIKeyBegin());
-    const response = await httpService.get(url).catch((error) => {
+    const response = await httpService.get(url).catch(error => {
       dispatch(fetchAPIKeyError(error));
       return error.response;
     });

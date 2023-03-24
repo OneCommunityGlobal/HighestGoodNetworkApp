@@ -6,6 +6,7 @@ import { getAllRoles } from '../../actions/role';
 import { Link } from 'react-router-dom';
 import { connect, useDispatch } from 'react-redux';
 import Timer from '../Timer/Timer';
+import OwnerMessage from '../OwnerMessage/OwnerMessage';
 import {
   LOGO,
   DASHBOARD,
@@ -74,38 +75,45 @@ export const Header = props => {
 
   return (
     <div className="header-wrapper">
-      <Navbar className="py-3 mb-3" color="dark" dark expand="lg">
-        {/**
-         * <NavbarBrand tag={Link} to="/" className="d-none d-md-block">
-          {LOGO}
-        </NavbarBrand>
-         */}
+      <Navbar className="py-3 mb-3 navbar" color="dark" dark expand="xl">
         {logoutPopup && <Logout open={logoutPopup} setLogoutPopup={setLogoutPopup} />}
-        {isAuthenticated && <Timer />}
+        <div
+          className="timer-message-section"
+          style={user.role == 'Owner' ? { marginRight: '6rem' } : { marginRight: '10rem' }}
+        >
+          {isAuthenticated && <Timer />}
+          {isAuthenticated && (
+            <div className="owner-message">
+              <OwnerMessage />
+            </div>
+          )}
+        </div>
         <NavbarToggler onClick={toggle} />
         {isAuthenticated && (
           <Collapse isOpen={isOpen} navbar>
-            <Nav className="ml-auto" navbar>
-              {hasPermission(user.role, 'editTask', roles, userPermissions) && <NavItem>
-                <NavLink tag={Link} to="/taskeditsuggestions">
-                  <div className="redBackGroupHeader">
-                    <span>{props.taskEditSuggestionCount}</span>
-                  </div>
-                </NavLink>
-              </NavItem>}
+            <Nav className="ml-auto nav-links" navbar>
+              {hasPermission(user.role, 'editTask', roles, userPermissions) && (
+                <NavItem>
+                  <NavLink tag={Link} to="/taskeditsuggestions">
+                    <div className="redBackGroupHeader">
+                      <span>{props.taskEditSuggestionCount}</span>
+                    </div>
+                  </NavLink>
+                </NavItem>
+              )}
               <NavItem>
                 <NavLink tag={Link} to="/dashboard">
-                  {DASHBOARD}
+                  <span className="dashboard-text-link">{DASHBOARD}</span>
                 </NavLink>
               </NavItem>
               <NavItem>
                 <NavLink tag={Link} to={`/timelog/${user.userid}`}>
-                  {TIMELOG}
+                  <span className="dashboard-text-link">{TIMELOG}</span>
                 </NavLink>
               </NavItem>
               <UncontrolledDropdown nav inNavbar>
                 <DropdownToggle nav caret>
-                  {REPORTS}
+                  <span className="dashboard-text-link">{REPORTS}</span>
                 </DropdownToggle>
                 <DropdownMenu>
                   <DropdownItem tag={Link} to="/reports">
@@ -137,7 +145,7 @@ export const Header = props => {
                 hasPermission(user.role, 'seePopupManagement', roles, userPermissions)) && (
                 <UncontrolledDropdown nav inNavbar>
                   <DropdownToggle nav caret>
-                    {OTHER_LINKS}
+                    <span className="dashboard-text-link">{OTHER_LINKS}</span>
                   </DropdownToggle>
                   <DropdownMenu>
                     {hasPermission(user.role, 'seeUserManagement', roles, userPermissions) ? (
@@ -190,15 +198,16 @@ export const Header = props => {
                   <img
                     src={`${profilePic || '/pfp-default-header.png'}`}
                     alt=""
-                    height="35"
-                    width="40"
+                    style={{ maxWidth: '60px', maxHeight: '60px'}}
                     className="dashboardimg"
                   />
                 </NavLink>
               </NavItem>
               <UncontrolledDropdown nav>
                 <DropdownToggle nav caret>
-                  {WELCOME}, {firstName}
+                  <span className="dashboard-text-link">
+                    {WELCOME}, {firstName}
+                  </span>
                 </DropdownToggle>
                 <DropdownMenu>
                   <DropdownItem header>Hello {firstName}</DropdownItem>

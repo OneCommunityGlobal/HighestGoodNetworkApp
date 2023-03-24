@@ -256,19 +256,19 @@ class UserProfileEdit extends Component {
           },
         });
         break;
-      case 'totalComittedHours':
+      case 'totalCommittedHours':
         this.setState({
           userProfile: {
             ...userProfile,
-            totalComittedHours: event.target.value,
+            totalCommittedHours: event.target.value,
           },
         });
         break;
-      case 'weeklyComittedHours':
+      case 'weeklyCommittedHours':
         this.setState({
           userProfile: {
             ...userProfile,
-            weeklyComittedHours: event.target.value,
+            weeklyCommittedHours: event.target.value,
           },
         });
         break;
@@ -641,7 +641,7 @@ class UserProfileEdit extends Component {
       return (
         <Col>
           <Row className={styleProfile.profileContainer}>
-            <Label>Sorry, you do not have permison to edit this profile.</Label>
+            <Label>Sorry, you do not have permission to edit this profile.</Label>
           </Row>
         </Col>
       );
@@ -941,15 +941,15 @@ class UserProfileEdit extends Component {
                     </Row>
                     <Row>
                       <Col md="6">
-                        <Label>Weekly Commited Hours </Label>
+                        <Label>Weekly Committed Hours </Label>
                       </Col>
                       <Col md="6">
                         <Input
                           type="number"
-                          name="weeklyComittedHours"
-                          id="weeklyComittedHours"
+                          name="weeklyCommittedHours"
+                          id="weeklyCommittedHours"
                           className={styleProfile.profileText}
-                          value={userProfile.weeklyComittedHours}
+                          value={userProfile.weeklyCommittedHours}
                           onChange={this.handleUserProfile}
                           placeholder="weeklyCommittedHours"
                           invalid={/*!hasPermission(requestorRole, 'editUserProfile')*/ true}
@@ -963,10 +963,10 @@ class UserProfileEdit extends Component {
                       <Col md="6">
                         <Input
                           type="number"
-                          name="totalComittedHours"
-                          id="totalComittedHours"
+                          name="totalCommittedHours"
+                          id="totalCommittedHours"
                           className={styleProfile.profileText}
-                          value={userProfile.totalComittedHours}
+                          value={userProfile.totalCommittedHours}
                           onChange={this.handleUserProfile}
                           placeholder="totalCommittedHours"
                           invalid={

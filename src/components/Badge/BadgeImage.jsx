@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import { Card, CardTitle, CardBody, CardImg, CardText, Popover } from 'reactstrap';
 
-const BadgeImage = (props) => {
+const BadgeImage = props => {
   const [isOpen, setOpen] = useState(false);
 
-  const toggle = () => setOpen((isOpen) => !isOpen);
+  const toggle = () => setOpen(isOpen => !isOpen);
 
   return (
     <>
@@ -14,6 +14,7 @@ const BadgeImage = (props) => {
             src={props?.badgeData?.imageUrl}
             id={'popover_' + props.time + props.index.toString()}
             alt=""
+            loading="lazy"
           />
         </div>
         {props.count < 100 ? (

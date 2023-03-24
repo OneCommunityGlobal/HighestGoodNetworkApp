@@ -10,7 +10,7 @@ const FileUpload = ({
   onUpload,
   readAsType,
 }) => {
-  const onChange = async (e) => {
+  const onChange = async e => {
     let errorMessage = '';
     const file = e.target.files[0];
     let isValid = true;
@@ -50,7 +50,7 @@ const FileUpload = ({
         id={name}
         name={name}
         className={className}
-        onChange={(e) => onChange(e)}
+        onChange={e => onChange(e)}
         accept={accept}
         type="file"
       />

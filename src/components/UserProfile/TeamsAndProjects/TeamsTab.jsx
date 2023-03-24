@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import AddTeamPopup from './AddTeamPopup';
 import UserTeamsTable from './UserTeamsTable';
 
-const TeamsTab = (props) => {
+const TeamsTab = props => {
   const { teamsData, userTeams, onDeleteteam, onAssignTeam, edit, role } = props;
   const [addTeamPopupOpen, setaddTeamPopupOpen] = useState(false);
   const [renderedOn, setRenderedOn] = useState(0);
@@ -15,11 +15,11 @@ const TeamsTab = (props) => {
   const onAddTeamPopupClose = () => {
     setaddTeamPopupOpen(false);
   };
-  const onSelectDeleteTeam = (teamId) => {
+  const onSelectDeleteTeam = teamId => {
     onDeleteteam(teamId);
   };
 
-  const onSelectAssignTeam = (team) => {
+  const onSelectAssignTeam = team => {
     onAssignTeam(team);
     setRenderedOn(Date.now());
   };

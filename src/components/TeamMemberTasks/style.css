@@ -4,6 +4,7 @@
 
 .team-member-tasks h1 {
   color: black;
+  font-size: 20px;
 }
 
 .team-member-tasks-bell {
@@ -11,7 +12,13 @@
   cursor: pointer;
 }
 
-.comitted-hours-circle {
+.team-member-tasks-done {
+  margin-left: 10px;
+  color: green;
+  cursor: pointer;
+}
+
+.committed-hours-circle {
   padding: 0.75rem;
 }
 
@@ -54,23 +61,118 @@
   align-items: center;
 }
 
+.hours-btn-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  min-width: 165px;
+}
+
 .circle-border {
-  border: 3px solid gray;
+  border: 2px solid gray;
   border-radius: 50%;
-  width: 50px;
-  height: 50px;
-  font-size: 15px;
+  width: 42px;
+  height: 42px;
+  font-size: 12px;
   font-weight: bold;
   font-family: Arial, Helvetica, sans-serif;
-  margin-right: 20px;
 }
 
 .circle-border:active {
   transform: scale(0.95);
-  box-shadow: 1px 1px 15px 1px rgba(0, 0, 0, 0.15)
+  box-shadow: 1px 1px 15px 1px rgba(0, 0, 0, 0.15);
 }
 
 .header-box {
   display: flex;
+  flex-direction: column;
+  padding: 10px;
   justify-content: space-between;
+}
+
+.complete-task-button {
+  background-color: lightgreen;
+}
+
+.uncomplete-task-button {
+  background-color: lightcoral;
+}
+
+.markAsDoneButton:hover {
+  cursor: pointer;
+}
+
+.right-padding-temp-fix {
+  padding-right: 0px !important;
+}
+
+@media only screen and (max-width: 768px) {
+  .pc-component {
+    display: none;
+  }
+
+  .team-member-tasks h1 {
+    color: black;
+    font-size: 20px;
+    text-align: center;
+  }
+
+  .hours-btn-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    min-width: 165px;
+    padding: 0 15%;
+  }
+
+  .card-body {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+  }
+  .card-body .container {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+  }
+  .team-member-tasks .table,
+  .team-member-tasks .table tbody,
+  .team-member-tasks .table tr,
+  .team-member-tasks .table td {
+    display: block;
+    width: 100%;
+    text-align: left !important;
+  }
+
+  .team-member-tasks .table td::before {
+    content: attr(data-label);
+    font-size: 17px;
+    font-weight: 500;
+
+    display: block;
+    text-align: left !important;
+  }
+
+  .table-row {
+    border: solid #e9ecef 2px;
+    background: #faf7fc;
+  }
+
+  .spacer {
+    height: 20px;
+  }
+}
+
+@media only screen and (min-width: 768px) {
+  .team-member-tasks h1 {
+    font-size: 24px;
+  }
+
+  .header-box {
+    flex-direction: unset;
+  }
+}
+
+@media only screen and (min-width: 768px) {
+  .team-member-tasks h1 {
+    font-size: 28px;
+  }
 }

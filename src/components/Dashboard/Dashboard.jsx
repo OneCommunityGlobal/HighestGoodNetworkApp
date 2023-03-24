@@ -14,6 +14,7 @@ import { getTimeZoneAPIKey } from '../../actions/timezoneAPIActions';
 export const Dashboard = props => {
   const [popup, setPopup] = useState(false);
   const [leaderData, setLeaderData] = useState(null);
+  const [submittedSummary, setSubmittedSummary] = useState(false);
   let userId = props.match.params.userId ? props.match.params.userId : props.auth.user.userid;
 
   const toggle = () => {
@@ -36,8 +37,6 @@ export const Dashboard = props => {
       getUserProfile(userId);
     }
   }, [props.match]);
-  let getUrl = window.location;
-  let baseUrl = getUrl.protocol + '//' + getUrl.host + '/' + getUrl.pathname.split('/')[1];
 
   return (
     <Container fluid>
@@ -49,7 +48,7 @@ export const Dashboard = props => {
         leaderData={leaderData}
       />
 
-      <Row>
+      <Row >
         <Col lg={{ size: 7 }}>&nbsp;</Col>
         <Col lg={{ size: 5 }}>
           <div className="row justify-content-center">
@@ -60,7 +59,7 @@ export const Dashboard = props => {
               onKeyDown={toggle}
               tabIndex="0"
             >
-              <WeeklySummary isPopup asUser={userId} />
+              <WeeklySummary isPopup asUser={userId} setSubmittedSummary={setSubmittedSummary} />
             </div>
           </div>
         </Col>

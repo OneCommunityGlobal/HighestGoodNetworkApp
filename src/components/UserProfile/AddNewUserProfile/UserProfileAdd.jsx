@@ -16,7 +16,7 @@ import {
   NavLink,
   Nav,
 } from 'reactstrap';
-
+import DuplicateNamePopup from 'components/UserManagement/DuplicateNamePopup';
 import ToggleSwitch from '../UserProfileEdit/ToggleSwitch';
 import './UserProfileAdd.scss';
 import { createUser, resetPassword } from '../../../services/userProfileService';
@@ -24,7 +24,7 @@ import { toast } from 'react-toastify';
 import TeamsTab from '../TeamsAndProjects/TeamsTab';
 import ProjectsTab from '../TeamsAndProjects/ProjectsTab';
 import { connect } from 'react-redux';
-import _ from 'lodash';
+import { get } from 'lodash';
 import { getUserProfile, updateUserProfile, clearUserProfile } from '../../../actions/userProfile';
 import {
   getAllUserTeams,
@@ -37,17 +37,19 @@ import { fetchAllProjects } from 'actions/projects';
 
 import PhoneInput from 'react-phone-input-2';
 import 'react-phone-input-2/lib/style.css';
-
 import classnames from 'classnames';
 import TimeZoneDropDown from '../TimeZoneDropDown';
 import { getUserTimeZone } from 'services/timezoneApiService';
 import hasPermission from 'utils/permissions';
+import NewUserPopup from 'components/UserManagement/NewUserPopup';
 
 const patt = RegExp(/^([\w.%+-]+)@([\w-]+\.)+([\w]{2,})$/i);
 class AddUserProfile extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      userProfiles: this.props.userProfiles,
+      popupOpen: false,
       weeklyCommittedHours: 10,
       teams: [],
       projects: [],
@@ -80,6 +82,12 @@ class AddUserProfile extends Component {
     };
   }
 
+  popupClose = () => {
+    this.setState({
+      popupOpen: false,
+    });
+  };
+
   componentDidMount() {
     this.state.showphone = true;
     this.onCreateNewUser();
@@ -92,6 +100,12 @@ class AddUserProfile extends Component {
       this.state.userProfile.phoneNumber.length === 0;
     return (
       <StickyContainer>
+        <DuplicateNamePopup
+          open={this.state.popupOpen}
+          popupClose={this.popupClose}
+          onClose={this.props.closePopup}
+          createUserProfile={this.createUserProfile}
+        />
         <Container className="emp-profile">
           <Row>
             <Col md="12">
@@ -177,7 +191,9 @@ class AddUserProfile extends Component {
                   <Col md="6">
                     <FormGroup>
                       <PhoneInput
-                        country={'us'}
+                        country="US"
+                        regions={['america', 'europe', 'asia', 'oceania', 'africa']}
+                        limitMaxLength="true"
                         value={phoneNumber}
                         onChange={phone => this.phoneChange(phone)}
                       />
@@ -382,7 +398,12 @@ class AddUserProfile extends Component {
             {/* <Col></Col> */}
             <Col md="12">
               <div className="w-50 pt-4 mx-auto">
-                <Button color="primary" block size="lg" onClick={this.createUserProfile}>
+                <Button
+                  color="primary"
+                  block
+                  size="lg"
+                  onClick={() => this.createUserProfile(false)}
+                >
                   Create
                 </Button>
               </div>
@@ -479,7 +500,7 @@ class AddUserProfile extends Component {
     if (phone === null) {
       toast.error('Phone Number is required');
       return false;
-    } else if (firstLength && lastLength && phone.length > 10) {
+    } else if (firstLength && lastLength && phone.length >= 9) {
       return true;
     } else {
       toast.error('Please fill all the required fields');
@@ -487,7 +508,21 @@ class AddUserProfile extends Component {
     }
   };
 
-  createUserProfile = () => {
+  checkIfDuplicate = (firstName, lastName) => {
+    let { userProfiles } = this.state.userProfiles;
+
+    const duplicates = userProfiles.filter(user => {
+      return (
+        user.firstName.toLowerCase() === firstName.toLowerCase() &&
+        user.lastName.toLowerCase() === lastName.toLowerCase()
+      );
+    });
+
+    if (duplicates.length > 0) return true;
+    else return false;
+  };
+
+  createUserProfile = allowsDuplicateName => {
     let that = this;
     const {
       firstName,
@@ -511,7 +546,7 @@ class AddUserProfile extends Component {
       jobTitle: jobTitle,
       phoneNumber: phoneNumber,
       bio: '',
-      weeklyComittedHours: that.state.userProfile.weeklyCommittedHours,
+      weeklycommittedHours: that.state.userProfile.weeklyCommittedHours,
       personalLinks: [],
       adminLinks: [],
       teams: this.state.teams,
@@ -521,6 +556,7 @@ class AddUserProfile extends Component {
       collaborationPreference: collaborationPreference,
       timeZone: timeZone,
       location: location,
+      allowsDuplicateName: allowsDuplicateName,
     };
 
     this.setState({ formSubmitted: true });
@@ -531,12 +567,20 @@ class AddUserProfile extends Component {
     if (this.fieldsAreValid()) {
       this.setState({ showphone: false });
       if (!email.match(patt)) {
-        toast.error('Email is not valid,Please include @ followed by .com format');
+        toast.error('Email is not valid. Please include @ followed by .com format');
       } else {
         createUser(userData)
           .then(res => {
             if (res.data.warning) {
               toast.warn(res.data.warning);
+            } else if (
+              this.checkIfDuplicate(userData.firstName, userData.lastName) &&
+              !allowsDuplicateName
+            ) {
+              this.setState({
+                popupOpen: true,
+              });
+              return;
             } else {
               toast.success('User profile created.');
             }
@@ -569,6 +613,16 @@ class AddUserProfile extends Component {
                       phoneNumber: 'Phone number already exists',
                     },
                   });
+                  break;
+                case 'name':
+                  if (
+                    this.checkIfDuplicate(userData.firstName, userData.lastName) &&
+                    !allowsDuplicateName
+                  ) {
+                    this.setState({
+                      popupOpen: true,
+                    });
+                  }
                   break;
               }
             }
@@ -833,7 +887,7 @@ class AddUserProfile extends Component {
 const mapStateToProps = state => ({
   auth: state.auth,
   userProjects: state.userProjects,
-  allProjects: _.get(state, 'allProjects'),
+  allProjects: get(state, 'allProjects'),
   allTeams: state,
   timeZoneKey: state.timeZoneAPI.userAPIKey,
   role: state.role,

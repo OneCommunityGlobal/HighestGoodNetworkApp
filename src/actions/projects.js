@@ -15,13 +15,13 @@ import { ENDPOINTS } from '../utils/URL';
  */
 export const fetchAllProjects = () => {
   const request = axios.get(ENDPOINTS.PROJECTS);
-  return async (dispatch) => {
+  return async dispatch => {
     await dispatch(setProjectsStart());
     request
-      .then((res) => {
+      .then(res => {
         dispatch(setProjects(res.data));
       })
-      .catch((err) => {
+      .catch(err => {
         console.log('Error', err);
         dispatch(setProjectsError());
       });
@@ -36,7 +36,7 @@ export const fetchAllProjects = () => {
 export const postNewProject = (projectName, projectCategory, isActive) => {
   const url = ENDPOINTS.PROJECTS;
   //console.log("Call API: ", url);
-  return async (dispatch) => {
+  return async dispatch => {
     let status = 200;
     let _id = null;
 
@@ -67,12 +67,12 @@ export const postNewProject = (projectName, projectCategory, isActive) => {
  * Post new project to DB
  * @param {projectId}: Id of deleted project
  */
-export const deleteProject = (projectId) => {
+export const deleteProject = projectId => {
   const url = ENDPOINTS.PROJECT + projectId;
 
   //console.log("Delete", projectId);
 
-  return async (dispatch) => {
+  return async dispatch => {
     let status = 200;
 
     try {
@@ -94,7 +94,7 @@ export const modifyProject = (type, projectId, projectName, category, isActive) 
   if (type === 'setActive') {
     isActive = !isActive;
   }
-  return async (dispatch) => {
+  return async dispatch => {
     let status = 200;
 
     try {
@@ -106,7 +106,7 @@ export const modifyProject = (type, projectId, projectName, category, isActive) 
       status = res.status;
       console.log(status);
     } catch (err) {
-      console.log("CAN'T Set active", err);
+      console.log("CAN'T SET ACTIVE", err);
       status = 400;
     }
 
@@ -131,7 +131,7 @@ export const setProjectsStart = () => {
  * set Projects in store
  * @param payload : projects []
  */
-export const setProjects = (payload) => {
+export const setProjects = payload => {
   return {
     type: types.RECEIVE_PROJECTS,
     payload,
@@ -142,7 +142,7 @@ export const setProjects = (payload) => {
  * Error when setting project
  * @param payload : error status code
  */
-export const setProjectsError = (payload) => {
+export const setProjectsError = payload => {
   return {
     type: types.FETCH_PROJECTS_ERROR,
     payload,

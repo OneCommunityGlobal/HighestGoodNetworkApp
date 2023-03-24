@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import {
   Card,
-  CardTitle,
-  CardText,
+  CardHeader,
+  CardFooter,
   CardBody,
   Button,
   Modal,
@@ -37,68 +37,66 @@ const Badges = props => {
   return (
     <>
       <Card id="badgeCard" style={{ backgroundColor: '#f6f6f3', marginTop: 20, marginBottom: 20 }}>
-        <CardBody>
-          <CardTitle
-            style={{
-              fontWeight: 'bold',
-              fontSize: 18,
-              color: '#285739',
-              marginBottom: 15,
-              minWidth: 446,
-            }}
-          >
-            Featured Badges <i className="fa fa-info-circle" id="FeaturedBadgeInfo" />
-            <Button className="btn--dark-sea-green float-right" onClick={toggle}>
-              Select Featured
-            </Button>
-            <Modal size="lg" isOpen={isOpen} toggle={toggle}>
-              <ModalHeader toggle={toggle}>Full View of Badge History</ModalHeader>
-              <ModalBody>
-                <BadgeReport
-                  badges={props.userProfile.badgeCollection}
-                  userId={props.userProfile._id}
-                  role={props.role}
-                  firstName={props.userProfile.firstName}
-                  lastName={props.userProfile.lastName}
-                  close={toggle}
-                  setUserProfile={props.setUserProfile}
-                  handleSubmit={props.handleSubmit}
-                  permissionsUser={permissionsUser}
-                />
-              </ModalBody>
-            </Modal>
-            {props.canEdit && (
-              <>
-                <Button className="btn--dark-sea-green float-right mr-2" onClick={assignToggle}>
-                  Assign Badges
-                </Button>
-                <Modal size="lg" isOpen={isAssignOpen} toggle={assignToggle}>
-                  <ModalHeader toggle={assignToggle}>Assign Badges</ModalHeader>
-                  <ModalBody>
-                    <AssignBadgePopup
-                      allBadgeData={props.allBadgeData}
-                      userProfile={props.userProfile}
-                      setUserProfile={props.setUserProfile}
-                      close={assignToggle}
-                      handleSubmit={props.handleSubmit}
-                    />
-                  </ModalBody>
-                </Modal>
-              </>
-            )}
-          </CardTitle>
+        <CardHeader>
+          <div className="badge-header">
+            <span className="badge-header-title">
+              Featured Badges <i className="fa fa-info-circle" id="FeaturedBadgeInfo" />
+            </span>
+            <div>
+              <Button className="btn--dark-sea-green" onClick={toggle}>
+                Select Featured
+              </Button>
+              <Modal size="lg" isOpen={isOpen} toggle={toggle}>
+                <ModalHeader toggle={toggle}>Full View of Badge History</ModalHeader>
+                <ModalBody>
+                  <BadgeReport
+                    badges={props.userProfile.badgeCollection}
+                    userId={props.userProfile._id}
+                    role={props.role}
+                    firstName={props.userProfile.firstName}
+                    lastName={props.userProfile.lastName}
+                    close={toggle}
+                    setUserProfile={props.setUserProfile}
+                    handleSubmit={props.handleSubmit}
+                    permissionsUser={permissionsUser}
+                  />
+                </ModalBody>
+              </Modal>
+              {props.canEdit && (
+                <>
+                  <Button className="btn--dark-sea-green mr-2" onClick={assignToggle}>
+                    Assign Badges
+                  </Button>
+                  <Modal size="lg" isOpen={isAssignOpen} toggle={assignToggle}>
+                    <ModalHeader toggle={assignToggle}>Assign Badges</ModalHeader>
+                    <ModalBody>
+                      <AssignBadgePopup
+                        allBadgeData={props.allBadgeData}
+                        userProfile={props.userProfile}
+                        setUserProfile={props.setUserProfile}
+                        close={assignToggle}
+                        handleSubmit={props.handleSubmit}
+                      />
+                    </ModalBody>
+                  </Modal>
+                </>
+              )}
+            </div>
+          </div>
+        </CardHeader>
+        <CardBody style={{ overflow: 'auto' }}>
           <FeaturedBadges badges={props.userProfile.badgeCollection} />
-          <CardText
-            style={{
-              fontWeight: 'bold',
-              fontSize: 18,
-              color: '#285739',
-            }}
-          >
-            Bravo! You've earned {props.userProfile.badgeCollection.length} badges!{' '}
-            <i className="fa fa-info-circle" id="CountInfo" />
-          </CardText>
         </CardBody>
+        <CardFooter
+          style={{
+            fontWeight: 'bold',
+            fontSize: 18,
+            color: '#285739',
+          }}
+        >
+          Bravo! You've earned {props.userProfile.badgeCollection.length} badges!{' '}
+          <i className="fa fa-info-circle" id="CountInfo" />
+        </CardFooter>
       </Card>
       <UncontrolledTooltip
         placement="right"
