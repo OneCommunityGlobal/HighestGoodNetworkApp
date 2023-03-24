@@ -6,7 +6,8 @@ import { toast } from 'react-toastify';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Label, Input } from 'reactstrap';
 import styles from './OwnerMessage.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEdit, faTrashAlt } from '@fortawesome/free-regular-svg-icons';
+import editIcon from './assets/edit.png';
+import deleteIcon from './assets/delete.png';
 
 import { connect } from 'react-redux';
 import {
@@ -15,7 +16,6 @@ import {
   updateOwnerMessage,
   deleteOwnerMessage,
 } from '../../actions/ownerMessageAction';
-
 import {
   getOwnerStandardMessage,
   createOwnerStandardMessage,
@@ -41,6 +41,7 @@ function OwnerMessage({
   const { user } = auth;
 
   const [disableTextInput, setDisableTextInput] = useState(false);
+  const [disableStandardMessageInput, setStandardMessageInput] = useState(true);
   const [standardMessage, setStandardMessage] = useState('');
   const [newStandardMessage, setNewStandardMessage] = useState('');
   const [message, setMessage] = useState('');
@@ -145,6 +146,7 @@ function OwnerMessage({
       fileReader.onloadend = () => {
         setNewStandardMessage(fileReader.result);
       };
+      setStandardMessageInput(false);
     }
   }
 
@@ -178,9 +180,15 @@ function OwnerMessage({
 
       {user.role == 'Owner' && (
         <div className="icon-wrapper">
-          <FontAwesomeIcon icon={faEdit} className=" text-primary" onClick={toggle} />
+          <button onClick={toggle}>
+            <img src={editIcon} alt="edit icon" />
+          </button>
+          
           {
-            message && <FontAwesomeIcon icon={faTrashAlt} className=" text-danger" onClick={toggleDeleteWarning} style={{ marginLeft: '0.5rem'}}/>
+            message 
+            && <button onClick={toggleDeleteWarning} style={{ marginLeft: '0.5rem'}} >
+                <img src={deleteIcon} alt="edit icon" />
+               </button>
           }
         </div>
       )}
@@ -191,13 +199,14 @@ function OwnerMessage({
           <p>Write a message:</p>
           <Input
             type="textarea"
-            placeholder="Write your message here..."
+            placeholder="Write your message here... (Max 100 characters)"
             onChange={event => setNewMessage(event.target.value)}
             maxLength="100"
             disabled={disableTextInput}
             className="inputs"
           />
           <p className="paragraph" style={{marginTop: '1rem'}}>Or upload a picture:</p>
+          <span style={{marginTop: '-1.25rem', marginBottom: '1rem', fontSize: '.8rem'}}>(max size 1000 x 400 pixels and 100 KB)</span>
           <Input
             id="image"
             name="file"
@@ -211,6 +220,7 @@ function OwnerMessage({
             
           </div>
           <strong>Set a standard image message:</strong>
+          <span style={{marginBottom: '1rem', fontSize: '.8rem'}}>(max size 1000 x 400 pixels and 100 KB)</span>
           <Input
             id="image"
             name="file"
@@ -220,12 +230,12 @@ function OwnerMessage({
             className="inputs"
           />
         </ModalBody>
-        <ModalFooter>
+        <ModalFooter style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           <Button color="secondary" onClick={toggle}>
             Cancel
           </Button>
-          <Button color="info" onClick={handleStandardMessage}>
-            {standardMessage ? <span style={{color: 'white'}}>Update Standard Message</span> : <span>Create Standard Message</span>}
+          <Button color="info" onClick={handleStandardMessage} disabled={disableStandardMessageInput}>
+            {standardMessage ? <span style={{color: 'white'}}>Update as Standard Message</span> : <span>Create as Standard Message</span>}
           </Button>
           <Button color="primary" onClick={handleMessage}>
             {message ? 'Update' : 'Create'}
