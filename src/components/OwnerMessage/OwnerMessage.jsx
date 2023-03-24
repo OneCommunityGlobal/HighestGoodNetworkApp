@@ -41,9 +41,8 @@ function OwnerMessage({
   const { user } = auth;
 
   const [disableTextInput, setDisableTextInput] = useState(false);
-  const [disableStandardMessageInput, setStandardMessageInput] = useState(true);
+  const [disableButtons, setDisableButtons] = useState(true);
   const [standardMessage, setStandardMessage] = useState('');
-  const [newStandardMessage, setNewStandardMessage] = useState('');
   const [message, setMessage] = useState('');
   const [newMessage, setNewMessage] = useState('');
   const [modal, setModal] = useState(false);
@@ -74,10 +73,12 @@ function OwnerMessage({
     }
     getOwnerStandardMessage();
     if (ownerStandardMessage) {
-      console.log(ownerStandardMessage)
       setStandardMessage(ownerStandardMessage);
     }
-  }, []);
+    newMessage 
+    ? setDisableButtons(false)
+    : setDisableButtons(true)
+  }, [newMessage]);
 
   async function handleImageUpload(event) {
     if (event) event.preventDefault();
@@ -127,44 +128,21 @@ function OwnerMessage({
     setMessage('');
   }
 
-  async function handleStandardImageUpload(event) {
-    if (event) event.preventDefault();
-    const file = event.target.files[0];
-    if (typeof file != 'undefined') {
-      const imageType = /jpg|jpeg|png/g;
-      const validFormats = imageType.test(file.name);
-
-      //Input validation: file type
-      if (!validFormats) {
-        toggle();
-        toggleWrongPictureFormatWarning();
-        return;
-      }
-
-      const fileReader = new FileReader();
-      fileReader.readAsDataURL(file);
-      fileReader.onloadend = () => {
-        setNewStandardMessage(fileReader.result);
-      };
-      setStandardMessageInput(false);
-    }
-  }
-
   async function handleStandardMessage() {
     const ownerStandardMessage = {
-      newStandardMessage: newStandardMessage,
+      newStandardMessage: newMessage,
     };
 
     if (standardMessage) {
       updateOwnerStandardMessage(ownerStandardMessageId, ownerStandardMessage);
       toggle();
       toast.success('Standard Message updated!');
-      setStandardMessage(newStandardMessage);
+      setStandardMessage(newMessage);
     } else {
       createOwnerStandardMessage(ownerStandardMessage);
       toggle();
       toast.success('Standard Message created!');
-      setStandardMessage(newStandardMessage);
+      setStandardMessage(newMessage);
     }
   }
 
@@ -175,7 +153,10 @@ function OwnerMessage({
             ? <img src={message} alt="" />
             : <span className="message">{message}</span>
           )
-        : <img src={standardMessage} alt="" />
+        : (isImage.test(standardMessage) 
+            ? <img src={standardMessage} alt="" />
+            : <span className="message">{standardMessage}</span>
+          )
       }
 
       {user.role == 'Owner' && (
@@ -215,29 +196,12 @@ function OwnerMessage({
             onChange={handleImageUpload}
             className="inputs"
           />
-          <div className="dropdown-divider" style={{marginTop: '1rem', marginBottom: '1rem'}}></div>
-          <div className="standard-message-wrapper">
-            
-          </div>
-          <strong>Set a standard image message:</strong>
-          <span style={{marginBottom: '1rem', fontSize: '.8rem'}}>(max size 1000 x 400 pixels and 100 KB)</span>
-          <Input
-            id="image"
-            name="file"
-            type="file"
-            label="Choose Image"
-            onChange={handleStandardImageUpload}
-            className="inputs"
-          />
         </ModalBody>
         <ModalFooter style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <Button color="secondary" onClick={toggle}>
-            Cancel
+          <Button color="info" onClick={handleStandardMessage} disabled={disableButtons}>
+            {standardMessage ? <span style={{color: 'white'}}>Update as Standard Message</span> : <span style={{color: 'white'}}>Create as Standard Message</span>}
           </Button>
-          <Button color="info" onClick={handleStandardMessage} disabled={disableStandardMessageInput}>
-            {standardMessage ? <span style={{color: 'white'}}>Update as Standard Message</span> : <span>Create as Standard Message</span>}
-          </Button>
-          <Button color="primary" onClick={handleMessage}>
+          <Button color="primary" onClick={handleMessage} disabled={disableButtons}>
             {message ? 'Update' : 'Create'}
           </Button>
         </ModalFooter>
