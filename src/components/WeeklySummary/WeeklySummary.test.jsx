@@ -53,7 +53,7 @@ describe('WeeklySummary page', () => {
       render(<WeeklySummary {...props} />);
     });
 
-    it('should display 3 tabs even when the user summaries related fields have not been initialized in the database', () => {
+    it('should display 4 tabs even when the user summaries related fields have not been initialized in the database', () => {
       props = {
         currentUser: { userid: '1' },
         getWeeklySummaries: jest.fn(),
@@ -65,12 +65,12 @@ describe('WeeklySummary page', () => {
       render(<WeeklySummary {...props} />);
 
       const li = screen.getAllByRole('listitem');
-      expect(li.length).toEqual(3);
+      expect(li.length).toEqual(4);
     });
 
-    it('should have 3 tab', () => {
+    it('should have 4 tab', () => {
       const li = screen.getAllByRole('listitem');
-      expect(li.length).toEqual(3);
+      expect(li.length).toEqual(4);
     });
 
     it('should have first tab set to "active" by default', () => {
@@ -91,6 +91,11 @@ describe('WeeklySummary page', () => {
       // Third tab click.
       userEvent.click(screen.getByTestId('tab-3'));
       expect(screen.getByTestId('tab-3').classList.contains('active')).toBe(true);
+    });
+    it('should make 4th tab active when clicked', () => {
+      // Fourth tab click.
+      userEvent.click(screen.getByTestId('tab-4'));
+      expect(screen.getByTestId('tab-4').classList.contains('active')).toBe(true);
     });
   });
 

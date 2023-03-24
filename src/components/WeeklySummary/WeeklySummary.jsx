@@ -40,6 +40,7 @@ export class WeeklySummary extends Component {
       summary: '',
       summaryLastWeek: '',
       summaryBeforeLast: '',
+      summaryThreeWeeksAgo: '',
       mediaUrl: '',
       weeklySummariesCount: 0,
       mediaConfirm: false,
@@ -58,6 +59,11 @@ export class WeeklySummary extends Component {
       .endOf('week')
       .subtract(2, 'week')
       .toISOString(),
+    dueDateThreeWeeksAgo: moment()
+      .tz('America/Los_Angeles')
+      .endOf('week')
+      .subtract(3, 'week')
+      .toISOString(),
     activeTab: '1',
     errors: {},
     fetchError: null,
@@ -72,6 +78,8 @@ export class WeeklySummary extends Component {
       (weeklySummaries && weeklySummaries[1] && weeklySummaries[1].summary) || '';
     const summaryBeforeLast =
       (weeklySummaries && weeklySummaries[2] && weeklySummaries[2].summary) || '';
+    const summaryThreeWeeksAgo =
+      (weeklySummaries && weeklySummaries[3] && weeklySummaries[3].summary) || '';
 
     const dueDateThisWeek = weeklySummaries && weeklySummaries[0] && weeklySummaries[0].dueDate;
     // Make sure server dueDate is not before the localtime dueDate.
@@ -84,12 +92,16 @@ export class WeeklySummary extends Component {
     const dueDateBeforeLast =
       (weeklySummaries && weeklySummaries[2] && weeklySummaries[2].dueDate) ||
       this.state.dueDateBeforeLast;
+    const dueDateThreeWeeksAgo =
+      (weeklySummaries && weeklySummaries[3] && weeklySummaries[3].dueDate) ||
+      this.state.dueDateThreeWeeksAgo;
 
     this.setState({
       formElements: {
         summary,
         summaryLastWeek,
         summaryBeforeLast,
+        summaryThreeWeeksAgo,
         mediaUrl: mediaUrl || '',
         weeklySummariesCount: weeklySummariesCount || 0,
         mediaConfirm: false,
@@ -97,6 +109,7 @@ export class WeeklySummary extends Component {
       dueDate,
       dueDateLastWeek,
       dueDateBeforeLast,
+      dueDateThreeWeeksAgo,
       activeTab: '1',
       fetchError: this.props.fetchError,
       loading: this.props.loading,
@@ -141,6 +154,10 @@ export class WeeklySummary extends Component {
       .regex(this.regexPattern)
       .label('Minimum 50 words'),
     summaryBeforeLast: Joi.string()
+      .allow('')
+      .regex(this.regexPattern)
+      .label('Minimum 50 words'),
+    summaryThreeWeeksAgo: Joi.string()
       .allow('')
       .regex(this.regexPattern)
       .label('Minimum 50 words'),
@@ -233,6 +250,10 @@ export class WeeklySummary extends Component {
           summary: this.state.formElements.summaryBeforeLast,
           dueDate: this.state.dueDateBeforeLast,
         },
+        {
+          summary: this.state.formElements.summaryThreeWeeksAgo,
+          dueDate: this.state.dueDateThreeWeeksAgo,
+        },
       ],
       weeklySummariesCount: this.state.formElements.weeklySummariesCount,
     };
@@ -274,6 +295,7 @@ export class WeeklySummary extends Component {
       fetchError,
       dueDateLastWeek,
       dueDateBeforeLast,
+      dueDateThreeWeeksAgo,
     } = this.state;
     const summariesLabels = {
       summary: 'This Week',
@@ -283,6 +305,9 @@ export class WeeklySummary extends Component {
       summaryBeforeLast: this.doesDateBelongToWeek(dueDateBeforeLast, 2)
         ? 'Week Before Last'
         : moment(dueDateBeforeLast).format('YYYY-MMM-DD'),
+      summaryThreeWeeksAgo: this.doesDateBelongToWeek(dueDateThreeWeeksAgo, 3)
+        ? 'Three Weeks Ago'
+        : moment(dueDateThreeWeeksAgo).format('YYYY-MMM-DD'),
     };
 
     if (fetchError) {
@@ -367,7 +392,7 @@ export class WeeklySummary extends Component {
                           onEditorChange={this.handleEditorChange}
                         />
                       </FormGroup>
-                      {(errors.summary || errors.summaryLastWeek || errors.summaryBeforeLast) && (
+                      {(errors.summary || errors.summaryLastWeek || errors.summaryBeforeLast || errors.summaryThreeWeeksAgo) && (
                         <Alert color="danger">
                           The summary must contain a minimum of 50 words.
                         </Alert>
