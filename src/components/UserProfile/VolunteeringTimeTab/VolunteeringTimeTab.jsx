@@ -18,7 +18,6 @@ const StartDate = props => {
       id="startDate"
       value={moment(props.userProfile.createdDate).format('YYYY-MM-DD')}
       onChange={e => {
-        props.setChanged(true);
         props.setUserProfile({ ...props.userProfile, createdDate: e.target.value });
       }}
       placeholder="Start Date"
@@ -46,7 +45,6 @@ const EndDate = props => {
         props.userProfile.endDate ? props.userProfile.endDate.toLocaleString().split('T')[0] : ''
       }
       onChange={e => {
-        props.setChanged(true);
         props.setUserProfile({ ...props.userProfile, endDate: e.target.value });
       }}
       placeholder="End Date"
@@ -72,7 +70,6 @@ const WeeklySummaryReqd = props => {
             ...props.userProfile,
             weeklySummaryNotReq: !props.userProfile.weeklySummaryNotReq,
           });
-          props.setChanged(true);
         }}
         checked={props.userProfile.weeklySummaryNotReq}
       />
@@ -81,9 +78,9 @@ const WeeklySummaryReqd = props => {
   );
 };
 
-const WeeklyCommitedHours = props => {
+const WeeklyCommittedHours = props => {
   if (!props.canEdit) {
-    return <p>{props.userProfile.weeklyComittedHours}</p>;
+    return <p>{props.userProfile.weeklycommittedHours}</p>;
   }
   return (
     <Input
@@ -111,7 +108,7 @@ const WeeklyCommitedHours = props => {
  * @returns
  */
 const ViewTab = props => {
-  const { userProfile, setUserProfile, setChanged, role, canEdit } = props;
+  const { userProfile, setUserProfile, role, canEdit } = props;
   const [totalTangibleHoursThisWeek, setTotalTangibleHoursThisWeek] = useState(0);
   const [totalTangibleHours, setTotalTangibleHours] = useState(0);
   const { hoursByCategory, totalIntangibleHrs } = userProfile;
