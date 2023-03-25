@@ -18,10 +18,15 @@ const selectUserId = state => state.auth.user.userid;
 const selectUpdateTaskData = (state, taskId) =>
   state.tasks.taskItems.find(({ _id }) => _id === taskId);
 
-export const fetchTeamMembersTask = () => async (dispatch, getState) => {
+
+  //for those who are not familiarized, this is a arrow function inside a arrow function.
+  // It's the same as doing function(currentUserId){async function(dispatch, getState)}
+  //Because of the closure, the inside function have access the currentUserId, that it uses and provides to the userId
+  export const fetchTeamMembersTask = currentUserId => async (dispatch, getState) => {
   try {
     const state = getState();
-    const userId = selectFetchTeamMembersTaskData(state);
+    //The userId will be equal the currentUserId if provided, if not, it'll call the selectFetchTeamMembersTaskData, that will return the current user id that's on the store
+    const userId = currentUserId ? currentUserId : selectFetchTeamMembersTaskData(state);
     dispatch(fetchTeamMembersTaskBegin());
     const response = await axios.get(ENDPOINTS.TEAM_MEMBER_TASKS(userId));
     dispatch(fetchTeamMembersTaskSuccess(response.data));
