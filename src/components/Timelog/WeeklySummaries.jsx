@@ -1,4 +1,5 @@
 import React from 'react';
+import parse from 'html-react-parser';
 
 const WeeklySummaries = ({ userProfile }) => {
   return (
@@ -6,7 +7,7 @@ const WeeklySummaries = ({ userProfile }) => {
       {userProfile.weeklySummaries[0].summary ? (
         <div>
           <h4>This week's summary</h4>
-          <h4>{userProfile.weeklySummaries[0].summary}</h4>
+          <h4>{parse(userProfile.weeklySummaries[0].summary)}</h4>
         </div>
       ) : (
         <h4>
@@ -16,7 +17,7 @@ const WeeklySummaries = ({ userProfile }) => {
       {userProfile.weeklySummaries[1].summary ? (
         <div>
           <h4>Last week's summary</h4>
-          <h4>{userProfile.weeklySummaries[1].summary}</h4>
+          <h4>{parse(userProfile.weeklySummaries[1].summary)}</h4>
         </div>
       ) : (
         <h4>
@@ -26,7 +27,7 @@ const WeeklySummaries = ({ userProfile }) => {
       {userProfile.weeklySummaries[2].summary ? (
         <div>
           <h4>The week before last's summary</h4>
-          <h4>{userProfile.weeklySummaries[2].summary}</h4>
+          <h4>{parse(userProfile.weeklySummaries[2].summary)}</h4>
         </div>
       ) : (
         <h4>
