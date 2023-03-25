@@ -50,4 +50,22 @@
     overflow-y: scroll;
     width: 100%;
   }
+
+  .right-padding-temp-fix {
+    padding-right: 0px !important;
+  }
+}
+
+#projectSelected {
+  max-width: 100%;
+}
+
+#projectSelected option {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.right-padding-temp-fix {
+  padding-right: 0px !important;
 }

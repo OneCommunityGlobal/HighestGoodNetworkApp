@@ -1,6 +1,6 @@
 import React, { useState, Component } from 'react';
 import Joi from 'joi';
-import _ from 'lodash';
+import { cloneDeep, isEqual, groupBy } from 'lodash';
 import Input from '../Input';
 import Dropdown from '../Dropdown';
 import Radio from '../Radio/';
@@ -74,7 +74,7 @@ import CheckboxCollection from '../CheckboxCollection';
     setErrors(errors);
   }; 
   
-  const isStateChanged = () => !_.isEqual(data, {});
+  const isStateChanged = () => !isEqual(data, {});
 
   const validateProperty = (name, value) => {
     const obj = { [name]: value };
@@ -100,7 +100,7 @@ import CheckboxCollection from '../CheckboxCollection';
       errors[element.path[0]] = element.message;
     });
 
-    const messages = _.groupBy(error.details, 'path[0]');
+    const messages = groupBy(error.details, 'path[0]');
     Object.keys(messages).forEach((key) => {
       errors[key] = messages[key].map((item) => item.message).join('. ');
     });
@@ -214,7 +214,7 @@ class Form extends Component {
     errors: {},
   };
 
-  resetForm = () => this.setState(_.cloneDeep(this.initialState));
+  resetForm = () => this.setState(cloneDeep(this.initialState));
 
   handleInput = ({ currentTarget: input }) => {
     this.handleState(input.name, input.value);
@@ -270,14 +270,14 @@ class Form extends Component {
     this.setState({ data, errors });
   };
 
-  isStateChanged = () => !_.isEqual(this.state.data, this.initialState.data);
+  isStateChanged = () => !isEqual(this.state.data, this.initialState.data);
 
   validateProperty = (name, value) => {
     const obj = { [name]: value };
     const schema = { [name]: this.schema[name] };
     let refs = schema[name]._refs;
     if (refs) {
-      refs.forEach((ref) => {
+      refs.forEach(ref => {
         schema[ref] = this.schema[ref];
         obj[ref] = this.state.data[ref];
       });
@@ -292,17 +292,17 @@ class Form extends Component {
     const options = { abortEarly: false };
     const { error } = Joi.validate(this.state.data, this.schema, options);
     if (!error) return null;
-    error.details.forEach((element) => {
+    error.details.forEach(element => {
       errors[element.path[0]] = element.message;
     });
 
-    const messages = _.groupBy(error.details, 'path[0]');
-    Object.keys(messages).forEach((key) => {
-      errors[key] = messages[key].map((item) => item.message).join('. ');
+    const messages = groupBy(error.details, 'path[0]');
+    Object.keys(messages).forEach(key => {
+      errors[key] = messages[key].map(item => item.message).join('. ');
     });
     return errors;
   };
-  handleSubmit = (e) => {
+  handleSubmit = e => {
     e.preventDefault();
     e.stopPropagation();
     const errors = this.validateForm();
@@ -325,7 +325,7 @@ class Form extends Component {
       <TinyMCEEditor
         name={name}
         value={data[name]}
-        onChange={(e) => this.handleRichTextEditor(e)}
+        onChange={e => this.handleRichTextEditor(e)}
         error={errors[name]}
         {...rest}
       />
@@ -340,7 +340,7 @@ class Form extends Component {
         label={label}
         options={options}
         value={data[name]}
-        onChange={(e) => this.handleInput(e)}
+        onChange={e => this.handleInput(e)}
         error={errors[name]}
         {...rest}
       />
@@ -353,7 +353,7 @@ class Form extends Component {
       <Input
         name={name}
         type={type}
-        onChange={(e) => this.handleInput(e)}
+        onChange={e => this.handleInput(e)}
         value={data[name]}
         label={label}
         error={errors[name]}
@@ -367,7 +367,7 @@ class Form extends Component {
       <Radio
         name={name}
         value={data[name]}
-        onChange={(e) => this.handleInput(e)}
+        onChange={e => this.handleInput(e)}
         error={errors[name]}
         {...rest}
       />
@@ -392,7 +392,7 @@ class Form extends Component {
     return (
       <Image
         name={name}
-        onChange={(e) => this.handleInput(e)}
+        onChange={e => this.handleInput(e)}
         value={data[name]}
         label={label}
         error={errors[name]}

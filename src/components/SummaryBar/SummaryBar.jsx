@@ -24,30 +24,26 @@ import badges_icon from './badges_icon.png';
 import bluesquare_icon from './bluesquare_icon.png';
 import report_icon from './report_icon.png';
 import httpService from '../../services/httpService';
-import { faWindowMinimize } from '@fortawesome/free-regular-svg-icons';
 import { ENDPOINTS } from 'utils/URL';
 import axios from 'axios';
 import { ApiEndpoint } from 'utils/URL';
-import hasPermission from 'utils/permissions';
 import { getProgressColor, getProgressValue } from '../../utils/effortColors';
 
 const SummaryBar = props => {
-  const { asUser, role, leaderData, userProfile, setUserProfile } = props;
+  const { asUser, role, leaderData } = props;
+  const [userProfile, setUserProfile] = useState(undefined);
+  const [infringements, setInfringements] = useState(0);
+  const [badges, setBadges] = useState(0);
+  const [totalEffort, setTotalEffort] = useState(0);
+  const [weeklySummary, setWeeklySummary] = useState([]);
+
   const [tasks, setTasks] = useState(undefined);
   const authenticateUser = useSelector(state => state.auth.user);
+  const gsUserprofile = useSelector(state => state.userProfile);
+  const gsUserTasks = useSelector(state => state.userTask);
   const authenticateUserId = authenticateUser ? authenticateUser.userid : '';
-  const { firstName, lastName, email, _id } = useSelector(state => state.userProfile);
-  const userPermissions = useSelector(state => state.auth.user?.permissions?.frontPermissions);
 
   const matchUser = asUser == authenticateUserId ? true : false;
-  const timeEntries = useSelector(state => {
-    let timeEntries = state?.timeEntries?.weeks;
-    if (timeEntries) {
-      return timeEntries[0];
-    } else {
-      return [];
-    }
-  });
 
   // Similar to UserProfile component function
   // Loads component depending on asUser passed as prop
@@ -58,7 +54,6 @@ const SummaryBar = props => {
     try {
       const response = await axios.get(ENDPOINTS.USER_PROFILE(userId));
       const newUserProfile = response.data;
-      console.log('User Profile loaded', newUserProfile);
       setUserProfile(newUserProfile);
     } catch (err) {
       console.log('User Profile not loaded.');
@@ -72,8 +67,6 @@ const SummaryBar = props => {
     try {
       const response = await axios.get(ENDPOINTS.TASKS_BY_USERID(userId));
       const newUserTasks = response.data;
-      console.log('User Tasks loaded');
-      console.log(newUserTasks.length);
       setTasks(newUserTasks.length);
     } catch (err) {
       console.log('User Tasks not loaded.');
@@ -81,53 +74,39 @@ const SummaryBar = props => {
   };
 
   useEffect(() => {
-    loadUserProfile();
-    getUserTask();
+    // Fetch user profile only if the selected timelog is of different user
+    if (!matchUser || gsUserprofile._id != asUser) {
+      loadUserProfile();
+      getUserTask();
+    } else {
+      setUserProfile(gsUserprofile);
+      setTasks(gsUserTasks.length);
+    }
   }, [leaderData]);
 
-  const calculateTotalTime = (data, isTangible) => {
-    const filteredData = data.filter(entry => entry.isTangible === isTangible);
+  useEffect(() => {
+    if (leaderData !== undefined && userProfile !== undefined) {
+      setInfringements(getInfringements());
+      setBadges(getBadges());
+      setTotalEffort(getTangibleTime());
+      setWeeklySummary(getWeeklySummary(userProfile));
+    }
+  }, [userProfile, leaderData]);
 
-    const reducer = (total, entry) => total + parseInt(entry.hours) + parseInt(entry.minutes) / 60;
-    return filteredData.reduce(reducer, 0);
+  const getTangibleTime = () => {
+    const user = leaderData.find(x => x.personId === asUser);
+    return user !== undefined ? parseFloat(user.tangibletime) : 0;
   };
-  // const weeklySummary = useSelector(state => {
-  //   let summaries = state.userProfile?.weeklySummaries;
-  //   if (summaries && Array.isArray(summaries) && summaries[0] && summaries[0].summary) {
-  //     console.log('Yes weeklySummary');
-  //     console.log(summaries[0].summary);
-  //     return summaries[0].summary;
-  //   } else {
-  //     console.log('No weeklySummary');
-  //     return '';
-  //   }
-  // });
 
   //Get infringement count from userProfile
-  const getInfringements = user => {
-    if (user && user.infringements) {
-      return user.infringements.length;
-    } else {
-      return 0;
-    }
+  const getInfringements = () => {
+    return userProfile && userProfile.infringements ? userProfile.infringements.length : 0;
   };
 
   //Get badges count from userProfile
-  const getBadges = user => {
-    if (user && user.badgeCollection) {
-      return user.badgeCollection.length;
-    } else {
-      return 0;
-    }
+  const getBadges = () => {
+    return userProfile && userProfile.badgeCollection ? userProfile.badgeCollection.length : 0;
   };
-
-  // const getTasks = user => {
-  //   if (user && user.tasks) {
-  //     return state.tasks.taskItems.length;
-  //   } else {
-  //     return 0;
-  //   }
-  // };
 
   const getState = useSelector(state => {
     return state;
@@ -157,17 +136,13 @@ const SummaryBar = props => {
     formData.forEach(function(value, key) {
       data[key] = value;
     });
-    data['firstName'] = firstName;
-    data['lastName'] = lastName;
-    data['email'] = email;
+    data['firstName'] = userProfile.firstName;
+    data['lastName'] = userProfile.lastName;
+    data['email'] = userProfile.email;
 
-    httpService.post(`${ApiEndpoint}/dashboard/bugreport/${_id}`, data).catch(e => {});
+    httpService.post(`${ApiEndpoint}/dashboard/bugreport/${userProfile._id}`, data).catch(e => {});
     openReport();
   };
-
-  // async componentDidMount() {
-  //   await this.props.getWeeklySummaries(this.props.currentUser.userid);
-  //   const { weeklySummariesCount } = this.props.summaries;}
 
   const onTaskClick = () => {
     window.location.hash = '#tasks';
@@ -196,15 +171,10 @@ const SummaryBar = props => {
   };
 
   if (userProfile !== undefined && leaderData !== undefined) {
-    const infringements = getInfringements(userProfile);
-    const badges = getBadges(userProfile);
-    console.log(tasks);
-    const { firstName, lastName, email, _id } = userProfile;
-    let totalEffort = parseFloat(leaderData.find(x => x.personId === asUser).tangibletime);
-    const weeklyCommittedHours = userProfile.weeklyComittedHours;
+    const weeklyCommittedHours = userProfile.weeklycommittedHours;
     const weeklySummary = getWeeklySummary(userProfile);
     return (
-      <Container fluid className="px-lg-0 bg--bar">
+      <Container fluid className={matchUser ? 'px-lg-0 bg--bar' : 'px-lg-0 bg--bar disabled-bar'}>
         <Row className="no-gutters row-eq-height">
           <Col
             className="d-flex justify-content-center align-items-center col-lg-2 col-12 text-list"
@@ -217,14 +187,13 @@ const SummaryBar = props => {
               </font>
               <CardTitle className="text--black align-middle" tag="h3">
                 <div>
-                  {firstName + ' '}
-                  {/* <br className="name-linebreak" /> */}
-                  {lastName}
+                  {userProfile.firstName + ' '}
+                  {userProfile.lastName}
                 </div>
               </CardTitle>
             </div>
           </Col>
-          <Col className="col-lg-3 col-12 no-gutters">
+          <Col className="d-flex col-lg-3 col-12 no-gutters">
             <Row className="no-gutters">
               {totalEffort < weeklyCommittedHours && (
                 <div className="border-red col-4 bg--white-smoke" align="center">
@@ -267,12 +236,12 @@ const SummaryBar = props => {
             </Row>
           </Col>
 
-          <Col className="col-lg-3 col-12 no-gutters">
+          <Col className="d-flex col-lg-3 col-12 no-gutters">
             <Row className="no-gutters">
               {!weeklySummary ? (
                 <div className="border-red col-4 bg--white-smoke no-gutters" align="center">
                   <div className="py-1"> </div>
-                  {matchUser || hasPermission(role, 'toggleSubmitForm') ? (
+                  {matchUser ? (
                     <p
                       className={'summary-toggle large_text_summary text--black text-danger'}
                       align="center"
@@ -307,12 +276,6 @@ const SummaryBar = props => {
                 </div>
               )}
 
-              {/* <div className="border-green col-sm-4 bg--dark-green" align="center">
-                <div className="py-1"> </div>
-                <h1 align="center">✓</h1>
-                <font size="3">SUMMARY</font>
-                <div className="py-2"> </div>
-              </div> */}
               <div
                 className="col-8 border-black bg--white-smoke d-flex align-items-center"
                 align="center"
@@ -321,8 +284,12 @@ const SummaryBar = props => {
                   <font className="text--black med_text_summary align-middle" size="3">
                     {weeklySummary || props.submittedSummary ? (
                       'You have submitted your weekly summary.'
-                    ) : (
+                    ) : matchUser ? (
                       <span className="summary-toggle" onClick={props.toggleSubmitForm}>
+                        You still need to complete the weekly summary. Click here to submit it.
+                      </span>
+                    ) : (
+                      <span className="summary-toggle">
                         You still need to complete the weekly summary. Click here to submit it.
                       </span>
                     )}
@@ -331,12 +298,6 @@ const SummaryBar = props => {
               </div>
             </Row>
           </Col>
-          {/* {isSubmitted && (<font className="text--black" align="center" size="3">
-              You have completed weekly summary.
-            </font>)}
-            {!isSubmitted && (<font className="text--black" align="center" size="3">
-              You still need to complete the weekly summary.
-            </font>)} */}
 
           <Col className="m-auto mt-2 col-lg-4 col-12 badge-list">
             <div className="d-flex justify-content-around no-gutters">
@@ -345,31 +306,48 @@ const SummaryBar = props => {
                 <div className="redBackgroup">
                   <span>{tasks}</span>
                 </div>
-
-                <img className="sum_img" src={task_icon} alt="" onClick={onTaskClick}></img>
+                {matchUser ? (
+                  <img className="sum_img" src={task_icon} alt="" onClick={onTaskClick}></img>
+                ) : (
+                  <img className="sum_img" src={task_icon} alt=""></img>
+                )}
               </div>
               &nbsp;&nbsp;
               <div className="image_frame">
-                <img className="sum_img" src={badges_icon} alt="" onClick={onBadgeClick} />
+                {matchUser ? (
+                  <img className="sum_img" src={badges_icon} alt="" onClick={onBadgeClick} />
+                ) : (
+                  <img className="sum_img" src={badges_icon} alt="" />
+                )}
                 <div className="redBackgroup">
                   <span>{badges}</span>
                 </div>
               </div>
               &nbsp;&nbsp;
               <div className="image_frame">
-                <Link to={`/userprofile/${_id}#bluesquare`}>
-                  <img className="sum_img" src={bluesquare_icon} alt="" />
-                  <div className="redBackgroup">
-                    <span>{infringements}</span>
+                {matchUser ? (
+                  <Link to={`/userprofile/${userProfile._id}#bluesquare`}>
+                    <img className="sum_img" src={bluesquare_icon} alt="" />
+                    <div className="redBackgroup">
+                      <span>{infringements}</span>
+                    </div>
+                  </Link>
+                ) : (
+                  <div>
+                    <img className="sum_img" src={bluesquare_icon} alt="" />
+                    <div className="redBackgroup">
+                      <span>{infringements}</span>
+                    </div>
                   </div>
-                </Link>
+                )}
               </div>
               &nbsp;&nbsp;
               <div className="image_frame">
-                <img className="sum_img" src={report_icon} alt="" onClick={openReport} />
-                {/* <div className="blackBackgroup">
-                <i className="fa fa-exclamation" aria-hidden="true" />
-              </div> */}
+                {matchUser ? (
+                  <img className="sum_img" src={report_icon} alt="" onClick={openReport} />
+                ) : (
+                  <img className="sum_img" src={report_icon} alt="" />
+                )}
               </div>
             </div>
           </Col>

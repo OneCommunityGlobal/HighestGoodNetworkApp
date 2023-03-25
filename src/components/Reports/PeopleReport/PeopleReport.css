@@ -32,7 +32,7 @@ body {
   border-radius: 50%;
   height: 50px;
   width: 50px;
-  margin:5px;
+  margin: 5px;
 }
 
 .badge_image_lg > img {
@@ -51,7 +51,7 @@ body {
   border-radius: 50%;
   width: 20px;
   height: 20px;
-  background:#007bff;
+  background: #007bff;
   color: #fff;
   text-align: center;
   font: 15px Arial, sans-serif;
@@ -65,7 +65,7 @@ body {
   border-radius: 50%;
   width: 20px;
   height: 15px;
-  background:#007bff;
+  background: #007bff;
   color: #fff;
   text-align: center;
   font: 11px Arial, sans-serif;
@@ -83,7 +83,7 @@ body {
 }
 
 .old_badges {
-  height:220px;
+  height: 220px;
 }
 
 .badge_history_container {
@@ -103,23 +103,23 @@ body {
 }
 
 .assign-badge-margin-top {
-  margin-Top: 15px;
+  margin-top: 15px;
 }
 
 .badge-message-background-success {
-  background-color:#d4edda;
+  background-color: #d4edda;
 }
 
 .badge-message-background-danger {
-  background-color:#f8d7da;
+  background-color: #f8d7da;
 }
 
 .badge-message-text-success {
-  color:#092b00;
+  color: #092b00;
 }
 
 .badge-message-text-danger {
-  color:#a8071a;
+  color: #a8071a;
 }
 
 .assign_badge_search_box {
@@ -171,7 +171,7 @@ body {
   display: flex;
 }
 
-.intro_date div{
+.intro_date div {
   display: inline-flex;
   vertical-align: top;
   font-family: 'Open Sans', sans-serif;

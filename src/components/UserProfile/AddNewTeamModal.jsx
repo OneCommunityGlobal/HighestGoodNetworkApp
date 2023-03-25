@@ -12,14 +12,14 @@ import {
   Input,
 } from 'reactstrap';
 
-const AddNewTeamModal = (props) => {
+const AddNewTeamModal = props => {
   const { isOpen, toggle, teams, submitHandler } = props;
   const [newTeam, setTeam] = useState('');
-  const handleSelectionChange = (e) => {
+  const handleSelectionChange = e => {
     setTeam(e.target.value);
   };
   const handleSubmit = () => {
-    const newTeams = teams.filter((team) => team._id === newTeam);
+    const newTeams = teams.filter(team => team._id === newTeam);
     if (newTeams.length === 1) {
       submitHandler('add', newTeams[0]);
     }
@@ -40,7 +40,7 @@ const AddNewTeamModal = (props) => {
                 onChange={handleSelectionChange}
                 value={newTeam}
               >
-                {teams.map((team) => (
+                {teams.map(team => (
                   <option key={team._id} value={team._id}>
                     {team.teamName}
                   </option>

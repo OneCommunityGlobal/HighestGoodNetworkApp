@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Table, Button, UncontrolledTooltip } from 'reactstrap';
 import { connect } from 'react-redux';
 import AssignTableRow from '../Badge/AssignTableRow';
@@ -10,10 +10,11 @@ import {
 import { ENDPOINTS } from 'utils/URL';
 import axios from 'axios';
 
-const AssignBadgePopup = (props) => {
+const AssignBadgePopup = props => {
   const [searchedName, setSearchedName] = useState('');
+  const [badgeList, setBadgeList] = useState([]);
 
-  const onSearch = (text) => {
+  const onSearch = text => {
     setSearchedName(text);
   };
 
@@ -31,9 +32,19 @@ const AssignBadgePopup = (props) => {
     props.handleSubmit();
     props.close();
   };
+  useEffect(() => {
+    loadAllBadges();
+  }, []);
 
-  const filterBadges = (allBadges) => {
-    let filteredList = allBadges.filter((badge) => {
+  const loadAllBadges = async () => {
+    try {
+      const response = await axios.get(ENDPOINTS.BADGE());
+      setBadgeList(response.data);
+    } catch (error) {}
+  };
+
+  const filterBadges = allBadges => {
+    let filteredList = allBadges.filter(badge => {
       if (badge.badgeName.toLowerCase().indexOf(searchedName.toLowerCase()) > -1) {
         return badge;
       }
@@ -41,7 +52,7 @@ const AssignBadgePopup = (props) => {
     return filteredList;
   };
 
-  let filteredBadges = filterBadges(props.allBadgeData);
+  let filteredBadges = filterBadges(badgeList);
 
   return (
     <div>
@@ -49,40 +60,42 @@ const AssignBadgePopup = (props) => {
         type="text"
         className="form-control assign_badge_search_box"
         placeholder="Search Badge Name"
-        onChange={(e) => {
+        onChange={e => {
           onSearch(e.target.value);
         }}
       />
-      <Table>
-        <thead>
-          <tr>
-            <th>Badge</th>
-            <th>Name</th>
-            <th>
-              <i className="fa fa-info-circle" id="SelectInfo" />
-              <UncontrolledTooltip
-                placement="right"
-                target="SelectInfo"
-                style={{ backgroundColor: '#666', color: '#fff' }}
-              >
-                <p className="badge_info_icon_text">
-                  Hmmm, little blank boxes... what could they mean? Yep, you guessed it, check those
-                  boxes to select the badges you wish to assign a person. Click the "Confirm" button
-                  at the bottom when you've selected all you wish to add.
-                </p>
-                <p className="badge_info_icon_text">
-                  Want to assign multiple of the same badge to a person? Repeat the process!!
-                </p>
-              </UncontrolledTooltip>
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          {filteredBadges.map((value, index) => (
-            <AssignTableRow badge={value} index={index} key={index} />
-          ))}
-        </tbody>
-      </Table>
+      <div style={{ overflowY: 'scroll', height: '75vh'}}>
+        <Table>
+          <thead>
+            <tr>
+              <th>Badge</th>
+              <th>Name</th>
+              <th style={{ zIndex: '10' }}>
+                <i className="fa fa-info-circle" id="SelectInfo" />
+                <UncontrolledTooltip
+                  placement="right"
+                  target="SelectInfo"
+                  style={{ backgroundColor: '#666', color: '#fff' }}
+                >
+                  <p className="badge_info_icon_text">
+                    Hmmm, little blank boxes... what could they mean? Yep, you guessed it, check those
+                    boxes to select the badges you wish to assign a person. Click the "Confirm" button
+                    at the bottom when you've selected all you wish to add.
+                  </p>
+                  <p className="badge_info_icon_text">
+                    Want to assign multiple of the same badge to a person? Repeat the process!!
+                  </p>
+                </UncontrolledTooltip>
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {filteredBadges.map((value, index) => (
+              <AssignTableRow badge={value} index={index} key={index}/>
+            ))}
+          </tbody>
+        </Table>
+      </div>
       <Button
         className="btn--dark-sea-green float-right"
         style={{ margin: 5 }}
@@ -94,11 +107,11 @@ const AssignBadgePopup = (props) => {
   );
 };
 
-const mapStateToProps = (state) => ({
+const mapStateToProps = state => ({
   selectedBadges: state.badge.selectedBadges,
 });
 
-const mapDispatchToProps = (dispatch) => {
+const mapDispatchToProps = dispatch => {
   return {
     assignBadgesByUserID: (userId, selectedBadge) =>
       assignBadgesByUserID(userId, selectedBadge)(dispatch),

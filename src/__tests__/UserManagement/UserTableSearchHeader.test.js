@@ -58,7 +58,7 @@ describe('user table search header row', () => {
       await userEvent.type(screen.getAllByRole('textbox')[2], 'test', { allAtOnce: false });
       expect(onEmailSearch).toHaveBeenCalledTimes(4);
     });
-    it('should fire onWeeklyHrsSearch once the user type something in the weeklycommited hrs search box', async () => {
+    it('should fire onWeeklyHrsSearch once the user type something in the weeklycommitted hrs search box', async () => {
       await userEvent.type(screen.getAllByRole('textbox')[3], 'test', { allAtOnce: false });
       expect(onWeeklyHrsSearch).toHaveBeenCalledTimes(4);
     });
