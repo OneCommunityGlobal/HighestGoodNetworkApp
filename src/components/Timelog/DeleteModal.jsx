@@ -20,12 +20,10 @@ const DeleteModal = ({ timeEntry, userProfile, projectCategory, taskClassificati
     dispatch(deleteTimeEntry(timeEntry));
     //update hours
     const formattedHours = parseFloat(timeEntry.hours) + parseFloat(timeEntry.minutes) / 60;
-    console.log(timeEntry);
     if (!timeEntry.isTangible) {
       userProfile.totalIntangibleHrs -= formattedHours;
     } else {
       const category = projectCategory ? projectCategory : taskClassification;
-      console.log(category);
       const { hoursByCategory } = userProfile;
       hoursByCategory[category] -= formattedHours;
     }

@@ -195,7 +195,7 @@ const ViewTab = props => {
     });
     setChanged(true);
   };
-  console.log(hoursByCategory);
+
   return (
     <div data-testid="volunteering-time-tab">
       <Row className="volunteering-time-row">
