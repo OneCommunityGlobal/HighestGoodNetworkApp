@@ -211,6 +211,7 @@ const TeamMemberTasks = props => {
         onApprove={handleTaskNotificationRead}
         loggedInUserId={props.auth.user.userid}
       />
+
       <div>
         <ul className="team-member-tasks-nav">
           <li>Team Member</li>

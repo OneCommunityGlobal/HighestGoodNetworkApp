@@ -5,9 +5,12 @@
   padding: 0.5rem 0;
 }
 
-/******** team member tasks container ********/
 .loading-animation {
   margin: 0 auto;
+
+.team-member-tasks h1 {
+  color: black;
+  font-size: 20px;
 }
 
 .team-member-container {
@@ -72,7 +75,6 @@
   border-bottom: 0;
 }
 
-/******** btn-group ********/
 .hours-btn {
   border: 0;
   padding: 0.3rem 1rem;
@@ -119,4 +121,79 @@
 
 .markAsDoneButton:hover {
   cursor: pointer;
+}
+
+.right-padding-temp-fix {
+  padding-right: 0px !important;
+}
+
+@media only screen and (max-width: 768px) {
+  .pc-component {
+    display: none;
+  }
+
+  .team-member-tasks h1 {
+    color: black;
+    font-size: 20px;
+    text-align: center;
+  }
+
+  .hours-btn-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    min-width: 165px;
+    padding: 0 15%;
+  }
+
+  .card-body {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+  }
+  .card-body .container {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+  }
+  .team-member-tasks .table,
+  .team-member-tasks .table tbody,
+  .team-member-tasks .table tr,
+  .team-member-tasks .table td {
+    display: block;
+    width: 100%;
+    text-align: left !important;
+  }
+
+  .team-member-tasks .table td::before {
+    content: attr(data-label);
+    font-size: 17px;
+    font-weight: 500;
+
+    display: block;
+    text-align: left !important;
+  }
+
+  .table-row {
+    border: solid #e9ecef 2px;
+    background: #faf7fc;
+  }
+
+  .spacer {
+    height: 20px;
+  }
+}
+
+@media only screen and (min-width: 768px) {
+  .team-member-tasks h1 {
+    font-size: 24px;
+  }
+
+  .header-box {
+    flex-direction: unset;
+  }
+}
+
+@media only screen and (min-width: 768px) {
+  .team-member-tasks h1 {
+    font-size: 28px;
+  }
 }
