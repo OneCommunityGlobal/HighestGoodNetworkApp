@@ -11,6 +11,7 @@ const CreateNewRolePopup = ({ toggle, addNewRole }) => {
   const [permissionsChecked, setPermissionsChecked] = useState([]);
   const [newRoleName, setNewRoleName] = useState('');
   const [isValidRole, setIsValidRole] = useState(true);
+  const symbolsRegex = /[!+,=()~_.@#\$%;:\^"'\&*?/-]/;
 
   const handleSubmit = async e => {
     e.preventDefault();
@@ -38,9 +39,7 @@ const CreateNewRolePopup = ({ toggle, addNewRole }) => {
   const handleRoleName = e => {
     const { value } = e.target;
     setNewRoleName(value);
-    value.indexOf('?') === -1 && value.indexOf('/') === -1
-      ? setIsValidRole(true)
-      : setIsValidRole(false);
+    symbolsRegex.test(value) ? setIsValidRole(false) : setIsValidRole(true);
   };
 
   const handleChange = e => {
