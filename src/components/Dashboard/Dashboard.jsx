@@ -78,7 +78,7 @@ export const Dashboard = props => {
           ) : null}
           <div className="my-2">
             <a name="wsummary"></a>
-            <Timelog isDashboard asUser={userId} />
+            <Timelog isDashboard={true} asUser={userId} />
           </div>
           <Badge userId={userId} role={props.auth.user.role} />
         </Col>
