@@ -88,7 +88,7 @@ export class WeeklySummary extends Component {
       : dueDateThisWeek;
     
     // Calculate due dates for the last three weeks by subtracting 1, 2, and 3 weeks from the current due date
-    // and then setting the due date to the end of the ISO week (Friday) for each respective week
+    // and then setting the due date to the end of the ISO week (Saturday) for each respective week
     const dueDateLastWeek = moment(dueDate).subtract(1, 'weeks').startOf('isoWeek').add(5, 'days');
     const dueDateBeforeLast = moment(dueDate).subtract(2, 'weeks').startOf('isoWeek').add(5, 'days');
     const dueDateThreeWeeksAgo = moment(dueDate).subtract(3, 'weeks').startOf('isoWeek').add(5, 'days');
