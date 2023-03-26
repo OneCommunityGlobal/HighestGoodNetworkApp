@@ -917,7 +917,7 @@ const UserProfile = props => {
                     edit={hasPermission(requestorRole, 'editUserProfile', roles, userPermissions)}
                     role={requestorRole}
                     roles={roles}
-                    handleUserProfile={handleUserProfile}
+                    onUserVisibilitySwitch={onUserVisibilitySwitch}
                     isVisible={userProfile.isVisible}
                     canEditVisibility={canEdit && userProfile.role != 'Volunteer'}
                   />
