@@ -13,9 +13,9 @@ const ActivationDatePopup = React.memo(props => {
   const closePopup = e => {
     props.onClose();
   };
-  const pauseUser = () => {
+  const pauseUser = async () => {
     if (moment().isBefore(moment(activationDate))) {
-      props.onPause(activationDate);
+      await props.onPause(activationDate);
       toast.success('Your Changes were saved successfully.');
     } else {
       setDateError(true);

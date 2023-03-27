@@ -673,6 +673,7 @@ const UserProfile = props => {
                   role={requestorRole}
                   userProfile={userProfile}
                   setUserProfile={setUserProfile}
+                  loadUserProfile={loadUserProfile}
                   handleUserProfile={handleUserProfile}
                   formValid={formValid}
                   setFormValid={setFormValid}
