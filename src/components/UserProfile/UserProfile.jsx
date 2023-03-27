@@ -16,12 +16,17 @@ import {
   NavLink,
   Button,
 } from 'reactstrap';
+import Select from 'react-select';
 import Image from 'react-bootstrap/Image';
 import { Link } from 'react-router-dom';
 import classnames from 'classnames';
 import moment from 'moment';
 import Alert from 'reactstrap/lib/Alert';
-
+import axios from 'axios';
+import parse from 'html-react-parser';
+import hasPermission from '../../utils/permissions';
+import ActiveCell from '../UserManagement/ActiveCell';
+import { ENDPOINTS } from '../../utils/URL';
 import Loading from '../common/Loading';
 import UserProfileModal from './UserProfileModal';
 import './UserProfile.scss';
@@ -32,34 +37,30 @@ import BasicInformationTab from './BasicInformationTab/BasicInformationTab';
 import VolunteeringTimeTab from './VolunteeringTimeTab/VolunteeringTimeTab';
 import SaveButton from './UserProfileEdit/SaveButton';
 import UserLinkLayout from './UserLinkLayout';
-import BlueSquareLayout from './BlueSquareLayout';
 import TabToolTips from './ToolTips/TabToolTips';
 import BasicToolTips from './ToolTips/BasicTabTips';
 import ResetPasswordButton from '../UserManagement/ResetPasswordButton';
 import Badges from './Badges';
-import TimeEntryEditHistory from './TimeEntryEditHistory.jsx';
-import { ENDPOINTS } from 'utils/URL';
-import ActiveCell from 'components/UserManagement/ActiveCell';
-import axios from 'axios';
-import hasPermission from 'utils/permissions';
+import TimeEntryEditHistory from './TimeEntryEditHistory';
 import ActiveInactiveConfirmationPopup from '../UserManagement/ActiveInactiveConfirmationPopup';
 import { updateUserStatus } from '../../actions/userManagement';
 import { UserStatus } from '../../utils/enums';
 import { faSleigh, faCamera } from '@fortawesome/free-solid-svg-icons';
+import BlueSquareLayout from './BlueSquareLayout';
 
-const UserProfile = props => {
+function UserProfile(props) {
   /* Constant values */
   const initialFormValid = {
     firstName: true,
     lastName: true,
     email: true,
   };
-  // const { roles } = props?.userProjects;
-  // const roles = props?.userProjects;
   const roles = props?.role.roles;
 
   /* Hooks */
   const [showLoading, setShowLoading] = useState(true);
+  const [showSelect, setShowSelect] = useState(false);
+  const [summaries, setSummaries] = useState(undefined);
   const [userProfile, setUserProfile] = useState(undefined);
   const [originalUserProfile, setOriginalUserProfile] = useState(undefined);
   const [originalTasks, setOriginalTasks] = useState([]);
@@ -83,7 +84,9 @@ const UserProfile = props => {
   const [activeInactivePopupOpen, setActiveInactivePopupOpen] = useState(false);
   const [tasks, setTasks] = useState([]);
   const [updatedTasks, setUpdatedTasks] = useState([]);
-  //const [isValid, setIsValid] = useState(true)
+  const [summarySelected, setSummarySelected] = useState(null);
+  const [summaryName, setSummaryName] = useState('');
+  const [showSummary, setShowSummary] = useState(false);
 
   const isTasksEqual = JSON.stringify(originalTasks) === JSON.stringify(tasks);
   const isProfileEqual = JSON.stringify(userProfile) === JSON.stringify(originalUserProfile);
@@ -223,6 +226,58 @@ const UserProfile = props => {
     }
   };
 
+  const getWeeklySummary = async userId => {
+    try {
+      setSummarySelected('');
+      setShowSummary(false);
+      const response = await axios.get(ENDPOINTS.USER_PROFILE(userId));
+      const user = response.data;
+      const summaries = user.weeklySummaries;
+      console.log('summaryName:', summaryName);
+      console.log('summaries:', summaries);
+      if (summaries && Array.isArray(summaries) && summaries.length >= 3) {
+        setSummarySelected([summaries[0].summary, summaries[1].summary, summaries[2].summary]);
+        setShowSummary(true);
+      } else if (summaries && Array.isArray(summaries) && summaries.length === 2) {
+        setSummarySelected([summaries[0].summary, summaries[1].summary, '']);
+        setShowSummary(true);
+      } else if (summaries && Array.isArray(summaries) && summaries.length === 1) {
+        setSummarySelected([summaries[0].summary, '', '']);
+        setShowSummary(true);
+      } else {
+        setSummarySelected(['', '', '']);
+        setShowSummary(true);
+      }
+      console.log('summarySelected', summarySelected);
+    } catch (err) {
+      setShowLoading(false);
+    }
+  };
+
+  const getTeamMembersWeeklySummary = async () => {
+    const userId = props?.match?.params?.userId;
+
+    if (!userId) return;
+
+    try {
+      const response = await axios.get(ENDPOINTS.LEADER_BOARD(userId));
+      const leaderBoardData = response.data;
+      const allSummaries = [];
+
+      for (let i = 0; i < leaderBoardData.length; i++) {
+        allSummaries.push({
+          value: [leaderBoardData[i].name, leaderBoardData[i].personId],
+          label: `View ${leaderBoardData[i].name}'s summary.`,
+        });
+      }
+      console.log('allSummaries:', allSummaries);
+      setSummaries(allSummaries);
+      return;
+    } catch (err) {
+      console.log('Could not load leaderBoard data.', err);
+    }
+  };
+
   const onDeleteTeam = deletedTeamId => {
     setTeams(prevTeams => prevTeams.filter(team => team._id !== deletedTeamId));
   };
@@ -266,30 +321,28 @@ const UserProfile = props => {
   const handleImageUpload = async evt => {
     if (evt) evt.preventDefault();
     const file = evt.target.files[0];
-    if (typeof file != 'undefined') {
+    if (typeof file !== 'undefined') {
       const filesizeKB = file.size / 1024;
       const allowedTypes = ['image/png', 'image/jpeg', 'image/jpg'];
       const allowedTypesString = `File type not permitted. Allowed types are ${allowedTypes
         .toString()
         .replaceAll(',', ', ')}`;
 
-      //Input validation: file type
+      // Input validation: file type
       if (!allowedTypes.includes(file.type)) {
         setType('image');
-        //setIsValid(false)
         setShowModal(true);
         setModalTitle('Profile Pic Error');
         setModalMessage(allowedTypesString);
         return;
       }
 
-      //Input validation: file size.
+      // Input validation: file size.
       if (filesizeKB > 50) {
         const errorMessage = `The file you are trying to upload exceeds the maximum size of 50KB. You can either
 														choose a different file, or use an online file compressor.`;
 
         setType('image');
-        //setIsValid(false)
         setShowModal(true);
         setModalTitle('Profile Pic Error');
         setModalMessage(errorMessage);
@@ -337,7 +390,7 @@ const UserProfile = props => {
       });
       setModalTitle('Blue Square');
     } else if (operation === 'update') {
-      let currentBlueSquares = [...userProfile?.infringements] || [];
+      const currentBlueSquares = [...userProfile?.infringements] || [];
       if (dateStamp != null && currentBlueSquares !== []) {
         currentBlueSquares.find(blueSquare => blueSquare._id === id).date = dateStamp;
       }
@@ -412,6 +465,29 @@ const UserProfile = props => {
     setActiveInactivePopupOpen(false);
   };
 
+  /* useEffect functions */
+  useEffect(() => {
+    getTeamMembersWeeklySummary();
+    loadUserProfile();
+  }, []);
+
+  useEffect(() => {
+    if (!shouldRefresh) return;
+    setShouldRefresh(false);
+    loadUserProfile();
+  }, [shouldRefresh]);
+
+  useEffect(() => {
+    setShowLoading(true);
+    loadUserProfile();
+  }, [props?.match?.params?.userId]);
+
+  useEffect(() => {
+    if (!blueSquareChanged) return;
+    setBlueSquareChanged(false);
+    handleSubmit();
+  }, [blueSquareChanged]);
+
   /**
    *
    * UserProfile.jsx and its subsomponents are being refactored to avoid the use of this monolithic function.
@@ -447,6 +523,8 @@ const UserProfile = props => {
           },
         });
         break;
+      default:
+        break;
     }
   };
 
@@ -467,8 +545,6 @@ const UserProfile = props => {
   const userPermissions = props.auth.user?.permissions?.frontPermissions;
 
   const isUserSelf = targetUserId === requestorId;
-  // const isUserAdmin = requestorRole === 'Administrator';
-  // const canEdit = hasPermission(requestorRole, 'editUserProfile') || isUserSelf;
   let canEdit;
   if (userProfile.role !== 'Owner') {
     canEdit = hasPermission(requestorRole, 'editUserProfile', roles, userPermissions) || isUserSelf;
@@ -477,11 +553,30 @@ const UserProfile = props => {
       hasPermission(requestorRole, 'addDeleteEditOwners', roles, userPermissions) || isUserSelf;
   }
 
+  const customStyles = {
+    control: (base, state) => ({
+      ...base,
+      border: state.isFocused ? '2px solid #333' : '2px solid #ccc',
+      boxShadow: 'none',
+      '&:hover': {
+        border: state.isFocused ? '2px solid #333' : '2px solid #ccc',
+      },
+    }),
+    dropdownIndicator: base => ({
+      ...base,
+      color: '#333',
+    }),
+    menu: base => ({
+      ...base,
+      zIndex: 9999,
+    }),
+  };
+
   return (
     <div>
       <ActiveInactiveConfirmationPopup
         isActive={userProfile.isActive}
-        fullName={userProfile.firstName + ' ' + userProfile.lastName}
+        fullName={`${userProfile.firstName} ${userProfile.lastName}`}
         open={activeInactivePopupOpen}
         setActiveInactive={setActiveInactive}
         onClose={activeInactivePopupClose}
@@ -500,7 +595,7 @@ const UserProfile = props => {
           handleLinkModel={props.handleLinkModel}
           role={requestorRole}
           userPermissions={userPermissions}
-          //setIsValid={setIsValid(true)}
+          // setIsValid={setIsValid(true)}
         />
       )}
       <TabToolTips />
@@ -524,7 +619,6 @@ const UserProfile = props => {
                     type="file"
                     name="newProfilePic"
                     id="newProfilePic"
-                    // onChange={this.handleImageUpload}
                     onChange={handleImageUpload}
                     accept="image/png,image/jpeg, image/jpg"
                   />
@@ -573,6 +667,17 @@ const UserProfile = props => {
                   onClick={() => props.history.push(`/timelog/${targetUserId}`)}
                 />
               )}
+              <Button
+                onClick={() => {
+                  setShowSelect(!showSelect);
+                  setSummarySelected(null);
+                  setSummaryName(null);
+                }}
+                color="primary"
+                size="sm"
+              >
+                Team Weekly Summaries
+              </Button>
               <h6>{jobTitle}</h6>
               <p className="proile-rating">
                 From : <span>{moment(userProfile.createdDate).format('YYYY-MM-DD')}</span>
@@ -583,6 +688,59 @@ const UserProfile = props => {
                 </span>
               </p>
             </div>
+            {showSelect && summaries === undefined ? <div>Loading</div> : <div />}
+            {showSelect && summaries !== undefined ? (
+              <div>
+                <Select
+                  options={summaries}
+                  styles={customStyles}
+                  onChange={e => {
+                    setSummaryName(e.value[0]);
+                    getWeeklySummary(e.value[1]);
+                  }}
+                />
+              </div>
+            ) : (
+              <div />
+            )}
+            {summarySelected && showSelect && showSummary ? (
+              <div>
+                {summarySelected[0] && summarySelected[0].length > 0 ? (
+                  <div>
+                    <h5>{'Viewing ' + summaryName + "'s summary."}</h5>
+                    {typeof summarySelected[0] === 'string'
+                      ? parse(summarySelected[0])
+                      : summarySelected[0]}
+                  </div>
+                ) : (
+                  <h5>{summaryName} did not submit a submit a summary for this week.</h5>
+                )}
+
+                {summarySelected[1] && summarySelected[1].length > 0 ? (
+                  <div>
+                    <h5>{'Viewing ' + summaryName + "'s last week's summary."}</h5>
+                    {typeof summarySelected[1] === 'string'
+                      ? parse(summarySelected[1])
+                      : summarySelected[1]}
+                  </div>
+                ) : (
+                  <h5>{summaryName} did not submit a submit a summary for last week.</h5>
+                )}
+
+                {summarySelected[2] && summarySelected[2].length > 0 ? (
+                  <div>
+                    <h5>{'Viewing ' + summaryName + ' summary from two weeks ago.'}</h5>
+                    {typeof summarySelected[2] === 'string'
+                      ? parse(summarySelected[2])
+                      : summarySelected[2]}
+                  </div>
+                ) : (
+                  <h5>{summaryName} did not submit a submit a summary two weeks ago.</h5>
+                )}
+              </div>
+            ) : (
+              <div />
+            )}
             <Badges
               userProfile={userProfile}
               setUserProfile={setUserProfile}
@@ -1082,7 +1240,7 @@ const UserProfile = props => {
                   <ResetPasswordButton className="mr-1 btn-bottom" user={userProfile} />
                 )}
               {isUserSelf &&
-                (activeTab == '1' ||
+                (activeTab === '1' ||
                   hasPermission(requestorRole, 'editUserProfile', roles, userPermissions)) && (
                   <Link to={`/updatepassword/${userProfile._id}`}>
                     <Button className="mr-1 btn-bottom" color="primary">
@@ -1092,7 +1250,7 @@ const UserProfile = props => {
                   </Link>
                 )}
               {canEdit &&
-                (activeTab == '1' ||
+                (activeTab === '1' ||
                   hasPermission(requestorRole, 'editUserProfile', roles, userPermissions)) && (
                   <>
                     <SaveButton
@@ -1127,6 +1285,6 @@ const UserProfile = props => {
       </Container>
     </div>
   );
-};
+}
 
 export default UserProfile;
