@@ -37,7 +37,19 @@ export function TeamReport({ match }) {
     isActive: false,
     isInactive: false,
   });
-console.log(teamMembers)
+
+  const [ selectedTeams, setSelectedTeams ] = useState([])
+
+  function handleSelectTeam(event, selectedTeam, index) {
+    if (event.target.checked) {
+      selectedTeams.length < 4 && setSelectedTeams([...selectedTeams, {selectedTeam, index}])
+    } else if(!event.target.checked) {
+      setSelectedTeams([...selectedTeams.filter(team => team.teamName !== team.selectedTeam.teamName)])
+    } else {
+      return
+    }
+  }
+
   function handleSearchByName(event) {
     event.persist()
 
@@ -176,6 +188,8 @@ console.log(teamMembers)
         selectedInput={selectedInput} 
         teamName={team.teamName}
         teamMembers={teamMembers}
+        selectedTeams={selectedTeams}
+        allTeamsMembers={allTeamsMembers}
       />
       <ReportPage.ReportBlock>
         <div className="input-group input-group-sm d-flex flex-nowrap justify-content-between">
@@ -262,7 +276,12 @@ console.log(teamMembers)
             {
               handleSearch().map((team, index) => ( 
                 <tr className="table-row" key={team._id}>
-                  <td><input type="checkbox" /></td>
+                  <td>
+                    <input 
+                    type="checkbox" 
+                    onChange={() => handleSelectTeam(event, team, index)}
+                    />
+                  </td>
                   <td><strong>{team.teamName}</strong></td>
                   <td>{handleStatus(team.isActive)}</td>
                   <td><Dropdown>
