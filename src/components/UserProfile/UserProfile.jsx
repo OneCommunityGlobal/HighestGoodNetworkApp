@@ -26,7 +26,6 @@ import parse from 'html-react-parser';
 import hasPermission from '../../utils/permissions';
 import ActiveCell from '../UserManagement/ActiveCell';
 import { ENDPOINTS } from '../../utils/URL';
-// import { ENDPOINTS } from 'utils/URL';
 import Loading from '../common/Loading';
 import UserProfileModal from './UserProfileModal';
 import './UserProfile.scss';
@@ -55,8 +54,6 @@ function UserProfile(props) {
     lastName: true,
     email: true,
   };
-  // const { roles } = props?.userProjects;
-  // const roles = props?.userProjects;
   const roles = props?.role.roles;
 
   /* Hooks */
@@ -89,7 +86,6 @@ function UserProfile(props) {
   const [summarySelected, setSummarySelected] = useState(null);
   const [summaryName, setSummaryName] = useState('');
   const [showSummary, setShowSummary] = useState(false);
-  // const [isValid, setIsValid] = useState(true)
 
   const isTasksEqual = JSON.stringify(originalTasks) === JSON.stringify(tasks);
   const isProfileEqual = JSON.stringify(userProfile) === JSON.stringify(originalUserProfile);
@@ -268,12 +264,6 @@ function UserProfile(props) {
       const allSummaries = [];
 
       for (let i = 0; i < leaderBoardData.length; i++) {
-        // const toAppend = await getWeeklySummary(leaderBoardData[i].personId);
-        // const options = [
-        //   { value: 'chocolate', label: 'Chocolate' },
-        //   { value: 'strawberry', label: 'Strawberry' },
-        //   { value: 'vanilla', label: 'Vanilla' },
-        // ];
         allSummaries.push({
           value: [leaderBoardData[i].name, leaderBoardData[i].personId],
           label: `View ${leaderBoardData[i].name}'s summary.`,
@@ -340,7 +330,6 @@ function UserProfile(props) {
       // Input validation: file type
       if (!allowedTypes.includes(file.type)) {
         setType('image');
-        // setIsValid(false)
         setShowModal(true);
         setModalTitle('Profile Pic Error');
         setModalMessage(allowedTypesString);
@@ -353,7 +342,6 @@ function UserProfile(props) {
 														choose a different file, or use an online file compressor.`;
 
         setType('image');
-        // setIsValid(false)
         setShowModal(true);
         setModalTitle('Profile Pic Error');
         setModalMessage(errorMessage);
@@ -556,8 +544,6 @@ function UserProfile(props) {
   const userPermissions = props.auth.user?.permissions?.frontPermissions;
 
   const isUserSelf = targetUserId === requestorId;
-  // const isUserAdmin = requestorRole === 'Administrator';
-  // const canEdit = hasPermission(requestorRole, 'editUserProfile') || isUserSelf;
   let canEdit;
   if (userProfile.role !== 'Owner') {
     canEdit = hasPermission(requestorRole, 'editUserProfile', roles, userPermissions) || isUserSelf;
@@ -632,7 +618,6 @@ function UserProfile(props) {
                     type="file"
                     name="newProfilePic"
                     id="newProfilePic"
-                    // onChange={this.handleImageUpload}
                     onChange={handleImageUpload}
                     accept="image/png,image/jpeg, image/jpg"
                   />
