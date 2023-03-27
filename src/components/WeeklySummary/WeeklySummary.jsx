@@ -64,6 +64,7 @@ export class WeeklySummary extends Component {
       .endOf('week')
       .subtract(3, 'week')
       .toISOString(),
+    submittedCountInFourWeeks: 0,
     activeTab: '1',
     errors: {},
     fetchError: null,
@@ -80,6 +81,19 @@ export class WeeklySummary extends Component {
       (weeklySummaries && weeklySummaries[2] && weeklySummaries[2].summary) || '';
     const summaryThreeWeeksAgo =
       (weeklySummaries && weeklySummaries[3] && weeklySummaries[3].summary) || '';
+    let submittedCountInFourWeeks = 0;
+    if (summary !== '') {
+      submittedCountInFourWeeks += 1;
+    }
+    if (summaryLastWeek !== '') {
+      submittedCountInFourWeeks += 1;
+    }
+    if (summaryBeforeLast !== '') {
+      submittedCountInFourWeeks += 1;
+    }
+    if (summaryThreeWeeksAgo !== '') {
+      submittedCountInFourWeeks += 1;
+    }
 
     const dueDateThisWeek = weeklySummaries && weeklySummaries[0] && weeklySummaries[0].dueDate;
     // Make sure server dueDate is not before the localtime dueDate.
@@ -110,6 +124,7 @@ export class WeeklySummary extends Component {
       dueDateLastWeek,
       dueDateBeforeLast,
       dueDateThreeWeeksAgo,
+      submittedCountInFourWeeks,
       activeTab: '1',
       fetchError: this.props.fetchError,
       loading: this.props.loading,
@@ -241,6 +256,21 @@ export class WeeklySummary extends Component {
     this.setState({ errors: errors || {} });
     if (errors) return;
 
+    let currentSubmittedCount = 0;
+    if (this.state.formElements.summary !== '') {
+      currentSubmittedCount += 1;
+    }
+    if (this.state.formElements.summaryLastWeek !== '') {
+      currentSubmittedCount += 1;
+    }
+    if (this.state.formElements.summaryBeforeLast !== '') {
+      currentSubmittedCount += 1;
+    }
+    if (this.state.formElements.summaryThreeWeeksAgo !== '') {
+      currentSubmittedCount += 1;
+    }
+    const diffInSubmittedCount = currentSubmittedCount-this.state.submittedCountInFourWeeks
+
     const modifiedWeeklySummaries = {
       mediaUrl: this.state.formElements.mediaUrl.trim(),
       weeklySummaries: [
@@ -255,7 +285,7 @@ export class WeeklySummary extends Component {
           dueDate: this.state.dueDateThreeWeeksAgo,
         },
       ],
-      weeklySummariesCount: this.state.formElements.weeklySummariesCount,
+      weeklySummariesCount: this.state.formElements.weeklySummariesCount+diffInSubmittedCount,
     };
 
     const updateWeeklySummaries = this.props.updateWeeklySummaries(
@@ -275,7 +305,6 @@ export class WeeklySummary extends Component {
       });
       this.props.getUserProfile(this.props.currentUser.userid);
       this.props.getWeeklySummaries(this.props.asUser || this.props.currentUser.userid);
-      this.props.setSubmittedSummary(true);
     } else {
       toast.error('✘ The data could not be saved!', {
         toastId: toastIdOnSave,
