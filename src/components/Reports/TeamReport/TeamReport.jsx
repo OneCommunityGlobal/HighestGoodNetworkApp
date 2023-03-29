@@ -42,11 +42,13 @@ export function TeamReport({ match }) {
 
   function handleSelectTeam(event, selectedTeam, index) {
     if (event.target.checked) {
-      selectedTeams.length < 4 && setSelectedTeams([...selectedTeams, {selectedTeam, index}])
-    } else if(!event.target.checked) {
-      setSelectedTeams([...selectedTeams.filter(team => team.teamName !== team.selectedTeam.teamName)])
+      if (selectedTeams.length < 4) {
+        setSelectedTeams([...selectedTeams, { selectedTeam, index }]);
+      }
     } else {
-      return
+      setSelectedTeams((prevSelectedTeams) =>
+        prevSelectedTeams.filter((team) => team.selectedTeam.teamName !== selectedTeam.teamName)
+      );
     }
   }
 

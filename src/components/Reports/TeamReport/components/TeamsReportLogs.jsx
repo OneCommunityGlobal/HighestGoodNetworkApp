@@ -1,8 +1,9 @@
 import { ReportPage } from 'components/Reports/sharedComponents/ReportPage';
-import React from 'react';
+import React, { useState } from 'react';
+import { useEffect } from 'react';
 import './ReportLogs.css';
 
-function ReportLogs({ title }) {
+function TeamsReportLogs({ title, selectedTeamsTotalValues }) {
   return (
     <section>
       <h2 className="teams-report-time-title">{ title }</h2>
@@ -12,35 +13,35 @@ function ReportLogs({ title }) {
           secondColor="#e25cb2"
           className="team-report-time-log-block"
         >
-          <h3>50</h3>
-          <p>Weekly Committed Hours</p>
-        </ReportPage.ReportBlock>
-        <ReportPage.ReportBlock
-          firstColor="#b368d2"
-          secondColor="#831ec4"
-          className="team-report-time-log-block"
-        >
-          <h3>50</h3>
-          <p>Team Completed Hours</p>
+          <h3>{selectedTeamsTotalValues.selectedTeamsTotalPeople}</h3>
+          <p>Number of Members</p>
         </ReportPage.ReportBlock>
         <ReportPage.ReportBlock
           firstColor="#64b7ff"
           secondColor="#928aef"
           className="team-report-time-log-block"
         >
-          <h3>12</h3>
+          <h3>{selectedTeamsTotalValues.selectedTeamsTotalBlueSquares}</h3>
           <p>Total Team Blue Squares</p>
+        </ReportPage.ReportBlock>
+        <ReportPage.ReportBlock
+          firstColor="#b368d2"
+          secondColor="#831ec4"
+          className="team-report-time-log-block"
+        >
+          <h3>{selectedTeamsTotalValues.selectedTeamsTotalCommitedHours}</h3>
+          <p>Weekly Committed Hours</p>
         </ReportPage.ReportBlock>
         <ReportPage.ReportBlock
           firstColor="#ffdb56"
           secondColor="#ff9145"
           className="team-report-time-log-block"
         >
-          <h3>800</h3>
-          <p>Total Team Hours Worked</p>
+          <h3>{selectedTeamsTotalValues.selectedTeamsTotalWorkedHours}</h3>
+          <p>Total Worked Hours This Week</p>
         </ReportPage.ReportBlock>
       </div>
     </section>
   );
 }
-export default ReportLogs;
+export default TeamsReportLogs;

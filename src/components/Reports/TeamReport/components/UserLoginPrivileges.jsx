@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { ReportPage } from 'components/Reports/sharedComponents/ReportPage';
 import TeamReportLogs from './TeamReportLogs';
-import ReportLogs from './ReportLogs';
+import TeamsReportLogs from './TeamsReportLogs';
 import TeamReportCharts from './TeamReportCharts';
 import TeamsReportCharts from './TeamsReportCharts';
 import ReportCharts from './ReportCharts';
@@ -26,17 +26,59 @@ function UserLoginPrivileges({
   //selectedTeams
   const [selectedTeamsMembers, setSelectedTeamsMembers] = useState([])
 
+  const [selectedTeamsData, setSelectedTeamsData] = useState([])
+  const [selectedTeamsTotalValues, setSelectedTeamsTotalValues] = useState({})
+  console.log(selectedTeamsMembers)
   useEffect(() => {
-    selectedTeams.map((team) =>
-      setSelectedTeamsMembers([...selectedTeamsMembers, allTeamsMembers[team.index]])
-    );
-    
-  }, [selectedTeams, allTeamsMembers]);
+    const teamsData = selectedTeamsMembers.map((teamMembers, index) => {
+      const { totalCommitedHours, totalWorkedHours, totalOfMembers, totalBlueSquares } = teamMembers.reduce((totals, member) => {
+        return {
+          totalCommitedHours: totals.totalCommitedHours + member.weeklycommittedHours,
+          totalWorkedHours: totals.totalWorkedHours + member.totalTangibleHrs,
+          totalOfMembers: totals.totalOfMembers + 1,
+          totalBlueSquares: totals.totalBlueSquares + member.infringements.length
+        };
+      }, { totalCommitedHours: 0, totalWorkedHours: 0, totalOfMembers: 0, totalBlueSquares: 0 });
+      
+      return {
+        name: selectedTeams[index]?.selectedTeam.teamName,
+        totalCommitedHours,
+        totalWorkedHours,
+        totalOfMembers,
+        totalBlueSquares
+      };
+    });
+  
+    setSelectedTeamsData(teamsData);
+  }, [selectedTeams, selectedTeamsMembers]);
 
-  //debug:
   useEffect(() => {
-    console.log(selectedTeamsMembers)
-  }, [selectedTeamsMembers]);
+    const { 
+      selectedTeamsTotalPeople, 
+      selectedTeamsTotalBlueSquares, 
+      selectedTeamsTotalCommitedHours, 
+      selectedTeamsTotalWorkedHours 
+    } = selectedTeamsData.reduce((totals, teamData) => {
+      return {
+        selectedTeamsTotalPeople: totals.selectedTeamsTotalPeople + teamData.totalOfMembers,
+        selectedTeamsTotalBlueSquares: totals.selectedTeamsTotalBlueSquares + teamData.totalBlueSquares,
+        selectedTeamsTotalCommitedHours: totals.selectedTeamsTotalCommitedHours + teamData.totalCommitedHours,
+        selectedTeamsTotalWorkedHours: totals.selectedTeamsTotalWorkedHours + teamData.totalWorkedHours
+      };
+    }, { selectedTeamsTotalPeople: 0, selectedTeamsTotalBlueSquares: 0, selectedTeamsTotalCommitedHours: 0, selectedTeamsTotalWorkedHours: 0 });
+    
+    setSelectedTeamsTotalValues({
+      selectedTeamsTotalPeople,
+      selectedTeamsTotalBlueSquares,
+      selectedTeamsTotalCommitedHours,
+      selectedTeamsTotalWorkedHours
+    });
+  }, [selectedTeamsData]);
+
+  useEffect(() => {
+    const selectedTeamsMembersArray = selectedTeams.map((team) => allTeamsMembers[team.index]);
+    setSelectedTeamsMembers(selectedTeamsMembersArray);
+  }, [selectedTeams, allTeamsMembers]);
   
   // Check if the user has admin privileges
   if (selectedInput == 'isManager') {
@@ -93,7 +135,10 @@ function UserLoginPrivileges({
             />
           </ReportPage.ReportBlock>
         </div>
-        <ReportLogs title="Selected Teams" />
+        <TeamsReportLogs 
+          title="Selected Teams" 
+          selectedTeamsTotalValues={selectedTeamsTotalValues}
+        />
         {/* Two cards with pie charts with data */}
         <div style={{
           display: 'flex', flexDirection: 'row', gap: '16px',
@@ -103,16 +148,14 @@ function UserLoginPrivileges({
             <TeamsReportCharts
               title="Commited Hours" 
               pieChartId="chart2" 
-              selectedTeams={selectedTeams}
-              selectedTeamsMembers={selectedTeamsMembers}
+              selectedTeamsData={selectedTeamsData}
             />
           </ReportPage.ReportBlock>
           <ReportPage.ReportBlock className="team-chart-container">
             <TeamsReportCharts
               title="Worked Hours - This Week" 
               pieChartId="chart3" 
-              selectedTeams={selectedTeams}
-              selectedTeamsMembers={selectedTeamsMembers}
+              selectedTeamsData={selectedTeamsData}
             />
           </ReportPage.ReportBlock>
         </div>
