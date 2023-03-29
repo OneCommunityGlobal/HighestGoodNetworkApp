@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import * as d3 from 'd3/dist/d3.min';
+import * as d3 from 'd3';
 import { CHART_RADIUS, CHART_SIZE } from './constants';
 import { generateArrayOfUniqColors } from './colorsGenerator';
 import './PieChart.css';
