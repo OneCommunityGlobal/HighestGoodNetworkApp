@@ -39,18 +39,18 @@ const TeamMemberTasks = props => {
   const [updatedTasks, setUpdatedTasks] = useState([]);
   const [showMarkAsDoneModal, setMarkAsDoneModal] = useState(false);
   const [clickedToShowModal, setClickedToShowModal] = useState(false);
+  const [userRole, setUserRole] = useState('')
 
   //function to get user's role if there's a match in the url
   function getUserRole(userId) {
     const fetchedUser = axios.get(ENDPOINTS.USER_PROFILE(userId));
-    return fetchedUser
+    return fetchedUser;
   }
 
   //moved the userId variable to before the first useEffect so the dispatch function can access it
   //Make so the userId gets the url param. If the url param is not available, it'll get the asUser passed as a props
   //If the asUser is not defined, it'll be equal the auth.user.userid from the store
   const userId = props?.match?.params?.userId || props.asUser || props.auth.user.userid;
-  let userRole = '';
 
   const dispatch = useDispatch();
   useEffect(() => {
@@ -60,9 +60,17 @@ const TeamMemberTasks = props => {
     //It works because the userId first looks for the url param. If it gets the param, it will provide it to the userId
     //after that, fetchTeamMembersTask will look for the team member's tasks of the provided userId
     dispatch(fetchTeamMembersTask(userId));
-    userRole = getUserRole(userId).then((resp) => resp).then((user) => {
-      return user.data.role
-    })
+    //fetch current user's role, so it can be displayed. It will only happen if the current user's id is different of the auth user id
+    //if it's not differente, it'll attribute the current authenticated user's role.
+    if (userId !== props.auth.user.userid) {
+      const currentUserRole = getUserRole(userId)
+        .then(resp => resp)
+        .then(user => {
+          setUserRole(user.data.role);
+        });
+    }else{
+      setUserRole(props.auth.user.role)
+    }
   }, []);
 
   useEffect(() => {
