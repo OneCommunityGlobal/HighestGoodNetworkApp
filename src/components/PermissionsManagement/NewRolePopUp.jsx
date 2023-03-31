@@ -11,7 +11,7 @@ const CreateNewRolePopup = ({ toggle, addNewRole }) => {
   const [permissionsChecked, setPermissionsChecked] = useState([]);
   const [newRoleName, setNewRoleName] = useState('');
   const [isValidRole, setIsValidRole] = useState(true);
-  const symbolsRegex = /^([a-zA-Z0-9]+)$/;
+  const symbolsRegex = /^([a-zA-Z0-9 ]+)$/;
 
   const handleSubmit = async e => {
     e.preventDefault();
