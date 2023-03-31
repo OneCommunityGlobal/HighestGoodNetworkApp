@@ -7,9 +7,10 @@ import TeamsReportCharts from './TeamsReportCharts';
 import ReportCharts from './ReportCharts';
 
 function UserLoginPrivileges({ 
-  selectedInput, 
+  role,
   teamName, 
   teamMembers, 
+  totalTeamWeeklyWorkedHours,
   selectedTeams, 
   allTeamsMembers }) {
   // team
@@ -28,7 +29,7 @@ function UserLoginPrivileges({
 
   const [selectedTeamsData, setSelectedTeamsData] = useState([])
   const [selectedTeamsTotalValues, setSelectedTeamsTotalValues] = useState({})
-  console.log(selectedTeamsMembers)
+
   useEffect(() => {
     const teamsData = selectedTeamsMembers.map((teamMembers, index) => {
       const { totalCommitedHours, totalWorkedHours, totalOfMembers, totalBlueSquares } = teamMembers.reduce((totals, member) => {
@@ -81,7 +82,7 @@ function UserLoginPrivileges({
   }, [selectedTeams, allTeamsMembers]);
   
   // Check if the user has admin privileges
-  if (selectedInput == 'isManager') {
+  if (role == 'Manager') {
     // Render the component if the user has admin privileges
     return (
       <div className="team-report-main-info">
@@ -111,7 +112,7 @@ function UserLoginPrivileges({
         </div>
       </div>
     );
-  } if (selectedInput == 'isAdmin') {
+  } if (role == ('Administrator' || 'Owner')) {
     return (
       <div className="team-report-main-info">
         <TeamReportLogs 
@@ -161,61 +162,62 @@ function UserLoginPrivileges({
         </div>
       </div>
     );
-  } if (selectedInput == 'isOwner') {
-    return (
-      <div className="team-report-main-info">
-        {/* Cards with report logged */}
-        <ReportLogs title="Organization" />
-        {/* Two cards with pie charts with data */}
-        <div style={{
-          display: 'flex', flexDirection: 'row', gap: '16px',
-        }}
-        >
-          <ReportPage.ReportBlock className="team-chart-container">
-            <ReportCharts title="Breakdown of Weekly Hours So Far This Week" pieChartId="chart1-3" />
-          </ReportPage.ReportBlock>
-          <ReportPage.ReportBlock className="team-chart-container">
-            <ReportCharts title="Hours to Complete Tasks" pieChartId="chart2-3" />
-          </ReportPage.ReportBlock>
-        </div>
-        <TeamReportLogs 
-          title={teamName} 
-          teamMembers={teamMembers} 
-          teamWeeklyCommittedHours={teamWeeklyCommittedHours} 
-          teamTotalTangibleHours={teamTotalTangibleHours} 
-          teamTotalBlueSquares={teamTotalBlueSquares}
-        />
-        {/* Two cards with pie charts with data */}
-        <div style={{
-          display: 'flex', flexDirection: 'row', gap: '16px',
-        }}
-        >
-          <ReportPage.ReportBlock className="team-chart-container">
-            <ReportCharts title="Breakdown of Weekly Hours So Far This Week" pieChartId="chart3-1" />
-          </ReportPage.ReportBlock>
-          <ReportPage.ReportBlock className="team-chart-container">
-            <ReportCharts title="Hours to Complete Tasks" pieChartId="chart4-1" />
-          </ReportPage.ReportBlock>
-        </div>
-        {/* Teams checked will contact and appear here */}
-        <ReportLogs title="Teams A, B and C" />
-        {/* Two cards with pie charts with data */}
-        <div style={{
-          display: 'flex', flexDirection: 'row', gap: '16px',
-        }}
-        >
-          <ReportPage.ReportBlock className="team-chart-container">
-            <ReportCharts title="Breakdown of Weekly Hours So Far This Week" pieChartId="chart5" />
-          </ReportPage.ReportBlock>
-          <ReportPage.ReportBlock className="team-chart-container">
-            <ReportCharts title="Hours to Complete Tasks" pieChartId="chart6" />
-          </ReportPage.ReportBlock>
-        </div>
-      </div>
-    );
-  }
+  // } if (selectedInput == 'isOwner') {
+  //   return (
+  //     <div className="team-report-main-info">
+  //       {/* Cards with report logged */}
+  //       <ReportLogs title="Organization" />
+  //       {/* Two cards with pie charts with data */}
+  //       <div style={{
+  //         display: 'flex', flexDirection: 'row', gap: '16px',
+  //       }}
+  //       >
+  //         <ReportPage.ReportBlock className="team-chart-container">
+  //           <ReportCharts title="Breakdown of Weekly Hours So Far This Week" pieChartId="chart1-3" />
+  //         </ReportPage.ReportBlock>
+  //         <ReportPage.ReportBlock className="team-chart-container">
+  //           <ReportCharts title="Hours to Complete Tasks" pieChartId="chart2-3" />
+  //         </ReportPage.ReportBlock>
+  //       </div>
+  //       <TeamReportLogs 
+  //         title={teamName} 
+  //         teamMembers={teamMembers} 
+  //         teamWeeklyCommittedHours={teamWeeklyCommittedHours} 
+  //         teamTotalTangibleHours={teamTotalTangibleHours} 
+  //         teamTotalBlueSquares={teamTotalBlueSquares}
+  //       />
+  //       {/* Two cards with pie charts with data */}
+  //       <div style={{
+  //         display: 'flex', flexDirection: 'row', gap: '16px',
+  //       }}
+  //       >
+  //         <ReportPage.ReportBlock className="team-chart-container">
+  //           <ReportCharts title="Breakdown of Weekly Hours So Far This Week" pieChartId="chart3-1" />
+  //         </ReportPage.ReportBlock>
+  //         <ReportPage.ReportBlock className="team-chart-container">
+  //           <ReportCharts title="Hours to Complete Tasks" pieChartId="chart4-1" />
+  //         </ReportPage.ReportBlock>
+  //       </div>
+  //       {/* Teams checked will contact and appear here */}
+  //       <ReportLogs title="Teams A, B and C" />
+  //       {/* Two cards with pie charts with data */}
+  //       <div style={{
+  //         display: 'flex', flexDirection: 'row', gap: '16px',
+  //       }}
+  //       >
+  //         <ReportPage.ReportBlock className="team-chart-container">
+  //           <ReportCharts title="Breakdown of Weekly Hours So Far This Week" pieChartId="chart5" />
+  //         </ReportPage.ReportBlock>
+  //         <ReportPage.ReportBlock className="team-chart-container">
+  //           <ReportCharts title="Hours to Complete Tasks" pieChartId="chart6" />
+  //         </ReportPage.ReportBlock>
+  //       </div>
+  //     </div>
+  //   );
+  // }
   // Otherwise, return null to prevent the component from being rendered
   return null;
+  }
 }
 
 export default UserLoginPrivileges;

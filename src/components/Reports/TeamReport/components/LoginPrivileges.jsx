@@ -27,17 +27,6 @@ export function LoginPrivileges({ selectedInput, handleInputChange }) {
           />
           <label htmlFor="isAdmin">Admin</label>
         </div>
-        <div>
-          <input
-            type="radio"
-            id="isOwner"
-            name="role"
-            value="isOwner"
-            checked={selectedInput === 'isOwner'}
-            onChange={handleInputChange}
-          />
-          <label htmlFor="isOwner">Owner</label>
-        </div>
       </div>
     </form>
 );

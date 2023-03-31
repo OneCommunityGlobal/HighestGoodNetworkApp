@@ -14,6 +14,7 @@ import {
   deleteTeamMember,
   addTeamMember,
 } from '../../../actions/allTeamsAction';
+
 import { getAllUserProfile } from 'actions/userManagement';
 
 import { getTeamReportData } from './selectors';
@@ -23,10 +24,14 @@ import UserLoginPrivileges from './components/UserLoginPrivileges';
 
 import Dropdown from 'react-bootstrap/Dropdown';
 import { LoginPrivileges } from './components/LoginPrivileges.jsx';
+import { useMemo } from 'react';
+import axios from 'axios';
+import { ENDPOINTS } from 'utils/URL';
 
 export function TeamReport({ match }) {
   const dispatch = useDispatch();
   const { team } = useSelector(getTeamReportData);
+  const user = useSelector(state => state.auth.user);
   const [ teamMembers, setTeamMembers ] = useState([]);
   const [ allTeams, setAllTeams ] = useState([]);
   const [ allTeamsMembers, setAllTeamsMembers ] = useState([]);
@@ -39,6 +44,28 @@ export function TeamReport({ match }) {
   });
 
   const [ selectedTeams, setSelectedTeams ] = useState([])
+  const [ disableRadio, setDisableRadio ] = useState(false)
+  
+  // Create a state variable to store the selected radio input
+  const [selectedInput, setSelectedInput] = useState('isManager');
+  
+  // Event handler for when a radio input is selected
+  const handleInputChange = (event) => {
+    // Update the selectedInput state variable with the value of the selected radio input
+    setSelectedInput(event.target.value);
+  };
+
+  const handleStatus = useMemo(() => (isActive) => {
+    return isActive ? 
+     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}>
+      <span className="dot" style={{ backgroundColor: '#00ff00', width: '0.7rem', height: '0.7rem' }}></span>
+      <strong>Active</strong>
+      </div> : 
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}>
+        <span className="dot" style={{ backgroundColor: 'red', width: '0.7rem', height: '0.7rem' }}></span>
+        <strong>Inactive</strong>
+      </div>
+  }, [])
 
   function handleSelectTeam(event, selectedTeam, index) {
     if (event.target.checked) {
@@ -100,31 +127,17 @@ export function TeamReport({ match }) {
     });
     return searchResults;
   }
-  
-  // Create a state variable to store the selected radio input
-  const [selectedInput, setSelectedInput] = useState('isManager');
-  
-  // Event handler for when a radio input is selected
-  const handleInputChange = (event) => {
-    // Update the selectedInput state variable with the value of the selected radio input
-    setSelectedInput(event.target.value);
-  };
-
-  function handleStatus(isActive) {
-      return isActive ? 
-       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}>
-        <span className="dot" style={{ backgroundColor: '#00ff00', width: '0.7rem', height: '0.7rem' }}></span>
-        <strong>Active</strong>
-        </div> : 
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}>
-          <span className="dot" style={{ backgroundColor: 'red', width: '0.7rem', height: '0.7rem' }}></span>
-          <strong>Inactive</strong>
-        </div>
-  }
 
   function handleDate(date) {
-    const newDate = moment(date).format('MM-DD-YYYY');
-    return newDate;
+    const formattedDates = {};
+    const getFormattedDate = (date) => {
+      if (!formattedDates[date]) {
+        formattedDates[date] = moment(date).format('MM-DD-YYYY');
+      }
+      return formattedDates[date];
+    };
+
+    return getFormattedDate(date);
   }
 
   useEffect(() => {
@@ -144,6 +157,65 @@ export function TeamReport({ match }) {
       });
     }
   }, []);
+
+  // Get Total Tangible Hours this week
+  const [teamMembersWeeklyEffort, setTeamMembersWeeklyEffort] = useState([]);
+  const [totalTeamWeeklyWorkedHours, setTotalTeamWeeklyWorkedHours] = useState('')
+
+  const calculateTotalHrsForPeriod = (timeEntries) => {
+    let hours = { totalTangibleHrs: 0, totalIntangibleHrs: 0 };
+    if (timeEntries.length < 1) return hours;
+
+    for (let i = 0; i < timeEntries.length; i++) {
+      const timeEntry = timeEntries[i];
+      if (timeEntry.isTangible) {
+        hours.totalTangibleHrs +=
+          parseFloat(timeEntry.hours) + parseFloat(timeEntry.minutes) / 60;
+      } else {
+        hours.totalIntangibleHrs +=
+          parseFloat(timeEntry.hours) + parseFloat(timeEntry.minutes) / 60;
+      }
+    }
+    return hours;
+  };
+
+  async function getWeeklyTangibleHours(member) {
+    const startOfWeek = moment().tz("America/Los_Angeles").startOf("week").format("YYYY-MM-DD");
+    const endOfWeek = moment().tz("America/Los_Angeles").endOf("week").format("YYYY-MM-DD");
+  
+    try {
+      const res = await axios.get(ENDPOINTS.TIME_ENTRIES_PERIOD(member._id, startOfWeek, endOfWeek));
+      const timeEntries = res.data;
+      const output = calculateTotalHrsForPeriod(timeEntries);
+      console.log(output.totalTangibleHrs.toFixed(2));
+      setTeamMembersWeeklyEffort((prevState) => [...prevState, parseFloat(output.totalTangibleHrs.toFixed(2))]);
+    } catch (err) {
+      console.log(err.message);
+    }
+  }
+
+  useEffect(() => {
+    const getTeamMembersWeeklyEffort = async () => {
+      try {
+        const weeklyEfforts = await Promise.all(
+          teamMembers.map((member) => getWeeklyTangibleHours(member))
+        );
+        setTeamMembersWeeklyEffort(weeklyEfforts);
+      } catch (err) {
+        console.log(err.message);
+      }
+    };
+    getTeamMembersWeeklyEffort();
+  }, [teamMembers, setTeamMembersWeeklyEffort, setTotalTeamWeeklyWorkedHours]);
+  
+  useEffect(() => {
+    const totalWeeklyEffort = teamMembersWeeklyEffort.reduce(
+      (accumulator, effort) => accumulator + Number(effort),
+      0
+    );
+    setTotalTeamWeeklyWorkedHours(String(totalWeeklyEffort));
+    console.log(totalTeamWeeklyWorkedHours);
+  }, [teamMembersWeeklyEffort]);
 
   if (!team) {
     return <h3>Team not found!</h3>;
@@ -177,7 +249,7 @@ export function TeamReport({ match }) {
           It is just to simulate the toggle between the login privileges. The logic is
           inside the userLoginPrivileges.jsx file.
           */}
-          <LoginPrivileges selectedInput={selectedInput} handleInputChange={handleInputChange} /> 
+          {/* <LoginPrivileges selectedInput={selectedInput} handleInputChange={handleInputChange} />  */}
 
           <div className="update-date">
             Last updated:
@@ -186,10 +258,11 @@ export function TeamReport({ match }) {
         </div>
       </ReportPage.ReportBlock>
       <UserLoginPrivileges 
+        role={user.role}
         handleInputChange={handleInputChange} 
-        selectedInput={selectedInput} 
         teamName={team.teamName}
         teamMembers={teamMembers}
+        teamMembersWeeklyEffort={teamMembersWeeklyEffort}
         selectedTeams={selectedTeams}
         allTeamsMembers={allTeamsMembers}
       />
@@ -274,7 +347,9 @@ export function TeamReport({ match }) {
               <td className="tableHeader"><strong>Modified At</strong></td>
             </tr>
           </thead>
-          <tbody className="table">
+          {
+          allTeamsMembers.length > 1 
+          ? <tbody className="table">
             {
               handleSearch().map((team, index) => ( 
                 <tr className="table-row" key={team._id}>
@@ -282,6 +357,10 @@ export function TeamReport({ match }) {
                     <input 
                     type="checkbox" 
                     onChange={() => handleSelectTeam(event, team, index)}
+                    disabled={
+                      selectedTeams.length === 4 && 
+                      !selectedTeams.some((selectedTeam) => selectedTeam.selectedTeam.teamName === team.teamName)
+                    }
                     />
                   </td>
                   <td><strong>{team.teamName}</strong></td>
@@ -291,7 +370,7 @@ export function TeamReport({ match }) {
                           See
                         </Dropdown.Toggle>
                           <Dropdown.Menu>
-                          {allTeamsMembers[index] ? (
+                          {
                             allTeamsMembers[index].length > 1 ? (
                               allTeamsMembers[index].map((member) => (
                                 <div key={`${team._id}-${member._id}`}>
@@ -306,9 +385,7 @@ export function TeamReport({ match }) {
                                 <strong>This team has no members!</strong>
                               </Dropdown.Item>
                             )
-                          ) : (
-                            <strong>Loading...</strong>
-                          )}
+                          }
                         </Dropdown.Menu>
                       </Dropdown>
                   </td>
@@ -319,6 +396,18 @@ export function TeamReport({ match }) {
               ))
             }
           </tbody>
+          : <tbody>
+              <tr style={{backgroundColor: 'white'}}>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td><strong>Loading...</strong></td>
+                <td></td>
+                <td></td>
+                <td></td>
+              </tr>
+          </tbody> 
+          }
         </table>
       </ReportPage.ReportBlock>
     </ReportPage>

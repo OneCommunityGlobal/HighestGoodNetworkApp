@@ -29,7 +29,6 @@ function TeamsReportCharts({ title, pieChartId, selectedTeamsData }) {
   const pie = d3.pie().value((d) => d[1]);
 
   useEffect(() => {
-    console.log(selectedTeamsData)
     const data_ready = pie(Object.entries([chart.team1, chart.team2, chart.team3, chart.team4]));
 
     getCreateSvgPie()
@@ -53,7 +52,9 @@ function TeamsReportCharts({ title, pieChartId, selectedTeamsData }) {
         <h4>{title}</h4>
         <div className="team-report-chart-info-wrapper">
           <div className="team-report-chart-info">
-            <div className="pie-chart-wrapper">
+            {
+              selectedTeamsData.length > 0
+              ? <div className="pie-chart-wrapper">
               <div id={`pie-chart-container-${pieChartId}`} className="pie-chart" />
               <div className="pie-chart-info-detail">
                 <div className="pie-chart-info-detail-title">
@@ -61,11 +62,14 @@ function TeamsReportCharts({ title, pieChartId, selectedTeamsData }) {
                   <h5>Hours</h5>
                 </div>
                 <PieChartInfoDetail keyName={selectedTeamsData[0]?.name} value={chart.team1} color="#B88AD5" />
-                <PieChartInfoDetail keyName={selectedTeamsData[1]?.name} value={chart.team2} color="#FAE386" />
-                <PieChartInfoDetail keyName={selectedTeamsData[2]?.name} value={chart.team3} color="#92C4F9" />
-                <PieChartInfoDetail keyName={selectedTeamsData[3]?.name} value={chart.team4} color="#ff5e82" />
+                {selectedTeamsData[1] && <PieChartInfoDetail keyName={selectedTeamsData[1]?.name} value={chart.team2} color="#FAE386" />}
+                {selectedTeamsData[2] && <PieChartInfoDetail keyName={selectedTeamsData[2]?.name} value={chart.team3} color="#92C4F9" />}
+                {selectedTeamsData[3] && <PieChartInfoDetail keyName={selectedTeamsData[3]?.name} value={chart.team4} color="#ff5e82" />}
               </div>
-            </div>
+              </div> 
+              : <strong>Please select a team. (Max 4)</strong>
+            }
+            
           </div>
           <div className="team-report-chart-info">
           </div>
