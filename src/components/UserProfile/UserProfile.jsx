@@ -635,9 +635,7 @@ function UserProfile(props) {
                   Please click on "Save changes" to save the changes you have made.{' '}
                 </Alert>
               ) : null}
-              <h5 style={{ display: 'inline-block', marginRight: 10 }}>
-                {`${firstName} ${lastName}`}
-              </h5>
+              <h5>{`${firstName} ${lastName}`}</h5>
               <i
                 data-toggle="tooltip"
                 data-placement="right"
@@ -656,7 +654,6 @@ function UserProfile(props) {
                       setActiveInactivePopupOpen(true);
                     }}
                   />
-                  &nbsp;
                 </>
               )}
               {canEdit && (
@@ -680,16 +677,16 @@ function UserProfile(props) {
               >
                 Team Weekly Summaries
               </Button>
-              <h6>{jobTitle}</h6>
-              <p className="proile-rating">
-                From : <span>{moment(userProfile.createdDate).format('YYYY-MM-DD')}</span>
-                {'   '}
-                To:{' '}
-                <span>
-                  {userProfile.endDate ? userProfile.endDate.toLocaleString().split('T')[0] : 'N/A'}
-                </span>
-              </p>
             </div>
+            <h6 className="job-title">{jobTitle}</h6>
+            <p className="proile-rating">
+              From : <span>{moment(userProfile.createdDate).format('YYYY-MM-DD')}</span>
+              {'   '}
+              To:{' '}
+              <span>
+                {userProfile.endDate ? userProfile.endDate.toLocaleString().split('T')[0] : 'N/A'}
+              </span>
+            </p>
             {showSelect && summaries === undefined ? <div>Loading</div> : <div />}
             {showSelect && summaries !== undefined ? (
               <div>
