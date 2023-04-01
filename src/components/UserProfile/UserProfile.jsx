@@ -451,14 +451,16 @@ function UserProfile(props) {
     });
   };
 
-  const setActiveInactive = isActive => {
+  const setActiveInactive = (isActive) => {
     setActiveInactivePopupOpen(false);
-    setUserProfile({
+    const newUserProfile = {
       ...userProfile,
       isActive: !userProfile.isActive,
       endDate: userProfile.isActive ? moment(new Date()).format('YYYY-MM-DD') : undefined,
-    });
-    updateUserStatus(userProfile, isActive ? UserStatus.Active : UserStatus.InActive, undefined);
+    };
+    updateUserStatus(newUserProfile, isActive ? UserStatus.Active : UserStatus.InActive, undefined);
+    setUserProfile(newUserProfile);
+    setOriginalUserProfile(newUserProfile);
   };
 
   const activeInactivePopupClose = () => {
