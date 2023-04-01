@@ -43,6 +43,7 @@ import { Logout } from '../Logout/Logout';
 import './Header.css';
 import hasPermission from '../../utils/permissions';
 import { fetchTaskEditSuggestionCount } from 'components/TaskEditSuggestions/thunks';
+import SummaryManagement from 'components/SummaryManagement/SummaryManagement';
 
 export const Header = props => {
   const [isOpen, setIsOpen] = useState(false);
@@ -171,6 +172,11 @@ export const Header = props => {
                     {hasPermission(user.role, 'seeTeamsManagement', roles, userPermissions) && (
                       <DropdownItem tag={Link} to="/teams">
                         {TEAMS}
+                      </DropdownItem>
+                    )}
+                    {hasPermission(user.role, 'seeTeamsManagement', roles, userPermissions) && (
+                      <DropdownItem tag={Link} to="/summarymanagement">
+                        {SUMMARY_MANAGEMENT}
                       </DropdownItem>
                     )}
                     {hasPermission(user.role, 'seePopupManagement', roles, userPermissions) ? (
