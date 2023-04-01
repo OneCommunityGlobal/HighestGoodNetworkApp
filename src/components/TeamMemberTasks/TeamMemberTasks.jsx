@@ -39,9 +39,10 @@ const TeamMemberTasks = props => {
   const [updatedTasks, setUpdatedTasks] = useState([]);
   const [showMarkAsDoneModal, setMarkAsDoneModal] = useState(false);
   const [clickedToShowModal, setClickedToShowModal] = useState(false);
+  //role state so it's more easily changed, the initial value is empty, so it'll be determinated on the first useEffect
   const [userRole, setUserRole] = useState('')
 
-  //function to get user's role if there's a match in the url
+  //function to get user's role if the current user's id is different from the authenticated user
   function getUserRole(userId) {
     const fetchedUser = axios.get(ENDPOINTS.USER_PROFILE(userId));
     return fetchedUser;
