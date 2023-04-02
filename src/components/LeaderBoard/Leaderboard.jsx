@@ -29,7 +29,6 @@ const LeaderBoard = ({
   organizationData,
   timeEntries,
   asUser,
-  setLeaderData,
 }) => {
   const userId = asUser ? asUser : loggedInUser.userId;
 
@@ -38,8 +37,7 @@ const LeaderBoard = ({
     getOrgData();
   }, [timeEntries]);
 
-  useEffect(() => {
-    setLeaderData(leaderBoardData);
+  useDeepEffect(() => {
     try {
       if (window.screen.width < 540) {
         const scrollWindow = document.getElementById('leaderboard');

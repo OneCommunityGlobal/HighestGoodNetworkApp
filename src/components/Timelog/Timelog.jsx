@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 
 import {
   Container,
@@ -29,7 +29,7 @@ import './Timelog.css';
 import classnames from 'classnames';
 import { connect, useSelector } from 'react-redux';
 import moment from 'moment';
-import { isEmpty } from 'lodash';
+import { isEmpty, isEqual } from 'lodash';
 import ReactTooltip from 'react-tooltip';
 
 import ActiveCell from 'components/UserManagement/ActiveCell';
@@ -47,10 +47,32 @@ import WeeklySummary from '../WeeklySummary/WeeklySummary';
 import Loading from '../common/Loading';
 import hasPermission from '../../utils/permissions';
 
-
-
 const Timelog = props => {
+  const auth = useSelector(state => state.auth);
+  const userProfile = useSelector(state => state.userProfile);
+  const timeEntries = useSelector(state => state.timeEntries);
+  const userProjects = useSelector(state => state.userProjects);
+  const role = useSelector(state => state.role);
+  const userTask = useSelector(state => state.userTask);
+
   /* =======Functions======== */
+  function useDeepEffect(effectFunc, deps) {
+    const isFirst = useRef(true);
+    const prevDeps = useRef(deps);
+    useEffect(() => {
+      const isSame = prevDeps.current.every((obj, index) => {
+        let isItEqual = isEqual(obj, deps[index]);
+        return isItEqual;
+      });
+      if (isFirst.current || !isSame) {
+        effectFunc();
+      }
+
+      isFirst.current = false;
+      prevDeps.current = deps;
+    }, deps);
+  }
+
   const doesUserHaveTaskWithWBS = tasks => {
     let check = false;
     for (let task of tasks) {
@@ -64,31 +86,31 @@ const Timelog = props => {
 
   // startOfWeek returns the date of the start of the week based on offset. Offset is the number of weeks before.
   // For example, if offset is 0, returns the start of this week. If offset is 1, returns the start of last week.
-  const startOfWeek = (offset)=> {
+  const startOfWeek = offset => {
     return moment()
       .tz('America/Los_Angeles')
       .startOf('week')
       .subtract(offset, 'weeks')
       .format('YYYY-MM-DD');
-  }
+  };
 
   // endOfWeek returns the date of the end of the week based on offset. Offset is the number of weeks before.
   // For example, if offset is 0, returns the end of this week. If offset is 1, returns the end of last week.
-  const endOfWeek=(offset)=> {
+  const endOfWeek = offset => {
     return moment()
       .tz('America/Los_Angeles')
       .endOf('week')
       .subtract(offset, 'weeks')
       .format('YYYY-MM-DD');
-  }
+  };
 
-  const toggle=()=> {
-    setState({...state, modal: !state.modal});
-  }
+  const toggle = () => {
+    setState({ ...state, modal: !state.modal });
+  };
 
-  const showSummary=(isOwner)=>{
+  const showSummary = isOwner => {
     if (isOwner) {
-      setState({...state, summary: !state.summary});
+      setState({ ...state, summary: !state.summary });
       setTimeout(() => {
         const elem = document.getElementById('weeklySum');
         if (elem) {
@@ -96,9 +118,9 @@ const Timelog = props => {
         }
       }, 150);
     }
-  }
+  };
 
-  const openInfo=()=> {
+  const openInfo = () => {
     const str = `This is the One Community time log! It is used to show a record of all the time you have volunteered with One Community, what you’ve done for each work session, etc.
     * “Add Time Entry” Button: Clicking this button will only allow you to add “Intangible” time. This is for time not related to your tasks OR for time you need a manager to change to “Tangible” for you because you were working away from your computer or made a mistake and are trying to manually log time. Intangible time will not be counted towards your committed time for the week or your tasks. “Intangible” time changed by a manager to “Tangible” time WILL be counted towards your committed time for the week and whatever task it is logged towards. For Blue Square purposes, changing Intangible Time to Tangible Time for any reason other than work away from your computer will count and be recorded in the system the same as a time edit.
     * Viewing Past Work: The current week is always shown by default but past weeks can also be viewed by clicking the tabs or selecting a date range.
@@ -110,47 +132,47 @@ const Timelog = props => {
     setState({
       ...state,
       in: !state.in,
-      information: str.split('\n').map((item, i) => <p key={i}>{item}</p>)
+      information: str.split('\n').map((item, i) => <p key={i}>{item}</p>),
     });
-  }
+  };
 
-  const changeTab=(tab)=> {
+  const changeTab = tab => {
     setState({
       ...state,
       activeTab: tab,
     });
-  }
+  };
 
-  const handleInputChange=(e)=> {
-    setState({ ...state,[e.target.name]: e.target.value });
-  }
+  const handleInputChange = e => {
+    setState({ ...state, [e.target.name]: e.target.value });
+  };
 
-  const handleSearch=(e)=> {
+  const handleSearch = e => {
     e.preventDefault();
     const userId =
       props.match && props.match.params.userId
         ? props.match.params.userId
-        : props.asUser || props.auth.user.userid;
-    getTimeEntriesForPeriod(userId, state.fromDate, state.toDate);
-  }
+        : props.asUser || auth.user.userid;
+    props.getTimeEntriesForPeriod(userId, state.fromDate, state.toDate);
+  };
 
-  const calculateTotalTime=(data, isTangible) =>{
+  const calculateTotalTime = (data, isTangible) => {
     const filteredData = data.filter(entry => entry.isTangible === isTangible);
 
     const reducer = (total, entry) => total + parseInt(entry.hours) + parseInt(entry.minutes) / 60;
     return filteredData.reduce(reducer, 0);
-  }
+  };
 
-  const generateTimeEntries=(data) =>{
+  const generateTimeEntries = data => {
     if (!state.projectsSelected.includes('all')) {
       data = data.filter(entry => state.projectsSelected.includes(entry.projectId));
     }
     return data.map(entry => (
-      <TimeEntry data={entry} displayYear={false} key={entry._id} userProfile={props.userProfile} />
+      <TimeEntry data={entry} displayYear={false} key={entry._id} userProfile={userProfile} />
     ));
-  }
+  };
 
-  const renderViewingTimeEntriesFrom=()=> {
+  const renderViewingTimeEntriesFrom = () => {
     if (state.activeTab === 0) {
       return <></>;
     } else if (state.activeTab === 4) {
@@ -167,33 +189,29 @@ const Timelog = props => {
         </p>
       );
     }
-  }
+  };
 
-  const loadAsyncData = async (userId) => {
-    //console.log('======loadData=======',userId);
+  const loadAsyncData = async userId => {
     setState({ ...state, isTimeEntriesLoading: true });
     try {
       await Promise.all([
-        getTimeEntriesForWeek(userId, 0),
-        getTimeEntriesForWeek(userId, 1),
-        getTimeEntriesForWeek(userId, 2),
-        getTimeEntriesForPeriod(userId, state.fromDate, state.toDate),
-        getUserProjects(userId),
-        getAllRoles(),
-        getUserTask(userId),
+        props.getTimeEntriesForWeek(userId, 0),
+        props.getTimeEntriesForWeek(userId, 1),
+        props.getTimeEntriesForWeek(userId, 2),
+        props.getTimeEntriesForPeriod(userId, state.fromDate, state.toDate),
+        props.getUserProjects(userId),
+        props.getAllRoles(),
+        props.getUserTask(userId),
       ]);
-      const weekEffort = calculateTotalTime(props.timeEntries.weeks[0], true);
-      setState({...state,currentWeekEffort:weekEffort});
-    } catch(e) {
+    } catch (e) {
       setError(e);
-      console.log('+++++++',error);
     }
-  }
+  };
 
-  const buildOptions = async ()=>{
+  const buildOptions = async () => {
     let projects = [];
-    if (!isEmpty(props.userProjects.projects)) {
-      projects = props.userProjects.projects;
+    if (!isEmpty(userProjects.projects)) {
+      projects = userProjects.projects;
     }
     const options = projects.map(project => (
       <option value={project.projectId} key={project.projectId}>
@@ -206,13 +224,15 @@ const Timelog = props => {
         All Projects and Tasks (Default)
       </option>,
     );
-  
+
     let tasks = [];
-    if (!isEmpty(props.userTask)) {
-      tasks = props.userTask;
+    if (!isEmpty(userTask)) {
+      tasks = userTask;
     }
     const activeTasks = tasks.filter(task =>
-      task.resources.some(resource => resource.userID === props.auth.user.userid && !resource.completedTask),
+      task.resources.some(
+        resource => resource.userID === auth.user.userid && !resource.completedTask,
+      ),
     );
     const taskOptions = activeTasks.map(task => (
       <option value={task._id} key={task._id}>
@@ -221,16 +241,26 @@ const Timelog = props => {
     ));
     const allOptions = options.concat(taskOptions);
     return allOptions;
-  }
+  };
 
-  const generateAllTimeEntries = async () =>{
-    const currentWeekEntries = generateTimeEntries(props.timeEntries.weeks[0]);
-    const lastWeekEntries = generateTimeEntries(props.timeEntries.weeks[1]);
-    const beforeLastEntries = generateTimeEntries(props.timeEntries.weeks[2]);
-    const periodEntries = generateTimeEntries(props.timeEntries.period);
-    return [currentWeekEntries,lastWeekEntries,beforeLastEntries,periodEntries];
-  }
- 
+  const generateAllTimeEntries = async () => {
+    const currentWeekEntries = generateTimeEntries(timeEntries.weeks[0]);
+    const lastWeekEntries = generateTimeEntries(timeEntries.weeks[1]);
+    const beforeLastEntries = generateTimeEntries(timeEntries.weeks[2]);
+    const periodEntries = generateTimeEntries(timeEntries.period);
+    return [currentWeekEntries, lastWeekEntries, beforeLastEntries, periodEntries];
+  };
+
+  const makeBarData = userId => {
+    const weekEffort = calculateTotalTime(timeEntries.weeks[0], true);
+    setState({ ...state, currentWeekEffort: weekEffort });
+    if (props.isDashboard) {
+      props.passSummaryBarData({ personId: userId, tangibletime: weekEffort });
+    } else {
+      setSummaryBarData({ personId: userId, tangibletime: weekEffort });
+    }
+  };
+
   /* =======State======== */
   const initialState = {
     modal: false,
@@ -247,94 +277,122 @@ const Timelog = props => {
   const [state, setState] = useState(initialState);
   const [data, setData] = useState({
     disabled: !hasPermission(
-      props.auth.user.role,
+      auth.user.role,
       'disabledDataTimelog',
-      props.role.roles,
-      props.auth.user?.permissions?.frontPermissions,
+      role.roles,
+      auth.user?.permissions?.frontPermissions,
     )
       ? false
       : true,
     isTangible: false,
   });
-  const [error,setError] = useState();
-  const [projectOrTaskOptions,setProjectOrTaskOptions] = useState();
-  const [currentWeekEntries,setCurrentWeekEntries]=useState();
-  const [lastWeekEntries,setLastWeekEntries]=useState();
-  const [beforeLastEntries,setBeforeLastEntries]=useState();
-  const [periodEntries,setPeriodEntries]=useState();
-  const [userId,setUserId] = useState();
+  const [error, setError] = useState(null);
+  const [projectOrTaskOptions, setProjectOrTaskOptions] = useState(null);
+  const [currentWeekEntries, setCurrentWeekEntries] = useState(null);
+  const [lastWeekEntries, setLastWeekEntries] = useState(null);
+  const [beforeLastEntries, setBeforeLastEntries] = useState(null);
+  const [periodEntries, setPeriodEntries] = useState(null);
+  const [userId, setUserId] = useState(null);
+  const [summaryBarData, setSummaryBarData] = useState(null);
 
   /* =======Hook======== */
-  const timeLogFunction = (userId)=>{
-    loadAsyncData(userId).then(()=>{
-      setState({ ...state, isTimeEntriesLoading: false });
-    }).then(()=>{
-      buildOptions().then((response)=>{
+  const timeLogFunction = () => {
+    buildOptions()
+      .then(response => {
         setProjectOrTaskOptions(response);
+      })
+      .then(() => {
+        generateAllTimeEntries().then(response => {
+          setCurrentWeekEntries(response[0]);
+          setLastWeekEntries(response[1]);
+          setBeforeLastEntries(response[2]);
+          setPeriodEntries(response[3]);
+        });
       });
-    })
 
-    const role = props.auth.user.role;
+    const role = auth.user.role;
     //if user role is admin, manager, mentor or owner then default tab is task. If user have any tasks assigned, default tab is task.
     if (role === 'Administrator' || role === 'Manager' || role === "'Mentor'" || role === 'Owner') {
       setState({ ...state, activeTab: 0 });
     }
 
-    const UserHaveTask = doesUserHaveTaskWithWBS(props.userTask);
+    const UserHaveTask = doesUserHaveTaskWithWBS(userTask);
     if (UserHaveTask) {
       setState({ ...state, activeTab: 0 });
     }
-  }
+  };
 
-  useEffect (() =>{
+  useEffect(() => {
     // Does not run again (except once in development)
-    const userId = props?.match?.params?.userId || props.asUser || props.auth.user.userid; //Including fix for "undefined"
+    const userId = props?.match?.params?.userId || props.asUser || auth.user.userid; //Including fix for "undefined"
     setUserId(userId);
-    timeLogFunction(userId);
-  },[])
- 
-  useEffect(() =>{
-    // runs after first and re-renders with changed dependencies.
-    if (!userId) {// skip the first render. 
-      setState(initialState);
-      const userId = props.match?.params?.userId || props.asUser || props.auth.user.userid;
-      if (props.userProfile._id !== userId){
-        getUserProfile(userId);
-      }
-      setUserId(userId);
-      timeLogFunction(userId);
-    }  
-    },[props.auth.user.userid]
-  )
+    if (userProfile._id !== userId) {
+      props.getUserProfile(userId);
+    }
+    loadAsyncData(userId).then(() => {
+      setState({ ...state, isTimeEntriesLoading: false });
+    });
+  }, []);
 
-  useEffect(()=>{
-    generateAllTimeEntries().then((response)=>{
+  useEffect(() => {
+    // Build the time log after new data is loaded
+    if (!state.isTimeEntriesLoading) {
+      timeLogFunction();
+      makeBarData(userId);
+    }
+  }, [state.isTimeEntriesLoading]);
+
+  useDeepEffect(() => {
+    // Only re-render when time entries change
+    if (!state.isTimeEntriesLoading) {
+      makeBarData(userId);
+      timeLogFunction();
+    }
+  }, [timeEntries]);
+
+  useEffect(() => {
+    // Only run when asUser changes.
+    if (!userId && !state.isTimeEntriesLoading) {
+      // skip the first render.
+      setState(initialState);
+      const newId = props.match?.params?.userId || props.asUser || auth.user.userid;
+      if (userProfile._id !== newId) {
+        props.getUserProfile(newId);
+      }
+      loadAsyncData(newId).then(() => {
+        makeBarData(newId);
+        setState({ ...state, isTimeEntriesLoading: false });
+      });
+      setUserId(newId);
+    }
+  }, [props.asUser]);
+
+  useEffect(() => {
+    // Filter the time entries
+    generateAllTimeEntries().then(response => {
       setCurrentWeekEntries(response[0]);
       setLastWeekEntries(response[1]);
       setBeforeLastEntries(response[2]);
       setPeriodEntries(response[3]);
     });
-  },[state.projectsSelected])
-  
-  const { role } = props.auth.user;
-  const userPermissions = props.auth.user?.permissions?.frontPermissions;
-  const isOwner = props.auth.user.userid === userId;
-  const leaderData = [{ personId: userId, tangibletime: state.currentWeekEffort }];
-  const fullName = `${props.userProfile.firstName} ${props.userProfile.lastName}`;
+  }, [state.projectsSelected]);
+
+  const userPermissions = auth.user?.permissions?.frontPermissions;
+  const isOwner = auth.user.userid === userId;
+  const fullName = `${userProfile.firstName} ${userProfile.lastName}`;
 
   return (
-    
     <div>
       {!props.isDashboard ? (
         <Container fluid>
-            <SummaryBar
-              asUser={userId}
-              toggleSubmitForm={() => showSummary(isOwner)}
-              role={role}
-              leaderData={leaderData}
-            />
-            <br />
-          </Container>
+          <SummaryBar
+            asUser={userId}
+            toggleSubmitForm={() => showSummary(isOwner)}
+            role={auth.user}
+            summaryBarData={summaryBarData}
+          />
+          <br />
+        </Container>
       ) : (
         ''
       )}
@@ -365,25 +423,21 @@ const Timelog = props => {
                           onClick={openInfo}
                         />
                         <ActiveCell
-                          isActive={props.userProfile.isActive}
-                          user={props.userProfile}
+                          isActive={userProfile.isActive}
+                          user={userProfile}
                           onClick={() => {
-                            updateUserProfile(userId, {
-                              ...props.userProfile,
-                              isActive: !props.userProfile.isActive,
+                            props.updateUserProfile(userId, {
+                              ...userProfile,
+                              isActive: !userProfile.isActive,
                               endDate:
-                                !props.userProfile.isActive === false
+                                !userProfile.isActive === false
                                   ? moment(new Date()).format('YYYY-MM-DD')
                                   : undefined,
                             });
                           }}
                         />
                         <ProfileNavDot
-                          userId={
-                            props.match?.params?.userId ||
-                            props.asUser ||
-                            props.auth.user.userid
-                          }
+                          userId={props.match?.params?.userId || props.asUser || auth.user.userid}
                         />
                       </CardTitle>
                       <CardSubtitle tag="h6" className="text-muted">
@@ -406,42 +460,42 @@ const Timelog = props => {
                               />
                             </Button>
                             <ReactTooltip id="timeEntryTip" place="bottom" effect="solid">
-                              Clicking this button only allows for “Intangible Time” to be added
-                              to your time log.{' '}
+                              Clicking this button only allows for “Intangible Time” to be added to
+                              your time log.{' '}
                               <u>
                                 You can manually log Intangible Time but it doesn’t <br />
                                 count towards your weekly time commitment.
                               </u>
                               <br />
                               <br />
-                              “Tangible Time” is the default for logging time using the timer at
-                              the top of the app. It represents all work done on assigned action
-                              items <br />
+                              “Tangible Time” is the default for logging time using the timer at the
+                              top of the app. It represents all work done on assigned action items{' '}
+                              <br />
                               and is what counts towards a person’s weekly volunteer time
                               commitment. The only way for a volunteer to log Tangible Time is by
                               using the clock
                               <br />
                               in/out timer. <br />
                               <br />
-                              Intangible Time is almost always used only by the management team.
-                              It is used for weekly Monday night management team calls, monthly
+                              Intangible Time is almost always used only by the management team. It
+                              is used for weekly Monday night management team calls, monthly
                               management
                               <br />
                               team reviews and Welcome Team Calls, and non-action-item related
-                              research, classes, and other learning, meetings, etc. that benefit
-                              or relate to <br />
+                              research, classes, and other learning, meetings, etc. that benefit or
+                              relate to <br />
                               the project but aren’t related to a specific action item on the{' '}
                               <a href="https://www.tinyurl.com/oc-os-wbs">
                                 One Community Work Breakdown Structure.
                               </a>
                               <br />
                               <br />
-                              Intangible Time may also be logged by a volunteer when in the field
-                              or for other reasons when the timer wasn’t able to be used. In these
+                              Intangible Time may also be logged by a volunteer when in the field or
+                              for other reasons when the timer wasn’t able to be used. In these
                               cases, the <br />
                               volunteer will use this button to log time as “intangible time” and
-                              then request that an Admin manually change the log from Intangible
-                              to Tangible.
+                              then request that an Admin manually change the log from Intangible to
+                              Tangible.
                               <br />
                               <br />
                             </ReactTooltip>
@@ -449,9 +503,9 @@ const Timelog = props => {
                         </div>
                       ) : (
                         hasPermission(
-                          role,
+                          auth.user,
                           'addTimeEntryOthers',
-                          props.role.roles,
+                          role.roles,
                           userPermissions,
                         ) && (
                           <div className="float-right">
@@ -471,9 +525,9 @@ const Timelog = props => {
                             Close
                           </Button>
                           {hasPermission(
-                            role,
+                            auth.user,
                             'editTimelogInfo',
-                            props.role.roles,
+                            role.roles,
                             userPermissions,
                           ) ? (
                             <Button onClick={openInfo} color="secondary">
@@ -488,8 +542,8 @@ const Timelog = props => {
                         edit={false}
                         toggle={toggle}
                         isOpen={state.modal}
-                        userProfile={props.userProfile}
-                        roles={props.role.roles}
+                        userProfile={userProfile}
+                        roles={role.roles}
                       />
                       <ReactTooltip id="registerTip" place="bottom" effect="solid">
                         Click this icon to learn about the timelog.
@@ -607,16 +661,15 @@ const Timelog = props => {
                             id="projectSelected"
                             value={state.projectsSelected}
                             title="Ctrl + Click to select multiple projects and tasks to filter."
-                            onChange={e =>{
-                              setState({...state,
+                            onChange={e => {
+                              setState({
+                                ...state,
                                 projectsSelected: Array.from(
                                   e.target.selectedOptions,
                                   option => option.value,
                                 ),
-                              })
-                            }
-                              
-                            }
+                              });
+                            }}
                             multiple
                           >
                             {projectOrTaskOptions}
@@ -649,20 +702,10 @@ const Timelog = props => {
         </Container>
       )}
     </div>
-
   );
+};
 
-}
-
-
-const mapStateToProps = state => ({
-  auth: state.auth,
-  userProfile: state.userProfile,
-  timeEntries: state.timeEntries,
-  userProjects: state.userProjects,
-  role: state.role,
-  userTask: state.userTask,
-});
+const mapStateToProps = state => state;
 
 export default connect(mapStateToProps, {
   getTimeEntriesForWeek,
