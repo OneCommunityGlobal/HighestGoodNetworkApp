@@ -100,6 +100,28 @@ const WeeklyCommittedHours = props => {
   );
 };
 
+const MissedHours = props => {
+  if (!props.canEdit) {
+    return <p>{props.userProfile.missedHours ?? 0}</p>;
+  }
+  return (
+    <Input
+      type="number"
+      name="missedHours"
+      id="missedHours"
+      data-testid="missedHours"
+      value={props.userProfile.missedHours ?? 0}
+      onChange={e => {
+        props.setUserProfile({
+          ...props.userProfile,
+          missedHours: Number(e.target.value),
+        });
+      }}
+      placeholder="Additional Make-up Hours This Week"
+    />
+  );
+};
+
 const TotalTangibleHours = props => {
   //isUserAdmin is currently a value of Undefined. Therefore, !props.isUserAdmin is set to true all the time.
   //Therefore, I have chosen to comment out the other return statement section as it is not being rendered.
@@ -270,6 +292,21 @@ const ViewTab = props => {
             />
           </Col>
         </Row>
+        {userProfile.role === 'Core Team' && (
+          <Row>
+            <Col md="6">
+              <Label>Additional Make-up Hours This Week </Label>
+            </Col>
+            <Col md="6">
+              <MissedHours
+                role={role}
+                userProfile={userProfile}
+                setUserProfile={setUserProfile}
+                canEdit={canEdit}
+              />
+            </Col>
+          </Row>
+        )}
         <Row>
           <Col md="6">
             <Label>Total Intangible Hours </Label>
@@ -391,6 +428,20 @@ const ViewTab = props => {
             />
           </Col>
         </Col>
+        {userProfile.role === 'Core Team' && (
+          <Col>
+            <Col md="6">
+              <Label>Additional Make-up Hours This Week </Label>
+            </Col>
+            <Col md="6">
+            <MissedHours
+              userProfile={userProfile}
+              setUserProfile={setUserProfile}
+              canEdit={canEdit}
+            />
+            </Col>
+          </Col>
+        )}
         <Col>
           <Col md="6">
             <Label>Total Intangible Hours </Label>
