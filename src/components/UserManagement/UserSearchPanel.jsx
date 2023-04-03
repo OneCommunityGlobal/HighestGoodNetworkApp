@@ -25,6 +25,7 @@ const UserSearchPanel = props => {
         aria-label="Search"
         placeholder="Search Text"
         id="user-profiles-wild-card-search"
+        value={props.searchText}
         onChange={e => {
           props.onSearch(e.target.value);
         }}

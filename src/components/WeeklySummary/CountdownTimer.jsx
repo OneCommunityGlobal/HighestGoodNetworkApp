@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React, { useEffect, useState } from 'react';
-import _ from 'lodash';
+import { isEmpty } from 'lodash';
 import { toast } from 'react-toastify';
 
 // Use named export in order for automated tests to work properly.
@@ -64,7 +64,7 @@ export function CountdownTimer({ date }) {
 
   return (
     <div className="countdown">
-      {!_.isEmpty(timeLeft)
+      {!isEmpty(timeLeft)
         ? Object.keys(timeLeft).map(interval => (
             <span key={interval} className="countdown__col">
               <span className="countdown__col__element">

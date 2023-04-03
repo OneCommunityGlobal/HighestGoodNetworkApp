@@ -337,13 +337,11 @@ function AddTaskModal(props) {
 
     props.addNewTask(newTask, props.wbsId);
 
-    setTimeout(() => {
-      setIsLoading(false);
-      if (props.tasks.error === 'none') {
-        toggle();
-        getNewNum();
-      }
-    }, 1000);
+    setIsLoading(false);
+    if (props.tasks.error === 'none') {
+      toggle();
+      getNewNum();
+    }
   };
 
   useEffect(() => {
@@ -351,6 +349,7 @@ function AddTaskModal(props) {
       const categoryMother = props.tasks.taskItems.find(({ _id }) => _id === props.taskId).category;
       if (categoryMother) {
         setCategory(categoryMother);
+      }
     } else {
       const res = props.allProjects.projects.filter(obj => obj._id === props.projectId)[0];
       setCategory(res.category);

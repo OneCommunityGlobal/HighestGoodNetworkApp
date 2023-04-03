@@ -10,18 +10,10 @@ import { useSelector } from 'react-redux';
 import { getUserTimeZone } from 'services/timezoneApiService';
 import hasPermission from 'utils/permissions';
 import SetUpFinalDayButton from 'components/UserManagement/SetUpFinalDayButton';
+import styles from './BasicInformationTab.css';
 
 const Name = props => {
-  const {
-    userProfile,
-    setUserProfile,
-    setChanged,
-    isUserSelf,
-    formValid,
-    setFormValid,
-    role,
-    canEdit,
-  } = props;
+  const { userProfile, setUserProfile, formValid, setFormValid, canEdit } = props;
 
   const { firstName, lastName } = userProfile;
 
@@ -39,7 +31,6 @@ const Name = props => {
               onChange={e => {
                 setUserProfile({ ...userProfile, firstName: e.target.value.trim() });
                 setFormValid({ ...formValid, firstName: !!e.target.value });
-                setChanged(true);
               }}
               placeholder="First Name"
               invalid={!formValid.firstName}
@@ -58,7 +49,6 @@ const Name = props => {
               onChange={e => {
                 setUserProfile({ ...userProfile, lastName: e.target.value.trim() });
                 setFormValid({ ...formValid, lastName: !!e.target.value });
-                setChanged(true);
               }}
               placeholder="Last Name"
               invalid={!formValid.lastName}
@@ -80,7 +70,7 @@ const Name = props => {
 };
 
 const Title = props => {
-  const { userProfile, setChanged, setUserProfile, isUserSelf, role, canEdit } = props;
+  const { userProfile, setUserProfile, canEdit } = props;
   const { jobTitle } = userProfile;
 
   if (canEdit) {
@@ -95,7 +85,6 @@ const Title = props => {
               value={jobTitle}
               onChange={e => {
                 setUserProfile({ ...userProfile, jobTitle: e.target.value });
-                setChanged(true);
               }}
               placeholder="Job Title"
             />
@@ -114,16 +103,7 @@ const Title = props => {
 };
 
 const Email = props => {
-  const {
-    userProfile,
-    setUserProfile,
-    setChanged,
-    isUserSelf,
-    formValid,
-    setFormValid,
-    role,
-    canEdit,
-  } = props;
+  const { userProfile, setUserProfile, formValid, setFormValid, canEdit } = props;
   const { email, privacySettings } = userProfile;
 
   const emailPattern = new RegExp(/^\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/i);
@@ -147,7 +127,6 @@ const Email = props => {
               onChange={e => {
                 setUserProfile({ ...userProfile, email: e.target.value });
                 setFormValid({ ...formValid, email: emailPattern.test(e.target.value) });
-                setChanged(true);
               }}
               placeholder="Email"
               invalid={!formValid.email}
@@ -200,15 +179,7 @@ const formatPhoneNumber = str => {
   return str;
 };
 const Phone = props => {
-  const {
-    userProfile,
-    setUserProfile,
-    handleUserProfile,
-    setChanged,
-    isUserSelf,
-    role,
-    canEdit,
-  } = props;
+  const { userProfile, setUserProfile, handleUserProfile, canEdit } = props;
   const { phoneNumber, privacySettings } = userProfile;
   if (canEdit) {
     return (
@@ -222,10 +193,9 @@ const Phone = props => {
             />
             <PhoneInput
               country={'us'}
-              value={phoneNumber[0]}
+              value={phoneNumber}
               onChange={phoneNumber => {
                 setUserProfile({ ...userProfile, phoneNumber: phoneNumber.trim() });
-                setChanged(true);
               }}
             />
           </FormGroup>
@@ -245,7 +215,7 @@ const Phone = props => {
 };
 
 const TimeZoneDifference = props => {
-  const { userProfile, setChanged, setUserProfile, isUserAdmin, isUserSelf } = props;
+  const { isUserSelf } = props;
 
   const viewingTimeZone = props.userProfile.timeZone;
   const yourLocalTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
@@ -291,7 +261,6 @@ const BasicInformationTab = props => {
   const {
     userProfile,
     setUserProfile,
-    setChanged,
     isUserSelf,
     handleUserProfile,
     formValid,
@@ -321,7 +290,6 @@ const BasicInformationTab = props => {
             let timezone = response.data.results[0].annotations.timezone.name;
             setTimeZoneFilter(timezone);
             setUserProfile({ ...userProfile, timeZone: timezone });
-            setChanged(true);
           } else {
             alert('Invalid location or ' + response.data.status.message);
           }
@@ -330,249 +298,472 @@ const BasicInformationTab = props => {
     }
   };
   return (
-    <div data-testid="basic-info-tab">
-      <Row>
-        <Col>
-          <Label>Name</Label>
-          <i
-            data-toggle="tooltip"
-            data-placement="right"
-            data-testid="info-name"
-            id="info-name"
-            style={{ fontSize: 15, cursor: 'pointer', marginLeft: 10 }}
-            aria-hidden="true"
-            className="fa fa-info-circle"
-          />
-        </Col>
-        <Name
-          userProfile={userProfile}
-          setUserProfile={setUserProfile}
-          setFormValid={setFormValid}
-          isUserSelf={isUserSelf}
-          handleUserProfile={handleUserProfile}
-          formValid={formValid}
-          setChanged={setChanged}
-          role={props.role}
-          canEdit={canEdit}
-        />
-      </Row>
-      <Row>
-        <Col>
-          <Label>Title</Label>
-          <i
-            data-toggle="tooltip"
-            data-placement="right"
-            data-testid="info-title"
-            id="info-title"
-            style={{ fontSize: 15, cursor: 'pointer', marginLeft: 10 }}
-            aria-hidden="true"
-            className="fa fa-info-circle"
-          />
-        </Col>
-        <Title
-          userProfile={userProfile}
-          setUserProfile={setUserProfile}
-          setChanged={setChanged}
-          isUserSelf={isUserSelf}
-          handleUserProfile={handleUserProfile}
-          formValid={formValid}
-          role={props.role}
-          canEdit={canEdit}
-        />
-      </Row>
-      <Row>
-        <Col>
-          <Label>Email</Label>
-          <i
-            data-toggle="tooltip"
-            data-placement="right"
-            data-testid="info-email"
-            id="info-email"
-            style={{ fontSize: 15, cursor: 'pointer', marginLeft: 10 }}
-            aria-hidden="true"
-            className="fa fa-info-circle"
-          />
-        </Col>
-        <Email
-          userProfile={userProfile}
-          setUserProfile={setUserProfile}
-          setChanged={setChanged}
-          isUserSelf={isUserSelf}
-          handleUserProfile={handleUserProfile}
-          formValid={formValid}
-          setFormValid={setFormValid}
-          role={props.role}
-          canEdit={canEdit}
-        />
-      </Row>
-      <Row>
-        <Col>
-          <Label>Phone</Label>
-          <i
-            data-toggle="tooltip"
-            data-placement="right"
-            data-testid="info-phone"
-            id="info-phone"
-            style={{ fontSize: 15, cursor: 'pointer', marginLeft: 10 }}
-            aria-hidden="true"
-            className="fa fa-info-circle"
-          />
-        </Col>
-        <Phone
-          userProfile={userProfile}
-          setUserProfile={setUserProfile}
-          setChanged={setChanged}
-          isUserSelf={isUserSelf}
-          handleUserProfile={handleUserProfile}
-          formValid={formValid}
-          role={props.role}
-          canEdit={canEdit}
-        />
-      </Row>
-      <Row>
-        <Col>
-          <Label>Video Call Preference</Label>
-        </Col>
-        <Col>
-          {canEdit ? (
-            <FormGroup disabled={!canEdit}>
-              <Input
-                type="text"
-                name="collaborationPreference"
-                id="collaborationPreference"
-                value={userProfile.collaborationPreference}
-                onChange={e => {
-                  setUserProfile({ ...userProfile, collaborationPreference: e.target.value });
-                  setChanged(true);
-                }}
-                placeholder="Skype, Zoom, etc."
-              />
-            </FormGroup>
-          ) : (
-            `${userProfile.collaborationPreference}`
-          )}
-        </Col>
-      </Row>
-      <Row>
-        <Col>
-          <Label>Role</Label>
-        </Col>
-        <Col>
-          {canEdit ? (
-            <FormGroup>
-              <select
-                value={userProfile.role}
-                onChange={e => {
-                  setUserProfile({ ...userProfile, role: e.target.value });
-                  setChanged(true);
-                }}
-                id="role"
-                name="role"
-                className="form-control"
-                disabled={!canEdit}
-                canEdit={canEdit}
-              >
-                {roles.map(({ roleName }) => {
-                  if (roleName === 'Owner') return;
-                  return <option value={roleName}>{roleName}</option>;
-                })}
-                {hasPermission(role, 'addDeleteEditOwners', roles, userPermissions) && (
-                  <option value="Owner">Owner</option>
-                )}
-              </select>
-            </FormGroup>
-          ) : (
-            `${userProfile.role}`
-          )}
-        </Col>
-      </Row>
-      {canEdit && (
+    <div>
+      <div data-testid="basic-info-tab" className="basic-info-tab-desktop">
         <Row>
-          <Col md={{ size: 6, offset: 0 }} className="text-md-left my-2">
-            <Label>Location</Label>
+          <Col>
+            <Label>Name</Label>
+            <i
+              data-toggle="tooltip"
+              data-placement="right"
+              data-testid="info-name"
+              id="info-name"
+              style={{ fontSize: 15, cursor: 'pointer', marginLeft: 10 }}
+              aria-hidden="true"
+              className="fa fa-info-circle"
+            />
           </Col>
-          <Col md="6">
-            <Row>
-              <Col md="6">
+          <Name
+            userProfile={userProfile}
+            setUserProfile={setUserProfile}
+            setFormValid={setFormValid}
+            isUserSelf={isUserSelf}
+            handleUserProfile={handleUserProfile}
+            formValid={formValid}
+            role={props.role}
+            canEdit={canEdit}
+          />
+        </Row>
+        <Row>
+          <Col>
+            <Label>Title</Label>
+            <i
+              data-toggle="tooltip"
+              data-placement="right"
+              data-testid="info-title"
+              id="info-title"
+              style={{ fontSize: 15, cursor: 'pointer', marginLeft: 10 }}
+              aria-hidden="true"
+              className="fa fa-info-circle"
+            />
+          </Col>
+          <Title
+            userProfile={userProfile}
+            setUserProfile={setUserProfile}
+            isUserSelf={isUserSelf}
+            handleUserProfile={handleUserProfile}
+            formValid={formValid}
+            role={props.role}
+            canEdit={canEdit}
+          />
+        </Row>
+        <Row>
+          <Col>
+            <Label>Email</Label>
+            <i
+              data-toggle="tooltip"
+              data-placement="right"
+              data-testid="info-email"
+              id="info-email"
+              style={{ fontSize: 15, cursor: 'pointer', marginLeft: 10 }}
+              aria-hidden="true"
+              className="fa fa-info-circle"
+            />
+          </Col>
+          <Email
+            userProfile={userProfile}
+            setUserProfile={setUserProfile}
+            isUserSelf={isUserSelf}
+            handleUserProfile={handleUserProfile}
+            formValid={formValid}
+            setFormValid={setFormValid}
+            role={props.role}
+            canEdit={canEdit}
+          />
+        </Row>
+        <Row>
+          <Col>
+            <Label>Phone</Label>
+            <i
+              data-toggle="tooltip"
+              data-placement="right"
+              data-testid="info-phone"
+              id="info-phone"
+              style={{ fontSize: 15, cursor: 'pointer', marginLeft: 10 }}
+              aria-hidden="true"
+              className="fa fa-info-circle"
+            />
+          </Col>
+          <Phone
+            userProfile={userProfile}
+            setUserProfile={setUserProfile}
+            isUserSelf={isUserSelf}
+            handleUserProfile={handleUserProfile}
+            formValid={formValid}
+            role={props.role}
+            canEdit={canEdit}
+          />
+        </Row>
+        <Row>
+          <Col>
+            <Label>Video Call Preference</Label>
+          </Col>
+          <Col>
+            {canEdit ? (
+              <FormGroup disabled={!canEdit}>
                 <Input
+                  type="text"
+                  name="collaborationPreference"
+                  id="collaborationPreference"
+                  value={userProfile.collaborationPreference}
                   onChange={e => {
-                    setLocation(e.target.value);
-                    setUserProfile({ ...userProfile, location: e.target.value });
-                    setChanged(true);
+                    setUserProfile({ ...userProfile, collaborationPreference: e.target.value });
                   }}
-                  value={userProfile.location}
+                  placeholder="Skype, Zoom, etc."
                 />
-              </Col>
-              <Col md="6">
-                <div className="w-100 pt-1 mb-2 mx-auto">
-                  <Button color="secondary" block size="sm" onClick={onClickGetTimeZone}>
-                    Get Time Zone
-                  </Button>
-                </div>
-              </Col>
-            </Row>
+              </FormGroup>
+            ) : (
+              `${userProfile.collaborationPreference}`
+            )}
           </Col>
         </Row>
-      )}
-      <Row style={{ marginBottom: '10px' }}>
-        <Col>
-          <Label>Time Zone</Label>
-        </Col>
-        <Col>
-          {!canEdit && <p>{userProfile.timeZone}</p>}
-          {canEdit && (
-            <TimeZoneDropDown
-              filter={timeZoneFilter}
-              onChange={e => {
-                setUserProfile({ ...userProfile, timeZone: e.target.value });
-                setChanged(true);
-              }}
-              selected={userProfile.timeZone}
+        <Row>
+          <Col>
+            <Label>Role</Label>
+          </Col>
+          <Col>
+            {canEdit ? (
+              <FormGroup>
+                <select
+                  value={userProfile.role}
+                  onChange={e => {
+                    setUserProfile({ ...userProfile, role: e.target.value });
+                  }}
+                  id="role"
+                  name="role"
+                  className="form-control"
+                  disabled={!canEdit}
+                  canEdit={canEdit}
+                >
+                  {roles.map(({ roleName }) => {
+                    if (roleName === 'Owner') return;
+                    return <option value={roleName}>{roleName}</option>;
+                  })}
+                  {hasPermission(role, 'addDeleteEditOwners', roles, userPermissions) && (
+                    <option value="Owner">Owner</option>
+                  )}
+                </select>
+              </FormGroup>
+            ) : (
+              `${userProfile.role}`
+            )}
+          </Col>
+        </Row>
+        {canEdit && (
+          <Row>
+            <Col md={{ size: 6, offset: 0 }} className="text-md-left my-2">
+              <Label>Location</Label>
+            </Col>
+            <Col md="6">
+              <Row>
+                <Col md="6">
+                  <Input
+                    onChange={e => {
+                      setLocation(e.target.value);
+                      setUserProfile({ ...userProfile, location: e.target.value });
+                    }}
+                    value={userProfile.location}
+                  />
+                </Col>
+                <Col md="6">
+                  <div className="w-100 pt-1 mb-2 mx-auto">
+                    <Button color="secondary" block size="sm" onClick={onClickGetTimeZone}>
+                      Get Time Zone
+                    </Button>
+                  </div>
+                </Col>
+              </Row>
+            </Col>
+          </Row>
+        )}
+        <Row style={{ marginBottom: '10px' }}>
+          <Col>
+            <Label>Time Zone</Label>
+          </Col>
+          <Col>
+            {!canEdit && <p>{userProfile.timeZone}</p>}
+            {canEdit && (
+              <TimeZoneDropDown
+                filter={timeZoneFilter}
+                onChange={e => {
+                  setUserProfile({ ...userProfile, timeZone: e.target.value });
+                }}
+                selected={userProfile.timeZone}
+              />
+            )}
+          </Col>
+        </Row>
+        <Row>
+          <Col>
+            <label>Difference in this Time Zone from Your Local</label>
+          </Col>
+          <TimeZoneDifference
+            userProfile={userProfile}
+            setUserProfile={setUserProfile}
+            isUserSelf={isUserSelf}
+            handleUserProfile={handleUserProfile}
+            formValid={formValid}
+          />
+        </Row>
+        <Row style={{ marginBottom: '10px' }}>
+          <Col>
+            <Label>Status</Label>
+          </Col>
+          <Col md="6">
+            <Label>
+              {userProfile.isActive
+                ? 'Active'
+                : userProfile.reactivationDate
+                ? 'Paused until ' + moment(userProfile.reactivationDate).format('YYYY-MM-DD')
+                : 'Inactive'}
+            </Label>
+            &nbsp;
+            {canEdit && <PauseAndResumeButton isBigBtn={true} userProfile={userProfile} />}
+          </Col>
+        </Row>
+        <Row style={{ marginBottom: '10px' }}>
+          <Col>
+            <Label>
+              {userProfile.endDate
+                ? 'End Date ' + userProfile.endDate.toLocaleString().split('T')[0]
+                : 'End Date ' + 'N/A'}
+            </Label>
+          </Col>
+          <Col md="6">
+            {canEdit && <SetUpFinalDayButton isBigBtn={true} userProfile={userProfile} />}
+          </Col>
+        </Row>
+      </div>
+      <div data-testid="basic-info-tab" className="basic-info-tab-tablet">
+        <Col className="cols">
+          <Col>
+            <Label>Name</Label>
+            <i
+              data-toggle="tooltip"
+              data-placement="right"
+              data-testid="info-name"
+              id="info-name"
+              style={{ fontSize: 15, cursor: 'pointer', marginLeft: 10 }}
+              aria-hidden="true"
+              className="fa fa-info-circle"
             />
-          )}
+          </Col>
+          <Name
+            userProfile={userProfile}
+            setUserProfile={setUserProfile}
+            setFormValid={setFormValid}
+            isUserSelf={isUserSelf}
+            handleUserProfile={handleUserProfile}
+            formValid={formValid}
+            role={props.role}
+            canEdit={canEdit}
+          />
         </Col>
-      </Row>
-      <Row>
-        <Col>
-          <label>Difference in this Time Zone from Your Local</label>
+        <Col className="cols">
+          <Col>
+            <Label>Title</Label>
+            <i
+              data-toggle="tooltip"
+              data-placement="right"
+              data-testid="info-title"
+              id="info-title"
+              style={{ fontSize: 15, cursor: 'pointer', marginLeft: 10 }}
+              aria-hidden="true"
+              className="fa fa-info-circle"
+            />
+          </Col>
+          <Title
+            userProfile={userProfile}
+            setUserProfile={setUserProfile}
+            isUserSelf={isUserSelf}
+            handleUserProfile={handleUserProfile}
+            formValid={formValid}
+            role={props.role}
+            canEdit={canEdit}
+          />
         </Col>
-        <TimeZoneDifference
-          userProfile={userProfile}
-          setUserProfile={setUserProfile}
-          setChanged={setChanged}
-          isUserSelf={isUserSelf}
-          handleUserProfile={handleUserProfile}
-          formValid={formValid}
-        />
-      </Row>
-      <Row style={{ marginBottom: '10px' }}>
-        <Col>
-          <Label>Status</Label>
+        <Col className="cols">
+          <Col>
+            <Label>Email</Label>
+            <i
+              data-toggle="tooltip"
+              data-placement="right"
+              data-testid="info-email"
+              id="info-email"
+              style={{ fontSize: 15, cursor: 'pointer', marginLeft: 10 }}
+              aria-hidden="true"
+              className="fa fa-info-circle"
+            />
+          </Col>
+          <Email
+            userProfile={userProfile}
+            setUserProfile={setUserProfile}
+            isUserSelf={isUserSelf}
+            handleUserProfile={handleUserProfile}
+            formValid={formValid}
+            setFormValid={setFormValid}
+            role={props.role}
+            canEdit={canEdit}
+          />
         </Col>
-        <Col md="6">
-          <Label>
-            {userProfile.isActive
-              ? 'Active'
-              : userProfile.reactivationDate
-              ? 'Paused through ' + moment(userProfile.reactivationDate).format('MM-DD-YYYY')
-              : 'Inactive'}
-          </Label>
-          &nbsp;
-          {canEdit && <PauseAndResumeButton isBigBtn={true} userProfile={userProfile} />}
+        <Col className="cols">
+          <Col>
+            <Label>Phone</Label>
+            <i
+              data-toggle="tooltip"
+              data-placement="right"
+              data-testid="info-phone"
+              id="info-phone"
+              style={{ fontSize: 15, cursor: 'pointer', marginLeft: 10 }}
+              aria-hidden="true"
+              className="fa fa-info-circle"
+            />
+          </Col>
+          <Phone
+            userProfile={userProfile}
+            setUserProfile={setUserProfile}
+            isUserSelf={isUserSelf}
+            handleUserProfile={handleUserProfile}
+            formValid={formValid}
+            role={props.role}
+            canEdit={canEdit}
+          />
         </Col>
-      </Row>
-      <Row style={{ marginBottom: '10px' }}>
-        <Col>
-          <Label>
-            {userProfile.endDate
-              ? 'End Date ' + userProfile.endDate.toLocaleString().split('T')[0]
-              : 'End Date ' + 'N/A'}
-          </Label>
+        <Col className="cols">
+          <Col>
+            <Label>Video Call Preference</Label>
+          </Col>
+          <Col>
+            {canEdit ? (
+              <FormGroup disabled={!canEdit}>
+                <Input
+                  type="text"
+                  name="collaborationPreference"
+                  id="collaborationPreference"
+                  value={userProfile.collaborationPreference}
+                  onChange={e => {
+                    setUserProfile({ ...userProfile, collaborationPreference: e.target.value });
+                  }}
+                  placeholder="Skype, Zoom, etc."
+                />
+              </FormGroup>
+            ) : (
+              `${userProfile.collaborationPreference}`
+            )}
+          </Col>
         </Col>
-        <Col md="6">
-          {canEdit && <SetUpFinalDayButton isBigBtn={true} userProfile={userProfile} />}
+        <Col className="cols">
+          <Col>
+            <Label>Role</Label>
+          </Col>
+          <Col>
+            {canEdit ? (
+              <FormGroup>
+                <select
+                  value={userProfile.role}
+                  onChange={e => {
+                    setUserProfile({ ...userProfile, role: e.target.value });
+                  }}
+                  id="role"
+                  name="role"
+                  className="form-control"
+                  disabled={!canEdit}
+                  canEdit={canEdit}
+                >
+                  {roles.map(({ roleName }) => {
+                    if (roleName === 'Owner') return;
+                    return <option value={roleName}>{roleName}</option>;
+                  })}
+                  {hasPermission(role, 'addDeleteEditOwners', roles, userPermissions) && (
+                    <option value="Owner">Owner</option>
+                  )}
+                </select>
+              </FormGroup>
+            ) : (
+              `${userProfile.role}`
+            )}
+          </Col>
         </Col>
-      </Row>
+        <hr />
+        {canEdit && (
+          <Col className="cols">
+            <Col>
+              <Label>Location</Label>
+            </Col>
+
+            <Col className="cols">
+              <Input
+                onChange={e => {
+                  setLocation(e.target.value);
+                  setUserProfile({ ...userProfile, location: e.target.value });
+                }}
+                value={userProfile.location}
+                style={{ marginBottom: '10px' }}
+              />
+
+              <div>
+                <Button color="secondary" block size="sm" onClick={onClickGetTimeZone}>
+                  Get Time Zone
+                </Button>
+              </div>
+            </Col>
+          </Col>
+        )}
+        <Col className="cols">
+          <Col>
+            <Label>Time Zone</Label>
+          </Col>
+          <Col>
+            {!canEdit && <p>{userProfile.timeZone}</p>}
+            {canEdit && (
+              <TimeZoneDropDown
+                filter={timeZoneFilter}
+                onChange={e => {
+                  setUserProfile({ ...userProfile, timeZone: e.target.value });
+                }}
+                selected={userProfile.timeZone}
+              />
+            )}
+          </Col>
+        </Col>
+        <Col className="cols">
+          <Col>
+            <label>Difference in this Time Zone from Your Local</label>
+          </Col>
+          <TimeZoneDifference
+            userProfile={userProfile}
+            setUserProfile={setUserProfile}
+            isUserSelf={isUserSelf}
+            handleUserProfile={handleUserProfile}
+            formValid={formValid}
+          />
+        </Col>
+        <hr />
+        <Row xs="2" style={{ marginLeft: '1rem' }}>
+          <Col style={{ alignItems: 'center', justifyContent: 'center' }}>
+            <Label>Status</Label>
+            <div>
+              <Label style={{ fontWeight: 'normal' }}>
+                {userProfile.isActive
+                  ? 'Active'
+                  : userProfile.reactivationDate
+                  ? 'Paused until ' + moment(userProfile.reactivationDate).format('YYYY-MM-DD')
+                  : 'Inactive'}
+              </Label>
+              &nbsp;
+              {canEdit && <PauseAndResumeButton isBigBtn={true} userProfile={userProfile} />}
+            </div>
+          </Col>
+          <Col>
+            <Label>
+              {userProfile.endDate
+                ? 'End Date ' + userProfile.endDate.toLocaleString().split('T')[0]
+                : 'End Date ' + 'N/A'}
+            </Label>
+            {canEdit && <SetUpFinalDayButton isBigBtn={true} userProfile={userProfile} />}
+          </Col>
+        </Row>
+      </div>
     </div>
   );
 };

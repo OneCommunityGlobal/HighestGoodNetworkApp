@@ -1,0 +1,18 @@
+.tablet {
+  display: none;
+}
+
+@media (max-width: 1024px) {
+  .desktop {
+    display: none;
+  }
+
+  .tablet {
+    display: block;
+  }
+
+  span {
+    font-size: 16px;
+    line-height: 70%;
+  }
+}

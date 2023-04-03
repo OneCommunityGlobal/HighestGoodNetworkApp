@@ -423,11 +423,11 @@ function Task(props) {
               <i className="fa fa-book" aria-hidden="true" />
             </td>
           </tr>
-
+          {/* TODO    */}
           {controllerRow ? (
             <tr className="wbsTaskController desktop-view" id={`controller_${props.id}`}>
-              <td colSpan={tableColNum} className="controlTd">
-                {hasPermission(role, 'addTask', roles, userPermissions) ? (
+              <td colSpan={15} className="controlTd">
+                {hasPermission(role, 'addTask') ? (
                   <AddTaskModal
                     key={`addTask_${props.id}`}
                     parentNum={props.num}
@@ -457,7 +457,7 @@ function Task(props) {
                   level={props.level}
                 />
 
-                {hasPermission(role, 'deleteTask', roles, userPermissions) ? (
+                {hasPermission(role, 'deleteTask') ? (
                   <>
                     <Button
                       color="danger"
