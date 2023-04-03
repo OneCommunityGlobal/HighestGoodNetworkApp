@@ -354,7 +354,6 @@ function AddTaskModal(props) {
       const res = props.allProjects.projects.filter(obj => obj._id === props.projectId)[0];
       setCategory(res.category);
       }
-    }
   }, [props.level]);
 
   getNewNum();
