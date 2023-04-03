@@ -11,6 +11,7 @@ const CreateNewRolePopup = ({ toggle, addNewRole }) => {
   const [permissionsChecked, setPermissionsChecked] = useState([]);
   const [newRoleName, setNewRoleName] = useState('');
   const [isValidRole, setIsValidRole] = useState(true);
+  const [errorMessage, setErrorMessage] = useState('');
   const noSymbolsRegex = /^([a-zA-Z0-9 ]+)$/;
 
   const handleSubmit = async e => {
@@ -21,9 +22,8 @@ const CreateNewRolePopup = ({ toggle, addNewRole }) => {
 
     permissionsBackEnd = [...permissionsBackEnd, ...commonBackEndPermissions].flat();
 
-    if (newRoleName === '') {
-      setIsValidRole(false);
-      toast.error('Please enter a role name');
+    if (!isValidRole) {
+      toast.error('Please enter a valid role name');
     } else {
       const newRoleObject = {
         roleName: newRoleName,
@@ -38,12 +38,19 @@ const CreateNewRolePopup = ({ toggle, addNewRole }) => {
 
   const handleRoleName = e => {
     const { value } = e.target;
-    if (value.length == 0) {
+    const regexTest = noSymbolsRegex.test(value);
+    if (value.trim() === '') {
       setNewRoleName(value);
+      setErrorMessage('Please enter a role name');
       setIsValidRole(false);
     } else {
-      noSymbolsRegex.test(value) ? setNewRoleName(value) : setNewRoleName(prevRole => prevRole);
-      setIsValidRole(true);
+      if (regexTest) {
+        setNewRoleName(value);
+        setIsValidRole(true);
+      } else {
+        setErrorMessage('Special character/symbols not allowed');
+        setIsValidRole(false);
+      }
     }
   };
 
@@ -68,7 +75,7 @@ const CreateNewRolePopup = ({ toggle, addNewRole }) => {
         />
         {isValidRole === false ? (
           <Alert className="createRole__alert" color="danger">
-            Please enter a role name.
+            {errorMessage}
           </Alert>
         ) : (
           <></>
