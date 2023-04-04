@@ -28,19 +28,22 @@ img {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: .5rem;
+  padding: .25rem;
   border-radius: 4px;
-  background-color: #e2e3e5;
   margin-left: 1rem;
 }
 
-svg {
-  width: 16px;
-  height: 16px;
-  color: black;
+button {
+  border: none;
+  background: none;
 }
 
-svg:hover {
+button > img {
+  width: 18px;
+  height: 18px;
+}
+
+button > img:hover {
   cursor: pointer;
   opacity: 0.6;
 }

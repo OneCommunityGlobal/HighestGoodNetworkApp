@@ -432,7 +432,6 @@ const Task = props => {
               <i className="fa fa-book" aria-hidden="true"></i>
             </td>
           </tr>
-
           {controllerRow ? (
             <tr className="wbsTaskController desktop-view" id={`controller_${props.id}`}>
               <td colSpan={tableColNum} className="controlTd">
