@@ -451,7 +451,7 @@ function UserProfile(props) {
     });
   };
 
-  const setActiveInactive = (isActive) => {
+  const setActiveInactive = isActive => {
     setActiveInactivePopupOpen(false);
     const newUserProfile = {
       ...userProfile,
@@ -850,13 +850,13 @@ function UserProfile(props) {
                 />
               </TabPane>
               <TabPane tabId="2">
-                <VolunteeringTimeTab
+                { <VolunteeringTimeTab
                   userProfile={userProfile}
                   setUserProfile={setUserProfile}
                   isUserSelf={isUserSelf}
                   role={requestorRole}
                   canEdit={hasPermission(requestorRole, 'editUserProfile', roles, userPermissions)}
-                />
+                /> }
               </TabPane>
               <TabPane tabId="3">
                 <TeamsTab
