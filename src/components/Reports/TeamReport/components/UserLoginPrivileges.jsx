@@ -12,15 +12,14 @@ function UserLoginPrivileges({
   teamMembers, 
   totalTeamWeeklyWorkedHours,
   selectedTeams, 
+  selectedTeamsWeeklyEffort,
   allTeamsMembers }) {
   // team
   let teamWeeklyCommittedHours = 0;
-  let teamTotalTangibleHours = 0;
   let teamTotalBlueSquares = 0;
 
   teamMembers.map(member => {
     teamWeeklyCommittedHours += member.weeklycommittedHours;
-    teamTotalTangibleHours += member.totalTangibleHrs;
     teamTotalBlueSquares += member.infringements.length;
   })
 
@@ -32,10 +31,9 @@ function UserLoginPrivileges({
 
   useEffect(() => {
     const teamsData = selectedTeamsMembers.map((teamMembers, index) => {
-      const { totalCommitedHours, totalWorkedHours, totalOfMembers, totalBlueSquares } = teamMembers.reduce((totals, member) => {
+      const { totalCommitedHours, totalOfMembers, totalBlueSquares } = teamMembers.reduce((totals, member) => {
         return {
           totalCommitedHours: totals.totalCommitedHours + member.weeklycommittedHours,
-          totalWorkedHours: totals.totalWorkedHours + member.totalTangibleHrs,
           totalOfMembers: totals.totalOfMembers + 1,
           totalBlueSquares: totals.totalBlueSquares + member.infringements.length
         };
@@ -44,7 +42,6 @@ function UserLoginPrivileges({
       return {
         name: selectedTeams[index]?.selectedTeam.teamName,
         totalCommitedHours,
-        totalWorkedHours,
         totalOfMembers,
         totalBlueSquares
       };
@@ -58,21 +55,18 @@ function UserLoginPrivileges({
       selectedTeamsTotalPeople, 
       selectedTeamsTotalBlueSquares, 
       selectedTeamsTotalCommitedHours, 
-      selectedTeamsTotalWorkedHours 
     } = selectedTeamsData.reduce((totals, teamData) => {
       return {
         selectedTeamsTotalPeople: totals.selectedTeamsTotalPeople + teamData.totalOfMembers,
         selectedTeamsTotalBlueSquares: totals.selectedTeamsTotalBlueSquares + teamData.totalBlueSquares,
         selectedTeamsTotalCommitedHours: totals.selectedTeamsTotalCommitedHours + teamData.totalCommitedHours,
-        selectedTeamsTotalWorkedHours: totals.selectedTeamsTotalWorkedHours + teamData.totalWorkedHours
       };
-    }, { selectedTeamsTotalPeople: 0, selectedTeamsTotalBlueSquares: 0, selectedTeamsTotalCommitedHours: 0, selectedTeamsTotalWorkedHours: 0 });
+    }, { selectedTeamsTotalPeople: 0, selectedTeamsTotalBlueSquares: 0, selectedTeamsTotalCommitedHours: 0 });
     
     setSelectedTeamsTotalValues({
       selectedTeamsTotalPeople,
       selectedTeamsTotalBlueSquares,
       selectedTeamsTotalCommitedHours,
-      selectedTeamsTotalWorkedHours
     });
   }, [selectedTeamsData]);
 
@@ -90,7 +84,7 @@ function UserLoginPrivileges({
           title={teamName} 
           teamMembers={teamMembers} 
           teamWeeklyCommittedHours={teamWeeklyCommittedHours} 
-          teamTotalTangibleHours={teamTotalTangibleHours} 
+          totalTeamWeeklyWorkedHours={totalTeamWeeklyWorkedHours} 
           teamTotalBlueSquares={teamTotalBlueSquares}
         />
         {/* Two cards with pie charts with data */}
@@ -106,7 +100,7 @@ function UserLoginPrivileges({
               title="Breakdown of Weekly Hours So Far This Week" 
               pieChartId="chart1" 
               teamWeeklyCommittedHours={teamWeeklyCommittedHours} 
-              teamTotalTangibleHours={teamTotalTangibleHours} 
+              totalTeamWeeklyWorkedHours={totalTeamWeeklyWorkedHours} 
             />
           </ReportPage.ReportBlock>
         </div>
@@ -119,7 +113,7 @@ function UserLoginPrivileges({
           title={teamName} 
           teamMembers={teamMembers} 
           teamWeeklyCommittedHours={teamWeeklyCommittedHours} 
-          teamTotalTangibleHours={teamTotalTangibleHours} 
+          totalTeamWeeklyWorkedHours={totalTeamWeeklyWorkedHours} 
           teamTotalBlueSquares={teamTotalBlueSquares}
         />
         {/* Two cards with pie charts with data */}
@@ -132,13 +126,14 @@ function UserLoginPrivileges({
                 title="Breakdown of Weekly Hours So Far This Week" 
                 pieChartId="chart1" 
                 teamWeeklyCommittedHours={teamWeeklyCommittedHours} 
-                teamTotalTangibleHours={teamTotalTangibleHours} 
+                totalTeamWeeklyWorkedHours={totalTeamWeeklyWorkedHours} 
             />
           </ReportPage.ReportBlock>
         </div>
         <TeamsReportLogs 
           title="Selected Teams" 
           selectedTeamsTotalValues={selectedTeamsTotalValues}
+          selectedTeamsWeeklyEffort={selectedTeamsWeeklyEffort}
         />
         {/* Two cards with pie charts with data */}
         <div style={{
@@ -147,75 +142,22 @@ function UserLoginPrivileges({
         >
           <ReportPage.ReportBlock className="team-chart-container">
             <TeamsReportCharts
-              title="Commited Hours" 
+              title="Weekly Commited Hours" 
               pieChartId="chart2" 
               selectedTeamsData={selectedTeamsData}
             />
           </ReportPage.ReportBlock>
           <ReportPage.ReportBlock className="team-chart-container">
             <TeamsReportCharts
-              title="Worked Hours - This Week" 
+              title="Hours Worked In Current Week" 
               pieChartId="chart3" 
               selectedTeamsData={selectedTeamsData}
+              selectedTeamsWeeklyEffort={selectedTeamsWeeklyEffort}
             />
           </ReportPage.ReportBlock>
         </div>
       </div>
     );
-  // } if (selectedInput == 'isOwner') {
-  //   return (
-  //     <div className="team-report-main-info">
-  //       {/* Cards with report logged */}
-  //       <ReportLogs title="Organization" />
-  //       {/* Two cards with pie charts with data */}
-  //       <div style={{
-  //         display: 'flex', flexDirection: 'row', gap: '16px',
-  //       }}
-  //       >
-  //         <ReportPage.ReportBlock className="team-chart-container">
-  //           <ReportCharts title="Breakdown of Weekly Hours So Far This Week" pieChartId="chart1-3" />
-  //         </ReportPage.ReportBlock>
-  //         <ReportPage.ReportBlock className="team-chart-container">
-  //           <ReportCharts title="Hours to Complete Tasks" pieChartId="chart2-3" />
-  //         </ReportPage.ReportBlock>
-  //       </div>
-  //       <TeamReportLogs 
-  //         title={teamName} 
-  //         teamMembers={teamMembers} 
-  //         teamWeeklyCommittedHours={teamWeeklyCommittedHours} 
-  //         teamTotalTangibleHours={teamTotalTangibleHours} 
-  //         teamTotalBlueSquares={teamTotalBlueSquares}
-  //       />
-  //       {/* Two cards with pie charts with data */}
-  //       <div style={{
-  //         display: 'flex', flexDirection: 'row', gap: '16px',
-  //       }}
-  //       >
-  //         <ReportPage.ReportBlock className="team-chart-container">
-  //           <ReportCharts title="Breakdown of Weekly Hours So Far This Week" pieChartId="chart3-1" />
-  //         </ReportPage.ReportBlock>
-  //         <ReportPage.ReportBlock className="team-chart-container">
-  //           <ReportCharts title="Hours to Complete Tasks" pieChartId="chart4-1" />
-  //         </ReportPage.ReportBlock>
-  //       </div>
-  //       {/* Teams checked will contact and appear here */}
-  //       <ReportLogs title="Teams A, B and C" />
-  //       {/* Two cards with pie charts with data */}
-  //       <div style={{
-  //         display: 'flex', flexDirection: 'row', gap: '16px',
-  //       }}
-  //       >
-  //         <ReportPage.ReportBlock className="team-chart-container">
-  //           <ReportCharts title="Breakdown of Weekly Hours So Far This Week" pieChartId="chart5" />
-  //         </ReportPage.ReportBlock>
-  //         <ReportPage.ReportBlock className="team-chart-container">
-  //           <ReportCharts title="Hours to Complete Tasks" pieChartId="chart6" />
-  //         </ReportPage.ReportBlock>
-  //       </div>
-  //     </div>
-  //   );
-  // }
-  // Otherwise, return null to prevent the component from being rendered
   return null;
   }
 }

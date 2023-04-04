@@ -74,7 +74,7 @@ export function TeamReport({ match }) {
       }
     } else {
       setSelectedTeams((prevSelectedTeams) =>
-        prevSelectedTeams.filter((team) => team.selectedTeam.teamName !== selectedTeam.teamName)
+        prevSelectedTeams.filter((team) => team.selectedTeam._id !== selectedTeam._id)
       );
     }
   }
@@ -158,7 +158,7 @@ export function TeamReport({ match }) {
     }
   }, []);
 
-  // Get Total Tangible Hours this week
+  // Get Total Tangible Hours this week [main TEAM]
   const [teamMembersWeeklyEffort, setTeamMembersWeeklyEffort] = useState([]);
   const [totalTeamWeeklyWorkedHours, setTotalTeamWeeklyWorkedHours] = useState('')
 
@@ -187,35 +187,68 @@ export function TeamReport({ match }) {
       const res = await axios.get(ENDPOINTS.TIME_ENTRIES_PERIOD(member._id, startOfWeek, endOfWeek));
       const timeEntries = res.data;
       const output = calculateTotalHrsForPeriod(timeEntries);
-      console.log(output.totalTangibleHrs.toFixed(2));
-      setTeamMembersWeeklyEffort((prevState) => [...prevState, parseFloat(output.totalTangibleHrs.toFixed(2))]);
-    } catch (err) {
-      console.log(err.message);
-    }
+      const totalTangibleHrs = output.totalTangibleHrs.toFixed(2);
+      if (parseFloat(totalTangibleHrs) > 0) {
+        return totalTangibleHrs;
+      }
+    } catch (networkError) {
+      console.log("Network error:", networkError.message);
+      throw networkError;
+    } 
   }
-
+  
   useEffect(() => {
     const getTeamMembersWeeklyEffort = async () => {
       try {
         const weeklyEfforts = await Promise.all(
           teamMembers.map((member) => getWeeklyTangibleHours(member))
         );
-        setTeamMembersWeeklyEffort(weeklyEfforts);
+        setTeamMembersWeeklyEffort(weeklyEfforts.filter((effort) => !!effort));
       } catch (err) {
         console.log(err.message);
       }
     };
     getTeamMembersWeeklyEffort();
-  }, [teamMembers, setTeamMembersWeeklyEffort, setTotalTeamWeeklyWorkedHours]);
+  }, [teamMembers]);
   
   useEffect(() => {
     const totalWeeklyEffort = teamMembersWeeklyEffort.reduce(
-      (accumulator, effort) => accumulator + Number(effort),
+      (accumulator, effort) => accumulator + effort,
       0
     );
-    setTotalTeamWeeklyWorkedHours(String(totalWeeklyEffort));
-    console.log(totalTeamWeeklyWorkedHours);
+    setTotalTeamWeeklyWorkedHours(Number(totalWeeklyEffort));
   }, [teamMembersWeeklyEffort]);
+
+// Get Total Tangible Hours this week [SELECTED TEAM]
+const [selectedTeamsMembers, setSelectedTeamsMembers] = useState([]);
+const [selectedTeamsWeeklyEffort, setSelectedTeamsWeeklyEffort] = useState([]);
+
+useEffect(() => {
+  const setSelectedTeamsMembersAndEffort = async () => {
+    const members = selectedTeams.map(team => allTeamsMembers[team.index]);
+    setSelectedTeamsMembers(members);
+
+    if (members) {
+      const weeklyEfforts = await Promise.all(
+        members.map(team => Promise.all(
+          team.map(member => getWeeklyTangibleHours(member))
+        ))
+      );
+      const totalWeeklyEfforts = weeklyEfforts.map(team =>
+        team.reduce((accumulator, effort) => {
+          if (effort === undefined) {
+            effort = 0;
+          }
+          return accumulator + Number(effort);
+        }, 0)
+      );
+
+      setSelectedTeamsWeeklyEffort(totalWeeklyEfforts);
+    }
+  };
+  
+  setSelectedTeamsMembersAndEffort();
+}, [selectedTeams]);
 
   if (!team) {
     return <h3>Team not found!</h3>;
@@ -233,7 +266,7 @@ export function TeamReport({ match }) {
             </div>
           </ReportPage.ReportHeader>
         )
-}
+      }
     >
       <ReportPage.ReportBlock className="team-report-main-info-wrapper">
         <div className="team-report-main-info-id">
@@ -262,8 +295,9 @@ export function TeamReport({ match }) {
         handleInputChange={handleInputChange} 
         teamName={team.teamName}
         teamMembers={teamMembers}
-        teamMembersWeeklyEffort={teamMembersWeeklyEffort}
+        totalTeamWeeklyWorkedHours={totalTeamWeeklyWorkedHours}
         selectedTeams={selectedTeams}
+        selectedTeamsWeeklyEffort={selectedTeamsWeeklyEffort}
         allTeamsMembers={allTeamsMembers}
       />
       <ReportPage.ReportBlock>

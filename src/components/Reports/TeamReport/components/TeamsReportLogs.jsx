@@ -3,7 +3,9 @@ import React, { useState } from 'react';
 import { useEffect } from 'react';
 import './ReportLogs.css';
 
-function TeamsReportLogs({ title, selectedTeamsTotalValues }) {
+function TeamsReportLogs({ title, selectedTeamsTotalValues, selectedTeamsWeeklyEffort }) {
+  const totalTeamsWorkedHours = selectedTeamsWeeklyEffort.reduce((accumulator, current) => accumulator + current, 0);
+  
   return (
     <section>
       <h2 className="teams-report-time-title">{ title }</h2>
@@ -37,7 +39,7 @@ function TeamsReportLogs({ title, selectedTeamsTotalValues }) {
           secondColor="#ff9145"
           className="team-report-time-log-block"
         >
-          <h3>{selectedTeamsTotalValues.selectedTeamsTotalWorkedHours}</h3>
+          <h3>{totalTeamsWorkedHours}</h3>
           <p>Total Worked Hours This Week</p>
         </ReportPage.ReportBlock>
       </div>

@@ -6,13 +6,13 @@ import { generateArrayOfUniqColors } from '../../../common/PieChart/colorsGenera
 import '../../../common/PieChart/PieChart.css';
 import PieChartInfoDetail from './PieChartInfoDetail';
 
-function TeamsReportCharts({ title, pieChartId, selectedTeamsData }) {
+function TeamsReportCharts({ title, pieChartId, selectedTeamsData, selectedTeamsWeeklyEffort }) {
 
   const chart = {
-    team1: title === 'Commited Hours' ? selectedTeamsData[0]?.totalCommitedHours : selectedTeamsData[0]?.totalWorkedHours,
-    team2: title === 'Commited Hours' ? selectedTeamsData[1]?.totalCommitedHours : selectedTeamsData[1]?.totalWorkedHours,
-    team3: title === 'Commited Hours' ? selectedTeamsData[2]?.totalCommitedHours : selectedTeamsData[2]?.totalWorkedHours,
-    team4: title === 'Commited Hours' ? selectedTeamsData[3]?.totalCommitedHours : selectedTeamsData[3]?.totalWorkedHours,
+    team1: title === 'Weekly Commited Hours' ? selectedTeamsData[0]?.totalCommitedHours : selectedTeamsWeeklyEffort[0],
+    team2: title === 'Weekly Commited Hours' ? selectedTeamsData[1]?.totalCommitedHours : selectedTeamsWeeklyEffort[1],
+    team3: title === 'Weekly Commited Hours' ? selectedTeamsData[2]?.totalCommitedHours : selectedTeamsWeeklyEffort[2],
+    team4: title === 'Weekly Commited Hours' ? selectedTeamsData[3]?.totalCommitedHours : selectedTeamsWeeklyEffort[3],
   }
   
   const getCreateSvgPie = () => d3.select(`#pie-chart-container-${pieChartId}`)
@@ -44,7 +44,7 @@ function TeamsReportCharts({ title, pieChartId, selectedTeamsData }) {
     return () => {
       d3.select(`#pie-chart-${pieChartId}`).remove();
     };
-  }, [selectedTeamsData]);
+  }, [selectedTeamsData, selectedTeamsWeeklyEffort]);
 
   return (
     <section className="team-report-chart-wrapper">

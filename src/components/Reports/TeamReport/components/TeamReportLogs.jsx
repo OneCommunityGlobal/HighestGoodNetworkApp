@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { useEffect } from 'react';
 import './ReportLogs.css';
 
-function TeamReportLogs({ title, teamMembers,teamTotalBlueSquares, teamWeeklyCommittedHours, teamTotalTangibleHours }) {
+function TeamReportLogs({ title, teamMembers, teamTotalBlueSquares, teamWeeklyCommittedHours, totalTeamWeeklyWorkedHours }) {
   return (
     <section>
       <h2 className="teams-report-time-title">{ title }</h2>
@@ -37,7 +37,7 @@ function TeamReportLogs({ title, teamMembers,teamTotalBlueSquares, teamWeeklyCom
           secondColor="#ff9145"
           className="team-report-time-log-block"
         >
-          <h3>{teamTotalTangibleHours}</h3>
+          <h3>{totalTeamWeeklyWorkedHours}</h3>
           <p>Total Worked Hours This Week</p>
         </ReportPage.ReportBlock>
       </div>

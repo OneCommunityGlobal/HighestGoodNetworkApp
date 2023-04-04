@@ -6,12 +6,12 @@ import { generateArrayOfUniqColors } from '../../../common/PieChart/colorsGenera
 import '../../../common/PieChart/PieChart.css';
 import PieChartInfoDetail from './PieChartInfoDetail';
 
-function TeamReportCharts({ title, pieChartId, teamWeeklyCommittedHours, teamTotalTangibleHours }) {
-  const totalHoursAvailable = teamWeeklyCommittedHours - teamTotalTangibleHours;
+function TeamReportCharts({ title, pieChartId, teamWeeklyCommittedHours, totalTeamWeeklyWorkedHours }) {
+  const totalHoursAvailable = teamWeeklyCommittedHours - totalTeamWeeklyWorkedHours;
 
   const chart = {
     teamWeeklyCommittedHours,
-    teamTotalTangibleHours,
+    totalTeamWeeklyWorkedHours,
     totalHoursAvailable
   }
   
@@ -29,7 +29,7 @@ function TeamReportCharts({ title, pieChartId, teamWeeklyCommittedHours, teamTot
   const pie = d3.pie().value((d) => d[1]);
 
   useEffect(() => {
-    const data_ready = pie(Object.entries([teamWeeklyCommittedHours, teamTotalTangibleHours, totalHoursAvailable]));
+    const data_ready = pie(Object.entries([teamWeeklyCommittedHours, totalTeamWeeklyWorkedHours, totalHoursAvailable]));
 
     getCreateSvgPie()
       .selectAll('whatever')
@@ -60,7 +60,7 @@ function TeamReportCharts({ title, pieChartId, teamWeeklyCommittedHours, teamTot
                   <h5>Hours</h5>
                 </div>
                 <PieChartInfoDetail keyName="Commited" value={teamWeeklyCommittedHours} color="#B88AD5" />
-                <PieChartInfoDetail keyName="Worked" value={teamTotalTangibleHours} color="#FAE386" />
+                <PieChartInfoDetail keyName="Worked" value={totalTeamWeeklyWorkedHours} color="#FAE386" />
                 <PieChartInfoDetail keyName="Total Hours Available" value={totalHoursAvailable > 0 ? totalHoursAvailable : 0} color="#E4E4E4" />
               </div>
             </div>
