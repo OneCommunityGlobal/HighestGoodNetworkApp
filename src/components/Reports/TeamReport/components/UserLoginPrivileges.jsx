@@ -76,37 +76,7 @@ function UserLoginPrivileges({
   }, [selectedTeams, allTeamsMembers]);
   
   // Check if the user has admin privileges
-  if (role == 'Manager') {
-    // Render the component if the user has admin privileges
-    return (
-      <div className="team-report-main-info">
-        <TeamReportLogs 
-          title={teamName} 
-          teamMembers={teamMembers} 
-          teamWeeklyCommittedHours={teamWeeklyCommittedHours} 
-          totalTeamWeeklyWorkedHours={totalTeamWeeklyWorkedHours} 
-          teamTotalBlueSquares={teamTotalBlueSquares}
-        />
-        {/* Two cards with pie charts with data */}
-        <div style={{
-          display: 'flex', flexDirection: 'row', gap: '16px',
-        }}
-        >
-          {/* The pieChartId prop has to be different for each chart,
-          otherwise it will render all of them in the first card. */}
-
-          <ReportPage.ReportBlock className="team-chart-container">
-            <TeamReportCharts
-              title="Breakdown of Weekly Hours So Far This Week" 
-              pieChartId="chart1" 
-              teamWeeklyCommittedHours={teamWeeklyCommittedHours} 
-              totalTeamWeeklyWorkedHours={totalTeamWeeklyWorkedHours} 
-            />
-          </ReportPage.ReportBlock>
-        </div>
-      </div>
-    );
-  } if (role == ('Administrator' || 'Owner')) {
+  if (role == ('Administrator' || 'Owner')) {
     return (
       <div className="team-report-main-info">
         <TeamReportLogs 
