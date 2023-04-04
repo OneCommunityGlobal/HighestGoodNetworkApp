@@ -89,15 +89,34 @@ const WeeklyCommittedHours = props => {
       id="weeklyComittedHours"
       min="0"
       data-testid="weeklyCommittedHours"
-      value={props.userProfile.weeklyComittedHours}
+      value={props.userProfile.weeklycommittedHours}
       onChange={e => {
-        props.setUserProfile({ ...props.userProfile, weeklyComittedHours: Number(e.target.value) });
-        props.setChanged(true);
+        props.setUserProfile({ ...props.userProfile, weeklycommittedHours: Math.max(Number(e.target.value), 0) });
       }}
       placeholder="Weekly Committed Hours"
     />
   );
 };
+
+const TotalIntangibleHours = props => {
+  if (!props.canEdit) {
+    return <p>{props.userProfile.totalIntangibleHrs}</p>;
+  }
+  return (
+    <Input
+      type="number"
+      name="totalIntangibleHours"
+      id="totalIntangibleHours"
+      step=".01"
+      data-testid="totalIntangibleHours"
+      value={props.userProfile.totalIntangibleHrs??0}
+      onChange={e => {
+        props.setUserProfile({ ...props.userProfile, totalIntangibleHrs: Math.max(Number(e.target.value), 0) });
+      }}
+      placeholder={`Total Intangible Hours`}
+    />
+  )
+}
 
 /**
  *
@@ -190,7 +209,6 @@ const ViewTab = props => {
         [key]: Number(value),
       },
     });
-    setChanged(true);
   };
 
   return (
@@ -204,7 +222,6 @@ const ViewTab = props => {
             role={role}
             userProfile={userProfile}
             setUserProfile={setUserProfile}
-            setChanged={setChanged}
             canEdit={canEdit}
           />
         </Col>
@@ -219,7 +236,6 @@ const ViewTab = props => {
             role={role}
             userProfile={userProfile}
             setUserProfile={setUserProfile}
-            setChanged={setChanged}
             canEdit={canEdit}
           />
         </Col>
@@ -243,7 +259,6 @@ const ViewTab = props => {
             role={role}
             userProfile={userProfile}
             setUserProfile={setUserProfile}
-            setChanged={setChanged}
             canEdit={canEdit}
           />
         </Col>
@@ -253,11 +268,10 @@ const ViewTab = props => {
           <Label className="hours-label">Weekly Committed Hours </Label>
         </Col>
         <Col md="6">
-          <WeeklyCommitedHours
+          <WeeklyCommittedHours
             role={role}
             userProfile={userProfile}
             setUserProfile={setUserProfile}
-            setChanged={setChanged}
             canEdit={canEdit}
           />
         </Col>
@@ -267,25 +281,11 @@ const ViewTab = props => {
           <Label className="hours-label">Total Intangible Hours </Label>
         </Col>
         <Col md="6">
-          {canEdit ? (
-            <Input
-              type="number"
-              id="intangibleHours"
-              step=".01"
-              min="0"
-              value={roundToTwo(userProfile.totalIntangibleHrs)}
-              onChange={e => {
-                setUserProfile({
-                  ...userProfile,
-                  totalIntangibleHrs: Number(e.target.value),
-                });
-                setChanged(true);
-              }}
-              placeholder={`Total Intangible Hours`}
-            />
-          ) : (
-            <p>{userProfile.totalIntangibleHrs}</p>
-          )}
+          <TotalIntangibleHours
+            userProfile={userProfile}
+            setUserProfile={setUserProfile}
+            canEdit={canEdit}
+          />
         </Col>
       </Row>
       <Row className="volunteering-time-row">
