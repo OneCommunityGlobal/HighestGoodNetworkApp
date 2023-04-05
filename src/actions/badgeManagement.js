@@ -113,23 +113,13 @@ export const assignBadges = (firstName, lastName, selectedBadges) => {
     }
     const badgeCollection = res.data[0].badgeCollection;
     const UserToBeAssigned = res.data[0]._id;
-    const earnedDate = badgeCollection.earnedDate;
     selectedBadges.forEach(badgeId => {
       let included = false;
-      const today = new Date();
-      const yyyy = today.getFullYear();
-      // Add 1 beacuse the month start at zero
-      let mm = today.getMonth() + 1;
-      let dd = today.getDate();
 
-      mm < 10 ? (mm = '0' + mm) : mm;
-      dd < 10 ? (dd = '0' + dd) : dd;
-      const formatedDate = mm + '-' + dd + '-' + yyyy;
       badgeCollection.forEach(badgeObj => {
         if (badgeId === badgeObj.badge) {
           badgeObj.count++;
           badgeObj.lastModified = Date.now();
-          badgeObj.earnedDate = [...earnedDate, formatedDate];
           included = true;
         }
       });
@@ -188,7 +178,7 @@ export const assignBadgesByUserID = (userId, selectedBadges) => {
       return;
     }
     const badgeCollection = res.data.badgeCollection;
-    const earnedDate = res.data.badgeCollection[0].earnedDate;
+    const earnedDate = res.data.badgeCollection.earnedDate;
     for (let i = 0; i < badgeCollection.length; i++) {
       badgeCollection[i].badge = badgeCollection[i].badge._id;
     }
@@ -203,7 +193,7 @@ export const assignBadgesByUserID = (userId, selectedBadges) => {
 
       mm < 10 ? (mm = '0' + mm) : mm;
       dd < 10 ? (dd = '0' + dd) : dd;
-      const formatedDate = mm + '-' + dd + '-' + yyyy;
+      const formatedDate = yyyy + '-' + mm + '-' + dd;
 
       badgeCollection.forEach(badgeObj => {
         if (badgeId === badgeObj.badge) {
