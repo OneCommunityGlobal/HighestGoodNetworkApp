@@ -79,7 +79,6 @@ const AddTaskModal = props => {
   // Endstate info (what it should look like when done)
   const [endstateInfo, setEndstateInfo] = useState('');
 
-
   // Category
   const categoryOptions = [
     { value: 'Food', label: 'Food' },
@@ -93,7 +92,6 @@ const AddTaskModal = props => {
   ];
 
   const [category, setCategory] = useState('Housing');
-
 
   // Warning
   const [dateWarning, setDateWarning] = useState(false);
@@ -360,13 +358,11 @@ const AddTaskModal = props => {
 
     props.addNewTask(newTask, props.wbsId);
 
-    setTimeout(() => {
-      setIsLoading(false);
-      if (props.tasks.error === 'none') {
-        toggle();
-        getNewNum();
-      }
-    }, 1000);
+    setIsLoading(false);
+    if (props.tasks.error === 'none') {
+      toggle();
+      getNewNum();
+    }
   };
 
   useEffect(() => {
@@ -374,7 +370,6 @@ const AddTaskModal = props => {
       const categoryMother = props.tasks.taskItems.find(({ _id }) => _id === props.taskId).category;
       if (categoryMother) {
         setCategory(categoryMother);
-
       }
     } else {
       const res = props.allProjects.projects.filter(obj => obj._id === props.projectId)[0];
@@ -626,7 +621,6 @@ const AddTaskModal = props => {
               <tr>
                 <td scope="col">Category</td>
                 <td scope="col">
-
                   <select value={category} onChange={e => setCategory(e.target.value)}>
                     {categoryOptions.map(cla => {
                       return (
