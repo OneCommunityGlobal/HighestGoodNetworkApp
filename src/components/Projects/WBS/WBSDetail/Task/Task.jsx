@@ -65,6 +65,24 @@ function Task(props) {
   }, []);
   let passCurrentNum = false;
 
+  //----This was the old method of display task actions by click on the task # - it was bit wonky and
+  //----not the proper way to conditionally render something in React
+
+  /* let controllerToggle = true;
+  const selectTask = (id) => {
+    if (controllerToggle) {
+      document.getElementById(id).style.background = '#effff2';
+      document.getElementById(`controller_${id}`).style.display = 'contents';
+      controllerToggle = false;
+    } else {
+      document.getElementById(id).style.background = 'white';
+      document.getElementById(`controller_${id}`).style.display = '';
+      controllerToggle = true;
+    }
+
+    props.selectTask(id);
+  }; */
+
   const toggleGroups = id => {
     if (isOpen) {
       const allItems = [
@@ -423,11 +441,10 @@ function Task(props) {
               <i className="fa fa-book" aria-hidden="true" />
             </td>
           </tr>
-          {/* TODO    */}
           {controllerRow ? (
             <tr className="wbsTaskController desktop-view" id={`controller_${props.id}`}>
-              <td colSpan={15} className="controlTd">
-                {hasPermission(role, 'addTask') ? (
+              <td colSpan={tableColNum} className="controlTd">
+                {hasPermission(role, 'addTask', roles, userPermissions) ? (
                   <AddTaskModal
                     key={`addTask_${props.id}`}
                     parentNum={props.num}
@@ -457,7 +474,7 @@ function Task(props) {
                   level={props.level}
                 />
 
-                {hasPermission(role, 'deleteTask') ? (
+                {hasPermission(role, 'deleteTask', roles, userPermissions) ? (
                   <>
                     <Button
                       color="danger"
