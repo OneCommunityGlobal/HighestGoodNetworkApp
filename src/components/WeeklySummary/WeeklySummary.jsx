@@ -36,6 +36,7 @@ import { getUserProfile } from 'actions/userProfile';
 // Need this export here in order for automated testing to work.
 export class WeeklySummary extends Component {
   state = {
+    summariesCountShowing: 0,
     formElements: {
       summary: '',
       summaryLastWeek: '',
@@ -81,6 +82,8 @@ export class WeeklySummary extends Component {
       (weeklySummaries && weeklySummaries[2] && weeklySummaries[2].summary) || '';
     const summaryThreeWeeksAgo =
       (weeklySummaries && weeklySummaries[3] && weeklySummaries[3].summary) || '';
+
+    // Before submitting summaries, count current submits in four weeks
     let submittedCountInFourWeeks = 0;
     if (summary !== '') {
       submittedCountInFourWeeks += 1;
@@ -256,6 +259,7 @@ export class WeeklySummary extends Component {
     this.setState({ errors: errors || {} });
     if (errors) return;
 
+    // After submitting summaries, count current submits in four week
     let currentSubmittedCount = 0;
     if (this.state.formElements.summary !== '') {
       currentSubmittedCount += 1;
@@ -269,7 +273,11 @@ export class WeeklySummary extends Component {
     if (this.state.formElements.summaryThreeWeeksAgo !== '') {
       currentSubmittedCount += 1;
     }
+    // Check whether has newly filled summary
     const diffInSubmittedCount = currentSubmittedCount-this.state.submittedCountInFourWeeks
+    if (diffInSubmittedCount !== 0) {
+      this.setState({summariesCountShowing: this.state.formElements.weeklySummariesCount + 1});
+    }
 
     const modifiedWeeklySummaries = {
       mediaUrl: this.state.formElements.mediaUrl.trim(),
@@ -368,7 +376,8 @@ export class WeeklySummary extends Component {
     return (
       <Container fluid={this.props.isModal ? true : false} className="bg--white-smoke py-3 mb-5">
         <h3>Weekly Summaries</h3>
-        <div>Total submitted: {formElements.weeklySummariesCount}</div>
+        {/* Before clicking Save button, summariesCountShowing is 0 */}
+        <div>Total submitted: {this.state.summariesCountShowing || this.state.formElements.weeklySummariesCount}</div>
 
         <Form className="mt-4">
           <Nav tabs>
