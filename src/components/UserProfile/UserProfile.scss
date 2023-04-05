@@ -62,9 +62,15 @@
 }
 .profile-head h5 {
   color: #333;
+  margin: 0;
 }
-.profile-head h6 {
+.job-title {
   color: #0062cc;
+}
+.profile-head {
+  display: flex;
+  align-items: center;
+  gap: 4px
 }
 .profile-edit-btn {
   border: none;
