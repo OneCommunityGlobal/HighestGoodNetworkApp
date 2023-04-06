@@ -506,6 +506,7 @@ const TimeEntryForm = props => {
     if (!props.edit) setInputs(initialFormValues);
 
     await getUserProfile(userId)(dispatch);
+    location.reload();
   };
 
   const handleInputChange = event => {
@@ -621,32 +622,6 @@ const TimeEntryForm = props => {
           </ReactTooltip>
         </ModalHeader>
         <ModalBody>
-          <div className="add-timer-container">
-            <button
-              className="transtion-color"
-              onClick={() => handleAddGoal(1000 * 60 * 15)}
-              disabled={shouldDisableAddBtn(15)}
-            >
-              <BiPlus fontSize="1rem" />
-              <span>15 min</span>
-            </button>
-            <button
-              className="transtion-color"
-              onClick={() => handleAddGoal(1000 * 60 * 30)}
-              disabled={shouldDisableAddBtn(30)}
-            >
-              <BiPlus fontSize="1rem" />
-              <span>30 min</span>
-            </button>
-            <button
-              className="transtion-color"
-              onClick={() => handleAddGoal(1000 * 60 * 60)}
-              disabled={shouldDisableAddBtn(60)}
-            >
-              <BiPlus fontSize="1rem" />
-              <span>60 min</span>
-            </button>
-          </div>
           <Form>
             <FormGroup>
               <Label for="dateOfWork">Date</Label>

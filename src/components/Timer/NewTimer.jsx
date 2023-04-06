@@ -1,5 +1,5 @@
 import moment from 'moment';
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import useWebSocket, { ReadyState } from 'react-use-websocket';
 import config from '../../../src/config.json';
 import './NewTimer.css';
@@ -86,6 +86,7 @@ export const NewTimer = () => {
   const handlePause = useCallback(() => sendMessage(action.PAUSE_TIMER), []);
   const handleClear = useCallback(() => sendMessage(action.CLEAR_TIMER), []);
   const handleSwitch = useCallback(() => sendMessage(action.SWITCH_MODE), []);
+  const handleGetTimer = useCallback(() => sendMessage(action.GET_TIMER), []);
   const handleSetGoal = useCallback(time => sendMessage(action.SET_GOAL.concat(time)), []);
   const handleAddGoal = useCallback(time => sendMessage(action.ADD_GOAL.concat(time)), []);
   const handleRemoveGoal = useCallback(time => sendMessage(action.REMOVE_GOAL.concat(time)), []);
@@ -113,6 +114,7 @@ export const NewTimer = () => {
   The timer status is the component that shows the status of the timer, if it is waiting for the server
   message, if some error ocurred and the ready state of the websocket connection
   */
+
   return (
     <div className="timer-container">
       <BsAlarmFill className="transition-color btn-white" fontSize="2rem" onClick={toggleTimer} />
@@ -128,7 +130,6 @@ export const NewTimer = () => {
           fontSize="1.7rem"
           onClick={() => handleRemoveGoal(1000 * 60 * 15)}
         />
-        <span>15 min</span>
       </div>
       {message?.paused ? (
         <BsFillPlayCircleFill
@@ -146,7 +147,10 @@ export const NewTimer = () => {
       <BsStopCircleFill
         className="btn-white transition-color"
         fontSize="1.5rem"
-        onClick={() => setLogModal(true)}
+        onClick={() => {
+          handlePause();
+          setLogModal(true);
+        }}
       />
       <Modal isOpen={inacModal} toggle={() => setInacModal(!inacModal)} centered={true}>
         <ModalHeader toggle={() => setInacModal(!inacModal)}>Timer Paused</ModalHeader>
