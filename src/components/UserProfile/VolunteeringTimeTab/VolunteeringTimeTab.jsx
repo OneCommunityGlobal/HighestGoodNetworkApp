@@ -327,7 +327,7 @@ const ViewTab = props => {
           <Label className="hours-label">Total Tangible Hours </Label>
         </Col>
         <Col md="6">
-          <p>{totalTangibleHours}</p>
+          <p className='hours-totalTangible'>{totalTangibleHours}</p>
         </Col>
 
         {props?.userProfile?.hoursByCategory
