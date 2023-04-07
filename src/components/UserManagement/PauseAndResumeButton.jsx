@@ -34,8 +34,9 @@ const PauseAndResumeButton = props => {
     await updateUserStatus(props.userProfile, UserStatus.InActive, reActivationDate)(dispatch);
     setIsActive(false);
     setActivationDateOpen(false);
-    setTimeout(() => {
-      props.loadUserProfile();
+    setTimeout(async () => {
+      await props.loadUserProfile();
+      toast.success('Your Changes were saved successfully.');
     }, 1000);
   };
 
@@ -46,10 +47,10 @@ const PauseAndResumeButton = props => {
     if (status === UserStatus.Active) {
       await updateUserStatus(user, status, Date.now())(dispatch);
       setIsActive(status);
-      setTimeout(() => {
-        props.loadUserProfile();
+      setTimeout(async () => {
+        await props.loadUserProfile();
+        toast.success('Your Changes were saved successfully.');
       }, 1000);
-      toast.success('Your Changes were saved successfully.');
     } else {
       setActivationDateOpen(true);
     }
