@@ -36,15 +36,15 @@ const WBSTasks = props => {
   const [isLoading, setIsLoading] = useState(false);
 
   const load = async openAll => {
+    const levelList = [0, 1, 2, 3, 4];
+    await Promise.all(levelList.map(level => props.fetchAllTasks(wbsId, level)));
     setIsLoading(true);
     if (openAll) {
-      const levelList = [0, 1, 2, 3, 4];
-      await Promise.all(levelList.map(level => props.fetchAllTasks(wbsId, level)));
       AutoOpenAll(true);
       setLoadAll(true);
       setIsLoading(false);
     } else {
-      await props.fetchAllTasks(wbsId, 0);
+      AutoOpenAll(false);
       setIsLoading(false);
     }
   };
