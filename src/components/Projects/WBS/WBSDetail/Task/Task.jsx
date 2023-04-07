@@ -132,7 +132,6 @@ const Task = props => {
     props.getPopupById(TASK_DELETE_POPUP_ID);
   };
 
-
   const deleteTask = (taskId, mother) => {
     if (mother !== null) {
       props.deleteChildrenTasks(mother);
@@ -142,11 +141,10 @@ const Task = props => {
     setTimeout(() => {
       props.fetchAllTasks(props.wbsId, 0);
     }, 2000);
-  }
+  };
 
   const deleteOneTask = (taskId, mother) => {
     props.deleteWBSTask(taskId, mother);
-
   };
 
   const onMove = (from, to) => {
