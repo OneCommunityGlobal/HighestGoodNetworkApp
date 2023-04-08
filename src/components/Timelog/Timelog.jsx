@@ -134,6 +134,15 @@ class Timelog extends Component {
     if (UserHaveTask) {
       this.setState({ activeTab: 0 });
     }
+
+    // Checks if there is a property named "isDashboard" in props
+    const isDashboard = this.props.hasOwnProperty('isDashboard');
+
+    // Sets active tab to "Current Week Timelog" when the Progress bar in Leaderboard is clicked
+    if (!isDashboard) {
+      this.setState({ activeTab: 1 });
+    }
+
   }
 
   async componentDidUpdate(prevProps) {
