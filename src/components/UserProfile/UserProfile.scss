@@ -31,9 +31,11 @@
 }
 
 .emp-profile {
-  padding: 3%;
-  margin-top: 3%;
-  margin-bottom: 3%;
+  padding-top: 20px;
+  padding-left: 3%;
+  padding-right: 3%;
+  margin-top: 40px;
+  margin-bottom: 20px;
   border-radius: 0.5rem;
   background: #fff;
 }
@@ -70,7 +72,7 @@
 .profile-head {
   display: flex;
   align-items: center;
-  gap: 4px
+  gap: 4px;
 }
 .profile-edit-btn {
   border: none;
@@ -213,11 +215,6 @@
     padding: 0;
   }
 
-  .emp-profile {
-    margin: 0;
-    padding: 0;
-  }
-
   .profile-work {
     padding: 0;
 
@@ -268,6 +265,12 @@
 
   .detailSection {
     width: 250px;
+  }
+}
+
+@media only screen and (max-width: 767px) {
+  .emp-profile {
+    margin-top: 0;
   }
 }
 

@@ -234,19 +234,26 @@ const WBSTasks = props => {
             />
           ) : null}
 
-          {props.state.tasks.taskItems.length === 0 && isShowImport === true ? (
-            <ImportTask wbsId={wbsId} projectId={projectId} />
-          ) : null}
-          <Button
-            color="primary"
-            className="btn-success"
-            size="sm"
-            onClick={() => {
-              refresh();
-            }}
-          >
-            Refresh{' '}
+        {props.state.tasks.taskItems.length === 0 && isShowImport === true ? (
+          <ImportTask wbsId={wbsId} projectId={projectId} />
+        ) : null}
+        <Button
+          color="primary"
+          className="btn-success"
+          size="sm"
+          onClick={() => {
+            refresh();
+          }}
+        >
+          Refresh{' '}
+        </Button>
+
+        {loadAll === false ? (
+          <Button color="warning" size="sm" className="ml-3">
+            {' '}
+            Task Loading......{' '}
           </Button>
+        ) : null}
 
           <div className="toggle-all">
             <Button
