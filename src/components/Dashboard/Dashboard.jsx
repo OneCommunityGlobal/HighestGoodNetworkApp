@@ -41,7 +41,12 @@ export const Dashboard = props => {
 
   return (
     <Container fluid>
-      <PopUpBar />
+      ?
+      {props.match.params.userId && props.auth.user.userid !== props.match.params.userId ? (
+        <PopUpBar />
+      ) : (
+        ''
+      )}
       <SummaryBar
         userProfile={userProfile}
         setUserProfile={setUserProfile}
