@@ -320,6 +320,11 @@ const Timelog = props => {
     if (UserHaveTask) {
       setState({ ...state, activeTab: 0 });
     }
+
+    // Sets active tab to "Current Week Timelog" when the Progress bar in Leaderboard is clicked
+    if (!props.isDashboard) {
+      setState({ ...state, activeTab: 1 });
+    }
   };
 
   useEffect(() => {

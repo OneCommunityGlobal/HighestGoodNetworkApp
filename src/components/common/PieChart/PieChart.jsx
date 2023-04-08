@@ -1,12 +1,15 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import * as d3 from 'd3/dist/d3.min';
 import { CHART_RADIUS, CHART_SIZE } from './constants';
 import { generateArrayOfUniqColors } from './colorsGenerator';
 import './PieChart.css';
 
 export const PieChart = ({ data, dataLegend, pieChartId, dataLegendHeader }) => {
-  const getCreateSvgPie = () => {
-    return d3
+  const [totalHours, setTotalHours] = useState(0);
+
+  // create the pie chart
+  const getCreateSvgPie = (totalValue) => {
+    var svg = d3
       .select(`#pie-chart-container-${pieChartId}`)
       .append('svg')
       .attr('id', `pie-chart-${pieChartId}`)
@@ -14,6 +17,12 @@ export const PieChart = ({ data, dataLegend, pieChartId, dataLegendHeader }) => 
       .attr('height', CHART_SIZE)
       .append('g')
       .attr('transform', `translate(${CHART_SIZE / 2},${CHART_SIZE / 2})`);
+
+    svg.append("text")
+      .attr("text-anchor", "middle")
+      .text(totalValue.toFixed(2));
+
+    return svg;
   };
 
   const color = d3.scaleOrdinal().range(generateArrayOfUniqColors(Object.keys(data).length));
@@ -23,7 +32,10 @@ export const PieChart = ({ data, dataLegend, pieChartId, dataLegendHeader }) => 
   useEffect(() => {
     const data_ready = pie(Object.entries(data));
 
-    getCreateSvgPie()
+    let totalValue = data_ready.map(obj => obj.value).reduce((a, c) => { return a + c });
+    setTotalHours(totalValue)
+
+    getCreateSvgPie(totalValue)
       .selectAll('whatever')
       .data(data_ready)
       .join('path')
@@ -60,6 +72,9 @@ export const PieChart = ({ data, dataLegend, pieChartId, dataLegendHeader }) => 
             </div>
           </div>
         ))}
+        <div className='data-total-value'>
+          Total Hours : {totalHours.toFixed(2)}
+        </div>
       </div>
     </div>
   );
