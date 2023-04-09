@@ -15,7 +15,7 @@ import {
   ModalFooter,
 } from 'reactstrap';
 import moment from 'moment-timezone';
-import _ from 'lodash';
+import { isEmpty } from 'lodash';
 import { Editor } from '@tinymce/tinymce-react';
 import ReactTooltip from 'react-tooltip';
 import { postTimeEntry, editTimeEntry } from '../../../actions/timeEntries';
@@ -31,6 +31,7 @@ import axios from 'axios';
 import { ENDPOINTS } from '../../../utils/URL';
 import hasPermission from 'utils/permissions';
 import { getTimeEntryFormData } from './selectors';
+import checkNegativeNumber from 'utils/checkNegativeHours';
 
 /**
  * Modal used to submit and edit tangible and intangible time entries.
@@ -79,7 +80,7 @@ const TimeEntryForm = props => {
   const [tasks, setTasks] = useState([]);
   const [formDataBeforeEdit, setFormDataBeforeEdit] = useState({});
 
-  const fromTimer = !_.isEmpty(timer);
+  const fromTimer = !isEmpty(timer);
   const { userProfile, currentUserRole } = useSelector(getTimeEntryFormData);
   const roles = useSelector(state => state.role.roles);
   const userPermissions = useSelector(state => state.auth.user?.permissions?.frontPermissions);
@@ -215,8 +216,23 @@ const TimeEntryForm = props => {
       result.dateOfWork = 'Date is required';
     } else {
       const date = moment(inputs.dateOfWork);
+      const today = moment(
+        moment()
+          .tz('America/Los_Angeles')
+          .format('YYYY-MM-DD'),
+      );
       if (!date.isValid()) {
         result.dateOfWork = 'Invalid date';
+      }
+      // Administrator/Owner can add time entries for any dates. Other roles cannot.
+      // Editing details of past date is possible for any role.
+      else if (
+        currentUserRole !== 'Administrator' &&
+        currentUserRole !== 'Owner' &&
+        !edit &&
+        today.diff(date, 'days') !== 0
+      ) {
+        result.dateOfWork = 'Invalid date. Please refresh the page.';
       }
     }
 
@@ -273,31 +289,35 @@ const TimeEntryForm = props => {
     }
 
     setErrors(result);
-    return _.isEmpty(result);
+    return isEmpty(result);
   };
   //Update hoursByCategory when submitting new time entry
   const updateHoursByCategory = async (userProfile, timeEntry, hours, minutes) => {
     const { hoursByCategory } = userProfile;
     const { projectId, isTangible, personId } = timeEntry;
-    if (isTangible !== 'true') return;
     //Format hours && minutes
     const volunteerTime = parseFloat(hours) + parseFloat(minutes) / 60;
 
-    //This is get to know which project or task is selected
-    const foundProject = projects.find(project => project._id === projectId);
-    const foundTask = tasks.find(task => task._id === projectId);
-
-    //Get category
-    const category = foundProject
-      ? foundProject.category.toLowerCase()
-      : foundTask.classification.toLowerCase();
-
-    //update hours
-    const isFindCategory = Object.keys(hoursByCategory).find(key => key === category);
-    if (isFindCategory) {
-      hoursByCategory[category] += volunteerTime;
+    //log  hours to intangible time entry
+    if (isTangible !== 'true') {
+      userProfile.totalIntangibleHrs += volunteerTime;
     } else {
-      hoursByCategory['unassigned'] += volunteerTime;
+      //This is get to know which project or task is selected
+      const foundProject = projects.find(project => project._id === projectId);
+      const foundTask = tasks.find(task => task._id === projectId);
+
+      //Get category
+      const category = foundProject
+        ? foundProject.category.toLowerCase()
+        : foundTask.classification.toLowerCase();
+
+      //update hours
+      const isFindCategory = Object.keys(hoursByCategory).find(key => key === category);
+      if (isFindCategory) {
+        hoursByCategory[category] += volunteerTime;
+      } else {
+        hoursByCategory['unassigned'] += volunteerTime;
+      }
     }
 
     //update database
@@ -337,7 +357,9 @@ const TimeEntryForm = props => {
     }
 
     //if time entry keeps intangible before and after edit, means we don't need update tangible hours
-    if (oldIsTangible === 'false' && currIsTangible === 'false') return;
+    if (oldIsTangible === 'false' && currIsTangible === 'false') {
+      userProfile.totalIntangibleHrs += timeDifference;
+    }
 
     //found project or task
     const foundProject = projects.find(project => project._id === currProjectId);
@@ -350,6 +372,7 @@ const TimeEntryForm = props => {
 
     //if change timeEntry from intangible to tangible, we need add hours on categories
     if (oldIsTangible === 'false' && currIsTangible === 'true') {
+      userProfile.totalIntangibleHrs -= currEntryTime;
       isFindCategory
         ? (hoursByCategory[category] += currEntryTime)
         : (hoursByCategory['unassigned'] += currEntryTime);
@@ -357,6 +380,7 @@ const TimeEntryForm = props => {
 
     //if change timeEntry from tangible to intangible, we need deduct hours on categories
     if (oldIsTangible === 'true' && currIsTangible === 'false') {
+      userProfile.totalIntangibleHrs += currEntryTime;
       isFindCategory
         ? (hoursByCategory[category] -= currEntryTime)
         : (hoursByCategory['unassigned'] -= currEntryTime);
@@ -387,7 +411,7 @@ const TimeEntryForm = props => {
           : (hoursByCategory['unassigned'] += currEntryTime);
       }
     }
-
+    checkNegativeNumber(userProfile);
     //update database
     try {
       const url = ENDPOINTS.USER_PROFILE(timeEntry.personId);
@@ -401,7 +425,6 @@ const TimeEntryForm = props => {
     //Validation and variable initialization
     if (event) event.preventDefault();
     if (isSubmitting) return;
-    console.log('submitting');
     const hours = inputs.hours || 0;
     const minutes = inputs.minutes || 0;
     const isTimeModified = edit && (data.hours !== hours || data.minutes !== minutes);
@@ -448,7 +471,7 @@ const TimeEntryForm = props => {
       );
       return;
     }
-    console.log(timeEntry);
+
     //Clear the form and clean up.
     if (fromTimer) {
       const timerStatus = await dispatch(stopTimer(userId));

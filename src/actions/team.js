@@ -1,5 +1,5 @@
 import moment from 'moment';
-import _ from 'lodash';
+import { uniqBy } from 'lodash';
 import httpService from '../services/httpService';
 import { FETCH_TEAMS_START, RECEIVE_TEAMS, FETCH_TEAMS_ERROR } from '../constants/teams';
 import { ENDPOINTS } from '../utils/URL';
@@ -50,7 +50,7 @@ export const fetchAllManagingTeams = (userId, managingTeams) => {
       allMembers = allMembers.concat(data[i].data);
     }
     console.log('allManagingTeams:', allManagingTeams);
-    const uniqueMembers = _.uniqBy(allMembers, '_id');
+    const uniqueMembers = uniqBy(allMembers, '_id');
     uniqueMembers.forEach(async member => {
       const fromDate = moment()
         .startOf('week')
@@ -83,8 +83,6 @@ export const fetchAllManagingTeams = (userId, managingTeams) => {
           allManagingTeams[i].members[j] = memberDataWithTimeEntries;
         }
       }
-
-      console.log('after processing: ', allManagingTeams);
     });
   });
 
