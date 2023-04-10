@@ -1,0 +1,28 @@
+.team-weekly-summaries {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: auto;
+  padding: 15px;
+  border: 1px solid #007bff;
+  border-radius: 3px;
+  background-color: #e6f2ff;
+}
+
+.team-weekly-header {
+  display: flex;
+  align-items: center;
+  padding-top: 10px;
+}
+
+.team-weekly-header-date {
+  color: #007bff;
+  padding-right: 10px;
+}
+
+.weekly-date-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  line-height: 0.8;
+}

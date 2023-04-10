@@ -47,6 +47,7 @@ import { updateUserStatus } from '../../actions/userManagement';
 import { UserStatus } from '../../utils/enums';
 import { faSleigh, faCamera } from '@fortawesome/free-solid-svg-icons';
 import BlueSquareLayout from './BlueSquareLayout';
+import TeamWeeklySummaries from './TeamWeeklySummaries/TeamWeeklySummaries';
 
 function UserProfile(props) {
   /* Constant values */
@@ -248,7 +249,6 @@ function UserProfile(props) {
         setSummarySelected(['', '', '']);
         setShowSummary(true);
       }
-      console.log('summarySelected', summarySelected);
     } catch (err) {
       setShowLoading(false);
     }
@@ -675,7 +675,7 @@ function UserProfile(props) {
                 color="primary"
                 size="sm"
               >
-                Team Weekly Summaries
+                {showSelect ? 'Hide Team Weekly Summaries' : 'Team Weekly Summaries'}
               </Button>
             </div>
             <h6 className="job-title">{jobTitle}</h6>
@@ -687,6 +687,10 @@ function UserProfile(props) {
                 {userProfile.endDate ? userProfile.endDate.toLocaleString().split('T')[0] : 'N/A'}
               </span>
             </p>
+          
+          
+
+            <TeamWeeklySummaries />
             {showSelect && summaries === undefined ? <div>Loading</div> : <div />}
             {showSelect && summaries !== undefined ? (
               <div>
@@ -712,7 +716,7 @@ function UserProfile(props) {
                       : summarySelected[0]}
                   </div>
                 ) : (
-                  <h5>{summaryName} did not submit a submit a summary for this week.</h5>
+                  <h5>{summaryName} did not submit a summary yet for this week.</h5>
                 )}
 
                 {summarySelected[1] && summarySelected[1].length > 0 ? (
@@ -723,7 +727,7 @@ function UserProfile(props) {
                       : summarySelected[1]}
                   </div>
                 ) : (
-                  <h5>{summaryName} did not submit a submit a summary for last week.</h5>
+                  <h5>{summaryName} did not submit a summary for this week.</h5>
                 )}
 
                 {summarySelected[2] && summarySelected[2].length > 0 ? (
@@ -734,7 +738,7 @@ function UserProfile(props) {
                       : summarySelected[2]}
                   </div>
                 ) : (
-                  <h5>{summaryName} did not submit a submit a summary two weeks ago.</h5>
+                  <h5>{summaryName} did not submit a summary for this week.</h5>
                 )}
               </div>
             ) : (
