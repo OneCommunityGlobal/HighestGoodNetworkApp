@@ -52,7 +52,7 @@ const TeamMemberTasks = props => {
   }, [updatedTasks]);
 
   const userRole = props.auth.user.role;
-  const userId = props.auth.user.userid;
+  const userId = props.auth.asUser;
 
   const closeMarkAsDone = () => {
     setMarkAsDoneModal(false);
