@@ -1,7 +1,3 @@
-/*********************************************************************************
- * Component: TAK
- * Author: Henry Ng - 21/03/20
- ********************************************************************************/
 import React, { createRef, useEffect, useState } from 'react';
 import { connect } from 'react-redux';
 import { Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
