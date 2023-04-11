@@ -46,6 +46,7 @@ import SummaryBar from '../SummaryBar/SummaryBar';
 import WeeklySummary from '../WeeklySummary/WeeklySummary';
 import Loading from '../common/Loading';
 import hasPermission from '../../utils/permissions';
+import WeeklySummaries from './WeeklySummaries';
 
 const doesUserHaveTaskWithWBS = tasks => {
   let check = false;
@@ -267,7 +268,7 @@ class Timelog extends Component {
   }
 
   renderViewingTimeEntriesFrom() {
-    if (this.state.activeTab === 0) {
+    if (this.state.activeTab === 0 || this.state.activeTab === 5) {
       return <></>;
     } else if (this.state.activeTab === 4) {
       return (
@@ -575,6 +576,18 @@ class Timelog extends Component {
                           Search by Date Range
                         </NavLink>
                       </NavItem>
+                      <NavItem>
+                        <NavLink
+                          className={classnames({ active: this.state.activeTab === 5 })}
+                          onClick={() => {
+                            this.changeTab(5);
+                          }}
+                          href="#"
+                          to="#"
+                        >
+                          Weekly Summaries
+                        </NavLink>
+                      </NavItem>
                     </Nav>
 
                     <TabContent activeTab={this.state.activeTab}>
@@ -610,7 +623,7 @@ class Timelog extends Component {
                           </Button>
                         </Form>
                       )}
-                      {this.state.activeTab === 0 ? (
+                      {this.state.activeTab === 0 || this.state.activeTab === 5 ? (
                         <></>
                       ) : (
                         <Form className="mb-2">
@@ -640,7 +653,7 @@ class Timelog extends Component {
                         </Form>
                       )}
 
-                      {this.state.activeTab === 0 ? (
+                      {this.state.activeTab === 0 || this.state.activeTab === 5 ? (
                         <></>
                       ) : (
                         <EffortBar
@@ -655,6 +668,9 @@ class Timelog extends Component {
                       <TabPane tabId={2}>{lastWeekEntries}</TabPane>
                       <TabPane tabId={3}>{beforeLastEntries}</TabPane>
                       <TabPane tabId={4}>{periodEntries}</TabPane>
+                      <TabPane tabId={5}>
+                        <WeeklySummaries userProfile={this.userProfile} />
+                      </TabPane>
                     </TabContent>
                   </CardBody>
                 </Card>
