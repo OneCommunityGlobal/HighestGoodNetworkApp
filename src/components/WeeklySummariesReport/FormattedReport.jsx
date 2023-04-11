@@ -58,14 +58,16 @@ const FormattedReport = ({ summaries, weekIndex }) => {
           ):
         </p>
 
-        {summaryText && ReactHtmlParser(summaryText)}
-
-        {summary.weeklySummaryNotReq === true && !summaryText && (
-          <p style={{ color: 'magenta' }}>Not required for this user</p>
+        {summaryText && (
+          summary?.weeklySummaryOption === 'Team' ? 
+            <div style={{ color: 'magenta' }}>{ReactHtmlParser(summaryText)}</div> :
+            ReactHtmlParser(summaryText)
         )}
 
-        {!summaryText && !summary.weeklySummaryNotReq && (
-          <span style={{ color: 'red' }}>Not provided!</span>
+        {!summaryText && (
+          summary?.weeklySummaryOption === 'Not Required' || summary.weeklySummaryNotReq ?
+            <p style={{ color: 'magenta' }}>Not required for this user</p> :
+            <span style={{ color: 'red' }}>Not provided!</span>
         )}
       </>
     );

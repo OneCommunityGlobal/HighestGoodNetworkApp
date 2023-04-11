@@ -35,6 +35,7 @@ const GeneratePdfReport = ({ summaries, weekIndex, weekDates }) => {
         weeklySummariesCount,
         weeklycommittedHours,
         totalSeconds,
+        weeklySummaryOption,
       } = eachSummary;
 
       const hoursLogged = (totalSeconds[weekIndex] || 0) / 3600;
@@ -58,10 +59,10 @@ const GeneratePdfReport = ({ summaries, weekIndex, weekDates }) => {
           )
             .tz('America/Los_Angeles')
             .format('YYYY-MMM-DD')}</b>):</div>
-                                  <div data-pdfmake="{&quot;margin&quot;:[20,0,20,0]}">${summary
+                                  <div data-pdfmake="{&quot;margin&quot;:[20,0,20,0]}" ${weeklySummaryOption === 'Team' ? 'style="color: magenta;"' : ''}>${summary
                                     .replace(styleRegex, '')
                                     .replace(styleInlineRegex, '')}</div>`;
-        } else if (eachSummary.weeklySummaryNotReq === true) {
+        } else if (weeklySummaryOption === 'Not Required' || eachSummary.weeklySummaryNotReq === true) {
           weeklySummaryMessage = weeklySummaryNotRequiredMessage;
         }
       }
