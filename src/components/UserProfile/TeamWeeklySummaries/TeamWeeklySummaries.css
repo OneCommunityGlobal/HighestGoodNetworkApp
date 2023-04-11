@@ -3,10 +3,11 @@
   flex-direction: column;
   width: 100%;
   height: auto;
-  padding: 15px;
+  padding: 10px;
+  margin-top: 8px;
   border: 1px solid #007bff;
   border-radius: 3px;
-  background-color: #e6f2ff;
+  background-color: #f7fbfe;
 }
 
 .team-weekly-header {

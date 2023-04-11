@@ -23,7 +23,6 @@ import classnames from 'classnames';
 import moment from 'moment';
 import Alert from 'reactstrap/lib/Alert';
 import axios from 'axios';
-import parse from 'html-react-parser';
 import hasPermission from '../../utils/permissions';
 import ActiveCell from '../UserManagement/ActiveCell';
 import { ENDPOINTS } from '../../utils/URL';
@@ -233,22 +232,10 @@ function UserProfile(props) {
       setShowSummary(false);
       const response = await axios.get(ENDPOINTS.USER_PROFILE(userId));
       const user = response.data;
-      const summaries = user.weeklySummaries;
-      console.log('summaryName:', summaryName);
-      console.log('summaries:', summaries);
-      if (summaries && Array.isArray(summaries) && summaries.length >= 3) {
-        setSummarySelected([summaries[0].summary, summaries[1].summary, summaries[2].summary]);
-        setShowSummary(true);
-      } else if (summaries && Array.isArray(summaries) && summaries.length === 2) {
-        setSummarySelected([summaries[0].summary, summaries[1].summary, '']);
-        setShowSummary(true);
-      } else if (summaries && Array.isArray(summaries) && summaries.length === 1) {
-        setSummarySelected([summaries[0].summary, '', '']);
-        setShowSummary(true);
-      } else {
-        setSummarySelected(['', '', '']);
-        setShowSummary(true);
-      }
+      const userSummaries = user.weeklySummaries;
+
+      setSummarySelected(userSummaries);
+      setShowSummary(true);
     } catch (err) {
       setShowLoading(false);
     }
@@ -270,7 +257,6 @@ function UserProfile(props) {
           label: `View ${leaderBoardData[i].name}'s summary.`,
         });
       }
-      console.log('allSummaries:', allSummaries);
       setSummaries(allSummaries);
       return;
     } catch (err) {
@@ -687,10 +673,6 @@ function UserProfile(props) {
                 {userProfile.endDate ? userProfile.endDate.toLocaleString().split('T')[0] : 'N/A'}
               </span>
             </p>
-          
-          
-
-            <TeamWeeklySummaries />
             {showSelect && summaries === undefined ? <div>Loading</div> : <div />}
             {showSelect && summaries !== undefined ? (
               <div>
@@ -706,44 +688,16 @@ function UserProfile(props) {
             ) : (
               <div />
             )}
-            {summarySelected && showSelect && showSummary ? (
-              <div>
-                {summarySelected[0] && summarySelected[0].length > 0 ? (
-                  <div>
-                    <h5>{'Viewing ' + summaryName + "'s summary."}</h5>
-                    {typeof summarySelected[0] === 'string'
-                      ? parse(summarySelected[0])
-                      : summarySelected[0]}
-                  </div>
-                ) : (
-                  <h5>{summaryName} did not submit a summary yet for this week.</h5>
-                )}
-
-                {summarySelected[1] && summarySelected[1].length > 0 ? (
-                  <div>
-                    <h5>{'Viewing ' + summaryName + "'s last week's summary."}</h5>
-                    {typeof summarySelected[1] === 'string'
-                      ? parse(summarySelected[1])
-                      : summarySelected[1]}
-                  </div>
-                ) : (
-                  <h5>{summaryName} did not submit a summary for this week.</h5>
-                )}
-
-                {summarySelected[2] && summarySelected[2].length > 0 ? (
-                  <div>
-                    <h5>{'Viewing ' + summaryName + ' summary from two weeks ago.'}</h5>
-                    {typeof summarySelected[2] === 'string'
-                      ? parse(summarySelected[2])
-                      : summarySelected[2]}
-                  </div>
-                ) : (
-                  <h5>{summaryName} did not submit a summary for this week.</h5>
-                )}
-              </div>
-            ) : (
-              <div />
-            )}
+            {summarySelected &&
+              showSelect &&
+              showSummary &&
+              summarySelected.map((data, i) => {
+                if (i === 0) {
+                  return <TeamWeeklySummaries thisWeek i={i} name={summaryName} data={data} />;
+                } else {
+                  return <TeamWeeklySummaries i={i} name={summaryName} data={data} />;
+                }
+              })}
             <Badges
               userProfile={userProfile}
               setUserProfile={setUserProfile}
