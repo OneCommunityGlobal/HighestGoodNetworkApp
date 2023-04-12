@@ -10,9 +10,4 @@
   .tablet {
     display: block;
   }
-
-  span {
-    font-size: 16px;
-    line-height: 70%;
-  }
 }

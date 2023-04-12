@@ -1,7 +1,3 @@
-/* eslint-disable max-len */
-/* eslint-disable no-trailing-spaces */
-/* eslint-disable no-plusplus */
-/* eslint-disable indent */
 import { faBell, faCircle, faClock, faCheck } from '@fortawesome/free-solid-svg-icons';
 import { Table, Progress } from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -202,9 +198,11 @@ const TeamMemberTasks = props => {
           totalHoursLogged = user.tasks
             .map(task => task.hoursLogged)
             .reduce((previousValue, currentValue) => previousValue + currentValue, 0);
-          totalHoursRemaining = user.tasks
-            .map(task => task.estimatedHours - task.hoursLogged)
-            .reduce((previousValue, currentValue) => previousValue + currentValue, 0);
+          for (const task of user.tasks) {
+            if (task.status !== 'Complete' && task.isAssigned !== 'false') {
+              totalHoursRemaining = totalHoursRemaining + (task.estimatedHours - task.hoursLogged);
+            }
+          }
         }
 
         const TaskButton = task => {
