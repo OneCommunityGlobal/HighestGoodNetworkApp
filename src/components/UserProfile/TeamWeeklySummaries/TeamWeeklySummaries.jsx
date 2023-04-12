@@ -3,7 +3,8 @@ import './TeamWeeklySummaries.css';
 import moment from 'moment';
 import parse from 'html-react-parser';
 
-function TeamWeeklySummaries({ name, i, thisWeek, data }) {
+function TeamWeeklySummaries({ name, i, data }) {
+
   const getWeekDates = weekIndex => ({
     fromDate: moment()
       .tz('America/Los_Angeles')
@@ -23,9 +24,9 @@ function TeamWeeklySummaries({ name, i, thisWeek, data }) {
           {getWeekDates(i).fromDate} to {getWeekDates(i).toDate}
         </h6>{' '}
         <h6>
-          {thisWeek && !data.summary && `${name} did not submit a summary yet for this week.`}
+          {(i === 0) && !data.summary && `${name} did not submit a summary yet for this week.`}
           {data.summary && `Viewing ${name}'s summary`}
-          {!thisWeek && !data.summary && `${name} did not submit a summary for this week.`}
+          {(i !== 0) && !data.summary && `${name} did not submit a summary for this week.`}
         </h6>
       </div>
       {data.summary && <div>{parse(data.summary)}</div>}

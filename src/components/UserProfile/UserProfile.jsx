@@ -692,11 +692,7 @@ function UserProfile(props) {
               showSelect &&
               showSummary &&
               summarySelected.map((data, i) => {
-                if (i === 0) {
-                  return <TeamWeeklySummaries thisWeek i={i} name={summaryName} data={data} />;
-                } else {
-                  return <TeamWeeklySummaries i={i} name={summaryName} data={data} />;
-                }
+                return <TeamWeeklySummaries i={i} name={summaryName} data={data} />;
               })}
             <Badges
               userProfile={userProfile}
