@@ -698,7 +698,7 @@ const Timelog = props => {
                       </Form>
                     )}
 
-                    {state.activeTab === 0 ? || state.activeTab === 5 ?(
+                    {state.activeTab === 0 || state.activeTab === 5 ?(
                       <></>
                     ) : (
                       <EffortBar
