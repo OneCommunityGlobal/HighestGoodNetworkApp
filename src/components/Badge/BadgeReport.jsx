@@ -187,6 +187,24 @@ const BadgeReport = props => {
 
   const countChange = (badge, index, newValue) => {
     let newBadges = sortBadges.slice();
+    const today = new Date();
+    const yyyy = today.getFullYear();
+    // Add 1 beacuse the month start at zero
+    let mm = today.getMonth() + 1;
+    let dd = today.getDate();
+
+    mm < 10 ? (mm = '0' + mm) : mm;
+    dd < 10 ? (dd = '0' + dd) : dd;
+    const formatedDate = `${yyyy}-${mm}-${dd}`;
+
+    newBadges.map(bdg => {
+      if (newValue > bdg.count) {
+        bdg.earnedDate.push(formatedDate);
+      } else {
+        bdg.earnedDate.pop();
+      }
+    });
+
     newBadges[index].count = newValue;
     setSortBadges(newBadges);
   };
