@@ -46,6 +46,7 @@ import SummaryBar from '../SummaryBar/SummaryBar';
 import WeeklySummary from '../WeeklySummary/WeeklySummary';
 import Loading from '../common/Loading';
 import hasPermission from '../../utils/permissions';
+import WeeklySummaries from './WeeklySummaries';
 
 const Timelog = props => {
   const auth = useSelector(state => state.auth);
@@ -72,6 +73,7 @@ const Timelog = props => {
       prevDeps.current = deps;
     }, deps);
   }
+
 
   const doesUserHaveTaskWithWBS = tasks => {
     let check = false;
@@ -172,8 +174,9 @@ const Timelog = props => {
     ));
   };
 
+
   const renderViewingTimeEntriesFrom = () => {
-    if (state.activeTab === 0) {
+    if (state.activeTab === 0 || state.activeTab === 5) {
       return <></>;
     } else if (state.activeTab === 4) {
       return (
@@ -617,6 +620,19 @@ const Timelog = props => {
                         Search by Date Range
                       </NavLink>
                     </NavItem>
+                    </NavItem>
+                      <NavItem>
+                        <NavLink
+                          className={classnames({ active: state.activeTab === 5 })}
+                          onClick={() => {
+                            this.changeTab(5);
+                          }}
+                          href="#"
+                          to="#"
+                        >
+                          Weekly Summaries
+                        </NavLink>
+                      </NavItem>
                   </Nav>
 
                   <TabContent activeTab={state.activeTab}>
@@ -652,7 +668,7 @@ const Timelog = props => {
                         </Button>
                       </Form>
                     )}
-                    {state.activeTab === 0 ? (
+                    {state.activeTab === 0 || state.activeTab === 5 ?(
                       <></>
                     ) : (
                       <Form className="mb-2">
@@ -683,7 +699,7 @@ const Timelog = props => {
                       </Form>
                     )}
 
-                    {state.activeTab === 0 ? (
+                    {state.activeTab === 0 ? || state.activeTab === 5 ?(
                       <></>
                     ) : (
                       <EffortBar
@@ -698,6 +714,9 @@ const Timelog = props => {
                     <TabPane tabId={2}>{lastWeekEntries}</TabPane>
                     <TabPane tabId={3}>{beforeLastEntries}</TabPane>
                     <TabPane tabId={4}>{periodEntries}</TabPane>
+                    <TabPane tabId={5}>
+                        <WeeklySummaries userProfile={this.userProfile} />
+                    </TabPane>
                   </TabContent>
                 </CardBody>
               </Card>
@@ -709,6 +728,7 @@ const Timelog = props => {
     </div>
   );
 };
+
 
 const mapStateToProps = state => state;
 
