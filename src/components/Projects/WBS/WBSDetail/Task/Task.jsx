@@ -1,7 +1,3 @@
-/*********************************************************************************
- * Component: TAK
- * Author: Henry Ng - 21/03/20
- ********************************************************************************/
 import React, { createRef, useEffect, useState } from 'react';
 import { connect } from 'react-redux';
 import { Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
@@ -55,6 +51,12 @@ const Task = props => {
     }
   }, []);
   let passCurrentNum = false;
+
+  useEffect(() => {
+    if (isOpen !== props.isOpen) {
+      setIsOpen(props.isOpen);
+    }
+  }, [props.isOpen]);
 
   //----This was the old method of display task actions by click on the task # - it was bit wonky and
   //----not the proper way to conditionally render something in React
