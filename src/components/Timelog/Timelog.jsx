@@ -620,19 +620,18 @@ const Timelog = props => {
                         Search by Date Range
                       </NavLink>
                     </NavItem>
+                    <NavItem>
+                      <NavLink
+                        className={classnames({ active: state.activeTab === 5 })}
+                        onClick={() => {
+                          this.changeTab(5);
+                        }}
+                        href="#"
+                        to="#"
+                      >
+                        Weekly Summaries
+                      </NavLink>
                     </NavItem>
-                      <NavItem>
-                        <NavLink
-                          className={classnames({ active: state.activeTab === 5 })}
-                          onClick={() => {
-                            this.changeTab(5);
-                          }}
-                          href="#"
-                          to="#"
-                        >
-                          Weekly Summaries
-                        </NavLink>
-                      </NavItem>
                   </Nav>
 
                   <TabContent activeTab={state.activeTab}>
