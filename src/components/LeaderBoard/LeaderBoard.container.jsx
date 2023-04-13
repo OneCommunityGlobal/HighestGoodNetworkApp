@@ -7,7 +7,6 @@ import { get, round, maxBy } from 'lodash';
 const mapStateToProps = state => {
   let leaderBoardData = get(state, 'leaderBoardData', []);
   let user = get(state, 'userProfile', []);
-  console.log(leaderBoardData)
 
   //created an auxiliar variable so the filtering do not interfere with the main variable
   let nonTutorsData = [];
