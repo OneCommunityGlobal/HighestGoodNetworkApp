@@ -29,7 +29,7 @@ import { connect } from 'react-redux';
 import { getUserProfile } from '../../actions/userProfile';
 import { toast } from 'react-toastify';
 import hasPermission from '../../utils/permissions';
-import styles from './BadgeReport.css';
+import './BadgeReport.css';
 
 pdfMake.vfs = pdfFonts.pdfMake.vfs;
 const BadgeReport = props => {
