@@ -624,7 +624,7 @@ const Timelog = props => {
                       <NavLink
                         className={classnames({ active: state.activeTab === 5 })}
                         onClick={() => {
-                          this.changeTab(5);
+                          changeTab(5);
                         }}
                         href="#"
                         to="#"
@@ -714,7 +714,7 @@ const Timelog = props => {
                     <TabPane tabId={3}>{beforeLastEntries}</TabPane>
                     <TabPane tabId={4}>{periodEntries}</TabPane>
                     <TabPane tabId={5}>
-                        <WeeklySummaries userProfile={this.userProfile} />
+                        <WeeklySummaries userProfile={userProfile} />
                     </TabPane>
                   </TabContent>
                 </CardBody>
