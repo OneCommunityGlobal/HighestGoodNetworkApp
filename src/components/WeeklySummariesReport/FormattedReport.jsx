@@ -39,14 +39,43 @@ const FormattedReport = ({ summaries, weekIndex }) => {
   };
 
   const getWeeklySummaryMessage = summary => {
-    if (!summary)
+    if (!summary) {
       return (
         <p>
           <b>Weekly Summary:</b> Not provided!
         </p>
       );
-
+    }
+    
     const summaryText = summary?.weeklySummaries[weekIndex]?.summary;
+    
+    const summaryContent = (() => {
+      if (summaryText) {
+        const style = {};
+        switch (summary?.weeklySummaryOption) {
+          case 'Team':
+            style.color = 'magenta';
+            break;
+          case 'Not Required':
+            style.color = 'green';
+            break;
+          case 'Required':
+            break;
+          default:
+            if (summary.weeklySummaryNotReq) {
+              style.color = 'green';
+            }
+            break;
+        }
+        return <div style={style}>{ReactHtmlParser(summaryText)}</div>;
+      }else{
+        if (summary?.weeklySummaryOption === 'Not Required' || (!summary?.weeklySummaryOption && summary.weeklySummaryNotReq)) {
+          return <p style={{ color: 'green' }}>Not required for this user</p>;
+        }else {
+          return <span style={{ color: 'red' }}>Not provided!</span>;
+        }
+      }
+    })();
 
     return (
       <>
@@ -57,18 +86,7 @@ const FormattedReport = ({ summaries, weekIndex }) => {
             .format('YYYY-MMM-DD')}
           ):
         </p>
-
-        {summaryText && (
-          summary?.weeklySummaryOption === 'Team' ? 
-            <div style={{ color: 'magenta' }}>{ReactHtmlParser(summaryText)}</div> :
-            ReactHtmlParser(summaryText)
-        )}
-
-        {!summaryText && (
-          summary?.weeklySummaryOption === 'Not Required' || summary.weeklySummaryNotReq ?
-            <p style={{ color: 'magenta' }}>Not required for this user</p> :
-            <span style={{ color: 'red' }}>Not provided!</span>
-        )}
+        {summaryContent}
       </>
     );
   };
