@@ -36,7 +36,7 @@ const TeamMemberTasks = props => {
   const [showMarkAsDoneModal, setMarkAsDoneModal] = useState(false);
   const [clickedToShowModal, setClickedToShowModal] = useState(false);
   //role state so it's more easily changed, the initial value is empty, so it'll be determinated on the first useEffect
-  const [userRole, setUserRole] = useState('')
+  const [userRole, setUserRole] = useState('');
 
   //function to get user's role if the current user's id is different from the authenticated user
   function getUserRole(userId) {
@@ -56,17 +56,19 @@ const TeamMemberTasks = props => {
     //so, before it gets from the store, it'll see if the userId is provided.
     //It works because the userId first looks for the url param. If it gets the param, it will provide it to the userId
     //after that, fetchTeamMembersTask will look for the team member's tasks of the provided userId
-    dispatch(fetchTeamMembersTask(userId));
     //fetch current user's role, so it can be displayed. It will only happen if the current user's id is different of the auth user id
     //if it's not differente, it'll attribute the current authenticated user's role.
+    //also, the userId is different from the authenticated user, it will call the fetchTeamMmbersTask with the currently authenticated user id
     if (userId !== props.auth.user.userid) {
+      dispatch(fetchTeamMembersTask(userId, props.auth.user.userid));
       const currentUserRole = getUserRole(userId)
         .then(resp => resp)
         .then(user => {
           setUserRole(user.data.role);
         });
-    }else{
-      setUserRole(props.auth.user.role)
+    } else {
+      dispatch(fetchTeamMembersTask(userId, null));
+      setUserRole(props.auth.user.role);
     }
   }, []);
 
@@ -78,10 +80,18 @@ const TeamMemberTasks = props => {
 
   useEffect(() => {
     submitTasks();
-    dispatch(fetchTeamMembersTask(userId));
+    if (userId !== props.auth.user.userid) {
+      dispatch(fetchTeamMembersTask(userId, props.auth.user.userid));
+      const currentUserRole = getUserRole(userId)
+        .then(resp => resp)
+        .then(user => {
+          setUserRole(user.data.role);
+        });
+    } else {
+      dispatch(fetchTeamMembersTask(userId, null));
+      setUserRole(props.auth.user.role);
+    }
   }, [updatedTasks]);
-
-  console.log(currentUserId);
 
   const closeMarkAsDone = () => {
     setMarkAsDoneModal(false);
