@@ -9,7 +9,8 @@
 }
 
 .report-page-content {
-  display: grid;
+  display: flex;
+  flex-direction: column;
   grid-row-start: 1;
   row-gap: 32px;
   padding-bottom: 24px;

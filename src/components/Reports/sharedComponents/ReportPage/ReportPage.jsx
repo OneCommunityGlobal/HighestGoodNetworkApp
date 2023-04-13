@@ -11,6 +11,7 @@ export function ReportPage({ children, renderProfile, contentClassName }) {
     </section>
   );
 }
+
 ReportPage.ReportHeader = ReportHeader;
 ReportPage.ReportBlock = ReportBlock;
 ReportPage.ReportCard = ReportCard;

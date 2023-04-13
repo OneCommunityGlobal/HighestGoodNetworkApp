@@ -133,6 +133,44 @@ const ToggleSwitch = ({ switchType, state, handleUserProfile }) => {
           </div>
         </div>
       );
+    case 'visible':
+      if (state) {
+        return (
+          <div className='blueSqare'>
+            <div className={style.switchSection}>
+              <div className={style.switchContainer}>
+                visible
+                <input
+                  data-testid="visibility-switch"
+                  id="leaderboardVisibility"
+                  type="checkbox"
+                  className={style.toggle}
+                  onChange={handleUserProfile}
+                />
+                invisible
+              </div>
+            </div>
+          </div>
+        )
+      }
+      return (
+        <div className='blueSqare'>
+          <div className={style.switchSection}>
+            <div className={style.switchContainer}>
+              visible
+              <input
+                data-testid="visibility-switch"
+                id="leaderboardVisibility"
+                type="checkbox"
+                className={style.toggle}
+                onChange={handleUserProfile}
+                defaultChecked
+              />
+              invisible
+            </div>
+          </div>
+        </div>
+      );
     default:
       break;
   }

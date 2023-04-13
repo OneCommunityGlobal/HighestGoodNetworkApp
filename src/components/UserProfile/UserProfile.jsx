@@ -530,6 +530,13 @@ function UserProfile(props) {
     }
   };
 
+  const onUserVisibilitySwitch = () => {
+    setUserProfile({
+      ...userProfile,
+      isVisible: !userProfile.isVisible ?? true,
+    });
+  }
+
   if ((showLoading && !props.isAddNewUser) || userProfile === undefined) {
     return (
       <Container fluid>
@@ -874,6 +881,9 @@ function UserProfile(props) {
                   edit={hasPermission(requestorRole, 'editUserProfile', roles, userPermissions)}
                   role={requestorRole}
                   roles={roles}
+                  onUserVisibilitySwitch={onUserVisibilitySwitch}
+                  isVisible={userProfile.isVisible}
+                  canEditVisibility={canEdit && userProfile.role != 'Volunteer'}
                 />
               </TabPane>
               <TabPane tabId="4">
@@ -1071,6 +1081,9 @@ function UserProfile(props) {
                     edit={hasPermission(requestorRole, 'editUserProfile', roles, userPermissions)}
                     role={requestorRole}
                     roles={roles}
+                    onUserVisibilitySwitch={onUserVisibilitySwitch}
+                    isVisible={userProfile.isVisible}
+                    canEditVisibility={canEdit && userProfile.role != 'Volunteer'}
                   />
                 </ModalBody>
                 <ModalFooter>
