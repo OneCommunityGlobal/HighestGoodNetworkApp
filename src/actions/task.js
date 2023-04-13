@@ -18,18 +18,41 @@ const selectUserId = state => state.auth.user.userid;
 const selectUpdateTaskData = (state, taskId) =>
   state.tasks.taskItems.find(({ _id }) => _id === taskId);
 
-
-  //for those who are not familiarized, this is a arrow function inside a arrow function.
-  // It's the same as doing function(currentUserId){async function(dispatch, getState)}
-  //Because of the closure, the inside function have access the currentUserId, that it uses and provides to the userId
-  export const fetchTeamMembersTask = currentUserId => async (dispatch, getState) => {
+//for those who are not familiarized, this is a arrow function inside a arrow function.
+// It's the same as doing function(currentUserId){async function(dispatch, getState)}
+//Because of the closure, the inside function have access the currentUserId, that it uses and provides to the userId
+//I've also added authentiatedUserId param so, if you are seeing another user's dashboard, it can fetch the authenticated user tasks to make a filter when seeing an owner or another user
+export const fetchTeamMembersTask = (currentUserId, authenticatedUserId) => async (
+  dispatch,
+  getState,
+) => {
   try {
     const state = getState();
     //The userId will be equal the currentUserId if provided, if not, it'll call the selectFetchTeamMembersTaskData, that will return the current user id that's on the store
+    
     const userId = currentUserId ? currentUserId : selectFetchTeamMembersTaskData(state);
+    const authUserId = authenticatedUserId ? authenticatedUserId : null
+    console.log(authUserId)
+    
     dispatch(fetchTeamMembersTaskBegin());
+    
     const response = await axios.get(ENDPOINTS.TEAM_MEMBER_TASKS(userId));
-    dispatch(fetchTeamMembersTaskSuccess(response.data));
+
+
+    //if you are seeing another user's dashboard, the authenticated user id will be provided so the filter can be made
+    if (authUserId !== null) {
+      const originalTasks = await axios.get(ENDPOINTS.TEAM_MEMBER_TASKS(authUserId));
+      const authUserTasks = originalTasks.data
+      const userTasks = response.data
+      console.log(authUserTasks, userTasks)
+      const correctedTasks = userTasks.filter(task => {
+        return authUserTasks.some(task2 => task2.personId === task.personId)
+      });
+      console.log(correctedTasks)
+      dispatch(fetchTeamMembersTaskSuccess(correctedTasks));
+    } else {
+      dispatch(fetchTeamMembersTaskSuccess(response.data));
+    }
   } catch (error) {
     dispatch(fetchTeamMembersTaskError());
   }
