@@ -55,7 +55,7 @@ const EndDate = props => {
 
 const WeeklySummaryOptions = props => {
   if (!props.canEdit) {
-    return <p>{props.userProfile.WeeklySummaryOption}</p>
+    return <p>{props.userProfile.weeklySummaryOption??(props.userProfile.weeklySummaryNotReq?'Not Required':'Required')}</p>
   }
   return (
     <FormGroup>
