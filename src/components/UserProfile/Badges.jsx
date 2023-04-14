@@ -64,9 +64,13 @@ const Badges = props => {
               </Modal>
               {props.canEdit && (
                 <>
-                  <Button className="btn--dark-sea-green mr-2" onClick={assignToggle}>
-                    Assign Badges
-                  </Button>
+                {(props.role == "Owner" || 
+                  props.role == "Administrator" || 
+                  props.userPermissions.includes("assignBadgeOthers")) && (
+                    <Button className="btn--dark-sea-green mr-2" onClick={assignToggle}>
+                      Assign Badges
+                    </Button>
+                )}
                   <Modal size="lg" isOpen={isAssignOpen} toggle={assignToggle}>
                     <ModalHeader toggle={assignToggle}>Assign Badges</ModalHeader>
                     <ModalBody>
