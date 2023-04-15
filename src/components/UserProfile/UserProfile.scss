@@ -140,11 +140,9 @@
   display: flex;
   flex-direction: row;
 }
-
 .icon {
   padding-right: 10px;
 }
-
 .profileEditButton {
   border: none;
   border-radius: 1.5rem;
@@ -159,12 +157,10 @@
   margin-top: 2px;
   margin-bottom: 2px;
 }
-
 .profilePicture {
   width: 150px;
   height: 150px;
 }
-
 .whoSection {
   display: flex;
   flex-direction: column;
@@ -174,7 +170,6 @@
   margin: 5vh;
   padding: 5vh;
 }
-
 .detailSectionContainer {
   display: flex;
   flex-direction: column;
@@ -182,18 +177,15 @@
   margin-right: 10vh;
   margin-left: 10vh;
 }
-
 .detailSection {
   width: 300px;
 }
-
 .profileLinks {
   display: flex;
   width: 80%;
   align-items: center;
   padding: 5px;
 }
-
 .linkIconSection {
   display: flex;
   flex-direction: row;
@@ -262,7 +254,6 @@
   .whoSection {
     width: 250px;
   }
-
   .detailSection {
     width: 250px;
   }
@@ -278,11 +269,9 @@
   .profileContainer {
     justify-content: space-around;
   }
-
   .whoSection {
     width: 240px;
   }
-
   .detailSection {
     width: 240px;
   }

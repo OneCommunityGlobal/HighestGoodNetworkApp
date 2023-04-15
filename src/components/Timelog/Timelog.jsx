@@ -101,9 +101,7 @@ class Timelog extends Component {
   state = this.initialState;
 
   async componentDidMount() {
-    console.log(this.props)
-    const userId =
-      this.props?.match?.params?.userId || this.props.asUser || this.props.auth.user.userid; //Including fix for "undefined"
+    const userId = this.props.asUser || this.props.match.params.userId; //Including fix for "undefined"
     const isOwner = this.props.auth.user.userid === this.props.asUser;
     if (!isOwner || this.props.userProfile) {
       await this.props.getUserProfile(userId);
@@ -143,7 +141,6 @@ class Timelog extends Component {
     if (!isDashboard) {
       this.setState({ activeTab: 1 });
     }
-
   }
 
   async componentDidUpdate(prevProps) {
