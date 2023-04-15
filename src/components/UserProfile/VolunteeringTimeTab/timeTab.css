@@ -16,3 +16,8 @@
   margin-bottom: 0;
   padding: 8px 0;
 }
+
+.tangible-hrs-group {
+  display: flex;
+  justify-content: space-between;
+}

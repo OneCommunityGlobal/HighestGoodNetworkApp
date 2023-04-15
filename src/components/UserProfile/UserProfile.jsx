@@ -863,6 +863,7 @@ function UserProfile(props) {
                     setUserProfile={setUserProfile}
                     isUserSelf={isUserSelf}
                     role={requestorRole}
+                    loadUserProfile={loadUserProfile}
                     canEdit={hasPermission(
                       requestorRole,
                       'editUserProfile',
@@ -1295,9 +1296,6 @@ function UserProfile(props) {
                     </span>
                   </>
                 )}
-              <Button outline onClick={() => loadUserProfile()}>
-                Refresh
-              </Button>
             </div>
           </Col>
         </Row>
