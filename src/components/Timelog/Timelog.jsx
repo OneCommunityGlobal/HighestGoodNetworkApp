@@ -75,6 +75,7 @@ const Timelog = props => {
   }
 
 
+
   const doesUserHaveTaskWithWBS = tasks => {
     let check = false;
     for (let task of tasks) {

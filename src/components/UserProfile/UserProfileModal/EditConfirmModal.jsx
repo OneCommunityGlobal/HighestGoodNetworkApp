@@ -9,6 +9,7 @@ const EditConfirmModal = props => {
   const toggle = () => {
     closeModal();
     history.push(`/userprofile/${userProfile._id}`);
+    window.location.reload();
   };
   return (
     <React.Fragment>

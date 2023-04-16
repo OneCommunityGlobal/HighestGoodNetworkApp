@@ -429,7 +429,6 @@ function UserProfile(props) {
       alert('An error occurred while attempting to save this profile.');
     }
     setShouldRefresh(true);
-    window.location.reload();
   };
 
   const toggle = modalName => setMenuModalTabletScreen(modalName);
