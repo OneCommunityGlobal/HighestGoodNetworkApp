@@ -31,9 +31,11 @@
 }
 
 .emp-profile {
-  padding: 3%;
-  margin-top: 3%;
-  margin-bottom: 3%;
+  padding-top: 20px;
+  padding-left: 3%;
+  padding-right: 3%;
+  margin-top: 40px;
+  margin-bottom: 20px;
   border-radius: 0.5rem;
   background: #fff;
 }
@@ -62,9 +64,15 @@
 }
 .profile-head h5 {
   color: #333;
+  margin: 0;
 }
-.profile-head h6 {
+.job-title {
   color: #0062cc;
+}
+.profile-head {
+  display: flex;
+  align-items: center;
+  gap: 4px;
 }
 .profile-edit-btn {
   border: none;
@@ -132,11 +140,9 @@
   display: flex;
   flex-direction: row;
 }
-
 .icon {
   padding-right: 10px;
 }
-
 .profileEditButton {
   border: none;
   border-radius: 1.5rem;
@@ -151,12 +157,10 @@
   margin-top: 2px;
   margin-bottom: 2px;
 }
-
 .profilePicture {
   width: 150px;
   height: 150px;
 }
-
 .whoSection {
   display: flex;
   flex-direction: column;
@@ -166,7 +170,6 @@
   margin: 5vh;
   padding: 5vh;
 }
-
 .detailSectionContainer {
   display: flex;
   flex-direction: column;
@@ -174,18 +177,15 @@
   margin-right: 10vh;
   margin-left: 10vh;
 }
-
 .detailSection {
   width: 300px;
 }
-
 .profileLinks {
   display: flex;
   width: 80%;
   align-items: center;
   padding: 5px;
 }
-
 .linkIconSection {
   display: flex;
   flex-direction: row;
@@ -203,11 +203,6 @@
 @media only screen and (max-width: 1024px) {
   .profileContainer {
     justify-content: space-around;
-    margin: 0;
-    padding: 0;
-  }
-
-  .emp-profile {
     margin: 0;
     padding: 0;
   }
@@ -259,9 +254,14 @@
   .whoSection {
     width: 250px;
   }
-
   .detailSection {
     width: 250px;
+  }
+}
+
+@media only screen and (max-width: 767px) {
+  .emp-profile {
+    margin-top: 0;
   }
 }
 
@@ -269,11 +269,9 @@
   .profileContainer {
     justify-content: space-around;
   }
-
   .whoSection {
     width: 240px;
   }
-
   .detailSection {
     width: 240px;
   }
