@@ -25,7 +25,7 @@ export const permissionLabel = {
   addTask: 'Add Task',
   deleteTask: 'Delete Task',
   editTask: 'Edit Task',
-  suggestTask: 'Suggest changes on a task',
+  suggestTask: 'Suggest Changes on a task',
   addWbs: 'Add WBS',
   addProject: 'Add Project',
   deleteProject: 'Delete Project',
