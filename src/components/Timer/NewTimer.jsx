@@ -25,6 +25,9 @@ export const NewTimer = () => {
   const [logModal, setLogModal] = useState(false);
   const [inacModal, setInacModal] = useState(false);
   const [showTimer, setShowTimer] = useState(false);
+  const [isActive, setIsActive] = useState(true);
+
+  const [confirmationResetModal, setConfirmationResetModal] = useState(false);
   const [previewTimer, setPreviewTimer] = useState(0);
   const data = {
     disabled: window.screenX <= 500,
@@ -61,6 +64,7 @@ export const NewTimer = () => {
     options,
   );
 
+
   //This is the contract between server and client
   const action = {
     START_TIMER: 'START_TIMER',
@@ -75,6 +79,7 @@ export const NewTimer = () => {
     ACK_FORCED: 'ACK_FORCED',
   };
 
+  console.log(isActive);
   /*
   This are the callbacks for the buttons in the timer, here we send the message to the server
   with every single action that the user wants to perform
@@ -118,7 +123,9 @@ export const NewTimer = () => {
   return (
     <div className="timer-container">
       <BsAlarmFill className="transition-color btn-white" fontSize="2rem" onClick={toggleTimer} />
-      <div className="preview">{moment.utc(previewTimer).format('HH:mm:ss')}</div>
+      <div className="preview" onClick={toggleTimer}>
+        {moment.utc(previewTimer).format('HH:mm:ss')}
+      </div>
       <div className="add-btn">
         <BsPlusCircleFill
           className="btn-white transition-color"
@@ -171,6 +178,25 @@ export const NewTimer = () => {
           </Button>{' '}
         </ModalFooter>
       </Modal>
+      <Modal
+        isOpen={confirmationResetModal}
+        toggle={() => setConfirmationResetModal(!confirmationResetModal)}
+        centered={true}
+      >
+        <ModalHeader toggle={() => setConfirmationResetModal(false)}>Reset of Time</ModalHeader>
+        <ModalBody>Are you sure you want to reset your time ?</ModalBody>
+        <ModalFooter>
+          <Button
+            color="primary"
+            onClick={() => {
+              handleClear();
+              setConfirmationResetModal(false);
+            }}
+          >
+            Yes, reset time !
+          </Button>{' '}
+        </ModalFooter>
+      </Modal>
       <div className={`timer ${!showTimer && 'hide-me'}`}>
         <div className="timer-content">
           <BsXLg className="transition-color btn-white cross" onClick={toggleTimer} />
@@ -186,7 +212,7 @@ export const NewTimer = () => {
                 handleAddGoal={handleAddGoal}
                 handleRemoveGoal={handleRemoveGoal}
                 setPreviewTimer={setPreviewTimer}
-                handleClear={handleClear}
+                handleClear={() => setConfirmationResetModal(true)}
                 toggleModal={() => setLogModal(true)}
               />
             ) : (
@@ -216,6 +242,7 @@ export const NewTimer = () => {
             handleStop={handleStop}
             handleAddGoal={handleAddGoal}
             goal={message?.goal}
+            setIsActive={setIsActive}
           />
         )}
       </div>

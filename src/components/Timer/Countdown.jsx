@@ -11,6 +11,7 @@ import { Input } from 'reactstrap';
 import './Countdown.css';
 import moment from 'moment';
 import { useEffect, useState } from 'react';
+import { useRef } from 'react';
 
 const Countdown = ({
   message,
@@ -23,6 +24,7 @@ const Countdown = ({
   setPreviewTimer,
   handleClear,
   toggleModal,
+  setIsDisabledModalAttentionOpen,
 }) => {
   const MAX_HOURS = 5;
   const MIN_MINS = 15;
@@ -55,12 +57,14 @@ const Countdown = ({
    * If the number in less than the min we set it
    * If is greater we set the max number
    * */
+
   const forceMinMax = (e, h = false) => {
     let { value, min, max } = e.target;
     value = Math.max(Number(min), Math.min(Number(max), Number(value)));
-
     if (h) setHours(value);
-    else setMinutes(value);
+    else {
+      setMinutes(value);
+    }
   };
 
   /*
@@ -74,6 +78,10 @@ const Countdown = ({
    * */
   const validateTime = () => {
     let dur = moment.duration(hours, 'hours').add(minutes, 'minutes');
+
+    handleSetGoal(dur.asMilliseconds());
+    setMinutes(minutes);
+
     if (dur.asHours() > MAX_HOURS) {
       setHours(MAX_HOURS);
       setMinutes(0);
@@ -81,9 +89,8 @@ const Countdown = ({
     } else if (dur.asMinutes() < MIN_MINS) {
       setHours(0);
       setMinutes(MIN_MINS);
-      dur = moment.duration(MIN_MINS, 'minutes');
+      dur = moment.duration(minutes, 'minutes');
     }
-    handleSetGoal(dur.asMilliseconds());
     setEditing(false);
   };
 
@@ -163,7 +170,7 @@ const Countdown = ({
    * easily by changing the MAX_HOURS variable
    * */
   return (
-    <div className="countdown">
+    <div className="countdown" ref={ref}>
       <BsArrowCounterclockwise
         onClick={handleClear}
         className="transition-color btn-white"
@@ -220,19 +227,35 @@ const Countdown = ({
         {time < message.goal || running ? (
           <>
             <div className="add-grid transition-color">
+              {minutes > 15 && (
+                <button
+                  style={{ cursor: `${running && 'not-allowed'}` }}
+                  disabled={shouldDisableBtn(15, false)}
+                  onClick={() => handleRemoveGoal(1000 * 60 * 15)}
+                >
+                  -15 m
+                </button>
+              )}
+
               <button
-                disabled={shouldDisableBtn(15, false)}
-                onClick={() => handleRemoveGoal(1000 * 60 * 15)}
+                style={{ cursor: `${running && 'not-allowed'}` }}
+                disabled={shouldDisableBtn(15)}
+                onClick={() => handleAddGoal(1000 * 60 * 15)}
               >
-                -15 m
-              </button>
-              <button disabled={shouldDisableBtn(15)} onClick={() => handleAddGoal(1000 * 60 * 15)}>
                 15 m
               </button>
-              <button disabled={shouldDisableBtn(30)} onClick={() => handleAddGoal(1000 * 60 * 30)}>
+              <button
+                style={{ cursor: `${running && 'not-allowed'}` }}
+                disabled={shouldDisableBtn(30)}
+                onClick={() => handleAddGoal(1000 * 60 * 30)}
+              >
                 30 m
               </button>
-              <button disabled={shouldDisableBtn(60)} onClick={() => handleAddGoal(1000 * 60 * 60)}>
+              <button
+                style={{ cursor: `${running && 'not-allowed'}` }}
+                disabled={shouldDisableBtn(60)}
+                onClick={() => handleAddGoal(1000 * 60 * 60)}
+              >
                 1 h
               </button>
             </div>
