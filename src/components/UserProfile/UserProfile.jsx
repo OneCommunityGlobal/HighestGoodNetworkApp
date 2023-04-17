@@ -603,7 +603,6 @@ function UserProfile(props) {
           handleLinkModel={props.handleLinkModel}
           role={requestorRole}
           userPermissions={userPermissions}
-          // setIsValid={setIsValid(true)}
         />
       )}
       <TabToolTips />
