@@ -64,7 +64,6 @@ export const NewTimer = () => {
     options,
   );
 
-
   //This is the contract between server and client
   const action = {
     START_TIMER: 'START_TIMER',
@@ -79,14 +78,33 @@ export const NewTimer = () => {
     ACK_FORCED: 'ACK_FORCED',
   };
 
-  console.log(isActive);
+  const remainingTime = () => {
+    return remaining;
+  };
+
   /*
   This are the callbacks for the buttons in the timer, here we send the message to the server
   with every single action that the user wants to perform
   the handleSetGoal and handleAddGoal are a little different, we need to send the time to the server
   so we concat the action with the time
   */
-  const handleStart = useCallback(() => sendMessage(action.START_TIMER), []);
+  const handleStart = useCallback(() => {
+    const now = moment();
+    const lastAccess = moment(message?.lastAccess);
+    const elapsedTime = moment.duration(now.diff(lastAccess)).asMilliseconds();
+    let remaining = message?.time - elapsedTime;
+    const lastTimeAdded = moment
+      .utc(message?.time)
+      .format('HH:mm')
+      .replace('00:0', '');
+    if (remaining < 0) {
+      handleAddGoal(1000 * 60 * Number(lastTimeAdded > 0 ? lastTimeAdded : 5));
+      sendMessage(action.START_TIMER);
+      return;
+    } else {
+      sendMessage(action.START_TIMER);
+    }
+  }, [minutes, message]);
   const handleStop = useCallback(() => sendMessage(action.STOP_TIMER), []);
   const handlePause = useCallback(() => sendMessage(action.PAUSE_TIMER), []);
   const handleClear = useCallback(() => sendMessage(action.CLEAR_TIMER), []);
@@ -111,6 +129,8 @@ export const NewTimer = () => {
   );
   const hours = timeToLog.hours();
   const minutes = timeToLog.minutes();
+
+  const timeRemaining = moment.utc(previewTimer).format('HH:mm:ss');
 
   /*
   Here is the the timer wrapper, we check if the timer is in countdown mode

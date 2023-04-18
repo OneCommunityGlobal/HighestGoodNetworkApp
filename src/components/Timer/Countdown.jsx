@@ -11,7 +11,6 @@ import { Input } from 'reactstrap';
 import './Countdown.css';
 import moment from 'moment';
 import { useEffect, useState } from 'react';
-import { useRef } from 'react';
 
 const Countdown = ({
   message,
@@ -24,7 +23,6 @@ const Countdown = ({
   setPreviewTimer,
   handleClear,
   toggleModal,
-  setIsDisabledModalAttentionOpen,
 }) => {
   const MAX_HOURS = 5;
   const MIN_MINS = 15;
@@ -111,7 +109,9 @@ const Countdown = ({
       remaining = 0;
       handleStop();
       toggleModal();
-      alarm();
+      setInterval(() => {
+        alarm();
+      }, 2000);
     }
     return remaining;
   };
@@ -170,7 +170,7 @@ const Countdown = ({
    * easily by changing the MAX_HOURS variable
    * */
   return (
-    <div className="countdown" ref={ref}>
+    <div className="countdown">
       <BsArrowCounterclockwise
         onClick={handleClear}
         className="transition-color btn-white"
