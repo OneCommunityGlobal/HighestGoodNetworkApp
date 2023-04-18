@@ -40,9 +40,9 @@ describe('WeeklySummariesReport page', () => {
       render(<WeeklySummariesReport {...props} />);
     });
 
-    it('should have 3 tab', () => {
+    it('should have 4 tab', () => {
       const li = screen.getAllByRole('listitem');
-      expect(li.length).toEqual(3);
+      expect(li.length).toEqual(4);
     });
 
     it('should have first tab set to "active" by default', () => {
@@ -63,6 +63,11 @@ describe('WeeklySummariesReport page', () => {
       // Third tab click.
       fireEvent.click(screen.getByTestId('tab-3'));
       expect(screen.getByTestId('tab-3').classList.contains('active')).toBe(true);
+    });
+    it('should make 4th tab active when clicked', () => {
+      // Fourth tab click.
+      fireEvent.click(screen.getByTestId('tab-4'));
+      expect(screen.getByTestId('tab-4').classList.contains('active')).toBe(true);
     });
   });
 });
