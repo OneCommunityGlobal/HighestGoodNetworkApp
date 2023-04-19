@@ -89,6 +89,9 @@ export const NewTimer = () => {
   so we concat the action with the time
   */
   const handleStart = useCallback(() => {
+    sendMessage(action.START_TIMER);
+  }, [minutes, message]);
+  const handleStartButton = useCallback(() => {
     const now = moment();
     const lastAccess = moment(message?.lastAccess);
     const elapsedTime = moment.duration(now.diff(lastAccess)).asMilliseconds();
@@ -130,8 +133,6 @@ export const NewTimer = () => {
   const hours = timeToLog.hours();
   const minutes = timeToLog.minutes();
 
-  const timeRemaining = moment.utc(previewTimer).format('HH:mm:ss');
-
   /*
   Here is the the timer wrapper, we check if the timer is in countdown mode
   if it is we show the countdown timer, if it is not we show the stopwatch
@@ -162,7 +163,7 @@ export const NewTimer = () => {
         <BsFillPlayCircleFill
           className="btn-white transition-color"
           fontSize="1.5rem"
-          onClick={handleStart}
+          onClick={handleStartButton}
         />
       ) : (
         <BsPauseCircleFill
