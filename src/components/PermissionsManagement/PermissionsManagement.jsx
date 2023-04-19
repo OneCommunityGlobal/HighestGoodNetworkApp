@@ -8,10 +8,12 @@ import { getAllRoles } from '../../actions/role';
 import { updateUserProfile, getUserProfile } from 'actions/userProfile';
 import { getAllUserProfile } from 'actions/userManagement';
 import UserPermissionsPopUp from './UserPermissionsPopUp';
+import { useHistory } from 'react-router-dom';
 
 const PermissionsManagement = ({ getAllRoles, roles, auth, getUserRole, userProfile }) => {
   const [isNewRolePopUpOpen, setIsNewRolePopUpOpen] = useState(false);
   const [isUserPermissionsOpen, setIsUserPermissionsOpen] = useState(false);
+  let history = useHistory();
 
   const togglePopUpNewRole = () => {
     setIsNewRolePopUpOpen(previousState => !previousState);
@@ -34,22 +36,24 @@ const PermissionsManagement = ({ getAllRoles, roles, auth, getUserRole, userProf
 
   return (
     <div className="permissions-management">
+      <h1 className="permissions-management__title">User Roles</h1>
       <div className="permissions-management__header">
-        <h1 className="permissions-management__title">User Roles</h1>
         <div className="role-name-container">
           {roleNames?.map(roleName => {
             let roleNameLC = roleName.toLowerCase().replace(' ', '-');
             return (
-              <p key={roleName} className="role-name">
-                <a href={`/permissionsmanagement/${roleNameLC}`} className="role-name-link">
-                  {roleName}
-                </a>
-              </p>
+              <button
+                onClick={() => history.push(`/permissionsmanagement/${roleNameLC}`)}
+                key={roleName}
+                className="role-name"
+              >
+                {roleName}
+              </button>
             );
           })}
         </div>
         {userProfile?.role === 'Owner' && (
-          <>
+          <div className="buttons-container">
             <Button
               className="permissions-management__button"
               type="button"
@@ -68,7 +72,7 @@ const PermissionsManagement = ({ getAllRoles, roles, auth, getUserRole, userProf
             >
               Manage User Permissions
             </Button>
-          </>
+          </div>
         )}
       </div>
       <div className="permissions-management--flex">
@@ -83,7 +87,6 @@ const PermissionsManagement = ({ getAllRoles, roles, auth, getUserRole, userProf
             <CreateNewRolePopup toggle={togglePopUpNewRole} />
           </ModalBody>
         </Modal>
-
         <Modal
           isOpen={isUserPermissionsOpen}
           toggle={togglePopUpUserPermissions}
