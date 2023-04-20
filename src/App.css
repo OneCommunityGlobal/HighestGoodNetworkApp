@@ -88,3 +88,7 @@ body,
   background-color: #CC3366 !important;
   /*  90%to100%-red */
 }
+.dropdown-menu.show {
+  transform: translate3d(-16px, 40px, 0px) !important;
+}
+
