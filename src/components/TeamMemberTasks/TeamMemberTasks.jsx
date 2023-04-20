@@ -199,6 +199,7 @@ const TeamMemberTasks = props => {
 
         const markAsDone = async task => {
           task.task.status = 'Complete';
+          console.log(task);
           const updatedTask = {
             taskName: task.task.taskName,
             priority: task.task.priority,
@@ -433,6 +434,7 @@ const TeamMemberTasks = props => {
           submitTasks={submitTasks}
           popupClose={closeMarkAsDone}
           updateTask={onUpdateTask}
+          deleteSelectedTask={deleteSelectedTask}
           userId={currentUserId}
           task={currentTask}
           setCurrentUserId={setCurrentUserId}
