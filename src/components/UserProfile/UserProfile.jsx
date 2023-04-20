@@ -1297,6 +1297,17 @@ function UserProfile(props) {
               <Button outline onClick={() => loadUserProfile()}>
                 Refresh
               </Button>
+              <SaveButton
+                className="mr-1 btn-bottom"
+                handleSubmit={handleSubmit}
+                disabled={
+                  !formValid.firstName ||
+                  !formValid.lastName ||
+                  !formValid.email ||
+                  (isProfileEqual && isTasksEqual && isTeamsEqual && isProjectsEqual)
+                }
+                userProfile={userProfile}
+              />
             </div>
           </Col>
         </Row>
