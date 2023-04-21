@@ -4,6 +4,9 @@ import moment from 'moment';
 import 'moment-timezone';
 import ReactHtmlParser from 'react-html-parser';
 import { Link } from 'react-router-dom';
+import google_doc_icon from './google_doc_icon.png';
+import './WeeklySummariesReport.css';
+import { toast } from 'react-toastify';
 
 const FormattedReport = ({ summaries, weekIndex }) => {
   const emails = [];
@@ -36,6 +39,16 @@ const FormattedReport = ({ summaries, weekIndex }) => {
     } else {
       return 'Not provided!';
     }
+  };
+
+  const getGoogleDocLink = summary => {
+    if (!summary.adminLinks) {
+      return undefined;
+    }
+
+    const googleDocLink = summary.adminLinks.find(link => link.Name === 'Google Doc');
+
+    return googleDocLink;
   };
 
   const getWeeklySummaryMessage = summary => {
@@ -80,22 +93,41 @@ const FormattedReport = ({ summaries, weekIndex }) => {
     );
   };
 
+  const handleGoogleDocClick = googleDocLink => {
+    const toastGoogleLinkDoesNotExist = 'toast-on-click';
+    if (googleDocLink) {
+      window.open(googleDocLink.Link);
+    } else {
+      toast.error(
+        'Uh oh, no Google Doc is present for this user! Please contact an Admin to find out why',
+        {
+          toastId: toastGoogleLinkDoesNotExist,
+          pauseOnFocusLoss: false,
+          autoClose: 3000,
+        },
+      );
+    }
+  };
   return (
     <>
       {alphabetize(summaries).map((summary, index) => {
         const hoursLogged = (summary.totalSeconds[weekIndex] || 0) / 3600;
-
+        const googleDocLink = getGoogleDocLink(summary);
         return (
           <div
             style={{ padding: '20px 0', marginTop: '5px', borderBottom: '1px solid #DEE2E6' }}
             key={'summary-' + index}
           >
-            <p>
+            <div>
               <b>Name: </b>
               <Link to={`/userProfile/${summary._id}`} title="View Profile">
                 {summary.firstName} {summary.lastName}
               </Link>
-            </p>
+
+              <span onClick={() => handleGoogleDocClick(googleDocLink)}>
+                <img className="google-doc-icon" src={google_doc_icon} alt="google_doc" />
+              </span>
+            </div>
             <p>
               {' '}
               <b>Media URL:</b> {getMediaUrlLink(summary)}
