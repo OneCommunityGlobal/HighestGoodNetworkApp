@@ -300,7 +300,12 @@ const ViewTab = props => {
         </Col>
         <Col md="6" className="tangible-hrs-group">
           <p className="hours-totalTangible">{totalTangibleHours}</p>
-          <Button outline onClick={() => props.loadUserProfile()}>
+          <Button
+            size="sm"
+            color="info"
+            className="refresh-btn"
+            onClick={() => props.loadUserProfile()}
+          >
             Refresh
           </Button>
         </Col>
