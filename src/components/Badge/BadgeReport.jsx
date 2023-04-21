@@ -196,11 +196,10 @@ const BadgeReport = props => {
     mm < 10 ? (mm = '0' + mm) : mm;
     dd < 10 ? (dd = '0' + dd) : dd;
     const formatedDate = `${yyyy}-${mm}-${dd}`;
-
-    newBadges.map(bdg => {
-      if (newValue > bdg.count) {
+    newBadges.map((bdg, i) => {
+      if (newValue > bdg.count && i === index) {
         bdg.earnedDate.push(formatedDate);
-      } else {
+      } else if (newValue < bdg.count && i === index) {
         bdg.earnedDate.pop();
       }
     });
