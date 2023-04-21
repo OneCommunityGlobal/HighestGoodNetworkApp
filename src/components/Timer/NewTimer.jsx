@@ -16,7 +16,6 @@ import { ENDPOINTS } from '../../utils/URL';
 import TimeEntryForm from '../Timelog/TimeEntryForm';
 import { useSelector } from 'react-redux';
 import Countdown from './Countdown';
-import SwitchTimer from './SwitchTimer';
 import Stopwatch from './Stopwatch';
 import TimerStatus from './TimerStatus';
 import { Modal, ModalHeader, ModalBody, ModalFooter, Button } from 'reactstrap';
@@ -59,6 +58,7 @@ export const NewTimer = () => {
   Expected message format:
   {userId: string, time: number, paused: boolean, forcedPause: boolean, stopped: boolean, goal: number, lastAccess: Date}
   */
+
   const { sendMessage, lastJsonMessage: message, readyState } = useWebSocket(
     ENDPOINTS.TIMER_SERVICE,
     options,
@@ -78,10 +78,6 @@ export const NewTimer = () => {
     ACK_FORCED: 'ACK_FORCED',
   };
 
-  const remainingTime = () => {
-    return remaining;
-  };
-
   /*
   This are the callbacks for the buttons in the timer, here we send the message to the server
   with every single action that the user wants to perform
@@ -91,6 +87,7 @@ export const NewTimer = () => {
   const handleStart = useCallback(() => {
     sendMessage(action.START_TIMER);
   }, [minutes, message]);
+
   const handleStartButton = useCallback(() => {
     const now = moment();
     const lastAccess = moment(message?.lastAccess);
@@ -180,7 +177,7 @@ export const NewTimer = () => {
           setLogModal(true);
         }}
       />
-      <Modal isOpen={inacModal} toggle={() => setInacModal(!inacModal)} centered={true}>
+      <Modal size={'md'} isOpen={inacModal} toggle={() => setInacModal(!inacModal)} centered={true}>
         <ModalHeader toggle={() => setInacModal(!inacModal)}>Timer Paused</ModalHeader>
         <ModalBody>
           The user timer has been paused due to inactivity or a lost in connection to the server.
@@ -203,8 +200,9 @@ export const NewTimer = () => {
         isOpen={confirmationResetModal}
         toggle={() => setConfirmationResetModal(!confirmationResetModal)}
         centered={true}
+        size={'sm'}
       >
-        <ModalHeader toggle={() => setConfirmationResetModal(false)}>Reset of Time</ModalHeader>
+        <ModalHeader toggle={() => setConfirmationResetModal(false)}>Reset Time</ModalHeader>
         <ModalBody>Are you sure you want to reset your time ?</ModalBody>
         <ModalFooter>
           <Button
@@ -214,7 +212,7 @@ export const NewTimer = () => {
               setConfirmationResetModal(false);
             }}
           >
-            Yes, reset time !
+            Yes, reset time!
           </Button>{' '}
         </ModalFooter>
       </Modal>

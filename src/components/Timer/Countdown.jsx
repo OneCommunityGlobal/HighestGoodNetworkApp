@@ -227,32 +227,29 @@ const Countdown = ({
         {time < message.goal || running ? (
           <>
             <div className="add-grid transition-color">
-              {minutes > 15 && (
-                <button
-                  style={{ cursor: `${running && 'not-allowed'}` }}
-                  disabled={shouldDisableBtn(15, false)}
-                  onClick={() => handleRemoveGoal(1000 * 60 * 15)}
-                >
-                  -15 m
-                </button>
-              )}
-
               <button
-                style={{ cursor: `${running && 'not-allowed'}` }}
+                style={{ cursor: `${shouldDisableBtn(15, false) && 'not-allowed'}` }}
+                disabled={shouldDisableBtn(15, false)}
+                onClick={() => handleRemoveGoal(1000 * 60 * 15)}
+              >
+                -15 m
+              </button>
+              <button
+                style={{ cursor: `${shouldDisableBtn(15) && 'not-allowed'}` }}
                 disabled={shouldDisableBtn(15)}
                 onClick={() => handleAddGoal(1000 * 60 * 15)}
               >
                 15 m
               </button>
               <button
-                style={{ cursor: `${running && 'not-allowed'}` }}
+                style={{ cursor: `${shouldDisableBtn(30) && 'not-allowed'}` }}
                 disabled={shouldDisableBtn(30)}
                 onClick={() => handleAddGoal(1000 * 60 * 30)}
               >
                 30 m
               </button>
               <button
-                style={{ cursor: `${running && 'not-allowed'}` }}
+                style={{ cursor: `${shouldDisableBtn(60) && 'not-allowed'}` }}
                 disabled={shouldDisableBtn(60)}
                 onClick={() => handleAddGoal(1000 * 60 * 60)}
               >

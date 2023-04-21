@@ -608,7 +608,7 @@ const TimeEntryForm = props => {
             ) : (
               <span style={{ color: 'orange' }}>Intangible </span>
             )}
-            Time Entrys{' '}
+            Time Entry{' '}
             <i
               className="fa fa-info-circle"
               data-tip
