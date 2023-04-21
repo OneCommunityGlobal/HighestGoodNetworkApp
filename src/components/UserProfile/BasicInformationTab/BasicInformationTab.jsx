@@ -422,7 +422,9 @@ const BasicInformationTab = props => {
             <Label>Role</Label>
           </Col>
           <Col>
-            {canEdit ? (
+          {(userProfile.role !== 'Owner' && userProfile.role !== 'Administrator') ? (
+              `${userProfile.role}`
+            ) : canEdit ? (
               <FormGroup>
                 <select
                   value={userProfile.role}

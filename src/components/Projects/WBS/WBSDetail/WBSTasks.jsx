@@ -14,6 +14,7 @@ import { NavItem, Button } from 'reactstrap';
 import './wbs.css';
 import ReactTooltip from 'react-tooltip';
 import hasPermission from 'utils/permissions';
+import Loading from '../../../common/Loading';
 
 const WBSTasks = props => {
   // modal
@@ -32,16 +33,24 @@ const WBSTasks = props => {
   const [openAll, setOpenAll] = useState(false);
   const [loadAll, setLoadAll] = useState(false);
   const [isDeleted, setIsDeleted] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
-  const load = async () => {
+  const load = async openAll => {
     const levelList = [0, 1, 2, 3, 4];
     await Promise.all(levelList.map(level => props.fetchAllTasks(wbsId, level)));
-    AutoOpenAll(false);
-    setLoadAll(true);
+    setIsLoading(true);
+    if (openAll) {
+      AutoOpenAll(true);
+      setLoadAll(true);
+      setIsLoading(false);
+    } else {
+      AutoOpenAll(false);
+      setIsLoading(false);
+    }
   };
 
   useEffect(() => {
-    load().then(setOpenAll(false));
+    load(openAll).then(setOpenAll(openAll));
     props.fetchAllMembers(projectId);
     setTimeout(() => setIsShowImport(true), 1000);
   }, [wbsId, projectId]);
@@ -69,7 +78,7 @@ const WBSTasks = props => {
 
   const AutoOpenAll = openflag => {
     if (openflag) {
-      //console.log('open the folder');
+      setOpenAll(true);
       for (let i = 2; i < 5; i++) {
         const subItems = [...document.getElementsByClassName(`lv_${i}`)];
         for (let i = 0; i < subItems.length; i++) {
@@ -77,13 +86,13 @@ const WBSTasks = props => {
         }
       }
     } else {
-      //console.log('close the folder');
       for (let i = 2; i < 5; i++) {
         const subItems = [...document.getElementsByClassName(`lv_${i}`)];
         for (let i = 0; i < subItems.length; i++) {
           subItems[i].style.display = 'none';
         }
       }
+      setOpenAll(false);
     }
   };
 
@@ -99,10 +108,6 @@ const WBSTasks = props => {
   };
 
   const dropTask = (taskIdTo, parentId) => {
-    console.log('droppppped');
-    console.log('drop', drag, taskIdTo);
-
-    console.log('drop', drag, taskIdTo);
     const tasks = props.state.tasks.taskItems;
 
     let tasksClass = document.getElementsByClassName('taskDrop');
@@ -142,9 +147,6 @@ const WBSTasks = props => {
         modifiedList = true;
       }
     }
-
-    //console.log(list);
-    //props.updateNumList(wbsId, list);*/
   };
 
   const deleteWBSTask = (taskId, mother) => {
@@ -216,15 +218,21 @@ const WBSTasks = props => {
           </ol>
         </nav>
 
-        {hasPermission(props.state.auth.user.role, 'addTask', roles, userPermissions) ? (
-          <AddTaskModal
-            key="task_modal_null"
-            parentNum={null}
-            taskId={null}
-            wbsId={wbsId}
-            projectId={projectId}
-          />
-        ) : null}
+        {isLoading && (
+          <div className="loading">
+            <Loading /> Loading...
+          </div>
+        )}
+        <div className={isLoading ? 'loading-task' : 'load'}>
+          {hasPermission(props.state.auth.user.role, 'addTask', roles, userPermissions) ? (
+            <AddTaskModal
+              key="task_modal_null"
+              parentNum={null}
+              taskId={null}
+              wbsId={wbsId}
+              projectId={projectId}
+            />
+          ) : null}
 
         {props.state.tasks.taskItems.length === 0 && isShowImport === true ? (
           <ImportTask wbsId={wbsId} projectId={projectId} />
@@ -247,152 +255,159 @@ const WBSTasks = props => {
           </Button>
         ) : null}
 
-        <div className="toggle-all">
-          <Button
-            color="primary"
-            size="sm"
-            className="ml-3"
-            onClick={() => {
-              setFilterState('all');
-              setOpenAll(!openAll);
-            }}
-          >
-            All
-          </Button>
-          <Button
-            color="secondary"
-            size="sm"
-            onClick={() => setFilterState('assigned')}
-            className="ml-3"
-          >
-            Assigned
-          </Button>
-          <Button
-            color="success"
-            size="sm"
-            onClick={() => setFilterState('unassigned')}
-            className="ml-3"
-          >
-            Unassigned
-          </Button>
-          <Button color="info" size="sm" onClick={() => setFilterState('active')} className="ml-3">
-            Active
-          </Button>
-          <Button
-            color="warning"
-            size="sm"
-            onClick={() => setFilterState('inactive')}
-            className="ml-3"
-          >
-            Inactive
-          </Button>
-          <Button
-            color="danger"
-            size="sm"
-            onClick={() => setFilterState('complete')}
-            className="ml-3"
-          >
-            Complete
-          </Button>
+          <div className="toggle-all">
+            <Button
+              color="primary"
+              size="sm"
+              className="ml-3"
+              onClick={() => {
+                loadAll ? setOpenAll(!openAll) : load(!openAll);
+                setFilterState('all');
+              }}
+            >
+              {openAll ? 'Collapse All' : 'Expand All'}
+            </Button>
+            <Button
+              color="secondary"
+              size="sm"
+              onClick={() => setFilterState('assigned')}
+              className="ml-3"
+            >
+              Assigned
+            </Button>
+            <Button
+              color="success"
+              size="sm"
+              onClick={() => setFilterState('unassigned')}
+              className="ml-3"
+            >
+              Unassigned
+            </Button>
+            <Button
+              color="info"
+              size="sm"
+              onClick={() => setFilterState('active')}
+              className="ml-3"
+            >
+              Active
+            </Button>
+            <Button
+              color="warning"
+              size="sm"
+              onClick={() => setFilterState('inactive')}
+              className="ml-3"
+            >
+              Inactive
+            </Button>
+            <Button
+              color="danger"
+              size="sm"
+              onClick={() => setFilterState('complete')}
+              className="ml-3"
+            >
+              Complete
+            </Button>
+          </div>
+
+          <table className="table table-bordered tasks-table">
+            <thead>
+              <tr>
+                <th scope="col" data-tip="Action" colSpan="2">
+                  Action
+                </th>
+                <th scope="col" data-tip="WBS ID" colSpan="1">
+                  #
+                </th>
+                <th scope="col" data-tip="Task Name" className="task-name">
+                  Task
+                </th>
+                <th scope="col" data-tip="Priority">
+                  <i className="fa fa-star" aria-hidden="true"></i>
+                </th>
+                <th className="desktop-view" scope="col" data-tip="Resources">
+                  <i className="fa fa-users" aria-hidden="true"></i>
+                </th>
+                <th scope="col" data-tip="Assigned">
+                  <i className="fa fa-user-circle-o" aria-hidden="true"></i>
+                </th>
+                <th className="desktop-view" scope="col" data-tip="Status">
+                  <i className="fa fa-tasks" aria-hidden="true"></i>
+                </th>
+                <th className="desktop-view" scope="col" data-tip="Hours-Best">
+                  <i className="fa fa-hourglass-start" aria-hidden="true"></i>
+                </th>
+                <th className="desktop-view" scope="col" data-tip="Hours-Worst">
+                  <i className="fa fa-hourglass" aria-hidden="true"></i>
+                </th>
+                <th className="desktop-view" scope="col" data-tip="Hours-Most">
+                  <i className="fa fa-hourglass-half" aria-hidden="true"></i>
+                </th>
+                <th className="desktop-view" scope="col" data-tip="Estimated Hours">
+                  <i className="fa fa-clock-o" aria-hidden="true"></i>
+                </th>
+                <th className="desktop-view" scope="col" data-tip="Start Date">
+                  <i className="fa fa-calendar-check-o" aria-hidden="true"></i> Start
+                </th>
+                <th className="desktop-view" scope="col" data-tip="Due Date">
+                  <i className="fa fa-calendar-times-o" aria-hidden="true"></i> End
+                </th>
+                <th className="desktop-view" scope="col" data-tip="Links">
+                  <i className="fa fa-link" aria-hidden="true"></i>
+                </th>
+                <th className="desktop-view" scope="col" data-tip="Details">
+                  <i className="fa fa-question" aria-hidden="true"></i>
+                </th>
+              </tr>
+            </thead>
+
+            <tbody>
+              <tr className="taskDrop">
+                <td colSpan={14}></td>
+              </tr>
+
+              {filteredTasks.map((task, i) => (
+                <Task
+                  key={`${task._id}${i}`}
+                  id={task._id}
+                  level={task.level}
+                  num={task.num}
+                  name={task.taskName}
+                  priority={task.priority}
+                  resources={task.resources}
+                  isAssigned={task.isAssigned}
+                  status={task.status}
+                  hoursBest={task.hoursBest}
+                  hoursMost={task.hoursMost}
+                  hoursWorst={task.hoursWorst}
+                  estimatedHours={task.estimatedHours}
+                  startedDatetime={task.startedDatetime}
+                  dueDatetime={task.dueDatetime}
+                  links={task.links}
+                  projectId={projectId}
+                  wbsId={wbsId}
+                  selectTask={selectTaskFunc}
+                  isNew={task.new ? true : false}
+                  parentId1={task.parentId1}
+                  parentId2={task.parentId2}
+                  parentId3={task.parentId3}
+                  mother={task.mother}
+                  isOpen={openAll}
+                  drop={dropTask}
+                  drag={dragTask}
+                  deleteWBSTask={deleteWBSTask}
+                  hasChildren={task.hasChild}
+                  siblings={props.state.tasks.taskItems.filter(item => item.mother === task.mother)}
+                  taskId={task.taskId}
+                  whyInfo={task.whyInfo}
+                  intentInfo={task.intentInfo}
+                  endstateInfo={task.endstateInfo}
+                  childrenQty={task.childrenQty}
+                  filteredTasks={filteredTasks}
+                />
+              ))}
+            </tbody>
+          </table>
         </div>
-
-        <table className="table table-bordered tasks-table">
-          <thead>
-            <tr>
-              <th scope="col" data-tip="Action" colSpan="2">
-                Action
-              </th>
-              <th scope="col" data-tip="WBS ID" colSpan="1">
-                #
-              </th>
-              <th scope="col" data-tip="Task Name" className="task-name">
-                Task
-              </th>
-              <th scope="col" data-tip="Priority">
-                <i className="fa fa-star" aria-hidden="true"></i>
-              </th>
-              <th className="desktop-view" scope="col" data-tip="Resources">
-                <i className="fa fa-users" aria-hidden="true"></i>
-              </th>
-              <th scope="col" data-tip="Assigned">
-                <i className="fa fa-user-circle-o" aria-hidden="true"></i>
-              </th>
-              <th className="desktop-view" scope="col" data-tip="Status">
-                <i className="fa fa-tasks" aria-hidden="true"></i>
-              </th>
-              <th className="desktop-view" scope="col" data-tip="Hours-Best">
-                <i className="fa fa-hourglass-start" aria-hidden="true"></i>
-              </th>
-              <th className="desktop-view" scope="col" data-tip="Hours-Worst">
-                <i className="fa fa-hourglass" aria-hidden="true"></i>
-              </th>
-              <th className="desktop-view" scope="col" data-tip="Hours-Most">
-                <i className="fa fa-hourglass-half" aria-hidden="true"></i>
-              </th>
-              <th className="desktop-view" scope="col" data-tip="Estimated Hours">
-                <i className="fa fa-clock-o" aria-hidden="true"></i>
-              </th>
-              <th className="desktop-view" scope="col" data-tip="Start Date">
-                <i className="fa fa-calendar-check-o" aria-hidden="true"></i> Start
-              </th>
-              <th className="desktop-view" scope="col" data-tip="Due Date">
-                <i className="fa fa-calendar-times-o" aria-hidden="true"></i> End
-              </th>
-              <th className="desktop-view" scope="col" data-tip="Links">
-                <i className="fa fa-link" aria-hidden="true"></i>
-              </th>
-              <th className="desktop-view" scope="col" data-tip="Details">
-                <i className="fa fa-question" aria-hidden="true"></i>
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr className="taskDrop">
-              <td colSpan={14}></td>
-            </tr>
-
-            {filteredTasks.map((task, i) => (
-              <Task
-                key={`${task._id}${i}`}
-                id={task._id}
-                level={task.level}
-                num={task.num}
-                name={task.taskName}
-                priority={task.priority}
-                resources={task.resources}
-                isAssigned={task.isAssigned}
-                status={task.status}
-                hoursBest={task.hoursBest}
-                hoursMost={task.hoursMost}
-                hoursWorst={task.hoursWorst}
-                estimatedHours={task.estimatedHours}
-                startedDatetime={task.startedDatetime}
-                dueDatetime={task.dueDatetime}
-                links={task.links}
-                projectId={projectId}
-                wbsId={wbsId}
-                selectTask={selectTaskFunc}
-                isNew={task.new ? true : false}
-                parentId1={task.parentId1}
-                parentId2={task.parentId2}
-                parentId3={task.parentId3}
-                mother={task.mother}
-                isOpen={openAll}
-                drop={dropTask}
-                drag={dragTask}
-                deleteWBSTask={deleteWBSTask}
-                hasChildren={task.hasChild}
-                siblings={props.state.tasks.taskItems.filter(item => item.mother === task.mother)}
-                taskId={task.taskId}
-                whyInfo={task.whyInfo}
-                intentInfo={task.intentInfo}
-                endstateInfo={task.endstateInfo}
-                childrenQty={task.childrenQty}
-                filteredTasks={filteredTasks}
-              />
-            ))}
-          </tbody>
-        </table>
       </div>
     </React.Fragment>
   );

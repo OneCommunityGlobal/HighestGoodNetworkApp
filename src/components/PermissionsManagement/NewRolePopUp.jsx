@@ -29,7 +29,6 @@ const CreateNewRolePopup = ({ toggle, addNewRole }) => {
         permissions: permissionsChecked,
         permissionsBackEnd,
       };
-      console.log(newRoleObject);
       await addNewRole(newRoleObject);
       toast.success('Role created successfully');
 
@@ -45,7 +44,6 @@ const CreateNewRolePopup = ({ toggle, addNewRole }) => {
       const unCheckPermission = previous.filter(perm => perm !== actualValue);
       return isAlreadyChecked ? unCheckPermission : [...previous, actualValue];
     });
-    console.log(permissionsChecked);
   };
 
   return (

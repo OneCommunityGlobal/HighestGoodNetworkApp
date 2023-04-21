@@ -25,6 +25,23 @@
   margin-left: 35px;
 }
 
+.loading {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.loading-task {
+  position: relative;
+  z-index: -50;
+  opacity: 0.1;
+
+}
+.load {
+  position: relative;
+}
+
 .dot {
   height: 20px;
   width: 20px;
@@ -53,10 +70,12 @@
   width: 80%;
   float: left;
 }
+
 .task-resouces-btn {
   width: 20%;
   float: right;
 }
+
 .task-reousces-list {
   margin-top: 3px;
   float: left;
@@ -66,6 +85,7 @@
 .wbsTaskController {
   display: contents;
 }
+
 .wbsTask {
   line-height: 14px;
 }
@@ -116,6 +136,7 @@
   color: white;
   font-size: 14px;
 }
+
 .resourceMore {
   display: none;
 }
@@ -128,6 +149,7 @@
 .toggle-all {
   float: right;
 }
+
 .tasks-table {
   overflow-x: scroll;
   width: 100% !important;
@@ -153,23 +175,5 @@
 
   .table td {
     padding: 5px !important;
-  }
-
-  .toggle-all {
-    width: 100%;
-    float: unset;
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 10px;
-  }
-
-  .toggle-all button {
-    padding: 3px !important;
-    font-size: 12px;
-  }
-
-  .toggle-all .ml-3,
-  .toggle-all .mx-3 {
-    margin-left: 0 !important;
   }
 }
