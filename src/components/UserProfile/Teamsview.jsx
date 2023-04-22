@@ -77,9 +77,6 @@ const Teams = React.memo(props => {
     setAddNewTeamModal(!addNewTeamModal);
   };
   return (
-    // <Card style={{ backgroundColor: ' lightgray' }}>
-    // <CardTitle>Teams</CardTitle>
-    // <CardBody>
     <React.Fragment>
       <TeamsModal
         isOpen={addNewTeamModal}

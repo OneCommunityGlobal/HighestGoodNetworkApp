@@ -6,7 +6,6 @@ import { useSelector } from 'react-redux';
 import styles from './UserProjectsTable.css';
 
 const UserProjectsTable = React.memo(props => {
-  //const [addProjectPopupOpen, showProjectPopup] = useState(false);
   const { roles } = useSelector(state => state.role);
   const userPermissions = useSelector(state => state.auth.user?.permissions?.frontPermissions);
 

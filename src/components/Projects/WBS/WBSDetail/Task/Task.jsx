@@ -58,24 +58,6 @@ const Task = props => {
     }
   }, [props.isOpen]);
 
-  //----This was the old method of display task actions by click on the task # - it was bit wonky and
-  //----not the proper way to conditionally render something in React
-
-  /* let controllerToggle = true;
-  const selectTask = (id) => {
-    if (controllerToggle) {
-      document.getElementById(id).style.background = '#effff2';
-      document.getElementById(`controller_${id}`).style.display = 'contents';
-      controllerToggle = false;
-    } else {
-      document.getElementById(id).style.background = 'white';
-      document.getElementById(`controller_${id}`).style.display = '';
-      controllerToggle = true;
-    }
-
-    props.selectTask(id);
-  }; */
-
   const toggleGroups = id => {
     if (isOpen) {
       const allItems = [
@@ -150,8 +132,6 @@ const Task = props => {
   };
 
   const onMove = (from, to) => {
-    // const fromNum = from.split('.0').join('');
-    // const toNum = to.split('.0').join('');
     props.moveTasks(props.wbsId, from, to);
     setTimeout(() => {
       props.fetchAllTasks(props.wbsId);
