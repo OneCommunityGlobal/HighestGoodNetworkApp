@@ -17,9 +17,10 @@ export const getAllUserProfile = () => {
   const userProfilesPromise = axios.get(ENDPOINTS.USER_PROFILES);
   return async dispatch => {
     await dispatch(userProfilesFetchStartAction());
-    userProfilesPromise
+    return userProfilesPromise
       .then(res => {
         dispatch(userProfilesFetchCompleteACtion(res.data));
+        return res.data;
       })
       .catch(err => {
         dispatch(userProfilesFetchErrorAction());

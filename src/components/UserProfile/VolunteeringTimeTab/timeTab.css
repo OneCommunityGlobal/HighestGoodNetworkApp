@@ -7,6 +7,10 @@
   padding: 8px 0;
 }
 
+.volunteering-time-row .col-md-6 .form-group {
+  margin-bottom: 0;
+}
+
 .col-md-6 .hours-label {
   margin-bottom: 0;
 }
