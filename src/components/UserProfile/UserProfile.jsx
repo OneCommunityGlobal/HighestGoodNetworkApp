@@ -553,13 +553,10 @@ function UserProfile(props) {
   const userPermissions = props.auth.user?.permissions?.frontPermissions;
 
   const isUserSelf = targetUserId === requestorId;
-  let canEdit;
-  if (userProfile.role !== 'Owner') {
-    canEdit = hasPermission(requestorRole, 'editUserProfile', roles, userPermissions) || isUserSelf;
-  } else {
-    canEdit =
-      hasPermission(requestorRole, 'addDeleteEditOwners', roles, userPermissions) || isUserSelf;
-  }
+  const canEditProfile = userProfile.role === 'Owner' ? 
+  hasPermission(requestorRole, 'addDeleteEditOwners', roles, userPermissions) :
+  hasPermission(requestorRole, 'editUserProfile', roles, userPermissions);
+  const canEdit = canEditProfile || isUserSelf;
 
   const customStyles = {
     control: (base, state) => ({
@@ -851,6 +848,7 @@ function UserProfile(props) {
                   isUserSelf={isUserSelf}
                   setShouldRefresh={setShouldRefresh}
                   canEdit={canEdit}
+                  canEditRole={canEditProfile}
                   roles={roles}
                   userPermissions={userPermissions}
                 />
