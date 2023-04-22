@@ -930,6 +930,7 @@ function UserProfile(props) {
                     isUserSelf={isUserSelf}
                     setShouldRefresh={setShouldRefresh}
                     canEdit={canEdit}
+                    canEditRole={canEditProfile}
                     roles={roles}
                     userPermissions={userPermissions}
                   />
