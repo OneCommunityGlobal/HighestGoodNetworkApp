@@ -14,6 +14,8 @@ import BadgeHistory from './BadgeHistory';
 const OldBadges = props => {
   const [isOpen, setOpen] = useState(false);
 
+  console.log("what data do i have?", props.badges)
+
   const toggle = () => setOpen(isOpen => !isOpen);
 
   return (
@@ -36,6 +38,10 @@ const OldBadges = props => {
             </Modal> */}
           </CardTitle>
           <div className="old_badges">
+            <div className="customBadge">
+            <img src="https://previews.dropbox.com/p/thumb/AB4Yjt1zWgzFtYBIgIs78l8PX5-Tgoa7e3f2nxIh3fvmO_9I2cWfVTHhTWTvexYMebaMOzaZW0XOpzz4_T-HJZ4N2ZbZPbenaxXGCK-LRS5srSDbUuCFkq-mbQfFt0Yo8oS_5t5rRhkL8czGcWZzqI3ZNc_flXvGtyAz64rbHR5iE4urhq-7LBagNX0Y7n7HR2FwQyPrP4PnfGGskSrmw_UF1OnadAcgf8m50vx2fZ7YrP9IEXlBLRTxoxcr4KSph9scXcXwJWNFVND6fwexEMPs-qkLieX0rkeju3DjIeY6PK3QcmwAMQeFR-KSEG6guUrLR1L1p9g0gYIgCfDqFeWi3H3kmNXNEnHpv1gUnAeLZ6oSMek0_lmSnuTEG9gcbhk/p.png" />
+            <div>{props.badges.length}</div>
+            </div>
             <BadgeHistory badges={props.badges} />
           </div>
         </CardBody>
