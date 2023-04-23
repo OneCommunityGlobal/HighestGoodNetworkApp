@@ -14,6 +14,7 @@ import { createOrUpdateTaskNotificationHTTP } from './taskNotification';
 import { createTaskEditSuggestionHTTP } from 'components/TaskEditSuggestions/service';
 
 const selectFetchTeamMembersTaskData = state => state.auth.user.userid;
+const selectViewTeamMembersTaskData = state => state.userProfile._id;
 const selectUserId = state => state.auth.user.userid;
 const selectUpdateTaskData = (state, taskId) =>
   state.tasks.taskItems.find(({ _id }) => _id === taskId);
@@ -21,10 +22,16 @@ const selectUpdateTaskData = (state, taskId) =>
 export const fetchTeamMembersTask = () => async (dispatch, getState) => {
   try {
     const state = getState();
-    const userId = selectFetchTeamMembersTaskData(state);
+    const authUserId = selectFetchTeamMembersTaskData(state);
+    const viewUserId = selectViewTeamMembersTaskData(state);
     dispatch(fetchTeamMembersTaskBegin());
-    const response = await axios.get(ENDPOINTS.TEAM_MEMBER_TASKS(userId));
-    dispatch(fetchTeamMembersTaskSuccess(response.data));
+    if (viewUserId) {
+      const response = await axios.get(ENDPOINTS.TEAM_MEMBER_TASKS(viewUserId));
+      dispatch(fetchTeamMembersTaskSuccess(response.data));
+    } else {
+      const response = await axios.get(ENDPOINTS.TEAM_MEMBER_TASKS(authUserId));
+      dispatch(fetchTeamMembersTaskSuccess(response.data));
+    }
   } catch (error) {
     dispatch(fetchTeamMembersTaskError());
   }
