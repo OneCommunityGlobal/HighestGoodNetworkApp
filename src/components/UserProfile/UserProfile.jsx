@@ -429,7 +429,6 @@ function UserProfile(props) {
       alert('An error occurred while attempting to save this profile.');
     }
     setShouldRefresh(true);
-    window.location.reload();
   };
 
   const toggle = modalName => setMenuModalTabletScreen(modalName);
@@ -530,6 +529,13 @@ function UserProfile(props) {
     }
   };
 
+  const onUserVisibilitySwitch = () => {
+    setUserProfile({
+      ...userProfile,
+      isVisible: !userProfile.isVisible ?? true,
+    });
+  }
+
   if ((showLoading && !props.isAddNewUser) || userProfile === undefined) {
     return (
       <Container fluid>
@@ -547,13 +553,10 @@ function UserProfile(props) {
   const userPermissions = props.auth.user?.permissions?.frontPermissions;
 
   const isUserSelf = targetUserId === requestorId;
-  let canEdit;
-  if (userProfile.role !== 'Owner') {
-    canEdit = hasPermission(requestorRole, 'editUserProfile', roles, userPermissions) || isUserSelf;
-  } else {
-    canEdit =
-      hasPermission(requestorRole, 'addDeleteEditOwners', roles, userPermissions) || isUserSelf;
-  }
+  const canEditProfile = userProfile.role === 'Owner' ? 
+  hasPermission(requestorRole, 'addDeleteEditOwners', roles, userPermissions) :
+  hasPermission(requestorRole, 'editUserProfile', roles, userPermissions);
+  const canEdit = canEditProfile || isUserSelf;
 
   const customStyles = {
     control: (base, state) => ({
@@ -597,7 +600,6 @@ function UserProfile(props) {
           handleLinkModel={props.handleLinkModel}
           role={requestorRole}
           userPermissions={userPermissions}
-          // setIsValid={setIsValid(true)}
         />
       )}
       <TabToolTips />
@@ -845,6 +847,7 @@ function UserProfile(props) {
                   isUserSelf={isUserSelf}
                   setShouldRefresh={setShouldRefresh}
                   canEdit={canEdit}
+                  canEditRole={canEditProfile}
                   roles={roles}
                   userPermissions={userPermissions}
                 />
@@ -874,6 +877,9 @@ function UserProfile(props) {
                   edit={hasPermission(requestorRole, 'editUserProfile', roles, userPermissions)}
                   role={requestorRole}
                   roles={roles}
+                  onUserVisibilitySwitch={onUserVisibilitySwitch}
+                  isVisible={userProfile.isVisible}
+                  canEditVisibility={canEdit && userProfile.role != 'Volunteer'}
                 />
               </TabPane>
               <TabPane tabId="4">
@@ -923,6 +929,7 @@ function UserProfile(props) {
                     isUserSelf={isUserSelf}
                     setShouldRefresh={setShouldRefresh}
                     canEdit={canEdit}
+                    canEditRole={canEditProfile}
                     roles={roles}
                     userPermissions={userPermissions}
                   />
@@ -1071,6 +1078,9 @@ function UserProfile(props) {
                     edit={hasPermission(requestorRole, 'editUserProfile', roles, userPermissions)}
                     role={requestorRole}
                     roles={roles}
+                    onUserVisibilitySwitch={onUserVisibilitySwitch}
+                    isVisible={userProfile.isVisible}
+                    canEditVisibility={canEdit && userProfile.role != 'Volunteer'}
                   />
                 </ModalBody>
                 <ModalFooter>

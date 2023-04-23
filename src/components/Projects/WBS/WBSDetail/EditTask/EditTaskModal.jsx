@@ -29,6 +29,8 @@ const EditTaskModal = props => {
       try {
         const res = await axios.get(ENDPOINTS.GET_TASK(props.taskId));
         setThisTask(res?.data || {});
+        setCategory(res.data.category);
+        setAssigned(res.data.isAssigned);
       } catch (error) {
         console.log(error);
       }
@@ -186,19 +188,6 @@ const EditTaskModal = props => {
   const removeLink = index => {
     setLinks([...links.splice(0, index), ...links.splice(index + 1)]);
   };
-
-  // // parent Id
-  // let parentId1 = props.parentId1 ? props.parentId1 : null;
-  // let parentId2 = props.parentId2 ? props.parentId2 : null;
-  // let parentId3 = props.parentId3 ? props.parentId3 : null;
-
-  // if (props.parentId1 === null) {
-  //   parentId1 = props.taskId;
-  // } else if (props.parentId2 === null) {
-  //   parentId2 = props.taskId;
-  // } else if (props.parentId3 === null) {
-  //   parentId3 = props.taskId;
-  // }
 
   // helpers for change start/end date
   const changeDateStart = startDate => {
@@ -375,7 +364,11 @@ const EditTaskModal = props => {
               <tr>
                 <td scope="col">Assigned</td>
                 <td scope="col">
-                  <select id="Assigned" onChange={e => setAssigned(e.target.value === 'true')}>
+                  <select
+                    id="Assigned"
+                    value={assigned}
+                    onChange={e => setAssigned(e.target.value === 'true')}
+                  >
                     <option value="true">Yes</option>
                     <option value="false">No</option>
                   </select>
@@ -384,7 +377,7 @@ const EditTaskModal = props => {
               <tr>
                 <td scope="col">Status</td>
                 <td scope="col">
-                  <select id="Status" onChange={e => setStatus(e.target.value)}>
+                  <select id="Status" value={status} onChange={e => setStatus(e.target.value)}>
                     <option value="Started">Started</option>
                     <option value="Not Started">Not Started</option>
                     <option value="Complete">Complete</option>
@@ -507,7 +500,12 @@ const EditTaskModal = props => {
               <tr>
                 <td scope="col">Category</td>
                 <td scope="col">
-                  <select value={category} onChange={e => setCategory(e.target.value)}>
+                  <select
+                    value={category}
+                    onChange={e => {
+                      setCategory(e.target.value);
+                    }}
+                  >
                     <option value="Food">Food</option>
                     <option value="Energy">Energy</option>
                     <option value="Housing">Housing</option>

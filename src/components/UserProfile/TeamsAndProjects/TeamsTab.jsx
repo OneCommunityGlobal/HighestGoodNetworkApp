@@ -1,10 +1,9 @@
 import React, { useState } from 'react';
-//import { Row, Col } from 'reactstrap';
 import AddTeamPopup from './AddTeamPopup';
 import UserTeamsTable from './UserTeamsTable';
 
 const TeamsTab = props => {
-  const { teamsData, userTeams, onDeleteteam, onAssignTeam, edit, role } = props;
+  const { teamsData, userTeams, onDeleteteam, onAssignTeam, edit, role, onUserVisibilitySwitch, isVisible, canEditVisibility } = props;
   const [addTeamPopupOpen, setaddTeamPopupOpen] = useState(false);
   const [renderedOn, setRenderedOn] = useState(0);
 
@@ -37,6 +36,9 @@ const TeamsTab = props => {
         userTeamsById={userTeams}
         onButtonClick={onAddTeamPopupShow}
         onDeleteClick={onSelectDeleteTeam}
+        onUserVisibilitySwitch={onUserVisibilitySwitch}
+        canEditVisibility = {canEditVisibility}
+        isVisible={isVisible}
         renderedOn={renderedOn}
         edit={edit}
         role={role}
