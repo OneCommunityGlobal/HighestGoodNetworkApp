@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Row, Label, Input, Col } from 'reactstrap';
+import { Row, Label, Input, Col, Button, FormGroup } from 'reactstrap';
 import moment from 'moment-timezone';
 import { capitalize } from 'lodash';
 import style from '../UserProfileEdit/ToggleSwitch/ToggleSwitch.module.scss';
@@ -53,30 +53,29 @@ const EndDate = props => {
   );
 };
 
-const WeeklySummaryReqd = props => {
+const WeeklySummaryOptions = props => {
   if (!props.canEdit) {
-    return <p>{props.userProfile.weeklySummaryNotReq ? 'Not Required' : 'Required'}</p>;
+    return <p>{props.userProfile.weeklySummaryOption??(props.userProfile.weeklySummaryNotReq?'Not Required':'Required')}</p>
   }
   return (
-    <div className={style.switchContainer} style={{ justifyContent: 'left', marginBottom: '10px' }}>
-      Required
-      <input
-        id="weeklySummaryNotReqd"
-        data-testid="weeklySummary-switch"
-        type="checkbox"
-        className={style.toggle}
+    <FormGroup>
+      <select
+        name="WeeklySummaryOptions"
+        id="weeklySummaryOptions"
+        className="form-control"
+        disabled={!props.canEdit}
+        value={props.userProfile.weeklySummaryOption??(props.userProfile.weeklySummaryNotReq?'Not Required':'Required')}
         onChange={e => {
-          props.setUserProfile({
-            ...props.userProfile,
-            weeklySummaryNotReq: !props.userProfile.weeklySummaryNotReq,
-          });
+          props.setUserProfile({ ...props.userProfile, weeklySummaryOption: e.target.value });
         }}
-        checked={props.userProfile.weeklySummaryNotReq}
-      />
-      Not Required
-    </div>
-  );
-};
+      >
+        <option value="Required">Required</option>
+        <option value="Not Required">Not Required</option>
+        <option value="Team">Team</option>
+      </select>
+    </FormGroup>
+  )
+}
 
 const WeeklyCommittedHours = props => {
   if (!props.canEdit) {
@@ -91,7 +90,10 @@ const WeeklyCommittedHours = props => {
       data-testid="weeklyCommittedHours"
       value={props.userProfile.weeklycommittedHours}
       onChange={e => {
-        props.setUserProfile({ ...props.userProfile, weeklycommittedHours: Math.max(Number(e.target.value), 0) });
+        props.setUserProfile({
+          ...props.userProfile,
+          weeklycommittedHours: Math.max(Number(e.target.value), 0),
+        });
       }}
       placeholder="Weekly Committed Hours"
     />
@@ -109,14 +111,17 @@ const TotalIntangibleHours = props => {
       id="totalIntangibleHours"
       step=".01"
       data-testid="totalIntangibleHours"
-      value={props.userProfile.totalIntangibleHrs??0}
+      value={props.userProfile.totalIntangibleHrs ?? 0}
       onChange={e => {
-        props.setUserProfile({ ...props.userProfile, totalIntangibleHrs: Math.max(Number(e.target.value), 0) });
+        props.setUserProfile({
+          ...props.userProfile,
+          totalIntangibleHrs: Math.max(Number(e.target.value), 0),
+        });
       }}
       placeholder={`Total Intangible Hours`}
     />
-  )
-}
+  );
+};
 
 /**
  *
@@ -252,10 +257,10 @@ const ViewTab = props => {
 
       <Row className="volunteering-time-row">
         <Col md="6">
-          <Label className="hours-label">Weekly Summary Required </Label>
+          <Label className="hours-label">Weekly Summary Options </Label>
         </Col>
         <Col md="6">
-          <WeeklySummaryReqd
+          <WeeklySummaryOptions
             role={role}
             userProfile={userProfile}
             setUserProfile={setUserProfile}
@@ -292,8 +297,16 @@ const ViewTab = props => {
         <Col md="6">
           <Label className="hours-label">Total Tangible Hours </Label>
         </Col>
-        <Col md="6">
+        <Col md="6" className="tangible-hrs-group">
           <p className="hours-totalTangible">{totalTangibleHours}</p>
+          <Button
+            size="sm"
+            color="info"
+            className="refresh-btn"
+            onClick={() => props.loadUserProfile()}
+          >
+            Refresh
+          </Button>
         </Col>
 
         {props?.userProfile?.hoursByCategory

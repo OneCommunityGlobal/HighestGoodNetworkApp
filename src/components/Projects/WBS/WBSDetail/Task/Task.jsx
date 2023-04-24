@@ -1,7 +1,3 @@
-/*********************************************************************************
- * Component: TAK
- * Author: Henry Ng - 21/03/20
- ********************************************************************************/
 import React, { createRef, useEffect, useState } from 'react';
 import { connect } from 'react-redux';
 import {
@@ -65,23 +61,11 @@ function Task(props) {
   }, []);
   let passCurrentNum = false;
 
-  //----This was the old method of display task actions by click on the task # - it was bit wonky and
-  //----not the proper way to conditionally render something in React
-
-  /* let controllerToggle = true;
-  const selectTask = (id) => {
-    if (controllerToggle) {
-      document.getElementById(id).style.background = '#effff2';
-      document.getElementById(`controller_${id}`).style.display = 'contents';
-      controllerToggle = false;
-    } else {
-      document.getElementById(id).style.background = 'white';
-      document.getElementById(`controller_${id}`).style.display = '';
-      controllerToggle = true;
+  useEffect(() => {
+    if (isOpen !== props.isOpen) {
+      setIsOpen(props.isOpen);
     }
-
-    props.selectTask(id);
-  }; */
+  }, [props.isOpen]);
 
   const toggleGroups = id => {
     if (isOpen) {
@@ -141,7 +125,6 @@ function Task(props) {
     props.getPopupById(TASK_DELETE_POPUP_ID);
   };
 
-
   const deleteTask = (taskId, mother) => {
     if (mother !== null) {
       props.deleteChildrenTasks(mother);
@@ -151,16 +134,13 @@ function Task(props) {
     setTimeout(() => {
       props.fetchAllTasks(props.wbsId, 0);
     }, 2000);
-  }
+  };
 
   const deleteOneTask = (taskId, mother) => {
     props.deleteWBSTask(taskId, mother);
-
   };
 
   const onMove = (from, to) => {
-    // const fromNum = from.split('.0').join('');
-    // const toNum = to.split('.0').join('');
     props.moveTasks(props.wbsId, from, to);
     setTimeout(() => {
       props.fetchAllTasks(props.wbsId);

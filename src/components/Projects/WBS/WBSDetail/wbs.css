@@ -3,9 +3,11 @@
   width: calc(100% - 40px);
 }
 
+/*
 .container {
   overflow: auto;
 }
+*/
 
 .level-space-1 {
   margin-left: 0px;
@@ -23,6 +25,23 @@
   margin-left: 35px;
 }
 
+.loading {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.loading-task {
+  position: relative;
+  z-index: -50;
+  opacity: 0.1;
+
+}
+.load {
+  position: relative;
+}
+
 .dot {
   height: 24px;
   width: 24px;
@@ -34,6 +53,8 @@
   font-weight: 700;
   text-align: center;
   text-transform: uppercase;
+  line-height: 20px;
+  margin-top: 3px;
 }
 
 .img-circle {

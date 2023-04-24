@@ -30,6 +30,8 @@ const EditTaskModal = props => {
       try {
         const res = await axios.get(ENDPOINTS.GET_TASK(props.taskId));
         setThisTask(res?.data || {});
+        setCategory(res.data.category);
+        setAssigned(res.data.isAssigned);
       } catch (error) {
         console.log(error);
       }
@@ -531,7 +533,12 @@ const EditTaskModal = props => {
               <tr>
                 <td scope="col">Category</td>
                 <td scope="col">
-                  <select value={category} onChange={e => setCategory(e.target.value)}>
+                  <select
+                    value={category}
+                    onChange={e => {
+                      setCategory(e.target.value);
+                    }}
+                  >
                     <option value="Food">Food</option>
                     <option value="Energy">Energy</option>
                     <option value="Housing">Housing</option>
