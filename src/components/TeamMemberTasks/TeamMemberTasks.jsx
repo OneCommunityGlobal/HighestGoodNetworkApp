@@ -1,7 +1,3 @@
-/* eslint-disable max-len */
-/* eslint-disable no-trailing-spaces */
-/* eslint-disable no-plusplus */
-/* eslint-disable indent */
 import { faBell, faCircle, faClock, faCheck } from '@fortawesome/free-solid-svg-icons';
 import { Table, Progress } from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -25,6 +21,7 @@ import { ENDPOINTS } from 'utils/URL';
 import axios from 'axios';
 import { fetchAllTasks } from 'actions/task';
 import { deleteSelectedTask } from './reducer';
+import { rest } from 'lodash';
 
 const TeamMemberTasks = props => {
   const [isTimeLogActive, setIsTimeLogActive] = useState(0);
@@ -38,10 +35,41 @@ const TeamMemberTasks = props => {
   const [updatedTasks, setUpdatedTasks] = useState([]);
   const [showMarkAsDoneModal, setMarkAsDoneModal] = useState(false);
   const [clickedToShowModal, setClickedToShowModal] = useState(false);
+  //role state so it's more easily changed, the initial value is empty, so it'll be determinated on the first useEffect
+  const [userRole, setUserRole] = useState('');
+
+  //function to get user's role if the current user's id is different from the authenticated user
+  function getUserRole(userId) {
+    const fetchedUser = axios.get(ENDPOINTS.USER_PROFILE(userId));
+    return fetchedUser;
+  }
+
+  //moved the userId variable to before the first useEffect so the dispatch function can access it
+  //Make so the userId gets the url param. If the url param is not available, it'll get the asUser passed as a props
+  //If the asUser is not defined, it'll be equal the auth.user.userid from the store
+  const userId = props?.match?.params?.userId || props.asUser || props.auth.user.userid;
 
   const dispatch = useDispatch();
   useEffect(() => {
-    dispatch(fetchTeamMembersTask());
+    //Passed the userid as argument to fetchTeamMembersTask
+    //the fetchTeamMembersTask has a function inside id that gets the userId from the store, like the last part of the userId variable in this file
+    //so, before it gets from the store, it'll see if the userId is provided.
+    //It works because the userId first looks for the url param. If it gets the param, it will provide it to the userId
+    //after that, fetchTeamMembersTask will look for the team member's tasks of the provided userId
+    //fetch current user's role, so it can be displayed. It will only happen if the current user's id is different of the auth user id
+    //if it's not differente, it'll attribute the current authenticated user's role.
+    //also, the userId is different from the authenticated user, it will call the fetchTeamMmbersTask with the currently authenticated user id
+    if (userId !== props.auth.user.userid) {
+      dispatch(fetchTeamMembersTask(userId, props.auth.user.userid));
+      const currentUserRole = getUserRole(userId)
+        .then(resp => resp)
+        .then(user => {
+          setUserRole(user.data.role);
+        });
+    } else {
+      dispatch(fetchTeamMembersTask(userId, null));
+      setUserRole(props.auth.user.role);
+    }
   }, []);
 
   useEffect(() => {
@@ -52,11 +80,18 @@ const TeamMemberTasks = props => {
 
   useEffect(() => {
     submitTasks();
-    dispatch(fetchTeamMembersTask());
+    if (userId !== props.auth.user.userid) {
+      dispatch(fetchTeamMembersTask(userId, props.auth.user.userid));
+      const currentUserRole = getUserRole(userId)
+        .then(resp => resp)
+        .then(user => {
+          setUserRole(user.data.role);
+        });
+    } else {
+      dispatch(fetchTeamMembersTask(userId, null));
+      setUserRole(props.auth.user.role);
+    }
   }, [updatedTasks]);
-
-  const userRole = props.auth.user.role;
-  const userId = props.auth.user.userid;
 
   const closeMarkAsDone = () => {
     setMarkAsDoneModal(false);
@@ -173,9 +208,11 @@ const TeamMemberTasks = props => {
           totalHoursLogged = user.tasks
             .map(task => task.hoursLogged)
             .reduce((previousValue, currentValue) => previousValue + currentValue, 0);
-          totalHoursRemaining = user.tasks
-            .map(task => task.estimatedHours - task.hoursLogged)
-            .reduce((previousValue, currentValue) => previousValue + currentValue, 0);
+          for (const task of user.tasks) {
+            if (task.status !== 'Complete' && task.isAssigned !== 'false') {
+              totalHoursRemaining = totalHoursRemaining + (task.estimatedHours - task.hoursLogged);
+            }
+          }
         }
 
         const TaskButton = task => {
@@ -226,7 +263,7 @@ const TeamMemberTasks = props => {
         };
 
         return (
-          <tr key={user.personId}>
+          <tr className="table-row" key={user.personId}>
             {/* green if member has met committed hours for the week, red if not */}
             <td>
               <div className="committed-hours-circle">
@@ -246,7 +283,7 @@ const TeamMemberTasks = props => {
                     <td className="team-member-tasks-user-name">
                       <Link to={`/userprofile/${user.personId}`}>{`${user.name}`}</Link>
                     </td>
-                    <td className="team-clocks">
+                    <td data-label="Time" className="team-clocks">
                       <u>{user.weeklycommittedHours ? user.weeklycommittedHours : 0}</u> /
                       <font color="green"> {thisWeekHours ? thisWeekHours.toFixed(1) : 0}</font> /
                       <font color="red">
@@ -282,7 +319,7 @@ const TeamMemberTasks = props => {
                       if (task.wbsId && task.projectId && isActiveTaskForUser) {
                         return (
                           <tr key={`${task._id}${index}`} className="task-break">
-                            <td className="task-align">
+                            <td data-label="Task(s)" className="task-align">
                               <p>
                                 <Link to={task.projectId ? `/wbs/tasks/${task._id}` : '/'}>
                                   <span>{`${task.num} ${task.taskName}`} </span>
@@ -311,7 +348,7 @@ const TeamMemberTasks = props => {
                               </p>
                             </td>
                             {task.hoursLogged != null && task.estimatedHours != null && (
-                              <td className="team-task-progress">
+                              <td data-label="Progress" className="team-task-progress">
                                 <div>
                                   <span>
                                     {`${parseFloat(task.hoursLogged.toFixed(2))}
@@ -330,7 +367,7 @@ const TeamMemberTasks = props => {
                               </td>
                             )}
                             {userRole === 'Administrator' ? (
-                              <td>
+                              <td data-label="Status">
                                 <TaskButton task={task}></TaskButton>
                               </td>
                             ) : null}
@@ -353,7 +390,7 @@ const TeamMemberTasks = props => {
     <div className="container team-member-tasks">
       <header className="header-box">
         <h1>Team Member Tasks</h1>
-        <div>
+        <div className="hours-btn-container">
           <button
             type="button"
             className="circle-border"
@@ -442,7 +479,7 @@ const TeamMemberTasks = props => {
         />
       )}
       <Table>
-        <thead>
+        <thead className="pc-component">
           <tr>
             {/* Empty column header for hours completed icon */}
             <th />
@@ -485,6 +522,7 @@ const TeamMemberTasks = props => {
             </th>
           </tr>
         </thead>
+
         <tbody>{isLoading ? <Loading /> : renderTeamsList()}</tbody>
       </Table>
     </div>

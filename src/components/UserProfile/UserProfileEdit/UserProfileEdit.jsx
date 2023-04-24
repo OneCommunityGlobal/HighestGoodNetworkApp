@@ -80,8 +80,6 @@ class UserProfileEdit extends Component {
       }
     }
 
-    // console.log('edit profile, component did mount, props: ', this.props);
-    // console.log('edit profile, state:', this.state);
   }
 
   toggleTab = tab => {
@@ -310,7 +308,6 @@ class UserProfileEdit extends Component {
       });
     }
     const filesizeKB = file.size / 1024;
-    // console.log(filesizeKB);
     if (filesizeKB > 50) {
       imageUploadError = `\nThe file you are trying to upload exceeds the maximum size of 50KB. You can either 
 														choose a different file, or use an online file compressor.`;
@@ -329,7 +326,6 @@ class UserProfileEdit extends Component {
     const reader = new FileReader();
     reader.readAsDataURL(file);
     reader.onloadend = () => {
-      // console.log(reader, file);
 
       this.setState({
         imageUploadError: '',
@@ -365,7 +361,6 @@ class UserProfileEdit extends Component {
   };
 
   handleNullState = kind => {
-    // console.log('before handle def:', this.state.userProfile);
 
     switch (kind) {
       case 'settings':
@@ -505,28 +500,6 @@ class UserProfileEdit extends Component {
     }
   };
 
-  /* modLinkButton = (canEditFields, isUserAdmin) => {
-    if (canEditFields) {
-      let user = 'user';
-      if (isUserAdmin) {
-        user = 'admin';
-      }
-      return (
-        <button
-          type="button"
-          className="modLinkButton"
-          onClick={() => {
-            this.handleLinkModel(true, 'updateLink', user);
-          }}
-        >
-          <i className="fa fa-wrench fa-lg" aria-hidden="true">
-            {' '}
-          </i>
-        </button>
-      );
-    }
-  }; */
-
   // render drop down list of teams, or auto-fill team names...
   // fetch and display available teams
   // once team is selected, push userid & teamid with addTeamMember...
@@ -543,17 +516,12 @@ class UserProfileEdit extends Component {
   };
 
   render() {
-    // const { allTeams, fetching } = this.props.allTeams;
-
-    // console.log('allteams...', allTeams)
 
     const { userId: targetUserId } = this.props.match
       ? this.props.match.params
       : { userId: undefined };
     const { userid: requestorId, role: requestorRole } = this.props.auth.user;
     const userPermissions = this.props.auth.user?.permissions?.frontPermissions;
-
-    // console.log(this.props.allTeams);
 
     const {
       userProfile,
@@ -608,7 +576,6 @@ class UserProfileEdit extends Component {
     } = userProfile;
 
     const isUserSelf = targetUserId === requestorId;
-    // const isUserAdmin = requestorRole === 'Administrator';
     let canEditFields;
     if (userProfile.role !== 'Owner') {
       canEditFields =

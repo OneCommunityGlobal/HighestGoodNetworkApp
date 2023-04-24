@@ -13,16 +13,7 @@ import SetUpFinalDayButton from 'components/UserManagement/SetUpFinalDayButton';
 import styles from './BasicInformationTab.css';
 
 const Name = props => {
-  const {
-    userProfile,
-    setUserProfile,
-    setChanged,
-    isUserSelf,
-    formValid,
-    setFormValid,
-    role,
-    canEdit,
-  } = props;
+  const { userProfile, setUserProfile, formValid, setFormValid, canEdit } = props;
 
   const { firstName, lastName } = userProfile;
 
@@ -40,7 +31,6 @@ const Name = props => {
               onChange={e => {
                 setUserProfile({ ...userProfile, firstName: e.target.value.trim() });
                 setFormValid({ ...formValid, firstName: !!e.target.value });
-                setChanged(true);
               }}
               placeholder="First Name"
               invalid={!formValid.firstName}
@@ -59,7 +49,6 @@ const Name = props => {
               onChange={e => {
                 setUserProfile({ ...userProfile, lastName: e.target.value.trim() });
                 setFormValid({ ...formValid, lastName: !!e.target.value });
-                setChanged(true);
               }}
               placeholder="Last Name"
               invalid={!formValid.lastName}
@@ -81,7 +70,7 @@ const Name = props => {
 };
 
 const Title = props => {
-  const { userProfile, setChanged, setUserProfile, isUserSelf, role, canEdit } = props;
+  const { userProfile, setUserProfile, canEdit } = props;
   const { jobTitle } = userProfile;
 
   if (canEdit) {
@@ -96,7 +85,6 @@ const Title = props => {
               value={jobTitle}
               onChange={e => {
                 setUserProfile({ ...userProfile, jobTitle: e.target.value });
-                setChanged(true);
               }}
               placeholder="Job Title"
             />
@@ -115,16 +103,7 @@ const Title = props => {
 };
 
 const Email = props => {
-  const {
-    userProfile,
-    setUserProfile,
-    setChanged,
-    isUserSelf,
-    formValid,
-    setFormValid,
-    role,
-    canEdit,
-  } = props;
+  const { userProfile, setUserProfile, formValid, setFormValid, canEdit } = props;
   const { email, privacySettings } = userProfile;
 
   const emailPattern = new RegExp(/^\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/i);
@@ -148,7 +127,6 @@ const Email = props => {
               onChange={e => {
                 setUserProfile({ ...userProfile, email: e.target.value });
                 setFormValid({ ...formValid, email: emailPattern.test(e.target.value) });
-                setChanged(true);
               }}
               placeholder="Email"
               invalid={!formValid.email}
@@ -201,15 +179,7 @@ const formatPhoneNumber = str => {
   return str;
 };
 const Phone = props => {
-  const {
-    userProfile,
-    setUserProfile,
-    handleUserProfile,
-    setChanged,
-    isUserSelf,
-    role,
-    canEdit,
-  } = props;
+  const { userProfile, setUserProfile, handleUserProfile, canEdit } = props;
   const { phoneNumber, privacySettings } = userProfile;
   if (canEdit) {
     return (
@@ -223,10 +193,9 @@ const Phone = props => {
             />
             <PhoneInput
               country={'us'}
-              value={phoneNumber[0]}
+              value={phoneNumber}
               onChange={phoneNumber => {
                 setUserProfile({ ...userProfile, phoneNumber: phoneNumber.trim() });
-                setChanged(true);
               }}
             />
           </FormGroup>
@@ -246,7 +215,7 @@ const Phone = props => {
 };
 
 const TimeZoneDifference = props => {
-  const { userProfile, setChanged, setUserProfile, isUserAdmin, isUserSelf } = props;
+  const { isUserSelf } = props;
 
   const viewingTimeZone = props.userProfile.timeZone;
   const yourLocalTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
@@ -292,13 +261,13 @@ const BasicInformationTab = props => {
   const {
     userProfile,
     setUserProfile,
-    setChanged,
     isUserSelf,
     handleUserProfile,
     formValid,
     setFormValid,
     role,
     canEdit,
+    canEditRole,
     roles,
     userPermissions,
   } = props;
@@ -322,7 +291,6 @@ const BasicInformationTab = props => {
             let timezone = response.data.results[0].annotations.timezone.name;
             setTimeZoneFilter(timezone);
             setUserProfile({ ...userProfile, timeZone: timezone });
-            setChanged(true);
           } else {
             alert('Invalid location or ' + response.data.status.message);
           }
@@ -353,7 +321,6 @@ const BasicInformationTab = props => {
             isUserSelf={isUserSelf}
             handleUserProfile={handleUserProfile}
             formValid={formValid}
-            setChanged={setChanged}
             role={props.role}
             canEdit={canEdit}
           />
@@ -374,7 +341,6 @@ const BasicInformationTab = props => {
           <Title
             userProfile={userProfile}
             setUserProfile={setUserProfile}
-            setChanged={setChanged}
             isUserSelf={isUserSelf}
             handleUserProfile={handleUserProfile}
             formValid={formValid}
@@ -398,7 +364,6 @@ const BasicInformationTab = props => {
           <Email
             userProfile={userProfile}
             setUserProfile={setUserProfile}
-            setChanged={setChanged}
             isUserSelf={isUserSelf}
             handleUserProfile={handleUserProfile}
             formValid={formValid}
@@ -423,7 +388,6 @@ const BasicInformationTab = props => {
           <Phone
             userProfile={userProfile}
             setUserProfile={setUserProfile}
-            setChanged={setChanged}
             isUserSelf={isUserSelf}
             handleUserProfile={handleUserProfile}
             formValid={formValid}
@@ -445,7 +409,6 @@ const BasicInformationTab = props => {
                   value={userProfile.collaborationPreference}
                   onChange={e => {
                     setUserProfile({ ...userProfile, collaborationPreference: e.target.value });
-                    setChanged(true);
                   }}
                   placeholder="Skype, Zoom, etc."
                 />
@@ -460,19 +423,16 @@ const BasicInformationTab = props => {
             <Label>Role</Label>
           </Col>
           <Col>
-            {canEdit ? (
+          { canEditRole ? (
               <FormGroup>
                 <select
                   value={userProfile.role}
                   onChange={e => {
                     setUserProfile({ ...userProfile, role: e.target.value });
-                    setChanged(true);
                   }}
                   id="role"
                   name="role"
                   className="form-control"
-                  disabled={!canEdit}
-                  canEdit={canEdit}
                 >
                   {roles.map(({ roleName }) => {
                     if (roleName === 'Owner') return;
@@ -500,7 +460,6 @@ const BasicInformationTab = props => {
                     onChange={e => {
                       setLocation(e.target.value);
                       setUserProfile({ ...userProfile, location: e.target.value });
-                      setChanged(true);
                     }}
                     value={userProfile.location}
                   />
@@ -527,7 +486,6 @@ const BasicInformationTab = props => {
                 filter={timeZoneFilter}
                 onChange={e => {
                   setUserProfile({ ...userProfile, timeZone: e.target.value });
-                  setChanged(true);
                 }}
                 selected={userProfile.timeZone}
               />
@@ -541,7 +499,6 @@ const BasicInformationTab = props => {
           <TimeZoneDifference
             userProfile={userProfile}
             setUserProfile={setUserProfile}
-            setChanged={setChanged}
             isUserSelf={isUserSelf}
             handleUserProfile={handleUserProfile}
             formValid={formValid}
@@ -597,7 +554,6 @@ const BasicInformationTab = props => {
             isUserSelf={isUserSelf}
             handleUserProfile={handleUserProfile}
             formValid={formValid}
-            setChanged={setChanged}
             role={props.role}
             canEdit={canEdit}
           />
@@ -618,7 +574,6 @@ const BasicInformationTab = props => {
           <Title
             userProfile={userProfile}
             setUserProfile={setUserProfile}
-            setChanged={setChanged}
             isUserSelf={isUserSelf}
             handleUserProfile={handleUserProfile}
             formValid={formValid}
@@ -642,7 +597,6 @@ const BasicInformationTab = props => {
           <Email
             userProfile={userProfile}
             setUserProfile={setUserProfile}
-            setChanged={setChanged}
             isUserSelf={isUserSelf}
             handleUserProfile={handleUserProfile}
             formValid={formValid}
@@ -667,7 +621,6 @@ const BasicInformationTab = props => {
           <Phone
             userProfile={userProfile}
             setUserProfile={setUserProfile}
-            setChanged={setChanged}
             isUserSelf={isUserSelf}
             handleUserProfile={handleUserProfile}
             formValid={formValid}
@@ -689,7 +642,6 @@ const BasicInformationTab = props => {
                   value={userProfile.collaborationPreference}
                   onChange={e => {
                     setUserProfile({ ...userProfile, collaborationPreference: e.target.value });
-                    setChanged(true);
                   }}
                   placeholder="Skype, Zoom, etc."
                 />
@@ -704,19 +656,16 @@ const BasicInformationTab = props => {
             <Label>Role</Label>
           </Col>
           <Col>
-            {canEdit ? (
+            {canEditRole ? (
               <FormGroup>
                 <select
                   value={userProfile.role}
                   onChange={e => {
                     setUserProfile({ ...userProfile, role: e.target.value });
-                    setChanged(true);
                   }}
                   id="role"
                   name="role"
                   className="form-control"
-                  disabled={!canEdit}
-                  canEdit={canEdit}
                 >
                   {roles.map(({ roleName }) => {
                     if (roleName === 'Owner') return;
@@ -744,7 +693,6 @@ const BasicInformationTab = props => {
                 onChange={e => {
                   setLocation(e.target.value);
                   setUserProfile({ ...userProfile, location: e.target.value });
-                  setChanged(true);
                 }}
                 value={userProfile.location}
                 style={{ marginBottom: '10px' }}
@@ -769,7 +717,6 @@ const BasicInformationTab = props => {
                 filter={timeZoneFilter}
                 onChange={e => {
                   setUserProfile({ ...userProfile, timeZone: e.target.value });
-                  setChanged(true);
                 }}
                 selected={userProfile.timeZone}
               />
@@ -783,26 +730,25 @@ const BasicInformationTab = props => {
           <TimeZoneDifference
             userProfile={userProfile}
             setUserProfile={setUserProfile}
-            setChanged={setChanged}
             isUserSelf={isUserSelf}
             handleUserProfile={handleUserProfile}
             formValid={formValid}
           />
         </Col>
         <hr />
-        <Row xs="2" style={{ marginLeft: '1rem' }}>         
-          <Col style={{ alignItems: 'center', justifyContent: 'center'}}>
+        <Row xs="2" style={{ marginLeft: '1rem' }}>
+          <Col style={{ alignItems: 'center', justifyContent: 'center' }}>
             <Label>Status</Label>
             <div>
-            <Label style={{ fontWeight: 'normal' }}>
-              {userProfile.isActive
-                ? 'Active'
-                : userProfile.reactivationDate
-                ? 'Paused until ' + moment(userProfile.reactivationDate).format('YYYY-MM-DD')
-                : 'Inactive'}
-            </Label>
-            &nbsp;
-            {canEdit && <PauseAndResumeButton isBigBtn={true} userProfile={userProfile} />}
+              <Label style={{ fontWeight: 'normal' }}>
+                {userProfile.isActive
+                  ? 'Active'
+                  : userProfile.reactivationDate
+                  ? 'Paused until ' + moment(userProfile.reactivationDate).format('YYYY-MM-DD')
+                  : 'Inactive'}
+              </Label>
+              &nbsp;
+              {canEdit && <PauseAndResumeButton isBigBtn={true} userProfile={userProfile} />}
             </div>
           </Col>
           <Col>

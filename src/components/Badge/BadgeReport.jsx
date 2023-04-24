@@ -29,7 +29,7 @@ import { connect } from 'react-redux';
 import { getUserProfile } from '../../actions/userProfile';
 import { toast } from 'react-toastify';
 import hasPermission from '../../utils/permissions';
-import styles from './BadgeReport.css';
+import './BadgeReport.css';
 
 pdfMake.vfs = pdfFonts.pdfMake.vfs;
 const BadgeReport = props => {
@@ -198,6 +198,25 @@ const BadgeReport = props => {
     if (value > 0) {
       setBadgesToDelete(prevBadges => prevBadges.filter(badge => badge !== index));
     }
+    const today = new Date();
+    const yyyy = today.getFullYear();
+    // Add 1 beacuse the month start at zero
+    let mm = today.getMonth() + 1;
+    let dd = today.getDate();
+
+    mm < 10 ? (mm = '0' + mm) : mm;
+    dd < 10 ? (dd = '0' + dd) : dd;
+    const formatedDate = `${yyyy}-${mm}-${dd}`;
+    newBadges.map((bdg, i) => {
+      if (newValue > bdg.count && i === index) {
+        bdg.earnedDate.push(formatedDate);
+      } else if (newValue < bdg.count && i === index) {
+        bdg.earnedDate.pop();
+      }
+    });
+
+    newBadges[index].count = newValue;
+    setSortBadges(newBadges);
   };
 
   const featuredChange = (badge, index, e) => {
@@ -281,6 +300,7 @@ const BadgeReport = props => {
                 <th style={{ width: '93px' }}>Badge</th>
                 <th>Name</th>
                 <th style={{ width: '110px' }}>Modified</th>
+                <th style={{ width: '110px' }}>Earned Dates</th>
                 <th style={{ width: '90px' }}>Count</th>
                 {hasPermission(props.role, 'deleteOwnBadge', roles, props.permissionsUser) ? (
                   <th>Delete</th>
@@ -321,6 +341,19 @@ const BadgeReport = props => {
                       {typeof value.lastModified == 'string'
                         ? value.lastModified.substring(0, 10)
                         : value.lastModified.toLocaleString().substring(0, 10)}
+                    </td>
+                    <td>
+                      {' '}
+                      <UncontrolledDropdown className="me-2" direction="down">
+                        <DropdownToggle caret color="primary">
+                          Dates
+                        </DropdownToggle>
+                        <DropdownMenu>
+                          {value.earnedDate.map(date => {
+                            return <DropdownItem>{date}</DropdownItem>;
+                          })}
+                        </DropdownMenu>
+                      </UncontrolledDropdown>
                     </td>
                     <td>
                       {hasPermission(
@@ -423,7 +456,7 @@ const BadgeReport = props => {
                 <th style={{ width: '93px' }}>Badge</th>
                 <th>Name</th>
                 <th style={{ width: '110px' }}>Modified</th>
-                <th style={{ width: '100%', zIndex: '10' }}></th>
+                <th style={{ width: '100%', zIndex: '10' }}>Earned</th>
               </tr>
             </thead>
             <tbody>
@@ -458,6 +491,7 @@ const BadgeReport = props => {
                         ? value.lastModified.substring(0, 10)
                         : value.lastModified.toLocaleString().substring(0, 10)}
                     </td>
+
                     <td>
                       <ButtonGroup style={{ marginLeft: '8px' }}>
                         <UncontrolledDropdown>
@@ -472,6 +506,7 @@ const BadgeReport = props => {
                           >
                             Options
                           </DropdownToggle>
+
                           <DropdownMenu>
                             <DropdownItem
                               style={{
