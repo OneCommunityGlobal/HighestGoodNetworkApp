@@ -8,6 +8,5 @@ export function getAllTeams() {
 }
 
 export function getTeamUsers(teamId) {
-  // return httpService.get(`${ApiEndpoint}/${teamId}/users`);
   return httpService.get(ENDPOINTS.TEAM_USERS(teamId));
 }

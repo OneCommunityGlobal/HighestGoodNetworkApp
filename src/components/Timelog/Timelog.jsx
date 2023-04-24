@@ -361,8 +361,8 @@ class Timelog extends Component {
                 </div>
               </div>
             ) : null}
-            <Row className="right-padding-temp-fix">
-              <Col className="right-padding-temp-fix" md={12}>
+            <Row>
+              <Col md={12}>
                 <Card>
                   <CardHeader>
                     <Row>
@@ -660,7 +660,7 @@ class Timelog extends Component {
                         />
                       )}
                       <TabPane tabId={0}>
-                        <TeamMemberTasks asUser={this.props.asUser} />
+                        <TeamMemberTasks asUser={userId} />
                       </TabPane>
                       <TabPane tabId={1}>{currentWeekEntries}</TabPane>
                       <TabPane tabId={2}>{lastWeekEntries}</TabPane>
@@ -673,7 +673,6 @@ class Timelog extends Component {
                   </CardBody>
                 </Card>
               </Col>
-              <Col md={4} />
             </Row>
           </Container>
         )}

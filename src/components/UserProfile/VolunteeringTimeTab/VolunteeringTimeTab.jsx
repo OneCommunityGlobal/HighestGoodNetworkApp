@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Row, Label, Input, Col, FormGroup } from 'reactstrap';
+import { Row, Label, Input, Col, Button, FormGroup } from 'reactstrap';
 import moment from 'moment-timezone';
 import { capitalize } from 'lodash';
 import style from '../UserProfileEdit/ToggleSwitch/ToggleSwitch.module.scss';
@@ -90,7 +90,10 @@ const WeeklyCommittedHours = props => {
       data-testid="weeklyCommittedHours"
       value={props.userProfile.weeklycommittedHours}
       onChange={e => {
-        props.setUserProfile({ ...props.userProfile, weeklycommittedHours: Math.max(Number(e.target.value), 0) });
+        props.setUserProfile({
+          ...props.userProfile,
+          weeklycommittedHours: Math.max(Number(e.target.value), 0),
+        });
       }}
       placeholder="Weekly Committed Hours"
     />
@@ -108,14 +111,17 @@ const TotalIntangibleHours = props => {
       id="totalIntangibleHours"
       step=".01"
       data-testid="totalIntangibleHours"
-      value={props.userProfile.totalIntangibleHrs??0}
+      value={props.userProfile.totalIntangibleHrs ?? 0}
       onChange={e => {
-        props.setUserProfile({ ...props.userProfile, totalIntangibleHrs: Math.max(Number(e.target.value), 0) });
+        props.setUserProfile({
+          ...props.userProfile,
+          totalIntangibleHrs: Math.max(Number(e.target.value), 0),
+        });
       }}
       placeholder={`Total Intangible Hours`}
     />
-  )
-}
+  );
+};
 
 /**
  *
@@ -291,8 +297,16 @@ const ViewTab = props => {
         <Col md="6">
           <Label className="hours-label">Total Tangible Hours </Label>
         </Col>
-        <Col md="6">
+        <Col md="6" className="tangible-hrs-group">
           <p className="hours-totalTangible">{totalTangibleHours}</p>
+          <Button
+            size="sm"
+            color="info"
+            className="refresh-btn"
+            onClick={() => props.loadUserProfile()}
+          >
+            Refresh
+          </Button>
         </Col>
 
         {props?.userProfile?.hoursByCategory

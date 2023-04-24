@@ -118,7 +118,6 @@ const WBSTasks = props => {
     const list = [];
     let target = tasks.find(task => task._id === taskIdTo);
     let siblings = tasks.filter(task => task.parentId === dragParent);
-    //console.log('sibs', siblings);
 
     let modifiedList = false;
     if (dragParent === target._id) {
@@ -133,7 +132,6 @@ const WBSTasks = props => {
         modifiedList = false;
       }
       if (modifiedList) {
-        //console.log('sib', siblings[i]._id, siblings[i + 1].num);
         list.push({
           id: siblings[i]._id,
           num: siblings[i + 1].num,

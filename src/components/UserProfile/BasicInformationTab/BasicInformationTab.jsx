@@ -267,6 +267,7 @@ const BasicInformationTab = props => {
     setFormValid,
     role,
     canEdit,
+    canEditRole,
     roles,
     userPermissions,
   } = props;
@@ -422,9 +423,7 @@ const BasicInformationTab = props => {
             <Label>Role</Label>
           </Col>
           <Col>
-          {(userProfile.role !== 'Owner' && userProfile.role !== 'Administrator') ? (
-              `${userProfile.role}`
-            ) : canEdit ? (
+          { canEditRole ? (
               <FormGroup>
                 <select
                   value={userProfile.role}
@@ -434,8 +433,6 @@ const BasicInformationTab = props => {
                   id="role"
                   name="role"
                   className="form-control"
-                  disabled={!canEdit}
-                  canEdit={canEdit}
                 >
                   {roles.map(({ roleName }) => {
                     if (roleName === 'Owner') return;
@@ -659,7 +656,7 @@ const BasicInformationTab = props => {
             <Label>Role</Label>
           </Col>
           <Col>
-            {canEdit ? (
+            {canEditRole ? (
               <FormGroup>
                 <select
                   value={userProfile.role}
@@ -669,8 +666,6 @@ const BasicInformationTab = props => {
                   id="role"
                   name="role"
                   className="form-control"
-                  disabled={!canEdit}
-                  canEdit={canEdit}
                 >
                   {roles.map(({ roleName }) => {
                     if (roleName === 'Owner') return;

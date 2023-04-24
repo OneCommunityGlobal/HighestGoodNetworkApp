@@ -553,13 +553,10 @@ function UserProfile(props) {
   const userPermissions = props.auth.user?.permissions?.frontPermissions;
 
   const isUserSelf = targetUserId === requestorId;
-  let canEdit;
-  if (userProfile.role !== 'Owner') {
-    canEdit = hasPermission(requestorRole, 'editUserProfile', roles, userPermissions) || isUserSelf;
-  } else {
-    canEdit =
-      hasPermission(requestorRole, 'addDeleteEditOwners', roles, userPermissions) || isUserSelf;
-  }
+  const canEditProfile = userProfile.role === 'Owner' ? 
+  hasPermission(requestorRole, 'addDeleteEditOwners', roles, userPermissions) :
+  hasPermission(requestorRole, 'editUserProfile', roles, userPermissions);
+  const canEdit = canEditProfile || isUserSelf;
 
   const customStyles = {
     control: (base, state) => ({
@@ -603,7 +600,6 @@ function UserProfile(props) {
           handleLinkModel={props.handleLinkModel}
           role={requestorRole}
           userPermissions={userPermissions}
-          // setIsValid={setIsValid(true)}
         />
       )}
       <TabToolTips />
@@ -851,6 +847,7 @@ function UserProfile(props) {
                   isUserSelf={isUserSelf}
                   setShouldRefresh={setShouldRefresh}
                   canEdit={canEdit}
+                  canEditRole={canEditProfile}
                   roles={roles}
                   userPermissions={userPermissions}
                 />
@@ -862,6 +859,7 @@ function UserProfile(props) {
                     setUserProfile={setUserProfile}
                     isUserSelf={isUserSelf}
                     role={requestorRole}
+                    loadUserProfile={loadUserProfile}
                     canEdit={hasPermission(
                       requestorRole,
                       'editUserProfile',
@@ -932,6 +930,7 @@ function UserProfile(props) {
                     isUserSelf={isUserSelf}
                     setShouldRefresh={setShouldRefresh}
                     canEdit={canEdit}
+                    canEditRole={canEditProfile}
                     roles={roles}
                     userPermissions={userPermissions}
                   />
@@ -1294,9 +1293,6 @@ function UserProfile(props) {
                     </span>
                   </>
                 )}
-              <Button outline onClick={() => loadUserProfile()}>
-                Refresh
-              </Button>
             </div>
           </Col>
         </Row>
