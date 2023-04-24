@@ -32,24 +32,16 @@ function WBSTasks(props) {
   const [openAll, setOpenAll] = useState(false);
   const [loadAll, setLoadAll] = useState(false);
   const [isDeleted, setIsDeleted] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
 
-  const load = async openAll => {
+  const load = async () => {
     const levelList = [0, 1, 2, 3, 4];
     await Promise.all(levelList.map(level => props.fetchAllTasks(wbsId, level)));
-    setIsLoading(true);
-    if (openAll) {
-      AutoOpenAll(true);
-      setLoadAll(true);
-      setIsLoading(false);
-    } else {
-      AutoOpenAll(false);
-      setIsLoading(false);
-    }
+    AutoOpenAll(false);
+    setLoadAll(true);
   };
 
   useEffect(() => {
-    load(openAll).then(setOpenAll(openAll));
+    load().then(setOpenAll(false));
     props.fetchAllMembers(projectId);
     setTimeout(() => setIsShowImport(true), 1000);
   }, [wbsId, projectId]);
@@ -77,7 +69,7 @@ function WBSTasks(props) {
 
   const AutoOpenAll = openflag => {
     if (openflag) {
-      setOpenAll(true);
+      //console.log('open the folder');
       for (let i = 2; i < 5; i++) {
         const subItems = [...document.getElementsByClassName(`lv_${i}`)];
         for (let i = 0; i < subItems.length; i++) {
@@ -85,13 +77,13 @@ function WBSTasks(props) {
         }
       }
     } else {
+      //console.log('close the folder');
       for (let i = 2; i < 5; i++) {
         const subItems = [...document.getElementsByClassName(`lv_${i}`)];
         for (let i = 0; i < subItems.length; i++) {
           subItems[i].style.display = 'none';
         }
       }
-      setOpenAll(false);
     }
   };
 
@@ -215,21 +207,15 @@ function WBSTasks(props) {
           </ol>
         </nav>
 
-        {isLoading && (
-          <div className="loading">
-            <Loading /> Loading...
-          </div>
-        )}
-        <div className={isLoading ? 'loading-task' : 'load'}>
-          {hasPermission(props.state.auth.user.role, 'addTask', roles, userPermissions) ? (
-            <AddTaskModal
-              key="task_modal_null"
-              parentNum={null}
-              taskId={null}
-              wbsId={wbsId}
-              projectId={projectId}
-            />
-          ) : null}
+        {hasPermission(props.state.auth.user.role, 'addTask', roles, userPermissions) ? (
+          <AddTaskModal
+            key="task_modal_null"
+            parentNum={null}
+            taskId={null}
+            wbsId={wbsId}
+            projectId={projectId}
+          />
+        ) : null}
 
         {props.state.tasks.taskItems.length === 0 && isShowImport === true ? (
           <ImportTask wbsId={wbsId} projectId={projectId} />
@@ -246,11 +232,14 @@ function WBSTasks(props) {
         </Button>
 
         {loadAll === false ? (
+
           <Button color="warning" size="sm" className="ml-3">
+
             {' '}
             Task Loading......{' '}
           </Button>
         ) : null}
+
         <div className="toggle-all">
           <Button
             color="primary"
@@ -398,49 +387,11 @@ function WBSTasks(props) {
                 endstateInfo={task.endstateInfo}
                 childrenQty={task.childrenQty}
                 filteredTasks={filteredTasks}
-              {filteredTasks.map((task, i) => (
-                <Task
-                  key={`${task._id}${i}`}
-                  id={task._id}
-                  level={task.level}
-                  num={task.num}
-                  name={task.taskName}
-                  priority={task.priority}
-                  resources={task.resources}
-                  isAssigned={task.isAssigned}
-                  status={task.status}
-                  hoursBest={task.hoursBest}
-                  hoursMost={task.hoursMost}
-                  hoursWorst={task.hoursWorst}
-                  estimatedHours={task.estimatedHours}
-                  startedDatetime={task.startedDatetime}
-                  dueDatetime={task.dueDatetime}
-                  links={task.links}
-                  projectId={projectId}
-                  wbsId={wbsId}
-                  selectTask={selectTaskFunc}
-                  isNew={task.new ? true : false}
-                  parentId1={task.parentId1}
-                  parentId2={task.parentId2}
-                  parentId3={task.parentId3}
-                  mother={task.mother}
-                  isOpen={openAll}
-                  drop={dropTask}
-                  drag={dragTask}
-                  deleteWBSTask={deleteWBSTask}
-                  hasChildren={task.hasChild}
-                  siblings={props.state.tasks.taskItems.filter(item => item.mother === task.mother)}
-                  taskId={task.taskId}
-                  whyInfo={task.whyInfo}
-                  intentInfo={task.intentInfo}
-                  endstateInfo={task.endstateInfo}
-                  childrenQty={task.childrenQty}
-                  filteredTasks={filteredTasks}
-                />
-              ))}
-            </tbody>
-          </table>
-        </div>
+
+              />
+            ))}
+          </tbody>
+        </table>
       </div>
     </>
   );
