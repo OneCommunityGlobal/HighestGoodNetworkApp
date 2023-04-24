@@ -660,7 +660,7 @@ class Timelog extends Component {
                         />
                       )}
                       <TabPane tabId={0}>
-                        <TeamMemberTasks asUser={this.props.asUser} />
+                        <TeamMemberTasks asUser={userId} />
                       </TabPane>
                       <TabPane tabId={1}>{currentWeekEntries}</TabPane>
                       <TabPane tabId={2}>{lastWeekEntries}</TabPane>
