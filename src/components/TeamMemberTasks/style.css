@@ -1,5 +1,6 @@
 .team-member-tasks {
   background-color: white;
+  overflow-x: auto;
 }
 
 .team-member-tasks h1 {
