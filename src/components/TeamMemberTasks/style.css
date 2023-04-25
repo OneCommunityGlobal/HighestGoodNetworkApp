@@ -1,11 +1,15 @@
 .team-member-tasks {
   background-color: white;
-  overflow-x: auto;
+  
 }
 
 .team-member-tasks h1 {
   color: black;
   font-size: 20px;
+}
+
+.table-container{
+  overflow-x: auto;
 }
 
 .team-member-tasks-bell {

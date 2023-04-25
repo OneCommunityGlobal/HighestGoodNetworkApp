@@ -439,6 +439,7 @@ const TeamMemberTasks = props => {
           setClickedToShowModal={setClickedToShowModal}
         />
       )}
+      <div className='table-container'>
       <Table>
         <thead className="pc-component">
           <tr>
@@ -486,6 +487,8 @@ const TeamMemberTasks = props => {
 
         <tbody>{isLoading ? <Loading /> : renderTeamsList()}</tbody>
       </Table>
+      </div>
+      
     </div>
   );
 };
