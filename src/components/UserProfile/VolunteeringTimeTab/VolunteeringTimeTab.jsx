@@ -100,6 +100,25 @@ const WeeklyCommittedHours = props => {
   );
 };
 
+const MissedHours = props => {
+  if (!props.canEdit) {
+    return <p>{props.userProfile.missedHours ?? 0}</p>;
+  }
+  return (
+    <Input
+      type="number"
+      name="missedHours"
+      id="missedHours"
+      data-testid="missedHours"
+      value={props.userProfile.missedHours ?? 0}
+      onChange={e => {
+        props.setUserProfile({ ...props.userProfile, missedHours: Math.max(Number(e.target.value), 0) });
+      }}
+      placeholder="Additional Make-up Hours This Week"
+    />
+  );
+};
+
 const TotalIntangibleHours = props => {
   if (!props.canEdit) {
     return <p>{props.userProfile.totalIntangibleHrs}</p>;
@@ -118,7 +137,7 @@ const TotalIntangibleHours = props => {
           totalIntangibleHrs: Math.max(Number(e.target.value), 0),
         });
       }}
-      placeholder={`Total Intangible Hours`}
+      placeholder='Total Intangible Hours'
     />
   );
 };
@@ -281,6 +300,21 @@ const ViewTab = props => {
           />
         </Col>
       </Row>
+      {userProfile.role === 'Core Team' && (
+        <Row className="volunteering-time-row">
+          <Col md="6">
+            <Label className="hours-label">Additional Make-up Hours This Week </Label>
+          </Col>
+          <Col md="6">
+            <MissedHours
+              role={role}
+              userProfile={userProfile}
+              setUserProfile={setUserProfile}
+              canEdit={canEdit}
+            />
+          </Col>
+        </Row>
+      )}
       <Row className="volunteering-time-row">
         <Col md="6">
           <Label className="hours-label">Total Intangible Hours </Label>
