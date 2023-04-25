@@ -241,6 +241,7 @@ function UserProfile(props) {
     }
   };
 
+
   const getTeamMembersWeeklySummary = async () => {
     const userId = props?.match?.params?.userId;
 
@@ -661,7 +662,7 @@ function UserProfile(props) {
                 color="primary"
                 size="sm"
               >
-                {showSelect ? 'Hide Team Weekly Summaries' : 'Team Weekly Summaries'}
+                {showSelect ? 'Hide Team Weekly Summaries' : 'Show Team Weekly Summaries'}
               </Button>
             </div>
             <h6 className="job-title">{jobTitle}</h6>
@@ -692,7 +693,7 @@ function UserProfile(props) {
               showSelect &&
               showSummary &&
               summarySelected.map((data, i) => {
-                return <TeamWeeklySummaries i={i} name={summaryName} data={data} />;
+                return <TeamWeeklySummaries key={data["_id"]} i={i} name={summaryName} data={data} />;
               })}
             <Badges
               userProfile={userProfile}
