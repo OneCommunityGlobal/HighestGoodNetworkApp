@@ -49,7 +49,6 @@ import hasPermission from '../../utils/permissions';
 
 const doesUserHaveTaskWithWBS = tasks => {
   let check = false;
-  console.log(tasks);
   for (let task of tasks) {
     if (task.wbsId && task.status !== 'Complete') {
       check = true;
