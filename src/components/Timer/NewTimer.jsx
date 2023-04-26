@@ -1,5 +1,5 @@
 import moment from 'moment';
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback, useEffect, useRef } from 'react';
 import useWebSocket, { ReadyState } from 'react-use-websocket';
 import config from '../../../src/config.json';
 import './NewTimer.css';
@@ -25,6 +25,7 @@ export const NewTimer = () => {
   const [inacModal, setInacModal] = useState(false);
   const [showTimer, setShowTimer] = useState(false);
   const [isActive, setIsActive] = useState(true);
+  const audioRef = useRef(null);
 
   const [confirmationResetModal, setConfirmationResetModal] = useState(false);
   const [previewTimer, setPreviewTimer] = useState(0);
@@ -88,6 +89,17 @@ export const NewTimer = () => {
     sendMessage(action.START_TIMER);
   }, [minutes, message]);
 
+  const handleStartAlarm = () => {
+    window.focus();
+    audioRef.current.play();
+  };
+
+  const handleStopAlarm = () => {
+    window.focus();
+    audioRef.current.pause();
+    audioRef.current.currentTime = 0;
+  };
+
   const handleStartButton = useCallback(() => {
     const now = moment();
     const lastAccess = moment(message?.lastAccess);
@@ -97,6 +109,7 @@ export const NewTimer = () => {
       .utc(message?.time)
       .format('HH:mm')
       .replace('00:0', '');
+
     if (remaining < 0) {
       handleAddGoal(1000 * 60 * Number(lastTimeAdded > 0 ? lastTimeAdded : 5));
       sendMessage(action.START_TIMER);
@@ -104,9 +117,12 @@ export const NewTimer = () => {
     } else {
       sendMessage(action.START_TIMER);
     }
-  }, [minutes, message]);
+  }, [message]);
   const handleStop = useCallback(() => sendMessage(action.STOP_TIMER), []);
-  const handlePause = useCallback(() => sendMessage(action.PAUSE_TIMER), []);
+  const handlePause = useCallback(() => {
+    handleStopAlarm();
+    sendMessage(action.PAUSE_TIMER);
+  }, []);
   const handleClear = useCallback(() => sendMessage(action.CLEAR_TIMER), []);
   const handleSwitch = useCallback(() => sendMessage(action.SWITCH_MODE), []);
   const handleGetTimer = useCallback(() => sendMessage(action.GET_TIMER), []);
@@ -137,7 +153,6 @@ export const NewTimer = () => {
   The timer status is the component that shows the status of the timer, if it is waiting for the server
   message, if some error ocurred and the ready state of the websocket connection
   */
-
   return (
     <div className="timer-container">
       <BsAlarmFill className="transition-color btn-white" fontSize="2rem" onClick={toggleTimer} />
@@ -203,7 +218,7 @@ export const NewTimer = () => {
         size={'sm'}
       >
         <ModalHeader toggle={() => setConfirmationResetModal(false)}>Reset Time</ModalHeader>
-        <ModalBody>Are you sure you want to reset your time ?</ModalBody>
+        <ModalBody>Are you sure you want to reset your time?</ModalBody>
         <ModalFooter>
           <Button
             color="primary"
@@ -233,6 +248,9 @@ export const NewTimer = () => {
                 setPreviewTimer={setPreviewTimer}
                 handleClear={() => setConfirmationResetModal(true)}
                 toggleModal={() => setLogModal(true)}
+                alarm={handleStartAlarm}
+                handlePauseAlarm={handleStopAlarm}
+                logModal={logModal}
               />
             ) : (
               <Stopwatch
@@ -265,6 +283,7 @@ export const NewTimer = () => {
           />
         )}
       </div>
+      <audio ref={audioRef} src="https://bigsoundbank.com/UPLOAD/mp3/2554.mp3" />
     </div>
   );
 };

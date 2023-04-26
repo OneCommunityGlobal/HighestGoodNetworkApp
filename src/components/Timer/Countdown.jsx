@@ -10,7 +10,7 @@ import { FaSave } from 'react-icons/fa';
 import { Input } from 'reactstrap';
 import './Countdown.css';
 import moment from 'moment';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 const Countdown = ({
   message,
@@ -23,6 +23,9 @@ const Countdown = ({
   setPreviewTimer,
   handleClear,
   toggleModal,
+  alarm,
+  handlePauseAlarm,
+  logModal,
 }) => {
   const MAX_HOURS = 5;
   const MIN_MINS = 15;
@@ -41,13 +44,6 @@ const Countdown = ({
     }
     time = moment.duration(message?.goal ?? 0, 'milliseconds').subtract(min, 'minutes');
     return time.asMinutes() < 15 ? true : false;
-  };
-
-  // Here we are playing the alarm audio from https://bigsoundbank.com/
-  const alarm = () => {
-    window.focus();
-    const audio = new Audio('https://bigsoundbank.com/UPLOAD/mp3/2554.mp3');
-    audio.play();
   };
 
   /*
@@ -100,20 +96,40 @@ const Countdown = ({
    * If the remaining time is less than 0 we set the remaining time to 0
    * then we trigger the alarm function, stop and toggle the modal to open
    * */
-  const remainingTime = () => {
-    const now = moment();
-    const lastAccess = moment(message.lastAccess);
-    const elapsedTime = moment.duration(now.diff(lastAccess)).asMilliseconds();
-    let remaining = message.time - elapsedTime;
-    if (remaining < 0) {
-      remaining = 0;
-      handleStop();
-      toggleModal();
-      setInterval(() => {
-        alarm();
-      }, 2000);
+
+  useEffect(() => {
+    if (logModal) {
+      remainingTime(true);
     }
-    return remaining;
+  }, [logModal]);
+
+  const intervalRef = useRef(null);
+
+  const remainingTime = (shouldStopAndCleanTimer = false) => {
+    if (!shouldStopAndCleanTimer) {
+      const now = moment();
+      const lastAccess = moment(message.lastAccess);
+      const elapsedTime = moment.duration(now.diff(lastAccess)).asMilliseconds();
+      let remaining = message.time - elapsedTime;
+      if (remaining < 0) {
+        remaining = 0;
+        handleStop();
+
+        // Play alarm in a loop for 5 minutes
+        intervalRef.current = setInterval(() => {
+          alarm();
+        }, 1000);
+      }
+      return remaining;
+    } else {
+      resetCounter();
+    }
+  };
+
+  const resetCounter = () => {
+    handlePauseAlarm();
+    clearInterval(intervalRef.current);
+    intervalRef.current = null;
   };
 
   /*
