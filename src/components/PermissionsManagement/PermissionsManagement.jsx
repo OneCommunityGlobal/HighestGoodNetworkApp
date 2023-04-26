@@ -42,13 +42,13 @@ const PermissionsManagement = ({ getAllRoles, roles, auth, getUserRole, userProf
           {roleNames?.map(roleName => {
             let roleNameLC = roleName.toLowerCase().replace(' ', '-');
             return (
-              <div
+              <button
                 onClick={() => history.push(`/permissionsmanagement/${roleNameLC}`)}
                 key={roleName}
                 className="role-name"
               >
                 {roleName}
-              </div>
+              </button>
             );
           })}
         </div>

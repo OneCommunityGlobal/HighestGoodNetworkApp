@@ -55,10 +55,8 @@
 .user-role-tab__permission {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   border-bottom: solid 1px #ced4da;
-}
-.user-role-tab__permission:hover {
-  background-color: #ced4da;
 }
 
 .permissions-management--flex {
@@ -79,7 +77,8 @@
   border: solid 1px lightgrey;
   border-radius: 8px;
   min-width: 300px;
-  height: 270.5px;
+  height: 450px;
+  max-height: 480px;
   overflow: auto;
 }
 
