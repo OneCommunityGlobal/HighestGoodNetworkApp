@@ -79,7 +79,7 @@ function AddTaskModal(props) {
   // Endstate info (what it should look like when done)
   const [endstateInfo, setEndstateInfo] = useState('');
 
-  // Category
+  // category
   const categoryOptions = [
     { value: 'Food', label: 'Food' },
     { value: 'Energy', label: 'Energy' },
@@ -257,11 +257,11 @@ function AddTaskModal(props) {
     setWhyInfo('');
     setIntentInfo('');
     setEndstateInfo('');
-    setClassification('');
+    setCategory('');
   };
 
   const paste = () => {
-    setTaskName(props.tasks.copiedTask.taskName);
+    taskName && setTaskName(props.tasks.copiedTask.taskName);
 
     if (props.tasks.copiedTask.priority === 'Secondary') {
       document.getElementById('priority').selectedIndex = 1;
@@ -332,28 +332,31 @@ function AddTaskModal(props) {
       whyInfo,
       intentInfo,
       endstateInfo,
-      classification,
+      category,
     };
 
     props.addNewTask(newTask, props.wbsId);
 
-    setIsLoading(false);
-    if (props.tasks.error === 'none') {
-      toggle();
-      getNewNum();
-    }
+    setTimeout(() => {
+      setIsLoading(false);
+      if (props.tasks.error === 'none') {
+        toggle();
+        getNewNum();
+      }
+    }, 1000);
   };
 
   useEffect(() => {
     if (props.level >= 1) {
-      const categoryMother = props.tasks.taskItems.find(({ _id }) => _id === props.taskId).category;
+      const categoryMother = props.tasks.taskItems.find(({ _id }) => _id === props.taskId)
+        .category;
       if (categoryMother) {
         setCategory(categoryMother);
       }
     } else {
       const res = props.allProjects.projects.filter(obj => obj._id === props.projectId)[0];
       setCategory(res.category);
-      }
+    }
   }, [props.level]);
 
   getNewNum();
