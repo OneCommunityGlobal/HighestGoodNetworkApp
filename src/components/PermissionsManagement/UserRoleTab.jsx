@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import RolePermissions from './RolePermissions';
 import { connect } from 'react-redux';
 import './UserRoleTab.css';
@@ -111,7 +111,6 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = dispatch => ({
   getAllRoles: () => dispatch(getAllRoles()),
-  getUserRole: id => dispatch(getUserProfile(id)),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(UserRoleTab);
