@@ -99,7 +99,7 @@ const FormattedReport = ({ summaries, weekIndex }) => {
       window.open(googleDocLink.Link);
     } else {
       toast.error(
-        'Uh oh, no Google Doc is present for this user! Please contact an Admin to find out why',
+        'Uh oh, no Google Doc is present for this user! Please contact an Admin to find out why.',
         {
           toastId: toastGoogleLinkDoesNotExist,
           pauseOnFocusLoss: false,
