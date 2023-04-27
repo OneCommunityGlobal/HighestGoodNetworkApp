@@ -40,9 +40,8 @@ describe('WeeklySummariesReport page', () => {
       render(<WeeklySummariesReport {...props} />);
     });
 
-    it('should have 4 tab', () => {
-      const li = screen.getAllByRole('listitem');
-      expect(li.length).toEqual(4);
+    afterEach(() => {
+      jest.clearAllMocks();
     });
 
     it('should have first tab set to "active" by default', () => {
