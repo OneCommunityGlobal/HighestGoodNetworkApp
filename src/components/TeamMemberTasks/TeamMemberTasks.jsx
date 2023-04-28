@@ -50,6 +50,11 @@ const TeamMemberTasks = props => {
   const userId = props?.match?.params?.userId || props.asUser || props.auth.user.userid;
 
   const dispatch = useDispatch();
+  //Set current used ID, it can be either the authenticated user or the viewed user's id
+  useEffect(() => {
+    setCurrentUserId(userId)
+  }, [])
+
   useEffect(() => {
     //Passed the userid as argument to fetchTeamMembersTask
     //the fetchTeamMembersTask has a function inside id that gets the userId from the store, like the last part of the userId variable in this file
@@ -133,8 +138,12 @@ const TeamMemberTasks = props => {
   };
 
   const handleTaskNotificationRead = (userId, taskId, taskNotificationId) => {
-    dispatch(deleteTaskNotification(userId, taskId, taskNotificationId));
+    //if the authentitated user is seeing it's own notification
+    if(userId === props.auth.user.userid){
+      dispatch(deleteTaskNotification(userId, taskId, taskNotificationId));
+    }
     handleOpenTaskNotificationModal();
+    window.location.reload(false)
   };
 
   const renderTeamsList = () => {
