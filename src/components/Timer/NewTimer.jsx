@@ -24,10 +24,11 @@ export const NewTimer = () => {
   const [logModal, setLogModal] = useState(false);
   const [inacModal, setInacModal] = useState(false);
   const [showTimer, setShowTimer] = useState(false);
-  const [isActive, setIsActive] = useState(true);
+  const [triggerAudio, setTriggerAudio] = useState(false);
   const audioRef = useRef(null);
 
   const [confirmationResetModal, setConfirmationResetModal] = useState(false);
+  const [isFirstLoading, setIsFirstLoading] = useState(true);
   const [previewTimer, setPreviewTimer] = useState(0);
   const data = {
     disabled: window.screenX <= 500,
@@ -101,15 +102,19 @@ export const NewTimer = () => {
   };
 
   const handleStartButton = useCallback(() => {
+    // Stop alarm on Countdown.jsx if it's already playing
+    setTriggerAudio(true);
     const now = moment();
     const lastAccess = moment(message?.lastAccess);
     const elapsedTime = moment.duration(now.diff(lastAccess)).asMilliseconds();
     let remaining = message?.time - elapsedTime;
+
     const lastTimeAdded = moment
       .utc(message?.time)
       .format('HH:mm')
       .replace('00:0', '');
 
+    // If the timer is ZERO he adds the last time setted as GOAL (THIS IS A RULE)
     if (remaining < 0) {
       handleAddGoal(1000 * 60 * Number(lastTimeAdded > 0 ? lastTimeAdded : 5));
       sendMessage(action.START_TIMER);
@@ -118,17 +123,40 @@ export const NewTimer = () => {
       sendMessage(action.START_TIMER);
     }
   }, [message]);
+
   const handleStop = useCallback(() => sendMessage(action.STOP_TIMER), []);
+
   const handlePause = useCallback(() => {
     handleStopAlarm();
     sendMessage(action.PAUSE_TIMER);
   }, []);
+
   const handleClear = useCallback(() => sendMessage(action.CLEAR_TIMER), []);
   const handleSwitch = useCallback(() => sendMessage(action.SWITCH_MODE), []);
   const handleGetTimer = useCallback(() => sendMessage(action.GET_TIMER), []);
   const handleSetGoal = useCallback(time => sendMessage(action.SET_GOAL.concat(time)), []);
   const handleAddGoal = useCallback(time => sendMessage(action.ADD_GOAL.concat(time)), []);
-  const handleRemoveGoal = useCallback(time => sendMessage(action.REMOVE_GOAL.concat(time)), []);
+
+  const handleRemoveGoal = useCallback(
+    time => {
+      const now = moment();
+      const lastAccess = moment(message?.lastAccess);
+      const elapsedTime = moment.duration(now.diff(lastAccess)).asMilliseconds();
+      let remaining = message?.time - elapsedTime;
+
+      if (remaining <= 900000) {
+        alert('Timer cannot be set to less than fifteen minutes!');
+        return;
+      } else if (remaining <= 1800000) {
+        sendMessage(action.SET_GOAL.concat(time));
+      } else {
+        console.log(time);
+        sendMessage(action.REMOVE_GOAL.concat(time));
+      }
+    },
+    [message],
+  );
+
   const handleAckForced = useCallback(() => sendMessage(action.ACK_FORCED), []);
   const toggleModal = () => setLogModal(modal => !modal);
   const toggleTimer = () => setShowTimer(timer => !timer);
@@ -153,6 +181,29 @@ export const NewTimer = () => {
   The timer status is the component that shows the status of the timer, if it is waiting for the server
   message, if some error ocurred and the ready state of the websocket connection
   */
+
+  useEffect(() => {
+    // If the user load the page and the time 0 it clear the timer and put the
+    const userHasLoadedPageAndAlreadyHaveSeeTheFirstLoadingAndHisTimeIsZero =
+      message?.time == 0 && isFirstLoading;
+
+    if (userHasLoadedPageAndAlreadyHaveSeeTheFirstLoadingAndHisTimeIsZero) {
+      handleClear();
+    }
+  }, [message, isFirstLoading]);
+
+  useEffect(() => {
+    setIsFirstLoading(true);
+  }, []);
+
+  useEffect(() => {
+    if (isFirstLoading) {
+      setTimeout(() => {
+        setIsFirstLoading(false);
+      }, 10000);
+    }
+  }, [isFirstLoading]);
+
   return (
     <div className="timer-container">
       <BsAlarmFill className="transition-color btn-white" fontSize="2rem" onClick={toggleTimer} />
@@ -168,7 +219,9 @@ export const NewTimer = () => {
         <AiFillMinusCircle
           className="btn-white transition-color"
           fontSize="1.7rem"
-          onClick={() => handleRemoveGoal(1000 * 60 * 15)}
+          onClick={() => {
+            handleRemoveGoal(1000 * 60 * 15);
+          }}
         />
       </div>
       {message?.paused ? (
@@ -240,7 +293,7 @@ export const NewTimer = () => {
               <Countdown
                 message={message}
                 handlePause={handlePause}
-                handleStart={handleStart}
+                handleStart={handleStartButton}
                 handleStop={handleStop}
                 handleSetGoal={handleSetGoal}
                 handleAddGoal={handleAddGoal}
@@ -251,6 +304,7 @@ export const NewTimer = () => {
                 alarm={handleStartAlarm}
                 handlePauseAlarm={handleStopAlarm}
                 logModal={logModal}
+                triggerAudio={triggerAudio}
               />
             ) : (
               <Stopwatch
@@ -271,15 +325,15 @@ export const NewTimer = () => {
             edit={false}
             userId={userId}
             toggle={toggleModal}
-            isOpen={true}
+            isOpen={logModal}
             timer={{ hours, minutes }}
             data={data}
             userProfile={userProfile}
             resetTimer={handleClear}
             handleStop={handleStop}
             handleAddGoal={handleAddGoal}
+            handlePauseAlarm={handleStopAlarm}
             goal={message?.goal}
-            setIsActive={setIsActive}
           />
         )}
       </div>

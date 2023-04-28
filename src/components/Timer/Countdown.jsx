@@ -10,7 +10,7 @@ import { FaSave } from 'react-icons/fa';
 import { Input } from 'reactstrap';
 import './Countdown.css';
 import moment from 'moment';
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 const Countdown = ({
   message,
@@ -26,6 +26,7 @@ const Countdown = ({
   alarm,
   handlePauseAlarm,
   logModal,
+  triggerAudio,
 }) => {
   const MAX_HOURS = 5;
   const MIN_MINS = 15;
@@ -101,30 +102,41 @@ const Countdown = ({
     if (logModal) {
       remainingTime(true);
     }
-  }, [logModal]);
+  }, [logModal, remainingTime]);
+
+  useEffect(() => {
+    if (triggerAudio) {
+      remainingTime(true);
+    }
+  }, [triggerAudio, remainingTime]);
 
   const intervalRef = useRef(null);
 
-  const remainingTime = (shouldStopAndCleanTimer = false) => {
-    if (!shouldStopAndCleanTimer) {
-      const now = moment();
-      const lastAccess = moment(message.lastAccess);
-      const elapsedTime = moment.duration(now.diff(lastAccess)).asMilliseconds();
-      let remaining = message.time - elapsedTime;
-      if (remaining < 0) {
-        remaining = 0;
-        handleStop();
+  const remainingTime = useCallback(
+    (shouldStopAndCleanTimer = false) => {
+      if (!shouldStopAndCleanTimer) {
+        const now = moment();
+        const lastAccess = moment(message.lastAccess);
+        const elapsedTime = moment.duration(now.diff(lastAccess)).asMilliseconds();
+        let remaining = message.time - elapsedTime;
+        if (remaining < 0) {
+          remaining = 0;
+          handleStop();
 
-        // Play alarm in a loop for 5 minutes
-        intervalRef.current = setInterval(() => {
-          alarm();
-        }, 1000);
+          intervalRef.current = setInterval(() => {
+            alarm();
+          }, 1000);
+        } else {
+          resetCounter();
+        }
+
+        return remaining;
+      } else {
+        resetCounter();
       }
-      return remaining;
-    } else {
-      resetCounter();
-    }
-  };
+    },
+    [message, running],
+  );
 
   const resetCounter = () => {
     handlePauseAlarm();

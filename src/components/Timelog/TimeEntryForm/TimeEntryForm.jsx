@@ -1,4 +1,4 @@
-import React, { useState, useEffect, Fragment } from 'react';
+import React, { useState, useEffect, Fragment, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import { useDispatch, useSelector } from 'react-redux';
 import {
@@ -580,8 +580,27 @@ const TimeEntryForm = props => {
     if (closed === true && isOpen) toggle();
   };
 
+  const stopAllAudioAndClearIntervals = useCallback(() => {
+    const audios = document.querySelectorAll('audio');
+    audios.forEach(audio => {
+      audio.pause();
+      audio.currentTime = 0;
+    });
+
+    const intervals = setInterval(() => {});
+    for (let i = 1; i < intervals; i++) {
+      clearInterval(i);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (isOpen) {
+      stopAllAudioAndClearIntervals();
+    }
+  }, [stopAllAudioAndClearIntervals, isOpen]);
+
   return (
-    <div onFocus={() => setIsActive(true)} onBlur={() => setIsActive(false)}>
+    <div>
       <TangibleInfoModal
         visible={isTangibleInfoModalVisible}
         setVisible={setTangibleInfoModalVisibleModalVisible}
