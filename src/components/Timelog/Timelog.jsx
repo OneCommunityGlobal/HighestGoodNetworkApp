@@ -51,7 +51,7 @@ import WeeklySummaries from './WeeklySummaries';
 const doesUserHaveTaskWithWBS = tasks => {
   let check = false;
   for (let task of tasks) {
-    if (task.wbsId) {
+    if (task.wbsId && task.status !== 'Complete') {
       check = true;
       break;
     }
