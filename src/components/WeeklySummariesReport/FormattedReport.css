@@ -1,0 +1,17 @@
+.star-rating {
+    position: relative;
+    display: inline-block;
+  }
+  
+  .rating-number {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    text-align: center;
+    font-size: 0.8em;
+    line-height: 4.0;
+    color: azure;
+  }
+  

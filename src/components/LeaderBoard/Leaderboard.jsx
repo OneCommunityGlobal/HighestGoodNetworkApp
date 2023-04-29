@@ -167,16 +167,17 @@ const LeaderBoard = ({
             <tr>
               <td className="align-middle">
                 <Link to={`/dashboard/`}>
-                  <div
+                  <i class="fa fa-star" aria-hidden="true"
                     title={`Weekly Committed: ${organizationData.weeklycommittedHours} hours`}
                     style={{
-                      backgroundColor:
+                      color:
                         organizationData.tangibletime >= organizationData.weeklycommittedHours
                           ? 'green'
                           : 'red',
-                      width: 15,
-                      height: 15,
-                      borderRadius: 7.5,
+                      fontSize: 20,
+                      // width: 15,
+                      // height: 15,
+                      //borderRadius: 7.5,
                       margin: 'auto',
                     }}
                   />
@@ -201,7 +202,9 @@ const LeaderBoard = ({
             </tr>
             {leaderBoardData.map((item, key) => (
               <tr key={key}>
-                <td className="align-middle" onClick={() => dashboardToggle(item)}>
+                <td className=" align-middle"
+                onClick={() => dashboardToggle(item)}>
+                 
                   <div>
                     <Modal isOpen={isDashboardOpen === item.personId} toggle={dashboardToggle}>
                       <ModalHeader toggle={dashboardToggle}>Jump to personal Dashboard</ModalHeader>
@@ -220,20 +223,42 @@ const LeaderBoard = ({
                   </div>
 
                   {/* <Link to={`/dashboard/${item.personId}`}> */}
-                  <div
+                  <i class="fa fa-star" aria-hidden="true"
                     title={`Weekly Committed: ${item.weeklycommittedHours} hours`}
+                    // Ayush Code
+
                     style={{
-                      backgroundColor:
-                        item.tangibletime >= item.weeklycommittedHours ? 'green' : 'red',
-                      width: 15,
-                      height: 15,
-                      borderRadius: 7.5,
+                      color: (() => {
+                        if (item.tangibletime >= item.weeklycommittedHours * 1.75) {
+                          // Purple
+                          return '#800080';
+                        } else if (item.tangibletime >= item.weeklycommittedHours * 1.50) {
+                          // Fuchsia
+                          return '#FF00FF';
+                        } else if (item.tangibletime >= item.weeklycommittedHours * 1.25) {
+                          // Light Green
+                          return '#90ee90'; 
+                        }
+                        else if (item.tangibletime >= item.weeklycommittedHours){
+                          return 'green'
+                        }
+                        else {
+                          return 'red';
+                        }
+                      })(),
+                      fontSize: 20,
+                      // width: 15,
+                      // height: 15,
+                      // // borderRadius: 7.5,
                       margin: 'auto',
                       verticalAlign: 'middle',
+                      
                     }}
+                   
                   />
                   {/* </Link> */}
                 </td>
+                
                 <th scope="row">
                   <Link to={`/userprofile/${item.personId}`} title="View Profile">
                     {item.name}

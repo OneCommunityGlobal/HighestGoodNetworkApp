@@ -4,6 +4,7 @@ import moment from 'moment';
 import 'moment-timezone';
 import ReactHtmlParser from 'react-html-parser';
 import { Link } from 'react-router-dom';
+import './FormattedReport.css';
 
 const FormattedReport = ({ summaries, weekIndex }) => {
   const emails = [];
@@ -95,6 +96,43 @@ const FormattedReport = ({ summaries, weekIndex }) => {
               <Link to={`/userProfile/${summary._id}`} title="View Profile">
                 {summary.firstName} {summary.lastName}
               </Link>
+              <div class="star-rating">
+              <i class="fa fa-star" aria-hidden="true"
+                    // title={`Weekly Committed: ${summary.weeklycommittedHours} hours`}
+                    
+                    title={`Congratulate this epic person, they did XX% more than their minimum committed hours!`}
+                    // Ayush Code
+                    style={{
+                      color: (() => {
+                        if (hoursLogged >= summary.weeklycommittedHours * 1.75) {
+                          // Purple
+                          return '#800080';
+                        } else if (hoursLogged >= summary.weeklycommittedHours * 1.50) {
+                          // Fuchsia
+                          return '#FF00FF';
+                        } else if (hoursLogged >= summary.weeklycommittedHours * 1.25) {
+                          // Light Green
+                          return '#90ee90'; 
+                        }
+                        else if (hoursLogged >= summary.weeklycommittedHours){
+                          return 'green'
+                        }
+                        else {
+                          return 'red';
+                        }
+                      })(),
+                      fontSize: 60,
+                      width: 45,
+                      height: 45,
+                      // // borderRadius: 7.5,
+                      margin: 'auto',
+                      verticalAlign: 'middle',
+                      
+                    }}
+                   
+                  />
+                  <span class="rating-number">40%</span>
+                  </div>
             </p>
             <p>
               {' '}
