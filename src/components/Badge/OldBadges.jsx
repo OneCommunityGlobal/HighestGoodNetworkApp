@@ -39,7 +39,7 @@ const OldBadges = props => {
           </CardTitle>
           <div className="old_badges">
             <div className="customBadge">
-            <img src="https://previews.dropbox.com/p/thumb/AB4Yjt1zWgzFtYBIgIs78l8PX5-Tgoa7e3f2nxIh3fvmO_9I2cWfVTHhTWTvexYMebaMOzaZW0XOpzz4_T-HJZ4N2ZbZPbenaxXGCK-LRS5srSDbUuCFkq-mbQfFt0Yo8oS_5t5rRhkL8czGcWZzqI3ZNc_flXvGtyAz64rbHR5iE4urhq-7LBagNX0Y7n7HR2FwQyPrP4PnfGGskSrmw_UF1OnadAcgf8m50vx2fZ7YrP9IEXlBLRTxoxcr4KSph9scXcXwJWNFVND6fwexEMPs-qkLieX0rkeju3DjIeY6PK3QcmwAMQeFR-KSEG6guUrLR1L1p9g0gYIgCfDqFeWi3H3kmNXNEnHpv1gUnAeLZ6oSMek0_lmSnuTEG9gcbhk/p.png" />
+            <img src="https://uc240a2e5ce97e247522cf55f232.previews.dropboxusercontent.com/p/thumb/AB5C26_v-7pIZpyH9WODRLiTvBMKBEjtsM6EYmx62lHpd0LkyTddIMck0Md5_tjJ4rEb_PaObc1EHjE-uP75Hjbn-9bcAOYwguhK_xC9Octl15qI2xd3fvygu-oZUoPaB1e1ibL6BrxEMM2u6p_j46rqYGXgV8aC-ZE46qzsFQ1ylzJqOpsHmtCpGGMd6tfIeQAOrsRsPbKEJ3S9zyQTgSqOC-S1q6BIlyYFfs9JuDUzxZg3VDZQDygUBOEA1GSzqm84DFZAJfmpeF480-HcloPGJ_s3ORqr4mwP08apgI3EwA1M7QPY0ibc0EnCxlOUoeYWXAHidmN3eIL-S7zuzYbj-3I-95cgjoXhSvAoxKYA0r26aynUHVYfIp1okS0ivv7kd4uNRtzfxNSI1CH3jzH7vkFT8nXwgshFqjozbdHN2Q/p.png" />
             <div>{props.badges.length}</div>
             </div>
             <BadgeHistory badges={props.badges} />
