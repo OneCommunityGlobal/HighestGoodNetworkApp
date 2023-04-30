@@ -67,6 +67,15 @@ export const ENDPOINTS = {
   DELETE_TASK_NOTIFICATION: taskNotificationId =>
     `${APIEndpoint}/tasknotification/${taskNotificationId}`,
 
+
+
+  //newly created endpoint
+  DELETE_TASK_NOTIFICATION_BY_USER_ID: (taskNotificationId, userId) => 
+  `${APIEndpoint}/tasknotification/${userId}/${taskNotificationId}`,
+  //---------------------------------------------------------------
+  
+  
+  
   TASK_EDIT_SUGGESTION: () => `${APIEndpoint}/taskeditsuggestion`,
   REJECT_TASK_EDIT_SUGGESTION: taskEditSuggestionId =>
     `${ENDPOINTS.TASK_EDIT_SUGGESTION()}/${taskEditSuggestionId}`,
