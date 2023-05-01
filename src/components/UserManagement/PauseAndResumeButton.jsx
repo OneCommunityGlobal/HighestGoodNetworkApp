@@ -30,23 +30,27 @@ const PauseAndResumeButton = props => {
   /**
    * Call back on Pause confirmation button click to trigger the action to update user status
    */
-  const pauseUser = reActivationDate => {
-    updateUserStatus(props.userProfile, UserStatus.InActive, reActivationDate)(dispatch);
+  const pauseUser = async reActivationDate => {
+    await updateUserStatus(props.userProfile, UserStatus.InActive, reActivationDate)(dispatch);
     setIsActive(false);
     setActivationDateOpen(false);
+    setTimeout(async () => {
+      await props.loadUserProfile();
+      toast.success('Your Changes were saved successfully.');
+    }, 1000);
   };
 
   /**
    * Call back on Pause or Resume button click to trigger the action to update user status
    */
-  const onPauseResumeClick = (user, status) => {
+  const onPauseResumeClick = async (user, status) => {
     if (status === UserStatus.Active) {
-      updateUserStatus(user, status, Date.now())(dispatch);
+      await updateUserStatus(user, status, Date.now())(dispatch);
       setIsActive(status);
-      toast.success('Your Changes were saved successfully.');
-      setTimeout(function() {
-        window.location.reload();
-      }, 5000);
+      setTimeout(async () => {
+        await props.loadUserProfile();
+        toast.success('Your Changes were saved successfully.');
+      }, 1000);
     } else {
       setActivationDateOpen(true);
     }
