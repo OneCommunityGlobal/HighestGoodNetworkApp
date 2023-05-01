@@ -198,8 +198,7 @@ export const Header = props => {
                   <img
                     src={`${profilePic || '/pfp-default-header.png'}`}
                     alt=""
-                    height="35"
-                    width="40"
+                    style={{ maxWidth: '60px', maxHeight: '60px'}}
                     className="dashboardimg"
                   />
                 </NavLink>

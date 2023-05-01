@@ -108,9 +108,10 @@ export const teamMemberAddAction = (member) => ({
 export const getAllUserTeams = () => {
   const userTeamsPromise = axios.get(ENDPOINTS.TEAM);
   return async (dispatch) => {
-    userTeamsPromise
+    return userTeamsPromise
       .then((res) => {
         dispatch(teamMembersFectchACtion(res.data));
+        return res.data;
         // console.log("getAllUserTeams: res:", res.data)
       })
       .catch(() => {
@@ -166,9 +167,10 @@ export const getTeamMembers = (teamId) => {
   const teamMembersPromise = axios.get(ENDPOINTS.TEAM_USERS(teamId));
   return async (dispatch) => {
     await dispatch(teamUsersFetchAction());
-    teamMembersPromise
+    return teamMembersPromise
       .then((res) => {
         dispatch(teamUsersFetchCompleteAction(res.data));
+        return res.data;
       })
       .catch(() => {
         dispatch(teamUsersFetchErrorAction());
