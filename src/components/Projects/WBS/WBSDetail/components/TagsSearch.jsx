@@ -7,11 +7,8 @@ function TagsSearch({ placeholder, members, addResources, removeResource, resour
   const [filteredData, setFilteredData] = useState([]);
   const [selectedIndex, setSelectedIndex] = useState(0);
 
-  const handleClick = (event) => {
-    members.map(member =>{ 
-      if(`${member.firstName} ${member.lastName}` == event.target.innerText) {
-        addResources(member._id, member.firstName, member.lastName);
-      }});
+  const handleClick = (event, member) => {
+    addResources(member._id, member.firstName, member.lastName);
     setIsHidden(!isHidden);
     event.target.closest('.container-fluid').querySelector('input').value = '';
   };
@@ -31,17 +28,6 @@ function TagsSearch({ placeholder, members, addResources, removeResource, resour
     }
   };
 
-  const handleBlur = () => {
-    setTimeout(() => {
-      setIsHidden(true);
-    }, 80);
-  }
-
-  const handleFocus = event => {
-    const value = event.target.value;
-    value !== '' && setIsHidden(false);
-  }
-
   return (
     <div className="container-fluid d-flex flex-column px-0">
       <div className="d-flex flex-column container-fluid mb-1 px-0">
@@ -51,8 +37,7 @@ function TagsSearch({ placeholder, members, addResources, removeResource, resour
             placeholder={placeholder}
             className="border border-dark rounded form-control px-2"
             onChange={handleFilter}
-            onBlur={handleBlur}
-            onFocus={handleFocus}
+
           />
           {filteredData.length !== 0 ? (
             <ul
@@ -63,14 +48,14 @@ function TagsSearch({ placeholder, members, addResources, removeResource, resour
               }`}
             >
               {filteredData.slice(0, 10).map((member, index) => (
-                <a href={member.link} key={member._id} className="text-decoration-none w-100">
+                <a key={member._id} className="text-decoration-none w-100">
                   <li
                     className={
                       index === selectedIndex
                         ? 'dropdown-item border-bottom fs-6 w-100 p-1'
                         : 'dropdown-item border-bottom fs-6 w-100 p-1'
                     }
-                    onClick={(event) => handleClick(event)}
+                    onClick={(event) => handleClick(event, member)}
                   >
                     {member.firstName + ' ' + member.lastName}
                   </li>
