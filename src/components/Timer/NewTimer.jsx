@@ -1,8 +1,8 @@
 import moment from 'moment';
-import React, { useState, useCallback, useEffect, useRef } from 'react';
+import React, { useState, useCallback, useEffect, useRef, useMemo } from 'react';
+import './NewTimer.css';
 import useWebSocket, { ReadyState } from 'react-use-websocket';
 import config from '../../../src/config.json';
-import './NewTimer.css';
 import {
   BsXLg,
   BsAlarmFill,
@@ -13,19 +13,20 @@ import {
 } from 'react-icons/bs';
 import { AiFillMinusCircle } from 'react-icons/ai';
 import { ENDPOINTS } from '../../utils/URL';
-import TimeEntryForm from '../Timelog/TimeEntryForm';
 import { useSelector } from 'react-redux';
+import { Modal, ModalHeader, ModalBody, ModalFooter, Button } from 'reactstrap';
+import TimeEntryForm from '../Timelog/TimeEntryForm';
 import Countdown from './Countdown';
 import Stopwatch from './Stopwatch';
 import TimerStatus from './TimerStatus';
-import { Modal, ModalHeader, ModalBody, ModalFooter, Button } from 'reactstrap';
 
 export const NewTimer = () => {
   const [logModal, setLogModal] = useState(false);
   const [inacModal, setInacModal] = useState(false);
   const [showTimer, setShowTimer] = useState(false);
   const [triggerAudio, setTriggerAudio] = useState(false);
-  const audioRef = useRef(null);
+  const [timerIsOverModalOpen, setTimerIsOverModalIsOpen] = useState(false);
+  const [userCanStop, setUserCanStop] = useState(false);
 
   const [confirmationResetModal, setConfirmationResetModal] = useState(false);
   const [isFirstLoading, setIsFirstLoading] = useState(true);
@@ -36,6 +37,8 @@ export const NewTimer = () => {
   };
   const userId = useSelector(state => state.auth.user.userid);
   const userProfile = useSelector(state => state.auth.user);
+
+  const audioRef = useRef(null);
 
   /*
   Here are the options for the websocket client,
@@ -150,7 +153,6 @@ export const NewTimer = () => {
       } else if (remaining <= 1800000) {
         sendMessage(action.SET_GOAL.concat(time));
       } else {
-        console.log(time);
         sendMessage(action.REMOVE_GOAL.concat(time));
       }
     },
@@ -174,6 +176,12 @@ export const NewTimer = () => {
   const hours = timeToLog.hours();
   const minutes = timeToLog.minutes();
 
+  const fullTime = { hours, minutes };
+
+  const userIsRunningTimerAndHasAtLeastOneMinute = useCallback(() => {
+    return timeToLog.minutes() >= 1;
+  }, [timeToLog?.minutes]);
+
   /*
   Here is the the timer wrapper, we check if the timer is in countdown mode
   if it is we show the countdown timer, if it is not we show the stopwatch
@@ -193,8 +201,19 @@ export const NewTimer = () => {
   }, [message, isFirstLoading]);
 
   useEffect(() => {
-    setIsFirstLoading(true);
-  }, []);
+    if (userCanStop) {
+      return;
+    }
+    const timeToLog = moment.duration(
+      message ? (message.countdown ? message.goal - previewTimer : previewTimer) : 0,
+    );
+    setInterval(() => {
+      if (timeToLog.minutes() >= 1) {
+        setUserCanStop(true);
+        return;
+      }
+    }, 60000);
+  }, [message, userCanStop]);
 
   useEffect(() => {
     if (isFirstLoading) {
@@ -203,6 +222,19 @@ export const NewTimer = () => {
       }, 10000);
     }
   }, [isFirstLoading]);
+
+  const stopAllAudioAndClearIntervals = useCallback(() => {
+    const audios = document.querySelectorAll('audio');
+    audios.forEach(audio => {
+      audio.pause();
+      audio.currentTime = 0;
+    });
+
+    const intervals = setInterval(() => {});
+    for (let i = 1; i < intervals; i++) {
+      clearInterval(i);
+    }
+  }, []);
 
   return (
     <div className="timer-container">
@@ -237,14 +269,53 @@ export const NewTimer = () => {
           onClick={handlePause}
         />
       )}
-      <BsStopCircleFill
-        className="btn-white transition-color"
-        fontSize="1.5rem"
+      <button
+        type="button"
+        disabled={!userCanStop}
         onClick={() => {
           handlePause();
           setLogModal(true);
         }}
-      />
+        className="disabled"
+      >
+        <BsStopCircleFill
+          className={`${!userCanStop ? 'transition-color disabled' : 'btn-white transition-color'}`}
+          fontSize="1.5rem"
+        />
+      </button>
+
+      <Modal
+        isOpen={timerIsOverModalOpen}
+        toggle={() => setTimerIsOverModalIsOpen(!timerIsOverModalOpen)}
+        centered={true}
+        size={'md'}
+      >
+        <ModalHeader toggle={() => setTimerIsOverModalIsOpen(false)}>Timer is Over!</ModalHeader>
+        <ModalBody>Click below if you’d like to add time or Log Time.</ModalBody>
+        <ModalFooter>
+          <Button
+            color="primary"
+            onClick={() => {
+              setTimerIsOverModalIsOpen(false);
+              setLogModal(true);
+            }}
+          >
+            Log Time
+          </Button>{' '}
+          <Button
+            color="secondary"
+            onClick={() => {
+              setTimerIsOverModalIsOpen(false);
+              stopAllAudioAndClearIntervals();
+              toggleTimer();
+              handleClear();
+            }}
+          >
+            Add more time
+          </Button>{' '}
+        </ModalFooter>
+      </Modal>
+
       <Modal size={'md'} isOpen={inacModal} toggle={() => setInacModal(!inacModal)} centered={true}>
         <ModalHeader toggle={() => setInacModal(!inacModal)}>Timer Paused</ModalHeader>
         <ModalBody>
@@ -268,7 +339,7 @@ export const NewTimer = () => {
         isOpen={confirmationResetModal}
         toggle={() => setConfirmationResetModal(!confirmationResetModal)}
         centered={true}
-        size={'sm'}
+        size={'md'}
       >
         <ModalHeader toggle={() => setConfirmationResetModal(false)}>Reset Time</ModalHeader>
         <ModalBody>Are you sure you want to reset your time?</ModalBody>
@@ -284,6 +355,7 @@ export const NewTimer = () => {
           </Button>{' '}
         </ModalFooter>
       </Modal>
+
       <div className={`timer ${!showTimer && 'hide-me'}`}>
         <div className="timer-content">
           <BsXLg className="transition-color btn-white cross" onClick={toggleTimer} />
@@ -305,6 +377,8 @@ export const NewTimer = () => {
                 handlePauseAlarm={handleStopAlarm}
                 logModal={logModal}
                 triggerAudio={triggerAudio}
+                setTimerIsOverModalIsOpen={setTimerIsOverModalIsOpen}
+                userIsRunningTimerAndHasAtLeastOneMinute={userCanStop}
               />
             ) : (
               <Stopwatch

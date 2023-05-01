@@ -27,6 +27,8 @@ const Countdown = ({
   handlePauseAlarm,
   logModal,
   triggerAudio,
+  setTimerIsOverModalIsOpen,
+  userIsRunningTimerAndHasAtLeastOneMinute,
 }) => {
   const MAX_HOURS = 5;
   const MIN_MINS = 15;
@@ -121,6 +123,7 @@ const Countdown = ({
         let remaining = message.time - elapsedTime;
         if (remaining < 0) {
           remaining = 0;
+          setTimerIsOverModalIsOpen(true);
           handleStop();
 
           intervalRef.current = setInterval(() => {
@@ -135,7 +138,7 @@ const Countdown = ({
         resetCounter();
       }
     },
-    [message, running],
+    [message, running, setTimerIsOverModalIsOpen],
   );
 
   const resetCounter = () => {
@@ -197,6 +200,7 @@ const Countdown = ({
    * For now the MAX_HOURS for a single run without adding more time is 5 hours, but you change this
    * easily by changing the MAX_HOURS variable
    * */
+
   return (
     <div className="countdown">
       <BsArrowCounterclockwise
@@ -229,11 +233,21 @@ const Countdown = ({
                   onClick={handlePause}
                   fontSize="3rem"
                 />
-                <BsStopFill
-                  fontSize="3rem"
-                  className="btn-purple transition-color"
+                <button
+                  type="button"
+                  className="btn-stop"
+                  disabled={userIsRunningTimerAndHasAtLeastOneMinute}
                   onClick={toggleModal}
-                />
+                >
+                  <BsStopFill
+                    fontSize="3rem"
+                    className={`${
+                      userIsRunningTimerAndHasAtLeastOneMinute
+                        ? 'transition-color btn-purple'
+                        : 'transition-color btn-gray'
+                    }`}
+                  />
+                </button>
               </div>
             ) : (
               <>

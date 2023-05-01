@@ -60,7 +60,7 @@ const TimeEntryForm = props => {
     handleStop,
     handleAddGoal,
     goal,
-    setIsActive,
+    setTimerIsOverModalIsOpen,
   } = props;
 
   const initialFormValues = {
@@ -594,10 +594,12 @@ const TimeEntryForm = props => {
   }, []);
 
   useEffect(() => {
-    if (isOpen) {
+    const userHasOpenTangibleModal = isOpen && data?.isTangible;
+
+    if (userHasOpenTangibleModal) {
       stopAllAudioAndClearIntervals();
     }
-  }, [stopAllAudioAndClearIntervals, isOpen]);
+  }, [stopAllAudioAndClearIntervals, isOpen, data?.isTangible]);
 
   return (
     <div>

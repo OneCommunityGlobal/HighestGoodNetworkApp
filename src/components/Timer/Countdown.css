@@ -126,3 +126,7 @@
   margin-bottom: auto;
   margin-top: auto;
 }
+.goal .btn-stop {
+  background: transparent;
+  border: none;
+}

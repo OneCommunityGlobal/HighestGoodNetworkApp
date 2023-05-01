@@ -87,6 +87,11 @@
   cursor: pointer;
   border-radius: 0.75rem;
 }
+.timer .btn-gray {
+  color: gray;
+  cursor: not-allowed;
+  border-radius: 0.75rem;
+}
 
 .btn-purple:hover {
   color: #fda4af;
@@ -98,6 +103,13 @@
   color: white;
 }
 
+.timer-container .disabled {
+  cursor: not-allowed;
+  color: gray;
+  background: transparent;
+  border: none;
+}
+
 .btn-white:hover {
   color: #ed688a;
 }
@@ -106,4 +118,13 @@
   transition-property: color, background-color, border-color, text-decoration-color, fill, stroke;
   transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
   transition-duration: 300ms;
+}
+
+.btn-stop {
+  background: transparent;
+  border: none;
+}
+
+.btn-stop:disabled {
+  cursor: not-allowed;
 }
