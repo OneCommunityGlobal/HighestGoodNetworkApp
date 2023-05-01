@@ -235,7 +235,6 @@ function UserProfile(props) {
     }
   };
 
-
   const getTeamMembersWeeklySummary = async () => {
     const userId = props?.match?.params?.userId;
 
@@ -537,9 +536,10 @@ function UserProfile(props) {
   const userPermissions = props.auth.user?.permissions?.frontPermissions;
 
   const isUserSelf = targetUserId === requestorId;
-  const canEditProfile = userProfile.role === 'Owner' ? 
-  hasPermission(requestorRole, 'addDeleteEditOwners', roles, userPermissions) :
-  hasPermission(requestorRole, 'editUserProfile', roles, userPermissions);
+  const canEditProfile =
+    userProfile.role === 'Owner'
+      ? hasPermission(requestorRole, 'addDeleteEditOwners', roles, userPermissions)
+      : hasPermission(requestorRole, 'editUserProfile', roles, userPermissions);
   const canEdit = canEditProfile || isUserSelf;
 
   const customStyles = {
@@ -649,7 +649,14 @@ function UserProfile(props) {
                   aria-hidden="true"
                   style={{ fontSize: 24, cursor: 'pointer' }}
                   title="Click to see user's timelog"
-                  onClick={() => props.history.push(`/timelog/${targetUserId}`)}
+                  onClick={e => {
+                    if (e.metaKey || e.ctrlKey) {
+                      window.open(`/timelog/${targetUserId}`, '_blank');
+                    } else {
+                      e.preventDefault();
+                      props.history.push(`/timelog/${targetUserId}`);
+                    }
+                  }}
                 />
               )}
               <Button
@@ -692,7 +699,9 @@ function UserProfile(props) {
               showSelect &&
               showSummary &&
               summarySelected.map((data, i) => {
-                return <TeamWeeklySummaries key={data["_id"]} i={i} name={summaryName} data={data} />;
+                return (
+                  <TeamWeeklySummaries key={data['_id']} i={i} name={summaryName} data={data} />
+                );
               })}
             <Badges
               userProfile={userProfile}
