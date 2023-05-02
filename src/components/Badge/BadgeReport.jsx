@@ -286,8 +286,6 @@ const BadgeReport = props => {
     props.handleSubmit();
     //close the modal
     props.close();
-    //Reload the view profile page with updated bages
-    window.location.reload();
   };
 
   return (

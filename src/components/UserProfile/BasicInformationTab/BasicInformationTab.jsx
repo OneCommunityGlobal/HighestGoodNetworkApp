@@ -270,6 +270,7 @@ const BasicInformationTab = props => {
     canEditRole,
     roles,
     userPermissions,
+    loadUserProfile,
   } = props;
   const [timeZoneFilter, setTimeZoneFilter] = useState('');
   const [location, setLocation] = useState('');
@@ -517,7 +518,14 @@ const BasicInformationTab = props => {
                 : 'Inactive'}
             </Label>
             &nbsp;
-            {canEdit && <PauseAndResumeButton isBigBtn={true} userProfile={userProfile} />}
+            {canEdit && (
+              <PauseAndResumeButton
+                setUserProfile={setUserProfile}
+                loadUserProfile={loadUserProfile}
+                isBigBtn={true}
+                userProfile={userProfile}
+              />
+            )}
           </Col>
         </Row>
         <Row style={{ marginBottom: '10px' }}>
@@ -529,7 +537,14 @@ const BasicInformationTab = props => {
             </Label>
           </Col>
           <Col md="6">
-            {canEdit && <SetUpFinalDayButton isBigBtn={true} userProfile={userProfile} />}
+            {canEdit && (
+              <SetUpFinalDayButton
+                loadUserProfile={loadUserProfile}
+                setUserProfile={setUserProfile}
+                isBigBtn={true}
+                userProfile={userProfile}
+              />
+            )}
           </Col>
         </Row>
       </div>
