@@ -539,7 +539,8 @@ class AddUserProfile extends Component {
     } = that.state.userProfile;
 
     const userData = {
-      password: '123Welcome!',
+      //password: '123Welcome!',
+      password: process.env.DEF_PWD,
       role: role,
       firstName: firstName,
       lastName: lastName,
