@@ -1,29 +1,25 @@
-import { faBell, faCircle, faClock, faCheck } from '@fortawesome/free-solid-svg-icons';
+import { faClock, faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
+import { faTrashAlt } from '@fortawesome/free-regular-svg-icons';
 import { Table, Progress } from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { fetchTeamMembersTask, deleteTaskNotification } from 'actions/task';
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector, connect } from 'react-redux';
-import { Link } from 'react-router-dom';
 import Loading from '../common/Loading';
 import { TaskDifferenceModal } from './components/TaskDifferenceModal';
 import { getTeamMemberTasksData } from './selectors';
 import { getUserProfile } from '../../actions/userProfile';
 import './style.css';
-import { getProgressColor, getProgressValue } from '../../utils/effortColors';
 import { fetchAllManagingTeams } from '../../actions/team';
-import EffortBar from 'components/Timelog/EffortBar';
-import TimeEntry from 'components/Timelog/TimeEntry';
-import { updateTask } from 'actions/task';
-import { getAllUserProfile } from 'actions/userManagement';
 import TaskCompletedModal from './components/TaskCompletedModal';
 import { ENDPOINTS } from 'utils/URL';
 import axios from 'axios';
-import { fetchAllTasks } from 'actions/task';
-import { deleteSelectedTask } from './reducer';
+import moment from 'moment';
+import TeamMemberTask from './TeamMemberTask';
+import FilteredTimeEntries from './FilteredTimeEntries';
+import { dataLoading, finishLoading } from './actions';
 
 const TeamMemberTasks = props => {
-  const [isTimeLogActive, setIsTimeLogActive] = useState(0);
   const [timeLogOpen, setTimeLogOpen] = useState(false);
   const [showTaskNotificationModal, setTaskNotificationModal] = useState(false);
   const [currentTaskNotifications, setCurrentTaskNotifications] = useState([]);
@@ -34,6 +30,10 @@ const TeamMemberTasks = props => {
   const [updatedTasks, setUpdatedTasks] = useState([]);
   const [showMarkAsDoneModal, setMarkAsDoneModal] = useState(false);
   const [clickedToShowModal, setClickedToShowModal] = useState(false);
+  const [teamList, setTeamList] = useState([]);
+  const [timeEntriesList, setTimeEntriesList] = useState([]);
+  const [selectedPeriod, setSelectedPeriod] = useState();
+  const [isTimeLogActive, setIsTimeLogActive] = useState(false);
 
   const dispatch = useDispatch();
   useEffect(() => {
@@ -45,6 +45,10 @@ const TeamMemberTasks = props => {
       setMarkAsDoneModal(true);
     }
   }, [currentUserId]);
+
+  useEffect(() => {
+    renderTeamsList();
+  }, []);
 
   useEffect(() => {
     submitTasks();
@@ -98,8 +102,44 @@ const TeamMemberTasks = props => {
     handleOpenTaskNotificationModal();
   };
 
+  const getTimeEntriesForPeriod = async period => {
+    if (selectedPeriod === period && timeEntriesList.length > 0) {
+      setIsTimeLogActive(true);
+      return;
+    }
+    dispatch(dataLoading());
+    setSelectedPeriod(period);
+    let newList = [];
+    const fromDate = moment()
+      .tz('America/Los_Angeles')
+      .subtract(period, 'hours')
+      .format('YYYY-MM-DD');
+
+    const toDate = moment()
+      .tz('America/Los_Angeles')
+      .format('YYYY-MM-DD');
+
+    const requests = teamList.map(async user => {
+      const url = ENDPOINTS.TIME_ENTRIES_PERIOD(user.personId, fromDate, toDate);
+      return axios.get(url);
+    });
+    const responses = await Promise.all(requests);
+    for (const response of responses) {
+      if (response.data.length > 0) newList.push(...response.data);
+    }
+
+    setTimeEntriesList(newList);
+    dispatch(finishLoading());
+    setIsTimeLogActive(true);
+  };
+
+  const cleanTimeLogs = () => {
+    setIsTimeLogActive(false);
+    setSelectedPeriod(null);
+    setTimeEntriesList([]);
+  };
+
   const renderTeamsList = () => {
-    let teamsList = [];
     if (usersWithTasks && usersWithTasks.length > 0) {
       // give different users different views
       let filteredMembers = usersWithTasks.filter(member => {
@@ -155,196 +195,8 @@ const TeamMemberTasks = props => {
         }
       }
 
-      teamsList = filteredMembers.map((user, index) => {
-        let totalHoursLogged = 0;
-        let totalHoursRemaining = 0;
-        const thisWeekHours = user.totaltangibletime_hrs;
-
-        if (user.tasks) {
-          user.tasks = user.tasks.map(task => {
-            task.hoursLogged = task.hoursLogged ? task.hoursLogged : 0;
-            task.estimatedHours = task.estimatedHours ? task.estimatedHours : 0;
-            return task;
-          });
-          totalHoursLogged = user.tasks
-            .map(task => task.hoursLogged)
-            .reduce((previousValue, currentValue) => previousValue + currentValue, 0);
-          for (const task of user.tasks) {
-            if (task.status !== 'Complete' && task.isAssigned !== 'false') {
-              totalHoursRemaining = totalHoursRemaining + (task.estimatedHours - task.hoursLogged);
-            }
-          }
-        }
-
-        const TaskButton = task => {
-          if (task.task.status !== 'Complete') {
-            return (
-              <td>
-                <h3
-                  onClick={() => markAsDone(task)}
-                  style={{ color: 'red' }}
-                  data-toggle="tooltip"
-                  data-placement="top"
-                  title="MARK AS DONE. MARKING THIS AS DONE WOULD REMOVE THE TASK PERMANENTLY."
-                  className="markAsDoneButton"
-                >
-                  X
-                </h3>
-              </td>
-            );
-          } else {
-            return <td></td>;
-          }
-        };
-
-        const markAsDone = async task => {
-          task.task.status = 'Complete';
-          const updatedTask = {
-            taskName: task.task.taskName,
-            priority: task.task.priority,
-            resources: task.task.resources,
-            isAssigned: task.task.isAssigned,
-            status: task.task.status,
-            hoursBest: parseFloat(task.task.hoursBest),
-            hoursWorst: parseFloat(task.task.hoursWorst),
-            hoursMost: parseFloat(task.task.hoursMost),
-            estimatedHours: parseFloat(task.task.hoursEstimate),
-            startedDatetime: task.task.startedDate,
-            dueDatetime: task.task.dueDate,
-            links: task.task.links,
-            whyInfo: task.task.whyInfo,
-            intentInfo: task.task.intentInfo,
-            endstateInfo: task.task.endstateInfo,
-            classification: task.task.classification,
-          };
-          await updateTask(String(task.task._id), updatedTask);
-          await deleteSelectedTask(task.task._id, task.task.mother);
-          await dispatch(getAllUserProfile());
-          await fetchAllTasks();
-        };
-
-        return (
-          <tr className="table-row" key={user.personId}>
-            {/* green if member has met committed hours for the week, red if not */}
-            <td>
-              <div className="committed-hours-circle">
-                <FontAwesomeIcon
-                  style={{
-                    color:
-                      user.totaltangibletime_hrs >= user.weeklycommittedHours ? 'green' : 'red',
-                  }}
-                  icon={faCircle}
-                />
-              </div>
-            </td>
-            <td>
-              <Table borderless className="team-member-tasks-subtable">
-                <tbody>
-                  <tr>
-                    <td className="team-member-tasks-user-name">
-                      <Link to={`/userprofile/${user.personId}`}>{`${user.name}`}</Link>
-                    </td>
-                    <td data-label="Time" className="team-clocks">
-                      <u>{user.weeklycommittedHours ? user.weeklycommittedHours : 0}</u> /
-                      <font color="green"> {thisWeekHours ? thisWeekHours.toFixed(1) : 0}</font> /
-                      <font color="red">
-                        {' '}
-                        {totalHoursRemaining ? totalHoursRemaining.toFixed(1) : 0}
-                      </font>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td colSpan={2}>
-                      {timeLogOpen && (
-                        <div>
-                          <EffortBar activeTab={0} projectsSelected={['all']} />
-                          <TimeEntry data={1} displayYear={0} userProfile={0} />
-                        </div>
-                      )}
-                    </td>
-                  </tr>
-                </tbody>
-              </Table>
-            </td>
-            <td>
-              <Table borderless className="team-member-tasks-subtable">
-                <tbody>
-                  {user.tasks &&
-                    user.tasks.map((task, index) => {
-                      let isActiveTaskForUser = true;
-                      if (task?.resources) {
-                        isActiveTaskForUser = !task.resources?.find(
-                          resource => resource.userID === user.personId,
-                        ).completedTask;
-                      }
-                      if (task.wbsId && task.projectId && isActiveTaskForUser) {
-                        return (
-                          <tr key={`${task._id}${index}`} className="task-break">
-                            <td data-label="Task(s)" className="task-align">
-                              <p>
-                                <Link to={task.projectId ? `/wbs/tasks/${task._id}` : '/'}>
-                                  <span>{`${task.num} ${task.taskName}`} </span>
-                                </Link>
-                                {task.taskNotifications.length > 0 && (
-                                  <FontAwesomeIcon
-                                    className="team-member-tasks-bell"
-                                    icon={faBell}
-                                    onClick={() => {
-                                      handleOpenTaskNotificationModal(
-                                        user.personId,
-                                        task,
-                                        task.taskNotifications,
-                                      );
-                                    }}
-                                  />
-                                )}
-                                <FontAwesomeIcon
-                                  className="team-member-tasks-done"
-                                  icon={faCheck}
-                                  title="Mark as Done"
-                                  onClick={() => {
-                                    handleMarkAsDoneModal(user.personId, task);
-                                  }}
-                                />
-                              </p>
-                            </td>
-                            {task.hoursLogged != null && task.estimatedHours != null && (
-                              <td data-label="Progress" className="team-task-progress">
-                                <div>
-                                  <span>
-                                    {`${parseFloat(task.hoursLogged.toFixed(2))}
-                                  of 
-                                ${parseFloat(task.estimatedHours.toFixed(2))}`}
-                                  </span>
-                                  <Progress
-                                    color={getProgressColor(
-                                      task.hoursLogged,
-                                      task.estimatedHours,
-                                      true,
-                                    )}
-                                    value={getProgressValue(task.hoursLogged, task.estimatedHours)}
-                                  />
-                                </div>
-                              </td>
-                            )}
-                            {userRole === 'Administrator' ? (
-                              <td data-label="Status">
-                                <TaskButton task={task}></TaskButton>
-                              </td>
-                            ) : null}
-                          </tr>
-                        );
-                      }
-                    })}
-                </tbody>
-              </Table>
-            </td>
-          </tr>
-        );
-      });
+      setTeamList([...filteredMembers]);
     }
-
-    return teamsList;
   };
 
   return (
@@ -354,64 +206,55 @@ const TeamMemberTasks = props => {
         <div className="hours-btn-container">
           <button
             type="button"
-            className="circle-border"
+            className="circle-border 24h"
             title="Timelogs submitted in the past 24 hours"
-            style={
-              isTimeLogActive === 0 || isTimeLogActive === 1
-                ? { backgroundColor: '#ffebcd' }
-                : { backgroundColor: 'white' }
-            }
-            onClick={() => {
-              setTimeLogOpen(!timeLogOpen);
-              if (isTimeLogActive === 1) {
-                setIsTimeLogActive(0);
-              } else {
-                setIsTimeLogActive(1);
-              }
-            }}
+            style={{ color: '#DC143C', border: '1px solid #DC143C' }}
+            onClick={() => getTimeEntriesForPeriod(24)}
           >
             24h
           </button>
           <button
             type="button"
-            className="circle-border"
+            className="circle-border 48h"
             title="Timelogs submitted in the past 48 hours"
-            style={
-              isTimeLogActive === 0 || isTimeLogActive === 2
-                ? { backgroundColor: '#f0ffff' }
-                : { backgroundColor: 'white' }
-            }
-            onClick={() => {
-              setTimeLogOpen(!timeLogOpen);
-              if (isTimeLogActive === 2) {
-                setIsTimeLogActive(0);
-              } else {
-                setIsTimeLogActive(2);
-              }
-            }}
+            style={{ color: '#6495ED', border: '1px solid #6495ED' }}
+            onClick={() => getTimeEntriesForPeriod(48)}
           >
             48h
           </button>
           <button
             type="button"
-            className="circle-border"
+            className="circle-border 72h"
             title="Timelogs submitted in the past 72 hours"
-            style={
-              isTimeLogActive === 0 || isTimeLogActive === 3
-                ? { backgroundColor: 'lightgray' }
-                : { backgroundColor: 'white' }
-            }
-            onClick={() => {
-              setTimeLogOpen(!timeLogOpen);
-              if (isTimeLogActive === 3) {
-                setIsTimeLogActive(0);
-              } else {
-                setIsTimeLogActive(3);
-              }
+            style={{
+              color: selectedPeriod === 72 ? 'white' : '#228B22',
+              backgroundColor: selectedPeriod === 72 ? '#228B22' : 'white',
+              border: '1px solid #228B22',
             }}
+            onClick={() => getTimeEntriesForPeriod(72)}
           >
             72h
           </button>
+          {(timeEntriesList.length > 0 || isTimeLogActive) && (
+            <>
+              <button type="button" title={isTimeLogActive ? 'Hide timelogs' : 'View timelogs'}>
+                <FontAwesomeIcon
+                  style={{ color: 'grey' }}
+                  icon={isTimeLogActive ? faEyeSlash : faEye}
+                  size="lg"
+                  onClick={() => setIsTimeLogActive(!isTimeLogActive)}
+                />
+              </button>
+              <button>
+                <FontAwesomeIcon
+                  style={{ color: 'grey' }}
+                  icon={faTrashAlt}
+                  size="lg"
+                  onClick={() => cleanTimeLogs()}
+                />
+              </button>
+            </>
+          )}
         </div>
       </header>
       <TaskDifferenceModal
@@ -484,7 +327,49 @@ const TeamMemberTasks = props => {
           </tr>
         </thead>
 
-        <tbody>{isLoading ? <Loading /> : renderTeamsList()}</tbody>
+        <tbody>
+          {isLoading ? (
+            <Loading />
+          ) : (
+            teamList.map(user => {
+              if (!isTimeLogActive) {
+                return (
+                  <>
+                    <TeamMemberTask
+                      user={user}
+                      key={user.personId}
+                      handleOpenTaskNotificationModal={handleOpenTaskNotificationModal}
+                      handleMarkAsDoneModal={handleMarkAsDoneModal}
+                      userRole={userRole}
+                    />
+                  </>
+                );
+              } else {
+                return (
+                  <>
+                    <TeamMemberTask
+                      user={user}
+                      key={user.personId}
+                      handleOpenTaskNotificationModal={handleOpenTaskNotificationModal}
+                      handleMarkAsDoneModal={handleMarkAsDoneModal}
+                      userRole={userRole}
+                    />
+                    {timeEntriesList.length > 0 &&
+                      timeEntriesList
+                        .filter(timeEntry => timeEntry.personId === user.personId)
+                        .map(timeEntry => (
+                          <tr className="table-row">
+                            <td colSpan={3}>
+                              <FilteredTimeEntries data={timeEntry} key={timeEntry._id} />
+                            </td>
+                          </tr>
+                        ))}
+                  </>
+                );
+              }
+            })
+          )}
+        </tbody>
       </Table>
     </div>
   );
