@@ -320,6 +320,12 @@ const TimeEntryForm = props => {
       }
     }
 
+    // if sum of reported tangible hours + volunteer time is greater than the previous personal best max hours
+    // we update the personal best max hours
+    if (parseFloat(userProfile.tangibleHoursReportedThisWeek) + volunteerTime > userProfile.personalBestMaxHrs) {
+      userProfile.personalBestMaxHrs = parseFloat(userProfile.tangibleHoursReportedThisWeek) + volunteerTime;
+    }
+
     //update database
     try {
       const url = ENDPOINTS.USER_PROFILE(personId);
