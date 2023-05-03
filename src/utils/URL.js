@@ -70,8 +70,8 @@ export const ENDPOINTS = {
 
 
   //newly created endpoint
-  DELETE_TASK_NOTIFICATION_BY_USER_ID: (taskNotificationId, userId) => 
-  `${APIEndpoint}/tasknotification/${userId}/${taskNotificationId}`,
+  DELETE_TASK_NOTIFICATION_BY_USER_ID: (taskId, userId) => 
+  `${APIEndpoint}/tasknotification/${userId}/${taskId}`,
   //---------------------------------------------------------------
   
   
