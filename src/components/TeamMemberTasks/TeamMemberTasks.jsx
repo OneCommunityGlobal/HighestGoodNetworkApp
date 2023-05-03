@@ -52,8 +52,8 @@ const TeamMemberTasks = props => {
   const dispatch = useDispatch();
   //Set current used ID, it can be either the authenticated user or the viewed user's id
   useEffect(() => {
-    setCurrentUserId(userId)
-  }, [])
+    setCurrentUserId(userId);
+  }, []);
 
   useEffect(() => {
     //Passed the userid as argument to fetchTeamMembersTask
@@ -139,11 +139,11 @@ const TeamMemberTasks = props => {
 
   const handleTaskNotificationRead = (userId, taskId, taskNotificationId) => {
     //if the authentitated user is seeing it's own notification
-    if(currentUserId === props.auth.user.userid){
+    if (currentUserId === props.auth.user.userid) {
       dispatch(deleteTaskNotification(userId, taskId, taskNotificationId));
     }
     handleOpenTaskNotificationModal();
-    window.location.reload(false)
+    window.location.reload(false);
   };
 
   const renderTeamsList = () => {
@@ -333,19 +333,26 @@ const TeamMemberTasks = props => {
                                 <Link to={task.projectId ? `/wbs/tasks/${task._id}` : '/'}>
                                   <span>{`${task.num} ${task.taskName}`} </span>
                                 </Link>
-                                {task.taskNotifications.length > 0 && (
-                                  <FontAwesomeIcon
-                                    className="team-member-tasks-bell"
-                                    icon={faBell}
-                                    onClick={() => {
-                                      handleOpenTaskNotificationModal(
-                                        user.personId,
-                                        task,
-                                        task.taskNotifications,
-                                      );
-                                    }}
-                                  />
-                                )}
+                                {task.taskNotifications.length > 0 &&
+                                task.taskNotifications.some(
+                                  notification =>
+                                    notification.hasOwnProperty('userId') &&
+                                    notification.userId === user.personId,
+                                ) ? (
+                                  <>
+                                    <FontAwesomeIcon
+                                      className="team-member-tasks-bell"
+                                      icon={faBell}
+                                      onClick={() => {
+                                        handleOpenTaskNotificationModal(
+                                          user.personId,
+                                          task,
+                                          task.taskNotifications,
+                                        );
+                                      }}
+                                    />
+                                  </>
+                                ) : null}
                                 <FontAwesomeIcon
                                   className="team-member-tasks-done"
                                   icon={faCheck}
@@ -487,56 +494,55 @@ const TeamMemberTasks = props => {
           setClickedToShowModal={setClickedToShowModal}
         />
       )}
-      <div className='table-container'>
-      <Table>
-        <thead className="pc-component">
-          <tr>
-            {/* Empty column header for hours completed icon */}
-            <th />
-            <th className="team-member-tasks-headers">
-              <Table borderless className="team-member-tasks-subtable">
-                <thead>
-                  <tr>
-                    <th className="team-member-tasks-headers team-member-tasks-user-name">
-                      Team Member
-                    </th>
-                    <th className="team-member-tasks-headers team-clocks team-clocks-header">
-                      <FontAwesomeIcon icon={faClock} title="Weekly Committed Hours" />
-                      /
-                      <FontAwesomeIcon
-                        style={{ color: 'green' }}
-                        icon={faClock}
-                        title="Total Hours Completed this Week"
-                      />
-                      /
-                      <FontAwesomeIcon
-                        style={{ color: 'red' }}
-                        icon={faClock}
-                        title="Total Remaining Hours"
-                      />
-                    </th>
-                  </tr>
-                </thead>
-              </Table>
-            </th>
-            <th className="team-member-tasks-headers">
-              <Table borderless className="team-member-tasks-subtable">
-                <thead>
-                  <tr>
-                    <th>Tasks(s)</th>
-                    <th className="team-task-progress">Progress</th>
-                    {userRole === 'Administrator' ? <th>Status</th> : null}
-                  </tr>
-                </thead>
-              </Table>
-            </th>
-          </tr>
-        </thead>
+      <div className="table-container">
+        <Table>
+          <thead className="pc-component">
+            <tr>
+              {/* Empty column header for hours completed icon */}
+              <th />
+              <th className="team-member-tasks-headers">
+                <Table borderless className="team-member-tasks-subtable">
+                  <thead>
+                    <tr>
+                      <th className="team-member-tasks-headers team-member-tasks-user-name">
+                        Team Member
+                      </th>
+                      <th className="team-member-tasks-headers team-clocks team-clocks-header">
+                        <FontAwesomeIcon icon={faClock} title="Weekly Committed Hours" />
+                        /
+                        <FontAwesomeIcon
+                          style={{ color: 'green' }}
+                          icon={faClock}
+                          title="Total Hours Completed this Week"
+                        />
+                        /
+                        <FontAwesomeIcon
+                          style={{ color: 'red' }}
+                          icon={faClock}
+                          title="Total Remaining Hours"
+                        />
+                      </th>
+                    </tr>
+                  </thead>
+                </Table>
+              </th>
+              <th className="team-member-tasks-headers">
+                <Table borderless className="team-member-tasks-subtable">
+                  <thead>
+                    <tr>
+                      <th>Tasks(s)</th>
+                      <th className="team-task-progress">Progress</th>
+                      {userRole === 'Administrator' ? <th>Status</th> : null}
+                    </tr>
+                  </thead>
+                </Table>
+              </th>
+            </tr>
+          </thead>
 
-        <tbody>{isLoading ? <Loading /> : renderTeamsList()}</tbody>
-      </Table>
+          <tbody>{isLoading ? <Loading /> : renderTeamsList()}</tbody>
+        </Table>
       </div>
-      
     </div>
   );
 };
