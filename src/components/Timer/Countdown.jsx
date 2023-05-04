@@ -236,7 +236,7 @@ const Countdown = ({
                 <button
                   type="button"
                   className="btn-stop"
-                  disabled={userIsRunningTimerAndHasAtLeastOneMinute}
+                  disabled={!userIsRunningTimerAndHasAtLeastOneMinute}
                   onClick={toggleModal}
                 >
                   <BsStopFill

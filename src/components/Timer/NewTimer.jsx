@@ -290,7 +290,7 @@ export const NewTimer = () => {
         centered={true}
         size={'md'}
       >
-        <ModalHeader toggle={() => setTimerIsOverModalIsOpen(false)}>Timer is Over!</ModalHeader>
+        <ModalHeader toggle={() => setTimerIsOverModalIsOpen(false)}>Time Complete!</ModalHeader>
         <ModalBody>Click below if you’d like to add time or Log Time.</ModalBody>
         <ModalFooter>
           <Button
@@ -307,11 +307,10 @@ export const NewTimer = () => {
             onClick={() => {
               setTimerIsOverModalIsOpen(false);
               stopAllAudioAndClearIntervals();
-              toggleTimer();
-              handleClear();
+              handleStartButton();
             }}
           >
-            Add more time
+            Add More Time
           </Button>{' '}
         </ModalFooter>
       </Modal>
@@ -348,6 +347,7 @@ export const NewTimer = () => {
             color="primary"
             onClick={() => {
               handleClear();
+
               setConfirmationResetModal(false);
             }}
           >
@@ -367,6 +367,7 @@ export const NewTimer = () => {
                 handlePause={handlePause}
                 handleStart={handleStartButton}
                 handleStop={handleStop}
+                timer={{ hours, minutes }}
                 handleSetGoal={handleSetGoal}
                 handleAddGoal={handleAddGoal}
                 handleRemoveGoal={handleRemoveGoal}
