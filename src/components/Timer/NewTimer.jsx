@@ -307,7 +307,8 @@ export const NewTimer = () => {
             onClick={() => {
               setTimerIsOverModalIsOpen(false);
               stopAllAudioAndClearIntervals();
-              handleStartButton();
+              handleAddGoal(1000 * 60 * 15);
+              sendMessage(action.START_TIMER);
             }}
           >
             Add More Time
