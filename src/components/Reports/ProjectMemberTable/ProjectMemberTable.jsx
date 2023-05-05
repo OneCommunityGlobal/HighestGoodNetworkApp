@@ -99,11 +99,11 @@ export const ProjectMemberTable = ({ projectMembers, skip, take }) => {
         >
           <input type="radio" name="memberFilter" value="active" id="active" defaultChecked />
           <label for="active" id="project-member-count">
-            ACTIVE:{projectMembers.foundUsers.length}
+            ACTIVE: {projectMembers.foundUsers.length}
           </label>
           <input type="radio" name="memberFilter" value="all-time" id="all-time" />
           <label for="all-time" id="project-member-count">
-            ALL-TIME:{projectMembers.members.length}
+            ALL-TIME: {projectMembers.members.length}
           </label>
         </div>
       </div>
