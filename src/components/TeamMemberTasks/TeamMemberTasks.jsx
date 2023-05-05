@@ -50,10 +50,7 @@ const TeamMemberTasks = props => {
   const userId = props?.match?.params?.userId || props.asUser || props.auth.user.userid;
 
   const dispatch = useDispatch();
-  //Set current used ID, it can be either the authenticated user or the viewed user's id
-  useEffect(() => {
-    setCurrentUserId(userId);
-  }, []);
+  
 
   useEffect(() => {
     //Passed the userid as argument to fetchTeamMembersTask
