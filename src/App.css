@@ -1,4 +1,6 @@
-html,
+html {
+  overflow-x: hidden;
+}
 body,
 #root {
   height: 100%;
@@ -86,3 +88,10 @@ body,
   background-color: #CC3366 !important;
   /*  90%to100%-red */
 }
+
+nav ul.navbar-nav li:last-child > div {
+   transform: translate3d(-26px, 40px, 0px) !important;
+}
+
+
+
