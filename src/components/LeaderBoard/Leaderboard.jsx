@@ -304,6 +304,7 @@ const LeaderBoard = ({
           </tbody>
         </Table>
       </div>
+      <a class="top" href="#">Back to Top ↑</a>
     </div>
   );
 };

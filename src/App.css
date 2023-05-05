@@ -1,7 +1,7 @@
 html {
   overflow-x: hidden;
 }
-body,
+body
 #root {
   height: 100%;
 }
@@ -93,5 +93,16 @@ nav ul.navbar-nav li:last-child > div {
    transform: translate3d(-26px, 40px, 0px) !important;
 }
 
-
-
+.top {
+  text-decoration: none;
+  padding: 10px;
+  margin: 10px;
+  font-family: sans-serif;
+  color: #fff;
+  background: #000;
+  border-radius: 100px;
+  place-self: end;
+  position: absolute;
+  right: -30px;
+  bottom: 0;
+}
