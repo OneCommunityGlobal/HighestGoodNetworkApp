@@ -540,7 +540,7 @@ class AddUserProfile extends Component {
 
     const userData = {
       //password: '123Welcome!',
-      password: process.env.DEF_PWD,
+      password: process.env.REACT_APP_DEF_PWD,
       role: role,
       firstName: firstName,
       lastName: lastName,
