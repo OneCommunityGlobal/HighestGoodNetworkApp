@@ -93,8 +93,45 @@ const FormattedReport = ({ summaries, weekIndex }) => {
             <p>
               <b>Name: </b>
               <Link to={`/userProfile/${summary._id}`} title="View Profile">
-                {summary.firstName} {summary.lastName}
+                {summary.firstName} {summary.lastName}{' '}
               </Link>
+
+              {hoursLogged > summary.weeklycommittedHours && (
+                <i
+                  className="fa fa-star"
+                  title={`Weekly Committed: ${summary.weeklycommittedHours} hours`}
+                  style={{
+                    color:
+                      hoursLogged >= summary.weeklycommittedHours * 1.75
+                        ? 'purple'
+                        : hoursLogged >= summary.weeklycommittedHours * 1.5 &&
+                          hoursLogged < summary.weeklycommittedHours * 1.75
+                        ? 'fuchsia'
+                        : hoursLogged >= summary.weeklycommittedHours * 1.25 &&
+                          hoursLogged < summary.weeklycommittedHours * 1.5
+                        ? 'lightgreen'
+                        : 'green',
+                    fontSize: '55px',
+                    margin: 'auto',
+                    verticalAlign: 'middle',
+                    position: 'relative',
+                  }}
+                >
+                  <span
+                    style={{
+                      position: 'absolute',
+                      top: '50%',
+                      left: '50%',
+                      transform: 'translate(-50%, -50%)',
+                      color: 'black',
+                      fontWeight: 'bold',
+                      fontSize: '10px',
+                    }}
+                  >
+                    {Math.round((hoursLogged / summary.weeklycommittedHours - 1) * 100)}% 
+                  </span>
+                </i>
+              )}
             </p>
             <p>
               {' '}
