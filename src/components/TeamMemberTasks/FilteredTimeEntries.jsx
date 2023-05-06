@@ -1,9 +1,8 @@
 import React, { useState } from 'react';
 import { Card, Row, Col } from 'reactstrap';
-import { useSelector } from 'react-redux';
 import ReactHtmlParser from 'react-html-parser';
 import moment from 'moment-timezone';
-import '../Timelog/Timelog.css';
+import './filteredTimeEntries.css';
 import { ENDPOINTS } from 'utils/URL';
 import axios from 'axios';
 import { useEffect } from 'react';
@@ -38,7 +37,10 @@ const FilteredTimeEntries = ({ data, displayYear }) => {
   }, []);
 
   return (
-    <Card className="mb-1 p-2" style={{ backgroundColor: data.isTangible ? '#CCFFCC' : '#CCFFFF' }}>
+    <Card
+      className="mb-1 p-2"
+      style={{ backgroundColor: data.isTangible ? '#CCFFCC' : '#CCFFFF', wordBreak: 'break-all' }}
+    >
       <Row className="mx-0">
         <Col md={3} className="date-block px-0">
           <div className="date-div">

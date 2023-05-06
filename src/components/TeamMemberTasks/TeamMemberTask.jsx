@@ -129,7 +129,7 @@ const TeamMemberTask = ({
                         )}
                         {userRole === 'Administrator' ? (
                           <td data-label="Status">
-                            <TaskButton task={task}></TaskButton>
+                            <TaskButton task={task} key={task._id}></TaskButton>
                           </td>
                         ) : null}
                       </tr>

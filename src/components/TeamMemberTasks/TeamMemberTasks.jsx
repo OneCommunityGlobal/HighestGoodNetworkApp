@@ -17,10 +17,8 @@ import axios from 'axios';
 import moment from 'moment';
 import TeamMemberTask from './TeamMemberTask';
 import FilteredTimeEntries from './FilteredTimeEntries';
-import { dataLoading, finishLoading } from './actions';
 
 const TeamMemberTasks = props => {
-  const [timeLogOpen, setTimeLogOpen] = useState(false);
   const [showTaskNotificationModal, setTaskNotificationModal] = useState(false);
   const [currentTaskNotifications, setCurrentTaskNotifications] = useState([]);
   const [currentTask, setCurrentTask] = useState();
@@ -34,6 +32,10 @@ const TeamMemberTasks = props => {
   const [timeEntriesList, setTimeEntriesList] = useState([]);
   const [selectedPeriod, setSelectedPeriod] = useState();
   const [isTimeLogActive, setIsTimeLogActive] = useState(false);
+  const [twentyFourHoursTimeEntries, setTwentyFourHoursTimeEntries] = useState([]);
+  const [fortyEightHoursTimeEntries, setFortyEightHoursTimeEntries] = useState([]);
+  const [seventyTwoHoursTimeEntries, setSeventyTwoHoursTimeEntries] = useState([]);
+  const [finishLoading, setFinishLoading] = useState(false);
 
   const dispatch = useDispatch();
   useEffect(() => {
@@ -102,17 +104,15 @@ const TeamMemberTasks = props => {
     handleOpenTaskNotificationModal();
   };
 
-  const getTimeEntriesForPeriod = async period => {
-    if (selectedPeriod === period && timeEntriesList.length > 0) {
-      setIsTimeLogActive(true);
-      return;
-    }
-    dispatch(dataLoading());
-    setSelectedPeriod(period);
+  const getTimeEntriesForPeriod = async teamList => {
     let newList = [];
+    let twentyFourList = [];
+    let fortyEightList = [];
+
+    //1, fetch data of past 72hrs timelogs
     const fromDate = moment()
       .tz('America/Los_Angeles')
-      .subtract(period, 'hours')
+      .subtract(72, 'hours')
       .format('YYYY-MM-DD');
 
     const toDate = moment()
@@ -128,15 +128,53 @@ const TeamMemberTasks = props => {
       if (response.data.length > 0) newList.push(...response.data);
     }
 
-    setTimeEntriesList(newList);
-    dispatch(finishLoading());
-    setIsTimeLogActive(true);
+    //2. Generate array of past 24/48 hrs timelogs
+    newList.map(entry => {
+      const threeDaysAgo = moment()
+        .tz('America/Los_Angeles')
+        .subtract(72, 'hours')
+        .format('YYYY-MM-DD');
+
+      const twoDaysAgo = moment()
+        .tz('America/Los_Angeles')
+        .subtract(48, 'hours')
+        .format('YYYY-MM-DD');
+
+      setSeventyTwoHoursTimeEntries([...seventyTwoHoursTimeEntries, entry]);
+      const isFortyEight = moment(entry.dateOfWork).isAfter(threeDaysAgo);
+      if (isFortyEight) fortyEightList.push(entry);
+      const isTwentyFour = moment(entry.dateOfWork).isAfter(twoDaysAgo);
+      if (isTwentyFour) twentyFourList.push(entry);
+    });
+
+    //3. set three array of time logs
+    setSeventyTwoHoursTimeEntries([...newList]);
+    setFortyEightHoursTimeEntries([...fortyEightList]);
+    setTwentyFourHoursTimeEntries([...twentyFourList]);
+
+    if (newList && twentyFourList && fortyEightList) {
+      setFinishLoading(true);
+    }
   };
 
+  //Clean the view of timelogs
   const cleanTimeLogs = () => {
     setIsTimeLogActive(false);
     setSelectedPeriod(null);
     setTimeEntriesList([]);
+  };
+
+  //Display timelogs based on selected period
+  const selectPeriod = period => {
+    setSelectedPeriod(period);
+    setIsTimeLogActive(true);
+    if (period === 24) {
+      setTimeEntriesList([...twentyFourHoursTimeEntries]);
+    } else if (period === 48) {
+      setTimeEntriesList([...fortyEightHoursTimeEntries]);
+    } else {
+      setTimeEntriesList([...seventyTwoHoursTimeEntries]);
+    }
   };
 
   const renderTeamsList = () => {
@@ -194,7 +232,7 @@ const TeamMemberTasks = props => {
           filteredMembers.unshift(currentUser);
         }
       }
-
+      getTimeEntriesForPeriod(filteredMembers);
       setTeamList([...filteredMembers]);
     }
   };
@@ -203,59 +241,71 @@ const TeamMemberTasks = props => {
     <div className="container team-member-tasks">
       <header className="header-box">
         <h1>Team Member Tasks</h1>
-        <div className="hours-btn-container">
-          <button
-            type="button"
-            className="circle-border 24h"
-            title="Timelogs submitted in the past 24 hours"
-            style={{ color: '#DC143C', border: '1px solid #DC143C' }}
-            onClick={() => getTimeEntriesForPeriod(24)}
-          >
-            24h
-          </button>
-          <button
-            type="button"
-            className="circle-border 48h"
-            title="Timelogs submitted in the past 48 hours"
-            style={{ color: '#6495ED', border: '1px solid #6495ED' }}
-            onClick={() => getTimeEntriesForPeriod(48)}
-          >
-            48h
-          </button>
-          <button
-            type="button"
-            className="circle-border 72h"
-            title="Timelogs submitted in the past 72 hours"
-            style={{
-              color: selectedPeriod === 72 ? 'white' : '#228B22',
-              backgroundColor: selectedPeriod === 72 ? '#228B22' : 'white',
-              border: '1px solid #228B22',
-            }}
-            onClick={() => getTimeEntriesForPeriod(72)}
-          >
-            72h
-          </button>
-          {(timeEntriesList.length > 0 || isTimeLogActive) && (
-            <>
-              <button type="button" title={isTimeLogActive ? 'Hide timelogs' : 'View timelogs'}>
-                <FontAwesomeIcon
-                  style={{ color: 'grey' }}
-                  icon={isTimeLogActive ? faEyeSlash : faEye}
-                  size="lg"
-                  onClick={() => setIsTimeLogActive(!isTimeLogActive)}
-                />
-              </button>
-              <button>
-                <FontAwesomeIcon
-                  style={{ color: 'grey' }}
-                  icon={faTrashAlt}
-                  size="lg"
-                  onClick={() => cleanTimeLogs()}
-                />
-              </button>
-            </>
-          )}
-        </div>
+        {finishLoading ? (
+          <div className="hours-btn-container">
+            <button
+              type="button"
+              className="circle-border 24h"
+              title="Timelogs submitted in the past 24 hours"
+              style={{
+                color: selectedPeriod === 24 ? 'white' : '#DC143C',
+                backgroundColor: selectedPeriod === 24 ? '#DC143C' : 'white',
+                border: '1px solid #DC143C',
+              }}
+              onClick={() => selectPeriod(24)}
+            >
+              24h
+            </button>
+            <button
+              type="button"
+              className="circle-border 48h"
+              title="Timelogs submitted in the past 48 hours"
+              style={{
+                color: selectedPeriod === 48 ? 'white' : '#6495ED',
+                backgroundColor: selectedPeriod === 48 ? '#6495ED' : 'white',
+                border: '1px solid #6495ED',
+              }}
+              onClick={() => selectPeriod(48)}
+            >
+              48h
+            </button>
+            <button
+              type="button"
+              className="circle-border 72h"
+              title="Timelogs submitted in the past 72 hours"
+              style={{
+                color: selectedPeriod === 72 ? 'white' : '#228B22',
+                backgroundColor: selectedPeriod === 72 ? '#228B22' : 'white',
+                border: '1px solid #228B22',
+              }}
+              onClick={() => selectPeriod(72)}
+            >
+              72h
+            </button>
+            {(timeEntriesList.length > 0 || isTimeLogActive) && (
+              <>
+                <button type="button" title={isTimeLogActive ? 'Hide timelogs' : 'View timelogs'}>
+                  <FontAwesomeIcon
+                    style={{ color: 'grey' }}
+                    icon={isTimeLogActive ? faEyeSlash : faEye}
+                    size="lg"
+                    onClick={() => setIsTimeLogActive(!isTimeLogActive)}
+                  />
+                </button>
+                <button type="button" title="Clear timelogs">
+                  <FontAwesomeIcon
+                    style={{ color: 'grey' }}
+                    icon={faTrashAlt}
+                    size="lg"
+                    onClick={() => cleanTimeLogs()}
+                  />
+                </button>
+              </>
+            )}
+          </div>
+        ) : (
+          <Loading />
+        )}
       </header>
       <TaskDifferenceModal
         isOpen={showTaskNotificationModal}
@@ -282,95 +332,97 @@ const TeamMemberTasks = props => {
           setClickedToShowModal={setClickedToShowModal}
         />
       )}
-      <Table>
-        <thead className="pc-component">
-          <tr>
-            {/* Empty column header for hours completed icon */}
-            <th />
-            <th className="team-member-tasks-headers">
-              <Table borderless className="team-member-tasks-subtable">
-                <thead>
-                  <tr>
-                    <th className="team-member-tasks-headers team-member-tasks-user-name">
-                      Team Member
-                    </th>
-                    <th className="team-member-tasks-headers team-clocks team-clocks-header">
-                      <FontAwesomeIcon icon={faClock} title="Weekly Committed Hours" />
-                      /
-                      <FontAwesomeIcon
-                        style={{ color: 'green' }}
-                        icon={faClock}
-                        title="Total Hours Completed this Week"
-                      />
-                      /
-                      <FontAwesomeIcon
-                        style={{ color: 'red' }}
-                        icon={faClock}
-                        title="Total Remaining Hours"
-                      />
-                    </th>
-                  </tr>
-                </thead>
-              </Table>
-            </th>
-            <th className="team-member-tasks-headers">
-              <Table borderless className="team-member-tasks-subtable">
-                <thead>
-                  <tr>
-                    <th>Tasks(s)</th>
-                    <th className="team-task-progress">Progress</th>
-                    {userRole === 'Administrator' ? <th>Status</th> : null}
-                  </tr>
-                </thead>
-              </Table>
-            </th>
-          </tr>
-        </thead>
+      <div className="table-container">
+        <Table>
+          <thead className="pc-component">
+            <tr>
+              {/* Empty column header for hours completed icon */}
+              <th />
+              <th className="team-member-tasks-headers">
+                <Table borderless className="team-member-tasks-subtable">
+                  <thead>
+                    <tr>
+                      <th className="team-member-tasks-headers team-member-tasks-user-name">
+                        Team Member
+                      </th>
+                      <th className="team-member-tasks-headers team-clocks team-clocks-header">
+                        <FontAwesomeIcon icon={faClock} title="Weekly Committed Hours" />
+                        /
+                        <FontAwesomeIcon
+                          style={{ color: 'green' }}
+                          icon={faClock}
+                          title="Total Hours Completed this Week"
+                        />
+                        /
+                        <FontAwesomeIcon
+                          style={{ color: 'red' }}
+                          icon={faClock}
+                          title="Total Remaining Hours"
+                        />
+                      </th>
+                    </tr>
+                  </thead>
+                </Table>
+              </th>
+              <th className="team-member-tasks-headers">
+                <Table borderless className="team-member-tasks-subtable">
+                  <thead>
+                    <tr>
+                      <th>Tasks(s)</th>
+                      <th className="team-task-progress">Progress</th>
+                      {userRole === 'Administrator' ? <th>Status</th> : null}
+                    </tr>
+                  </thead>
+                </Table>
+              </th>
+            </tr>
+          </thead>
 
-        <tbody>
-          {isLoading ? (
-            <Loading />
-          ) : (
-            teamList.map(user => {
-              if (!isTimeLogActive) {
-                return (
-                  <>
-                    <TeamMemberTask
-                      user={user}
-                      key={user.personId}
-                      handleOpenTaskNotificationModal={handleOpenTaskNotificationModal}
-                      handleMarkAsDoneModal={handleMarkAsDoneModal}
-                      userRole={userRole}
-                    />
-                  </>
-                );
-              } else {
-                return (
-                  <>
-                    <TeamMemberTask
-                      user={user}
-                      key={user.personId}
-                      handleOpenTaskNotificationModal={handleOpenTaskNotificationModal}
-                      handleMarkAsDoneModal={handleMarkAsDoneModal}
-                      userRole={userRole}
-                    />
-                    {timeEntriesList.length > 0 &&
-                      timeEntriesList
-                        .filter(timeEntry => timeEntry.personId === user.personId)
-                        .map(timeEntry => (
-                          <tr className="table-row">
-                            <td colSpan={3}>
-                              <FilteredTimeEntries data={timeEntry} key={timeEntry._id} />
-                            </td>
-                          </tr>
-                        ))}
-                  </>
-                );
-              }
-            })
-          )}
-        </tbody>
-      </Table>
+          <tbody>
+            {isLoading ? (
+              <Loading />
+            ) : (
+              teamList.map(user => {
+                if (!isTimeLogActive) {
+                  return (
+                    <>
+                      <TeamMemberTask
+                        user={user}
+                        key={user.personId}
+                        handleOpenTaskNotificationModal={handleOpenTaskNotificationModal}
+                        handleMarkAsDoneModal={handleMarkAsDoneModal}
+                        userRole={userRole}
+                      />
+                    </>
+                  );
+                } else {
+                  return (
+                    <>
+                      <TeamMemberTask
+                        user={user}
+                        key={user.personId}
+                        handleOpenTaskNotificationModal={handleOpenTaskNotificationModal}
+                        handleMarkAsDoneModal={handleMarkAsDoneModal}
+                        userRole={userRole}
+                      />
+                      {timeEntriesList.length > 0 &&
+                        timeEntriesList
+                          .filter(timeEntry => timeEntry.personId === user.personId)
+                          .map(timeEntry => (
+                            <tr className="table-row">
+                              <td colSpan={3} style={{ padding: 0 }}>
+                                <FilteredTimeEntries data={timeEntry} key={timeEntry._id} />
+                              </td>
+                            </tr>
+                          ))}
+                    </>
+                  );
+                }
+              })
+            )}
+          </tbody>
+        </Table>
+      </div>
     </div>
   );
 };

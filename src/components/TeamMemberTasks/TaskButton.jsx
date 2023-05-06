@@ -8,9 +8,7 @@ import { useDispatch } from 'react-redux';
 
 const TaskButton = ({ task }) => {
   const dispatch = useDispatch();
-
   const markAsDone = async task => {
-    console.log(task);
     task.status = 'Complete';
     const updatedTask = {
       taskName: task.taskName,
@@ -30,7 +28,6 @@ const TaskButton = ({ task }) => {
       endstateInfo: task.endstateInfo,
       classification: task.classification,
     };
-    console.log(updatedTask);
     await updateTask(String(task._id), updatedTask);
     await deleteSelectedTask(task._id, task.mother);
     await dispatch(getAllUserProfile());
