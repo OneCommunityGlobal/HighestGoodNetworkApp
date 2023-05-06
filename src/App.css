@@ -1,7 +1,10 @@
 html {
   overflow-x: hidden;
 }
-body
+body {
+  display: grid;
+  grid-template-columns: auto 0px;
+}
 #root {
   height: 100%;
 }
@@ -97,12 +100,15 @@ nav ul.navbar-nav li:last-child > div {
   text-decoration: none;
   padding: 10px;
   margin: 10px;
+  --offset: 100px; 
+  margin-top: calc(100vh + var(--offset));
   font-family: sans-serif;
   color: #fff;
   background: #000;
   border-radius: 100px;
   place-self: end;
-  position: absolute;
+  position: sticky;
   right: -30px;
-  bottom: 0;
+  bottom: 10px;
+  white-space: nowrap
 }
