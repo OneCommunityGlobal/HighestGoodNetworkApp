@@ -43,8 +43,6 @@ const UserProfileModal = props => {
     }
   }
 
-  // const [modal, setModal] = useState(false)
-
   const [linkName, setLinkName] = useState('');
   const [linkURL, setLinkURL] = useState('');
 
@@ -56,17 +54,6 @@ const UserProfileModal = props => {
 
   const [addButton, setAddButton] = useState(true);
   const [summaryFieldView, setSummaryFieldView] = useState(true);
-
-  // console.log('grabed personal links:', personalLinks)
-
-  // let nullProfile = {}
-
-  // if (userProfile == null){
-  // 	nullProfile = {
-  // 		personalLinks: {},
-  // 		adminLinks: {}
-  // 	}
-  // }
 
   const [personalLinks, dispatchPersonalLinks] = useReducer(
     (personalLinks, { type, value, passedIndex }) => {

@@ -51,7 +51,7 @@ export const Dashboard = props => {
         leaderData={leaderData}
       />
 
-      <Row >
+      <Row>
         <Col lg={{ size: 7 }}>&nbsp;</Col>
         <Col lg={{ size: 5 }}>
           <div className="row justify-content-center">
@@ -62,7 +62,12 @@ export const Dashboard = props => {
               onKeyDown={toggle}
               tabIndex="0"
             >
-              <WeeklySummary isPopup asUser={userId} setSubmittedSummary={setSubmittedSummary} />
+              <WeeklySummary
+                isDashboard={true}
+                isPopup={popup}
+                asUser={userId}
+                setSubmittedSummary={setSubmittedSummary}
+              />
             </div>
           </div>
         </Col>

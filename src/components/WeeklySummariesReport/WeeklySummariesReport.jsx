@@ -111,6 +111,15 @@ export class WeeklySummariesReport extends Component {
                   Week Before Last
                 </NavLink>
               </NavItem>
+              <NavItem>
+                <NavLink
+                  className={classnames({ active: activeTab === '4' })}
+                  data-testid="tab-4"
+                  onClick={() => this.toggleTab('4')}
+                >
+                  Three Weeks Ago
+                </NavLink>
+              </NavItem>
             </Nav>
             <TabContent activeTab={activeTab} className="p-4">
               <TabPane tabId="1">
@@ -170,6 +179,26 @@ export class WeeklySummariesReport extends Component {
                 <Row>
                   <Col>
                     <FormattedReport summaries={summaries} weekIndex={2} />
+                  </Col>
+                </Row>
+              </TabPane>
+              <TabPane tabId="4">
+                <Row>
+                  <Col sm="12" md="8" className="mb-2">
+                    From <b>{this.getWeekDates(3).fromDate}</b> to{' '}
+                    <b>{this.getWeekDates(3).toDate}</b>
+                  </Col>
+                  <Col sm="12" md="4">
+                    <GeneratePdfReport
+                      summaries={summaries}
+                      weekIndex={3}
+                      weekDates={this.getWeekDates(3)}
+                    />
+                  </Col>
+                </Row>
+                <Row>
+                  <Col>
+                    <FormattedReport summaries={summaries} weekIndex={3} />
                   </Col>
                 </Row>
               </TabPane>
