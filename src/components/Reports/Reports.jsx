@@ -87,20 +87,6 @@ class ReportsPage extends Component {
       checkActive: '',
     };
     this.props.getAllUserProfile();
-    // let temp=[];
-  //   this.props.state.allUserProfiles.userProfiles.forEach(member=>{
-  //     // console.log(member._id);
-  //     // this.state.peopleSearchData?.push(httpService.get(ENDPOINTS.USER_PROFILE(member._id)).catch(err => { }))
-  //     temp.push(httpService.get(ENDPOINTS.USER_PROFILE(member._id)).catch(err => { }));
-  //   })
-  //   // console.log(this.state.peopleSearchData);
-  //   Promise.all(temp).then(member=>{
-  //     console.log(member.data);
-  //     this.setState({
-  //       peopleSearchData:member,
-  //   })
-  // })
-  // console.log(this.state.peopleSearchData);
   }
 
   /**
@@ -235,7 +221,6 @@ class ReportsPage extends Component {
     const { projects } = this.props.state.allProjects;
     const { allTeams } = this.props.state.allTeamsData;
     const { userProfiles } = this.props.state.allUserProfiles;
-    // console.log(this.props.state.allUserProfiles.userProfiles);
     this.state.teamSearchData = this.filteredTeamList(allTeams);
     this.state.peopleSearchData = this.filteredPeopleList(userProfiles);
     this.state.projectSearchData = this.filteredProjectList(projects);

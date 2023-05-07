@@ -48,6 +48,7 @@ import Loading from '../common/Loading';
 import hasPermission from '../../utils/permissions';
 import WeeklySummaries from './WeeklySummaries';
 
+
 const Timelog = props => {
   const auth = useSelector(state => state.auth);
   const userProfile = useSelector(state => state.userProfile);
@@ -68,18 +69,15 @@ const Timelog = props => {
       if (isFirst.current || !isSame) {
         effectFunc();
       }
-
       isFirst.current = false;
       prevDeps.current = deps;
     }, deps);
   }
 
-
-
   const doesUserHaveTaskWithWBS = tasks => {
     let check = false;
     for (let task of tasks) {
-      if (task.wbsId) {
+      if (task.wbsId && task.status !== 'Complete') {
         check = true;
         break;
       }
@@ -416,8 +414,8 @@ const Timelog = props => {
               </div>
             </div>
           ) : null}
-          <Row className="right-padding-temp-fix">
-            <Col className="right-padding-temp-fix" md={12}>
+          <Row>
+            <Col md={12}>
               <Card>
                 <CardHeader>
                   <Row>
@@ -721,14 +719,12 @@ const Timelog = props => {
                 </CardBody>
               </Card>
             </Col>
-            <Col md={4} />
           </Row>
         </Container>
       )}
     </div>
   );
 };
-
 
 const mapStateToProps = state => state;
 

@@ -1,8 +1,5 @@
 import React from 'react';
-//import { CardText, Badge, Tooltip } from 'reactstrap';
 import { Link } from 'react-router-dom';
-//import styles from './UserLinks.css';
-// import styleProfile from '../UserProfile.module.scss';
 
 const UserLinks = ({
   // eslint-disable-next-line react/prop-types

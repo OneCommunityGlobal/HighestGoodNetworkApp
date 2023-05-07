@@ -169,7 +169,7 @@ const ForgotPassword = React.memo(() => {
           </Button>
           <Link to="login">
             {' '}
-            <Button style={{ marginLeft: '350px' }}>Cancel</Button>
+            <Button style={{ float: 'right' }}>Cancel</Button>
           </Link>
         </div>
       </form>
