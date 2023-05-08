@@ -103,12 +103,21 @@ export class WeeklySummary extends Component {
     const dueDate = moment(dueDateThisWeek).isBefore(this.state.dueDate)
       ? this.state.dueDate
       : dueDateThisWeek;
-    
+
     // Calculate due dates for the last three weeks by subtracting 1, 2, and 3 weeks from the current due date
     // and then setting the due date to the end of the ISO week (Saturday) for each respective week
-    const dueDateLastWeek = moment(dueDate).subtract(1, 'weeks').startOf('isoWeek').add(5, 'days');
-    const dueDateBeforeLast = moment(dueDate).subtract(2, 'weeks').startOf('isoWeek').add(5, 'days');
-    const dueDateThreeWeeksAgo = moment(dueDate).subtract(3, 'weeks').startOf('isoWeek').add(5, 'days');
+    const dueDateLastWeek = moment(dueDate)
+      .subtract(1, 'weeks')
+      .startOf('isoWeek')
+      .add(5, 'days');
+    const dueDateBeforeLast = moment(dueDate)
+      .subtract(2, 'weeks')
+      .startOf('isoWeek')
+      .add(5, 'days');
+    const dueDateThreeWeeksAgo = moment(dueDate)
+      .subtract(3, 'weeks')
+      .startOf('isoWeek')
+      .add(5, 'days');
 
     this.setState({
       formElements: {
@@ -271,9 +280,9 @@ export class WeeklySummary extends Component {
       currentSubmittedCount += 1;
     }
     // Check whether has newly filled summary
-    const diffInSubmittedCount = currentSubmittedCount-this.state.submittedCountInFourWeeks
+    const diffInSubmittedCount = currentSubmittedCount - this.state.submittedCountInFourWeeks;
     if (diffInSubmittedCount !== 0) {
-      this.setState({summariesCountShowing: this.state.formElements.weeklySummariesCount + 1});
+      this.setState({ summariesCountShowing: this.state.formElements.weeklySummariesCount + 1 });
     }
 
     const modifiedWeeklySummaries = {
@@ -290,7 +299,7 @@ export class WeeklySummary extends Component {
           dueDate: this.state.dueDateThreeWeeksAgo,
         },
       ],
-      weeklySummariesCount: this.state.formElements.weeklySummariesCount+diffInSubmittedCount,
+      weeklySummariesCount: this.state.formElements.weeklySummariesCount + diffInSubmittedCount,
     };
 
     const updateWeeklySummaries = this.props.updateWeeklySummaries(
@@ -372,15 +381,18 @@ export class WeeklySummary extends Component {
       );
     }
 
-    if (this.props.isModal || this.props.isPopup) {
-      return <DueDateTime dueDate={moment(dueDate)} />;
+    if (this.props.isDashboard) {
+      return <DueDateTime isShow={this.props.isPopup} dueDate={moment(dueDate)} />;
     }
 
     return (
       <Container fluid={this.props.isModal ? true : false} className="bg--white-smoke py-3 mb-5">
         <h3>Weekly Summaries</h3>
         {/* Before clicking Save button, summariesCountShowing is 0 */}
-        <div>Total submitted: {this.state.summariesCountShowing || this.state.formElements.weeklySummariesCount}</div>
+        <div>
+          Total submitted:{' '}
+          {this.state.summariesCountShowing || this.state.formElements.weeklySummariesCount}
+        </div>
 
         <Form className="mt-4">
           <Nav tabs>
@@ -433,7 +445,10 @@ export class WeeklySummary extends Component {
                           onEditorChange={this.handleEditorChange}
                         />
                       </FormGroup>
-                      {(errors.summary || errors.summaryLastWeek || errors.summaryBeforeLast || errors.summaryThreeWeeksAgo) && (
+                      {(errors.summary ||
+                        errors.summaryLastWeek ||
+                        errors.summaryBeforeLast ||
+                        errors.summaryThreeWeeksAgo) && (
                         <Alert color="danger">
                           The summary must contain a minimum of 50 words.
                         </Alert>

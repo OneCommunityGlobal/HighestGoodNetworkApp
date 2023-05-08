@@ -84,6 +84,7 @@ const mapStateToProps = state => {
     loggedInUser: get(state, 'auth.user', {}),
     organizationData: orgData,
     timeEntries: get(state, 'timeEntries', {}),
+    isVisible: user.role === 'Volunteer' || user.isVisible,
   };
 };
 export default connect(mapStateToProps, { getLeaderboardData, getOrgData })(Leaderboard);

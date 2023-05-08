@@ -23,7 +23,6 @@ import classnames from 'classnames';
 import moment from 'moment';
 import Alert from 'reactstrap/lib/Alert';
 import axios from 'axios';
-import parse from 'html-react-parser';
 import hasPermission from '../../utils/permissions';
 import ActiveCell from '../UserManagement/ActiveCell';
 import { ENDPOINTS } from '../../utils/URL';
@@ -47,6 +46,7 @@ import { updateUserStatus } from '../../actions/userManagement';
 import { UserStatus } from '../../utils/enums';
 import { faSleigh, faCamera } from '@fortawesome/free-solid-svg-icons';
 import BlueSquareLayout from './BlueSquareLayout';
+import TeamWeeklySummaries from './TeamWeeklySummaries/TeamWeeklySummaries';
 
 function UserProfile(props) {
   /* Constant values */
@@ -102,12 +102,6 @@ function UserProfile(props) {
   useEffect(() => {
     loadUserProfile();
   }, []);
-
-  useEffect(() => {
-    if (!shouldRefresh) return;
-    setShouldRefresh(false);
-    loadUserProfile();
-  }, [shouldRefresh]);
 
   useEffect(() => {
     setShowLoading(true);
@@ -232,23 +226,10 @@ function UserProfile(props) {
       setShowSummary(false);
       const response = await axios.get(ENDPOINTS.USER_PROFILE(userId));
       const user = response.data;
-      const summaries = user.weeklySummaries;
-      console.log('summaryName:', summaryName);
-      console.log('summaries:', summaries);
-      if (summaries && Array.isArray(summaries) && summaries.length >= 3) {
-        setSummarySelected([summaries[0].summary, summaries[1].summary, summaries[2].summary]);
-        setShowSummary(true);
-      } else if (summaries && Array.isArray(summaries) && summaries.length === 2) {
-        setSummarySelected([summaries[0].summary, summaries[1].summary, '']);
-        setShowSummary(true);
-      } else if (summaries && Array.isArray(summaries) && summaries.length === 1) {
-        setSummarySelected([summaries[0].summary, '', '']);
-        setShowSummary(true);
-      } else {
-        setSummarySelected(['', '', '']);
-        setShowSummary(true);
-      }
-      console.log('summarySelected', summarySelected);
+      const userSummaries = user.weeklySummaries;
+
+      setSummarySelected(userSummaries);
+      setShowSummary(true);
     } catch (err) {
       setShowLoading(false);
     }
@@ -270,7 +251,6 @@ function UserProfile(props) {
           label: `View ${leaderBoardData[i].name}'s summary.`,
         });
       }
-      console.log('allSummaries:', allSummaries);
       setSummaries(allSummaries);
       return;
     } catch (err) {
@@ -383,7 +363,10 @@ function UserProfile(props) {
   const modifyBlueSquares = (id, dateStamp, summary, operation) => {
     if (operation === 'add') {
       const newBlueSquare = { date: dateStamp, description: summary };
-      setShowModal(false);
+      setOriginalUserProfile({
+        ...originalUserProfile,
+        infringements: userProfile.infringements?.concat(newBlueSquare),
+      });
       setUserProfile({
         ...userProfile,
         infringements: userProfile.infringements?.concat(newBlueSquare),
@@ -398,16 +381,17 @@ function UserProfile(props) {
         currentBlueSquares.find(blueSquare => blueSquare._id === id).description = summary;
       }
 
-      setShowModal(false);
       setUserProfile({ ...userProfile, infringements: currentBlueSquares });
+      setOriginalUserProfile({ ...userProfile, infringements: currentBlueSquares });
     } else if (operation === 'delete') {
       let newInfringements = [...userProfile?.infringements] || [];
       if (newInfringements !== []) {
         newInfringements = newInfringements.filter(infringement => infringement._id !== id);
         setUserProfile({ ...userProfile, infringements: newInfringements });
-        setShowModal(false);
+        setOriginalUserProfile({ ...userProfile, infringements: newInfringements });
       }
     }
+    setShowModal(false);
     setBlueSquareChanged(true);
   };
 
@@ -428,7 +412,6 @@ function UserProfile(props) {
     } catch (err) {
       alert('An error occurred while attempting to save this profile.');
     }
-    setShouldRefresh(true);
   };
 
   const toggle = modalName => setMenuModalTabletScreen(modalName);
@@ -534,7 +517,7 @@ function UserProfile(props) {
       ...userProfile,
       isVisible: !userProfile.isVisible ?? true,
     });
-  }
+  };
 
   if ((showLoading && !props.isAddNewUser) || userProfile === undefined) {
     return (
@@ -553,9 +536,10 @@ function UserProfile(props) {
   const userPermissions = props.auth.user?.permissions?.frontPermissions;
 
   const isUserSelf = targetUserId === requestorId;
-  const canEditProfile = userProfile.role === 'Owner' ? 
-  hasPermission(requestorRole, 'addDeleteEditOwners', roles, userPermissions) :
-  hasPermission(requestorRole, 'editUserProfile', roles, userPermissions);
+  const canEditProfile =
+    userProfile.role === 'Owner'
+      ? hasPermission(requestorRole, 'addDeleteEditOwners', roles, userPermissions)
+      : hasPermission(requestorRole, 'editUserProfile', roles, userPermissions);
   const canEdit = canEditProfile || isUserSelf;
 
   const customStyles = {
@@ -665,7 +649,14 @@ function UserProfile(props) {
                   aria-hidden="true"
                   style={{ fontSize: 24, cursor: 'pointer' }}
                   title="Click to see user's timelog"
-                  onClick={() => props.history.push(`/timelog/${targetUserId}`)}
+                  onClick={e => {
+                    if (e.metaKey || e.ctrlKey) {
+                      window.open(`/timelog/${targetUserId}`, '_blank');
+                    } else {
+                      e.preventDefault();
+                      props.history.push(`/timelog/${targetUserId}`);
+                    }
+                  }}
                 />
               )}
               <Button
@@ -677,7 +668,7 @@ function UserProfile(props) {
                 color="primary"
                 size="sm"
               >
-                Team Weekly Summaries
+                {showSelect ? 'Hide Team Weekly Summaries' : 'Show Team Weekly Summaries'}
               </Button>
             </div>
             <h6 className="job-title">{jobTitle}</h6>
@@ -704,44 +695,14 @@ function UserProfile(props) {
             ) : (
               <div />
             )}
-            {summarySelected && showSelect && showSummary ? (
-              <div>
-                {summarySelected[0] && summarySelected[0].length > 0 ? (
-                  <div>
-                    <h5>{'Viewing ' + summaryName + "'s summary."}</h5>
-                    {typeof summarySelected[0] === 'string'
-                      ? parse(summarySelected[0])
-                      : summarySelected[0]}
-                  </div>
-                ) : (
-                  <h5>{summaryName} did not submit a submit a summary for this week.</h5>
-                )}
-
-                {summarySelected[1] && summarySelected[1].length > 0 ? (
-                  <div>
-                    <h5>{'Viewing ' + summaryName + "'s last week's summary."}</h5>
-                    {typeof summarySelected[1] === 'string'
-                      ? parse(summarySelected[1])
-                      : summarySelected[1]}
-                  </div>
-                ) : (
-                  <h5>{summaryName} did not submit a submit a summary for last week.</h5>
-                )}
-
-                {summarySelected[2] && summarySelected[2].length > 0 ? (
-                  <div>
-                    <h5>{'Viewing ' + summaryName + ' summary from two weeks ago.'}</h5>
-                    {typeof summarySelected[2] === 'string'
-                      ? parse(summarySelected[2])
-                      : summarySelected[2]}
-                  </div>
-                ) : (
-                  <h5>{summaryName} did not submit a submit a summary two weeks ago.</h5>
-                )}
-              </div>
-            ) : (
-              <div />
-            )}
+            {summarySelected &&
+              showSelect &&
+              showSummary &&
+              summarySelected.map((data, i) => {
+                return (
+                  <TeamWeeklySummaries key={data['_id']} i={i} name={summaryName} data={data} />
+                );
+              })}
             <Badges
               userProfile={userProfile}
               setUserProfile={setUserProfile}
@@ -841,11 +802,11 @@ function UserProfile(props) {
                   role={requestorRole}
                   userProfile={userProfile}
                   setUserProfile={setUserProfile}
+                  loadUserProfile={loadUserProfile}
                   handleUserProfile={handleUserProfile}
                   formValid={formValid}
                   setFormValid={setFormValid}
                   isUserSelf={isUserSelf}
-                  setShouldRefresh={setShouldRefresh}
                   canEdit={canEdit}
                   canEditRole={canEditProfile}
                   roles={roles}
@@ -859,6 +820,7 @@ function UserProfile(props) {
                     setUserProfile={setUserProfile}
                     isUserSelf={isUserSelf}
                     role={requestorRole}
+                    loadUserProfile={loadUserProfile}
                     canEdit={hasPermission(
                       requestorRole,
                       'editUserProfile',
@@ -927,7 +889,6 @@ function UserProfile(props) {
                     formValid={formValid}
                     setFormValid={setFormValid}
                     isUserSelf={isUserSelf}
-                    setShouldRefresh={setShouldRefresh}
                     canEdit={canEdit}
                     canEditRole={canEditProfile}
                     roles={roles}
@@ -1292,9 +1253,6 @@ function UserProfile(props) {
                     </span>
                   </>
                 )}
-              <Button outline onClick={() => loadUserProfile()}>
-                Refresh
-              </Button>
             </div>
           </Col>
         </Row>

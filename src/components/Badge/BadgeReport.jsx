@@ -36,7 +36,7 @@ const BadgeReport = props => {
   let [sortBadges, setSortBadges] = useState(props.badges.slice() || []);
   let [numFeatured, setNumFeatured] = useState(0);
   let [showModal, setShowModal] = useState(false);
-  let [badgeToDelete, setBadgeToDelete] = useState(null);
+  let [badgesToDelete, setBadgesToDelete] = useState([]);
   const { roles } = props.state.role;
 
   async function imageToUri(url, callback) {
@@ -187,6 +187,17 @@ const BadgeReport = props => {
 
   const countChange = (badge, index, newValue) => {
     let newBadges = sortBadges.slice();
+    let value = newValue.length === 0 ? 0 : parseInt(newValue);
+    newBadges[index].count = newValue.length === 0 ? 0 : parseInt(newValue);
+    if (
+      (value === 0 && badgesToDelete.indexOf(index) === -1) ||
+      (newValue.length === 0 && badgesToDelete.indexOf(index) === -1)
+    ) {
+      setBadgesToDelete(prevBadges => [...prevBadges, index]);
+    }
+    if (value > 0) {
+      setBadgesToDelete(prevBadges => prevBadges.filter(badge => badge !== index));
+    }
     const today = new Date();
     const yyyy = today.getFullYear();
     // Add 1 beacuse the month start at zero
@@ -228,26 +239,39 @@ const BadgeReport = props => {
 
   const handleDeleteBadge = index => {
     setShowModal(true);
-    setBadgeToDelete(index);
+    setBadgesToDelete(index);
   };
 
   const handleCancel = () => {
     setShowModal(false);
-    setBadgeToDelete(null);
+    setBadgesToDelete([]);
+  };
+
+  const handleDeleteAfterSave = () => {
+    let newBadges = sortBadges;
+    let indexToDelete = badgesToDelete;
+    badgesToDelete.forEach(index => {
+      indexToDelete = indexToDelete.filter(index => index !== null);
+      newBadges.splice(indexToDelete[0], 1);
+      indexToDelete = indexToDelete.map(index => (index === 0 ? null : index - 1));
+      indexToDelete.shift();
+    });
+    setSortBadges(newBadges);
   };
 
   const deleteBadge = () => {
     let newBadges = sortBadges.slice();
-    const deletedBadge = newBadges.splice(badgeToDelete, 1);
-    if (deletedBadge[0].featured) {
+    const [deletedBadge] = newBadges.splice(badgesToDelete, 1);
+    if (deletedBadge.featured) {
       setNumFeatured(--numFeatured);
     }
     setSortBadges(newBadges);
     setShowModal(false);
-    setBadgeToDelete(null);
+    setBadgesToDelete([]);
   };
 
   const saveChanges = async () => {
+    badgesToDelete.length > 0 && handleDeleteAfterSave();
     let newBadgeCollection = JSON.parse(JSON.stringify(sortBadges));
     for (let i = 0; i < newBadgeCollection.length; i++) {
       newBadgeCollection[i].badge = newBadgeCollection[i].badge._id;
@@ -262,8 +286,6 @@ const BadgeReport = props => {
     props.handleSubmit();
     //close the modal
     props.close();
-    //Reload the view profile page with updated bages
-    window.location.reload();
   };
 
   return (
