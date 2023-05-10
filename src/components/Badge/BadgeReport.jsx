@@ -18,7 +18,7 @@ import {
   UncontrolledDropdown,
   UncontrolledPopover,
   DropdownMenu,
-  DropdownItem
+  DropdownItem,
 } from 'reactstrap';
 import pdfMake from 'pdfmake/build/pdfmake';
 import pdfFonts from 'pdfmake/build/vfs_fonts';
@@ -29,14 +29,14 @@ import { connect } from 'react-redux';
 import { getUserProfile } from '../../actions/userProfile';
 import { toast } from 'react-toastify';
 import hasPermission from '../../utils/permissions';
-import styles from './BadgeReport.css';
+import './BadgeReport.css';
 
 pdfMake.vfs = pdfFonts.pdfMake.vfs;
 const BadgeReport = props => {
   let [sortBadges, setSortBadges] = useState(props.badges.slice() || []);
   let [numFeatured, setNumFeatured] = useState(0);
   let [showModal, setShowModal] = useState(false);
-  let [badgeToDelete, setBadgeToDelete] = useState(null);
+  let [badgesToDelete, setBadgesToDelete] = useState([]);
   const { roles } = props.state.role;
 
   async function imageToUri(url, callback) {
@@ -187,6 +187,34 @@ const BadgeReport = props => {
 
   const countChange = (badge, index, newValue) => {
     let newBadges = sortBadges.slice();
+    let value = newValue.length === 0 ? 0 : parseInt(newValue);
+    newBadges[index].count = newValue.length === 0 ? 0 : parseInt(newValue);
+    if (
+      (value === 0 && badgesToDelete.indexOf(index) === -1) ||
+      (newValue.length === 0 && badgesToDelete.indexOf(index) === -1)
+    ) {
+      setBadgesToDelete(prevBadges => [...prevBadges, index]);
+    }
+    if (value > 0) {
+      setBadgesToDelete(prevBadges => prevBadges.filter(badge => badge !== index));
+    }
+    const today = new Date();
+    const yyyy = today.getFullYear();
+    // Add 1 beacuse the month start at zero
+    let mm = today.getMonth() + 1;
+    let dd = today.getDate();
+
+    mm < 10 ? (mm = '0' + mm) : mm;
+    dd < 10 ? (dd = '0' + dd) : dd;
+    const formatedDate = `${yyyy}-${mm}-${dd}`;
+    newBadges.map((bdg, i) => {
+      if (newValue > bdg.count && i === index) {
+        bdg.earnedDate.push(formatedDate);
+      } else if (newValue < bdg.count && i === index) {
+        bdg.earnedDate.pop();
+      }
+    });
+
     newBadges[index].count = newValue;
     setSortBadges(newBadges);
   };
@@ -211,26 +239,39 @@ const BadgeReport = props => {
 
   const handleDeleteBadge = index => {
     setShowModal(true);
-    setBadgeToDelete(index);
+    setBadgesToDelete(index);
   };
 
   const handleCancel = () => {
     setShowModal(false);
-    setBadgeToDelete(null);
+    setBadgesToDelete([]);
+  };
+
+  const handleDeleteAfterSave = () => {
+    let newBadges = sortBadges;
+    let indexToDelete = badgesToDelete;
+    badgesToDelete.forEach(index => {
+      indexToDelete = indexToDelete.filter(index => index !== null);
+      newBadges.splice(indexToDelete[0], 1);
+      indexToDelete = indexToDelete.map(index => (index === 0 ? null : index - 1));
+      indexToDelete.shift();
+    });
+    setSortBadges(newBadges);
   };
 
   const deleteBadge = () => {
     let newBadges = sortBadges.slice();
-    const deletedBadge = newBadges.splice(badgeToDelete, 1);
-    if (deletedBadge[0].featured) {
+    const [deletedBadge] = newBadges.splice(badgesToDelete, 1);
+    if (deletedBadge.featured) {
       setNumFeatured(--numFeatured);
     }
     setSortBadges(newBadges);
     setShowModal(false);
-    setBadgeToDelete(null);
+    setBadgesToDelete([]);
   };
 
   const saveChanges = async () => {
+    badgesToDelete.length > 0 && handleDeleteAfterSave();
     let newBadgeCollection = JSON.parse(JSON.stringify(sortBadges));
     for (let i = 0; i < newBadgeCollection.length; i++) {
       newBadgeCollection[i].badge = newBadgeCollection[i].badge._id;
@@ -245,20 +286,19 @@ const BadgeReport = props => {
     props.handleSubmit();
     //close the modal
     props.close();
-    //Reload the view profile page with updated bages
-    window.location.reload();
   };
 
   return (
     <div>
       <div className="desktop">
-        <div style={{ overflowY: 'scroll', height: '75vh'}}>
+        <div style={{ overflowY: 'scroll', height: '75vh' }}>
           <Table>
-            <thead style={{zIndex: '10'}}>
-              <tr style={{zIndex: '10'}}>
+            <thead style={{ zIndex: '10' }}>
+              <tr style={{ zIndex: '10' }}>
                 <th style={{ width: '93px' }}>Badge</th>
                 <th>Name</th>
                 <th style={{ width: '110px' }}>Modified</th>
+                <th style={{ width: '110px' }}>Earned Dates</th>
                 <th style={{ width: '90px' }}>Count</th>
                 {hasPermission(props.role, 'deleteOwnBadge', roles, props.permissionsUser) ? (
                   <th>Delete</th>
@@ -299,6 +339,19 @@ const BadgeReport = props => {
                       {typeof value.lastModified == 'string'
                         ? value.lastModified.substring(0, 10)
                         : value.lastModified.toLocaleString().substring(0, 10)}
+                    </td>
+                    <td>
+                      {' '}
+                      <UncontrolledDropdown className="me-2" direction="down">
+                        <DropdownToggle caret color="primary">
+                          Dates
+                        </DropdownToggle>
+                        <DropdownMenu>
+                          {value.earnedDate.map(date => {
+                            return <DropdownItem>{date}</DropdownItem>;
+                          })}
+                        </DropdownMenu>
+                      </UncontrolledDropdown>
                     </td>
                     <td>
                       {hasPermission(
@@ -396,12 +449,12 @@ const BadgeReport = props => {
       <div className="tablet">
         <div style={{ overflow: 'auto', height: '68vh' }}>
           <Table>
-            <thead style={{zIndex: '10'}}>
-              <tr style={{zIndex: '10'}}>
+            <thead style={{ zIndex: '10' }}>
+              <tr style={{ zIndex: '10' }}>
                 <th style={{ width: '93px' }}>Badge</th>
                 <th>Name</th>
                 <th style={{ width: '110px' }}>Modified</th>
-                <th style={{ width: '100%', zIndex: '10' }}></th>
+                <th style={{ width: '100%', zIndex: '10' }}>Earned</th>
               </tr>
             </thead>
             <tbody>
@@ -436,15 +489,34 @@ const BadgeReport = props => {
                         ? value.lastModified.substring(0, 10)
                         : value.lastModified.toLocaleString().substring(0, 10)}
                     </td>
+
                     <td>
                       <ButtonGroup style={{ marginLeft: '8px' }}>
                         <UncontrolledDropdown>
-                          <DropdownToggle caret style={{display: 'flex', alignItems:'center', justifyContent:'center', width: '80px'}}>
+                          <DropdownToggle
+                            caret
+                            style={{
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              width: '80px',
+                            }}
+                          >
                             Options
                           </DropdownToggle>
+
                           <DropdownMenu>
-                            <DropdownItem style={{ display: 'flex', alignItems: 'center', whiteSpace: 'now-rap', gap: '8px', height: '60px'}} toggle={false}>
-                              <span style={{ fontWeight: 'bold'}}>Count:</span>
+                            <DropdownItem
+                              style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                whiteSpace: 'now-rap',
+                                gap: '8px',
+                                height: '60px',
+                              }}
+                              toggle={false}
+                            >
+                              <span style={{ fontWeight: 'bold' }}>Count:</span>
                               {hasPermission(
                                 props.role,
                                 'modifyOwnBadgeAmount',
@@ -459,15 +531,24 @@ const BadgeReport = props => {
                                   onChange={e => {
                                     countChange(value, index, e.target.value);
                                   }}
-                                  style={{ width: '70px'}}
+                                  style={{ width: '70px' }}
                                 ></Input>
                               ) : (
                                 Math.round(value.count)
                               )}
                             </DropdownItem>
                             <DropdownItem divider />
-                            <DropdownItem style={{ display: 'flex', alignItems: 'center', whiteSpace: 'now-rap', gap: '8px', height: '60px'}} toggle={false}>
-                              <span style={{ fontWeight: 'bold'}}>Featured:</span>
+                            <DropdownItem
+                              style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                whiteSpace: 'now-rap',
+                                gap: '8px',
+                                height: '60px',
+                              }}
+                              toggle={false}
+                            >
+                              <span style={{ fontWeight: 'bold' }}>Featured:</span>
                               <FormGroup check inline style={{ zIndex: '0' }}>
                                 <Input
                                   /* alternative to using the formgroup
@@ -483,8 +564,20 @@ const BadgeReport = props => {
                               </FormGroup>
                             </DropdownItem>
                             <DropdownItem divider />
-                            <DropdownItem style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '60px'}}>
-                              {hasPermission(props.role, 'deleteOwnBadge', roles, props.permissionsUser) ? (
+                            <DropdownItem
+                              style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                height: '60px',
+                              }}
+                            >
+                              {hasPermission(
+                                props.role,
+                                'deleteOwnBadge',
+                                roles,
+                                props.permissionsUser,
+                              ) ? (
                                 <button
                                   type="button"
                                   className="btn btn-danger"
@@ -513,14 +606,14 @@ const BadgeReport = props => {
               saveChanges();
             }}
           >
-            <span>Save Changes</span> 
+            <span>Save Changes</span>
           </Button>
           <Button
             className="btn--dark-sea-green float-right"
             style={{ margin: 5 }}
             onClick={pdfDocGenerator}
           >
-            <span>Export All Badges to PDF</span>       
+            <span>Export All Badges to PDF</span>
           </Button>
           <Button
             className="btn--dark-sea-green float-right"
@@ -528,7 +621,7 @@ const BadgeReport = props => {
             onClick={pdfFeaturedDocGenerator}
           >
             <span>Export Selected/Featured Badges to PDF</span>
-          </Button>               
+          </Button>
         </div>
         <Modal isOpen={showModal}>
           <ModalBody>
@@ -548,7 +641,6 @@ const BadgeReport = props => {
         </Modal>
       </div>
     </div>
-
   );
 };
 

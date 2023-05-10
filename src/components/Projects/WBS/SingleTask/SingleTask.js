@@ -139,21 +139,25 @@ const SingleTask = props => {
                     mother={task.mother}
                     level={task.level}
                   />
-                  <Button
-                    type="button"
-                    size="sm"
-                    className="btn btn-danger"
-                    onClick={() => showUpDeleteModal()}
-                  >
-                    Delete <i className="fa fa-trash" aria-hidden="true"></i>
-                  </Button>
-                  <ModalDelete
-                    isOpen={modalDelete}
-                    closeModal={() => setModalDelete(false)}
-                    confirmModal={() => deleteTask(task._id, task.mother)}
-                    modalMessage={props.popupEditor.currPopup.popupContent || 'DELETE THIS TASK ?'}
-                    modalTitle={Message.CONFIRM_DELETION}
-                  />
+                  {user.role === "Volunteer" ? ("") : (
+                    <>
+                      <Button
+                        type="button"
+                        size="sm"
+                        className="btn btn-danger"
+                        onClick={() => showUpDeleteModal()}
+                      >
+                        Delete <i className="fa fa-trash" aria-hidden="true"></i>
+                      </Button>
+                      <ModalDelete
+                        isOpen={modalDelete}
+                        closeModal={() => setModalDelete(false)}
+                        confirmModal={() => deleteTask(task._id, task.mother)}
+                        modalMessage={props.popupEditor.currPopup.popupContent || 'DELETE THIS TASK ?'}
+                        modalTitle={Message.CONFIRM_DELETION}
+                      />
+                    </>
+                  )}
                 </th>
                 <th scope="row">{task.num}</th>
                 <td>{task.taskName}</td>
@@ -187,7 +191,7 @@ const SingleTask = props => {
                             </a>
                           );
                         }
-                      } catch (err) {}
+                      } catch (err) { }
                     })}
                 </td>
                 <td>

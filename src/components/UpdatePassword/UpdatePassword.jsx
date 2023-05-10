@@ -15,7 +15,6 @@ class UpdatePassword extends Form {
   };
 
   componentDidMount() {
-    // document.title = "Update Password";
   }
 
   componentDidUpdate(prevProps) {

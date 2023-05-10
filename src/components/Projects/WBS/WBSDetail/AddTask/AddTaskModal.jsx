@@ -2,18 +2,18 @@ import React, { useState, useEffect } from 'react';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import { connect } from 'react-redux';
 import ReactTooltip from 'react-tooltip';
-import { fetchAllTasks } from './../../../../../actions/task';
-import { addNewTask, updateTask } from './../../../../../actions/task';
-import { DUE_DATE_MUST_GREATER_THAN_START_DATE } from './../../../../../languages/en/messages';
 import DayPickerInput from 'react-day-picker/DayPickerInput';
-import 'react-day-picker/lib/style.css';
-import dateFnsFormat from 'date-fns/format';
 import { Editor } from '@tinymce/tinymce-react';
+import dateFnsFormat from 'date-fns/format';
+import { fetchAllTasks, addNewTask } from '../../../../../actions/task';
+import { DUE_DATE_MUST_GREATER_THAN_START_DATE } from '../../../../../languages/en/messages';
+import 'react-day-picker/lib/style.css';
+import TagsSearch from '../components/TagsSearch';
 
-const AddTaskModal = props => {
+function AddTaskModal(props) {
   const tasks = props.tasks.taskItems;
   const [members] = useState(props.projectMembers || props.projectMembers.members);
-  let foundedMembers = [];
+  const foundedMembers = [];
 
   // modal
   const [modal, setModal] = useState(false);
@@ -79,8 +79,7 @@ const AddTaskModal = props => {
   // Endstate info (what it should look like when done)
   const [endstateInfo, setEndstateInfo] = useState('');
 
-
-  // Category
+  // category
   const categoryOptions = [
     { value: 'Food', label: 'Food' },
     { value: 'Energy', label: 'Energy' },
@@ -91,9 +90,7 @@ const AddTaskModal = props => {
     { value: 'Stewardship', label: 'Stewardship' },
     { value: 'Other', label: 'Other' },
   ];
-
   const [category, setCategory] = useState('Housing');
-
 
   // Warning
   const [dateWarning, setDateWarning] = useState(false);
@@ -103,23 +100,23 @@ const AddTaskModal = props => {
     if (tasks.length > 0) {
       if (props.taskId) {
         const childTasks = tasks.filter(task => task.mother === props.taskId);
-        newNum = `${props.parentNum !== null ? props.parentNum + '.' : ''}${childTasks.length + 1}`;
+        newNum = `${props.parentNum !== null ? `${props.parentNum}.` : ''}${childTasks.length + 1}`;
         newNum = newNum.replace(/.0/g, '');
       } else {
-        newNum = tasks.filter(task => task.level === 1).length + 1 + '';
+        newNum = `${tasks.filter(task => task.level === 1).length + 1}`;
       }
     }
   };
 
   const [foundMembersHTML, setfoundMembersHTML] = useState('');
   const findMembers = () => {
-    let memberList = members.members ? props.projectMembers.members : members;
+    const memberList = members.members ? props.projectMembers.members : members;
     console.log('findMembers', memberList);
     for (let i = 0; i < memberList.length; i++) {
       console.log('project members', memberList[i]);
 
       if (
-        (memberList[i].firstName + ' ' + memberList[i].lastName)
+        `${memberList[i].firstName} ${memberList[i].lastName}`
           .toLowerCase()
           .includes(memberName.toLowerCase())
       ) {
@@ -129,11 +126,11 @@ const AddTaskModal = props => {
 
     const html = foundedMembers.map((elm, i) => (
       <div key={`found-member-${i}`}>
-        <a href={`/userprofile/${elm._id}`} target="_blank">
+        <a href={`/userprofile/${elm._id}`} target="_blank" rel="noreferrer">
           <input
             type="text"
             className="task-resouces-input"
-            value={elm.firstName + ' ' + elm.lastName}
+            value={`${elm.firstName} ${elm.lastName}`}
             disabled
           />
         </a>
@@ -143,7 +140,7 @@ const AddTaskModal = props => {
           type="button"
           onClick={() => addResources(elm._id, elm.firstName, elm.lastName, elm.profilePic)}
         >
-          <i className="fa fa-plus" aria-hidden="true"></i>
+          <i className="fa fa-plus" aria-hidden="true" />
         </button>
       </div>
     ));
@@ -151,7 +148,7 @@ const AddTaskModal = props => {
   };
 
   const removeResource = userID => {
-    var removeIndex = resourceItems.map(item => item.userID).indexOf(userID);
+    const removeIndex = resourceItems.map(item => item.userID).indexOf(userID);
     setResourceItems([
       ...resourceItems.slice(0, removeIndex),
       ...resourceItems.slice(removeIndex + 1),
@@ -171,9 +168,7 @@ const AddTaskModal = props => {
 
   // Date picker
   const FORMAT = 'MM/dd/yy';
-  const formatDate = (date, format, locale) => {
-    return dateFnsFormat(date, format, { locale });
-  };
+  const formatDate = (date, format, locale) => dateFnsFormat(date, format, { locale });
 
   // Links
   const [link, setLink] = useState('');
@@ -189,7 +184,7 @@ const AddTaskModal = props => {
   const calHoursEstimate = (isOn = null) => {
     let currHoursMost = parseInt(hoursMost);
     let currHoursWorst = parseInt(hoursWorst);
-    let currHoursBest = parseInt(hoursBest);
+    const currHoursBest = parseInt(hoursBest);
     if (isOn !== 'hoursMost') {
       currHoursMost = Math.round((currHoursWorst - currHoursBest) / 2 + currHoursBest);
       setHoursMost(currHoursMost);
@@ -266,7 +261,7 @@ const AddTaskModal = props => {
   };
 
   const paste = () => {
-    setTaskName(props.tasks.copiedTask.taskName);
+    taskName && setTaskName(props.tasks.copiedTask.taskName);
 
     if (props.tasks.copiedTask.priority === 'Secondary') {
       document.getElementById('priority').selectedIndex = 1;
@@ -308,53 +303,35 @@ const AddTaskModal = props => {
     setIntentInfo(props.tasks.copiedTask.intentInfo);
     setEndstateInfo(props.tasks.copiedTask.endstateInfo);
   };
-  //FUNCTION TO UPDATE TASK MOTHER
-  const updateTaskMother = () => {
-    let qty = 0;
-    if (props.taskId) {
-      if (props.childrenQty >= 0) {
-        qty = props.childrenQty + 1;
-      }
-      const updatedTask = {
-        resources: resourceItems,
-        hasChild: true,
-        childrenQty: qty,
-      };
-      props.updateTask(props.taskId, updatedTask, props.hasPermission);
-    } else {
-      return;
-    }
-  };
 
   const addNewTask = () => {
     setIsLoading(true);
-    updateTaskMother();
 
     const newTask = {
       wbsId: props.wbsId,
-      taskName: taskName,
+      taskName,
       num: newNum,
       level: newNum.length > 1 ? newNum.split('.').length : 1,
-      priority: priority,
+      priority,
       resources: resourceItems,
       isAssigned: assigned,
-      status: status,
+      status,
       hoursBest: parseFloat(hoursBest),
       hoursWorst: parseFloat(hoursWorst),
       hoursMost: parseFloat(hoursMost),
       estimatedHours: parseFloat(hoursEstimate),
       startedDatetime: startedDate,
       dueDatetime: dueDate,
-      links: links,
+      links,
       mother: props.taskId,
-      parentId1: parentId1,
-      parentId2: parentId2,
-      parentId3: parentId3,
+      parentId1,
+      parentId2,
+      parentId3,
       position: tasks.length,
       isActive: true,
-      whyInfo: whyInfo,
-      intentInfo: intentInfo,
-      endstateInfo: endstateInfo,
+      whyInfo,
+      intentInfo,
+      endstateInfo,
       category,
     };
 
@@ -371,10 +348,10 @@ const AddTaskModal = props => {
 
   useEffect(() => {
     if (props.level >= 1) {
-      const categoryMother = props.tasks.taskItems.find(({ _id }) => _id === props.taskId).category;
+      const categoryMother = props.tasks.taskItems.find(({ _id }) => _id === props.taskId)
+        .category;
       if (categoryMother) {
         setCategory(categoryMother);
-
       }
     } else {
       const res = props.allProjects.projects.filter(obj => obj._id === props.projectId)[0];
@@ -387,23 +364,24 @@ const AddTaskModal = props => {
   return (
     <div className="controlBtn">
       <Modal isOpen={modal} toggle={toggle}>
-        <ModalHeader toggle={toggle}>
-          Add New Task
-          <button
-            type="button"
-            size="small"
-            className="btn btn-primary btn-sm margin-left"
-            onClick={() => clear()}
-          >
-            Reset
-          </button>
+        <ModalHeader toggle={toggle} className="w-100 align-items-center">
+          <p className="fs-2 d-inline mr-3">Add New Task</p>
           <button
             type="button"
             size="small"
             className="btn btn-primary btn-sm margin-left"
             onClick={() => paste()}
+            disabled={hoursWarning}
           >
             Paste
+          </button>
+          <button
+            type="button"
+            size="small"
+            className="btn btn-danger btn-sm margin-left"
+            onClick={() => clear()}
+          >
+            Reset
           </button>
         </ModalHeader>
         <ModalBody>
@@ -443,149 +421,161 @@ const AddTaskModal = props => {
                 <td scope="col">Resources</td>
                 <td scope="col">
                   <div>
-                    <input
-                      type="text"
-                      aria-label="Search user"
-                      placeholder="Name"
-                      className="task-resouces-input"
-                      data-tip="Input a name"
-                      onChange={e => setMemberName(e.target.value)}
-                      onKeyPress={e => setMemberName(e.target.value)}
+                    <TagsSearch
+                      placeholder="Add resources"
+                      members={members.members}
+                      addResources={addResources}
+                      removeResource={removeResource}
+                      resourceItems={resourceItems}
                     />
-                    <button
-                      className="task-resouces-btn"
-                      type="button"
-                      data-tip="All members"
-                      onClick={findMembers}
-                    >
-                      <i className="fa fa-caret-square-o-down" aria-hidden="true"></i>
-                    </button>
-                  </div>
-                  <div className="task-reousces-list">
-                    <div>{foundMembersHTML}</div>
-                  </div>
-                  <div className="task-reousces-list">
-                    {resourceItems.map((elm, i) => {
-                      if (!elm.profilePic) {
-                        return (
-                          <a
-                            key={`res_${i}`}
-                            data-tip={elm.name}
-                            onClick={e => removeResource(elm.userID, e.target)}
-                          >
-                            <span className="dot">{elm.name.substring(0, 2)}</span>
-                          </a>
-                        );
-                      }
-                      return (
-                        <a
-                          key={`res_${i}`}
-                          data-tip={elm.name}
-                          onClick={e => removeResource(elm.userID, e.target)}
-                        >
-                          <img className="img-circle" src={elm.profilePic} />
-                        </a>
-                      );
-                    })}
                   </div>
                 </td>
               </tr>
               <tr>
                 <td scope="col">Assigned</td>
                 <td scope="col">
-                  <select
-                    id="Assigned"
-                    onChange={e => setAssigned(e.target.value === 'true' ? true : false)}
-                  >
-                    <option value="true">Yes</option>
-                    <option value="false">No</option>
-                  </select>
+                  <div className="flex-row d-inline align-items-center">
+                    <div className="form-check form-check-inline">
+                      <input
+                        className="form-check-input"
+                        type="radio"
+                        id="true"
+                        name="Assigned"
+                        value={true}
+                        onChange={() => setAssigned(true)}
+                      />
+                      <label className="form-check-label" htmlFor="true">
+                        Yes
+                      </label>
+                    </div>
+                    <div className="form-check form-check-inline">
+                      <input
+                        className="form-check-input"
+                        type="radio"
+                        id="false"
+                        name="Assigned"
+                        value={false}
+                        onChange={() => setAssigned(false)}
+                      />
+                      <label className="form-check-label" htmlFor="false">
+                        No
+                      </label>
+                    </div>
+                  </div>
                 </td>
               </tr>
               <tr>
                 <td scope="col">Status</td>
                 <td scope="col">
-                  <select id="Status" onChange={e => setStatus(e.target.value)}>
-                    <option value="Not Started">Not Started</option>
-                    <option value="Started">Started</option>
-                  </select>
+                  <div className="flex-row  d-inline align-items-center">
+                    <div className="form-check form-check-inline">
+                      <input
+                        className="form-check-input"
+                        type="radio"
+                        id="started"
+                        name="started"
+                        value={true}
+                        onChange={() => setStatus(true)}
+                      />
+                      <label className="form-check-label" htmlFor="started">
+                        Started
+                      </label>
+                    </div>
+                    <div className="form-check form-check-inline">
+                      <input
+                        className="form-check-input"
+                        type="radio"
+                        id="notStarted"
+                        name="started"
+                        value={false}
+                        onChange={() => setStatus(false)}
+                      />
+                      <label className="form-check-label" htmlFor="notStarted">
+                        Not Started
+                      </label>
+                    </div>
+                  </div>
                 </td>
               </tr>
               <tr>
                 <td scope="col" data-tip="Hours - Best-case">
-                  Hours - Best-case
+                  Hours
                 </td>
-                <td scope="col" data-tip="Hours - Best-case">
-                  <input
-                    type="number"
-                    min="0"
-                    max="500"
-                    value={hoursBest}
-                    onChange={e => setHoursBest(e.target.value)}
-                    onBlur={() => calHoursEstimate()}
-                  />
-                  <div className="warning">
-                    {hoursWarning
-                      ? 'Hours - Best-case < Hours - Most-case < Hours - Most-case'
-                      : ''}
+                <td scope="col" data-tip="Hours - Best-case" className="w-100">
+                  <div className="d-inline py-2">
+                    <label htmlFor="bestCase" className="text-nowrap mr-2 w-25 mr-4">
+                      Best-case
+                    </label>
+                    <input
+                      type="number"
+                      min="0"
+                      max="500"
+                      value={hoursBest}
+                      onChange={e => setHoursBest(e.target.value)}
+                      onBlur={() => calHoursEstimate()}
+                      id="bestCase"
+                      className="w-25"
+                    />
+                    <div className="warning">
+                      {
+                        hoursWarning ? 
+                        'Hours - Best-case < Hours - Most-case < Hours - Most-case' : ''
+                      }
+                    </div>
+                  </div>
+                  <div className="d-inline py-2">
+                    <label htmlFor="worstCase" className="text-nowrap mr-2  w-25 mr-4">
+                      Worst-case
+                    </label>
+                    <input
+                      type="number"
+                      min={hoursBest}
+                      max="500"
+                      value={hoursWorst}
+                      onChange={e => setHoursWorst(e.target.value)}
+                      onBlur={() => calHoursEstimate('hoursWorst')}
+                      className="w-25"
+                    />
+                    <div className="warning">
+                      {hoursWarning
+                        ? 'Hours - Best-case < Hours - Most-case < Hours - Most-case'
+                        : ''}
+                    </div>
+                  </div>
+                  <div className="d-inline py-2">
+                    <label htmlFor="mostCase" className="text-nowrap mr-2 w-25 mr-4">
+                      Most-case
+                    </label>
+                    <input
+                      type="number"
+                      min="0"
+                      max="500"
+                      value={hoursMost}
+                      onChange={e => setHoursMost(e.target.value)}
+                      onBlur={() => calHoursEstimate('hoursMost')}
+                      className="w-25"
+                    />
+                    <div className="warning">
+                      {hoursWarning
+                        ? 'Hours - Best-case < Hours - Most-case < Hours - Most-case'
+                        : ''}
+                    </div>
+                  </div>
+                  <div className="d-inline py-2">
+                    <label htmlFor="Estimated" className="text-nowrap mr-2  w-25 mr-4">
+                      Estimated
+                    </label>
+                    <input
+                      type="number"
+                      min="0"
+                      max="500"
+                      value={hoursEstimate}
+                      onChange={e => setHoursEstimate(e.target.value)}
+                      className="w-25"
+                    />
                   </div>
                 </td>
               </tr>
-              <tr>
-                <td scope="col" data-tip="Hours - Worst-case">
-                  Hours - Worst-case
-                </td>
-                <td scope="col" data-tip="Hours - Worst-case">
-                  <input
-                    type="number"
-                    min={hoursBest}
-                    max="500"
-                    value={hoursWorst}
-                    onChange={e => setHoursWorst(e.target.value)}
-                    onBlur={() => calHoursEstimate('hoursWorst')}
-                  />
-                  <div className="warning">
-                    {hoursWarning
-                      ? 'Hours - Best-case < Hours - Most-case < Hours - Most-case'
-                      : ''}
-                  </div>
-                </td>
-              </tr>
-              <tr>
-                <td scope="col" data-tip="Hours - Most-case">
-                  Hours - Most-case
-                </td>
-                <td scope="col" data-tip="Hours - Most-case">
-                  <input
-                    type="number"
-                    min="0"
-                    max="500"
-                    value={hoursMost}
-                    onChange={e => setHoursMost(e.target.value)}
-                    onBlur={() => calHoursEstimate('hoursMost')}
-                  />
-                  <div className="warning">
-                    {hoursWarning
-                      ? 'Hours - Best-case < Hours - Most-case < Hours - Most-case'
-                      : ''}
-                  </div>
-                </td>
-              </tr>
-              <tr>
-                <td scope="col" data-tip="Estimated Hours">
-                  Estimated Hours
-                </td>
-                <td scope="col" data-tip="Estimated Hours">
-                  <input
-                    type="number"
-                    min="0"
-                    max="500"
-                    value={hoursEstimate}
-                    onChange={e => setHoursEstimate(e.target.value)}
-                  />
-                </td>
-              </tr>
-
               <tr>
                 <td scope="col">Links</td>
                 <td scope="col">
@@ -604,14 +594,14 @@ const AddTaskModal = props => {
                       data-tip="Add Link"
                       onClick={() => addLink()}
                     >
-                      <i className="fa fa-plus" aria-hidden="true"></i>
+                      <i className="fa fa-plus" aria-hidden="true" />
                     </button>
                   </div>
                   <div>
                     {links.map((link, i) =>
                       link.length > 1 ? (
                         <div key={i}>
-                          <a href={link} target="_blank">
+                          <a href={link} target="_blank" rel="noreferrer">
                             {link}
                           </a>
                           <span className="remove-link" onClick={() => removeLink(i)}>
@@ -626,15 +616,12 @@ const AddTaskModal = props => {
               <tr>
                 <td scope="col">Category</td>
                 <td scope="col">
-
                   <select value={category} onChange={e => setCategory(e.target.value)}>
-                    {categoryOptions.map(cla => {
-                      return (
-                        <option value={cla.value} key={cla.value}>
-                          {cla.label}
-                        </option>
-                      );
-                    })}
+                    {categoryOptions.map(cla => (
+                      <option value={cla.value} key={cla.value}>
+                        {cla.label}
+                      </option>
+                    ))}
                   </select>
                 </td>
               </tr>
@@ -655,8 +642,7 @@ const AddTaskModal = props => {
                       autoresize_bottom_margin: 1,
                     }}
                     name="why-info"
-                    className="why-info"
-                    className="form-control"
+                    className="why-info form-control"
                     value={whyInfo}
                     onEditorChange={content => setWhyInfo(content)}
                   />
@@ -679,8 +665,7 @@ const AddTaskModal = props => {
                       autoresize_bottom_margin: 1,
                     }}
                     name="intent-info"
-                    className="intent-info"
-                    className="form-control"
+                    className="intent-info form-control"
                     value={intentInfo}
                     onEditorChange={content => setIntentInfo(content)}
                   />
@@ -703,8 +688,7 @@ const AddTaskModal = props => {
                       autoresize_bottom_margin: 1,
                     }}
                     name="endstate-info"
-                    className="endstate-info"
-                    className="form-control"
+                    className="endstate-info form-control"
                     value={endstateInfo}
                     onEditorChange={content => setEndstateInfo(content)}
                   />
@@ -750,7 +734,7 @@ const AddTaskModal = props => {
             isLoading ? (
               ' Adding...'
             ) : (
-              <Button color="primary" onClick={toggle} onClick={addNewTask}>
+              <Button color="primary" onClick={toggle && addNewTask} disabled={hoursWarning}>
                 Save
               </Button>
             )
@@ -762,13 +746,10 @@ const AddTaskModal = props => {
       </Button>
     </div>
   );
-};
+}
 
-const mapStateToProps = state => {
-  return state;
-};
+const mapStateToProps = state => state;
 export default connect(mapStateToProps, {
   addNewTask,
   fetchAllTasks,
-  updateTask,
 })(AddTaskModal);
