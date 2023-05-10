@@ -586,6 +586,7 @@ const TimeEntryForm = props => {
     setInputs(newInputs);
     setReminder({ ...initialReminder });
     setErrors({});
+    toggle();
     if (closed === true && isOpen) toggle();
   };
 
@@ -610,6 +611,12 @@ const TimeEntryForm = props => {
     }
   }, [stopAllAudioAndClearIntervals, isOpen, data?.isTangible]);
 
+  const closeBtn = (
+    <Button onClick={clearAll} color="danger">
+      Clear and Close
+    </Button>
+  );
+
   return (
     <div>
       <TangibleInfoModal
@@ -630,7 +637,7 @@ const TimeEntryForm = props => {
       />
 
       <Modal isOpen={isOpen} toggle={toggle} data-testid="timeEntryFormModal">
-        <ModalHeader toggle={toggle}>
+        <ModalHeader toggle={toggle} close={closeBtn}>
           <div>
             {edit ? 'Edit ' : 'Add '}
             {inputs.isTangible ? (
@@ -797,9 +804,7 @@ const TimeEntryForm = props => {
         </ModalBody>
         <ModalFooter>
           <small className="mr-auto">* All the fields are required</small>
-          <Button onClick={clearAll} color="danger">
-            Clear All
-          </Button>
+
           {/* <Button color="primary" disabled={isSubmitting || (data.hours === inputs.hours && data.minutes === inputs.minutes && data.notes === inputs.notes)} onClick={handleSubmit}> */}
           <Button color="primary" onClick={handleSubmit}>
             {edit ? 'Save' : 'Submit'}

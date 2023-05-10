@@ -138,7 +138,10 @@ export const NewTimer = () => {
   const handleSwitch = useCallback(() => sendMessage(action.SWITCH_MODE), []);
   const handleGetTimer = useCallback(() => sendMessage(action.GET_TIMER), []);
   const handleSetGoal = useCallback(time => sendMessage(action.SET_GOAL.concat(time)), []);
-  const handleAddGoal = useCallback(time => sendMessage(action.ADD_GOAL.concat(time)), []);
+  const handleAddGoal = useCallback(time => {
+    handlePause();
+    sendMessage(action.ADD_GOAL.concat(time));
+  }, []);
 
   const handleRemoveGoal = useCallback(
     time => {
@@ -175,8 +178,6 @@ export const NewTimer = () => {
   );
   const hours = timeToLog.hours();
   const minutes = timeToLog.minutes();
-
-  const fullTime = { hours, minutes };
 
   const userIsRunningTimerAndHasAtLeastOneMinute = useCallback(() => {
     return timeToLog.minutes() >= 1;
@@ -348,7 +349,6 @@ export const NewTimer = () => {
             color="primary"
             onClick={() => {
               handleClear();
-
               setConfirmationResetModal(false);
             }}
           >
@@ -396,22 +396,20 @@ export const NewTimer = () => {
             <TimerStatus readyState={readyState} message={message} />
           )}
         </div>
-        {logModal && (
-          <TimeEntryForm
-            edit={false}
-            userId={userId}
-            toggle={toggleModal}
-            isOpen={logModal}
-            timer={{ hours, minutes }}
-            data={data}
-            userProfile={userProfile}
-            resetTimer={handleClear}
-            handleStop={handleStop}
-            handleAddGoal={handleAddGoal}
-            handlePauseAlarm={handleStopAlarm}
-            goal={message?.goal}
-          />
-        )}
+        <TimeEntryForm
+          edit={false}
+          userId={userId}
+          toggle={toggleModal}
+          isOpen={true}
+          timer={{ hours, minutes }}
+          data={data}
+          userProfile={userProfile}
+          resetTimer={handleClear}
+          handleStop={handleStop}
+          handleAddGoal={handleAddGoal}
+          handlePauseAlarm={handleStopAlarm}
+          goal={message?.goal}
+        />
       </div>
       <audio ref={audioRef} src="https://bigsoundbank.com/UPLOAD/mp3/2554.mp3" />
     </div>
