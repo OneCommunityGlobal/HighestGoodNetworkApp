@@ -21,12 +21,11 @@ const TaskCompletedModal = React.memo(props => {
       .catch(err => console.log(err));
   };
 
-  const removeTaskFromUser = async task => {
+  const removeTaskFromUser = task => {
     const resources = [...task.resources];
     const newResources = resources?.map(resource => {
       let newResource = { ...resource };
       if (resource.userID === props.userId) {
-        task.status = 'Complete';
         newResource = {
           ...resource,
           completedTask: true,
