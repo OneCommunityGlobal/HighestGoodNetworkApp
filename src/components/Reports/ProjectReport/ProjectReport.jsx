@@ -3,7 +3,7 @@ import 'react-datepicker/dist/react-datepicker.css';
 import { useDispatch, useSelector } from 'react-redux';
 import { FiBox } from 'react-icons/fi';
 import { getProjectDetail } from '../../../actions/project';
-import { fetchAllMembers } from '../../../actions/projectMembers';
+import { fetchAllMembers, getProjectActiveUser } from '../../../actions/projectMembers';
 import { fetchAllWBS } from '../../../actions/wbs';
 import { ProjectMemberTable } from '../ProjectMemberTable';
 import { ReportPage } from '../sharedComponents/ReportPage';
@@ -27,6 +27,12 @@ export const ProjectReport = ({ match }) => {
       dispatch(fetchAllMembers(match.params.projectId));
     }
   }, []);
+
+  useEffect(() => {
+    if (projectMembers.members) {
+      dispatch(getProjectActiveUser());
+    }
+  }, [projectMembers.members]);
 
   return (
     <ReportPage
@@ -52,3 +58,4 @@ export const ProjectReport = ({ match }) => {
     </ReportPage>
   );
 };
+

@@ -26,3 +26,13 @@
   padding: 0 16px;
   border-bottom: 3px solid #f8f7f8;
 }
+
+.project-member-count-head {
+  text-align: start;
+}
+
+.project-member-count {
+  display: inline;
+  margin-right: 20px;
+  font-weight: normal;
+}
