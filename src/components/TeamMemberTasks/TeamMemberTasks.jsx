@@ -198,6 +198,7 @@ const TeamMemberTasks = props => {
         let totalHoursLogged = 0;
         let totalHoursRemaining = 0;
         const thisWeekHours = user.totaltangibletime_hrs;
+
         if (user.tasks) {
           user.tasks = user.tasks.map(task => {
             task.hoursLogged = task.hoursLogged ? task.hoursLogged : 0;
@@ -207,18 +208,9 @@ const TeamMemberTasks = props => {
           totalHoursLogged = user.tasks
             .map(task => task.hoursLogged)
             .reduce((previousValue, currentValue) => previousValue + currentValue, 0);
-          if (
-            user.tasks.length === 1 &&
-            (user.tasks[0].estimatedHours === 0 ||
-              (user.tasks[0].resources && user.tasks[0].resources[0].completedTask))
-          ) {
-            totalHoursRemaining = 0;
-          } else {
-            for (const task of user.tasks) {
-              if (task.status !== 'Complete' && task.isAssigned !== 'false') {
-                totalHoursRemaining =
-                  totalHoursRemaining + (task.estimatedHours - task.hoursLogged);
-              }
+          for (const task of user.tasks) {
+            if (task.status !== 'Complete' && task.isAssigned !== 'false') {
+              totalHoursRemaining = totalHoursRemaining + (task.estimatedHours - task.hoursLogged);
             }
           }
         }
@@ -480,7 +472,6 @@ const TeamMemberTasks = props => {
           submitTasks={submitTasks}
           popupClose={closeMarkAsDone}
           updateTask={onUpdateTask}
-          deleteSelectedTask={deleteSelectedTask}
           userId={currentUserId}
           task={currentTask}
           setCurrentUserId={setCurrentUserId}
