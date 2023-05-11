@@ -396,20 +396,22 @@ export const NewTimer = () => {
             <TimerStatus readyState={readyState} message={message} />
           )}
         </div>
-        <TimeEntryForm
-          edit={false}
-          userId={userId}
-          toggle={toggleModal}
-          isOpen={true}
-          timer={{ hours, minutes }}
-          data={data}
-          userProfile={userProfile}
-          resetTimer={handleClear}
-          handleStop={handleStop}
-          handleAddGoal={handleAddGoal}
-          handlePauseAlarm={handleStopAlarm}
-          goal={message?.goal}
-        />
+        {logModal && (
+          <TimeEntryForm
+            edit={false}
+            userId={userId}
+            toggle={toggleModal}
+            isOpen={logModal}
+            timer={{ hours, minutes }}
+            data={data}
+            userProfile={userProfile}
+            resetTimer={handleClear}
+            handleStop={handleStop}
+            handleAddGoal={handleAddGoal}
+            handlePauseAlarm={handleStopAlarm}
+            goal={message?.goal}
+          />
+        )}
       </div>
       <audio ref={audioRef} src="https://bigsoundbank.com/UPLOAD/mp3/2554.mp3" />
     </div>
