@@ -1,5 +1,5 @@
 .header-wrapper {
-  height: fit-content;
+  height: 82px;
   width: clamp(100vw, .1rem + 1vw ,100%);
   margin-bottom: 1rem;
 }
@@ -64,6 +64,10 @@
   }
 }
 
-
+@media(max-width: 1200px) {
+  .header-wrapper {
+    height: 56px;
+  }
+}
 
 

@@ -43,6 +43,7 @@ const ToggleSwitch = ({ switchType, state, handleUserProfile }) => {
           </div>
         </div>
       );
+
     case 'email':
       if (state) {
         return (
@@ -135,7 +136,7 @@ const ToggleSwitch = ({ switchType, state, handleUserProfile }) => {
     case 'visible':
       if (state) {
         return (
-          <div className="blueSqare">
+          <div className='blueSqare'>
             <div className={style.switchSection}>
               <div className={style.switchContainer}>
                 visible
@@ -150,10 +151,10 @@ const ToggleSwitch = ({ switchType, state, handleUserProfile }) => {
               </div>
             </div>
           </div>
-        );
+        )
       }
       return (
-        <div className="blueSqare">
+        <div className='blueSqare'>
           <div className={style.switchSection}>
             <div className={style.switchContainer}>
               visible
@@ -166,25 +167,6 @@ const ToggleSwitch = ({ switchType, state, handleUserProfile }) => {
                 defaultChecked
               />
               invisible
-            </div>
-          </div>
-        </div>
-      );
-    case 'bio':
-      return (
-        <div className="blueSqare">
-          <div className={style.switchSection}>
-            <div className={style.switchContainer}>
-              posted
-              <input
-                data-testid="bio-switch"
-                id="bioPosted"
-                type="checkbox"
-                className={style.toggle}
-                onChange={handleUserProfile}
-                checked={state}
-              />
-              requested
             </div>
           </div>
         </div>
