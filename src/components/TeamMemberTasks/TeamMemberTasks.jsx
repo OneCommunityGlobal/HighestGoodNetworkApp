@@ -1,6 +1,5 @@
 import { faClock, faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
-import { faTrashAlt } from '@fortawesome/free-regular-svg-icons';
-import { Table, Progress } from 'reactstrap';
+import { Table } from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { fetchTeamMembersTask, deleteTaskNotification } from 'actions/task';
 import React, { useEffect, useState } from 'react';
@@ -157,17 +156,14 @@ const TeamMemberTasks = props => {
     }
   };
 
-  //Clean the view of timelogs
-  const cleanTimeLogs = () => {
-    setIsTimeLogActive(false);
-    setSelectedPeriod(null);
-    setTimeEntriesList([]);
-  };
-
   //Display timelogs based on selected period
   const selectPeriod = period => {
+    if (period === selectedPeriod) {
+      setIsTimeLogActive(!isTimeLogActive);
+    } else {
+      setIsTimeLogActive(true);
+    }
     setSelectedPeriod(period);
-    setIsTimeLogActive(true);
     if (period === 24) {
       setTimeEntriesList([...twentyFourHoursTimeEntries]);
     } else if (period === 48) {
@@ -248,8 +244,8 @@ const TeamMemberTasks = props => {
               className="circle-border 24h"
               title="Timelogs submitted in the past 24 hours"
               style={{
-                color: selectedPeriod === 24 ? 'white' : '#DC143C',
-                backgroundColor: selectedPeriod === 24 ? '#DC143C' : 'white',
+                color: selectedPeriod === 24 && isTimeLogActive ? 'white' : '#DC143C',
+                backgroundColor: selectedPeriod === 24 && isTimeLogActive ? '#DC143C' : 'white',
                 border: '1px solid #DC143C',
               }}
               onClick={() => selectPeriod(24)}
@@ -261,8 +257,8 @@ const TeamMemberTasks = props => {
               className="circle-border 48h"
               title="Timelogs submitted in the past 48 hours"
               style={{
-                color: selectedPeriod === 48 ? 'white' : '#6495ED',
-                backgroundColor: selectedPeriod === 48 ? '#6495ED' : 'white',
+                color: selectedPeriod === 48 && isTimeLogActive ? 'white' : '#6495ED',
+                backgroundColor: selectedPeriod === 48 && isTimeLogActive ? '#6495ED' : 'white',
                 border: '1px solid #6495ED',
               }}
               onClick={() => selectPeriod(48)}
@@ -274,34 +270,14 @@ const TeamMemberTasks = props => {
               className="circle-border 72h"
               title="Timelogs submitted in the past 72 hours"
               style={{
-                color: selectedPeriod === 72 ? 'white' : '#228B22',
-                backgroundColor: selectedPeriod === 72 ? '#228B22' : 'white',
+                color: selectedPeriod === 72 && isTimeLogActive ? 'white' : '#228B22',
+                backgroundColor: selectedPeriod === 72 && isTimeLogActive ? '#228B22' : 'white',
                 border: '1px solid #228B22',
               }}
               onClick={() => selectPeriod(72)}
             >
               72h
             </button>
-            {(timeEntriesList.length > 0 || isTimeLogActive) && (
-              <>
-                <button type="button" title={isTimeLogActive ? 'Hide timelogs' : 'View timelogs'}>
-                  <FontAwesomeIcon
-                    style={{ color: 'grey' }}
-                    icon={isTimeLogActive ? faEyeSlash : faEye}
-                    size="lg"
-                    onClick={() => setIsTimeLogActive(!isTimeLogActive)}
-                  />
-                </button>
-                <button type="button" title="Clear timelogs">
-                  <FontAwesomeIcon
-                    style={{ color: 'grey' }}
-                    icon={faTrashAlt}
-                    size="lg"
-                    onClick={() => cleanTimeLogs()}
-                  />
-                </button>
-              </>
-            )}
           </div>
         ) : (
           <Loading />
