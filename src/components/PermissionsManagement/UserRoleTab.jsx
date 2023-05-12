@@ -3,17 +3,24 @@ import RolePermissions from './RolePermissions';
 import { connect } from 'react-redux';
 import './UserRoleTab.css';
 import { getUserProfile } from 'actions/userProfile';
-import { useHistory } from 'react-router-dom';
 
 export const permissionLabel = {
   seeWeeklySummaryReports: 'See Weekly Summary Reports Tab',
   seeUserManagement: 'See User Management Tab (delete and update users)',
   seeBadgeManagement: 'See Badge Management Tab (create badges)',
+  seePopupManagement: 'See Popup Management Tab (create and update popups)',
+  seeProjectManagement: 'See Project Management Tab',
+  seeTeamsManagement: 'See Teams Management Tab',
   deleteOwnBadge: 'Delete Badge',
   modifyOwnBadgeAmount: 'Modify Badge Amount',
   assignBadgeOthers: 'Assign Badges',
-  seePopupManagement: 'See Popup Management Tab (create and update popups)',
-  seeProjectManagement: 'See Project Management Tab',
+  editTimelogInfo: 'Edit Timelog Information',
+  addTimeEntryOthers: 'Add Time Entry (Others)',
+  deleteTimeEntryOthers: 'Delete Time Entry (Others)',
+  toggleTangibleTime: 'Toggle Tangible Time',
+  changeIntangibleTimeEntryDate: 'Change Date on Intangible Time Entry',
+  editTimeEntry: 'Edit Time Entry',
+  deleteTimeEntry: 'Delete Time Entry',
   deleteWbs: 'Delete WBS',
   addTask: 'Add Task',
   deleteTask: 'Delete Task',
@@ -26,25 +33,17 @@ export const permissionLabel = {
   findUserInProject: 'Find User in Project',
   assignUserInProject: 'Assign User in Project',
   unassignUserInProject: 'Unassign User in Project',
-  seeTeamsManagement: 'See Teams Management Tab',
-  editDeleteTeam: 'Edit/Delete Team',
-  createTeam: 'Create Team',
-  assignTeamToUser: 'Assign Team to User',
-  editTimelogInfo: 'Edit Timelog Information',
-  addTimeEntryOthers: 'Add Time Entry (Others)',
-  deleteTimeEntryOthers: 'Delete Time Entry (Others)',
-  toggleTangibleTime: 'Toggle Tangible Time',
-  changeIntangibleTimeEntryDate: 'Change Date on Intangible Time Entry',
-  editTimeEntry: 'Edit Time Entry',
-  deleteTimeEntry: 'Delete Time Entry',
   changeUserStatus: 'Change User Status',
   adminLinks: 'Manage Admin Links in User Profile',
   editUserProfile: 'Edit User Profile',
+  assignTeamToUser: 'Assign Team to User',
   seeUserProfileInProjects: 'See User Profiles in Projects',
+  createTeam: 'Create Team',
+  editDeleteTeam: 'Edit/Delete Team',
+  handleBlueSquare: 'Handle Blue Squares',
   resetPasswordOthers: 'Reset Password (Others)',
   dataIsTangibleTimelog: 'Timelog Data is Tangible',
   toggleSubmitForm: 'Toggle Summary Submit Form (Others)',
-  handleBlueSquare: 'Handle Blue Squares',
   assignOnlyBlueSquares: 'Only Assign Blue Squares',
   seePermissionsManagement: 'See Permissions Management Tab',
 };
@@ -53,7 +52,6 @@ const UserRoleTab = props => {
   useEffect(() => {
     props.getUserRole(props.auth?.user.userid);
   }, []);
-  const history = useHistory();
 
   const roleNames = props.roles.map(role => role.roleName);
   const userRoleParamsURL = props.match.params.userRole;
@@ -83,12 +81,9 @@ const UserRoleTab = props => {
   }
   return (
     <div className="userRoleTab__container">
-      <button
-        onClick={() => history.push('/permissionsmanagement')}
-        className="userRoleTab__backBtn"
-      >
+      <a href="/permissionsmanagement" className="userRoleTab__backBtn">
         Back
-      </button>
+      </a>
       <RolePermissions
         userRole={props.userProfile.role}
         role={roleName}

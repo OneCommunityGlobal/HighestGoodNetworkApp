@@ -164,9 +164,7 @@ const UserPermissionsPopUp = ({ allUserProfiles, toggle, getAllUsers }) => {
           {Object.entries(permissionLabel).map(([key, value]) => {
             return (
               <li key={key} className="user-role-tab__permission">
-                <div style={{ color: isPermissionChecked(key) ? 'green' : 'red', padding: '14px' }}>
-                  {value}
-                </div>
+                <p style={{ color: isPermissionChecked(key) ? 'green' : 'red' }}>{value}</p>
                 {isPermissionChecked(key) ? (
                   <Button
                     type="button"
@@ -174,7 +172,7 @@ const UserPermissionsPopUp = ({ allUserProfiles, toggle, getAllUsers }) => {
                     onClick={e => onChangeCheck(key)}
                     disabled={actualUserProfile ? false : true}
                   >
-                    Remove
+                    Delete
                   </Button>
                 ) : (
                   <Button
