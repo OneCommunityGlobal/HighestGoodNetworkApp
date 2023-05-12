@@ -164,8 +164,6 @@ const InfringementsViz = ({infringements, fromDate, toDate}) =>{
             .style("position","relative")
             .style("top",`-450px`)
             .style("left",`980px`)
-            // .style("top",`-${height + margin.top + margin.bottom + 10}px`)
-            // .style("left",`${width - 110}px`)
   
             legend.html(legendEl())
   

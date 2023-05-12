@@ -68,6 +68,7 @@ class AddUserProfile extends Component {
         timeZone: '',
         location: '',
         showphone: true,
+        weeklySummaryOption: 'Required',
       },
       formValid: {},
       formErrors: {
@@ -257,6 +258,26 @@ class AddUserProfile extends Component {
                           this.props.role.roles,
                           this.props.auth.user?.permissions?.frontPermissions,
                         ) && <option value="Owner">Owner</option>}
+                      </Input>
+                    </FormGroup>
+                  </Col>
+                </Row>
+                <Row>
+                  <Col md={{ size: 4 }} className="text-md-right my-2">
+                    <Label className="weeklySummaryOptionsLabel" >Weekly Summary Options</Label>
+                  </Col>
+                  <Col md="6">
+                    <FormGroup>
+                      <Input
+                        type="select"
+                        name="weeklySummaryOption"
+                        id="weeklySummaryOption"
+                        defaultValue="Required"
+                        onChange={this.handleUserProfile}
+                      >
+                        <option value="Required">Required</option>
+                        <option value="Not Required">Not Required</option>
+                        <option value="Team">Team</option>
                       </Input>
                     </FormGroup>
                   </Col>
@@ -536,6 +557,7 @@ class AddUserProfile extends Component {
       jobTitle,
       timeZone,
       location,
+      weeklySummaryOption,
     } = that.state.userProfile;
 
     const userData = {
@@ -547,6 +569,7 @@ class AddUserProfile extends Component {
       phoneNumber: phoneNumber,
       bio: '',
       weeklycommittedHours: that.state.userProfile.weeklyCommittedHours,
+      weeklySummaryOption: weeklySummaryOption,
       personalLinks: [],
       adminLinks: [],
       teams: this.state.teams,
@@ -819,6 +842,18 @@ class AddUserProfile extends Component {
           formErrors: {
             ...formErrors,
             weeklyCommittedHours: !!event.target.value ? '' : 'Committed hours can not be empty',
+          },
+        });
+        break;
+      case 'weeklySummaryOption':
+        this.setState({
+          userProfile: {
+            ...userProfile,
+            [event.target.id]: event.target.value.trim(),
+          },
+          formValid: {
+            ...formValid,
+            [event.target.id]: !!event.target.value,
           },
         });
         break;

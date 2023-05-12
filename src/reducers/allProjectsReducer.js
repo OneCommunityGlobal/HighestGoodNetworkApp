@@ -21,7 +21,6 @@ export const allProjectsReducer = (allProjects = allProjectsInital, action) => {
     case types.FETCH_PROJECTS_ERROR:
       return { ...allProjects, fetching: false, status: action.payload };
     case types.RECEIVE_PROJECTS:
-      //console.log("Reducers projects", action.payload);
       return updateObject(allProjects, {
         projects: action.payload,
         fetching: false,
