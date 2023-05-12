@@ -365,6 +365,7 @@ const TeamMemberTasks = props => {
           submitTasks={submitTasks}
           popupClose={closeMarkAsDone}
           updateTask={onUpdateTask}
+          deleteSelectedTask={deleteSelectedTask}
           userId={currentUserId}
           task={currentTask}
           setCurrentUserId={setCurrentUserId}
