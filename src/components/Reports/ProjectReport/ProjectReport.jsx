@@ -15,6 +15,7 @@ import '../../Teams/Team.css';
 import './ProjectReport.css';
 
 export const ProjectReport = ({ match }) => {
+  const [memberCount, setMemberCount] = useState(0);
   const dispatch = useDispatch();
   const { wbs, projectMembers, isActive, projectName, wbsTasksID, isLoading } = useSelector(
     projectReportViewData,
@@ -34,6 +35,10 @@ export const ProjectReport = ({ match }) => {
     }
   }, [projectMembers.members]);
 
+  const handleMemberCount = (elementCount) => {
+    setMemberCount(elementCount)
+  }
+
   return (
     <ReportPage
       renderProfile={() => (
@@ -47,8 +52,8 @@ export const ProjectReport = ({ match }) => {
           </Paging>
         </ReportPage.ReportBlock>
         <ReportPage.ReportBlock className="wbs-and-members-blocks">
-          <Paging totalElementsCount={projectMembers.members.length}>
-            <ProjectMemberTable projectMembers={projectMembers} />
+          <Paging totalElementsCount={memberCount}>
+            <ProjectMemberTable projectMembers={projectMembers} handleMemberCount={handleMemberCount} />
           </Paging>
         </ReportPage.ReportBlock>
       </div>

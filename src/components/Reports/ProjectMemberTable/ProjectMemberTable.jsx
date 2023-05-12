@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import './ProjectMemberTable.css';
 import { Link } from 'react-router-dom';
 
-export const ProjectMemberTable = ({ projectMembers, skip, take }) => {
+export const ProjectMemberTable = ({ projectMembers, skip, take, handleMemberCount }) => {
   const [allMemberList, setAllMemberList] = useState([]);
   const [activeMemberList, setActiveMemberList] = useState([]);
   const [memberFilter, setMemberFilter] = useState('active');
@@ -108,6 +108,7 @@ export const ProjectMemberTable = ({ projectMembers, skip, take }) => {
           <label htmlFor="all-time" id="project-all-member-count" className="project-member-count">
             ALL-TIME: {projectMembers.members.length}
           </label>
+          {memberFilter == 'all-time' ? handleMemberCount(allMemberList.length) : handleMemberCount(activeMemberList.length)}
         </div>
       </div>
       <div className="project-member-table-row reports-table-head">
@@ -129,7 +130,7 @@ export const ProjectMemberTable = ({ projectMembers, skip, take }) => {
           <Stub />
         )}
       </div>
-    </div>
+    </div>  
   );
 };
 
