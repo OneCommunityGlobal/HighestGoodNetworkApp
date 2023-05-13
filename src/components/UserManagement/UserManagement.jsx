@@ -54,6 +54,8 @@ class UserManagement extends React.PureComponent {
   componentDidMount() {
     // Initiating the user profile fetch action.
     this.props.getAllUserProfile();
+    const mode = localStorage.getItem('mode');
+    document.body.className = mode;
   }
 
   render() {

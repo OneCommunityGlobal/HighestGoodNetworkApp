@@ -1,4 +1,5 @@
 import React from 'react';
+import { useEffect } from 'react';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
 import Form from '../common/Form';
@@ -14,8 +15,14 @@ class UpdatePassword extends Form {
     errors: {},
   };
 
+  
+
   componentDidMount() {
+    const mode = localStorage.getItem('mode');
+    document.body.className = mode;
   }
+
+
 
   componentDidUpdate(prevProps) {
     if (prevProps.errors.error !== this.props.errors.error) {

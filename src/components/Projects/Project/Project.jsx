@@ -23,6 +23,11 @@ const Project = props => {
   };
 
   useEffect(() => {
+    const mode = localStorage.getItem('mode');
+    document.body.className = mode;
+  }, []);
+
+  useEffect(() => {
     if (!firstLoad) {
       updateProject();
     }

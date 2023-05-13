@@ -101,7 +101,11 @@ function UserProfile(props) {
 
   useEffect(() => {
     loadUserProfile();
+    const mode = localStorage.getItem('mode');
+    document.body.className = mode;
   }, []);
+
+  
 
   useEffect(() => {
     setShowLoading(true);

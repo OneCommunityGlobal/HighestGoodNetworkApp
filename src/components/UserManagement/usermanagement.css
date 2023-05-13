@@ -1,6 +1,9 @@
 thead {
   background: aliceblue;
 }
+body.dark thead {
+  background: #333;
+}
 
 
 #new_usermanagement {

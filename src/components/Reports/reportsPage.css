@@ -23,6 +23,9 @@
   align-items: flex-start;
   background-color: #FAF7FC;
 }
+body.dark .container-component-wrapper {
+  background-color: #333;
+}
 
 .container-component-category {
   width: 720px;

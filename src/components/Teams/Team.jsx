@@ -3,9 +3,16 @@ import './Team.css';
 import { DELETE } from '../../languages/en/ui';
 import TeamTable from '../Reports/TeamTable';
 import hasPermission from 'utils/permissions';
+import { useEffect } from 'react';
 
-const Team = props => (
-  <tr className="teams__tr" id={`tr_${props.teamId}`}>
+const Team = props => {
+
+  useEffect(() => {
+    const mode = localStorage.getItem('mode');
+    document.body.className = mode;
+  }, []);
+
+  return (<tr className="teams__tr" id={`tr_${props.teamId}`}>
     <th className="teams__order--input" scope="row">
       <div>{props.index + 1}</div>
     </th>
@@ -65,6 +72,6 @@ const Team = props => (
         </span>
       </td>
     )}
-  </tr>
-);
+  </tr>)
+}
 export default Team;

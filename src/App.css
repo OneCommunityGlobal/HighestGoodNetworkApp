@@ -93,5 +93,58 @@ nav ul.navbar-nav li:last-child > div {
    transform: translate3d(-26px, 40px, 0px) !important;
 }
 
+.dark {
+  background-color: #333;
+  color: #fff;
+}
+
+.light {
+  background-color: #fff;
+  color: #333;
+}
 
 
+
+body.dark .table th, body.dark .table td {
+  color: white;
+}
+
+body.dark .card-header, body.dark .card-body{
+  background-color: #333;
+  border-color: white;
+}
+
+body.dark .nav-tabs .nav-link.active, 
+body.dark .nav-tabs .nav-item.show .nav-link {
+  color: white;
+  background-color: #333;
+  border-color:  #fff;
+}
+
+body.dark #badgesearned .card-title,body.dark #badgesearned  .card-text{
+  color: greenyellow !important;
+}
+
+
+
+body.dark .profile-img {
+  background-color: white;;
+
+}
+body.dark .profile-head h5 {
+  color: white;
+}
+body.dark .job-title {
+  color: #dbe4ee;
+}
+body.dark .proile-rating, body.dark .proile-rating span{
+  color: white;
+}
+
+body.dark .emp-profile {
+  background-color: #333;
+}
+
+body.dark .m-header{
+  color: black;
+}

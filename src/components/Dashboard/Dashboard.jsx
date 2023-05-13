@@ -16,6 +16,8 @@ export const Dashboard = props => {
   const [leaderData, setLeaderData] = useState(null);
   const [submittedSummary, setSubmittedSummary] = useState(false);
   const [userProfile, setUserProfile] = useState(undefined);
+
+  const [theme, setTheme] = useState('light');
   let userId = props.match.params.userId ? props.match.params.userId : props.auth.user.userid;
 
   const toggle = () => {
@@ -28,8 +30,23 @@ export const Dashboard = props => {
     }, 150);
   };
 
+  const toggleTheme = () => {
+    if (theme === 'light') {
+      localStorage.setItem('mode',"dark");
+      setTheme('dark');
+    } else {
+      localStorage.setItem('mode',"light");
+    setTheme('light');
+    }
+  };
+
   useEffect(() => {
     props.getTimeZoneAPIKey();
+    const mode = localStorage.getItem('mode');
+    if(mode){
+      setTheme(mode)
+    }
+
   }, []);
 
   useEffect(() => {
@@ -38,6 +55,12 @@ export const Dashboard = props => {
       getUserProfile(userId);
     }
   }, [props.match]);
+
+  useEffect(() => {
+    document.body.className = theme;
+    }, [theme]);
+
+    
 
   return (
     <Container fluid>
@@ -54,7 +77,8 @@ export const Dashboard = props => {
       <Row>
         <Col lg={{ size: 7 }}>&nbsp;</Col>
         <Col lg={{ size: 5 }}>
-          <div className="row justify-content-center">
+          <div className="row justify-content-center {`${theme}`}">
+            <button onClick={toggleTheme}>Toggle Theme</button>
             <div
               role="button"
               className="mt-3 mb-5 text-center"

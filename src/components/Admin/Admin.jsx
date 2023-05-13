@@ -19,6 +19,13 @@ const Admin = props => {
     }
   };
 
+  useEffect(() => {
+
+    const mode = localStorage.getItem('mode');
+    document.body.className = mode;
+
+  }, []);
+
   return (
     <>
       <div className="container">

@@ -15,6 +15,8 @@ const BadgeManagement = props => {
 
   useEffect(() => {
     props.fetchAllBadges();
+    const mode = localStorage.getItem('mode');
+    document.body.className = mode;
   }, []);
 
   return (

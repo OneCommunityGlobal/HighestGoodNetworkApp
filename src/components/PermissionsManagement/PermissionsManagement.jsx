@@ -24,6 +24,8 @@ const PermissionsManagement = ({ getAllRoles, roles, auth, getUserRole, userProf
   useEffect(() => {
     getAllRoles();
     getUserRole(auth?.user.userid);
+    const mode = localStorage.getItem('mode');
+      document.body.className = mode;
   }, []);
 
   const togglePopUpUserPermissions = () => {

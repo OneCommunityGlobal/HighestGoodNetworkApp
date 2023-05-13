@@ -54,6 +54,9 @@
   border-radius: 6px;
   width: 260px;
 }
+body.dark .due-section{
+    background-color: white;;
+}
 
 .due-section__date {
   background-color: #225163;
@@ -110,6 +113,9 @@
   border-color: #fff #dee2e6 #dee2e6;
 }
 
+body.dark .bg--white-smoke{
+  background-color: #333;
+}
 @media screen and (min-width: 992px) {
   .left-col-dashboard {
     margin-top: -200px;

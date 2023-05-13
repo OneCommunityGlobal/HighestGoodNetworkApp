@@ -16,6 +16,8 @@
   height: 100%;
 }
 
+
+
 .team-report-main-info {
   display: flex;
   flex-direction: column;
@@ -58,6 +60,9 @@
 
 .table-row {
   background: white;
+}
+body.dark .table-row {
+  background: #333;
 }
 
 .input-wrapper {
