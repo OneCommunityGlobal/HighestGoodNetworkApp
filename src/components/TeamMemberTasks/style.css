@@ -70,18 +70,22 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  column-gap: 1rem;
+  min-width: 165px;
 }
 
 .circle-border {
-  border-radius: 6px;
+  border: 2px solid gray;
+  border-radius: 50%;
   width: 42px;
   height: 42px;
   font-size: 12px;
   font-weight: bold;
   font-family: Arial, Helvetica, sans-serif;
-  color: white;
-  box-shadow: 2px 2px 4px 1px lightgray;
+}
+
+.circle-border:active {
+  transform: scale(0.95);
+  box-shadow: 1px 1px 15px 1px rgba(0, 0, 0, 0.15);
 }
 
 .header-box {
