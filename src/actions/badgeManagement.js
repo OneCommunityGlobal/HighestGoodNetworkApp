@@ -183,9 +183,27 @@ export const assignBadgesByUserID = (userId, selectedBadges) => {
       badgeCollection[i].badge = badgeCollection[i].badge._id;
     }
 
+    // remove duplicate badge count
+    let included_badges = [],
+        unique_badges = []
+    for (let i = 0; i < badgeCollection.length; i++) {
+      if (included_badges.includes(badgeCollection[i].badge)) {
+        unique_badges.forEach(badgeObj => {
+          if (badgeCollection[i].badge === badgeObj.badge) {
+            badgeObj.count++;
+            if (badgeCollection[i].lastModified > badgeObj.lastModified)
+              badgeObj.lastModified = badgeCollection[i].lastModified
+          }
+        });
+      } else {
+        unique_badges.push(badgeCollection[i])
+        included_badges.push(badgeCollection[i].badge)
+      }
+    }
+
     selectedBadges.forEach((badgeId) => {
       let included = false;
-      badgeCollection.forEach((badgeObj) => {
+      unique_badges.forEach((badgeObj) => {
         if (badgeId === badgeObj.badge) {
           badgeObj.count++;
           badgeObj.lastModified = Date.now();
@@ -193,7 +211,7 @@ export const assignBadgesByUserID = (userId, selectedBadges) => {
         }
       });
       if (!included) {
-        badgeCollection.push({ badge: badgeId, count: 1, lastModified: Date.now() });
+        unique_badges.push({ badge: badgeId, count: 1, lastModified: Date.now() });
       }
     });
 
@@ -201,7 +219,7 @@ export const assignBadgesByUserID = (userId, selectedBadges) => {
     const url = ENDPOINTS.BADGE_ASSIGN(userToBeAssignedBadge);
 
     try {
-      await axios.put(url, { badgeCollection, newBadges: selectedBadges.length });
+      await axios.put(url, { badgeCollection: unique_badges, newBadges: selectedBadges.length });
       dispatch(
         getMessage(
           'Awesomesauce! Not only have you increased a person\'s badges, you\'ve also proportionally increased their life happiness!',

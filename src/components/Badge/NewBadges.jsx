@@ -4,6 +4,7 @@ import BadgeImage from './BadgeImage';
 import { WEEK_DIFF } from '../../constants/badge';
 
 const NewBadges = props => {
+
   const filterBadges = allBadges => {
     let filteredList = allBadges.filter(
       value => Date.now() - new Date(value.lastModified).getTime() <= WEEK_DIFF,
@@ -22,12 +23,6 @@ const NewBadges = props => {
 
   let filteredBadges = filterBadges(props.badges);
 
-  // userProfile.personalBestMaxHrs
-
-  console.log('>>>>>>>>>>>>>>')
-  console.log(props)
-  console.log('>>>>>>>>>>>>>>')
-
   return (
     <>
       <Card style={{ backgroundColor: '#f6f6f3' }}>
@@ -43,14 +38,6 @@ const NewBadges = props => {
             New Badges Earned <i className="fa fa-info-circle" id="NewBadgeInfo" />
           </CardTitle>
           <div className="new_badges">
-
-
-            {/*<div className="customBadge">
-            <img src="https://uc240a2e5ce97e247522cf55f232.previews.dropboxusercontent.com/p/thumb/AB5C26_v-7pIZpyH9WODRLiTvBMKBEjtsM6EYmx62lHpd0LkyTddIMck0Md5_tjJ4rEb_PaObc1EHjE-uP75Hjbn-9bcAOYwguhK_xC9Octl15qI2xd3fvygu-oZUoPaB1e1ibL6BrxEMM2u6p_j46rqYGXgV8aC-ZE46qzsFQ1ylzJqOpsHmtCpGGMd6tfIeQAOrsRsPbKEJ3S9zyQTgSqOC-S1q6BIlyYFfs9JuDUzxZg3VDZQDygUBOEA1GSzqm84DFZAJfmpeF480-HcloPGJ_s3ORqr4mwP08apgI3EwA1M7QPY0ibc0EnCxlOUoeYWXAHidmN3eIL-S7zuzYbj-3I-95cgjoXhSvAoxKYA0r26aynUHVYfIp1okS0ivv7kd4uNRtzfxNSI1CH3jzH7vkFT8nXwgshFqjozbdHN2Q/p.png" />
-            <div>{props.badges.length}</div>
-            </div>*/}
-
-
             {filteredBadges.length == 0 ? (
               <strong style={{ opacity: 0.7 }}>
                 Get yourself a herd of new badges! New badges are earned at the close of each epic
