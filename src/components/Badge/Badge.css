@@ -135,23 +135,3 @@
 .badgeTooltip .tooltip-inner {
   background-color: #666;
 }
-
-/* .customBadge{
-  position: relative;
-}
-
-.customBadge > div{
-  position: absolute;
-  left: 15px;
-  bottom: 0px;
-  font-size: 13px;
-  line-height: 25px;
-  background-color: blue;
-  border-radius: 10px;
-  height: 22px;
-  width: 22px;
-  color: white;
-  text-align: center;
-} */
-
-
