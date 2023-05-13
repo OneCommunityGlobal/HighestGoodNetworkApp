@@ -63,6 +63,16 @@ const TeamMemberTask = ({
                   </font>
                 </td>
               </tr>
+              <tr>
+                <td colSpan={2}>
+                  {timeLogOpen && (
+                    <div>
+                      <EffortBar activeTab={0} projectsSelected={['all']} />
+                      <TimeEntry data={1} displayYear={0} userProfile={0} />
+                    </div>
+                  )}
+                </td>
+              </tr>
             </tbody>
           </Table>
         </td>
@@ -85,19 +95,26 @@ const TeamMemberTask = ({
                             <Link to={task.projectId ? `/wbs/tasks/${task._id}` : '/'}>
                               <span>{`${task.num} ${task.taskName}`} </span>
                             </Link>
-                            {task.taskNotifications.length > 0 && (
-                              <FontAwesomeIcon
-                                className="team-member-tasks-bell"
-                                icon={faBell}
-                                onClick={() => {
-                                  handleOpenTaskNotificationModal(
-                                    user.personId,
-                                    task,
-                                    task.taskNotifications,
-                                  );
-                                }}
-                              />
-                            )}
+                            {task.taskNotifications.length > 0 &&
+                            task.taskNotifications.some(
+                              notification =>
+                                notification.hasOwnProperty('userId') &&
+                                notification.userId === user.personId,
+                            ) ? (
+                              <>
+                                <FontAwesomeIcon
+                                  className="team-member-tasks-bell"
+                                  icon={faBell}
+                                  onClick={() => {
+                                    handleOpenTaskNotificationModal(
+                                      user.personId,
+                                      task,
+                                      task.taskNotifications,
+                                    );
+                                  }}
+                                />
+                              </>
+                            ) : null}
                             <FontAwesomeIcon
                               className="team-member-tasks-done"
                               icon={faCheck}
@@ -113,8 +130,8 @@ const TeamMemberTask = ({
                             <div>
                               <span>
                                 {`${parseFloat(task.hoursLogged.toFixed(2))}
-                            of 
-                          ${parseFloat(task.estimatedHours.toFixed(2))}`}
+                                  of 
+                                ${parseFloat(task.estimatedHours.toFixed(2))}`}
                               </span>
                               <Progress
                                 color={getProgressColor(
@@ -129,7 +146,7 @@ const TeamMemberTask = ({
                         )}
                         {userRole === 'Administrator' ? (
                           <td data-label="Status">
-                            <TaskButton task={task} key={task._id}></TaskButton>
+                            <TaskButton task={task}></TaskButton>
                           </td>
                         ) : null}
                       </tr>
@@ -139,7 +156,7 @@ const TeamMemberTask = ({
             </tbody>
           </Table>
         </td>
-      </tr>
+      </tr>{' '}
     </>
   );
 };
