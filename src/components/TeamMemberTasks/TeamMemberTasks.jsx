@@ -267,6 +267,7 @@ const TeamMemberTasks = props => {
           filteredMembers.unshift(currentUser);
         }
       }
+
       getTimeEntriesForPeriod(filteredMembers);
       setTeamList([...filteredMembers]);
     }
@@ -341,7 +342,6 @@ const TeamMemberTasks = props => {
           submitTasks={submitTasks}
           popupClose={closeMarkAsDone}
           updateTask={onUpdateTask}
-          deleteSelectedTask={deleteSelectedTask}
           userId={currentUserId}
           task={currentTask}
           setCurrentUserId={setCurrentUserId}
