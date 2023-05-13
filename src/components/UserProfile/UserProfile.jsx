@@ -706,6 +706,7 @@ function UserProfile(props) {
             <Badges
               userProfile={userProfile}
               setUserProfile={setUserProfile}
+              setOriginalUserProfile={setOriginalUserProfile}
               role={requestorRole}
               canEdit={canEdit}
               handleSubmit={handleSubmit}
