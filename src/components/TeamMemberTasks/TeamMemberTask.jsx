@@ -63,16 +63,6 @@ const TeamMemberTask = ({
                   </font>
                 </td>
               </tr>
-              <tr>
-                <td colSpan={2}>
-                  {timeLogOpen && (
-                    <div>
-                      <EffortBar activeTab={0} projectsSelected={['all']} />
-                      <TimeEntry data={1} displayYear={0} userProfile={0} />
-                    </div>
-                  )}
-                </td>
-              </tr>
             </tbody>
           </Table>
         </td>
@@ -130,8 +120,8 @@ const TeamMemberTask = ({
                             <div>
                               <span>
                                 {`${parseFloat(task.hoursLogged.toFixed(2))}
-                                  of 
-                                ${parseFloat(task.estimatedHours.toFixed(2))}`}
+                            of 
+                          ${parseFloat(task.estimatedHours.toFixed(2))}`}
                               </span>
                               <Progress
                                 color={getProgressColor(
@@ -146,7 +136,7 @@ const TeamMemberTask = ({
                         )}
                         {userRole === 'Administrator' ? (
                           <td data-label="Status">
-                            <TaskButton task={task}></TaskButton>
+                            <TaskButton task={task} key={task._id}></TaskButton>
                           </td>
                         ) : null}
                       </tr>
@@ -156,7 +146,7 @@ const TeamMemberTask = ({
             </tbody>
           </Table>
         </td>
-      </tr>{' '}
+      </tr>
     </>
   );
 };
