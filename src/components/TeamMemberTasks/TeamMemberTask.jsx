@@ -16,6 +16,8 @@ const TeamMemberTask = ({
   let totalHoursLogged = 0;
   let totalHoursRemaining = 0;
   const thisWeekHours = user.totaltangibletime_hrs;
+  const rolesAllowedToResolveTasks = ['Administrator', 'Owner'];
+  const isAllowedToResolveTasks = rolesAllowedToResolveTasks.includes(userRole);
 
   if (user.tasks) {
     user.tasks = user.tasks.map(task => {
@@ -98,14 +100,16 @@ const TeamMemberTask = ({
                                 }}
                               />
                             )}
-                            <FontAwesomeIcon
-                              className="team-member-tasks-done"
-                              icon={faCheck}
-                              title="Mark as Done"
-                              onClick={() => {
-                                handleMarkAsDoneModal(user.personId, task);
-                              }}
-                            />
+                            {isAllowedToResolveTasks && (
+                              <FontAwesomeIcon
+                                className="team-member-tasks-done"
+                                icon={faCheck}
+                                title="Mark as Done"
+                                onClick={() => {
+                                  handleMarkAsDoneModal(user.personId, task);
+                                }}
+                              />
+                            )}
                           </p>
                         </td>
                         {task.hoursLogged != null && task.estimatedHours != null && (
