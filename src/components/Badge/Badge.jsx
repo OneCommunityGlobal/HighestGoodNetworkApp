@@ -65,7 +65,7 @@ const Badge = props => {
   const permissionsUser = props.userProfile?.permissions?.frontPermissions;
   return (
     <>
-      <Container>
+      <Container className="right-padding-temp-fix">
         <Row>
           <Col md={12}>
             <Card style={{ backgroundColor: '#fafafa', borderRadius: 0 }} id="badgesearned">

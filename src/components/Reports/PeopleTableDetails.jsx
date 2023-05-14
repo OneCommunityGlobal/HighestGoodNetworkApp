@@ -90,7 +90,6 @@ const PeopleTableDetails = props => {
   let toggleMoreResourcesStatus = true;
   const toggleMoreResources = id => {
     let x = document.getElementById(id);
-    // let hidden = x.getAttribute("hidden");
     if (toggleMoreResourcesStatus) {
       x.style.display = 'table-cell';
     } else {
@@ -205,14 +204,12 @@ const PeopleTableDetails = props => {
               className="rectangle"
               type="text"
               value={value.intentInfo}
-              // onChange={this.handleChange}
             />
             <div>End State</div>
             <textarea
               className="rectangle"
               type="text"
               value={value.endstateInfo}
-              // onChange={this.handleChange}
             />
           </NewModal>
         ))}

@@ -4,6 +4,9 @@ import moment from 'moment';
 import 'moment-timezone';
 import ReactHtmlParser from 'react-html-parser';
 import { Link } from 'react-router-dom';
+import google_doc_icon from './google_doc_icon.png';
+import './WeeklySummariesReport.css';
+import { toast } from 'react-toastify';
 
 const FormattedReport = ({ summaries, weekIndex }) => {
   const emails = [];
@@ -38,15 +41,54 @@ const FormattedReport = ({ summaries, weekIndex }) => {
     }
   };
 
+  const getGoogleDocLink = summary => {
+    if (!summary.adminLinks) {
+      return undefined;
+    }
+
+    const googleDocLink = summary.adminLinks.find(link => link.Name === 'Google Doc');
+
+    return googleDocLink;
+  };
+
   const getWeeklySummaryMessage = summary => {
-    if (!summary)
+    if (!summary) {
       return (
         <p>
           <b>Weekly Summary:</b> Not provided!
         </p>
       );
-
+    }
+    
     const summaryText = summary?.weeklySummaries[weekIndex]?.summary;
+    
+    const summaryContent = (() => {
+      if (summaryText) {
+        const style = {};
+        switch (summary?.weeklySummaryOption) {
+          case 'Team':
+            style.color = 'magenta';
+            break;
+          case 'Not Required':
+            style.color = 'green';
+            break;
+          case 'Required':
+            break;
+          default:
+            if (summary.weeklySummaryNotReq) {
+              style.color = 'green';
+            }
+            break;
+        }
+        return <div style={style}>{ReactHtmlParser(summaryText)}</div>;
+      }else{
+        if (summary?.weeklySummaryOption === 'Not Required' || (!summary?.weeklySummaryOption && summary.weeklySummaryNotReq)) {
+          return <p style={{ color: 'green' }}>Not required for this user</p>;
+        }else {
+          return <span style={{ color: 'red' }}>Not provided!</span>;
+        }
+      }
+    })();
 
     return (
       <>
@@ -57,16 +99,7 @@ const FormattedReport = ({ summaries, weekIndex }) => {
             .format('YYYY-MMM-DD')}
           ):
         </p>
-
-        {summaryText && ReactHtmlParser(summaryText)}
-
-        {summary.weeklySummaryNotReq === true && !summaryText && (
-          <p style={{ color: 'magenta' }}>Not required for this user</p>
-        )}
-
-        {!summaryText && !summary.weeklySummaryNotReq && (
-          <span style={{ color: 'red' }}>Not provided!</span>
-        )}
+        {summaryContent}
       </>
     );
   };
@@ -80,22 +113,41 @@ const FormattedReport = ({ summaries, weekIndex }) => {
     );
   };
 
+  const handleGoogleDocClick = googleDocLink => {
+    const toastGoogleLinkDoesNotExist = 'toast-on-click';
+    if (googleDocLink) {
+      window.open(googleDocLink.Link);
+    } else {
+      toast.error(
+        'Uh oh, no Google Doc is present for this user! Please contact an Admin to find out why.',
+        {
+          toastId: toastGoogleLinkDoesNotExist,
+          pauseOnFocusLoss: false,
+          autoClose: 3000,
+        },
+      );
+    }
+  };
   return (
     <>
       {alphabetize(summaries).map((summary, index) => {
         const hoursLogged = (summary.totalSeconds[weekIndex] || 0) / 3600;
-
+        const googleDocLink = getGoogleDocLink(summary);
         return (
           <div
             style={{ padding: '20px 0', marginTop: '5px', borderBottom: '1px solid #DEE2E6' }}
             key={'summary-' + index}
           >
-            <p>
+            <div>
               <b>Name: </b>
               <Link to={`/userProfile/${summary._id}`} title="View Profile">
                 {summary.firstName} {summary.lastName}
               </Link>
-            </p>
+
+              <span onClick={() => handleGoogleDocClick(googleDocLink)}>
+                <img className="google-doc-icon" src={google_doc_icon} alt="google_doc" />
+              </span>
+            </div>
             <p>
               {' '}
               <b>Media URL:</b> {getMediaUrlLink(summary)}

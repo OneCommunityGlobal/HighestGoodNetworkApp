@@ -15,6 +15,7 @@ export const Dashboard = props => {
   const [popup, setPopup] = useState(false);
   const [leaderData, setLeaderData] = useState(null);
   const [submittedSummary, setSubmittedSummary] = useState(false);
+  const [userProfile, setUserProfile] = useState(undefined);
   let userId = props.match.params.userId ? props.match.params.userId : props.auth.user.userid;
 
   const toggle = () => {
@@ -42,13 +43,15 @@ export const Dashboard = props => {
     <Container fluid>
       <PopUpBar />
       <SummaryBar
+        userProfile={userProfile}
+        setUserProfile={setUserProfile}
         asUser={userId}
         toggleSubmitForm={toggle}
         role={props.auth.user.role}
         leaderData={leaderData}
       />
 
-      <Row >
+      <Row>
         <Col lg={{ size: 7 }}>&nbsp;</Col>
         <Col lg={{ size: 5 }}>
           <div className="row justify-content-center">
@@ -59,7 +62,12 @@ export const Dashboard = props => {
               onKeyDown={toggle}
               tabIndex="0"
             >
-              <WeeklySummary isPopup asUser={userId} setSubmittedSummary={setSubmittedSummary} />
+              <WeeklySummary
+                isDashboard={true}
+                isPopup={popup}
+                asUser={userId}
+                setSubmittedSummary={setSubmittedSummary}
+              />
             </div>
           </div>
         </Col>
@@ -72,13 +80,13 @@ export const Dashboard = props => {
           {popup ? (
             <div className="my-2">
               <div id="weeklySum">
-                <WeeklySummary asUser={userId} />
+                <WeeklySummary asUser={userId} setPopup={setPopup} />
               </div>
             </div>
           ) : null}
           <div className="my-2">
             <a name="wsummary"></a>
-            <Timelog isDashboard asUser={userId} />
+            <Timelog isDashboard asUser={userId} userProfile={userProfile} />
           </div>
           <Badge userId={userId} role={props.auth.user.role} />
         </Col>

@@ -87,4 +87,10 @@ body,
   /*  90%to100%-red */
 }
 
+nav ul.navbar-nav li:last-child > div {
+   transform: translate3d(-26px, 40px, 0px) !important;
+}
+
+
+
 

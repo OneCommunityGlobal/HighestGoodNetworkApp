@@ -13,13 +13,14 @@ import { Editor } from '@tinymce/tinymce-react';
 import hasPermission from 'utils/permissions';
 import axios from 'axios';
 import { ENDPOINTS } from 'utils/URL';
+import TagsSearch from '../components/TagsSearch';
 
 const EditTaskModal = props => {
   const [role] = useState(props.auth ? props.auth.user.role : null);
   const userPermissions = props.auth.user?.permissions?.frontPermissions;
   const { roles } = props.role;
 
-  const { members } = props.projectMembers;
+  const [members] = useState(props.projectMembers || props.projectMembers.members);
   let foundedMembers = [];
 
   // get this task by id
@@ -29,12 +30,14 @@ const EditTaskModal = props => {
       try {
         const res = await axios.get(ENDPOINTS.GET_TASK(props.taskId));
         setThisTask(res?.data || {});
+        setCategory(res.data.category);
+        setAssigned(res.data.isAssigned);
       } catch (error) {
         console.log(error);
       }
     };
     fetchTaskData();
-  }, []);
+  }, [props.taskId]);
 
   // modal
   const [modal, setModal] = useState(false);
@@ -52,10 +55,11 @@ const EditTaskModal = props => {
   const [resourceItems, setResourceItems] = useState(thisTask?.resources);
 
   // assigned
-  const [assigned, setAssigned] = useState(thisTask?.assigned);
+  const [assigned, setAssigned] = useState(false);
+
 
   // status
-  const [status, setStatus] = useState(thisTask?.status);
+  const [status, setStatus] = useState('false');
 
   // hour best
   const [hoursBest, setHoursBest] = useState(thisTask?.hoursBest);
@@ -93,8 +97,8 @@ const EditTaskModal = props => {
     setTaskName(thisTask?.taskName);
     setPriority(thisTask?.priority);
     setResourceItems(thisTask?.resources);
-    setAssigned(thisTask?.assigned);
-    setStatus(thisTask?.status);
+    setAssigned(thisTask?.isAssigned || false);
+    setStatus(thisTask?.status || false);
     setHoursBest(thisTask?.hoursBest);
     setHoursWorst(thisTask?.hoursWorst);
     setHoursMost(thisTask?.hoursMost);
@@ -111,17 +115,28 @@ const EditTaskModal = props => {
   // helpers for editing the resources of task
   const [foundMembersHTML, setfoundMembersHTML] = useState('');
   const findMembers = () => {
-    foundedMembers = members.filter(user =>
-      `${user.firstName} ${user.lastName}`.toLowerCase().includes(memberName.toLowerCase()),
-    );
-    const html = foundedMembers.map(elm => (
-      <div>
-        <input
-          type="text"
-          className="task-resouces-input"
-          value={`${elm.firstName} ${elm.lastName}`}
-          disabled
-        />
+    const memberList = members.members ? props.projectMembers.members : members;
+    for (let i = 0; i < memberList.length; i++) {
+
+      if (
+        `${memberList[i].firstName} ${memberList[i].lastName}`
+          .toLowerCase()
+          .includes(memberName.toLowerCase())
+      ) {
+        foundedMembers.push(memberList[i]);
+      }
+    }
+
+    const html = foundedMembers.map((elm, i) => (
+      <div key={`found-member-${i}`}>
+        <a href={`/userprofile/${elm._id}`} target="_blank" rel="noreferrer">
+          <input
+            type="text"
+            className="task-resouces-input"
+            value={`${elm.firstName} ${elm.lastName}`}
+            disabled
+          />
+        </a>
         <button
           data-tip="Add this member"
           className="task-resouces-btn"
@@ -186,19 +201,6 @@ const EditTaskModal = props => {
   const removeLink = index => {
     setLinks([...links.splice(0, index), ...links.splice(index + 1)]);
   };
-
-  // // parent Id
-  // let parentId1 = props.parentId1 ? props.parentId1 : null;
-  // let parentId2 = props.parentId2 ? props.parentId2 : null;
-  // let parentId3 = props.parentId3 ? props.parentId3 : null;
-
-  // if (props.parentId1 === null) {
-  //   parentId1 = props.taskId;
-  // } else if (props.parentId2 === null) {
-  //   parentId2 = props.taskId;
-  // } else if (props.parentId3 === null) {
-  //   parentId3 = props.taskId;
-  // }
 
   // helpers for change start/end date
   const changeDateStart = startDate => {
@@ -267,6 +269,14 @@ const EditTaskModal = props => {
     }
   };
 
+  const handleAssign = (value) => {
+    setAssigned(value);
+  };
+
+  const handleStatus = (value) => {
+    setStatus(value);
+  };
+
   return (
     <div className="controlBtn">
       <Modal isOpen={modal} toggle={toggle}>
@@ -325,148 +335,164 @@ const EditTaskModal = props => {
                 <td scope="col">Resources</td>
                 <td scope="col">
                   <div>
-                    <input
-                      type="text"
-                      aria-label="Search user"
-                      placeholder="Name"
-                      className="task-resouces-input"
-                      data-tip="Input a name"
-                      onChange={e => setMemberName(e.target.value)}
-                      onKeyPress={findMembers}
+                    <TagsSearch
+                      placeholder="Add resources"
+                      members={members.members}
+                      addResources={addResources}
+                      removeResource={removeResource}
+                      resourceItems={resourceItems}
                     />
-                    <button
-                      className="task-resouces-btn"
-                      type="button"
-                      data-tip="All members"
-                      onClick={findMembers}
-                    >
-                      <i className="fa fa-caret-square-o-down" aria-hidden="true" />
-                    </button>
-                  </div>
-                  <div className="task-reousces-list">
-                    <div>{foundMembersHTML}</div>
-                  </div>
-                  <div className="task-reousces-list">
-                    {resourceItems?.map((elm, i) => {
-                      if (!elm.profilePic) {
-                        return (
-                          <a
-                            key={`res_${i}`}
-                            data-tip={elm.name}
-                            onClick={e => removeResource(elm.userID, e.target)}
-                          >
-                            <span className="dot">{elm.name.substring(0, 2)}</span>
-                          </a>
-                        );
-                      }
-                      return (
-                        <a
-                          key={`res_${i}`}
-                          data-tip={elm.name}
-                          onClick={e => removeResource(elm.userID, e.target)}
-                        >
-                          <img className="img-circle" src={elm.profilePic} />
-                        </a>
-                      );
-                    })}
                   </div>
                 </td>
               </tr>
               <tr>
                 <td scope="col">Assigned</td>
                 <td scope="col">
-                  <select id="Assigned" onChange={e => setAssigned(e.target.value === 'true')}>
-                    <option value="true">Yes</option>
-                    <option value="false">No</option>
-                  </select>
+                  <div className="flex-row d-inline align-items-center">
+                    <div className="form-check form-check-inline">
+                      <input
+                        className="form-check-input"
+                        type="radio"
+                        id="true"
+                        name="Assigned"
+                        value="true"
+                        onChange={(e) => handleAssign(true)}
+                        checked={assigned}
+                      />
+                      <label className="form-check-label" htmlFor="true">
+                        Yes
+                      </label>
+                    </div>
+                    <div className="form-check form-check-inline">
+                      <input
+                        className="form-check-input"
+                        type="radio"
+                        id="false"
+                        name="Assigned"
+                        value="false"
+                        onChange={(e) => handleAssign(false)}
+                        checked={!assigned}
+                      />
+                      <label className="form-check-label" htmlFor="false">
+                        No
+                      </label>
+                    </div>
+                  </div>
                 </td>
               </tr>
               <tr>
                 <td scope="col">Status</td>
                 <td scope="col">
-                  <select id="Status" onChange={e => setStatus(e.target.value)}>
-                    <option value="Started">Started</option>
-                    <option value="Not Started">Not Started</option>
-                    <option value="Complete">Complete</option>
-                  </select>
+                  <div className="flex-row  d-inline align-items-center">
+                    <div className="form-check form-check-inline">
+                    <input
+                      className="form-check-input"
+                      type="radio"
+                      id="started"
+                      name="started"
+                      value="true"
+                      onChange={(e) => handleStatus('true')}
+                      checked={status === 'true' ? true : false}
+                    />
+                      <label className="form-check-label" htmlFor="started">
+                        Started
+                      </label>
+                    </div>
+                    <div className="form-check form-check-inline">
+                    <input
+                      className="form-check-input"
+                      type="radio"
+                      id="notStarted"
+                      name="started"
+                      value="false"
+                      onChange={(e) => handleStatus('false')}
+                      checked={status === 'false' ? true : false}
+                    />
+                      <label className="form-check-label" htmlFor="notStarted">
+                        Not Started
+                      </label>
+                    </div>
+                  </div>
                 </td>
               </tr>
-
               <tr>
                 <td scope="col" data-tip="Hours - Best-case">
-                  Hours - Best-case
+                  Hours
                 </td>
-                <td scope="col" data-tip="Hours - Best-case">
-                  <input
-                    type="number"
-                    min="0"
-                    max="500"
-                    value={hoursBest}
-                    onChange={e => setHoursBest(e.target.value)}
-                    onBlur={() => calHoursEstimate()}
-                  />
-                  <div className="warning">
-                    {hoursWarning
-                      ? 'Hours - Best-case < Hours - Most-case < Hours - Most-case'
-                      : ''}
+                <td scope="col" data-tip="Hours - Best-case" className="w-100">
+                  <div className="d-inline py-2">
+                    <label htmlFor="bestCase" className="text-nowrap mr-2 w-25 mr-4">
+                      Best-case
+                    </label>
+                    <input
+                      type="number"
+                      min="0"
+                      max="500"
+                      value={hoursBest}
+                      onChange={e => setHoursBest(e.target.value)}
+                      onBlur={() => calHoursEstimate()}
+                      id="bestCase"
+                      className="w-25"
+                    />
+                    <div className="warning">
+                      {hoursWarning
+                        ? 'Hours - Best-case < Hours - Most-case < Hours - Most-case'
+                        : ''}
+                    </div>
+                  </div>
+                  <div className="d-inline py-2">
+                    <label htmlFor="worstCase" className="text-nowrap mr-2  w-25 mr-4">
+                      Worst-case
+                    </label>
+                    <input
+                      type="number"
+                      min={hoursBest}
+                      max="500"
+                      value={hoursWorst}
+                      onChange={e => setHoursWorst(e.target.value)}
+                      onBlur={() => calHoursEstimate('hoursWorst')}
+                      className="w-25"
+                    />
+                    <div className="warning">
+                      {hoursWarning
+                        ? 'Hours - Best-case < Hours - Most-case < Hours - Most-case'
+                        : ''}
+                    </div>
+                  </div>
+                  <div className="d-inline py-2">
+                    <label htmlFor="mostCase" className="text-nowrap mr-2 w-25 mr-4">
+                      Most-case
+                    </label>
+                    <input
+                      type="number"
+                      min="0"
+                      max="500"
+                      value={hoursMost}
+                      onChange={e => setHoursMost(e.target.value)}
+                      onBlur={() => calHoursEstimate('hoursMost')}
+                      className="w-25"
+                    />
+                    <div className="warning">
+                      {hoursWarning
+                        ? 'Hours - Best-case < Hours - Most-case < Hours - Most-case'
+                        : ''}
+                    </div>
+                  </div>
+                  <div className="d-inline py-2">
+                    <label htmlFor="Estimated" className="text-nowrap mr-2  w-25 mr-4">
+                      Estimated
+                    </label>
+                    <input
+                      type="number"
+                      min="0"
+                      max="500"
+                      value={hoursEstimate}
+                      onChange={e => setHoursEstimate(e.target.value)}
+                      className="w-25"
+                    />
                   </div>
                 </td>
               </tr>
-              <tr>
-                <td scope="col" data-tip="Hours - Worst-case">
-                  Hours - Worst-case
-                </td>
-                <td scope="col" data-tip="Hours - Worst-case">
-                  <input
-                    type="number"
-                    min={hoursBest}
-                    max="500"
-                    value={hoursWorst}
-                    onChange={e => setHoursWorst(e.target.value)}
-                    onBlur={() => calHoursEstimate('hoursWorst')}
-                  />
-                  <div className="warning">
-                    {hoursWarning
-                      ? 'Hours - Best-case < Hours - Most-case < Hours - Most-case'
-                      : ''}
-                  </div>
-                </td>
-              </tr>
-              <tr>
-                <td scope="col" data-tip="Hours - Most-case">
-                  Hours - Most-case
-                </td>
-                <td scope="col" data-tip="Hours - Most-case">
-                  <input
-                    type="number"
-                    min="0"
-                    max="500"
-                    value={hoursMost}
-                    onChange={e => setHoursMost(e.target.value)}
-                    onBlur={() => calHoursEstimate('hoursMost')}
-                  />
-                  <div className="warning">
-                    {hoursWarning
-                      ? 'Hours - Best-case < Hours - Most-case < Hours - Most-case'
-                      : ''}
-                  </div>
-                </td>
-              </tr>
-              <tr>
-                <td scope="col" data-tip="Estimated Hours">
-                  Estimated Hours
-                </td>
-                <td scope="col" data-tip="Estimated Hours">
-                  <input
-                    type="number"
-                    min="0"
-                    max="500"
-                    value={hoursEstimate}
-                    onChange={e => setHoursEstimate(e.target.value)}
-                  />
-                </td>
-              </tr>
-
               <tr>
                 <td scope="col">Links</td>
                 <td scope="col">
@@ -507,7 +533,12 @@ const EditTaskModal = props => {
               <tr>
                 <td scope="col">Category</td>
                 <td scope="col">
-                  <select value={category} onChange={e => setCategory(e.target.value)}>
+                  <select
+                    value={category}
+                    onChange={e => {
+                      setCategory(e.target.value);
+                    }}
+                  >
                     <option value="Food">Food</option>
                     <option value="Energy">Energy</option>
                     <option value="Housing">Housing</option>
