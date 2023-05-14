@@ -454,10 +454,10 @@ class PeopleReport extends Component {
           {!this.state.isBioPosted ? (
             <div>
               <h4>Bio {this.state.isBioPosted ? 'posted' : 'requested'}</h4>{' '}
-              {this.state.authRole == 'Administrator' || this.state.authRole == 'Owner' ? (
+              {this.state.authRole === 'Administrator' || this.state.authRole === 'Owner' ? (
                 <ToggleSwitch
                   switchType="bio"
-                  state={this.state.isBioPosted ? false : true}
+                  state={!this.state.isBioPosted}
                   handleUserProfile={onChangeBioPosted}
                 />
               ) : null}
