@@ -145,7 +145,7 @@ const TeamMemberTasks = props => {
       dispatch(deleteTaskNotification(userId, taskId, taskNotificationId));
     }
     handleOpenTaskNotificationModal();
-    window.location.reload(false);
+
   };
 
   const getTimeEntriesForPeriod = async teamList => {
