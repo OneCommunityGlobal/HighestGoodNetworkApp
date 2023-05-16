@@ -1,6 +1,6 @@
 import React from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faBell, faCircle, faCheck } from '@fortawesome/free-solid-svg-icons';
+import { faBell, faCircle, faCheck, faCopy } from '@fortawesome/free-solid-svg-icons';
 import TaskButton from './TaskButton';
 import { Table, Progress } from 'reactstrap';
 import { Link } from 'react-router-dom';
@@ -85,6 +85,11 @@ const TeamMemberTask = ({
                             <Link to={task.projectId ? `/wbs/tasks/${task._id}` : '/'}>
                               <span>{`${task.num} ${task.taskName}`} </span>
                             </Link>
+                            <FontAwesomeIcon
+                              className="team-member-tasks-copy"
+                              icon={faCopy}
+                              onClick={() => {navigator.clipboard.writeText(task.taskName)}}
+                            />
                             {task.taskNotifications.length > 0 && (
                               <FontAwesomeIcon
                                 className="team-member-tasks-bell"

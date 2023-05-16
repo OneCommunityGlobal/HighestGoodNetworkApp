@@ -13,6 +13,7 @@
 }
 
 .team-member-tasks-bell {
+  margin-left: 20px;
   color: red;
   cursor: pointer;
 }
@@ -20,6 +21,10 @@
 .team-member-tasks-done {
   margin-left: 10px;
   color: green;
+  cursor: pointer;
+}
+
+.team-member-tasks-copy {
   cursor: pointer;
 }
 
