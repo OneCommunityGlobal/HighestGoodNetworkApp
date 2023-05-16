@@ -22,6 +22,7 @@
     "date-fns": "^2.14.0",
     "diff": "^5.0.0",
     "font-awesome": "^4.7.0",
+    "gcc": "^1.0.2",
     "history": "^4.10.1",
     "html-react-parser": "^1.4.14",
     "html-to-pdfmake": "^2.0.6",
