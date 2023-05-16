@@ -14,6 +14,7 @@ import { getTimeZoneAPIKey } from '../../actions/timezoneAPIActions';
 export const Dashboard = props => {
   const [popup, setPopup] = useState(false);
   const [leaderData, setLeaderData] = useState(null);
+  const [userProfile, setUserProfile] = useState(undefined);
   let userId = props.match.params.userId ? props.match.params.userId : props.auth.user.userid;
 
   const toggle = () => {
