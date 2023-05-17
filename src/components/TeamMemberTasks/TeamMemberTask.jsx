@@ -1,6 +1,7 @@
 import React from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBell, faCircle, faCheck, faCopy } from '@fortawesome/free-solid-svg-icons';
+import { toast } from 'react-toastify';
 import TaskButton from './TaskButton';
 import { Table, Progress } from 'reactstrap';
 import { Link } from 'react-router-dom';
@@ -88,7 +89,10 @@ const TeamMemberTask = ({
                             <FontAwesomeIcon
                               className="team-member-tasks-copy"
                               icon={faCopy}
-                              onClick={() => {navigator.clipboard.writeText(task.taskName)}}
+                              onClick={() => {
+                                navigator.clipboard.writeText(task.taskName)
+                                toast.success("Task Copied!")
+                              }}
                             />
                             {task.taskNotifications.length > 0 && (
                               <FontAwesomeIcon
