@@ -9,6 +9,7 @@ const initialState = {
 };
 
 export const teamMemberTasksReducer = (state = initialState, action) => {
+  console.log(action)
   switch (action.type) {
     case 'DATA_LOADING':
       return { ...state, isLoading: true };
@@ -26,7 +27,7 @@ export const teamMemberTasksReducer = (state = initialState, action) => {
     case 'DELETE_TASK_NOTIFICATION_SUCCESS':
       return {
         ...state,
-        usersWithTasks: usersWithTasks.map(user =>
+        usersWithTasks: state.usersWithTasks.map(user =>
           user.personId === action.payload.userId
             ? {
                 ...user,
@@ -44,7 +45,12 @@ export const teamMemberTasksReducer = (state = initialState, action) => {
               }
             : user,
         ),
+        isLoading: false
       };
+    case 'DELETE_TASK_NOTIFICATION_BEGIN':
+      return {
+        ...state, isLoading:true
+      }
     default:
       return state;
   }
