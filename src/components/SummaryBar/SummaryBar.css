@@ -42,6 +42,7 @@
 .text--black {
   color: #000000;
 }
+
 body.dark .text--black{
   color: white;
 }

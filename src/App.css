@@ -103,8 +103,6 @@ nav ul.navbar-nav li:last-child > div {
   color: #333;
 }
 
-
-
 body.dark .table th, body.dark .table td {
   color: white;
 }
@@ -121,11 +119,9 @@ body.dark .nav-tabs .nav-item.show .nav-link {
   border-color:  #fff;
 }
 
-body.dark #badgesearned .card-title,body.dark #badgesearned  .card-text{
+body.dark #badgesearned .card-title, body.dark #badgesearned .card-text{
   color: greenyellow !important;
 }
-
-
 
 body.dark .profile-img {
   background-color: white;;

@@ -79,6 +79,10 @@
   transform: scale(1);
 }
 
+body.dark .role-name-link {
+  color: #fff
+}
+
 .role-name-link:hover {
   display: inline-block;
   text-decoration: none;
