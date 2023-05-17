@@ -163,7 +163,13 @@ export const NewTimer = () => {
   );
 
   const handleAckForced = useCallback(() => sendMessage(action.ACK_FORCED), []);
-  const toggleModal = () => setLogModal(modal => !modal);
+  const toggleModal = () => {
+    setLogModal(modal => !modal);
+    setTimerIsOverModalIsOpen(true);
+  };
+  const toggleModalClose = () => {
+    setLogModal(false);
+  };
   const toggleTimer = () => setShowTimer(timer => !timer);
 
   /*
@@ -298,6 +304,7 @@ export const NewTimer = () => {
             color="primary"
             onClick={() => {
               setTimerIsOverModalIsOpen(false);
+              stopAllAudioAndClearIntervals();
               setLogModal(true);
             }}
           >
@@ -398,6 +405,7 @@ export const NewTimer = () => {
         </div>
         {logModal && (
           <TimeEntryForm
+            toggleModalClose={toggleModalClose}
             edit={false}
             userId={userId}
             toggle={toggleModal}

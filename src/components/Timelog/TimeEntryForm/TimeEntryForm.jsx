@@ -61,7 +61,7 @@ const TimeEntryForm = props => {
     handleStop,
     handleAddGoal,
     goal,
-    setTimerIsOverModalIsOpen,
+    toggleModalClose,
   } = props;
 
   const initialFormValues = {
@@ -509,7 +509,7 @@ const TimeEntryForm = props => {
       }));
     }
 
-    if (isOpen) toggle();
+    if (isOpen) toggleModalClose();
     if (fromTimer) clearAll();
     setReminder(initialReminder);
 
