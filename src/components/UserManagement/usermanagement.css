@@ -47,6 +47,12 @@ thead {
   color: white;
 }
 
+
+.copy_icon {
+  float: right;
+  cursor: pointer;
+ }
+
 .usermanagement__order--input div {
   margin-top: 7px;
 }
