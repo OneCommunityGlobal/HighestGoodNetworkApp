@@ -12,7 +12,6 @@ import {
 } from 'components/TeamMemberTasks/actions';
 import * as types from '../constants/task';
 import { ENDPOINTS } from '../utils/URL';
-import ensureTasksHaveNum from '../utils/ensureTaskItemNum';
 import { createOrUpdateTaskNotificationHTTP } from './taskNotification';
 import { createTaskEditSuggestionHTTP } from 'components/TaskEditSuggestions/service';
 
@@ -32,13 +31,13 @@ export const fetchTeamMembersTask = (currentUserId, authenticatedUserId) => asyn
   try {
     const state = getState();
     //The userId will be equal the currentUserId if provided, if not, it'll call the selectFetchTeamMembersTaskData, that will return the current user id that's on the store
-
+    
     const userId = currentUserId ? currentUserId : selectFetchTeamMembersTaskData(state);
     const authUserId = authenticatedUserId ? authenticatedUserId : null
     console.log(authUserId)
-
+    
     dispatch(fetchTeamMembersTaskBegin());
-
+    
     const response = await axios.get(ENDPOINTS.TEAM_MEMBER_TASKS(userId));
 
 
@@ -184,7 +183,7 @@ export const fetchAllTasks = (wbsId, level = 0, mother = null) => {
     await dispatch(setTasksStart());
     try {
       const request = await axios.get(ENDPOINTS.TASKS(wbsId, level === -1 ? 1 : level + 1, mother));
-      dispatch(setTasks(ensureTasksHaveNum(request.data), level, mother));
+      dispatch(setTasks(request.data, level, mother));
     } catch (err) {
       dispatch(setTasksError(err));
     }
