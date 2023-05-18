@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useRef } from 'react';
-
 import {
   Container,
   Row,
@@ -25,13 +24,11 @@ import {
   ModalFooter,
 } from 'reactstrap';
 import './Timelog.css';
-
 import classnames from 'classnames';
 import { connect, useSelector } from 'react-redux';
 import moment from 'moment';
 import { isEmpty, isEqual } from 'lodash';
 import ReactTooltip from 'react-tooltip';
-
 import ActiveCell from 'components/UserManagement/ActiveCell';
 import { ProfileNavDot } from 'components/UserManagement/ProfileNavDot';
 import TeamMemberTasks from 'components/TeamMemberTasks';
@@ -48,6 +45,32 @@ import Loading from '../common/Loading';
 import hasPermission from '../../utils/permissions';
 import WeeklySummaries from './WeeklySummaries';
 
+const doesUserHaveTaskWithWBS = tasks => {
+  let check = false;
+  for (let task of tasks) {
+    if (task.wbsId && task.status !== 'Complete') {
+      check = true;
+      break;
+    }
+  }
+  return check;
+};
+
+function useDeepEffect(effectFunc, deps) {
+  const isFirst = useRef(true);
+  const prevDeps = useRef(deps);
+  useEffect(() => {
+    const isSame = prevDeps.current.every((obj, index) => {
+      let isItEqual = isEqual(obj, deps[index]);
+      return isItEqual;
+    });
+    if (isFirst.current || !isSame) {
+      effectFunc();
+    }
+    isFirst.current = false;
+    prevDeps.current = deps;
+  }, deps);
+}
 
 const Timelog = props => {
   const auth = useSelector(state => state.auth);
@@ -57,52 +80,64 @@ const Timelog = props => {
   const role = useSelector(state => state.role);
   const userTask = useSelector(state => state.userTask);
 
-  /* =======Functions======== */
-  function useDeepEffect(effectFunc, deps) {
-    const isFirst = useRef(true);
-    const prevDeps = useRef(deps);
-    useEffect(() => {
-      const isSame = prevDeps.current.every((obj, index) => {
-        let isItEqual = isEqual(obj, deps[index]);
-        return isItEqual;
-      });
-      if (isFirst.current || !isSame) {
-        effectFunc();
-      }
-      isFirst.current = false;
-      prevDeps.current = deps;
-    }, deps);
-  }
+  const defaultTab = () => {
+    //change default to time log tab(1) in the following cases:
+    const role = auth.user.role;
+    let tab = 0;
+    const UserHaveTask = doesUserHaveTaskWithWBS(userTask);
+    /* To set the Task tab as defatult this.userTask is being watched.
+    Accounts with no tasks assigned to it return an empty array.
+    Accounts assigned with tasks with no wbs return and empty array.
+    Accounts assigned with tasks with wbs return an array with that wbs data.
+    The problem: even after unassigning tasks the array keeps the wbs data.
+    That breaks this feature. Necessary to check if this array should keep data or be reset when unassinging tasks.*/
 
-  const doesUserHaveTaskWithWBS = tasks => {
-    let check = false;
-    for (let task of tasks) {
-      if (task.wbsId && task.status !== 'Complete') {
-        check = true;
-        break;
-      }
+    //if user role is volunteer or core team and they don't have tasks assigned, then default tab is timelog.
+    if ((role === 'Volunteer' || role === 'Core Team') && !UserHaveTask) {
+      tab = 1;
     }
-    return check;
+
+    // Sets active tab to "Current Week Timelog" when the Progress bar in Leaderboard is clicked
+    if (!props.isDashboard) {
+      tab = 1;
+    }
+    return tab;
   };
 
-  // startOfWeek returns the date of the start of the week based on offset. Offset is the number of weeks before.
-  // For example, if offset is 0, returns the start of this week. If offset is 1, returns the start of last week.
-  const startOfWeek = offset => {
-    return moment()
-      .tz('America/Los_Angeles')
-      .startOf('week')
-      .subtract(offset, 'weeks')
-      .format('YYYY-MM-DD');
+  const timeLogFunction = () => {
+    //build the time log component
+    buildOptions()
+      .then(response => {
+        setProjectOrTaskOptions(response);
+      })
+      .then(() => {
+        generateAllTimeEntries().then(response => {
+          setCurrentWeekEntries(response[0]);
+          setLastWeekEntries(response[1]);
+          setBeforeLastEntries(response[2]);
+          setPeriodEntries(response[3]);
+        });
+      });
   };
 
-  // endOfWeek returns the date of the end of the week based on offset. Offset is the number of weeks before.
-  // For example, if offset is 0, returns the end of this week. If offset is 1, returns the end of last week.
-  const endOfWeek = offset => {
-    return moment()
-      .tz('America/Los_Angeles')
-      .endOf('week')
-      .subtract(offset, 'weeks')
-      .format('YYYY-MM-DD');
+  const loadAsyncData = async userId => {
+    //load timelog data
+    setState({ ...state, isTimeEntriesLoading: true });
+    try {
+      await Promise.all([
+        props.getTimeEntriesForWeek(userId, 0),
+        props.getTimeEntriesForWeek(userId, 1),
+        props.getTimeEntriesForWeek(userId, 2),
+        props.getTimeEntriesForPeriod(userId, state.fromDate, state.toDate),
+        props.getUserProjects(userId),
+        props.getAllRoles(),
+        props.getUserTask(userId),
+      ]);
+    } catch (e) {
+      setError(e);
+    }
+
+    //setState({...state,activeTab:defaultTabValue});
   };
 
   const toggle = () => {
@@ -157,9 +192,28 @@ const Timelog = props => {
     props.getTimeEntriesForPeriod(userId, state.fromDate, state.toDate);
   };
 
+  // startOfWeek returns the date of the start of the week based on offset. Offset is the number of weeks before.
+  // For example, if offset is 0, returns the start of this week. If offset is 1, returns the start of last week.
+  const startOfWeek = offset => {
+    return moment()
+      .tz('America/Los_Angeles')
+      .startOf('week')
+      .subtract(offset, 'weeks')
+      .format('YYYY-MM-DD');
+  };
+
+  // endOfWeek returns the date of the end of the week based on offset. Offset is the number of weeks before.
+  // For example, if offset is 0, returns the end of this week. If offset is 1, returns the end of last week.
+  const endOfWeek = offset => {
+    return moment()
+      .tz('America/Los_Angeles')
+      .endOf('week')
+      .subtract(offset, 'weeks')
+      .format('YYYY-MM-DD');
+  };
+
   const calculateTotalTime = (data, isTangible) => {
     const filteredData = data.filter(entry => entry.isTangible === isTangible);
-
     const reducer = (total, entry) => total + parseInt(entry.hours) + parseInt(entry.minutes) / 60;
     return filteredData.reduce(reducer, 0);
   };
@@ -172,7 +226,6 @@ const Timelog = props => {
       <TimeEntry data={entry} displayYear={false} key={entry._id} userProfile={userProfile} />
     ));
   };
-
 
   const renderViewingTimeEntriesFrom = () => {
     if (state.activeTab === 0 || state.activeTab === 5) {
@@ -193,24 +246,27 @@ const Timelog = props => {
     }
   };
 
-  const loadAsyncData = async userId => {
-    setState({ ...state, isTimeEntriesLoading: true });
-    try {
-      await Promise.all([
-        props.getTimeEntriesForWeek(userId, 0),
-        props.getTimeEntriesForWeek(userId, 1),
-        props.getTimeEntriesForWeek(userId, 2),
-        props.getTimeEntriesForPeriod(userId, state.fromDate, state.toDate),
-        props.getUserProjects(userId),
-        props.getAllRoles(),
-        props.getUserTask(userId),
-      ]);
-    } catch (e) {
-      setError(e);
+  const generateAllTimeEntries = async () => {
+    const currentWeekEntries = generateTimeEntries(timeEntries.weeks[0]);
+    const lastWeekEntries = generateTimeEntries(timeEntries.weeks[1]);
+    const beforeLastEntries = generateTimeEntries(timeEntries.weeks[2]);
+    const periodEntries = generateTimeEntries(timeEntries.period);
+    return [currentWeekEntries, lastWeekEntries, beforeLastEntries, periodEntries];
+  };
+
+  const makeBarData = userId => {
+    //pass the data to summary bar
+    const weekEffort = calculateTotalTime(timeEntries.weeks[0], true);
+    setState({ ...state, currentWeekEffort: weekEffort });
+    if (props.isDashboard) {
+      props.passSummaryBarData({ personId: userId, tangibletime: weekEffort });
+    } else {
+      setSummaryBarData({ personId: userId, tangibletime: weekEffort });
     }
   };
 
   const buildOptions = async () => {
+    //build options for the project and task
     let projects = [];
     if (!isEmpty(userProjects.projects)) {
       projects = userProjects.projects;
@@ -245,38 +301,15 @@ const Timelog = props => {
     return allOptions;
   };
 
-  const generateAllTimeEntries = async () => {
-    const currentWeekEntries = generateTimeEntries(timeEntries.weeks[0]);
-    const lastWeekEntries = generateTimeEntries(timeEntries.weeks[1]);
-    const beforeLastEntries = generateTimeEntries(timeEntries.weeks[2]);
-    const periodEntries = generateTimeEntries(timeEntries.period);
-    return [currentWeekEntries, lastWeekEntries, beforeLastEntries, periodEntries];
-  };
-
-  const makeBarData = userId => {
-    const weekEffort = calculateTotalTime(timeEntries.weeks[0], true);
-    setState({ ...state, currentWeekEffort: weekEffort });
-    if (props.isDashboard) {
-      props.passSummaryBarData({ personId: userId, tangibletime: weekEffort });
-    } else {
-      setSummaryBarData({ personId: userId, tangibletime: weekEffort });
-    }
-  };
-
-  /* =======State======== */
-  const initialState = {
-    modal: false,
-    summary: false,
-    activeTab: 1,
-    projectsSelected: ['all'],
-    fromDate: startOfWeek(0),
-    toDate: endOfWeek(0),
-    in: false,
-    information: '',
-    currentWeekEffort: 0,
-    isTimeEntriesLoading: true,
-  };
-  const [state, setState] = useState(initialState);
+  const [error, setError] = useState(null);
+  const [initialTab, setInitialTab] = useState(null);
+  const [projectOrTaskOptions, setProjectOrTaskOptions] = useState(null);
+  const [currentWeekEntries, setCurrentWeekEntries] = useState(null);
+  const [lastWeekEntries, setLastWeekEntries] = useState(null);
+  const [beforeLastEntries, setBeforeLastEntries] = useState(null);
+  const [periodEntries, setPeriodEntries] = useState(null);
+  const [userId, setUserId] = useState(null);
+  const [summaryBarData, setSummaryBarData] = useState(null);
   const [data, setData] = useState({
     disabled: !hasPermission(
       auth.user.role,
@@ -288,66 +321,37 @@ const Timelog = props => {
       : true,
     isTangible: false,
   });
-  const [error, setError] = useState(null);
-  const [projectOrTaskOptions, setProjectOrTaskOptions] = useState(null);
-  const [currentWeekEntries, setCurrentWeekEntries] = useState(null);
-  const [lastWeekEntries, setLastWeekEntries] = useState(null);
-  const [beforeLastEntries, setBeforeLastEntries] = useState(null);
-  const [periodEntries, setPeriodEntries] = useState(null);
-  const [userId, setUserId] = useState(null);
-  const [summaryBarData, setSummaryBarData] = useState(null);
-
-  /* =======Hook======== */
-  const timeLogFunction = () => {
-    buildOptions()
-      .then(response => {
-        setProjectOrTaskOptions(response);
-      })
-      .then(() => {
-        generateAllTimeEntries().then(response => {
-          setCurrentWeekEntries(response[0]);
-          setLastWeekEntries(response[1]);
-          setBeforeLastEntries(response[2]);
-          setPeriodEntries(response[3]);
-        });
-      });
-
-    const role = auth.user.role;
-    //if user role is admin, manager, mentor or owner then default tab is task. If user have any tasks assigned, default tab is task.
-    if (role === 'Administrator' || role === 'Manager' || role === "'Mentor'" || role === 'Owner') {
-      setState({ ...state, activeTab: 0 });
-    }
-
-    const UserHaveTask = doesUserHaveTaskWithWBS(userTask);
-    if (UserHaveTask) {
-      setState({ ...state, activeTab: 0 });
-    }
-
-    // Sets active tab to "Current Week Timelog" when the Progress bar in Leaderboard is clicked
-    if (!props.isDashboard) {
-      setState({ ...state, activeTab: 1 });
-    }
+  const initialState = {
+    modal: false,
+    summary: false,
+    activeTab: 0,
+    projectsSelected: ['all'],
+    fromDate: startOfWeek(0),
+    toDate: endOfWeek(0),
+    in: false,
+    information: '',
+    currentWeekEffort: 0,
+    isTimeEntriesLoading: true,
   };
+  const [state, setState] = useState(initialState);
 
   useEffect(() => {
     // Does not run again (except once in development)
-    const userId = props?.match?.params?.userId || props.asUser || auth.user.userid; //Including fix for "undefined"
+    const userId = props?.match?.params?.userId || props.asUser; //Including fix for "undefined"
     setUserId(userId);
     if (userProfile._id !== userId) {
       props.getUserProfile(userId);
     }
     loadAsyncData(userId).then(() => {
       setState({ ...state, isTimeEntriesLoading: false });
+      const defaultTabValue = defaultTab();
+      setInitialTab(defaultTabValue);
     });
   }, []);
 
   useEffect(() => {
-    // Build the time log after new data is loaded
-    if (!state.isTimeEntriesLoading) {
-      timeLogFunction();
-      makeBarData(userId);
-    }
-  }, [state.isTimeEntriesLoading]);
+    changeTab(initialTab);
+  }, [initialTab]);
 
   useDeepEffect(() => {
     // Only re-render when time entries change
@@ -358,7 +362,15 @@ const Timelog = props => {
   }, [timeEntries]);
 
   useEffect(() => {
-    // Only run when asUser changes.
+    // Build the time log after new data is loaded
+    if (!state.isTimeEntriesLoading) {
+      timeLogFunction();
+      makeBarData(userId);
+    }
+  }, [state.isTimeEntriesLoading]);
+
+  useEffect(() => {
+    // Only render (reload data) when asUser changes.
     if (!userId && !state.isTimeEntriesLoading) {
       // skip the first render.
       setState(initialState);
@@ -367,7 +379,8 @@ const Timelog = props => {
         props.getUserProfile(newId);
       }
       loadAsyncData(newId).then(() => {
-        makeBarData(newId);
+        const defaultTabValue = defaultTab();
+        setInitialTab(defaultTabValue);
         setState({ ...state, isTimeEntriesLoading: false });
       });
       setUserId(newId);
@@ -444,7 +457,9 @@ const Timelog = props => {
                           }}
                         />
                         <ProfileNavDot
-                          userId={props.match?.params?.userId || props.asUser || auth.user.userid}
+                          userId={
+                            props.match?.params?.userId || props.asUser || props.auth.user.userid
+                          }
                         />
                       </CardTitle>
                       <CardSubtitle tag="h6" className="text-muted">
@@ -666,12 +681,12 @@ const Timelog = props => {
                         </Button>
                       </Form>
                     )}
-                    {state.activeTab === 0 || state.activeTab === 5 ?(
+                    {state.activeTab === 0 || state.activeTab === 5 ? (
                       <></>
                     ) : (
                       <Form className="mb-2">
                         <FormGroup>
-                          <Label for="projectSelected" className="mr-1 ml-1 mb-1 align-top">
+                          <Label htmlFor="projectSelected" className="mr-1 ml-1 mb-1 align-top">
                             Filter Entries by Project and Task:
                           </Label>
                           <Input
@@ -697,7 +712,7 @@ const Timelog = props => {
                       </Form>
                     )}
 
-                    {state.activeTab === 0 || state.activeTab === 5 ?(
+                    {state.activeTab === 0 || state.activeTab === 5 ? (
                       <></>
                     ) : (
                       <EffortBar
@@ -713,7 +728,7 @@ const Timelog = props => {
                     <TabPane tabId={3}>{beforeLastEntries}</TabPane>
                     <TabPane tabId={4}>{periodEntries}</TabPane>
                     <TabPane tabId={5}>
-                        <WeeklySummaries userProfile={userProfile} />
+                      <WeeklySummaries userProfile={userProfile} />
                     </TabPane>
                   </TabContent>
                 </CardBody>

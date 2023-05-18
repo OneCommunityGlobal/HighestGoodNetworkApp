@@ -165,8 +165,7 @@ const SummaryBar = props => {
     }
   };
 
-
-  if (userProfile !== undefined && leaderData !== undefined) {
+  if (userProfile !== undefined && summaryBarData !== undefined) {
     const weeklyCommittedHours = userProfile.weeklycommittedHours + (userProfile.missedHours ?? 0);
     const weeklySummary = getWeeklySummary(userProfile);
     return (
