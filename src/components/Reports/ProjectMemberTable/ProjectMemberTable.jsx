@@ -9,21 +9,18 @@ export const ProjectMemberTable = ({ projectMembers, skip, take, handleMemberCou
   const [memberFilter, setMemberFilter] = useState('active');
   const { fetched, foundUsers, members } = projectMembers;
 
-  let activeMemberTable = [];
-  let allMemberTable = [];
-
   useEffect(() => {
-    let memberList = [];
-    let activeList = [];
-    let currentActive = [];
     if (fetched) {
+      const memberList = [];
+      const activeList = [];
+      const currentActive = new Set();
       if (foundUsers.length > 0) {
-        foundUsers.map(member => {
-          currentActive.push(member._id);
+        foundUsers.forEach(member => {
+          currentActive.add(member._id);
         });
       }
-      members.map(member => {
-        if (currentActive.includes(member._id)) {
+      members.forEach(member => {
+        if (currentActive.has(member._id)) {
           memberList.push({ ...member, active: true });
           activeList.push({ ...member, active: true });
         } else {
@@ -35,7 +32,7 @@ export const ProjectMemberTable = ({ projectMembers, skip, take, handleMemberCou
     }
   }, [fetched]);
 
-  activeMemberTable = activeMemberList.slice(skip, skip + take).map((member, index) => (
+  const activeMemberTable = activeMemberList.slice(skip, skip + take).map((member, index) => (
     <div className="project-member-table-row" id={'tr_' + member._id} key={'ac_' + member._id}>
       <div>
         <div>{skip + index + 1}</div>
@@ -60,7 +57,7 @@ export const ProjectMemberTable = ({ projectMembers, skip, take, handleMemberCou
     </div>
   ));
 
-  allMemberTable = allMemberList.slice(skip, skip + take).map((member, index) => (
+  const allMemberTable = allMemberList.slice(skip, skip + take).map((member, index) => (
     <div className="project-member-table-row" id={'tr_' + member._id} key={'al_' + member._id}>
       <div>
         <div>{skip + index + 1}</div>

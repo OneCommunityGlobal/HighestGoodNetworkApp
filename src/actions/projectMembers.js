@@ -15,9 +15,8 @@ export const getAllUserProfiles = () => {
     await dispatch(findUsersStart());
     request
       .then(res => {
-        let users = res.data;
         let members = getState().projectMembers.members;
-        users = users.map(user => {
+        const users = res.data.map(user => {
           if (!members.find(member => member._id === user._id)) {
             return (user = { ...user, assigned: false });
           } else {
@@ -95,18 +94,13 @@ export const getProjectActiveUser = () => {
     await dispatch(findUsersStart());
     request
       .then(res => {
-        let users = res.data;
         let members = getState().projectMembers.members;
-        const memberList = [];
-        users = users.map(user => {
-          if (members.find(member => member._id === user._id && user.isActive === true)) {
-            memberList.push({ ...user });
-          }
+        const users = res.data.filter(user => {
+          return (members.find(member => member._id === user._id) && user.isActive === true) 
         });
-        dispatch(foundUsers(memberList));
+        dispatch(foundUsers(users));
       })
       .catch(err => {
-        //console.log("getProjectActiveUser Error", err);
         dispatch(findUsersError(err));
       });
   };
