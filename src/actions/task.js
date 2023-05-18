@@ -66,7 +66,7 @@ export const deleteTaskNotification = (userId, taskId, taskNotificationId) => as
   getState,
 ) => {
   try {
-    dispatch(deleteTaskNotificationBegin());
+    //dispatch(deleteTaskNotificationBegin());
     const res = await axios.delete(ENDPOINTS.DELETE_TASK_NOTIFICATION_BY_USER_ID(taskId, userId));
     console.log(res)
     
