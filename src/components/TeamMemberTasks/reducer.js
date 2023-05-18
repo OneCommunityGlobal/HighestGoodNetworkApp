@@ -9,7 +9,6 @@ const initialState = {
 };
 
 export const teamMemberTasksReducer = (state = initialState, action) => {
-  console.log(action)
   switch (action.type) {
     case 'DATA_LOADING':
       return { ...state, isLoading: true };
