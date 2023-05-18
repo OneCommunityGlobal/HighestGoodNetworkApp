@@ -26,3 +26,6 @@ export const UPDATE_NUMS = 'UPDATE_NUMS';
 
 // COPY TASK
 export const COPY_TASK = 'COPY_TASK';
+
+// EMPTY TASK ITEMS
+export const EMPTY_TASK_ITEMS = 'EMPTY_TASK_ITEMS';
