@@ -83,7 +83,7 @@ const TeamMemberTasks = props => {
 
   useEffect(() => {
     renderTeamsList();
-  }, []);
+  }, [usersWithTasks]);
 
   useEffect(() => {
     submitTasks();
