@@ -34,6 +34,7 @@ import { getTimeEntryFormData } from './selectors';
 import checkNegativeNumber from 'utils/checkNegativeHours';
 
 import './TimeEntryForm.css';
+import Loading from 'components/common/Loading/Loading';
 
 /**
  * Modal used to submit and edit tangible and intangible time entries.
@@ -482,7 +483,6 @@ const TimeEntryForm = props => {
       updateHoursByCategory(userProfile, timeEntry, hours, minutes);
       timeEntryStatus = await dispatch(postTimeEntry(timeEntry));
     }
-    setSubmitting(false);
 
     if (timeEntryStatus !== 200) {
       toggle();
@@ -508,6 +508,7 @@ const TimeEntryForm = props => {
         editNotice: !reminder.editNotice,
       }));
     }
+    setSubmitting(false);
 
     if (isOpen) toggleModalClose();
     if (fromTimer) clearAll();
@@ -515,8 +516,8 @@ const TimeEntryForm = props => {
 
     if (!props.edit) setInputs(initialFormValues);
 
-    await getUserProfile(userId)(dispatch);
-    location.reload();
+    getUserProfile(userId)(dispatch);
+    window.location.reload(true);
   };
 
   const handleInputChange = event => {
@@ -586,8 +587,7 @@ const TimeEntryForm = props => {
     setInputs(newInputs);
     setReminder({ ...initialReminder });
     setErrors({});
-    toggle();
-    if (closed === true && isOpen) toggle();
+    if (closed === true && isOpen) toggleModalClose();
   };
 
   const stopAllAudioAndClearIntervals = useCallback(() => {
@@ -637,182 +637,194 @@ const TimeEntryForm = props => {
       />
 
       <Modal isOpen={isOpen} toggle={toggle} data-testid="timeEntryFormModal">
-        <ModalHeader toggle={toggle} close={closeBtn}>
-          <div>
-            {edit ? 'Edit ' : 'Add '}
-            {inputs.isTangible ? (
-              <span style={{ color: 'blue' }}>Tangible </span>
-            ) : (
-              <span style={{ color: 'orange' }}>Intangible </span>
-            )}
-            Time Entry{' '}
-            <i
-              className="fa fa-info-circle"
-              data-tip
-              data-for="registerTip"
-              aria-hidden="true"
-              title="timeEntryTip"
-              onClick={() => setInfoModalVisible(true)}
-            />
-          </div>
-          <ReactTooltip id="registerTip" place="bottom" effect="solid">
-            Click this icon to learn about this time entry form
-          </ReactTooltip>
-        </ModalHeader>
-        <ModalBody>
-          <Form>
-            <FormGroup>
-              <Label for="dateOfWork">Date</Label>
-              {hasPermission(
-                currentUserRole,
-                'changeIntangibleTimeEntryDate',
-                roles,
-                userPermissions,
-              ) && !fromTimer ? (
-                <Input
-                  type="date"
-                  name="dateOfWork"
-                  id="dateOfWork"
-                  value={inputs.dateOfWork}
-                  onChange={handleInputChange}
-                />
+        {!isSubmitting && (
+          <ModalHeader toggle={toggle} close={closeBtn}>
+            <div>
+              {edit ? 'Edit ' : 'Add '}
+              {inputs.isTangible ? (
+                <span style={{ color: 'blue' }}>Tangible </span>
               ) : (
-                <Input
-                  type="date"
-                  name="dateOfWork"
-                  id="dateOfWork"
-                  value={inputs.dateOfWork}
-                  disabled
-                />
+                <span style={{ color: 'orange' }}>Intangible </span>
               )}
-              {'dateOfWork' in errors && (
-                <div className="text-danger">
-                  <small>{errors.dateOfWork}</small>
-                </div>
-              )}
-            </FormGroup>
-            <FormGroup>
-              <Label for="timeSpent">Time (HH:MM)</Label>
-              <Row form>
-                <Col>
-                  <Input
-                    type="number"
-                    name="hours"
-                    id="hours"
-                    min={0}
-                    max={40}
-                    placeholder="Hours"
-                    value={inputs.hours}
-                    onChange={handleHHInputChange}
-                    disabled={fromTimer}
-                  />
-                </Col>
-                <Col>
-                  <Input
-                    type="number"
-                    name="minutes"
-                    id="minutes"
-                    min={0}
-                    max={59}
-                    placeholder="Minutes"
-                    value={inputs.minutes}
-                    onChange={handleMMInputChange}
-                    disabled={fromTimer}
-                  />
-                </Col>
-              </Row>
-              {'time' in errors && (
-                <div className="text-danger">
-                  <small>{errors.time}</small>
-                </div>
-              )}
-            </FormGroup>
-            <FormGroup>
-              <Label for="project">Project/Task</Label>
-              <Input
-                type="select"
-                name="projectId"
-                id="projectId"
-                value={inputs.projectId}
-                onChange={handleInputChange}
-              >
-                {projectOrTaskOptions}
-              </Input>
-              {'projectId' in errors && (
-                <div className="text-danger">
-                  <small>{errors.projectId}</small>
-                </div>
-              )}
-            </FormGroup>
-            <FormGroup>
-              <Label for="notes">Notes</Label>
-              <Editor
-                init={{
-                  menubar: false,
-                  placeholder: 'Description (10-word minimum) and reference link',
-                  plugins:
-                    'advlist autolink autoresize lists link charmap table paste help wordcount',
-                  toolbar:
-                    'bold italic underline link removeformat | bullist numlist outdent indent |\
-                                    styleselect fontsizeselect | table| strikethrough forecolor backcolor |\
-                                    subscript superscript charmap  | help',
-                  branding: false,
-                  min_height: 180,
-                  max_height: 300,
-                  autoresize_bottom_margin: 1,
-                }}
-                id="notes"
-                name="notes"
-                className="form-control"
-                value={inputs.notes}
-                onEditorChange={handleEditorChange}
+              Time Entry{' '}
+              <i
+                className="fa fa-info-circle"
+                data-tip
+                data-for="registerTip"
+                aria-hidden="true"
+                title="timeEntryTip"
+                onClick={() => setInfoModalVisible(true)}
               />
-
-              {'notes' in errors && (
-                <div className="text-danger">
-                  <small>{errors.notes}</small>
-                </div>
-              )}
-            </FormGroup>
-            <FormGroup check>
-              <Label check>
+            </div>
+            <ReactTooltip id="registerTip" place="bottom" effect="solid">
+              Click this icon to learn about this time entry form
+            </ReactTooltip>
+          </ModalHeader>
+        )}
+        <ModalBody>
+          {!isSubmitting ? (
+            <Form>
+              <FormGroup>
+                <Label for="dateOfWork">Date</Label>
+                {hasPermission(
+                  currentUserRole,
+                  'changeIntangibleTimeEntryDate',
+                  roles,
+                  userPermissions,
+                ) && !fromTimer ? (
+                  <Input
+                    type="date"
+                    name="dateOfWork"
+                    id="dateOfWork"
+                    value={inputs.dateOfWork}
+                    onChange={handleInputChange}
+                  />
+                ) : (
+                  <Input
+                    type="date"
+                    name="dateOfWork"
+                    id="dateOfWork"
+                    value={inputs.dateOfWork}
+                    disabled
+                  />
+                )}
+                {'dateOfWork' in errors && (
+                  <div className="text-danger">
+                    <small>{errors.dateOfWork}</small>
+                  </div>
+                )}
+              </FormGroup>
+              <FormGroup>
+                <Label for="timeSpent">Time (HH:MM)</Label>
+                <Row form>
+                  <Col>
+                    <Input
+                      type="number"
+                      name="hours"
+                      id="hours"
+                      min={0}
+                      max={40}
+                      placeholder="Hours"
+                      value={inputs.hours}
+                      onChange={handleHHInputChange}
+                      disabled={fromTimer}
+                    />
+                  </Col>
+                  <Col>
+                    <Input
+                      type="number"
+                      name="minutes"
+                      id="minutes"
+                      min={0}
+                      max={59}
+                      placeholder="Minutes"
+                      value={inputs.minutes}
+                      onChange={handleMMInputChange}
+                      disabled={fromTimer}
+                    />
+                  </Col>
+                </Row>
+                {'time' in errors && (
+                  <div className="text-danger">
+                    <small>{errors.time}</small>
+                  </div>
+                )}
+              </FormGroup>
+              <FormGroup>
+                <Label for="project">Project/Task</Label>
                 <Input
-                  type="checkbox"
-                  name="isTangible"
-                  checked={inputs.isTangible}
-                  onChange={handleCheckboxChange}
-                  disabled={
-                    !hasPermission(currentUserRole, 'toggleTangibleTime', roles, userPermissions) &&
-                    !data.isTangible
-                  }
+                  type="select"
+                  name="projectId"
+                  id="projectId"
+                  value={inputs.projectId}
+                  onChange={handleInputChange}
+                >
+                  {projectOrTaskOptions}
+                </Input>
+                {'projectId' in errors && (
+                  <div className="text-danger">
+                    <small>{errors.projectId}</small>
+                  </div>
+                )}
+              </FormGroup>
+              <FormGroup>
+                <Label for="notes">Notes</Label>
+                <Editor
+                  init={{
+                    menubar: false,
+                    placeholder: 'Description (10-word minimum) and reference link',
+                    plugins:
+                      'advlist autolink autoresize lists link charmap table paste help wordcount',
+                    toolbar:
+                      'bold italic underline link removeformat | bullist numlist outdent indent |\
+                                   styleselect fontsizeselect | table| strikethrough forecolor backcolor |\
+                                   subscript superscript charmap  | help',
+                    branding: false,
+                    min_height: 180,
+                    max_height: 300,
+                    autoresize_bottom_margin: 1,
+                  }}
+                  id="notes"
+                  name="notes"
+                  className="form-control"
+                  value={inputs.notes}
+                  onEditorChange={handleEditorChange}
                 />
-                Tangible&nbsp;
-                <i
-                  className="fa fa-info-circle"
-                  data-tip
-                  data-for="tangibleTip"
-                  aria-hidden="true"
-                  title="tangibleTip"
-                  onClick={tangibleInfoToggle}
-                />
-                <ReactTooltip id="tangibleTip" place="bottom" effect="solid">
-                  Click this icon to learn about tangible and intangible time.
-                </ReactTooltip>
-              </Label>
-            </FormGroup>
-          </Form>
-        </ModalBody>
-        <ModalFooter>
-          <small className="mr-auto">* All the fields are required</small>
 
-          {/* <Button color="primary" disabled={isSubmitting || (data.hours === inputs.hours && data.minutes === inputs.minutes && data.notes === inputs.notes)} onClick={handleSubmit}> */}
-          <Button color="secondary" onClick={toggle}>
-            Back
-          </Button>
-          <Button color="primary" onClick={handleSubmit}>
-            {edit ? 'Save' : 'Submit'}
-          </Button>
-        </ModalFooter>
+                {'notes' in errors && (
+                  <div className="text-danger">
+                    <small>{errors.notes}</small>
+                  </div>
+                )}
+              </FormGroup>
+              <FormGroup check>
+                <Label check>
+                  <Input
+                    type="checkbox"
+                    name="isTangible"
+                    checked={inputs.isTangible}
+                    onChange={handleCheckboxChange}
+                    disabled={
+                      !hasPermission(
+                        currentUserRole,
+                        'toggleTangibleTime',
+                        roles,
+                        userPermissions,
+                      ) && !data.isTangible
+                    }
+                  />
+                  Tangible&nbsp;
+                  <i
+                    className="fa fa-info-circle"
+                    data-tip
+                    data-for="tangibleTip"
+                    aria-hidden="true"
+                    title="tangibleTip"
+                    onClick={tangibleInfoToggle}
+                  />
+                  <ReactTooltip id="tangibleTip" place="bottom" effect="solid">
+                    Click this icon to learn about tangible and intangible time.
+                  </ReactTooltip>
+                </Label>
+              </FormGroup>
+            </Form>
+          ) : (
+            <Loading />
+          )}
+        </ModalBody>
+        {!isSubmitting && (
+          <ModalFooter>
+            <small className="mr-auto">* All the fields are required</small>
+
+            {/* <Button color="primary" disabled={isSubmitting || (data.hours === inputs.hours && data.minutes === inputs.minutes && data.notes === inputs.notes)} onClick={handleSubmit}> */}
+            <Button color="secondary" onClick={toggle}>
+              Back
+            </Button>
+            <Button color="primary" onClick={handleSubmit}>
+              {edit ? 'Save' : 'Submit'}
+            </Button>
+          </ModalFooter>
+        )}
       </Modal>
     </div>
   );

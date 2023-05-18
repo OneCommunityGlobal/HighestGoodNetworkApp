@@ -185,10 +185,6 @@ export const NewTimer = () => {
   const hours = timeToLog.hours();
   const minutes = timeToLog.minutes();
 
-  const userIsRunningTimerAndHasAtLeastOneMinute = useCallback(() => {
-    return timeToLog.minutes() >= 1;
-  }, [timeToLog?.minutes]);
-
   /*
   Here is the the timer wrapper, we check if the timer is in countdown mode
   if it is we show the countdown timer, if it is not we show the stopwatch
