@@ -178,7 +178,11 @@ export const assignBadgesByUserID = (userId, selectedBadges) => {
       return;
     }
     const badgeCollection = res.data.badgeCollection;
-    const earnedDate = res.data.badgeCollection.earnedDate;
+    const personal_max_badge_ids = badgeCollection.filter(({ badge: { type }}) => type == 'Personal Max').map(({ badge: { _id }}) => _id)
+    
+    // badgeCollection is an array, it doesn't contain the earnedDate field
+    // const earnedDate = res.data.badgeCollection.earnedDate;
+
     for (let i = 0; i < badgeCollection.length; i++) {
       badgeCollection[i].badge = badgeCollection[i].badge._id;
     }
@@ -216,17 +220,19 @@ export const assignBadgesByUserID = (userId, selectedBadges) => {
         if (badgeId === badgeObj.badge) {
           badgeObj.count++;
           badgeObj.lastModified = Date.now();
-          badgeObj.earnedDate = [...earnedDate, formatedDate];
+          badgeObj.earnedDate = [...(badgeObj.earnedDate), formatedDate];
           included = true;
         }
       });
       if (!included) {
-        let dates = [];
-        dates.push(formatedDate);
-        unique_badges.push({ badge: badgeId, count: 1, earnedDate: dates, lastModified: Date.now() });
+        unique_badges.push({ badge: badgeId, count: 1, earnedDate: [formatedDate], lastModified: Date.now() });
       }
     });
 
+    for (let i = 0; i < unique_badges.length; i++)
+      if (personal_max_badge_ids.includes(unique_badges[i].badge))
+        unique_badges[i].count = parseInt(res.data.personalBestMaxHrs)
+    
     const userToBeAssignedBadge = res.data._id;
     const url = ENDPOINTS.BADGE_ASSIGN(userToBeAssignedBadge);
 
