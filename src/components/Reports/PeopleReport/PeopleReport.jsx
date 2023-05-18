@@ -31,6 +31,7 @@ class PeopleReport extends Component {
       infringements: {},
       isAssigned: '',
       isActive: '',
+      isRehirable: '',
       priority: '',
       status: '',
       hasFilter: true,
@@ -50,6 +51,7 @@ class PeopleReport extends Component {
     this.setStatus = this.setStatus.bind(this);
     this.setPriority = this.setPriority.bind(this);
     this.setActive = this.setActive.bind(this);
+    this.setRehireable = this.setRehireable.bind(this);
     this.setAssign = this.setAssign.bind(this);
     this.setFilter = this.setFilter.bind(this);
     this.setClassfication = this.setClassfication.bind(this);
@@ -130,6 +132,16 @@ class PeopleReport extends Component {
       };
     });
   }
+
+  setRehireable(activeValue) {
+    console.log(activeValue);
+    this.setState(state => {
+      return {
+        isRehireable: activeValue,
+      };
+    });
+  }
+
   setPriority(priorityValue) {
     if (priorityValue != 'Filter Off') {
       this.setState(state => {
@@ -177,6 +189,7 @@ class PeopleReport extends Component {
       return {
         isAssigned: false,
         isActive: false,
+        isRehirable: false,
         priority: '',
         priorityList: [],
         status: '',
@@ -225,13 +238,12 @@ class PeopleReport extends Component {
       userTask,
       userProjects,
       isActive,
-      isRehireable,
+      isRehirable,
       fromDate,
       toDate,
       timeEntries,
     } = this.state;
     const { firstName, lastName, weeklycommittedHours, totalTangibleHrs } = userProfile;
-    console.log('toto', userProfile.isRehireable);
     var totalTangibleHrsRound = 0;
     if (totalTangibleHrs) {
       totalTangibleHrsRound = totalTangibleHrs.toFixed(2);
@@ -438,9 +450,13 @@ class PeopleReport extends Component {
         name={`${firstName} ${lastName}`}
       >
         <p>{userProfile.role}</p>
-        <p>{userProfile.isRehireable}</p>
+
         <p>
-          <Checkbox label="Rehireable"></Checkbox>
+          <Checkbox
+            value={userProfile.isRehireable}
+            onChange={() => this.setRehireable(!userProfile.isRehireable)}
+            label="Rehireable"
+          ></Checkbox>
         </p>
 
         <div className="stats">

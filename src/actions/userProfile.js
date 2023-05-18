@@ -56,3 +56,14 @@ export const updateUserProfile = (userId, userProfile) => {
     return res.status;
   };
 };
+
+export const isInactiveUserRehireable = userId => {
+  const url = ENDPOINTS.USER_PROFILE(userId);
+  return async dispatch => {
+    const res = await axios.get(url).catch(error => {
+      if (error.status === 401) {
+        //logout error
+      }
+    });
+  };
+};
