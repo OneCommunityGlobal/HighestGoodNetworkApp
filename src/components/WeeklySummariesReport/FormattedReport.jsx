@@ -59,9 +59,9 @@ const FormattedReport = ({ summaries, weekIndex }) => {
         </p>
       );
     }
-    
+
     const summaryText = summary?.weeklySummaries[weekIndex]?.summary;
-    
+
     const summaryContent = (() => {
       if (summaryText) {
         const style = {};
@@ -81,10 +81,13 @@ const FormattedReport = ({ summaries, weekIndex }) => {
             break;
         }
         return <div style={style}>{ReactHtmlParser(summaryText)}</div>;
-      }else{
-        if (summary?.weeklySummaryOption === 'Not Required' || (!summary?.weeklySummaryOption && summary.weeklySummaryNotReq)) {
+      } else {
+        if (
+          summary?.weeklySummaryOption === 'Not Required' ||
+          (!summary?.weeklySummaryOption && summary.weeklySummaryNotReq)
+        ) {
           return <p style={{ color: 'green' }}>Not required for this user</p>;
-        }else {
+        } else {
           return <span style={{ color: 'red' }}>Not provided!</span>;
         }
       }
@@ -94,7 +97,7 @@ const FormattedReport = ({ summaries, weekIndex }) => {
       <>
         <p>
           <b>Weekly Summary</b> (
-          {moment(summary.weeklySummaries[weekIndex]?.dueDate)
+          {moment(summary.weeklySummaries[weekIndex]?.uploadDate)
             .tz('America/Los_Angeles')
             .format('YYYY-MMM-DD')}
           ):

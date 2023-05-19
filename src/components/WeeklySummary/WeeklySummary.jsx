@@ -37,6 +37,12 @@ import { getUserProfile } from 'actions/userProfile';
 export class WeeklySummary extends Component {
   state = {
     summariesCountShowing: 0,
+    originSummaries: {
+      summary: '',
+      summaryLastWeek: '',
+      summaryBeforeLast: '',
+      summaryThreeWeeksAgo: '',
+    },
     formElements: {
       summary: '',
       summaryLastWeek: '',
@@ -46,6 +52,18 @@ export class WeeklySummary extends Component {
       weeklySummariesCount: 0,
       mediaConfirm: false,
     },
+    uploadDate: moment()
+      .tz('America/Los_Angeles')
+      .toISOString(),
+    uploadDateLastWeek: moment()
+      .tz('America/Los_Angeles')
+      .toISOString(),
+    uploadDateBeforeLast: moment()
+      .tz('America/Los_Angeles')
+      .toISOString(),
+    uploadDateThreeWeeksAgo: moment()
+      .tz('America/Los_Angeles')
+      .toISOString(),
     dueDate: moment()
       .tz('America/Los_Angeles')
       .endOf('week')
@@ -83,6 +101,11 @@ export class WeeklySummary extends Component {
     const summaryThreeWeeksAgo =
       (weeklySummaries && weeklySummaries[3] && weeklySummaries[3].summary) || '';
 
+    const originSummary = summary;
+    const originSummaryLastWeek = summaryLastWeek;
+    const originSummaryBeforeLast = summaryBeforeLast;
+    const originSummaryThreeWeeksAgo = summaryThreeWeeksAgo;
+
     // Before submitting summaries, count current submits in four weeks
     let submittedCountInFourWeeks = 0;
     if (summary !== '') {
@@ -97,6 +120,26 @@ export class WeeklySummary extends Component {
     if (summaryThreeWeeksAgo !== '') {
       submittedCountInFourWeeks += 1;
     }
+
+    const uploadDateNow = moment()
+      .tz('America/Los_Angeles')
+      .toISOString();
+    const uploadDate =
+      summary === ''
+        ? uploadDateNow
+        : weeklySummaries && weeklySummaries[0] && weeklySummaries[0].uploadDate;
+    const uploadDateLastWeek =
+      summaryLastWeek === ''
+        ? uploadDateNow
+        : weeklySummaries && weeklySummaries[1] && weeklySummaries[1].uploadDate;
+    const uploadDateBeforeLast =
+      summaryBeforeLast === ''
+        ? uploadDateNow
+        : weeklySummaries && weeklySummaries[2] && weeklySummaries[2].uploadDate;
+    const uploadDateThreeWeeksAgo =
+      summaryThreeWeeksAgo === ''
+        ? uploadDateNow
+        : weeklySummaries && weeklySummaries[3] && weeklySummaries[3].uploadDate;
 
     const dueDateThisWeek = weeklySummaries && weeklySummaries[0] && weeklySummaries[0].dueDate;
     // Make sure server dueDate is not before the localtime dueDate.
@@ -120,6 +163,12 @@ export class WeeklySummary extends Component {
       .add(5, 'days');
 
     this.setState({
+      originSummaries: {
+        originSummary,
+        originSummaryLastWeek,
+        originSummaryBeforeLast,
+        originSummaryThreeWeeksAgo,
+      },
       formElements: {
         summary,
         summaryLastWeek,
@@ -129,6 +178,10 @@ export class WeeklySummary extends Component {
         weeklySummariesCount: weeklySummariesCount || 0,
         mediaConfirm: false,
       },
+      uploadDate,
+      uploadDateLastWeek,
+      uploadDateBeforeLast,
+      uploadDateThreeWeeksAgo,
       dueDate,
       dueDateLastWeek,
       dueDateBeforeLast,
@@ -285,18 +338,70 @@ export class WeeklySummary extends Component {
       this.setState({ summariesCountShowing: this.state.formElements.weeklySummariesCount + 1 });
     }
 
+    let newUploadDate = this.state.uploadDate;
+    let newUploadDateLastWeek = this.state.uploadDateLastWeek;
+    let newUploadDateBeforeLast = this.state.uploadDateBeforeLast;
+    let newUploadDateThreeWeeksAgo = this.state.uploadDateThreeWeeksAgo;
+    const originSummaries = { ...this.state.originSummaries };
+    if (this.state.formElements.summary !== this.state.originSummaries.originSummary) {
+      newUploadDate = moment()
+        .tz('America/Los_Angeles')
+        .toISOString();
+      originSummaries.originSummary = this.state.formElements.summary;
+      this.setState({ originSummaries, uploadDate: newUploadDate });
+    }
+    if (
+      this.state.formElements.summaryLastWeek !== this.state.originSummaries.originSummaryLastWeek
+    ) {
+      newUploadDateLastWeek = moment()
+        .tz('America/Los_Angeles')
+        .toISOString();
+      originSummaries.originSummaryLastWeek = this.state.formElements.summaryLastWeek;
+      this.setState({ originSummaries, uploadDateLastWeek: newUploadDateLastWeek });
+    }
+    if (
+      this.state.formElements.summaryBeforeLast !==
+      this.state.originSummaries.originSummaryBeforeLast
+    ) {
+      newUploadDateBeforeLast = moment()
+        .tz('America/Los_Angeles')
+        .toISOString();
+      originSummaries.originSummaryBeforeLast = this.state.formElements.summaryBeforeLast;
+      this.setState({ originSummaries, uploadDateBeforeLast: newUploadDateBeforeLast });
+    }
+    if (
+      this.state.formElements.summaryThreeWeeksAgo !==
+      this.state.originSummaries.originSummaryThreeWeeksAgo
+    ) {
+      newUploadDateThreeWeeksAgo = moment()
+        .tz('America/Los_Angeles')
+        .toISOString();
+      originSummaries.originSummaryThreeWeeksAgo = this.state.formElements.summaryThreeWeeksAgo;
+      this.setState({ originSummaries, uploadDateThreeWeeksAgo: newUploadDateThreeWeeksAgo });
+    }
+
     const modifiedWeeklySummaries = {
       mediaUrl: this.state.formElements.mediaUrl.trim(),
       weeklySummaries: [
-        { summary: this.state.formElements.summary, dueDate: this.state.dueDate },
-        { summary: this.state.formElements.summaryLastWeek, dueDate: this.state.dueDateLastWeek },
+        {
+          summary: this.state.formElements.summary,
+          dueDate: this.state.dueDate,
+          uploadDate: newUploadDate,
+        },
+        {
+          summary: this.state.formElements.summaryLastWeek,
+          dueDate: this.state.dueDateLastWeek,
+          uploadDate: newUploadDateLastWeek,
+        },
         {
           summary: this.state.formElements.summaryBeforeLast,
           dueDate: this.state.dueDateBeforeLast,
+          uploadDate: newUploadDateBeforeLast,
         },
         {
           summary: this.state.formElements.summaryThreeWeeksAgo,
           dueDate: this.state.dueDateThreeWeeksAgo,
+          uploadDate: newUploadDateThreeWeeksAgo,
         },
       ],
       weeklySummariesCount: this.state.formElements.weeklySummariesCount + diffInSubmittedCount,
