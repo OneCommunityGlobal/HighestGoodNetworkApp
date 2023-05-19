@@ -41,7 +41,7 @@ const TeamMembersPopup = React.memo(props => {
       <Modal isOpen={props.open} toggle={closePopup}>
         <ModalHeader
           toggle={closePopup}
-        >{`Members of ${props.selectedSummaryGroupName}`}</ModalHeader>
+        >{`Summary Receivers of ${props.selectedSummaryGroupName}`}</ModalHeader>
         <ModalBody style={{ textAlign: 'center' }}>
           {
             <div className="input-group-prepend" style={{ marginBottom: '10px' }}>
