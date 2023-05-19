@@ -215,11 +215,22 @@ input:checked + .slider:before {
   transform: translateX(26px);
 }
 
-
 .slider.round {
   border-radius: 34px;
 }
 
 .slider.round:before {
   border-radius: 50%;
+}
+
+.dark .modal-title {
+  color: black;
+}
+
+.dark .bg-white {
+  background-color: #333 !important
+}
+
+.dark .form-group {
+  color: black
 }
