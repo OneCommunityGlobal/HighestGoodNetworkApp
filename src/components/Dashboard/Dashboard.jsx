@@ -110,7 +110,7 @@ export const Dashboard = props => {
           {popup ? (
             <div className="my-2">
               <div id="weeklySum">
-                <WeeklySummary asUser={userId} />
+                <WeeklySummary asUser={userId} setPopup={setPopup} />
               </div>
             </div>
           ) : null}
