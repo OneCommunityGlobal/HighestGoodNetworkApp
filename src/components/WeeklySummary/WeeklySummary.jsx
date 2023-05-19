@@ -54,15 +54,22 @@ export class WeeklySummary extends Component {
     },
     uploadDate: moment()
       .tz('America/Los_Angeles')
+      .endOf('week')
       .toISOString(),
     uploadDateLastWeek: moment()
       .tz('America/Los_Angeles')
+      .endOf('week')
+      .subtract(1, 'week')
       .toISOString(),
     uploadDateBeforeLast: moment()
       .tz('America/Los_Angeles')
+      .endOf('week')
+      .subtract(2, 'week')
       .toISOString(),
     uploadDateThreeWeeksAgo: moment()
       .tz('America/Los_Angeles')
+      .endOf('week')
+      .subtract(3, 'week')
       .toISOString(),
     dueDate: moment()
       .tz('America/Los_Angeles')
@@ -121,24 +128,36 @@ export class WeeklySummary extends Component {
       submittedCountInFourWeeks += 1;
     }
 
-    const uploadDateNow = moment()
-      .tz('America/Los_Angeles')
-      .toISOString();
     const uploadDate =
       summary === ''
-        ? uploadDateNow
+        ? moment()
+            .tz('America/Los_Angeles')
+            .endOf('week')
+            .toISOString()
         : weeklySummaries && weeklySummaries[0] && weeklySummaries[0].uploadDate;
     const uploadDateLastWeek =
       summaryLastWeek === ''
-        ? uploadDateNow
+        ? moment()
+            .tz('America/Los_Angeles')
+            .endOf('week')
+            .subtract(1, 'week')
+            .toISOString()
         : weeklySummaries && weeklySummaries[1] && weeklySummaries[1].uploadDate;
     const uploadDateBeforeLast =
       summaryBeforeLast === ''
-        ? uploadDateNow
+        ? moment()
+            .tz('America/Los_Angeles')
+            .endOf('week')
+            .subtract(2, 'week')
+            .toISOString()
         : weeklySummaries && weeklySummaries[2] && weeklySummaries[2].uploadDate;
     const uploadDateThreeWeeksAgo =
       summaryThreeWeeksAgo === ''
-        ? uploadDateNow
+        ? moment()
+            .tz('America/Los_Angeles')
+            .endOf('week')
+            .subtract(3, 'week')
+            .toISOString()
         : weeklySummaries && weeklySummaries[3] && weeklySummaries[3].uploadDate;
 
     const dueDateThisWeek = weeklySummaries && weeklySummaries[0] && weeklySummaries[0].dueDate;
