@@ -17,7 +17,6 @@ export const updateObject = (oldObject, updatedProperties) => ({
 export const summaryGroupReducer = (allSummaryGroups = summaryInitial, action) => {
   switch (action.type) {
     case types.RECEIVE_ALL_SUMMARY_GROUP:
-      console.log('RECEIVE_ALL_SUMMARY_GROUP', allSummaryGroups.allSummaryGroups, action.payload);
       return updateObject(allSummaryGroups, {
         allSummaryGroups: action.payload,
         fetching: true,
@@ -34,14 +33,9 @@ export const summaryGroupReducer = (allSummaryGroups = summaryInitial, action) =
       });
 
     case types.SUMMARYGROUP_DELETE:
-      console.log(
-        'SUMMARYGROUP_DELETE',
-        allSummaryGroups.allSummaryGroups,
-        allSummaryGroups.allSummaryGroups,
-      );
-
+     
       const NoDeletedSummaryGroups = allSummaryGroups.allSummaryGroups.filter(
-        item => item._id !== action.summaryGroupId,
+        (item) => item._id !== action.summaryGroupId,
       );
       return updateObject(allSummaryGroups, {
         allSummaryGroups: NoDeletedSummaryGroups,
@@ -52,7 +46,7 @@ export const summaryGroupReducer = (allSummaryGroups = summaryInitial, action) =
     case types.UPDATE_SUMMARYGROUP:
       const summaryGroups = Object.assign([...allSummaryGroups.allSummaryGroups]);
       const updatedSummaryGroups = summaryGroups.find(
-        summaryGroup => summaryGroup._id === action.summaryGroupId,
+        (summaryGroup) => summaryGroup._id === action.summaryGroupId,
       );
       updatedSummaryGroups.isActive = action.isActive;
       updatedSummaryGroups.summaryGroupName = action.summaryGroupName;

@@ -27,9 +27,9 @@ const SummaryTablesearchPanel = props => {
         aria-label="Search"
         placeholder="Search Text"
         id="team-profiles-wild-card-search"
-        //onChange={e => {
-        //props.onSearch(e.target.value);
-        //}}
+        onChange={e => {
+          props.onSearch(e.target.value);
+        }}
       />
     </div>
   );

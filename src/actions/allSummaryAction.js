@@ -17,15 +17,11 @@ export const postNewSummaryGroup = (name, status) => {
   const data = { summaryGroupName: name, isActive: status };
   const summaryGroupCreationPromise = axios.post(ENDPOINTS.SUMMARY_GROUPS, data);
   return dispatch => {
-    summaryGroupCreationPromise
-      .then(res => {
-        if (res && res.data) {
-          dispatch(addNewSummaryGroup(res.data, true));
-        }
-      })
-      .catch(err => {
-        dispatch(addNewSummaryGroup(err.response.data, false));
-      });
+    summaryGroupCreationPromise.then(res => {
+      if (res && res.data) {
+        dispatch(addNewSummaryGroup(res.data, true));
+      }
+    });
   };
 };
 
@@ -33,7 +29,6 @@ export const SummaryGroupFectchACtion = payload => ({
   type: RECEIVE_ALL_SUMMARY_GROUP,
   payload,
 });
-
 
 export const getAllSummaryGroup = () => {
   const SummaryGroupPromise = axios.get(ENDPOINTS.SUMMARY_GROUPS);
@@ -80,3 +75,12 @@ export const updateSummaryGroup = (summaryGroupName, summaryGroupId, isActive) =
     });
   };
 };
+
+
+
+
+
+
+
+
+

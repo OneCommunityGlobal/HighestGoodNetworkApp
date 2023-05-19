@@ -19,10 +19,16 @@ export const ENDPOINTS = {
   USER_PROJECTS: userId => `${APIEndpoint}/projects/user/${userId}`,
   PROJECT: `${APIEndpoint}/project/`,
   PROJECT_BY_ID: projectId => `${APIEndpoint}/project/${projectId}`,
+  PROJECT_MEMBER: projectId => `${APIEndpoint}/project/${projectId}/users`,
   SUMMARY_GROUPS: `${APIEndpoint}/SUMMARY_GROUPS`,
   SUMMARY_GROUPS_BY_ID: summaryGroupId => `${APIEndpoint}/SUMMARY_GROUPS/${summaryGroupId}`,
-
-  PROJECT_MEMBER: projectId => `${APIEndpoint}/project/${projectId}/users`,
+  SUMMARY_GROUP_TEAM_MEMBERS: summaryGroupId => `${APIEndpoint}/SUMMARY_GROUPS/${summaryGroupId}/teamMembers`,
+  SUMMARY_GROUP_SUMMARY_RECEVIER: summaryGroupId => `${APIEndpoint}/SUMMARY_GROUPS/${summaryGroupId}/summaryReceivers`,
+  SUMMARY_GROUP_TEAM_MEMBERS_DELETE: (summaryGroupId, userId) => 
+    `${APIEndpoint}/SUMMARY_GROUPS/${summaryGroupId}/teamMembers/${userId}`,
+  SUMMARY_GROUP_SUMMARY_RECEIVER_DELETE: (summaryGroupId, userId) => 
+  `${APIEndpoint}/SUMMARY_GROUPS/${summaryGroupId}/summaryReceivers/${userId}`,
+  //TEAM_MEMBERS: teamId => `${APIEndpoint}/team/${teamId}/users`,
   UPDATE_PASSWORD: userId => `${APIEndpoint}/userprofile/${userId}/updatePassword`,
   FORCE_PASSWORD: `${APIEndpoint}/forcepassword`,
   LEADER_BOARD: userId => `${APIEndpoint}/dashboard/leaderboard/${userId}`,

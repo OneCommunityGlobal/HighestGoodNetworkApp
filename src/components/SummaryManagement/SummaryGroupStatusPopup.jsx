@@ -9,9 +9,11 @@ const SummaryGroupStatusPopup = React.memo(props => {
   return (
     <Modal isOpen={props.open} toggle={closePopup}>
       <ModalHeader toggle={closePopup}>Status Popup</ModalHeader>
-      <ModalBody style={{ textAlign: 'center' }}>
-        <span>{`Are you sure you want to change the status of this Summary Group ${props.selectedSummaryGroupName}`}</span>
-        <br />
+      <ModalBody>
+        <p>
+          Are you sure you want to change the status of the “{props.selectedSummaryGroupName}”
+          Summary Group ?
+        </p>
       </ModalBody>
       <ModalFooter>
         <Button

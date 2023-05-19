@@ -9,12 +9,13 @@ const summaryGroupTableBody = props => {
         <div>{props.index + 1}</div>
       </th>
       <td>{props.name}</td>
-      <td className="summarygroup__active--input"
-      onClick={(e) => {
-        //</tr>hasPermission(props.requestorRole, 'editDeleteTeam', props.roles, props.userPermissions)
-          props.onStatusClick(props.name, props.summaryGroupId, props.active)
-          
-      }}>
+      <td
+        className="summarygroup__active--input"
+        onClick={e => {
+          //</tr>hasPermission(props.requestorRole, 'editDeleteTeam', props.roles, props.userPermissions)
+          props.onStatusClick(props.name, props.summaryGroupId, props.active);
+        }}
+      >
         {props.active ? (
           <div className="isActive">
             <i className="fa fa-circle" aria-hidden="true" />
@@ -26,19 +27,26 @@ const summaryGroupTableBody = props => {
         )}
       </td>
       <td>
-      <button
-        type="button"
-        className="btn btn-outline-info"
-        onClick={(e) => {
-          props.onMembersClick(props.teamId, props.name);
-        }}
-      >
-        <i className="fa fa-users" aria-hidden="true" />
-      </button>
-        
+        <button
+          type="button"
+          className="btn btn-outline-info"
+          onClick={e => {
+            props.onMembersClick(props.summaryGroupId, props.name);
+          }}
+        >
+          <i className="fa fa-users" aria-hidden="true" />
+        </button>
       </td>
       <td>
-        <button type="button" className="btn btn-outline-info"></button>
+        <button
+          type="button"
+          className="btn btn-outline-info"
+          onClick={e => {
+            props.onSummaryReciverClick(props.summaryGroupId, props.name);
+          }}
+        >
+          <i className="fa fa-users" aria-hidden="true" />
+        </button>
       </td>
       <td>
         <span className="usermanagement-actions-cell">
