@@ -102,7 +102,6 @@ class SummaryManagement extends Component {
     this.setState({
       deleteSummaryGroupPopupOpen: false,
     });
-    //this.fetchSummaryGroup();
   };
 
   /*Update SummaryGroup related Function*/
@@ -122,21 +121,23 @@ class SummaryManagement extends Component {
     });
   };
   onUpadteSummaryGroup = async updatename => {
-    updateSummaryGroup(updatename, this.state.selectedSummaryGroupId, this.state.isActive);
+    this.props.updateSummaryGroup(
+      updatename,
+      this.state.selectedSummaryGroupId,
+      this.state.isActive,
+    );
     alert('Team update successfully');
     this.setState({
       updateSummaryGroupPopupOpen: false,
     });
-    this.fetchSummaryGroup();
   };
   onConfirmClick = (summaryGroupId, summaryGroupName, isActive) => {
-    updateSummaryGroup(summaryGroupId, summaryGroupName, isActive);
+    this.props.updateSummaryGroup(summaryGroupId, summaryGroupName, isActive);
     this.setState({
       summaryGroupStatusPopupOpen: false,
       deleteSummaryGroupPopupOpen: false,
     });
     alert('Status Updated Successfully');
-    this.fetchSummaryGroup();
   };
   /* Active and Inactive Set function*/
   onSummaryGroupStatusShow = (summaryGroupName, summaryGroupId, isActive) => {
@@ -217,8 +218,7 @@ class SummaryManagement extends Component {
     const requestData = {
       _id: deletedUserId,
     };
-    console.log('deletedUserId', deletedUserId);
-    console.log('selectedSummaryGroupId', this.state.selectedSummaryGroupId);
+
     try {
       const response = await axios.delete(
         ENDPOINTS.SUMMARY_GROUP_TEAM_MEMBERS_DELETE(
