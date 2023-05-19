@@ -15,9 +15,8 @@ export const getAllUserProfiles = () => {
     await dispatch(findUsersStart());
     request
       .then(res => {
-        let users = res.data;
         let members = getState().projectMembers.members;
-        users = users.map(user => {
+        const users = res.data.map(user => {
           if (!members.find(member => member._id === user._id)) {
             return (user = { ...user, assigned: false });
           } else {
@@ -81,6 +80,28 @@ export const fetchAllMembers = projectId => {
       })
       .catch(err => {
         dispatch(setMembersError(err));
+      });
+  };
+};
+
+/*
+ * Call API to find active members out of
+ * the members of one project
+ */
+export const getProjectActiveUser = () => {
+  const request = axios.get(ENDPOINTS.USER_PROFILES);
+  return async (dispatch, getState) => {
+    await dispatch(findUsersStart());
+    request
+      .then(res => {
+        let members = getState().projectMembers.members;
+        const users = res.data.filter(user => {
+          return (members.find(member => member._id === user._id) && user.isActive === true) 
+        });
+        dispatch(foundUsers(users));
+      })
+      .catch(err => {
+        dispatch(findUsersError(err));
       });
   };
 };
@@ -232,3 +253,4 @@ export const addNewMemberError = err => {
     err,
   };
 };
+

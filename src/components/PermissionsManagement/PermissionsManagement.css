@@ -3,15 +3,17 @@
   width: 40%;
   min-width: 400px;
   margin: 1.5rem auto;
-  border: 1px solid lightgrey;
-  box-shadow: 6px 6px 18px 2px rgb(158, 158, 158);
+  box-shadow: 1px 1px 8px rgb(158, 158, 158);
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  border-radius: 8px;
 }
 
 .permissions-management__header {
   display: flex;
-  flex-direction: column;
-  row-gap: 1rem;
   align-items: center;
+  gap: 30px;
 }
 
 .permissions-management__title {
@@ -50,33 +52,61 @@
   font-size: 1.2rem;
 }
 
+.user-role-tab__permission {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: solid 1px #ced4da;
+}
+
 .permissions-management--flex {
   display: flex;
   justify-content: space-between;
   flex-direction: row-reverse;
 }
 
-.permissions-management__button {
-  width: 100%;
+.buttons-container {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }
 
 .role-name-container {
-  width: 100%;
+  display: flex;
+  flex-direction: column;
+  border: solid 1px lightgrey;
+  border-radius: 8px;
+  min-width: 300px;
+  height: 450px;
+  max-height: 480px;
+  overflow: auto;
+}
+
+.role-name-container::-webkit-scrollbar {
+  width: 5px;
+}
+
+.role-name-container::-webkit-scrollbar-track {
+  background: rgb(0, 0, 0, 0);
+}
+
+.role-name-container::-webkit-scrollbar-thumb {
+  background: rgb(206, 212, 218);
+  border-radius: 8px;
 }
 
 .role-name {
   text-align: center;
-  border-bottom: 1px solid lightgrey;
+  cursor: pointer;
   margin-bottom: 0;
   padding: 0.5rem 0;
   font-size: 1.2rem;
   font-weight: 500;
+  text-align: center;
 }
 
-.role-name-link {
-  color: black;
-  transition: all 0.2s ease-in-out;
-  transform: scale(1);
+.role-name:hover {
+  background-color: lightgrey;
 }
 
 body.dark .role-name-link {
@@ -88,4 +118,10 @@ body.dark .role-name-link {
   text-decoration: none;
   transform: scale(1.1);
   transition: all 0.2 ease-in-out;
+}
+
+@media only screen and (max-width: 1199px) {
+  .permissions-management__header {
+    flex-direction: column;
+  }
 }
