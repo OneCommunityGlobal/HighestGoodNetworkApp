@@ -14,7 +14,7 @@ import {
   deleteSummaryGroup,
   updateSummaryGroup,
 } from 'actions/allSummaryAction';
-import { getAllUserProfile } from 'actions/userManagement';
+//import { getAllUserProfile } from 'actions/userManagement';
 import { TEAM_MEMBER, SUMMARY_RECEIVER, SUMMARY_GROUP, ACTIONS, ACTIVE } from 'languages/en/ui';
 import CreateNewSummaryGroupPopup from './CreateNewSummaryGroupPopup';
 import UpdateSummaryGroupPopup from './UpdateSummaryGroupPopup';
@@ -188,6 +188,18 @@ class SummaryManagement extends Component {
       teamMembersPopupOpen: false,
     });
   };
+  getTeamMembers = async selectedSummaryGroupId => {
+    try {
+      const response = await axios.get(
+        ENDPOINTS.SUMMARY_GROUP_TEAM_MEMBERS(selectedSummaryGroupId),
+      );
+
+      const members = response.data;
+      this.setState({ members: response.data });
+    } catch (error) {
+      console.log(error);
+    }
+  };
   onAddTeamMember = async (user, selectedSummaryGroupId) => {
     const requestData = {
       _id: user._id,
@@ -202,16 +214,7 @@ class SummaryManagement extends Component {
     } catch (error) {
       console.log(error);
     }
-    try {
-      const response = await axios.get(
-        ENDPOINTS.SUMMARY_GROUP_TEAM_MEMBERS(selectedSummaryGroupId),
-      );
-
-      const members = response.data;
-      this.setState({ members: response.data });
-    } catch (error) {
-      console.log(error);
-    }
+    this.getTeamMembers(selectedSummaryGroupId);
   };
 
   onDeleteTeamMember = async deletedUserId => {
@@ -229,19 +232,20 @@ class SummaryManagement extends Component {
     } catch (error) {
       console.log(error);
     }
-    try {
-      const response = await axios.get(
-        ENDPOINTS.SUMMARY_GROUP_TEAM_MEMBERS(this.state.selectedSummaryGroupId),
-      );
-      const members = response.data;
-      this.setState({ members: response.data });
-    } catch (error) {
-      console.log(error);
-    }
+    this.getTeamMembers(selectedSummaryGroupId);
 
     alert(
       'Team member successfully deleted! Ryunosuke Satoro famously said, “Individually we are one drop, together we are an ocean.” Through the action you just took, this ocean is now one drop smaller.',
     );
+  };
+  getSummaryReceiver = async summaryGroupId => {
+    try {
+      const response = await axios.get(ENDPOINTS.SUMMARY_GROUP_SUMMARY_RECEVIER(summaryGroupId));
+      const summaryReceiver = response.data;
+      this.setState({ summaryReceiver: response.data });
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   onSummaryReciverShow = async (summaryGroupId, name) => {
@@ -250,14 +254,7 @@ class SummaryManagement extends Component {
       selectedSummaryGroup: name,
       selectedSummaryGroupId: summaryGroupId,
     });
-
-    try {
-      const response = await axios.get(ENDPOINTS.SUMMARY_GROUP_SUMMARY_RECEVIER(summaryGroupId));
-      const summaryReceiver = response.data;
-      this.setState({ summaryReceiver: response.data });
-    } catch (error) {
-      console.log(error);
-    }
+    this.getSummaryReceiver(summaryGroupId);
   };
   onSummaryReciverClose = () => {
     this.setState({
@@ -281,16 +278,7 @@ class SummaryManagement extends Component {
     } catch (error) {
       console.log(error);
     }
-
-    try {
-      const response = await axios.get(
-        ENDPOINTS.SUMMARY_GROUP_SUMMARY_RECEVIER(selectedSummaryGroupId),
-      );
-      const summaryReceiver = response.data;
-      this.setState({ summaryReceiver: response.data });
-    } catch (error) {
-      console.log(error);
-    }
+    this.getSummaryReceiver(selectedSummaryGroupId);
   };
 
   onDeleteSummaryReceiver = async deletedUserId => {
@@ -304,15 +292,8 @@ class SummaryManagement extends Component {
     } catch (error) {
       console.log(error);
     }
-    try {
-      const response = await axios.get(
-        ENDPOINTS.SUMMARY_GROUP_SUMMARY_RECEVIER(this.state.selectedSummaryGroupId),
-      );
-      const summaryReceiver = response.data;
-      this.setState({ summaryReceiver: response.data });
-    } catch (error) {
-      console.log(error);
-    }
+    this.getSummaryReceiver(this.state.selectedSummaryGroupId);
+
     alert(
       'Team member successfully deleted! Ryunosuke Satoro famously said, “Individually we are one drop, together we are an ocean.” Through the action you just took, this ocean is now one drop smaller.',
     );

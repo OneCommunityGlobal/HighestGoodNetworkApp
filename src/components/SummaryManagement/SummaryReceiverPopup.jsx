@@ -7,10 +7,9 @@ import MembersAutoComplete from './MembersAutoComplete';
 
 const TeamMembersPopup = React.memo(props => {
   // debugger;
-  
+
   const closePopup = () => {
     props.onClose();
-
   };
   const [selectedUser, onSelectUser] = useState(undefined);
   const [isValidUser, onValidation] = useState(true);
