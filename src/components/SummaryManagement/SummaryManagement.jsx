@@ -274,7 +274,6 @@ class SummaryManagement extends Component {
       email: user.email,
     };
     try {
-      console.log(ENDPOINTS.SUMMARY_GROUP_SUMMARY_RECEVIER(selectedSummaryGroupId));
       const response = await axios.post(
         ENDPOINTS.SUMMARY_GROUP_SUMMARY_RECEVIER(selectedSummaryGroupId),
         requestData,

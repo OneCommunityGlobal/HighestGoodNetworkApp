@@ -7,8 +7,10 @@ import MembersAutoComplete from './MembersAutoComplete';
 
 const TeamMembersPopup = React.memo(props => {
   // debugger;
+  
   const closePopup = () => {
     props.onClose();
+
   };
   const [selectedUser, onSelectUser] = useState(undefined);
   const [isValidUser, onValidation] = useState(true);
@@ -18,8 +20,8 @@ const TeamMembersPopup = React.memo(props => {
     if (
       selectedUser &&
       (!props.members ||
-        !props.members.teamMembers ||
-        !props.members.teamMembers.some(x => x._id === selectedUser._id))
+        !props.members.summaryReceivers ||
+        !props.members.summaryReceivers.some(x => x._id === selectedUser._id))
     ) {
       props.onAddUser(selectedUser, props.selectedSummaryGroupId);
       setSearchText('');
