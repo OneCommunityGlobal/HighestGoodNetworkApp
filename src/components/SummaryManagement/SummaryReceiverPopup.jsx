@@ -15,7 +15,6 @@ const TeamMembersPopup = React.memo(props => {
   const [searchText, setSearchText] = useState('');
 
   const onAddUser = () => {
-    cd;
     if (
       selectedUser &&
       (!props.members ||
