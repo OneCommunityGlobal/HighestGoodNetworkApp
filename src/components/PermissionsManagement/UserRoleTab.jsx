@@ -51,6 +51,8 @@ export const permissionLabel = {
 const UserRoleTab = props => {
   useEffect(() => {
     props.getUserRole(props.auth?.user.userid);
+    const mode = localStorage.getItem('mode');
+    document.body.className = mode
   }, []);
 
   const roleNames = props.roles.map(role => role.roleName);

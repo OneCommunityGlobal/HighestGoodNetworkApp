@@ -5,6 +5,10 @@
   margin: 0 auto;
 }
 
+.dark .userRoleTab__container {
+  background-color: black;
+}
+
 .userRoleTab__backBtn {
   -webkit-appearance: button;
   -moz-appearance: button;

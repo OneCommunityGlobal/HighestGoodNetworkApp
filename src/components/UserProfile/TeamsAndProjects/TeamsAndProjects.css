@@ -3,6 +3,15 @@
   background-color: #fafafa;
   margin-top: 20px;
 }
+
+.dark .teamtable-container,
+.dark .projecttable-container {
+  background-color: transparent;
+
+}
+.dark .teamtable-container .col-md-7, .dark .projecttable-container .col-md-7, .dark .projecttable-container .col-md-12{
+  background-color: transparent !important;
+}
 .btn-addteam,
 .btn-addproject {
   width: 300px;

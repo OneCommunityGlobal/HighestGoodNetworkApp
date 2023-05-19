@@ -30,13 +30,13 @@ export const Dashboard = props => {
     }, 150);
   };
 
-  const toggleTheme = () => {
-    if (theme === 'light') {
+  const toggleTheme = (e) => {
+    if (theme === 'dark' ||  e.target.value === "checked") {
+      localStorage.setItem('mode',"light");
+      setTheme('light');
+    } else {
       localStorage.setItem('mode',"dark");
       setTheme('dark');
-    } else {
-      localStorage.setItem('mode',"light");
-    setTheme('light');
     }
   };
 
@@ -46,7 +46,6 @@ export const Dashboard = props => {
     if(mode){
       setTheme(mode)
     }
-
   }, []);
 
   useEffect(() => {
@@ -59,8 +58,6 @@ export const Dashboard = props => {
   useEffect(() => {
     document.body.className = theme;
     }, [theme]);
-
-    
 
   return (
     <Container fluid>
@@ -78,7 +75,8 @@ export const Dashboard = props => {
         <Col lg={{ size: 7 }}>&nbsp;</Col>
         <Col lg={{ size: 5 }}>
           <div className="row justify-content-center {`${theme}`}">
-            <button onClick={toggleTheme}>Toggle Theme</button>
+         
+          
             <div
               role="button"
               className="mt-3 mb-5 text-center"
@@ -92,6 +90,14 @@ export const Dashboard = props => {
                 asUser={userId}
                 setSubmittedSummary={setSubmittedSummary}
               />
+            </div>
+
+            <div>
+            <br/><br/><br/>
+            <label className="switch">
+              <input type="checkbox" name="theme" onChange={toggleTheme}/>
+              <span className="slider round"></span>
+            </label>
             </div>
           </div>
         </Col>
