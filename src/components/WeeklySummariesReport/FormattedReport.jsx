@@ -12,7 +12,7 @@ import axios from 'axios';
 import { ENDPOINTS } from '../../utils/URL';
 import { useState } from 'react';
 
-const FormattedReport = ({ summaries, weekIndex, role = null }) => {
+const FormattedReport = ({ summaries, weekIndex }) => {
   const emails = [];
 
   summaries.forEach(summary => {
@@ -153,120 +153,61 @@ const FormattedReport = ({ summaries, weekIndex, role = null }) => {
     }
   };
 
-  const buildSummaryPageHasPermission = summaries => {
-    return alphabetize(summaries).map((summary, index) => {
-      const hoursLogged = (summary.totalSeconds[weekIndex] || 0) / 3600;
-      const googleDocLink = getGoogleDocLink(summary);
-      const [isBioPosted, setIsBioPosted] = useState(summary.bioPosted);
-      return (
-        <div
-          style={{ padding: '20px 0', marginTop: '5px', borderBottom: '1px solid #DEE2E6' }}
-          key={'summary-' + index}
-        >
-          <div>
-            <b>Name: </b>
-            <Link to={`/userProfile/${summary._id}`} title="View Profile">
-              {summary.firstName} {summary.lastName}
-            </Link>
-
-            <span onClick={() => handleGoogleDocClick(googleDocLink)}>
-              <img className="google-doc-icon" src={google_doc_icon} alt="google_doc" />
-            </span>
-          </div>
-          <div>
-            {' '}
-            <b>Media URL:</b> {getMediaUrlLink(summary)}
-          </div>
-          <div>
-            <div className="bio-toggle">
-              <b>Bio announcement:</b>
-            </div>
-            <div className="bio-toggle">
-              <ToggleSwitch
-                switchType="bio"
-                state={isBioPosted ? false : true}
-                handleUserProfile={() => {
-                  handleChangeBioPosted(summary._id, isBioPosted);
-                  setIsBioPosted(!isBioPosted);
-                }}
-              />
-            </div>
-          </div>
-          {getTotalValidWeeklySummaries(summary)}
-          {hoursLogged >= summary.weeklycommittedHours && (
-            <p>
-              <b>Hours logged:</b> {hoursLogged.toFixed(2)} / {summary.weeklycommittedHours}
-            </p>
-          )}
-          {hoursLogged < summary.weeklycommittedHours && (
-            <p style={{ color: 'red' }}>
-              <b>Hours logged:</b> {hoursLogged.toFixed(2)} / {summary.weeklycommittedHours}
-            </p>
-          )}
-          {getWeeklySummaryMessage(summary)}
-        </div>
-      );
-    });
-  };
-
-  const buildSummaryPageNoPermission = summaries => {
-    return alphabetize(summaries).map((summary, index) => {
-      const hoursLogged = (summary.totalSeconds[weekIndex] || 0) / 3600;
-      const googleDocLink = getGoogleDocLink(summary);
-      const [isBioPosted, setIsBioPosted] = useState(summary.bioPosted);
-      return (
-        <div
-          style={{ padding: '20px 0', marginTop: '5px', borderBottom: '1px solid #DEE2E6' }}
-          key={'summary-' + index}
-        >
-          <div>
-            <b>Name: </b>
-            <Link to={`/userProfile/${summary._id}`} title="View Profile">
-              {summary.firstName} {summary.lastName}
-            </Link>
-
-            <span onClick={() => handleGoogleDocClick(googleDocLink)}>
-              <img className="google-doc-icon" src={google_doc_icon} alt="google_doc" />
-            </span>
-          </div>
-          <div>
-            {' '}
-            <b>Media URL:</b> {getMediaUrlLink(summary)}
-          </div>
-          <div>
-            <div className="bio-toggle">
-              <b>Bio announcement:</b>
-            </div>
-            <div className="bio-toggle">
-              <ToggleSwitch
-                switchType="bio"
-                state={isBioPosted ? false : true}
-                handleUserProfile={() => {}}
-              />
-            </div>
-          </div>
-          {getTotalValidWeeklySummaries(summary)}
-          {hoursLogged >= summary.weeklycommittedHours && (
-            <p>
-              <b>Hours logged:</b> {hoursLogged.toFixed(2)} / {summary.weeklycommittedHours}
-            </p>
-          )}
-          {hoursLogged < summary.weeklycommittedHours && (
-            <p style={{ color: 'red' }}>
-              <b>Hours logged:</b> {hoursLogged.toFixed(2)} / {summary.weeklycommittedHours}
-            </p>
-          )}
-          {getWeeklySummaryMessage(summary)}
-        </div>
-      );
-    });
-  };
-
   return (
     <>
-      {role === 'Administrator' || role === 'Owner'
-        ? buildSummaryPageHasPermission(summaries)
-        : buildSummaryPageNoPermission(summaries)}
+      {alphabetize(summaries).map((summary, index) => {
+        const hoursLogged = (summary.totalSeconds[weekIndex] || 0) / 3600;
+        const googleDocLink = getGoogleDocLink(summary);
+        const [isBioPosted, setIsBioPosted] = useState(summary.bioPosted);
+        return (
+          <div
+            style={{ padding: '20px 0', marginTop: '5px', borderBottom: '1px solid #DEE2E6' }}
+            key={'summary-' + index}
+          >
+            <div>
+              <b>Name: </b>
+              <Link to={`/userProfile/${summary._id}`} title="View Profile">
+                {summary.firstName} {summary.lastName}
+              </Link>
+
+              <span onClick={() => handleGoogleDocClick(googleDocLink)}>
+                <img className="google-doc-icon" src={google_doc_icon} alt="google_doc" />
+              </span>
+            </div>
+            <div>
+              {' '}
+              <b>Media URL:</b> {getMediaUrlLink(summary)}
+            </div>
+            <div>
+              <div className="bio-toggle">
+                <b>Bio announcement:</b>
+              </div>
+              <div className="bio-toggle">
+                <ToggleSwitch
+                  switchType="bio"
+                  state={isBioPosted ? false : true}
+                  handleUserProfile={() => {
+                    handleChangeBioPosted(summary._id, isBioPosted);
+                    setIsBioPosted(!isBioPosted);
+                  }}
+                />
+              </div>
+            </div>
+            {getTotalValidWeeklySummaries(summary)}
+            {hoursLogged >= summary.weeklycommittedHours && (
+              <p>
+                <b>Hours logged:</b> {hoursLogged.toFixed(2)} / {summary.weeklycommittedHours}
+              </p>
+            )}
+            {hoursLogged < summary.weeklycommittedHours && (
+              <p style={{ color: 'red' }}>
+                <b>Hours logged:</b> {hoursLogged.toFixed(2)} / {summary.weeklycommittedHours}
+              </p>
+            )}
+            {getWeeklySummaryMessage(summary)}
+          </div>
+        );
+      })}
       <h4>Emails</h4>
       <p>{emailString}</p>
     </>

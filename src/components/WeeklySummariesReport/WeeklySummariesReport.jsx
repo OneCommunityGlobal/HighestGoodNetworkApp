@@ -18,7 +18,6 @@ export class WeeklySummariesReport extends Component {
     loading: true,
     summaries: [],
     activeTab: '1',
-    role: null,
   };
 
   async componentDidMount() {
@@ -27,7 +26,6 @@ export class WeeklySummariesReport extends Component {
       error: this.props.error,
       loading: this.props.loading,
       summaries: this.props.summaries,
-      role: this.props.auth.user.role,
     });
   }
 
@@ -52,7 +50,7 @@ export class WeeklySummariesReport extends Component {
   };
 
   render() {
-    const { error, loading, summaries, activeTab, role } = this.state;
+    const { error, loading, summaries, activeTab } = this.state;
 
     if (error) {
       return (
@@ -140,7 +138,7 @@ export class WeeklySummariesReport extends Component {
                 </Row>
                 <Row>
                   <Col>
-                    <FormattedReport summaries={summaries} weekIndex={0} role={role} />
+                    <FormattedReport summaries={summaries} weekIndex={0} />
                   </Col>
                 </Row>
               </TabPane>
@@ -160,7 +158,7 @@ export class WeeklySummariesReport extends Component {
                 </Row>
                 <Row>
                   <Col>
-                    <FormattedReport summaries={summaries} weekIndex={1} role={role} />
+                    <FormattedReport summaries={summaries} weekIndex={1} />
                   </Col>
                 </Row>
               </TabPane>
@@ -180,7 +178,7 @@ export class WeeklySummariesReport extends Component {
                 </Row>
                 <Row>
                   <Col>
-                    <FormattedReport summaries={summaries} weekIndex={2} role={role} />
+                    <FormattedReport summaries={summaries} weekIndex={2} />
                   </Col>
                 </Row>
               </TabPane>
@@ -200,7 +198,7 @@ export class WeeklySummariesReport extends Component {
                 </Row>
                 <Row>
                   <Col>
-                    <FormattedReport summaries={summaries} weekIndex={3} role={role} />
+                    <FormattedReport summaries={summaries} weekIndex={3} />
                   </Col>
                 </Row>
               </TabPane>
@@ -219,11 +217,10 @@ WeeklySummariesReport.propTypes = {
   summaries: PropTypes.array.isRequired,
 };
 
-const mapStateToProps = state => ({
-  auth: state.auth,
-  error: state.weeklySummariesReport.error,
-  loading: state.weeklySummariesReport.loading,
-  summaries: state.weeklySummariesReport.summaries,
+const mapStateToProps = ({ weeklySummariesReport }) => ({
+  error: weeklySummariesReport.error,
+  loading: weeklySummariesReport.loading,
+  summaries: weeklySummariesReport.summaries,
 });
 
 export default connect(mapStateToProps, { getWeeklySummariesReport })(WeeklySummariesReport);
