@@ -232,7 +232,7 @@ input:checked + .slider:before {
 }
 
 .dark .form-group {
-  color: black
+  color: #007bff
 }
 
 .dark .form-check-label {
@@ -244,9 +244,13 @@ input:checked + .slider:before {
 }
 
 .dark .tab-content p {
-  color: white
+  color: #007bff
 }
 
 /* .dark .form-group label {
   color: white
 } */
+
+.dark .modal-footer {
+  color: black
+}
