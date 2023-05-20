@@ -29,12 +29,13 @@ export const fetchTeamMembersTask = (currentUserId, authenticatedUserId) => asyn
   try {
     const state = getState();
     //The userId will be equal the currentUserId if provided, if not, it'll call the selectFetchTeamMembersTaskData, that will return the current user id that's on the store
-
+    
     const userId = currentUserId ? currentUserId : selectFetchTeamMembersTaskData(state);
     const authUserId = authenticatedUserId ? authenticatedUserId : null
-
+    console.log(authUserId)
+    
     dispatch(fetchTeamMembersTaskBegin());
-
+    
     const response = await axios.get(ENDPOINTS.TEAM_MEMBER_TASKS(userId));
 
 
@@ -183,12 +184,6 @@ export const fetchAllTasks = (wbsId, level = 0, mother = null) => {
   };
 };
 
-export const emptyAllTaskItems = () => {
-  return async dispatch => {
-    dispatch(emptyTaskItems());
-  }
-}
-
 export const deleteTask = (taskId, mother) => {
   const url = ENDPOINTS.TASK_DEL(taskId, mother);
   return async dispatch => {
@@ -228,12 +223,6 @@ export const setTasks = (taskItems, level, mother) => {
     taskItems,
     level,
     mother,
-  };
-};
-
-export const emptyTaskItems = () => {
-  return {
-    type: types.EMPTY_TASK_ITEMS,
   };
 };
 
