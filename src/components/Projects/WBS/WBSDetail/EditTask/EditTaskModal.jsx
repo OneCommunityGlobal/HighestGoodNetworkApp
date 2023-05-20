@@ -539,9 +539,9 @@ const EditTaskModal = props => {
                       setCategory(e.target.value);
                     }}
                   >
+                    <option value="Housing">Housing</option>
                     <option value="Food">Food</option>
                     <option value="Energy">Energy</option>
-                    <option value="Housing">Housing</option>
                     <option value="Education">Education</option>
                     <option value="Soceity">Society</option>
                     <option value="Economics">Economics</option>
