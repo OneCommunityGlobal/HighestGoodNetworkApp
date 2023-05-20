@@ -41,7 +41,7 @@ const UserTableData = React.memo(props => {
         <a href={`/userprofile/${props.user._id}`}>{props.user.lastName}</a>
       </td>
       <td>{props.user.role}</td>
-      <td>
+      <td className="email_cell">
         {props.user.email}
         <FontAwesomeIcon
           className="copy_icon"
