@@ -16,6 +16,10 @@
   gap: 30px;
 }
 
+.dark .role-name {
+  color: white 
+}
+
 .permissions-management__title {
   font-size: 1.8rem;
 }

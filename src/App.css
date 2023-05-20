@@ -234,3 +234,19 @@ input:checked + .slider:before {
 .dark .form-group {
   color: black
 }
+
+.dark .form-check-label {
+  color: black;
+}
+
+.dark .tab-content .form-group {
+  color: white
+}
+
+.dark .tab-content p {
+  color: white
+}
+
+/* .dark .form-group label {
+  color: white
+} */
