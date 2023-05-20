@@ -8,7 +8,7 @@ import { Link } from 'react-router-dom';
 import { NavItem, Button } from 'reactstrap';
 import ReactTooltip from 'react-tooltip';
 import hasPermission from 'utils/permissions';
-import { fetchAllTasks, updateNumList, deleteTask } from '../../../../actions/task';
+import { fetchAllTasks, emptyAllTaskItems, updateNumList, deleteTask } from '../../../../actions/task';
 import { fetchAllMembers } from '../../../../actions/projectMembers.js';
 import Task from './Task';
 import AddTaskModal from './AddTask/AddTaskModal';
@@ -39,6 +39,12 @@ function WBSTasks(props) {
     AutoOpenAll(false);
     setLoadAll(true);
   };
+
+  useEffect(() => {
+    return () => {
+      props.emptyAllTaskItems();
+    };
+  }, [])
 
   useEffect(() => {
     load().then(setOpenAll(false));
@@ -268,10 +274,10 @@ function WBSTasks(props) {
           >
             Unassigned
           </Button>
-          <Button 
-            color="info" 
-            size="sm" 
-            onClick={() => setFilterState('active')} 
+          <Button
+            color="info"
+            size="sm"
+            onClick={() => setFilterState('active')}
             className="ml-2"
           >
             Active
@@ -349,7 +355,7 @@ function WBSTasks(props) {
               <td colSpan={14} />
             </tr>
 
-            {filteredTasks.map((task, i) => (
+            {props.state.tasks.fetched && filteredTasks.map((task, i) => (
               <Task
                 key={`${task._id}${i}`}
                 id={task._id}
@@ -401,6 +407,7 @@ const mapStateToProps = state => ({ state });
 
 export default connect(mapStateToProps, {
   fetchAllTasks,
+  emptyAllTaskItems,
   updateNumList,
   deleteTask,
   fetchAllMembers,
