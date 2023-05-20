@@ -2,6 +2,7 @@ import React from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBell, faCircle, faCheck } from '@fortawesome/free-solid-svg-icons';
 import TaskButton from './TaskButton';
+import CopyToClipboard from 'components/common/Clipboard/CopyToClipboard';
 import { Table, Progress } from 'reactstrap';
 import { Link } from 'react-router-dom';
 import { getProgressColor, getProgressValue } from '../../utils/effortColors';
@@ -87,6 +88,10 @@ const TeamMemberTask = ({
                             <Link to={task.projectId ? `/wbs/tasks/${task._id}` : '/'}>
                               <span>{`${task.num} ${task.taskName}`} </span>
                             </Link>
+                            <CopyToClipboard 
+                              writeText={task.taskName} 
+                              message="Task Copied!"
+                            />
                             {task.taskNotifications.length > 0 &&
                             task.taskNotifications.some(
                               notification =>

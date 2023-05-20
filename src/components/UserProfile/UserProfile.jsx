@@ -1228,7 +1228,7 @@ function UserProfile(props) {
                   </Link>
                 )}
               {canEdit &&
-                (activeTab === '1' ||
+                (activeTab === '1' || activeTab === '3' ||
                   hasPermission(requestorRole, 'editUserProfile', roles, userPermissions)) && (
                   <>
                     <SaveButton
@@ -1242,16 +1242,18 @@ function UserProfile(props) {
                       }
                       userProfile={userProfile}
                     />
-                    <span
-                      onClick={() => {
-                        setUserProfile(originalUserProfile);
-                        setTasks(originalTasks);
-                        setTeams(originalTeams);
-                      }}
-                      className="btn btn-outline-danger mr-1 btn-bottom"
-                    >
-                      Cancel
-                    </span>
+                    {activeTab !== '3' && (
+                      <span
+                        onClick={() => {
+                          setUserProfile(originalUserProfile);
+                          setTasks(originalTasks);
+                          setTeams(originalTeams);
+                        }}
+                        className="btn btn-outline-danger mr-1 btn-bottom"
+                      >
+                        Cancel
+                      </span>
+                    )}
                   </>
                 )}
             </div>
