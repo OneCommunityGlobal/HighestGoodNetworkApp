@@ -47,6 +47,14 @@ body.dark .text--black{
   color: white;
 }
 
+.dark .bg--bar {
+  background-color: #333;
+}
+
+.dark .badge-list {
+  background-color: #333;
+}
+
 .media-url {
   line-height: 2.3;
 }
