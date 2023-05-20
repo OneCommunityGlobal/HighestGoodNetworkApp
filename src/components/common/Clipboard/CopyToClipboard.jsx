@@ -5,12 +5,12 @@ import './style.css';
 
 
 const CopyToClipboard = ({
-    textName, 
+    writeText, 
     message
   }) => {
 
     const handleCopyToClipboard = () => {
-        navigator.clipboard.writeText(textName)
+        navigator.clipboard.writeText(writeText)
         toast.success(message)
     }
     
