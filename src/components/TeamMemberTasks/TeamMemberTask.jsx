@@ -87,7 +87,7 @@ const TeamMemberTask = ({
                               <span>{`${task.num} ${task.taskName}`} </span>
                             </Link>
                             <CopyToClipboard 
-                              writeText={task.taskName} 
+                              textName={task.taskName} 
                               message="Task Copied!"
                             />
                             {task.taskNotifications.length > 0 && (
