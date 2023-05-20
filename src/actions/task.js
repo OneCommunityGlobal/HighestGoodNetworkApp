@@ -32,7 +32,6 @@ export const fetchTeamMembersTask = (currentUserId, authenticatedUserId) => asyn
 
     const userId = currentUserId ? currentUserId : selectFetchTeamMembersTaskData(state);
     const authUserId = authenticatedUserId ? authenticatedUserId : null
-    console.log(authUserId)
 
     dispatch(fetchTeamMembersTaskBegin());
 
