@@ -46,11 +46,12 @@ import SummaryBar from '../SummaryBar/SummaryBar';
 import WeeklySummary from '../WeeklySummary/WeeklySummary';
 import Loading from '../common/Loading';
 import hasPermission from '../../utils/permissions';
+import WeeklySummaries from './WeeklySummaries';
 
 const doesUserHaveTaskWithWBS = tasks => {
   let check = false;
   for (let task of tasks) {
-    if (task.wbsId) {
+    if (task.wbsId && task.status !== 'Complete') {
       check = true;
       break;
     }
@@ -100,8 +101,7 @@ class Timelog extends Component {
   state = this.initialState;
 
   async componentDidMount() {
-    const userId =
-      this.props?.match?.params?.userId || this.props.asUser || this.props.auth.user.userid; //Including fix for "undefined"
+    const userId = this.props.asUser || this.props.match.params.userId; //Including fix for "undefined"
     const isOwner = this.props.auth.user.userid === this.props.asUser;
     if (!isOwner || this.props.userProfile) {
       await this.props.getUserProfile(userId);
@@ -132,6 +132,14 @@ class Timelog extends Component {
 
     if (UserHaveTask) {
       this.setState({ activeTab: 0 });
+    }
+
+    // Checks if there is a property named "isDashboard" in props
+    const isDashboard = this.props.hasOwnProperty('isDashboard');
+
+    // Sets active tab to "Current Week Timelog" when the Progress bar in Leaderboard is clicked
+    if (!isDashboard) {
+      this.setState({ activeTab: 1 });
     }
   }
 
@@ -258,7 +266,7 @@ class Timelog extends Component {
   }
 
   renderViewingTimeEntriesFrom() {
-    if (this.state.activeTab === 0) {
+    if (this.state.activeTab === 0 || this.state.activeTab === 5) {
       return <></>;
     } else if (this.state.activeTab === 4) {
       return (
@@ -353,8 +361,8 @@ class Timelog extends Component {
                 </div>
               </div>
             ) : null}
-            <Row className="right-padding-temp-fix">
-              <Col className="right-padding-temp-fix" md={12}>
+            <Row>
+              <Col md={12}>
                 <Card>
                   <CardHeader>
                     <Row>
@@ -566,6 +574,18 @@ class Timelog extends Component {
                           Search by Date Range
                         </NavLink>
                       </NavItem>
+                      <NavItem>
+                        <NavLink
+                          className={classnames({ active: this.state.activeTab === 5 })}
+                          onClick={() => {
+                            this.changeTab(5);
+                          }}
+                          href="#"
+                          to="#"
+                        >
+                          Weekly Summaries
+                        </NavLink>
+                      </NavItem>
                     </Nav>
 
                     <TabContent activeTab={this.state.activeTab}>
@@ -601,7 +621,7 @@ class Timelog extends Component {
                           </Button>
                         </Form>
                       )}
-                      {this.state.activeTab === 0 ? (
+                      {this.state.activeTab === 0 || this.state.activeTab === 5 ? (
                         <></>
                       ) : (
                         <Form className="mb-2">
@@ -631,7 +651,7 @@ class Timelog extends Component {
                         </Form>
                       )}
 
-                      {this.state.activeTab === 0 ? (
+                      {this.state.activeTab === 0 || this.state.activeTab === 5 ? (
                         <></>
                       ) : (
                         <EffortBar
@@ -640,17 +660,19 @@ class Timelog extends Component {
                         />
                       )}
                       <TabPane tabId={0}>
-                        <TeamMemberTasks asUser={this.props.asUser} />
+                        <TeamMemberTasks asUser={userId} />
                       </TabPane>
                       <TabPane tabId={1}>{currentWeekEntries}</TabPane>
                       <TabPane tabId={2}>{lastWeekEntries}</TabPane>
                       <TabPane tabId={3}>{beforeLastEntries}</TabPane>
                       <TabPane tabId={4}>{periodEntries}</TabPane>
+                      <TabPane tabId={5}>
+                        <WeeklySummaries userProfile={this.userProfile} />
+                      </TabPane>
                     </TabContent>
                   </CardBody>
                 </Card>
               </Col>
-              <Col md={4} />
             </Row>
           </Container>
         )}

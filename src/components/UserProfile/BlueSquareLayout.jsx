@@ -2,7 +2,6 @@ import React from 'react';
 import BlueSquare from './BlueSquares';
 import ToggleSwitch from './UserProfileEdit/ToggleSwitch';
 import './UserProfile.scss';
-// import styleEdit from './UserProfileEdit.module.scss';
 import './UserProfileEdit/UserProfileEdit.scss';
 
 const BlueSquareLayout = props => {

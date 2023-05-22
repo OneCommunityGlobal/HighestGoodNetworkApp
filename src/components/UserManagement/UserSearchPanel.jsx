@@ -6,7 +6,7 @@ import { SEARCH, SHOW, CREATE_NEW_USER } from '../../languages/en/ui';
  */
 const UserSearchPanel = props => {
   return (
-    <div className="input-group" id="new_usermanagement">
+    <div className="input-group mt-3" id="new_usermanagement">
       <button
         type="button"
         className="btn btn-info"

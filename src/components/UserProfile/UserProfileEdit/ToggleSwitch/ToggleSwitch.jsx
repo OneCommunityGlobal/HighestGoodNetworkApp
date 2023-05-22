@@ -43,7 +43,6 @@ const ToggleSwitch = ({ switchType, state, handleUserProfile }) => {
           </div>
         </div>
       );
-
     case 'email':
       if (state) {
         return (
@@ -129,6 +128,63 @@ const ToggleSwitch = ({ switchType, state, handleUserProfile }) => {
                 onChange={handleUserProfile}
               />
               private
+            </div>
+          </div>
+        </div>
+      );
+    case 'visible':
+      if (state) {
+        return (
+          <div className="blueSqare">
+            <div className={style.switchSection}>
+              <div className={style.switchContainer}>
+                visible
+                <input
+                  data-testid="visibility-switch"
+                  id="leaderboardVisibility"
+                  type="checkbox"
+                  className={style.toggle}
+                  onChange={handleUserProfile}
+                />
+                invisible
+              </div>
+            </div>
+          </div>
+        );
+      }
+      return (
+        <div className="blueSqare">
+          <div className={style.switchSection}>
+            <div className={style.switchContainer}>
+              visible
+              <input
+                data-testid="visibility-switch"
+                id="leaderboardVisibility"
+                type="checkbox"
+                className={style.toggle}
+                onChange={handleUserProfile}
+                defaultChecked
+              />
+              invisible
+            </div>
+          </div>
+        </div>
+      );
+    case 'bio':
+      return (
+        <div className="blueSqare">
+          <div className={style.switchSection}>
+            <div className={style.switchContainer}>
+              posted
+              <input
+                data-testid="bio-switch"
+                id="bioPosted"
+                type="checkbox"
+                className={style.toggle}
+                onChange={handleUserProfile}
+                checked={state}
+              />
+              requested
             </div>
           </div>
         </div>

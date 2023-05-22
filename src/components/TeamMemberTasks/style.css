@@ -1,5 +1,6 @@
 .team-member-tasks {
   background-color: white;
+  
 }
 
 .team-member-tasks h1 {
@@ -7,7 +8,12 @@
   font-size: 20px;
 }
 
+.table-container{
+  overflow-x: auto;
+}
+
 .team-member-tasks-bell {
+  margin-left: 20px;
   color: red;
   cursor: pointer;
 }
@@ -65,22 +71,18 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  min-width: 165px;
+  column-gap: 1rem;
 }
 
 .circle-border {
-  border: 2px solid gray;
-  border-radius: 50%;
+  border-radius: 6px;
   width: 42px;
   height: 42px;
   font-size: 12px;
   font-weight: bold;
   font-family: Arial, Helvetica, sans-serif;
-}
-
-.circle-border:active {
-  transform: scale(0.95);
-  box-shadow: 1px 1px 15px 1px rgba(0, 0, 0, 0.15);
+  color: white;
+  box-shadow: 2px 2px 4px 1px lightgray;
 }
 
 .header-box {

@@ -28,7 +28,7 @@ export const PeopleTasksPieChart = () => {
     <div className="people-pie-charts-wrapper">
       {showProjectsPieChart && (
         <ReportPage.ReportBlock>
-          <h5 className="people-pie-charts-header">Projects with committed hours</h5>
+          <h5 className="people-pie-charts-header">Projects With Completed Hours</h5>
           <PieChart
             pieChartId={'projectsPieChart'}
             data={projectsWithLoggedHoursById}
@@ -40,8 +40,8 @@ export const PeopleTasksPieChart = () => {
       {showTasksPieChart && (
         <ReportPage.ReportBlock>
           <h5 className="people-pie-charts-header">{`${
-            showViewAllTasksButton ? 'Last t' : 'T'
-          }asks with committed hours`}</h5>
+            showViewAllTasksButton ? 'Last ' : ''
+          }Tasks With Completed Hours`}</h5>
           <PieChart
             pieChartId={'tasksPieChart'}
             data={displayedTasksWithLoggedHoursById}
@@ -50,7 +50,7 @@ export const PeopleTasksPieChart = () => {
           />
           {showViewAllTasksButton && (
             <NewModal
-              header={'Tasks with committed hours'}
+              header={'Tasks With Completed Hours'}
               trigger={() => (
                 <div onClick={showAllTasks} className="show-all-tasks-button">
                   View all

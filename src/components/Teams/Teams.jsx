@@ -61,7 +61,7 @@ class Teams extends React.PureComponent {
           <Loading />
         ) : (
           <React.Fragment>
-            <div className="container">
+            <div className="container mt-3">
               {this.teampopupElements(requestorRole, roles, userPermissions)}
               <TeamOverview
                 numberOfTeams={numberOfTeams}

@@ -21,8 +21,6 @@ export const TaskEditSuggestions = () => {
     userRole,
   } = useSelector(getTaskEditSuggestionsData);
 
-  // const isUserPermitted = hasPermission(userRole, 'editTask');
-
   const dispatch = useDispatch();
   useEffect(() => {
     dispatch(fetchTaskEditSuggestions());
@@ -45,7 +43,7 @@ export const TaskEditSuggestions = () => {
 
   return (
     <Container>
-      <h1>Task Edit Suggestions</h1>
+      <h1 className='mt-3'>Task Edit Suggestions</h1>
       {/* {isUserPermitted ? <h1>Task Edit Suggestions</h1> : <h1>{userRole} is not permitted to view this</h1>} */}
       {isLoading && <Loading />}
       {!isLoading && taskEditSuggestions && (

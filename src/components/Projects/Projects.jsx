@@ -114,7 +114,6 @@ export class Projects extends Component {
     let numberOfActive = projects.filter(project => project.isActive).length;
 
     let showModalMsg = false;
-    //console.log("STATUS ", status, "trackModelMsg ", trackModelMsg);
 
     if (status === 400 && trackModelMsg) {
       showModalMsg = true;
@@ -147,7 +146,7 @@ export class Projects extends Component {
     return (
       <React.Fragment>
         <ProjectInfoModal isOpen={projectInfoModal} toggle={this.toggleProjectInfoModal} />
-        <div className="container">
+        <div className="container mt-3">
           {fetching || !fetched ? <Loading /> : null}
           <h3 style={{ display: 'inline-block', marginRight: 10 }}>Projects</h3>
           <i
