@@ -88,14 +88,14 @@ const TeamMemberTasks = props => {
   useEffect(() => {
     submitTasks();
     if (userId !== props.auth.user.userid) {
-      dispatch(fetchTeamMembersTask(userId, props.auth.user.userid));
+      dispatch(fetchTeamMembersTask(userId, props.auth.user.userid, false));
       const currentUserRole = getUserRole(userId)
         .then(resp => resp)
         .then(user => {
           setUserRole(user.data.role);
         });
     } else {
-      dispatch(fetchTeamMembersTask(userId, null));
+      dispatch(fetchTeamMembersTask(userId, null, false));
       setUserRole(props.auth.user.role);
     }
   }, [updatedTasks]);
