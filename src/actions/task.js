@@ -24,7 +24,7 @@ const selectUpdateTaskData = (state, taskId) =>
 // It's the same as doing function(currentUserId){async function(dispatch, getState)}
 //Because of the closure, the inside function have access the currentUserId, that it uses and provides to the userId
 //I've also added authentiatedUserId param so, if you are seeing another user's dashboard, it can fetch the authenticated user tasks to make a filter when seeing an owner or another user
-export const fetchTeamMembersTask = (currentUserId, authenticatedUserId) => async (
+export const fetchTeamMembersTask = (currentUserId, authenticatedUserId, shouldReload = true) => async (
   dispatch,
   getState,
 ) => {
@@ -35,7 +35,9 @@ export const fetchTeamMembersTask = (currentUserId, authenticatedUserId) => asyn
     const userId = currentUserId ? currentUserId : selectFetchTeamMembersTaskData(state);
     const authUserId = authenticatedUserId ? authenticatedUserId : null
 
-    dispatch(fetchTeamMembersTaskBegin());
+    if(shouldReload){
+      dispatch(fetchTeamMembersTaskBegin());
+    }
 
     const response = await axios.get(ENDPOINTS.TEAM_MEMBER_TASKS(userId));
 
