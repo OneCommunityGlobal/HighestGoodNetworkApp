@@ -6,6 +6,7 @@ import { ENDPOINTS } from 'utils/URL';
 import axios from 'axios';
 import { useEffect } from 'react';
 import moment from 'moment';
+import { hrsFilterBtnRed, hrsFilterBtnBlue } from 'constants/colors';
 
 const FilteredTimeEntries = ({ data, displayYear }) => {
   const [projectName, setProjectName] = useState('');
@@ -27,9 +28,9 @@ const FilteredTimeEntries = ({ data, displayYear }) => {
       .format('YYYY-MM-DD');
 
     if (moment(dateOfWork).isSameOrAfter(pastTwentyFourHrs)) {
-      return <div className="color-bar" style={{ backgroundColor: '#DC143C' }}></div>;
+      return <div className="color-bar" style={{ backgroundColor: hrsFilterBtnRed }}></div>;
     } else if (moment(dateOfWork).isSameOrAfter(pastFortyEightHrs)) {
-      return <div className="color-bar" style={{ backgroundColor: '#6495ED' }}></div>;
+      return <div className="color-bar" style={{ backgroundColor: hrsFilterBtnBlue }}></div>;
     } else {
       return <div className="color-bar" style={{ backgroundColor: 'green' }}></div>;
     }
