@@ -4,7 +4,7 @@ import './PeopleReport.css';
 import { Button, Dropdown, DropdownButton } from 'react-bootstrap';
 import { connect } from 'react-redux';
 import { FiUser } from 'react-icons/fi';
-import { getUserProfile, getUserTask } from '../../../actions/userProfile';
+import { getUserProfile, getUserTask, updateUserProfile } from '../../../actions/userProfile';
 import { getUserProjects } from '../../../actions/userProjects';
 import { getWeeklySummaries, updateWeeklySummaries } from '../../../actions/weeklySummaries';
 import moment from 'moment';
@@ -31,7 +31,7 @@ class PeopleReport extends Component {
       infringements: {},
       isAssigned: '',
       isActive: '',
-      isRehirable: '',
+      isRehireable: false,
       priority: '',
       status: '',
       hasFilter: true,
@@ -75,6 +75,7 @@ class PeopleReport extends Component {
         userProfile: {
           ...this.props.userProfile,
         },
+        isRehireable: this.props.userProfile.isRehireable,
         userTask: [...this.props.userTask],
         userProjects: {
           ...this.props.userProjects,
@@ -133,13 +134,14 @@ class PeopleReport extends Component {
     });
   }
 
-  setRehireable(activeValue) {
-    console.log(activeValue);
+  setRehireable(rehireValue) {
     this.setState(state => {
       return {
-        isRehireable: activeValue,
+        isRehireable: rehireValue,
       };
     });
+    this.props.userProfile.isRehireable = rehireValue;
+    this.props.updateUserProfile(this.props.userProfile._id, this.props.userProfile);
   }
 
   setPriority(priorityValue) {
@@ -189,7 +191,6 @@ class PeopleReport extends Component {
       return {
         isAssigned: false,
         isActive: false,
-        isRehirable: false,
         priority: '',
         priorityList: [],
         status: '',
@@ -238,7 +239,6 @@ class PeopleReport extends Component {
       userTask,
       userProjects,
       isActive,
-      isRehirable,
       fromDate,
       toDate,
       timeEntries,
@@ -454,8 +454,8 @@ class PeopleReport extends Component {
         {userProfile.endDate ? (
           <p>
             <Checkbox
-              value={userProfile.isRehireable}
-              onChange={() => this.setRehireable(!userProfile.isRehireable)}
+              value={this.state.isRehireable}
+              onChange={() => this.setRehireable(!this.state.isRehireable)}
               label="Rehireable"
             ></Checkbox>
           </p>
@@ -490,8 +490,6 @@ class PeopleReport extends Component {
             <p>Weekly Committed Hours</p>
           </ReportPage.ReportBlock>
 
-          {/* TESTS */}
-
           {userProfile.endDate ? (
             ''
           ) : (
@@ -504,8 +502,6 @@ class PeopleReport extends Component {
               <p>Hours Logged This Week</p>
             </ReportPage.ReportBlock>
           )}
-
-          {/* TESTS */}
 
           <ReportPage.ReportBlock
             firstColor="#64b7ff"
@@ -563,6 +559,7 @@ class PeopleReport extends Component {
 
 export default connect(getPeopleReportData, {
   getUserProfile,
+  updateUserProfile,
   getWeeklySummaries,
   updateWeeklySummaries,
   getUserTask,
