@@ -47,7 +47,10 @@ const UserTableHeader = React.memo(props => {
       <th scope="col" id="usermanagement_resume_date">
         End Date
       </th>
-      {props.authRole !=="Owner" && props.roleSearchText !=="Owner" && (
+      {((
+        props.authRole !=="Owner" && 
+        props.roleSearchText !=="Owner") || 
+        props.authRole =="Owner") && (
         <th scope="col" id="usermanagement_delete"></th>
       )}
     </tr>
