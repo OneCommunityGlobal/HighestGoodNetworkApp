@@ -48,7 +48,7 @@ export function TeamReport({ match }) {
   
   // Create a state variable to store the selected radio input
   const [selectedInput, setSelectedInput] = useState('isManager');
-  
+
   // Event handler for when a radio input is selected
   const handleInputChange = (event) => {
     // Update the selectedInput state variable with the value of the selected radio input

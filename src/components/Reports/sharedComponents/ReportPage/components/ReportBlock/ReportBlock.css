@@ -9,3 +9,7 @@
   height: 100%;
   padding: 16px;
 }
+
+.dark .report-block-content {
+  background-color: #333 !important;
+}

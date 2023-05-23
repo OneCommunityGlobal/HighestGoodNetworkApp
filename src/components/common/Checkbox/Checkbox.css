@@ -12,3 +12,7 @@
   margin: 0 4px;
   cursor: pointer;
 }
+
+.dark .checkbox-label {
+  color: black
+}

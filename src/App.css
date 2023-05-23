@@ -224,7 +224,7 @@ input:checked + .slider:before {
 }
 
 .dark .modal-title {
-  color: black;
+  color: #007bff;
 }
 
 .dark .bg-white {
@@ -236,7 +236,7 @@ input:checked + .slider:before {
 }
 
 .dark .form-check-label {
-  color: black;
+  color: #007bff;
 }
 
 .dark .tab-content .form-group {
@@ -253,4 +253,24 @@ input:checked + .slider:before {
 
 .dark .modal-footer {
   color: black
+}
+
+.dark .modal-body {
+  color: black
+}
+
+.dark .modal-content {
+  background-color: #333;
+}
+
+.dark .close {
+  color: white;
+}
+
+.dark .close:hover {
+  color: white;
+}
+
+.dark label {
+  color: white;
 }

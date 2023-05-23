@@ -21,3 +21,11 @@
   background-color: #f1ebf7;
   border-top-left-radius: 25px;
 }
+
+.dark .report-page-wrapper {
+  background-color: #333;
+}
+
+.dark .report-page-profile {
+  background-color: #333;
+}
