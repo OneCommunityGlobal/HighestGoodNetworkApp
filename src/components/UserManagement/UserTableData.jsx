@@ -99,7 +99,6 @@ const UserTableData = React.memo(props => {
       {checkPermissionsOnOwner() ? null : (
       <td>
         <span className="usermanagement-actions-cell">
-          {checkPermissionsOnOwner() ? null : (
             <button
               type="button"
               className="btn btn-outline-danger btn-sm"
@@ -109,7 +108,6 @@ const UserTableData = React.memo(props => {
             >
               {DELETE}
             </button>
-          )}
         </span>
         <span className="usermanagement-actions-cell">
           <ResetPasswordButton user={props.user} isSmallButton />
