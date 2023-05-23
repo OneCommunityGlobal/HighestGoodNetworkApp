@@ -24,6 +24,21 @@ const UserTableData = React.memo(props => {
     onReset(false);
   }, [props.isActive, props.resetLoading]);
 
+  const checkPermissionsOnOwner = () => {
+    return (props.user.role === 'Owner' && !hasPermission(
+      props.role,
+      'addDeleteEditOwners',
+      props.roles,
+      props.userPermissions) ? true : false
+    )}
+    
+    props.user.role === 'Owner' &&
+          !hasPermission(
+            props.role,
+            'addDeleteEditOwners',
+            props.roles,
+            props.userPermissions,
+          )
   return (
     <tr className="usermanagement__tr" id={`tr_user_${props.index}`}>
       <td className="usermanagement__active--input">
@@ -90,13 +105,7 @@ const UserTableData = React.memo(props => {
       <td>{props.user.endDate ? props.user.endDate.toLocaleString().split('T')[0] : 'N/A'}</td>
       <td>
         <span className="usermanagement-actions-cell">
-          {props.user.role === 'Owner' &&
-          !hasPermission(
-            props.role,
-            'addDeleteEditOwners',
-            props.roles,
-            props.userPermissions,
-          ) ? null : (
+          {checkPermissionsOnOwner() ? null : (
             <button
               type="button"
               className="btn btn-outline-danger btn-sm"
@@ -109,7 +118,9 @@ const UserTableData = React.memo(props => {
           )}
         </span>
         <span className="usermanagement-actions-cell">
-          <ResetPasswordButton user={props.user} isSmallButton />
+        {checkPermissionsOnOwner() ? null : (
+          <ResetPasswordButton user={props.user} isSmallButton />)
+          } 
         </span>
       </td>
     </tr>
