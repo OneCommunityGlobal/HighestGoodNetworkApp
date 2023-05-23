@@ -31,14 +31,7 @@ const UserTableData = React.memo(props => {
       props.roles,
       props.userPermissions) ? true : false
     )}
-    
-    props.user.role === 'Owner' &&
-          !hasPermission(
-            props.role,
-            'addDeleteEditOwners',
-            props.roles,
-            props.userPermissions,
-          )
+     
   return (
     <tr className="usermanagement__tr" id={`tr_user_${props.index}`}>
       <td className="usermanagement__active--input">
