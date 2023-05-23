@@ -52,7 +52,9 @@ const UserTableSearchHeader = React.memo(props => {
       <td id="user_finalDay"></td>
       <td id="user_resume_date"></td>
       <td id="user_end_date"></td>
-      <td id="user__delete"></td>
+      {props.authRole !=="Owner" && props.roleSearchText !=="Owner" && (
+        <td id="user__delete"></td>
+      )}
     </tr>
   );
 });

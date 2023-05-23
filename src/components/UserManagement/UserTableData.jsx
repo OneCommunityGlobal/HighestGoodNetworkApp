@@ -29,7 +29,7 @@ const UserTableData = React.memo(props => {
       props.role,
       'addDeleteEditOwners',
       props.roles,
-      props.userPermissions) ? true : false
+      props.userPermissions)
     )}
      
   return (
@@ -96,6 +96,7 @@ const UserTableData = React.memo(props => {
           : ''}
       </td>
       <td>{props.user.endDate ? props.user.endDate.toLocaleString().split('T')[0] : 'N/A'}</td>
+      {checkPermissionsOnOwner() ? null : (
       <td>
         <span className="usermanagement-actions-cell">
           {checkPermissionsOnOwner() ? null : (
@@ -111,11 +112,10 @@ const UserTableData = React.memo(props => {
           )}
         </span>
         <span className="usermanagement-actions-cell">
-        {checkPermissionsOnOwner() ? null : (
-          <ResetPasswordButton user={props.user} isSmallButton />)
-          } 
+          <ResetPasswordButton user={props.user} isSmallButton />
         </span>
       </td>
+      )}
     </tr>
   );
 });
