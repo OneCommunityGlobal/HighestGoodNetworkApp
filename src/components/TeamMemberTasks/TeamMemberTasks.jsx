@@ -16,6 +16,7 @@ import axios from 'axios';
 import moment from 'moment';
 import TeamMemberTask from './TeamMemberTask';
 import FilteredTimeEntries from './FilteredTimeEntries';
+import { hrsFilterBtnRed, hrsFilterBtnBlue } from 'constants/colors';
 
 const TeamMemberTasks = props => {
   const [showTaskNotificationModal, setTaskNotificationModal] = useState(false);
@@ -295,8 +296,9 @@ const TeamMemberTasks = props => {
               className="circle-border 24h"
               title="Timelogs submitted in the past 24 hours"
               style={{
-                color: selectedPeriod === 24 && isTimeLogActive ? 'white' : '#DC143C',
-                backgroundColor: selectedPeriod === 24 && isTimeLogActive ? '#DC143C' : 'white',
+                color: selectedPeriod === 24 && isTimeLogActive ? 'white' : hrsFilterBtnRed,
+                backgroundColor:
+                  selectedPeriod === 24 && isTimeLogActive ? hrsFilterBtnRed : 'white',
                 border: '1px solid #DC143C',
               }}
               onClick={() => selectPeriod(24)}
@@ -308,8 +310,9 @@ const TeamMemberTasks = props => {
               className="circle-border 48h"
               title="Timelogs submitted in the past 48 hours"
               style={{
-                color: selectedPeriod === 48 && isTimeLogActive ? 'white' : '#6495ED',
-                backgroundColor: selectedPeriod === 48 && isTimeLogActive ? '#6495ED' : 'white',
+                color: selectedPeriod === 48 && isTimeLogActive ? 'white' : hrsFilterBtnBlue,
+                backgroundColor:
+                  selectedPeriod === 48 && isTimeLogActive ? hrsFilterBtnBlue : 'white',
                 border: '1px solid #6495ED',
               }}
               onClick={() => selectPeriod(48)}
