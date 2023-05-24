@@ -256,7 +256,7 @@ input:checked + .slider:before {
 }
 
 .dark .modal-body {
-  color: black
+  color: #007bff
 }
 
 .dark .modal-content {
@@ -273,4 +273,12 @@ input:checked + .slider:before {
 
 .dark label {
   color: white;
+}
+
+.dark .btn-default{
+  color: #007bff
+}
+
+.dark .btn-default:hover{
+  color: #007bff
 }

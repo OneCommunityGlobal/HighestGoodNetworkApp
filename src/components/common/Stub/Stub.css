@@ -11,3 +11,7 @@
 .stub-hint {
   color: rgba(0, 0, 0, 0.4);
 }
+
+.dark .stub-hint {
+  color: white
+}
