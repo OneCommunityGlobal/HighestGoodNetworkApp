@@ -275,6 +275,7 @@ export const NewTimer = () => {
         type="button"
         disabled={!userCanStop}
         onClick={() => {
+          handleStart();
           handlePause();
           setLogModal(true);
         }}
