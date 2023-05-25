@@ -13,7 +13,7 @@ import { getTimeZoneAPIKey } from '../../actions/timezoneAPIActions';
 
 export const Dashboard = props => {
   const [popup, setPopup] = useState(false);
-  const [summaryBarData, setSummaryBarData] = useState(null);
+  const [leaderData, setLeaderData] = useState(null);
   const [submittedSummary, setSubmittedSummary] = useState(false);
   const [userProfile, setUserProfile] = useState(undefined);
   let userId = props.match.params.userId ? props.match.params.userId : props.auth.user.userid;
@@ -48,7 +48,7 @@ export const Dashboard = props => {
         asUser={userId}
         toggleSubmitForm={toggle}
         role={props.auth.user.role}
-        summaryBarData={summaryBarData}
+        leaderData={leaderData}
       />
 
       <Row>
@@ -74,7 +74,7 @@ export const Dashboard = props => {
       </Row>
       <Row>
         <Col lg={{ size: 5 }} className="order-sm-12">
-          <Leaderboard asUser={userId} />
+          <Leaderboard asUser={userId} setLeaderData={setLeaderData} />
         </Col>
         <Col lg={{ size: 7 }} className="left-col-dashboard order-sm-1">
           {popup ? (
@@ -86,7 +86,7 @@ export const Dashboard = props => {
           ) : null}
           <div className="my-2">
             <a name="wsummary"></a>
-            <Timelog isDashboard={true} asUser={userId} passSummaryBarData={setSummaryBarData} />
+            <Timelog isDashboard asUser={userId} userProfile={userProfile} />
           </div>
           <Badge userId={userId} role={props.auth.user.role} />
         </Col>
