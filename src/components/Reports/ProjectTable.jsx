@@ -32,21 +32,19 @@ const ProjectTable = props => {
   }
 
   return (
-    <table class="center">
-      <table className="table table-bordered table-responsive-sm">
-        <thead>
-          <tr>
-            <th scope="col" id="projects__order">
-              #
-            </th>
-            <th scope="col">Project Name</th>
-            <th scope="col" id="projects__active">
-              Active
-            </th>
-          </tr>
-        </thead>
-        <tbody>{ProjectsList}</tbody>
-      </table>
+    <table className="table table-bordered table-responsive-sm">
+      <thead>
+        <tr>
+          <th scope="col" id="projects__order">
+            #
+          </th>
+          <th scope="col">Project Name</th>
+          <th scope="col" id="projects__active">
+            Active
+          </th>
+        </tr>
+      </thead>
+      <tbody>{ProjectsList}</tbody>
     </table>
   );
 };
