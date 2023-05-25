@@ -377,7 +377,11 @@ export const NewTimer = () => {
                 handleRemoveGoal={handleRemoveGoal}
                 setPreviewTimer={setPreviewTimer}
                 handleClear={() => setConfirmationResetModal(true)}
-                toggleModal={() => setLogModal(true)}
+                toggleModal={() => {
+                  handleStart();
+                  handlePause();
+                  setLogModal(true);
+                }}
                 alarm={handleStartAlarm}
                 handlePauseAlarm={handleStopAlarm}
                 logModal={logModal}
