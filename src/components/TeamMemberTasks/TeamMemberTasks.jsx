@@ -17,6 +17,7 @@ import moment from 'moment';
 import TeamMemberTask from './TeamMemberTask';
 import FilteredTimeEntries from './FilteredTimeEntries';
 import { hrsFilterBtnRed, hrsFilterBtnBlue } from 'constants/colors';
+import { setCurrentUser } from 'actions/authActions';
 
 const TeamMemberTasks = props => {
   const [showTaskNotificationModal, setTaskNotificationModal] = useState(false);
@@ -81,20 +82,23 @@ const TeamMemberTasks = props => {
   }, [currentUserId]);
 
   useEffect(() => {
+    setCurrentUserId('')
+    setClickedToShowModal(false)
+    closeMarkAsDone()
     renderTeamsList();
-  }, []);
+  }, [usersWithTasks]);
 
   useEffect(() => {
     submitTasks();
     if (userId !== props.auth.user.userid) {
-      dispatch(fetchTeamMembersTask(userId, props.auth.user.userid));
+      dispatch(fetchTeamMembersTask(userId, props.auth.user.userid,false));
       const currentUserRole = getUserRole(userId)
         .then(resp => resp)
         .then(user => {
           setUserRole(user.data.role);
         });
     } else {
-      dispatch(fetchTeamMembersTask(userId, null));
+      dispatch(fetchTeamMembersTask(userId, null, false));
       setUserRole(props.auth.user.role);
     }
   }, [updatedTasks]);
@@ -103,11 +107,12 @@ const TeamMemberTasks = props => {
     setMarkAsDoneModal(false);
   };
 
-  const onUpdateTask = (taskId, updatedTask) => {
+  const onUpdateTask = (taskId, updatedTask, setIsLoadingTask) => {
     const newTask = {
       updatedTask,
       taskId,
     };
+    
     setTasks(tasks => {
       const tasksWithoutTheUpdated = [...tasks];
       const taskIndex = tasks.findIndex(task => task._id === taskId);
