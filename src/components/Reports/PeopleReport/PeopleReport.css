@@ -179,7 +179,6 @@ body {
 }
 
 .people-report-time-logs-wrapper {
-  display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
   color: white;
@@ -190,4 +189,13 @@ body {
   width: 270px;
   white-space: nowrap;
   margin-bottom: 16px;
+}
+
+@media (min-width: 850px) {
+  .people-report-time-logs-wrapper {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    color: white;
+  }
 }
