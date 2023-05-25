@@ -282,3 +282,11 @@ input:checked + .slider:before {
 .dark .btn-default:hover{
   color: #007bff
 }
+
+.dark .mr-auto {
+  color: #007bff
+}
+
+.dark .card {
+  background-color: #333;
+}
