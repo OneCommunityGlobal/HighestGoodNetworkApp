@@ -587,7 +587,7 @@ const TimeEntryForm = props => {
     setInputs(newInputs);
     setReminder({ ...initialReminder });
     setErrors({});
-    if (closed === true && isOpen) toggleModalClose();
+    toggleModalClose();
   };
 
   const stopAllAudioAndClearIntervals = useCallback(() => {

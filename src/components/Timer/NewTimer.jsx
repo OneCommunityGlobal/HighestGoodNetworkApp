@@ -131,7 +131,6 @@ export const NewTimer = () => {
 
   const handlePause = useCallback(() => {
     handleStopAlarm();
-    sendMessage(action.PAUSE_TIMER);
   }, []);
 
   const handleClear = useCallback(() => sendMessage(action.CLEAR_TIMER), []);
@@ -168,7 +167,7 @@ export const NewTimer = () => {
     setTimerIsOverModalIsOpen(true);
   };
   const toggleModalClose = () => {
-    setLogModal(false);
+    setLogModal(modal => !modal);
   };
   const toggleTimer = () => setShowTimer(timer => !timer);
 
