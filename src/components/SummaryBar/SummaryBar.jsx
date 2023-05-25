@@ -30,7 +30,7 @@ import { ApiEndpoint } from 'utils/URL';
 import { getProgressColor, getProgressValue } from '../../utils/effortColors';
 
 const SummaryBar = props => {
-  const { asUser, role, summaryBarData } = props;
+  const { asUser, role, leaderData } = props;
   const [userProfile, setUserProfile] = useState(undefined);
   const [infringements, setInfringements] = useState(0);
   const [badges, setBadges] = useState(0);
@@ -82,16 +82,21 @@ const SummaryBar = props => {
       setUserProfile(gsUserprofile);
       setTasks(gsUserTasks.length);
     }
-  }, [asUser]);
+  }, [leaderData]);
 
   useEffect(() => {
-    if (summaryBarData && userProfile !== undefined) {
+    if (leaderData !== undefined && userProfile !== undefined) {
       setInfringements(getInfringements());
       setBadges(getBadges());
-      setTotalEffort(summaryBarData.tangibletime);
+      setTotalEffort(getTangibleTime());
       setWeeklySummary(getWeeklySummary(userProfile));
     }
-  }, [userProfile, summaryBarData]);
+  }, [userProfile, leaderData]);
+
+  const getTangibleTime = () => {
+    const user = leaderData.find(x => x.personId === asUser);
+    return user !== undefined ? parseFloat(user.tangibletime) : 0;
+  };
 
   //Get infringement count from userProfile
   const getInfringements = () => {
@@ -165,7 +170,7 @@ const SummaryBar = props => {
     }
   };
 
-  if (userProfile !== undefined && summaryBarData !== undefined) {
+  if (userProfile !== undefined && leaderData !== undefined) {
     const weeklyCommittedHours = userProfile.weeklycommittedHours + (userProfile.missedHours ?? 0);
     const weeklySummary = getWeeklySummary(userProfile);
     return (
