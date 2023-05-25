@@ -15,11 +15,11 @@ const UserTeamsTable = props => {
         <div className="container">
           {props.canEditVisibility && (
             <div className="row">
-              <Col md='7'>
-              <span className="teams-span">Visibility</span>
+              <Col md="7">
+                <span className="teams-span">Visibility</span>
               </Col>
-              <Col md='5'>
-              <ToggleSwitch
+              <Col md="5">
+                <ToggleSwitch
                   switchType="visible"
                   state={props.isVisible}
                   handleUserProfile={props.onUserVisibilitySwitch}
@@ -101,20 +101,23 @@ const UserTeamsTable = props => {
         </div>
       </div>
       <div className="teamtable-container tablet">
-          <div style={{ display: 'flex', flexDirection: 'column' }}>
+        <div style={{ display: 'flex', flexDirection: 'column' }}>
           {props.canEditVisibility && (
             <>
-              <Col 
-                md='12' 
+              <Col
+                md="12"
                 style={{
                   backgroundColor: ' #e9ecef',
                   border: '1px solid #ced4da',
                   marginBottom: '10px',
                 }}
               >
-              <span className="teams-span">Visibility</span>
+                <span className="teams-span">Visibility</span>
               </Col>
-              <Col md='12' style={{ display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+              <Col
+                md="12"
+                style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+              >
                 <ToggleSwitch
                   switchType="visible"
                   state={props.isVisible}
@@ -123,30 +126,33 @@ const UserTeamsTable = props => {
               </Col>
             </>
           )}
+          <Col
+            md="12"
+            style={{
+              backgroundColor: ' #e9ecef',
+              border: '1px solid #ced4da',
+              marginBottom: '10px',
+            }}
+          >
+            <span className="teams-span">Teams</span>
+          </Col>
+          {props.edit && props.role && (
             <Col
-              md='12'
-              style={{
-                backgroundColor: ' #e9ecef',
-                border: '1px solid #ced4da',
-                marginBottom: '10px',
-              }}
+              md="12"
+              style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}
             >
-              <span className="teams-span">Teams</span>
-            </Col>
-            {props.edit && props.role && (
-              <Col md='12' style={{ display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-                {hasPermission(props.role, 'assignTeamToUser', roles, userPermissions) ? (
-                  <Button
-                    className="btn-addteam"
-                    color="primary"
-                    onClick={() => {
-                      props.onButtonClick();
-                    }}
-                  >
-                    Assign Team
-                  </Button>
-                ) : (
-                  <></>
+              {hasPermission(props.role, 'assignTeamToUser', roles, userPermissions) ? (
+                <Button
+                  className="btn-addteam"
+                  color="primary"
+                  onClick={() => {
+                    props.onButtonClick();
+                  }}
+                >
+                  Assign Team
+                </Button>
+              ) : (
+                <></>
               )}
             </Col>
           )}
@@ -172,7 +178,13 @@ const UserTeamsTable = props => {
                     <td>{`${team.teamName}`}</td>
                     {props.edit && props.role && (
                       <td>
-                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        <div
+                          style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                          }}
+                        >
                           <Button
                             disabled={
                               !hasPermission(props.role, 'assignTeamToUser', roles, userPermissions)
