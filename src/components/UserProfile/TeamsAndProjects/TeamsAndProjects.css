@@ -3,13 +3,15 @@
   background-color: #fafafa;
   margin-top: 20px;
 }
+
 .btn-addteam,
 .btn-addproject {
-  width: 300px;
+  width: 120px;
   margin-bottom: 10px;
   margin-left: -15px;
   outline: none;
 }
+
 .teams-span,
 .projects-span {
   font-size: x-large;
@@ -20,13 +22,16 @@
   cursor: pointer;
   padding: 5px;
 }
+
 .project-auto-complete:hover {
   background: #1d62f0;
 }
+
 .team-auto-complete {
   cursor: pointer;
   padding: 5px;
 }
+
 .team-auto-complete:hover {
   background: #1d62f0;
 }
