@@ -31,7 +31,6 @@ const LeaderBoard = ({
   timeEntries,
   isVisible,
   asUser,
-  setLeaderData,
 }) => {
   const userId = asUser ? asUser : loggedInUser.userId;
 
@@ -40,8 +39,7 @@ const LeaderBoard = ({
     getOrgData();
   }, [timeEntries]);
 
-  useEffect(() => {
-    setLeaderData(leaderBoardData);
+  useDeepEffect(() => {
     try {
       if (window.screen.width < 540) {
         const scrollWindow = document.getElementById('leaderboard');
@@ -61,21 +59,20 @@ const LeaderBoard = ({
   const [modalContent, setContent] = useState(null);
 
   const toggle = () => setOpen(isOpen => !isOpen);
- 
+
   const modalInfos = [
     <>
       <p>
-        This is the One Community Leaderboard! It is used to show how much tangible and total
-        time you’ve contributed, whether or not you’ve achieved your total committed hours for
-        the week, and (in the case of teams) where your completed hours for the week rank you
-        compared to other team members. It can also be used to access key areas of this
-        application.
+        This is the One Community Leaderboard! It is used to show how much tangible and total time
+        you’ve contributed, whether or not you’ve achieved your total committed hours for the week,
+        and (in the case of teams) where your completed hours for the week rank you compared to
+        other team members. It can also be used to access key areas of this application.
       </p>
       <ul>
         <li>
-          The HGN Totals at the top shows how many volunteers are currently active in the
-          system, how many volunteer hours they are collectively committed to, and how many
-          tangible and total hours they have completed.
+          The HGN Totals at the top shows how many volunteers are currently active in the system,
+          how many volunteer hours they are collectively committed to, and how many tangible and
+          total hours they have completed.
           {/*The color and length of that bar
           changes based on what percentage of the total committed hours for the week have been
           completed: 0-20%: Red, 20-40%: Orange, 40-60% hrs: Green, 60-80%: Blue, 80-100%:Indigo, 
@@ -83,17 +80,17 @@ const LeaderBoard = ({
         </li>
         <li>
           The red/green dot shows whether or not a person has completed their “tangible” hours
-          commitment for the week. Green = yes (Great job!), Red = no. Clicking this dot will
-          take you to a person’s tasks section on their/your dashboard.{' '}
+          commitment for the week. Green = yes (Great job!), Red = no. Clicking this dot will take
+          you to a person’s tasks section on their/your dashboard.{' '}
         </li>
         <li>
           The time bar shows how much tangible and total (tangible + intangible) time you’ve
-          completed so far this week. In the case of teams, it also shows you where your
-          completed hours for the week rank you compared to other people on your team.
-          Clicking a person’s time bar will take you to the time log section on their/your
-          dashboard. This bar also changes color based on how many tangible hours you have
-          completed: 0-5 hrs: Red, 5-10 hrs: Orange, 10-20 hrs: Green, 20-30 hrs: Blue, 30-40
-          hrs: Indigo, 40-50 hrs: Violet, and 50+ hrs: Purple
+          completed so far this week. In the case of teams, it also shows you where your completed
+          hours for the week rank you compared to other people on your team. Clicking a person’s
+          time bar will take you to the time log section on their/your dashboard. This bar also
+          changes color based on how many tangible hours you have completed: 0-5 hrs: Red, 5-10 hrs:
+          Orange, 10-20 hrs: Green, 20-30 hrs: Blue, 30-40 hrs: Indigo, 40-50 hrs: Violet, and 50+
+          hrs: Purple
         </li>
         <li>Clicking a person’s name will lead to their/your profile page.</li>
       </ul>
@@ -101,25 +98,25 @@ const LeaderBoard = ({
     </>,
     <>
       <p>
-        An Admin has made it so you can see your team but they can't see you. We recommend you keep this setting as it is. 
+        An Admin has made it so you can see your team but they can't see you. We recommend you keep
+        this setting as it is.
       </p>
       <p>
-        If you want to change this setting so your team/everyone can see and access your time log though, you can do so by going to&nbsp; 
+        If you want to change this setting so your team/everyone can see and access your time log
+        though, you can do so by going to&nbsp;
         <Link to={`/userprofile/${userId}`} title="View Profile">
           Your Profile&nbsp;
         </Link>
         --&gt; Teams Tab --&gt; toggle the “Visibility” switch to “Visible”.
       </p>
-      <p>
-        Note: Admins and Core Team can always see all team members. This cannot be changed.
-      </p>
-    </>
-  ]
-  
+      <p>Note: Admins and Core Team can always see all team members. This cannot be changed.</p>
+    </>,
+  ];
+
   const handleModalOpen = idx => {
     setContent(modalInfos[idx]);
     setOpen(true);
-  }
+  };
   // add state hook for the popup the personal's dashboard from leaderboard
   const [isDashboardOpen, setIsDashboardOpen] = useState(false);
   const dashboardToggle = item => setIsDashboardOpen(item.personId);
@@ -164,26 +161,24 @@ const LeaderBoard = ({
       </h3>
       {!isVisible && (
         <Alert color="warning">
-          Note: You are currently invisible to the team(s) you are on.&nbsp;&nbsp; 
+          Note: You are currently invisible to the team(s) you are on.&nbsp;&nbsp;
           <i
-          data-toggle="tooltip"
-          data-placement="right"
-          title="Click for more information"
-          style={{ fontSize: 20, cursor: 'pointer' }}
-          aria-hidden="true"
-          className="fa fa-info-circle"
-          onClick={() => {
-            handleModalOpen(1);
-          }}
-        />
-        </Alert>)
-      }
+            data-toggle="tooltip"
+            data-placement="right"
+            title="Click for more information"
+            style={{ fontSize: 20, cursor: 'pointer' }}
+            aria-hidden="true"
+            className="fa fa-info-circle"
+            onClick={() => {
+              handleModalOpen(1);
+            }}
+          />
+        </Alert>
+      )}
       <span className="leaderboard">
         <Modal isOpen={isOpen} toggle={toggle}>
           <ModalHeader toggle={toggle}>Leaderboard Info</ModalHeader>
-          <ModalBody>
-            {modalContent}
-          </ModalBody>
+          <ModalBody>{modalContent}</ModalBody>
           <ModalFooter>
             <Button onClick={toggle} color="secondary" className="float-left">
               {' '}
