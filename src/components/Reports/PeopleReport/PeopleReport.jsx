@@ -452,13 +452,13 @@ class PeopleReport extends Component {
         <p>{userProfile.role}</p>
 
         {userProfile.endDate ? (
-          <p>
+          <div>
             <Checkbox
               value={this.state.isRehireable}
               onChange={() => this.setRehireable(!this.state.isRehireable)}
               label="Rehireable"
             ></Checkbox>
-          </p>
+          </div>
         ) : (
           ''
         )}
