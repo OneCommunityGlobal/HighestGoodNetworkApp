@@ -17,7 +17,6 @@ import moment from 'moment';
 import TeamMemberTask from './TeamMemberTask';
 import FilteredTimeEntries from './FilteredTimeEntries';
 import { hrsFilterBtnRed, hrsFilterBtnBlue } from 'constants/colors';
-import { setCurrentUser } from 'actions/authActions';
 
 const TeamMemberTasks = props => {
   const [showTaskNotificationModal, setTaskNotificationModal] = useState(false);
@@ -107,26 +106,36 @@ const TeamMemberTasks = props => {
     setMarkAsDoneModal(false);
   };
 
-  const onUpdateTask = (taskId, updatedTask, setIsLoadingTask) => {
+  const onUpdateTask = (taskId, updatedTask) => {
     const newTask = {
       updatedTask,
       taskId,
     };
-    
-    setTasks(tasks => {
-      const tasksWithoutTheUpdated = [...tasks];
-      const taskIndex = tasks.findIndex(task => task._id === taskId);
-      tasksWithoutTheUpdated[taskIndex] = updatedTask;
-      return tasksWithoutTheUpdated;
-    });
-    setUpdatedTasks(tasks => [...tasks, newTask]);
+    //This function is not needed
+    // setTasks(tasks => {
+    //   const tasksWithoutTheUpdated = [...tasks];
+    //   const taskIndex = tasks.findIndex(task => task._id === taskId);
+    //   tasksWithoutTheUpdated[taskIndex] = updatedTask;
+    //   return tasksWithoutTheUpdated;
+    // });
+
+    //updatedTasks doesn't need to be an array, it was only making it bigger
+    setUpdatedTasks(newTask);
   };
 
   const submitTasks = async () => {
-    for (let i = 0; i < updatedTasks.length; i += 1) {
-      const updatedTask = updatedTasks[i];
-      const url = ENDPOINTS.TASK_UPDATE(updatedTask.taskId);
-      axios.put(url, updatedTask.updatedTask).catch(err => console.log(err));
+    // for (let i = 0; i < updatedTasks.length; i += 1) {
+    //   const updatedTask = updatedTasks[i];
+    //   const url = ENDPOINTS.TASK_UPDATE(updatedTask.taskId);
+    //   axios.put(url, updatedTask.updatedTask).catch(err => console.log(err));
+    // }
+
+    //It only needs to update the updated task, before, it was being added on an unecessary array
+    const url = ENDPOINTS.TASK_UPDATE(updatedTasks.taskId)
+    try {
+      await axios.put(url, updatedTasks.updatedTask)
+    } catch (error) {
+      console.log(error)
     }
   };
 
@@ -218,7 +227,7 @@ const TeamMemberTasks = props => {
     }
   };
 
-  const renderTeamsList = () => {
+  const renderTeamsList = async () => {
     if (usersWithTasks && usersWithTasks.length > 0) {
       // give different users different views
       let filteredMembers = usersWithTasks.filter(member => {
