@@ -11,7 +11,9 @@ import { useState } from 'react';
 const TaskCompletedModal = React.memo(props => {
   const [isLoadingTask, setIsLoadingTask] = useState(false);
 
-  const closePopup = e => {
+  const closeFunction = e => {
+    props.setClickedToShowModal(false);
+    props.setCurrentUserId('');
     props.popupClose();
   };
 
@@ -69,9 +71,7 @@ const TaskCompletedModal = React.memo(props => {
             </Button>
             <Button
               onClick={() => {
-                props.setClickedToShowModal(false);
-                props.setCurrentUserId('');
-                closePopup();
+                closeFunction()
               }}
             >
               Cancel

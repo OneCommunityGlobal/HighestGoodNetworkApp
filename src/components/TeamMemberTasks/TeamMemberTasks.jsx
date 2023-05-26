@@ -103,7 +103,9 @@ const TeamMemberTasks = props => {
   }, [updatedTasks]);
 
   const closeMarkAsDone = () => {
+    setClickedToShowModal(false);
     setMarkAsDoneModal(false);
+    setCurrentUserId('')
   };
 
   const onUpdateTask = (taskId, updatedTask) => {
