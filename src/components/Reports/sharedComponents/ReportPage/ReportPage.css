@@ -28,10 +28,12 @@
     padding: 40px;
     align-items: center;
   }
+
   .report-page-profile {
     padding: 24px;
     border-radius: 25px;
   }
+
   .report-page-content {
     padding: 24px;
   }

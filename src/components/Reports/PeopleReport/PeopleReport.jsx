@@ -457,7 +457,7 @@ class PeopleReport extends Component {
               value={this.state.isRehireable}
               onChange={() => this.setRehireable(!this.state.isRehireable)}
               label="Rehireable"
-            ></Checkbox>
+            />
           </div>
         ) : (
           ''
