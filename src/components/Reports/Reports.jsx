@@ -20,6 +20,8 @@ import projectsImage from './images/Projects.svg';
 import peopleImage from './images/People.svg';
 import teamsImage from './images/Teams.svg';
 
+const DATE_PICKER_MIN_DATE = '01/01/2010';
+
 class ReportsPage extends Component {
   constructor(props) {
     super(props);
@@ -66,7 +68,7 @@ class ReportsPage extends Component {
       peopleSearchData: [],
       projectSearchData: {},
       users: {},
-      startDate: new Date('01-01-2010'),
+      startDate: new Date(DATE_PICKER_MIN_DATE),
       endDate: new Date(),
     };
     this.showProjectTable = this.showProjectTable.bind(this);
@@ -340,7 +342,7 @@ class ReportsPage extends Component {
                 </label>
                 <DatePicker
                   selected={this.state.startDate}
-                  minDate={new Date('01/01/2010')}
+                  minDate={new Date(DATE_PICKER_MIN_DATE)}
                   maxDate={new Date()}
                   onChange={date => this.setState({ startDate: date })}
                   className="form-control"
@@ -354,7 +356,7 @@ class ReportsPage extends Component {
                 <DatePicker
                   selected={this.state.endDate}
                   maxDate={new Date()}
-                  minDate={new Date('01/01/2010')}
+                  minDate={new Date(DATE_PICKER_MIN_DATE)}
                   onChange={date => this.setState({ endDate: date })}
                   className="form-control"
                 />
