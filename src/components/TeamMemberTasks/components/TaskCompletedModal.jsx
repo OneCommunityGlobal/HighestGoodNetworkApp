@@ -26,7 +26,6 @@ const TaskCompletedModal = React.memo(props => {
   };
 
   const removeTaskFromUser = task => {
-    setIsLoadingTask(true)
     const resources = [...task.resources];
     const newResources = resources?.map(resource => {
       let newResource = { ...resource };
@@ -45,22 +44,28 @@ const TaskCompletedModal = React.memo(props => {
 
   useEffect(() => {
     loadUserTasks(props.userId);
-  }, [props.userID, props.tasks]);
+  }, [props.userId]);
 
   return (
     <Modal isOpen={props.isOpen} toggle={() => props.popupClose()}>
       <ModalHeader toggle={() => props.popupClose()}>Mark as Done</ModalHeader>
-      {!isLoadingTask ? (
+      {isLoadingTask ? (
+        <ModalBody>
+          <p>Loading...</p>
+        </ModalBody>
+      ) : (
         <ModalBody>
           <p>Are you sure you want to mark this task as done?</p>
           <ModalFooter>
             <Button
               color="primary"
               onClick={() => {
+                setIsLoadingTask(true);
                 removeTaskFromUser(props.task);
               }}
+              disabled={isLoadingTask}
             >
-              Confirm
+              {isLoadingTask ? 'Resolving task...' : 'Done'}
             </Button>
             <Button
               onClick={() => {
@@ -72,10 +77,6 @@ const TaskCompletedModal = React.memo(props => {
               Cancel
             </Button>
           </ModalFooter>
-        </ModalBody>
-      ) : (
-        <ModalBody>
-          <p>Loading...</p>
         </ModalBody>
       )}
     </Modal>
