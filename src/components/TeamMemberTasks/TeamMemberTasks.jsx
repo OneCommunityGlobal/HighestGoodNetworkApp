@@ -82,10 +82,10 @@ const TeamMemberTasks = props => {
   }, [currentUserId]);
 
   useEffect(() => {
-    setCurrentUserId('')
+    renderTeamsList();
     setClickedToShowModal(false)
     closeMarkAsDone()
-    renderTeamsList();
+    setCurrentUserId('')
   }, [usersWithTasks]);
 
   useEffect(() => {
