@@ -35,6 +35,8 @@ const Members = props => {
     });
   };
 
+  const activeMembers = props.state.projectMembers.members.filter(member => member.isActive === true);
+
   return (
     <React.Fragment>
       <div className="container">
@@ -129,7 +131,7 @@ const Members = props => {
             </tr>
           </thead>
           <tbody>
-            {props.state.projectMembers.members.map((member, i) => (
+            {activeMembers.map((member, i) => (
               <Member
                 index={i}
                 key={member._id}
