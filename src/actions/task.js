@@ -49,7 +49,6 @@ export const fetchTeamMembersTask = (currentUserId, authenticatedUserId, shouldR
       const correctedTasks = userTasks.filter(task => {
         return authUserTasks.some(task2 => task2.personId === task.personId)
       });
-      console.log(correctedTasks)
       dispatch(fetchTeamMembersTaskSuccess(correctedTasks));
     } else {
       dispatch(fetchTeamMembersTaskSuccess(response.data));
