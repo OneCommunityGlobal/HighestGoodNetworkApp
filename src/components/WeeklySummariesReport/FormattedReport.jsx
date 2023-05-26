@@ -7,6 +7,10 @@ import { Link } from 'react-router-dom';
 import google_doc_icon from './google_doc_icon.png';
 import './WeeklySummariesReport.css';
 import { toast } from 'react-toastify';
+import ToggleSwitch from '../UserProfile/UserProfileEdit/ToggleSwitch';
+import axios from 'axios';
+import { ENDPOINTS } from '../../utils/URL';
+import { useState } from 'react';
 
 const FormattedReport = ({ summaries, weekIndex }) => {
   const emails = [];
@@ -59,9 +63,9 @@ const FormattedReport = ({ summaries, weekIndex }) => {
         </p>
       );
     }
-    
+
     const summaryText = summary?.weeklySummaries[weekIndex]?.summary;
-    
+
     const summaryContent = (() => {
       if (summaryText) {
         const style = {};
@@ -81,10 +85,13 @@ const FormattedReport = ({ summaries, weekIndex }) => {
             break;
         }
         return <div style={style}>{ReactHtmlParser(summaryText)}</div>;
-      }else{
-        if (summary?.weeklySummaryOption === 'Not Required' || (!summary?.weeklySummaryOption && summary.weeklySummaryNotReq)) {
+      } else {
+        if (
+          summary?.weeklySummaryOption === 'Not Required' ||
+          (!summary?.weeklySummaryOption && summary.weeklySummaryNotReq)
+        ) {
           return <p style={{ color: 'green' }}>Not required for this user</p>;
-        }else {
+        } else {
           return <span style={{ color: 'red' }}>Not provided!</span>;
         }
       }
@@ -128,11 +135,30 @@ const FormattedReport = ({ summaries, weekIndex }) => {
       );
     }
   };
+
+  const handleChangeBioPosted = async (userId, bioStatus) => {
+    try {
+      const url = ENDPOINTS.USER_PROFILE(userId);
+      const response = await axios.get(url);
+      const userProfile = response.data;
+      const res = await axios.put(url, {
+        ...userProfile,
+        bioPosted: !bioStatus,
+      });
+      if (res.status === 200) {
+        toast.success('You have changed the bio announcement status of this user.');
+      }
+    } catch (err) {
+      alert('An error occurred while attempting to save the bioPosted change to the profile.');
+    }
+  };
+
   return (
     <>
       {alphabetize(summaries).map((summary, index) => {
         const hoursLogged = (summary.totalSeconds[weekIndex] || 0) / 3600;
         const googleDocLink = getGoogleDocLink(summary);
+        const [isBioPosted, setIsBioPosted] = useState(summary.bioPosted);
         return (
           <div
             style={{ padding: '20px 0', marginTop: '5px', borderBottom: '1px solid #DEE2E6' }}
@@ -148,10 +174,25 @@ const FormattedReport = ({ summaries, weekIndex }) => {
                 <img className="google-doc-icon" src={google_doc_icon} alt="google_doc" />
               </span>
             </div>
-            <p>
+            <div>
               {' '}
               <b>Media URL:</b> {getMediaUrlLink(summary)}
-            </p>
+            </div>
+            <div>
+              <div className="bio-toggle">
+                <b>Bio announcement:</b>
+              </div>
+              <div className="bio-toggle">
+                <ToggleSwitch
+                  switchType="bio"
+                  state={isBioPosted ? false : true}
+                  handleUserProfile={() => {
+                    handleChangeBioPosted(summary._id, isBioPosted);
+                    setIsBioPosted(!isBioPosted);
+                  }}
+                />
+              </div>
+            </div>
             {getTotalValidWeeklySummaries(summary)}
             {hoursLogged >= summary.weeklycommittedHours && (
               <p>

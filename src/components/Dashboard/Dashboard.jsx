@@ -14,7 +14,6 @@ import { getTimeZoneAPIKey } from '../../actions/timezoneAPIActions';
 export const Dashboard = props => {
   const [popup, setPopup] = useState(false);
   const [leaderData, setLeaderData] = useState(null);
-  const [submittedSummary, setSubmittedSummary] = useState(false);
   const [userProfile, setUserProfile] = useState(undefined);
 
   const [theme, setTheme] = useState('light');
@@ -61,7 +60,11 @@ export const Dashboard = props => {
 
   return (
     <Container fluid>
-      <PopUpBar />
+      {props.match.params.userId && props.auth.user.userid !== props.match.params.userId ? (
+        <PopUpBar />
+      ) : (
+        ''
+      )}
       <SummaryBar
         userProfile={userProfile}
         setUserProfile={setUserProfile}
@@ -88,7 +91,6 @@ export const Dashboard = props => {
                 isDashboard={true}
                 isPopup={popup}
                 asUser={userId}
-                setSubmittedSummary={setSubmittedSummary}
               />
             </div>
 

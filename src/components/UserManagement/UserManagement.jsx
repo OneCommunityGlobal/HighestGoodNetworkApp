@@ -79,7 +79,10 @@ class UserManagement extends React.PureComponent {
             <div className="table-responsive">
               <Table className="table table-bordered noWrap">
                 <thead>
-                  <UserTableHeader />
+                  <UserTableHeader 
+                  authRole={this.props.state.auth.user.role} 
+                  roleSearchText={this.state.roleSearchText}
+                  />
                   <UserTableSearchHeader
                     onFirstNameSearch={this.onFirstNameSearch}
                     onLastNameSearch={this.onLastNameSearch}
@@ -87,6 +90,8 @@ class UserManagement extends React.PureComponent {
                     onEmailSearch={this.onEmailSearch}
                     onWeeklyHrsSearch={this.onWeeklyHrsSearch}
                     roles={roles}
+                    authRole={this.props.state.auth.user.role} 
+                    roleSearchText={this.state.roleSearchText}
                   />
                 </thead>
                 <tbody>{userTable}</tbody>

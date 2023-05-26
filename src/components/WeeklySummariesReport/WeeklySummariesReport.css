@@ -33,3 +33,7 @@ body.dark .header-box, body.dark .header-box h1{
   height: 20px;
   margin-left: 10px;
 }
+
+.bio-toggle {
+  display: inline-block;
+}
