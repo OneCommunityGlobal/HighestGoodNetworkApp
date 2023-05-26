@@ -9,21 +9,21 @@ import { useState } from 'react';
  * Modal popup to delete the user profile
  */
 const TaskCompletedModal = React.memo(props => {
-  const [isLoadingTask, setIsLoadingTask] = useState(true);
+  const [isLoadingTask, setIsLoadingTask] = useState(false);
 
   const closePopup = e => {
     props.popupClose();
   };
 
-  const loadUserTasks = async userId => {
-    axios
-      .get(ENDPOINTS.TASKS_BY_USERID(userId))
-      .then(res => {
-        props.setTasks(res?.data || []);
-        setIsLoadingTask(false);
-      })
-      .catch(err => console.log(err));
-  };
+  // const loadUserTasks = async userId => {
+  //   axios
+  //     .get(ENDPOINTS.TASKS_BY_USERID(userId))
+  //     .then(res => {
+  //       props.setTasks(res?.data || []);
+  //       setIsLoadingTask(false);
+  //     })
+  //     .catch(err => console.log(err));
+  // };
 
   const removeTaskFromUser = task => {
     const resources = [...task.resources];
@@ -39,12 +39,12 @@ const TaskCompletedModal = React.memo(props => {
     });
 
     const updatedTask = { ...task, resources: newResources };
-    props.updateTask(task._id, updatedTask, setIsLoadingTask);
+    props.updateTask(task._id, updatedTask);
   };
 
-  useEffect(() => {
-    loadUserTasks(props.userId);
-  }, [props.userId]);
+  // useEffect(() => {
+  //   loadUserTasks(props.userId);
+  // }, [props.userId]);
 
   return (
     <Modal isOpen={props.isOpen} toggle={() => props.popupClose()}>
