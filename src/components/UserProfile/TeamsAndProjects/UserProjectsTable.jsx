@@ -73,7 +73,7 @@ const UserProjectsTable = React.memo(props => {
       let newResource = { ...resource };
       if (resource.userID === props.userId) {
         if (method === 'remove') {
-          task.status="Complete";
+          task.status = 'Complete';
           newResource = {
             ...resource,
             completedTask: true,
@@ -183,7 +183,10 @@ const UserProjectsTable = React.memo(props => {
               <span className="projects-span">Tasks</span>
             </Col>
           </div>
-          <div className="justify-content-end d-flex pb-2" style={{ gap: '4px' }}>
+          <div
+            className="justify-content-end d-flex pb-2"
+            style={{ gap: '4px', marginRight: '10px' }}
+          >
             <button
               type="button"
               className="btn btn-primary btn-sm"
@@ -294,7 +297,10 @@ const UserProjectsTable = React.memo(props => {
               <span className="projects-span">Projects</span>
             </Col>
             {props.edit && props.role && (
-              <Col md="5" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+              <Col
+                md="5"
+                style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+              >
                 {hasPermission(props.role, 'assignUserInProject', roles, userPermissions) ? (
                   <Button
                     className="btn-addproject"
@@ -332,7 +338,13 @@ const UserProjectsTable = React.memo(props => {
                       <td>{`${project.projectName}`}</td>
                       {props.edit && props.role && (
                         <td style={{ width: '103px' }}>
-                          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                          <div
+                            style={{
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                            }}
+                          >
                             <Button
                               color="danger"
                               disabled={
@@ -419,7 +431,13 @@ const UserProjectsTable = React.memo(props => {
                         <td>{`${task.taskName}`}</td>
                         {!isCompletedTask && props.edit && props.role && (
                           <td>
-                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                            <div
+                              style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                              }}
+                            >
                               <Button
                                 color="danger"
                                 style={{ width: '72px' }}

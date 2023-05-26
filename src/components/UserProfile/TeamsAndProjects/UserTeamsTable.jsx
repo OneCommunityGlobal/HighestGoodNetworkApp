@@ -62,10 +62,10 @@ const UserTeamsTable = props => {
             <thead>
               {props.role && (
                 <tr>
-                  <th>#</th>
+                  <th style={{ width: '70px' }}>#</th>
                   <th>Team Name</th>
                   {hasPermission(props.role, 'assignTeamToUser', roles, userPermissions) ? (
-                    <th>{}</th>
+                    <th style={{ width: '100px' }}>{}</th>
                   ) : null}
                 </tr>
               )}
