@@ -1,4 +1,4 @@
-import React, { Component, Image } from 'react';
+import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import moment from 'moment';
 import { Container } from 'reactstrap';
@@ -11,9 +11,6 @@ import ProjectTable from './ProjectTable';
 import { getAllUserProfile } from '../../actions/userManagement';
 import { fetchAllTasks } from '../../actions/task';
 import ReportTableSearchPanel from './ReportTableSearchPanel';
-import { getUserProfile, getUserTask } from '../../actions/userProfile';
-import httpService from '../../services/httpService';
-import { ENDPOINTS } from '../../utils/URL';
 import 'react-datepicker/dist/react-datepicker.css';
 import './reportsPage.css';
 import projectsImage from './images/Projects.svg';
