@@ -12,8 +12,9 @@ import axios from 'axios';
 import { ENDPOINTS } from '../../utils/URL';
 import { useState } from 'react';
 
-const FormattedReport = ({ summaries, weekIndex }) => {
+const FormattedReport = ({ summaries, weekIndex, role }) => {
   const emails = [];
+  const bioCanEdit = role === 'Owner' || role === 'Administrator';
 
   summaries.forEach(summary => {
     if (summary.email !== undefined && summary.email !== null) {
@@ -153,61 +154,126 @@ const FormattedReport = ({ summaries, weekIndex }) => {
     }
   };
 
+  //These two similar but different(toggle switch onclick action) functions below are to wrap 
+  //up the actions that makes the content for each user's summary. Depending on whether the user
+  //has the permission, one of the two will be called in the map function.
+  //Checking the role once should be better than checking inside the map loop.
+  const summaryCardCanChange = (summary, index) => {
+    const hoursLogged = (summary.totalSeconds[weekIndex] || 0) / 3600;
+    const googleDocLink = getGoogleDocLink(summary);
+    const [isBioPosted, setIsBioPosted] = useState(summary.bioPosted);
+    return (
+      <div
+        style={{ padding: '20px 0', marginTop: '5px', borderBottom: '1px solid #DEE2E6' }}
+        key={'summary-' + index}
+      >
+        <div>
+          <b>Name: </b>
+          <Link to={`/userProfile/${summary._id}`} title="View Profile">
+            {summary.firstName} {summary.lastName}
+          </Link>
+
+          <span onClick={() => handleGoogleDocClick(googleDocLink)}>
+            <img className="google-doc-icon" src={google_doc_icon} alt="google_doc" />
+          </span>
+        </div>
+        <div>
+          {' '}
+          <b>Media URL:</b> {getMediaUrlLink(summary)}
+        </div>
+        <div>
+          <div className="bio-toggle">
+            <b>Bio announcement:</b>
+          </div>
+          <div className="bio-toggle">
+            <ToggleSwitch
+              switchType="bio"
+              state={isBioPosted ? false : true}
+              handleUserProfile={() => {
+                handleChangeBioPosted(summary._id, isBioPosted);
+                setIsBioPosted(!isBioPosted);
+              }}
+            />
+          </div>
+        </div>
+        {getTotalValidWeeklySummaries(summary)}
+        {hoursLogged >= summary.weeklycommittedHours && (
+          <p>
+            <b>Hours logged:</b> {hoursLogged.toFixed(2)} / {summary.weeklycommittedHours}
+          </p>
+        )}
+        {hoursLogged < summary.weeklycommittedHours && (
+          <p style={{ color: 'red' }}>
+            <b>Hours logged:</b> {hoursLogged.toFixed(2)} / {summary.weeklycommittedHours}
+          </p>
+        )}
+        {getWeeklySummaryMessage(summary)}
+      </div>
+    );
+  };
+
+  const summaryCardNoChange = (summary, index) => {
+    const hoursLogged = (summary.totalSeconds[weekIndex] || 0) / 3600;
+    const googleDocLink = getGoogleDocLink(summary);
+    const [isBioPosted, setIsBioPosted] = useState(summary.bioPosted);
+    return (
+      <div
+        style={{ padding: '20px 0', marginTop: '5px', borderBottom: '1px solid #DEE2E6' }}
+        key={'summary-' + index}
+      >
+        <div>
+          <b>Name: </b>
+          <Link to={`/userProfile/${summary._id}`} title="View Profile">
+            {summary.firstName} {summary.lastName}
+          </Link>
+
+          <span onClick={() => handleGoogleDocClick(googleDocLink)}>
+            <img className="google-doc-icon" src={google_doc_icon} alt="google_doc" />
+          </span>
+        </div>
+        <div>
+          {' '}
+          <b>Media URL:</b> {getMediaUrlLink(summary)}
+        </div>
+        <div>
+          <div className="bio-toggle">
+            <b>Bio announcement:</b>
+          </div>
+          <div className="bio-toggle">
+            <ToggleSwitch
+              switchType="bio"
+              state={isBioPosted ? false : true}
+              handleUserProfile={() => {
+                toast.error('You have not be authethrized to change the bio annoucement status.');
+              }}
+            />
+          </div>
+        </div>
+        {getTotalValidWeeklySummaries(summary)}
+        {hoursLogged >= summary.weeklycommittedHours && (
+          <p>
+            <b>Hours logged:</b> {hoursLogged.toFixed(2)} / {summary.weeklycommittedHours}
+          </p>
+        )}
+        {hoursLogged < summary.weeklycommittedHours && (
+          <p style={{ color: 'red' }}>
+            <b>Hours logged:</b> {hoursLogged.toFixed(2)} / {summary.weeklycommittedHours}
+          </p>
+        )}
+        {getWeeklySummaryMessage(summary)}
+      </div>
+    );
+  };
+
   return (
     <>
-      {alphabetize(summaries).map((summary, index) => {
-        const hoursLogged = (summary.totalSeconds[weekIndex] || 0) / 3600;
-        const googleDocLink = getGoogleDocLink(summary);
-        const [isBioPosted, setIsBioPosted] = useState(summary.bioPosted);
-        return (
-          <div
-            style={{ padding: '20px 0', marginTop: '5px', borderBottom: '1px solid #DEE2E6' }}
-            key={'summary-' + index}
-          >
-            <div>
-              <b>Name: </b>
-              <Link to={`/userProfile/${summary._id}`} title="View Profile">
-                {summary.firstName} {summary.lastName}
-              </Link>
-
-              <span onClick={() => handleGoogleDocClick(googleDocLink)}>
-                <img className="google-doc-icon" src={google_doc_icon} alt="google_doc" />
-              </span>
-            </div>
-            <div>
-              {' '}
-              <b>Media URL:</b> {getMediaUrlLink(summary)}
-            </div>
-            <div>
-              <div className="bio-toggle">
-                <b>Bio announcement:</b>
-              </div>
-              <div className="bio-toggle">
-                <ToggleSwitch
-                  switchType="bio"
-                  state={isBioPosted ? false : true}
-                  handleUserProfile={() => {
-                    handleChangeBioPosted(summary._id, isBioPosted);
-                    setIsBioPosted(!isBioPosted);
-                  }}
-                />
-              </div>
-            </div>
-            {getTotalValidWeeklySummaries(summary)}
-            {hoursLogged >= summary.weeklycommittedHours && (
-              <p>
-                <b>Hours logged:</b> {hoursLogged.toFixed(2)} / {summary.weeklycommittedHours}
-              </p>
-            )}
-            {hoursLogged < summary.weeklycommittedHours && (
-              <p style={{ color: 'red' }}>
-                <b>Hours logged:</b> {hoursLogged.toFixed(2)} / {summary.weeklycommittedHours}
-              </p>
-            )}
-            {getWeeklySummaryMessage(summary)}
-          </div>
-        );
-      })}
+      {bioCanEdit
+        ? alphabetize(summaries).map((summary, index) => {
+            return summaryCardCanChange(summary, index);
+          })
+        : alphabetize(summaries).map((summary, index) => {
+            return summaryCardNoChange(summary, index);
+          })}
       <h4>Emails</h4>
       <p>{emailString}</p>
     </>
