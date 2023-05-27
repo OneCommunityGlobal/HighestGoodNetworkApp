@@ -1,4 +1,4 @@
-import React, { Component, Image } from 'react';
+import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import moment from 'moment';
 import { Container } from 'reactstrap';
@@ -11,14 +11,13 @@ import ProjectTable from './ProjectTable';
 import { getAllUserProfile } from '../../actions/userManagement';
 import { fetchAllTasks } from '../../actions/task';
 import ReportTableSearchPanel from './ReportTableSearchPanel';
-import { getUserProfile, getUserTask } from '../../actions/userProfile';
-import httpService from '../../services/httpService';
-import { ENDPOINTS } from '../../utils/URL';
 import 'react-datepicker/dist/react-datepicker.css';
 import './reportsPage.css';
 import projectsImage from './images/Projects.svg';
 import peopleImage from './images/People.svg';
 import teamsImage from './images/Teams.svg';
+
+const DATE_PICKER_MIN_DATE = '01/01/2010';
 
 class ReportsPage extends Component {
   constructor(props) {
@@ -66,7 +65,7 @@ class ReportsPage extends Component {
       peopleSearchData: [],
       projectSearchData: {},
       users: {},
-      startDate: new Date('01-01-2010'),
+      startDate: new Date(DATE_PICKER_MIN_DATE),
       endDate: new Date(),
     };
     this.showProjectTable = this.showProjectTable.bind(this);
@@ -340,7 +339,7 @@ class ReportsPage extends Component {
                 </label>
                 <DatePicker
                   selected={this.state.startDate}
-                  minDate={new Date('01/01/2010')}
+                  minDate={new Date(DATE_PICKER_MIN_DATE)}
                   maxDate={new Date()}
                   onChange={date => this.setState({ startDate: date })}
                   className="form-control"
@@ -354,7 +353,7 @@ class ReportsPage extends Component {
                 <DatePicker
                   selected={this.state.endDate}
                   maxDate={new Date()}
-                  minDate={new Date('01/01/2010')}
+                  minDate={new Date(DATE_PICKER_MIN_DATE)}
                   onChange={date => this.setState({ endDate: date })}
                   className="form-control"
                 />
