@@ -266,7 +266,7 @@ const LeaderBoard = ({
                   </div>
 
                   {/* <Link to={`/dashboard/${item.personId}`}> */}
-                  <div
+                  {/* <div
                     title={`Weekly Committed: ${item.weeklycommittedHours} hours`}
                     style={{
                       backgroundColor:
@@ -277,7 +277,30 @@ const LeaderBoard = ({
                       margin: 'auto',
                       verticalAlign: 'middle',
                     }}
+                  /> */}
+                  <div
+                    title={`Weekly Committed: ${item.weeklycommittedHours} hours`}
+                    style={{
+                      backgroundColor:
+                        item.tangibletime >= item.weeklycommittedHours * 1.75
+                          ? 'purple'
+                          : item.tangibletime >= item.weeklycommittedHours * 1.5 &&
+                            item.tangibletime < item.weeklycommittedHours * 1.75
+                          ? 'fuchsia'
+                          : item.tangibletime >= item.weeklycommittedHours * 1.25 &&
+                            item.tangibletime < item.weeklycommittedHours * 1.5
+                          ? 'lightgreen'
+                          : item.tangibletime >= item.weeklycommittedHours 
+                          ? 'green'
+                          : 'red',
+                      width: 15,
+                      height: 15,
+                      borderRadius: 7.5,
+                      margin: 'auto',
+                      verticalAlign: 'middle',
+                    }}
                   />
+
                   {/* </Link> */}
                 </td>
                 <th scope="row">
