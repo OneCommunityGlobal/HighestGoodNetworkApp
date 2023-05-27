@@ -13,6 +13,13 @@
   pointer-events: none;
 }
 
+.disable-div input,
+.disable-div select,
+.disable-div .from-check,
+.disable-div .task-specific-description {
+  background-color: #e9ecef;
+}
+
 .margin-left {
   margin-left: 5px;
 }

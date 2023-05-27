@@ -57,7 +57,6 @@ const EditTaskModal = props => {
   // assigned
   const [assigned, setAssigned] = useState(false);
 
-
   // status
   const [status, setStatus] = useState('false');
 
@@ -117,7 +116,6 @@ const EditTaskModal = props => {
   const findMembers = () => {
     const memberList = members.members ? props.projectMembers.members : members;
     for (let i = 0; i < memberList.length; i++) {
-
       if (
         `${memberList[i].firstName} ${memberList[i].lastName}`
           .toLowerCase()
@@ -269,11 +267,11 @@ const EditTaskModal = props => {
     }
   };
 
-  const handleAssign = (value) => {
+  const handleAssign = value => {
     setAssigned(value);
   };
 
-  const handleStatus = (value) => {
+  const handleStatus = value => {
     setStatus(value);
   };
 
@@ -356,7 +354,7 @@ const EditTaskModal = props => {
                         id="true"
                         name="Assigned"
                         value="true"
-                        onChange={(e) => handleAssign(true)}
+                        onChange={e => handleAssign(true)}
                         checked={assigned}
                       />
                       <label className="form-check-label" htmlFor="true">
@@ -370,7 +368,7 @@ const EditTaskModal = props => {
                         id="false"
                         name="Assigned"
                         value="false"
-                        onChange={(e) => handleAssign(false)}
+                        onChange={e => handleAssign(false)}
                         checked={!assigned}
                       />
                       <label className="form-check-label" htmlFor="false">
@@ -385,29 +383,29 @@ const EditTaskModal = props => {
                 <td scope="col">
                   <div className="flex-row  d-inline align-items-center">
                     <div className="form-check form-check-inline">
-                    <input
-                      className="form-check-input"
-                      type="radio"
-                      id="started"
-                      name="started"
-                      value="true"
-                      onChange={(e) => handleStatus('true')}
-                      checked={status === 'true' ? true : false}
-                    />
+                      <input
+                        className="form-check-input"
+                        type="radio"
+                        id="started"
+                        name="started"
+                        value="true"
+                        onChange={e => handleStatus('true')}
+                        checked={status === 'true' ? true : false}
+                      />
                       <label className="form-check-label" htmlFor="started">
                         Started
                       </label>
                     </div>
                     <div className="form-check form-check-inline">
-                    <input
-                      className="form-check-input"
-                      type="radio"
-                      id="notStarted"
-                      name="started"
-                      value="false"
-                      onChange={(e) => handleStatus('false')}
-                      checked={status === 'false' ? true : false}
-                    />
+                      <input
+                        className="form-check-input"
+                        type="radio"
+                        id="notStarted"
+                        name="started"
+                        value="false"
+                        onChange={e => handleStatus('false')}
+                        checked={status === 'false' ? true : false}
+                      />
                       <label className="form-check-label" htmlFor="notStarted">
                         Not Started
                       </label>
@@ -552,7 +550,7 @@ const EditTaskModal = props => {
               </tr>
 
               <tr>
-                <td scope="col" colSpan="2">
+                <td scope="col" colSpan="2" className="task-specific-description">
                   Why this Task is Important
                   <Editor
                     init={{
@@ -575,7 +573,7 @@ const EditTaskModal = props => {
                 </td>
               </tr>
               <tr>
-                <td scope="col" colSpan="2">
+                <td scope="col" colSpan="2" className="task-specific-description">
                   Design Intent
                   <Editor
                     init={{
@@ -598,7 +596,7 @@ const EditTaskModal = props => {
                 </td>
               </tr>
               <tr>
-                <td scope="col" colSpan="2">
+                <td scope="col" colSpan="2" className="task-specific-description">
                   Endstate
                   <Editor
                     init={{
