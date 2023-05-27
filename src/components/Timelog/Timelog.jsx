@@ -141,6 +141,9 @@ class Timelog extends Component {
     if (!isDashboard) {
       this.setState({ activeTab: 1 });
     }
+
+    const mode = localStorage.getItem('mode');
+    document.body.className = mode;
   }
 
   async componentDidUpdate(prevProps) {

@@ -23,6 +23,10 @@
   padding: 0 5px 0 27px;
 }
 
+.dark .popup-header {
+  color:black
+}
+
 .popup-modal-footer {
   position: sticky;
   bottom: 0;

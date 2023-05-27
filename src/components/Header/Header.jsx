@@ -7,6 +7,7 @@ import { Link } from 'react-router-dom';
 import { connect, useDispatch } from 'react-redux';
 import Timer from '../Timer/Timer';
 import OwnerMessage from '../OwnerMessage/OwnerMessage';
+import '../../App.css';
 import {
   LOGO,
   DASHBOARD,
@@ -47,6 +48,8 @@ export const Header = props => {
   const [isOpen, setIsOpen] = useState(false);
   const [logoutPopup, setLogoutPopup] = useState(false);
   const { isAuthenticated, user, firstName, profilePic } = props.auth;
+  const [checked, setChecked] = useState();
+  const [theme, setTheme] = useState('light');
 
   const dispatch = useDispatch();
 
@@ -58,11 +61,35 @@ export const Header = props => {
     }
   }, []);
 
+  const toggleTheme = (e) => {
+    console.log("navbar toggle click")
+    if (theme === 'dark' ||  e.target.value === "checked") {
+      localStorage.setItem('mode',"light");
+      setTheme('light');
+    } else {
+      localStorage.setItem('mode',"dark");
+      setTheme('dark');
+    }
+  };
+
   useEffect(() => {
     if (roles.length === 0) {
       props.getAllRoles();
     }
+    
+    const mode = localStorage.getItem('mode');
+    if(mode){
+      setTheme(mode)
+      if(mode === 'dark'){
+        setChecked('checked')
+      }
+    }
   }, []);
+
+  useEffect(() => {
+    document.body.className = theme;
+    }, [theme]);
+
   const roles = props.role?.roles;
 
   const toggle = () => {
@@ -74,7 +101,7 @@ export const Header = props => {
   };
 
   return (
-    <div className="header-wrapper">
+    <div className="header-wrapper {`${theme}`}">
       <Navbar className="py-3 mb-3 navbar" color="dark" dark expand="xl">
         {logoutPopup && <Logout open={logoutPopup} setLogoutPopup={setLogoutPopup} />}
         <div
@@ -87,7 +114,18 @@ export const Header = props => {
               <OwnerMessage />
             </div>
           )}
+          {/* <label className="switch">
+            <input type="checkbox" name="theme" checked={checked} onChange={toggleTheme}/>
+            <span className="slider round"></span>
+          </label> */}
         </div>
+
+        <div> <label className="switch">
+            <input type="checkbox" name="theme" checked={checked} onChange={toggleTheme}/>
+            <span className="slider round"></span>
+          </label>
+        </div>
+       
         <NavbarToggler onClick={toggle} />
         {isAuthenticated && (
           <Collapse isOpen={isOpen} navbar>

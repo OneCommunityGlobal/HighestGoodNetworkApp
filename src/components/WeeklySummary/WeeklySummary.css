@@ -115,7 +115,9 @@ body.dark .due-section{
 
 body.dark .bg--white-smoke{
   background-color: #333;
+  border: solid 1px black;
 }
+
 @media screen and (min-width: 992px) {
   .left-col-dashboard {
     margin-top: -200px;

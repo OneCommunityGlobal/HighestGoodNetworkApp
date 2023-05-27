@@ -17,7 +17,6 @@ export const Dashboard = props => {
   const [submittedSummary, setSubmittedSummary] = useState(false);
   const [userProfile, setUserProfile] = useState(undefined);
 
-  const [theme, setTheme] = useState('light');
   let userId = props.match.params.userId ? props.match.params.userId : props.auth.user.userid;
 
   const toggle = () => {
@@ -30,22 +29,8 @@ export const Dashboard = props => {
     }, 150);
   };
 
-  const toggleTheme = (e) => {
-    if (theme === 'dark' ||  e.target.value === "checked") {
-      localStorage.setItem('mode',"light");
-      setTheme('light');
-    } else {
-      localStorage.setItem('mode',"dark");
-      setTheme('dark');
-    }
-  };
-
   useEffect(() => {
     props.getTimeZoneAPIKey();
-    const mode = localStorage.getItem('mode');
-    if(mode){
-      setTheme(mode)
-    }
   }, []);
 
   useEffect(() => {
@@ -54,10 +39,6 @@ export const Dashboard = props => {
       getUserProfile(userId);
     }
   }, [props.match]);
-
-  useEffect(() => {
-    document.body.className = theme;
-    }, [theme]);
 
   return (
     <Container fluid>
@@ -70,13 +51,10 @@ export const Dashboard = props => {
         role={props.auth.user.role}
         leaderData={leaderData}
       />
-
       <Row>
         <Col lg={{ size: 7 }}>&nbsp;</Col>
         <Col lg={{ size: 5 }}>
-          <div className="row justify-content-center {`${theme}`}">
-         
-          
+          <div className="row justify-content-center">
             <div
               role="button"
               className="mt-3 mb-5 text-center"
@@ -91,13 +69,7 @@ export const Dashboard = props => {
                 setSubmittedSummary={setSubmittedSummary}
               />
             </div>
-
             <div>
-            <br/><br/><br/>
-            <label className="switch">
-              <input type="checkbox" name="theme" onChange={toggleTheme}/>
-              <span className="slider round"></span>
-            </label>
             </div>
           </div>
         </Col>
