@@ -101,7 +101,7 @@ export const Header = props => {
   };
 
   return (
-    <div className="header-wrapper {`${theme}`}">
+    <div className="header-wrapper">
       <Navbar className="py-3 mb-3 navbar" color="dark" dark expand="xl">
         {logoutPopup && <Logout open={logoutPopup} setLogoutPopup={setLogoutPopup} />}
         <div
@@ -114,13 +114,10 @@ export const Header = props => {
               <OwnerMessage />
             </div>
           )}
-          {/* <label className="switch">
-            <input type="checkbox" name="theme" checked={checked} onChange={toggleTheme}/>
-            <span className="slider round"></span>
-          </label> */}
         </div>
 
-        <div> <label className="switch">
+        <div> 
+          <label className="switch">
             <input type="checkbox" name="theme" checked={checked} onChange={toggleTheme}/>
             <span className="slider round"></span>
           </label>
