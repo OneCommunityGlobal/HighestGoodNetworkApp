@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
+import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Row, Col } from 'reactstrap';
 import { connect } from 'react-redux';
 import ReactTooltip from 'react-tooltip';
 import { DUE_DATE_MUST_GREATER_THAN_START_DATE } from '../../../../../languages/en/messages';
@@ -61,13 +61,13 @@ const EditTaskModal = props => {
   const [status, setStatus] = useState('false');
 
   // hour best
-  const [hoursBest, setHoursBest] = useState(thisTask?.hoursBest);
+  const [hoursBest, setHoursBest] = useState(0);
   // hour worst
-  const [hoursWorst, setHoursWorst] = useState(thisTask?.hoursWorst);
+  const [hoursWorst, setHoursWorst] = useState(0);
   // hour most
-  const [hoursMost, setHoursMost] = useState(thisTask?.hoursMost);
+  const [hoursMost, setHoursMost] = useState(0);
   // hour estimate
-  const [hoursEstimate, setHoursEstimate] = useState(thisTask?.estimatedHours);
+  const [hoursEstimate, setHoursEstimate] = useState(0);
   // hours warning
   const [hoursWarning, setHoursWarning] = useState(false);
 
@@ -98,10 +98,10 @@ const EditTaskModal = props => {
     setResourceItems(thisTask?.resources);
     setAssigned(thisTask?.isAssigned || false);
     setStatus(thisTask?.status || false);
-    setHoursBest(thisTask?.hoursBest);
-    setHoursWorst(thisTask?.hoursWorst);
-    setHoursMost(thisTask?.hoursMost);
-    setHoursEstimate(thisTask?.estimatedHours);
+    setHoursBest(thisTask?.hoursBest || '');
+    setHoursWorst(thisTask?.hoursWorst || '');
+    setHoursMost(thisTask?.hoursMost || '');
+    setHoursEstimate(thisTask?.estimatedHours || '');
     setLinks(thisTask?.links);
     setCategory(thisTask?.category);
     setWhyInfo(thisTask?.whyInfo);
@@ -200,38 +200,6 @@ const EditTaskModal = props => {
     setLinks([...links.splice(0, index), ...links.splice(index + 1)]);
   };
 
-  // helpers for change start/end date
-  const changeDateStart = startDate => {
-    setStartedDate(startDate);
-    if (dueDate) {
-      if (startDate > dueDate) {
-        setDateWarning(true);
-      } else {
-        setDateWarning(false);
-      }
-    }
-  };
-  const changeDateEnd = dueDate => {
-    setDueDate(dueDate);
-    if (startedDate) {
-      if (dueDate < startedDate) {
-        setDateWarning(true);
-      } else {
-        setDateWarning(false);
-      }
-    }
-  };
-  // helper for date picker
-  const FORMAT = 'MM/dd/yy';
-  const formatDate = (date, format, locale) => dateFnsFormat(date, format, { locale });
-  const parseDate = (str, format, locale) => {
-    const parsed = dateFnsParse(str, format, new Date(), { locale });
-    if (DateUtils.isDate(parsed)) {
-      return parsed;
-    }
-    return undefined;
-  };
-
   // helper for updating task
   const updateTask = () => {
     const updatedTask = {
@@ -275,6 +243,10 @@ const EditTaskModal = props => {
     setStatus(value);
   };
 
+  const canEdit =
+    hasPermission(role, 'editTask', roles, userPermissions) ||
+    hasPermission(role, 'suggestTask', roles, userPermissions);
+
   return (
     <div className="controlBtn">
       <Modal isOpen={modal} toggle={toggle}>
@@ -304,36 +276,22 @@ const EditTaskModal = props => {
                 <td scope="col">{thisTask?.num}</td>
               </tr>
               <tr>
-                <td scope="col">Task Name</td>
-                <td scope="col">
-                  <input
-                    type="text"
-                    className="task-name"
-                    onChange={e => setTaskName(e.target.value)}
-                    onKeyPress={e => setTaskName(e.target.value)}
-                    value={taskName}
-                  />
-                </td>
+                <TaskName
+                  canEdit={canEdit}
+                  className="task-name"
+                  setTaskName={setTaskName}
+                  value={taskName}
+                />
               </tr>
               <tr>
-                <td scope="col">Priority</td>
-                <td scope="col">
-                  <select
-                    id="priority"
-                    onChange={e => setPriority(e.target.value)}
-                    value={priority}
-                  >
-                    <option value="Primary">Primary</option>
-                    <option value="Secondary">Secondary</option>
-                    <option value="Tertiary">Tertiary</option>
-                  </select>
-                </td>
+                <TaskPriority canEdit={canEdit} setPriority={setPriority} value={priority} />
               </tr>
               <tr>
                 <td scope="col">Resources</td>
                 <td scope="col">
                   <div>
                     <TagsSearch
+                      props={{ canEdit: canEdit }}
                       placeholder="Add resources"
                       members={members.members}
                       addResources={addResources}
@@ -344,317 +302,61 @@ const EditTaskModal = props => {
                 </td>
               </tr>
               <tr>
-                <td scope="col">Assigned</td>
-                <td scope="col">
-                  <div className="flex-row d-inline align-items-center">
-                    <div className="form-check form-check-inline">
-                      <input
-                        className="form-check-input"
-                        type="radio"
-                        id="true"
-                        name="Assigned"
-                        value="true"
-                        onChange={e => handleAssign(true)}
-                        checked={assigned}
-                      />
-                      <label className="form-check-label" htmlFor="true">
-                        Yes
-                      </label>
-                    </div>
-                    <div className="form-check form-check-inline">
-                      <input
-                        className="form-check-input"
-                        type="radio"
-                        id="false"
-                        name="Assigned"
-                        value="false"
-                        onChange={e => handleAssign(false)}
-                        checked={!assigned}
-                      />
-                      <label className="form-check-label" htmlFor="false">
-                        No
-                      </label>
-                    </div>
-                  </div>
-                </td>
+                <TaskAssigned caneEdit={canEdit} handleAssign={handleAssign} assigned={assigned} />
               </tr>
               <tr>
-                <td scope="col">Status</td>
-                <td scope="col">
-                  <div className="flex-row  d-inline align-items-center">
-                    <div className="form-check form-check-inline">
-                      <input
-                        className="form-check-input"
-                        type="radio"
-                        id="started"
-                        name="started"
-                        value="true"
-                        onChange={e => handleStatus('true')}
-                        checked={status === 'true' ? true : false}
-                      />
-                      <label className="form-check-label" htmlFor="started">
-                        Started
-                      </label>
-                    </div>
-                    <div className="form-check form-check-inline">
-                      <input
-                        className="form-check-input"
-                        type="radio"
-                        id="notStarted"
-                        name="started"
-                        value="false"
-                        onChange={e => handleStatus('false')}
-                        checked={status === 'false' ? true : false}
-                      />
-                      <label className="form-check-label" htmlFor="notStarted">
-                        Not Started
-                      </label>
-                    </div>
-                  </div>
-                </td>
+                <TaskStatus canEdit={canEdit} handleStatus={handleStatus} status={status} />
               </tr>
               <tr>
-                <td scope="col" data-tip="Hours - Best-case">
-                  Hours
-                </td>
-                <td scope="col" data-tip="Hours - Best-case" className="w-100">
-                  <div className="d-inline py-2">
-                    <label htmlFor="bestCase" className="text-nowrap mr-2 w-25 mr-4">
-                      Best-case
-                    </label>
-                    <input
-                      type="number"
-                      min="0"
-                      max="500"
-                      value={hoursBest}
-                      onChange={e => setHoursBest(e.target.value)}
-                      onBlur={() => calHoursEstimate()}
-                      id="bestCase"
-                      className="w-25"
-                    />
-                    <div className="warning">
-                      {hoursWarning
-                        ? 'Hours - Best-case < Hours - Most-case < Hours - Most-case'
-                        : ''}
-                    </div>
-                  </div>
-                  <div className="d-inline py-2">
-                    <label htmlFor="worstCase" className="text-nowrap mr-2  w-25 mr-4">
-                      Worst-case
-                    </label>
-                    <input
-                      type="number"
-                      min={hoursBest}
-                      max="500"
-                      value={hoursWorst}
-                      onChange={e => setHoursWorst(e.target.value)}
-                      onBlur={() => calHoursEstimate('hoursWorst')}
-                      className="w-25"
-                    />
-                    <div className="warning">
-                      {hoursWarning
-                        ? 'Hours - Best-case < Hours - Most-case < Hours - Most-case'
-                        : ''}
-                    </div>
-                  </div>
-                  <div className="d-inline py-2">
-                    <label htmlFor="mostCase" className="text-nowrap mr-2 w-25 mr-4">
-                      Most-case
-                    </label>
-                    <input
-                      type="number"
-                      min="0"
-                      max="500"
-                      value={hoursMost}
-                      onChange={e => setHoursMost(e.target.value)}
-                      onBlur={() => calHoursEstimate('hoursMost')}
-                      className="w-25"
-                    />
-                    <div className="warning">
-                      {hoursWarning
-                        ? 'Hours - Best-case < Hours - Most-case < Hours - Most-case'
-                        : ''}
-                    </div>
-                  </div>
-                  <div className="d-inline py-2">
-                    <label htmlFor="Estimated" className="text-nowrap mr-2  w-25 mr-4">
-                      Estimated
-                    </label>
-                    <input
-                      type="number"
-                      min="0"
-                      max="500"
-                      value={hoursEstimate}
-                      onChange={e => setHoursEstimate(e.target.value)}
-                      className="w-25"
-                    />
-                  </div>
-                </td>
+                <TaskHours
+                  canEdit={canEdit}
+                  hoursBest={hoursBest}
+                  hoursWorst={hoursWorst}
+                  hoursMost={hoursMost}
+                  hoursEstimate={hoursEstimate}
+                  hoursWarning={hoursWarning}
+                  setHoursBest={setHoursBest}
+                  setHoursWorst={setHoursWorst}
+                  setHoursMost={setHoursMost}
+                  setHoursEstimate={setHoursEstimate}
+                  setHoursWarning={setHoursWarning}
+                  calHoursEstimate={calHoursEstimate}
+                />
               </tr>
               <tr>
-                <td scope="col">Links</td>
-                <td scope="col">
-                  <div>
-                    <input
-                      type="text"
-                      aria-label="Search user"
-                      placeholder="Link"
-                      className="task-resouces-input"
-                      data-tip="Add a link"
-                      onChange={e => setLink(e.target.value)}
-                    />
-                    <button
-                      className="task-resouces-btn"
-                      type="button"
-                      data-tip="Add Link"
-                      onClick={addLink}
-                    >
-                      <i className="fa fa-plus" aria-hidden="true" />
-                    </button>
-                  </div>
-                  <div>
-                    {links?.map((link, i) =>
-                      link.length > 1 ? (
-                        <div key={i} className="task-link">
-                          <a href={link} target="_blank">
-                            {link.slice(-10)}
-                          </a>
-                          <span className="remove-link" onClick={() => removeLink(i)}>
-                            x
-                          </span>
-                        </div>
-                      ) : null,
-                    )}
-                  </div>
-                </td>
+                <TaskLinks
+                  canEdit={canEdit}
+                  links={links}
+                  setLink={setLink}
+                  addLink={addLink}
+                  removeLink={removeLink}
+                />
               </tr>
               <tr>
-                <td scope="col">Category</td>
-                <td scope="col">
-                  <select
-                    value={category}
-                    onChange={e => {
-                      setCategory(e.target.value);
-                    }}
-                  >
-                    <option value="Housing">Housing</option>
-                    <option value="Food">Food</option>
-                    <option value="Energy">Energy</option>
-                    <option value="Education">Education</option>
-                    <option value="Soceity">Society</option>
-                    <option value="Economics">Economics</option>
-                    <option value="Stewardship">Stewardship</option>
-                    <option value="Not Assigned">Not Assigned</option>
-                  </select>
-                </td>
+                <TaskCategory canEdit={canEdit} category={category} setCategory={setCategory} />
               </tr>
-
-              <tr>
-                <td scope="col" colSpan="2" className="task-specific-description">
-                  Why this Task is Important
-                  <Editor
-                    init={{
-                      menubar: false,
-                      plugins: 'advlist autolink autoresize lists link charmap table paste help',
-                      toolbar:
-                        'bold italic  underline numlist   |  removeformat link bullist  outdent indent |\
-                                        styleselect fontsizeselect | table| strikethrough forecolor backcolor |\
-                                        subscript superscript charmap  | help',
-                      branding: false,
-                      min_height: 180,
-                      max_height: 300,
-                      autoresize_bottom_margin: 1,
-                    }}
-                    name="why-info"
-                    className="why-info form-control"
-                    value={whyInfo}
-                    onEditorChange={content => setWhyInfo(content)}
-                  />
-                </td>
-              </tr>
-              <tr>
-                <td scope="col" colSpan="2" className="task-specific-description">
-                  Design Intent
-                  <Editor
-                    init={{
-                      menubar: false,
-                      plugins: 'advlist autolink autoresize lists link charmap table paste help',
-                      toolbar:
-                        'bold italic  underline numlist   |  removeformat link bullist  outdent indent |\
-                                        styleselect fontsizeselect | table| strikethrough forecolor backcolor |\
-                                        subscript superscript charmap  | help',
-                      branding: false,
-                      min_height: 180,
-                      max_height: 300,
-                      autoresize_bottom_margin: 1,
-                    }}
-                    name="intent-info"
-                    className="intent-info form-control"
-                    value={intentInfo}
-                    onEditorChange={content => setIntentInfo(content)}
-                  />
-                </td>
-              </tr>
-              <tr>
-                <td scope="col" colSpan="2" className="task-specific-description">
-                  Endstate
-                  <Editor
-                    init={{
-                      menubar: false,
-                      plugins: 'advlist autolink autoresize lists link charmap table paste help',
-                      toolbar:
-                        'bold italic  underline numlist   |  removeformat link bullist  outdent indent |\
-                                        styleselect fontsizeselect | table| strikethrough forecolor backcolor |\
-                                        subscript superscript charmap  | help',
-                      branding: false,
-                      min_height: 180,
-                      max_height: 300,
-                      autoresize_bottom_margin: 1,
-                    }}
-                    name="endstate-info"
-                    className="endstate-info form-control"
-                    value={endstateInfo}
-                    onEditorChange={content => setEndstateInfo(content)}
-                  />
-                </td>
-              </tr>
-              <tr>
-                <td scope="col">Start Date</td>
-                <td scope="col">
-                  <div>
-                    <DayPickerInput
-                      format={FORMAT}
-                      formatDate={formatDate}
-                      placeholder={`${dateFnsFormat(new Date(), FORMAT)}`}
-                      onDayChange={(day, mod, input) => changeDateStart(input.state.value)}
-                      value={startedDate}
-                    />
-                    <div className="warning">
-                      {dateWarning ? DUE_DATE_MUST_GREATER_THAN_START_DATE : ''}
-                    </div>
-                  </div>
-                </td>
-              </tr>
-              <tr>
-                <td scope="col">End Date</td>
-                <td scope="col">
-                  <DayPickerInput
-                    format={FORMAT}
-                    formatDate={formatDate}
-                    placeholder={`${dateFnsFormat(new Date(), FORMAT)}`}
-                    onDayChange={(day, mod, input) => changeDateEnd(input.state.value)}
-                    value={dueDate}
-                  />
-                  <div className="warning">
-                    {dateWarning ? DUE_DATE_MUST_GREATER_THAN_START_DATE : ''}
-                  </div>
-                </td>
-              </tr>
+              <TaskInfo
+                canEdit={canEdit}
+                whyInfo={whyInfo}
+                intentInfo={intentInfo}
+                endstateInfo={endstateInfo}
+                setWhyInfo={setWhyInfo}
+                setIntentInfo={setIntentInfo}
+                setEndstateInfo={setEndstateInfo}
+              />
+              <TaskDate
+                canEdit={canEdit}
+                startedDate={startedDate}
+                dueDate={dueDate}
+                dateWarning={dateWarning}
+                setDateWarning={setDateWarning}
+                setStartedDate={setStartedDate}
+                setDueDate={setDueDate}
+              />
             </tbody>
           </table>
         </ModalBody>
-        {hasPermission(role, 'editTask', roles, userPermissions) ||
-        hasPermission(role, 'suggestTask', roles, userPermissions) ? (
+        {canEdit ? (
           <ModalFooter>
             {taskName !== '' && startedDate !== '' && dueDate !== '' ? (
               <Button color="primary" onClick={updateTask}>
@@ -675,6 +377,552 @@ const EditTaskModal = props => {
           : 'View'}
       </Button>
     </div>
+  );
+};
+
+const TaskName = props => {
+  if (!props.canEdit) {
+    return (
+      <>
+        <td scope="col">Task Name</td>
+        <td>{props.value}</td>
+      </>
+    );
+  }
+  return (
+    <>
+      <td scope="col">Task Name</td>
+      <td scope="col">
+        <input
+          type="text"
+          className="task-name"
+          onChange={e => props.setTaskName(e.target.value)}
+          onKeyPress={e => props.setTaskName(e.target.value)}
+          value={props.value}
+        />
+      </td>
+    </>
+  );
+};
+
+const TaskPriority = props => {
+  if (!props.canEdit) {
+    return (
+      <>
+        <td scope="col">Priority</td>
+        <td scope="col">{props.value}</td>
+      </>
+    );
+  }
+  return (
+    <>
+      <td scope="col">Priority</td>
+      <td scope="col">
+        <select id="priority" onChange={e => props.setPriority(e.target.value)} value={props.value}>
+          <option value="Primary">Primary</option>
+          <option value="Secondary">Secondary</option>
+          <option value="Tertiary">Tertiary</option>
+        </select>
+      </td>
+    </>
+  );
+};
+
+const TaskAssigned = props => {
+  const statusText = props.status ? 'Yes' : 'No';
+  if (!props.canEdit) {
+    return (
+      <>
+        <td scope="col">Assigned</td>
+        <td scope="col">{statusText}</td>
+      </>
+    );
+  }
+  return (
+    <>
+      <td scope="col">Assigned</td>
+      <td scope="col">
+        <div className="flex-row d-inline align-items-center">
+          <div className="form-check form-check-inline">
+            <input
+              className="form-check-input"
+              type="radio"
+              id="true"
+              name="Assigned"
+              value="true"
+              onChange={e => props.handleAssign(true)}
+              checked={props.assigned}
+            />
+            <label className="form-check-label" htmlFor="true">
+              Yes
+            </label>
+          </div>
+          <div className="form-check form-check-inline">
+            <input
+              className="form-check-input"
+              type="radio"
+              id="false"
+              name="Assigned"
+              value="false"
+              onChange={e => handleAssign(false)}
+              checked={!assigned}
+            />
+            <label className="form-check-label" htmlFor="false">
+              No
+            </label>
+          </div>
+        </div>
+      </td>
+    </>
+  );
+};
+
+const TaskStatus = props => {
+  const statusText = props.status ? 'Started' : 'NotStarted';
+  if (!props.canEdit) {
+    return (
+      <>
+        <td scope="col">Status</td>
+        <td scope="col">
+          <p className="form-check-label">{statusText}</p>
+        </td>
+      </>
+    );
+  }
+  return (
+    <>
+      <td scope="col">Status</td>
+      <td scope="col">
+        <div className="flex-row  d-inline align-items-center">
+          <div className="form-check form-check-inline">
+            <input
+              className="form-check-input"
+              type="radio"
+              id="started"
+              name="started"
+              value="true"
+              onChange={e => props.handleStatus('true')}
+              checked={props.status === 'true' ? true : false}
+            />
+            <label className="form-check-label" htmlFor="started">
+              Started
+            </label>
+          </div>
+          <div className="form-check form-check-inline">
+            <input
+              className="form-check-input"
+              type="radio"
+              id="notStarted"
+              name="started"
+              value="false"
+              onChange={e => props.handleStatus('false')}
+              checked={props.status === 'false' ? true : false}
+            />
+            <label className="form-check-label" htmlFor="notStarted">
+              Not Started
+            </label>
+          </div>
+        </div>
+      </td>
+    </>
+  );
+};
+
+const TaskHours = props => {
+  if (!props.canEdit) {
+    return (
+      <>
+        <td scope="col" data-tip="Hours - Best-case">
+          Hours
+        </td>
+        <td scope="col" data-tip="Hours - Best-case" className="w-100">
+          <Row className=" py-2">
+            <Col className="text-nowrap mr-2 w-25 mr-4">Best-case</Col>
+            <Col>{props.hoursBest}</Col>
+          </Row>
+          <Row className=" py-2">
+            <Col htmlFor="worstCase" className="text-nowrap mr-2 w-25 mr-4">
+              Worst-case
+            </Col>
+            <Col>{props.hoursWorst}</Col>
+          </Row>
+          <Row className="py-2">
+            <Col htmlFor="mostCase" className="text-nowrap mr-2 w-25 mr-4">
+              Most-case
+            </Col>
+            <Col>{props.hoursMost}</Col>
+          </Row>
+          <Row className="py-2">
+            <Col htmlFor="mostCase" className="text-nowrap mr-2 w-25 mr-4">
+              Most-case
+            </Col>
+            <Col>{props.hoursEstimate}</Col>
+          </Row>
+        </td>
+      </>
+    );
+  }
+  return (
+    <>
+      <td scope="col" data-tip="Hours - Best-case">
+        Hours
+      </td>
+      <td scope="col" data-tip="Hours - Best-case" className="w-100">
+        <div className="d-inline py-2">
+          <label htmlFor="bestCase" className="text-nowrap mr-2 w-25 mr-4">
+            Best-case
+          </label>
+          <input
+            type="number"
+            min="0"
+            max="500"
+            value={props.hoursBest}
+            onChange={e => props.setHoursBest(e.target.value)}
+            onBlur={() => props.calHoursEstimate()}
+            id="bestCase"
+            className="w-25"
+          />
+          <div className="warning">
+            {props.hoursWarning ? 'Hours - Best-case < Hours - Most-case < Hours - Most-case' : ''}
+          </div>
+        </div>
+        <div className="d-inline py-2">
+          <label htmlFor="worstCase" className="text-nowrap mr-2  w-25 mr-4">
+            Worst-case
+          </label>
+          <input
+            type="number"
+            min={props.hoursBest}
+            max="500"
+            value={props.hoursWorst}
+            onChange={e => props.setHoursWorst(e.target.value)}
+            onBlur={() => props.calHoursEstimate('hoursWorst')}
+            className="w-25"
+          />
+          <div className="warning">
+            {props.hoursWarning ? 'Hours - Best-case < Hours - Most-case < Hours - Most-case' : ''}
+          </div>
+        </div>
+        <div className="d-inline py-2">
+          <label htmlFor="mostCase" className="text-nowrap mr-2 w-25 mr-4">
+            Most-case
+          </label>
+          <input
+            type="number"
+            min="0"
+            max="500"
+            value={props.hoursMost}
+            onChange={e => props.setHoursMost(e.target.value)}
+            onBlur={() => props.calHoursEstimate('hoursMost')}
+            className="w-25"
+          />
+          <div className="warning">
+            {props.hoursWarning ? 'Hours - Best-case < Hours - Most-case < Hours - Most-case' : ''}
+          </div>
+        </div>
+        <div className="d-inline py-2">
+          <label htmlFor="Estimated" className="text-nowrap mr-2  w-25 mr-4">
+            Estimated
+          </label>
+          <input
+            type="number"
+            min="0"
+            max="500"
+            value={props.hoursEstimate}
+            onChange={e => props.setHoursEstimate(e.target.value)}
+            className="w-25"
+          />
+        </div>
+      </td>
+    </>
+  );
+};
+
+const TaskLinks = props => {
+  if (!props.canEdit) {
+    return (
+      <>
+        <td scope="col">Links</td>
+        <td scope="col">
+          {props.links?.map((link, i) =>
+            link.length > 1 ? (
+              <div key={i} className="task-link">
+                <a href={link} target="_blank">
+                  {link.slice(-10)}
+                </a>
+              </div>
+            ) : null,
+          )}
+        </td>
+      </>
+    );
+  }
+  return (
+    <>
+      <td scope="col">Links</td>
+      <td scope="col">
+        <div>
+          <input
+            type="text"
+            aria-label="Search user"
+            placeholder="Link"
+            className="task-resouces-input"
+            data-tip="Add a link"
+            onChange={e => props.setLink(e.target.value)}
+          />
+          <button
+            className="task-resouces-btn"
+            type="button"
+            data-tip="Add Link"
+            onClick={props.addLink}
+          >
+            <i className="fa fa-plus" aria-hidden="true" />
+          </button>
+        </div>
+        <div>
+          {props.links?.map((link, i) =>
+            link.length > 1 ? (
+              <div key={i} className="task-link">
+                <a href={link} target="_blank">
+                  {link.slice(-10)}
+                </a>
+                <span className="remove-link" onClick={() => props.removeLink(i)}>
+                  x
+                </span>
+              </div>
+            ) : null,
+          )}
+        </div>
+      </td>
+    </>
+  );
+};
+
+const TaskCategory = props => {
+  if (!props.canEdit) {
+    return (
+      <>
+        <td scope="col">Category</td>
+        <p>{props.category}</p>
+      </>
+    );
+  }
+  return (
+    <>
+      <td scope="col">Category</td>
+      <td scope="col">
+        <select
+          value={props.category}
+          onChange={e => {
+            props.setCategory(e.target.value);
+          }}
+        >
+          <option value="Housing">Housing</option>
+          <option value="Food">Food</option>
+          <option value="Energy">Energy</option>
+          <option value="Education">Education</option>
+          <option value="Soceity">Society</option>
+          <option value="Economics">Economics</option>
+          <option value="Stewardship">Stewardship</option>
+          <option value="Not Assigned">Not Assigned</option>
+        </select>
+      </td>
+    </>
+  );
+};
+
+const TaskInfo = props => {
+  const editorViewInit = {
+    readonly: true,
+    menubar: false,
+    plugins: 'advlist autolink autoresize lists link charmap table paste help',
+    toolbar: false,
+    branding: false,
+    min_height: 180,
+    max_height: 300,
+    autoresize_bottom_margin: 1,
+  };
+
+  const editorInit = {
+    ...editorViewInit,
+    readonly: false,
+    plugins: 'advlist autolink autoresize lists link charmap table paste help',
+    toolbar:
+      'bold italic  underline numlist   |  removeformat link bullist  outdent indent |\
+                      styleselect fontsizeselect | table| strikethrough forecolor backcolor |\
+                      subscript superscript charmap  | help',
+  };
+
+  if (!props.canEdit) {
+    return (
+      <>
+        <tr>
+          <td scope="col" colSpan="2" className="task-specific-description">
+            Why this Task is Important
+            <Editor
+              init={editorViewInit}
+              name="why-info"
+              className="why-info form-control"
+              value={props.whyInfo}
+            />
+          </td>
+        </tr>
+        <tr>
+          <td scope="col" colSpan="2" className="task-specific-description">
+            Design Intent
+            <Editor
+              init={editorViewInit}
+              name="intent-info"
+              className="intent-info form-control"
+              value={props.intentInfo}
+            />
+          </td>
+        </tr>
+        <tr>
+          <td scope="col" colSpan="2" className="task-specific-description">
+            Endstate
+            <Editor
+              init={editorViewInit}
+              name="endstate-info"
+              className="endstate-info form-control"
+              value={props.endstateInfo}
+            />
+          </td>
+        </tr>
+      </>
+    );
+  }
+  return (
+    <>
+      <tr>
+        <td scope="col" colSpan="2" className="task-specific-description">
+          Why this Task is Important
+          <Editor
+            init={editorInit}
+            name="why-info"
+            className="why-info form-control"
+            value={props.whyInfo}
+            onEditorChange={content => props.setWhyInfo(content)}
+          />
+        </td>
+      </tr>
+      <tr>
+        <td scope="col" colSpan="2" className="task-specific-description">
+          Design Intent
+          <Editor
+            init={editorInit}
+            name="intent-info"
+            className="intent-info form-control"
+            value={props.intentInfo}
+            onEditorChange={content => props.setIntentInfo(content)}
+          />
+        </td>
+      </tr>
+      <tr>
+        <td scope="col" colSpan="2" className="task-specific-description">
+          Endstate
+          <Editor
+            init={editorInit}
+            name="endstate-info"
+            className="endstate-info form-control"
+            value={props.endstateInfo}
+            onEditorChange={content => props.setEndstateInfo(content)}
+          />
+        </td>
+      </tr>
+    </>
+  );
+};
+
+const TaskDate = props => {
+  // helpers for change start/end date
+  const startedDate = props.startedDate;
+  const dueDate = props.dueDate;
+
+  const changeDateStart = startedDate => {
+    props.setStartedDate(startedDate);
+    if (dueDate) {
+      if (startedDate > dueDate) {
+        props.setDateWarning(true);
+      } else {
+        props.setDateWarning(false);
+      }
+    }
+  };
+  const changeDateEnd = dueDate => {
+    props.setDueDate(dueDate);
+    if (startedDate) {
+      if (dueDate < startedDate) {
+        props.setDateWarning(true);
+      } else {
+        props.setDateWarning(false);
+      }
+    }
+  };
+  // helper for date picker
+  const FORMAT = 'MM/dd/yy';
+  const formatDate = (date, format, locale) => dateFnsFormat(date, format, { locale });
+  const parseDate = (str, format, locale) => {
+    const parsed = dateFnsParse(str, format, new Date(), { locale });
+    if (DateUtils.isDate(parsed)) {
+      return parsed;
+    }
+    return undefined;
+  };
+
+  if (!props.canEdit) {
+    return (
+      <>
+        <tr>
+          <td scope="col">Start Date</td>
+          <td scope="col">
+            <p>{startedDate}</p>
+          </td>
+        </tr>
+        <tr>
+          <td scope="col">End Date</td>
+          <td scope="col">
+            <p>{dueDate}</p>
+          </td>
+        </tr>
+      </>
+    );
+  }
+  return (
+    <>
+      <tr>
+        <td scope="col">Start Date</td>
+        <td scope="col">
+          <div>
+            <DayPickerInput
+              format={FORMAT}
+              formatDate={formatDate}
+              placeholder={`${dateFnsFormat(new Date(), FORMAT)}`}
+              onDayChange={(day, mod, input) => changeDateStart(input.state.value)}
+              value={startedDate}
+            />
+            <div className="warning">
+              {props.dateWarning ? DUE_DATE_MUST_GREATER_THAN_START_DATE : ''}
+            </div>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td scope="col">End Date</td>
+        <td scope="col">
+          <DayPickerInput
+            format={FORMAT}
+            formatDate={formatDate}
+            placeholder={`${dateFnsFormat(new Date(), FORMAT)}`}
+            onDayChange={(day, mod, input) => changeDateEnd(input.state.value)}
+            value={dueDate}
+          />
+          <div className="warning">
+            {props.dateWarning ? DUE_DATE_MUST_GREATER_THAN_START_DATE : ''}
+          </div>
+        </td>
+      </tr>
+    </>
   );
 };
 

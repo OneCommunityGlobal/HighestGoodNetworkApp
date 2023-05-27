@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import TagSent from './TagSent';
 import './TagsSearch.css';
 
-function TagsSearch({ placeholder, members, addResources, removeResource, resourceItems }) {
+function TagsSearch({ placeholder, members, addResources, removeResource, resourceItems, props }) {
   const [isHidden, setIsHidden] = useState(false);
   const [filteredData, setFilteredData] = useState([]);
   const [selectedIndex, setSelectedIndex] = useState(0);
@@ -15,10 +15,12 @@ function TagsSearch({ placeholder, members, addResources, removeResource, resour
 
   const handleFilter = event => {
     const searchWord = event.target.value;
-    const newFilter = members.filter(member =>
-      !resourceItems.some(resourceItem =>
-        resourceItem.name === `${member.firstName} ${member.lastName}` 
-      ) && `${member.firstName} ${member.lastName}`.toLowerCase().includes(searchWord.toLowerCase())
+    const newFilter = members.filter(
+      member =>
+        !resourceItems.some(
+          resourceItem => resourceItem.name === `${member.firstName} ${member.lastName}`,
+        ) &&
+        `${member.firstName} ${member.lastName}`.toLowerCase().includes(searchWord.toLowerCase()),
     );
     if (searchWord === '') {
       setFilteredData([]);
@@ -28,17 +30,28 @@ function TagsSearch({ placeholder, members, addResources, removeResource, resour
     }
   };
 
+  const inputElement = () => {
+    // if no props is provided, render intput as usual
+    const { canEdit = true } = props ?? {};
+    if (canEdit) {
+      return (
+        <input
+          type="text"
+          placeholder={placeholder}
+          className="border border-dark rounded form-control px-2"
+          onChange={handleFilter}
+        />
+      );
+    } else {
+      return null;
+    }
+  };
+
   return (
     <div className="container-fluid d-flex flex-column px-0">
       <div className="d-flex flex-column container-fluid mb-1 px-0">
         <div className="align-items-start justify-content-start w-100 px-0 position-relative">
-          <input
-            type="text"
-            placeholder={placeholder}
-            className="border border-dark rounded form-control px-2"
-            onChange={handleFilter}
-
-          />
+          {inputElement()}
           {filteredData.length !== 0 ? (
             <ul
               className={`my-element ${
@@ -55,7 +68,7 @@ function TagsSearch({ placeholder, members, addResources, removeResource, resour
                         ? 'dropdown-item border-bottom fs-6 w-100 p-1'
                         : 'dropdown-item border-bottom fs-6 w-100 p-1'
                     }
-                    onClick={(event) => handleClick(event, member)}
+                    onClick={event => handleClick(event, member)}
                   >
                     {member.firstName + ' ' + member.lastName}
                   </li>
@@ -69,7 +82,10 @@ function TagsSearch({ placeholder, members, addResources, removeResource, resour
       </div>
       <div className="d-flex flex-wrap align-items-start justify-content-start">
         {resourceItems?.map((elm, index) => (
-          <ul key={`${elm._id}-${index}`} className="d-flex align-items-start justify-content-start m-0 p-1">
+          <ul
+            key={`${elm._id}-${index}`}
+            className="d-flex align-items-start justify-content-start m-0 p-1"
+          >
             <TagSent elm={elm} removeResource={removeResource} />
           </ul>
         ))}
