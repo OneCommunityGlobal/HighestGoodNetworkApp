@@ -45,7 +45,6 @@ export const fetchTeamMembersTask = (currentUserId, authenticatedUserId, shouldR
       const originalTasks = await axios.get(ENDPOINTS.TEAM_MEMBER_TASKS(authUserId));
       const authUserTasks = originalTasks.data
       const userTasks = response.data
-      console.log(authUserTasks, userTasks)
       const correctedTasks = userTasks.filter(task => {
         return authUserTasks.some(task2 => task2.personId === task.personId)
       });
@@ -54,6 +53,8 @@ export const fetchTeamMembersTask = (currentUserId, authenticatedUserId, shouldR
       dispatch(fetchTeamMembersTaskSuccess(response.data));
     }
   } catch (error) {
+    console.log('mudou por causa do erro')
+
     dispatch(fetchTeamMembersTaskError());
   }
 };
