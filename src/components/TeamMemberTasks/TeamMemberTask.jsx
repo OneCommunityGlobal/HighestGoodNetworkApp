@@ -22,7 +22,7 @@ const TeamMemberTask = ({
   const thisWeekHours = user.totaltangibletime_hrs;
   const rolesAllowedToResolveTasks = ['Administrator', 'Owner'];
   const isAllowedToResolveTasks = rolesAllowedToResolveTasks.includes(userRole);
-
+  const isAllowedToFollowUp = userRole !== 'Volunteers';
   const [isChecked, setIsChecked] = useState(false);
   if (user.tasks) {
     user.tasks = user.tasks.map(task => {
@@ -135,58 +135,66 @@ const TeamMemberTask = ({
                                 value={getProgressValue(task.hoursLogged, task.estimatedHours)}
                                 className="team-task-progress-bar"
                               />
-                              <input
-                                type="checkbox"
-                                title="This box is used to track follow ups. Clicking it means you’ve checked in with a person that they are on track to meet their deadline"
-                                className="team-task-progress-follow-up "
-                                checked={isChecked}
-                                onChange={() => {
-                                  setIsChecked(!isChecked);
-                                }}
-                              />
-                              {isChecked && (
-                                <FontAwesomeIcon
-                                  icon={faCheck}
-                                  title="This box is used to track follow ups. Clicking it means you’ve checked in with a person that they are on track to meet their deadline"
-                                  className="team-task-progress-follow-up-check"
-                                  onClick={() => {
-                                    setIsChecked(!isChecked);
-                                  }}
-                                />
+                              {isAllowedToFollowUp && (
+                                <>
+                                  <input
+                                    type="checkbox"
+                                    title="This box is used to track follow ups. Clicking it means you’ve checked in with a person that they are on track to meet their deadline"
+                                    className="team-task-progress-follow-up team-task-progress-follow-up-red"
+                                    checked={isChecked}
+                                    onChange={() => {
+                                      setIsChecked(!isChecked);
+                                    }}
+                                  />
+                                  {isChecked && (
+                                    <FontAwesomeIcon
+                                      icon={faCheck}
+                                      title="This box is used to track follow ups. Clicking it means you’ve checked in with a person that they are on track to meet their deadline"
+                                      className="team-task-progress-follow-up-check"
+                                      onClick={() => {
+                                        setIsChecked(!isChecked);
+                                      }}
+                                    />
+                                  )}
+                                  <FontAwesomeIcon
+                                    icon={faInfo}
+                                    className="follow-up-button-info-icon"
+                                    data-tip="true"
+                                    data-for="follow-up-button-tip"
+                                    data-delay-hide="500"
+                                    aria-hidden="true"
+                                  />
+                                  <ReactTooltip
+                                    id="follow-up-button-tip"
+                                    place="bottom"
+                                    effect="solid"
+                                  >
+                                    This checkbox allows you to track follow-ups. By clicking it,
+                                    you indicate that you have checked <br /> in with a person to
+                                    ensure they are on track to meet their deadline.
+                                    <br />
+                                    <br />
+                                    The checkbox is visible and accessible to all classes except
+                                    volunteers. Checking the box will modify
+                                    <br /> its appearance for all others who can see it.
+                                    <br />
+                                    <br />
+                                    When a person's task is at 50%, 75%, or 90% of the deadline, the
+                                    checkbox changes to a red outline with a <br />
+                                    light pink filler. This visual cue indicates that the person
+                                    requires follow-up. <br />
+                                    Once checked, the box reverts to a green outline with a light
+                                    green filler and a check mark inside.
+                                    <br />
+                                    <br />
+                                    The checkbox automatically clears when a person reaches 75% and
+                                    90% of their task deadline, <br />
+                                    serving as a reminder for follow-up actions.
+                                    <br />
+                                    <br />
+                                  </ReactTooltip>
+                                </>
                               )}
-                              <FontAwesomeIcon
-                                icon={faInfo}
-                                className="follow-up-button-info-icon"
-                                data-tip="true"
-                                data-for="follow-up-button-tip"
-                                data-delay-hide="500"
-                                aria-hidden="true"
-                              />
-                              <ReactTooltip id="follow-up-button-tip" place="bottom" effect="solid">
-                                This checkbox allows you to track follow-ups. By clicking it, you
-                                indicate that you have checked <br /> in with a person to ensure
-                                they are on track to meet their deadline.
-                                <br />
-                                <br />
-                                The checkbox is visible and accessible to all classes except
-                                volunteers. Checking the box will modify
-                                <br /> its appearance for all others who can see it.
-                                <br />
-                                <br />
-                                When a person's task is at 50%, 75%, or 90% of the deadline, the
-                                checkbox changes to a red outline with a <br />
-                                light pink filler. This visual cue indicates that the person
-                                requires follow-up. <br />
-                                Once checked, the box reverts to a green outline with a light green
-                                filler and a check mark inside.
-                                <br />
-                                <br />
-                                The checkbox automatically clears when a person reaches 75% and 90%
-                                of their task deadline, <br />
-                                serving as a reminder for follow-up actions.
-                                <br />
-                                <br />
-                              </ReactTooltip>
                             </div>
                           </td>
                         )}
