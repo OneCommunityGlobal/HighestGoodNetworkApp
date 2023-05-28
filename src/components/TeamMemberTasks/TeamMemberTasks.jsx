@@ -2,7 +2,7 @@ import { faClock, faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 import { Table } from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { fetchTeamMembersTask, deleteTaskNotification } from 'actions/task';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useDispatch, useSelector, connect } from 'react-redux';
 import Loading from '../common/Loading';
 import { TaskDifferenceModal } from './components/TaskDifferenceModal';
@@ -36,6 +36,9 @@ const TeamMemberTasks = props => {
   const [fortyEightHoursTimeEntries, setFortyEightHoursTimeEntries] = useState([]);
   const [seventyTwoHoursTimeEntries, setSeventyTwoHoursTimeEntries] = useState([]);
   const [finishLoading, setFinishLoading] = useState(false);
+
+  //added it to keep track if it's the first run of the page, in case it is, only one request is going to be made by the fetchTeamMembersTasks
+  const isFirstRun = useRef(true);
 
   //role state so it's more easily changed, the initial value is empty, so it'll be determinated on the first useEffect
   const [userRole, setUserRole] = useState('');
@@ -81,16 +84,23 @@ const TeamMemberTasks = props => {
   }, [currentUserId]);
 
   useEffect(() => {
-    renderTeamsList();
-    setClickedToShowModal(false)
-    closeMarkAsDone()
-    setCurrentUserId('')
+    if (isLoading === false) {
+      renderTeamsList();
+      setClickedToShowModal(false);
+      closeMarkAsDone();
+      setCurrentUserId('');
+    }
   }, [usersWithTasks]);
 
   useEffect(() => {
+    //As this useEffect should not run if it's the first run of the page, it will see if the isFirstRun ref is true, in case it is it will change it to false and return
+    if (isFirstRun.current) {
+      isFirstRun.current = false;
+      return;
+    }
     submitTasks();
     if (userId !== props.auth.user.userid) {
-      dispatch(fetchTeamMembersTask(userId, props.auth.user.userid,false));
+      dispatch(fetchTeamMembersTask(userId, props.auth.user.userid, false));
       const currentUserRole = getUserRole(userId)
         .then(resp => resp)
         .then(user => {
@@ -105,7 +115,7 @@ const TeamMemberTasks = props => {
   const closeMarkAsDone = () => {
     setClickedToShowModal(false);
     setMarkAsDoneModal(false);
-    setCurrentUserId('')
+    setCurrentUserId('');
   };
 
   const onUpdateTask = (taskId, updatedTask) => {
@@ -133,11 +143,11 @@ const TeamMemberTasks = props => {
     // }
 
     //It only needs to update the updated task, before, it was being added on an unecessary array
-    const url = ENDPOINTS.TASK_UPDATE(updatedTasks.taskId)
+    const url = ENDPOINTS.TASK_UPDATE(updatedTasks.taskId);
     try {
-      await axios.put(url, updatedTasks.updatedTask)
+      await axios.put(url, updatedTasks.updatedTask);
     } catch (error) {
-      console.log(error)
+      console.log(error);
     }
   };
 
