@@ -1,12 +1,15 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faBell, faCircle, faCheck } from '@fortawesome/free-solid-svg-icons';
+import { faBell, faCircle, faCheck, faInfo } from '@fortawesome/free-solid-svg-icons';
+
 import TaskButton from './TaskButton';
 import CopyToClipboard from 'components/common/Clipboard/CopyToClipboard';
 import { Table, Progress } from 'reactstrap';
 import { Link } from 'react-router-dom';
 import { getProgressColor, getProgressValue } from '../../utils/effortColors';
 import './style.css';
+import classNames from 'classnames';
+import ReactTooltip from 'react-tooltip';
 
 const TeamMemberTask = ({
   user,
@@ -20,6 +23,7 @@ const TeamMemberTask = ({
   const rolesAllowedToResolveTasks = ['Administrator', 'Owner'];
   const isAllowedToResolveTasks = rolesAllowedToResolveTasks.includes(userRole);
 
+  const [isChecked, setIsChecked] = useState(false);
   if (user.tasks) {
     user.tasks = user.tasks.map(task => {
       task.hoursLogged = task.hoursLogged ? task.hoursLogged : 0;
@@ -88,10 +92,7 @@ const TeamMemberTask = ({
                             <Link to={task.projectId ? `/wbs/tasks/${task._id}` : '/'}>
                               <span>{`${task.num} ${task.taskName}`} </span>
                             </Link>
-                            <CopyToClipboard 
-                              writeText={task.taskName} 
-                              message="Task Copied!"
-                            />
+                            <CopyToClipboard writeText={task.taskName} message="Task Copied!" />
                             {task.taskNotifications.length > 0 && (
                               <FontAwesomeIcon
                                 className="team-member-tasks-bell"
@@ -119,8 +120,8 @@ const TeamMemberTask = ({
                         </td>
                         {task.hoursLogged != null && task.estimatedHours != null && (
                           <td data-label="Progress" className="team-task-progress">
-                            <div>
-                              <span>
+                            <div className="team-task-progress-container">
+                              <span className="team-task-progress-time">
                                 {`${parseFloat(task.hoursLogged.toFixed(2))}
                             of 
                           ${parseFloat(task.estimatedHours.toFixed(2))}`}
@@ -132,7 +133,60 @@ const TeamMemberTask = ({
                                   true,
                                 )}
                                 value={getProgressValue(task.hoursLogged, task.estimatedHours)}
+                                className="team-task-progress-bar"
                               />
+                              <input
+                                type="checkbox"
+                                title="This box is used to track follow ups. Clicking it means you’ve checked in with a person that they are on track to meet their deadline"
+                                className="team-task-progress-follow-up "
+                                checked={isChecked}
+                                onChange={() => {
+                                  setIsChecked(!isChecked);
+                                }}
+                              />
+                              {isChecked && (
+                                <FontAwesomeIcon
+                                  icon={faCheck}
+                                  title="This box is used to track follow ups. Clicking it means you’ve checked in with a person that they are on track to meet their deadline"
+                                  className="team-task-progress-follow-up-check"
+                                  onClick={() => {
+                                    setIsChecked(!isChecked);
+                                  }}
+                                />
+                              )}
+                              <FontAwesomeIcon
+                                icon={faInfo}
+                                className="follow-up-button-info-icon"
+                                data-tip="true"
+                                data-for="follow-up-button-tip"
+                                data-delay-hide="500"
+                                aria-hidden="true"
+                              />
+                              <ReactTooltip id="follow-up-button-tip" place="bottom" effect="solid">
+                                This checkbox allows you to track follow-ups. By clicking it, you
+                                indicate that you have checked <br /> in with a person to ensure
+                                they are on track to meet their deadline.
+                                <br />
+                                <br />
+                                The checkbox is visible and accessible to all classes except
+                                volunteers. Checking the box will modify
+                                <br /> its appearance for all others who can see it.
+                                <br />
+                                <br />
+                                When a person's task is at 50%, 75%, or 90% of the deadline, the
+                                checkbox changes to a red outline with a <br />
+                                light pink filler. This visual cue indicates that the person
+                                requires follow-up. <br />
+                                Once checked, the box reverts to a green outline with a light green
+                                filler and a check mark inside.
+                                <br />
+                                <br />
+                                The checkbox automatically clears when a person reaches 75% and 90%
+                                of their task deadline, <br />
+                                serving as a reminder for follow-up actions.
+                                <br />
+                                <br />
+                              </ReactTooltip>
                             </div>
                           </td>
                         )}
