@@ -288,7 +288,7 @@ const LeaderBoard = ({
                           title={`Weekly Committed: ${item.weeklycommittedHours} hours`}
                           style={{
                             backgroundColor:
-                              item.tangibletime >= item.weeklycommittedHours ? 'green' : 'red',
+                              item.tangibletime >= item.weeklycommittedHours ? '#32CD32' : 'red',
                             width: 15,
                             height: 15,
                             borderRadius: 7.5,
