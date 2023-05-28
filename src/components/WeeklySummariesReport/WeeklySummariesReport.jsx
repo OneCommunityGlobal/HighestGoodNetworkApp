@@ -217,6 +217,7 @@ WeeklySummariesReport.propTypes = {
   getWeeklySummariesReport: PropTypes.func.isRequired,
   loading: PropTypes.bool.isRequired,
   summaries: PropTypes.array.isRequired,
+  authRole: PropTypes.string.isRequired,
 };
 
 const mapStateToProps = state => ({
