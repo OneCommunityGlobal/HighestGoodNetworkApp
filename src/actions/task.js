@@ -53,7 +53,6 @@ export const fetchTeamMembersTask = (currentUserId, authenticatedUserId, shouldR
       dispatch(fetchTeamMembersTaskSuccess(response.data));
     }
   } catch (error) {
-    console.log('mudou por causa do erro')
 
     dispatch(fetchTeamMembersTaskError());
   }
