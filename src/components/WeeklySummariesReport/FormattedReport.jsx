@@ -12,9 +12,8 @@ import axios from 'axios';
 import { ENDPOINTS } from '../../utils/URL';
 import { useState } from 'react';
 
-const FormattedReport = ({ summaries, weekIndex, role }) => {
+const FormattedReport = ({ summaries, weekIndex, editPermission }) => {
   const emails = [];
-  const bioCanEdit = role === 'Owner' || role === 'Administrator';
 
   summaries.forEach(summary => {
     if (summary.email !== undefined && summary.email !== null) {
@@ -225,7 +224,7 @@ const FormattedReport = ({ summaries, weekIndex, role }) => {
 
   return (
     <>
-      {bioCanEdit
+      {editPermission
         ? alphabetize(summaries).map((summary, index) => {
             return summaryCard(summary, index, bioSwitch);
           })

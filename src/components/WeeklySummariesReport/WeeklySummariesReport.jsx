@@ -11,6 +11,7 @@ import Loading from '../common/Loading';
 import { getWeeklySummariesReport } from '../../actions/weeklySummariesReport';
 import FormattedReport from './FormattedReport';
 import GeneratePdfReport from './GeneratePdfReport';
+import hasPermission from '../../utils/permissions';
 
 export class WeeklySummariesReport extends Component {
   state = {
@@ -18,7 +19,8 @@ export class WeeklySummariesReport extends Component {
     loading: true,
     summaries: [],
     activeTab: '1',
-    role: null,
+    auth: [],
+    roles: [],
   };
 
   async componentDidMount() {
@@ -27,7 +29,8 @@ export class WeeklySummariesReport extends Component {
       error: this.props.error,
       loading: this.props.loading,
       summaries: this.props.summaries,
-      role: this.props.authRole,
+      auth: this.props.auth,
+      roles: this.props.roles,
     });
   }
 
@@ -52,7 +55,10 @@ export class WeeklySummariesReport extends Component {
   };
 
   render() {
-    const { error, loading, summaries, activeTab, role } = this.state;
+    const { error, loading, summaries, activeTab, auth, roles } = this.state;
+    const authRole = auth.user ? auth.user.role : '';
+    const authPermissions = auth.user ? auth.user.permissions?.frontPermissions : [];
+    const bioCanEdit = hasPermission(authRole, 'editBioAnnoucementStatus', roles, authPermissions);
 
     if (error) {
       return (
@@ -140,7 +146,11 @@ export class WeeklySummariesReport extends Component {
                 </Row>
                 <Row>
                   <Col>
-                    <FormattedReport summaries={summaries} weekIndex={0} role={role} />
+                    <FormattedReport
+                      summaries={summaries}
+                      weekIndex={0}
+                      editPermission={bioCanEdit}
+                    />
                   </Col>
                 </Row>
               </TabPane>
@@ -160,7 +170,11 @@ export class WeeklySummariesReport extends Component {
                 </Row>
                 <Row>
                   <Col>
-                    <FormattedReport summaries={summaries} weekIndex={1} role={role} />
+                    <FormattedReport
+                      summaries={summaries}
+                      weekIndex={1}
+                      editPermission={bioCanEdit}
+                    />
                   </Col>
                 </Row>
               </TabPane>
@@ -180,7 +194,11 @@ export class WeeklySummariesReport extends Component {
                 </Row>
                 <Row>
                   <Col>
-                    <FormattedReport summaries={summaries} weekIndex={2} role={role} />
+                    <FormattedReport
+                      summaries={summaries}
+                      weekIndex={2}
+                      editPermission={bioCanEdit}
+                    />
                   </Col>
                 </Row>
               </TabPane>
@@ -200,7 +218,11 @@ export class WeeklySummariesReport extends Component {
                 </Row>
                 <Row>
                   <Col>
-                    <FormattedReport summaries={summaries} weekIndex={3} role={role} />
+                    <FormattedReport
+                      summaries={summaries}
+                      weekIndex={3}
+                      editPermission={bioCanEdit}
+                    />
                   </Col>
                 </Row>
               </TabPane>
@@ -217,11 +239,13 @@ WeeklySummariesReport.propTypes = {
   getWeeklySummariesReport: PropTypes.func.isRequired,
   loading: PropTypes.bool.isRequired,
   summaries: PropTypes.array.isRequired,
-  authRole: PropTypes.string.isRequired,
+  auth: PropTypes.object.isRequired,
+  roles: PropTypes.array.isRequired,
 };
 
 const mapStateToProps = state => ({
-  authRole: state.auth.user.role,
+  auth: state.auth,
+  roles: state.role.roles,
   error: state.weeklySummariesReport.error,
   loading: state.weeklySummariesReport.loading,
   summaries: state.weeklySummariesReport.summaries,
