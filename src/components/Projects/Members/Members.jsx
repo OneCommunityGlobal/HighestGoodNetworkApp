@@ -35,7 +35,42 @@ const Members = props => {
     });
   };
 
-  const activeMembers = props.state.projectMembers.members.filter(member => member.isActive === true);
+  const activeMembers = [];
+  const inactiveMembers = [];
+  props.state.projectMembers.members.forEach((member) => {
+    if (member.isActive) {
+      activeMembers.push(member);
+    } else {
+      inactiveMembers.push(member);
+    }
+  })
+
+  const renderMembersTable = (tableTitle, members) => (
+    <table className="table table-bordered table-responsive-sm">
+      <thead>
+        <tr>
+          <th scope="col" id="members__order">
+            #
+          </th>
+          <th scope="col" id="members__name">{tableTitle}</th>
+          {hasPermission(role, 'unassignUserInProject', roles, userPermissions) ? (
+            <th scope="col" id="members__name"></th>
+          ) : null}
+        </tr>
+      </thead>
+      <tbody>
+        {members.map((member, i) => (
+          <Member
+            index={i}
+            key={member._id}
+            projectId={projectId}
+            uid={member._id}
+            fullName={member.firstName + ' ' + member.lastName}
+          />
+        ))}
+      </tbody>
+    </table>
+  );
 
   return (
     <React.Fragment>
@@ -117,31 +152,8 @@ const Members = props => {
             </tbody>
           </table>
         )}
-
-        <table className="table table-bordered table-responsive-sm">
-          <thead>
-            <tr>
-              <th scope="col" id="members__order">
-                #
-              </th>
-              <th scope="col" id="members__name"></th>
-              {hasPermission(role, 'unassignUserInProject', roles, userPermissions) ? (
-                <th scope="col" id="members__name"></th>
-              ) : null}
-            </tr>
-          </thead>
-          <tbody>
-            {activeMembers.map((member, i) => (
-              <Member
-                index={i}
-                key={member._id}
-                projectId={projectId}
-                uid={member._id}
-                fullName={member.firstName + ' ' + member.lastName}
-              />
-            ))}
-          </tbody>
-        </table>
+        {activeMembers.length > 0 ? renderMembersTable('Active Members', activeMembers) : null}
+        {inactiveMembers.length > 0 ? renderMembersTable('Inactive Members', inactiveMembers) : null}
       </div>
     </React.Fragment>
   );
