@@ -35,16 +35,6 @@ const Members = props => {
     });
   };
 
-  const activeMembers = [];
-  const inactiveMembers = [];
-  props.state.projectMembers.members.forEach((member) => {
-    if (member.isActive) {
-      activeMembers.push(member);
-    } else {
-      inactiveMembers.push(member);
-    }
-  })
-
   const renderMembersTable = (tableTitle, members) => (
     <table className="table table-bordered table-responsive-sm">
       <thead>
@@ -71,6 +61,18 @@ const Members = props => {
       </tbody>
     </table>
   );
+
+  const activeMembers = [];
+  const inactiveMembers = [];
+  props.state.projectMembers.members.forEach((member) => {
+    if (member.isActive) {
+      activeMembers.push(member);
+    } else {
+      inactiveMembers.push(member);
+    }
+  })
+  const activeMembersTable = activeMembers.length > 0 ? renderMembersTable('Active Members', activeMembers) : null;
+  const inactiveMembersTable = inactiveMembers.length > 0 ? renderMembersTable('Inactive Members', inactiveMembers) : null;
 
   return (
     <React.Fragment>
@@ -152,8 +154,8 @@ const Members = props => {
             </tbody>
           </table>
         )}
-        {activeMembers.length > 0 ? renderMembersTable('Active Members', activeMembers) : null}
-        {inactiveMembers.length > 0 ? renderMembersTable('Inactive Members', inactiveMembers) : null}
+        {activeMembersTable}
+        {inactiveMembersTable}
       </div>
     </React.Fragment>
   );
