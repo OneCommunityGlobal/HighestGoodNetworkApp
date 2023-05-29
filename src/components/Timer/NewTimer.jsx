@@ -1,5 +1,5 @@
 import moment from 'moment';
-import React, { useState, useCallback, useEffect, useRef, useMemo } from 'react';
+import React, { useState, useCallback, useEffect, useRef } from 'react';
 import './NewTimer.css';
 import useWebSocket, { ReadyState } from 'react-use-websocket';
 import config from '../../../src/config.json';
@@ -91,7 +91,7 @@ export const NewTimer = () => {
   */
   const handleStart = useCallback(() => {
     sendMessage(action.START_TIMER);
-  }, [minutes, message]);
+  }, [sendMessage]);
 
   const handleStartAlarm = () => {
     window.focus();
@@ -118,7 +118,7 @@ export const NewTimer = () => {
       .replace('00:0', '');
 
     // If the timer is ZERO he adds the last time setted as GOAL (THIS IS A RULE)
-    if (remaining < 0) {
+    if (remaining <= 0) {
       handleAddGoal(1000 * 60 * Number(lastTimeAdded > 0 ? lastTimeAdded : 5));
       sendMessage(action.START_TIMER);
       return;
@@ -127,20 +127,22 @@ export const NewTimer = () => {
     }
   }, [message]);
 
-  const handleStop = useCallback(() => sendMessage(action.STOP_TIMER), []);
+  const handleStop = useCallback(() => {
+    sendMessage(action.STOP_TIMER);
+  }, [sendMessage]);
 
   const handlePause = useCallback(() => {
     handleStopAlarm();
-  }, []);
-
-  const handleClear = useCallback(() => sendMessage(action.CLEAR_TIMER), []);
-  const handleSwitch = useCallback(() => sendMessage(action.SWITCH_MODE), []);
-  const handleGetTimer = useCallback(() => sendMessage(action.GET_TIMER), []);
-  const handleSetGoal = useCallback(time => sendMessage(action.SET_GOAL.concat(time)), []);
+    sendMessage(action.PAUSE_TIMER);
+  }, [handleStopAlarm, sendMessage]);
+    
+  const handleClear = useCallback(() => sendMessage(action.CLEAR_TIMER), [sendMessage]);
+  const handleSwitch = useCallback(() => sendMessage(action.SWITCH_MODE), [sendMessage]);
+  const handleGetTimer = useCallback(() => sendMessage(action.GET_TIMER), [sendMessage]);
+  const handleSetGoal = useCallback(time => sendMessage(action.SET_GOAL.concat(time)), [sendMessage]);
   const handleAddGoal = useCallback(time => {
-    handlePause();
-    sendMessage(action.ADD_GOAL.concat(time));
-  }, []);
+  sendMessage(action.ADD_GOAL.concat(time));
+}, [sendMessage]);
 
   const handleRemoveGoal = useCallback(
     time => {
@@ -164,7 +166,7 @@ export const NewTimer = () => {
   const handleAckForced = useCallback(() => sendMessage(action.ACK_FORCED), []);
   const toggleModal = () => {
     setLogModal(modal => !modal);
-    setTimerIsOverModalIsOpen(true);
+    // setTimerIsOverModalIsOpen(true);
   };
   const toggleModalClose = () => {
     setLogModal(modal => !modal);
@@ -273,10 +275,8 @@ export const NewTimer = () => {
       )}
       <button
         type="button"
-        disabled={!userCanStop}
+        // disabled={!userCanStop}
         onClick={() => {
-          handleStart();
-          handlePause();
           setLogModal(true);
         }}
         className="disabled"
@@ -378,8 +378,6 @@ export const NewTimer = () => {
                 setPreviewTimer={setPreviewTimer}
                 handleClear={() => setConfirmationResetModal(true)}
                 toggleModal={() => {
-                  handleStart();
-                  handlePause();
                   setLogModal(true);
                 }}
                 alarm={handleStartAlarm}

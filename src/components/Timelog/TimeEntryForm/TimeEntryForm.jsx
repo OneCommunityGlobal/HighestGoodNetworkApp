@@ -1,4 +1,4 @@
-import React, { useState, useEffect, Fragment, useCallback } from 'react';
+import React, { useState, useEffect, Fragment, useCallback, useRef } from 'react';
 import PropTypes from 'prop-types';
 import { useDispatch, useSelector } from 'react-redux';
 import {
@@ -50,6 +50,7 @@ import Loading from 'components/common/Loading/Loading';
  * @param {function} props.resetTimer
  * @returns
  */
+
 const TimeEntryForm = props => {
   const {
     userId,
@@ -94,7 +95,9 @@ const TimeEntryForm = props => {
   };
 
   const [isSubmitting, setSubmitting] = useState(false);
-  const [inputs, setInputs] = useState(edit ? data : initialFormValues);
+  const [inputs, setInputs] = useState(
+    edit ? data : JSON.parse(localStorage.getItem('timeEntryInputs')) || initialFormValues
+  );
   const [errors, setErrors] = useState({});
   const [close, setClose] = useState(false);
   const [reminder, setReminder] = useState(initialReminder);
@@ -513,11 +516,14 @@ const TimeEntryForm = props => {
     if (isOpen) toggleModalClose();
     if (fromTimer) clearAll();
     setReminder(initialReminder);
-
+  
     if (!props.edit) setInputs(initialFormValues);
-
+  
     getUserProfile(userId)(dispatch);
     window.location.reload(true);
+  
+    // Clear the saved notes from localStorage
+    localStorage.removeItem('timeEntryInputs');
   };
 
   const handleInputChange = event => {
@@ -553,13 +559,14 @@ const TimeEntryForm = props => {
   const handleEditorChange = (content, editor) => {
     inputs.notes = content;
     const { wordcount } = editor.plugins;
-
+  
     setInputs(inputs => ({ ...inputs, [editor.id]: content }));
     setReminder(reminder => ({
       ...reminder,
       wordCount: wordcount.body.getWordCount(),
       hasLink: inputs.notes.indexOf('http://') > -1 || inputs.notes.indexOf('https://') > -1,
     }));
+    localStorage.setItem('timeEntryInputs', JSON.stringify(inputs));
   };
 
   const handleCheckboxChange = event => {
@@ -588,6 +595,7 @@ const TimeEntryForm = props => {
     setReminder({ ...initialReminder });
     setErrors({});
     toggleModalClose();
+    localStorage.removeItem('timeEntryInputs');
   };
 
   const stopAllAudioAndClearIntervals = useCallback(() => {
