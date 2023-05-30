@@ -23,7 +23,7 @@ const TeamMemberTasks = props => {
   const [currentTaskNotifications, setCurrentTaskNotifications] = useState([]);
   const [currentTask, setCurrentTask] = useState();
   const [currentUserId, setCurrentUserId] = useState('');
-  const { isLoading, usersWithTasks } = useSelector(getTeamMemberTasksData);
+  const { isLoading,usersWithTasks } = useSelector(getTeamMemberTasksData);
   const [tasks, setTasks] = useState();
   const [updatedTasks, setUpdatedTasks] = useState([]);
   const [showMarkAsDoneModal, setMarkAsDoneModal] = useState(false);
@@ -37,8 +37,8 @@ const TeamMemberTasks = props => {
   const [seventyTwoHoursTimeEntries, setSeventyTwoHoursTimeEntries] = useState([]);
   const [finishLoading, setFinishLoading] = useState(false);
 
-  //added it to keep track if it's the first run of the page, in case it is, only one request is going to be made by the fetchTeamMembersTasks
-  const isFirstRun = useRef(true);
+  //added it to keep track if the renderTeamsList should run
+  const [shouldRun, setShouldRun] = useState(false);
 
   //role state so it's more easily changed, the initial value is empty, so it'll be determinated on the first useEffect
   const [userRole, setUserRole] = useState('');
@@ -56,26 +56,30 @@ const TeamMemberTasks = props => {
 
   const dispatch = useDispatch();
   useEffect(() => {
-    //Passed the userid as argument to fetchTeamMembersTask
-    //the fetchTeamMembersTask has a function inside id that gets the userId from the store, like the last part of the userId variable in this file
-    //so, before it gets from the store, it'll see if the userId is provided.
-    //It works because the userId first looks for the url param. If it gets the param, it will provide it to the userId
-    //after that, fetchTeamMembersTask will look for the team member's tasks of the provided userId
-    //fetch current user's role, so it can be displayed. It will only happen if the current user's id is different of the auth user id
-    //if it's not differente, it'll attribute the current authenticated user's role.
-    //also, the userId is different from the authenticated user, it will call the fetchTeamMmbersTask with the currently authenticated user id
-    if (userId !== props.auth.user.userid) {
-      console.log(userId)
-      dispatch(fetchTeamMembersTask(userId, props.auth.user.userid));
-      const currentUserRole = getUserRole(userId)
-        .then(resp => resp)
-        .then(user => {
-          setUserRole(user.data.role);
-        });
-    } else {
-      dispatch(fetchTeamMembersTask(userId, null));
-      setUserRole(props.auth.user.role);
-    }
+    const initialFetching = async () => {
+      //Passed the userid as argument to fetchTeamMembersTask
+      //the fetchTeamMembersTask has a function inside id that gets the userId from the store, like the last part of the userId variable in this file
+      //so, before it gets from the store, it'll see if the userId is provided.
+      //It works because the userId first looks for the url param. If it gets the param, it will provide it to the userId
+      //after that, fetchTeamMembersTask will look for the team member's tasks of the provided userId
+      //fetch current user's role, so it can be displayed. It will only happen if the current user's id is different of the auth user id
+      //if it's not differente, it'll attribute the current authenticated user's role.
+      //also, the userId is different from the authenticated user, it will call the fetchTeamMmbersTask with the currently authenticated user id
+      if (userId !== props.auth.user.userid) {
+        console.log(userId);
+        await dispatch(fetchTeamMembersTask(userId, props.auth.user.userid));
+        const currentUserRole = getUserRole(userId)
+          .then(resp => resp)
+          .then(user => {
+            setUserRole(user.data.role);
+          });
+      } else {
+        await dispatch(fetchTeamMembersTask(userId, null));
+        setUserRole(props.auth.user.role);
+      }
+      setShouldRun(true)     
+    };
+    initialFetching()
   }, []);
 
   useEffect(() => {
@@ -85,13 +89,13 @@ const TeamMemberTasks = props => {
   }, [currentUserId]);
 
   useEffect(() => {
-    if (isLoading === false) {
+    if (isLoading === false && shouldRun) {
       renderTeamsList();
       setClickedToShowModal(false);
       closeMarkAsDone();
       setCurrentUserId('');
     }
-  }, [usersWithTasks]);
+  }, [usersWithTasks, shouldRun]);
 
   // useEffect(() => {
   //   //As this useEffect should not run if it's the first run of the page, it will see if the isFirstRun ref is true, in case it is it will change it to false and return
@@ -138,7 +142,7 @@ const TeamMemberTasks = props => {
     dispatch(fetchTeamMembersTask(userId, props.auth.user.userid, false));
   };
 
-  const submitTasks = async (updatedTasks) => {
+  const submitTasks = async updatedTasks => {
     // for (let i = 0; i < updatedTasks.length; i += 1) {
     //   const updatedTask = updatedTasks[i];
     //   const url = ENDPOINTS.TASK_UPDATE(updatedTask.taskId);
@@ -243,6 +247,7 @@ const TeamMemberTasks = props => {
   };
 
   const renderTeamsList = async () => {
+    console.log('Imprimindo usersWithTasks', usersWithTasks)
     if (usersWithTasks && usersWithTasks.length > 0) {
       // give different users different views
       let filteredMembers = usersWithTasks.filter(member => {
