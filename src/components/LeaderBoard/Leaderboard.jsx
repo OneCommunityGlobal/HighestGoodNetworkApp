@@ -264,7 +264,7 @@ const LeaderBoard = ({
                   {/* <Link to={`/dashboard/${item.personId}`}> */}
                   {
                     hasLeaderboardPermissions(loggedInUser.role) && 
-                    item.weeklycommittedHours > 0 && item.tangibletime >= item.weeklycommittedHours * 1.25 ? (
+                    item.weeklycommittedHours !== 0 && item.tangibletime >= item.weeklycommittedHours * 1.25 ? (
                         <i
                         className="fa fa-star"
                         title={`Weekly Committed: ${item.weeklycommittedHours} hours`}
