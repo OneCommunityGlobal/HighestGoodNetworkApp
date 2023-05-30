@@ -111,21 +111,21 @@ export const NewTimer = () => {
     const lastAccess = moment(message?.lastAccess);
     const elapsedTime = moment.duration(now.diff(lastAccess)).asMilliseconds();
     let remaining = message?.time - elapsedTime;
-
+  
     const lastTimeAdded = moment
       .utc(message?.time)
       .format('HH:mm')
       .replace('00:0', '');
-
-    // If the timer is ZERO he adds the last time setted as GOAL (THIS IS A RULE)
+  
+    // If the timer is ZERO, add the last time set as GOAL
     if (remaining <= 0) {
-      handleAddGoal(1000 * 60 * Number(lastTimeAdded > 0 ? lastTimeAdded : 5));
+      handleAddGoal(1000 * 60 * (Number(lastTimeAdded) > 0 ? Number(lastTimeAdded) : 5));
       sendMessage(action.START_TIMER);
       return;
-    } else {
-      sendMessage(action.START_TIMER);
     }
-  }, [message]);
+  
+    sendMessage(action.START_TIMER);
+  }, [message, sendMessage, handleAddGoal]);  
 
   const handleStop = useCallback(() => {
     sendMessage(action.STOP_TIMER);
