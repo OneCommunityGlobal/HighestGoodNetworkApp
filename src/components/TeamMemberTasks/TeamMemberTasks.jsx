@@ -247,7 +247,6 @@ const TeamMemberTasks = props => {
   };
 
   const renderTeamsList = async () => {
-    console.log('Imprimindo usersWithTasks', usersWithTasks)
     if (usersWithTasks && usersWithTasks.length > 0) {
       // give different users different views
       let filteredMembers = usersWithTasks.filter(member => {
