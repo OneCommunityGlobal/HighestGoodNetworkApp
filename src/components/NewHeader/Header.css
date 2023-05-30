@@ -1,5 +1,12 @@
 .header-wrapper {
-  height: 83px;
+  height: 82px;
+  width: clamp(100vw, 0.1rem + 1vw, 100%);
+  margin-bottom: 1rem;
+}
+
+.navbar {
+  z-index: 100;
+  white-space: nowrap;
 }
 
 .redBackGroupHeader {
@@ -17,4 +24,27 @@
   max-width: 39px;
   font-size: 1rem;
   min-width: 29px;
+}
+
+.owner-message {
+  width: 100%;
+  display: flex;
+  justify-content: flex-end;
+  padding-right: 1rem;
+}
+
+.nav-links {
+  align-items: center;
+}
+
+@media (max-width: 1400px) {
+  .timer-message-section {
+    display: flex;
+    width: 0;
+    margin-right: 0;
+  }
+
+  .owner-message {
+    display: none;
+  }
 }

@@ -4,6 +4,7 @@ import { getTimerData } from '../../actions/timer';
 import { getAllRoles } from '../../actions/role';
 import { Link } from 'react-router-dom';
 import { connect, useDispatch } from 'react-redux';
+import OwnerMessage from '../OwnerMessage/OwnerMessage';
 import {
   DASHBOARD,
   TIMELOG,
@@ -66,16 +67,22 @@ export const Header = props => {
     setLogoutPopup(true);
   };
 
+  const isResolutionGreaterThan1024 = window.innerWidth > 1024;
+
   return (
     <div className="header-wrapper">
       <Navbar className="py-3 mb-3" color="dark" dark expand="lg" style={{ zIndex: '10' }}>
         {logoutPopup && <Logout open={logoutPopup} setLogoutPopup={setLogoutPopup} />}
         <NavbarToggler onClick={toggle} />
         {isAuthenticated && <NewTimer />}
-
+        {isAuthenticated && isResolutionGreaterThan1024 && (
+          <div className="owner-message">
+            <OwnerMessage />
+          </div>
+        )}
         {isAuthenticated && (
           <Collapse isOpen={isOpen} navbar>
-            <Nav className="ml-auto" navbar>
+            <Nav className="ml-auto justify-content-center nav-links" navbar> {/* Add justify-content-center class */}
               {hasPermission(user.role, 'editTask', roles, userPermissions) && (
                 <NavItem>
                   <NavLink tag={Link} to="/taskeditsuggestions">

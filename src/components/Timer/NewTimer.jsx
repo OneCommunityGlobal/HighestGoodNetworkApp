@@ -120,10 +120,7 @@ export const NewTimer = () => {
     // If the timer is ZERO, add the last time set as GOAL
     if (remaining <= 0) {
       handleAddGoal(1000 * 60 * (Number(lastTimeAdded) > 0 ? Number(lastTimeAdded) : 5));
-      sendMessage(action.START_TIMER);
-      return;
     }
-  
     sendMessage(action.START_TIMER);
   }, [message, sendMessage, handleAddGoal]);  
 
