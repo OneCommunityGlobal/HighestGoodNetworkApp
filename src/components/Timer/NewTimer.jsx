@@ -413,6 +413,7 @@ export const NewTimer = () => {
             userProfile={userProfile}
             resetTimer={handleClear}
             handleStop={handleStop}
+            handleStart={handleStart}
             handleAddGoal={handleAddGoal}
             handlePauseAlarm={handleStopAlarm}
             goal={message?.goal}

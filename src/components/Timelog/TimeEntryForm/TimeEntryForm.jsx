@@ -62,6 +62,7 @@ const TimeEntryForm = props => {
     resetTimer,
     handleStop,
     handleAddGoal,
+    handleStart,
     goal,
     toggleModalClose,
   } = props;
@@ -825,7 +826,10 @@ const TimeEntryForm = props => {
             <small className="mr-auto">* All the fields are required</small>
 
             {/* <Button color="primary" disabled={isSubmitting || (data.hours === inputs.hours && data.minutes === inputs.minutes && data.notes === inputs.notes)} onClick={handleSubmit}> */}
-            <Button color="secondary" onClick={toggle}>
+            <Button color="secondary" onClick={() => {
+              toggle()
+              handleStart()
+              }}>
               Back
             </Button>
             <Button color="primary" onClick={handleSubmit}>
