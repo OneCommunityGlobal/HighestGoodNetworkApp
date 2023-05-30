@@ -18,7 +18,6 @@ export class WeeklySummariesReport extends Component {
     loading: true,
     summaries: [],
     activeTab: '1',
-    role: null,
   };
 
   async componentDidMount() {
@@ -27,7 +26,6 @@ export class WeeklySummariesReport extends Component {
       error: this.props.error,
       loading: this.props.loading,
       summaries: this.props.summaries,
-      role: this.props.authRole,
     });
   }
 
@@ -52,7 +50,8 @@ export class WeeklySummariesReport extends Component {
   };
 
   render() {
-    const { error, loading, summaries, activeTab, role } = this.state;
+    const { error, loading, summaries, activeTab } = this.state;
+    const role = this.props.authRole;
 
     if (error) {
       return (
