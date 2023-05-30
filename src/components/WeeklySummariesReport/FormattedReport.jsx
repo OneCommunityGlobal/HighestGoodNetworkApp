@@ -173,7 +173,7 @@ const FormattedReport = ({ summaries, weekIndex }) => {
               <span onClick={() => handleGoogleDocClick(googleDocLink)}>
                 <img className="google-doc-icon" src={google_doc_icon} alt="google_doc" />
               </span>
-              {hoursLogged >= summary.weeklycommittedHours * 1.25 && (
+              {summary.weeklycommitedHours > 0 && hoursLogged >= summary.weeklycommittedHours * 1.25 && (
                 <i
                   className="fa fa-star"
                   title={`Weekly Committed: ${summary.weeklycommittedHours} hours`}
