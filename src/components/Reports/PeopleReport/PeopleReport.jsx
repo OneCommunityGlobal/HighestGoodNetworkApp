@@ -2,6 +2,7 @@ import React, { Component, useState } from 'react';
 import '../../Teams/Team.css';
 import './PeopleReport.css';
 import { Button, Dropdown, DropdownButton } from 'react-bootstrap';
+import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { FiUser } from 'react-icons/fi';
 import { getUserProfile, getUserTask, updateUserProfile } from '../../../actions/userProfile';
@@ -447,9 +448,14 @@ class PeopleReport extends Component {
         src={this.state.userProfile.profilePic}
         avatar={this.state.userProfile.profilePic ? undefined : <FiUser />}
         isActive={isActive}
-        name={`${firstName} ${lastName}`}
       >
-        <p>{userProfile.role}</p>
+        <p>
+          <Link to={`/userProfile/${userProfile._id}`} title="View Profile">
+            {userProfile.firstName} {userProfile.lastName}
+          </Link>
+        </p>
+        <p>Role: {userProfile.role}</p>
+        <p>Title: {userProfile.jobTitle}</p>
 
         {userProfile.endDate ? (
           <div>
