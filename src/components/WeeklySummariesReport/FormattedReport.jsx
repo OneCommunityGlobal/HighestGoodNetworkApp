@@ -184,7 +184,7 @@ const FormattedReport = ({ summaries, weekIndex, role }) => {
     );
   };
 
-  const summaryCard = (summary, index, bioFunction) => {
+  const summaryCard = (summary, index) => {
     const hoursLogged = (summary.totalSeconds[weekIndex] || 0) / 3600;
     const googleDocLink = getGoogleDocLink(summary);
     return (
@@ -223,15 +223,13 @@ const FormattedReport = ({ summaries, weekIndex, role }) => {
     );
   };
 
+  const bioFunction = bioCanEdit ? bioSwitch : bioLabel;
+
   return (
     <>
-      {bioCanEdit
-        ? alphabetize(summaries).map((summary, index) => {
-            return summaryCard(summary, index, bioSwitch);
-          })
-        : alphabetize(summaries).map((summary, index) => {
-            return summaryCard(summary, index, bioLabel);
-          })}
+      {alphabetize(summaries).map((summary, index) => {
+        return summaryCard(summary, index);
+      })}
       <h4>Emails</h4>
       <p>{emailString}</p>
     </>
