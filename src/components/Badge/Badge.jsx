@@ -85,7 +85,13 @@ const Badge = props => {
                   Bravo! You Earned {totalBadge} Badges!{' '}
                   <i className="fa fa-info-circle" id="CountInfo" />
                 </CardText>
-                <Button className="btn--dark-sea-green float-right" onClick={toggle}>
+                <Button
+                  className="btn--dark-sea-green float-right"
+                  onClick={toggle}
+                  style={{
+                    boxShadow: '2px 2px 4px 1px lightgray',
+                  }}
+                >
                   Badge Report
                 </Button>
                 <Modal size={'lg'} isOpen={isOpen} toggle={toggle}>

@@ -445,20 +445,22 @@ const Timelog = props => {
                           aria-hidden="true"
                           onClick={openInfo}
                         />
-                        <ActiveCell
-                          isActive={userProfile.isActive}
-                          user={userProfile}
-                          onClick={() => {
-                            props.updateUserProfile(userId, {
-                              ...userProfile,
-                              isActive: !userProfile.isActive,
-                              endDate:
-                                !userProfile.isActive === false
-                                  ? moment(new Date()).format('YYYY-MM-DD')
-                                  : undefined,
-                            });
-                          }}
-                        />
+                        <span style={{ padding: '0 5px' }}>
+                          <ActiveCell
+                            isActive={userProfile.isActive}
+                            user={userProfile}
+                            onClick={() => {
+                              props.updateUserProfile(userId, {
+                                ...userProfile,
+                                isActive: !userProfile.isActive,
+                                endDate:
+                                  !userProfile.isActive === false
+                                    ? moment(new Date()).format('YYYY-MM-DD')
+                                    : undefined,
+                              });
+                            }}
+                          />
+                        </span>
                         <ProfileNavDot
                           userId={
                             props.match?.params?.userId || props.asUser || props.auth.user.userid
@@ -473,8 +475,14 @@ const Timelog = props => {
                       {isOwner ? (
                         <div className="float-right">
                           <div>
-                            <Button color="success" onClick={toggle}>
-                              {'Add Intangible Time Entry '}
+                            <Button
+                              color="success"
+                              onClick={toggle}
+                              style={{
+                                boxShadow: '2px 2px 4px 1px lightgray',
+                              }}
+                            >
+                              Add Intangible Time Entry{' '}
                               <i
                                 className="fa fa-info-circle"
                                 data-tip

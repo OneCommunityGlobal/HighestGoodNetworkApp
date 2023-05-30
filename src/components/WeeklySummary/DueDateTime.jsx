@@ -17,7 +17,7 @@ function DueDateTime({ dueDate, isShow }) {
       ) : (
         <div className="mb-1">Weekly Summary Due Date (click to add)</div>
       )}
-      <div className="mx-auto due-section">
+      <div className="mx-auto due-section" style={{ boxShadow: '2px 2px 4px 1px lightgray' }}>
         <div className="text-white due-section__date">
           <FontAwesomeIcon icon={faCalendarCheck} className="mr-1" />{' '}
           {/* eslint-disable-next-line react/jsx-one-expression-per-line */}
