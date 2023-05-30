@@ -283,11 +283,12 @@ const BadgeReport = props => {
     props.setUserProfile(prevProfile => {
       return { ...prevProfile, badgeCollection: sortBadges };
     });
+    props.setOriginalUserProfile(prevProfile => {
+      return { ...prevProfile, badgeCollection: sortBadges };
+    });
     props.handleSubmit();
     //close the modal
     props.close();
-    //Reload the view profile page with updated bages
-    window.location.reload();
   };
 
   return (

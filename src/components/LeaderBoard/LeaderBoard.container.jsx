@@ -8,37 +8,10 @@ const mapStateToProps = state => {
   let leaderBoardData = get(state, 'leaderBoardData', []);
   let user = get(state, 'userProfile', []);
 
-  //created an auxiliar variable so the filtering do not interfere with the main variable
-  let nonTutorsData = [];
-
-  //filtering users with non zero hours and role different from Mentor
-  if (user.role === 'Administrator' || user.role === 'Owner' || user.role === 'Core Team') {
-    //nothing happens if the user is an administrator, owner or core team, they are able to see all the leaderboard, including members with zero hours and mentor members
-    leaderBoardData = leaderBoardData
-  } else if (
-    //if the user is not an administrator, nor owner, nor mentor, and also not a core team, it will only see the people from the same team, no zero hour members and not mentor members
-    user.role !== 'Administrator' &&
-    user.role !== 'Owner' &&
-    user.role !== 'Mentor' &&
-    user.role !== 'Core Team' &&
-    user.weeklycommittedHours > 0
-  ) {
-    nonTutorsData = leaderBoardData.filter(element => {
-      if (element.weeklycommittedHours > 0 && element.role !== 'Mentor') {
-        return element;
-      }
+  if (user.role !== 'Administrator' && user.role !== 'Owner' && user.role !== 'Core Team') {
+    leaderBoardData = leaderBoardData.filter(element => {
+      return element.weeklycommittedHours > 0 || user._id === element.personId;
     });
-    leaderBoardData = nonTutorsData;
-  } else if (user.role === 'Mentor' || user.weeklycommittedHours === 0) { //if the user is a mentor, or have zero hours, it will be able to see itself and the members from it's team
-    nonTutorsData = leaderBoardData.filter(element => {
-      if (
-        (element.weeklycommittedHours > 0 && element.role !== 'Mentor') ||
-        user._id === element.personId
-      ) {
-        return element;
-      }
-    });
-    leaderBoardData = nonTutorsData;
   }
 
   if (leaderBoardData.length) {
@@ -84,6 +57,7 @@ const mapStateToProps = state => {
     loggedInUser: get(state, 'auth.user', {}),
     organizationData: orgData,
     timeEntries: get(state, 'timeEntries', {}),
+    isVisible: user.role === 'Volunteer' || user.isVisible,
   };
 };
 export default connect(mapStateToProps, { getLeaderboardData, getOrgData })(Leaderboard);

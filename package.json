@@ -1,6 +1,9 @@
 {
   "name": "hgnreactapp",
   "version": "0.1.0",
+  "engines": {
+    "node": ">=14.0.0 <15"
+  },
   "private": true,
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^1.2.27",
@@ -20,7 +23,7 @@
     "diff": "^5.0.0",
     "font-awesome": "^4.7.0",
     "history": "^4.10.1",
-    "html-react-parser": "^1.0.0",
+    "html-react-parser": "^1.4.14",
     "html-to-pdfmake": "^2.0.6",
     "jest": "26.6.0",
     "jest-mock-axios": "^4.2.1",
@@ -37,7 +40,6 @@
     "react-autosuggest": "^10.1.0",
     "react-bootstrap": "^1.0.1",
     "react-calendar": "^3.7.0",
-    "react-circular-progressbar": "^2.1.0",
     "react-date-picker": "^8.4.0",
     "react-datepicker": "^3.7.0",
     "react-day-picker": "^7.4.8",
@@ -59,7 +61,6 @@
     "react-table": "^6.10.0",
     "react-toastify": "^5.3.1",
     "react-tooltip": "^4.2.10",
-    "react-use-websocket": "3.0.0",
     "reactjs-popup": "^2.0.5",
     "reactstrap": "^8.4.1",
     "read-excel-file": "^5.5.3",

@@ -81,9 +81,9 @@ function AddTaskModal(props) {
 
   // category
   const categoryOptions = [
+    { value: 'Housing', label: 'Housing' },
     { value: 'Food', label: 'Food' },
     { value: 'Energy', label: 'Energy' },
-    { value: 'Housing', label: 'Housing' },
     { value: 'Education', label: 'Education' },
     { value: 'Soceity', label: 'Soceity' },
     { value: 'Economics', label: 'Economics' },

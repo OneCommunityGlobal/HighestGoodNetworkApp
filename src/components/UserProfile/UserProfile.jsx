@@ -104,12 +104,6 @@ function UserProfile(props) {
   }, []);
 
   useEffect(() => {
-    if (!shouldRefresh) return;
-    setShouldRefresh(false);
-    loadUserProfile();
-  }, [shouldRefresh]);
-
-  useEffect(() => {
     setShowLoading(true);
     loadUserProfile();
     loadUserTasks();
@@ -369,7 +363,10 @@ function UserProfile(props) {
   const modifyBlueSquares = (id, dateStamp, summary, operation) => {
     if (operation === 'add') {
       const newBlueSquare = { date: dateStamp, description: summary };
-      setShowModal(false);
+      setOriginalUserProfile({
+        ...originalUserProfile,
+        infringements: userProfile.infringements?.concat(newBlueSquare),
+      });
       setUserProfile({
         ...userProfile,
         infringements: userProfile.infringements?.concat(newBlueSquare),
@@ -384,16 +381,17 @@ function UserProfile(props) {
         currentBlueSquares.find(blueSquare => blueSquare._id === id).description = summary;
       }
 
-      setShowModal(false);
       setUserProfile({ ...userProfile, infringements: currentBlueSquares });
+      setOriginalUserProfile({ ...userProfile, infringements: currentBlueSquares });
     } else if (operation === 'delete') {
       let newInfringements = [...userProfile?.infringements] || [];
       if (newInfringements !== []) {
         newInfringements = newInfringements.filter(infringement => infringement._id !== id);
         setUserProfile({ ...userProfile, infringements: newInfringements });
-        setShowModal(false);
+        setOriginalUserProfile({ ...userProfile, infringements: newInfringements });
       }
     }
+    setShowModal(false);
     setBlueSquareChanged(true);
   };
 
@@ -414,7 +412,6 @@ function UserProfile(props) {
     } catch (err) {
       alert('An error occurred while attempting to save this profile.');
     }
-    setShouldRefresh(true);
   };
 
   const toggle = modalName => setMenuModalTabletScreen(modalName);
@@ -652,7 +649,14 @@ function UserProfile(props) {
                   aria-hidden="true"
                   style={{ fontSize: 24, cursor: 'pointer' }}
                   title="Click to see user's timelog"
-                  onClick={() => props.history.push(`/timelog/${targetUserId}`)}
+                  onClick={e => {
+                    if (e.metaKey || e.ctrlKey) {
+                      window.open(`/timelog/${targetUserId}`, '_blank');
+                    } else {
+                      e.preventDefault();
+                      props.history.push(`/timelog/${targetUserId}`);
+                    }
+                  }}
                 />
               )}
               <Button
@@ -702,6 +706,7 @@ function UserProfile(props) {
             <Badges
               userProfile={userProfile}
               setUserProfile={setUserProfile}
+              setOriginalUserProfile={setOriginalUserProfile}
               role={requestorRole}
               canEdit={canEdit}
               handleSubmit={handleSubmit}
@@ -798,11 +803,11 @@ function UserProfile(props) {
                   role={requestorRole}
                   userProfile={userProfile}
                   setUserProfile={setUserProfile}
+                  loadUserProfile={loadUserProfile}
                   handleUserProfile={handleUserProfile}
                   formValid={formValid}
                   setFormValid={setFormValid}
                   isUserSelf={isUserSelf}
-                  setShouldRefresh={setShouldRefresh}
                   canEdit={canEdit}
                   canEditRole={canEditProfile}
                   roles={roles}
@@ -885,7 +890,6 @@ function UserProfile(props) {
                     formValid={formValid}
                     setFormValid={setFormValid}
                     isUserSelf={isUserSelf}
-                    setShouldRefresh={setShouldRefresh}
                     canEdit={canEdit}
                     canEditRole={canEditProfile}
                     roles={roles}
@@ -1224,7 +1228,7 @@ function UserProfile(props) {
                   </Link>
                 )}
               {canEdit &&
-                (activeTab === '1' ||
+                (activeTab === '1' || activeTab === '3' ||
                   hasPermission(requestorRole, 'editUserProfile', roles, userPermissions)) && (
                   <>
                     <SaveButton
@@ -1238,16 +1242,18 @@ function UserProfile(props) {
                       }
                       userProfile={userProfile}
                     />
-                    <span
-                      onClick={() => {
-                        setUserProfile(originalUserProfile);
-                        setTasks(originalTasks);
-                        setTeams(originalTeams);
-                      }}
-                      className="btn btn-outline-danger mr-1 btn-bottom"
-                    >
-                      Cancel
-                    </span>
+                    {activeTab !== '3' && (
+                      <span
+                        onClick={() => {
+                          setUserProfile(originalUserProfile);
+                          setTasks(originalTasks);
+                          setTeams(originalTeams);
+                        }}
+                        className="btn btn-outline-danger mr-1 btn-bottom"
+                      >
+                        Cancel
+                      </span>
+                    )}
                   </>
                 )}
             </div>

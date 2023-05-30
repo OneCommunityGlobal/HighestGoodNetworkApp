@@ -73,7 +73,7 @@ export const Header = props => {
 
   return (
     <div className="header-wrapper">
-      <Navbar className="py-3 mb-3 navbar" color="dark" dark expand="xl">
+      <Navbar className="py-3 navbar" color="dark" dark expand="xl">
         {logoutPopup && <Logout open={logoutPopup} setLogoutPopup={setLogoutPopup} />}
         <div
           className="timer-message-section"
