@@ -9,6 +9,7 @@ import { fetchAllTasks, addNewTask } from '../../../../../actions/task';
 import { DUE_DATE_MUST_GREATER_THAN_START_DATE } from '../../../../../languages/en/messages';
 import 'react-day-picker/lib/style.css';
 import TagsSearch from '../components/TagsSearch';
+import { boxStyle } from './../../../../styles.js';
 
 function AddTaskModal(props) {
   const tasks = props.tasks.taskItems;
@@ -348,8 +349,7 @@ function AddTaskModal(props) {
 
   useEffect(() => {
     if (props.level >= 1) {
-      const categoryMother = props.tasks.taskItems.find(({ _id }) => _id === props.taskId)
-        .category;
+      const categoryMother = props.tasks.taskItems.find(({ _id }) => _id === props.taskId).category;
       if (categoryMother) {
         setCategory(categoryMother);
       }
@@ -517,10 +517,9 @@ function AddTaskModal(props) {
                       className="w-25"
                     />
                     <div className="warning">
-                      {
-                        hoursWarning ? 
-                        'Hours - Best-case < Hours - Most-case < Hours - Most-case' : ''
-                      }
+                      {hoursWarning
+                        ? 'Hours - Best-case < Hours - Most-case < Hours - Most-case'
+                        : ''}
                     </div>
                   </div>
                   <div className="d-inline py-2">
@@ -741,7 +740,7 @@ function AddTaskModal(props) {
           ) : null}
         </ModalFooter>
       </Modal>
-      <Button color="primary" size="sm" onClick={setToggle}>
+      <Button color="primary" size="sm" onClick={setToggle} style={boxStyle}>
         Add Task
       </Button>
     </div>

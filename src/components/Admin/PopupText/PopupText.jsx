@@ -5,7 +5,6 @@ import { updatePopupEditor, backupPopupEditor } from './../../../actions/popupEd
 import ModalBackupConfirm from './../../common/Modal';
 import axios from 'axios';
 import { ENDPOINTS } from './../../../utils/URL';
-import './style.css';
 
 const PopupText = props => {
   const [content, setContent] = useState(props.content);

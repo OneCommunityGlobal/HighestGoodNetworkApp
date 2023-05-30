@@ -19,6 +19,7 @@ import NewBadges from './NewBadges';
 import OldBadges from './OldBadges';
 import BadgeReport from './BadgeReport';
 import { getUserProfile } from '../../actions/userProfile';
+import { boxStyle } from '../styles.js';
 
 const Badge = props => {
   const [isOpen, setOpen] = useState(false);
@@ -88,9 +89,7 @@ const Badge = props => {
                 <Button
                   className="btn--dark-sea-green float-right"
                   onClick={toggle}
-                  style={{
-                    boxShadow: '2px 2px 4px 1px lightgray',
-                  }}
+                  style={boxStyle}
                 >
                   Badge Report
                 </Button>

@@ -9,6 +9,7 @@ import { updateUserProfile, getUserProfile } from 'actions/userProfile';
 import { getAllUserProfile } from 'actions/userManagement';
 import UserPermissionsPopUp from './UserPermissionsPopUp';
 import { useHistory } from 'react-router-dom';
+import { boxStyle } from '../styles.js';
 
 const PermissionsManagement = ({ getAllRoles, roles, auth, getUserRole, userProfile }) => {
   const [isNewRolePopUpOpen, setIsNewRolePopUpOpen] = useState(false);
@@ -59,6 +60,7 @@ const PermissionsManagement = ({ getAllRoles, roles, auth, getUserRole, userProf
               type="button"
               color="success"
               onClick={() => togglePopUpNewRole()}
+              style={boxStyle}
             >
               Add New Role
             </Button>
@@ -69,6 +71,7 @@ const PermissionsManagement = ({ getAllRoles, roles, auth, getUserRole, userProf
               onClick={() => {
                 togglePopUpUserPermissions();
               }}
+              style={boxStyle}
             >
               Manage User Permissions
             </Button>

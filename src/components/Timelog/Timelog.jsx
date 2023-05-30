@@ -44,6 +44,7 @@ import WeeklySummary from '../WeeklySummary/WeeklySummary';
 import Loading from '../common/Loading';
 import hasPermission from '../../utils/permissions';
 import WeeklySummaries from './WeeklySummaries';
+import { boxStyle } from '../styles.js';
 
 const doesUserHaveTaskWithWBS = tasks => {
   let check = false;
@@ -475,13 +476,7 @@ const Timelog = props => {
                       {isOwner ? (
                         <div className="float-right">
                           <div>
-                            <Button
-                              color="success"
-                              onClick={toggle}
-                              style={{
-                                boxShadow: '2px 2px 4px 1px lightgray',
-                              }}
-                            >
+                            <Button color="success" onClick={toggle} style={boxStyle}>
                               Add Intangible Time Entry{' '}
                               <i
                                 className="fa fa-info-circle"

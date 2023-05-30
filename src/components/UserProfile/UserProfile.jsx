@@ -47,6 +47,7 @@ import { UserStatus } from '../../utils/enums';
 import { faSleigh, faCamera } from '@fortawesome/free-solid-svg-icons';
 import BlueSquareLayout from './BlueSquareLayout';
 import TeamWeeklySummaries from './TeamWeeklySummaries/TeamWeeklySummaries';
+import { boxStyle } from '../styles.js';
 
 function UserProfile(props) {
   /* Constant values */
@@ -667,6 +668,7 @@ function UserProfile(props) {
                 }}
                 color="primary"
                 size="sm"
+                style={boxStyle}
               >
                 {showSelect ? 'Hide Team Weekly Summaries' : 'Show Team Weekly Summaries'}
               </Button>
@@ -1228,7 +1230,8 @@ function UserProfile(props) {
                   </Link>
                 )}
               {canEdit &&
-                (activeTab === '1' || activeTab === '3' ||
+                (activeTab === '1' ||
+                  activeTab === '3' ||
                   hasPermission(requestorRole, 'editUserProfile', roles, userPermissions)) && (
                   <>
                     <SaveButton

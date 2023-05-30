@@ -30,6 +30,7 @@ import { getUserProfile } from '../../actions/userProfile';
 import { toast } from 'react-toastify';
 import hasPermission from '../../utils/permissions';
 import './BadgeReport.css';
+import { boxStyle } from '../styles.js';
 
 pdfMake.vfs = pdfFonts.pdfMake.vfs;
 const BadgeReport = props => {
@@ -411,7 +412,7 @@ const BadgeReport = props => {
         </div>
         <Button
           className="btn--dark-sea-green float-right"
-          style={{ margin: 5 }}
+          style={{ ...boxStyle, margin: 5 }}
           onClick={e => {
             saveChanges();
           }}
@@ -420,14 +421,14 @@ const BadgeReport = props => {
         </Button>
         <Button
           className="btn--dark-sea-green float-right"
-          style={{ margin: 5 }}
+          style={{ ...boxStyle, margin: 5 }}
           onClick={pdfDocGenerator}
         >
           Export All Badges to PDF
         </Button>
         <Button
           className="btn--dark-sea-green float-right"
-          style={{ margin: 5 }}
+          style={{ ...boxStyle, margin: 5 }}
           onClick={pdfFeaturedDocGenerator}
         >
           Export Selected/Featured Badges to PDF

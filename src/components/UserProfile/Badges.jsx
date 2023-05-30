@@ -16,6 +16,7 @@ import FeaturedBadges from './FeaturedBadges';
 import BadgeReport from '../Badge/BadgeReport';
 import AssignBadgePopup from './AssignBadgePopup';
 import { clearSelected } from 'actions/badgeManagement';
+import { boxStyle } from '../styles.js';
 
 const Badges = props => {
   const [isOpen, setOpen] = useState(false);
@@ -43,7 +44,7 @@ const Badges = props => {
               Featured Badges <i className="fa fa-info-circle" id="FeaturedBadgeInfo" />
             </span>
             <div>
-              <Button className="btn--dark-sea-green" onClick={toggle}>
+              <Button className="btn--dark-sea-green" onClick={toggle} style={boxStyle}>
                 Select Featured
               </Button>
               <Modal size="lg" isOpen={isOpen} toggle={toggle}>
@@ -66,7 +67,11 @@ const Badges = props => {
               {((props.canEdit && (props.role == 'Owner' || props.role == 'Administrator')) ||
                 props.userPermissions.includes('assignBadgeOthers')) && (
                 <>
-                  <Button className="btn--dark-sea-green mr-2" onClick={assignToggle}>
+                  <Button
+                    className="btn--dark-sea-green mr-2"
+                    onClick={assignToggle}
+                    style={boxStyle}
+                  >
                     Assign Badges
                   </Button>
                   <Modal size="lg" isOpen={isAssignOpen} toggle={assignToggle}>

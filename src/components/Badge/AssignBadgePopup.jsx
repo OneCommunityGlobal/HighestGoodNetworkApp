@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Table, Button, UncontrolledTooltip } from 'reactstrap';
 import AssignTableRow from './AssignTableRow';
+import { boxStyle } from '../styles.js';
 
 const AssignBadgePopup = props => {
   const [searchedName, setSearchedName] = useState('');
@@ -62,7 +63,7 @@ const AssignBadgePopup = props => {
       </Table>
       <Button
         className="btn--dark-sea-green float-right"
-        style={{ margin: 5 }}
+        style={{ ...boxStyle, margin: 5 }}
         onClick={props.toggle}
       >
         Confirm
