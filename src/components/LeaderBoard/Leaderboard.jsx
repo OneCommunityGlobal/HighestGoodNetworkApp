@@ -4,7 +4,7 @@ import { isEqual } from 'lodash';
 import { Link } from 'react-router-dom';
 import { Table, Progress, Modal, ModalBody, ModalFooter, ModalHeader, Button } from 'reactstrap';
 import Alert from 'reactstrap/lib/Alert';
-import hasLeaderboardPermissions from 'utils/leaderboardPermissions';
+import { hasLeaderboardPermissions, assignStarDotColors, showStar } from 'utils/leaderboardPermissions';
 
 function useDeepEffect(effectFunc, deps) {
   const isFirst = useRef(true);
@@ -264,24 +264,16 @@ const LeaderBoard = ({
                   {/* <Link to={`/dashboard/${item.personId}`}> */}
                   {
                     hasLeaderboardPermissions(loggedInUser.role) && 
-                    item.weeklycommittedHours !== 0 && item.tangibletime >= item.weeklycommittedHours * 1.25 ? (
+                    showStar(item.tangibletime, item.weeklycommittedHours) ? (
                         <i
                         className="fa fa-star"
                         title={`Weekly Committed: ${item.weeklycommittedHours} hours`}
                         style={{
-                          color:
-                          item.tangibletime >= item.weeklycommittedHours * 1.75
-                              ? 'purple'
-                              : item.tangibletime >= item.weeklycommittedHours * 1.5 &&
-                              item.tangibletime < item.weeklycommittedHours * 1.75
-                              ? 'fuchsia'
-                              : item.tangibletime >= item.weeklycommittedHours * 1.25 &&
-                              item.tangibletime < item.weeklycommittedHours * 1.5
-                              ? 'darkgreen'
-                              : null,
+                          color: assignStarDotColors(item.tangibletime, item.weeklycommittedHours),
                           fontSize: '20px',
-                          marginLeft: '16px',
-                          verticalAlign: 'middle',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
                         }}
                       />) : (
                         <div
