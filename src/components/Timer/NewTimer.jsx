@@ -206,12 +206,6 @@ const handleRemoveGoal = useCallback(
   */
 
   useEffect(() => {
-    if (elapsedTime >= 60000) {
-      setUserCanStop(true);
-    }
-  }, [elapsedTime]);
-
-  useEffect(() => {
     // If the user load the page and the time 0 it clear the timer and put the
     const userHasLoadedPageAndAlreadyHaveSeeTheFirstLoadingAndHisTimeIsZero =
       message?.time == 0 && isFirstLoading;
@@ -244,10 +238,12 @@ const handleRemoveGoal = useCallback(
   }, [message, userCanStop]);
 
   useEffect(() => {
-    if (isFirstLoading && message && message.time === 0) {
-      handleClear();
+    if (isFirstLoading) {
+      setTimeout(() => {
+        setIsFirstLoading(false);
+      }, 10000);
     }
-  }, [isFirstLoading, message, handleClear]);
+  }, [isFirstLoading]);
 
   const stopAllAudioAndClearIntervals = useCallback(() => {
     const audios = document.querySelectorAll('audio');
