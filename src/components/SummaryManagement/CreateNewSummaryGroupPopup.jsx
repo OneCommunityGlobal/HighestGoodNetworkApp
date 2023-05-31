@@ -5,6 +5,7 @@ import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Input, Alert } from
 const CreateNewSummaryGroupPopup = React.memo(props => {
   const [newSummaryTeam, onNewName] = useState(props.sumaryGroupName || '');
   const [isValidTeam, onValidation] = useState(true);
+
   const closePopup = () => {
     props.onClose();
   };
@@ -43,7 +44,11 @@ const CreateNewSummaryGroupPopup = React.memo(props => {
             color="primary"
             onClick={() => {
               if (newSummaryTeam !== '') {
-                props.onOkClick(newSummaryTeam, props.isEdit);
+                if (!props.summaryGroup.some(group => group.summaryGroupName === newSummaryTeam)) {
+                  props.onOkClick(newSummaryTeam, props.isEdit);
+                } else {
+                  onValidation(false);
+                }
               } else {
                 onValidation(false);
               }

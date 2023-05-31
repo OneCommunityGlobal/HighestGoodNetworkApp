@@ -278,6 +278,7 @@ class SummaryManagement extends Component {
     } catch (error) {
       console.log(error);
     }
+
     this.getSummaryReceiver(selectedSummaryGroupId);
   };
 
@@ -299,7 +300,6 @@ class SummaryManagement extends Component {
     );
   };
   onWildCardSearch = searchText => {
-    console.log('Search text:', searchText);
     this.setState(
       {
         wildCardSearchText: searchText,
@@ -340,6 +340,7 @@ class SummaryManagement extends Component {
       ? allSummaryGroups.filter(summaryGroup => summaryGroup.isActive).length
       : 0;
     const usersdata = this.props.state ? this.props.state.allUserProfiles : [];
+
     return (
       <React.Fragment>
         <div className="container">
@@ -361,6 +362,7 @@ class SummaryManagement extends Component {
             SummaryGroupName={this.state.selectedSummaryGroup}
             SummaryGroupId={this.state.selectedSummaryGroupId}
             isEdit={this.state.isEdit}
+            summaryGroup={allSummaryGroups}
           />
           <UpdateSummaryGroupPopup
             open={this.state.updateSummaryGroupPopupOpen}

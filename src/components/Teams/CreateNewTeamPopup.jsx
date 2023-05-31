@@ -4,6 +4,7 @@ import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Input, Alert } from
 
 const CreateNewTeamPopup = React.memo(props => {
   const [newTeam, onNewName] = useState('');
+  
   const closePopup = () => {
     props.onClose();
   };
