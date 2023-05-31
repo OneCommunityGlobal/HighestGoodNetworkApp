@@ -32,6 +32,7 @@ export const NewTimer = () => {
   const [isFirstLoading, setIsFirstLoading] = useState(true);
   const [previewTimer, setPreviewTimer] = useState(0);
   const [remainingTime, setRemainingTime] = useState(0);
+  const [elapsedTime, setElapsedTime] = useState(0);
 
   const data = {
     disabled: window.screenX <= 500,
@@ -107,17 +108,18 @@ export const NewTimer = () => {
   };
 
   const handleStartButton = useCallback(() => {
-    setTriggerAudio(true);
     const now = moment();
     const lastAccess = moment(message?.lastAccess);
-    const elapsedTime = moment.duration(now.diff(lastAccess)).asMilliseconds();
-    let remaining = message?.time - elapsedTime; // Use message.time instead of remainingTime
-  
+    const elapsed = moment.duration(now.diff(lastAccess)).asMilliseconds();
+    let remaining = message?.time - elapsed;
+    
     const lastTimeAdded = moment.utc(remainingTime).format('HH:mm').replace('00:0', '');
   
     if (remaining <= 0) {
       handleAddGoal(1000 * 60 * (Number(lastTimeAdded) > 0 ? Number(lastTimeAdded) : 5));
     }
+  
+    setElapsedTime(elapsed);
     sendMessage(action.START_TIMER);
   }, [message, remainingTime, sendMessage, handleAddGoal]);
 
@@ -204,6 +206,12 @@ const handleRemoveGoal = useCallback(
   */
 
   useEffect(() => {
+    if (elapsedTime >= 60000) {
+      setUserCanStop(true);
+    }
+  }, [elapsedTime]);
+
+  useEffect(() => {
     // If the user load the page and the time 0 it clear the timer and put the
     const userHasLoadedPageAndAlreadyHaveSeeTheFirstLoadingAndHisTimeIsZero =
       message?.time == 0 && isFirstLoading;
@@ -238,9 +246,6 @@ const handleRemoveGoal = useCallback(
   useEffect(() => {
     if (isFirstLoading && message && message.time === 0) {
       handleClear();
-      setTimeout(() => {
-        setIsFirstLoading(false);
-      }, 10000);
     }
   }, [isFirstLoading, message, handleClear]);
 
@@ -303,6 +308,7 @@ const handleRemoveGoal = useCallback(
           fontSize="1.5rem"
         />
       </button>
+
 
       <Modal
         isOpen={timerIsOverModalOpen}
