@@ -682,7 +682,12 @@ const Timelog = props => {
                             onChange={handleInputChange}
                           />
                         </FormGroup>
-                        <Button color="primary" onClick={handleSearch} className="ml-2">
+                        <Button
+                          color="primary"
+                          onClick={handleSearch}
+                          className="ml-2"
+                          style={boxStyle}
+                        >
                           Search
                         </Button>
                       </Form>

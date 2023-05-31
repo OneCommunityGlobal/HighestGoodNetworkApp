@@ -1223,7 +1223,7 @@ function UserProfile(props) {
                 (activeTab === '1' ||
                   hasPermission(requestorRole, 'editUserProfile', roles, userPermissions)) && (
                   <Link to={`/updatepassword/${userProfile._id}`}>
-                    <Button className="mr-1 btn-bottom" color="primary">
+                    <Button className="mr-1 btn-bottom" color="primary" style={boxStyle}>
                       {' '}
                       Update Password
                     </Button>
@@ -1253,6 +1253,7 @@ function UserProfile(props) {
                           setTeams(originalTeams);
                         }}
                         className="btn btn-outline-danger mr-1 btn-bottom"
+                        style={boxStyle}
                       >
                         Cancel
                       </span>

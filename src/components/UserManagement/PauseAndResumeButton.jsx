@@ -6,6 +6,7 @@ import ActivationDatePopup from './ActivationDatePopup';
 import { updateUserStatus } from '../../actions/userManagement';
 import { Button } from 'reactstrap';
 import { toast } from 'react-toastify';
+import { boxStyle } from '../styles.js';
 
 /**
  * @param {*} props
@@ -69,6 +70,7 @@ const PauseAndResumeButton = props => {
         className={`btn btn-outline-${isActive ? 'warning' : 'success'} ${
           props.isBigBtn ? '' : 'btn-sm'
         }  mr-1`}
+        style={boxStyle}
         onClick={e => {
           onPauseResumeClick(props.userProfile, isActive ? UserStatus.InActive : UserStatus.Active);
         }}

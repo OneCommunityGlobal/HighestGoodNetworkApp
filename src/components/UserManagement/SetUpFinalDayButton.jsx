@@ -5,6 +5,7 @@ import { SET_FINAL_DAY, CANCEL } from '../../languages/en/ui';
 import SetUpFinalDayPopUp from './SetUpFinalDayPopUp';
 import { updateUserFinalDayStatus } from 'actions/userManagement';
 import { toast } from 'react-toastify';
+import { boxStyle } from '../styles.js';
 
 /**
  * @param {*} props
@@ -61,6 +62,7 @@ const SetUpFinalDayButton = props => {
         className={`btn btn-outline-${isSet ? 'warning' : 'success'} ${
           props.isBigBtn ? '' : 'btn-sm'
         }  mr-1`}
+        style={boxStyle}
         onClick={e => {
           onFinalDayClick(props.userProfile, isSet);
         }}

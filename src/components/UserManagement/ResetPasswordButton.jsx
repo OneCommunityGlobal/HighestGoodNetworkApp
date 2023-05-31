@@ -3,6 +3,7 @@ import ResetPasswordPopup from './ResetPasswordPopup';
 import { resetPassword } from '../../services/userProfileService';
 import { Button } from 'reactstrap';
 import { toast } from 'react-toastify';
+import { boxStyle } from '../styles.js';
 
 class ResetPasswordButton extends React.PureComponent {
   constructor(props) {
@@ -24,7 +25,7 @@ class ResetPasswordButton extends React.PureComponent {
           outline
           color="primary"
           className={'btn  btn-outline-success mr-1' + (this.props.isSmallButton ? ' btn-sm' : '')}
-          style={{ minWidth: '115px' }}
+          style={{ ...boxStyle, minWidth: '115px' }}
           onClick={this.onResetClick}
         >
           {'Reset Password'}
