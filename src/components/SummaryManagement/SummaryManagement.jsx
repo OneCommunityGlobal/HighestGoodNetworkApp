@@ -370,6 +370,7 @@ class SummaryManagement extends Component {
             onClose={this.onUpdateSummaryPopupClose}
             SummaryGroupName={this.state.selectedSummaryGroup}
             SummaryGroupId={this.state.selectedSummaryGroupId}
+            summaryGroup={allSummaryGroups}
             //isEdit={this.state.isEdit}
           />
           <DeleteSummaryGroupPopup

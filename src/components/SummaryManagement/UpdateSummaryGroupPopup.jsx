@@ -28,7 +28,7 @@ const UpdateSummaryGroupPopup = React.memo(props => {
             required
           />
           {isValidTeam === false ? (
-            <Alert color="danger">Please enter a summary group name.</Alert>
+            <Alert color="danger">Please enter a new summary group name.</Alert>
           ) : (
             <></>
           )}
@@ -41,7 +41,11 @@ const UpdateSummaryGroupPopup = React.memo(props => {
             color="primary"
             onClick={() => {
               if (newSummaryTeam !== '') {
-                props.onOkClick(newSummaryTeam);
+                if (!props.summaryGroup.some(group => group.summaryGroupName === newSummaryTeam)) {
+                  props.onOkClick(newSummaryTeam, props.isEdit);
+                } else {
+                  onValidation(false);
+                }
               } else {
                 onValidation(false);
               }
