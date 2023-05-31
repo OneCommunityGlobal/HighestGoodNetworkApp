@@ -11,6 +11,7 @@ import ToggleSwitch from '../UserProfile/UserProfileEdit/ToggleSwitch';
 import axios from 'axios';
 import { ENDPOINTS } from '../../utils/URL';
 import { useState } from 'react';
+import { assignStarDotColors, showStar } from 'utils/leaderboardPermissions';
 
 const FormattedReport = ({ summaries, weekIndex, role }) => {
   const emails = [];
@@ -184,51 +185,75 @@ const FormattedReport = ({ summaries, weekIndex, role }) => {
     );
   };
 
-  const summaryCard = (summary, index) => {
-    const hoursLogged = (summary.totalSeconds[weekIndex] || 0) / 3600;
-    const googleDocLink = getGoogleDocLink(summary);
-    return (
-      <div
-        style={{ padding: '20px 0', marginTop: '5px', borderBottom: '1px solid #DEE2E6' }}
-        key={'summary-' + index}
-      >
-        <div>
-          <b>Name: </b>
-          <Link to={`/userProfile/${summary._id}`} title="View Profile">
-            {summary.firstName} {summary.lastName}
-          </Link>
-
-          <span onClick={() => handleGoogleDocClick(googleDocLink)}>
-            <img className="google-doc-icon" src={google_doc_icon} alt="google_doc" />
-          </span>
-        </div>
-        <div>
-          {' '}
-          <b>Media URL:</b> {getMediaUrlLink(summary)}
-        </div>
-        {bioFunction(summary._id, summary.bioPosted)}
-        {getTotalValidWeeklySummaries(summary)}
-        {hoursLogged >= summary.weeklycommittedHours && (
-          <p>
-            <b>Hours logged:</b> {hoursLogged.toFixed(2)} / {summary.weeklycommittedHours}
-          </p>
-        )}
-        {hoursLogged < summary.weeklycommittedHours && (
-          <p style={{ color: 'red' }}>
-            <b>Hours logged:</b> {hoursLogged.toFixed(2)} / {summary.weeklycommittedHours}
-          </p>
-        )}
-        {getWeeklySummaryMessage(summary)}
-      </div>
-    );
-  };
-
   const bioFunction = bioCanEdit ? bioSwitch : bioLabel;
 
   return (
     <>
       {alphabetize(summaries).map((summary, index) => {
-        return summaryCard(summary, index);
+        const hoursLogged = (summary.totalSeconds[weekIndex] || 0) / 3600;
+        const googleDocLink = getGoogleDocLink(summary);
+        
+        return (
+          <div
+            style={{ padding: '20px 0', marginTop: '5px', borderBottom: '1px solid #DEE2E6' }}
+            key={'summary-' + index}
+          >
+            <div>
+              <b>Name: </b>
+              <Link to={`/userProfile/${summary._id}`} title="View Profile">
+                {summary.firstName} {summary.lastName}
+              </Link>
+
+              <span onClick={() => handleGoogleDocClick(googleDocLink)}>
+                <img className="google-doc-icon" src={google_doc_icon} alt="google_doc" />
+              </span>
+              {showStar(hoursLogged, summary.weeklycommittedHours) && (
+                <i
+                  className="fa fa-star"
+                  title={`Weekly Committed: ${summary.weeklycommittedHours} hours`}
+                  style={{
+                    color: assignStarDotColors(hoursLogged, summary.weeklycommittedHours),
+                    fontSize: '55px',
+                    marginLeft: '10px',
+                    verticalAlign: 'middle',
+                    position: 'relative',
+                  }}
+                >
+                  <span
+                    style={{
+                      position: 'absolute',
+                      top: '50%',
+                      left: '50%',
+                      transform: 'translate(-50%, -50%)',
+                      color: 'white',
+                      fontWeight: 'bold',
+                      fontSize: '10px',
+                    }}
+                  >
+                    +{Math.round((hoursLogged / summary.weeklycommittedHours - 1) * 100)}% 
+                  </span>
+                </i>
+              )}
+            </div>
+            <div>
+              {' '}
+              <b>Media URL:</b> {getMediaUrlLink(summary)}
+            </div>
+            {bioFunction(summary._id, summary.bioPosted)}
+            {getTotalValidWeeklySummaries(summary)}
+            {hoursLogged >= summary.weeklycommittedHours && (
+              <p>
+                <b>Hours logged:</b> {hoursLogged.toFixed(2)} / {summary.weeklycommittedHours}
+              </p>
+            )}
+            {hoursLogged < summary.weeklycommittedHours && (
+              <p style={{ color: 'red' }}>
+                <b>Hours logged:</b> {hoursLogged.toFixed(2)} / {summary.weeklycommittedHours}
+              </p>
+            )}
+            {getWeeklySummaryMessage(summary)}
+          </div>
+        );
       })}
       <h4>Emails</h4>
       <p>{emailString}</p>

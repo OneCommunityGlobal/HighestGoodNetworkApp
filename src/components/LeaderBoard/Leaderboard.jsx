@@ -4,6 +4,7 @@ import { isEqual } from 'lodash';
 import { Link } from 'react-router-dom';
 import { Table, Progress, Modal, ModalBody, ModalFooter, ModalHeader, Button } from 'reactstrap';
 import Alert from 'reactstrap/lib/Alert';
+import { hasLeaderboardPermissions, assignStarDotColors, showStar } from 'utils/leaderboardPermissions';
 
 function useDeepEffect(effectFunc, deps) {
   const isFirst = useRef(true);
@@ -220,7 +221,7 @@ const LeaderBoard = ({
                       borderRadius: 7.5,
                       margin: 'auto',
                     }}
-                  />
+                  />  
                 </Link>
               </td>
               <th scope="row">{organizationData.name}</th>
@@ -261,18 +262,34 @@ const LeaderBoard = ({
                   </div>
 
                   {/* <Link to={`/dashboard/${item.personId}`}> */}
-                  <div
-                    title={`Weekly Committed: ${item.weeklycommittedHours} hours`}
-                    style={{
-                      backgroundColor:
-                        item.tangibletime >= item.weeklycommittedHours ? 'green' : 'red',
-                      width: 15,
-                      height: 15,
-                      borderRadius: 7.5,
-                      margin: 'auto',
-                      verticalAlign: 'middle',
-                    }}
-                  />
+                  {
+                    hasLeaderboardPermissions(loggedInUser.role) && 
+                    showStar(item.tangibletime, item.weeklycommittedHours) ? (
+                        <i
+                        className="fa fa-star"
+                        title={`Weekly Committed: ${item.weeklycommittedHours} hours`}
+                        style={{
+                          color: assignStarDotColors(item.tangibletime, item.weeklycommittedHours),
+                          fontSize: '20px',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                        }}
+                      />) : (
+                        <div
+                          title={`Weekly Committed: ${item.weeklycommittedHours} hours`}
+                          style={{
+                            backgroundColor:
+                              item.tangibletime >= item.weeklycommittedHours ? '#32CD32' : 'red',
+                            width: 15,
+                            height: 15,
+                            borderRadius: 7.5,
+                            margin: 'auto',
+                            verticalAlign: 'middle',
+                          }}
+                        />
+                      )
+                  }
                   {/* </Link> */}
                 </td>
                 <th scope="row">
