@@ -11,6 +11,7 @@ import ToggleSwitch from '../UserProfile/UserProfileEdit/ToggleSwitch';
 import axios from 'axios';
 import { ENDPOINTS } from '../../utils/URL';
 import { useState } from 'react';
+import { assignStarDotColors, showStar } from 'utils/leaderboardPermissions';
 
 const FormattedReport = ({ summaries, weekIndex }) => {
   const emails = [];
@@ -173,6 +174,33 @@ const FormattedReport = ({ summaries, weekIndex }) => {
               <span onClick={() => handleGoogleDocClick(googleDocLink)}>
                 <img className="google-doc-icon" src={google_doc_icon} alt="google_doc" />
               </span>
+              {showStar(hoursLogged, summary.weeklycommittedHours) && (
+                <i
+                  className="fa fa-star"
+                  title={`Weekly Committed: ${summary.weeklycommittedHours} hours`}
+                  style={{
+                    color: assignStarDotColors(hoursLogged, summary.weeklycommittedHours),
+                    fontSize: '55px',
+                    marginLeft: '10px',
+                    verticalAlign: 'middle',
+                    position: 'relative',
+                  }}
+                >
+                  <span
+                    style={{
+                      position: 'absolute',
+                      top: '50%',
+                      left: '50%',
+                      transform: 'translate(-50%, -50%)',
+                      color: 'white',
+                      fontWeight: 'bold',
+                      fontSize: '10px',
+                    }}
+                  >
+                    +{Math.round((hoursLogged / summary.weeklycommittedHours - 1) * 100)}% 
+                  </span>
+                </i>
+              )}
             </div>
             <div>
               {' '}
