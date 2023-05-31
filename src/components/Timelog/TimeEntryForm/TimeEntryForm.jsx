@@ -828,7 +828,6 @@ const TimeEntryForm = props => {
             {/* <Button color="primary" disabled={isSubmitting || (data.hours === inputs.hours && data.minutes === inputs.minutes && data.notes === inputs.notes)} onClick={handleSubmit}> */}
             <Button color="secondary" onClick={() => {
               toggle()
-              handleStart()
               }}>
               Back
             </Button>
