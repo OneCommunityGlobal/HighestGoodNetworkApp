@@ -477,7 +477,7 @@ const Timelog = props => {
                         <div className="float-right">
                           <div>
                             <Button color="success" onClick={toggle} style={boxStyle}>
-                              Add Intangible Time Entry{' '}
+                              Add Intangible Time Entry
                               <i
                                 className="fa fa-info-circle"
                                 data-tip
