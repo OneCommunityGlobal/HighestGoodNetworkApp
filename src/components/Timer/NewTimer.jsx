@@ -204,26 +204,6 @@ const handleRemoveGoal = useCallback(
   */
 
   useEffect(() => {
-    // If the user load the page and the time 0 it clear the timer and put the
-    const userHasLoadedPageAndAlreadyHaveSeeTheFirstLoadingAndHisTimeIsZero =
-      message?.time == 0 && isFirstLoading;
-
-    if (userHasLoadedPageAndAlreadyHaveSeeTheFirstLoadingAndHisTimeIsZero) {
-      handleClear();
-    }
-  }, [message, isFirstLoading]);
-
-  useEffect(() => {
-    const now = moment();
-    const lastAccess = moment(message?.lastAccess);
-    const elapsedTime = moment.duration(now.diff(lastAccess)).asMilliseconds();
-
-    if(elapsedTime >= 1){
-      setUserCanStop(true)
-    }
-  }, [message?.lastAccess])
-
-  useEffect(() => {
     if (userCanStop) {
       return;
     }
@@ -237,6 +217,23 @@ const handleRemoveGoal = useCallback(
       }
     }, 60000);
   }, [message, userCanStop]);
+
+  useEffect(() => {
+    // If the user load the page and the time 0 it clear the timer and put the
+    const userHasLoadedPageAndAlreadyHaveSeeTheFirstLoadingAndHisTimeIsZero =
+      message?.time == 0 && isFirstLoading;
+
+    if (userHasLoadedPageAndAlreadyHaveSeeTheFirstLoadingAndHisTimeIsZero) {
+      handleClear();
+    }
+
+    if((message?.goal - message?.time) >= 60000){
+      console.log(message?.goal - message?.time)
+      setUserCanStop(true)
+    } else {
+      setUserCanStop(false)
+    }
+  }, [message, isFirstLoading]);
 
   useEffect(() => {
     if (isFirstLoading && message && message.time === 0) {
@@ -296,10 +293,10 @@ const handleRemoveGoal = useCallback(
         onClick={() => {
           setLogModal(true);
         }}
-        className="disabled"
+        className={`${userCanStop ? '' : 'disabled'}`}
       >
         <BsStopCircleFill
-          className={`${!userCanStop ? 'transition-color disabled' : 'btn-white transition-color'}`}
+          className={`transition-color ${userCanStop ? '' : 'disabled'}`}
           fontSize="1.5rem"
         />
       </button>
