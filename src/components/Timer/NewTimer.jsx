@@ -204,21 +204,6 @@ const handleRemoveGoal = useCallback(
   */
 
   useEffect(() => {
-    if (userCanStop) {
-      return;
-    }
-    const timeToLog = moment.duration(
-      message ? (message.countdown ? message.goal - previewTimer : previewTimer) : 0,
-    );
-    setInterval(() => {
-      if (timeToLog.minutes() >= 1) {
-        setUserCanStop(true);
-        return;
-      }
-    }, 60000);
-  }, [message, userCanStop]);
-
-  useEffect(() => {
     // If the user load the page and the time 0 it clear the timer and put the
     const userHasLoadedPageAndAlreadyHaveSeeTheFirstLoadingAndHisTimeIsZero =
       message?.time == 0 && isFirstLoading;
@@ -236,8 +221,26 @@ const handleRemoveGoal = useCallback(
   }, [message, isFirstLoading]);
 
   useEffect(() => {
+    if (userCanStop) {
+      return;
+    }
+    const timeToLog = moment.duration(
+      message ? (message.countdown ? message.goal - previewTimer : previewTimer) : 0,
+    );
+    setInterval(() => {
+      if (timeToLog.minutes() >= 1) {
+        setUserCanStop(true);
+        return;
+      }
+    }, 60000);
+  }, [message, userCanStop]);
+
+  useEffect(() => {
     if (isFirstLoading && message && message.time === 0) {
       handleClear();
+      setTimeout(() => {
+        setIsFirstLoading(false);
+      }, 10000);
     }
   }, [isFirstLoading, message, handleClear]);
 
