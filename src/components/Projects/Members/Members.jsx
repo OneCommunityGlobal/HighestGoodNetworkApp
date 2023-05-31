@@ -24,6 +24,8 @@ const Members = props => {
   const projectId = props.match.params.projectId;
   const { roles } = props.state.role;
 
+  const projectName = props.state?.allProjects?.projects?.filter((project) => project?._id === projectId)?.[0]?.projectName ?? `Project #${projectId}`;
+
   useEffect(() => {
     props.fetchAllMembers(projectId);
   }, [projectId]);
@@ -88,6 +90,7 @@ const Members = props => {
             <div id="member_project__name">PROJECTS {props.projectId}</div>
           </ol>
         </nav>
+        <h3>{projectName}</h3>
         {hasPermission(role, 'findUserInProject', roles, userPermissions) ? (
           <div className="input-group" id="new_project">
             <div className="input-group-prepend">
