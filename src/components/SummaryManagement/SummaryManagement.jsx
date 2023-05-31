@@ -232,7 +232,7 @@ class SummaryManagement extends Component {
     } catch (error) {
       console.log(error);
     }
-    this.getTeamMembers(selectedSummaryGroupId);
+    this.getTeamMembers(this.state.selectedSummaryGroupId);
 
     alert(
       'Team member successfully deleted! Ryunosuke Satoro famously said, “Individually we are one drop, together we are an ocean.” Through the action you just took, this ocean is now one drop smaller.',
