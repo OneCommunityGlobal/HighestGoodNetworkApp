@@ -21,6 +21,10 @@
   padding: 0 16px;
   cursor: pointer;
   border-bottom: 3px solid #f8f7f8;
+
+  @media screen and (max-width: 550px) {
+    display: block;
+  }
 }
 
 .people-table-center-cell {

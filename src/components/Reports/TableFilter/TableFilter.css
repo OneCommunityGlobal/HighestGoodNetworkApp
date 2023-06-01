@@ -27,6 +27,10 @@ select {
 .table-filter-input {
   width: 140px;
   border: 2px solid #d1cfd4;
+
+  @media screen and (max-width: 550px) {
+    width: 100%;
+  }
 }
 
 .table-filter-input:focus,

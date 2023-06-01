@@ -12,11 +12,19 @@
   padding: 16px 0;
   color: #fff;
   text-transform: capitalize;
+
+  @media screen and (max-width: 700px) {
+    flex-direction: column;
+  }
 }
 
 .team-report-main-info-wrapper {
   margin-top: 24px;
   height: 60px;
+
+  @media screen and (max-width: 500px) {
+    height: fit-content;
+  }
 }
 
 .team-report-time-log-block {
@@ -24,8 +32,16 @@
   width: 240px;
   white-space: nowrap;
   margin-bottom: 16px;
+
+  @media screen and (max-width: 700px) {
+    width: 80%;
+  }
 }
 
 .teams-report-time-title {
   margin-top: 40px;
+
+  @media screen and (max-width: 700px) {
+    text-align: center;
+  }
 }

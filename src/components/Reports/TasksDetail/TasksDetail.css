@@ -10,6 +10,14 @@
   border-bottom: 3px solid #f8f7f8;
 }
 
+@media screen and (max-width: 1000px) {
+  .tasks-detail-table-row {
+    display: flex;
+    overflow: scroll;
+    gap: 20px;
+    max-width: 512px;
+  }
+}
 .tasks-detail-table-head {
   background-color: #eee7f8;
   margin-bottom: 16px;

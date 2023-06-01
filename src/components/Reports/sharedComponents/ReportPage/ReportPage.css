@@ -6,6 +6,18 @@
   background-color: #faf7fd;
   margin-top: -16px;
   padding: 24px 0 0 24px;
+
+  @media screen and (max-width: 800px) {
+    display: block;
+    padding: 24px;
+  }
+
+  @media screen and (max-width: 1250px) {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 24px;
+  }
 }
 
 .report-page-content {
@@ -14,10 +26,29 @@
   grid-row-start: 1;
   row-gap: 32px;
   padding-bottom: 24px;
+
+  @media screen and (max-width: 1200px) {
+    width: 100%;
+  }
 }
 
 .report-page-profile {
   padding: 24px 24px 0 24px;
   background-color: #f1ebf7;
   border-top-left-radius: 25px;
+
+  @media screen and (max-width: 500px) {
+    max-width: 100%;
+  }
+
+  @media screen and (max-width: 800px) {
+    margin-bottom: 20px;
+    padding: 24px;
+  }
+
+  @media screen and (max-width: 1250px) {
+    width: 400px;
+    height: 310px;
+    border-radius: 25px;
+  }
 }

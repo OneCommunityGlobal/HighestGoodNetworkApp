@@ -21,4 +21,14 @@
   justify-items: start;
   padding: 0 16px;
   border-bottom: 3px solid #f8f7f8;
+
+  @media screen and (max-width: 500px) {
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+  }
+}
+
+.wbs-projects-id {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 100%;
 }

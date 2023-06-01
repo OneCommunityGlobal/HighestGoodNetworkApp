@@ -1,6 +1,10 @@
 .pie-chart-wrapper {
   display: flex;
   align-items: center;
+
+  @media screen and (max-width: 500px) {
+    flex-direction: column;
+  }
 }
 
 .pie-chart {

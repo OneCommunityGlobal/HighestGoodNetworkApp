@@ -14,7 +14,7 @@ export const ProjectMemberTable = ({ projectMembers, skip, take }) => {
           <div>
             {member.firstName} {member.lastName}
           </div>
-          <div>{member._id}</div>
+          <div className="project-member-table-row-id">{member._id}</div>
         </div>
       ));
     }

@@ -200,17 +200,9 @@ const PeopleTableDetails = props => {
             <div>Why This Task is important</div>
             <textarea className="rectangle" type="text" value={value.whyInfo} />
             <div>Design Intent</div>
-            <textarea
-              className="rectangle"
-              type="text"
-              value={value.intentInfo}
-            />
+            <textarea className="rectangle" type="text" value={value.intentInfo} />
             <div>End State</div>
-            <textarea
-              className="rectangle"
-              type="text"
-              value={value.endstateInfo}
-            />
+            <textarea className="rectangle" type="text" value={value.endstateInfo} />
           </NewModal>
         ))}
       </div>

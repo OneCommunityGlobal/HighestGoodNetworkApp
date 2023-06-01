@@ -4,7 +4,6 @@ import moment from 'moment';
 import DatePicker from 'react-datepicker';
 import { FiUsers } from 'react-icons/fi';
 import { BsCheckLg, BsXLg } from 'react-icons/bs';
-import { useMediaQuery } from 'react-responsive';
 import { getTeamDetail } from '../../../actions/team';
 import {
   getAllUserTeams,
@@ -24,13 +23,6 @@ import { ReportPage } from '../sharedComponents/ReportPage';
 import UserLoginPrivileges from './components/UserLoginPrivileges';
 
 import Dropdown from 'react-bootstrap/Dropdown';
-import {
-  DropdownToggle,
-  UncontrolledDropdown,
-  DropdownMenu,
-  DropdownItem,
-  ButtonGroup,
-} from 'reactstrap';
 import { LoginPrivileges } from './components/LoginPrivileges.jsx';
 import { useMemo } from 'react';
 import axios from 'axios';
@@ -53,8 +45,6 @@ export function TeamReport({ match }) {
 
   const [selectedTeams, setSelectedTeams] = useState([]);
   const [disableRadio, setDisableRadio] = useState(false);
-
-  const isTablet = useMediaQuery({ query: '(max-width: 800px)' });
 
   // Create a state variable to store the selected radio input
   const [selectedInput, setSelectedInput] = useState('isManager');
@@ -422,29 +412,21 @@ export function TeamReport({ match }) {
               <td className="tableHeader">
                 <strong>Team</strong>
               </td>
-              {isTablet ? (
-                <td className="tableHeader">
-                  <strong>More info</strong>
-                </td>
-              ) : (
-                <>
-                  <td className="tableHeader">
-                    <strong>Status</strong>
-                  </td>
-                  <td className="tableHeader">
-                    <strong>Team Members</strong>
-                  </td>
-                  <td className="tableHeader">
-                    <strong>ID</strong>
-                  </td>
-                  <td className="tableHeader">
-                    <strong>Created At</strong>
-                  </td>
-                  <td className="tableHeader">
-                    <strong>Modified At</strong>
-                  </td>
-                </>
-              )}
+              <td className="tableHeader">
+                <strong>Status</strong>
+              </td>
+              <td className="tableHeader">
+                <strong>Team Members</strong>
+              </td>
+              <td className="tableHeader">
+                <strong>ID</strong>
+              </td>
+              <td className="tableHeader">
+                <strong>Created At</strong>
+              </td>
+              <td className="tableHeader">
+                <strong>Modified At</strong>
+              </td>
             </tr>
           </thead>
           {allTeamsMembers.length > 1 ? (
@@ -466,83 +448,38 @@ export function TeamReport({ match }) {
                   <td>
                     <strong>{team.teamName}</strong>
                   </td>
+                  <td>{handleStatus(team.isActive)}</td>
 
-                  {isTablet ? (
-                    <td>
-                      <ButtonGroup style={{ marginLeft: '8px' }}>
-                        <td>
-                          <UncontrolledDropdown className="me-2" direction="down">
-                            <DropdownToggle caret color="primary">
-                              More
-                            </DropdownToggle>
-                            <DropdownMenu>
-                              <DropdownItem>{handleStatus(team.isActive)}</DropdownItem>
-                              <DropdownItem divider />
-
-                              <DropdownItem>
-                                <strong>Team members:</strong>
-                                {allTeamsMembers[index].length > 1 ? (
-                                  allTeamsMembers[index].map(member => (
-                                    <div key={`${team._id}-${member._id}`}>
-                                      {member.firstName} {member.lastName}
-                                    </div>
-                                  ))
-                                ) : (
-                                  <strong>This team has no members!</strong>
-                                )}
-                              </DropdownItem>
-                              <DropdownItem divider />
-                              <DropdownItem>ID: {team._id}</DropdownItem>
-                              <DropdownItem divider />
-                              <DropdownItem>
-                                Created at: {handleDate(team.createdDatetime)}
-                              </DropdownItem>
-                              <DropdownItem divider />
-                              <DropdownItem>
-                                Modified at: {handleDate(team.modifiedDatetime)}
-                              </DropdownItem>
-                              <DropdownItem divider />
-                            </DropdownMenu>
-                          </UncontrolledDropdown>
-                        </td>
-                      </ButtonGroup>
-                    </td>
-                  ) : (
-                    <>
-                      <td>{handleStatus(team.isActive)}</td>
-
-                      <td>
-                        <Dropdown>
-                          <Dropdown.Toggle
-                            variant="success"
-                            id="dropdown-basic"
-                            style={{ backgroundColor: '#996cd3', border: 'none' }}
-                          >
-                            See
-                          </Dropdown.Toggle>
-                          <Dropdown.Menu>
-                            {allTeamsMembers[index].length > 1 ? (
-                              allTeamsMembers[index].map(member => (
-                                <div key={`${team._id}-${member._id}`}>
-                                  <Dropdown.Item href="#/action-1">
-                                    {member.firstName} {member.lastName}
-                                  </Dropdown.Item>
-                                  <Dropdown.Divider />
-                                </div>
-                              ))
-                            ) : (
+                  <td>
+                    <Dropdown>
+                      <Dropdown.Toggle
+                        variant="success"
+                        id="dropdown-basic"
+                        style={{ backgroundColor: '#996cd3', border: 'none' }}
+                      >
+                        See
+                      </Dropdown.Toggle>
+                      <Dropdown.Menu>
+                        {allTeamsMembers[index].length > 1 ? (
+                          allTeamsMembers[index].map(member => (
+                            <div key={`${team._id}-${member._id}`}>
                               <Dropdown.Item href="#/action-1">
-                                <strong>This team has no members!</strong>
+                                {member.firstName} {member.lastName}
                               </Dropdown.Item>
-                            )}
-                          </Dropdown.Menu>
-                        </Dropdown>
-                      </td>
-                      <td>{team._id}</td>
-                      <td>{handleDate(team.createdDatetime)}</td>
-                      <td>{handleDate(team.modifiedDatetime)}</td>
-                    </>
-                  )}
+                              <Dropdown.Divider />
+                            </div>
+                          ))
+                        ) : (
+                          <Dropdown.Item href="#/action-1">
+                            <strong>This team has no members!</strong>
+                          </Dropdown.Item>
+                        )}
+                      </Dropdown.Menu>
+                    </Dropdown>
+                  </td>
+                  <td>{team._id}</td>
+                  <td>{handleDate(team.createdDatetime)}</td>
+                  <td>{handleDate(team.modifiedDatetime)}</td>
                 </tr>
               ))}
             </tbody>

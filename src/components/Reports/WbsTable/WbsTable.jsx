@@ -21,7 +21,7 @@ export const WbsTable = ({ wbs, skip, take }) => {
               </div>
             )}
           </div>
-          <div>{item._id}</div>
+          <div className="wbs-projects-id">{item._id}</div>
         </div>
       ));
     }

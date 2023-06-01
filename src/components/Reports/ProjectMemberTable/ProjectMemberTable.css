@@ -26,3 +26,9 @@
   padding: 0 16px;
   border-bottom: 3px solid #f8f7f8;
 }
+
+.project-member-table-row-id {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 100%;
+}

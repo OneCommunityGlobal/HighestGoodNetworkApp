@@ -1,9 +1,12 @@
 import { useRef } from 'react';
 import Popup from 'reactjs-popup';
+import { useMediaQuery } from 'react-responsive';
 import './NewModal.css';
 
 export const NewModal = ({ header, children, trigger }) => {
   const popupRef = useRef(null);
+
+  const isMobile = useMediaQuery({ query: '(max-width: 550px)' });
 
   const closePopup = () => {
     popupRef.current.close();
@@ -16,7 +19,7 @@ export const NewModal = ({ header, children, trigger }) => {
       modal
       arrow
       ref={popupRef}
-      contentStyle={{ height: '85vh', borderRadius: '8px', width: 'auto' }}
+      contentStyle={{ height: '85vh', borderRadius: '8px', width: isMobile ? '100%' : 'auto' }}
     >
       <div className="popup-modal-wrapper">
         <div className="popup-header">

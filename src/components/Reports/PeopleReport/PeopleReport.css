@@ -145,13 +145,17 @@ body {
 /*Badge changes ends here*/
 
 .visualizationDiv {
-  display: inline-flex;
+  /* display: inline-flex; */
   /* margin-bottom: 10px; */
   margin-top: 20px;
 }
 
 .visualizationDiv > * {
   margin-left: 10px;
+
+  @media screen and (max-width: 550px) {
+    margin-left: 0px;
+  }
 }
 
 #inf td,

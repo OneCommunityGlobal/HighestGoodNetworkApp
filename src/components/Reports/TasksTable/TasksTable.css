@@ -6,12 +6,20 @@
 .tasks-table-filters-wrapper {
   display: flex;
   justify-content: space-between;
+
+  @media screen and (max-width: 500px) {
+    flex-direction: column;
+  }
 }
 
 .tasks-table-filters {
   display: flex;
   flex-wrap: wrap;
   margin-bottom: 24px;
+
+  @media screen and (max-width: 500px) {
+    flex-direction: column;
+  }
 }
 
 .tasks-table-filter-item {

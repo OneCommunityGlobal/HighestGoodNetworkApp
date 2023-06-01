@@ -1,9 +1,13 @@
 import React from 'react';
 import * as d3 from 'd3/dist/d3.min';
 import { Button } from 'react-bootstrap';
+import { useMediaQuery } from 'react-responsive';
+import './reportsPage.css';
 
 const TimeEntriesViz = ({ timeEntries, fromDate, toDate }) => {
   const [show, setShow] = React.useState(false);
+
+  const isMobile = useMediaQuery({ query: '(max-width: 550px)' });
 
   React.useEffect(() => {
     generateGraph();
@@ -14,9 +18,9 @@ const TimeEntriesViz = ({ timeEntries, fromDate, toDate }) => {
       d3.selectAll('#tlplot > *').remove();
     } else {
       d3.selectAll('#tlplot > *').remove();
-      const margin = { top: 10, right: 30, bottom: 30, left: 60 },
-        width = 1000 - margin.left - margin.right,
-        height = 400 - margin.top - margin.bottom;
+      const margin = { top: 10, right: isMobile ? 15 : 30, bottom: 30, left: isMobile ? 15 : 60 },
+        width = isMobile ? 600 - margin.left - margin.right : 1000 - margin.left - margin.right,
+        height = isMobile ? 200 - margin.top - margin.bottom : 400 - margin.top - margin.bottom;
 
       var tooltipEl = function(d) {
         return (
@@ -260,7 +264,7 @@ const TimeEntriesViz = ({ timeEntries, fromDate, toDate }) => {
   };
 
   return (
-    <div>
+    <div className="responsive-display">
       <Button onClick={() => setShow(!show)} aria-expanded={show}>
         Show Time Entries Graph
       </Button>
