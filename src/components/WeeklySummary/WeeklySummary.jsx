@@ -52,33 +52,34 @@ export class WeeklySummary extends Component {
       weeklySummariesCount: 0,
       mediaConfirm: false,
     },
-    uploadDate: this.dueDateFromXWeeksAgo(0),
-    uploadDateLastWeek: this.dueDateFromXWeeksAgo(1),
-    uploadDateBeforeLast: this.dueDateFromXWeeksAgo(2),
-    uploadDateThreeWeeksAgo: this.dueDateFromXWeeksAgo(3),
-    dueDate: this.dueDateFromXWeeksAgo(0),
-    dueDateLastWeek: this.dueDateFromXWeeksAgo(1),
-    dueDateBeforeLast: this.dueDateFromXWeeksAgo(2),
-    dueDateThreeWeeksAgo: this.dueDateFromXWeeksAgo(3),
+    dueDate: moment()
+      .tz('America/Los_Angeles')
+      .endOf('week')
+      .toISOString(),
+    dueDateLastWeek: moment()
+      .tz('America/Los_Angeles')
+      .endOf('week')
+      .subtract(1, 'week')
+      .toISOString(),
+    dueDateBeforeLast: moment()
+      .tz('America/Los_Angeles')
+      .endOf('week')
+      .subtract(2, 'week')
+      .toISOString(),
+    dueDateThreeWeeksAgo: moment()
+      .tz('America/Los_Angeles')
+      .endOf('week')
+      .subtract(3, 'week')
+      .toISOString(),
+    uploadDate: this.dueDate,
+    uploadDateLastWeek: this.dueDateLastWeek,
+    uploadDateBeforeLast: this.dueDateBeforeLast,
+    uploadDateThreeWeeksAgo: this.dueDateThreeWeeksAgo,
     submittedCountInFourWeeks: 0,
     activeTab: '1',
     errors: {},
     fetchError: null,
     loading: true,
-  };
-
-  dueDateFromXWeeksAgo = X => {
-    if (X == 0) {
-      return moment()
-        .tz('America/Los_Angeles')
-        .endOf('week')
-        .toISOString();
-    }
-    return moment()
-      .tz('America/Los_Angeles')
-      .endOf('week')
-      .subtract(X, 'week')
-      .toISOString();
   };
 
   async componentDidMount() {
@@ -112,23 +113,6 @@ export class WeeklySummary extends Component {
       submittedCountInFourWeeks += 1;
     }
 
-    const uploadDate =
-      summary === ''
-        ? this.dueDateFromXWeeksAgo(0)
-        : weeklySummaries && weeklySummaries[0] && weeklySummaries[0].uploadDate;
-    const uploadDateLastWeek =
-      summaryLastWeek === ''
-        ? this.dueDateFromXWeeksAgo(1)
-        : weeklySummaries && weeklySummaries[1] && weeklySummaries[1].uploadDate;
-    const uploadDateBeforeLast =
-      summaryBeforeLast === ''
-        ? this.dueDateFromXWeeksAgo(2)
-        : weeklySummaries && weeklySummaries[2] && weeklySummaries[2].uploadDate;
-    const uploadDateThreeWeeksAgo =
-      summaryThreeWeeksAgo === ''
-        ? this.dueDateFromXWeeksAgo(3)
-        : weeklySummaries && weeklySummaries[3] && weeklySummaries[3].uploadDate;
-
     const dueDateThisWeek = weeklySummaries && weeklySummaries[0] && weeklySummaries[0].dueDate;
     // Make sure server dueDate is not before the localtime dueDate.
     const dueDate = moment(dueDateThisWeek).isBefore(this.state.dueDate)
@@ -140,15 +124,35 @@ export class WeeklySummary extends Component {
     const dueDateLastWeek = moment(dueDate)
       .subtract(1, 'weeks')
       .startOf('isoWeek')
-      .add(5, 'days');
+      .add(5, 'days')
+      .toISOString();
     const dueDateBeforeLast = moment(dueDate)
       .subtract(2, 'weeks')
       .startOf('isoWeek')
-      .add(5, 'days');
+      .add(5, 'days')
+      .toISOString();
     const dueDateThreeWeeksAgo = moment(dueDate)
       .subtract(3, 'weeks')
       .startOf('isoWeek')
-      .add(5, 'days');
+      .add(5, 'days')
+      .toISOString();
+
+    const uploadDate =
+      summary === ''
+        ? dueDate
+        : weeklySummaries && weeklySummaries[0] && weeklySummaries[0].uploadDate;
+    const uploadDateLastWeek =
+      summaryLastWeek === ''
+        ? dueDateLastWeek
+        : weeklySummaries && weeklySummaries[1] && weeklySummaries[1].uploadDate;
+    const uploadDateBeforeLast =
+      summaryBeforeLast === ''
+        ? dueDateBeforeLast
+        : weeklySummaries && weeklySummaries[2] && weeklySummaries[2].uploadDate;
+    const uploadDateThreeWeeksAgo =
+      summaryThreeWeeksAgo === ''
+        ? dueDateThreeWeeksAgo
+        : weeklySummaries && weeklySummaries[3] && weeklySummaries[3].uploadDate;
 
     this.setState({
       originSummaries: {
