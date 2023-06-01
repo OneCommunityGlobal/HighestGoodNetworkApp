@@ -143,35 +143,32 @@ export const NewTimer = () => {
   sendMessage(action.ADD_GOAL.concat(time));
 }, [sendMessage]);
 
-const handleRemoveGoal = useCallback(
-  (time) => {
-    const now = moment();
-    const lastAccess = moment(message?.lastAccess);
-    const elapsedTime = moment.duration(now.diff(lastAccess)).asMilliseconds();
-    let remaining = message?.time - elapsedTime;
+const handleRemoveGoal = useCallback((time) => {
+  const now = moment();
+  const lastAccess = moment(message?.lastAccess);
+  const elapsedTime = moment.duration(now.diff(lastAccess)).asMilliseconds();
+  let remaining = message?.time - elapsedTime;
 
-    if (remaining <= 900000) {
-      alert('Timer cannot be set to less than fifteen minutes!');
-      return;
+  if (remaining >= 900000) {
+    alert('Timer cannot be set to less than fifteen minutes!');
+    return;
+  }
+
+  if (message?.countdown) {
+    // Adjust the remaining time based on the removed goal
+    const adjustedRemaining = remaining + time;
+
+    if (adjustedRemaining <= message.goal) {
+      // If the adjusted remaining time is less than or equal to the goal, set the goal as the new remaining time
+      setRemainingTime(message.goal);
+    } else {
+      // If the adjusted remaining time is greater than the goal, subtract the removed goal from the remaining time
+      setRemainingTime(adjustedRemaining - time);
     }
+  }
 
-    if (message?.countdown) {
-      // Adjust the remaining time based on the removed goal
-      const adjustedRemaining = remaining + time;
-
-      if (adjustedRemaining <= message.goal) {
-        // If the adjusted remaining time is less than or equal to the goal, set the goal as the new remaining time
-        setRemainingTime(message.goal);
-      } else {
-        // If the adjusted remaining time is greater than the goal, subtract the removed goal from the remaining time
-        setRemainingTime(adjustedRemaining - time);
-      }
-    }
-
-    sendMessage(action.REMOVE_GOAL.concat(time));
-  },
-  [message, sendMessage]
-);
+  sendMessage(action.REMOVE_GOAL.concat(time));
+}, [message, sendMessage]);
 
   const handleAckForced = useCallback(() => sendMessage(action.ACK_FORCED), []);
   const toggleModal = () => {
