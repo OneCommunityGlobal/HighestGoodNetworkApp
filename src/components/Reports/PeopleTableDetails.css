@@ -23,7 +23,8 @@
   border-bottom: 3px solid #f8f7f8;
 
   @media screen and (max-width: 550px) {
-    display: block;
+    display: flex;
+    overflow: scroll;
   }
 }
 

@@ -54,7 +54,7 @@ export function TeamReport({ match }) {
   const [selectedTeams, setSelectedTeams] = useState([]);
   const [disableRadio, setDisableRadio] = useState(false);
 
-  const isTablet = useMediaQuery({ query: '(max-width: 800px)' });
+  const isTablet = useMediaQuery({ query: '(max-width: 850px)' });
 
   // Create a state variable to store the selected radio input
   const [selectedInput, setSelectedInput] = useState('isManager');
