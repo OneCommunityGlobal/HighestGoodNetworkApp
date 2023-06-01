@@ -215,7 +215,6 @@ const handleRemoveGoal = useCallback(
     }
 
     if((message?.goal - message?.time) >= 60000){
-      console.log(message?.goal - message?.time)
       setUserCanStop(true)
     } else {
       setUserCanStop(false)
@@ -297,10 +296,10 @@ const handleRemoveGoal = useCallback(
         onClick={() => {
           setLogModal(true);
         }}
-        className={`${userCanStop ? '' : 'disabled'}`}
+        className="disabled"
       >
         <BsStopCircleFill
-          className={`transition-color ${userCanStop ? '' : 'disabled'}`}
+          className={`${!userCanStop ? 'transition-color disabled' : 'btn-white transition-color'}`}
           fontSize="1.5rem"
         />
       </button>
