@@ -59,9 +59,7 @@ const FormattedReport = ({ summaries, weekIndex }) => {
         </p>
       );
     }
-
     const summaryText = summary?.weeklySummaries[weekIndex]?.summary;
-
     const summaryContent = (() => {
       if (summaryText) {
         const style = {};

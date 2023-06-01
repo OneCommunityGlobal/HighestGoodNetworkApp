@@ -124,18 +124,15 @@ export class WeeklySummary extends Component {
     const dueDateLastWeek = moment(dueDate)
       .subtract(1, 'weeks')
       .startOf('isoWeek')
-      .add(5, 'days')
-      .toISOString();
+      .add(5, 'days');
     const dueDateBeforeLast = moment(dueDate)
       .subtract(2, 'weeks')
       .startOf('isoWeek')
-      .add(5, 'days')
-      .toISOString();
+      .add(5, 'days');
     const dueDateThreeWeeksAgo = moment(dueDate)
       .subtract(3, 'weeks')
       .startOf('isoWeek')
-      .add(5, 'days')
-      .toISOString();
+      .add(5, 'days');
 
     const uploadDate =
       summary === ''

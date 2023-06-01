@@ -22,7 +22,7 @@ const server = setupServer(
     );
     return res(ctx.status(500), ctx.json({ error: 'You must add request handler.' }));
   }),
-  );
+);
 
 beforeAll(() => server.listen());
 afterAll(() => server.close());
