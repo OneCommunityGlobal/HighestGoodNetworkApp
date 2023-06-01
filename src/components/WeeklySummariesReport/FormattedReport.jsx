@@ -97,9 +97,15 @@ const FormattedReport = ({ summaries, weekIndex }) => {
       <>
         <p>
           <b>Weekly Summary</b> (
-          {moment(summary.weeklySummaries[weekIndex]?.uploadDate)
-            .tz('America/Los_Angeles')
-            .format('YYYY-MMM-DD')}
+          {summary.weeklySummaries[weekIndex]?.summary
+            ? moment(summary.weeklySummaries[weekIndex]?.uploadDate)
+                .tz('America/Los_Angeles')
+                .format('YYYY-MMM-DD')
+            : moment()
+                .tz('America/Los_Angeles')
+                .endOf('week')
+                .subtract(weekIndex, 'week')
+                .format('YYYY-MMM-DD')}
           ):
         </p>
         {summaryContent}
