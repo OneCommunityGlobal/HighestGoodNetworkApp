@@ -52,49 +52,33 @@ export class WeeklySummary extends Component {
       weeklySummariesCount: 0,
       mediaConfirm: false,
     },
-    uploadDate: moment()
-      .tz('America/Los_Angeles')
-      .endOf('week')
-      .toISOString(),
-    uploadDateLastWeek: moment()
-      .tz('America/Los_Angeles')
-      .endOf('week')
-      .subtract(1, 'week')
-      .toISOString(),
-    uploadDateBeforeLast: moment()
-      .tz('America/Los_Angeles')
-      .endOf('week')
-      .subtract(2, 'week')
-      .toISOString(),
-    uploadDateThreeWeeksAgo: moment()
-      .tz('America/Los_Angeles')
-      .endOf('week')
-      .subtract(3, 'week')
-      .toISOString(),
-    dueDate: moment()
-      .tz('America/Los_Angeles')
-      .endOf('week')
-      .toISOString(),
-    dueDateLastWeek: moment()
-      .tz('America/Los_Angeles')
-      .endOf('week')
-      .subtract(1, 'week')
-      .toISOString(),
-    dueDateBeforeLast: moment()
-      .tz('America/Los_Angeles')
-      .endOf('week')
-      .subtract(2, 'week')
-      .toISOString(),
-    dueDateThreeWeeksAgo: moment()
-      .tz('America/Los_Angeles')
-      .endOf('week')
-      .subtract(3, 'week')
-      .toISOString(),
+    uploadDate: this.dueDateFromXWeeksAgo(0),
+    uploadDateLastWeek: this.dueDateFromXWeeksAgo(1),
+    uploadDateBeforeLast: this.dueDateFromXWeeksAgo(2),
+    uploadDateThreeWeeksAgo: this.dueDateFromXWeeksAgo(3),
+    dueDate: this.dueDateFromXWeeksAgo(0),
+    dueDateLastWeek: this.dueDateFromXWeeksAgo(1),
+    dueDateBeforeLast: this.dueDateFromXWeeksAgo(2),
+    dueDateThreeWeeksAgo: this.dueDateFromXWeeksAgo(3),
     submittedCountInFourWeeks: 0,
     activeTab: '1',
     errors: {},
     fetchError: null,
     loading: true,
+  };
+
+  dueDateFromXWeeksAgo = X => {
+    if (X == 0) {
+      return moment()
+        .tz('America/Los_Angeles')
+        .endOf('week')
+        .toISOString();
+    }
+    return moment()
+      .tz('America/Los_Angeles')
+      .endOf('week')
+      .subtract(X, 'week')
+      .toISOString();
   };
 
   async componentDidMount() {
@@ -130,34 +114,19 @@ export class WeeklySummary extends Component {
 
     const uploadDate =
       summary === ''
-        ? moment()
-            .tz('America/Los_Angeles')
-            .endOf('week')
-            .toISOString()
+        ? this.dueDateFromXWeeksAgo(0)
         : weeklySummaries && weeklySummaries[0] && weeklySummaries[0].uploadDate;
     const uploadDateLastWeek =
       summaryLastWeek === ''
-        ? moment()
-            .tz('America/Los_Angeles')
-            .endOf('week')
-            .subtract(1, 'week')
-            .toISOString()
+        ? this.dueDateFromXWeeksAgo(1)
         : weeklySummaries && weeklySummaries[1] && weeklySummaries[1].uploadDate;
     const uploadDateBeforeLast =
       summaryBeforeLast === ''
-        ? moment()
-            .tz('America/Los_Angeles')
-            .endOf('week')
-            .subtract(2, 'week')
-            .toISOString()
+        ? this.dueDateFromXWeeksAgo(2)
         : weeklySummaries && weeklySummaries[2] && weeklySummaries[2].uploadDate;
     const uploadDateThreeWeeksAgo =
       summaryThreeWeeksAgo === ''
-        ? moment()
-            .tz('America/Los_Angeles')
-            .endOf('week')
-            .subtract(3, 'week')
-            .toISOString()
+        ? this.dueDateFromXWeeksAgo(3)
         : weeklySummaries && weeklySummaries[3] && weeklySummaries[3].uploadDate;
 
     const dueDateThisWeek = weeklySummaries && weeklySummaries[0] && weeklySummaries[0].dueDate;
