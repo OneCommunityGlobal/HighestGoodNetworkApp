@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
-// import { getUserProfile } from '../../actions/userProfile'
 import { getHeaderData } from '../../actions/authActions';
 import { getTimerData } from '../../actions/timer';
 import { getAllRoles } from '../../actions/role';
 import { Link } from 'react-router-dom';
 import { connect, useDispatch } from 'react-redux';
-import Timer from '../Timer/Timer';
+import OldTimer from '../OldTimer';
 import OwnerMessage from '../OwnerMessage/OwnerMessage';
 import {
+  LOGO,
   DASHBOARD,
   TIMELOG,
   REPORTS,
@@ -28,6 +28,7 @@ import {
   Collapse,
   Navbar,
   NavbarToggler,
+  NavbarBrand,
   Nav,
   NavItem,
   NavLink,
@@ -37,11 +38,11 @@ import {
   DropdownItem,
 } from 'reactstrap';
 import { Logout } from '../Logout/Logout';
-import './Header.css';
+import './OldHeader.css';
 import hasPermission from '../../utils/permissions';
 import { fetchTaskEditSuggestionCount } from 'components/TaskEditSuggestions/thunks';
 
-export const Header = props => {
+export const OldHeader = props => {
   const [isOpen, setIsOpen] = useState(false);
   const [logoutPopup, setLogoutPopup] = useState(false);
   const { isAuthenticated, user, firstName, profilePic } = props.auth;
@@ -73,13 +74,13 @@ export const Header = props => {
 
   return (
     <div className="header-wrapper">
-      <Navbar className="py-3 navbar" color="dark" dark expand="xl">
+      <Navbar className="py-3 mb-3 navbar" color="dark" dark expand="xl">
         {logoutPopup && <Logout open={logoutPopup} setLogoutPopup={setLogoutPopup} />}
         <div
           className="timer-message-section"
           style={user.role == 'Owner' ? { marginRight: '6rem' } : { marginRight: '10rem' }}
         >
-          {isAuthenticated && <Timer />}
+          {isAuthenticated && <OldTimer />}
           {isAuthenticated && (
             <div className="owner-message">
               <OwnerMessage />
@@ -87,8 +88,6 @@ export const Header = props => {
           )}
         </div>
         <NavbarToggler onClick={toggle} />
-        {isAuthenticated && <NewTimer />}
-
         {isAuthenticated && (
           <Collapse isOpen={isOpen} navbar>
             <Nav className="ml-auto nav-links" navbar>
@@ -198,7 +197,8 @@ export const Header = props => {
                   <img
                     src={`${profilePic || '/pfp-default-header.png'}`}
                     alt=""
-                    style={{ maxWidth: '60px', maxHeight: '60px'}}
+                    height="35"
+                    width="40"
                     className="dashboardimg"
                   />
                 </NavLink>
@@ -242,4 +242,4 @@ export default connect(mapStateToProps, {
   getHeaderData,
   getTimerData,
   getAllRoles,
-})(Header);
+})(OldHeader);
