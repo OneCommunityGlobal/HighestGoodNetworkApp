@@ -8,6 +8,7 @@ import { connect, useDispatch } from 'react-redux';
 import Timer from '../Timer/Timer';
 import OwnerMessage from '../OwnerMessage/OwnerMessage';
 import {
+  LOGO,
   DASHBOARD,
   TIMELOG,
   REPORTS,
@@ -28,6 +29,7 @@ import {
   Collapse,
   Navbar,
   NavbarToggler,
+  NavbarBrand,
   Nav,
   NavItem,
   NavLink,
@@ -87,8 +89,6 @@ export const Header = props => {
           )}
         </div>
         <NavbarToggler onClick={toggle} />
-        {isAuthenticated && <NewTimer />}
-
         {isAuthenticated && (
           <Collapse isOpen={isOpen} navbar>
             <Nav className="ml-auto nav-links" navbar>
