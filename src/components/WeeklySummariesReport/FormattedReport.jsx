@@ -30,7 +30,8 @@ const FormattedReport = ({ summaries, weekIndex, bioCanEdit }) => {
   while (emailString.includes('\n')) emailString = emailString.replace('\n', ', ');
 
   const alphabetize = summaries => {
-    return summaries.sort((a, b) =>
+    const temp = [...summaries]
+    return temp.sort((a, b) =>
       `${a.firstName} ${a.lastName}`.localeCompare(`${b.firstName} ${b.lastname}`),
     );
   };
