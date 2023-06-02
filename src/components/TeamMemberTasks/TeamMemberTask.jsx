@@ -2,6 +2,7 @@ import React from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBell, faCircle, faCheck } from '@fortawesome/free-solid-svg-icons';
 import TaskButton from './TaskButton';
+import CopyToClipboard from 'components/common/Clipboard/CopyToClipboard';
 import { Table, Progress } from 'reactstrap';
 import { Link } from 'react-router-dom';
 import { getProgressColor, getProgressValue } from '../../utils/effortColors';
@@ -16,6 +17,8 @@ const TeamMemberTask = ({
   let totalHoursLogged = 0;
   let totalHoursRemaining = 0;
   const thisWeekHours = user.totaltangibletime_hrs;
+  const rolesAllowedToResolveTasks = ['Administrator', 'Owner'];
+  const isAllowedToResolveTasks = rolesAllowedToResolveTasks.includes(userRole);
 
   if (user.tasks) {
     user.tasks = user.tasks.map(task => {
@@ -85,6 +88,10 @@ const TeamMemberTask = ({
                             <Link to={task.projectId ? `/wbs/tasks/${task._id}` : '/'}>
                               <span>{`${task.num} ${task.taskName}`} </span>
                             </Link>
+                            <CopyToClipboard 
+                              writeText={task.taskName} 
+                              message="Task Copied!"
+                            />
                             {task.taskNotifications.length > 0 && (
                               <FontAwesomeIcon
                                 className="team-member-tasks-bell"
@@ -98,14 +105,16 @@ const TeamMemberTask = ({
                                 }}
                               />
                             )}
-                            <FontAwesomeIcon
-                              className="team-member-tasks-done"
-                              icon={faCheck}
-                              title="Mark as Done"
-                              onClick={() => {
-                                handleMarkAsDoneModal(user.personId, task);
-                              }}
-                            />
+                            {isAllowedToResolveTasks && (
+                              <FontAwesomeIcon
+                                className="team-member-tasks-done"
+                                icon={faCheck}
+                                title="Mark as Done"
+                                onClick={() => {
+                                  handleMarkAsDoneModal(user.personId, task);
+                                }}
+                              />
+                            )}
                           </p>
                         </td>
                         {task.hoursLogged != null && task.estimatedHours != null && (
