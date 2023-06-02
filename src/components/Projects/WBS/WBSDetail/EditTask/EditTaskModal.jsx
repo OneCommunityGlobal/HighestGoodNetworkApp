@@ -546,7 +546,6 @@ const EditTaskModal = props => {
                     <option value="Soceity">Society</option>
                     <option value="Economics">Economics</option>
                     <option value="Stewardship">Stewardship</option>
-                    <option value="Other">Other</option>
                     <option value="Not Assigned">Not Assigned</option>
                   </select>
                 </td>
