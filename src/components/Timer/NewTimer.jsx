@@ -22,6 +22,7 @@ import TimerStatus from './TimerStatus';
 
 export const NewTimer = () => {
   const [logModal, setLogModal] = useState(false);
+  const [oneMinuteMinimumModal, setOneMinuteMinimumModal] = useState(false);
   const [inacModal, setInacModal] = useState(false);
   const [showTimer, setShowTimer] = useState(false);
   const [triggerAudio, setTriggerAudio] = useState(false);
@@ -233,7 +234,7 @@ const handleRemoveGoal = useCallback((time) => {
     if (timePassed.minutes() >= 1) {
       setLogModal(true)
     } else {
-      alert('You need at least 1 minute to log time!')
+      setOneMinuteMinimumModal(true);
     }
   }
 
@@ -294,6 +295,13 @@ const handleRemoveGoal = useCallback((time) => {
           fontSize="1.5rem"
         />
       </button>
+
+      <Modal size={'md'} isOpen={oneMinuteMinimumModal} toggle={() => setOneMinuteMinimumModal(!oneMinuteMinimumModal)} centered={true}>
+        <ModalHeader toggle={() => setOneMinuteMinimumModal(!oneMinuteMinimumModal)}>Alert</ModalHeader>
+        <ModalBody>
+        <strong>You need at least 1 minute to log time!</strong>
+        </ModalBody>
+      </Modal>
 
 
       <Modal
