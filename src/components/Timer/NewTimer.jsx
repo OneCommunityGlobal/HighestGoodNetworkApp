@@ -218,28 +218,24 @@ const handleRemoveGoal = useCallback((time) => {
     }
   }, [message, isFirstLoading]);
 
-  useEffect(() => {
-    if (userCanStop) {
-      return;
-    }
-    const timeToLog = moment.duration(
-      message ? (message.countdown ? message.goal - previewTimer : previewTimer) : 0,
-    );
-    setInterval(() => {
-      if (timeToLog.minutes() >= 1) {
-        setUserCanStop(true);
-        return;
-      }
-    }, 60000);
-  }, [message, userCanStop]);
+
 
   useEffect(() => {
-    if (isFirstLoading) {
-      setTimeout(() => {
-        setIsFirstLoading(false);
-      }, 10000);
+    setTimeout(() => {
+      setIsFirstLoading(false);
+    }, 10000);
+  }, []);
+
+  function handleUserCanStop() {
+    const timePassed = moment.duration(
+      message ? (message.countdown ? message.goal - previewTimer : previewTimer) : 0,
+    );
+    if (timePassed.minutes() >= 1) {
+      setLogModal(true)
+    } else {
+      alert('You need at least 1 minute to log time!')
     }
-  }, [isFirstLoading]);
+  }
 
   const stopAllAudioAndClearIntervals = useCallback(() => {
     const audios = document.querySelectorAll('audio');
@@ -289,14 +285,12 @@ const handleRemoveGoal = useCallback((time) => {
       )}
       <button
         type="button"
-        disabled={!userCanStop}
         onClick={() => {
-          setLogModal(true);
+          handleUserCanStop()
         }}
-        className="disabled"
       >
         <BsStopCircleFill
-          className={`${!userCanStop ? 'transition-color disabled' : 'btn-white transition-color'}`}
+          className={`${'btn-white transition-color'}`}
           fontSize="1.5rem"
         />
       </button>
@@ -390,6 +384,7 @@ const handleRemoveGoal = useCallback((time) => {
                 handleSetGoal={handleSetGoal}
                 handleAddGoal={handleAddGoal}
                 handleRemoveGoal={handleRemoveGoal}
+                handleUserCanStop={handleUserCanStop}
                 setPreviewTimer={setPreviewTimer}
                 handleClear={() => setConfirmationResetModal(true)}
                 toggleModal={() => {

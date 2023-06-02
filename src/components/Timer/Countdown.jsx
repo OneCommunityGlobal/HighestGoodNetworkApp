@@ -20,6 +20,7 @@ const Countdown = ({
   handleSetGoal,
   handleAddGoal,
   handleRemoveGoal,
+  handleUserCanStop,
   setPreviewTimer,
   handleClear,
   toggleModal,
@@ -236,15 +237,12 @@ const Countdown = ({
                 <button
                   type="button"
                   className="btn-stop"
-                  disabled={!userIsRunningTimerAndHasAtLeastOneMinute}
-                  onClick={toggleModal}
+                  onClick={handleUserCanStop}
                 >
                   <BsStopFill
                     fontSize="3rem"
                     className={`${
-                      userIsRunningTimerAndHasAtLeastOneMinute
-                        ? 'transition-color btn-purple'
-                        : 'transition-color btn-gray'
+                      'transition-color btn-purple'
                     }`}
                   />
                 </button>
@@ -270,7 +268,7 @@ const Countdown = ({
           <>
             <div className="add-grid transition-color">
               <button
-                style={{ cursor: `${shouldDisableBtn(15, false) && 'not-allowed'}` }}
+                style={{ cursor: `${shouldDisableBtn(15, false) ? 'not-allowed' : ''}` }}
                 disabled={shouldDisableBtn(15, false)}
                 onClick={() => handleRemoveGoal(1000 * 60 * 15)}
               >
