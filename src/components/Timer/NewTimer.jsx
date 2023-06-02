@@ -34,6 +34,8 @@ export const NewTimer = () => {
   const [previewTimer, setPreviewTimer] = useState(0);
   const [remainingTime, setRemainingTime] = useState(0);
   const [elapsedTime, setElapsedTime] = useState(0);
+  const [prevLogModal, setPrevLogModal] = useState(false);
+  const [initialRender, setInitialRender] = useState(true);
 
   const data = {
     disabled: window.screenX <= 500,
@@ -174,7 +176,6 @@ const handleRemoveGoal = useCallback((time) => {
   const handleAckForced = useCallback(() => sendMessage(action.ACK_FORCED), []);
   const toggleModal = () => {
     setLogModal(modal => !modal);
-    handleStart()
     // setTimerIsOverModalIsOpen(true);
   };
   const toggleModalClose = () => {
@@ -203,30 +204,6 @@ const handleRemoveGoal = useCallback((time) => {
   message, if some error ocurred and the ready state of the websocket connection
   */
 
-  useEffect(() => {
-    // If the user load the page and the time 0 it clear the timer and put the
-    const userHasLoadedPageAndAlreadyHaveSeeTheFirstLoadingAndHisTimeIsZero =
-      message?.time == 0 && isFirstLoading;
-
-    if (userHasLoadedPageAndAlreadyHaveSeeTheFirstLoadingAndHisTimeIsZero) {
-      handleClear();
-    }
-
-    if((message?.goal - message?.time) >= 60000){
-      setUserCanStop(true)
-    } else {
-      setUserCanStop(false)
-    }
-  }, [message, isFirstLoading]);
-
-
-
-  useEffect(() => {
-    setTimeout(() => {
-      setIsFirstLoading(false);
-    }, 10000);
-  }, []);
-
   function handleUserCanStop() {
     const timePassed = moment.duration(
       message ? (message.countdown ? message.goal - previewTimer : previewTimer) : 0,
@@ -249,6 +226,42 @@ const handleRemoveGoal = useCallback((time) => {
     for (let i = 1; i < intervals; i++) {
       clearInterval(i);
     }
+  }, []);
+  
+  useEffect(() => {
+    if (!initialRender && prevLogModal && !logModal) {
+      handleStart();
+    }
+    if (!initialRender && !prevLogModal && logModal) {
+      handlePause();
+    }
+    setPrevLogModal(logModal);
+  }, [logModal, prevLogModal, initialRender]);
+  
+  useEffect(() => {
+    setInitialRender(false);
+  }, []);
+
+  useEffect(() => {
+    // If the user load the page and the time 0 it clear the timer and put the
+    const userHasLoadedPageAndAlreadyHaveSeeTheFirstLoadingAndHisTimeIsZero =
+      message?.time == 0 && isFirstLoading;
+
+    if (userHasLoadedPageAndAlreadyHaveSeeTheFirstLoadingAndHisTimeIsZero) {
+      handleClear();
+    }
+
+    if((message?.goal - message?.time) >= 60000){
+      setUserCanStop(true)
+    } else {
+      setUserCanStop(false)
+    }
+  }, [message, isFirstLoading]);
+
+  useEffect(() => {
+    setTimeout(() => {
+      setIsFirstLoading(false);
+    }, 10000);
   }, []);
 
   return (
