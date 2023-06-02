@@ -429,8 +429,7 @@ export class WeeklySummary extends Component {
                         <Editor
                           init={{
                             menubar: false,
-                            placeholder:
-                              'Weekly summary content... Remember to be detailed (50-word minimum) and write it in 3rd person. E.g. “This week John…"',
+                            placeholder: `Did you: Write it in 3rd person with a minimum of 50-words? Remember to run it through ChatGPT or other AI editor using the “Current AI Editing Prompt” from above? Remember to read and do a final edit before hitting Save?`,
                             plugins:
                               'advlist autolink autoresize lists link charmap table paste help wordcount',
                             toolbar:
