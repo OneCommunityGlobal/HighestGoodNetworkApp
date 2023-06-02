@@ -45,6 +45,8 @@ export class WeeklySummary extends Component {
       mediaUrl: '',
       weeklySummariesCount: 0,
       mediaConfirm: false,
+      editorConfirm: false,
+      proofreadConfirm: false,
     },
     dueDate: moment()
       .tz('America/Los_Angeles')
@@ -128,6 +130,8 @@ export class WeeklySummary extends Component {
         mediaUrl: mediaUrl || '',
         weeklySummariesCount: weeklySummariesCount || 0,
         mediaConfirm: false,
+        editorConfirm: false,
+        proofreadConfirm: false,
       },
       dueDate,
       dueDateLastWeek,
@@ -189,6 +193,12 @@ export class WeeklySummary extends Component {
     mediaConfirm: Joi.boolean()
       .invalid(false)
       .label('Media Confirm'),
+    editorConfirm: Joi.boolean()
+    .invalid(false)
+    .label('Editor Confirm'),
+    proofreadConfirm: Joi.boolean()
+    .invalid(false)
+    .label('Proofread Confirm'),
   };
 
   validate = () => {
@@ -245,7 +255,6 @@ export class WeeklySummary extends Component {
   handleCheckboxChange = event => {
     event.persist();
     const { name, checked } = event.target;
-
     const errors = { ...this.state.errors };
     const errorMessage = this.validateProperty(event.target);
     if (errorMessage) errors[name] = errorMessage;
@@ -461,7 +470,7 @@ export class WeeklySummary extends Component {
             <Row>
               <Col>
                 <Label for="mediaUrl" className="mt-1">
-                  Link to your media files (eg. DropBox or Google Doc). (required){' '}
+                  DropBox link to your weekly media files. (required){' '}
                   <MediaURLTooltip />
                 </Label>
                 <Row form>
@@ -510,12 +519,54 @@ export class WeeklySummary extends Component {
                     )}
                   </Col>
                 </Row>
+                <Row>
+                  <Col>
+                    <FormGroup>
+                      <CustomInput
+                        id="editorConfirm"
+                        name="editorConfirm"
+                        type="checkbox"
+                        label="I used GPT (or other AI editor) with the most current prompt"
+                        htmlFor="editorConfirm"
+                        checked={formElements.editorConfirm}
+                        valid={formElements.editorConfirm}
+                        onChange={this.handleCheckboxChange}
+                      />
+                    </FormGroup>
+                    {errors.editorConfirm && (
+                      <Alert color="danger">
+                        Please confirm that you used an AI editor to write your summary.
+                      </Alert>
+                    )}
+                  </Col>
+                </Row>
+                <Row>
+                  <Col>
+                    <FormGroup>
+                      <CustomInput
+                        id="proofreadConfirm"
+                        name="proofreadConfirm"
+                        type="checkbox"
+                        label="I proofread my summary."
+                        htmlFor="proofreadConfirm"
+                        checked={formElements.proofreadConfirm}
+                        valid={formElements.proofreadConfirm}
+                        onChange={this.handleCheckboxChange}
+                      />
+                    </FormGroup>
+                    {errors.proofreadConfirm && (
+                      <Alert color="danger">
+                        Please confirm that you have proofread your summary.
+                      </Alert>
+                    )}
+                  </Col>
+                </Row>
                 <Row className="mt-4">
                   <Col>
                     <FormGroup className="mt-2">
                       <Button
                         className="px-5 btn--dark-sea-green"
-                        disabled={this.validate() || !formElements.mediaUrl ? true : false}
+                        disabled={this.validate() || !formElements.mediaConfirm ? true : false}
                         onClick={this.handleSave}
                       >
                         Save
