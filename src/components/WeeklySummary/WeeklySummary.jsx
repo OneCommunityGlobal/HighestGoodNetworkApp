@@ -470,7 +470,7 @@ export class WeeklySummary extends Component {
             <Row>
               <Col>
                 <Label for="mediaUrl" className="mt-1">
-                  DropBox link to your weekly media files. (required){' '}
+                  Dropbox link to your weekly media files. (required){' '}
                   <MediaURLTooltip />
                 </Label>
                 <Row form>
@@ -526,7 +526,7 @@ export class WeeklySummary extends Component {
                         id="editorConfirm"
                         name="editorConfirm"
                         type="checkbox"
-                        label="I used GPT (or other AI editor) with the most current prompt"
+                        label="I used GPT (or other AI editor) with the most current prompt."
                         htmlFor="editorConfirm"
                         checked={formElements.editorConfirm}
                         valid={formElements.editorConfirm}
@@ -547,7 +547,7 @@ export class WeeklySummary extends Component {
                         id="proofreadConfirm"
                         name="proofreadConfirm"
                         type="checkbox"
-                        label="I proofread my summary."
+                        label="I proofread my weekly summary."
                         htmlFor="proofreadConfirm"
                         checked={formElements.proofreadConfirm}
                         valid={formElements.proofreadConfirm}
@@ -566,7 +566,7 @@ export class WeeklySummary extends Component {
                     <FormGroup className="mt-2">
                       <Button
                         className="px-5 btn--dark-sea-green"
-                        disabled={this.validate() || !formElements.mediaConfirm ? true : false}
+                        disabled={this.validate()}
                         onClick={this.handleSave}
                       >
                         Save
