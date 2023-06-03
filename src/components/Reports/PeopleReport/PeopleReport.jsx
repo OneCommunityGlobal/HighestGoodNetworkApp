@@ -451,16 +451,18 @@ class PeopleReport extends Component {
             </h4>
             <p>End Date</p>
           </div>
-          <div>
-            <h4>Bio {this.state.isBioPosted ? 'posted' : 'requested'}</h4>
-            {this.state.authRole == 'Administrator' || this.state.authRole == 'Owner' ? (
-              <ToggleSwitch
-                switchType="bio"
-                state={this.state.isBioPosted ? false : true}
-                handleUserProfile={onChangeBioPosted}
-              />
-            ) : null}
-          </div>
+          {!this.state.isBioPosted ? (
+            <div>
+              <h4>Bio {this.state.isBioPosted ? 'posted' : 'requested'}</h4>{' '}
+              {this.state.authRole === 'Administrator' || this.state.authRole === 'Owner' ? (
+                <ToggleSwitch
+                  switchType="bio"
+                  state={!this.state.isBioPosted}
+                  handleUserProfile={onChangeBioPosted}
+                />
+              ) : null}
+            </div>
+          ) : null}
         </div>
       </ReportPage.ReportHeader>
     );
