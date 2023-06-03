@@ -52,7 +52,7 @@ export class WeeklySummariesReport extends Component {
 
   render() {
     const { error, loading, summaries, activeTab } = this.state;
-    const role = this.props.authUser.role;
+    const role = this.props.authUser?.role;
     const userPermissions = this.props.authUser?.permissions?.frontPermissions;
     const roles = this.props.roles;
     const bioEditPermission = hasPermission(role, 'changeBioAnnouncement', roles, userPermissions);
