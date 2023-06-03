@@ -1,14 +1,14 @@
-.timer {
+.oldTimer {
   margin: auto;
   display: flex;
 }
 
-.timer button {
+.oldTimer button {
   min-width: 3.75rem;
   box-shadow: none !important;
 }
 
-.timer .badge {
+.oldTimer .badge {
   font-size: 1.5rem;
   font-variant-numeric: tabular-nums;
 }
@@ -18,7 +18,7 @@
 }
 
 @media (min-width: 1550px) {
-  .timer {
+  .oldTimer {
     display: flex;
   }
 }
