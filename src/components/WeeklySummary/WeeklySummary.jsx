@@ -93,11 +93,6 @@ export class WeeklySummary extends Component {
     const summaryThreeWeeksAgo =
       (weeklySummaries && weeklySummaries[3] && weeklySummaries[3].summary) || '';
 
-    const originSummary = summary;
-    const originSummaryLastWeek = summaryLastWeek;
-    const originSummaryBeforeLast = summaryBeforeLast;
-    const originSummaryThreeWeeksAgo = summaryThreeWeeksAgo;
-
     // Before submitting summaries, count current submits in four weeks
     let submittedCountInFourWeeks = 0;
     if (summary !== '') {
@@ -134,29 +129,22 @@ export class WeeklySummary extends Component {
       .startOf('isoWeek')
       .add(5, 'days');
 
-    const uploadDate =
+    const uploadDateXWeeksAgo = x => {
       summary === ''
         ? dueDate
-        : weeklySummaries && weeklySummaries[0] && weeklySummaries[0].uploadDate;
-    const uploadDateLastWeek =
-      summaryLastWeek === ''
-        ? dueDateLastWeek
-        : weeklySummaries && weeklySummaries[1] && weeklySummaries[1].uploadDate;
-    const uploadDateBeforeLast =
-      summaryBeforeLast === ''
-        ? dueDateBeforeLast
-        : weeklySummaries && weeklySummaries[2] && weeklySummaries[2].uploadDate;
-    const uploadDateThreeWeeksAgo =
-      summaryThreeWeeksAgo === ''
-        ? dueDateThreeWeeksAgo
-        : weeklySummaries && weeklySummaries[3] && weeklySummaries[3].uploadDate;
+        : weeklySummaries && weeklySummaries[x] && weeklySummaries[x].uploadDate;
+    };
+    const uploadDate = uploadDateXWeeksAgo(0);
+    const uploadDateLastWeek = uploadDateXWeeksAgo(1);
+    const uploadDateBeforeLast = uploadDateXWeeksAgo(2);
+    const uploadDateThreeWeeksAgo = uploadDateXWeeksAgo(3);
 
     this.setState({
       originSummaries: {
-        originSummary,
-        originSummaryLastWeek,
-        originSummaryBeforeLast,
-        originSummaryThreeWeeksAgo,
+        summary,
+        summaryLastWeek,
+        summaryBeforeLast,
+        summaryThreeWeeksAgo,
       },
       formElements: {
         summary,
