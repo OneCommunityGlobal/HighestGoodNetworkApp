@@ -1631,6 +1631,7 @@ export default {
             "dataIsTangibleTimelog",
             "toggleSubmitForm",
             "seePermissionsManagement",
+            "changeBioAnnouncement",
           ],
           permissionsBackEnd: [
             "seeBadges",
@@ -1815,6 +1816,7 @@ export default {
             "addDeleteEditOwners",
             "toggleSubmitForm",
             "seePermissionsManagement",
+            "changeBioAnnouncement",
           ],
           permissionsBackEnd: [
             "seeBadges",
