@@ -14,16 +14,6 @@ const TaskCompletedModal = React.memo(props => {
     props.popupClose();
   };
 
-  // const loadUserTasks = async userId => {
-  //   axios
-  //     .get(ENDPOINTS.TASKS_BY_USERID(userId))
-  //     .then(res => {
-  //       props.setTasks(res?.data || []);
-  //       setIsLoadingTask(false);
-  //     })
-  //     .catch(err => console.log(err));
-  // };
-
   const removeTaskFromUser = task => {
     const resources = [...task.resources];
     const newResources = resources?.map(resource => {
@@ -40,10 +30,6 @@ const TaskCompletedModal = React.memo(props => {
     const updatedTask = { ...task, resources: newResources };
     props.updateTask(task._id, updatedTask);
   };
-
-  // useEffect(() => {
-  //   loadUserTasks(props.userId);
-  // }, [props.userId]);
 
   return (
     <Modal isOpen={props.isOpen} toggle={() => props.popupClose()}>
@@ -64,7 +50,7 @@ const TaskCompletedModal = React.memo(props => {
               }}
               disabled={isLoadingTask}
             >
-              {isLoadingTask ? 'Resolving task...' : 'Done'}
+              Mark as Done
             </Button>
             <Button
               onClick={() => {

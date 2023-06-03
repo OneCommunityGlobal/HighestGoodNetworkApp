@@ -23,7 +23,7 @@ const TeamMemberTasks = props => {
   const [currentTaskNotifications, setCurrentTaskNotifications] = useState([]);
   const [currentTask, setCurrentTask] = useState();
   const [currentUserId, setCurrentUserId] = useState('');
-  const { isLoading,usersWithTasks } = useSelector(getTeamMemberTasksData);
+  const { isLoading, usersWithTasks } = useSelector(getTeamMemberTasksData);
   const [tasks, setTasks] = useState();
   const [updatedTasks, setUpdatedTasks] = useState([]);
   const [showMarkAsDoneModal, setMarkAsDoneModal] = useState(false);
@@ -66,7 +66,6 @@ const TeamMemberTasks = props => {
       //if it's not differente, it'll attribute the current authenticated user's role.
       //also, the userId is different from the authenticated user, it will call the fetchTeamMmbersTask with the currently authenticated user id
       if (userId !== props.auth.user.userid) {
-        console.log(userId);
         await dispatch(fetchTeamMembersTask(userId, props.auth.user.userid));
         const currentUserRole = getUserRole(userId)
           .then(resp => resp)
@@ -79,7 +78,7 @@ const TeamMemberTasks = props => {
       }
       setShouldRun(true)     
     };
-    initialFetching()
+    initialFetching();
   }, []);
 
   useEffect(() => {
@@ -91,31 +90,9 @@ const TeamMemberTasks = props => {
   useEffect(() => {
     if (isLoading === false && shouldRun) {
       renderTeamsList();
-      setClickedToShowModal(false);
       closeMarkAsDone();
-      setCurrentUserId('');
     }
   }, [usersWithTasks, shouldRun]);
-
-  // useEffect(() => {
-  //   //As this useEffect should not run if it's the first run of the page, it will see if the isFirstRun ref is true, in case it is it will change it to false and return
-  //   if (isFirstRun.current) {
-  //     isFirstRun.current = false;
-  //     return;
-  //   }
-  //   submitTasks();
-  //   if (userId !== props.auth.user.userid) {
-  //     dispatch(fetchTeamMembersTask(userId, props.auth.user.userid, false));
-  //     const currentUserRole = getUserRole(userId)
-  //       .then(resp => resp)
-  //       .then(user => {
-  //         setUserRole(user.data.role);
-  //       });
-  //   } else {
-  //     dispatch(fetchTeamMembersTask(userId, null, false));
-  //     setUserRole(props.auth.user.role);
-  //   }
-  // }, [updatedTasks]);
 
   const closeMarkAsDone = () => {
     setClickedToShowModal(false);
@@ -128,28 +105,11 @@ const TeamMemberTasks = props => {
       updatedTask,
       taskId,
     };
-    //This function is not needed
-    // setTasks(tasks => {
-    //   const tasksWithoutTheUpdated = [...tasks];
-    //   const taskIndex = tasks.findIndex(task => task._id === taskId);
-    //   tasksWithoutTheUpdated[taskIndex] = updatedTask;
-    //   return tasksWithoutTheUpdated;
-    // });
-
-    //updatedTasks doesn't need to be an array, it was only making it bigger
-    //setUpdatedTasks(newTask);
     submitTasks(newTask);
     dispatch(fetchTeamMembersTask(userId, props.auth.user.userid, false));
   };
 
   const submitTasks = async updatedTasks => {
-    // for (let i = 0; i < updatedTasks.length; i += 1) {
-    //   const updatedTask = updatedTasks[i];
-    //   const url = ENDPOINTS.TASK_UPDATE(updatedTask.taskId);
-    //   axios.put(url, updatedTask.updatedTask).catch(err => console.log(err));
-    // }
-
-    //It only needs to update the updated task, before, it was being added on an unecessary array
     const url = ENDPOINTS.TASK_UPDATE(updatedTasks.taskId);
     try {
       await axios.put(url, updatedTasks.updatedTask);
