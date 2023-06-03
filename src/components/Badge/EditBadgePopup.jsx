@@ -17,6 +17,7 @@ import { connect } from 'react-redux';
 import './Badge.css';
 import { updateBadge, closeAlert } from '../../actions/badgeManagement';
 import { badgeTypes } from './BadgeTypes';
+import { boxStyle } from 'styles';
 
 const EditBadgePopup = props => {
   const [badgeValues, setBadgeValues] = useState('');
@@ -425,10 +426,10 @@ const EditBadgePopup = props => {
         </Form>
       </ModalBody>
       <ModalFooter>
-        <Button color="info" onClick={handleSubmit} disabled={enableButton}>
+        <Button color="info" onClick={handleSubmit} disabled={enableButton} style={boxStyle}>
           Update
         </Button>{' '}
-        <Button color="primary" onClick={closePopup}>
+        <Button color="primary" onClick={closePopup} style={boxStyle}>
           Cancel
         </Button>
       </ModalFooter>

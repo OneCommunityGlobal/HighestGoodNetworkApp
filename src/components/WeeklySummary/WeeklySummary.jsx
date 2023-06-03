@@ -32,6 +32,7 @@ import { toast } from 'react-toastify';
 import { WeeklySummaryContentTooltip, MediaURLTooltip } from './WeeklySummaryTooltips';
 import classnames from 'classnames';
 import { getUserProfile } from 'actions/userProfile';
+import { boxStyle } from 'styles';
 
 // Need this export here in order for automated testing to work.
 export class WeeklySummary extends Component {
@@ -518,6 +519,7 @@ export class WeeklySummary extends Component {
                         className="px-5 btn--dark-sea-green"
                         disabled={this.validate() || !formElements.mediaUrl ? true : false}
                         onClick={this.handleSave}
+                        style={boxStyle}
                       >
                         Save
                       </Button>

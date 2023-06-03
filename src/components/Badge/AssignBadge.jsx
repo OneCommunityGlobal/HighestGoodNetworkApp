@@ -25,6 +25,7 @@ import {
 } from '../../actions/badgeManagement';
 import { getAllUserProfile } from '../../actions/userManagement';
 import Autosuggest from 'react-autosuggest';
+import { boxStyle } from 'styles';
 
 const AssignBadge = props => {
   const [isOpen, setOpen] = useState(false);
@@ -169,7 +170,11 @@ const AssignBadge = props => {
         </Col>
       </Row>
       <FormGroup className="assign-badge-margin-top">
-        <Button outline color="info" onClick={toggle}>
+        <Button
+          className="btn--dark-sea-green"
+          onClick={toggle}
+          style={{ ...boxStyle, margin: 20 }}
+        >
           Assign Badge
         </Button>
         <Modal isOpen={isOpen} toggle={toggle} backdrop="static">

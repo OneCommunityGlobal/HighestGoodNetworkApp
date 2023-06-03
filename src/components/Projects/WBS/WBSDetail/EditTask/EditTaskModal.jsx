@@ -14,6 +14,7 @@ import hasPermission from 'utils/permissions';
 import axios from 'axios';
 import { ENDPOINTS } from 'utils/URL';
 import TagsSearch from '../components/TagsSearch';
+import { boxStyle } from 'styles';
 
 const EditTaskModal = props => {
   const [role] = useState(props.auth ? props.auth.user.role : null);
@@ -56,7 +57,6 @@ const EditTaskModal = props => {
 
   // assigned
   const [assigned, setAssigned] = useState(false);
-
 
   // status
   const [status, setStatus] = useState('false');
@@ -117,7 +117,6 @@ const EditTaskModal = props => {
   const findMembers = () => {
     const memberList = members.members ? props.projectMembers.members : members;
     for (let i = 0; i < memberList.length; i++) {
-
       if (
         `${memberList[i].firstName} ${memberList[i].lastName}`
           .toLowerCase()
@@ -269,11 +268,11 @@ const EditTaskModal = props => {
     }
   };
 
-  const handleAssign = (value) => {
+  const handleAssign = value => {
     setAssigned(value);
   };
 
-  const handleStatus = (value) => {
+  const handleStatus = value => {
     setStatus(value);
   };
 
@@ -356,7 +355,7 @@ const EditTaskModal = props => {
                         id="true"
                         name="Assigned"
                         value="true"
-                        onChange={(e) => handleAssign(true)}
+                        onChange={e => handleAssign(true)}
                         checked={assigned}
                       />
                       <label className="form-check-label" htmlFor="true">
@@ -370,7 +369,7 @@ const EditTaskModal = props => {
                         id="false"
                         name="Assigned"
                         value="false"
-                        onChange={(e) => handleAssign(false)}
+                        onChange={e => handleAssign(false)}
                         checked={!assigned}
                       />
                       <label className="form-check-label" htmlFor="false">
@@ -385,29 +384,29 @@ const EditTaskModal = props => {
                 <td scope="col">
                   <div className="flex-row  d-inline align-items-center">
                     <div className="form-check form-check-inline">
-                    <input
-                      className="form-check-input"
-                      type="radio"
-                      id="started"
-                      name="started"
-                      value="true"
-                      onChange={(e) => handleStatus('true')}
-                      checked={status === 'true' ? true : false}
-                    />
+                      <input
+                        className="form-check-input"
+                        type="radio"
+                        id="started"
+                        name="started"
+                        value="true"
+                        onChange={e => handleStatus('true')}
+                        checked={status === 'true' ? true : false}
+                      />
                       <label className="form-check-label" htmlFor="started">
                         Started
                       </label>
                     </div>
                     <div className="form-check form-check-inline">
-                    <input
-                      className="form-check-input"
-                      type="radio"
-                      id="notStarted"
-                      name="started"
-                      value="false"
-                      onChange={(e) => handleStatus('false')}
-                      checked={status === 'false' ? true : false}
-                    />
+                      <input
+                        className="form-check-input"
+                        type="radio"
+                        id="notStarted"
+                        name="started"
+                        value="false"
+                        onChange={e => handleStatus('false')}
+                        checked={status === 'false' ? true : false}
+                      />
                       <label className="form-check-label" htmlFor="notStarted">
                         Not Started
                       </label>
@@ -659,17 +658,17 @@ const EditTaskModal = props => {
         hasPermission(role, 'suggestTask', roles, userPermissions) ? (
           <ModalFooter>
             {taskName !== '' && startedDate !== '' && dueDate !== '' ? (
-              <Button color="primary" onClick={updateTask}>
+              <Button color="primary" onClick={updateTask} style={boxStyle}>
                 Update
               </Button>
             ) : null}
-            <Button color="secondary" onClick={toggle}>
+            <Button color="secondary" onClick={toggle} style={boxStyle}>
               Cancel
             </Button>
           </ModalFooter>
         ) : null}
       </Modal>
-      <Button color="primary" size="sm" onClick={toggle}>
+      <Button color="primary" size="sm" onClick={toggle} style={boxStyle}>
         {hasPermission(role, 'editTask', roles, userPermissions)
           ? 'Edit'
           : hasPermission(role, 'suggestTask', roles, userPermissions)

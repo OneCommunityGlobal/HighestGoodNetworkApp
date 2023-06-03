@@ -6,6 +6,7 @@ import style from '../UserProfileEdit/ToggleSwitch/ToggleSwitch.module.scss';
 import { ENDPOINTS } from 'utils/URL';
 import axios from 'axios';
 import './timeTab.css';
+import { boxStyle } from 'styles';
 
 const StartDate = props => {
   if (!props.canEdit) {
@@ -55,7 +56,12 @@ const EndDate = props => {
 
 const WeeklySummaryOptions = props => {
   if (!props.canEdit) {
-    return <p>{props.userProfile.weeklySummaryOption??(props.userProfile.weeklySummaryNotReq?'Not Required':'Required')}</p>
+    return (
+      <p>
+        {props.userProfile.weeklySummaryOption ??
+          (props.userProfile.weeklySummaryNotReq ? 'Not Required' : 'Required')}
+      </p>
+    );
   }
   return (
     <FormGroup>
@@ -64,7 +70,10 @@ const WeeklySummaryOptions = props => {
         id="weeklySummaryOptions"
         className="form-control"
         disabled={!props.canEdit}
-        value={props.userProfile.weeklySummaryOption??(props.userProfile.weeklySummaryNotReq?'Not Required':'Required')}
+        value={
+          props.userProfile.weeklySummaryOption ??
+          (props.userProfile.weeklySummaryNotReq ? 'Not Required' : 'Required')
+        }
         onChange={e => {
           props.setUserProfile({ ...props.userProfile, weeklySummaryOption: e.target.value });
         }}
@@ -74,8 +83,8 @@ const WeeklySummaryOptions = props => {
         <option value="Team">Team</option>
       </select>
     </FormGroup>
-  )
-}
+  );
+};
 
 const WeeklyCommittedHours = props => {
   if (!props.canEdit) {
@@ -112,7 +121,10 @@ const MissedHours = props => {
       data-testid="missedHours"
       value={props.userProfile.missedHours ?? 0}
       onChange={e => {
-        props.setUserProfile({ ...props.userProfile, missedHours: Math.max(Number(e.target.value), 0) });
+        props.setUserProfile({
+          ...props.userProfile,
+          missedHours: Math.max(Number(e.target.value), 0),
+        });
       }}
       placeholder="Additional Make-up Hours This Week"
     />
@@ -137,7 +149,7 @@ const TotalIntangibleHours = props => {
           totalIntangibleHrs: Math.max(Number(e.target.value), 0),
         });
       }}
-      placeholder='Total Intangible Hours'
+      placeholder="Total Intangible Hours"
     />
   );
 };
@@ -338,6 +350,7 @@ const ViewTab = props => {
             color="info"
             className="refresh-btn"
             onClick={() => props.loadUserProfile()}
+            style={boxStyle}
           >
             Refresh
           </Button>

@@ -4,6 +4,7 @@ import './TeamsAndProjects.css';
 import hasPermission from '../../../utils/permissions';
 import { useSelector } from 'react-redux';
 import styles from './UserProjectsTable.css';
+import { boxStyle } from 'styles';
 
 const UserProjectsTable = React.memo(props => {
   const { roles } = useSelector(state => state.role);
@@ -73,7 +74,7 @@ const UserProjectsTable = React.memo(props => {
       let newResource = { ...resource };
       if (resource.userID === props.userId) {
         if (method === 'remove') {
-          task.status="Complete";
+          task.status = 'Complete';
           newResource = {
             ...resource,
             completedTask: true,
@@ -117,6 +118,7 @@ const UserProjectsTable = React.memo(props => {
                       onClick={() => {
                         props.onButtonClick();
                       }}
+                      style={boxStyle}
                     >
                       Assign Project
                     </Button>
@@ -156,6 +158,7 @@ const UserProjectsTable = React.memo(props => {
                             onClick={e => {
                               props.onDeleteClicK(project._id);
                             }}
+                            style={boxStyle}
                           >
                             Delete
                           </Button>
@@ -188,6 +191,7 @@ const UserProjectsTable = React.memo(props => {
               type="button"
               className="btn btn-primary btn-sm"
               onClick={() => filterTasksAndUpdateFilter('all')}
+              style={boxStyle}
             >
               All
             </button>
@@ -195,6 +199,7 @@ const UserProjectsTable = React.memo(props => {
               type="button"
               className="btn btn-success btn-sm"
               onClick={() => filterTasksAndUpdateFilter('active')}
+              style={boxStyle}
             >
               Active
             </button>
@@ -202,6 +207,7 @@ const UserProjectsTable = React.memo(props => {
               type="button"
               className="btn btn-danger btn-sm"
               onClick={() => filterTasksAndUpdateFilter('complete')}
+              style={boxStyle}
             >
               Complete
             </button>
@@ -235,7 +241,7 @@ const UserProjectsTable = React.memo(props => {
                           <td>
                             <Button
                               color="danger"
-                              style={{ width: '72px' }}
+                              style={{ ...boxStyle, width: '72px' }}
                               disabled={
                                 !hasPermission(
                                   props.role,
@@ -294,7 +300,10 @@ const UserProjectsTable = React.memo(props => {
               <span className="projects-span">Projects</span>
             </Col>
             {props.edit && props.role && (
-              <Col md="5" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+              <Col
+                md="5"
+                style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+              >
                 {hasPermission(props.role, 'assignUserInProject', roles, userPermissions) ? (
                   <Button
                     className="btn-addproject"
@@ -332,7 +341,13 @@ const UserProjectsTable = React.memo(props => {
                       <td>{`${project.projectName}`}</td>
                       {props.edit && props.role && (
                         <td style={{ width: '103px' }}>
-                          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                          <div
+                            style={{
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                            }}
+                          >
                             <Button
                               color="danger"
                               disabled={
@@ -419,7 +434,13 @@ const UserProjectsTable = React.memo(props => {
                         <td>{`${task.taskName}`}</td>
                         {!isCompletedTask && props.edit && props.role && (
                           <td>
-                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                            <div
+                              style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                              }}
+                            >
                               <Button
                                 color="danger"
                                 style={{ width: '72px' }}
