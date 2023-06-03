@@ -13,7 +13,6 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  width: 100%;
   gap: 1rem;
 }
 
@@ -38,17 +37,9 @@
   min-width: 29px;
 }
 
-@media(max-width: 1500px) { 
-.owner-message {
-  margin-right: 3rem;
-}
-
+@media (max-width: 1500px) {
   .dashboard-text-link {
     font-size: 14px;
-  }
-
-  .owner-message {
-    margin-right: 0;
   }
 }
 
