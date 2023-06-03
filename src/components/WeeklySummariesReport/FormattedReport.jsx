@@ -163,11 +163,11 @@ const FormattedReport = ({ summaries, weekIndex, bioCanEdit }) => {
         <div className="bio-toggle">
           <b>Bio announcement:</b>
         </div>
-          <div className="bio-toggle">
-            <ToggleSwitch 
-              switchType="bio"
-              state={bioStatus}
-              handleUserProfile={(bio) => {
+        <div className="bio-toggle">
+          <ToggleSwitch
+            switchType="bio"
+            state={bioStatus}
+            handleUserProfile={(bio) => {
               setBioStatus(bio);
               handleChangeBioPosted(userId, bio);
             }}
@@ -182,8 +182,8 @@ const FormattedReport = ({ summaries, weekIndex, bioCanEdit }) => {
       <div>
         <b>Bio announcement:</b>
         {bioPosted === 'default' ? 'Not requested/posted' :
-         bioPosted === 'posted' ? 'posted' : 
-         'requested'}
+         bioPosted === 'posted' ? 'Posted' : 
+         'Requested'}
       </div>
     );
   };
