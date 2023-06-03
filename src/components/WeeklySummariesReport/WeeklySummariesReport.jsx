@@ -51,6 +51,7 @@ export class WeeklySummariesReport extends Component {
 
   render() {
     const { error, loading, summaries, activeTab } = this.state;
+    const role = this.props.authRole;
 
     if (error) {
       return (
@@ -138,7 +139,7 @@ export class WeeklySummariesReport extends Component {
                 </Row>
                 <Row>
                   <Col>
-                    <FormattedReport summaries={summaries} weekIndex={0} />
+                    <FormattedReport summaries={summaries} weekIndex={0} role={role} />
                   </Col>
                 </Row>
               </TabPane>
@@ -158,7 +159,7 @@ export class WeeklySummariesReport extends Component {
                 </Row>
                 <Row>
                   <Col>
-                    <FormattedReport summaries={summaries} weekIndex={1} />
+                    <FormattedReport summaries={summaries} weekIndex={1} role={role} />
                   </Col>
                 </Row>
               </TabPane>
@@ -178,7 +179,7 @@ export class WeeklySummariesReport extends Component {
                 </Row>
                 <Row>
                   <Col>
-                    <FormattedReport summaries={summaries} weekIndex={2} />
+                    <FormattedReport summaries={summaries} weekIndex={2} role={role} />
                   </Col>
                 </Row>
               </TabPane>
@@ -198,7 +199,7 @@ export class WeeklySummariesReport extends Component {
                 </Row>
                 <Row>
                   <Col>
-                    <FormattedReport summaries={summaries} weekIndex={3} />
+                    <FormattedReport summaries={summaries} weekIndex={3} role={role} />
                   </Col>
                 </Row>
               </TabPane>
@@ -215,12 +216,14 @@ WeeklySummariesReport.propTypes = {
   getWeeklySummariesReport: PropTypes.func.isRequired,
   loading: PropTypes.bool.isRequired,
   summaries: PropTypes.array.isRequired,
+  authRole: PropTypes.string.isRequired,
 };
 
-const mapStateToProps = ({ weeklySummariesReport }) => ({
-  error: weeklySummariesReport.error,
-  loading: weeklySummariesReport.loading,
-  summaries: weeklySummariesReport.summaries,
+const mapStateToProps = state => ({
+  authRole: state.auth.user.role,
+  error: state.weeklySummariesReport.error,
+  loading: state.weeklySummariesReport.loading,
+  summaries: state.weeklySummariesReport.summaries,
 });
 
 export default connect(mapStateToProps, { getWeeklySummariesReport })(WeeklySummariesReport);
