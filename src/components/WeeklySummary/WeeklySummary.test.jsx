@@ -67,16 +67,13 @@ describe('WeeklySummary page', () => {
       const li = screen.getAllByRole('listitem');
       expect(li.length).toEqual(4);
     });
-
     it('should have 4 tab', () => {
       const li = screen.getAllByRole('listitem');
       expect(li.length).toEqual(4);
     });
-
     it('should have first tab set to "active" by default', () => {
       expect(screen.getByTestId('tab-1').classList.contains('active')).toBe(true);
     });
-
     it('should make 1st tab active when clicked', () => {
       // First tab click.
       userEvent.click(screen.getByTestId('tab-1'));
@@ -181,55 +178,62 @@ describe('WeeklySummary page', () => {
       });
     });
 
-    describe('Confirmation checkboxes', () => {
+    describe('Confirm media checkbox', () => {
       it('should be unchecked by default and can be checked', () => {
         const mediaCheckbox = screen.getByTestId("mediaConfirm")
-        const editorCheckbox = screen.getByTestId("editorConfirm")
-        const proofreadCheckbox = screen.getByTestId("proofreadConfirm")
         expect(mediaCheckbox).not.toBeChecked();
         userEvent.click(mediaCheckbox);
         expect(mediaCheckbox).toBeChecked();
-        expect(editorCheckbox).not.toBeChecked();
-        userEvent.click(editorCheckbox);
-        expect(editorCheckbox).toBeChecked();
-        expect(proofreadCheckbox).not.toBeChecked();
-        userEvent.click(proofreadCheckbox);
-        expect(proofreadCheckbox).toBeChecked();
       });
-
       it('should display an error message if a checkbox is unchecked after it was checked first', () => {
         const mediaCheckbox = screen.getByTestId("mediaConfirm")
-        const editorCheckbox = screen.getByTestId("editorConfirm")
-        const proofreadCheckbox = screen.getByTestId("proofreadConfirm")
-
         expect(mediaCheckbox).not.toBeChecked();
         userEvent.click(mediaCheckbox);
         expect(mediaCheckbox).toBeChecked();
         userEvent.click(mediaCheckbox);
         expect(mediaCheckbox).not.toBeChecked();
-
-        expect(editorCheckbox).not.toBeChecked();
-        userEvent.click(editorCheckbox);
-        expect(editorCheckbox).toBeChecked();
-        userEvent.click(editorCheckbox);
-        expect(editorCheckbox).not.toBeChecked();
-
-        expect(proofreadCheckbox).not.toBeChecked();
-        userEvent.click(proofreadCheckbox);
-        expect(proofreadCheckbox).toBeChecked();
-        userEvent.click(proofreadCheckbox);
-        expect(proofreadCheckbox).not.toBeChecked();
-
         const mediaCheckboxError = screen.getByText(
           /Please confirm that you have provided the required media files./i,
         );
         expect(mediaCheckboxError).toBeInTheDocument();
+      });
+    });
 
+    describe('Confirm editor was used checkbox', () => {
+      it('should be unchecked by default and can be checked', () => {
+        const editorCheckbox = screen.getByTestId("editorConfirm")
+        expect(editorCheckbox).not.toBeChecked();
+        userEvent.click(editorCheckbox);
+        expect(editorCheckbox).toBeChecked();
+      });
+      it('should display an error message if a checkbox is unchecked after it was checked first', () => {
+        const editorCheckbox = screen.getByTestId("editorConfirm")
+        expect(editorCheckbox).not.toBeChecked();
+        userEvent.click(editorCheckbox);
+        expect(editorCheckbox).toBeChecked();
+        userEvent.click(editorCheckbox);
+        expect(editorCheckbox).not.toBeChecked();
         const editorCheckboxError = screen.getByText(
           /Please confirm that you used an AI editor to write your summary./i,
         );
         expect(editorCheckboxError).toBeInTheDocument();
+      });
+    });
 
+    describe('Confirm proofread checkbox', () => {
+      it('should be unchecked by default and can be checked', () => {
+        const proofreadCheckbox = screen.getByTestId("proofreadConfirm")
+        expect(proofreadCheckbox).not.toBeChecked();
+        userEvent.click(proofreadCheckbox);
+        expect(proofreadCheckbox).toBeChecked();
+      });
+      it('should display an error message if a checkbox is unchecked after it was checked first', () => {
+        const proofreadCheckbox = screen.getByTestId("proofreadConfirm")
+        expect(proofreadCheckbox).not.toBeChecked();
+        userEvent.click(proofreadCheckbox);
+        expect(proofreadCheckbox).toBeChecked();
+        userEvent.click(proofreadCheckbox);
+        expect(proofreadCheckbox).not.toBeChecked();
         const proofreadCheckboxError = screen.getByText(
           /Please confirm that you have proofread your summary./i,
         );
@@ -237,14 +241,11 @@ describe('WeeklySummary page', () => {
       });
     });
 
-
-
     describe('Handle save', () => {
       props = {
         ...props,
         updateWeeklySummaries: jest.fn().mockReturnValueOnce(200),
       };
-
       it('should save the form data when "Save" button is pressed', async () => {
         const saveButton = screen.getByRole('button', { name: /save/i });
         expect(saveButton).toBeDisabled();
@@ -253,14 +254,10 @@ describe('WeeklySummary page', () => {
         const labelText = screen.getByLabelText(/Dropbox link to your weekly media files/i);
         await userEvent.type(labelText, 'https://www.example.com/');
         // check off the media URL concent checkbox
-      
         userEvent.click(screen.getByTestId("mediaConfirm"));
         userEvent.click(screen.getByTestId("editorConfirm"));
         userEvent.click(screen.getByTestId("proofreadConfirm"));
-
-
         expect(saveButton).toBeEnabled();
-
         userEvent.click(saveButton);
       });
     });
