@@ -11,6 +11,7 @@ import { permissionFrontToBack } from 'utils/associatedPermissions';
 import { ENDPOINTS } from '../../utils/URL';
 import axios from 'axios';
 import { useHistory } from 'react-router-dom';
+import { boxStyle } from 'styles';
 
 function getKeyByValue(object, value) {
   return Object.keys(object).find(key => object[key] === value);
@@ -177,6 +178,7 @@ function RolePermissions(props) {
                   onRemovePermission(permission), setChanged(true);
                 }}
                 disabled={props?.userRole !== 'Owner' ? true : false}
+                style={boxStyle}
               >
                 Delete
               </Button>
@@ -187,6 +189,7 @@ function RolePermissions(props) {
                   onAddPermission(permission), setChanged(true);
                 }}
                 disabled={props?.userRole !== 'Owner' ? true : false}
+                style={boxStyle}
               >
                 Add
               </Button>
@@ -207,8 +210,8 @@ function RolePermissions(props) {
           Are you sure you want to delete <strong>{roleName}</strong> role?
         </ModalBody>
         <ModalFooter>
-          <Button onClick={toggleDeleteRoleModal}>Cancel</Button>
-          <Button color="danger" onClick={() => deleteRole()}>
+          <Button onClick={toggleDeleteRoleModal} style={boxStyle}>Cancel</Button>
+          <Button color="danger" onClick={() => deleteRole()} style={boxStyle}>
             Delete
           </Button>
         </ModalFooter>
