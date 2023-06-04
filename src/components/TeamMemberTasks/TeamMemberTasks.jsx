@@ -261,6 +261,7 @@ const TeamMemberTasks = props => {
           filteredMembers.unshift(currentUser);
         }
       }
+
       getTimeEntriesForPeriod(filteredMembers);
       setTeamList([...filteredMembers]);
     }
