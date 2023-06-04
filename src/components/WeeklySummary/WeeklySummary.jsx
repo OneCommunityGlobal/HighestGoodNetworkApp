@@ -503,6 +503,7 @@ export class WeeklySummary extends Component {
                     <FormGroup>
                       <CustomInput
                         id="mediaConfirm"
+                        data-testid="mediaConfirm"
                         name="mediaConfirm"
                         type="checkbox"
                         label="I have provided a minimum of 4 screenshots (6-10 preferred) of this week's work. (required)"
@@ -524,6 +525,7 @@ export class WeeklySummary extends Component {
                     <FormGroup>
                       <CustomInput
                         id="editorConfirm"
+                        data-testid="editorConfirm"
                         name="editorConfirm"
                         type="checkbox"
                         label="I used GPT (or other AI editor) with the most current prompt."
@@ -546,6 +548,7 @@ export class WeeklySummary extends Component {
                       <CustomInput
                         id="proofreadConfirm"
                         name="proofreadConfirm"
+                        data-testid="proofreadConfirm"
                         type="checkbox"
                         label="I proofread my weekly summary."
                         htmlFor="proofreadConfirm"
