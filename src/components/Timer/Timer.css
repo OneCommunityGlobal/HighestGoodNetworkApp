@@ -18,6 +18,10 @@
   }
 }
 
+.timer{
+  display: flex;
+}
+
 /**
 @media (max-width: 1150px) { 
     .timer button {

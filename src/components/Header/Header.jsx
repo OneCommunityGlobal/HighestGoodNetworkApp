@@ -43,6 +43,7 @@ import { Logout } from '../Logout/Logout';
 import './Header.css';
 import hasPermission from '../../utils/permissions';
 import { fetchTaskEditSuggestionCount } from 'components/TaskEditSuggestions/thunks';
+import { BsFillSunFill, BsFillMoonFill } from 'react-icons/bs';
 
 export const Header = props => {
   const [isOpen, setIsOpen] = useState(false);
@@ -101,7 +102,7 @@ export const Header = props => {
   };
 
   return (
-    <div className="header-wrapper {`${theme}`}" >
+    <div className="header-wrapper" >
       <Navbar className="py-3 mb-3 navbar" color="dark" dark expand="xl">
         {logoutPopup && <Logout open={logoutPopup} setLogoutPopup={setLogoutPopup} />}
         <div
@@ -115,13 +116,13 @@ export const Header = props => {
             </div>
           )}
         </div>
-
-        <div> 
-          <label className="switch">
-            <input type="checkbox" name="theme" checked={checked} onChange={toggleTheme}/>
-            <span className="slider round"></span>
-          </label>
-        </div>
+        
+        {isAuthenticated && <div className={`${theme}-toggle`}> 
+          <button onClick={toggleTheme} className='dark-toggle'>
+            {theme === 'dark' ? (<BsFillMoonFill className='toggle-icon' style={{color: "yellow"}}/>) 
+            : (<BsFillSunFill className='toggle-icon' style={{color: "yellow"}}/>)}
+          </button>
+        </div>}
        
         <NavbarToggler onClick={toggle} />
         {isAuthenticated && (

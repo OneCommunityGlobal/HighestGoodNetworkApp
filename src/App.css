@@ -231,6 +231,10 @@ input:checked + .slider:before {
   color: #007bff;
 }
 
+.dark .modal-title span {
+  color: lightcoral !important;
+}
+
 .dark .bg-white {
   background-color: #333 !important
 }
@@ -302,3 +306,23 @@ input:checked + .slider:before {
 .dark .popup-content-wrapper {
   color: black
 }
+
+.dark-toggle {
+  background: transparent;
+  border-color: transparent;
+  width: 5rem;
+  height: 2rem;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+}
+
+.toggle-icon {
+  font-size: 1.5rem;
+  color: #222
+}
+
+.dark a[href="/forgotpassword"] span {
+  color: #007bff !important
+}
+

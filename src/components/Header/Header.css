@@ -15,6 +15,7 @@
   justify-content: space-between;
   width: 100%;
   gap: 1rem;
+  margin-right: 0px !important;
 }
 
 .nav-links {
