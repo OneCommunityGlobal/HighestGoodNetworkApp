@@ -4,6 +4,18 @@
   margin-top: 20px;
 }
 
+
+
+.teamtable-container .container,
+.projecttable-container .container {
+  padding: 0px;
+}
+
+.teamtable-container .row,
+.projecttable-container .row {
+  margin: 0px;
+}
+
 .btn-addteam,
 .btn-addproject {
   width: 120px;

@@ -99,7 +99,7 @@ const UserProjectsTable = React.memo(props => {
           <div className="container">
             <div className="row">
               <Col
-                md={props.edit ? '7' : '12'}
+                md={props.edit ? '10' : '12'}
                 style={{
                   backgroundColor: ' #e9ecef',
                   border: '1px solid #ced4da',
@@ -109,7 +109,7 @@ const UserProjectsTable = React.memo(props => {
                 <span className="projects-span">Projects</span>
               </Col>
               {props.edit && props.role && (
-                <Col md="5">
+                <Col md="2">
                   {hasPermission(props.role, 'assignUserInProject', roles, userPermissions) ? (
                     <Button
                       className="btn-addproject"
