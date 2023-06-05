@@ -11,7 +11,7 @@ import Login from './components/Login';
 import ForcePasswordUpdate from './components/ForcePasswordUpdate';
 import ProtectedRoute from './components/common/ProtectedRoute';
 import UpdatePassword from './components/UpdatePassword';
-import Header from './components/Header';
+import NewHeader from './components/NewHeader';
 import Projects from './components/Projects';
 import Teams from './components/Teams/Teams';
 import UserManagement from './components/UserManagement';
@@ -35,10 +35,12 @@ import { TaskEditSuggestions } from 'components/TaskEditSuggestions/TaskEditSugg
 import { RoutePermissions } from 'utils/routePermissions';
 import PermissionsManagement from 'components/PermissionsManagement/PermissionsManagement';
 import UserRoleTab from 'components/PermissionsManagement/UserRoleTab';
+// import OldHeader from './components/OldHeader/OldHeader';
 
 export default (
   <React.Fragment>
-    <Header />
+    <NewHeader />
+    {/* <OldHeader /> */}
     <AutoUpdate />
     <ToastContainer />
     <Switch>
