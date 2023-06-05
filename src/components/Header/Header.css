@@ -1,7 +1,7 @@
 .header-wrapper {
-  height: fit-content;
-  width: clamp(100vw, .1rem + 1vw ,100%);
- 
+  height: 82px;
+  width: clamp(100vw, 0.1rem + 1vw, 100%);
+  margin-bottom: 1rem;
 }
 
 .navbar {
@@ -38,11 +38,11 @@
   min-width: 29px;
 }
 
+@media(max-width: 1500px) { 
 .owner-message {
   margin-right: 3rem;
 }
 
-@media(max-width: 1500px) { 
   .dashboard-text-link {
     font-size: 14px;
   }
@@ -52,18 +52,20 @@
   }
 }
 
-@media(max-width: 1400px) {
+@media (max-width: 1400px) {
   .timer-message-section {
     display: flex;
     width: 0;
     margin-right: 0;
   }
 
-  .owner-message{
+  .owner-message {
     display: none;
   }
 }
 
-
-
-
+@media (max-width: 1200px) {
+  .header-wrapper {
+    height: 56px;
+  }
+}
