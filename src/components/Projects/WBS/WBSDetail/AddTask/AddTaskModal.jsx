@@ -24,7 +24,7 @@ function AddTaskModal(props) {
   const setToggle = () => {
     try {
       props.openChild();
-    } catch {}
+    } catch { }
     toggle();
   };
 
@@ -387,7 +387,7 @@ function AddTaskModal(props) {
         <ModalBody>
           <ReactTooltip />
 
-          <table className="table table-bordered">
+          <table className="table table-bordered responsive">
             <tbody>
               <tr>
                 <td scope="col" data-tip="WBS ID">
@@ -518,8 +518,8 @@ function AddTaskModal(props) {
                     />
                     <div className="warning">
                       {
-                        hoursWarning ? 
-                        'Hours - Best-case < Hours - Most-case < Hours - Most-case' : ''
+                        hoursWarning ?
+                          'Hours - Best-case < Hours - Most-case < Hours - Most-case' : ''
                       }
                     </div>
                   </div>

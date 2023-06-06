@@ -284,19 +284,18 @@ const EditTaskModal = props => {
           {hasPermission(role, 'editTask', roles, userPermissions)
             ? 'Edit'
             : hasPermission(role, 'suggestTask', roles, userPermissions)
-            ? 'Suggest'
-            : 'View'}
+              ? 'Suggest'
+              : 'View'}
         </ModalHeader>
         <ModalBody>
           <ReactTooltip />
           <table
-            className={`table table-bordered 
-            ${
-              hasPermission(role, 'editTask', roles, userPermissions) ||
-              hasPermission(role, 'suggestTask', roles, userPermissions)
+            className={`table table-bordered responsive
+            ${hasPermission(role, 'editTask', roles, userPermissions) ||
+                hasPermission(role, 'suggestTask', roles, userPermissions)
                 ? null
                 : 'disable-div'
-            }`}
+              }`}
           >
             <tbody>
               <tr>
@@ -385,29 +384,29 @@ const EditTaskModal = props => {
                 <td scope="col">
                   <div className="flex-row  d-inline align-items-center">
                     <div className="form-check form-check-inline">
-                    <input
-                      className="form-check-input"
-                      type="radio"
-                      id="started"
-                      name="started"
-                      value="true"
-                      onChange={(e) => handleStatus('true')}
-                      checked={status === 'true' ? true : false}
-                    />
+                      <input
+                        className="form-check-input"
+                        type="radio"
+                        id="started"
+                        name="started"
+                        value="true"
+                        onChange={(e) => handleStatus('true')}
+                        checked={status === 'true' ? true : false}
+                      />
                       <label className="form-check-label" htmlFor="started">
                         Started
                       </label>
                     </div>
                     <div className="form-check form-check-inline">
-                    <input
-                      className="form-check-input"
-                      type="radio"
-                      id="notStarted"
-                      name="started"
-                      value="false"
-                      onChange={(e) => handleStatus('false')}
-                      checked={status === 'false' ? true : false}
-                    />
+                      <input
+                        className="form-check-input"
+                        type="radio"
+                        id="notStarted"
+                        name="started"
+                        value="false"
+                        onChange={(e) => handleStatus('false')}
+                        checked={status === 'false' ? true : false}
+                      />
                       <label className="form-check-label" htmlFor="notStarted">
                         Not Started
                       </label>
@@ -657,7 +656,7 @@ const EditTaskModal = props => {
           </table>
         </ModalBody>
         {hasPermission(role, 'editTask', roles, userPermissions) ||
-        hasPermission(role, 'suggestTask', roles, userPermissions) ? (
+          hasPermission(role, 'suggestTask', roles, userPermissions) ? (
           <ModalFooter>
             {taskName !== '' && startedDate !== '' && dueDate !== '' ? (
               <Button color="primary" onClick={updateTask}>
@@ -674,8 +673,8 @@ const EditTaskModal = props => {
         {hasPermission(role, 'editTask', roles, userPermissions)
           ? 'Edit'
           : hasPermission(role, 'suggestTask', roles, userPermissions)
-          ? 'Suggest'
-          : 'View'}
+            ? 'Suggest'
+            : 'View'}
       </Button>
     </div>
   );

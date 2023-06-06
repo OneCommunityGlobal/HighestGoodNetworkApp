@@ -38,12 +38,12 @@ button {
   background: none;
 }
 
-button > img {
+button>img {
   width: 18px;
   height: 18px;
 }
 
-button > img:hover {
+button>img:hover {
   cursor: pointer;
   opacity: 0.6;
 }
@@ -63,5 +63,5 @@ button > img:hover {
   .message {
     color: black;
   }
-  
+
 }
