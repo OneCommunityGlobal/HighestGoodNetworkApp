@@ -4,7 +4,7 @@ import './TeamsAndProjects.css';
 import ToggleSwitch from '../UserProfileEdit/ToggleSwitch';
 import hasPermission from '../../../utils/permissions';
 import { useSelector } from 'react-redux';
-import styles from './UserTeamsTable.css';
+import './UserTeamsTable.css';
 
 const UserTeamsTable = props => {
   const { roles } = useSelector(state => state.role);
@@ -137,10 +137,7 @@ const UserTeamsTable = props => {
             <span className="teams-span">Teams</span>
           </Col>
           {props.edit && props.role && (
-            <Col
-              md="12"
-              style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-            >
+            <Col md="12" className="centered-col">
               {hasPermission(props.role, 'assignTeamToUser', roles, userPermissions) ? (
                 <Button
                   className="btn-addteam"
@@ -178,13 +175,7 @@ const UserTeamsTable = props => {
                     <td>{`${team.teamName}`}</td>
                     {props.edit && props.role && (
                       <td>
-                        <div
-                          style={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                          }}
-                        >
+                        <div className="centered-col">
                           <Button
                             disabled={
                               !hasPermission(props.role, 'assignTeamToUser', roles, userPermissions)

@@ -53,7 +53,6 @@ class AddUserProfile extends Component {
       weeklyCommittedHours: 10,
       teams: [],
       projects: [],
-      activeTab: '1',
       userProfile: {
         firstName: '',
         lastName: '',
@@ -679,14 +678,6 @@ class AddUserProfile extends Component {
         },
       });
     };
-  };
-
-  toggleTab = tab => {
-    if (this.state.activeTab !== tab) {
-      this.setState({
-        activeTab: tab,
-      });
-    }
   };
 
   phoneChange = phone => {
