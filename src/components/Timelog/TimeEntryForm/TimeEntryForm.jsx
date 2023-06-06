@@ -772,6 +772,9 @@ const TimeEntryForm = props => {
                     min_height: 180,
                     max_height: 300,
                     autoresize_bottom_margin: 1,
+                    // added content_style to directly manipulate cursor style to text at highest specificity
+                    // was showing default cursor over placeholder text which could be viewed as an inaccessible textbox
+                    content_style: 'body { cursor: text !important; }',
                   }}
                   id="notes"
                   name="notes"
