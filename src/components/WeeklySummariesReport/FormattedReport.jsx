@@ -181,9 +181,9 @@ const FormattedReport = ({ summaries, weekIndex, bioCanEdit }) => {
     return (
       <div>
         <b>Bio announcement:</b>
-        {bioPosted === 'default' ? 'Not requested/posted' :
-         bioPosted === 'posted' ? 'Posted' : 
-         'Requested'}
+        {bioPosted === 'default' ? ' Not requested/posted' :
+         bioPosted === 'posted' ? ' Posted' : 
+         ' Requested'}
       </div>
     );
   };
