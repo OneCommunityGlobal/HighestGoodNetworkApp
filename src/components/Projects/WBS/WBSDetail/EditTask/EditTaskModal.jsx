@@ -419,7 +419,7 @@ const EditTaskModal = props => {
                   Hours
                 </td>
                 <td scope="col" data-tip="Hours - Best-case" className="w-100">
-                  <div className="d-inline py-2">
+                  <div className="py-2 flex-responsive">
                     <label htmlFor="bestCase" className="text-nowrap mr-2 w-25 mr-4">
                       Best-case
                     </label>
@@ -439,7 +439,7 @@ const EditTaskModal = props => {
                         : ''}
                     </div>
                   </div>
-                  <div className="d-inline py-2">
+                  <div className="py-2 flex-responsive">
                     <label htmlFor="worstCase" className="text-nowrap mr-2  w-25 mr-4">
                       Worst-case
                     </label>
@@ -458,7 +458,7 @@ const EditTaskModal = props => {
                         : ''}
                     </div>
                   </div>
-                  <div className="d-inline py-2">
+                  <div className="py-2 flex-responsive">
                     <label htmlFor="mostCase" className="text-nowrap mr-2 w-25 mr-4">
                       Most-case
                     </label>
@@ -477,7 +477,7 @@ const EditTaskModal = props => {
                         : ''}
                     </div>
                   </div>
-                  <div className="d-inline py-2">
+                  <div className="py-2 flex-responsive">
                     <label htmlFor="Estimated" className="text-nowrap mr-2  w-25 mr-4">
                       Estimated
                     </label>
