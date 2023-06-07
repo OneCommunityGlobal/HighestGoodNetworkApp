@@ -57,7 +57,6 @@ const EditTaskModal = props => {
   // assigned
   const [assigned, setAssigned] = useState(false);
 
-
   // status
   const [status, setStatus] = useState('false');
 
@@ -117,7 +116,6 @@ const EditTaskModal = props => {
   const findMembers = () => {
     const memberList = members.members ? props.projectMembers.members : members;
     for (let i = 0; i < memberList.length; i++) {
-
       if (
         `${memberList[i].firstName} ${memberList[i].lastName}`
           .toLowerCase()
@@ -269,11 +267,11 @@ const EditTaskModal = props => {
     }
   };
 
-  const handleAssign = (value) => {
+  const handleAssign = value => {
     setAssigned(value);
   };
 
-  const handleStatus = (value) => {
+  const handleStatus = value => {
     setStatus(value);
   };
 
@@ -284,18 +282,19 @@ const EditTaskModal = props => {
           {hasPermission(role, 'editTask', roles, userPermissions)
             ? 'Edit'
             : hasPermission(role, 'suggestTask', roles, userPermissions)
-              ? 'Suggest'
-              : 'View'}
+            ? 'Suggest'
+            : 'View'}
         </ModalHeader>
         <ModalBody>
           <ReactTooltip />
           <table
             className={`table table-bordered responsive
-            ${hasPermission(role, 'editTask', roles, userPermissions) ||
-                hasPermission(role, 'suggestTask', roles, userPermissions)
+            ${
+              hasPermission(role, 'editTask', roles, userPermissions) ||
+              hasPermission(role, 'suggestTask', roles, userPermissions)
                 ? null
                 : 'disable-div'
-              }`}
+            }`}
           >
             <tbody>
               <tr>
@@ -355,7 +354,7 @@ const EditTaskModal = props => {
                         id="true"
                         name="Assigned"
                         value="true"
-                        onChange={(e) => handleAssign(true)}
+                        onChange={e => handleAssign(true)}
                         checked={assigned}
                       />
                       <label className="form-check-label" htmlFor="true">
@@ -369,7 +368,7 @@ const EditTaskModal = props => {
                         id="false"
                         name="Assigned"
                         value="false"
-                        onChange={(e) => handleAssign(false)}
+                        onChange={e => handleAssign(false)}
                         checked={!assigned}
                       />
                       <label className="form-check-label" htmlFor="false">
@@ -390,7 +389,7 @@ const EditTaskModal = props => {
                         id="started"
                         name="started"
                         value="true"
-                        onChange={(e) => handleStatus('true')}
+                        onChange={e => handleStatus('true')}
                         checked={status === 'true' ? true : false}
                       />
                       <label className="form-check-label" htmlFor="started">
@@ -404,7 +403,7 @@ const EditTaskModal = props => {
                         id="notStarted"
                         name="started"
                         value="false"
-                        onChange={(e) => handleStatus('false')}
+                        onChange={e => handleStatus('false')}
                         checked={status === 'false' ? true : false}
                       />
                       <label className="form-check-label" htmlFor="notStarted">
@@ -656,7 +655,7 @@ const EditTaskModal = props => {
           </table>
         </ModalBody>
         {hasPermission(role, 'editTask', roles, userPermissions) ||
-          hasPermission(role, 'suggestTask', roles, userPermissions) ? (
+        hasPermission(role, 'suggestTask', roles, userPermissions) ? (
           <ModalFooter>
             {taskName !== '' && startedDate !== '' && dueDate !== '' ? (
               <Button color="primary" onClick={updateTask}>
@@ -673,8 +672,8 @@ const EditTaskModal = props => {
         {hasPermission(role, 'editTask', roles, userPermissions)
           ? 'Edit'
           : hasPermission(role, 'suggestTask', roles, userPermissions)
-            ? 'Suggest'
-            : 'View'}
+          ? 'Suggest'
+          : 'View'}
       </Button>
     </div>
   );
