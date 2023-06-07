@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import { toast } from 'react-toastify';
+import ReactTooltip from 'react-tooltip';
 
 function CurrentPromptModal() {
   const [modal, setModal] = useState(false);
@@ -21,7 +22,24 @@ function CurrentPromptModal() {
     <div>
       <Button color="info" onClick={toggle}>
         View Current AI Prompt
+        <i
+          className="fa fa-info-circle"
+          data-tip
+          data-for="timeEntryTip"
+          data-delay-hide="1000"
+          aria-hidden="true"
+          title=""
+          style= {{paddingLeft: '.32rem'}}
+        />
       </Button>
+      <ReactTooltip id="timeEntryTip" place="bottom" effect="solid">
+        Click this button to see and copy the most current AI prompt 
+        <br />
+        you should be using when editing your weeklly summary with chatGPT 
+        <br />
+        or similar AI text completion tool 
+        <br />
+      </ReactTooltip>
       <Modal isOpen={modal} toggle={toggle}>
         <ModalHeader toggle={toggle}>Current AI Prompt </ModalHeader>
         <ModalBody>
