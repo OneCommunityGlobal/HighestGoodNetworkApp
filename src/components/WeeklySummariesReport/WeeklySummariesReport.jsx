@@ -35,7 +35,6 @@ export class WeeklySummariesReport extends Component {
 
   componentWillUnmount() {
     localStorage.removeItem('tabSelection');
-    window.removeEventListener("popstate");
   }
 
   getWeekDates = weekIndex => ({
