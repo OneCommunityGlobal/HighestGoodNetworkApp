@@ -14,6 +14,8 @@ export const createOrUpdateTaskNotificationError = createAction(
   'CREATE_OR_UPDATE_TASK_NOTIFICATION_ERROR',
 );
 
+export const setFollowedUp = createAction('SET_FOLLOWED_UP')
+
 export const deleteTaskNotificationBegin = createAction('DELETE_TASK_NOTIFICATION_BEGIN');
 export const deleteTaskNotificationSuccess = createAction('DELETE_TASK_NOTIFICATION_SUCCESS');
 export const deleteTaskNotificationError = createAction('DELETE_TASK_NOTIFICATION_ERROR');

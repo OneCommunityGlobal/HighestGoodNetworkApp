@@ -1,7 +1,7 @@
 import { faClock, faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 import { Table } from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { fetchTeamMembersTask, deleteTaskNotification } from 'actions/task';
+import { fetchTeamMembersTask, deleteTaskNotification, setFollowup } from 'actions/task';
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector, connect } from 'react-redux';
 import Loading from '../common/Loading';
@@ -83,7 +83,6 @@ const TeamMemberTasks = props => {
   useEffect(() => {
     renderTeamsList();
   }, []);
-
   useEffect(() => {
     submitTasks();
     if (userId !== props.auth.user.userid) {
@@ -141,6 +140,47 @@ const TeamMemberTasks = props => {
   const handleTaskNotificationRead = (userId, taskId, taskNotificationId) => {
     dispatch(deleteTaskNotification(userId, taskId, taskNotificationId));
     handleOpenTaskNotificationModal();
+  };
+
+  const handleFollowUp = (taskId, userId, data, userIndex, taskIndex) => {
+    dispatch(setFollowup(taskId, userId, data))
+      .then(() => {
+        setTeamList(prevState => {
+          const newTeamList = [...prevState];
+          newTeamList[userIndex].tasks[taskIndex].resources = newTeamList[userIndex].tasks[
+            taskIndex
+          ].resources.map(resource => {
+            if (resource.userID === userId) {
+              return { ...resource, followedUp: data };
+            }
+            return resource;
+          });
+          return newTeamList;
+
+          // const updatedUsersWithTasks = prevState.map(user => {
+          //   if (user.personId === userId) {
+          //     const updatedTasks = user.tasks.map(task => {
+          //       if (task._id === taskId) {
+          //         const updatedResources = task.resources.map(resource => {
+          //           if (resource.userID === userId) {
+          //             return { ...resource, followedUp: data };
+          //           }
+          //           return resource;
+          //         });
+          //         return { ...task, resources: updatedResources };
+          //       }
+          //       return task;
+          //     });
+          //     return { ...user, tasks: updatedTasks };
+          //   }
+          //   return user;
+          // });
+          // return updatedUsersWithTasks;
+        });
+      })
+      .catch(error => {
+        console.log(error);
+      });
   };
 
   const getTimeEntriesForPeriod = async teamList => {
@@ -212,7 +252,6 @@ const TeamMemberTasks = props => {
       setTimeEntriesList([...seventyTwoHoursTimeEntries]);
     }
   };
-
   const renderTeamsList = () => {
     if (usersWithTasks && usersWithTasks.length > 0) {
       // give different users different views
@@ -399,17 +438,23 @@ const TeamMemberTasks = props => {
 
           <tbody>
             {isLoading ? (
-              <Loading />
+              <tr>
+                <td>
+                  <Loading />
+                </td>
+              </tr>
             ) : (
-              teamList.map(user => {
+              teamList.map((user, userIndex) => {
                 if (!isTimeLogActive) {
                   return (
                     <>
                       <TeamMemberTask
                         user={user}
+                        userIndex={userIndex}
                         key={user.personId}
                         handleOpenTaskNotificationModal={handleOpenTaskNotificationModal}
                         handleMarkAsDoneModal={handleMarkAsDoneModal}
+                        handleFollowUp={handleFollowUp}
                         userRole={userRole}
                       />
                     </>
@@ -419,16 +464,18 @@ const TeamMemberTasks = props => {
                     <>
                       <TeamMemberTask
                         user={user}
+                        userIndex={userIndex}
                         key={user.personId}
                         handleOpenTaskNotificationModal={handleOpenTaskNotificationModal}
                         handleMarkAsDoneModal={handleMarkAsDoneModal}
+                        handleFollowUp={handleFollowUp}
                         userRole={userRole}
                       />
                       {timeEntriesList.length > 0 &&
                         timeEntriesList
                           .filter(timeEntry => timeEntry.personId === user.personId)
                           .map(timeEntry => (
-                            <tr className="table-row">
+                            <tr className="table-row" key={timeEntry._id}>
                               <td colSpan={3} style={{ padding: 0 }}>
                                 <FilteredTimeEntries data={timeEntry} key={timeEntry._id} />
                               </td>

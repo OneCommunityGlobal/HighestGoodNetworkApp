@@ -29,21 +29,47 @@ export const teamMemberTasksReducer = (state = initialState, action) => {
         usersWithTasks: usersWithTasks.map(user =>
           user.personId === action.payload.userId
             ? {
-                ...user,
-                tasks: user.tasks.map(task =>
-                  task._id === action.payload.taskId
-                    ? {
-                        ...task,
-                        taskNotifications: task.taskNotifications.filter(
-                          taskNotification =>
-                            taskNotification._id !== action.payload.taskNotificationId,
-                        ),
-                      }
-                    : task,
-                ),
-              }
+              ...user,
+              tasks: user.tasks.map(task =>
+                task._id === action.payload.taskId
+                  ? {
+                    ...task,
+                    taskNotifications: task.taskNotifications.filter(
+                      taskNotification =>
+                        taskNotification._id !== action.payload.taskNotificationId,
+                    ),
+                  }
+                  : task,
+              ),
+            }
             : user,
         ),
+      };
+    case "SET_FOLLOWED_UP":
+      return {
+        ...state,
+        usersWithTasks: state.usersWithTasks.map(user =>
+          user.personId === action.payload.userId
+            ? {
+              ...user,
+              tasks: user.tasks?.map(task =>
+                task._id === action.payload.taskId
+                  ? {
+                    ...task,
+                    resources: task.resources.map(resource =>
+                      resource.userID === action.payload.userId
+                        ? {
+                          ...resource,
+                          followedUp: action.payload.data,
+                        }
+                        : resource
+                    )
+                  }
+                  : task
+              )
+            }
+            : user
+        )
       };
     default:
       return state;

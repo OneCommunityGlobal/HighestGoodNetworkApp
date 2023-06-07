@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBell, faCircle, faCheck, faInfo } from '@fortawesome/free-solid-svg-icons';
 
@@ -13,8 +13,10 @@ import ReactTooltip from 'react-tooltip';
 
 const TeamMemberTask = ({
   user,
+  userIndex,
   handleMarkAsDoneModal,
   handleOpenTaskNotificationModal,
+  handleFollowUp,
   userRole,
 }) => {
   let totalHoursLogged = 0;
@@ -22,8 +24,8 @@ const TeamMemberTask = ({
   const thisWeekHours = user.totaltangibletime_hrs;
   const rolesAllowedToResolveTasks = ['Administrator', 'Owner'];
   const isAllowedToResolveTasks = rolesAllowedToResolveTasks.includes(userRole);
-  const isAllowedToFollowUp = userRole !== 'Volunteers';
-  const [isChecked, setIsChecked] = useState(false);
+  const isAllowedToFollowUpWithPeople = userRole !== 'Volunteer';
+  const isFollowUpWith = [];
   if (user.tasks) {
     user.tasks = user.tasks.map(task => {
       task.hoursLogged = task.hoursLogged ? task.hoursLogged : 0;
@@ -39,6 +41,29 @@ const TeamMemberTask = ({
       }
     }
   }
+
+  if (user.tasks) {
+    user.tasks.forEach(task => {
+      const followedUpResources = task.resources?.filter(
+        resource => resource.userID === user.personId && resource.followedUp,
+      );
+
+      if (followedUpResources?.length > 0) {
+        isFollowUpWith.push(task._id);
+      }
+    });
+  }
+
+  const handleCheckboxFollowUp = (taskId, userId, userIndex, taskIndex) => {
+    handleFollowUp(taskId, userId, !isFollowUpWith.includes(taskId), userIndex, taskIndex);
+    // if (isFollowUpWith.includes(taskId)) {
+    //   // If the value is already in the checkedItems array, remove it
+    //   setIsFollowUpWith(isFollowUpWith.filter(item => item !== taskId));
+    // } else {
+    //   // If the value is not in the checkedItems array, add it
+    //   setIsFollowUpWith([...isFollowUpWith, taskId]);
+    // }
+  };
 
   return (
     <>
@@ -77,7 +102,7 @@ const TeamMemberTask = ({
           <Table borderless className="team-member-tasks-subtable">
             <tbody>
               {user.tasks &&
-                user.tasks.map((task, index) => {
+                user.tasks.map((task, taskIndex) => {
                   let isActiveTaskForUser = true;
                   if (task?.resources) {
                     isActiveTaskForUser = !task.resources?.find(
@@ -86,7 +111,7 @@ const TeamMemberTask = ({
                   }
                   if (task.wbsId && task.projectId && isActiveTaskForUser) {
                     return (
-                      <tr key={`${task._id}${index}`} className="task-break">
+                      <tr key={`${task._id}${taskIndex}`} className="task-break">
                         <td data-label="Task(s)" className="task-align">
                           <p>
                             <Link to={task.projectId ? `/wbs/tasks/${task._id}` : '/'}>
@@ -121,7 +146,13 @@ const TeamMemberTask = ({
                         {task.hoursLogged != null && task.estimatedHours != null && (
                           <td data-label="Progress" className="team-task-progress">
                             <div className="team-task-progress-container">
-                              <span className="team-task-progress-time">
+                              <span
+                                className={`team-task-progress-time ${
+                                  isAllowedToFollowUpWithPeople
+                                    ? ''
+                                    : 'team-task-progress-time-volunteers'
+                                }`}
+                              >
                                 {`${parseFloat(task.hoursLogged.toFixed(2))}
                             of 
                           ${parseFloat(task.estimatedHours.toFixed(2))}`}
@@ -135,25 +166,37 @@ const TeamMemberTask = ({
                                 value={getProgressValue(task.hoursLogged, task.estimatedHours)}
                                 className="team-task-progress-bar"
                               />
-                              {isAllowedToFollowUp && (
+                              {isAllowedToFollowUpWithPeople && (
                                 <>
                                   <input
                                     type="checkbox"
                                     title="This box is used to track follow ups. Clicking it means you’ve checked in with a person that they are on track to meet their deadline"
                                     className="team-task-progress-follow-up team-task-progress-follow-up-red"
-                                    checked={isChecked}
-                                    onChange={() => {
-                                      setIsChecked(!isChecked);
-                                    }}
+                                    data-id={task._id}
+                                    checked={isFollowUpWith.includes(task._id)}
+                                    onChange={() =>
+                                      handleCheckboxFollowUp(
+                                        task._id,
+                                        user.personId,
+                                        userIndex,
+                                        taskIndex,
+                                      )
+                                    }
                                   />
-                                  {isChecked && (
+                                  {isFollowUpWith.includes(task._id) && (
                                     <FontAwesomeIcon
                                       icon={faCheck}
                                       title="This box is used to track follow ups. Clicking it means you’ve checked in with a person that they are on track to meet their deadline"
                                       className="team-task-progress-follow-up-check"
-                                      onClick={() => {
-                                        setIsChecked(!isChecked);
-                                      }}
+                                      data-id={task._id}
+                                      onClick={() =>
+                                        handleCheckboxFollowUp(
+                                          task._id,
+                                          user.personId,
+                                          userIndex,
+                                          taskIndex,
+                                        )
+                                      }
                                     />
                                   )}
                                   <FontAwesomeIcon

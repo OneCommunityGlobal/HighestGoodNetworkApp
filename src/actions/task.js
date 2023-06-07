@@ -7,6 +7,7 @@ import {
   fetchTeamMembersTaskSuccess,
   fetchTeamMembersTaskBegin,
   fetchTeamMembersTaskError,
+  setFollowedUp
 } from 'components/TeamMemberTasks/actions';
 import * as types from '../constants/task';
 import { ENDPOINTS } from '../utils/URL';
@@ -31,29 +32,48 @@ export const fetchTeamMembersTask = (currentUserId, authenticatedUserId) => asyn
     //The userId will be equal the currentUserId if provided, if not, it'll call the selectFetchTeamMembersTaskData, that will return the current user id that's on the store
 
     const userId = currentUserId ? currentUserId : selectFetchTeamMembersTaskData(state);
-    const authUserId = authenticatedUserId ? authenticatedUserId : null
+    const authUserId = authenticatedUserId ? authenticatedUserId : null;
 
     dispatch(fetchTeamMembersTaskBegin());
 
     const response = await axios.get(ENDPOINTS.TEAM_MEMBER_TASKS(userId));
-
-
     //if you are seeing another user's dashboard, the authenticated user id will be provided so the filter can be made
     if (authUserId !== null) {
       const originalTasks = await axios.get(ENDPOINTS.TEAM_MEMBER_TASKS(authUserId));
-      const authUserTasks = originalTasks.data
-      const userTasks = response.data
-      console.log(authUserTasks, userTasks)
+      const authUserTasks = originalTasks.data;
+      const userTasks = response.data;
+      console.log(authUserTasks, userTasks);
       const correctedTasks = userTasks.filter(task => {
-        return authUserTasks.some(task2 => task2.personId === task.personId)
+        return authUserTasks.some(task2 => task2.personId === task.personId);
       });
-      console.log(correctedTasks)
+      console.log(correctedTasks);
       dispatch(fetchTeamMembersTaskSuccess(correctedTasks));
     } else {
       dispatch(fetchTeamMembersTaskSuccess(response.data));
     }
   } catch (error) {
     dispatch(fetchTeamMembersTaskError());
+  }
+};
+
+
+export const setFollowup = (taskId, userId, data) => async (
+  dispatch,
+  getState,
+) => {
+  try {
+    const response = await axios.post(ENDPOINTS.SET_TASK_FOLLOW_UP(taskId, userId), { data });
+    if (response.status === 200) {
+
+      dispatch(setFollowedUp({ taskId, userId, data }));
+
+    }
+    else {
+      throw new Error('Error' + response.data)
+    }
+
+  } catch (error) {
+    console.log(error)
   }
 };
 
@@ -166,7 +186,7 @@ export const moveTasks = (wbsId, fromNum, toNum) => {
   return async dispatch => {
     try {
       const res = await axios.put(url, { fromNum, toNum });
-    } catch (err) {}
+    } catch (err) { }
     dispatch(setTasksError());
   };
 };
@@ -186,8 +206,8 @@ export const fetchAllTasks = (wbsId, level = 0, mother = null) => {
 export const emptyAllTaskItems = () => {
   return async dispatch => {
     dispatch(emptyTaskItems());
-  }
-}
+  };
+};
 
 export const deleteTask = (taskId, mother) => {
   const url = ENDPOINTS.TASK_DEL(taskId, mother);
