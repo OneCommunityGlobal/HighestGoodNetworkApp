@@ -17,16 +17,25 @@ export class WeeklySummariesReport extends Component {
     error: null,
     loading: true,
     summaries: [],
-    activeTab: '1',
+    activeTab: '2'
   };
 
   async componentDidMount() {
     await this.props.getWeeklySummariesReport();
+    window.addEventListener("popstate", () => {
+      localStorage.removeItem('tabSelection')
+    });
     this.setState({
       error: this.props.error,
       loading: this.props.loading,
       summaries: this.props.summaries,
+      activeTab: localStorage.getItem('tabSelection') === null ? '2' : localStorage.getItem('tabSelection'),
     });
+  }
+
+  componentWillUnmount() {
+    localStorage.removeItem('tabSelection');
+    window.removeEventListener("popstate");
   }
 
   getWeekDates = weekIndex => ({
@@ -46,6 +55,7 @@ export class WeeklySummariesReport extends Component {
     const activeTab = this.state.activeTab;
     if (activeTab !== tab) {
       this.setState({ activeTab: tab });
+      localStorage.setItem('tabSelection', tab);
     }
   };
 
