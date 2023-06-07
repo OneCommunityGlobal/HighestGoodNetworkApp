@@ -458,7 +458,7 @@ class PeopleReport extends Component {
         <p>Title: {userProfile.jobTitle}</p>
 
         {userProfile.endDate ? (
-          <div>
+          <div className="rehireable">
             <Checkbox
               value={this.state.isRehireable}
               onChange={() => this.setRehireable(!this.state.isRehireable)}

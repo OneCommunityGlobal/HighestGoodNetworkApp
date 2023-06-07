@@ -20,6 +20,9 @@ body {
   flex-direction: column;
 }
 
+.rehireable {
+  margin-bottom: 30px;
+}
 /*profile style changes ends*/
 
 .btn--dark-sea-green {
