@@ -24,7 +24,7 @@ function AddTaskModal(props) {
   const setToggle = () => {
     try {
       props.openChild();
-    } catch { }
+    } catch {}
     toggle();
   };
 
@@ -519,7 +519,7 @@ function AddTaskModal(props) {
                     <div className="warning">
                       {
                         hoursWarning ?
-                          'Hours - Best-case < Hours - Most-case < Hours - Most-case' : ''
+                         'Hours - Best-case < Hours - Most-case < Hours - Most-case' : ''
                       }
                     </div>
                   </div>
