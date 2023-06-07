@@ -348,8 +348,7 @@ function AddTaskModal(props) {
 
   useEffect(() => {
     if (props.level >= 1) {
-      const categoryMother = props.tasks.taskItems.find(({ _id }) => _id === props.taskId)
-        .category;
+      const categoryMother = props.tasks.taskItems.find(({ _id }) => _id === props.taskId).category;
       if (categoryMother) {
         setCategory(categoryMother);
       }
@@ -517,10 +516,9 @@ function AddTaskModal(props) {
                       className="w-25"
                     />
                     <div className="warning">
-                      {
-                        hoursWarning ? 
-                        'Hours - Best-case < Hours - Most-case < Hours - Most-case' : ''
-                      }
+                      {hoursWarning
+                        ? 'Hours - Best-case < Hours - Most-case < Hours - Most-case'
+                        : ''}
                     </div>
                   </div>
                   <div className="py-2 flex-responsive">
