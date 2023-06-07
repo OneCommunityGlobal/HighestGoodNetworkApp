@@ -518,8 +518,8 @@ function AddTaskModal(props) {
                     />
                     <div className="warning">
                       {
-                        hoursWarning ?
-                         'Hours - Best-case < Hours - Most-case < Hours - Most-case' : ''
+                        hoursWarning ? 
+                        'Hours - Best-case < Hours - Most-case < Hours - Most-case' : ''
                       }
                     </div>
                   </div>
