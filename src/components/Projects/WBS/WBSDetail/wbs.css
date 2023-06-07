@@ -38,7 +38,6 @@
   opacity: 0.1;
 
 }
-
 .load {
   position: relative;
 }
@@ -169,11 +168,11 @@
 
 @media only screen and (max-width: 600px) {
   .desktop-view {
-    display: none;
+      display: none;
   }
 
   .table td {
-    padding: 5px !important;
+      padding: 5px !important;
   }
 }
 
