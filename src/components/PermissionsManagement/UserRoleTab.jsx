@@ -47,6 +47,8 @@ export const permissionLabel = {
   handleBlueSquare: 'Handle Blue Squares',
   assignOnlyBlueSquares: 'Only Assign Blue Squares',
   seePermissionsManagement: 'See Permissions Management Tab',
+  submitWeeklySummaryForOthers: 'Submit Weekly Summary For Others',
+  changeBioAnnouncement: 'Change the Bio Announcement Status',
 };
 
 const UserRoleTab = props => {

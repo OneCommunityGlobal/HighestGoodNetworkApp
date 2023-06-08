@@ -47,16 +47,15 @@ export const fetchTeamMembersTask = (currentUserId, authenticatedUserId, shouldR
       const originalTasks = await axios.get(ENDPOINTS.TEAM_MEMBER_TASKS(authUserId));
       const authUserTasks = originalTasks.data
       const userTasks = response.data
-      console.log(authUserTasks, userTasks)
       const correctedTasks = userTasks.filter(task => {
         return authUserTasks.some(task2 => task2.personId === task.personId)
       });
-      console.log(correctedTasks)
       dispatch(fetchTeamMembersTaskSuccess(correctedTasks));
     } else {
       dispatch(fetchTeamMembersTaskSuccess(response.data));
     }
   } catch (error) {
+
     dispatch(fetchTeamMembersTaskError());
   }
 };

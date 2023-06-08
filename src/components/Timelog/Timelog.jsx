@@ -73,6 +73,9 @@ function useDeepEffect(effectFunc, deps) {
 }
 
 const Timelog = props => {
+  //Main Function component
+
+  //access the store states
   const auth = useSelector(state => state.auth);
   const userProfile = useSelector(state => state.userProfile);
   const timeEntries = useSelector(state => state.timeEntries);
@@ -121,7 +124,7 @@ const Timelog = props => {
   };
 
   const loadAsyncData = async userId => {
-    //load timelog data
+    //load the timelog data
     setState({ ...state, isTimeEntriesLoading: true });
     try {
       await Promise.all([
@@ -336,7 +339,7 @@ const Timelog = props => {
   const [state, setState] = useState(initialState);
 
   useEffect(() => {
-    // Does not run again (except once in development)
+    // Does not run again (except once in development): load data
     const userId = props?.match?.params?.userId || props.asUser; //Including fix for "undefined"
     setUserId(userId);
     if (userProfile._id !== userId) {
@@ -374,7 +377,7 @@ const Timelog = props => {
     if (!userId && !state.isTimeEntriesLoading) {
       // skip the first render.
       setState(initialState);
-      const newId = props.match?.params?.userId || props.asUser || auth.user.userid;
+      const newId = props.match?.params?.userId || props.asUser;
       if (userProfile._id !== newId) {
         props.getUserProfile(newId);
       }
@@ -525,7 +528,7 @@ const Timelog = props => {
                         </div>
                       ) : (
                         hasPermission(
-                          auth.user,
+                          auth.user.role,
                           'addTimeEntryOthers',
                           role.roles,
                           userPermissions,
@@ -547,7 +550,7 @@ const Timelog = props => {
                             Close
                           </Button>
                           {hasPermission(
-                            auth.user,
+                            auth.user.role,
                             'editTimelogInfo',
                             role.roles,
                             userPermissions,
