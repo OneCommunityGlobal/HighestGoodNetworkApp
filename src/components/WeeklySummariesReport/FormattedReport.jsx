@@ -13,9 +13,9 @@ import { ENDPOINTS } from '../../utils/URL';
 import { useState } from 'react';
 import { assignStarDotColors, showStar } from 'utils/leaderboardPermissions';
 
-const FormattedReport = ({ summaries, weekIndex, role }) => {
+const FormattedReport = ({ summaries, weekIndex, bioCanEdit }) => {
   const emails = [];
-  const bioCanEdit = role === 'Owner' || role === 'Administrator';
+  //const bioCanEdit = role === 'Owner' || role === 'Administrator';
 
   summaries.forEach(summary => {
     if (summary.email !== undefined && summary.email !== null) {
@@ -192,7 +192,7 @@ const FormattedReport = ({ summaries, weekIndex, role }) => {
       {alphabetize(summaries).map((summary, index) => {
         const hoursLogged = (summary.totalSeconds[weekIndex] || 0) / 3600;
         const googleDocLink = getGoogleDocLink(summary);
-        
+
         return (
           <div
             style={{ padding: '20px 0', marginTop: '5px', borderBottom: '1px solid #DEE2E6' }}
@@ -230,7 +230,7 @@ const FormattedReport = ({ summaries, weekIndex, role }) => {
                       fontSize: '10px',
                     }}
                   >
-                    +{Math.round((hoursLogged / summary.weeklycommittedHours - 1) * 100)}% 
+                    +{Math.round((hoursLogged / summary.weeklycommittedHours - 1) * 100)}%
                   </span>
                 </i>
               )}
