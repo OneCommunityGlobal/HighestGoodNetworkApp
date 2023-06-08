@@ -31,7 +31,7 @@ export const permissionLabel = {
   createTeam: 'Create Team',
   assignTeamToUser: 'Assign Team to User',
   editTimelogInfo: 'Edit Timelog Information',
-  addTimeEntryOthers: 'Add Time Entry (Others)',
+  addTimeEntryOthers: '  Time Entry (Others)',
   deleteTimeEntryOthers: 'Delete Time Entry (Others)',
   toggleTangibleTime: 'Toggle Tangible Time',
   changeIntangibleTimeEntryDate: 'Change Date on Intangible Time Entry',
@@ -49,6 +49,7 @@ export const permissionLabel = {
   seePermissionsManagement: 'See Permissions Management Tab',
   submitWeeklySummaryForOthers: 'Submit Weekly Summary For Others',
   changeBioAnnouncement: 'Change the Bio Announcement Status',
+  seeAllReports: "See All the Reports Tab", 
 };
 
 const UserRoleTab = props => {
