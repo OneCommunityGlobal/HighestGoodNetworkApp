@@ -31,7 +31,7 @@ export const permissionLabel = {
   createTeam: 'Create Team',
   assignTeamToUser: 'Assign Team to User',
   editTimelogInfo: 'Edit Timelog Information',
-  addTimeEntryOthers: '  Time Entry (Others)',
+  addTimeEntryOthers: 'Add Time Entry (Others)',
   deleteTimeEntryOthers: 'Delete Time Entry (Others)',
   toggleTangibleTime: 'Toggle Tangible Time',
   changeIntangibleTimeEntryDate: 'Change Date on Intangible Time Entry',

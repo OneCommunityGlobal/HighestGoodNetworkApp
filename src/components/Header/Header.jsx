@@ -37,7 +37,6 @@ import {
   DropdownToggle,
   DropdownMenu,
   DropdownItem,
-  Dropdown,
 } from 'reactstrap';
 import { Logout } from '../Logout/Logout';
 import './Header.css';
