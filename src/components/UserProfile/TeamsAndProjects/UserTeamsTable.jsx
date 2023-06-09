@@ -6,6 +6,7 @@ import hasPermission from '../../../utils/permissions';
 import { useSelector } from 'react-redux';
 import styles from './UserTeamsTable.css';
 import { boxStyle } from 'styles';
+import './UserTeamsTable.css';
 
 const UserTeamsTable = props => {
   const { roles } = useSelector(state => state.role);
@@ -64,10 +65,10 @@ const UserTeamsTable = props => {
             <thead>
               {props.role && (
                 <tr>
-                  <th>#</th>
+                  <th style={{ width: '70px' }}>#</th>
                   <th>Team Name</th>
                   {hasPermission(props.role, 'assignTeamToUser', roles, userPermissions) ? (
-                    <th>{}</th>
+                    <th style={{ width: '100px' }}>{}</th>
                   ) : null}
                 </tr>
               )}

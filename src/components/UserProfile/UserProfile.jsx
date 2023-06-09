@@ -838,7 +838,7 @@ function UserProfile(props) {
                   userTeams={teams || []}
                   teamsData={props?.allTeams?.allTeamsData || []}
                   onAssignTeam={onAssignTeam}
-                  onDeleteteam={onDeleteTeam}
+                  onDeleteTeam={onDeleteTeam}
                   edit={hasPermission(requestorRole, 'editUserProfile', roles, userPermissions)}
                   role={requestorRole}
                   roles={roles}
@@ -1038,7 +1038,7 @@ function UserProfile(props) {
                     userTeams={userProfile?.teams || []}
                     teamsData={props?.allTeams?.allTeamsData || []}
                     onAssignTeam={onAssignTeam}
-                    onDeleteteam={onDeleteTeam}
+                    onDeleteTeam={onDeleteTeam}
                     edit={hasPermission(requestorRole, 'editUserProfile', roles, userPermissions)}
                     role={requestorRole}
                     roles={roles}

@@ -8,6 +8,9 @@ import axios from 'axios';
 import './timeTab.css';
 import { boxStyle } from 'styles';
 
+const MINIMUM_WEEK_HOURS = 0;
+const MAXIMUM_WEEK_HOURS = 168;
+
 const StartDate = props => {
   if (!props.canEdit) {
     return <p>{moment(props.userProfile.createdDate).format('YYYY-MM-DD')}</p>;
@@ -90,20 +93,40 @@ const WeeklyCommittedHours = props => {
   if (!props.canEdit) {
     return <p>{props.userProfile.weeklycommittedHours}</p>;
   }
+  const handleChange = e => {
+    // Maximum and minimum constants on lines 9 & 10
+    // Convert value from string into easy number variable
+    const value = parseInt(e.target.value);
+    if (value > MAXIMUM_WEEK_HOURS) {
+      // Check if Value is greater than total hours in one week
+      alert(`You can't commit more than ${MAXIMUM_WEEK_HOURS} hours per week.`);
+      if (value === MAXIMUM_WEEK_HOURS + 1) {
+        props.setUserProfile({ ...props.userProfile, weeklyComittedHours: MAXIMUM_WEEK_HOURS });
+        props.setChanged(true);
+      } else {
+        props.setChanged(true);
+      }
+    } else if (value < MINIMUM_WEEK_HOURS) {
+      //Check if value is less than minimum hours and set it to minimum hours if needed
+      alert(`You can't commit less than ${MINIMUM_WEEK_HOURS} hours per week.`);
+      props.setUserProfile({ ...props.userProfile, weeklyComittedHours: MINIMUM_WEEK_HOURS });
+      props.setChanged(true);
+    } else {
+      props.setUserProfile({ ...props.userProfile, weeklyComittedHours: value });
+      props.setChanged(true);
+    }
+  };
+
   return (
     <Input
       type="number"
+      min={MINIMUM_WEEK_HOURS - 1}
+      max={MAXIMUM_WEEK_HOURS + 1}
       name="weeklyComittedHours"
       id="weeklyComittedHours"
-      min="0"
       data-testid="weeklyCommittedHours"
-      value={props.userProfile.weeklycommittedHours}
-      onChange={e => {
-        props.setUserProfile({
-          ...props.userProfile,
-          weeklycommittedHours: Math.max(Number(e.target.value), 0),
-        });
-      }}
+      value={props.userProfile.weeklyComittedHours}
+      onChange={e => handleChange(e)}
       placeholder="Weekly Committed Hours"
     />
   );

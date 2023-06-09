@@ -54,7 +54,6 @@ class AddUserProfile extends Component {
       weeklyCommittedHours: 10,
       teams: [],
       projects: [],
-      activeTab: '1',
       userProfile: {
         firstName: '',
         lastName: '',
@@ -362,37 +361,8 @@ class AddUserProfile extends Component {
           </Row>
           <Row>
             <Col md="12">
-              <div className="profile-tabs">
-                <Nav tabs>
-                  <NavItem>
-                    <NavLink
-                      className={classnames({ active: this.state.activeTab === '1' }, 'nav-link')}
-                      onClick={() => {
-                        this.toggleTab('1');
-                      }}
-                    >
-                      Project
-                    </NavLink>
-                  </NavItem>
-                  <NavItem>
-                    <NavLink
-                      className={classnames({ active: this.state.activeTab === '2' }, 'nav-link')}
-                      onClick={() => {
-                        this.toggleTab('2');
-                      }}
-                    >
-                      Team
-                    </NavLink>
-                  </NavItem>
-                </Nav>
-              </div>
-              <TabContent
-                activeTab={this.state.activeTab}
-                className="tab-content profile-tab"
-                id="myTabContent"
-                style={{ border: 0 }}
-              >
-                <TabPane tabId="1">
+              <TabContent id="myTabContent">
+                <TabPane>
                   <ProjectsTab
                     userProjects={this.state.projects}
                     projectsData={this.props ? this.props.allProjects.projects : []}
@@ -403,12 +373,12 @@ class AddUserProfile extends Component {
                     edit
                   />
                 </TabPane>
-                <TabPane tabId="2">
+                <TabPane>
                   <TeamsTab
                     userTeams={this.state.teams}
                     teamsData={this.props ? this.props.allTeams.allTeamsData : []}
                     onAssignTeam={this.onAssignTeam}
-                    onDeleteteam={this.onDeleteTeam}
+                    onDeleteTeam={this.onDeleteTeam}
                     isUserAdmin={true}
                     role={this.props.auth.user.role}
                     edit
@@ -687,7 +657,7 @@ class AddUserProfile extends Component {
 
     if (filesizeKB > 50) {
       imageUploadError = `\n The file you are trying to upload exceeds the maximum size of 50KB. You can either
-														choose a different file, or use an online file compressor.`;
+                            choose a different file, or use an online file compressor.`;
       isValid = false;
 
       return this.setState({
@@ -711,14 +681,6 @@ class AddUserProfile extends Component {
         },
       });
     };
-  };
-
-  toggleTab = tab => {
-    if (this.state.activeTab !== tab) {
-      this.setState({
-        activeTab: tab,
-      });
-    }
   };
 
   phoneChange = phone => {

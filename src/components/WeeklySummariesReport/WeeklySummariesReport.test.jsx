@@ -11,6 +11,8 @@ describe('WeeklySummariesReport page', () => {
         error: { message: 'SOME ERROR CONNECTING!!!' },
         loading: false,
         summaries: [],
+        authUser: {role:''},
+        roles: [],
       };
       render(<WeeklySummariesReport {...props} />);
 
@@ -24,6 +26,8 @@ describe('WeeklySummariesReport page', () => {
         getWeeklySummariesReport: jest.fn(),
         loading: true,
         summaries: [],
+        authUser: {role:''},
+        roles: [],
       };
       render(<WeeklySummariesReport {...props} />);
       expect(screen.getByTestId('loading')).toBeInTheDocument();
@@ -35,6 +39,8 @@ describe('WeeklySummariesReport page', () => {
       getWeeklySummariesReport: jest.fn(),
       loading: false,
       summaries: [],
+      authUser: {role:''},
+      roles: [],
     };
     beforeEach(() => {
       render(<WeeklySummariesReport {...props} />);
