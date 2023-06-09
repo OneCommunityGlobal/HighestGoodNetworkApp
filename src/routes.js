@@ -82,10 +82,6 @@ export default (
         path="/reports"
         exact
         component={Reports}
-        allowedRoles={[
-          UserRole.Administrator,
-          UserRole.Owner
-        ]}
         routePermissions={RoutePermissions.reports}
       />
       <ProtectedRoute
