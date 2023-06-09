@@ -29,7 +29,7 @@ class PeopleReport extends Component {
       userProjects: {},
       userId: '',
       isLoading: true,
-      isBioPosted: '',
+      bioStatus: '',
       authRole: '',
       infringements: {},
       isAssigned: '',
@@ -73,7 +73,7 @@ class PeopleReport extends Component {
       this.setState({
         userId,
         isLoading: false,
-        isBioPosted: this.props.userProfile.bioPosted,
+        bioStatus: this.props.userProfile.bioPosted,
         authRole: this.props.auth.user.role,
         userProfile: {
           ...this.props.userProfile,
@@ -451,32 +451,37 @@ class PeopleReport extends Component {
             </h4>
             <p>End Date</p>
           </div>
-          <div>
-            <h4>Bio {this.state.isBioPosted ? 'posted' : 'requested'}</h4>
-            {this.state.authRole == 'Administrator' || this.state.authRole == 'Owner' ? (
-              <ToggleSwitch
-                switchType="bio"
-                state={this.state.isBioPosted ? false : true}
-                handleUserProfile={onChangeBioPosted}
-              />
-            ) : null}
-          </div>
+          {this.state.bioStatus ? (
+            <div>
+              <h5>Bio {this.state.bioStatus === "default" ? "not requested" : this.state.bioStatus}</h5>{' '}
+              {this.state.authRole === 'Administrator' || this.state.authRole === 'Owner' ? (
+                <ToggleSwitch
+                  fontSize={"13px"}
+                  switchType="bio"
+                  state={this.state.bioStatus}
+                  handleUserProfile={
+                    (bio) => onChangeBioPosted(bio)}
+                />
+              ) : null}
+            </div>
+          ) : null}
         </div>
       </ReportPage.ReportHeader>
     );
 
-    const onChangeBioPosted = async () => {
+    const onChangeBioPosted = async (bio) => {
       const userId = this.state.userId || this.props.match?.params?.userId;
-      const bioStatus = this.state.isBioPosted;
+      const bioStatus = bio;
       this.setState(state => {
         return {
-          isBioPosted: !bioStatus,
+          bioStatus: bioStatus,
         };
       });
+      console.log(bioStatus)
       try {
         await this.props.updateUserProfile(userId, {
           ...this.state.userProfile,
-          bioPosted: !bioStatus,
+          bioPosted: bioStatus,
         });
         toast.success('You have changed the bio announcement status of this user.');
       } catch (err) {

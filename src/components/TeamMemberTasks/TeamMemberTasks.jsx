@@ -2,7 +2,7 @@ import { faClock, faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 import { Table } from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { fetchTeamMembersTask, deleteTaskNotification } from 'actions/task';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useDispatch, useSelector, connect } from 'react-redux';
 import Loading from '../common/Loading';
 import { TaskDifferenceModal } from './components/TaskDifferenceModal';
@@ -16,6 +16,7 @@ import axios from 'axios';
 import moment from 'moment';
 import TeamMemberTask from './TeamMemberTask';
 import FilteredTimeEntries from './FilteredTimeEntries';
+import { hrsFilterBtnRed, hrsFilterBtnBlue } from 'constants/colors';
 
 const TeamMemberTasks = props => {
   const [showTaskNotificationModal, setTaskNotificationModal] = useState(false);
@@ -36,6 +37,9 @@ const TeamMemberTasks = props => {
   const [seventyTwoHoursTimeEntries, setSeventyTwoHoursTimeEntries] = useState([]);
   const [finishLoading, setFinishLoading] = useState(false);
 
+  //added it to keep track if the renderTeamsList should run
+  const [shouldRun, setShouldRun] = useState(false);
+
   //role state so it's more easily changed, the initial value is empty, so it'll be determinated on the first useEffect
   const [userRole, setUserRole] = useState('');
 
@@ -52,25 +56,29 @@ const TeamMemberTasks = props => {
 
   const dispatch = useDispatch();
   useEffect(() => {
-    //Passed the userid as argument to fetchTeamMembersTask
-    //the fetchTeamMembersTask has a function inside id that gets the userId from the store, like the last part of the userId variable in this file
-    //so, before it gets from the store, it'll see if the userId is provided.
-    //It works because the userId first looks for the url param. If it gets the param, it will provide it to the userId
-    //after that, fetchTeamMembersTask will look for the team member's tasks of the provided userId
-    //fetch current user's role, so it can be displayed. It will only happen if the current user's id is different of the auth user id
-    //if it's not differente, it'll attribute the current authenticated user's role.
-    //also, the userId is different from the authenticated user, it will call the fetchTeamMmbersTask with the currently authenticated user id
-    if (userId !== props.auth.user.userid) {
-      dispatch(fetchTeamMembersTask(userId, props.auth.user.userid));
-      const currentUserRole = getUserRole(userId)
-        .then(resp => resp)
-        .then(user => {
-          setUserRole(user.data.role);
-        });
-    } else {
-      dispatch(fetchTeamMembersTask(userId, null));
-      setUserRole(props.auth.user.role);
-    }
+    const initialFetching = async () => {
+      //Passed the userid as argument to fetchTeamMembersTask
+      //the fetchTeamMembersTask has a function inside id that gets the userId from the store, like the last part of the userId variable in this file
+      //so, before it gets from the store, it'll see if the userId is provided.
+      //It works because the userId first looks for the url param. If it gets the param, it will provide it to the userId
+      //after that, fetchTeamMembersTask will look for the team member's tasks of the provided userId
+      //fetch current user's role, so it can be displayed. It will only happen if the current user's id is different of the auth user id
+      //if it's not differente, it'll attribute the current authenticated user's role.
+      //also, the userId is different from the authenticated user, it will call the fetchTeamMmbersTask with the currently authenticated user id
+      if (userId !== props.auth.user.userid) {
+        await dispatch(fetchTeamMembersTask(userId, props.auth.user.userid));
+        const currentUserRole = getUserRole(userId)
+          .then(resp => resp)
+          .then(user => {
+            setUserRole(user.data.role);
+          });
+      } else {
+        await dispatch(fetchTeamMembersTask(userId, null));
+        setUserRole(props.auth.user.role);
+      }
+      setShouldRun(true)     
+    };
+    initialFetching();
   }, []);
 
   useEffect(() => {
@@ -80,26 +88,16 @@ const TeamMemberTasks = props => {
   }, [currentUserId]);
 
   useEffect(() => {
-    renderTeamsList();
-  }, []);
-
-  useEffect(() => {
-    submitTasks();
-    if (userId !== props.auth.user.userid) {
-      dispatch(fetchTeamMembersTask(userId, props.auth.user.userid));
-      const currentUserRole = getUserRole(userId)
-        .then(resp => resp)
-        .then(user => {
-          setUserRole(user.data.role);
-        });
-    } else {
-      dispatch(fetchTeamMembersTask(userId, null));
-      setUserRole(props.auth.user.role);
+    if (isLoading === false && shouldRun) {
+      renderTeamsList();
+      closeMarkAsDone();
     }
-  }, [updatedTasks]);
+  }, [usersWithTasks, shouldRun]);
 
   const closeMarkAsDone = () => {
+    setClickedToShowModal(false);
     setMarkAsDoneModal(false);
+    setCurrentUserId('');
   };
 
   const onUpdateTask = (taskId, updatedTask) => {
@@ -107,20 +105,16 @@ const TeamMemberTasks = props => {
       updatedTask,
       taskId,
     };
-    setTasks(tasks => {
-      const tasksWithoutTheUpdated = [...tasks];
-      const taskIndex = tasks.findIndex(task => task._id === taskId);
-      tasksWithoutTheUpdated[taskIndex] = updatedTask;
-      return tasksWithoutTheUpdated;
-    });
-    setUpdatedTasks(tasks => [...tasks, newTask]);
+    submitTasks(newTask);
+    dispatch(fetchTeamMembersTask(userId, props.auth.user.userid, false));
   };
 
-  const submitTasks = async () => {
-    for (let i = 0; i < updatedTasks.length; i += 1) {
-      const updatedTask = updatedTasks[i];
-      const url = ENDPOINTS.TASK_UPDATE(updatedTask.taskId);
-      axios.put(url, updatedTask.updatedTask).catch(err => console.log(err));
+  const submitTasks = async updatedTasks => {
+    const url = ENDPOINTS.TASK_UPDATE(updatedTasks.taskId);
+    try {
+      await axios.put(url, updatedTasks.updatedTask);
+    } catch (error) {
+      console.log(error);
     }
   };
 
@@ -212,7 +206,7 @@ const TeamMemberTasks = props => {
     }
   };
 
-  const renderTeamsList = () => {
+  const renderTeamsList = async () => {
     if (usersWithTasks && usersWithTasks.length > 0) {
       // give different users different views
       let filteredMembers = usersWithTasks.filter(member => {
@@ -284,8 +278,9 @@ const TeamMemberTasks = props => {
               className="circle-border 24h"
               title="Timelogs submitted in the past 24 hours"
               style={{
-                color: selectedPeriod === 24 && isTimeLogActive ? 'white' : '#DC143C',
-                backgroundColor: selectedPeriod === 24 && isTimeLogActive ? '#DC143C' : 'white',
+                color: selectedPeriod === 24 && isTimeLogActive ? 'white' : hrsFilterBtnRed,
+                backgroundColor:
+                  selectedPeriod === 24 && isTimeLogActive ? hrsFilterBtnRed : 'white',
                 border: '1px solid #DC143C',
               }}
               onClick={() => selectPeriod(24)}
@@ -297,8 +292,9 @@ const TeamMemberTasks = props => {
               className="circle-border 48h"
               title="Timelogs submitted in the past 48 hours"
               style={{
-                color: selectedPeriod === 48 && isTimeLogActive ? 'white' : '#6495ED',
-                backgroundColor: selectedPeriod === 48 && isTimeLogActive ? '#6495ED' : 'white',
+                color: selectedPeriod === 48 && isTimeLogActive ? 'white' : hrsFilterBtnBlue,
+                backgroundColor:
+                  selectedPeriod === 48 && isTimeLogActive ? hrsFilterBtnBlue : 'white',
                 border: '1px solid #6495ED',
               }}
               onClick={() => selectPeriod(48)}

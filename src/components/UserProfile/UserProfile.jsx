@@ -836,7 +836,7 @@ function UserProfile(props) {
                   userTeams={teams || []}
                   teamsData={props?.allTeams?.allTeamsData || []}
                   onAssignTeam={onAssignTeam}
-                  onDeleteteam={onDeleteTeam}
+                  onDeleteTeam={onDeleteTeam}
                   edit={hasPermission(requestorRole, 'editUserProfile', roles, userPermissions)}
                   role={requestorRole}
                   roles={roles}
@@ -1036,7 +1036,7 @@ function UserProfile(props) {
                     userTeams={userProfile?.teams || []}
                     teamsData={props?.allTeams?.allTeamsData || []}
                     onAssignTeam={onAssignTeam}
-                    onDeleteteam={onDeleteTeam}
+                    onDeleteTeam={onDeleteTeam}
                     edit={hasPermission(requestorRole, 'editUserProfile', roles, userPermissions)}
                     role={requestorRole}
                     roles={roles}
@@ -1229,6 +1229,7 @@ function UserProfile(props) {
                 )}
               {canEdit &&
                 (activeTab === '1' ||
+                  activeTab === '3' ||
                   hasPermission(requestorRole, 'editUserProfile', roles, userPermissions)) && (
                   <>
                     <SaveButton
@@ -1242,16 +1243,18 @@ function UserProfile(props) {
                       }
                       userProfile={userProfile}
                     />
-                    <span
-                      onClick={() => {
-                        setUserProfile(originalUserProfile);
-                        setTasks(originalTasks);
-                        setTeams(originalTeams);
-                      }}
-                      className="btn btn-outline-danger mr-1 btn-bottom"
-                    >
-                      Cancel
-                    </span>
+                    {activeTab !== '3' && (
+                      <span
+                        onClick={() => {
+                          setUserProfile(originalUserProfile);
+                          setTasks(originalTasks);
+                          setTeams(originalTeams);
+                        }}
+                        className="btn btn-outline-danger mr-1 btn-bottom"
+                      >
+                        Cancel
+                      </span>
+                    )}
                   </>
                 )}
             </div>

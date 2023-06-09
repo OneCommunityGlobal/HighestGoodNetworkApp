@@ -78,19 +78,15 @@ body,
 }
 
 .bg-bright-red {
-  background-color: #FF3300 !important;
+  background-color: #ff3300 !important;
   /*  bright-red */
 }
 
 .bg-almost-red {
-  background-color: #CC3366 !important;
+  background-color: #cc3366 !important;
   /*  90%to100%-red */
 }
 
 nav ul.navbar-nav li:last-child > div {
-   transform: translate3d(-26px, 40px, 0px) !important;
+  transform: translate3d(-26px, 40px, 0px) !important;
 }
-
-
-
-
