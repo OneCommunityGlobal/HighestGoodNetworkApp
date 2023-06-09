@@ -43,27 +43,32 @@ const Badges = props => {
               Featured Badges <i className="fa fa-info-circle" id="FeaturedBadgeInfo" />
             </span>
             <div>
-              <Button className="btn--dark-sea-green" onClick={toggle}>
-                Select Featured
-              </Button>
-              <Modal size="lg" isOpen={isOpen} toggle={toggle}>
-                <ModalHeader toggle={toggle}>Full View of Badge History</ModalHeader>
-                <ModalBody>
-                  <BadgeReport
-                    badges={props.userProfile.badgeCollection}
-                    userId={props.userProfile._id}
-                    role={props.role}
-                    firstName={props.userProfile.firstName}
-                    lastName={props.userProfile.lastName}
-                    close={toggle}
-                    setUserProfile={props.setUserProfile}
-                    handleSubmit={props.handleSubmit}
-                    permissionsUser={permissionsUser}
-                  />
-                </ModalBody>
-              </Modal>
-              {((props.canEdit && (props.role == "Owner" || props.role == "Administrator")) || 
-              props.userPermissions.includes("assignBadgeOthers"))&& (
+              {(props.canEdit || props.role == 'Owner' || props.role == 'Administrator') && (
+                <>
+                  <Button className="btn--dark-sea-green" onClick={toggle}>
+                    Select Featured
+                  </Button>
+                  <Modal size="lg" isOpen={isOpen} toggle={toggle}>
+                    <ModalHeader toggle={toggle}>Full View of Badge History</ModalHeader>
+                    <ModalBody>
+                      <BadgeReport
+                        badges={props.userProfile.badgeCollection}
+                        userId={props.userProfile._id}
+                        role={props.role}
+                        firstName={props.userProfile.firstName}
+                        lastName={props.userProfile.lastName}
+                        close={toggle}
+                        setUserProfile={props.setUserProfile}
+                        setOriginalUserProfile={props.setOriginalUserProfile}
+                        handleSubmit={props.handleSubmit}
+                        permissionsUser={permissionsUser}
+                      />
+                    </ModalBody>
+                  </Modal>
+                </>
+              )}
+              {((props.canEdit && (props.role == 'Owner' || props.role == 'Administrator')) ||
+                props.userPermissions.includes('assignBadgeOthers')) && (
                 <>
                   <Button className="btn--dark-sea-green mr-2" onClick={assignToggle}>
                     Assign Badges

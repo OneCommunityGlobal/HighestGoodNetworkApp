@@ -5,7 +5,7 @@ import { Button, Dropdown, DropdownButton } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { FiUser } from 'react-icons/fi';
-import { getUserProfile, getUserTask, updateUserProfile } from '../../../actions/userProfile';
+import { updateUserProfile, getUserProfile, getUserTask } from '../../../actions/userProfile';
 import { getUserProjects } from '../../../actions/userProjects';
 import { getWeeklySummaries, updateWeeklySummaries } from '../../../actions/weeklySummaries';
 import moment from 'moment';
@@ -18,6 +18,8 @@ import PeopleTableDetails from '../PeopleTableDetails';
 import { ReportPage } from '../sharedComponents/ReportPage';
 import { getPeopleReportData } from './selectors';
 import { PeopleTasksPieChart } from './components';
+import { toast } from 'react-toastify';
+import ToggleSwitch from '../../UserProfile/UserProfileEdit/ToggleSwitch';
 import { Checkbox } from 'components/common/Checkbox';
 
 class PeopleReport extends Component {
@@ -29,6 +31,8 @@ class PeopleReport extends Component {
       userProjects: {},
       userId: '',
       isLoading: true,
+      isBioPosted: '',
+      authRole: '',
       infringements: {},
       isAssigned: '',
       isActive: '',
@@ -39,9 +43,10 @@ class PeopleReport extends Component {
       allClassification: [],
       classification: '',
       users: '',
+      users: '',
       classificationList: [],
       priorityList: [],
-      statusList: [],
+      fromDate: '2016-01-01',
       fromDate: '2016-01-01',
       toDate: this.endOfWeek(0),
       timeEntries: {},
@@ -73,6 +78,8 @@ class PeopleReport extends Component {
       this.setState({
         userId,
         isLoading: false,
+        isBioPosted: this.props.userProfile.bioPosted,
+        authRole: this.props.auth.user.role,
         userProfile: {
           ...this.props.userProfile,
         },
@@ -290,6 +297,7 @@ class PeopleReport extends Component {
 
       users = Array.from(new Set(users)).sort();
       users.unshift('Filter Off');
+
       return (
         <DropdownButton style={{ margin: '3px' }} exact id="dropdown-basic-button" title="Users">
           {users.map((c, index) => (
@@ -354,7 +362,7 @@ class PeopleReport extends Component {
           <tr className="teams__tr">
             <td>{index + 1}</td>
             <td>{current.date}</td>
-            <td>{current.description}</td>
+            <td>{current.description}</td>>
           </tr>
         ));
       }
@@ -480,9 +488,40 @@ class PeopleReport extends Component {
             </h4>
             <p>End Date</p>
           </div>
+          {!this.state.isBioPosted ? (
+            <div>
+              <h4>Bio {this.state.isBioPosted ? 'posted' : 'requested'}</h4>{' '}
+              {this.state.authRole === 'Administrator' || this.state.authRole === 'Owner' ? (
+                <ToggleSwitch
+                  switchType="bio"
+                  state={!this.state.isBioPosted}
+                  handleUserProfile={onChangeBioPosted}
+                />
+              ) : null}
+            </div>
+          ) : null}
         </div>
       </ReportPage.ReportHeader>
     );
+
+    const onChangeBioPosted = async () => {
+      const userId = this.state.userId || this.props.match?.params?.userId;
+      const bioStatus = this.state.isBioPosted;
+      this.setState(state => {
+        return {
+          isBioPosted: !bioStatus,
+        };
+      });
+      try {
+        await this.props.updateUserProfile(userId, {
+          ...this.state.userProfile,
+          bioPosted: !bioStatus,
+        });
+        toast.success('You have changed the bio announcement status of this user.');
+      } catch (err) {
+        alert('An error occurred while attempting to save the bioPosted change to the profile.');
+      }
+    };
 
     return (
       <ReportPage renderProfile={renderProfileInfo}>
@@ -562,7 +601,6 @@ class PeopleReport extends Component {
     );
   }
 }
-
 export default connect(getPeopleReportData, {
   getUserProfile,
   updateUserProfile,

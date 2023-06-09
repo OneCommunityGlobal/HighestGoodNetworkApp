@@ -11,6 +11,7 @@ import Loading from '../common/Loading';
 import { getWeeklySummariesReport } from '../../actions/weeklySummariesReport';
 import FormattedReport from './FormattedReport';
 import GeneratePdfReport from './GeneratePdfReport';
+import hasPermission from '../../utils/permissions';
 
 export class WeeklySummariesReport extends Component {
   state = {
@@ -51,6 +52,10 @@ export class WeeklySummariesReport extends Component {
 
   render() {
     const { error, loading, summaries, activeTab } = this.state;
+    const role = this.props.authUser?.role;
+    const userPermissions = this.props.authUser?.permissions?.frontPermissions;
+    const roles = this.props.roles;
+    const bioEditPermission = hasPermission(role, 'changeBioAnnouncement', roles, userPermissions);
 
     if (error) {
       return (
@@ -111,6 +116,15 @@ export class WeeklySummariesReport extends Component {
                   Week Before Last
                 </NavLink>
               </NavItem>
+              <NavItem>
+                <NavLink
+                  className={classnames({ active: activeTab === '4' })}
+                  data-testid="tab-4"
+                  onClick={() => this.toggleTab('4')}
+                >
+                  Three Weeks Ago
+                </NavLink>
+              </NavItem>
             </Nav>
             <TabContent activeTab={activeTab} className="p-4">
               <TabPane tabId="1">
@@ -129,7 +143,11 @@ export class WeeklySummariesReport extends Component {
                 </Row>
                 <Row>
                   <Col>
-                    <FormattedReport summaries={summaries} weekIndex={0} />
+                    <FormattedReport
+                      summaries={summaries}
+                      weekIndex={0}
+                      bioCanEdit={bioEditPermission}
+                    />
                   </Col>
                 </Row>
               </TabPane>
@@ -149,7 +167,11 @@ export class WeeklySummariesReport extends Component {
                 </Row>
                 <Row>
                   <Col>
-                    <FormattedReport summaries={summaries} weekIndex={1} />
+                    <FormattedReport
+                      summaries={summaries}
+                      weekIndex={1}
+                      bioCanEdit={bioEditPermission}
+                    />
                   </Col>
                 </Row>
               </TabPane>
@@ -169,7 +191,35 @@ export class WeeklySummariesReport extends Component {
                 </Row>
                 <Row>
                   <Col>
-                    <FormattedReport summaries={summaries} weekIndex={2} />
+                    <FormattedReport
+                      summaries={summaries}
+                      weekIndex={2}
+                      bioCanEdit={bioEditPermission}
+                    />
+                  </Col>
+                </Row>
+              </TabPane>
+              <TabPane tabId="4">
+                <Row>
+                  <Col sm="12" md="8" className="mb-2">
+                    From <b>{this.getWeekDates(3).fromDate}</b> to{' '}
+                    <b>{this.getWeekDates(3).toDate}</b>
+                  </Col>
+                  <Col sm="12" md="4">
+                    <GeneratePdfReport
+                      summaries={summaries}
+                      weekIndex={3}
+                      weekDates={this.getWeekDates(3)}
+                    />
+                  </Col>
+                </Row>
+                <Row>
+                  <Col>
+                    <FormattedReport
+                      summaries={summaries}
+                      weekIndex={3}
+                      bioCanEdit={bioEditPermission}
+                    />
                   </Col>
                 </Row>
               </TabPane>
@@ -188,10 +238,12 @@ WeeklySummariesReport.propTypes = {
   summaries: PropTypes.array.isRequired,
 };
 
-const mapStateToProps = ({ weeklySummariesReport }) => ({
-  error: weeklySummariesReport.error,
-  loading: weeklySummariesReport.loading,
-  summaries: weeklySummariesReport.summaries,
+const mapStateToProps = state => ({
+  authUser: state.auth.user,
+  roles: state.role.roles,
+  error: state.weeklySummariesReport.error,
+  loading: state.weeklySummariesReport.loading,
+  summaries: state.weeklySummariesReport.summaries,
 });
 
 export default connect(mapStateToProps, { getWeeklySummariesReport })(WeeklySummariesReport);

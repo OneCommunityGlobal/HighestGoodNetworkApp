@@ -1,7 +1,16 @@
 import React, { createRef, useEffect, useState } from 'react';
 import { connect } from 'react-redux';
-import { Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
-import { Button, Dropdown, DropdownItem, DropdownToggle, DropdownMenu } from 'reactstrap';
+import {
+  Modal,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+  Button,
+  Dropdown,
+  DropdownItem,
+  DropdownToggle,
+  DropdownMenu,
+} from 'reactstrap';
 import { BsFillCaretDownFill, BsFillCaretUpFill } from 'react-icons/bs';
 import AddTaskModal from '../AddTask/AddTaskModal';
 import EditTaskModal from '../EditTask/EditTaskModal';
@@ -20,8 +29,9 @@ import * as Message from './../../../../../languages/en/messages';
 import { getPopupById } from './../../../../../actions/popupEditorAction';
 import { TASK_DELETE_POPUP_ID } from './../../../../../constants/popupId';
 import hasPermission from 'utils/permissions';
+import ReactTooltip from 'react-tooltip';
 
-const Task = props => {
+function Task(props) {
   const [role] = useState(props.state ? props.state.auth.user.role : null);
   const { roles } = props.state.role;
   const userPermissions = props.state.auth.user?.permissions?.frontPermissions;
@@ -84,7 +94,7 @@ const Task = props => {
   };
 
   const openChild = (num, id) => {
-    const allItems = document.getElementsByClassName(`wbsTask`);
+    const allItems = document.getElementsByClassName('wbsTask');
     for (let i = 0; i < allItems.length; i++) {
       if (
         allItems[i].className.indexOf(
@@ -145,7 +155,8 @@ const Task = props => {
   return (
     <>
       {props.id ? (
-        <React.Fragment>
+        <>
+          <ReactTooltip/>
           <tr
             ref={tableRowRef}
             key={props.key}
@@ -258,13 +269,13 @@ const Task = props => {
             </td>
             <td>
               {props.priority === 'Primary' ? (
-                <i data-tip="Primary" className="fa fa-star" aria-hidden="true"></i>
+                <i data-tip="Primary" className="fa fa-star" aria-hidden="true" />
               ) : null}
               {props.priority === 'Secondary' ? (
-                <i data-tip="Secondary" className="fa fa-star-half-o" aria-hidden="true"></i>
+                <i data-tip="Secondary" className="fa fa-star-half-o" aria-hidden="true" />
               ) : null}
               {props.priority === 'Tertiary' ? (
-                <i data-tip="Tertiary" className="fa fa-star-o" aria-hidden="true"></i>
+                <i data-tip="Tertiary" className="fa fa-star-o" aria-hidden="true" />
               ) : null}
             </td>
             <td className="desktop-view">
@@ -280,6 +291,7 @@ const Task = props => {
                               className="name"
                               href={`/userprofile/${elm.userID}`}
                               target="_blank"
+                              rel="noreferrer"
                             >
                               <span className="dot">{elm.name.substring(0, 2)}</span>
                             </a>
@@ -292,6 +304,7 @@ const Task = props => {
                             className="name"
                             href={`/userprofile/${elm.userID}`}
                             target="_blank"
+                            rel="noreferrer"
                           >
                             <img className="img-circle" src={elm.profilePic} />
                           </a>
@@ -322,6 +335,7 @@ const Task = props => {
                               key={i}
                               href={`/userprofile/${elm.userID}`}
                               target="_blank"
+                              rel="noreferrer"
                             >
                               <span className="dot">{elm.name.substring(0, 2)}</span>
                             </a>
@@ -334,6 +348,7 @@ const Task = props => {
                             key={i}
                             href={`/userprofile/${elm.userID}`}
                             target="_blank"
+                            rel="noreferrer"
                           >
                             <img className="img-circle" src={elm.profilePic} />
                           </a>
@@ -345,16 +360,16 @@ const Task = props => {
             </td>
             <td>
               {props.isAssigned ? (
-                <i data-tip="Assigned" className="fa fa-check-square" aria-hidden="true"></i>
+                <i data-tip="Assigned" className="fa fa-check-square" aria-hidden="true" />
               ) : (
-                <i data-tip="Not Assigned" className="fa fa-square-o" aria-hidden="true"></i>
+                <i data-tip="Not Assigned" className="fa fa-square-o" aria-hidden="true" />
               )}
             </td>
             <td className="desktop-view">
               {props.status === 'Started' || props.status === 'Active' ? (
-                <i data-tip="Started" className="fa fa-pause" aria-hidden="true"></i>
+                <i data-tip="Started" className="fa fa-pause" aria-hidden="true" />
               ) : (
-                <i data-tip="Not Started" className="fa fa-play" aria-hidden="true"></i>
+                <i data-tip="Not Started" className="fa fa-play" aria-hidden="true" />
               )}
             </td>
             <td
@@ -398,14 +413,14 @@ const Task = props => {
             <td className="desktop-view">
               {props.links.map((link, i) =>
                 link.length > 1 ? (
-                  <a key={i} href={link} target="_blank" data-tip={link}>
-                    <i className="fa fa-link" aria-hidden="true"></i>
+                  <a key={i} href={link} target="_blank" data-tip={link} rel="noreferrer">
+                    <i className="fa fa-link" aria-hidden="true" />
                   </a>
                 ) : null,
               )}
             </td>
             <td className="desktop-view" onClick={toggleModel}>
-              <i className="fa fa-book" aria-hidden="true"></i>
+              <i className="fa fa-book" aria-hidden="true" />
             </td>
           </tr>
           {controllerRow ? (
@@ -499,7 +514,7 @@ const Task = props => {
                         max_height: 300,
                         autoresize_bottom_margin: 1,
                       }}
-                      disabled={true}
+                      disabled
                       value={props.whyInfo}
                     />
 
@@ -513,7 +528,7 @@ const Task = props => {
                         max_height: 300,
                         autoresize_bottom_margin: 1,
                       }}
-                      disabled={true}
+                      disabled
                       value={props.intentInfo}
                     />
 
@@ -527,7 +542,7 @@ const Task = props => {
                         max_height: 300,
                         autoresize_bottom_margin: 1,
                       }}
-                      disabled={true}
+                      disabled
                       value={props.endstateInfo}
                     />
                   </ModalBody>
@@ -545,14 +560,14 @@ const Task = props => {
               </td>
             </tr>
           ) : null}
-        </React.Fragment>
+        </>
       ) : null}
     </>
   );
 };
-const mapStateToProps = state => {
-  return { state };
-};
+
+const mapStateToProps = state => ({ state });
+
 export default connect(mapStateToProps, {
   moveTasks,
   fetchAllTasks,
