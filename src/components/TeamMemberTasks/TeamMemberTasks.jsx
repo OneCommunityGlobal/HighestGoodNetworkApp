@@ -76,7 +76,7 @@ const TeamMemberTasks = props => {
         await dispatch(fetchTeamMembersTask(userId, null));
         setUserRole(props.auth.user.role);
       }
-      setShouldRun(true)     
+      setShouldRun(true);
     };
     initialFetching();
   }, []);
@@ -392,7 +392,11 @@ const TeamMemberTasks = props => {
 
           <tbody>
             {isLoading ? (
-              <Loading />
+              <tr>
+                <td>
+                  <Loading />
+                </td>
+              </tr>
             ) : (
               teamList.map(user => {
                 if (!isTimeLogActive) {
