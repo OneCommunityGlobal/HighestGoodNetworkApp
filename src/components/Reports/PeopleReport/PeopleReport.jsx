@@ -43,10 +43,9 @@ class PeopleReport extends Component {
       allClassification: [],
       classification: '',
       users: '',
-      users: '',
       classificationList: [],
       priorityList: [],
-      fromDate: '2016-01-01',
+      statusList: [],
       fromDate: '2016-01-01',
       toDate: this.endOfWeek(0),
       timeEntries: {},
@@ -98,7 +97,6 @@ class PeopleReport extends Component {
       });
     }
   }
-
   setStartDate(date) {
     this.setState(state => {
       return {
@@ -252,6 +250,7 @@ class PeopleReport extends Component {
       timeEntries,
     } = this.state;
     const { firstName, lastName, weeklycommittedHours, totalTangibleHrs } = userProfile;
+
     var totalTangibleHrsRound = 0;
     if (totalTangibleHrs) {
       totalTangibleHrsRound = totalTangibleHrs.toFixed(2);
@@ -297,7 +296,6 @@ class PeopleReport extends Component {
 
       users = Array.from(new Set(users)).sort();
       users.unshift('Filter Off');
-
       return (
         <DropdownButton style={{ margin: '3px' }} exact id="dropdown-basic-button" title="Users">
           {users.map((c, index) => (
@@ -362,7 +360,7 @@ class PeopleReport extends Component {
           <tr className="teams__tr">
             <td>{index + 1}</td>
             <td>{current.date}</td>
-            <td>{current.description}</td>>
+            <td>{current.description}</td>
           </tr>
         ));
       }
