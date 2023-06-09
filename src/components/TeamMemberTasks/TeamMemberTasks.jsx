@@ -401,15 +401,13 @@ const TeamMemberTasks = props => {
               teamList.map(user => {
                 if (!isTimeLogActive) {
                   return (
-                    <>
-                      <TeamMemberTask
-                        user={user}
-                        key={user.personId}
-                        handleOpenTaskNotificationModal={handleOpenTaskNotificationModal}
-                        handleMarkAsDoneModal={handleMarkAsDoneModal}
-                        userRole={userRole}
-                      />
-                    </>
+                    <TeamMemberTask
+                      user={user}
+                      key={user.personId}
+                      handleOpenTaskNotificationModal={handleOpenTaskNotificationModal}
+                      handleMarkAsDoneModal={handleMarkAsDoneModal}
+                      userRole={userRole}
+                    />
                   );
                 } else {
                   return (
