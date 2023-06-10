@@ -46,7 +46,7 @@ const Badges = props => {
             <div>
               {(props.canEdit || props.role == 'Owner' || props.role == 'Administrator') && (
                 <>
-                  <Button className="btn--dark-sea-green" onClick={toggle}>
+                  <Button className="btn--dark-sea-green" onClick={toggle} style={boxStyle}>
                     Select Featured
                   </Button>
                   <Modal size="lg" isOpen={isOpen} toggle={toggle}>

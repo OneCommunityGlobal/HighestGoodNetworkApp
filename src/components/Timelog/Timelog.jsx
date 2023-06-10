@@ -538,7 +538,7 @@ const Timelog = props => {
                         ) && (
                           <div className="float-right">
                             <div>
-                              <Button color="warning" onClick={toggle}>
+                              <Button color="warning" onClick={toggle} style={boxStyle}>
                                 Add Time Entry {!isOwner && `for ${fullName}`}
                               </Button>
                             </div>
@@ -549,7 +549,7 @@ const Timelog = props => {
                         <ModalHeader>Info</ModalHeader>
                         <ModalBody>{state.information}</ModalBody>
                         <ModalFooter>
-                          <Button onClick={openInfo} color="primary">
+                          <Button onClick={openInfo} color="primary" style={boxStyle}>
                             Close
                           </Button>
                           {hasPermission(
@@ -558,7 +558,7 @@ const Timelog = props => {
                             role.roles,
                             userPermissions,
                           ) ? (
-                            <Button onClick={openInfo} color="secondary">
+                            <Button onClick={openInfo} color="secondary" style={boxStyle}>
                               Edit
                             </Button>
                           ) : null}
