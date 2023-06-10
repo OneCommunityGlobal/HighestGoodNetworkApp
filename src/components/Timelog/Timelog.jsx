@@ -106,25 +106,7 @@ const Timelog = props => {
     }
     
     return tab;
-  }
-
-  // async componentDidUpdate(prevProps) {
-  //   // Don't run function on first render
-  //   if (!this.props.match) return;
-
-  //   if (
-  //     prevProps.match?.params?.userId !== this.props.match.params.userId ||
-  //     prevProps.asUser !== this.props.asUser
-  //   ) {
-  //     this.setState(this.initialState);
-
-  //     const userId =
-  //       this.props.match?.params?.userId || this.props.asUser || this.props.auth.user.userid;
-  //     await this.props.getUserProfile(userId);
-
-  //     this.userProfile = this.props.userProfile;
-  // };
-
+  };
 
   const timeLogFunction = () => {
     //build the time log component
