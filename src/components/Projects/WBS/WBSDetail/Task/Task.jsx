@@ -30,7 +30,7 @@ import { getPopupById } from './../../../../../actions/popupEditorAction';
 import { TASK_DELETE_POPUP_ID } from './../../../../../constants/popupId';
 import hasPermission from 'utils/permissions';
 import { boxStyle } from 'styles';
-import from 'react-tooltip';
+import ReactTooptip from 'react-tooltip';
 
 function Task(props) {
   const [role] = useState(props.state ? props.state.auth.user.role : null);
@@ -157,7 +157,7 @@ function Task(props) {
     <>
       {props.id ? (
         <>
-          <ReactTooltip/>
+          <ReactTooltip />
           <tr
             ref={tableRowRef}
             key={props.key}
