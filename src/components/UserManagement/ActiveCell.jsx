@@ -10,8 +10,14 @@ const ActiveCell = props => {
       style={{ fontSize: '1.5rem' }}
       className={props.isActive ? 'isActive' : 'isNotActive'}
       id={props.index === undefined ? undefined : `active_cell_${props.index}`}
-      title="Click here to change the user status"
-      onClick={props.onClick}
+      title={
+        props.canChange
+          ? 'Click here to change the user status'
+          : props.isActive
+          ? 'Active'
+          : 'Inactive'
+      }
+      onClick={props.canChange ? props.onClick : () => {}}
     >
       <i className="fa fa-circle" aria-hidden="true" />
     </span>
