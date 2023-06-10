@@ -710,6 +710,7 @@ const TimeEntryForm = props => {
                   min_height: 180,
                   max_height: 300,
                   autoresize_bottom_margin: 1,
+                  content_style: 'body { cursor: text !important; }',
                 }}
                 id="notes"
                 name="notes"
@@ -727,44 +728,6 @@ const TimeEntryForm = props => {
             <FormGroup check>
               <Label check>
                 <Input
-                  type="select"
-                  name="projectId"
-                  id="projectId"
-                  value={inputs.projectId}
-                  onChange={handleInputChange}
-                >
-                  {projectOrTaskOptions}
-                </Input>
-                {'projectId' in errors && (
-                  <div className="text-danger">
-                    <small>{errors.projectId}</small>
-                  </div>
-                )}
-              </FormGroup>
-              <FormGroup>
-                <Label for="notes">Notes</Label>
-                <Editor
-                  init={{
-                    menubar: false,
-                    placeholder: 'Description (10-word minimum) and reference link',
-                    plugins:
-                      'advlist autolink autoresize lists link charmap table paste help wordcount',
-                    toolbar:
-                      'bold italic underline link removeformat | bullist numlist outdent indent |\
-                                   styleselect fontsizeselect | table| strikethrough forecolor backcolor |\
-                                   subscript superscript charmap  | help',
-                    branding: false,
-                    min_height: 180,
-                    max_height: 300,
-                    autoresize_bottom_margin: 1,
-                    content_style: 'body { cursor: text !important; }',
-                  }}
-                  id="notes"
-                  name="notes"
-                  className="form-control"
-                  value={inputs.notes}
-                  onEditorChange={handleEditorChange}
-
                   type="checkbox"
                   name="isTangible"
                   checked={inputs.isTangible}
