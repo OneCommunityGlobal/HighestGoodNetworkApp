@@ -17,6 +17,7 @@ describe('User Table Data', () => {
         <tbody>
           <UserTableData
             isActive
+            canChange={true}//add to enable the test of 'change the user status' functionality in line37 and 82.
             index={0}
             user={userProfileMock}
             onActiveInactiveClick={onActiveInactiveClick}
