@@ -124,14 +124,28 @@ const AssignBadge = props => {
         margin: 20,
       }}
     >
-      <Row className="assign-badge-margin-top">
-        <Col md="4" lg="3" xl="2">
-          <Label style={{ fontWeight: 'bold' }}>Search by Name</Label>
-          <i className="fa fa-info-circle" id="NameInfo" style={{ marginLeft: '5px' }} />
+    <div className="assign-badge-margin-top" style={{ display: 'flex', alignItems: 'center' }}>
+        <Label
+          style={{
+            fontWeight: 'bold',
+            marginLeft: '15px',
+            marginRight: '2px',
+            paddingRight: '2px',
+          }}
+        >
+          Search by Name
+        </Label>
+        <i className="fa fa-info-circle" id="NameInfo" style={{ marginRight: '5px' }} />
+        <div style={{ display: 'flex', alignItems: 'center', paddingLeft: '5px' }}>
           <UncontrolledTooltip
             placement="right"
             target="NameInfo"
-            style={{ backgroundColor: '#666', color: '#fff' }}
+            style={{
+              backgroundColor: '#666',
+              color: '#fff',
+              paddingLeft: '2px',
+              marginLeft: '2px',
+            }}
           >
             <p className="badge_info_icon_text">
               Really, you're not sure what "name" means? Start typing a first or last name and a
@@ -145,30 +159,32 @@ const AssignBadge = props => {
               this process and choosing the same badge as many times as you want them to earn it.
             </p>
           </UncontrolledTooltip>
-        </Col>
-        <Col md="4" lg="3" xl="2">
-          <Autosuggest
-            suggestions={firstSuggestions}
-            onSuggestionsFetchRequested={onFirstSuggestionsFetchRequested}
-            onSuggestionsClearRequested={onFirstSuggestionsClearRequested}
-            onSuggestionSelected={onFirstSuggestionSelected}
-            getSuggestionValue={getSuggestionFirst}
-            renderSuggestion={renderSuggestion}
-            inputProps={FirstInputProps}
-          />
-        </Col>
-        <Col md="4" lg="3" xl="2">
-          <Autosuggest
-            suggestions={lastSuggestions}
-            onSuggestionsFetchRequested={onLastSuggestionsFetchRequested}
-            onSuggestionsClearRequested={onLastSuggestionsClearRequested}
-            onSuggestionSelected={onLastSuggestionSelected}
-            getSuggestionValue={getSuggestionLast}
-            renderSuggestion={renderSuggestion}
-            inputProps={LastInputProps}
-          />
-        </Col>
-      </Row>
+          <div style={{ marginRight: '5px' }}>
+            <Autosuggest
+              suggestions={firstSuggestions}
+              onSuggestionsFetchRequested={onFirstSuggestionsFetchRequested}
+              onSuggestionsClearRequested={onFirstSuggestionsClearRequested}
+              onSuggestionSelected={onFirstSuggestionSelected}
+              getSuggestionValue={getSuggestionFirst}
+              renderSuggestion={renderSuggestion}
+              inputProps={FirstInputProps}
+              style={{ marginLeft: '5px', marginRight: '5px' }}
+            />
+          </div>
+          <div style={{ marginLeft: '5px' }}>
+            <Autosuggest
+              suggestions={lastSuggestions}
+              onSuggestionsFetchRequested={onLastSuggestionsFetchRequested}
+              onSuggestionsClearRequested={onLastSuggestionsClearRequested}
+              onSuggestionSelected={onLastSuggestionSelected}
+              getSuggestionValue={getSuggestionLast}
+              renderSuggestion={renderSuggestion}
+              inputProps={LastInputProps}
+              style={{ marginLeft: '5px' }}
+            />
+          </div>
+        </div>
+      </div>
       <FormGroup className="assign-badge-margin-top">
         <Button
           className="btn--dark-sea-green"
