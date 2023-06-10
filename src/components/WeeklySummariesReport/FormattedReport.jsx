@@ -30,7 +30,8 @@ const FormattedReport = ({ summaries, weekIndex, bioCanEdit }) => {
   while (emailString.includes('\n')) emailString = emailString.replace('\n', ', ');
 
   const alphabetize = summaries => {
-    return summaries.sort((a, b) =>
+    const temp = [...summaries]
+    return temp.sort((a, b) =>
       `${a.firstName} ${a.lastName}`.localeCompare(`${b.firstName} ${b.lastname}`),
     );
   };
@@ -145,7 +146,7 @@ const FormattedReport = ({ summaries, weekIndex, bioCanEdit }) => {
       const userProfile = response.data;
       const res = await axios.put(url, {
         ...userProfile,
-        bioPosted: !bioStatus,
+        bioPosted: bioStatus,
       });
       if (res.status === 200) {
         toast.success('You have changed the bio announcement status of this user.');
@@ -156,7 +157,7 @@ const FormattedReport = ({ summaries, weekIndex, bioCanEdit }) => {
   };
 
   const bioSwitch = (userId, bioPosted) => {
-    const [isBioPosted, setIsBioPosted] = useState(bioPosted);
+    const [bioStatus, setBioStatus] = useState(bioPosted);
     return (
       <div>
         <div className="bio-toggle">
@@ -165,10 +166,10 @@ const FormattedReport = ({ summaries, weekIndex, bioCanEdit }) => {
         <div className="bio-toggle">
           <ToggleSwitch
             switchType="bio"
-            state={isBioPosted ? false : true}
-            handleUserProfile={() => {
-              handleChangeBioPosted(userId, isBioPosted);
-              setIsBioPosted(!isBioPosted);
+            state={bioStatus}
+            handleUserProfile={(bio) => {
+              setBioStatus(bio);
+              handleChangeBioPosted(userId, bio);
             }}
           />
         </div>
@@ -180,7 +181,9 @@ const FormattedReport = ({ summaries, weekIndex, bioCanEdit }) => {
     return (
       <div>
         <b>Bio announcement:</b>
-        {bioPosted ? ' Posted' : ' Requested'}
+        {bioPosted === 'default' ? ' Not requested/posted' :
+         bioPosted === 'posted' ? ' Posted' : 
+         ' Requested'}
       </div>
     );
   };
