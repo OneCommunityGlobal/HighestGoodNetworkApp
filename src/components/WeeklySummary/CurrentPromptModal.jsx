@@ -21,7 +21,7 @@ function CurrentPromptModal() {
   return (
     <div>
       <Button color="info" onClick={toggle}>
-        View Current AI Prompt
+        View and Copy Current AI Prompt
         <i
           className="fa fa-info-circle"
           data-tip

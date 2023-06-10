@@ -423,9 +423,12 @@ export class WeeklySummary extends Component {
                   <Row>
                     <Col>
                       <FormGroup>
-                        <Label for={summaryName}>
-                          Enter your weekly summary below. (required){' '}
-                          <WeeklySummaryContentTooltip tabId={tId} />
+                        <Label for={summaryName} className="summary-instructions-row">
+                          <div>
+                            Enter your weekly summary below. (required){' '}
+                            <WeeklySummaryContentTooltip tabId={tId} />
+                          </div>
+                          <CurrentPromptModal/>
                         </Label>
                         <Editor
                           init={{
@@ -460,11 +463,6 @@ export class WeeklySummary extends Component {
                 </TabPane>
               );
             })}
-            <Row>
-              <Col>
-                <CurrentPromptModal/>
-              </Col>
-            </Row>
             <Row>
               <Col>
                 <Label for="mediaUrl" className="mt-1">
