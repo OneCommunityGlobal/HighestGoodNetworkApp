@@ -2,6 +2,7 @@ import React, { Component, useState } from 'react';
 import '../../Teams/Team.css';
 import './PeopleReport.css';
 import { Button, Dropdown, DropdownButton } from 'react-bootstrap';
+import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { FiUser } from 'react-icons/fi';
 import { updateUserProfile, getUserProfile, getUserTask } from '../../../actions/userProfile';
@@ -19,6 +20,7 @@ import { getPeopleReportData } from './selectors';
 import { PeopleTasksPieChart } from './components';
 import { toast } from 'react-toastify';
 import ToggleSwitch from '../../UserProfile/UserProfileEdit/ToggleSwitch';
+import { Checkbox } from 'components/common/Checkbox';
 
 class PeopleReport extends Component {
   constructor(props) {
@@ -34,6 +36,7 @@ class PeopleReport extends Component {
       infringements: {},
       isAssigned: '',
       isActive: '',
+      isRehireable: false,
       priority: '',
       status: '',
       hasFilter: true,
@@ -53,6 +56,7 @@ class PeopleReport extends Component {
     this.setStatus = this.setStatus.bind(this);
     this.setPriority = this.setPriority.bind(this);
     this.setActive = this.setActive.bind(this);
+    this.setRehireable = this.setRehireable.bind(this);
     this.setAssign = this.setAssign.bind(this);
     this.setFilter = this.setFilter.bind(this);
     this.setClassfication = this.setClassfication.bind(this);
@@ -78,6 +82,7 @@ class PeopleReport extends Component {
         userProfile: {
           ...this.props.userProfile,
         },
+        isRehireable: this.props.userProfile.isRehireable,
         userTask: [...this.props.userTask],
         userProjects: {
           ...this.props.userProjects,
@@ -134,6 +139,17 @@ class PeopleReport extends Component {
       };
     });
   }
+
+  setRehireable(rehireValue) {
+    this.setState(state => {
+      return {
+        isRehireable: rehireValue,
+      };
+    });
+    this.props.userProfile.isRehireable = rehireValue;
+    this.props.updateUserProfile(this.props.userProfile._id, this.props.userProfile);
+  }
+
   setPriority(priorityValue) {
     if (priorityValue != 'Filter Off') {
       this.setState(state => {
@@ -438,8 +454,27 @@ class PeopleReport extends Component {
         src={this.state.userProfile.profilePic}
         avatar={this.state.userProfile.profilePic ? undefined : <FiUser />}
         isActive={isActive}
-        name={`${firstName} ${lastName}`}
       >
+        <p>
+          <Link to={`/userProfile/${userProfile._id}`} title="View Profile">
+            {userProfile.firstName} {userProfile.lastName}
+          </Link>
+        </p>
+        <p>Role: {userProfile.role}</p>
+        <p>Title: {userProfile.jobTitle}</p>
+
+        {userProfile.endDate ? (
+          <div className="rehireable">
+            <Checkbox
+              value={this.state.isRehireable}
+              onChange={() => this.setRehireable(!this.state.isRehireable)}
+              label="Rehireable"
+            />
+          </div>
+        ) : (
+          ''
+        )}
+
         <div className="stats">
           <div>
             <h4>{moment(userProfile.createdDate).format('YYYY-MM-DD')}</h4>
@@ -500,14 +535,20 @@ class PeopleReport extends Component {
             <h3>{weeklycommittedHours}</h3>
             <p>Weekly Committed Hours</p>
           </ReportPage.ReportBlock>
-          <ReportPage.ReportBlock
-            firstColor="#b368d2"
-            secondColor="#831ec4"
-            className="people-report-time-log-block"
-          >
-            <h3>{this.props.tangibleHoursReportedThisWeek}</h3>
-            <p>Hours Logged This Week</p>
-          </ReportPage.ReportBlock>
+
+          {userProfile.endDate ? (
+            ''
+          ) : (
+            <ReportPage.ReportBlock
+              firstColor="#b368d2"
+              secondColor="#831ec4"
+              className="people-report-time-log-block"
+            >
+              <h3>{this.props.tangibleHoursReportedThisWeek}</h3>
+              <p>Hours Logged This Week</p>
+            </ReportPage.ReportBlock>
+          )}
+
           <ReportPage.ReportBlock
             firstColor="#64b7ff"
             secondColor="#928aef"
@@ -561,13 +602,12 @@ class PeopleReport extends Component {
     );
   }
 }
-
 export default connect(getPeopleReportData, {
   getUserProfile,
+  updateUserProfile,
   getWeeklySummaries,
   updateWeeklySummaries,
   getUserTask,
   getUserProjects,
-  updateUserProfile,
   getTimeEntriesForPeriod,
 })(PeopleReport);
