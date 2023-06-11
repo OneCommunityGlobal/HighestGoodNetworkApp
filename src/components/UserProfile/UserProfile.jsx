@@ -637,16 +637,14 @@ function UserProfile(props) {
                 className="fa fa-info-circle"
                 onClick={toggleInfoModal}
               />{' '}
-              <>
-                <ActiveCell
-                  isActive={userProfile.isActive}
-                  user={userProfile}
-                  canChange={canChangeUserStatus}
-                  onClick={() => {
-                    setActiveInactivePopupOpen(true);
-                  }}
-                />
-              </>
+              <ActiveCell
+                isActive={userProfile.isActive}
+                user={userProfile}
+                canChange={canChangeUserStatus}
+                onClick={() => {
+                  setActiveInactivePopupOpen(true);
+                }}
+              />
               {canEdit && (
                 <i
                   data-toggle="tooltip"
