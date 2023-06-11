@@ -46,10 +46,11 @@ export const fetchTeamMembersTask = (currentUserId, authenticatedUserId) => asyn
       const correctedTasks = userTasks.filter(task => {
         return authUserTasks.some(task2 => task2.personId === task.personId);
       });
-      console.log(correctedTasks);
+      correctedTasks = checkWhoNeedsFollowUp(correctedTasks)
       dispatch(fetchTeamMembersTaskSuccess(correctedTasks));
     } else {
-      dispatch(fetchTeamMembersTaskSuccess(response.data));
+      const data = checkWhoNeedsFollowUp(response.data)
+      dispatch(fetchTeamMembersTaskSuccess(data));
     }
   } catch (error) {
     dispatch(fetchTeamMembersTaskError());
@@ -57,16 +58,15 @@ export const fetchTeamMembersTask = (currentUserId, authenticatedUserId) => asyn
 };
 
 
-export const setFollowup = (taskId, userId, data) => async (
+export const setFollowUp = (taskId, userId, data) => async (
   dispatch,
   getState,
 ) => {
   try {
-    const response = await axios.post(ENDPOINTS.SET_TASK_FOLLOW_UP(taskId, userId), { data });
+    const { followUpCheck, followUpPercentageDeadline, needFollowUp } = data
+    const response = await axios.post(ENDPOINTS.SET_TASK_FOLLOW_UP(taskId, userId), { followUpCheck, followUpPercentageDeadline });
     if (response.status === 200) {
-
-      dispatch(setFollowedUp({ taskId, userId, data }));
-
+      dispatch(setFollowedUp({ taskId, userId, followUpCheck, followUpPercentageDeadline, needFollowUp }));
     }
     else {
       throw new Error('Error' + response.data)
@@ -314,4 +314,49 @@ export const saveTmpTask = taskId => {
     type: types.COPY_TASK,
     taskId,
   };
+};
+
+function checkWhoNeedsFollowUp(usersWithTasks) {
+  const newUsers = usersWithTasks.map(user => {
+    return {
+      ...user,
+      tasks: user.tasks?.map(task => {
+        const taskProgressPercentage = isNaN(task.hoursLogged / task.estimatedHours) ? 0 : ((task.hoursLogged / task.estimatedHours) * 100).toFixed(2);
+        return {
+          ...task,
+          resources: task.resources?.map(resource => {
+            if (resource.userID === user.personId) {
+              if ('followedUp' in resource) {
+                const followUpPercentageDeadline = resource.followedUp.followUpPercentageDeadline || 0;
+
+                if (followUpPercentageDeadline) {
+
+                  if (followUpPercentageDeadline < 50 && taskProgressPercentage > 50) {
+                    resource.followedUp.followUpCheck = false;
+                    resource.followedUp.needFollowUp = true;
+                  } else if (followUpPercentageDeadline >= 50 && followUpPercentageDeadline < 75 && taskProgressPercentage > 75) {
+                    resource.followedUp.followUpCheck = false;
+                    resource.followedUp.needFollowUp = true;
+                  } else if (followUpPercentageDeadline >= 75 && followUpPercentageDeadline < 90 && taskProgressPercentage > 90) {
+                    resource.followedUp.followUpCheck = false;
+                    resource.followedUp.needFollowUp = true;
+                  } else if (followUpPercentageDeadline < 90 && taskProgressPercentage > 90) {
+                    resource.followedUp.followUpCheck = false;
+                    resource.followedUp.needFollowUp = true;
+                  }
+                }
+              } else {
+                if (taskProgressPercentage > 50) {
+                  resource.followedUp = { needFollowUp: true };
+                }
+              }
+            }
+            return resource;
+          })
+        };
+      })
+    };
+  });
+
+  return newUsers;
 };

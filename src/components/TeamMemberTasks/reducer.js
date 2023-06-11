@@ -60,7 +60,11 @@ export const teamMemberTasksReducer = (state = initialState, action) => {
                       resource.userID === action.payload.userId
                         ? {
                           ...resource,
-                          followedUp: action.payload.data,
+                          followedUp: {
+                            followUpCheck: action.payload.followUpCheck,
+                            followUpPercentageDeadline: action.payload.followUpPercentageDeadline,
+                            needFollowUp: action.payload.needFollowUp,
+                          },
                         }
                         : resource
                     )

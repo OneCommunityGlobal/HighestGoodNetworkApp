@@ -10,6 +10,7 @@ import { getProgressColor, getProgressValue } from '../../utils/effortColors';
 import './style.css';
 import classNames from 'classnames';
 import ReactTooltip from 'react-tooltip';
+import { da } from 'date-fns/locale';
 
 const TeamMemberTask = ({
   user,
@@ -25,7 +26,8 @@ const TeamMemberTask = ({
   const rolesAllowedToResolveTasks = ['Administrator', 'Owner'];
   const isAllowedToResolveTasks = rolesAllowedToResolveTasks.includes(userRole);
   const isAllowedToFollowUpWithPeople = userRole !== 'Volunteer';
-  const isFollowUpWith = [];
+  const isFollowedUpWith = [];
+  const needFollowUp = [];
   if (user.tasks) {
     user.tasks = user.tasks.map(task => {
       task.hoursLogged = task.hoursLogged ? task.hoursLogged : 0;
@@ -44,25 +46,41 @@ const TeamMemberTask = ({
 
   if (user.tasks) {
     user.tasks.forEach(task => {
-      const followedUpResources = task.resources?.filter(
-        resource => resource.userID === user.personId && resource.followedUp,
+      const usersWithFollowUpCheck = task.resources?.filter(
+        resource => resource.userID === user.personId && resource.followedUp?.followUpCheck,
       );
-
-      if (followedUpResources?.length > 0) {
-        isFollowUpWith.push(task._id);
+      const usersNeedFollowUp = task.resources?.filter(
+        resource => resource.userID === user.personId && resource.followedUp?.needFollowUp,
+      );
+      if (usersWithFollowUpCheck?.length > 0) {
+        isFollowedUpWith.push(task._id);
+      }
+      if (usersNeedFollowUp?.length > 0) {
+        needFollowUp.push(task._id);
       }
     });
   }
 
   const handleCheckboxFollowUp = (taskId, userId, userIndex, taskIndex) => {
-    handleFollowUp(taskId, userId, !isFollowUpWith.includes(taskId), userIndex, taskIndex);
-    // if (isFollowUpWith.includes(taskId)) {
-    //   // If the value is already in the checkedItems array, remove it
-    //   setIsFollowUpWith(isFollowUpWith.filter(item => item !== taskId));
-    // } else {
-    //   // If the value is not in the checkedItems array, add it
-    //   setIsFollowUpWith([...isFollowUpWith, taskId]);
-    // }
+    const task = user.tasks[taskIndex];
+    const followUpCheck = !isFollowedUpWith.includes(taskId);
+    let data = {};
+    if (followUpCheck) {
+      const followUpPercentageDeadline =
+        ((task.hoursLogged / task.estimatedHours) * 100).toFixed(2) || 0;
+      data = {
+        followUpCheck,
+        followUpPercentageDeadline,
+        needFollowUp: false,
+      };
+    } else {
+      data = {
+        followUpCheck,
+        followUpPercentageDeadline: 0,
+        needFollowUp: true,
+      };
+    }
+    handleFollowUp(taskId, userId, data, userIndex, taskIndex);
   };
 
   return (
@@ -171,9 +189,13 @@ const TeamMemberTask = ({
                                   <input
                                     type="checkbox"
                                     title="This box is used to track follow ups. Clicking it means you’ve checked in with a person that they are on track to meet their deadline"
-                                    className="team-task-progress-follow-up team-task-progress-follow-up-red"
+                                    className={`team-task-progress-follow-up ${
+                                      needFollowUp.includes(task._id)
+                                        ? 'team-task-progress-follow-up-red'
+                                        : ''
+                                    }`}
                                     data-id={task._id}
-                                    checked={isFollowUpWith.includes(task._id)}
+                                    checked={isFollowedUpWith.includes(task._id)}
                                     onChange={() =>
                                       handleCheckboxFollowUp(
                                         task._id,
@@ -183,7 +205,7 @@ const TeamMemberTask = ({
                                       )
                                     }
                                   />
-                                  {isFollowUpWith.includes(task._id) && (
+                                  {isFollowedUpWith.includes(task._id) && (
                                     <FontAwesomeIcon
                                       icon={faCheck}
                                       title="This box is used to track follow ups. Clicking it means you’ve checked in with a person that they are on track to meet their deadline"

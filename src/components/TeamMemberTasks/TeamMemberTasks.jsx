@@ -1,7 +1,7 @@
 import { faClock, faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 import { Table } from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { fetchTeamMembersTask, deleteTaskNotification, setFollowup } from 'actions/task';
+import { fetchTeamMembersTask, deleteTaskNotification, setFollowUp } from 'actions/task';
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector, connect } from 'react-redux';
 import Loading from '../common/Loading';
@@ -143,7 +143,10 @@ const TeamMemberTasks = props => {
   };
 
   const handleFollowUp = (taskId, userId, data, userIndex, taskIndex) => {
-    dispatch(setFollowup(taskId, userId, data))
+    const { followUpCheck, followUpPercentageDeadline, needFollowUp } = data;
+    console.log(followUpCheck, followUpPercentageDeadline, needFollowUp);
+    console.log(taskId, userId, userIndex, taskIndex);
+    dispatch(setFollowUp(taskId, userId, data))
       .then(() => {
         setTeamList(prevState => {
           const newTeamList = [...prevState];
@@ -151,31 +154,18 @@ const TeamMemberTasks = props => {
             taskIndex
           ].resources.map(resource => {
             if (resource.userID === userId) {
-              return { ...resource, followedUp: data };
+              return {
+                ...resource,
+                followedUp: {
+                  followUpCheck,
+                  followUpPercentageDeadline,
+                  needFollowUp,
+                },
+              };
             }
             return resource;
           });
           return newTeamList;
-
-          // const updatedUsersWithTasks = prevState.map(user => {
-          //   if (user.personId === userId) {
-          //     const updatedTasks = user.tasks.map(task => {
-          //       if (task._id === taskId) {
-          //         const updatedResources = task.resources.map(resource => {
-          //           if (resource.userID === userId) {
-          //             return { ...resource, followedUp: data };
-          //           }
-          //           return resource;
-          //         });
-          //         return { ...task, resources: updatedResources };
-          //       }
-          //       return task;
-          //     });
-          //     return { ...user, tasks: updatedTasks };
-          //   }
-          //   return user;
-          // });
-          // return updatedUsersWithTasks;
         });
       })
       .catch(error => {
@@ -252,6 +242,7 @@ const TeamMemberTasks = props => {
       setTimeEntriesList([...seventyTwoHoursTimeEntries]);
     }
   };
+
   const renderTeamsList = () => {
     if (usersWithTasks && usersWithTasks.length > 0) {
       // give different users different views
@@ -309,6 +300,7 @@ const TeamMemberTasks = props => {
       }
 
       getTimeEntriesForPeriod(filteredMembers);
+      // checkWhoNeedsFollowUp(filteredMembers);
       setTeamList([...filteredMembers]);
     }
   };
