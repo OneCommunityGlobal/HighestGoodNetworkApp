@@ -183,9 +183,7 @@ const TeamMemberTasks = props => {
     setFortyEightHoursTimeEntries([...fortyEightList]);
     setTwentyFourHoursTimeEntries([...twentyFourList]);
 
-    if (usersListTasks.length && twentyFourList.length && fortyEightList.length) {
-      setFinishLoading(true);
-    }
+    setFinishLoading(true);
   };
 
   //Display timelogs based on selected period
