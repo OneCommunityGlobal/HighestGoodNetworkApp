@@ -22,9 +22,7 @@ export class WeeklySummariesReport extends Component {
 
   async componentDidMount() {
     await this.props.getWeeklySummariesReport();
-    window.addEventListener('popstate', () => {
-      localStorage.removeItem('tabSelection');
-    });
+    window.addEventListener('popstate', removeLocalStorageItem);
     this.setState({
       error: this.props.error,
       loading: this.props.loading,
@@ -36,9 +34,7 @@ export class WeeklySummariesReport extends Component {
 
   componentWillUnmount() {
     localStorage.removeItem('tabSelection');
-    window.removeEventListener('popstate', () => {
-      localStorage.removeItem('tabSelection');
-    });
+    window.removeEventListener('popstate', removeLocalStorageItem);
   }
 
   getWeekDates = weekIndex => ({
@@ -223,6 +219,10 @@ export class WeeklySummariesReport extends Component {
     );
   }
 }
+
+const removeLocalStorageItem = () => {
+  localStorage.removeItem('tabSelection');
+};
 
 WeeklySummariesReport.propTypes = {
   error: PropTypes.any,
