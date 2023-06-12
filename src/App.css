@@ -255,10 +255,6 @@ input:checked + .slider:before {
   color: #007bff
 }
 
-/* .dark .form-group label {
-  color: white
-} */
-
 .dark .modal-footer {
   color: black
 }
@@ -326,3 +322,14 @@ input:checked + .slider:before {
   color: #007bff !important
 }
 
+.dark .team-weekly-header h6 {
+  color:  #007bff
+}
+
+.dark .team-weekly-summaries div p {
+  color:  #007bff
+}
+
+.dark .css-1dimb5e-singleValue {
+  color: #007bff
+}
