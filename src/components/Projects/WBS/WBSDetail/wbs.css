@@ -36,7 +36,6 @@
   position: relative;
   z-index: -50;
   opacity: 0.1;
-
 }
 .load {
   position: relative;
@@ -168,9 +167,22 @@
 
 @media only screen and (max-width: 600px) {
   .desktop-view {
-      display: none;
+    display: none;
   }
+
   .table td {
-      padding: 5px !important;
+    padding: 5px !important;
+  }
+}
+
+@media (min-width: 200px) and (max-width: 1496px) {
+  table.responsive {
+    table-layout: fixed;
+  }
+
+  .flex-responsive {
+    display: flex;
+    flex-direction: row;
+    column-gap: 2vw;
   }
 }
