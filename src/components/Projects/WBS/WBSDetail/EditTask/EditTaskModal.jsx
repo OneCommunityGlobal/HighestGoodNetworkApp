@@ -57,7 +57,6 @@ const EditTaskModal = props => {
   // assigned
   const [assigned, setAssigned] = useState(false);
 
-
   // status
   const [status, setStatus] = useState('false');
 
@@ -117,7 +116,6 @@ const EditTaskModal = props => {
   const findMembers = () => {
     const memberList = members.members ? props.projectMembers.members : members;
     for (let i = 0; i < memberList.length; i++) {
-
       if (
         `${memberList[i].firstName} ${memberList[i].lastName}`
           .toLowerCase()
@@ -269,11 +267,11 @@ const EditTaskModal = props => {
     }
   };
 
-  const handleAssign = (value) => {
+  const handleAssign = value => {
     setAssigned(value);
   };
 
-  const handleStatus = (value) => {
+  const handleStatus = value => {
     setStatus(value);
   };
 
@@ -290,7 +288,7 @@ const EditTaskModal = props => {
         <ModalBody>
           <ReactTooltip />
           <table
-            className={`table table-bordered 
+            className={`table table-bordered responsive
             ${
               hasPermission(role, 'editTask', roles, userPermissions) ||
               hasPermission(role, 'suggestTask', roles, userPermissions)
@@ -356,7 +354,7 @@ const EditTaskModal = props => {
                         id="true"
                         name="Assigned"
                         value="true"
-                        onChange={(e) => handleAssign(true)}
+                        onChange={e => handleAssign(true)}
                         checked={assigned}
                       />
                       <label className="form-check-label" htmlFor="true">
@@ -370,7 +368,7 @@ const EditTaskModal = props => {
                         id="false"
                         name="Assigned"
                         value="false"
-                        onChange={(e) => handleAssign(false)}
+                        onChange={e => handleAssign(false)}
                         checked={!assigned}
                       />
                       <label className="form-check-label" htmlFor="false">
@@ -385,29 +383,29 @@ const EditTaskModal = props => {
                 <td scope="col">
                   <div className="flex-row  d-inline align-items-center">
                     <div className="form-check form-check-inline">
-                    <input
-                      className="form-check-input"
-                      type="radio"
-                      id="started"
-                      name="started"
-                      value="true"
-                      onChange={(e) => handleStatus('true')}
-                      checked={status === 'true' ? true : false}
-                    />
+                      <input
+                        className="form-check-input"
+                        type="radio"
+                        id="started"
+                        name="started"
+                        value="true"
+                        onChange={e => handleStatus('true')}
+                        checked={status === 'true' ? true : false}
+                      />
                       <label className="form-check-label" htmlFor="started">
                         Started
                       </label>
                     </div>
                     <div className="form-check form-check-inline">
-                    <input
-                      className="form-check-input"
-                      type="radio"
-                      id="notStarted"
-                      name="started"
-                      value="false"
-                      onChange={(e) => handleStatus('false')}
-                      checked={status === 'false' ? true : false}
-                    />
+                      <input
+                        className="form-check-input"
+                        type="radio"
+                        id="notStarted"
+                        name="started"
+                        value="false"
+                        onChange={e => handleStatus('false')}
+                        checked={status === 'false' ? true : false}
+                      />
                       <label className="form-check-label" htmlFor="notStarted">
                         Not Started
                       </label>
@@ -420,7 +418,7 @@ const EditTaskModal = props => {
                   Hours
                 </td>
                 <td scope="col" data-tip="Hours - Best-case" className="w-100">
-                  <div className="d-inline py-2">
+                  <div className="py-2 flex-responsive">
                     <label htmlFor="bestCase" className="text-nowrap mr-2 w-25 mr-4">
                       Best-case
                     </label>
@@ -440,7 +438,7 @@ const EditTaskModal = props => {
                         : ''}
                     </div>
                   </div>
-                  <div className="d-inline py-2">
+                  <div className="py-2 flex-responsive">
                     <label htmlFor="worstCase" className="text-nowrap mr-2  w-25 mr-4">
                       Worst-case
                     </label>
@@ -459,7 +457,7 @@ const EditTaskModal = props => {
                         : ''}
                     </div>
                   </div>
-                  <div className="d-inline py-2">
+                  <div className="py-2 flex-responsive">
                     <label htmlFor="mostCase" className="text-nowrap mr-2 w-25 mr-4">
                       Most-case
                     </label>
@@ -478,7 +476,7 @@ const EditTaskModal = props => {
                         : ''}
                     </div>
                   </div>
-                  <div className="d-inline py-2">
+                  <div className="py-2 flex-responsive">
                     <label htmlFor="Estimated" className="text-nowrap mr-2  w-25 mr-4">
                       Estimated
                     </label>
