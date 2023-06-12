@@ -348,8 +348,7 @@ function AddTaskModal(props) {
 
   useEffect(() => {
     if (props.level >= 1) {
-      const categoryMother = props.tasks.taskItems.find(({ _id }) => _id === props.taskId)
-        .category;
+      const categoryMother = props.tasks.taskItems.find(({ _id }) => _id === props.taskId).category;
       if (categoryMother) {
         setCategory(categoryMother);
       }
@@ -387,7 +386,7 @@ function AddTaskModal(props) {
         <ModalBody>
           <ReactTooltip />
 
-          <table className="table table-bordered">
+          <table className="table table-bordered responsive">
             <tbody>
               <tr>
                 <td scope="col" data-tip="WBS ID">
@@ -502,7 +501,7 @@ function AddTaskModal(props) {
                   Hours
                 </td>
                 <td scope="col" data-tip="Hours - Best-case" className="w-100">
-                  <div className="d-inline py-2">
+                  <div className="py-2 flex-responsive">
                     <label htmlFor="bestCase" className="text-nowrap mr-2 w-25 mr-4">
                       Best-case
                     </label>
@@ -517,13 +516,12 @@ function AddTaskModal(props) {
                       className="w-25"
                     />
                     <div className="warning">
-                      {
-                        hoursWarning ? 
-                        'Hours - Best-case < Hours - Most-case < Hours - Most-case' : ''
-                      }
+                      {hoursWarning
+                        ? 'Hours - Best-case < Hours - Most-case < Hours - Most-case'
+                        : ''}
                     </div>
                   </div>
-                  <div className="d-inline py-2">
+                  <div className="py-2 flex-responsive">
                     <label htmlFor="worstCase" className="text-nowrap mr-2  w-25 mr-4">
                       Worst-case
                     </label>
@@ -542,7 +540,7 @@ function AddTaskModal(props) {
                         : ''}
                     </div>
                   </div>
-                  <div className="d-inline py-2">
+                  <div className="py-2 flex-responsive">
                     <label htmlFor="mostCase" className="text-nowrap mr-2 w-25 mr-4">
                       Most-case
                     </label>
@@ -561,7 +559,7 @@ function AddTaskModal(props) {
                         : ''}
                     </div>
                   </div>
-                  <div className="d-inline py-2">
+                  <div className="py-2 flex-responsive">
                     <label htmlFor="Estimated" className="text-nowrap mr-2  w-25 mr-4">
                       Estimated
                     </label>
