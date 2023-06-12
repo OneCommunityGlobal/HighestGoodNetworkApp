@@ -328,6 +328,78 @@ export class WeeklySummary extends Component {
       });
     }
   };
+  handleClear = async event => {
+    event.preventDefault();
+    // Providing a custom toast id to prevent duplicate.
+    const toastIdOnSave = 'toast-on-save';
+
+    // const errors = this.validate();
+    this.setState({ errors: errors || {} });
+    // if (errors) return;
+
+    // After submitting summaries, count current submits in four week
+    let currentSubmittedCount = 0;
+    if (this.state.formElements.summary !== '') {
+      currentSubmittedCount += 1;
+    }
+    if (this.state.formElements.summaryLastWeek !== '') {
+      currentSubmittedCount += 1;
+    }
+    if (this.state.formElements.summaryBeforeLast !== '') {
+      currentSubmittedCount += 1;
+    }
+    if (this.state.formElements.summaryThreeWeeksAgo !== '') {
+      currentSubmittedCount += 1;
+    }
+    // Check whether has newly filled summary
+    const diffInSubmittedCount = currentSubmittedCount - this.state.submittedCountInFourWeeks;
+    if (diffInSubmittedCount !== 0) {
+      this.setState({ summariesCountShowing: this.state.formElements.weeklySummariesCount + 1 });
+    }
+
+    const modifiedWeeklySummaries = {
+      mediaUrl: this.state.formElements.mediaUrl.trim(),
+      weeklySummaries: [
+        { summary: this.state.formElements.summary, dueDate: this.state.dueDate },
+        { summary: this.state.formElements.summaryLastWeek, dueDate: this.state.dueDateLastWeek },
+        {
+          summary: this.state.formElements.summaryBeforeLast,
+          dueDate: this.state.dueDateBeforeLast,
+        },
+        {
+          summary: this.state.formElements.summaryThreeWeeksAgo,
+          dueDate: this.state.dueDateThreeWeeksAgo,
+        },
+      ],
+      weeklySummariesCount: this.state.formElements.weeklySummariesCount + diffInSubmittedCount,
+    };
+
+    const updateWeeklySummaries = this.props.updateWeeklySummaries(
+      this.props.asUser || this.props.currentUser.userid,
+      modifiedWeeklySummaries,
+    );
+    let saveResult;
+    if (updateWeeklySummaries) {
+      saveResult = await updateWeeklySummaries();
+    }
+
+    if (saveResult === 200) {
+      toast.success('✔ The data was saved successfully!', {
+        toastId: toastIdOnSave,
+        pauseOnFocusLoss: false,
+        autoClose: 3000,
+      });
+      this.props.getUserProfile(this.props.asUser || this.props.currentUser.userid);
+      this.props.getWeeklySummaries(this.props.asUser || this.props.currentUser.userid);
+      this.props.setPopup(false);
+    } else {
+      toast.error('✘ The data could not be saved!', {
+        toastId: toastIdOnSave,
+        pauseOnFocusLoss: false,
+        autoClose: 3000,
+      });
+    }
+  };
 
   render() {
     const {
@@ -418,7 +490,7 @@ export class WeeklySummary extends Component {
             {Object.keys(summariesLabels).map((summaryName, i) => {
               let tId = String(i + 1);
               return (
-                <TabPane tabId={tId} key={tId}>
+              <TabPane tabId={tId} key={tId}>
                   <Row>
                     <Col>
                       <FormGroup>
@@ -520,6 +592,14 @@ export class WeeklySummary extends Component {
                         onClick={this.handleSave}
                       >
                         Save
+                      </Button>
+                    </FormGroup>
+                    <FormGroup className="mt-2">
+                      <Button
+                        className="px-5 btn--dark-sea-green"
+                        onClick={this.handleClear}
+                      >
+                        Clear
                       </Button>
                     </FormGroup>
                   </Col>
