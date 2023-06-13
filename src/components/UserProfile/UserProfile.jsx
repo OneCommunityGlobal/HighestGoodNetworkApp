@@ -840,7 +840,7 @@ function UserProfile(props) {
                   userTeams={teams || []}
                   teamsData={props?.allTeams?.allTeamsData || []}
                   onAssignTeam={onAssignTeam}
-                  onDeleteteam={onDeleteTeam}
+                  onDeleteTeam={onDeleteTeam}
                   edit={hasPermission(requestorRole, 'editUserProfile', roles, userPermissions)}
                   role={requestorRole}
                   roles={roles}
@@ -1040,7 +1040,7 @@ function UserProfile(props) {
                     userTeams={userProfile?.teams || []}
                     teamsData={props?.allTeams?.allTeamsData || []}
                     onAssignTeam={onAssignTeam}
-                    onDeleteteam={onDeleteTeam}
+                    onDeleteTeam={onDeleteTeam}
                     edit={hasPermission(requestorRole, 'editUserProfile', roles, userPermissions)}
                     role={requestorRole}
                     roles={roles}
@@ -1232,7 +1232,8 @@ function UserProfile(props) {
                   </Link>
                 )}
               {canEdit &&
-                (activeTab === '1' || activeTab === '3' ||
+                (activeTab === '1' ||
+                  activeTab === '3' ||
                   hasPermission(requestorRole, 'editUserProfile', roles, userPermissions)) && (
                   <>
                     <SaveButton
