@@ -11,9 +11,11 @@ import ToggleSwitch from '../UserProfile/UserProfileEdit/ToggleSwitch';
 import axios from 'axios';
 import { ENDPOINTS } from '../../utils/URL';
 import { useState } from 'react';
+import { assignStarDotColors, showStar } from 'utils/leaderboardPermissions';
 
-const FormattedReport = ({ summaries, weekIndex }) => {
+const FormattedReport = ({ summaries, weekIndex, bioCanEdit }) => {
   const emails = [];
+  //const bioCanEdit = role === 'Owner' || role === 'Administrator';
 
   summaries.forEach(summary => {
     if (summary.email !== undefined && summary.email !== null) {
@@ -28,7 +30,8 @@ const FormattedReport = ({ summaries, weekIndex }) => {
   while (emailString.includes('\n')) emailString = emailString.replace('\n', ', ');
 
   const alphabetize = summaries => {
-    return summaries.sort((a, b) =>
+    const temp = [...summaries]
+    return temp.sort((a, b) =>
       `${a.firstName} ${a.lastName}`.localeCompare(`${b.firstName} ${b.lastname}`),
     );
   };
@@ -143,7 +146,7 @@ const FormattedReport = ({ summaries, weekIndex }) => {
       const userProfile = response.data;
       const res = await axios.put(url, {
         ...userProfile,
-        bioPosted: !bioStatus,
+        bioPosted: bioStatus,
       });
       if (res.status === 200) {
         toast.success('You have changed the bio announcement status of this user.');
@@ -153,12 +156,46 @@ const FormattedReport = ({ summaries, weekIndex }) => {
     }
   };
 
+  const bioSwitch = (userId, bioPosted) => {
+    const [bioStatus, setBioStatus] = useState(bioPosted);
+    return (
+      <div>
+        <div className="bio-toggle">
+          <b>Bio announcement:</b>
+        </div>
+        <div className="bio-toggle">
+          <ToggleSwitch
+            switchType="bio"
+            state={bioStatus}
+            handleUserProfile={(bio) => {
+              setBioStatus(bio);
+              handleChangeBioPosted(userId, bio);
+            }}
+          />
+        </div>
+      </div>
+    );
+  };
+
+  const bioLabel = (userId, bioPosted) => {
+    return (
+      <div>
+        <b>Bio announcement:</b>
+        {bioPosted === 'default' ? ' Not requested/posted' :
+         bioPosted === 'posted' ? ' Posted' : 
+         ' Requested'}
+      </div>
+    );
+  };
+
+  const bioFunction = bioCanEdit ? bioSwitch : bioLabel;
+
   return (
     <>
       {alphabetize(summaries).map((summary, index) => {
         const hoursLogged = (summary.totalSeconds[weekIndex] || 0) / 3600;
         const googleDocLink = getGoogleDocLink(summary);
-        const [isBioPosted, setIsBioPosted] = useState(summary.bioPosted);
+
         return (
           <div
             style={{ padding: '20px 0', marginTop: '5px', borderBottom: '1px solid #DEE2E6' }}
@@ -173,26 +210,39 @@ const FormattedReport = ({ summaries, weekIndex }) => {
               <span onClick={() => handleGoogleDocClick(googleDocLink)}>
                 <img className="google-doc-icon" src={google_doc_icon} alt="google_doc" />
               </span>
+              {showStar(hoursLogged, summary.weeklycommittedHours) && (
+                <i
+                  className="fa fa-star"
+                  title={`Weekly Committed: ${summary.weeklycommittedHours} hours`}
+                  style={{
+                    color: assignStarDotColors(hoursLogged, summary.weeklycommittedHours),
+                    fontSize: '55px',
+                    marginLeft: '10px',
+                    verticalAlign: 'middle',
+                    position: 'relative',
+                  }}
+                >
+                  <span
+                    style={{
+                      position: 'absolute',
+                      top: '50%',
+                      left: '50%',
+                      transform: 'translate(-50%, -50%)',
+                      color: 'white',
+                      fontWeight: 'bold',
+                      fontSize: '10px',
+                    }}
+                  >
+                    +{Math.round((hoursLogged / summary.weeklycommittedHours - 1) * 100)}%
+                  </span>
+                </i>
+              )}
             </div>
             <div>
               {' '}
               <b>Media URL:</b> {getMediaUrlLink(summary)}
             </div>
-            <div>
-              <div className="bio-toggle">
-                <b>Bio announcement:</b>
-              </div>
-              <div className="bio-toggle">
-                <ToggleSwitch
-                  switchType="bio"
-                  state={isBioPosted ? false : true}
-                  handleUserProfile={() => {
-                    handleChangeBioPosted(summary._id, isBioPosted);
-                    setIsBioPosted(!isBioPosted);
-                  }}
-                />
-              </div>
-            </div>
+            {bioFunction(summary._id, summary.bioPosted)}
             {getTotalValidWeeklySummaries(summary)}
             {hoursLogged >= summary.weeklycommittedHours && (
               <p>
