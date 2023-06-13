@@ -28,7 +28,7 @@ const UserTeamsTable = props => {
             </div>
           )}
           <div className="row">
-            <Col
+            {/* <Col
               md={props.edit ? '10' : '12'}
               style={{
                 backgroundColor: ' #e9ecef',
@@ -37,7 +37,16 @@ const UserTeamsTable = props => {
               }}
             >
               <span className="teams-span">Teams</span>
-            </Col>
+            </Col> */}
+            <div className="col"
+              style={{
+                backgroundColor: ' #e9ecef',
+                border: '1px solid #ced4da',
+                marginBottom: '10px',
+              }}
+            >
+              <span className="teams-span">Teams</span>
+            </div>
             {props.edit && props.role && (
               <Col md="2">
                 {hasPermission(props.role, 'assignTeamToUser', roles, userPermissions) ? (

@@ -4,7 +4,18 @@
   margin-top: 20px;
 }
 
+.projecttable-container .col-md-2,
+.teamtable-container .col-md-2 {
+  padding: 0px;
+}
 
+.container {
+  padding: 0;
+}
+
+.row {
+  margin-left: 0;
+}
 
 .teamtable-container .container,
 .projecttable-container .container {
@@ -18,9 +29,7 @@
 
 .btn-addteam,
 .btn-addproject {
-  width: 120px;
   margin-bottom: 10px;
-  margin-left: -15px;
   outline: none;
 }
 
