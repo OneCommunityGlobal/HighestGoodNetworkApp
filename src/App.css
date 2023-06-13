@@ -330,3 +330,6 @@ input:checked + .slider:before {
   color:  #007bff
 }
 
+.dark #react-select-2-listbox, .dark #react-select-3-listbox{
+  color: #007bff
+}
