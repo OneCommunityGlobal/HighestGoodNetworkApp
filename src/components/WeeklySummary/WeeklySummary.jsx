@@ -237,6 +237,7 @@ export class WeeklySummary extends Component {
   handleEditorChange = (content, editor) => {
     // Filter out blank pagagraphs inserted by tinymce replacing new line characters. Need those removed so Joi could do word count checks properly.
     const filteredContent = content.replace(/<p>&nbsp;<\/p>/g, '');
+
     const errors = { ...this.state.errors };
     const errorMessage = this.validateEditorProperty(filteredContent, editor.id);
     if (errorMessage) errors[editor.id] = errorMessage;
@@ -260,6 +261,52 @@ export class WeeklySummary extends Component {
     formElements[name] = checked;
     this.setState({ formElements, errors });
   };
+
+  handleMoveOptions = event => {
+    const activeTab = this.state.activeTab;
+    const selectedOption = event.target.value;
+    
+    if (selectedOption !== activeTab){
+      let movedContent = '';
+      let formElements = {...this.state.formElements};
+  
+      switch (activeTab) {
+        case "1":
+          movedContent = formElements.summary;
+          formElements.summary = '';
+          break;
+        case "2":
+          movedContent = formElements.summaryLastWeek;
+          formElements.summaryLastWeek = '';
+          break;
+        case "3":
+          movedContent = formElements.summaryBeforeLast;
+          formElements.summaryBeforeLast = '';
+          break;
+        default:
+          movedContent = formElements.summaryThreeWeeksAgo;
+          formElements.summaryThreeWeeksAgo = '';
+      }
+      
+      switch (selectedOption) {
+        case "1":
+          formElements.summary = movedContent;
+          break;
+        case "2":
+          formElements.summaryLastWeek = movedContent;
+          break;
+        case "3":
+          formElements.summaryBeforeLast = movedContent;
+          break;
+        default:
+          formElements.summaryThreeWeeksAgo = movedContent;
+      }
+  
+      this.setState({ formElements });
+    }
+  }
+  
+ 
 
   handleSave = async event => {
     event.preventDefault();
@@ -529,25 +576,25 @@ export class WeeklySummary extends Component {
                         Move to correct week
                         <FormGroup check>
                           <Label check>
-                            <Input type="radio" name="weekSelect" />{' '}
+                            <Input type="radio" name="weekSelect" onChange={this.handleMoveOptions} value="1" />{' '}
                             This Week
                           </Label>
                         </FormGroup>
                         <FormGroup check>
                           <Label check>
-                            <Input type="radio" name="weekSelect" />{' '}
+                            <Input type="radio" name="weekSelect" onChange={this.handleMoveOptions} value="2" />{' '}
                             Last Week
                           </Label>
                         </FormGroup>
                         <FormGroup check>
                           <Label check>
-                            <Input type="radio" name="weekSelect" />{' '}
+                            <Input type="radio" name="weekSelect" onChange={this.handleMoveOptions} value="3" />{' '}
                             Week Before Last Week
                           </Label>
                         </FormGroup>
                         <FormGroup check>
                           <Label check>
-                            <Input type="radio" name="weekSelect" />{' '}
+                            <Input type="radio" name="weekSelect" onChange={this.handleMoveOptions} value="4" />{' '}
                             Three Weeks Ago
                           </Label>
                         </FormGroup>
