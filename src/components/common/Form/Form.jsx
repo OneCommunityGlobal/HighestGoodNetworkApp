@@ -262,9 +262,6 @@ class Form extends Component {
     let { errors, data } = this.state;
     data[name] = value;
     const errorMessage = this.validateProperty(name, value);
-
-    
-
     if (errorMessage) {
       errors[name] = errorMessage;
     } else {
@@ -295,7 +292,6 @@ class Form extends Component {
     const options = { abortEarly: false };
     const { error } = Joi.validate(this.state.data, this.schema, options);
 
-
     if (!error) return null;
     error.details.forEach(element => {
       errors[element.path[0]] = element.message;
@@ -313,7 +309,6 @@ class Form extends Component {
     console.log("submit")
     const errors = this.validateForm();
     this.setState({ errors: errors || {} });
-
     if (errors) return;
     this.doSubmit();
   };
@@ -356,7 +351,6 @@ class Form extends Component {
 
   renderInput({ name, label, type = 'text', ...rest }) {
     let { data, errors } = { ...this.state };
-    console.log("render input: ", errors, errors[name] , name )
     return (
       <Input
         name={name}
