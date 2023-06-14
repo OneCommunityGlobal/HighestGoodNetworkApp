@@ -32,6 +32,7 @@ import { toast } from 'react-toastify';
 import { WeeklySummaryContentTooltip, MediaURLTooltip } from './WeeklySummaryTooltips';
 import classnames from 'classnames';
 import { getUserProfile } from 'actions/userProfile';
+import Radio from 'components/common/Radio/Radio';
 
 // Need this export here in order for automated testing to work.
 export class WeeklySummary extends Component {
@@ -45,7 +46,6 @@ export class WeeklySummary extends Component {
       mediaUrl: '',
       weeklySummariesCount: 0,
       mediaConfirm: false,
-      weekConfirm: false,
     },
     dueDate: moment()
       .tz('America/Los_Angeles')
@@ -71,6 +71,7 @@ export class WeeklySummary extends Component {
     errors: {},
     fetchError: null,
     loading: true,
+    weekSelect: "1"
   };
 
   async componentDidMount() {
@@ -129,7 +130,6 @@ export class WeeklySummary extends Component {
         mediaUrl: mediaUrl || '',
         weeklySummariesCount: weeklySummariesCount || 0,
         mediaConfirm: false,
-        weekConfirm: false,
       },
       dueDate,
       dueDateLastWeek,
@@ -139,6 +139,7 @@ export class WeeklySummary extends Component {
       activeTab: '1',
       fetchError: this.props.fetchError,
       loading: this.props.loading,
+      weekSelect: "1"
     });
   }
 
@@ -191,9 +192,6 @@ export class WeeklySummary extends Component {
     mediaConfirm: Joi.boolean()
       .invalid(false)
       .label('Media Confirm'),
-    weekConfirm: Joi.boolean()
-      .invalid(false)
-      .label('Week Confirm'),
   };
 
   validate = () => {
@@ -263,10 +261,10 @@ export class WeeklySummary extends Component {
   };
 
   handleMoveOptions = event => {
+    event.persist();
     const activeTab = this.state.activeTab;
-    const selectedOption = event.target.value;
-    
-    if (selectedOption !== activeTab){
+    const weekSelect = event.target.value;
+    if (weekSelect !== activeTab){
       let movedContent = '';
       let formElements = {...this.state.formElements};
   
@@ -288,7 +286,7 @@ export class WeeklySummary extends Component {
           formElements.summaryThreeWeeksAgo = '';
       }
       
-      switch (selectedOption) {
+      switch (weekSelect) {
         case "1":
           formElements.summary = movedContent;
           break;
@@ -301,8 +299,7 @@ export class WeeklySummary extends Component {
         default:
           formElements.summaryThreeWeeksAgo = movedContent;
       }
-  
-      this.setState({ formElements });
+      this.setState({ formElements, weekSelect });
     }
   }
   
@@ -555,61 +552,53 @@ export class WeeklySummary extends Component {
                         valid={formElements.mediaConfirm}
                         onChange={this.handleCheckboxChange}
                       />
-                      <CustomInput
-                        id="weekConfirm"
-                        name="weekConfirm"
-                        type="checkbox"
-                        label="I confirm this summary is for the current week"
-                        htmlFor="weekConfirm"
-                        checked={formElements.weekConfirm}
-                        valid={formElements.weekConfirm}
-                        onChange={this.handleCheckboxChange}
-                      />
                     </FormGroup>
                     {errors.mediaConfirm && (
                       <Alert color="danger">
                         Please confirm that you have provided the required media files.
                       </Alert>
                     )}
-                    {errors.weekConfirm && (
-                      <Label>
-                        Move to correct week
-                        <FormGroup check>
-                          <Label check>
-                            <Input type="radio" name="weekSelect" onChange={this.handleMoveOptions} value="1" />{' '}
-                            This Week
-                          </Label>
-                        </FormGroup>
-                        <FormGroup check>
-                          <Label check>
-                            <Input type="radio" name="weekSelect" onChange={this.handleMoveOptions} value="2" />{' '}
-                            Last Week
-                          </Label>
-                        </FormGroup>
-                        <FormGroup check>
-                          <Label check>
-                            <Input type="radio" name="weekSelect" onChange={this.handleMoveOptions} value="3" />{' '}
-                            Week Before Last Week
-                          </Label>
-                        </FormGroup>
-                        <FormGroup check>
-                          <Label check>
-                            <Input type="radio" name="weekSelect" onChange={this.handleMoveOptions} value="4" />{' '}
-                            Three Weeks Ago
-                          </Label>
-                        </FormGroup>
-                      </Label>
-                    )}
-                    
-                    {/* {!errors.keepUnchange && (
-                      <Label>
-                      <Input
-                      type="radio"
-                      value={"Week Before Last"}
-                      checked={selectedWeek == "Week Before Last"}
+                  </Col>
+                  <Col>
+                    <Label>
+                      I confirm this summary is for
+                      <CustomInput
+                        id="thisWeek"
+                        name="weekSelect"
+                        type="radio"
+                        label="This week"
+                        value="1"
+                        onChange={this.handleMoveOptions}
+                        disabled={activeTab === '1'}
                       />
-                      {/* onChange={(e) => this.moveSelectedWeek(e.target.value)} 
-                    */}
+                      <CustomInput
+                        id="lastWeek"
+                        name="weekSelect"
+                        type="radio"
+                        label="Last week"
+                        value="2"
+                        onChange={this.handleMoveOptions}
+                        disabled={activeTab === '2'}
+                      />
+                      <CustomInput
+                        id="weekBeforeLast"
+                        name="weekSelect"
+                        type="radio"
+                        label="Week fore Last"
+                        value="3"
+                        onChange={this.handleMoveOptions}
+                        disabled={activeTab === '3'}
+                      />
+                      <CustomInput
+                        id="threeWeeksAgo"
+                        name="weekSelect"
+                        type="radio"
+                        label="Three Weeks Ago"
+                        value="4"
+                        onChange={this.handleMoveOptions}
+                        disabled={activeTab === '4'}
+                      />
+                    </Label>
                   </Col>
                 </Row>
                 <Row className="mt-4">
