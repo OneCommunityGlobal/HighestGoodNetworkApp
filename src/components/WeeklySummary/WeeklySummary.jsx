@@ -32,7 +32,6 @@ import { toast } from 'react-toastify';
 import { WeeklySummaryContentTooltip, MediaURLTooltip } from './WeeklySummaryTooltips';
 import classnames from 'classnames';
 import { getUserProfile } from 'actions/userProfile';
-import Radio from 'components/common/Radio/Radio';
 
 // Need this export here in order for automated testing to work.
 export class WeeklySummary extends Component {
@@ -561,12 +560,12 @@ export class WeeklySummary extends Component {
                   </Col>
                   <Col>
                     <Label>
-                      I confirm this summary is for
+                      Move this summary to
                       <CustomInput
                         id="thisWeek"
                         name="weekSelect"
                         type="radio"
-                        label="This week"
+                        label="This Week"
                         value="1"
                         onChange={this.handleMoveOptions}
                         disabled={activeTab === '1'}
@@ -575,7 +574,7 @@ export class WeeklySummary extends Component {
                         id="lastWeek"
                         name="weekSelect"
                         type="radio"
-                        label="Last week"
+                        label="Last Week"
                         value="2"
                         onChange={this.handleMoveOptions}
                         disabled={activeTab === '2'}
@@ -584,7 +583,7 @@ export class WeeklySummary extends Component {
                         id="weekBeforeLast"
                         name="weekSelect"
                         type="radio"
-                        label="Week fore Last"
+                        label="Week Before Last"
                         value="3"
                         onChange={this.handleMoveOptions}
                         disabled={activeTab === '3'}
