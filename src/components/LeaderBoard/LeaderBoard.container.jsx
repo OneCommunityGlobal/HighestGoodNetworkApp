@@ -1,43 +1,11 @@
 import { getLeaderboardData, getOrgData } from '../../actions/leaderBoardData';
 import { connect } from 'react-redux';
 import Leaderboard from './Leaderboard';
-import { getcolor, getprogress, getProgressValue } from '../../utils/effortColors';
-import { get, round, maxBy } from 'lodash';
+import { getcolor, getprogress} from '../../utils/effortColors';
+import { get, round} from 'lodash';
 
 const mapStateToProps = state => {
-  let leaderBoardData = get(state, 'leaderBoardData', []);
   let user = get(state, 'userProfile', []);
-
-  if (user.role !== 'Administrator' && user.role !== 'Owner' && user.role !== 'Core Team') {
-    leaderBoardData = leaderBoardData.filter(element => {
-      return element.weeklycommittedHours > 0 || user._id === element.personId;
-    });
-  }
-
-  if (leaderBoardData.length) {
-    let maxTotal = maxBy(leaderBoardData, 'totaltime_hrs').totaltime_hrs || 10;
-
-    leaderBoardData = leaderBoardData.map(element => {
-      element.didMeetWeeklyCommitment =
-        element.totaltangibletime_hrs >= element.weeklycommittedHours ? true : false;
-
-      element.weeklycommitted = round(element.weeklycommittedHours, 2);
-      element.tangibletime = round(element.totaltangibletime_hrs, 2);
-      element.intangibletime = round(element.totalintangibletime_hrs, 2);
-
-      element.tangibletimewidth = round((element.totaltangibletime_hrs * 100) / maxTotal, 0);
-
-      element.intangibletimewidth = round((element.totalintangibletime_hrs * 100) / maxTotal, 0);
-
-      element.barcolor = getcolor(element.totaltangibletime_hrs);
-      element.barprogress = getProgressValue(element.totaltangibletime_hrs, 40);
-      element.totaltime = round(element.totaltime_hrs, 2);
-      element.isVisible = element.role === 'Volunteer' || element.isVisible;
-
-      return element;
-    });
-  }
-
   const orgData = get(state, 'orgData', {});
 
   orgData.name = `HGN Totals: ${orgData.memberCount} Members`;
@@ -54,7 +22,6 @@ const mapStateToProps = state => {
 
   return {
     isAuthenticated: get(state, 'auth.isAuthenticated', false),
-    leaderBoardData: leaderBoardData,
     loggedInUser: get(state, 'auth.user', {}),
     organizationData: orgData,
     timeEntries: get(state, 'timeEntries', {}),

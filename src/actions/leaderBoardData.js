@@ -6,12 +6,11 @@ import {
 } from '../constants/leaderBoardData';
 
 export const getLeaderboardData = userId => {
-
   return async dispatch => {
     const url = ENDPOINTS.LEADER_BOARD(userId);
     const res = await httpService.get(url);
-
-    await dispatch(getLeaderBoardDataActionCreator(res.data));
+    dispatch(getLeaderBoardDataActionCreator(res.data));
+    return res.data
   };
 };
 

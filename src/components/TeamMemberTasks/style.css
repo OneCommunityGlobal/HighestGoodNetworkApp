@@ -88,8 +88,10 @@
 .header-box {
   display: flex;
   flex-direction: column;
-  padding: 10px;
+  padding: 10px 0px;
   justify-content: space-between;
+  align-items: center;
+  gap: 20px;
 }
 
 .complete-task-button {
@@ -178,3 +180,23 @@
     font-size: 28px;
   }
 }
+
+.circle-border {
+  border-radius: 6px;
+  width: 42px;
+  height: 42px;
+  font-size: 12px;
+  font-weight: bold;
+  font-family: Arial, Helvetica, sans-serif;
+  color: white;
+  box-shadow: 2px 2px 4px 1px lightgray;
+}
+.my-team{
+  color: white;
+  font-weight: 600;
+  width: max-content;
+  padding-inline: 4px;
+  font-size: 12px;
+}
+
+

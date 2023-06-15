@@ -24,3 +24,39 @@
     border-top-color: rgb(222, 226, 230);
   }
 }
+
+.circle-border {
+  border-radius: 6px;
+  width: 42px;
+  height: 42px;
+  font-size: 12px;
+  font-weight: bold;
+  font-family: Arial, Helvetica, sans-serif;
+  color: white;
+  box-shadow: 2px 2px 4px 1px lightgray;
+}
+.my-team{
+  color: white;
+  font-weight: 200;
+  width: -webkit-max-content;
+  width: 140px;
+  padding-inline: 5px;
+  font-size: 14px;
+  
+}
+
+.no-team{
+  text-align: center;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: lightslategrey;
+}
+
+.learder-head{
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 20px;
+  margin-bottom: 15px;
+  margin-top: 15px;
+}
