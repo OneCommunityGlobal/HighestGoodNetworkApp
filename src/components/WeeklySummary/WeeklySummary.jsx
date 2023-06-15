@@ -32,7 +32,7 @@ import { toast } from 'react-toastify';
 import { WeeklySummaryContentTooltip, MediaURLTooltip } from './WeeklySummaryTooltips';
 import classnames from 'classnames';
 import { getUserProfile } from 'actions/userProfile';
-import CurrentPromptModal from './CurrentPromptModal.jsx'
+import CurrentPromptModal from './CurrentPromptModal.jsx';
 
 // Need this export here in order for automated testing to work.
 export class WeeklySummary extends Component {
@@ -131,9 +131,14 @@ export class WeeklySummary extends Component {
       .add(5, 'days');
 
     const uploadDateXWeeksAgo = x => {
-      summary === ''
-        ? dueDate
-        : weeklySummaries && weeklySummaries[x] && weeklySummaries[x].uploadDate;
+      const summaryList = [summary, summaryLastWeek, summaryBeforeLast, summaryThreeWeeksAgo];
+      const dueDateList = [dueDate, dueDateLastWeek, dueDateBeforeLast, dueDateThreeWeeksAgo];
+      return summaryList[x] !== '' &&
+        weeklySummaries &&
+        weeklySummaries[x] &&
+        weeklySummaries[x].uploadDate
+        ? weeklySummaries[x].uploadDate
+        : dueDateList[x];
     };
     const uploadDate = uploadDateXWeeksAgo(0);
     const uploadDateLastWeek = uploadDateXWeeksAgo(1);
@@ -321,40 +326,37 @@ export class WeeklySummary extends Component {
     let newUploadDateBeforeLast = this.state.uploadDateBeforeLast;
     let newUploadDateThreeWeeksAgo = this.state.uploadDateThreeWeeksAgo;
     const originSummaries = { ...this.state.originSummaries };
-    if (this.state.formElements.summary !== this.state.originSummaries.originSummary) {
+    if (this.state.formElements.summary !== this.state.originSummaries.summary) {
       newUploadDate = moment()
         .tz('America/Los_Angeles')
         .toISOString();
-      originSummaries.originSummary = this.state.formElements.summary;
+      originSummaries.summary = this.state.formElements.summary;
       this.setState({ originSummaries, uploadDate: newUploadDate });
     }
-    if (
-      this.state.formElements.summaryLastWeek !== this.state.originSummaries.originSummaryLastWeek
-    ) {
+    if (this.state.formElements.summaryLastWeek !== this.state.originSummaries.summaryLastWeek) {
       newUploadDateLastWeek = moment()
         .tz('America/Los_Angeles')
         .toISOString();
-      originSummaries.originSummaryLastWeek = this.state.formElements.summaryLastWeek;
+      originSummaries.summaryLastWeek = this.state.formElements.summaryLastWeek;
       this.setState({ originSummaries, uploadDateLastWeek: newUploadDateLastWeek });
     }
     if (
-      this.state.formElements.summaryBeforeLast !==
-      this.state.originSummaries.originSummaryBeforeLast
+      this.state.formElements.summaryBeforeLast !== this.state.originSummaries.summaryBeforeLast
     ) {
       newUploadDateBeforeLast = moment()
         .tz('America/Los_Angeles')
         .toISOString();
-      originSummaries.originSummaryBeforeLast = this.state.formElements.summaryBeforeLast;
+      originSummaries.summaryBeforeLast = this.state.formElements.summaryBeforeLast;
       this.setState({ originSummaries, uploadDateBeforeLast: newUploadDateBeforeLast });
     }
     if (
       this.state.formElements.summaryThreeWeeksAgo !==
-      this.state.originSummaries.originSummaryThreeWeeksAgo
+      this.state.originSummaries.summaryThreeWeeksAgo
     ) {
       newUploadDateThreeWeeksAgo = moment()
         .tz('America/Los_Angeles')
         .toISOString();
-      originSummaries.originSummaryThreeWeeksAgo = this.state.formElements.summaryThreeWeeksAgo;
+      originSummaries.summaryThreeWeeksAgo = this.state.formElements.summaryThreeWeeksAgo;
       this.setState({ originSummaries, uploadDateThreeWeeksAgo: newUploadDateThreeWeeksAgo });
     }
 
@@ -510,7 +512,7 @@ export class WeeklySummary extends Component {
                             Enter your weekly summary below. (required){' '}
                             <WeeklySummaryContentTooltip tabId={tId} />
                           </div>
-                          <CurrentPromptModal/>
+                          <CurrentPromptModal />
                         </Label>
                         <Editor
                           init={{
