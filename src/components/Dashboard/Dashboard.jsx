@@ -12,6 +12,7 @@ import { getUserProfile } from '../../actions/userProfile';
 import { getTimeZoneAPIKey } from '../../actions/timezoneAPIActions';
 import axios from 'axios';
 import { ENDPOINTS } from '../utils/URL';
+
 export const Dashboard = props => {
   const [popup, setPopup] = useState(false);
   const [summaryBarData, setSummaryBarData] = useState(null);
