@@ -6,7 +6,7 @@ const ProjectInfoModal = ({ isOpen, toggle }) => (
     <Modal isOpen={isOpen} toggle={toggle}>
       <ModalHeader toggle={toggle}>HOW TO IMPORT A NEW WORK BREAKDOWN STRUCTURE (WBS)</ModalHeader>
       <ModalBody>
-        <ol type="1">
+        <ol type="1" className="project_info_modal_ol">
           <li>As an Admin, go to Other Links → Projects </li>
           <li>
             Choose the Project you want to import the WBS to and click on the WBS Icon for that
@@ -22,7 +22,7 @@ const ProjectInfoModal = ({ isOpen, toggle }) => (
           <li>
             Click “Import Tasks” and read the “Import Tasks” warning. Check your Google Sheet to
             confirm:
-            <ol type="a">
+            <ol type="a" className="project_info_modal_ol">
               <li>All numbers (for the tasks) are sequential</li>
               <li>No dots/periods at the end of numbers, double periods in numbers, etc.</li>
               <li>
@@ -36,7 +36,7 @@ const ProjectInfoModal = ({ isOpen, toggle }) => (
           <li>
             On the popup that happens next, double check the Rows listed match the rows being
             imported.
-            <ol type="a">
+            <ol type="a" className="project_info_modal_ol">
               <li>If they do, click “Upload” and you are done! </li>
               <li>
                 If they don’t, go back and double check all numbers are sequential, no additional

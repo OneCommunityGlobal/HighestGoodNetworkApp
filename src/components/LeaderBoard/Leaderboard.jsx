@@ -34,7 +34,6 @@ const LeaderBoard = ({
   asUser,
 }) => {
   const userId = asUser ? asUser : loggedInUser.userId;
-  const isAdmin = ['Owner', 'Administrator', 'Core Team'].includes(loggedInUser.role);
 
   useDeepEffect(() => {
     getLeaderboardData(userId);
@@ -313,8 +312,6 @@ const LeaderBoard = ({
                   <Link to={`/userprofile/${item.personId}`} title="View Profile">
                     {item.name}
                   </Link>
-                  &nbsp;&nbsp;&nbsp;
-                  {isAdmin && !item.isVisible && <i className="fa fa-eye-slash" title="User is invisible"></i>}
                 </th>
                 <td className="align-middle" id={`id${item.personId}`}>
                   <span title="Tangible time">{item.tangibletime}</span>
