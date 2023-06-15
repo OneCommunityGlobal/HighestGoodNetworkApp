@@ -29,6 +29,7 @@
 
 .btn-addteam,
 .btn-addproject {
+  width: 100%;
   margin-bottom: 10px;
   outline: none;
 }
