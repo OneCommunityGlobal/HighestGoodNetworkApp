@@ -118,11 +118,11 @@ body.dark .bg--white-smoke{
   background-color: #333;
   border: solid 1px black;
 }
+
 .summary-instructions-row {
   display: flex;
   justify-content: space-between;
   margin-right: 0;
-
 }
 
 @media screen and (min-width: 992px) {
