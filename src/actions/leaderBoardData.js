@@ -11,7 +11,7 @@ export const getLeaderboardData = userId => {
     const url = ENDPOINTS.LEADER_BOARD(userId);
     const res = await httpService.get(url);
     dispatch(getLeaderBoardDataActionCreator(res.data));
-    return res.data
+    return res.data;
   };
 };
 

@@ -6,10 +6,9 @@ import { Table, Progress, Modal, ModalBody, ModalFooter, ModalHeader, Button } f
 import Alert from 'reactstrap/lib/Alert';
 import { hasLeaderboardPermissions, assignStarDotColors, showStar } from 'utils/leaderboardPermissions';
 import { getTeamMembers} from '../../actions/allTeamsAction';
-import { useDispatch } from 'react-redux';
-import {skyblue, silverGray} from 'constants/colors';
+import {skyblue} from 'constants/colors';
 import Loading from '../common/Loading';
-import { getLeaderboardData } from '../../actions/leaderBoardData';
+import { getLeaderboardData, getOrgData} from '../../actions/leaderBoardData';
 import { round, maxBy } from 'lodash';
 import { getcolor, getProgressValue } from '../../utils/effortColors';
 
@@ -31,14 +30,15 @@ function useDeepEffect(effectFunc, deps) {
 }
 
 const LeaderBoard = ({
-  getOrgData,
+  
   loggedInUser,
   organizationData,
   timeEntries,
   isVisible,
   asUser,
   userTeams,
-  userRole
+  userRole,
+  dispatch
 }) => {
 
   const [myTeamData,setmyTeamData] = useState([])
@@ -46,17 +46,20 @@ const LeaderBoard = ({
   const [showLeaderboard, setShowLeaderboard] = useState([]);
   const [isTeamTab, setisTeamTab] = useState(false);
   const [isLoadingmember, setisLoadingmember] = useState(false);
-  const dispatch = useDispatch();
+ 
   const userId = asUser ? asUser : loggedInUser.userId;
   const isAdmin = ['Owner', 'Administrator', 'Core Team'].includes(loggedInUser.role);
  
   useDeepEffect(() => {
-    getLeaderboardData(userId);
-    getOrgData();
+    getLeaderboardData(userId)(dispatch);
+    getOrgData()(dispatch);
   }, [timeEntries]);
 
   //get leaderboard data
   const getdata = async ()=>{
+    // const url = ENDPOINTS.LEADER_BOARD(userId);
+    // const res = await httpService.get(url);
+    // let leaderBoardData = res.data
     let leaderBoardData = await getLeaderboardData(userId)(dispatch)
     if (loggedInUser.role !== 'Administrator' && loggedInUser.role !== 'Owner' && loggedInUser.role !== 'Core Team') {
       leaderBoardData = leaderBoardData.filter(element => {
@@ -435,7 +438,6 @@ useEffect(()=>{
             ))}
           </tbody>
         </Table>
-        
       </div>
     </div>
   );

@@ -11,7 +11,7 @@ import { connect } from 'react-redux';
 import { getUserProfile } from '../../actions/userProfile';
 import { getTimeZoneAPIKey } from '../../actions/timezoneAPIActions';
 import axios from 'axios';
-import { ENDPOINTS } from '../utils/URL';
+import { ENDPOINTS } from '../../utils/URL';
 
 
 export const Dashboard = props => {

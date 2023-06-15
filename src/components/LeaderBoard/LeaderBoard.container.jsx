@@ -29,4 +29,4 @@ const mapStateToProps = state => {
     isVisible: user.role === 'Volunteer' || user.isVisible,
   };
 };
-export default connect(mapStateToProps, { getLeaderboardData, getOrgData })(Leaderboard);
+export default connect(mapStateToProps)(Leaderboard);
