@@ -306,7 +306,6 @@ class Form extends Component {
   handleSubmit = e => {
     e.preventDefault();
     e.stopPropagation();
-    console.log("submit")
     const errors = this.validateForm();
     this.setState({ errors: errors || {} });
     if (errors) return;
@@ -378,7 +377,6 @@ class Form extends Component {
 
   renderFileUpload({ name, ...rest }) {
     let { errors } = { ...this.state };
-
     return (
       <FileUpload name={name} onUpload={this.handleFileUpload} {...rest} error={errors[name]} />
     );
