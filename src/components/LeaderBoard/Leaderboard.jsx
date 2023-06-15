@@ -34,6 +34,7 @@ const LeaderBoard = ({
   asUser,
 }) => {
   const userId = asUser ? asUser : loggedInUser.userId;
+  const isAdmin = ['Owner', 'Administrator', 'Core Team'].includes(loggedInUser.role);
 
   useDeepEffect(() => {
     getLeaderboardData(userId);
@@ -207,23 +208,7 @@ const LeaderBoard = ({
           </thead>
           <tbody className="my-custome-scrollbar">
             <tr>
-              <td className="align-middle">
-                <Link to={`/dashboard/`}>
-                  <div
-                    title={`Weekly Committed: ${organizationData.weeklycommittedHours} hours`}
-                    style={{
-                      backgroundColor:
-                        organizationData.tangibletime >= organizationData.weeklycommittedHours
-                          ? 'green'
-                          : 'red',
-                      width: 15,
-                      height: 15,
-                      borderRadius: 7.5,
-                      margin: 'auto',
-                    }}
-                  />  
-                </Link>
-              </td>
+              <td/>
               <th scope="row">{organizationData.name}</th>
               <td className="align-middle">
                 <span title="Tangible time">{organizationData.tangibletime}</span>
@@ -312,6 +297,8 @@ const LeaderBoard = ({
                   <Link to={`/userprofile/${item.personId}`} title="View Profile">
                     {item.name}
                   </Link>
+                  &nbsp;&nbsp;&nbsp;
+                  {isAdmin && !item.isVisible && <i className="fa fa-eye-slash" title="User is invisible"></i>}
                 </th>
                 <td className="align-middle" id={`id${item.personId}`}>
                   <span title="Tangible time">{item.tangibletime}</span>
