@@ -147,6 +147,11 @@ class PeopleReport extends Component {
       };
     });
     this.props.userProfile.isRehireable = rehireValue;
+    let endDate = new Date(this.props.userProfile.endDate);
+    let year = endDate.toLocaleString('default', { year: 'numeric' });
+    let month = endDate.toLocaleString('default', { month: '2-digit' });
+    let day = endDate.toLocaleString('default', { day: '2-digit' });
+    this.props.userProfile.endDate = year + '-' + month + '-' + day;
     this.props.updateUserProfile(this.props.userProfile._id, this.props.userProfile);
   }
 
@@ -488,14 +493,15 @@ class PeopleReport extends Component {
           </div>
           {this.state.bioStatus ? (
             <div>
-              <h5>Bio {this.state.bioStatus === "default" ? "not requested" : this.state.bioStatus}</h5>{' '}
+              <h5>
+                Bio {this.state.bioStatus === 'default' ? 'not requested' : this.state.bioStatus}
+              </h5>{' '}
               {this.state.authRole === 'Administrator' || this.state.authRole === 'Owner' ? (
                 <ToggleSwitch
-                  fontSize={"13px"}
+                  fontSize={'13px'}
                   switchType="bio"
                   state={this.state.bioStatus}
-                  handleUserProfile={
-                    (bio) => onChangeBioPosted(bio)}
+                  handleUserProfile={bio => onChangeBioPosted(bio)}
                 />
               ) : null}
             </div>
@@ -504,7 +510,7 @@ class PeopleReport extends Component {
       </ReportPage.ReportHeader>
     );
 
-    const onChangeBioPosted = async (bio) => {
+    const onChangeBioPosted = async bio => {
       const userId = this.state.userId || this.props.match?.params?.userId;
       const bioStatus = bio;
       this.setState(state => {
@@ -512,7 +518,6 @@ class PeopleReport extends Component {
           bioStatus: bioStatus,
         };
       });
-      console.log(bioStatus)
       try {
         await this.props.updateUserProfile(userId, {
           ...this.state.userProfile,

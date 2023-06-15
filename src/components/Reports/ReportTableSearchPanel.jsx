@@ -18,7 +18,7 @@ function ReportTableSearchPanel(props) {
         aria-label="Search"
         placeholder="Search Text"
         id="team-profiles-wild-card-search"
-        onChange={(e) => {
+        onChange={e => {
           props.onSearch(e.target.value);
         }}
       />
