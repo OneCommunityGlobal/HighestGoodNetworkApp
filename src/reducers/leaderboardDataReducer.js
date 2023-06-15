@@ -1,9 +1,9 @@
-export const leaderboardDataReducer = (leaderBoardData = [], action) => {
+export const leaderboardDataReducer = (state = [], action) => {
   if (action.type === 'GET_LEADERBOARD_DATA') {
     return action.payload;
   }
 
-  return leaderBoardData;
+  return state;
 };
 
 export const orgDataReducer = (orgData = {}, action) => {

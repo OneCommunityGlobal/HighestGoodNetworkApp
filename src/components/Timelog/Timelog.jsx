@@ -724,7 +724,7 @@ const Timelog = props => {
                       />
                     )}
                     <TabPane tabId={0}>
-                      <TeamMemberTasks asUser={props.asUser} />
+                    <TeamMemberTasks asUser={props.asUser} userProfile={userProfile} />
                     </TabPane>
                     <TabPane tabId={1}>{currentWeekEntries}</TabPane>
                     <TabPane tabId={2}>{lastWeekEntries}</TabPane>
