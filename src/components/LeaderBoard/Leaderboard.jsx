@@ -30,7 +30,7 @@ function useDeepEffect(effectFunc, deps) {
 }
 
 const LeaderBoard = ({
-  
+  leaderBoardData,
   loggedInUser,
   organizationData,
   timeEntries,
@@ -361,7 +361,7 @@ useEffect(()=>{
                 </span>
               </td>
             </tr>
-            {isLoadingmember ? <Loading/>: 
+            {isLoadingmember ? <Loading/>: (
             showLeaderboard.map((item, key) => (
               <tr key={key}>
                 <td className="align-middle" onClick={() => dashboardToggle(item)}>
@@ -435,7 +435,7 @@ useEffect(()=>{
                   <span title="Total time">{item.totaltime}</span>
                 </td>
               </tr>
-            ))}
+            )))}
           </tbody>
         </Table>
       </div>

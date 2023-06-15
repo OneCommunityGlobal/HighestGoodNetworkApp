@@ -6,7 +6,7 @@ import { get, round} from 'lodash';
 
 const mapStateToProps = state => {
   let user = get(state, 'userProfile', []);
-
+  const leaderBoardData = get(state, 'leaderBoardData', []);
   const orgData = get(state, 'orgData', {});
 
   orgData.name = `HGN Totals: ${orgData.memberCount} Members`;
@@ -22,6 +22,7 @@ const mapStateToProps = state => {
   orgData.barprogress = getprogress(orgTangibleColorTime);
 
   return {
+    leaderBoardData:leaderBoardData,
     isAuthenticated: get(state, 'auth.isAuthenticated', false),
     loggedInUser: get(state, 'auth.user', {}),
     organizationData: orgData,
