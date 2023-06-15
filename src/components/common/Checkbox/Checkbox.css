@@ -14,5 +14,9 @@
 }
 
 .dark .checkbox-label {
-  color: black
+  color: white
+}
+
+.dark .checkbox-wrapper {
+  background-color: #333;
 }
