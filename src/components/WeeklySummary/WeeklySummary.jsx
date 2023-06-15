@@ -298,10 +298,8 @@ export class WeeklySummary extends Component {
         default:
           formElements.summaryThreeWeeksAgo = movedContent;
       }
-      this.toggleTab(weekSelect)
-      console.log("switch", weekSelect);
-      // activeTab = weekSelect;
-      // console.log('end', activeTab, weekSelect);
+      this.toggleTab(weekSelect)//switch Tab to weekSelect
+
       this.setState({ formElements});
     }
   }
