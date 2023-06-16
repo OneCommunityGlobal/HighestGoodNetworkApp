@@ -176,7 +176,6 @@ const handleRemoveGoal = useCallback((time) => {
   const handleAckForced = useCallback(() => sendMessage(action.ACK_FORCED), []);
   const toggleModal = () => {
     setLogModal(modal => !modal);
-    // setTimerIsOverModalIsOpen(true);
   };
   const toggleModalClose = () => {
     setLogModal(modal => !modal);
