@@ -64,10 +64,10 @@ const TeamMemberTask = ({
   const handleCheckboxFollowUp = (taskId, userId, userIndex, taskIndex) => {
     const task = user.tasks[taskIndex];
     const followUpCheck = !isFollowedUpWith.includes(taskId);
+    const followUpPercentageDeadline =
+      ((task.hoursLogged / task.estimatedHours) * 100).toFixed(2) || 0;
     let data = {};
     if (followUpCheck) {
-      const followUpPercentageDeadline =
-        ((task.hoursLogged / task.estimatedHours) * 100).toFixed(2) || 0;
       data = {
         followUpCheck,
         followUpPercentageDeadline,
@@ -77,7 +77,7 @@ const TeamMemberTask = ({
       data = {
         followUpCheck,
         followUpPercentageDeadline: 0,
-        needFollowUp: true,
+        needFollowUp: followUpPercentageDeadline > 50,
       };
     }
     handleFollowUp(taskId, userId, data, userIndex, taskIndex);

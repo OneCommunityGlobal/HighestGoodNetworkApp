@@ -329,7 +329,7 @@ function checkWhoNeedsFollowUp(usersWithTasks) {
               if ('followedUp' in resource) {
                 const followUpPercentageDeadline = resource.followedUp.followUpPercentageDeadline || 0;
 
-                if (followUpPercentageDeadline) {
+                if (followUpPercentageDeadline !== null || !isNaN(followUpPercentageDeadline)) {
 
                   if (followUpPercentageDeadline < 50 && taskProgressPercentage > 50) {
                     resource.followedUp.followUpCheck = false;
