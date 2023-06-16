@@ -34,8 +34,6 @@ export const Dashboard = props => {
     props.getTimeZoneAPIKey();
   }, []);
 
-  useEffect(()=>{
-  },[userProfile])
 
   const getuser = async()=>{
     const response = await axios.get(ENDPOINTS.USER_PROFILE(userId));

@@ -85,13 +85,6 @@
   box-shadow: 2px 2px 4px 1px lightgray;
 }
 
-.header-box {
-  display: flex;
-  flex-direction: column;
-  padding: 10px;
-  justify-content: space-between;
-}
-
 .complete-task-button {
   background-color: lightgreen;
 }
@@ -189,10 +182,20 @@
   color: white;
   box-shadow: 2px 2px 4px 1px lightgray;
 }
+
+.header-box {
+  display: flex;
+  padding: 10px;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
 .my-team{
   color: white;
-  font-weight: 600;
-  width: max-content;
+  font-weight: 500;
+  width: 150px;
   padding-inline: 4px;
-  font-size: 12px;
+  font-size: 14px;
 }

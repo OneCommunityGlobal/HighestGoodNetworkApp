@@ -93,17 +93,15 @@ const LeaderBoard = ({
     if(loggedInUser){
       setisLoadingmember(true)
       getdata()
-      if(loggedInUser.role === 'Owner' || loggedInUser.role=== 'Administrator' || loggedInUser.role === 'Core Team' && userTeams?.length > 0){
-       setisTeamTab(true)
-      }
     }
   },[loggedInUser])
 
   //if user role is core team or admin or owner instead of showing all members show only team members by default.//loggedInUser.role
   useDeepEffect(() => {
     if(userRole){
-      if(userRole === 'Owner' || userRole === 'Administrator' || userRole === 'Core Team' && userTeams?.length > 0){
-          getMyTeam();
+      if((userRole === 'Owner' || userRole === 'Administrator' || userRole === 'Core Team') && userTeams?.length > 0){
+        setisTeamTab(true)
+        getMyTeam();
       }else{
         setShowLeaderboard([...leaderboarddata])
       } 
@@ -245,7 +243,7 @@ useEffect(()=>{
 
   return (
     <div>
-      <div className='learder-head'>
+      <div className='leader-head'>
       <h3>
         Leaderboard&nbsp;&nbsp;
         <i

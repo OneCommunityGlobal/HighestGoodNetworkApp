@@ -37,8 +37,14 @@
 }
 .my-team{
   color: white;
-  font-weight: 600;
-  width: max-content;
+  font-weight: 500;
+  width: 150px;
   padding-inline: 4px;
-  font-size: 12px;
+  font-size: 14px;
+}
+.leader-head{
+  display: flex;
+  gap: 20px;
+  margin-bottom: 10px;
+  flex-wrap: wrap;
 }
