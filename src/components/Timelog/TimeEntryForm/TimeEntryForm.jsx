@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Fragment, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import { useDispatch, useSelector } from 'react-redux';
 import {
@@ -16,7 +16,7 @@ import {
 } from 'reactstrap';
 import moment from 'moment-timezone';
 import { isEmpty } from 'lodash';
-import { Editor } from '@tinymce/tinymce-react';
+import { Editor } from 'primereact/editor';
 import ReactTooltip from 'react-tooltip';
 import { postTimeEntry, editTimeEntry } from '../../../actions/timeEntries';
 import { getUserProjects } from '../../../actions/userProjects';
@@ -79,6 +79,7 @@ const TimeEntryForm = props => {
   const [projects, setProjects] = useState([]);
   const [tasks, setTasks] = useState([]);
   const [formDataBeforeEdit, setFormDataBeforeEdit] = useState({});
+  const numberOfWords = inputs.notes ? inputs.notes.trim().split(/\s+/).length : 0;
 
   const fromTimer = !isEmpty(timer);
   const { userProfile, currentUserRole } = useSelector(getTimeEntryFormData);
@@ -209,85 +210,44 @@ const TimeEntryForm = props => {
     Do you wish to continue?`;
   };
 
-  const validateForm = isTimeModified => {
+  const validateForm = (isTimeModified) => {
     const result = {};
-
+  
     if (inputs.dateOfWork === '') {
       result.dateOfWork = 'Date is required';
     } else {
       const date = moment(inputs.dateOfWork);
-      const today = moment(
-        moment()
-          .tz('America/Los_Angeles')
-          .format('YYYY-MM-DD'),
-      );
+      const today = moment().tz('America/Los_Angeles').startOf('day');
       if (!date.isValid()) {
         result.dateOfWork = 'Invalid date';
-      }
-      // Administrator/Owner can add time entries for any dates. Other roles cannot.
-      // Editing details of past date is possible for any role.
-      else if (
-        currentUserRole !== 'Administrator' &&
-        currentUserRole !== 'Owner' &&
-        !edit &&
-        today.diff(date, 'days') !== 0
-      ) {
-        result.dateOfWork = 'Invalid date. Please refresh the page.';
+      } else if (date.isAfter(today)) {
+        result.dateOfWork = 'Date cannot be in the future';
       }
     }
-
+  
     if (inputs.hours === '' && inputs.minutes === '') {
       result.time = 'Time is required';
     } else {
-      const hours = inputs.hours === '' ? 0 : inputs.hours * 1;
-      const minutes = inputs.minutes === '' ? 0 : inputs.minutes * 1;
-      if (!Number.isInteger(hours) || !Number.isInteger(minutes)) {
-        result.time = 'Hours and minutes should be integers';
-      }
-      if (hours < 0 || minutes < 0 || (hours === 0 && minutes === 0)) {
+      const hours = parseInt(inputs.hours) || 0;
+      const minutes = parseInt(inputs.minutes) || 0;
+      const totalMinutes = hours * 60 + minutes;
+      if (totalMinutes <= 0) {
         result.time = 'Time should be greater than 0';
       }
     }
-
+  
     if (inputs.projectId === '') {
       result.projectId = 'Project/Task is required';
     }
-
-    if (reminder.wordCount < 10) {
-      openModal();
-      setReminder(reminder => ({
-        ...reminder,
-        remind:
-          'Please write a more detailed description of your work completed, write at least 1-2 sentences.',
-      }));
-      result.notes = 'Description and reference link are required';
+  
+    const editorContent = inputs.notes;
+    const wordCount = editorContent.trim().split(/\s+/).length;
+    const hasLink = editorContent.includes('http');
+  
+    if (wordCount < 10 || !hasLink) {
+      result.notes = '10 words and reference link are required';
     }
-
-    if (reminder.wordCount >= 10 && !reminder.hasLink) {
-      openModal();
-      setReminder(reminder => ({
-        ...reminder,
-        remind:
-          'Do you have a link to your Google Doc or other place to review this work? You should add it if you do. (Note: Please include http[s]:// in your URL)',
-      }));
-      result.notes = 'Description and reference link are required';
-    }
-
-    if (
-      !hasPermission(currentUserRole, 'addTimeEntryOthers', roles, userPermissions) &&
-      data.isTangible &&
-      isTimeModified &&
-      reminder.editNotice
-    ) {
-      openModal();
-      setReminder(reminder => ({
-        ...reminder,
-        remind: getEditMessage(),
-        editNotice: !reminder.editNotice,
-      }));
-      return false;
-    }
-
+  
     setErrors(result);
     return isEmpty(result);
   };
@@ -528,17 +488,15 @@ const TimeEntryForm = props => {
     }));
   };
 
-  const handleEditorChange = (content, editor) => {
-    inputs.notes = content;
-    const { wordcount } = editor.plugins;
-
-    setInputs(inputs => ({ ...inputs, [editor.id]: content }));
-    setReminder(reminder => ({
+  const handleEditorChange = useCallback((e) => {
+    setInputs((inputs) => ({ ...inputs, notes: e.htmlValue }));
+    const { wordCount, hasLink } = e.textValue;
+    setReminder((reminder) => ({
       ...reminder,
-      wordCount: wordcount.body.getWordCount(),
-      hasLink: inputs.notes.indexOf('http://') > -1 || inputs.notes.indexOf('https://') > -1,
+      wordCount: wordCount,
+      hasLink: hasLink,
     }));
-  };
+  }, []);  
 
   const handleCheckboxChange = event => {
     event.persist();
