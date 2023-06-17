@@ -3,7 +3,6 @@ import TagSent from './TagSent';
 import './TagsSearch.css';
 
 function TagsSearch({ placeholder, members, addResources, removeResource, resourceItems }) {
-  console.log('members', members)
   const [isHidden, setIsHidden] = useState(false);
   const [filteredData, setFilteredData] = useState([]);
   const [selectedIndex, setSelectedIndex] = useState(0);
