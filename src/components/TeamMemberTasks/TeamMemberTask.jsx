@@ -245,16 +245,31 @@ const TeamMemberTask = ({
                                     <br />
                                     <br />
                                     When a person's task is at 50%, 75%, or 90% of the deadline, the
-                                    checkbox changes to a red outline with a <br />
+                                    checkbox automatically clears and changes to a red outline with
+                                    a <br />
                                     light pink filler. This visual cue indicates that the person
                                     requires follow-up. <br />
+                                    <br />
                                     Once checked, the box reverts to a green outline with a light
                                     green filler and a check mark inside.
                                     <br />
                                     <br />
-                                    The checkbox automatically clears when a person reaches 75% and
-                                    90% of their task deadline, <br />
-                                    serving as a reminder for follow-up actions.
+                                    If a person is followed up with when their progress is between
+                                    50-75%, the checkbox will not <br /> automatically clear until
+                                    the person reaches over 75% progress.
+                                    <br />
+                                    <br /> Similarly, If a person is followed up with when their
+                                    progress is between 75-90% the checkbox remains checked <br />{' '}
+                                    until the person reaches over 90% progress.
+                                    <br />
+                                    <br />
+                                    if the checkbox is unchecked it resets to initial state.
+                                    <br />
+                                    (If the progress is less than 50%, the checkbox will be
+                                    unchecked and shown in green.
+                                    <br />
+                                    If the progress is over 50%, the checkbox will be unchecked and
+                                    shown in red)
                                     <br />
                                     <br />
                                   </ReactTooltip>
