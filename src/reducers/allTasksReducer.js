@@ -120,6 +120,11 @@ export const taskReducer = (allTasks = allTasksInital, action) => {
         fetching: false,
         error: 'none',
       };
+    case types.EMPTY_TASK_ITEMS:
+      return {
+        ...allTasks,
+        taskItems: []
+      };
     case types.UPDATE_TASK:
       let updIndexStart = allTasks.taskItems.findIndex(task => task._id === action.taskId);
       let updIndexEnd = updIndexStart;

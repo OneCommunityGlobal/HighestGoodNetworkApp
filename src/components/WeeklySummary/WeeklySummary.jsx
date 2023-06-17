@@ -32,6 +32,7 @@ import { toast } from 'react-toastify';
 import { WeeklySummaryContentTooltip, MediaURLTooltip } from './WeeklySummaryTooltips';
 import classnames from 'classnames';
 import { getUserProfile } from 'actions/userProfile';
+import CurrentPromptModal from './CurrentPromptModal.jsx'
 
 // Need this export here in order for automated testing to work.
 export class WeeklySummary extends Component {
@@ -317,7 +318,7 @@ export class WeeklySummary extends Component {
         pauseOnFocusLoss: false,
         autoClose: 3000,
       });
-      this.props.getUserProfile(this.props.currentUser.userid);
+      this.props.getUserProfile(this.props.asUser || this.props.currentUser.userid);
       this.props.getWeeklySummaries(this.props.asUser || this.props.currentUser.userid);
       this.props.setPopup(false);
     } else {
@@ -422,9 +423,12 @@ export class WeeklySummary extends Component {
                   <Row>
                     <Col>
                       <FormGroup>
-                        <Label for={summaryName}>
-                          Enter your weekly summary below. (required){' '}
-                          <WeeklySummaryContentTooltip tabId={tId} />
+                        <Label for={summaryName} className="summary-instructions-row">
+                          <div>
+                            Enter your weekly summary below. (required){' '}
+                            <WeeklySummaryContentTooltip tabId={tId} />
+                          </div>
+                          <CurrentPromptModal/>
                         </Label>
                         <Editor
                           init={{

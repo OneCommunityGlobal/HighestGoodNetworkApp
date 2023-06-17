@@ -146,7 +146,7 @@ export class Projects extends Component {
     return (
       <React.Fragment>
         <ProjectInfoModal isOpen={projectInfoModal} toggle={this.toggleProjectInfoModal} />
-        <div className="container">
+        <div className="container mt-3">
           {fetching || !fetched ? <Loading /> : null}
           <h3 style={{ display: 'inline-block', marginRight: 10 }}>Projects</h3>
           <i

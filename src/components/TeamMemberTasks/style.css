@@ -13,6 +13,7 @@
 }
 
 .team-member-tasks-bell {
+  margin-left: 20px;
   color: red;
   cursor: pointer;
 }
