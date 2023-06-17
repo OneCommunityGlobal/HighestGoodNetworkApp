@@ -7,6 +7,8 @@ import {
   fetchTeamMembersTaskSuccess,
   fetchTeamMembersTaskBegin,
   fetchTeamMembersTaskError,
+  deleteTaskNotificationSuccess,
+  deleteTaskNotificationBegin
 } from 'components/TeamMemberTasks/actions';
 import * as types from '../constants/task';
 import { ENDPOINTS } from '../utils/URL';
@@ -65,8 +67,11 @@ export const deleteTaskNotification = (userId, taskId, taskNotificationId) => as
 ) => {
   try {
     //dispatch(deleteTaskNotificationBegin());
-    const res = await axios.delete(ENDPOINTS.DELETE_TASK_NOTIFICATION(taskNotificationId));
+    const res = await axios.delete(ENDPOINTS.DELETE_TASK_NOTIFICATION_BY_USER_ID(taskId, userId));
+    
+    //const res = await axios.delete(ENDPOINTS.DELETE_TASK_NOTIFICATION(taskNotificationId));
     dispatch(deleteTaskNotificationSuccess({ userId, taskId, taskNotificationId }));
+    //window.location.reload(false);
   } catch (error) {
     //dispatch(deleteTaskNotificationError());
   }
