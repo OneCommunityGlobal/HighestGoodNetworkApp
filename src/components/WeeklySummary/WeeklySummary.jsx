@@ -75,7 +75,7 @@ export class WeeklySummary extends Component {
 
   async componentDidMount() {
     await this.props.getWeeklySummaries(this.props.asUser || this.props.currentUser.userid);
-    const { mediaUrl, weeklySummaries, weeklySummariesCount } = this.props.summaries;
+    const { mediaUrl, googleDocLink, weeklySummaries, weeklySummariesCount } = this.props.summaries;
     const summary = (weeklySummaries && weeklySummaries[0] && weeklySummaries[0].summary) || '';
     const summaryLastWeek =
       (weeklySummaries && weeklySummaries[1] && weeklySummaries[1].summary) || '';
@@ -126,7 +126,7 @@ export class WeeklySummary extends Component {
         summaryLastWeek,
         summaryBeforeLast,
         summaryThreeWeeksAgo,
-        mediaUrl: mediaUrl || '',
+        mediaUrl: googleDocLink || mediaUrl || '',
         weeklySummariesCount: weeklySummariesCount || 0,
         mediaConfirm: false,
       },
@@ -234,7 +234,6 @@ export class WeeklySummary extends Component {
   handleEditorChange = (content, editor) => {
     // Filter out blank pagagraphs inserted by tinymce replacing new line characters. Need those removed so Joi could do word count checks properly.
     const filteredContent = content.replace(/<p>&nbsp;<\/p>/g, '');
-
     const errors = { ...this.state.errors };
     const errorMessage = this.validateEditorProperty(filteredContent, editor.id);
     if (errorMessage) errors[editor.id] = errorMessage;
@@ -266,45 +265,41 @@ export class WeeklySummary extends Component {
     if (weekSelect !== activeTab){
       let movedContent = '';
       let formElements = {...this.state.formElements};
-  
       switch (activeTab) {
         case "1":
-          movedContent = formElements.summary;
-          formElements.summary = '';
-          break;
+        movedContent = formElements.summary;
+        formElements.summary = '';
+        break;
         case "2":
-          movedContent = formElements.summaryLastWeek;
-          formElements.summaryLastWeek = '';
-          break;
+        movedContent = formElements.summaryLastWeek;
+        formElements.summaryLastWeek = '';
+        break;
         case "3":
-          movedContent = formElements.summaryBeforeLast;
-          formElements.summaryBeforeLast = '';
-          break;
+        movedContent = formElements.summaryBeforeLast;
+        formElements.summaryBeforeLast = '';
+        break;
         default:
-          movedContent = formElements.summaryThreeWeeksAgo;
-          formElements.summaryThreeWeeksAgo = '';
+        movedContent = formElements.summaryThreeWeeksAgo;
+        formElements.summaryThreeWeeksAgo = '';
       }
-      
       switch (weekSelect) {
         case "1":
-          formElements.summary = movedContent;
-          break;
+        formElements.summary = movedContent;
+        break;
         case "2":
-          formElements.summaryLastWeek = movedContent;
-          break;
+        formElements.summaryLastWeek = movedContent;
+        break;
         case "3":
-          formElements.summaryBeforeLast = movedContent;
-          break;
+        formElements.summaryBeforeLast = movedContent;
+        break;
         default:
-          formElements.summaryThreeWeeksAgo = movedContent;
+        formElements.summaryThreeWeeksAgo = movedContent;
       }
       this.toggleTab(weekSelect)//switch Tab to weekSelect
-
       this.setState({ formElements});
     }
   }
-  
- 
+    
 
   handleSave = async event => {
     event.preventDefault();
@@ -378,7 +373,7 @@ export class WeeklySummary extends Component {
       });
     }
   };
-  
+
   render() {
     const {
       formElements,
@@ -468,7 +463,7 @@ export class WeeklySummary extends Component {
             {Object.keys(summariesLabels).map((summaryName, i) => {
               let tId = String(i + 1);
               return (
-              <TabPane tabId={tId} key={tId}>
+                <TabPane tabId={tId} key={tId}>
                   <Row>
                     <Col>
                       <FormGroup>
@@ -560,46 +555,48 @@ export class WeeklySummary extends Component {
                       </Alert>
                     )}
                   </Col>
+                </Row>
+                <Row>
                   <Col>
                     <Label>
                       Move this summary to
                       <CustomInput
-                        id="thisWeek"
-                        name="weekSelect"
-                        type="radio"
-                        label="This Week"
-                        value="1"
-                        onChange={this.handleMoveOptions}
-                        disabled={activeTab === '1'}
+                      id="thisWeek"
+                      name="weekSelect"
+                      type="radio"
+                      label="This Week"
+                      value="1"
+                      onChange={this.handleMoveOptions}
+                      disabled={activeTab === '1'}
                       />
                       <CustomInput
-                        id="lastWeek"
-                        name="weekSelect"
-                        type="radio"
-                        label="Last Week"
-                        value="2"
-                        onChange={this.handleMoveOptions}
-                        disabled={activeTab === '2'}
+                      id="lastWeek"
+                      name="weekSelect"
+                      type="radio"
+                      label="Last Week"
+                      value="2"
+                      onChange={this.handleMoveOptions}
+                      disabled={activeTab === '2'}
                       />
                       <CustomInput
-                        id="weekBeforeLast"
-                        name="weekSelect"
-                        type="radio"
-                        label="Week Before Last"
-                        value="3"
-                        onChange={this.handleMoveOptions}
-                        disabled={activeTab === '3'}
+                      id="weekBeforeLast"
+                      name="weekSelect"
+                      type="radio"
+                      label="Week Before Last"
+                      value="3"
+                      onChange={this.handleMoveOptions}
+                      disabled={activeTab === '3'}
                       />
                       <CustomInput
-                        id="threeWeeksAgo"
-                        name="weekSelect"
-                        type="radio"
-                        label="Three Weeks Ago"
-                        value="4"
-                        onChange={this.handleMoveOptions}
-                        disabled={activeTab === '4'}
+                      id="threeWeeksAgo"
+                      name="weekSelect"
+                      type="radio"
+                      label="Three Weeks Ago"
+                      value="4"
+                      onChange={this.handleMoveOptions}
+                      disabled={activeTab === '4'}
                       />
-                    </Label>
+                      </Label>
                   </Col>
                 </Row>
                 <Row className="mt-4">
