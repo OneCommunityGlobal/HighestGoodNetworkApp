@@ -75,7 +75,7 @@ export class WeeklySummary extends Component {
 
   async componentDidMount() {
     await this.props.getWeeklySummaries(this.props.asUser || this.props.currentUser.userid);
-    const { mediaUrl, googleDocLink, weeklySummaries, weeklySummariesCount } = this.props.summaries;
+    const { mediaUrl, weeklySummaries, weeklySummariesCount } = this.props.summaries;
     const summary = (weeklySummaries && weeklySummaries[0] && weeklySummaries[0].summary) || '';
     const summaryLastWeek =
       (weeklySummaries && weeklySummaries[1] && weeklySummaries[1].summary) || '';
@@ -126,7 +126,7 @@ export class WeeklySummary extends Component {
         summaryLastWeek,
         summaryBeforeLast,
         summaryThreeWeeksAgo,
-        mediaUrl: googleDocLink || mediaUrl || '',
+        mediaUrl: mediaUrl || '',
         weeklySummariesCount: weeklySummariesCount || 0,
         mediaConfirm: false,
       },
