@@ -26,7 +26,7 @@ export const ENDPOINTS = {
   ORG_DATA: `${APIEndpoint}/dashboard/leaderboard/org/data`,
   TIME_ENTRIES_PERIOD: (userId, fromDate, toDate) =>
     `${APIEndpoint}/TimeEntry/user/${userId}/${fromDate}/${toDate}`,
-  TIME_ENTRIES_USER_LIST: users => `${APIEndpoint}/TimeEntry/users?members=${users}`,
+  TIME_ENTRIES_USER_LIST: `${APIEndpoint}/TimeEntry/users`,
   TIME_ENTRY: () => `${APIEndpoint}/TimeEntry`,
   TIME_ENTRY_CHANGE: timeEntryId => `${APIEndpoint}/TimeEntry/${timeEntryId}`,
   WBS_ALL: `${APIEndpoint}/wbs`,
@@ -84,7 +84,8 @@ export const ENDPOINTS = {
   OWNERMESSAGE_BY_ID: ownerMessageId => `${APIEndpoint}/ownerMessage/${ownerMessageId}`,
 
   OWNERSTANDARDMESSAGE: () => `${APIEndpoint}/ownerStandardMessage`,
-  OWNERSTANDARDMESSAGE_BY_ID: ownerStandardMessageId => `${APIEndpoint}/ownerStandardMessage/${ownerStandardMessageId}`
+  OWNERSTANDARDMESSAGE_BY_ID: ownerStandardMessageId =>
+    `${APIEndpoint}/ownerStandardMessage/${ownerStandardMessageId}`,
 };
 
 export const ApiEndpoint = APIEndpoint;
