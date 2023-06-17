@@ -124,7 +124,6 @@ const TeamMemberTasks = props => {
     setCurrentUserId(userId);
     setCurrentTask(task);
     setCurrentTaskNotifications(taskNotifications);
-    console.log(taskNotifications)
     setTaskNotificationModal(!showTaskNotificationModal);
   };
 
@@ -135,7 +134,6 @@ const TeamMemberTasks = props => {
   };
 
   const handleTaskNotificationRead = (userId, taskId, taskNotificationId) => {
-    console.log(taskNotificationId)
     //if the authentitated user is seeing it's own notification
     if (currentUserId === props.auth.user.userid) {
       dispatch(deleteTaskNotification(userId, taskId, taskNotificationId));
