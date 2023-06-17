@@ -55,6 +55,8 @@ const TeamMemberTasks = props => {
   const userId = props?.match?.params?.userId || props.asUser || props.auth.user.userid;
 
   const dispatch = useDispatch();
+  
+
   useEffect(() => {
     const initialFetching = async () => {
       //Passed the userid as argument to fetchTeamMembersTask
@@ -76,7 +78,7 @@ const TeamMemberTasks = props => {
         await dispatch(fetchTeamMembersTask(userId, null));
         setUserRole(props.auth.user.role);
       }
-      setShouldRun(true)     
+      setShouldRun(true);
     };
     initialFetching();
   }, []);
@@ -132,7 +134,10 @@ const TeamMemberTasks = props => {
   };
 
   const handleTaskNotificationRead = (userId, taskId, taskNotificationId) => {
-    dispatch(deleteTaskNotification(userId, taskId, taskNotificationId));
+    //if the authentitated user is seeing it's own notification
+    if (currentUserId === props.auth.user.userid) {
+      dispatch(deleteTaskNotification(userId, taskId, taskNotificationId));
+    }
     handleOpenTaskNotificationModal();
   };
 
@@ -392,20 +397,22 @@ const TeamMemberTasks = props => {
 
           <tbody>
             {isLoading ? (
-              <Loading />
+              <tr>
+                <td>
+                  <Loading />
+                </td>
+              </tr>
             ) : (
               teamList.map(user => {
                 if (!isTimeLogActive) {
                   return (
-                    <>
-                      <TeamMemberTask
-                        user={user}
-                        key={user.personId}
-                        handleOpenTaskNotificationModal={handleOpenTaskNotificationModal}
-                        handleMarkAsDoneModal={handleMarkAsDoneModal}
-                        userRole={userRole}
-                      />
-                    </>
+                    <TeamMemberTask
+                      user={user}
+                      key={user.personId}
+                      handleOpenTaskNotificationModal={handleOpenTaskNotificationModal}
+                      handleMarkAsDoneModal={handleMarkAsDoneModal}
+                      userRole={userRole}
+                    />
                   );
                 } else {
                   return (
