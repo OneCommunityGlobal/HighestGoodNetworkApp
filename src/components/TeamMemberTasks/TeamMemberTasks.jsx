@@ -78,7 +78,7 @@ const TeamMemberTasks = props => {
         await dispatch(fetchTeamMembersTask(userId, null));
         setUserRole(props.auth.user.role);
       }
-      setShouldRun(true)     
+      setShouldRun(true);
     };
     initialFetching();
   }, []);
@@ -397,20 +397,22 @@ const TeamMemberTasks = props => {
 
           <tbody>
             {isLoading ? (
-              <Loading />
+              <tr>
+                <td>
+                  <Loading />
+                </td>
+              </tr>
             ) : (
               teamList.map(user => {
                 if (!isTimeLogActive) {
                   return (
-                    <>
-                      <TeamMemberTask
-                        user={user}
-                        key={user.personId}
-                        handleOpenTaskNotificationModal={handleOpenTaskNotificationModal}
-                        handleMarkAsDoneModal={handleMarkAsDoneModal}
-                        userRole={userRole}
-                      />
-                    </>
+                    <TeamMemberTask
+                      user={user}
+                      key={user.personId}
+                      handleOpenTaskNotificationModal={handleOpenTaskNotificationModal}
+                      handleMarkAsDoneModal={handleMarkAsDoneModal}
+                      userRole={userRole}
+                    />
                   );
                 } else {
                   return (
