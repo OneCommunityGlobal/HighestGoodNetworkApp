@@ -307,8 +307,8 @@ class AddUserProfile extends Component {
                     <FormGroup>
                       <Input
                         type="text"
-                        name="googleDoc"
-                        id="googleDoc"
+                        name="weeklySummariesLink"
+                        id="weeklySummariesLink"
                         value={this.state.userProfile.googleDoc}
                         onChange={this.handleUserProfile}
                         placeholder="DropBox Folder of Folders"

@@ -42,7 +42,14 @@ export const getWeeklySummaries = userId => {
       const response = await axios.get(url);
       // Only pick the fields related to weekly summaries from the userProfile.
       const { weeklySummariesCount, weeklySummaries, mediaUrl } = response.data;
-      dispatch(fetchWeeklySummariesSuccess({ weeklySummariesCount, weeklySummaries, mediaUrl }));
+      let weeklySummariesLink;
+      for (let link in response.data.adminLinks) {
+        if (response.data.adminLinks[link].Name === "Weekly Summaries Link") {
+          weeklySummariesLink = response.data.adminLinks[link].Link;
+          break; // This line is not mandatory, but it would optimize your code as it would break the loop once the link is found.
+        }
+      }
+      dispatch(fetchWeeklySummariesSuccess({ weeklySummariesCount, weeklySummaries, mediaUrl, weeklySummariesLink}));
       return response.status;
     } catch (error) {
       dispatch(fetchWeeklySummariesError(error));
