@@ -28,6 +28,7 @@ const TeamMemberTask = ({
   const isAllowedToFollowUpWithPeople = userRole !== 'Volunteer';
   const isFollowedUpWith = [];
   const needFollowUp = [];
+
   if (user.tasks) {
     user.tasks = user.tasks.map(task => {
       task.hoursLogged = task.hoursLogged ? task.hoursLogged : 0;
@@ -60,6 +61,18 @@ const TeamMemberTask = ({
       }
     });
   }
+  const followUpMouseoverText = task => {
+    const progressPersantage = ((task.hoursLogged / task.estimatedHours) * 100).toFixed(2) || 0;
+    if (progressPersantage < 50) {
+      return 'Check this box once you’ve checked in for the first time with this team member to make sure they are clear on their task.';
+    } else if (progressPersantage >= 50 && progressPersantage < 75) {
+      return 'Your team member’s task should be at least 50% complete. Check this box once you’ve confirmed they are on track to meet their deadline. Request additional time be added to their task if it is needed.';
+    } else if (progressPersantage >= 75 && progressPersantage < 90) {
+      return 'Your team member’s task should be at least 75% complete! Check this box once you’ve confirmed they are on track to meet their deadline. Request additional time be added to their task if it is needed';
+    } else if (progressPersantage >= 90) {
+      return 'Your team member’s task should be almost complete! Check this box once you’ve confirmed they are on track to meet their deadline. Request additional time be added to their task if it is needed';
+    }
+  };
 
   const handleCheckboxFollowUp = (taskId, userId, userIndex, taskIndex) => {
     const task = user.tasks[taskIndex];
@@ -188,7 +201,7 @@ const TeamMemberTask = ({
                                 <>
                                   <input
                                     type="checkbox"
-                                    title="This box is used to track follow ups. Clicking it means you’ve checked in with a person that they are on track to meet their deadline"
+                                    title={followUpMouseoverText(task)}
                                     className={`team-task-progress-follow-up ${
                                       needFollowUp.includes(task._id)
                                         ? 'team-task-progress-follow-up-red'
