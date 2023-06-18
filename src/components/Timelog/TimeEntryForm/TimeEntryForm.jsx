@@ -772,10 +772,10 @@ TimeEntryForm.propTypes = {
   userId: PropTypes.string.isRequired,
   toggle: PropTypes.func.isRequired,
   isOpen: PropTypes.bool.isRequired,
-  timer: PropTypes.any.isRequired,
+  timer: PropTypes.any,
   data: PropTypes.any.isRequired,
   userProfile: PropTypes.any.isRequired,
-  resetTimer: PropTypes.func.isRequired,
+  resetTimer: PropTypes.func,
 };
 
 export default TimeEntryForm;
