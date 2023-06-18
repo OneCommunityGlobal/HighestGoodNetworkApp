@@ -61,13 +61,13 @@ const EditTaskModal = props => {
   const [status, setStatus] = useState('false');
 
   // hour best
-  const [hoursBest, setHoursBest] = useState(0);
+  const [hoursBest, setHoursBest] = useState(thisTask?.hoursBest);
   // hour worst
-  const [hoursWorst, setHoursWorst] = useState(0);
+  const [hoursWorst, setHoursWorst] = useState(thisTask?.hoursWorst);
   // hour most
-  const [hoursMost, setHoursMost] = useState(0);
+  const [hoursMost, setHoursMost] = useState(thisTask?.hoursMost);
   // hour estimate
-  const [hoursEstimate, setHoursEstimate] = useState(0);
+  const [hoursEstimate, setHoursEstimate] = useState(thisTask?.estimatedHours);
   // hours warning
   const [hoursWarning, setHoursWarning] = useState(false);
 
@@ -98,10 +98,10 @@ const EditTaskModal = props => {
     setResourceItems(thisTask?.resources);
     setAssigned(thisTask?.isAssigned || false);
     setStatus(thisTask?.status || false);
-    setHoursBest(thisTask?.hoursBest || '');
-    setHoursWorst(thisTask?.hoursWorst || '');
-    setHoursMost(thisTask?.hoursMost || '');
-    setHoursEstimate(thisTask?.estimatedHours || '');
+    setHoursBest(thisTask?.hoursBest);
+    setHoursWorst(thisTask?.hoursWorst);
+    setHoursMost(thisTask?.hoursMost);
+    setHoursEstimate(thisTask?.estimatedHours);
     setLinks(thisTask?.links);
     setCategory(thisTask?.category);
     setWhyInfo(thisTask?.whyInfo);
