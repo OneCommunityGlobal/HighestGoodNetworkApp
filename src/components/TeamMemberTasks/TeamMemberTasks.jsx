@@ -410,7 +410,6 @@ const TeamMemberTasks = props => {
               teamList.map(user => {
                 if (!isTimeLogActive) {
                   return (
-                    <>
                       <TeamMemberTask
                         user={user}
                         key={user.personId}
@@ -422,7 +421,6 @@ const TeamMemberTasks = props => {
                         updateTask={onUpdateTask}
                         roles={props.roles}
                       />
-                    </>
                   );
                 } else {
                   return (
@@ -432,10 +430,11 @@ const TeamMemberTasks = props => {
                         key={user.personId}
                         handleOpenTaskNotificationModal={handleOpenTaskNotificationModal}
                         handleMarkAsDoneModal={handleMarkAsDoneModal}
-                        handleTaskModalOption={handleTaskModalOption}
                         handleRemoveFromTaskModal={handleRemoveFromTaskModal}
+                        handleTaskModalOption={handleTaskModalOption}
                         userRole={userRole}
                         updateTask={onUpdateTask}
+                        roles={props.roles}
                       />
                       {timeEntriesList.length > 0 &&
                         timeEntriesList
