@@ -7,7 +7,7 @@ import { useState } from 'react';
  */
 const TaskCompletedModal = React.memo(props => {
   const [isLoadingTask, setIsLoadingTask] = useState(false);
-
+  
   const closeFunction = e => {
     props.setClickedToShowModal(false);
     props.setCurrentUserId('');
@@ -31,26 +31,46 @@ const TaskCompletedModal = React.memo(props => {
     props.updateTask(task._id, updatedTask);
   };
 
+  const removeUserFromTask = task => {
+    const removeIndex = task.resources.map(item => item.userID).indexOf(props.userId);
+    const newResources = [
+      ...task.resources.slice(0, removeIndex),
+      ...task.resources.slice(removeIndex + 1
+        )]
+    const updatedTask = {...task, resources: newResources};
+    props.updateTask(task._id, updatedTask);
+  }
+
+  let modalBody;
+  let modalHeader;
+
+  {props.taskModalOption === 'Checkmark' ? 
+  (modalHeader = 'Mark as Done', modalBody = 'Are you sure you want to mark this task as done?') :
+  (modalHeader = 'Remove User from Task', modalBody = 'Are you sure you want to remove this user from the task?')}
+
   return (
     <Modal isOpen={props.isOpen} toggle={() => props.popupClose()}>
-      <ModalHeader toggle={() => props.popupClose()}>Mark as Done</ModalHeader>
+      <ModalHeader toggle={() => props.popupClose()}>{modalHeader}</ModalHeader>
       {isLoadingTask ? (
         <ModalBody>
           <p>Loading...</p>
         </ModalBody>
       ) : (
         <ModalBody>
-          <p>Are you sure you want to mark this task as done?</p>
+          <p>{modalBody}</p>
           <ModalFooter>
             <Button
               color="primary"
               onClick={() => {
                 setIsLoadingTask(true);
-                removeTaskFromUser(props.task);
+                {props.taskModalOption === 'Checkmark' ? 
+                removeTaskFromUser(props.task) : 
+                removeUserFromTask(props.task)
+                }
               }}
               disabled={isLoadingTask}
             >
-              Mark as Done
+              {modalHeader}
             </Button>
             <Button
               onClick={() => {

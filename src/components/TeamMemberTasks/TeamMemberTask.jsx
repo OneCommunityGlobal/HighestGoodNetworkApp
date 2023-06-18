@@ -1,18 +1,22 @@
 import React from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faBell, faCircle, faCheck } from '@fortawesome/free-solid-svg-icons';
+import { faBell, faCircle, faCheck, faTimes } from '@fortawesome/free-solid-svg-icons';
 import TaskButton from './TaskButton';
 import CopyToClipboard from 'components/common/Clipboard/CopyToClipboard';
 import { Table, Progress } from 'reactstrap';
 import { Link } from 'react-router-dom';
 import { getProgressColor, getProgressValue } from '../../utils/effortColors';
+import hasPermission from 'utils/permissions';
 import './style.css';
 
 const TeamMemberTask = ({
   user,
   handleMarkAsDoneModal,
+  handleRemoveFromTaskModal,
   handleOpenTaskNotificationModal,
+  handleTaskModalOption,
   userRole,
+  roles,
 }) => {
   let totalHoursLogged = 0;
   let totalHoursRemaining = 0;
@@ -112,8 +116,20 @@ const TeamMemberTask = ({
                                 title="Mark as Done"
                                 onClick={() => {
                                   handleMarkAsDoneModal(user.personId, task);
+                                  handleTaskModalOption("Checkmark");	
                                 }}
                               />
+                            )}
+                            {hasPermission(userRole, 'removeUserFromTask', roles) && (		
+                            <FontAwesomeIcon 		
+                              className="team-member-task-remove"		
+                              icon={faTimes}		
+                              title="Remove User from Task"		
+                              onClick={() => {		
+                                handleRemoveFromTaskModal(user.personId, task);		
+                                handleTaskModalOption("XMark");		
+                              }}		
+                            />		
                             )}
                           </p>
                         </td>
@@ -136,11 +152,6 @@ const TeamMemberTask = ({
                             </div>
                           </td>
                         )}
-                        {userRole === 'Administrator' ? (
-                          <td data-label="Status">
-                            <TaskButton task={task} key={task._id}></TaskButton>
-                          </td>
-                        ) : null}
                       </tr>
                     );
                   }

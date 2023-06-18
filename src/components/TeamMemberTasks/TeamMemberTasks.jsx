@@ -36,6 +36,7 @@ const TeamMemberTasks = props => {
   const [fortyEightHoursTimeEntries, setFortyEightHoursTimeEntries] = useState([]);
   const [seventyTwoHoursTimeEntries, setSeventyTwoHoursTimeEntries] = useState([]);
   const [finishLoading, setFinishLoading] = useState(false);
+  const [taskModalOption, setTaskModalOption] = useState('');
 
   //added it to keep track if the renderTeamsList should run
   const [shouldRun, setShouldRun] = useState(false);
@@ -107,6 +108,7 @@ const TeamMemberTasks = props => {
     };
     submitTasks(newTask);
     dispatch(fetchTeamMembersTask(userId, props.auth.user.userid, false));
+    props.handleUpdateTask();
   };
 
   const submitTasks = async updatedTasks => {
@@ -114,7 +116,7 @@ const TeamMemberTasks = props => {
     try {
       await axios.put(url, updatedTasks.updatedTask);
     } catch (error) {
-      console.log(error);
+      toast.error("Failed to update task")
     }
   };
 
@@ -130,6 +132,16 @@ const TeamMemberTasks = props => {
     setCurrentTask(task);
     setClickedToShowModal(true);
   };
+
+  const handleRemoveFromTaskModal = (userId, task) => {
+    setCurrentUserId(userId);
+    setCurrentTask(task);
+    setClickedToShowModal(true);
+  }
+
+  const handleTaskModalOption = (option) => {
+    setTaskModalOption(option);
+  }
 
   const handleTaskNotificationRead = (userId, taskId, taskNotificationId) => {
     dispatch(deleteTaskNotification(userId, taskId, taskNotificationId));
@@ -342,6 +354,7 @@ const TeamMemberTasks = props => {
           task={currentTask}
           setCurrentUserId={setCurrentUserId}
           setClickedToShowModal={setClickedToShowModal}
+          taskModalOption={taskModalOption}
         />
       )}
       <div className="table-container">
@@ -403,7 +416,11 @@ const TeamMemberTasks = props => {
                         key={user.personId}
                         handleOpenTaskNotificationModal={handleOpenTaskNotificationModal}
                         handleMarkAsDoneModal={handleMarkAsDoneModal}
+                        handleRemoveFromTaskModal={handleRemoveFromTaskModal}
+                        handleTaskModalOption={handleTaskModalOption}
                         userRole={userRole}
+                        updateTask={onUpdateTask}
+                        roles={props.roles}
                       />
                     </>
                   );
@@ -415,7 +432,10 @@ const TeamMemberTasks = props => {
                         key={user.personId}
                         handleOpenTaskNotificationModal={handleOpenTaskNotificationModal}
                         handleMarkAsDoneModal={handleMarkAsDoneModal}
+                        handleTaskModalOption={handleTaskModalOption}
+                        handleRemoveFromTaskModal={handleRemoveFromTaskModal}
                         userRole={userRole}
+                        updateTask={onUpdateTask}
                       />
                       {timeEntriesList.length > 0 &&
                         timeEntriesList
