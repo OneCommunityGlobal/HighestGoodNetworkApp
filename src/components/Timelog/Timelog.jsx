@@ -82,13 +82,14 @@ const Timelog = props => {
   const userProjects = useSelector(state => state.userProjects);
   const role = useSelector(state => state.role);
   const userTask = useSelector(state => state.userTask);
+  const userIdByState = useSelector(state => state.auth.user.userid)
   const [taskUpdated, isTaskUpdated] = useState(false);
 
   const defaultTab = () => {
     //change default to time log tab(1) in the following cases:
     const role = auth.user.role;
     let tab = 0;
-    const UserHaveTask = doesUserHaveTaskWithWBS(userTask);
+    const UserHaveTask = doesUserHaveTaskWithWBS(userTask,userIdByState);
     /* To set the Task tab as defatult this.userTask is being watched.
     Accounts with no tasks assigned to it return an empty array.
     Accounts assigned with tasks with no wbs return and empty array.
