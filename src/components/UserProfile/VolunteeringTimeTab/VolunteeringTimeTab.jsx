@@ -88,15 +88,17 @@ const WeeklySummaryOptions = props => {
 };
 
 const WeeklyCommittedHours = props => {
+  //Do Not change the property name "weeklycommittedHours"
+  //Otherwise it will not update in the backend.
   if (!props.canEdit) {
     return <p>{props.userProfile.weeklycommittedHours}</p>;
   }
   const handleChange = e => {
-    // Maximum and minimum constants on lines 9 & 10
-    // Convert value from string into easy number variable
+    // Max: 168 hrs  Min: 0 hr
+    // Convert value from string into easy number
     const value = parseInt(e.target.value);
     if (value > MAXIMUM_WEEK_HOURS) {
-      // Check if Value is greater than total hours in one week
+      // Check if Value is greater than maximum hours and set it to maximum hours if needed
       alert(`You can't commit more than ${MAXIMUM_WEEK_HOURS} hours per week.`);
       props.setUserProfile({ ...props.userProfile, weeklycommittedHours: MAXIMUM_WEEK_HOURS });
     } else if (value < MINIMUM_WEEK_HOURS) {
@@ -104,6 +106,7 @@ const WeeklyCommittedHours = props => {
       alert(`You can't commit less than ${MINIMUM_WEEK_HOURS} hours per week.`);
       props.setUserProfile({ ...props.userProfile, weeklycommittedHours: MINIMUM_WEEK_HOURS });
     } else {
+      //update weekly hours whatever numbers in the input
       props.setUserProfile({ ...props.userProfile, weeklycommittedHours: value });
     }
   };
