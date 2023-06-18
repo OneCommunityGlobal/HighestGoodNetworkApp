@@ -278,7 +278,7 @@ const TeamMemberTasks = props => {
       setTeamList([...filteredMembers]);
     }
   };
-
+  
   return (
     <div className="container team-member-tasks">
       <header className="header-box">

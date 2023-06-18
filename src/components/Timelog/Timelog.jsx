@@ -45,16 +45,15 @@ import Loading from '../common/Loading';
 import hasPermission from '../../utils/permissions';
 import WeeklySummaries from './WeeklySummaries';
 
-const doesUserHaveTaskWithWBS = (tasks, userId) => {
-  
+const doesUserHaveTaskWithWBS = tasks => {
+  let check = false;
   for (let task of tasks) {
-    for(let resource of task.resources){
-      if (resource.userID == userId && resource.completedTask == false) {
-        return true
-      }
+    if (task.wbsId && task.status !== 'Complete') {
+      check = true;
+      break;
     }
   }
-  return false;
+  return check;
 };
 
 function useDeepEffect(effectFunc, deps) {
@@ -83,14 +82,13 @@ const Timelog = props => {
   const userProjects = useSelector(state => state.userProjects);
   const role = useSelector(state => state.role);
   const userTask = useSelector(state => state.userTask);
-  const userIdByState = useSelector(state => state.auth.user.userid);
   const [taskUpdated, isTaskUpdated] = useState(false);
 
   const defaultTab = () => {
     //change default to time log tab(1) in the following cases:
     const role = auth.user.role;
     let tab = 0;
-    const UserHaveTask = doesUserHaveTaskWithWBS(userTask,userIdByState);
+    const UserHaveTask = doesUserHaveTaskWithWBS(userTask);
     /* To set the Task tab as defatult this.userTask is being watched.
     Accounts with no tasks assigned to it return an empty array.
     Accounts assigned with tasks with no wbs return and empty array.
@@ -99,7 +97,7 @@ const Timelog = props => {
     That breaks this feature. Necessary to check if this array should keep data or be reset when unassinging tasks.*/
 
     //if user role is volunteer or core team and they don't have tasks assigned, then default tab is timelog.
-    if ((role === 'Volunteer') && !UserHaveTask) {
+    if ((role === 'Volunteer' || role === 'Core Team') && !UserHaveTask) {
       tab = 1;
     }
 
@@ -341,6 +339,10 @@ const Timelog = props => {
   };
   const [state, setState] = useState(initialState);
 
+  const handleUpdateTask = () => {
+    isTaskUpdated(!taskUpdated)
+  }
+
   useEffect(() => {
     // Does not run again (except once in development): load data
     const userId = props?.match?.params?.userId || props.asUser; //Including fix for "undefined"
@@ -406,6 +408,8 @@ const Timelog = props => {
   const userPermissions = auth.user?.permissions?.frontPermissions;
   const isOwner = auth.user.userid === userId;
   const fullName = `${userProfile.firstName} ${userProfile.lastName}`;
+
+  console.log(role.roles)
 
   return (
     <div>
@@ -571,7 +575,7 @@ const Timelog = props => {
                         toggle={toggle}
                         isOpen={state.modal}
                         userProfile={userProfile}
-                        roles={role.roles}
+                        taskUpdated={taskUpdated}
                       />
                       <ReactTooltip id="registerTip" place="bottom" effect="solid">
                         Click this icon to learn about the timelog.
@@ -724,10 +728,15 @@ const Timelog = props => {
                       <EffortBar
                         activeTab={state.activeTab}
                         projectsSelected={state.projectsSelected}
+                        roles={role.roles}
                       />
                     )}
                     <TabPane tabId={0}>
-                      <TeamMemberTasks asUser={props.asUser} />
+                      <TeamMemberTasks 
+                      asUser={props.asUser} 
+                      handleUpdateTask={handleUpdateTask} 
+                      roles={role.roles}
+                      />
                     </TabPane>
                     <TabPane tabId={1}>{currentWeekEntries}</TabPane>
                     <TabPane tabId={2}>{lastWeekEntries}</TabPane>
