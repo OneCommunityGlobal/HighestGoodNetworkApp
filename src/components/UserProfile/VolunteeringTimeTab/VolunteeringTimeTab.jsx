@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { Row, Label, Input, Col, Button, FormGroup } from 'reactstrap';
 import moment from 'moment-timezone';
 import { capitalize } from 'lodash';
-import style from '../UserProfileEdit/ToggleSwitch/ToggleSwitch.module.scss';
 import { ENDPOINTS } from 'utils/URL';
 import axios from 'axios';
 import './timeTab.css';
@@ -89,30 +88,26 @@ const WeeklySummaryOptions = props => {
 };
 
 const WeeklyCommittedHours = props => {
+  //Do Not change the property name "weeklycommittedHours"
+  //Otherwise it will not update in the backend.
   if (!props.canEdit) {
     return <p>{props.userProfile.weeklycommittedHours}</p>;
   }
   const handleChange = e => {
-    // Maximum and minimum constants on lines 9 & 10
-    // Convert value from string into easy number variable
+    // Max: 168 hrs  Min: 0 hr
+    // Convert value from string into easy number
     const value = parseInt(e.target.value);
     if (value > MAXIMUM_WEEK_HOURS) {
-      // Check if Value is greater than total hours in one week
+      // Check if Value is greater than maximum hours and set it to maximum hours if needed
       alert(`You can't commit more than ${MAXIMUM_WEEK_HOURS} hours per week.`);
-      if (value === MAXIMUM_WEEK_HOURS + 1) {
-        props.setUserProfile({ ...props.userProfile, weeklyComittedHours: MAXIMUM_WEEK_HOURS });
-        props.setChanged(true);
-      } else {
-        props.setChanged(true);
-      }
+      props.setUserProfile({ ...props.userProfile, weeklycommittedHours: MAXIMUM_WEEK_HOURS });
     } else if (value < MINIMUM_WEEK_HOURS) {
       //Check if value is less than minimum hours and set it to minimum hours if needed
       alert(`You can't commit less than ${MINIMUM_WEEK_HOURS} hours per week.`);
-      props.setUserProfile({ ...props.userProfile, weeklyComittedHours: MINIMUM_WEEK_HOURS });
-      props.setChanged(true);
+      props.setUserProfile({ ...props.userProfile, weeklycommittedHours: MINIMUM_WEEK_HOURS });
     } else {
-      props.setUserProfile({ ...props.userProfile, weeklyComittedHours: value });
-      props.setChanged(true);
+      //update weekly hours whatever numbers in the input
+      props.setUserProfile({ ...props.userProfile, weeklycommittedHours: value });
     }
   };
 
@@ -121,10 +116,10 @@ const WeeklyCommittedHours = props => {
       type="number"
       min={MINIMUM_WEEK_HOURS - 1}
       max={MAXIMUM_WEEK_HOURS + 1}
-      name="weeklyComittedHours"
-      id="weeklyComittedHours"
-      data-testid="weeklyCommittedHours"
-      value={props.userProfile.weeklyComittedHours}
+      name="weeklycommittedHours"
+      id="weeklycommittedHours"
+      data-testid="weeklycommittedHours"
+      value={props.userProfile.weeklycommittedHours}
       onChange={e => handleChange(e)}
       placeholder="Weekly Committed Hours"
     />

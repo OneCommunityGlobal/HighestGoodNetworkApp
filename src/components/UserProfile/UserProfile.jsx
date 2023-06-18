@@ -541,6 +541,12 @@ function UserProfile(props) {
       ? hasPermission(requestorRole, 'addDeleteEditOwners', roles, userPermissions)
       : hasPermission(requestorRole, 'editUserProfile', roles, userPermissions);
   const canEdit = canEditProfile || isUserSelf;
+  const canChangeUserStatus = hasPermission(
+    requestorRole,
+    'changeUserStatus',
+    roles,
+    userPermissions,
+  );
 
   const customStyles = {
     control: (base, state) => ({
@@ -631,17 +637,14 @@ function UserProfile(props) {
                 className="fa fa-info-circle"
                 onClick={toggleInfoModal}
               />{' '}
-              {canEdit && (
-                <>
-                  <ActiveCell
-                    isActive={userProfile.isActive}
-                    user={userProfile}
-                    onClick={() => {
-                      setActiveInactivePopupOpen(true);
-                    }}
-                  />
-                </>
-              )}
+              <ActiveCell
+                isActive={userProfile.isActive}
+                user={userProfile}
+                canChange={canChangeUserStatus}
+                onClick={() => {
+                  setActiveInactivePopupOpen(true);
+                }}
+              />
               {canEdit && (
                 <i
                   data-toggle="tooltip"

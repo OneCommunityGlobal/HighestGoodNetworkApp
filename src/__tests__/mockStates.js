@@ -1051,6 +1051,8 @@ export const rolesMock = {
           "toggleSubmitForm",
           "seePermissionsManagement",
           "changeBioAnnouncement",
+          'changeUserStatus',
+          'submitWeeklySummaryForOthers',
         ],
         permissionsBackEnd: [
           "seeBadges",
