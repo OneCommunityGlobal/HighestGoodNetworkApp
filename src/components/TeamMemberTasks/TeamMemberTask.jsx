@@ -40,6 +40,8 @@ const TeamMemberTask = ({
     }
   }
 
+  const hasRemovePermission = hasPermission(userRole, 'removeUserFromTask', roles);
+
   return (
     <>
       <tr className="table-row" key={user.personId}>
@@ -132,7 +134,7 @@ const TeamMemberTask = ({
                                 }}
                               />
                             )}
-                            {hasPermission(userRole, 'removeUserFromTask', roles) && (		
+                            {hasRemovePermission && (		
                             <FontAwesomeIcon 		
                               className="team-member-task-remove"		
                               icon={faTimes}		
