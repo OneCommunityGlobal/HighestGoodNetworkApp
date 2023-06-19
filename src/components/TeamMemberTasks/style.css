@@ -199,3 +199,11 @@
   padding-inline: 4px;
   font-size: 14px;
 }
+
+.noMember{
+  color: saddlebrown;
+  font-size: 1.1rem;
+  background-color: whitesmoke;
+  padding: 5px 10px;
+  border: 1px solid saddlebrown;
+}

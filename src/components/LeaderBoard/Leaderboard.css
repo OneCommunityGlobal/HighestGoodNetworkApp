@@ -48,3 +48,11 @@
   margin-bottom: 10px;
   flex-wrap: wrap;
 }
+
+.noMember{
+  color: saddlebrown;
+  font-size: 1.1rem;
+  background-color: whitesmoke;
+  padding: 5px 10px;
+  border: 1px solid saddlebrown;
+}

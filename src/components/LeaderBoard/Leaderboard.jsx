@@ -11,6 +11,8 @@ import Loading from '../common/Loading';
 import { getLeaderboardData, getOrgData} from '../../actions/leaderBoardData';
 import { round, maxBy } from 'lodash';
 import { getcolor, getProgressValue } from '../../utils/effortColors';
+import {faFrown} from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 function useDeepEffect(effectFunc, deps) {
   const isFirst = useRef(true);
@@ -41,7 +43,7 @@ const LeaderBoard = ({
   dispatch
 }) => {
 
-  const [myTeamData,setmyTeamData] = useState([])
+  const [myTeamData,setmyTeamData] = useState(undefined)
   const [leaderboarddata,setleaderboarddata] = useState([]);
   const [showLeaderboard, setShowLeaderboard] = useState([]);
   const [isTeamTab, setisTeamTab] = useState(false);
@@ -436,6 +438,8 @@ useEffect(()=>{
             )))}
           </tbody>
         </Table>
+        {isTeamTab && myTeamData?.length === 1 && <p className='noMember'>Great, you are on a team! Unfortunately though, your team has only you in it 
+         <FontAwesomeIcon icon={faFrown} size='lg' style={{color: "#ffd22e", marginLeft:'2px'}} />. Contact an Administrator or your Manager to fix this so you aren't so lonely here!</p>}
       </div>
     </div>
   );

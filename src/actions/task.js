@@ -34,7 +34,7 @@ export const fetchTeamMembersTask = (currentUserId, authenticatedUserId, shouldR
     const authUserId = authenticatedUserId ? authenticatedUserId : null
 
     if(shouldReload){
-      dispatch(fetchTeamMembersTaskBegin());
+      await dispatch(fetchTeamMembersTaskBegin());
     }
 
     const response = await axios.get(ENDPOINTS.TEAM_MEMBER_TASKS(userId));
@@ -48,13 +48,13 @@ export const fetchTeamMembersTask = (currentUserId, authenticatedUserId, shouldR
       const correctedTasks = userTasks.filter(task => {
         return authUserTasks.some(task2 => task2.personId === task.personId)
       });
-      dispatch(fetchTeamMembersTaskSuccess(correctedTasks));
+      await dispatch(fetchTeamMembersTaskSuccess(correctedTasks));
     } else {
-      dispatch(fetchTeamMembersTaskSuccess(response.data));
+      await dispatch(fetchTeamMembersTaskSuccess(response.data));
     }
   } catch (error) {
 
-    dispatch(fetchTeamMembersTaskError());
+    await dispatch(fetchTeamMembersTaskError());
   }
 };
 

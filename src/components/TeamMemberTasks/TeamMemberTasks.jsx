@@ -1,4 +1,4 @@
-import { faClock, faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
+import { faClock, faFrown} from '@fortawesome/free-solid-svg-icons';
 import { Table } from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { fetchTeamMembersTask, deleteTaskNotification } from 'actions/task';
@@ -30,7 +30,7 @@ const TeamMemberTasks = props => {
   const [showMarkAsDoneModal, setMarkAsDoneModal] = useState(false);
   const [clickedToShowModal, setClickedToShowModal] = useState(false);
   const [allTeamList, setallTeamList] = useState([]);
-  const [myTeamList, setmyTeamList] = useState([]);
+  const [myTeamList, setmyTeamList] = useState(undefined);
   const [teamList, setTeamList] = useState([]);
   const [isLoadingmember, setisLoadingmember] = useState(false);
   const [isTimeLogActive, setIsTimeLogActive] = useState(false);
@@ -91,7 +91,8 @@ const TeamMemberTasks = props => {
 
   //if user role is core team instead of showing all members show only team members by default.
   useEffect(()=>{
-    if(props.userProfile.role=== 'Owner' || props.userProfile.role === 'Administrator' || props.userProfile.role === 'Core Team' && props.userProfile.teams.length > 0){
+    console.log('PROFILE',props.userProfile)
+    if((props.userProfile.role=== 'Owner' || props.userProfile.role === 'Administrator' || props.userProfile.role === 'Core Team') && props.userProfile.teams.length > 0){
       setisTeamTab(true)
       setisLoadingmember(true)
     }
@@ -380,7 +381,7 @@ const renderTeamsList = async () => {
     <div className="container team-member-tasks">
       <header className="header-box">
         <h1>Team Member Tasks</h1>
-        {(userRole == 'Owner' || userRole === 'Administrator' || userRole === 'Core Team') &&  props.userProfile.teams.length > 0 &&<button className='circle-border my-team' style={{ 
+        {(props.userProfile?.role == 'Owner' || props.userProfile?.role === 'Administrator' || props.userProfile?.role === 'Core Team') &&  props.userProfile.teams.length > 0 &&<button className='circle-border my-team' style={{ 
                 backgroundColor: isTeamTab ? skyblue : 'slategray',
                 cursor: isLoadingmember ? 'not-allowed' : 'pointer'
                 }} onClick={toggleTeamView}
@@ -549,7 +550,8 @@ const renderTeamsList = async () => {
           </tbody>
           
         </Table>
-        
+        {isTeamTab && myTeamList?.length === 1 && <p className='noMember'>Great, you are on a team! Unfortunately though, your team has only you in it 
+         <FontAwesomeIcon icon={faFrown} size='lg' style={{color: "#ffd22e", marginLeft:'2px'}} />. Contact an Administrator or your Manager to fix this so you aren't so lonely here!</p>}
       </div>
     </div>
   );
