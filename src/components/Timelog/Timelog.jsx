@@ -84,7 +84,7 @@ const Timelog = props => {
   const role = useSelector(state => state.role);
   const userTask = useSelector(state => state.userTask);
   const userIdByState = useSelector(state => state.auth.user.userid)
-  const [taskUpdated, isTaskUpdated] = useState(false);
+  const [isTaskUpdated, setIsTaskUpdated] = useState(false);
 
   const defaultTab = () => {
     //change default to time log tab(1) in the following cases:
@@ -342,7 +342,7 @@ const Timelog = props => {
   const [state, setState] = useState(initialState);
 
   const handleUpdateTask = () => {
-    isTaskUpdated(!taskUpdated)
+    setIsTaskUpdated(!isTaskUpdated)
   }
 
   useEffect(() => {
@@ -410,8 +410,6 @@ const Timelog = props => {
   const userPermissions = auth.user?.permissions?.frontPermissions;
   const isOwner = auth.user.userid === userId;
   const fullName = `${userProfile.firstName} ${userProfile.lastName}`;
-
-  console.log(role.roles)
 
   return (
     <div>
@@ -578,7 +576,7 @@ const Timelog = props => {
                         isOpen={state.modal}
                         userProfile={userProfile}
                         roles={role.roles}
-                        taskUpdated={taskUpdated}
+                        isTaskUpdated={isTaskUpdated}
                       />
                       <ReactTooltip id="registerTip" place="bottom" effect="solid">
                         Click this icon to learn about the timelog.

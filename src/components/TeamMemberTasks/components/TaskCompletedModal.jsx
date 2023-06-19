@@ -29,21 +29,14 @@ const TaskCompletedModal = React.memo(props => {
   };
 
   const removeUserFromTask = task => {
-    const removeIndex = task.resources.map(item => item.userID).indexOf(props.userId);
-    const newResources = [
-      ...task.resources.slice(0, removeIndex),
-      ...task.resources.slice(removeIndex + 1
-        )]
+    const newResources = task.resources.filter(item => item.userID !== props.userId);
     const updatedTask = {...task, resources: newResources};
     props.updateTask(task._id, updatedTask);
   }
 
-  let modalBody;
-  let modalHeader;
-
-  {props.taskModalOption === 'Checkmark' ? 
-  (modalHeader = 'Mark as Done', modalBody = 'Are you sure you want to mark this task as done?') :
-  (modalHeader = 'Remove User from Task', modalBody = 'Are you sure you want to remove this user from the task?')}
+  let isCheckmark = props.taskModalOption === 'Checkmark';
+  let modalHeader = isCheckmark ? 'Mark as Done'  : 'Remove User from Task' ;
+  let modalBody = isCheckmark ? 'Are you sure you want to mark this task as done?' : 'Are you sure you want to remove this user from the task?';
 
   return (
     <Modal isOpen={props.isOpen} toggle={() => props.popupClose()}>
