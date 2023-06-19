@@ -308,7 +308,7 @@ class AddUserProfile extends Component {
                       <Input
                         type="text"
                         name="weeklySummariesLink"
-                        id="weeklySummariesLink"
+                        id="googleDoc"
                         value={this.state.userProfile.googleDoc}
                         onChange={this.handleUserProfile}
                         placeholder="DropBox Folder of Folders"
@@ -583,7 +583,6 @@ class AddUserProfile extends Component {
     };
 
     this.setState({ formSubmitted: true });
-
     if (googleDoc) {
       userData.adminLinks.push({ Name: 'Weekly Summaries Link', Link: googleDoc });
     }

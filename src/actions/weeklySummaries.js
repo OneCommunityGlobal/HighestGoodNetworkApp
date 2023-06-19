@@ -41,15 +41,15 @@ export const getWeeklySummaries = userId => {
     try {
       const response = await axios.get(url);
       // Only pick the fields related to weekly summaries from the userProfile.
-      const { weeklySummariesCount, weeklySummaries, mediaUrl } = response.data;
-      let weeklySummariesLink;
-      for (let link in response.data.adminLinks) {
-        if (response.data.adminLinks[link].Name === "Weekly Summaries Link") {
-          weeklySummariesLink = response.data.adminLinks[link].Link;
-          break; // This line is not mandatory, but it would optimize your code as it would break the loop once the link is found.
+      const { weeklySummariesCount, weeklySummaries, mediaUrl, adminLinks} = response.data;
+      let googleDocLink;
+      for (let link in adminLinks) {
+        if (adminLinks[link].Name === "Weekly Summaries Link") {
+          googleDocLink = adminLinks[link].Link;
+          break; 
         }
       }
-      dispatch(fetchWeeklySummariesSuccess({ weeklySummariesCount, weeklySummaries, mediaUrl, weeklySummariesLink}));
+      dispatch(fetchWeeklySummariesSuccess({ weeklySummariesCount, weeklySummaries, mediaUrl:googleDocLink}));
       return response.status;
     } catch (error) {
       dispatch(fetchWeeklySummariesError(error));
@@ -71,16 +71,22 @@ export const updateWeeklySummaries = (userId, weeklySummariesData) => {
       // Get the user's profile from the server.
       let response = await axios.get(url);
       const userProfile = await response.data;
-
-      // Merge the weekly summaries related changes with the user's profile.
+      const adminLinks = userProfile.adminLinks || [];
       const { mediaUrl, weeklySummaries, weeklySummariesCount } = weeklySummariesData;
+      // update the changes on weekly summaries link into admin links
+      for (let link of adminLinks) {
+        if (link.Name === "Weekly Summaries Link") {
+          link.Link = mediaUrl;
+          break; 
+        }
+      }
       const userProfileUpdated = {
         ...userProfile,
+        adminLinks,
         mediaUrl,
         weeklySummaries,
         weeklySummariesCount,
       };
-
       // Update the user's profile on the server.
       response = await axios.put(url, userProfileUpdated);
       return response.status;
