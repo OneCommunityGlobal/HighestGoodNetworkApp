@@ -34,6 +34,8 @@ const Badges = props => {
     }
   }, [isOpen, isAssignOpen]);
 
+  const badgesEarned = props.userProfile.badgeCollection.length;
+
   return (
     <>
       <Card id="badgeCard" style={{ backgroundColor: '#f6f6f3', marginTop: 20, marginBottom: 20 }}>
@@ -100,9 +102,9 @@ const Badges = props => {
             color: '#285739',
           }}
         >
-          {`Bravo! ${props.isUserSelf ? "You've" : 'This person has'} earned ${
-            props.userProfile.badgeCollection.length
-          } badges! `}
+          {`Bravo! ${props.isUserSelf ? "You've" : 'This person has'} earned ${badgesEarned} ${
+            badgesEarned == 1 ? 'badge' : 'badges'
+          }! `}
           <i className="fa fa-info-circle" id="CountInfo" />
         </CardFooter>
       </Card>
