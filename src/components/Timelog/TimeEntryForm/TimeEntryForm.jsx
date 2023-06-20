@@ -1,4 +1,4 @@
-import React, { useState, useEffect, Fragment, useCallback, useRef } from 'react';
+import React, { useState, useEffect, Fragment, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import { useDispatch, useSelector } from 'react-redux';
 import {
@@ -16,12 +16,12 @@ import {
 } from 'reactstrap';
 import moment from 'moment-timezone';
 import { isEmpty } from 'lodash';
-import { Editor } from '@tinymce/tinymce-react';
+import { Editor } from 'primereact/editor';
 import ReactTooltip from 'react-tooltip';
 import { postTimeEntry, editTimeEntry } from '../../../actions/timeEntries';
 import { getUserProjects } from '../../../actions/userProjects';
 import { getUserProfile } from 'actions/userProfile';
-import { BiPlus } from 'react-icons/bi';
+import { getAllRoles } from 'actions/role';
 
 import { stopTimer } from '../../../actions/timer';
 import AboutModal from './AboutModal';
@@ -32,9 +32,6 @@ import { ENDPOINTS } from '../../../utils/URL';
 import hasPermission from 'utils/permissions';
 import { getTimeEntryFormData } from './selectors';
 import checkNegativeNumber from 'utils/checkNegativeHours';
-
-import './TimeEntryForm.css';
-import Loading from 'components/common/Loading/Loading';
 
 /**
  * Modal used to submit and edit tangible and intangible time entries.
@@ -50,22 +47,8 @@ import Loading from 'components/common/Loading/Loading';
  * @param {function} props.resetTimer
  * @returns
  */
-
 const TimeEntryForm = props => {
-  const {
-    userId,
-    edit,
-    data,
-    isOpen,
-    toggle,
-    timer,
-    resetTimer,
-    handleStop,
-    handleAddGoal,
-    handleStart,
-    goal,
-    toggleModalClose,
-  } = props;
+  const { userId, edit, data, isOpen, toggle, timer, resetTimer } = props;
 
   const initialFormValues = {
     dateOfWork: moment()
@@ -86,19 +69,8 @@ const TimeEntryForm = props => {
     editNotice: true,
   };
 
-  /*
-   * Here we just check if the amount of time that we are going to add will surpass the
-   * maximum allowed time on backend that its 10 hours
-   * */
-  const shouldDisableAddBtn = mins => {
-    const amount = moment.duration(goal ?? 0, 'milliseconds').add(mins, 'minutes');
-    return amount.asHours() > 10 ? true : false;
-  };
-
   const [isSubmitting, setSubmitting] = useState(false);
-  const [inputs, setInputs] = useState(
-    edit ? data : JSON.parse(localStorage.getItem('timeEntryInputs')) || initialFormValues
-  );
+  const [inputs, setInputs] = useState(edit ? data : initialFormValues);
   const [errors, setErrors] = useState({});
   const [close, setClose] = useState(false);
   const [reminder, setReminder] = useState(initialReminder);
@@ -107,6 +79,7 @@ const TimeEntryForm = props => {
   const [projects, setProjects] = useState([]);
   const [tasks, setTasks] = useState([]);
   const [formDataBeforeEdit, setFormDataBeforeEdit] = useState({});
+  const numberOfWords = inputs.notes ? inputs.notes.trim().split(/\s+/).length : 0;
 
   const fromTimer = !isEmpty(timer);
   const { userProfile, currentUserRole } = useSelector(getTimeEntryFormData);
@@ -237,85 +210,44 @@ const TimeEntryForm = props => {
     Do you wish to continue?`;
   };
 
-  const validateForm = isTimeModified => {
+  const validateForm = (isTimeModified) => {
     const result = {};
-
+  
     if (inputs.dateOfWork === '') {
       result.dateOfWork = 'Date is required';
     } else {
       const date = moment(inputs.dateOfWork);
-      const today = moment(
-        moment()
-          .tz('America/Los_Angeles')
-          .format('YYYY-MM-DD'),
-      );
+      const today = moment().tz('America/Los_Angeles').startOf('day');
       if (!date.isValid()) {
         result.dateOfWork = 'Invalid date';
-      }
-      // Administrator/Owner can add time entries for any dates. Other roles cannot.
-      // Editing details of past date is possible for any role.
-      else if (
-        currentUserRole !== 'Administrator' &&
-        currentUserRole !== 'Owner' &&
-        !edit &&
-        today.diff(date, 'days') !== 0
-      ) {
-        result.dateOfWork = 'Invalid date. Please refresh the page.';
+      } else if (date.isAfter(today)) {
+        result.dateOfWork = 'Date cannot be in the future';
       }
     }
-
+  
     if (inputs.hours === '' && inputs.minutes === '') {
       result.time = 'Time is required';
     } else {
-      const hours = inputs.hours === '' ? 0 : inputs.hours * 1;
-      const minutes = inputs.minutes === '' ? 0 : inputs.minutes * 1;
-      if (!Number.isInteger(hours) || !Number.isInteger(minutes)) {
-        result.time = 'Hours and minutes should be integers';
-      }
-      if (hours < 0 || minutes < 0 || (hours === 0 && minutes === 0)) {
+      const hours = parseInt(inputs.hours) || 0;
+      const minutes = parseInt(inputs.minutes) || 0;
+      const totalMinutes = hours * 60 + minutes;
+      if (totalMinutes <= 0) {
         result.time = 'Time should be greater than 0';
       }
     }
-
+  
     if (inputs.projectId === '') {
       result.projectId = 'Project/Task is required';
     }
-
-    if (reminder.wordCount < 10) {
-      openModal();
-      setReminder(reminder => ({
-        ...reminder,
-        remind:
-          'Please write a more detailed description of your work completed, write at least 1-2 sentences.',
-      }));
-      result.notes = 'Description and reference link are required';
+  
+    const editorContent = inputs.notes;
+    const wordCount = editorContent.trim().split(/\s+/).length;
+    const hasLink = editorContent.includes('http');
+  
+    if (wordCount < 10 || !hasLink) {
+      result.notes = '10 words and reference link are required';
     }
-
-    if (reminder.wordCount >= 10 && !reminder.hasLink) {
-      openModal();
-      setReminder(reminder => ({
-        ...reminder,
-        remind:
-          'Do you have a link to your Google Doc or other place to review this work? You should add it if you do. (Note: Please include http[s]:// in your URL)',
-      }));
-      result.notes = 'Description and reference link are required';
-    }
-
-    if (
-      !hasPermission(currentUserRole, 'addTimeEntryOthers', roles, userPermissions) &&
-      data.isTangible &&
-      isTimeModified &&
-      reminder.editNotice
-    ) {
-      openModal();
-      setReminder(reminder => ({
-        ...reminder,
-        remind: getEditMessage(),
-        editNotice: !reminder.editNotice,
-      }));
-      return false;
-    }
-
+  
     setErrors(result);
     return isEmpty(result);
   };
@@ -450,6 +382,7 @@ const TimeEntryForm = props => {
   };
 
   const handleSubmit = async event => {
+    //Validation and variable initialization
     if (event) event.preventDefault();
     if (isSubmitting) return;
     const hours = inputs.hours || 0;
@@ -474,6 +407,8 @@ const TimeEntryForm = props => {
       timeEntry.timeSpent = `${hours}:${minutes}:00`;
     }
 
+    //Update userprofile hoursByCategory
+
     //Send the time entry to the server
     setSubmitting(true);
 
@@ -487,6 +422,7 @@ const TimeEntryForm = props => {
       updateHoursByCategory(userProfile, timeEntry, hours, minutes);
       timeEntryStatus = await dispatch(postTimeEntry(timeEntry));
     }
+    setSubmitting(false);
 
     if (timeEntryStatus !== 200) {
       toggle();
@@ -512,19 +448,14 @@ const TimeEntryForm = props => {
         editNotice: !reminder.editNotice,
       }));
     }
-    setSubmitting(false);
 
-    if (isOpen) toggleModalClose();
-    if (fromTimer) clearAll();
+    if (isOpen) toggle();
+    if (fromTimer) clearForm();
     setReminder(initialReminder);
-  
+
     if (!props.edit) setInputs(initialFormValues);
-  
-    getUserProfile(userId)(dispatch);
-    window.location.reload(true);
-  
-    // Clear the saved notes from localStorage
-    localStorage.removeItem('timeEntryInputs');
+
+    await getUserProfile(userId)(dispatch);
   };
 
   const handleInputChange = event => {
@@ -557,18 +488,15 @@ const TimeEntryForm = props => {
     }));
   };
 
-  const handleEditorChange = (content, editor) => {
-    inputs.notes = content;
-    const { wordcount } = editor.plugins;
-  
-    setInputs(inputs => ({ ...inputs, [editor.id]: content }));
-    setReminder(reminder => ({
+  const handleEditorChange = useCallback((e) => {
+    setInputs((inputs) => ({ ...inputs, notes: e.htmlValue }));
+    const { wordCount, hasLink } = e.textValue;
+    setReminder((reminder) => ({
       ...reminder,
-      wordCount: wordcount.body.getWordCount(),
-      hasLink: inputs.notes.indexOf('http://') > -1 || inputs.notes.indexOf('https://') > -1,
+      wordCount: wordCount,
+      hasLink: hasLink,
     }));
-    localStorage.setItem('timeEntryInputs', JSON.stringify(inputs));
-  };
+  }, []);  
 
   const handleCheckboxChange = event => {
     event.persist();
@@ -582,8 +510,7 @@ const TimeEntryForm = props => {
    * Resets the project/task and notes fields of the form without resetting hours and minutes.
    * @param {*} closed If true, the form closes after being cleared.
    */
-  const clearAll = closed => {
-    resetTimer();
+  const clearForm = closed => {
     const newInputs = {
       ...inputs,
       notes: '',
@@ -595,39 +522,11 @@ const TimeEntryForm = props => {
     setInputs(newInputs);
     setReminder({ ...initialReminder });
     setErrors({});
-    toggleModalClose();
-    localStorage.removeItem('timeEntryInputs');
+    if (closed === true && isOpen) toggle();
   };
 
-  const stopAllAudioAndClearIntervals = useCallback(() => {
-    const audios = document.querySelectorAll('audio');
-    audios.forEach(audio => {
-      audio.pause();
-      audio.currentTime = 0;
-    });
-
-    const intervals = setInterval(() => {});
-    for (let i = 1; i < intervals; i++) {
-      clearInterval(i);
-    }
-  }, []);
-
-  useEffect(() => {
-    const userHasOpenTangibleModal = isOpen && data?.isTangible;
-
-    if (userHasOpenTangibleModal) {
-      stopAllAudioAndClearIntervals();
-    }
-  }, [stopAllAudioAndClearIntervals, isOpen, data?.isTangible]);
-
-  const closeBtn = (
-    <Button onClick={clearAll} color="danger">
-      Clear and Close
-    </Button>
-  );
-
   return (
-    <div>
+    <>
       <TangibleInfoModal
         visible={isTangibleInfoModalVisible}
         setVisible={setTangibleInfoModalVisibleModalVisible}
@@ -646,207 +545,184 @@ const TimeEntryForm = props => {
       />
 
       <Modal isOpen={isOpen} toggle={toggle} data-testid="timeEntryFormModal">
-        {!isSubmitting && (
-          <ModalHeader toggle={toggle} close={closeBtn}>
-            <div>
-              {edit ? 'Edit ' : 'Add '}
-              {inputs.isTangible ? (
-                <span style={{ color: 'blue' }}>Tangible </span>
-              ) : (
-                <span style={{ color: 'orange' }}>Intangible </span>
-              )}
-              Time Entry{' '}
-              <i
-                className="fa fa-info-circle"
-                data-tip
-                data-for="registerTip"
-                aria-hidden="true"
-                title="timeEntryTip"
-                onClick={() => setInfoModalVisible(true)}
-              />
-            </div>
-            <ReactTooltip id="registerTip" place="bottom" effect="solid">
-              Click this icon to learn about this time entry form
-            </ReactTooltip>
-          </ModalHeader>
-        )}
+        <ModalHeader toggle={toggle}>
+          <div>
+            {edit ? 'Edit ' : 'Add '}
+            {inputs.isTangible ? (
+              <span style={{ color: 'blue' }}>Tangible </span>
+            ) : (
+              <span style={{ color: 'orange' }}>Intangible </span>
+            )}
+            Time Entry{' '}
+            <i
+              className="fa fa-info-circle"
+              data-tip
+              data-for="registerTip"
+              aria-hidden="true"
+              title="timeEntryTip"
+              onClick={() => setInfoModalVisible(true)}
+            />
+          </div>
+          <ReactTooltip id="registerTip" place="bottom" effect="solid">
+            Click this icon to learn about this time entry form
+          </ReactTooltip>
+        </ModalHeader>
         <ModalBody>
-          {!isSubmitting ? (
-            <Form>
-              <FormGroup>
-                <Label for="dateOfWork">Date</Label>
-                {hasPermission(
-                  currentUserRole,
-                  'changeIntangibleTimeEntryDate',
-                  roles,
-                  userPermissions,
-                ) && !fromTimer ? (
-                  <Input
-                    type="date"
-                    name="dateOfWork"
-                    id="dateOfWork"
-                    value={inputs.dateOfWork}
-                    onChange={handleInputChange}
-                  />
-                ) : (
-                  <Input
-                    type="date"
-                    name="dateOfWork"
-                    id="dateOfWork"
-                    value={inputs.dateOfWork}
-                    disabled
-                  />
-                )}
-                {'dateOfWork' in errors && (
-                  <div className="text-danger">
-                    <small>{errors.dateOfWork}</small>
-                  </div>
-                )}
-              </FormGroup>
-              <FormGroup>
-                <Label for="timeSpent">Time (HH:MM)</Label>
-                <Row form>
-                  <Col>
-                    <Input
-                      type="number"
-                      name="hours"
-                      id="hours"
-                      min={0}
-                      max={40}
-                      placeholder="Hours"
-                      value={inputs.hours}
-                      onChange={handleHHInputChange}
-                      disabled={fromTimer}
-                    />
-                  </Col>
-                  <Col>
-                    <Input
-                      type="number"
-                      name="minutes"
-                      id="minutes"
-                      min={0}
-                      max={59}
-                      placeholder="Minutes"
-                      value={inputs.minutes}
-                      onChange={handleMMInputChange}
-                      disabled={fromTimer}
-                    />
-                  </Col>
-                </Row>
-                {'time' in errors && (
-                  <div className="text-danger">
-                    <small>{errors.time}</small>
-                  </div>
-                )}
-              </FormGroup>
-              <FormGroup>
-                <Label for="project">Project/Task</Label>
+          <Form>
+            <FormGroup>
+              <Label for="dateOfWork">Date</Label>
+              {hasPermission(
+                currentUserRole,
+                'changeIntangibleTimeEntryDate',
+                roles,
+                userPermissions,
+              ) && !fromTimer ? (
                 <Input
-                  type="select"
-                  name="projectId"
-                  id="projectId"
-                  value={inputs.projectId}
+                  type="date"
+                  name="dateOfWork"
+                  id="dateOfWork"
+                  value={inputs.dateOfWork}
                   onChange={handleInputChange}
-                >
-                  {projectOrTaskOptions}
-                </Input>
-                {'projectId' in errors && (
-                  <div className="text-danger">
-                    <small>{errors.projectId}</small>
-                  </div>
-                )}
-              </FormGroup>
-              <FormGroup>
-                <Label for="notes">Notes</Label>
-                <Editor
-                  init={{
-                    menubar: false,
-                    placeholder: 'Description (10-word minimum) and reference link',
-                    plugins:
-                      'advlist autolink autoresize lists link charmap table paste help wordcount',
-                    toolbar:
-                      'bold italic underline link removeformat | bullist numlist outdent indent |\
-                                   styleselect fontsizeselect | table| strikethrough forecolor backcolor |\
-                                   subscript superscript charmap  | help',
-                    branding: false,
-                    min_height: 180,
-                    max_height: 300,
-                    autoresize_bottom_margin: 1,
-                  }}
-                  id="notes"
-                  name="notes"
-                  className="form-control"
-                  value={inputs.notes}
-                  onEditorChange={handleEditorChange}
                 />
-
-                {'notes' in errors && (
-                  <div className="text-danger">
-                    <small>{errors.notes}</small>
-                  </div>
-                )}
-              </FormGroup>
-              <FormGroup check>
-                <Label check>
+              ) : (
+                <Input
+                  type="date"
+                  name="dateOfWork"
+                  id="dateOfWork"
+                  value={inputs.dateOfWork}
+                  disabled
+                />
+              )}
+              {'dateOfWork' in errors && (
+                <div className="text-danger">
+                  <small>{errors.dateOfWork}</small>
+                </div>
+              )}
+            </FormGroup>
+            <FormGroup>
+              <Label for="timeSpent">Time (HH:MM)</Label>
+              <Row form>
+                <Col>
                   <Input
-                    type="checkbox"
-                    name="isTangible"
-                    checked={inputs.isTangible}
-                    onChange={handleCheckboxChange}
-                    disabled={
-                      !hasPermission(
-                        currentUserRole,
-                        'toggleTangibleTime',
-                        roles,
-                        userPermissions,
-                      ) && !data.isTangible
-                    }
+                    type="number"
+                    name="hours"
+                    id="hours"
+                    min={0}
+                    max={40}
+                    placeholder="Hours"
+                    value={inputs.hours}
+                    onChange={handleHHInputChange}
+                    disabled={fromTimer}
                   />
-                  Tangible&nbsp;
-                  <i
-                    className="fa fa-info-circle"
-                    data-tip
-                    data-for="tangibleTip"
-                    aria-hidden="true"
-                    title="tangibleTip"
-                    onClick={tangibleInfoToggle}
+                </Col>
+                <Col>
+                  <Input
+                    type="number"
+                    name="minutes"
+                    id="minutes"
+                    min={0}
+                    max={59}
+                    placeholder="Minutes"
+                    value={inputs.minutes}
+                    onChange={handleMMInputChange}
+                    disabled={fromTimer}
                   />
-                  <ReactTooltip id="tangibleTip" place="bottom" effect="solid">
-                    Click this icon to learn about tangible and intangible time.
-                  </ReactTooltip>
-                </Label>
-              </FormGroup>
-            </Form>
-          ) : (
-            <Loading />
-          )}
+                </Col>
+              </Row>
+              {'time' in errors && (
+                <div className="text-danger">
+                  <small>{errors.time}</small>
+                </div>
+              )}
+            </FormGroup>
+            <FormGroup>
+              <Label for="project">Project/Task</Label>
+              <Input
+                type="select"
+                name="projectId"
+                id="projectId"
+                value={inputs.projectId}
+                onChange={handleInputChange}
+              >
+                {projectOrTaskOptions}
+              </Input>
+              {'projectId' in errors && (
+                <div className="text-danger">
+                  <small>{errors.projectId}</small>
+                </div>
+              )}
+            </FormGroup>
+            <FormGroup>
+              <Label for="notes">Notes</Label>
+              <Editor
+                init={{
+                  menubar: false,
+                  placeholder: 'Description (10-word minimum) and reference link',
+                  plugins:
+                    'advlist autolink autoresize lists link charmap table paste help wordcount',
+                  toolbar:
+                    'bold italic underline link removeformat | bullist numlist outdent indent |\
+                                    styleselect fontsizeselect | table| strikethrough forecolor backcolor |\
+                                    subscript superscript charmap  | help',
+                  branding: false,
+                  min_height: 180,
+                  max_height: 300,
+                  autoresize_bottom_margin: 1,
+                }}
+                id="notes"
+                name="notes"
+                className="form-control"
+                value={inputs.notes}
+                onEditorChange={handleEditorChange}
+              />
+
+              {'notes' in errors && (
+                <div className="text-danger">
+                  <small>{errors.notes}</small>
+                </div>
+              )}
+            </FormGroup>
+            <FormGroup check>
+              <Label check>
+                <Input
+                  type="checkbox"
+                  name="isTangible"
+                  checked={inputs.isTangible}
+                  onChange={handleCheckboxChange}
+                  disabled={
+                    !hasPermission(currentUserRole, 'toggleTangibleTime', roles, userPermissions) &&
+                    !data.isTangible
+                  }
+                />
+                Tangible&nbsp;
+                <i
+                  className="fa fa-info-circle"
+                  data-tip
+                  data-for="tangibleTip"
+                  aria-hidden="true"
+                  title="tangibleTip"
+                  onClick={tangibleInfoToggle}
+                />
+                <ReactTooltip id="tangibleTip" place="bottom" effect="solid">
+                  Click this icon to learn about tangible and intangible time.
+                </ReactTooltip>
+              </Label>
+            </FormGroup>
+          </Form>
         </ModalBody>
-        {!isSubmitting && (
-          <ModalFooter>
-            <small className="mr-auto">* All the fields are required</small>
-
-            {/* <Button color="primary" disabled={isSubmitting || (data.hours === inputs.hours && data.minutes === inputs.minutes && data.notes === inputs.notes)} onClick={handleSubmit}> */}
-            <Button color="secondary" onClick={() => {
-              toggle()
-              }}>
-              Back
-            </Button>
-            <Button color="primary" onClick={handleSubmit}>
-              {edit ? 'Save' : 'Submit'}
-            </Button>
-          </ModalFooter>
-        )}
+        <ModalFooter>
+          <small className="mr-auto">* All the fields are required</small>
+          <Button onClick={clearForm} color="danger">
+            Clear Form
+          </Button>
+          {/* <Button color="primary" disabled={isSubmitting || (data.hours === inputs.hours && data.minutes === inputs.minutes && data.notes === inputs.notes)} onClick={handleSubmit}> */}
+          <Button color="primary" onClick={handleSubmit}>
+            {edit ? 'Save' : 'Submit'}
+          </Button>
+        </ModalFooter>
       </Modal>
-    </div>
+    </>
   );
-};
-
-TimeEntryForm.defaultProps = {
-  timer: '',
-  resetTimer: () => {},
-  handleStop: () => {},
-  handleAddGoal: () => {},
-  goal: 0,
 };
 
 TimeEntryForm.propTypes = {
@@ -858,9 +734,6 @@ TimeEntryForm.propTypes = {
   data: PropTypes.any.isRequired,
   userProfile: PropTypes.any.isRequired,
   resetTimer: PropTypes.func,
-  handleStop: PropTypes.func,
-  handleAddGoal: PropTypes.func,
-  goal: PropTypes.number.isRequired,
 };
 
 export default TimeEntryForm;

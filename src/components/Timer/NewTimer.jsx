@@ -115,13 +115,13 @@ export const NewTimer = () => {
     const lastAccess = moment(message?.lastAccess);
     const elapsed = moment.duration(now.diff(lastAccess)).asMilliseconds();
     let remaining = message?.time - elapsed;
-    
+
     const lastTimeAdded = moment.utc(remainingTime).format('HH:mm').replace('00:0', '');
-  
+
     if (remaining <= 0) {
       handleAddGoal(1000 * 60 * (Number(lastTimeAdded) > 0 ? Number(lastTimeAdded) : 5));
     }
-  
+
     setElapsedTime(elapsed);
     sendMessage(action.START_TIMER);
   }, [message, remainingTime, sendMessage, handleAddGoal]);
@@ -134,7 +134,7 @@ export const NewTimer = () => {
     handleStopAlarm();
     sendMessage(action.PAUSE_TIMER);
   }, [handleStopAlarm, sendMessage]);
-    
+
   const handleClear = useCallback(() => {
     sendMessage(action.CLEAR_TIMER); 
     setRemainingTime(0); // Reset the remaining time to 0
@@ -176,7 +176,6 @@ const handleRemoveGoal = useCallback((time) => {
   const handleAckForced = useCallback(() => sendMessage(action.ACK_FORCED), []);
   const toggleModal = () => {
     setLogModal(modal => !modal);
-    // setTimerIsOverModalIsOpen(true);
   };
   const toggleModalClose = () => {
     setLogModal(modal => !modal);
@@ -227,7 +226,7 @@ const handleRemoveGoal = useCallback((time) => {
       clearInterval(i);
     }
   }, []);
-  
+
   useEffect(() => {
     if (!initialRender && prevLogModal && !logModal) {
       handleStart();
@@ -237,7 +236,7 @@ const handleRemoveGoal = useCallback((time) => {
     }
     setPrevLogModal(logModal);
   }, [logModal, prevLogModal, initialRender]);
-  
+
   useEffect(() => {
     setInitialRender(false);
   }, []);
