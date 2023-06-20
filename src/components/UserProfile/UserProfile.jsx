@@ -707,6 +707,7 @@ function UserProfile(props) {
                 );
               })}
             <Badges
+              isUserSelf={isUserSelf}
               userProfile={userProfile}
               setUserProfile={setUserProfile}
               setOriginalUserProfile={setOriginalUserProfile}

@@ -100,7 +100,9 @@ const Badges = props => {
             color: '#285739',
           }}
         >
-          Bravo! You've earned {props.userProfile.badgeCollection.length} badges!{' '}
+          {`Bravo! ${props.isUserSelf ? "You've" : 'This person has'} earned ${
+            props.userProfile.badgeCollection.length
+          } badges! `}
           <i className="fa fa-info-circle" id="CountInfo" />
         </CardFooter>
       </Card>
