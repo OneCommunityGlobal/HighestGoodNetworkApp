@@ -24,6 +24,7 @@ const StartDate = props => {
       }}
       placeholder="Start Date"
       invalid={!props.canEdit}
+      max={props.userProfile.endDate ? moment(props.userProfile.endDate).format('YYYY-MM-DD') : ''}
     />
   );
 };
@@ -51,6 +52,7 @@ const EndDate = props => {
       }}
       placeholder="End Date"
       invalid={!props.canEdit}
+      min={moment(props.userProfile.createdDate).format('YYYY-MM-DD')}
     />
   );
 };
