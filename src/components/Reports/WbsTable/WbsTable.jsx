@@ -1,8 +1,23 @@
 import { Stub } from 'components/common/Stub';
 import React from 'react';
 import './WbsTable.css';
+import {useState} from 'react';
+
+
 
 export const WbsTable = ({ wbs, skip, take }) => {
+  const [copyMessage, setCopyMessage ] = useState("Copy id to clipboard")
+
+  const copyContent = async (text) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      console.log('Id copied to clipboard');
+      setCopyMessage("Copied!")
+    } catch (err) {
+      console.error('Failed to copy: ', err);
+    }
+  }
+
   let WbsList = [];
   if (wbs.fetched) {
     if (wbs.WBSItems.length > 0) {
@@ -21,7 +36,9 @@ export const WbsTable = ({ wbs, skip, take }) => {
               </div>
             )}
           </div>
-          <div>{item._id}</div>
+          <div className='wbs_id' onClick={()=>copyContent(item._id)} onMouseEnter={()=>setCopyMessage("Copy id to clipboard")}>{item._id}
+          <div>{copyMessage}</div>
+          </div>
         </div>
       ));
     }
@@ -36,7 +53,7 @@ export const WbsTable = ({ wbs, skip, take }) => {
         <div id="projects__active">Active</div>
         <div id="projects__active">ID</div>
       </div>
-      <div>{WbsList.length > 0 ? WbsList : <Stub />}</div>
+      <div className='scroll_x'>{WbsList.length > 0 ? WbsList : <Stub />}</div>
     </div>
   );
 };

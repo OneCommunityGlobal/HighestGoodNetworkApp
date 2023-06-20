@@ -8,6 +8,18 @@ export const ProjectMemberTable = ({ projectMembers, skip, take, handleMemberCou
   const [activeMemberList, setActiveMemberList] = useState([]);
   const [memberFilter, setMemberFilter] = useState('active');
   const { fetched, foundUsers, members } = projectMembers;
+  const [copyMessage, setCopyMessage ] = useState("Copy id to clipboard")
+
+  const copyContent = async (text) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      console.log('Id copied to clipboard');
+      setCopyMessage("Copied!")
+    } catch (err) {
+      console.error('Failed to copy: ', err);
+    }
+  }
+
 
   useEffect(() => {
     if (fetched) {
@@ -34,10 +46,10 @@ export const ProjectMemberTable = ({ projectMembers, skip, take, handleMemberCou
 
   const activeMemberTable = activeMemberList.slice(skip, skip + take).map((member, index) => (
     <div className="project-member-table-row" id={'tr_' + member._id} key={'ac_' + member._id}>
-      <div>
+      <div className='projectId'>
         <div>{skip + index + 1}</div>
       </div>
-      <Link to={`/userprofile/${member._id}`} title="View Profile">
+      <Link className='projectProfile' to={`/userprofile/${member._id}`} title="View Profile">
         <div>
           {member.firstName} {member.lastName}
         </div>
@@ -53,7 +65,10 @@ export const ProjectMemberTable = ({ projectMembers, skip, take, handleMemberCou
           </div>
         )}
       </div>
-      <div>{member._id}</div>
+      <div className='member_id' onClick={()=>copyContent(member._id)} onMouseEnter={()=>setCopyMessage("Copy id to clipboard")}>{member._id}
+      <div>{copyMessage}</div>
+      
+      </div>
     </div>
   ));
 
@@ -111,7 +126,7 @@ export const ProjectMemberTable = ({ projectMembers, skip, take, handleMemberCou
         <div>Active</div>
         <div>ID</div>
       </div>
-      <div>
+      <div className='scroll_x'>
         {memberFilter == 'all-time' ? (
           allMemberTable.length > 0 ? (
             allMemberTable
