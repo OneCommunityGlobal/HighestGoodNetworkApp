@@ -79,7 +79,7 @@ const TimeEntryForm = props => {
   const [projects, setProjects] = useState([]);
   const [tasks, setTasks] = useState([]);
   const [formDataBeforeEdit, setFormDataBeforeEdit] = useState({});
-  const numberOfWords = inputs.notes ? inputs.notes.trim().split(/\s+/).length : 0;
+  const [numberOfWords, setNumberOfWords] = useState(inputs.notes ? inputs.notes.trim().split(/\s+/).length : 0);
 
   const fromTimer = !isEmpty(timer);
   const { userProfile, currentUserRole } = useSelector(getTimeEntryFormData);
@@ -106,6 +106,10 @@ const TimeEntryForm = props => {
     }
     return result;
   };
+
+  useEffect(() => {
+    setNumberOfWords(inputs.notes ? inputs.notes.trim().split(/\s+/).length : 0);
+  }, [inputs.notes]);
 
   useEffect(() => {
     //this to make sure that the form is cleared before closing
@@ -491,12 +495,14 @@ const TimeEntryForm = props => {
   const handleEditorChange = useCallback((e) => {
     setInputs((inputs) => ({ ...inputs, notes: e.htmlValue }));
     const { wordCount, hasLink } = e.textValue;
+    setNumberOfWords(wordCount);
+    console.log(Number(wordCount))
     setReminder((reminder) => ({
       ...reminder,
       wordCount: wordCount,
       hasLink: hasLink,
     }));
-  }, []);  
+  }, []);
 
   const handleCheckboxChange = event => {
     event.persist();
@@ -655,6 +661,16 @@ const TimeEntryForm = props => {
             <FormGroup>
               <Label for="notes">Notes</Label>
               <Editor
+                style={{
+                          height: '180px'
+                }}
+                id="notes"
+                name="notes"
+                value={String(inputs.notes)}
+                onTextChange={handleEditorChange}
+              />
+              <p>{numberOfWords} words</p>
+              {/* <Editor
                 init={{
                   menubar: false,
                   placeholder: 'Description (10-word minimum) and reference link',
@@ -674,7 +690,7 @@ const TimeEntryForm = props => {
                 className="form-control"
                 value={inputs.notes}
                 onEditorChange={handleEditorChange}
-              />
+              /> */}
 
               {'notes' in errors && (
                 <div className="text-danger">
