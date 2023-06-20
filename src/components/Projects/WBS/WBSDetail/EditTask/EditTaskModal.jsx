@@ -22,7 +22,6 @@ const EditTaskModal = props => {
 
   const [members] = useState(props.projectMembers || props.projectMembers.members);
   let foundedMembers = [];
-  
 
   // get this task by id
   const [thisTask, setThisTask] = useState();
