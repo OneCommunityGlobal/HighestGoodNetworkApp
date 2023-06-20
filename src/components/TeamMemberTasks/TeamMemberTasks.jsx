@@ -55,6 +55,8 @@ const TeamMemberTasks = props => {
   const userId = props?.match?.params?.userId || props.asUser || props.auth.user.userid;
 
   const dispatch = useDispatch();
+  
+
   useEffect(() => {
     const initialFetching = async () => {
       //Passed the userid as argument to fetchTeamMembersTask
@@ -76,7 +78,7 @@ const TeamMemberTasks = props => {
         await dispatch(fetchTeamMembersTask(userId, null));
         setUserRole(props.auth.user.role);
       }
-      setShouldRun(true)     
+      setShouldRun(true);
     };
     initialFetching();
   }, []);
@@ -132,12 +134,14 @@ const TeamMemberTasks = props => {
   };
 
   const handleTaskNotificationRead = (userId, taskId, taskNotificationId) => {
-    dispatch(deleteTaskNotification(userId, taskId, taskNotificationId));
+    //if the authentitated user is seeing it's own notification
+    if (currentUserId === props.auth.user.userid) {
+      dispatch(deleteTaskNotification(userId, taskId, taskNotificationId));
+    }
     handleOpenTaskNotificationModal();
   };
 
   const getTimeEntriesForPeriod = async teamList => {
-    let newList = [];
     let twentyFourList = [];
     let fortyEightList = [];
 
@@ -146,22 +150,22 @@ const TeamMemberTasks = props => {
       .tz('America/Los_Angeles')
       .subtract(72, 'hours')
       .format('YYYY-MM-DD');
-
     const toDate = moment()
       .tz('America/Los_Angeles')
       .format('YYYY-MM-DD');
 
-    const requests = teamList.map(async user => {
-      const url = ENDPOINTS.TIME_ENTRIES_PERIOD(user.personId, fromDate, toDate);
-      return axios.get(url);
-    });
-    const responses = await Promise.all(requests);
-    for (const response of responses) {
-      if (response.data.length > 0) newList.push(...response.data);
-    }
+    const userIds = teamList.map(user => user.personId);
+    
+    const userListTasksRequest = async userList => {
+      const url = ENDPOINTS.TIME_ENTRIES_USER_LIST;
+      return axios.post(url, { users: userList, fromDate, toDate });
+    };
+
+    const taskResponse = await userListTasksRequest(userIds);
+    const usersListTasks = taskResponse.data
 
     //2. Generate array of past 24/48 hrs timelogs
-    newList.map(entry => {
+    usersListTasks.map(entry => {
       const threeDaysAgo = moment()
         .tz('America/Los_Angeles')
         .subtract(72, 'hours')
@@ -180,13 +184,11 @@ const TeamMemberTasks = props => {
     });
 
     //3. set three array of time logs
-    setSeventyTwoHoursTimeEntries([...newList]);
+    setSeventyTwoHoursTimeEntries([...usersListTasks]);
     setFortyEightHoursTimeEntries([...fortyEightList]);
     setTwentyFourHoursTimeEntries([...twentyFourList]);
 
-    if (newList && twentyFourList && fortyEightList) {
-      setFinishLoading(true);
-    }
+    setFinishLoading(true);
   };
 
   //Display timelogs based on selected period
@@ -392,20 +394,22 @@ const TeamMemberTasks = props => {
 
           <tbody>
             {isLoading ? (
-              <Loading />
+              <tr>
+                <td>
+                  <Loading />
+                </td>
+              </tr>
             ) : (
               teamList.map(user => {
                 if (!isTimeLogActive) {
                   return (
-                    <>
-                      <TeamMemberTask
-                        user={user}
-                        key={user.personId}
-                        handleOpenTaskNotificationModal={handleOpenTaskNotificationModal}
-                        handleMarkAsDoneModal={handleMarkAsDoneModal}
-                        userRole={userRole}
-                      />
-                    </>
+                    <TeamMemberTask
+                      user={user}
+                      key={user.personId}
+                      handleOpenTaskNotificationModal={handleOpenTaskNotificationModal}
+                      handleMarkAsDoneModal={handleMarkAsDoneModal}
+                      userRole={userRole}
+                    />
                   );
                 } else {
                   return (
