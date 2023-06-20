@@ -296,7 +296,7 @@ describe('Non-admin user', () => {
     it('should not render the + button', () => {
       expect(screen.queryByText('+')).toBeFalsy();
     });
-    it("should fire handleBlueSquare to view the blue square once the user click", async () => {
+    it("should fire putUserProfileImportantInfo to view the blue square once the user click", async () => {
       userEvent.click(screen.getAllByRole('button')[3]);
       expect(screen.getByText('Summary')).toBeInTheDocument();
     })

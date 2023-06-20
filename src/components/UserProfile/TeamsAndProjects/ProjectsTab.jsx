@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import AddProjectPopup from './AddProjectPopup';
+import postProjectPopup from './AddProjectPopup';
 import UserProjectsTable from './UserProjectsTable';
 
 const ProjectsTab = props => {
@@ -14,7 +14,7 @@ const ProjectsTab = props => {
     userId,
     updateTask,
   } = props;
-  const [addProjectPopupOpen, setaddProjectPopupOpen] = useState(false);
+  const [postProjectPopupOpen, setPostProjectPopupOpen] = useState(false);
   const [renderedOn, setRenderedOn] = useState(0);
   const onSelectDeleteProject = projectId => {
     onDeleteProject(projectId);
@@ -23,21 +23,21 @@ const ProjectsTab = props => {
   const onSelectAssignProject = project => {
     onAssignProject(project);
     setRenderedOn(Date.now());
-    //setaddProjectPopupOpen(false);
+    //setPostProjectPopupOpen(false);
   };
 
   const onAddProjectPopupShow = () => {
-    setaddProjectPopupOpen(true);
+    setPostProjectPopupOpen(true);
   };
 
   const onAddProjectPopupClose = () => {
-    setaddProjectPopupOpen(false);
+    setPostProjectPopupOpen(false);
   };
 
   return (
     <React.Fragment>
-      <AddProjectPopup
-        open={addProjectPopupOpen}
+      <postProjectPopup
+        open={postProjectPopupOpen}
         onClose={onAddProjectPopupClose}
         userProjectsById={userProjects}
         projects={projectsData}

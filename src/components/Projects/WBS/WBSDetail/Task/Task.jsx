@@ -138,7 +138,7 @@ function Task(props) {
   };
 
   const deleteOneTask = (taskId, mother) => {
-    props.deleteWBSTask(taskId, mother);
+    props.deleteWbsTask(taskId, mother);
   };
 
   const onMove = (from, to) => {
@@ -156,7 +156,7 @@ function Task(props) {
     <>
       {props.id ? (
         <>
-          <ReactTooltip/>
+          <ReactTooltip />
           <tr
             ref={tableRowRef}
             key={props.key}
@@ -426,9 +426,9 @@ function Task(props) {
           {controllerRow ? (
             <tr className="wbsTaskController desktop-view" id={`controller_${props.id}`}>
               <td colSpan={tableColNum} className="controlTd">
-                {hasPermission(role, 'addTask', roles, userPermissions) ? (
+                {hasPermission(role, 'postTask', roles, userPermissions) ? (
                   <AddTaskModal
-                    key={`addTask_${props.id}`}
+                    key={`postTask_${props.id}`}
                     parentNum={props.num}
                     taskId={props.id}
                     projectId={props.projectId}
@@ -444,7 +444,7 @@ function Task(props) {
                   />
                 ) : null}
                 <EditTaskModal
-                  key={`editTask_${props.id}`}
+                  key={`updateTask_${props.id}`}
                   parentNum={props.num}
                   taskId={props.id}
                   projectId={props.projectId}
@@ -564,7 +564,7 @@ function Task(props) {
       ) : null}
     </>
   );
-};
+}
 
 const mapStateToProps = state => ({ state });
 

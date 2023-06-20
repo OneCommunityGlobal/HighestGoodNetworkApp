@@ -539,7 +539,7 @@ function UserProfile(props) {
   const canEditProfile =
     userProfile.role === 'Owner'
       ? hasPermission(requestorRole, 'addDeleteEditOwners', roles, userPermissions)
-      : hasPermission(requestorRole, 'editUserProfile', roles, userPermissions);
+      : hasPermission(requestorRole, 'putUserProfile', roles, userPermissions);
   const canEdit = canEditProfile || isUserSelf;
 
   const customStyles = {
@@ -822,12 +822,7 @@ function UserProfile(props) {
                     isUserSelf={isUserSelf}
                     role={requestorRole}
                     loadUserProfile={loadUserProfile}
-                    canEdit={hasPermission(
-                      requestorRole,
-                      'editUserProfile',
-                      roles,
-                      userPermissions,
-                    )}
+                    canEdit={hasPermission(requestorRole, 'putUserProfile', roles, userPermissions)}
                   />
                 }
               </TabPane>
@@ -837,7 +832,7 @@ function UserProfile(props) {
                   teamsData={props?.allTeams?.allTeamsData || []}
                   onAssignTeam={onAssignTeam}
                   onDeleteTeam={onDeleteTeam}
-                  edit={hasPermission(requestorRole, 'editUserProfile', roles, userPermissions)}
+                  edit={hasPermission(requestorRole, 'putUserProfile', roles, userPermissions)}
                   role={requestorRole}
                   roles={roles}
                   onUserVisibilitySwitch={onUserVisibilitySwitch}
@@ -852,7 +847,7 @@ function UserProfile(props) {
                   projectsData={props?.allProjects?.projects || []}
                   onAssignProject={onAssignProject}
                   onDeleteProject={onDeleteProject}
-                  edit={hasPermission(requestorRole, 'editUserProfile', roles, userPermissions)}
+                  edit={hasPermission(requestorRole, 'putUserProfile', roles, userPermissions)}
                   role={requestorRole}
                   userPermissions={userPermissions}
                   userId={props.match.params.userId}
@@ -899,12 +894,7 @@ function UserProfile(props) {
                 <ModalFooter>
                   <Row>
                     <div className="profileEditButtonContainer">
-                      {hasPermission(
-                        requestorRole,
-                        'resetPasswordOthers',
-                        roles,
-                        userPermissions,
-                      ) &&
+                      {hasPermission(requestorRole, 'updatePassword', roles, userPermissions) &&
                         canEdit &&
                         !isUserSelf && (
                           <ResetPasswordButton className="mr-1 btn-bottom" user={userProfile} />
@@ -913,7 +903,7 @@ function UserProfile(props) {
                         (activeTab == '1' ||
                           hasPermission(
                             requestorRole,
-                            'editUserProfile',
+                            'putUserProfile',
                             roles,
                             userPermissions,
                           )) && (
@@ -928,7 +918,7 @@ function UserProfile(props) {
                         (activeTab == '1' ||
                           hasPermission(
                             requestorRole,
-                            'editUserProfile',
+                            'putUserProfile',
                             roles,
                             userPermissions,
                           )) && (
@@ -977,12 +967,7 @@ function UserProfile(props) {
                     setUserProfile={setUserProfile}
                     isUserSelf={isUserSelf}
                     role={requestorRole}
-                    canEdit={hasPermission(
-                      requestorRole,
-                      'editUserProfile',
-                      roles,
-                      userPermissions,
-                    )}
+                    canEdit={hasPermission(requestorRole, 'putUserProfile', roles, userPermissions)}
                   />
                 </ModalBody>
                 <ModalFooter>
@@ -992,7 +977,7 @@ function UserProfile(props) {
                         (activeTab == '1' ||
                           hasPermission(
                             requestorRole,
-                            'editUserProfile',
+                            'putUserProfile',
                             roles,
                             userPermissions,
                           )) && (
@@ -1037,7 +1022,7 @@ function UserProfile(props) {
                     teamsData={props?.allTeams?.allTeamsData || []}
                     onAssignTeam={onAssignTeam}
                     onDeleteTeam={onDeleteTeam}
-                    edit={hasPermission(requestorRole, 'editUserProfile', roles, userPermissions)}
+                    edit={hasPermission(requestorRole, 'putUserProfile', roles, userPermissions)}
                     role={requestorRole}
                     roles={roles}
                     onUserVisibilitySwitch={onUserVisibilitySwitch}
@@ -1052,7 +1037,7 @@ function UserProfile(props) {
                         (activeTab == '1' ||
                           hasPermission(
                             requestorRole,
-                            'editUserProfile',
+                            'putUserProfile',
                             roles,
                             userPermissions,
                           )) && (
@@ -1098,7 +1083,7 @@ function UserProfile(props) {
                     projectsData={props?.allProjects?.projects || []}
                     onAssignProject={onAssignProject}
                     onDeleteProject={onDeleteProject}
-                    edit={hasPermission(requestorRole, 'editUserProfile', roles, userPermissions)}
+                    edit={hasPermission(requestorRole, 'putUserProfile', roles, userPermissions)}
                     role={requestorRole}
                     userPermissions={userPermissions}
                     userId={props.match.params.userId}
@@ -1112,7 +1097,7 @@ function UserProfile(props) {
                         (activeTab == '1' ||
                           hasPermission(
                             requestorRole,
-                            'editUserProfile',
+                            'putUserProfile',
                             roles,
                             userPermissions,
                           )) && (
@@ -1171,7 +1156,7 @@ function UserProfile(props) {
                         (activeTab == '1' ||
                           hasPermission(
                             requestorRole,
-                            'editUserProfile',
+                            'putUserProfile',
                             roles,
                             userPermissions,
                           )) && (
@@ -1212,14 +1197,14 @@ function UserProfile(props) {
           <Col md="4"></Col>
           <Col md="8" className="desktop-panel">
             <div className="profileEditButtonContainer">
-              {hasPermission(requestorRole, 'resetPasswordOthers', roles, userPermissions) &&
+              {hasPermission(requestorRole, 'updatePassword', roles, userPermissions) &&
                 canEdit &&
                 !isUserSelf && (
                   <ResetPasswordButton className="mr-1 btn-bottom" user={userProfile} />
                 )}
               {isUserSelf &&
                 (activeTab === '1' ||
-                  hasPermission(requestorRole, 'editUserProfile', roles, userPermissions)) && (
+                  hasPermission(requestorRole, 'putUserProfile', roles, userPermissions)) && (
                   <Link to={`/updatepassword/${userProfile._id}`}>
                     <Button className="mr-1 btn-bottom" color="primary">
                       {' '}
@@ -1230,7 +1215,7 @@ function UserProfile(props) {
               {canEdit &&
                 (activeTab === '1' ||
                   activeTab === '3' ||
-                  hasPermission(requestorRole, 'editUserProfile', roles, userPermissions)) && (
+                  hasPermission(requestorRole, 'putUserProfile', roles, userPermissions)) && (
                   <>
                     <SaveButton
                       className="mr-1 btn-bottom"

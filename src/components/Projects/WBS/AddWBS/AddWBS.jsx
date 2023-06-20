@@ -26,7 +26,7 @@ const AddWBS = props => {
 
   return (
     <>
-      {hasPermission(role, 'addWbs', roles, userPermissions) ? (
+      {hasPermission(role, 'postWbs', roles, userPermissions) ? (
         <div className="input-group" id="new_project">
           <div className="input-group-prepend">
             <span className="input-group-text">Add new WBS</span>

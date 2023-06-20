@@ -62,7 +62,7 @@ test.skip('it skips tests because redux', () => {
 //     let props = { match: { params: { userId } } };
 //     let userProfileService = require("../services/userProfileService");
 //     let response = { status: 400 };
-//     userProfileService.editUserProfileData = jest.fn(() => {
+//     userProfileService.putUserProfileData = jest.fn(() => {
 //       throw { response };
 //     });
 //     toast.error = jest.fn();
@@ -76,7 +76,7 @@ test.skip('it skips tests because redux', () => {
 //     let props = { match: { params: { userId } } };
 //     let userProfileService = require("../services/userProfileService");
 //     let response = { status: 200 };
-//     userProfileService.editUserProfileData = jest.fn(() => {
+//     userProfileService.putUserProfileData = jest.fn(() => {
 //       return { response };
 //     });
 //     toast.success = jest.fn();

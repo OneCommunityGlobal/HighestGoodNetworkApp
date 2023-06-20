@@ -575,7 +575,7 @@ class UserProfileEdit extends Component {
     let canEditFields;
     if (userProfile.role !== 'Owner') {
       canEditFields =
-        hasPermission(requestorRole, 'editUserProfile', this.props.role.roles, userPermissions) ||
+        hasPermission(requestorRole, 'putUserProfile', this.props.role.roles, userPermissions) ||
         isUserSelf;
     } else {
       canEditFields =
@@ -915,7 +915,7 @@ class UserProfileEdit extends Component {
                           value={userProfile.weeklyCommittedHours}
                           onChange={this.handleUserProfile}
                           placeholder="weeklyCommittedHours"
-                          invalid={/*!hasPermission(requestorRole, 'editUserProfile')*/ true}
+                          invalid={/*!hasPermission(requestorRole, 'putUserProfile')*/ true}
                         />
                       </Col>
                     </Row>
@@ -935,7 +935,7 @@ class UserProfileEdit extends Component {
                           invalid={
                             !hasPermission(
                               requestorRole,
-                              'editUserProfile',
+                              'putUserProfile',
                               this.props.role.roles,
                               userPermissions,
                             )

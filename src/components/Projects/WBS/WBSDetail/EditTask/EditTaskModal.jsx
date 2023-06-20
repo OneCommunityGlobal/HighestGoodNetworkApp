@@ -256,7 +256,7 @@ const EditTaskModal = props => {
     props.updateTask(
       props.taskId,
       updatedTask,
-      hasPermission(role, 'editTask', roles, userPermissions),
+      hasPermission(role, 'updateTask', roles, userPermissions),
     );
     setTimeout(() => {
       props.fetchAllTasks(props.wbsId);
@@ -279,7 +279,7 @@ const EditTaskModal = props => {
     <div className="controlBtn">
       <Modal isOpen={modal} toggle={toggle}>
         <ModalHeader toggle={toggle}>
-          {hasPermission(role, 'editTask', roles, userPermissions)
+          {hasPermission(role, 'updateTask', roles, userPermissions)
             ? 'Edit'
             : hasPermission(role, 'suggestTask', roles, userPermissions)
             ? 'Suggest'
@@ -290,7 +290,7 @@ const EditTaskModal = props => {
           <table
             className={`table table-bordered responsive
             ${
-              hasPermission(role, 'editTask', roles, userPermissions) ||
+              hasPermission(role, 'updateTask', roles, userPermissions) ||
               hasPermission(role, 'suggestTask', roles, userPermissions)
                 ? null
                 : 'disable-div'
@@ -653,7 +653,7 @@ const EditTaskModal = props => {
             </tbody>
           </table>
         </ModalBody>
-        {hasPermission(role, 'editTask', roles, userPermissions) ||
+        {hasPermission(role, 'updateTask', roles, userPermissions) ||
         hasPermission(role, 'suggestTask', roles, userPermissions) ? (
           <ModalFooter>
             {taskName !== '' && startedDate !== '' && dueDate !== '' ? (
@@ -668,7 +668,7 @@ const EditTaskModal = props => {
         ) : null}
       </Modal>
       <Button color="primary" size="sm" onClick={toggle}>
-        {hasPermission(role, 'editTask', roles, userPermissions)
+        {hasPermission(role, 'updateTask', roles, userPermissions)
           ? 'Edit'
           : hasPermission(role, 'suggestTask', roles, userPermissions)
           ? 'Suggest'

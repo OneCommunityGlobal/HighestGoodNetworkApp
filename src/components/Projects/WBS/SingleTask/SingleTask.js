@@ -58,7 +58,7 @@ const SingleTask = props => {
     <React.Fragment>
       <ReactTooltip />
       <div className="container-single-task">
-        {hasPermission(user.role, 'seeProjectManagement', roles, userPermissions) && (
+        {hasPermission(user.role, 'postProject', roles, userPermissions) && (
           <nav aria-label="breadcrumb">
             <ol className="breadcrumb">
               <NavItem tag={Link} to={`/wbs/samefoldertasks/${taskId}`}>
@@ -129,7 +129,7 @@ const SingleTask = props => {
               <tr>
                 <th scope="row">
                   <EditTaskModal
-                    key={`editTask_${task._id}`}
+                    key={`updateTask_${task._id}`}
                     parentNum={task.num}
                     taskId={task._id}
                     wbsId={task.wbsId}

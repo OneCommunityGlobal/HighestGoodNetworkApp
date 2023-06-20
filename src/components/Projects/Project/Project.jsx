@@ -43,7 +43,7 @@ const Project = props => {
         <div>{props.index + 1}</div>
       </th>
       <td className="projects__name--input">
-        {hasPermission(role, 'editProject', roles, userPermissions) ? (
+        {hasPermission(role, 'putProject', roles, userPermissions) ? (
           <input
             type="text"
             className="form-control"
@@ -56,7 +56,7 @@ const Project = props => {
         )}
       </td>
       <td className="projects__category--input">
-        {hasPermission(role, 'editProject', roles, userPermissions) ? (
+        {hasPermission(role, 'putProject', roles, userPermissions) ? (
           <select
             value={props.category}
             onChange={e => {
@@ -81,7 +81,7 @@ const Project = props => {
       </td>
       <td
         className="projects__active--input"
-        onClick={hasPermission(role, 'editProject', roles, userPermissions) ? updateActive : null}
+        onClick={hasPermission(role, 'putProject', roles, userPermissions) ? updateActive : null}
       >
         {props.active ? (
           <div className="isActive">

@@ -115,9 +115,9 @@ const UserProjectsTable = React.memo(props => {
               </Col>
               {props.edit && props.role && (
                 <Col md="5">
-                  {hasPermission(props.role, 'assignUserInProject', roles, userPermissions) ? (
+                  {hasPermission(props.role, 'assignProjectToUsers', roles, userPermissions) ? (
                     <Button
-                      className="btn-addproject"
+                      className="btn-postProject"
                       color="primary"
                       onClick={() => {
                         props.onButtonClick();
@@ -139,7 +139,7 @@ const UserProjectsTable = React.memo(props => {
                   <tr>
                     <th style={{ width: '70px' }}>#</th>
                     <th>Project Name</th>
-                    {hasPermission(props.role, 'assignUserInProject', roles, userPermissions) ? (
+                    {hasPermission(props.role, 'assignProjectToUsers', roles, userPermissions) ? (
                       <th style={{ width: '100px' }}>{}</th>
                     ) : null}
                   </tr>
@@ -156,7 +156,7 @@ const UserProjectsTable = React.memo(props => {
                           <Button
                             color="danger"
                             disabled={
-                              !hasPermission(props.role, 'editTask', roles, userPermissions)
+                              !hasPermission(props.role, 'updateTask', roles, userPermissions)
                             }
                             onClick={e => {
                               props.onDeleteClicK(project._id);
@@ -224,7 +224,7 @@ const UserProjectsTable = React.memo(props => {
                     <tr>
                       <th style={{ width: '70px' }}>#</th>
                       <th>Task Name</th>
-                      {hasPermission(props.role, 'assignUserInProject', roles, userPermissions) ? (
+                      {hasPermission(props.role, 'assignProjectToUsers', roles, userPermissions) ? (
                         <th style={{ width: '100px' }}>{}</th>
                       ) : null}
                     </tr>
@@ -249,7 +249,7 @@ const UserProjectsTable = React.memo(props => {
                                   disabled={
                                     !hasPermission(
                                       props.role,
-                                      'unassignUserInProject',
+                                      'assignProjectToUsers',
                                       roles,
                                       userPermissions,
                                     )
@@ -268,7 +268,7 @@ const UserProjectsTable = React.memo(props => {
                                   disabled={
                                     !hasPermission(
                                       props.role,
-                                      'unassignUserInProject',
+                                      'assignProjectToUsers',
                                       roles,
                                       userPermissions,
                                     )
@@ -310,9 +310,9 @@ const UserProjectsTable = React.memo(props => {
                 md="5"
                 style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}
               >
-                {hasPermission(props.role, 'assignUserInProject', roles, userPermissions) ? (
+                {hasPermission(props.role, 'assignProjectToUsers', roles, userPermissions) ? (
                   <Button
-                    className="btn-addproject"
+                    className="btn-postProject"
                     color="primary"
                     onClick={() => {
                       props.onButtonClick();
@@ -333,7 +333,7 @@ const UserProjectsTable = React.memo(props => {
                   <tr>
                     <th style={{ width: '70px' }}>#</th>
                     <th>Project Name</th>
-                    {hasPermission(props.role, 'assignUserInProject', roles, userPermissions) ? (
+                    {hasPermission(props.role, 'assignProjectToUsers', roles, userPermissions) ? (
                       <th style={{ width: '100px' }}>{}</th>
                     ) : null}
                   </tr>
@@ -357,7 +357,7 @@ const UserProjectsTable = React.memo(props => {
                             <Button
                               color="danger"
                               disabled={
-                                !hasPermission(props.role, 'editTask', roles, userPermissions)
+                                !hasPermission(props.role, 'updateTask', roles, userPermissions)
                               }
                               onClick={e => {
                                 props.onDeleteClicK(project._id);
@@ -423,7 +423,7 @@ const UserProjectsTable = React.memo(props => {
                     <tr>
                       <th style={{ width: '70px' }}>#</th>
                       <th>Task Name</th>
-                      {hasPermission(props.role, 'assignUserInProject', roles, userPermissions) ? (
+                      {hasPermission(props.role, 'assignProjectToUsers', roles, userPermissions) ? (
                         <th style={{ width: '100px' }}>{}</th>
                       ) : null}
                     </tr>
@@ -455,7 +455,7 @@ const UserProjectsTable = React.memo(props => {
                                     disabled={
                                       !hasPermission(
                                         props.role,
-                                        'unassignUserInProject',
+                                        'assignProjectToUsers',
                                         roles,
                                         userPermissions,
                                       )
@@ -475,7 +475,7 @@ const UserProjectsTable = React.memo(props => {
                                   disabled={
                                     !hasPermission(
                                       props.role,
-                                      'unassignUserInProject',
+                                      'assignProjectToUsers',
                                       roles,
                                       userPermissions,
                                     )

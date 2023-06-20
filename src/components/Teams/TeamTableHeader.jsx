@@ -18,7 +18,8 @@ const TeamTableHeader = React.memo(props => {
       <th scope="col" id="teams__members">
         {MEMBERS}
       </th>
-      {hasPermission(props.requestorRole, 'editDeleteTeam', props.roles, props.userPermissions) && (
+      {(hasPermission(props.requestorRole, 'deleteTeam', props.roles, props.userPermissions) ||
+        hasPermission(props.requestorRole, 'putTeam', props.roles, props.userPermissions)) && (
         <th scope="col" id="teams__delete"></th>
       )}
     </tr>

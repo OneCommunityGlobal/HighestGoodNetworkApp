@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Input, Alert } from 'reactstrap';
-import AddProjectsAutoComplete from './AddProjectsAutoComplete';
+import postProjectsAutoComplete from './AddProjectsAutoComplete';
 
-const AddProjectPopup = React.memo(props => {
+const postProjectPopup = React.memo(props => {
   const closePopup = () => {
     props.onClose();
   };
@@ -33,7 +33,7 @@ const AddProjectPopup = React.memo(props => {
       <ModalHeader toggle={closePopup}>Add Project </ModalHeader>
       <ModalBody style={{ textAlign: 'center' }}>
         <div className="input-group-prepend" style={{ marginBottom: '10px' }}>
-          <AddProjectsAutoComplete
+          <postProjectsAutoComplete
             projectsData={props.projects}
             onDropDownSelect={selectProject}
             selectedProject={selectedProject}
@@ -59,4 +59,4 @@ const AddProjectPopup = React.memo(props => {
     </Modal>
   );
 });
-export default AddProjectPopup;
+export default postProjectPopup;

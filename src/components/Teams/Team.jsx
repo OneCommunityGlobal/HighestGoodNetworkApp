@@ -13,7 +13,8 @@ const Team = props => (
     <td
       className="teams__active--input"
       onClick={e => {
-        hasPermission(props.requestorRole, 'editDeleteTeam', props.roles, props.userPermissions)
+        hasPermission(props.requestorRole, 'deleteTeam', props.roles, props.userPermissions) ||
+        hasPermission(props.requestorRole, 'putTeam', props.roles, props.userPermissions)
           ? props.onStatusClick(props.name, props.teamId, props.active)
           : null;
       }}
@@ -39,7 +40,8 @@ const Team = props => (
         <i className="fa fa-users" aria-hidden="true" />
       </button>
     </td>
-    {hasPermission(props.requestorRole, 'editDeleteTeam', props.roles, props.userPermissions) && (
+    {(hasPermission(props.requestorRole, 'deleteTeam', props.roles, props.userPermissions) ||
+      hasPermission(props.requestorRole, 'putTeam', props.roles, props.userPermissions)) && (
       <td>
         <span className="usermanagement-actions-cell">
           <button

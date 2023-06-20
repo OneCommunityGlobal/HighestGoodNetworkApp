@@ -6,7 +6,7 @@
 import React, { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
 import ModalDelete from './../../../common/Modal';
-import { deleteWBS } from './../../../../actions/wbs';
+import { deleteWbs } from './../../../../actions/wbs';
 import { getPopupById } from './../../../../actions/popupEditorAction';
 import { WBS_DELETE_POPUP_ID } from './../../../../constants/popupId';
 import hasPermission from 'utils/permissions';
@@ -16,7 +16,7 @@ const WBSItem = props => {
   const { roles } = props.role;
   const userPermissions = props.auth.user?.permissions?.frontPermissions;
   const confirmDelete = () => {
-    props.deleteWBS(props.wbsId);
+    props.deleteWbs(props.wbsId);
     setShowModalDelete(false);
   };
 
@@ -56,4 +56,4 @@ const WBSItem = props => {
   );
 };
 const mapStateToProps = state => state;
-export default connect(mapStateToProps, { deleteWBS, getPopupById })(WBSItem);
+export default connect(mapStateToProps, { deleteWbs, getPopupById })(WBSItem);

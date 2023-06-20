@@ -136,7 +136,7 @@ const SameFolderTasks = props => {
                     <tr key={i}>
                       <th>
                         <EditTaskModal
-                          key={`editTask_${e._id}`}
+                          key={`updateTask_${e._id}`}
                           parentNum={e.num}
                           taskId={e._id}
                           wbsId={e.wbsId}
