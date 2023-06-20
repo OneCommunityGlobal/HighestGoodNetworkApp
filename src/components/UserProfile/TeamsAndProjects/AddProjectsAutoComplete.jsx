@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Dropdown, Input } from 'reactstrap';
 import './TeamsAndProjects.css';
 
-const AddProjectsAutoComplete = React.memo(props => {
+const postProjectsAutoComplete = React.memo(props => {
   const [searchText, onInputChange] = useState('');
   const [isOpen, toggle] = useState(false);
 
@@ -62,4 +62,4 @@ const AddProjectsAutoComplete = React.memo(props => {
   );
 });
 
-export default AddProjectsAutoComplete;
+export default postProjectsAutoComplete;

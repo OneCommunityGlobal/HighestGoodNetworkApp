@@ -144,7 +144,7 @@ const UserProfileModal = props => {
       <ModalBody>
         {type === 'updateLink' && (
           <div>
-            {hasPermission(role, 'editUserProfile', roles, userPermissions) && (
+            {hasPermission(role, 'putUserProfile', roles, userPermissions) && (
               <CardBody>
                 <Card>
                   <Label style={{ display: 'flex', margin: '5px' }}>Admin Links:</Label>

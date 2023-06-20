@@ -106,7 +106,7 @@ const TimeEntry = ({ data, displayYear, userProfile }) => {
             type="checkbox"
             name="isTangible"
             checked={data.isTangible}
-            disabled={!hasPermission(role, 'toggleTangibleTime', roles, userPermissions)}
+            disabled={!hasPermission(role, 'editTimeEntry', roles, userPermissions)}
             onChange={() => toggleTangibility(data)}
           />
         </Col>

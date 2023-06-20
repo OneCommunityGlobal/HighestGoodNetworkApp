@@ -553,7 +553,7 @@ const Timelog = props => {
                           </Button>
                           {hasPermission(
                             auth.user.role,
-                            'editTimelogInfo',
+                            'editTimeEntry',
                             role.roles,
                             userPermissions,
                           ) ? (

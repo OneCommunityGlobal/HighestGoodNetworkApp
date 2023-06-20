@@ -3,12 +3,12 @@
 export const RoutePermissions = {
   inventoryProject: '',
   inventoryProjectWbs: '',
-  weeklySummariesReport: 'seeWeeklySummaryReports',
-  projects: 'seeProjectManagement',
-  userManagement: 'seeUserManagement',
-  badgeManagement: 'seeBadgeManagement',
+  weeklySummariesReport: 'getWeeklySummaries',
+  projects: 'postProject',
+  userManagement: 'postUserProfile',
+  badgeManagement: 'createBadges',
   permissionsManagement: 'seePermissionsManagement',
   permissionsManagementRole: 'seePermissionsManagement',
-  teams: 'seeTeamsManagement',
-  reports: 'seeAllReports',
+  teams: 'putTeam',
+  reports: 'getWeeklySummaries',
 };

@@ -38,7 +38,7 @@ const TeamMembersPopup = React.memo(props => {
         <ModalBody style={{ textAlign: 'center' }}>
           {hasPermission(
             props.requestorRole,
-            'assignTeamToUser',
+            'assignTeamToUsers',
             props.roles,
             props.userPermissions,
           ) && (
@@ -67,7 +67,7 @@ const TeamMembersPopup = React.memo(props => {
                   <th>User Name</th>
                   {hasPermission(
                     props.requestorRole,
-                    'assignTeamToUser',
+                    'assignTeamToUsers',
                     props.roles,
                     props.userPermissions,
                   ) && <th> </th>}
@@ -81,7 +81,7 @@ const TeamMembersPopup = React.memo(props => {
                       <td>{`${user.firstName} ${user.lastName}`}</td>
                       {hasPermission(
                         props.requestorRole,
-                        'assignTeamToUser',
+                        'assignTeamToUsers',
                         props.roles,
                         props.userPermissions,
                       ) && (

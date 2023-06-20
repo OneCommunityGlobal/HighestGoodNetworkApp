@@ -19,13 +19,13 @@ const Member = props => {
           <div>{props.index + 1}</div>
         </th>
         <td className="members__name">
-          {hasPermission(role, 'seeUserProfileInProjects', roles, userPermissions) ? (
+          {hasPermission(role, 'getUserProfiles', roles, userPermissions) ? (
             <a href={`/userprofile/${props.uid}`}>{props.fullName}</a>
           ) : (
             props.fullName
           )}
         </td>
-        {hasPermission(role, 'unassignUserInProject', roles, userPermissions) ? (
+        {hasPermission(role, 'assignProjectToUsers', roles, userPermissions) ? (
           <td className="members__assign">
             <button
               className="btn btn-outline-danger btn-sm"

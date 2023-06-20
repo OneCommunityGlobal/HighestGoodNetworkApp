@@ -1,11 +1,11 @@
 /*********************************************************************************
- * Component: ADDPROJECT
+ * Component: postProject
  * Author: Henry Ng - 01/17/20
  * This component is used to add more project into the database
  ********************************************************************************/
 import React, { useState } from 'react';
 
-const AddProject = props => {
+const postProject = props => {
   const [showAddButton, setShowAddButton] = useState(false);
   const [newName, setNewName] = useState('');
   const [newCategory, setNewCategory] = useState('Unspecified');
@@ -61,4 +61,4 @@ const AddProject = props => {
   );
 };
 
-export default AddProject;
+export default postProject;

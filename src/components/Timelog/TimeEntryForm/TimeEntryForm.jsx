@@ -615,7 +615,7 @@ const TimeEntryForm = props => {
               <Label for="dateOfWork">Date</Label>
               {hasPermission(
                 currentUserRole,
-                'changeIntangibleTimeEntryDate',
+                'editTimeEntry',
                 roles,
                 userPermissions,
               ) && !fromTimer ? (
@@ -733,7 +733,7 @@ const TimeEntryForm = props => {
                   checked={inputs.isTangible}
                   onChange={handleCheckboxChange}
                   disabled={
-                    !hasPermission(currentUserRole, 'toggleTangibleTime', roles, userPermissions) &&
+                    !hasPermission(currentUserRole, 'editTimeEntry', roles, userPermissions) &&
                     !data.isTangible
                   }
                 />

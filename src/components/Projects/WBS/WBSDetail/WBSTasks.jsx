@@ -8,7 +8,12 @@ import { Link } from 'react-router-dom';
 import { NavItem, Button } from 'reactstrap';
 import ReactTooltip from 'react-tooltip';
 import hasPermission from 'utils/permissions';
-import { fetchAllTasks, emptyAllTaskItems, updateNumList, deleteTask } from '../../../../actions/task';
+import {
+  fetchAllTasks,
+  emptyAllTaskItems,
+  updateNumList,
+  deleteTask,
+} from '../../../../actions/task';
 import { fetchAllMembers } from '../../../../actions/projectMembers.js';
 import Task from './Task';
 import AddTaskModal from './AddTask/AddTaskModal';
@@ -44,7 +49,7 @@ function WBSTasks(props) {
     return () => {
       props.emptyAllTaskItems();
     };
-  }, [])
+  }, []);
 
   useEffect(() => {
     load().then(setOpenAll(false));
@@ -144,7 +149,7 @@ function WBSTasks(props) {
     }
   };
 
-  const deleteWBSTask = (taskId, mother) => {
+  const deleteWbsTask = (taskId, mother) => {
     props.deleteTask(taskId, mother);
     setIsDeleted(true);
   };
@@ -213,7 +218,7 @@ function WBSTasks(props) {
           </ol>
         </nav>
 
-        {hasPermission(props.state.auth.user.role, 'addTask', roles, userPermissions) ? (
+        {hasPermission(props.state.auth.user.role, 'postTask', roles, userPermissions) ? (
           <AddTaskModal
             key="task_modal_null"
             parentNum={null}
@@ -238,9 +243,7 @@ function WBSTasks(props) {
         </Button>
 
         {loadAll === false ? (
-
           <Button color="warning" size="sm" className="ml-3">
-
             {' '}
             Task Loading......{' '}
           </Button>
@@ -274,12 +277,7 @@ function WBSTasks(props) {
           >
             Unassigned
           </Button>
-          <Button
-            color="info"
-            size="sm"
-            onClick={() => setFilterState('active')}
-            className="ml-2"
-          >
+          <Button color="info" size="sm" onClick={() => setFilterState('active')} className="ml-2">
             Active
           </Button>
           <Button
@@ -355,53 +353,53 @@ function WBSTasks(props) {
               <td colSpan={14} />
             </tr>
 
-            {props.state.tasks.fetched && filteredTasks.map((task, i) => (
-              <Task
-                key={`${task._id}${i}`}
-                id={task._id}
-                level={task.level}
-                num={task.num}
-                name={task.taskName}
-                priority={task.priority}
-                resources={task.resources}
-                isAssigned={task.isAssigned}
-                status={task.status}
-                hoursBest={task.hoursBest}
-                hoursMost={task.hoursMost}
-                hoursWorst={task.hoursWorst}
-                estimatedHours={task.estimatedHours}
-                startedDatetime={task.startedDatetime}
-                dueDatetime={task.dueDatetime}
-                links={task.links}
-                projectId={projectId}
-                wbsId={wbsId}
-                selectTask={selectTaskFunc}
-                isNew={!!task.new}
-                parentId1={task.parentId1}
-                parentId2={task.parentId2}
-                parentId3={task.parentId3}
-                mother={task.mother}
-                isOpen={openAll}
-                drop={dropTask}
-                drag={dragTask}
-                deleteWBSTask={deleteWBSTask}
-                hasChildren={task.hasChild}
-                siblings={props.state.tasks.taskItems.filter(item => item.mother === task.mother)}
-                taskId={task.taskId}
-                whyInfo={task.whyInfo}
-                intentInfo={task.intentInfo}
-                endstateInfo={task.endstateInfo}
-                childrenQty={task.childrenQty}
-                filteredTasks={filteredTasks}
-
-              />
-            ))}
+            {props.state.tasks.fetched &&
+              filteredTasks.map((task, i) => (
+                <Task
+                  key={`${task._id}${i}`}
+                  id={task._id}
+                  level={task.level}
+                  num={task.num}
+                  name={task.taskName}
+                  priority={task.priority}
+                  resources={task.resources}
+                  isAssigned={task.isAssigned}
+                  status={task.status}
+                  hoursBest={task.hoursBest}
+                  hoursMost={task.hoursMost}
+                  hoursWorst={task.hoursWorst}
+                  estimatedHours={task.estimatedHours}
+                  startedDatetime={task.startedDatetime}
+                  dueDatetime={task.dueDatetime}
+                  links={task.links}
+                  projectId={projectId}
+                  wbsId={wbsId}
+                  selectTask={selectTaskFunc}
+                  isNew={!!task.new}
+                  parentId1={task.parentId1}
+                  parentId2={task.parentId2}
+                  parentId3={task.parentId3}
+                  mother={task.mother}
+                  isOpen={openAll}
+                  drop={dropTask}
+                  drag={dragTask}
+                  deleteWbsTask={deleteWbsTask}
+                  hasChildren={task.hasChild}
+                  siblings={props.state.tasks.taskItems.filter(item => item.mother === task.mother)}
+                  taskId={task.taskId}
+                  whyInfo={task.whyInfo}
+                  intentInfo={task.intentInfo}
+                  endstateInfo={task.endstateInfo}
+                  childrenQty={task.childrenQty}
+                  filteredTasks={filteredTasks}
+                />
+              ))}
           </tbody>
         </table>
       </div>
     </>
   );
-};
+}
 
 const mapStateToProps = state => ({ state });
 

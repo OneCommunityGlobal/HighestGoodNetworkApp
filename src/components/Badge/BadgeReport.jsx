@@ -303,7 +303,7 @@ const BadgeReport = props => {
                 <th style={{ width: '110px' }}>Modified</th>
                 <th style={{ width: '110px' }}>Earned Dates</th>
                 <th style={{ width: '90px' }}>Count</th>
-                {hasPermission(props.role, 'deleteOwnBadge', roles, props.permissionsUser) ? (
+                {hasPermission(props.role, 'deleteBadges', roles, props.permissionsUser) ? (
                   <th>Delete</th>
                 ) : (
                   []
@@ -376,7 +376,7 @@ const BadgeReport = props => {
                         Math.round(value.count)
                       )}
                     </td>
-                    {hasPermission(props.role, 'deleteOwnBadge', roles, props.permissionsUser) ? (
+                    {hasPermission(props.role, 'deleteBadges', roles, props.permissionsUser) ? (
                       <td>
                         <button
                           type="button"
@@ -577,7 +577,7 @@ const BadgeReport = props => {
                             >
                               {hasPermission(
                                 props.role,
-                                'deleteOwnBadge',
+                                'deleteBadges',
                                 roles,
                                 props.permissionsUser,
                               ) ? (

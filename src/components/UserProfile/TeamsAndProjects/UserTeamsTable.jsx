@@ -40,7 +40,7 @@ const UserTeamsTable = props => {
             </Col>
             {props.edit && props.role && (
               <Col md="5">
-                {hasPermission(props.role, 'assignTeamToUser', roles, userPermissions) ? (
+                {hasPermission(props.role, 'assignTeamToUsers', roles, userPermissions) ? (
                   <Button
                     className="btn-addteam"
                     color="primary"
@@ -64,7 +64,7 @@ const UserTeamsTable = props => {
                 <tr>
                   <th style={{ width: '70px' }}>#</th>
                   <th>Team Name</th>
-                  {hasPermission(props.role, 'assignTeamToUser', roles, userPermissions) ? (
+                  {hasPermission(props.role, 'assignTeamToUsers', roles, userPermissions) ? (
                     <th style={{ width: '100px' }}>{}</th>
                   ) : null}
                 </tr>
@@ -80,7 +80,7 @@ const UserTeamsTable = props => {
                       <td>
                         <Button
                           disabled={
-                            !hasPermission(props.role, 'assignTeamToUser', roles, userPermissions)
+                            !hasPermission(props.role, 'assignTeamToUsers', roles, userPermissions)
                           }
                           color="danger"
                           onClick={e => {
@@ -138,7 +138,7 @@ const UserTeamsTable = props => {
           </Col>
           {props.edit && props.role && (
             <Col md="12" className="centered-col">
-              {hasPermission(props.role, 'assignTeamToUser', roles, userPermissions) ? (
+              {hasPermission(props.role, 'assignTeamToUsers', roles, userPermissions) ? (
                 <Button
                   className="btn-addteam"
                   color="primary"
@@ -161,7 +161,7 @@ const UserTeamsTable = props => {
                 <tr>
                   <th>#</th>
                   <th>Team Name</th>
-                  {hasPermission(props.role, 'assignTeamToUser', roles, userPermissions) ? (
+                  {hasPermission(props.role, 'assignTeamToUsers', roles, userPermissions) ? (
                     <th style={{ flex: 2 }}>{}</th>
                   ) : null}
                 </tr>
@@ -178,7 +178,7 @@ const UserTeamsTable = props => {
                         <div className="centered-col">
                           <Button
                             disabled={
-                              !hasPermission(props.role, 'assignTeamToUser', roles, userPermissions)
+                              !hasPermission(props.role, 'assignTeamToUsers', roles, userPermissions)
                             }
                             color="danger"
                             onClick={e => {

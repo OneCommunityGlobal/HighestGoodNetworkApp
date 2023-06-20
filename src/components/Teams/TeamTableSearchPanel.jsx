@@ -8,7 +8,7 @@ import hasPermission from 'utils/permissions';
 const TeamTablesearchPanel = props => {
   return (
     <div className="input-group" id="new_team">
-      {hasPermission(props.requestorRole, 'createTeam', props.roles, props.userPermissions) && (
+      {hasPermission(props.requestorRole, 'postTeam', props.roles, props.userPermissions) && (
         <button
           type="button"
           className="btn btn-info"

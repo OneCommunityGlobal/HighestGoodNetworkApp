@@ -17,7 +17,7 @@ import {
 } from '../../actions/projects';
 import { getPopupById } from '../../actions/popupEditorAction';
 import Overview from './Overview';
-import AddProject from './AddProject';
+import postProject from './AddProject';
 import ProjectTableHeader from './ProjectTableHeader';
 import Project from './Project';
 import ModalDelete from './../common/Modal';
@@ -95,7 +95,7 @@ export class Projects extends Component {
     this.setState({ showModalDelete: false });
   };
 
-  addProject = (name, category) => {
+  postProject = (name, category) => {
     this.props.postNewProject(name, category, true);
     this.setState({ trackModelMsg: true });
   };
@@ -159,8 +159,8 @@ export class Projects extends Component {
             onClick={this.toggleProjectInfoModal}
           />
           <Overview numberOfProjects={numberOfProjects} numberOfActive={numberOfActive} />
-          {hasPermission(role, 'addProject', roles, userPermissions) ? (
-            <AddProject addNewProject={this.addProject} />
+          {hasPermission(role, 'postProject', roles, userPermissions) ? (
+            <postProject addNewProject={this.postProject} />
           ) : null}
 
           <table className="table table-bordered table-responsive-sm">

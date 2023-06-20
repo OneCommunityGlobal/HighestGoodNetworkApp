@@ -55,7 +55,7 @@ const TimeEntryEditHistory = props => {
             </th>
             {hasPermission(
               props.role,
-              'deleteTimeEntryOthers',
+              'deleteTimeEntry',
               props.roles,
               props.userPermissions,
             ) && <th></th>}
@@ -74,7 +74,7 @@ const TimeEntryEditHistory = props => {
                 <td>{secondsToHms(item.newSeconds)}</td>
                 {hasPermission(
                   props.role,
-                  'deleteTimeEntryOthers',
+                  'deleteTimeEntry',
                   props.roles,
                   props.userPermissions,
                 ) && (

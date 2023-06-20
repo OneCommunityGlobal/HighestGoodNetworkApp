@@ -49,7 +49,7 @@ const Members = props => {
             <div id="member_project__name">PROJECTS {props.projectId}</div>
           </ol>
         </nav>
-        {hasPermission(role, 'findUserInProject', roles, userPermissions) ? (
+        {hasPermission(role, 'getProjectMembers', roles, userPermissions) ? (
           <div className="input-group" id="new_project">
             <div className="input-group-prepend">
               <span className="input-group-text">Find user</span>
@@ -85,7 +85,7 @@ const Members = props => {
                 </th>
                 <th scope="col">Name</th>
                 <th scope="col">Email</th>
-                {hasPermission(role, 'assignUserInProject', roles, userPermissions) ? (
+                {hasPermission(role, 'assignProjectToUsers', roles, userPermissions) ? (
                   <th scope="col">
                     Assign
                     <button
@@ -123,7 +123,7 @@ const Members = props => {
                 #
               </th>
               <th scope="col" id="members__name"></th>
-              {hasPermission(role, 'unassignUserInProject', roles, userPermissions) ? (
+              {hasPermission(role, 'assignProjectToUsers', roles, userPermissions) ? (
                 <th scope="col" id="members__name"></th>
               ) : null}
             </tr>

@@ -68,7 +68,7 @@ const Badges = props => {
                 </>
               )}
               {((props.canEdit && (props.role == 'Owner' || props.role == 'Administrator')) ||
-                props.userPermissions.includes('assignBadgeOthers')) && (
+                props.userPermissions.includes('assignBadges')) && (
                 <>
                   <Button className="btn--dark-sea-green mr-2" onClick={assignToggle}>
                     Assign Badges

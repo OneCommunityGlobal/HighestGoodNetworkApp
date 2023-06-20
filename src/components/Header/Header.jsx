@@ -92,7 +92,7 @@ export const Header = props => {
         {isAuthenticated && (
           <Collapse isOpen={isOpen} navbar>
             <Nav className="ml-auto nav-links" navbar>
-              {hasPermission(user.role, 'editTask', roles, userPermissions) && (
+              {hasPermission(user.role, 'updateTask', roles, userPermissions) && (
                 <NavItem>
                   <NavLink tag={Link} to="/taskeditsuggestions">
                     <div className="redBackGroupHeader">
@@ -111,29 +111,29 @@ export const Header = props => {
                   <span className="dashboard-text-link">{TIMELOG}</span>
                 </NavLink>
               </NavItem>
-              {hasPermission(user.role, "seeAllReports", roles, userPermissions) ||
-               hasPermission(user.role, "seeWeeklySummaryReports", roles, userPermissions) ? (
-              <UncontrolledDropdown nav inNavbar>
-                <DropdownToggle nav caret>
-                  <span className="dashboard-text-link">{REPORTS}</span>
-                </DropdownToggle>
-                <DropdownMenu>
-                  {hasPermission(user.role, "seeAllReports", roles, userPermissions) ? (
-                    <>
-                      <DropdownItem tag={Link} to="/reports">
-                        {REPORTS}
-                      </DropdownItem>
+              {hasPermission(user.role, 'getWeeklySummaries', roles, userPermissions) ||
+              hasPermission(user.role, 'getWeeklySummaries', roles, userPermissions) ? (
+                <UncontrolledDropdown nav inNavbar>
+                  <DropdownToggle nav caret>
+                    <span className="dashboard-text-link">{REPORTS}</span>
+                  </DropdownToggle>
+                  <DropdownMenu>
+                    {hasPermission(user.role, 'getWeeklySummaries', roles, userPermissions) ? (
+                      <>
+                        <DropdownItem tag={Link} to="/reports">
+                          {REPORTS}
+                        </DropdownItem>
+                        <DropdownItem tag={Link} to="/weeklysummariesreport">
+                          {WEEKLY_SUMMARIES_REPORT}
+                        </DropdownItem>
+                      </>
+                    ) : (
                       <DropdownItem tag={Link} to="/weeklysummariesreport">
                         {WEEKLY_SUMMARIES_REPORT}
                       </DropdownItem>
-                    </>
-                  ) : (
-                    <DropdownItem tag={Link} to="/weeklysummariesreport">
-                      {WEEKLY_SUMMARIES_REPORT}
-                    </DropdownItem>
-                  )}
-                </DropdownMenu>
-              </UncontrolledDropdown>
+                    )}
+                  </DropdownMenu>
+                </UncontrolledDropdown>
               ) : null}
               <NavItem>
                 <NavLink tag={Link} to={`/timelog/${user.userid}`}>
@@ -145,41 +145,54 @@ export const Header = props => {
                   </i>
                 </NavLink>
               </NavItem>
-              {(hasPermission(user.role, 'seeUserManagement', roles, userPermissions) ||
-                hasPermission(user.role, 'seeBadgeManagement', roles, userPermissions) ||
-                hasPermission(user.role, 'seeProjectManagement', roles, userPermissions) ||
-                hasPermission(user.role, 'seeTeamsManagement', roles, userPermissions) ||
-                hasPermission(user.role, 'seePopupManagement', roles, userPermissions)) && (
+              {(hasPermission(user.role, 'postUserProfile', roles, userPermissions) ||
+                hasPermission(user.role, 'deleteUserProfile', roles, userPermissions) ||
+                hasPermission(user.role, 'putUserProfileImportantInfo', roles, userPermissions) ||
+                hasPermission(user.role, 'createBadges', roles, userPermissions) ||
+                hasPermission(user.role, 'postProject', roles, userPermissions) ||
+                hasPermission(user.role, 'deleteTeam', roles, userPermissions) ||
+                hasPermission(user.role, 'putTeam', roles, userPermissions) ||
+                hasPermission(user.role, 'createPopup', roles, userPermissions) ||
+                hasPermission(user.role, 'updatePopup', roles, userPermissions)) && (
                 <UncontrolledDropdown nav inNavbar>
                   <DropdownToggle nav caret>
                     <span className="dashboard-text-link">{OTHER_LINKS}</span>
                   </DropdownToggle>
                   <DropdownMenu>
-                    {hasPermission(user.role, 'seeUserManagement', roles, userPermissions) ? (
+                    {hasPermission(user.role, 'postUserProfile', roles, userPermissions) ||
+                    hasPermission(user.role, 'deleteUserProfile', roles, userPermissions) ||
+                    hasPermission(
+                      user.role,
+                      'putUserProfileImportantInfo',
+                      roles,
+                      userPermissions,
+                    ) ? (
                       <DropdownItem tag={Link} to="/usermanagement">
                         {USER_MANAGEMENT}
                       </DropdownItem>
                     ) : (
                       <React.Fragment></React.Fragment>
                     )}
-                    {hasPermission(user.role, 'seeBadgeManagement', roles, userPermissions) ? (
+                    {hasPermission(user.role, 'createBadges', roles, userPermissions) ? (
                       <DropdownItem tag={Link} to="/badgemanagement">
                         {BADGE_MANAGEMENT}
                       </DropdownItem>
                     ) : (
                       <React.Fragment></React.Fragment>
                     )}
-                    {hasPermission(user.role, 'seeProjectManagement', roles, userPermissions) && (
+                    {hasPermission(user.role, 'postProject', roles, userPermissions) && (
                       <DropdownItem tag={Link} to="/projects">
                         {PROJECTS}
                       </DropdownItem>
                     )}
-                    {hasPermission(user.role, 'seeTeamsManagement', roles, userPermissions) && (
+                    {(hasPermission(user.role, 'deleteTeam', roles, userPermissions) ||
+                      hasPermission(user.role, 'putTeam', roles, userPermissions)) && (
                       <DropdownItem tag={Link} to="/teams">
                         {TEAMS}
                       </DropdownItem>
                     )}
-                    {hasPermission(user.role, 'seePopupManagement', roles, userPermissions) ? (
+                    {hasPermission(user.role, 'createPopup', roles, userPermissions) ||
+                    hasPermission(user.role, 'updatePopup', roles, userPermissions) ? (
                       <>
                         <DropdownItem divider />
                         <DropdownItem tag={Link} to={`/admin/`}>
@@ -205,7 +218,7 @@ export const Header = props => {
                   <img
                     src={`${profilePic || '/pfp-default-header.png'}`}
                     alt=""
-                    style={{ maxWidth: '60px', maxHeight: '60px'}}
+                    style={{ maxWidth: '60px', maxHeight: '60px' }}
                     className="dashboardimg"
                   />
                 </NavLink>
