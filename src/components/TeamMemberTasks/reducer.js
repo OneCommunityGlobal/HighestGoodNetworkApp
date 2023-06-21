@@ -26,7 +26,7 @@ export const teamMemberTasksReducer = (state = initialState, action) => {
     case 'DELETE_TASK_NOTIFICATION_SUCCESS':
       return {
         ...state,
-        usersWithTasks: usersWithTasks.map(user =>
+        usersWithTasks: state.usersWithTasks.map(user =>
           user.personId === action.payload.userId
             ? {
               ...user,
@@ -44,7 +44,9 @@ export const teamMemberTasksReducer = (state = initialState, action) => {
             }
             : user,
         ),
+        isLoading: false
       };
+<<<<<<< HEAD
     case "SET_FOLLOWED_UP":
       return {
         ...state,
@@ -75,6 +77,12 @@ export const teamMemberTasksReducer = (state = initialState, action) => {
             : user
         )
       };
+=======
+    case 'DELETE_TASK_NOTIFICATION_BEGIN':
+      return {
+        ...state, isLoading:true
+      }
+>>>>>>> origin/development
     default:
       return state;
   }

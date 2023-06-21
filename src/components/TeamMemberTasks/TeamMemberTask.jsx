@@ -148,6 +148,7 @@ const TeamMemberTask = ({
                             <Link to={task.projectId ? `/wbs/tasks/${task._id}` : '/'}>
                               <span>{`${task.num} ${task.taskName}`} </span>
                             </Link>
+<<<<<<< HEAD
                             <CopyToClipboard writeText={task.taskName} message="Task Copied!" />
                             {task.taskNotifications.length > 0 && (
                               <FontAwesomeIcon
@@ -162,6 +163,37 @@ const TeamMemberTask = ({
                                 }}
                               />
                             )}
+=======
+                            <CopyToClipboard 
+                              writeText={task.taskName} 
+                              message="Task Copied!"
+                            />
+                            {task.taskNotifications.length > 0 &&
+                            task.taskNotifications.some(
+                              notification =>
+                                notification.hasOwnProperty('userId') &&
+                                notification.userId === user.personId,
+                            ) ? (
+                              <>
+                                <FontAwesomeIcon
+                                  className="team-member-tasks-bell"
+                                  icon={faBell}
+                                  onClick={() => {
+                                    const taskNotificationId = task.taskNotifications.filter(taskNotification => {
+                                      if(taskNotification.userId === user.personId){
+                                        return taskNotification
+                                      }
+                                    })
+                                    handleOpenTaskNotificationModal(
+                                      user.personId,
+                                      task,
+                                      taskNotificationId,
+                                    );
+                                  }}
+                                />
+                              </>
+                            ) : null}
+>>>>>>> origin/development
                             {isAllowedToResolveTasks && (
                               <FontAwesomeIcon
                                 className="team-member-tasks-done"

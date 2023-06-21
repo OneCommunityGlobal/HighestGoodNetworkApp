@@ -1,8 +1,13 @@
 import { faClock, faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 import { Table } from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+<<<<<<< HEAD
 import { fetchTeamMembersTask, deleteTaskNotification, setFollowUp } from 'actions/task';
 import React, { useEffect, useState } from 'react';
+=======
+import { fetchTeamMembersTask, deleteTaskNotification } from 'actions/task';
+import React, { useEffect, useState, useRef } from 'react';
+>>>>>>> origin/development
 import { useDispatch, useSelector, connect } from 'react-redux';
 import Loading from '../common/Loading';
 import { TaskDifferenceModal } from './components/TaskDifferenceModal';
@@ -37,6 +42,9 @@ const TeamMemberTasks = props => {
   const [seventyTwoHoursTimeEntries, setSeventyTwoHoursTimeEntries] = useState([]);
   const [finishLoading, setFinishLoading] = useState(false);
 
+  //added it to keep track if the renderTeamsList should run
+  const [shouldRun, setShouldRun] = useState(false);
+
   //role state so it's more easily changed, the initial value is empty, so it'll be determinated on the first useEffect
   const [userRole, setUserRole] = useState('');
 
@@ -52,26 +60,32 @@ const TeamMemberTasks = props => {
   const userId = props?.match?.params?.userId || props.asUser || props.auth.user.userid;
 
   const dispatch = useDispatch();
+  
+
   useEffect(() => {
-    //Passed the userid as argument to fetchTeamMembersTask
-    //the fetchTeamMembersTask has a function inside id that gets the userId from the store, like the last part of the userId variable in this file
-    //so, before it gets from the store, it'll see if the userId is provided.
-    //It works because the userId first looks for the url param. If it gets the param, it will provide it to the userId
-    //after that, fetchTeamMembersTask will look for the team member's tasks of the provided userId
-    //fetch current user's role, so it can be displayed. It will only happen if the current user's id is different of the auth user id
-    //if it's not differente, it'll attribute the current authenticated user's role.
-    //also, the userId is different from the authenticated user, it will call the fetchTeamMmbersTask with the currently authenticated user id
-    if (userId !== props.auth.user.userid) {
-      dispatch(fetchTeamMembersTask(userId, props.auth.user.userid));
-      const currentUserRole = getUserRole(userId)
-        .then(resp => resp)
-        .then(user => {
-          setUserRole(user.data.role);
-        });
-    } else {
-      dispatch(fetchTeamMembersTask(userId, null));
-      setUserRole(props.auth.user.role);
-    }
+    const initialFetching = async () => {
+      //Passed the userid as argument to fetchTeamMembersTask
+      //the fetchTeamMembersTask has a function inside id that gets the userId from the store, like the last part of the userId variable in this file
+      //so, before it gets from the store, it'll see if the userId is provided.
+      //It works because the userId first looks for the url param. If it gets the param, it will provide it to the userId
+      //after that, fetchTeamMembersTask will look for the team member's tasks of the provided userId
+      //fetch current user's role, so it can be displayed. It will only happen if the current user's id is different of the auth user id
+      //if it's not differente, it'll attribute the current authenticated user's role.
+      //also, the userId is different from the authenticated user, it will call the fetchTeamMmbersTask with the currently authenticated user id
+      if (userId !== props.auth.user.userid) {
+        await dispatch(fetchTeamMembersTask(userId, props.auth.user.userid));
+        const currentUserRole = getUserRole(userId)
+          .then(resp => resp)
+          .then(user => {
+            setUserRole(user.data.role);
+          });
+      } else {
+        await dispatch(fetchTeamMembersTask(userId, null));
+        setUserRole(props.auth.user.role);
+      }
+      setShouldRun(true);
+    };
+    initialFetching();
   }, []);
 
   useEffect(() => {
@@ -81,6 +95,7 @@ const TeamMemberTasks = props => {
   }, [currentUserId]);
 
   useEffect(() => {
+<<<<<<< HEAD
     renderTeamsList();
   }, []);
   useEffect(() => {
@@ -95,11 +110,18 @@ const TeamMemberTasks = props => {
     } else {
       dispatch(fetchTeamMembersTask(userId, null));
       setUserRole(props.auth.user.role);
+=======
+    if (isLoading === false && shouldRun) {
+      renderTeamsList();
+      closeMarkAsDone();
+>>>>>>> origin/development
     }
-  }, [updatedTasks]);
+  }, [usersWithTasks, shouldRun]);
 
   const closeMarkAsDone = () => {
+    setClickedToShowModal(false);
     setMarkAsDoneModal(false);
+    setCurrentUserId('');
   };
 
   const onUpdateTask = (taskId, updatedTask) => {
@@ -107,20 +129,16 @@ const TeamMemberTasks = props => {
       updatedTask,
       taskId,
     };
-    setTasks(tasks => {
-      const tasksWithoutTheUpdated = [...tasks];
-      const taskIndex = tasks.findIndex(task => task._id === taskId);
-      tasksWithoutTheUpdated[taskIndex] = updatedTask;
-      return tasksWithoutTheUpdated;
-    });
-    setUpdatedTasks(tasks => [...tasks, newTask]);
+    submitTasks(newTask);
+    dispatch(fetchTeamMembersTask(userId, props.auth.user.userid, false));
   };
 
-  const submitTasks = async () => {
-    for (let i = 0; i < updatedTasks.length; i += 1) {
-      const updatedTask = updatedTasks[i];
-      const url = ENDPOINTS.TASK_UPDATE(updatedTask.taskId);
-      axios.put(url, updatedTask.updatedTask).catch(err => console.log(err));
+  const submitTasks = async updatedTasks => {
+    const url = ENDPOINTS.TASK_UPDATE(updatedTasks.taskId);
+    try {
+      await axios.put(url, updatedTasks.updatedTask);
+    } catch (error) {
+      console.log(error);
     }
   };
 
@@ -138,7 +156,10 @@ const TeamMemberTasks = props => {
   };
 
   const handleTaskNotificationRead = (userId, taskId, taskNotificationId) => {
-    dispatch(deleteTaskNotification(userId, taskId, taskNotificationId));
+    //if the authentitated user is seeing it's own notification
+    if (currentUserId === props.auth.user.userid) {
+      dispatch(deleteTaskNotification(userId, taskId, taskNotificationId));
+    }
     handleOpenTaskNotificationModal();
   };
 
@@ -174,7 +195,6 @@ const TeamMemberTasks = props => {
   };
 
   const getTimeEntriesForPeriod = async teamList => {
-    let newList = [];
     let twentyFourList = [];
     let fortyEightList = [];
 
@@ -183,22 +203,22 @@ const TeamMemberTasks = props => {
       .tz('America/Los_Angeles')
       .subtract(72, 'hours')
       .format('YYYY-MM-DD');
-
     const toDate = moment()
       .tz('America/Los_Angeles')
       .format('YYYY-MM-DD');
 
-    const requests = teamList.map(async user => {
-      const url = ENDPOINTS.TIME_ENTRIES_PERIOD(user.personId, fromDate, toDate);
-      return axios.get(url);
-    });
-    const responses = await Promise.all(requests);
-    for (const response of responses) {
-      if (response.data.length > 0) newList.push(...response.data);
-    }
+    const userIds = teamList.map(user => user.personId);
+    
+    const userListTasksRequest = async userList => {
+      const url = ENDPOINTS.TIME_ENTRIES_USER_LIST;
+      return axios.post(url, { users: userList, fromDate, toDate });
+    };
+
+    const taskResponse = await userListTasksRequest(userIds);
+    const usersListTasks = taskResponse.data
 
     //2. Generate array of past 24/48 hrs timelogs
-    newList.map(entry => {
+    usersListTasks.map(entry => {
       const threeDaysAgo = moment()
         .tz('America/Los_Angeles')
         .subtract(72, 'hours')
@@ -217,13 +237,11 @@ const TeamMemberTasks = props => {
     });
 
     //3. set three array of time logs
-    setSeventyTwoHoursTimeEntries([...newList]);
+    setSeventyTwoHoursTimeEntries([...usersListTasks]);
     setFortyEightHoursTimeEntries([...fortyEightList]);
     setTwentyFourHoursTimeEntries([...twentyFourList]);
 
-    if (newList && twentyFourList && fortyEightList) {
-      setFinishLoading(true);
-    }
+    setFinishLoading(true);
   };
 
   //Display timelogs based on selected period
@@ -243,7 +261,7 @@ const TeamMemberTasks = props => {
     }
   };
 
-  const renderTeamsList = () => {
+  const renderTeamsList = async () => {
     if (usersWithTasks && usersWithTasks.length > 0) {
       // give different users different views
       let filteredMembers = usersWithTasks.filter(member => {
@@ -439,6 +457,7 @@ const TeamMemberTasks = props => {
               teamList.map((user, userIndex) => {
                 if (!isTimeLogActive) {
                   return (
+<<<<<<< HEAD
                     <>
                       <TeamMemberTask
                         user={user}
@@ -450,6 +469,15 @@ const TeamMemberTasks = props => {
                         userRole={userRole}
                       />
                     </>
+=======
+                    <TeamMemberTask
+                      user={user}
+                      key={user.personId}
+                      handleOpenTaskNotificationModal={handleOpenTaskNotificationModal}
+                      handleMarkAsDoneModal={handleMarkAsDoneModal}
+                      userRole={userRole}
+                    />
+>>>>>>> origin/development
                   );
                 } else {
                   return (
