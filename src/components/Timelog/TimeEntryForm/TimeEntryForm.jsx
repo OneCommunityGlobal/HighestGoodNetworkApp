@@ -710,6 +710,7 @@ const TimeEntryForm = props => {
                   min_height: 180,
                   max_height: 300,
                   autoresize_bottom_margin: 1,
+                  content_style: 'body { cursor: text !important; }',
                 }}
                 id="notes"
                 name="notes"
