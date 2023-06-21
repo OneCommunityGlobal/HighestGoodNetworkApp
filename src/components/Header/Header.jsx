@@ -200,12 +200,7 @@ export const Header = props => {
                         </DropdownItem>
                       </>
                     ) : null}
-                    {hasPermission(
-                      user.role,
-                      'seePermissionsManagement',
-                      roles,
-                      userPermissions,
-                    ) && (
+                    {hasPermission(user.role, 'putRole', roles, userPermissions) && (
                       <DropdownItem tag={Link} to="/permissionsmanagement">
                         {PERMISSIONS_MANAGEMENT}
                       </DropdownItem>
