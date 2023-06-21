@@ -642,6 +642,15 @@ function UserProfile(props) {
                 user={userProfile}
                 canChange={canChangeUserStatus}
                 onClick={() => {
+                  if (
+                    userProfile.role === 'Owner' &&
+                    userProfile.isActive &&
+                    requestorRole !== 'Owner'
+                  ) {
+                    //Owner user cannot be deactivated by another user that is not an Owner.
+                    alert('You are not authorized to deactivate an owner.');
+                    return;
+                  }
                   setActiveInactivePopupOpen(true);
                 }}
               />
