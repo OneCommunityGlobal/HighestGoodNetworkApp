@@ -9,7 +9,7 @@ export const permissionLabel = {
   // Badges
   createBadges: 'See Badge Management Tab (create badges)',
   deleteBadges: 'Delete Badge',
-  modifyOwnBadgeAmount: 'Modify Badge Amount',
+  updateBadges: 'Modify Badge Amount',
   assignBadges: 'Assign Badges',
   // Popups
   createPopup: 'See Popup Management Tab (create popups)',
@@ -36,7 +36,6 @@ export const permissionLabel = {
   assignTeamToUsers: 'Assign Team to User',
   // Time Entries
   editTimeEntry: 'Edit Timelog Information',
-  addTimeEntryOthers: 'Add Time Entry (Others)',
   deleteTimeEntry: 'Delete Time Entry (Others)',
   editTimeEntry: 'Toggle Tangible Time',
   editTimeEntry: 'Change Date on Intangible Time Entry',
@@ -46,19 +45,16 @@ export const permissionLabel = {
   postUserProfile: 'See User Management Tab (create users)',
   deleteUserProfile: 'See User Management Tab (delete users)',
   changeUserStatus: 'Change User Status',
-  adminLinks: 'Manage Admin Links in User Profile',
   putUserProfile: 'Edit User Profile',
   getUserProfiles: 'See User Profiles in Projects',
   updatePassword: 'Reset Password (Others)',
-  toggleSubmitForm: 'Toggle Summary Submit Form (Others)',
   putUserProfileImportantInfo: 'Handle Blue Squares',
   infringementAuthorizer: 'Only Assign Blue Squares',
-  submitWeeklySummaryForOthers: 'Submit Weekly Summary For Others',
+  putUserProfileImportantInfo: 'Submit Weekly Summary For Others',
+  addDeleteEditOwners: 'Add, Delete, or Edit Owners',
   // Misc
-  dataIsTangibleTimelog: 'Timelog Data is Tangible',
   getWeeklySummaries: 'See Weekly Summary Reports Tab',
-  seePermissionsManagement: 'See Permissions Management Tab',
-  changeBioAnnouncement: 'Change the Bio Announcement Status',
+  putRole: 'See Permissions Management Tab',
   getWeeklySummaries: 'See All the Reports Tab',
 };
 
