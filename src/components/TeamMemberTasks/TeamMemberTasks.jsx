@@ -1,13 +1,8 @@
 import { faClock, faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 import { Table } from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-<<<<<<< HEAD
 import { fetchTeamMembersTask, deleteTaskNotification, setFollowUp } from 'actions/task';
-import React, { useEffect, useState } from 'react';
-=======
-import { fetchTeamMembersTask, deleteTaskNotification } from 'actions/task';
 import React, { useEffect, useState, useRef } from 'react';
->>>>>>> origin/development
 import { useDispatch, useSelector, connect } from 'react-redux';
 import Loading from '../common/Loading';
 import { TaskDifferenceModal } from './components/TaskDifferenceModal';
@@ -60,7 +55,6 @@ const TeamMemberTasks = props => {
   const userId = props?.match?.params?.userId || props.asUser || props.auth.user.userid;
 
   const dispatch = useDispatch();
-  
 
   useEffect(() => {
     const initialFetching = async () => {
@@ -95,26 +89,9 @@ const TeamMemberTasks = props => {
   }, [currentUserId]);
 
   useEffect(() => {
-<<<<<<< HEAD
-    renderTeamsList();
-  }, []);
-  useEffect(() => {
-    submitTasks();
-    if (userId !== props.auth.user.userid) {
-      dispatch(fetchTeamMembersTask(userId, props.auth.user.userid));
-      const currentUserRole = getUserRole(userId)
-        .then(resp => resp)
-        .then(user => {
-          setUserRole(user.data.role);
-        });
-    } else {
-      dispatch(fetchTeamMembersTask(userId, null));
-      setUserRole(props.auth.user.role);
-=======
     if (isLoading === false && shouldRun) {
       renderTeamsList();
       closeMarkAsDone();
->>>>>>> origin/development
     }
   }, [usersWithTasks, shouldRun]);
 
@@ -208,14 +185,14 @@ const TeamMemberTasks = props => {
       .format('YYYY-MM-DD');
 
     const userIds = teamList.map(user => user.personId);
-    
+
     const userListTasksRequest = async userList => {
       const url = ENDPOINTS.TIME_ENTRIES_USER_LIST;
       return axios.post(url, { users: userList, fromDate, toDate });
     };
 
     const taskResponse = await userListTasksRequest(userIds);
-    const usersListTasks = taskResponse.data
+    const usersListTasks = taskResponse.data;
 
     //2. Generate array of past 24/48 hrs timelogs
     usersListTasks.map(entry => {
@@ -318,7 +295,6 @@ const TeamMemberTasks = props => {
       }
 
       getTimeEntriesForPeriod(filteredMembers);
-      // checkWhoNeedsFollowUp(filteredMembers);
       setTeamList([...filteredMembers]);
     }
   };
@@ -457,7 +433,6 @@ const TeamMemberTasks = props => {
               teamList.map((user, userIndex) => {
                 if (!isTimeLogActive) {
                   return (
-<<<<<<< HEAD
                     <>
                       <TeamMemberTask
                         user={user}
@@ -469,15 +444,6 @@ const TeamMemberTasks = props => {
                         userRole={userRole}
                       />
                     </>
-=======
-                    <TeamMemberTask
-                      user={user}
-                      key={user.personId}
-                      handleOpenTaskNotificationModal={handleOpenTaskNotificationModal}
-                      handleMarkAsDoneModal={handleMarkAsDoneModal}
-                      userRole={userRole}
-                    />
->>>>>>> origin/development
                   );
                 } else {
                   return (

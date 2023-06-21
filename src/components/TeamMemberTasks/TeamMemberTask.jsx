@@ -148,26 +148,7 @@ const TeamMemberTask = ({
                             <Link to={task.projectId ? `/wbs/tasks/${task._id}` : '/'}>
                               <span>{`${task.num} ${task.taskName}`} </span>
                             </Link>
-<<<<<<< HEAD
                             <CopyToClipboard writeText={task.taskName} message="Task Copied!" />
-                            {task.taskNotifications.length > 0 && (
-                              <FontAwesomeIcon
-                                className="team-member-tasks-bell"
-                                icon={faBell}
-                                onClick={() => {
-                                  handleOpenTaskNotificationModal(
-                                    user.personId,
-                                    task,
-                                    task.taskNotifications,
-                                  );
-                                }}
-                              />
-                            )}
-=======
-                            <CopyToClipboard 
-                              writeText={task.taskName} 
-                              message="Task Copied!"
-                            />
                             {task.taskNotifications.length > 0 &&
                             task.taskNotifications.some(
                               notification =>
@@ -179,11 +160,13 @@ const TeamMemberTask = ({
                                   className="team-member-tasks-bell"
                                   icon={faBell}
                                   onClick={() => {
-                                    const taskNotificationId = task.taskNotifications.filter(taskNotification => {
-                                      if(taskNotification.userId === user.personId){
-                                        return taskNotification
-                                      }
-                                    })
+                                    const taskNotificationId = task.taskNotifications.filter(
+                                      taskNotification => {
+                                        if (taskNotification.userId === user.personId) {
+                                          return taskNotification;
+                                        }
+                                      },
+                                    );
                                     handleOpenTaskNotificationModal(
                                       user.personId,
                                       task,
@@ -193,7 +176,6 @@ const TeamMemberTask = ({
                                 />
                               </>
                             ) : null}
->>>>>>> origin/development
                             {isAllowedToResolveTasks && (
                               <FontAwesomeIcon
                                 className="team-member-tasks-done"
