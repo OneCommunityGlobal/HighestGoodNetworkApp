@@ -37,7 +37,6 @@ import { WeeklySummaryContentTooltip, MediaURLTooltip } from './WeeklySummaryToo
 import classnames from 'classnames';
 import { getUserProfile } from 'actions/userProfile';
 import CurrentPromptModal from './CurrentPromptModal.jsx'
-import { eventPropTypes } from '@tinymce/tinymce-react/lib/cjs/main/ts/components/EditorPropTypes';
 
 // Need this export here in order for automated testing to work.
 export class WeeklySummary extends Component {

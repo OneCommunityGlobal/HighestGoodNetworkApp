@@ -92,19 +92,31 @@ const TeamMemberTask = ({
                               writeText={task.taskName} 
                               message="Task Copied!"
                             />
-                            {task.taskNotifications.length > 0 && (
-                              <FontAwesomeIcon
-                                className="team-member-tasks-bell"
-                                icon={faBell}
-                                onClick={() => {
-                                  handleOpenTaskNotificationModal(
-                                    user.personId,
-                                    task,
-                                    task.taskNotifications,
-                                  );
-                                }}
-                              />
-                            )}
+                            {task.taskNotifications.length > 0 &&
+                            task.taskNotifications.some(
+                              notification =>
+                                notification.hasOwnProperty('userId') &&
+                                notification.userId === user.personId,
+                            ) ? (
+                              <>
+                                <FontAwesomeIcon
+                                  className="team-member-tasks-bell"
+                                  icon={faBell}
+                                  onClick={() => {
+                                    const taskNotificationId = task.taskNotifications.filter(taskNotification => {
+                                      if(taskNotification.userId === user.personId){
+                                        return taskNotification
+                                      }
+                                    })
+                                    handleOpenTaskNotificationModal(
+                                      user.personId,
+                                      task,
+                                      taskNotificationId,
+                                    );
+                                  }}
+                                />
+                              </>
+                            ) : null}
                             {isAllowedToResolveTasks && (
                               <FontAwesomeIcon
                                 className="team-member-tasks-done"
