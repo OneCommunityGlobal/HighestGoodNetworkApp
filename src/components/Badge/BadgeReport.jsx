@@ -357,12 +357,7 @@ const BadgeReport = props => {
                       </UncontrolledDropdown>
                     </td>
                     <td>
-                      {hasPermission(
-                        props.role,
-                        'modifyOwnBadgeAmount',
-                        roles,
-                        props.permissionsUser,
-                      ) ? (
+                      {hasPermission(props.role, 'updateBadges', roles, props.permissionsUser) ? (
                         <Input
                           type="number"
                           value={Math.round(value.count)}
@@ -522,7 +517,7 @@ const BadgeReport = props => {
                               <span style={{ fontWeight: 'bold' }}>Count:</span>
                               {hasPermission(
                                 props.role,
-                                'modifyOwnBadgeAmount',
+                                'updateBadges',
                                 roles,
                                 props.permissionsUser,
                               ) ? (

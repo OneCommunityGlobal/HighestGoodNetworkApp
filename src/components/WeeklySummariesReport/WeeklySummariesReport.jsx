@@ -64,7 +64,12 @@ export class WeeklySummariesReport extends Component {
     const role = this.props.authUser?.role;
     const userPermissions = this.props.authUser?.permissions?.frontPermissions;
     const roles = this.props.roles;
-    const bioEditPermission = hasPermission(role, 'changeBioAnnouncement', roles, userPermissions);
+    const bioEditPermission = hasPermission(
+      role,
+      'putuserprofileImportantinfo',
+      roles,
+      userPermissions,
+    );
 
     if (error) {
       return (
