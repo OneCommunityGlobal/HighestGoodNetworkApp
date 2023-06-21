@@ -93,7 +93,7 @@ const EditLinkModal = props => {
         <ModalHeader toggle={closeModal}>Edit Links</ModalHeader>
         <ModalBody>
           <div>
-            {hasPermission(role, 'adminLinks', roles, userPermissions) && (
+            {hasPermission(role, 'putUserProfileImportantInfo', roles, userPermissions) && (
               <CardBody>
                 <Card style={{ padding: '16px' }}>
                   <Label style={{ display: 'flex', margin: '5px' }}>Admin Links:</Label>
@@ -103,7 +103,11 @@ const EditLinkModal = props => {
                       <div className="customTitle">Link URL</div>
                     </div>
                     {adminLinks?.map((link, index) => (
-                      <div key={index} style={{ display: 'flex', margin: '5px' }} className="link-fields">
+                      <div
+                        key={index}
+                        style={{ display: 'flex', margin: '5px' }}
+                        className="link-fields"
+                      >
                         <input
                           className="customInput"
                           value={link.Name}
@@ -141,7 +145,7 @@ const EditLinkModal = props => {
                       <div className="customTitle">+ ADD LINK:</div>
                     </div>
 
-                    <div style={{ display: 'flex', margin: '5px'}} className="link-fields">
+                    <div style={{ display: 'flex', margin: '5px' }} className="link-fields">
                       <input
                         className="customEdit"
                         id="linkName"
@@ -180,7 +184,11 @@ const EditLinkModal = props => {
                     <div className="customTitle">Link URL</div>
                   </div>
                   {personalLinks.map((link, index) => (
-                    <div key={index} style={{ display: 'flex', margin: '5px' }} className="link-fields">
+                    <div
+                      key={index}
+                      style={{ display: 'flex', margin: '5px' }}
+                      className="link-fields"
+                    >
                       <input
                         className="customInput"
                         value={link.Name}

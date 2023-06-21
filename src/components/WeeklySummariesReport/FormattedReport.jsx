@@ -15,7 +15,6 @@ import { assignStarDotColors, showStar } from 'utils/leaderboardPermissions';
 
 const FormattedReport = ({ summaries, weekIndex, bioCanEdit }) => {
   const emails = [];
-  //const bioCanEdit = role === 'Owner' || role === 'Administrator';
 
   summaries.forEach(summary => {
     if (summary.email !== undefined && summary.email !== null) {
@@ -30,7 +29,7 @@ const FormattedReport = ({ summaries, weekIndex, bioCanEdit }) => {
   while (emailString.includes('\n')) emailString = emailString.replace('\n', ', ');
 
   const alphabetize = summaries => {
-    const temp = [...summaries]
+    const temp = [...summaries];
     return temp.sort((a, b) =>
       `${a.firstName} ${a.lastName}`.localeCompare(`${b.firstName} ${b.lastname}`),
     );
@@ -167,7 +166,7 @@ const FormattedReport = ({ summaries, weekIndex, bioCanEdit }) => {
           <ToggleSwitch
             switchType="bio"
             state={bioStatus}
-            handleUserProfile={(bio) => {
+            handleUserProfile={bio => {
               setBioStatus(bio);
               handleChangeBioPosted(userId, bio);
             }}
@@ -181,9 +180,11 @@ const FormattedReport = ({ summaries, weekIndex, bioCanEdit }) => {
     return (
       <div>
         <b>Bio announcement:</b>
-        {bioPosted === 'default' ? ' Not requested/posted' :
-         bioPosted === 'posted' ? ' Posted' : 
-         ' Requested'}
+        {bioPosted === 'default'
+          ? ' Not requested/posted'
+          : bioPosted === 'posted'
+          ? ' Posted'
+          : ' Requested'}
       </div>
     );
   };

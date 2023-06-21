@@ -274,7 +274,7 @@ const TimeEntryForm = props => {
     }
 
     if (
-      !hasPermission(currentUserRole, 'addTimeEntryOthers', roles, userPermissions) &&
+      !hasPermission(currentUserRole, 'putUserProfileImportantInfo', roles, userPermissions) &&
       data.isTangible &&
       isTimeModified &&
       reminder.editNotice
@@ -613,12 +613,8 @@ const TimeEntryForm = props => {
           <Form>
             <FormGroup>
               <Label for="dateOfWork">Date</Label>
-              {hasPermission(
-                currentUserRole,
-                'editTimeEntry',
-                roles,
-                userPermissions,
-              ) && !fromTimer ? (
+              {hasPermission(currentUserRole, 'editTimeEntry', roles, userPermissions) &&
+              !fromTimer ? (
                 <Input
                   type="date"
                   name="dateOfWork"

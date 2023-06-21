@@ -181,7 +181,7 @@ const SummaryBar = props => {
           matchUser ||
           hasPermission(
             authenticateUserRole,
-            'submitWeeklySummaryForOthers',
+            'putUserProfileImportantInfo',
             roles,
             authenticateUserPermission,
           )
@@ -258,7 +258,7 @@ const SummaryBar = props => {
                   {matchUser ||
                   hasPermission(
                     authenticateUserRole,
-                    'submitWeeklySummaryForOthers',
+                    'putUserProfileImportantInfo',
                     roles,
                     authenticateUserPermission,
                   ) ? (

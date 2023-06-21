@@ -529,7 +529,7 @@ const Timelog = props => {
                       ) : (
                         hasPermission(
                           auth.user.role,
-                          'addTimeEntryOthers',
+                          'putUserProfileImportantInfo',
                           role.roles,
                           userPermissions,
                         ) && (
