@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
-import routes from '../routes';
+//import routes from '../routes';
+import RoutesWrapper from 'routes';
 import logger from '../services/logService';
 
 import httpService from '../services/httpService';
@@ -51,7 +52,9 @@ class App extends Component {
     return (
       <Provider store={store}>
         <PersistGate loading={<Loading />} persistor={persistor}>
-          <Router>{routes}</Router>
+          <Router>
+            <RoutesWrapper/>
+          </Router>
         </PersistGate>
       </Provider>
     );
