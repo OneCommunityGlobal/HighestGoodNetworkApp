@@ -532,7 +532,7 @@ const TimeEntryForm = props => {
   };
 
   return (
-    <>
+    <div>
       <TangibleInfoModal
         visible={isTangibleInfoModalVisible}
         setVisible={setTangibleInfoModalVisibleModalVisible}
@@ -737,7 +737,7 @@ const TimeEntryForm = props => {
           </Button>
         </ModalFooter>
       </Modal>
-    </>
+      </div>
   );
 };
 
