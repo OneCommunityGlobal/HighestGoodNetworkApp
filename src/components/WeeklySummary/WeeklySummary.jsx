@@ -16,6 +16,10 @@ import {
   Nav,
   NavItem,
   NavLink,
+  Modal,
+  ModalBody,
+  ModalHeader,
+  ModalFooter
 } from 'reactstrap';
 import './WeeklySummary.css';
 import { connect } from 'react-redux';
@@ -71,6 +75,8 @@ export class WeeklySummary extends Component {
     errors: {},
     fetchError: null,
     loading: true,
+    editPopup: false,
+    mediaChangeConfirm: false,
   };
 
   async componentDidMount() {
@@ -138,6 +144,8 @@ export class WeeklySummary extends Component {
       activeTab: '1',
       fetchError: this.props.fetchError,
       loading: this.props.loading,
+      editPopup: false,
+      mediaChangeConfirm: false
     });
   }
 
@@ -159,6 +167,15 @@ export class WeeklySummary extends Component {
     const activeTab = this.state.activeTab;
     if (activeTab !== tab) {
       this.setState({ activeTab: tab });
+    }
+  };
+  //modal show 
+  toggleShowPopup = showPopup => {
+    const mediaChangeConfirm = this.state.mediaChangeConfirm;
+    if (!mediaChangeConfirm){
+      this.setState({ editPopup: !showPopup});
+    }else{
+      this.setState({ editPopup: false});
     }
   };
 
@@ -219,15 +236,23 @@ export class WeeklySummary extends Component {
   handleInputChange = event => {
     event.persist();
     const { name, value } = event.target;
-
-    const errors = { ...this.state.errors };
-    const errorMessage = this.validateProperty(event.target);
-    if (errorMessage) errors[name] = errorMessage;
-    else delete errors[name];
-
     const formElements = { ...this.state.formElements };
-    formElements[name] = value;
-    this.setState({ formElements, errors });
+    if (this.state.mediaChangeConfirm){
+      const errors = { ...this.state.errors };
+      const errorMessage = this.validateProperty(event.target);
+      if (errorMessage) errors[name] = errorMessage;
+      else delete errors[name];
+      formElements[name] = value;
+      this.setState({formElements, errors });
+    }else{
+      this.toggleShowPopup(this.state.editPopup);
+    }
+  };
+   
+  handleMediaChange = event => {
+    const mediaChangeConfirm = this.state.mediaChangeConfirm;
+    this.setState({ mediaChangeConfirm: true });
+    this.toggleShowPopup(this.state.editPopup);
   };
 
   handleEditorChange = (content, editor) => {
@@ -476,11 +501,28 @@ export class WeeklySummary extends Component {
                         type="url"
                         name="mediaUrl"
                         id="mediaUrl"
+                        data-testid="media-input"
                         placeholder="Enter a link"
                         value={formElements.mediaUrl}
                         onChange={this.handleInputChange}
                       />
                     </FormGroup>
+                    {<Modal isOpen={this.state.editPopup}>
+                    <ModalHeader> Warning!</ModalHeader>
+                    <ModalBody>
+                      Whoa Tiger! Are you sure you want to do that?
+                      This link was added by an Admin when you were set up as a member 
+                      of the team. Only change this if you are SURE your new link is more 
+                    </ModalBody>
+                    <ModalFooter>
+                      <Button checked={this.state.mediaChangeConfirm} onClick={this.handleMediaChange}>
+                          Confirm
+                      </Button>{' '}
+                      <Button onClick={() => this.toggleShowPopup(this.state.editPopup)}>
+                          Close
+                      </Button>{' '}
+                    </ModalFooter>
+                  </Modal>} 
                     {errors.mediaUrl && <Alert color="danger">{errors.mediaUrl}</Alert>}
                   </Col>
                   {formElements.mediaUrl && !errors.mediaUrl && (
