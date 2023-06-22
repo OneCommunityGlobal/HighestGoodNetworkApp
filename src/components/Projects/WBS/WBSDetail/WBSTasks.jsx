@@ -63,6 +63,10 @@ function WBSTasks(props) {
   };
 
   useEffect(() => {
+    ReactTooltip.rebuild();
+  }, [props.state.tasks.taskItems]);
+
+  useEffect(() => {
     AutoOpenAll(openAll);
   }, [openAll]);
 
@@ -186,15 +190,18 @@ function WBSTasks(props) {
   };
 
   const LoadTasks = props.state.tasks.taskItems.slice(0).sort((a, b) => {
-    var former = a.num.split('.');
-    var latter = b.num.split('.');
-    for (var i = 0; i < 4; i++) {
-      var _former = +former[i] || 0;
-      var _latter = +latter[i] || 0;
-      if (_former === _latter) continue;
-      else return _former > _latter ? 1 : -1;
-    }
-    return 0;
+    // var former = a.num.split('.');
+    // var latter = b.num.split('.');
+    // for (var i = 0; i < 4; i++) {
+    //   var _former = +former[i] || 0;
+    //   var _latter = +latter[i] || 0;
+    //   if (_former === _latter) continue;
+    //   else return _former > _latter ? 1 : -1;
+    // }
+    // return 0;
+    const aNum = +a.num.replaceAll('.','');
+    const bNum = +b.num.replaceAll('.','');
+    return aNum - bNum;
   });
   const filteredTasks = filterTasks(LoadTasks, filterState);
 

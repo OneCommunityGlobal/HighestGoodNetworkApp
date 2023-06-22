@@ -53,9 +53,6 @@ function Task(props) {
   const [tableColNum, setTableColNum] = useState(16);
   const tableRowRef = createRef();
 
-  useEffect(() => {
-    ReactTooltip.rebuild();
-  }, []);
 
   useEffect(() => {
     if (tableRowRef.current) {

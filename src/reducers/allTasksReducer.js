@@ -5,51 +5,36 @@ import * as types from './../constants/task';
 const allTasksInital = {
   fetching: false,
   fetched: false,
+  fetchedData: [],
   taskItems: [],
   error: '',
   copiedTask: null,
 };
 
-const filterAndSort = (tasks, level) => {
+const filterAndSort = tasks => {
   return tasks.sort((a, b) => {
-    const aArr = a.num.split('.');
-    const bArr = b.num.split('.');
-    for (let i = 0; i < level; i++) {
-      if (parseInt(aArr[i]) < parseInt(bArr[i])) {
-        return -1;
-      }
-      if (parseInt(aArr[i]) > parseInt(bArr[i])) {
-        return 1;
-      }
-    }
-    return 0;
+    const aNum = +a.num.replaceAll('.', '');
+    const bNum = +b.num.replaceAll('.', '');
+    return aNum - bNum;
   });
 };
 
 const sortByNum = tasks => {
-  const appendTasks = [];
-
-  tasks.forEach((task, i) => {
-    let numChildren = tasks.filter(item => item.mother === task.taskId).length;
-    if (numChildren > 0) {
-      task.hasChildren = true;
-    } else {
-      task.hasChildren = false;
-    }
+  const appendTasks = tasks.map(task => {
+    let num = task.num;
     if (task.level === 1) {
-      task.num += '.0.0.0';
+      num += '.0.0.0';
     }
     if (task.level === 2) {
-      task.num += '.0.0';
+      num += '.0.0';
     }
     if (task.level === 3) {
-      task.num += '.0';
+      num += '.0';
     }
-
-    appendTasks.push(task);
+    return { ...task, num };
   });
 
-  return filterAndSort(appendTasks, 4);
+  return filterAndSort(appendTasks);
 };
 
 export const taskReducer = (allTasks = allTasksInital, action) => {
@@ -59,25 +44,45 @@ export const taskReducer = (allTasks = allTasksInital, action) => {
     case types.FETCH_TASKS_ERROR:
       return { ...allTasks, fetched: true, fetching: false, error: action.err };
     case types.RECEIVE_TASKS:
+      // if (action.level === -1) {
+      //   return { ...allTasks, taskItems: [], fetched: true, fetching: false, error: 'none' };
+      // } else if (action.level === 0) {
+      //   return {
+      //     ...allTasks,
+      //     taskItems: [...sortByNum(action.taskItems)],
+      //     fetched: true,
+      //     fetching: false,
+      //     error: 'none',
+      //   };
+      // } else {
+      //   const motherIndex = allTasks.taskItems.findIndex(item => item._id === action.mother);
+      //   return {
+      //     ...allTasks,
+      //     taskItems: [
+      //       ...allTasks.taskItems.slice(0, motherIndex + 1),
+      //       ...sortByNum(action.taskItems),
+      //       ...allTasks.taskItems.slice(motherIndex + 1),
+      //     ],
+      //     fetched: true,
+      //     fetching: false,
+      //     error: 'none',
+      //   };
       if (action.level === -1) {
-        return { ...allTasks, taskItems: [], fetched: true, fetching: false, error: 'none' };
-      } else if (action.level === 0) {
         return {
           ...allTasks,
-          taskItems: [...sortByNum(action.taskItems)],
-          fetched: true,
+          taskItems: [],
+          fetchedData: [],
+          fetched: false,
           fetching: false,
           error: 'none',
         };
       } else {
-        const motherIndex = allTasks.taskItems.findIndex(item => item._id === action.mother);
+        allTasks.fetchedData[action.level] = action.taskItems;
+        console.log('fetchedData', allTasks.fetchedData);
         return {
           ...allTasks,
-          taskItems: [
-            ...allTasks.taskItems.slice(0, motherIndex + 1),
-            ...sortByNum(action.taskItems),
-            ...allTasks.taskItems.slice(motherIndex + 1),
-          ],
+          fetchedData: [...allTasks.fetchedData],
+          taskItems: [...sortByNum(allTasks.fetchedData.flat())],
           fetched: true,
           fetching: false,
           error: 'none',
@@ -123,7 +128,7 @@ export const taskReducer = (allTasks = allTasksInital, action) => {
     case types.EMPTY_TASK_ITEMS:
       return {
         ...allTasks,
-        taskItems: []
+        taskItems: [],
       };
     case types.UPDATE_TASK:
       let updIndexStart = allTasks.taskItems.findIndex(task => task._id === action.taskId);
