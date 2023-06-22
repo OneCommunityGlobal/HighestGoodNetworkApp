@@ -50,6 +50,10 @@ export const Header = props => {
 
   const dispatch = useDispatch();
 
+  useEffect(() => {
+    console.log(props)
+  }, [])
+
   const userPermissions = props.auth.user?.permissions?.frontPermissions;
   useEffect(() => {
     if (props.auth.isAuthenticated) {
