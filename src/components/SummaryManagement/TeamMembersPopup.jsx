@@ -15,8 +15,11 @@ const TeamMembersPopup = React.memo(props => {
   const [searchText, setSearchText] = useState('');
 
   const onAddUser = () => {
-    
-    if (selectedUser && !props.members.teamMembers.some(x => x._id === selectedUser._id)) {
+    if (
+      selectedUser &&
+      !props.members.teamMembers.some(x => x._id === selectedUser._id) &&
+      props.apiCallDone
+    ) {
       props.onAddUser(selectedUser, props.selectedSummaryGroupId);
       setSearchText('');
     } else {

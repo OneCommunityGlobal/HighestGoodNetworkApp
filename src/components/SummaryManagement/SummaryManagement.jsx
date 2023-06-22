@@ -43,6 +43,7 @@ class SummaryManagement extends Component {
       members: [],
       summaryReceiver: [],
       SummaryReceiverPopupOpen: false,
+      ApiCallDone: true,
     };
   }
   async componentDidMount() {
@@ -201,6 +202,7 @@ class SummaryManagement extends Component {
     }
   };
   onAddTeamMember = async (user, selectedSummaryGroupId) => {
+    this.setState({ ApiCallDone: false });
     const requestData = {
       _id: user._id,
       fullName: `${user.firstName} ${user.lastName}`,
@@ -211,10 +213,13 @@ class SummaryManagement extends Component {
         ENDPOINTS.SUMMARY_GROUP_TEAM_MEMBERS(selectedSummaryGroupId),
         requestData,
       );
+      this.getTeamMembers(selectedSummaryGroupId);
     } catch (error) {
       console.log(error);
     }
-    this.getTeamMembers(selectedSummaryGroupId);
+    setTimeout(() => {
+      this.setState({ ApiCallDone: true });
+    }, 500);
   };
 
   onDeleteTeamMember = async deletedUserId => {
@@ -334,6 +339,7 @@ class SummaryManagement extends Component {
 
   render() {
     const { allSummaryGroups } = this.props.state.allSummaryGroups;
+    // console.log(allSummaryGroups[0]);
     const summaryGroupTable = this.summaryGroupElements(allSummaryGroups);
     const numberOfSummaryGroup = allSummaryGroups.length;
     const numberOfActiveSummaryGroup = numberOfSummaryGroup
@@ -399,6 +405,7 @@ class SummaryManagement extends Component {
             selectedSummaryGroupId={this.state.selectedSummaryGroupId}
             onAddUser={this.onAddTeamMember}
             onDeleteClick={this.onDeleteTeamMember}
+            apiCallDone={this.state.ApiCallDone}
           ></TeamMembersPopup>
           <SummaryReceiverPopup
             open={this.state.SummaryReceiverPopupOpen}
