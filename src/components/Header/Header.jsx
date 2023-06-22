@@ -8,6 +8,7 @@ import { connect, useDispatch } from 'react-redux';
 import Timer from '../Timer/Timer';
 import OwnerMessage from '../OwnerMessage/OwnerMessage';
 import {
+  LOGO,
   DASHBOARD,
   TIMELOG,
   REPORTS,
@@ -28,6 +29,7 @@ import {
   Collapse,
   Navbar,
   NavbarToggler,
+  NavbarBrand,
   Nav,
   NavItem,
   NavLink,
@@ -87,8 +89,6 @@ export const Header = props => {
           )}
         </div>
         <NavbarToggler onClick={toggle} />
-        {isAuthenticated && <NewTimer />}
-
         {isAuthenticated && (
           <Collapse isOpen={isOpen} navbar>
             <Nav className="ml-auto nav-links" navbar>
@@ -111,23 +111,30 @@ export const Header = props => {
                   <span className="dashboard-text-link">{TIMELOG}</span>
                 </NavLink>
               </NavItem>
+              {hasPermission(user.role, "seeAllReports", roles, userPermissions) ||
+               hasPermission(user.role, "seeWeeklySummaryReports", roles, userPermissions) ? (
               <UncontrolledDropdown nav inNavbar>
                 <DropdownToggle nav caret>
                   <span className="dashboard-text-link">{REPORTS}</span>
                 </DropdownToggle>
                 <DropdownMenu>
-                  <DropdownItem tag={Link} to="/reports">
-                    {REPORTS}
-                  </DropdownItem>
-                  {hasPermission(user.role, 'seeWeeklySummaryReports', roles, userPermissions) ? (
+                  {hasPermission(user.role, "seeAllReports", roles, userPermissions) ? (
+                    <>
+                      <DropdownItem tag={Link} to="/reports">
+                        {REPORTS}
+                      </DropdownItem>
+                      <DropdownItem tag={Link} to="/weeklysummariesreport">
+                        {WEEKLY_SUMMARIES_REPORT}
+                      </DropdownItem>
+                    </>
+                  ) : (
                     <DropdownItem tag={Link} to="/weeklysummariesreport">
                       {WEEKLY_SUMMARIES_REPORT}
                     </DropdownItem>
-                  ) : (
-                    <React.Fragment></React.Fragment>
                   )}
                 </DropdownMenu>
               </UncontrolledDropdown>
+              ) : null}
               <NavItem>
                 <NavLink tag={Link} to={`/timelog/${user.userid}`}>
                   <i className="fa fa-bell i-large">

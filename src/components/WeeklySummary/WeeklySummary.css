@@ -110,6 +110,12 @@
   border-color: #fff #dee2e6 #dee2e6;
 }
 
+.summary-instructions-row {
+  display: flex;
+  justify-content: space-between;
+  margin-right: 0;
+}
+
 @media screen and (min-width: 992px) {
   .left-col-dashboard {
     margin-top: -200px;

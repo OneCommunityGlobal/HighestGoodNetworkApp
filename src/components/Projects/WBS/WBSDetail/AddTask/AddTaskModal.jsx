@@ -3,7 +3,7 @@ import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import { connect } from 'react-redux';
 import ReactTooltip from 'react-tooltip';
 import DayPickerInput from 'react-day-picker/DayPickerInput';
-import { Editor } from 'primereact/editor';
+import { Editor } from '@tinymce/tinymce-react';
 import dateFnsFormat from 'date-fns/format';
 import { fetchAllTasks, addNewTask } from '../../../../../actions/task';
 import { DUE_DATE_MUST_GREATER_THAN_START_DATE } from '../../../../../languages/en/messages';
@@ -360,18 +360,6 @@ function AddTaskModal(props) {
 
   getNewNum();
 
-  const renderHeader = () => {
-    return (
-        <span className="ql-formats">
-            <button className="ql-bold" aria-label="Bold"></button>
-            <button className="ql-italic" aria-label="Italic"></button>
-            <button className="ql-underline" aria-label="Underline"></button>
-        </span>
-    );
-  };
-
-  const header = renderHeader();
-
   return (
     <div className="controlBtn">
       <Modal isOpen={modal} toggle={toggle}>
@@ -639,13 +627,22 @@ function AddTaskModal(props) {
                 <td scope="col" colSpan="2">
                   Why this Task is Important
                   <Editor
-                  style={{
-                            height: '180px'
-                  }}
-                  name="why-info"
-                  value={whyInfo}
-                  onEditorChange={content => setWhyInfo(String(content))}
-                  headerTemplate={header}
+                    init={{
+                      menubar: false,
+                      plugins: 'advlist autolink autoresize lists link charmap table paste help',
+                      toolbar:
+                        'bold italic  underline numlist   |  removeformat link bullist  outdent indent |\
+                                        styleselect fontsizeselect | table| strikethrough forecolor backcolor |\
+                                        subscript superscript charmap  | help',
+                      branding: false,
+                      min_height: 180,
+                      max_height: 300,
+                      autoresize_bottom_margin: 1,
+                    }}
+                    name="why-info"
+                    className="why-info form-control"
+                    value={whyInfo}
+                    onEditorChange={content => setWhyInfo(content)}
                   />
                 </td>
               </tr>
@@ -653,13 +650,22 @@ function AddTaskModal(props) {
                 <td scope="col" colSpan="2">
                   Design Intent
                   <Editor
-                  style={{
-                            height: '180px'
-                  }}
-                  name="intent-info"
-                  value={intentInfo}
-                  onEditorChange={content => setIntentInfo(String(content))}
-                  headerTemplate={header}
+                    init={{
+                      menubar: false,
+                      plugins: 'advlist autolink autoresize lists link charmap table paste help',
+                      toolbar:
+                        'bold italic  underline numlist   |  removeformat link bullist  outdent indent |\
+                                        styleselect fontsizeselect | table| strikethrough forecolor backcolor |\
+                                        subscript superscript charmap  | help',
+                      branding: false,
+                      min_height: 180,
+                      max_height: 300,
+                      autoresize_bottom_margin: 1,
+                    }}
+                    name="intent-info"
+                    className="intent-info form-control"
+                    value={intentInfo}
+                    onEditorChange={content => setIntentInfo(content)}
                   />
                 </td>
               </tr>
@@ -667,13 +673,22 @@ function AddTaskModal(props) {
                 <td scope="col" colSpan="2">
                   Endstate
                   <Editor
-                  style={{
-                            height: '180px'
-                  }}
-                  name="endstate-info"
-                  value={endstateInfo}
-                  onTextChange={content => setEndstateInfo(String(content))}
-                  headerTemplate={header}
+                    init={{
+                      menubar: false,
+                      plugins: 'advlist autolink autoresize lists link charmap table paste help',
+                      toolbar:
+                        'bold italic  underline numlist   |  removeformat link bullist  outdent indent |\
+                                        styleselect fontsizeselect | table| strikethrough forecolor backcolor |\
+                                        subscript superscript charmap  | help',
+                      branding: false,
+                      min_height: 180,
+                      max_height: 300,
+                      autoresize_bottom_margin: 1,
+                    }}
+                    name="endstate-info"
+                    className="endstate-info form-control"
+                    value={endstateInfo}
+                    onEditorChange={content => setEndstateInfo(content)}
                   />
                 </td>
               </tr>
