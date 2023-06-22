@@ -40,8 +40,6 @@ import { useState } from 'react';
 
 const RoutesWrapper = props => {
 
-  const [params, setParams] = useState();
-
   return (
     <React.Fragment>
       <Header/>
