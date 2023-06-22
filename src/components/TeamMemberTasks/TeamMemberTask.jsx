@@ -18,6 +18,7 @@ const TeamMemberTask = ({
   handleTaskModalOption,
   userRole,
   roles,
+  userPermissions,
 }) => {
   const [infoTaskIconModal, setInfoTaskIconModal] = useState(false);
 
@@ -56,7 +57,7 @@ const TeamMemberTask = ({
   }
 
 
-  const hasRemovePermission = hasPermission(userRole, 'removeUserFromTask', roles);
+  const hasRemovePermission = hasPermission(userRole, 'removeUserFromTask', roles, userPermissions);
 
   return (
     <>

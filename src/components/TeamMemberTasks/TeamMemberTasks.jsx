@@ -426,6 +426,7 @@ const TeamMemberTasks = props => {
                         userRole={userRole}
                         updateTask={onUpdateTask}
                         roles={props.roles}
+                        userPermissions={props.userPermissions}
                       />
                   );
                 } else {
