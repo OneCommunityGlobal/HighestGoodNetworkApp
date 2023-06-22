@@ -174,8 +174,8 @@ export class WeeklySummary extends Component {
     const move = options.target.value;
     const moveSelect = this.state.moveSelect;
     let formElements = {...this.state.formElements};
-    if (moveSelect != move){
-      const activeTab = this.state.activeTab;
+    const activeTab = this.state.activeTab;
+    if (activeTab != move){
       let movedContent = "";
       switch (activeTab) {
         case "1":
