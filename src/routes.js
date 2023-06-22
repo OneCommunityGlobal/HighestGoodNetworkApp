@@ -42,12 +42,12 @@ const RoutesWrapper = props => {
 
   return (
     <React.Fragment>
-      <Header/>
+      <Route component={Header}/>
       <AutoUpdate />
       <ToastContainer />
       <Switch>
         <ProtectedRoute path="/dashboard" exact component={Dashboard} />
-        <ProtectedRoute path="/dashboard/:userId" exact component={Dashboard} setUrlParams={setParams} urlParams={params}/>
+        <ProtectedRoute path="/dashboard/:userId" exact component={Dashboard}/>
         <ProtectedRoute path="/wbs/tasks/:wbsId/:projectId/:wbsName" component={WBSDetail} />
         <ProtectedRoute path="/project/members/:projectId" component={Members} />
         <ProtectedRoute path="/admin" component={Admin} />
