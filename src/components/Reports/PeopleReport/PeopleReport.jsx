@@ -580,6 +580,5 @@ export default connect(getPeopleReportData, {
   updateWeeklySummaries,
   getUserTask,
   getUserProjects,
-  updateUserProfile,
   getTimeEntriesForPeriod,
 })(PeopleReport);
