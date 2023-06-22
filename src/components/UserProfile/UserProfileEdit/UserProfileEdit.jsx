@@ -79,6 +79,7 @@ class UserProfileEdit extends Component {
         }
       }
     }
+
   }
 
   toggleTab = tab => {
@@ -325,6 +326,7 @@ class UserProfileEdit extends Component {
     const reader = new FileReader();
     reader.readAsDataURL(file);
     reader.onloadend = () => {
+
       this.setState({
         imageUploadError: '',
         userProfile: {
@@ -359,6 +361,7 @@ class UserProfileEdit extends Component {
   };
 
   handleNullState = kind => {
+
     switch (kind) {
       case 'settings':
         this.setState(() => ({
@@ -513,6 +516,7 @@ class UserProfileEdit extends Component {
   };
 
   render() {
+
     const { userId: targetUserId } = this.props.match
       ? this.props.match.params
       : { userId: undefined };
@@ -949,7 +953,7 @@ class UserProfileEdit extends Component {
                       userTeams={this.state ? this.state.userProfile.teams : []}
                       teamsData={this.props ? this.props.allTeams.allTeamsData : []}
                       onAssignTeam={this.onAssignTeam}
-                      onDeleteTeam={this.onDeleteTeam}
+                      onDeleteteam={this.onDeleteTeam}
                       role={requestorRole}
                       edit
                     />

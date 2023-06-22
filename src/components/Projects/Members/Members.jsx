@@ -24,6 +24,8 @@ const Members = props => {
   const projectId = props.match.params.projectId;
   const { roles } = props.state.role;
 
+  const projectName = props.state?.allProjects?.projects?.filter((project) => project?._id === projectId)?.[0]?.projectName ?? `Project #${projectId}`;
+
   useEffect(() => {
     props.fetchAllMembers(projectId);
   }, [projectId]);
@@ -34,6 +36,45 @@ const Members = props => {
       props.assignProject(projectId, user._id, 'Assign', user.firstName, user.lastName);
     });
   };
+
+  const renderMembersTable = (tableTitle, members) => (
+    <table className="table table-bordered table-responsive-sm">
+      <thead>
+        <tr>
+          <th scope="col" id="members__order">
+            #
+          </th>
+          <th scope="col" id="members__name">{tableTitle}</th>
+          {hasPermission(role, 'unassignUserInProject', roles, userPermissions) ? (
+            <th scope="col" id="members__name"></th>
+          ) : null}
+        </tr>
+      </thead>
+      <tbody>
+        {members.map((member, i) => (
+          <Member
+            index={i}
+            key={member._id}
+            projectId={projectId}
+            uid={member._id}
+            fullName={member.firstName + ' ' + member.lastName}
+          />
+        ))}
+      </tbody>
+    </table>
+  );
+
+  const activeMembers = [];
+  const inactiveMembers = [];
+  props.state.projectMembers.members.forEach((member) => {
+    if (member.isActive) {
+      activeMembers.push(member);
+    } else {
+      inactiveMembers.push(member);
+    }
+  })
+  const activeMembersTable = activeMembers.length > 0 ? renderMembersTable('Active Members', activeMembers) : null;
+  const inactiveMembersTable = inactiveMembers.length > 0 ? renderMembersTable('Inactive Members', inactiveMembers) : null;
 
   return (
     <React.Fragment>
@@ -49,6 +90,7 @@ const Members = props => {
             <div id="member_project__name">PROJECTS {props.projectId}</div>
           </ol>
         </nav>
+        <h3>{projectName}</h3>
         {hasPermission(role, 'findUserInProject', roles, userPermissions) ? (
           <div className="input-group" id="new_project">
             <div className="input-group-prepend">
@@ -115,31 +157,8 @@ const Members = props => {
             </tbody>
           </table>
         )}
-
-        <table className="table table-bordered table-responsive-sm">
-          <thead>
-            <tr>
-              <th scope="col" id="members__order">
-                #
-              </th>
-              <th scope="col" id="members__name"></th>
-              {hasPermission(role, 'unassignUserInProject', roles, userPermissions) ? (
-                <th scope="col" id="members__name"></th>
-              ) : null}
-            </tr>
-          </thead>
-          <tbody>
-            {props.state.projectMembers.members.map((member, i) => (
-              <Member
-                index={i}
-                key={member._id}
-                projectId={projectId}
-                uid={member._id}
-                fullName={member.firstName + ' ' + member.lastName}
-              />
-            ))}
-          </tbody>
-        </table>
+        {activeMembersTable}
+        {inactiveMembersTable}
       </div>
     </React.Fragment>
   );

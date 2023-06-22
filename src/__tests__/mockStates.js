@@ -1050,9 +1050,6 @@ export const rolesMock = {
           "dataIsTangibleTimelog",
           "toggleSubmitForm",
           "seePermissionsManagement",
-          "changeBioAnnouncement",
-          'changeUserStatus',
-          'submitWeeklySummaryForOthers',
         ],
         permissionsBackEnd: [
           "seeBadges",

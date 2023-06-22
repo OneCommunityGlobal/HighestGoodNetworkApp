@@ -13,9 +13,9 @@ import { ENDPOINTS } from '../../utils/URL';
 import { useState } from 'react';
 import { assignStarDotColors, showStar } from 'utils/leaderboardPermissions';
 
-const FormattedReport = ({ summaries, weekIndex, bioCanEdit }) => {
+const FormattedReport = ({ summaries, weekIndex, role }) => {
   const emails = [];
-  //const bioCanEdit = role === 'Owner' || role === 'Administrator';
+  const bioCanEdit = role === 'Owner' || role === 'Administrator';
 
   summaries.forEach(summary => {
     if (summary.email !== undefined && summary.email !== null) {
@@ -30,8 +30,7 @@ const FormattedReport = ({ summaries, weekIndex, bioCanEdit }) => {
   while (emailString.includes('\n')) emailString = emailString.replace('\n', ', ');
 
   const alphabetize = summaries => {
-    const temp = [...summaries]
-    return temp.sort((a, b) =>
+    return summaries.sort((a, b) =>
       `${a.firstName} ${a.lastName}`.localeCompare(`${b.firstName} ${b.lastname}`),
     );
   };
@@ -146,7 +145,7 @@ const FormattedReport = ({ summaries, weekIndex, bioCanEdit }) => {
       const userProfile = response.data;
       const res = await axios.put(url, {
         ...userProfile,
-        bioPosted: bioStatus,
+        bioPosted: !bioStatus,
       });
       if (res.status === 200) {
         toast.success('You have changed the bio announcement status of this user.');
@@ -157,7 +156,7 @@ const FormattedReport = ({ summaries, weekIndex, bioCanEdit }) => {
   };
 
   const bioSwitch = (userId, bioPosted) => {
-    const [bioStatus, setBioStatus] = useState(bioPosted);
+    const [isBioPosted, setIsBioPosted] = useState(bioPosted);
     return (
       <div>
         <div className="bio-toggle">
@@ -166,10 +165,10 @@ const FormattedReport = ({ summaries, weekIndex, bioCanEdit }) => {
         <div className="bio-toggle">
           <ToggleSwitch
             switchType="bio"
-            state={bioStatus}
-            handleUserProfile={(bio) => {
-              setBioStatus(bio);
-              handleChangeBioPosted(userId, bio);
+            state={isBioPosted ? false : true}
+            handleUserProfile={() => {
+              handleChangeBioPosted(userId, isBioPosted);
+              setIsBioPosted(!isBioPosted);
             }}
           />
         </div>
@@ -181,9 +180,7 @@ const FormattedReport = ({ summaries, weekIndex, bioCanEdit }) => {
     return (
       <div>
         <b>Bio announcement:</b>
-        {bioPosted === 'default' ? ' Not requested/posted' :
-         bioPosted === 'posted' ? ' Posted' : 
-         ' Requested'}
+        {bioPosted ? ' Posted' : ' Requested'}
       </div>
     );
   };
@@ -195,7 +192,7 @@ const FormattedReport = ({ summaries, weekIndex, bioCanEdit }) => {
       {alphabetize(summaries).map((summary, index) => {
         const hoursLogged = (summary.totalSeconds[weekIndex] || 0) / 3600;
         const googleDocLink = getGoogleDocLink(summary);
-
+        
         return (
           <div
             style={{ padding: '20px 0', marginTop: '5px', borderBottom: '1px solid #DEE2E6' }}
@@ -233,7 +230,7 @@ const FormattedReport = ({ summaries, weekIndex, bioCanEdit }) => {
                       fontSize: '10px',
                     }}
                   >
-                    +{Math.round((hoursLogged / summary.weeklycommittedHours - 1) * 100)}%
+                    +{Math.round((hoursLogged / summary.weeklycommittedHours - 1) * 100)}% 
                   </span>
                 </i>
               )}

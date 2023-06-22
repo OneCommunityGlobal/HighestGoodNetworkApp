@@ -19,6 +19,8 @@ import checkNegativeNumber from 'utils/checkNegativeHours';
 
 const TimeEntry = ({ data, displayYear, userProfile }) => {
   const [modal, setModal] = useState(false);
+  const [projectName, setProjectName] = useState('');
+  const [taskName, setTaskName] = useState('');
 
   const toggle = () => setModal(modal => !modal);
 
@@ -54,6 +56,27 @@ const TimeEntry = ({ data, displayYear, userProfile }) => {
   const taskClassification = data.classification?.toLowerCase() || '';
   const dispatch = useDispatch();
 
+  useEffect(() => {
+    axios
+      .get(ENDPOINTS.PROJECT_BY_ID(data.projectId))
+      .then(res => {
+        setProjectCategory(res?.data.category.toLowerCase() || '');
+        setProjectName(res?.data?.projectName || '');
+      })
+      .catch(err => console.log(err));
+  }, []);
+
+  useEffect(() => {
+    axios
+      // Note: Here taskId is stored in projectId since no taskId field in timeEntry schema
+      .get(ENDPOINTS.GET_TASK(data.projectId))
+      .then(res => {
+        setTaskClassification(res?.data?.classification.toLowerCase() || '');
+        setTaskName(res?.data?.taskName || '');
+      })
+      .catch(err => console.log(err));
+  }, []);
+
   const toggleTangibility = () => {
     const newData = {
       ...data,
@@ -65,7 +88,7 @@ const TimeEntry = ({ data, displayYear, userProfile }) => {
     //Update intangible hours property in userprofile
     const formattedHours = parseFloat(data.hours) + parseFloat(data.minutes) / 60;
     const { hoursByCategory } = userProfile;
-    if (data.projectName) {
+    if (projectName) {
       const isFindCategory = Object.keys(hoursByCategory).find(key => key === projectCategory);
       //change tangible to intangible
       if (data.isTangible) {
@@ -117,7 +140,7 @@ const TimeEntry = ({ data, displayYear, userProfile }) => {
             {data.hours}h {data.minutes}m
           </h4>
           <div className="text-muted">Project/Task:</div>
-          <h6> {data.projectName || data.taskName} </h6>
+          <h6> {projectName || taskName} </h6>
           <span className="text-muted">Tangible:&nbsp;</span>
           <input
             type="checkbox"

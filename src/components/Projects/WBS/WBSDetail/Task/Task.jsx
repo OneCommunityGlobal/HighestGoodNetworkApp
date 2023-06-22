@@ -29,7 +29,6 @@ import * as Message from './../../../../../languages/en/messages';
 import { getPopupById } from './../../../../../actions/popupEditorAction';
 import { TASK_DELETE_POPUP_ID } from './../../../../../constants/popupId';
 import hasPermission from 'utils/permissions';
-import ReactTooltip from 'react-tooltip';
 
 function Task(props) {
   const [role] = useState(props.state ? props.state.auth.user.role : null);
@@ -156,7 +155,6 @@ function Task(props) {
     <>
       {props.id ? (
         <>
-          <ReactTooltip/>
           <tr
             ref={tableRowRef}
             key={props.key}

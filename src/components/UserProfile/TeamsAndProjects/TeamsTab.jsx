@@ -3,17 +3,7 @@ import AddTeamPopup from './AddTeamPopup';
 import UserTeamsTable from './UserTeamsTable';
 
 const TeamsTab = props => {
-  const {
-    teamsData,
-    userTeams,
-    onDeleteTeam,
-    onAssignTeam,
-    edit,
-    role,
-    onUserVisibilitySwitch,
-    isVisible,
-    canEditVisibility,
-  } = props;
+  const { teamsData, userTeams, onDeleteteam, onAssignTeam, edit, role, onUserVisibilitySwitch, isVisible, canEditVisibility } = props;
   const [addTeamPopupOpen, setaddTeamPopupOpen] = useState(false);
   const [renderedOn, setRenderedOn] = useState(0);
 
@@ -25,7 +15,7 @@ const TeamsTab = props => {
     setaddTeamPopupOpen(false);
   };
   const onSelectDeleteTeam = teamId => {
-    onDeleteTeam(teamId);
+    onDeleteteam(teamId);
   };
 
   const onSelectAssignTeam = team => {
@@ -47,7 +37,7 @@ const TeamsTab = props => {
         onButtonClick={onAddTeamPopupShow}
         onDeleteClick={onSelectDeleteTeam}
         onUserVisibilitySwitch={onUserVisibilitySwitch}
-        canEditVisibility={canEditVisibility}
+        canEditVisibility = {canEditVisibility}
         isVisible={isVisible}
         renderedOn={renderedOn}
         edit={edit}

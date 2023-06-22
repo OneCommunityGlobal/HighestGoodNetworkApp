@@ -17,8 +17,6 @@ describe('WeeklySummary page', () => {
         updateWeeklySummaries: jest.fn(),
         loading: true,
         summaries: weeklySummaryMockData1,
-        authUser: {role:''},
-        roles: [],
       };
 
       render(<WeeklySummary {...props} />);
@@ -33,8 +31,6 @@ describe('WeeklySummary page', () => {
         fetchError: { message: 'SOME ERROR CONNECTING!!!' },
         loading: false,
         summaries: weeklySummaryMockData1,
-        authUser: {role:''},
-        roles: [],
       };
       render(<WeeklySummary {...props} />);
 
@@ -51,8 +47,6 @@ describe('WeeklySummary page', () => {
       updateWeeklySummaries: jest.fn(),
       loading: false,
       summaries: weeklySummaryMockData1,
-      authUser: {role:''},
-      roles: [],
     };
 
     beforeEach(() => {
@@ -66,8 +60,6 @@ describe('WeeklySummary page', () => {
         updateWeeklySummaries: jest.fn(),
         loading: false,
         summaries: {},
-        authUser: {role:''},
-        roles: [],
       };
 
       render(<WeeklySummary {...props} />);
@@ -130,8 +122,6 @@ describe('WeeklySummary page', () => {
       updateWeeklySummaries: jest.fn(),
       loading: false,
       summaries: weeklySummaryMockData1,
-      authUser: {role:''},
-      roles: [],
     };
 
     beforeEach(() => {
@@ -166,8 +156,6 @@ describe('WeeklySummary page', () => {
       updateWeeklySummaries: jest.fn(),
       loading: false,
       summaries: {},
-      authUser: {role:''},
-      roles: [],
     };
 
     beforeEach(() => {

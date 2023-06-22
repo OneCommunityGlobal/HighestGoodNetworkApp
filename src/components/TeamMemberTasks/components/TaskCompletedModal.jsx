@@ -1,14 +1,24 @@
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import React from 'react';
+import { useEffect } from 'react';
+import { ENDPOINTS } from 'utils/URL';
+import axios from 'axios';
 
-import { useState } from 'react';
+/**
+ * Modal popup to delete the user profile
+ */
 const TaskCompletedModal = React.memo(props => {
-  const [isLoadingTask, setIsLoadingTask] = useState(false);
-
-  const closeFunction = e => {
-    props.setClickedToShowModal(false);
-    props.setCurrentUserId('');
+  const closePopup = e => {
     props.popupClose();
+  };
+
+  const loadUserTasks = async userId => {
+    axios
+      .get(ENDPOINTS.TASKS_BY_USERID(userId))
+      .then(res => {
+        props.setTasks(res?.data || []);
+      })
+      .catch(err => console.log(err));
   };
 
   const removeTaskFromUser = task => {
@@ -28,37 +38,38 @@ const TaskCompletedModal = React.memo(props => {
     props.updateTask(task._id, updatedTask);
   };
 
+  useEffect(() => {
+    loadUserTasks(props.userId);
+  }, [props.userID, props.tasks]);
+
   return (
     <Modal isOpen={props.isOpen} toggle={() => props.popupClose()}>
       <ModalHeader toggle={() => props.popupClose()}>Mark as Done</ModalHeader>
-      {isLoadingTask ? (
-        <ModalBody>
-          <p>Loading...</p>
-        </ModalBody>
-      ) : (
-        <ModalBody>
-          <p>Are you sure you want to mark this task as done?</p>
-          <ModalFooter>
-            <Button
-              color="primary"
-              onClick={() => {
-                setIsLoadingTask(true);
-                removeTaskFromUser(props.task);
-              }}
-              disabled={isLoadingTask}
-            >
-              Mark as Done
-            </Button>
-            <Button
-              onClick={() => {
-                closeFunction()
-              }}
-            >
-              Cancel
-            </Button>
-          </ModalFooter>
-        </ModalBody>
-      )}
+      <ModalBody>
+        <p>Are you sure you want to mark this task as done?</p>
+        <ModalFooter>
+          <Button
+            color="primary"
+            onClick={() => {
+              removeTaskFromUser(props.task);
+              props.setClickedToShowModal(false);
+              props.setCurrentUserId('');
+              closePopup();
+            }}
+          >
+            Confirm
+          </Button>
+          <Button
+            onClick={() => {
+              props.setClickedToShowModal(false);
+              props.setCurrentUserId('');
+              closePopup();
+            }}
+          >
+            Cancel
+          </Button>
+        </ModalFooter>
+      </ModalBody>
     </Modal>
   );
 });
