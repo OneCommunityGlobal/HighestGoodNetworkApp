@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import postProjectPopup from './AddProjectPopup';
+import AddProjectPopup from './AddProjectPopup';
 import UserProjectsTable from './UserProjectsTable';
 
 const ProjectsTab = props => {
@@ -36,7 +36,7 @@ const ProjectsTab = props => {
 
   return (
     <React.Fragment>
-      <postProjectPopup
+      <AddProjectPopup
         open={postProjectPopupOpen}
         onClose={onAddProjectPopupClose}
         userProjectsById={userProjects}

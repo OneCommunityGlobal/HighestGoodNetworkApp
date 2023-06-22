@@ -17,7 +17,7 @@ import {
 } from '../../actions/projects';
 import { getPopupById } from '../../actions/popupEditorAction';
 import Overview from './Overview';
-import postProject from './AddProject';
+import AddProject from './AddProject';
 import ProjectTableHeader from './ProjectTableHeader';
 import Project from './Project';
 import ModalDelete from './../common/Modal';
@@ -160,7 +160,7 @@ export class Projects extends Component {
           />
           <Overview numberOfProjects={numberOfProjects} numberOfActive={numberOfActive} />
           {hasPermission(role, 'postProject', roles, userPermissions) ? (
-            <postProject addNewProject={this.postProject} />
+            <AddProject addNewProject={this.postProject} />
           ) : null}
 
           <table className="table table-bordered table-responsive-sm">

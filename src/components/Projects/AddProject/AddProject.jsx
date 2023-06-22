@@ -5,7 +5,7 @@
  ********************************************************************************/
 import React, { useState } from 'react';
 
-const postProject = props => {
+const AddProject = props => {
   const [showAddButton, setShowAddButton] = useState(false);
   const [newName, setNewName] = useState('');
   const [newCategory, setNewCategory] = useState('Unspecified');
@@ -61,4 +61,4 @@ const postProject = props => {
   );
 };
 
-export default postProject;
+export default AddProject;

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Container } from 'reactstrap';
-import postProjectPopup from './AddProjectPopup';
+import AddProjectPopup from './AddProjectPopup';
 import AddTeamPopup from './AddTeamPopup';
 import UserProjectsTable from './UserProjectsTable';
 import UserTeamsTable from './UserTeamsTable';
@@ -25,7 +25,7 @@ class UserTeamProjectContainer extends React.PureComponent {
           userTeamsById={this.props.userTeams}
           onSelectAssignTeam={this.onSelectAssignTeam}
         />
-        <postProjectPopup
+        <AddProjectPopup
           open={this.state.postProjectPopupOpen}
           onClose={this.onAddProjectPopupClose}
           userProjectsById={this.props.userProjects}
