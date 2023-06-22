@@ -442,6 +442,7 @@ const TeamMemberTasks = props => {
                         userRole={userRole}
                         updateTask={onUpdateTask}
                         roles={props.roles}
+                        userPermissions={props.userPermissions}
                       />
                       {timeEntriesList.length > 0 &&
                         timeEntriesList
