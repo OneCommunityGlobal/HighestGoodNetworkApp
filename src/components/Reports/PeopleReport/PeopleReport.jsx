@@ -4,7 +4,7 @@ import './PeopleReport.css';
 import { Button, Dropdown, DropdownButton } from 'react-bootstrap';
 import { connect } from 'react-redux';
 import { FiUser } from 'react-icons/fi';
-import { updateUserProfile, getUserProfile, getUserTask } from '../../../actions/userProfile';
+import { updateUserProfileProperty, getUserProfile, getUserTask } from '../../../actions/userProfile';
 import { getUserProjects } from '../../../actions/userProjects';
 import { getWeeklySummaries, updateWeeklySummaries } from '../../../actions/weeklySummaries';
 import moment from 'moment';
@@ -134,6 +134,22 @@ class PeopleReport extends Component {
       };
     });
   }
+
+  async setRehireable(rehireValue) {
+    this.setState(state => {
+      return {
+        isRehireable: rehireValue,
+      };
+    });
+
+    try {
+      await this.props.updateUserProfileProperty(this.props.userProfile, 'isRehireable',rehireValue);
+      toast.success(`You have changed the rehireable status of this user to ${rehireValue}`);
+    } catch (err) {
+      alert('An error occurred while attempting to save the rehireable status of this user.');
+    }
+  }
+
   setPriority(priorityValue) {
     if (priorityValue != 'Filter Off') {
       this.setState(state => {
@@ -467,24 +483,22 @@ class PeopleReport extends Component {
       </ReportPage.ReportHeader>
     );
 
-    const onChangeBioPosted = async () => {
-      const userId = this.state.userId || this.props.match?.params?.userId;
-      const bioStatus = this.state.isBioPosted;
+    const onChangeBioPosted = async (bio) => {
+      const bioStatus = bio;
       this.setState(state => {
         return {
           isBioPosted: !bioStatus,
         };
       });
+
       try {
-        await this.props.updateUserProfile(userId, {
-          ...this.state.userProfile,
-          bioPosted: !bioStatus,
-        });
+        await  this.props.updateUserProfileProperty(this.props.userProfile, 'bioPosted',bioStatus);
         toast.success('You have changed the bio announcement status of this user.');
       } catch (err) {
         alert('An error occurred while attempting to save the bioPosted change to the profile.');
       }
     };
+
 
     return (
       <ReportPage renderProfile={renderProfileInfo}>
@@ -561,6 +575,7 @@ class PeopleReport extends Component {
 
 export default connect(getPeopleReportData, {
   getUserProfile,
+  updateUserProfileProperty,
   getWeeklySummaries,
   updateWeeklySummaries,
   getUserTask,
