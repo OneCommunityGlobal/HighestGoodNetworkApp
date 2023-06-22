@@ -42,7 +42,7 @@ const RoutesWrapper = props => {
 
   return (
     <React.Fragment>
-      <Route component={Header}/>
+      <Header/>
       <AutoUpdate />
       <ToastContainer />
       <Switch>

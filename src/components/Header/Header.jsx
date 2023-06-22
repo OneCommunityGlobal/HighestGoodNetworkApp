@@ -42,17 +42,24 @@ import { Logout } from '../Logout/Logout';
 import './Header.css';
 import hasPermission from '../../utils/permissions';
 import { fetchTaskEditSuggestionCount } from 'components/TaskEditSuggestions/thunks';
+import { useLocation } from 'react-router-dom';
 
 export const Header = props => {
   const [isOpen, setIsOpen] = useState(false);
   const [logoutPopup, setLogoutPopup] = useState(false);
   const { isAuthenticated, user, firstName, profilePic } = props.auth;
+  const location = useLocation()
 
   const dispatch = useDispatch();
 
   useEffect(() => {
-    console.log(props)
-  }, [])
+    console.log(location)
+    // if (props.location.pathname.includes(props.userProfile._id)) {
+    //   console.log('tem id');
+    // } else {
+    //   console.log('não tem id');
+    // }
+  }, []);
 
   const userPermissions = props.auth.user?.permissions?.frontPermissions;
   useEffect(() => {
@@ -115,29 +122,29 @@ export const Header = props => {
                   <span className="dashboard-text-link">{TIMELOG}</span>
                 </NavLink>
               </NavItem>
-              {hasPermission(user.role, "seeAllReports", roles, userPermissions) ||
-               hasPermission(user.role, "seeWeeklySummaryReports", roles, userPermissions) ? (
-              <UncontrolledDropdown nav inNavbar>
-                <DropdownToggle nav caret>
-                  <span className="dashboard-text-link">{REPORTS}</span>
-                </DropdownToggle>
-                <DropdownMenu>
-                  {hasPermission(user.role, "seeAllReports", roles, userPermissions) ? (
-                    <>
-                      <DropdownItem tag={Link} to="/reports">
-                        {REPORTS}
-                      </DropdownItem>
+              {hasPermission(user.role, 'seeAllReports', roles, userPermissions) ||
+              hasPermission(user.role, 'seeWeeklySummaryReports', roles, userPermissions) ? (
+                <UncontrolledDropdown nav inNavbar>
+                  <DropdownToggle nav caret>
+                    <span className="dashboard-text-link">{REPORTS}</span>
+                  </DropdownToggle>
+                  <DropdownMenu>
+                    {hasPermission(user.role, 'seeAllReports', roles, userPermissions) ? (
+                      <>
+                        <DropdownItem tag={Link} to="/reports">
+                          {REPORTS}
+                        </DropdownItem>
+                        <DropdownItem tag={Link} to="/weeklysummariesreport">
+                          {WEEKLY_SUMMARIES_REPORT}
+                        </DropdownItem>
+                      </>
+                    ) : (
                       <DropdownItem tag={Link} to="/weeklysummariesreport">
                         {WEEKLY_SUMMARIES_REPORT}
                       </DropdownItem>
-                    </>
-                  ) : (
-                    <DropdownItem tag={Link} to="/weeklysummariesreport">
-                      {WEEKLY_SUMMARIES_REPORT}
-                    </DropdownItem>
-                  )}
-                </DropdownMenu>
-              </UncontrolledDropdown>
+                    )}
+                  </DropdownMenu>
+                </UncontrolledDropdown>
               ) : null}
               <NavItem>
                 <NavLink tag={Link} to={`/timelog/${user.userid}`}>
@@ -209,7 +216,7 @@ export const Header = props => {
                   <img
                     src={`${profilePic || '/pfp-default-header.png'}`}
                     alt=""
-                    style={{ maxWidth: '60px', maxHeight: '60px'}}
+                    style={{ maxWidth: '60px', maxHeight: '60px' }}
                     className="dashboardimg"
                   />
                 </NavLink>
