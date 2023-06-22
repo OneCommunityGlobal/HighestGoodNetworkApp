@@ -551,16 +551,6 @@ const Timelog = props => {
                           <Button onClick={openInfo} color="primary">
                             Close
                           </Button>
-                          {hasPermission(
-                            auth.user.role,
-                            'editTimelogInfo',
-                            role.roles,
-                            userPermissions,
-                          ) ? (
-                            <Button onClick={openInfo} color="secondary">
-                              Edit
-                            </Button>
-                          ) : null}
                         </ModalFooter>
                       </Modal>
                       <TimeEntryForm
