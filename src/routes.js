@@ -44,7 +44,7 @@ const RoutesWrapper = props => {
 
   return (
     <React.Fragment>
-      <Header urlMatch={props.match}/>
+      <Header/>
       <AutoUpdate />
       <ToastContainer />
       <Switch>
