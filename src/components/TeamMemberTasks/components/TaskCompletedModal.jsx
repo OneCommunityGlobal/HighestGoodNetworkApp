@@ -1,10 +1,7 @@
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import React from 'react';
-import { useState } from 'react';
 
-/**
- * Modal popup to delete the user profile
- */
+import { useState } from 'react';
 const TaskCompletedModal = React.memo(props => {
   const [isLoadingTask, setIsLoadingTask] = useState(false);
 
