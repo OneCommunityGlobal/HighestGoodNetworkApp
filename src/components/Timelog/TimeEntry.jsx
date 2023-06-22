@@ -20,9 +20,7 @@ import checkNegativeNumber from 'utils/checkNegativeHours';
 const TimeEntry = ({ data, displayYear, userProfile }) => {
   const [modal, setModal] = useState(false);
   const [projectName, setProjectName] = useState('');
-  const [projectCategory, setProjectCategory] = useState('');
   const [taskName, setTaskName] = useState('');
-  const [taskClassification, setTaskClassification] = useState('');
 
   const toggle = () => setModal(modal => !modal);
 
