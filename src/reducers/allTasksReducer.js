@@ -11,11 +11,14 @@ const allTasksInital = {
   copiedTask: null,
 };
 
-const filterAndSort = tasks => {
+const filterAndSort = (tasks, level) => {
   return tasks.sort((a, b) => {
-    const aNum = +a.num.replaceAll('.', '');
-    const bNum = +b.num.replaceAll('.', '');
-    return aNum - bNum;
+    const aArr = a.num.split('.');
+    const bArr = b.num.split('.');
+    for (let i = 0; i < level; i++) {
+      if (+aArr[i] !== +bArr[i]) return +aArr[i] - +bArr[i];
+    }
+    return 0;
   });
 };
 
@@ -34,7 +37,7 @@ const sortByNum = tasks => {
     return { ...task, num };
   });
 
-  return filterAndSort(appendTasks);
+  return filterAndSort(appendTasks, 4);
 };
 
 export const taskReducer = (allTasks = allTasksInital, action) => {
@@ -78,11 +81,11 @@ export const taskReducer = (allTasks = allTasksInital, action) => {
         };
       } else {
         allTasks.fetchedData[action.level] = action.taskItems;
-        console.log('fetchedData', allTasks.fetchedData);
+        const newTaskItems = allTasks.fetchedData.flat();
         return {
           ...allTasks,
           fetchedData: [...allTasks.fetchedData],
-          taskItems: [...sortByNum(allTasks.fetchedData.flat())],
+          taskItems: sortByNum(newTaskItems),
           fetched: true,
           fetching: false,
           error: 'none',
