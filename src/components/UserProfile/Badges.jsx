@@ -17,7 +17,7 @@ import BadgeReport from '../Badge/BadgeReport';
 import AssignBadgePopup from './AssignBadgePopup';
 import { clearSelected } from 'actions/badgeManagement';
 
-const Badges = props => {
+export const Badges = props => {
   const [isOpen, setOpen] = useState(false);
   const [isAssignOpen, setAssignOpen] = useState(false);
   const permissionsUser = props.userProfile?.permissions?.frontPermissions;
