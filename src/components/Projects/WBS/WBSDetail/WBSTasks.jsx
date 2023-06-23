@@ -347,7 +347,7 @@ function WBSTasks(props) {
               <td colSpan={14} />
             </tr>
 
-            {loadAll && filteredTasks.map((task, i) => (
+            {props.state.tasks.fetched && filteredTasks.map((task, i) => (
               <Task
                 key={`${task._id}${i}`}
                 id={task._id}
@@ -377,7 +377,7 @@ function WBSTasks(props) {
                 drop={dropTask}
                 drag={dragTask}
                 deleteWBSTask={deleteWBSTask}
-                hasChildren={task.hasChild}
+                hasChildren={task.hasChildren}
                 siblings={props.state.tasks.taskItems.filter(item => item.mother === task.mother)}
                 taskId={task.taskId}
                 whyInfo={task.whyInfo}
