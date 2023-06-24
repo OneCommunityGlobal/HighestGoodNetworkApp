@@ -493,14 +493,15 @@ class PeopleReport extends Component {
           </div>
           {this.state.bioStatus ? (
             <div>
-              <h5>Bio {this.state.bioStatus === "default" ? "not requested" : this.state.bioStatus}</h5>{' '}
+              <h5>
+                Bio {this.state.bioStatus === 'default' ? 'not requested' : this.state.bioStatus}
+              </h5>{' '}
               {this.state.authRole === 'Administrator' || this.state.authRole === 'Owner' ? (
                 <ToggleSwitch
-                  fontSize={"13px"}
+                  fontSize={'13px'}
                   switchType="bio"
                   state={this.state.bioStatus}
-                  handleUserProfile={
-                    (bio) => onChangeBioPosted(bio)}
+                  handleUserProfile={bio => onChangeBioPosted(bio)}
                 />
               ) : null}
             </div>

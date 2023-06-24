@@ -20,6 +20,7 @@ const UserSearchPanel = props => {
         <span className="input-group-text">{SEARCH}</span>
       </div>
       <input
+        autoFocus
         type="text"
         className="form-control"
         aria-label="Search"
