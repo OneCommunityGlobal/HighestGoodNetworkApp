@@ -13,6 +13,7 @@ const TeamsTab = props => {
     onUserVisibilitySwitch,
     isVisible,
     canEditVisibility,
+    handleSubmit,
   } = props;
   const [addTeamPopupOpen, setaddTeamPopupOpen] = useState(false);
   const [renderedOn, setRenderedOn] = useState(0);
@@ -41,6 +42,7 @@ const TeamsTab = props => {
         teamsData={teamsData}
         userTeamsById={userTeams}
         onSelectAssignTeam={onSelectAssignTeam}
+        handleSubmit={handleSubmit}
       />
       <UserTeamsTable
         userTeamsById={userTeams}
