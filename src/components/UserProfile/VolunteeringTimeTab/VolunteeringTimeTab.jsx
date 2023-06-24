@@ -63,7 +63,7 @@ const EndDate = props => {
       }}
       placeholder="End Date"
       invalid={!props.canEdit}
-      min={moment(props.userProfile.createdDate).format('YYYY-MM-DD')}
+      min={props.userProfile.createdDate ? moment(props.userProfile.createdDate).format('YYYY-MM-DD') : ''}
     />
   );
 };
