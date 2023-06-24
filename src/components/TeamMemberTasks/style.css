@@ -24,6 +24,12 @@
   cursor: pointer;
 }
 
+.team-member-task-remove{
+  margin-left: 10px;
+  color: red;
+  cursor: pointer;
+}
+
 .committed-hours-circle {
   padding: 0.75rem;
 }

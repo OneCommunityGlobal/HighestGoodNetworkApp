@@ -15,14 +15,14 @@ function TagsSearch({ placeholder, members, addResources, removeResource, resour
 
   const handleFilter = event => {
     const searchWord = event.target.value;
-    const newFilter = members.filter(member =>
-      !resourceItems.some(resourceItem =>
-        resourceItem.name === `${member.firstName} ${member.lastName}` 
-      ) && `${member.firstName} ${member.lastName}`.toLowerCase().includes(searchWord.toLowerCase())
-    );
     if (searchWord === '') {
       setFilteredData([]);
     } else {
+      const newFilter = members.filter(member =>
+        !resourceItems.some(resourceItem =>
+          resourceItem.name === `${member.firstName} ${member.lastName}` 
+        ) && `${member.firstName} ${member.lastName}`.toLowerCase().includes(searchWord.toLowerCase())
+      );
       setIsHidden(false);
       setFilteredData(newFilter);
     }

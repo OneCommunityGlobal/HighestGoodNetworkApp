@@ -137,7 +137,7 @@ const TimeEntryForm = props => {
         setTasks(activeTasks || []);
       })
       .catch(err => console.log(err));
-  }, []);
+  }, [props.isTaskUpdated]);
 
   //grab form data before editing
   useEffect(() => {
