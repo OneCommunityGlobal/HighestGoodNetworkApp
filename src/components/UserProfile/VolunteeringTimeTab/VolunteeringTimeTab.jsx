@@ -10,7 +10,6 @@ const MINIMUM_WEEK_HOURS = 0;
 const MAXIMUM_WEEK_HOURS = 168;
 
 const startEndDateValidation = props => {
-  console.log(props.userProfile.createdDate > props.userProfile.endDate);
   return (
     props.userProfile.createdDate > props.userProfile.endDate && props.userProfile.endDate !== ''
   );
