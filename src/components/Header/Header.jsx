@@ -54,12 +54,12 @@ export const Header = props => {
 
   useEffect(() => {
     console.log(location)
-    // if (props.location.pathname.includes(props.userProfile._id)) {
-    //   console.log('tem id');
-    // } else {
-    //   console.log('não tem id');
-    // }
-  }, []);
+    if (location.pathname.includes(props.userProfile._id)) {
+      console.log('has ID');
+    } else {
+      console.log('dont have ID');
+    }
+  }, [location, props.userProfile]);
 
   const userPermissions = props.auth.user?.permissions?.frontPermissions;
   useEffect(() => {
