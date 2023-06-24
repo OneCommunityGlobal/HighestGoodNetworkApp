@@ -13,16 +13,35 @@ function TagsSearch({ placeholder, members, addResources, removeResource, resour
     event.target.closest('.container-fluid').querySelector('input').value = '';
   };
 
+  const sortByStartingWith = (keyword) => {
+
+    const newFilterList = members
+      .filter(member =>
+        !resourceItems.some(resourceItem =>
+          resourceItem.name === `${member.firstName} ${member.lastName}`
+        ) && `${member.firstName} ${member.lastName}`.toLowerCase().includes(keyword.toLowerCase())
+      );
+
+    const finalList = newFilterList.sort((a, b) => {
+      const aStarts = `${a.firstName} ${a.lastName}`.toLowerCase().startsWith(keyword.toLowerCase());
+      const bStarts = `${b.firstName} ${b.lastName}`.toLowerCase().startsWith(keyword.toLowerCase());
+      if (aStarts && bStarts) return `${a.firstName} ${a.lastName}`.localeCompare(`${b.firstName} ${b.lastName}`);
+      if (aStarts && !bStarts) return -1;
+      if (!aStarts && bStarts) return 1; cb
+      return `${a.firstName} ${a.lastName}`.localeCompare(`${b.firstName} ${b.lastName}`);
+    })
+
+    return finalList
+
+  }
+
+
   const handleFilter = event => {
     const searchWord = event.target.value;
     if (searchWord === '') {
       setFilteredData([]);
     } else {
-      const newFilter = members.filter(member =>
-        !resourceItems.some(resourceItem =>
-          resourceItem.name === `${member.firstName} ${member.lastName}` 
-        ) && `${member.firstName} ${member.lastName}`.toLowerCase().includes(searchWord.toLowerCase())
-      );
+      const newFilter = sortByStartingWith(searchWord)
       setIsHidden(false);
       setFilteredData(newFilter);
     }
@@ -41,11 +60,10 @@ function TagsSearch({ placeholder, members, addResources, removeResource, resour
           />
           {filteredData.length !== 0 ? (
             <ul
-              className={`my-element ${
-                isHidden
-                  ? 'd-none'
-                  : 'dropdown-menu d-flex flex-column align-items-start justify-content-start w-auto scrollbar shadow-lg rounded-3 position-absolute top-8 start-0 z-3 bg-light'
-              }`}
+              className={`my-element ${isHidden
+                ? 'd-none'
+                : 'dropdown-menu d-flex flex-column align-items-start justify-content-start w-auto scrollbar shadow-lg rounded-3 position-absolute top-8 start-0 z-3 bg-light'
+                }`}
             >
               {filteredData.slice(0, 10).map((member, index) => (
                 <a key={member._id} className="text-decoration-none w-100">
