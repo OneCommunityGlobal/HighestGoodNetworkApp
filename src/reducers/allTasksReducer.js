@@ -27,10 +27,16 @@ const sortByNum = tasks => {
     /** Based on my observation, previous addTask functionality is not working properly,
      * the created new task does not change its parent task property 'hasChild' from default false to true,
      * so below are the temporary fix to create a 'hasChildren' property to represent the actual 'hasChild' value
-     * this should be fixed by future PR.
+     * this should be fixed by future PR. --- PR#934
      */
     const hasChildren = tasks.some(item => item.mother === task._id);
 
+    /** task.num from response data has different form for different level:
+     *    level 1: x
+     *    level 2: x.x
+     *    level 3: x.x.x
+     *  below is trying to make sure the num property in state is in the same form of x.x.x.x,
+     * */
     const numOfNums = task.num.split('.').length;
     const num = task.num.concat('.0'.repeat(4 - numOfNums));
 

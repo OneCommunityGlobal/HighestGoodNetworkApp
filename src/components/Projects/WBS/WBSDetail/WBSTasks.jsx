@@ -62,6 +62,7 @@ function WBSTasks(props) {
     setTimeout(() => setIsShowImport(true), 1000);
   };
 
+  // rebuild tooltip for any changes from child component
   useEffect(() => {
     ReactTooltip.rebuild();
   }, [props.state.tasks.taskItems]);
