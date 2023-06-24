@@ -2,6 +2,10 @@
   display: none;
 }
 
+.end-date-field {
+  border-color: red;
+}
+
 @media (max-width: 1024px) {
   .volunteering-time-tab-desktop {
     display: none;
@@ -14,7 +18,7 @@
   .cols {
     margin-bottom: 10px;
   }
-  
+
   .rows {
     margin-bottom: 10px;
   }

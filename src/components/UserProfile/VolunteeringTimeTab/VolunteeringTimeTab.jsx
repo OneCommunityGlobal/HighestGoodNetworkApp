@@ -9,6 +9,13 @@ import './timeTab.css';
 const MINIMUM_WEEK_HOURS = 0;
 const MAXIMUM_WEEK_HOURS = 168;
 
+const startEndDateValidation = props => {
+  console.log(props.userProfile.createdDate > props.userProfile.endDate);
+  return (
+    props.userProfile.createdDate > props.userProfile.endDate && props.userProfile.endDate !== ''
+  );
+};
+
 const StartDate = props => {
   if (!props.canEdit) {
     return <p>{moment(props.userProfile.createdDate).format('YYYY-MM-DD')}</p>;
@@ -18,9 +25,11 @@ const StartDate = props => {
       type="date"
       name="StartDate"
       id="startDate"
+      className={startEndDateValidation(props) ? 'border-error-validation' : null}
       value={moment(props.userProfile.createdDate).format('YYYY-MM-DD')}
       onChange={e => {
         props.setUserProfile({ ...props.userProfile, createdDate: e.target.value });
+        props.onStartDateComponent(e.target.value);
       }}
       placeholder="Start Date"
       invalid={!props.canEdit}
@@ -39,8 +48,10 @@ const EndDate = props => {
       </p>
     );
   }
+
   return (
     <Input
+      className={startEndDateValidation(props) ? 'border-error-validation' : null}
       type="date"
       name="EndDate"
       id="endDate"
@@ -49,6 +60,7 @@ const EndDate = props => {
       }
       onChange={e => {
         props.setUserProfile({ ...props.userProfile, endDate: e.target.value });
+        props.onEndDateComponent(e.target.value);
       }}
       placeholder="End Date"
       invalid={!props.canEdit}
@@ -187,6 +199,14 @@ const ViewTab = props => {
   const [totalTangibleHours, setTotalTangibleHours] = useState(0);
   const { hoursByCategory, totalIntangibleHrs } = userProfile;
 
+  const handleStartDates = async startDate => {
+    props.onStartDate(startDate);
+  };
+
+  const handleEndDates = async endDate => {
+    props.onEndDate(endDate);
+  };
+
   useEffect(() => {
     sumOfCategoryHours();
   }, [hoursByCategory]);
@@ -278,6 +298,7 @@ const ViewTab = props => {
             userProfile={userProfile}
             setUserProfile={setUserProfile}
             canEdit={canEdit}
+            onStartDateComponent={handleStartDates}
           />
         </Col>
       </Row>
@@ -292,6 +313,7 @@ const ViewTab = props => {
             userProfile={userProfile}
             setUserProfile={setUserProfile}
             canEdit={canEdit}
+            onEndDateComponent={handleEndDates}
           />
         </Col>
       </Row>
