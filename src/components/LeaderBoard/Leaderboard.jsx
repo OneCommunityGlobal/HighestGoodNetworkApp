@@ -312,7 +312,9 @@ const LeaderBoard = ({
                   <span 
                   title="Total time"
                   style={{
-                    color: showBlueTime(loggedInUser.role, item.totalintangibletime_hrs)
+                    color: item.totalintangibletime_hrs > 0 
+                    ? '#0000EE'
+                    : 'black' 
                   }}>{item.totaltime}</span>
                 </td>
               </tr>

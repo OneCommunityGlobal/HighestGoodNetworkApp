@@ -29,11 +29,3 @@ export const showStar = (hoursLogged, weeklyCommittedHours) => {
     return (weeklyCommittedHours !== 0 && 
         hoursLogged >= weeklyCommittedHours * DARKGREEN_TIER)
 }
-
-export const showBlueTime = (authRole, intangibleHours) => {
-  return (
-    intangibleHours > 0 && 
-    (authRole === 'Owner' || authRole === 'Administrator')) 
-    ? '#0000EE' 
-    : 'black'
-}
