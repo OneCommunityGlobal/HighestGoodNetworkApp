@@ -36,12 +36,18 @@ import { toast } from 'react-toastify';
 import { WeeklySummaryContentTooltip, MediaURLTooltip } from './WeeklySummaryTooltips';
 import classnames from 'classnames';
 import { getUserProfile } from 'actions/userProfile';
-import CurrentPromptModal from './CurrentPromptModal.jsx'
+import CurrentPromptModal from './CurrentPromptModal.jsx';
 
 // Need this export here in order for automated testing to work.
 export class WeeklySummary extends Component {
   state = {
     summariesCountShowing: 0,
+    originSummaries: {
+      summary: '',
+      summaryLastWeek: '',
+      summaryBeforeLast: '',
+      summaryThreeWeeksAgo: '',
+    },
     formElements: {
       summary: '',
       summaryLastWeek: '',
@@ -70,6 +76,10 @@ export class WeeklySummary extends Component {
       .endOf('week')
       .subtract(3, 'week')
       .toISOString(),
+    uploadDate: this.dueDate,
+    uploadDateLastWeek: this.dueDateLastWeek,
+    uploadDateBeforeLast: this.dueDateBeforeLast,
+    uploadDateThreeWeeksAgo: this.dueDateThreeWeeksAgo,
     submittedCountInFourWeeks: 0,
     activeTab: '1',
     errors: {},
@@ -127,7 +137,28 @@ export class WeeklySummary extends Component {
       .startOf('isoWeek')
       .add(5, 'days');
 
+    const uploadDateXWeeksAgo = x => {
+      const summaryList = [summary, summaryLastWeek, summaryBeforeLast, summaryThreeWeeksAgo];
+      const dueDateList = [dueDate, dueDateLastWeek, dueDateBeforeLast, dueDateThreeWeeksAgo];
+      return summaryList[x] !== '' &&
+        weeklySummaries &&
+        weeklySummaries[x] &&
+        weeklySummaries[x].uploadDate
+        ? weeklySummaries[x].uploadDate
+        : dueDateList[x];
+    };
+    const uploadDate = uploadDateXWeeksAgo(0);
+    const uploadDateLastWeek = uploadDateXWeeksAgo(1);
+    const uploadDateBeforeLast = uploadDateXWeeksAgo(2);
+    const uploadDateThreeWeeksAgo = uploadDateXWeeksAgo(3);
+
     this.setState({
+      originSummaries: {
+        summary,
+        summaryLastWeek,
+        summaryBeforeLast,
+        summaryThreeWeeksAgo,
+      },
       formElements: {
         summary,
         summaryLastWeek,
@@ -137,6 +168,10 @@ export class WeeklySummary extends Component {
         weeklySummariesCount: weeklySummariesCount || 0,
         mediaConfirm: false,
       },
+      uploadDate,
+      uploadDateLastWeek,
+      uploadDateBeforeLast,
+      uploadDateThreeWeeksAgo,
       dueDate,
       dueDateLastWeek,
       dueDateBeforeLast,
@@ -344,18 +379,67 @@ export class WeeklySummary extends Component {
       this.setState({ summariesCountShowing: this.state.formElements.weeklySummariesCount + 1 });
     }
 
+    let newUploadDate = this.state.uploadDate;
+    let newUploadDateLastWeek = this.state.uploadDateLastWeek;
+    let newUploadDateBeforeLast = this.state.uploadDateBeforeLast;
+    let newUploadDateThreeWeeksAgo = this.state.uploadDateThreeWeeksAgo;
+    const originSummaries = { ...this.state.originSummaries };
+    if (this.state.formElements.summary !== this.state.originSummaries.summary) {
+      newUploadDate = moment()
+        .tz('America/Los_Angeles')
+        .toISOString();
+      originSummaries.summary = this.state.formElements.summary;
+      this.setState({ originSummaries, uploadDate: newUploadDate });
+    }
+    if (this.state.formElements.summaryLastWeek !== this.state.originSummaries.summaryLastWeek) {
+      newUploadDateLastWeek = moment()
+        .tz('America/Los_Angeles')
+        .toISOString();
+      originSummaries.summaryLastWeek = this.state.formElements.summaryLastWeek;
+      this.setState({ originSummaries, uploadDateLastWeek: newUploadDateLastWeek });
+    }
+    if (
+      this.state.formElements.summaryBeforeLast !== this.state.originSummaries.summaryBeforeLast
+    ) {
+      newUploadDateBeforeLast = moment()
+        .tz('America/Los_Angeles')
+        .toISOString();
+      originSummaries.summaryBeforeLast = this.state.formElements.summaryBeforeLast;
+      this.setState({ originSummaries, uploadDateBeforeLast: newUploadDateBeforeLast });
+    }
+    if (
+      this.state.formElements.summaryThreeWeeksAgo !==
+      this.state.originSummaries.summaryThreeWeeksAgo
+    ) {
+      newUploadDateThreeWeeksAgo = moment()
+        .tz('America/Los_Angeles')
+        .toISOString();
+      originSummaries.summaryThreeWeeksAgo = this.state.formElements.summaryThreeWeeksAgo;
+      this.setState({ originSummaries, uploadDateThreeWeeksAgo: newUploadDateThreeWeeksAgo });
+    }
+
     const modifiedWeeklySummaries = {
       mediaUrl: this.state.formElements.mediaUrl.trim(),
       weeklySummaries: [
-        { summary: this.state.formElements.summary, dueDate: this.state.dueDate },
-        { summary: this.state.formElements.summaryLastWeek, dueDate: this.state.dueDateLastWeek },
+        {
+          summary: this.state.formElements.summary,
+          dueDate: this.state.dueDate,
+          uploadDate: newUploadDate,
+        },
+        {
+          summary: this.state.formElements.summaryLastWeek,
+          dueDate: this.state.dueDateLastWeek,
+          uploadDate: newUploadDateLastWeek,
+        },
         {
           summary: this.state.formElements.summaryBeforeLast,
           dueDate: this.state.dueDateBeforeLast,
+          uploadDate: newUploadDateBeforeLast,
         },
         {
           summary: this.state.formElements.summaryThreeWeeksAgo,
           dueDate: this.state.dueDateThreeWeeksAgo,
+          uploadDate: newUploadDateThreeWeeksAgo,
         },
       ],
       weeklySummariesCount: this.state.formElements.weeklySummariesCount + diffInSubmittedCount,
@@ -486,7 +570,7 @@ export class WeeklySummary extends Component {
                             Enter your weekly summary below. (required){' '}
                             <WeeklySummaryContentTooltip tabId={tId} />
                           </div>
-                          <CurrentPromptModal/>
+                          <CurrentPromptModal />
                         </Label>
                         <Editor
                           init={{
