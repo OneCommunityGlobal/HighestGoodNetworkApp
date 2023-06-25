@@ -313,8 +313,12 @@ const LeaderBoard = ({
                   title="Total time"
                   style={{
                     color: item.totalintangibletime_hrs > 0 
-                    ? '#0000EE'
-                    : 'black' 
+                    ? '#007bff'
+                    : 'black',
+                    fontWeight: item.totalintangibletime_hrs > 0
+                    ? 'bold'
+                    : null
+
                   }}>{item.totaltime}</span>
                 </td>
               </tr>
