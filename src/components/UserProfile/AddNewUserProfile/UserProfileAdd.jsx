@@ -300,17 +300,17 @@ class AddUserProfile extends Component {
                 </Row>
                 <Row>
                   <Col md={{ size: 3, offset: 1 }} className="text-md-right my-2">
-                    <Label>Weekly Summaries Link</Label>
+                    <Label>Google Doc</Label>
                   </Col>
                   <Col md="6">
                     <FormGroup>
                       <Input
                         type="text"
-                        name="Weekly Summaries Link"
+                        name="googleDoc"
                         id="googleDoc"
                         value={this.state.userProfile.googleDoc}
                         onChange={this.handleUserProfile}
-                        placeholder="DropBox Folder's Link"
+                        placeholder="Admin Document"
                       />
                     </FormGroup>
                   </Col>
@@ -555,7 +555,7 @@ class AddUserProfile extends Component {
     this.setState({ formSubmitted: true });
 
     if (googleDoc) {
-      userData.adminLinks.push({ Name: 'Weekly Summaries Link', Link: googleDoc });
+      userData.adminLinks.push({ Name: 'Google Doc', Link: googleDoc });
     }
     if (this.fieldsAreValid()) {
       this.setState({ showphone: false });
