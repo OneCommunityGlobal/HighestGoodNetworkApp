@@ -47,25 +47,65 @@ import { useLocation } from 'react-router-dom';
 export const Header = props => {
   const [isOpen, setIsOpen] = useState(false);
   const [logoutPopup, setLogoutPopup] = useState(false);
-  const { isAuthenticated, user, firstName, profilePic } = props.auth;
-  const location = useLocation()
+
+  //initial permissions
+  //---------------------------------------------------------------------------
+
+  const [userState, setUserState] = useState({
+    isAuthenticated: props.auth.isAuthenticated,
+    user: props.auth.user,
+    firstName: props.auth.firstName,
+    profilePic: props.auth.profilePic,
+    userPermissions: props.auth.user.permissions.frontPermissions,
+    isViewingAnotherUser: false,
+  });
+
+  let {
+    isAuthenticated,
+    user,
+    firstName,
+    profilePic,
+    userPermissions,
+    isViewingAnotherUser,
+  } = userState;
+  //---------------------------------------------------------------------------
+
+  //location react router dom hook
+  //---------------------------------------------------------------------------
+  const location = useLocation();
+  //---------------------------------------------------------------------------
 
   const dispatch = useDispatch();
 
   useEffect(() => {
-    console.log(location)
-    if (location.pathname.includes(props.userProfile._id)) {
-      console.log('has ID');
-    } else {
-      console.log('dont have ID');
+    if (
+      location.pathname.includes(props.userProfile._id) &&
+      location.pathname.includes('dashboard')
+    ) {
+      const tempUser = {
+        userid: props.userProfile._id,
+        role: props.userProfile.role,
+        permissions: props.userProfile.permissions,
+        expiryTimestamp: '',
+        iat: '',
+      };
+      setUserState({
+        isAuthenticated: true,
+        user: tempUser,
+        firstName: props.userProfile.firstName,
+        profilePic: '',
+        userPermissions: props.userProfile.permissions.frontPermissions,
+        isViewingAnotherUser: true,
+      });
+      props.getHeaderData(user.userid);
+      props.getTimerData(user.userid);
     }
   }, [location, props.userProfile]);
 
-  const userPermissions = props.auth.user?.permissions?.frontPermissions;
   useEffect(() => {
     if (props.auth.isAuthenticated) {
-      props.getHeaderData(props.auth.user.userid);
-      props.getTimerData(props.auth.user.userid);
+      props.getHeaderData(user.userid);
+      props.getTimerData(user.userid);
     }
   }, []);
 
@@ -113,9 +153,15 @@ export const Header = props => {
                 </NavItem>
               )}
               <NavItem>
-                <NavLink tag={Link} to="/dashboard">
-                  <span className="dashboard-text-link">{DASHBOARD}</span>
-                </NavLink>
+                {isViewingAnotherUser ? (
+                  <NavLink tag={Link} to={`/dashboard/${user.userid}`}>
+                    <span className="dashboard-text-link">{DASHBOARD}</span>
+                  </NavLink>
+                ) : (
+                  <NavLink tag={Link} to="/dashboard">
+                    <span className="dashboard-text-link">{DASHBOARD}</span>
+                  </NavLink>
+                )}
               </NavItem>
               <NavItem>
                 <NavLink tag={Link} to={`/timelog/${user.userid}`}>
