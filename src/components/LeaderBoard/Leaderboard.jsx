@@ -318,7 +318,6 @@ const LeaderBoard = ({
                     fontWeight: item.totalintangibletime_hrs > 0
                     ? 'bold'
                     : null
-
                   }}>{item.totaltime}</span>
                 </td>
               </tr>
