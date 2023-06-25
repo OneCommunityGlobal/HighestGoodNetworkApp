@@ -541,6 +541,12 @@ function UserProfile(props) {
       ? hasPermission(requestorRole, 'addDeleteEditOwners', roles, userPermissions)
       : hasPermission(requestorRole, 'editUserProfile', roles, userPermissions);
   const canEdit = canEditProfile || isUserSelf;
+  const canChangeUserStatus = hasPermission(
+    requestorRole,
+    'changeUserStatus',
+    roles,
+    userPermissions,
+  );
 
   const customStyles = {
     control: (base, state) => ({
@@ -631,17 +637,14 @@ function UserProfile(props) {
                 className="fa fa-info-circle"
                 onClick={toggleInfoModal}
               />{' '}
-              {canEdit && (
-                <>
-                  <ActiveCell
-                    isActive={userProfile.isActive}
-                    user={userProfile}
-                    onClick={() => {
-                      setActiveInactivePopupOpen(true);
-                    }}
-                  />
-                </>
-              )}
+              <ActiveCell
+                isActive={userProfile.isActive}
+                user={userProfile}
+                canChange={canChangeUserStatus}
+                onClick={() => {
+                  setActiveInactivePopupOpen(true);
+                }}
+              />
               {canEdit && (
                 <i
                   data-toggle="tooltip"
@@ -836,7 +839,7 @@ function UserProfile(props) {
                   userTeams={teams || []}
                   teamsData={props?.allTeams?.allTeamsData || []}
                   onAssignTeam={onAssignTeam}
-                  onDeleteteam={onDeleteTeam}
+                  onDeleteTeam={onDeleteTeam}
                   edit={hasPermission(requestorRole, 'editUserProfile', roles, userPermissions)}
                   role={requestorRole}
                   roles={roles}
@@ -1036,7 +1039,7 @@ function UserProfile(props) {
                     userTeams={userProfile?.teams || []}
                     teamsData={props?.allTeams?.allTeamsData || []}
                     onAssignTeam={onAssignTeam}
-                    onDeleteteam={onDeleteTeam}
+                    onDeleteTeam={onDeleteTeam}
                     edit={hasPermission(requestorRole, 'editUserProfile', roles, userPermissions)}
                     role={requestorRole}
                     roles={roles}
@@ -1228,7 +1231,8 @@ function UserProfile(props) {
                   </Link>
                 )}
               {canEdit &&
-                (activeTab === '1' || activeTab === '3' ||
+                (activeTab === '1' ||
+                  activeTab === '3' ||
                   hasPermission(requestorRole, 'editUserProfile', roles, userPermissions)) && (
                   <>
                     <SaveButton

@@ -12,8 +12,12 @@ import TagsSearch from '../components/TagsSearch';
 
 function AddTaskModal(props) {
   const tasks = props.tasks.taskItems;
-  const [members] = useState(props.projectMembers || props.projectMembers.members);
-  const foundedMembers = [];
+
+  // members
+  const [members, setMembers] = useState([]);
+  useEffect(() => {
+    setMembers(props.projectMembers.members);
+  }, [props.projectMembers.members]);
 
   // modal
   const [modal, setModal] = useState(false);
@@ -108,44 +112,6 @@ function AddTaskModal(props) {
     }
   };
 
-  const [foundMembersHTML, setfoundMembersHTML] = useState('');
-  const findMembers = () => {
-    const memberList = members.members ? props.projectMembers.members : members;
-    console.log('findMembers', memberList);
-    for (let i = 0; i < memberList.length; i++) {
-      console.log('project members', memberList[i]);
-
-      if (
-        `${memberList[i].firstName} ${memberList[i].lastName}`
-          .toLowerCase()
-          .includes(memberName.toLowerCase())
-      ) {
-        foundedMembers.push(memberList[i]);
-      }
-    }
-
-    const html = foundedMembers.map((elm, i) => (
-      <div key={`found-member-${i}`}>
-        <a href={`/userprofile/${elm._id}`} target="_blank" rel="noreferrer">
-          <input
-            type="text"
-            className="task-resouces-input"
-            value={`${elm.firstName} ${elm.lastName}`}
-            disabled
-          />
-        </a>
-        <button
-          data-tip="Add this member"
-          className="task-resouces-btn"
-          type="button"
-          onClick={() => addResources(elm._id, elm.firstName, elm.lastName, elm.profilePic)}
-        >
-          <i className="fa fa-plus" aria-hidden="true" />
-        </button>
-      </div>
-    ));
-    setfoundMembersHTML(html);
-  };
 
   const removeResource = userID => {
     const removeIndex = resourceItems.map(item => item.userID).indexOf(userID);
@@ -348,8 +314,7 @@ function AddTaskModal(props) {
 
   useEffect(() => {
     if (props.level >= 1) {
-      const categoryMother = props.tasks.taskItems.find(({ _id }) => _id === props.taskId)
-        .category;
+      const categoryMother = props.tasks.taskItems.find(({ _id }) => _id === props.taskId).category;
       if (categoryMother) {
         setCategory(categoryMother);
       }
@@ -387,7 +352,7 @@ function AddTaskModal(props) {
         <ModalBody>
           <ReactTooltip />
 
-          <table className="table table-bordered">
+          <table className="table table-bordered responsive">
             <tbody>
               <tr>
                 <td scope="col" data-tip="WBS ID">
@@ -423,7 +388,7 @@ function AddTaskModal(props) {
                   <div>
                     <TagsSearch
                       placeholder="Add resources"
-                      members={members.members}
+                      members={members}
                       addResources={addResources}
                       removeResource={removeResource}
                       resourceItems={resourceItems}
@@ -502,7 +467,7 @@ function AddTaskModal(props) {
                   Hours
                 </td>
                 <td scope="col" data-tip="Hours - Best-case" className="w-100">
-                  <div className="d-inline py-2">
+                  <div className="py-2 flex-responsive">
                     <label htmlFor="bestCase" className="text-nowrap mr-2 w-25 mr-4">
                       Best-case
                     </label>
@@ -517,13 +482,12 @@ function AddTaskModal(props) {
                       className="w-25"
                     />
                     <div className="warning">
-                      {
-                        hoursWarning ? 
-                        'Hours - Best-case < Hours - Most-case < Hours - Most-case' : ''
-                      }
+                      {hoursWarning
+                        ? 'Hours - Best-case < Hours - Most-case < Hours - Most-case'
+                        : ''}
                     </div>
                   </div>
-                  <div className="d-inline py-2">
+                  <div className="py-2 flex-responsive">
                     <label htmlFor="worstCase" className="text-nowrap mr-2  w-25 mr-4">
                       Worst-case
                     </label>
@@ -542,7 +506,7 @@ function AddTaskModal(props) {
                         : ''}
                     </div>
                   </div>
-                  <div className="d-inline py-2">
+                  <div className="py-2 flex-responsive">
                     <label htmlFor="mostCase" className="text-nowrap mr-2 w-25 mr-4">
                       Most-case
                     </label>
@@ -561,7 +525,7 @@ function AddTaskModal(props) {
                         : ''}
                     </div>
                   </div>
-                  <div className="d-inline py-2">
+                  <div className="py-2 flex-responsive">
                     <label htmlFor="Estimated" className="text-nowrap mr-2  w-25 mr-4">
                       Estimated
                     </label>

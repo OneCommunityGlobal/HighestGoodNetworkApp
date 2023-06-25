@@ -7,6 +7,8 @@ import {
   fetchTeamMembersTaskSuccess,
   fetchTeamMembersTaskBegin,
   fetchTeamMembersTaskError,
+  deleteTaskNotificationSuccess,
+  deleteTaskNotificationBegin
 } from 'components/TeamMemberTasks/actions';
 import * as types from '../constants/task';
 import { ENDPOINTS } from '../utils/URL';
@@ -22,7 +24,7 @@ const selectUpdateTaskData = (state, taskId) =>
 // It's the same as doing function(currentUserId){async function(dispatch, getState)}
 //Because of the closure, the inside function have access the currentUserId, that it uses and provides to the userId
 //I've also added authentiatedUserId param so, if you are seeing another user's dashboard, it can fetch the authenticated user tasks to make a filter when seeing an owner or another user
-export const fetchTeamMembersTask = (currentUserId, authenticatedUserId) => async (
+export const fetchTeamMembersTask = (currentUserId, authenticatedUserId, shouldReload = true) => async (
   dispatch,
   getState,
 ) => {
@@ -33,7 +35,9 @@ export const fetchTeamMembersTask = (currentUserId, authenticatedUserId) => asyn
     const userId = currentUserId ? currentUserId : selectFetchTeamMembersTaskData(state);
     const authUserId = authenticatedUserId ? authenticatedUserId : null
 
-    dispatch(fetchTeamMembersTaskBegin());
+    if(shouldReload){
+      dispatch(fetchTeamMembersTaskBegin());
+    }
 
     const response = await axios.get(ENDPOINTS.TEAM_MEMBER_TASKS(userId));
 
@@ -43,16 +47,15 @@ export const fetchTeamMembersTask = (currentUserId, authenticatedUserId) => asyn
       const originalTasks = await axios.get(ENDPOINTS.TEAM_MEMBER_TASKS(authUserId));
       const authUserTasks = originalTasks.data
       const userTasks = response.data
-      console.log(authUserTasks, userTasks)
       const correctedTasks = userTasks.filter(task => {
         return authUserTasks.some(task2 => task2.personId === task.personId)
       });
-      console.log(correctedTasks)
       dispatch(fetchTeamMembersTaskSuccess(correctedTasks));
     } else {
       dispatch(fetchTeamMembersTaskSuccess(response.data));
     }
   } catch (error) {
+
     dispatch(fetchTeamMembersTaskError());
   }
 };
@@ -64,8 +67,11 @@ export const deleteTaskNotification = (userId, taskId, taskNotificationId) => as
 ) => {
   try {
     //dispatch(deleteTaskNotificationBegin());
-    const res = await axios.delete(ENDPOINTS.DELETE_TASK_NOTIFICATION(taskNotificationId));
+    const res = await axios.delete(ENDPOINTS.DELETE_TASK_NOTIFICATION_BY_USER_ID(taskId, userId));
+    
+    //const res = await axios.delete(ENDPOINTS.DELETE_TASK_NOTIFICATION(taskNotificationId));
     dispatch(deleteTaskNotificationSuccess({ userId, taskId, taskNotificationId }));
+    //window.location.reload(false);
   } catch (error) {
     //dispatch(deleteTaskNotificationError());
   }

@@ -62,6 +62,11 @@ function WBSTasks(props) {
     setTimeout(() => setIsShowImport(true), 1000);
   };
 
+  // rebuild tooltip for any changes from child component
+  useEffect(() => {
+    ReactTooltip.rebuild();
+  }, [props.state.tasks.taskItems]);
+
   useEffect(() => {
     AutoOpenAll(openAll);
   }, [openAll]);
@@ -184,23 +189,11 @@ function WBSTasks(props) {
       });
     }
   };
-
-  const LoadTasks = props.state.tasks.taskItems.slice(0).sort((a, b) => {
-    var former = a.num.split('.');
-    var latter = b.num.split('.');
-    for (var i = 0; i < 4; i++) {
-      var _former = +former[i] || 0;
-      var _latter = +latter[i] || 0;
-      if (_former === _latter) continue;
-      else return _former > _latter ? 1 : -1;
-    }
-    return 0;
-  });
-  const filteredTasks = filterTasks(LoadTasks, filterState);
+  const filteredTasks = filterTasks(props.state.tasks.taskItems, filterState);
 
   return (
     <>
-      <ReactTooltip />
+      <ReactTooltip delayShow={250}/>
       <div className="container-tasks">
         <nav aria-label="breadcrumb">
           <ol className="breadcrumb">
@@ -237,7 +230,7 @@ function WBSTasks(props) {
           Refresh{' '}
         </Button>
 
-        {loadAll === false ? (
+        {!loadAll ? (
 
           <Button color="warning" size="sm" className="ml-3">
 
@@ -385,7 +378,7 @@ function WBSTasks(props) {
                 drop={dropTask}
                 drag={dragTask}
                 deleteWBSTask={deleteWBSTask}
-                hasChildren={task.hasChild}
+                hasChildren={task.hasChildren}
                 siblings={props.state.tasks.taskItems.filter(item => item.mother === task.mother)}
                 taskId={task.taskId}
                 whyInfo={task.whyInfo}
