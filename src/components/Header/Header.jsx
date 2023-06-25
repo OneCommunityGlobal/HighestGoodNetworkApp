@@ -50,7 +50,7 @@ export const Header = props => {
   const location = useLocation();
   const dispatch = useDispatch();
 
-  const { isAuthenticated, user, firstName, profilePic } = location.pathname.includes(
+  const { isAuthenticated, user, firstName, profilePic, isViewingAnotherUser } = location.pathname.includes(
     props.userProfile._id,
   )
     ? {
@@ -64,8 +64,9 @@ export const Header = props => {
         },
         firstName: props.userProfile.firstName,
         profilePic: '',
+        isViewingAnotherUser: true
       }
-    : props.auth;
+    : {...props.auth, isViewingAnotherUser: false};
 
   useEffect(() => {
     console.log(location);
@@ -133,9 +134,11 @@ export const Header = props => {
                 </NavItem>
               )}
               <NavItem>
-                <NavLink tag={Link} to="/dashboard">
+                {isViewingAnotherUser ? (<NavLink tag={Link} to={`/dashboard/${user.userid}`}>
                   <span className="dashboard-text-link">{DASHBOARD}</span>
-                </NavLink>
+                </NavLink>) : (<NavLink tag={Link} to="/dashboard">
+                  <span className="dashboard-text-link">{DASHBOARD}</span>
+                </NavLink>)}
               </NavItem>
               <NavItem>
                 <NavLink tag={Link} to={`/timelog/${user.userid}`}>
