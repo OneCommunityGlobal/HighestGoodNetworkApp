@@ -33,7 +33,7 @@ export const showStar = (hoursLogged, weeklyCommittedHours) => {
 export const showBlueTime = (authRole, intangibleHours) => {
   return (
     intangibleHours > 0 && 
-    authRole === 'Owner' || authRole === 'Administrator') 
-    ? 'blue'
+    (authRole === 'Owner' || authRole === 'Administrator')) 
+    ? '#0000EE' 
     : 'black'
 }

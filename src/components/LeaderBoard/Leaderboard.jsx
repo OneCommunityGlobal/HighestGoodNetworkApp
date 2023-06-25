@@ -298,11 +298,7 @@ const LeaderBoard = ({
                   </Link>
                 </th>
                 <td className="align-middle" id={`id${item.personId}`}>
-                  <span 
-                  title="Tangible time"
-                  style={{
-                    color: showBlueTime(loggedInUser.role, item.totalintangibletime_hrs)
-                  }}>{item.tangibletime}</span>
+                  <span title="Tangible time">{item.tangibletime}</span>
                 </td>
                 <td className="align-middle">
                   <Link
