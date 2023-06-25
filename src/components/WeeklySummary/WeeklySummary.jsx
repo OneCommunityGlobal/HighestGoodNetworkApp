@@ -571,6 +571,8 @@ export class WeeklySummary extends Component {
                       Whoa Tiger! Are you sure you want to do that?
                       This link was added by an Admin when you were set up as a member 
                       of the team. Only change this if you are SURE your new link is more 
+                      than the one already here.
+
                     </ModalBody>
                     <ModalFooter>
                       <Button checked={this.state.mediaChangeConfirm} onClick={this.handleMediaChange}>
