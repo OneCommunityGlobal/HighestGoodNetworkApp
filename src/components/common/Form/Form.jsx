@@ -292,6 +292,7 @@ class Form extends Component {
     let errors = {};
     const options = { abortEarly: false };
     const { error } = Joi.validate(this.state.data, this.schema, options);
+
     if (!error) return null;
     error.details.forEach(element => {
       errors[element.path[0]] = element.message;
@@ -377,7 +378,6 @@ class Form extends Component {
 
   renderFileUpload({ name, ...rest }) {
     let { errors } = { ...this.state };
-
     return (
       <FileUpload name={name} onUpload={this.handleFileUpload} {...rest} error={errors[name]} />
     );

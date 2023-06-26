@@ -56,3 +56,14 @@ export const updateUserProfile = (userId, userProfile) => {
     return res.status;
   };
 };
+
+export const updateUserProfileProperty = (userProfile, key, value) => {
+  const url = ENDPOINTS.USER_PROFILE_PROPERTY(userProfile._id);
+  return async dispatch => {
+    const res = await axios.patch(url, {key: key, value: value});
+    if (res.status === 200) {
+      await dispatch(getUserProfileActionCreator(userProfile));
+    }
+    return res.status;
+  };
+};

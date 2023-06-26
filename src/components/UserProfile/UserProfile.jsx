@@ -23,7 +23,7 @@ import classnames from 'classnames';
 import moment from 'moment';
 import Alert from 'reactstrap/lib/Alert';
 import axios from 'axios';
-import hasPermission from '../../utils/permissions';
+import hasPermission, { deactivateOwnerPermission } from '../../utils/permissions';
 import ActiveCell from '../UserManagement/ActiveCell';
 import { ENDPOINTS } from '../../utils/URL';
 import Loading from '../common/Loading';
@@ -542,6 +542,12 @@ function UserProfile(props) {
       ? hasPermission(requestorRole, 'addDeleteEditOwners', roles, userPermissions)
       : hasPermission(requestorRole, 'editUserProfile', roles, userPermissions);
   const canEdit = canEditProfile || isUserSelf;
+  const canChangeUserStatus = hasPermission(
+    requestorRole,
+    'changeUserStatus',
+    roles,
+    userPermissions,
+  );
 
   const customStyles = {
     control: (base, state) => ({
@@ -632,17 +638,19 @@ function UserProfile(props) {
                 className="fa fa-info-circle"
                 onClick={toggleInfoModal}
               />{' '}
-              {canEdit && (
-                <>
-                  <ActiveCell
-                    isActive={userProfile.isActive}
-                    user={userProfile}
-                    onClick={() => {
-                      setActiveInactivePopupOpen(true);
-                    }}
-                  />
-                </>
-              )}
+              <ActiveCell
+                isActive={userProfile.isActive}
+                user={userProfile}
+                canChange={canChangeUserStatus}
+                onClick={() => {
+                  if (deactivateOwnerPermission(userProfile, requestorRole)) {
+                    //Owner user cannot be deactivated by another user that is not an Owner.
+                    alert('You are not authorized to deactivate an owner.');
+                    return;
+                  }
+                  setActiveInactivePopupOpen(true);
+                }}
+              />
               {canEdit && (
                 <i
                   data-toggle="tooltip"

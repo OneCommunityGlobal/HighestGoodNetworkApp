@@ -1632,6 +1632,8 @@ export default {
             "toggleSubmitForm",
             "seePermissionsManagement",
             "changeBioAnnouncement",
+            'changeUserStatus',
+            'submitWeeklySummaryForOthers',
           ],
           permissionsBackEnd: [
             "seeBadges",
@@ -1817,6 +1819,8 @@ export default {
             "toggleSubmitForm",
             "seePermissionsManagement",
             "changeBioAnnouncement",
+            'changeUserStatus',
+            'submitWeeklySummaryForOthers',
           ],
           permissionsBackEnd: [
             "seeBadges",

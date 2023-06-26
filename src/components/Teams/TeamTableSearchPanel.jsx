@@ -26,6 +26,7 @@ const TeamTablesearchPanel = props => {
       </div>
 
       <input
+        autoFocus
         type="text"
         className="form-control"
         aria-label="Search"
