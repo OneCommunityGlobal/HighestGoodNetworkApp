@@ -19,17 +19,15 @@ describe('Badges Component', () => {
     userPermissions: [],
   };
   describe('Card Footer Text', () => {
-    it('should say "You\'ve earned..." when user is viewing their own profile', () => {
+    it('should say "You have..." when user is viewing their own profile', () => {
       const props = { ...badgeProps, isUserSelf: true };
       const renderedBadges = render(<Badges {...props} />);
-      expect(renderedBadges.find('.card-footer').text()).toBe("Bravo! You've earned 0 badges! ");
+      expect(renderedBadges.find('.card-footer').text()).toBe('You have no badges. ');
     });
 
-    it('should say "This person has earned..." when user is viewing someone else\'s profile', () => {
+    it('should say "This person has..." when user is viewing someone else\'s profile', () => {
       const renderedBadges = render(<Badges {...badgeProps} />);
-      expect(renderedBadges.find('.card-footer').text()).toBe(
-        'Bravo! This person has earned 0 badges! ',
-      );
+      expect(renderedBadges.find('.card-footer').text()).toBe('This person has no badges. ');
     });
 
     it('should use the singular version of badge when the user has exactly 1 badge', () => {

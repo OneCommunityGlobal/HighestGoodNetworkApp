@@ -35,6 +35,13 @@ export const Badges = props => {
   }, [isOpen, isAssignOpen]);
 
   const badgesEarned = props.userProfile.badgeCollection.length;
+  const subject = props.isUserSelf ? 'You have' : 'This person has';
+  const verb = badgesEarned ? `earned ${badgesEarned}` : 'no';
+  const object = badgesEarned == 1 ? 'badge' : 'badges';
+  let congratulatoryText = `${subject} ${verb} ${object}`;
+  congratulatoryText = badgesEarned
+    ? 'Bravo! ' + congratulatoryText + '! '
+    : congratulatoryText + '. ';
 
   return (
     <>
@@ -102,9 +109,7 @@ export const Badges = props => {
             color: '#285739',
           }}
         >
-          {`Bravo! ${props.isUserSelf ? "You've" : 'This person has'} earned ${badgesEarned} ${
-            badgesEarned == 1 ? 'badge' : 'badges'
-          }! `}
+          {congratulatoryText}
           <i className="fa fa-info-circle" id="CountInfo" />
         </CardFooter>
       </Card>
