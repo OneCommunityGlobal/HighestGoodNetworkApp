@@ -50,9 +50,9 @@ export const Header = props => {
   const location = useLocation();
   const dispatch = useDispatch();
 
-  const { isAuthenticated, user, firstName, profilePic, isViewingAnotherUser } = location.pathname.includes(
+  const { isAuthenticated, user, firstName, profilePic, isViewingAnotherUser } = (location.pathname.includes(
     props.userProfile._id,
-  )
+  ) && location.pathname.includes('dashboard'))
     ? {
         isAuthenticated: true,
         user: {
