@@ -3,7 +3,7 @@ import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import { connect } from 'react-redux';
 import ReactTooltip from 'react-tooltip';
 import DayPickerInput from 'react-day-picker/DayPickerInput';
-import { Editor } from '@tinymce/tinymce-react';
+import { Editor } from 'primereact/editor';
 import dateFnsFormat from 'date-fns/format';
 import { fetchAllTasks, addNewTask } from '../../../../../actions/task';
 import { DUE_DATE_MUST_GREATER_THAN_START_DATE } from '../../../../../languages/en/messages';
@@ -12,12 +12,8 @@ import TagsSearch from '../components/TagsSearch';
 
 function AddTaskModal(props) {
   const tasks = props.tasks.taskItems;
-
-  // members
-  const [members, setMembers] = useState([]);
-  useEffect(() => {
-    setMembers(props.projectMembers.members);
-  }, [props.projectMembers.members]);
+  const [members] = useState(props.projectMembers || props.projectMembers.members);
+  const foundedMembers = [];
 
   // modal
   const [modal, setModal] = useState(false);
@@ -112,6 +108,44 @@ function AddTaskModal(props) {
     }
   };
 
+  const [foundMembersHTML, setfoundMembersHTML] = useState('');
+  const findMembers = () => {
+    const memberList = members.members ? props.projectMembers.members : members;
+    console.log('findMembers', memberList);
+    for (let i = 0; i < memberList.length; i++) {
+      console.log('project members', memberList[i]);
+
+      if (
+        `${memberList[i].firstName} ${memberList[i].lastName}`
+          .toLowerCase()
+          .includes(memberName.toLowerCase())
+      ) {
+        foundedMembers.push(memberList[i]);
+      }
+    }
+
+    const html = foundedMembers.map((elm, i) => (
+      <div key={`found-member-${i}`}>
+        <a href={`/userprofile/${elm._id}`} target="_blank" rel="noreferrer">
+          <input
+            type="text"
+            className="task-resouces-input"
+            value={`${elm.firstName} ${elm.lastName}`}
+            disabled
+          />
+        </a>
+        <button
+          data-tip="Add this member"
+          className="task-resouces-btn"
+          type="button"
+          onClick={() => addResources(elm._id, elm.firstName, elm.lastName, elm.profilePic)}
+        >
+          <i className="fa fa-plus" aria-hidden="true" />
+        </button>
+      </div>
+    ));
+    setfoundMembersHTML(html);
+  };
 
   const removeResource = userID => {
     const removeIndex = resourceItems.map(item => item.userID).indexOf(userID);
@@ -326,6 +360,18 @@ function AddTaskModal(props) {
 
   getNewNum();
 
+  const renderHeader = () => {
+    return (
+        <span className="ql-formats">
+            <button className="ql-bold" aria-label="Bold"></button>
+            <button className="ql-italic" aria-label="Italic"></button>
+            <button className="ql-underline" aria-label="Underline"></button>
+        </span>
+    );
+  };
+
+  const header = renderHeader();
+
   return (
     <div className="controlBtn">
       <Modal isOpen={modal} toggle={toggle}>
@@ -388,7 +434,7 @@ function AddTaskModal(props) {
                   <div>
                     <TagsSearch
                       placeholder="Add resources"
-                      members={members}
+                      members={members.members}
                       addResources={addResources}
                       removeResource={removeResource}
                       resourceItems={resourceItems}
@@ -593,22 +639,13 @@ function AddTaskModal(props) {
                 <td scope="col" colSpan="2">
                   Why this Task is Important
                   <Editor
-                    init={{
-                      menubar: false,
-                      plugins: 'advlist autolink autoresize lists link charmap table paste help',
-                      toolbar:
-                        'bold italic  underline numlist   |  removeformat link bullist  outdent indent |\
-                                        styleselect fontsizeselect | table| strikethrough forecolor backcolor |\
-                                        subscript superscript charmap  | help',
-                      branding: false,
-                      min_height: 180,
-                      max_height: 300,
-                      autoresize_bottom_margin: 1,
-                    }}
-                    name="why-info"
-                    className="why-info form-control"
-                    value={whyInfo}
-                    onEditorChange={content => setWhyInfo(content)}
+                  style={{
+                            height: '180px'
+                  }}
+                  name="why-info"
+                  value={whyInfo}
+                  onEditorChange={content => setWhyInfo(String(content))}
+                  headerTemplate={header}
                   />
                 </td>
               </tr>
@@ -616,22 +653,13 @@ function AddTaskModal(props) {
                 <td scope="col" colSpan="2">
                   Design Intent
                   <Editor
-                    init={{
-                      menubar: false,
-                      plugins: 'advlist autolink autoresize lists link charmap table paste help',
-                      toolbar:
-                        'bold italic  underline numlist   |  removeformat link bullist  outdent indent |\
-                                        styleselect fontsizeselect | table| strikethrough forecolor backcolor |\
-                                        subscript superscript charmap  | help',
-                      branding: false,
-                      min_height: 180,
-                      max_height: 300,
-                      autoresize_bottom_margin: 1,
-                    }}
-                    name="intent-info"
-                    className="intent-info form-control"
-                    value={intentInfo}
-                    onEditorChange={content => setIntentInfo(content)}
+                  style={{
+                            height: '180px'
+                  }}
+                  name="intent-info"
+                  value={intentInfo}
+                  onEditorChange={content => setIntentInfo(String(content))}
+                  headerTemplate={header}
                   />
                 </td>
               </tr>
@@ -639,22 +667,13 @@ function AddTaskModal(props) {
                 <td scope="col" colSpan="2">
                   Endstate
                   <Editor
-                    init={{
-                      menubar: false,
-                      plugins: 'advlist autolink autoresize lists link charmap table paste help',
-                      toolbar:
-                        'bold italic  underline numlist   |  removeformat link bullist  outdent indent |\
-                                        styleselect fontsizeselect | table| strikethrough forecolor backcolor |\
-                                        subscript superscript charmap  | help',
-                      branding: false,
-                      min_height: 180,
-                      max_height: 300,
-                      autoresize_bottom_margin: 1,
-                    }}
-                    name="endstate-info"
-                    className="endstate-info form-control"
-                    value={endstateInfo}
-                    onEditorChange={content => setEndstateInfo(content)}
+                  style={{
+                            height: '180px'
+                  }}
+                  name="endstate-info"
+                  value={endstateInfo}
+                  onTextChange={content => setEndstateInfo(String(content))}
+                  headerTemplate={header}
                   />
                 </td>
               </tr>
