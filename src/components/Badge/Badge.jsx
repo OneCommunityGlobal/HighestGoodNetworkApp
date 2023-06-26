@@ -82,7 +82,11 @@ const Badge = props => {
                     color: '#285739',
                   }}
                 >
-                  Bravo! You Earned {totalBadge} Badges!{' '}
+                  {totalBadge
+                    ? `Bravo! You have earned ${totalBadge} ${
+                        totalBadge == 1 ? 'badge' : 'badges'
+                      }! `
+                    : 'You have no badges. '}
                   <i className="fa fa-info-circle" id="CountInfo" />
                 </CardText>
                 <Button className="btn--dark-sea-green float-right" onClick={toggle}>
