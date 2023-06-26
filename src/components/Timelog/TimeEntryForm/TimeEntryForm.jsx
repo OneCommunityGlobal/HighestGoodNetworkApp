@@ -137,7 +137,7 @@ const TimeEntryForm = props => {
         setTasks(activeTasks || []);
       })
       .catch(err => console.log(err));
-  }, []);
+  }, [props.isTaskUpdated]);
 
   //grab form data before editing
   useEffect(() => {
@@ -710,6 +710,7 @@ const TimeEntryForm = props => {
                   min_height: 180,
                   max_height: 300,
                   autoresize_bottom_margin: 1,
+                  content_style: 'body { cursor: text !important; }',
                 }}
                 id="notes"
                 name="notes"
@@ -772,10 +773,10 @@ TimeEntryForm.propTypes = {
   userId: PropTypes.string.isRequired,
   toggle: PropTypes.func.isRequired,
   isOpen: PropTypes.bool.isRequired,
-  timer: PropTypes.any.isRequired,
+  timer: PropTypes.any,
   data: PropTypes.any.isRequired,
   userProfile: PropTypes.any.isRequired,
-  resetTimer: PropTypes.func.isRequired,
+  resetTimer: PropTypes.func,
 };
 
 export default TimeEntryForm;

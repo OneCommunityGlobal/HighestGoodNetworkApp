@@ -73,7 +73,7 @@ const LeaderBoard = ({
       let maxTotal = maxBy(leaderBoardData, 'totaltime_hrs').totaltime_hrs || 10;
       leaderBoardData = leaderBoardData.map(element => {
         element.didMeetWeeklyCommitment =
-        element.totaltangibletime_hrs >= element.weeklycommittedHours ? true : false;
+        element.totaltangibletime_hrs >= element.weeklycommittedHours;
         element.weeklycommitted = round(element.weeklycommittedHours, 2);
         element.tangibletime = round(element.totaltangibletime_hrs, 2);
         element.intangibletime = round(element.totalintangibletime_hrs, 2);
@@ -140,7 +140,7 @@ const LeaderBoard = ({
     }
     const filteredlist = leaderboarddata.filter(user => {
       for(let i = 0; i < member.length; i++){
-        if(user.personId == member[i]._id){
+        if(user.personId === member[i]._id){
           return user;
         }
       }
