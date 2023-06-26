@@ -9,6 +9,7 @@ import { getProgressColor, getProgressValue } from '../../utils/effortColors';
 import hasPermission from 'utils/permissions';
 import './style.css';
 import ReactTooltip from 'react-tooltip';
+import { boxStyle } from 'styles';
 
 const TeamMemberTask = ({
   user,
@@ -24,8 +25,8 @@ const TeamMemberTask = ({
 
   const infoTaskIconContent = `Red Bell Icon: When clicked, this will show any task changes\n 
   Green Checkmark Icon: When clicked, this will mark the task as completed\n
-  X Mark Icon: When clicked, this will remove the user from that task`
- 
+  X Mark Icon: When clicked, this will remove the user from that task`;
+
   let totalHoursLogged = 0;
   let totalHoursRemaining = 0;
   const thisWeekHours = user.totaltangibletime_hrs;
@@ -54,8 +55,7 @@ const TeamMemberTask = ({
 
   const handleModalOpen = () => {
     setInfoTaskIconModal(true);
-  }
-
+  };
 
   const hasRemovePermission = hasPermission(userRole, 'removeUserFromTask', roles, userPermissions);
 
@@ -111,10 +111,7 @@ const TeamMemberTask = ({
                             <Link to={task.projectId ? `/wbs/tasks/${task._id}` : '/'}>
                               <span>{`${task.num} ${task.taskName}`} </span>
                             </Link>
-                            <CopyToClipboard 
-                              writeText={task.taskName} 
-                              message="Task Copied!"
-                            />
+                            <CopyToClipboard writeText={task.taskName} message="Task Copied!" />
                             {task.taskNotifications.length > 0 &&
                             task.taskNotifications.some(
                               notification =>
@@ -127,11 +124,13 @@ const TeamMemberTask = ({
                                   title="Task Info Changes"
                                   icon={faBell}
                                   onClick={() => {
-                                    const taskNotificationId = task.taskNotifications.filter(taskNotification => {
-                                      if(taskNotification.userId === user.personId){
-                                        return taskNotification
-                                      }
-                                    })
+                                    const taskNotificationId = task.taskNotifications.filter(
+                                      taskNotification => {
+                                        if (taskNotification.userId === user.personId) {
+                                          return taskNotification;
+                                        }
+                                      },
+                                    );
                                     handleOpenTaskNotificationModal(
                                       user.personId,
                                       task,
@@ -148,24 +147,24 @@ const TeamMemberTask = ({
                                 title="Mark as Done"
                                 onClick={() => {
                                   handleMarkAsDoneModal(user.personId, task);
-                                  handleTaskModalOption("Checkmark");	
+                                  handleTaskModalOption('Checkmark');
                                 }}
                               />
                             )}
-                            {hasRemovePermission && (		
-                            <FontAwesomeIcon 		
-                              className="team-member-task-remove"		
-                              icon={faTimes}		
-                              title="Remove User from Task"		
-                              onClick={() => {		
-                                handleRemoveFromTaskModal(user.personId, task);		
-                                handleTaskModalOption("XMark");		
-                              }}		
-                            />		
+                            {hasRemovePermission && (
+                              <FontAwesomeIcon
+                                className="team-member-task-remove"
+                                icon={faTimes}
+                                title="Remove User from Task"
+                                onClick={() => {
+                                  handleRemoveFromTaskModal(user.personId, task);
+                                  handleTaskModalOption('XMark');
+                                }}
+                              />
                             )}
                             <i
                               className="fa fa-info-circle"
-                              style={{ cursor: 'pointer', marginLeft: '10px'}}
+                              style={{ cursor: 'pointer', marginLeft: '10px' }}
                               data-tip
                               data-for="taskIconTip"
                               aria-hidden="true"
@@ -177,16 +176,25 @@ const TeamMemberTask = ({
                               Click this icon to learn about the task icons
                             </ReactTooltip>
                             <Modal isOpen={infoTaskIconModal} toggle={toggleInfoTaskIconModal}>
-                            <ModalHeader toggle={toggleInfoTaskIconModal}>Task Icons Info</ModalHeader>
-                            <ModalBody>
-                              {infoTaskIconContent.split('\n').map((item, i) => <p key={i}>{item}</p>)}
-                            </ModalBody>
-                            <ModalFooter>
-                              <Button onClick={toggleInfoTaskIconModal} color="secondary" className="float-left">
-                                {' '}  
-                                Ok{' '}
-                              </Button>
-                            </ModalFooter>
+                              <ModalHeader toggle={toggleInfoTaskIconModal}>
+                                Task Icons Info
+                              </ModalHeader>
+                              <ModalBody>
+                                {infoTaskIconContent.split('\n').map((item, i) => (
+                                  <p key={i}>{item}</p>
+                                ))}
+                              </ModalBody>
+                              <ModalFooter>
+                                <Button
+                                  onClick={toggleInfoTaskIconModal}
+                                  color="secondary"
+                                  className="float-left"
+                                  style={boxStyle}
+                                >
+                                  {' '}
+                                  Ok{' '}
+                                </Button>
+                              </ModalFooter>
                             </Modal>
                           </p>
                         </td>

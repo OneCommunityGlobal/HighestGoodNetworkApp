@@ -108,12 +108,12 @@ const AssignBadge = props => {
   };
 
   const FirstInputProps = {
-    placeholder: 'first name',
+    placeholder: ' first name',
     value: props.firstName,
     onChange: onFirstChange,
   };
   const LastInputProps = {
-    placeholder: 'last name',
+    placeholder: ' last name',
     value: props.lastName,
     onChange: onLastChange,
   };
@@ -124,7 +124,7 @@ const AssignBadge = props => {
         margin: 20,
       }}
     >
-    <div className="assign-badge-margin-top" style={{ display: 'flex', alignItems: 'center' }}>
+      <div className="assign-badge-margin-top" style={{ display: 'flex', alignItems: 'center' }}>
         <Label
           style={{
             fontWeight: 'bold',
