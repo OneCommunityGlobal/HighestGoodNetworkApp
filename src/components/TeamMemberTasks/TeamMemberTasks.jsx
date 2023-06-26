@@ -4,7 +4,6 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { fetchTeamMembersTask, deleteTaskNotification } from 'actions/task';
 import React, { useEffect, useState, useRef } from 'react';
 import { useDispatch, useSelector, connect } from 'react-redux';
-import Loading from '../common/Loading';
 import SkeletonLoading from '../common/SkeletonLoading';
 import { TaskDifferenceModal } from './components/TaskDifferenceModal';
 import { getTeamMemberTasksData } from './selectors';

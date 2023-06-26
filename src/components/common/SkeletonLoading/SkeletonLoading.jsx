@@ -7,11 +7,13 @@ const SkeletonLoading = ({ template }) => {
     switch (template) {
       case 'Timelog':
         return (
-          <div className="skeleton-loading-timelog">
-            <div className="skeleton-loading-item-timelog"></div>
-            <div className="skeleton-loading-item-timelog"></div>
-            <div className="skeleton-loading-item-add-intangible"></div>
-          </div>
+          <Container fluid="md">
+            <div className="skeleton-loading-timelog">
+              <div className="skeleton-loading-item-timelog"></div>
+              <div className="skeleton-loading-item-timelog"></div>
+              <div className="skeleton-loading-item-add-intangible"></div>
+            </div>
+          </Container>
         );
       case 'TimelogFilter':
         return (

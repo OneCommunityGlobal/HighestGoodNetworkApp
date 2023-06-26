@@ -428,7 +428,7 @@ const Timelog = props => {
       {state.isTimeEntriesLoading ? (
         <LoadingSkeleton template="Timelog" />
       ) : (
-        <Container className="right-padding-temp-fix">
+        <Container fluid="md" className="right-padding-temp-fix">
           {state.summary ? (
             <div className="my-2">
               <div id="weeklySum">
