@@ -1,0 +1,103 @@
+/* Skeleton Loading for Timelog */
+
+.skeleton-loading-timelog {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid rgba(0, 0, 0, 0.125);
+  margin-left: 1rem;
+  background-color: #f3f4f6;
+}
+
+.skeleton-loading-timelog {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid rgba(0, 0, 0, 0.125);
+  margin-left: 1rem;
+  background-color: #f3f4f6;
+}
+
+/* Large screens */
+@media (min-width: 769px) and (max-width: 1599px) {
+  .skeleton-loading-timelog {
+    width: 49.5rem; /* Adjust the width for large screens */
+    margin-left: 1rem; /* Add the left margin for large screens if needed */
+  }
+}
+
+/* Extra-Large screens */
+@media (min-width: 1600px) {
+  .skeleton-loading-timelog {
+    width: 63.5rem; /* Adjust the width for extra-large screens */
+    margin-left: 1rem; /* Add the left margin for extra-large screens if needed */
+  }
+}
+
+
+.skeleton-loading-item-timelog {
+  background: linear-gradient(90deg, #a0a0a0 0%, #c0c0c0 50%, #a0a0a0 100%);
+  background-size: 200% 100%;
+  animation: skeleton-loading-animation 1.5s ease-in-out infinite;
+  height: 20px; /* Adjust the height */
+  margin-bottom: 5px; /* Adjust the margin between items */
+  border-radius: 5px;
+  margin-top: 10px;
+  margin-left: 40px;
+  margin-right: 300px;
+}
+
+.skeleton-loading-item-add-intangible {
+  background: linear-gradient(90deg, #a0a0a0 0%, #c0c0c0 50%, #a0a0a0 100%);
+  background-size: 200% 100%;
+  animation: skeleton-loading-animation 3s ease-in-out infinite;
+  height: 30px; /* Adjust the height */
+  margin-bottom: 10px; /* Adjust the margin between items */
+  border-radius: 5px;
+  margin-top: 5px;
+  margin-left: 480px;
+  margin-right: 80px;
+}
+
+/* Skeleton Loading for Timelog Filter */
+
+.skeleton-loading-timelog-filter {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;  
+}
+
+.skeleton-loading-timelog-filter-item {
+  background: linear-gradient(90deg, #a0a0a0 0%, #c0c0c0 50%, #a0a0a0 100%);
+  background-size: 200% 100%;
+  animation: skeleton-loading-animation 1.5s ease-in-out infinite;
+  width: 40px; /* Adjust the width of each button */
+  height: 40px; /* Adjust the height of each button */
+  border-radius: 5px;
+  margin-left: 15px; /* Adjust the gap between buttons */
+  padding-left: 15px;
+}
+
+/* Skeleton Loading for Team Member Tasks */
+
+/* .skeleton-loading-team-member-tasks {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;  
+} */
+
+.skeleton-loading-team-member-tasks-row {
+  background: linear-gradient(90deg, #a0a0a0 0%, #c0c0c0 50%, #a0a0a0 100%);
+  background-size: 200% 100%;  
+  height: 60px; /* Adjust the height */
+  animation: skeleton-loading-animation 1.5s ease-in-out infinite;
+  
+}
+
+@keyframes skeleton-loading-animation {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
