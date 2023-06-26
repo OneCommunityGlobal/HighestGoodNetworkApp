@@ -16,12 +16,20 @@ import {
   Nav,
   NavItem,
   NavLink,
+  Modal,
+  ModalBody,
+  ModalHeader,
+  ModalFooter,
+  UncontrolledDropdown,
+  DropdownMenu, 
+  DropdownItem,
+  DropdownToggle
 } from 'reactstrap';
 import './WeeklySummary.css';
 import { connect } from 'react-redux';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faExternalLinkAlt } from '@fortawesome/free-solid-svg-icons';
-import { Editor } from 'primereact/editor';
+import { Editor } from '@tinymce/tinymce-react';
 import { getWeeklySummaries, updateWeeklySummaries } from '../../actions/weeklySummaries';
 import DueDateTime from './DueDateTime';
 import moment from 'moment';
@@ -32,12 +40,18 @@ import { toast } from 'react-toastify';
 import { WeeklySummaryContentTooltip, MediaURLTooltip } from './WeeklySummaryTooltips';
 import classnames from 'classnames';
 import { getUserProfile } from 'actions/userProfile';
-import CurrentPromptModal from './CurrentPromptModal.jsx'
+import CurrentPromptModal from './CurrentPromptModal.jsx';
 
 // Need this export here in order for automated testing to work.
 export class WeeklySummary extends Component {
   state = {
     summariesCountShowing: 0,
+    originSummaries: {
+      summary: '',
+      summaryLastWeek: '',
+      summaryBeforeLast: '',
+      summaryThreeWeeksAgo: '',
+    },
     formElements: {
       summary: '',
       summaryLastWeek: '',
@@ -66,13 +80,20 @@ export class WeeklySummary extends Component {
       .endOf('week')
       .subtract(3, 'week')
       .toISOString(),
+    uploadDate: this.dueDate,
+    uploadDateLastWeek: this.dueDateLastWeek,
+    uploadDateBeforeLast: this.dueDateBeforeLast,
+    uploadDateThreeWeeksAgo: this.dueDateThreeWeeksAgo,
     submittedCountInFourWeeks: 0,
     activeTab: '1',
     errors: {},
     fetchError: null,
     loading: true,
-    summaryLabel: '',
-    wordCount: 0,
+    editPopup: false,
+    mediaChangeConfirm: false,
+    moveConfirm: false,
+    moveSelect: '1',
+    moveToggle: false,
   };
 
   async componentDidMount() {
@@ -122,7 +143,28 @@ export class WeeklySummary extends Component {
       .startOf('isoWeek')
       .add(5, 'days');
 
+    const uploadDateXWeeksAgo = x => {
+      const summaryList = [summary, summaryLastWeek, summaryBeforeLast, summaryThreeWeeksAgo];
+      const dueDateList = [dueDate, dueDateLastWeek, dueDateBeforeLast, dueDateThreeWeeksAgo];
+      return summaryList[x] !== '' &&
+        weeklySummaries &&
+        weeklySummaries[x] &&
+        weeklySummaries[x].uploadDate
+        ? weeklySummaries[x].uploadDate
+        : dueDateList[x];
+    };
+    const uploadDate = uploadDateXWeeksAgo(0);
+    const uploadDateLastWeek = uploadDateXWeeksAgo(1);
+    const uploadDateBeforeLast = uploadDateXWeeksAgo(2);
+    const uploadDateThreeWeeksAgo = uploadDateXWeeksAgo(3);
+
     this.setState({
+      originSummaries: {
+        summary,
+        summaryLastWeek,
+        summaryBeforeLast,
+        summaryThreeWeeksAgo,
+      },
       formElements: {
         summary,
         summaryLastWeek,
@@ -132,6 +174,10 @@ export class WeeklySummary extends Component {
         weeklySummariesCount: weeklySummariesCount || 0,
         mediaConfirm: false,
       },
+      uploadDate,
+      uploadDateLastWeek,
+      uploadDateBeforeLast,
+      uploadDateThreeWeeksAgo,
       dueDate,
       dueDateLastWeek,
       dueDateBeforeLast,
@@ -140,8 +186,9 @@ export class WeeklySummary extends Component {
       activeTab: '1',
       fetchError: this.props.fetchError,
       loading: this.props.loading,
-      summaryLabel: 'summary',
-      wordCount: 0
+      editPopup: false,
+      mediaChangeConfirm: false,
+      moveSelect: '1',
     });
   }
 
@@ -159,12 +206,64 @@ export class WeeklySummary extends Component {
     return moment(dueDate).isBetween(fromDate, toDate, undefined, '[]');
   };
 
-  toggleTab = (tab, summariesLabels) => {
-    this.setState({ summaryLabel: Object.keys(summariesLabels)[tab - 1] });
+  toggleTab = tab => {
     const activeTab = this.state.activeTab;
     if (activeTab !== tab) {
       this.setState({ activeTab: tab });
     }
+  };
+  //modal show 
+  toggleShowPopup = showPopup => {
+    const mediaChangeConfirm = this.state.mediaChangeConfirm;
+    if (!mediaChangeConfirm){
+      this.setState({ editPopup: !showPopup});
+    }else{
+      this.setState({ editPopup: false});
+    }
+  };
+
+  toggleMove = options =>{
+    const move = options.target.value;
+    const moveSelect = this.state.moveSelect;
+    let formElements = {...this.state.formElements};
+    const activeTab = this.state.activeTab;
+    if (activeTab != move){
+      let movedContent = "";
+      switch (activeTab) {
+        case "1":
+          movedContent = formElements.summary;
+          formElements.summary = "";
+          break;
+        case "2":
+          movedContent = formElements.summaryLastWeek;
+          formElements.summaryLastWeek = "";
+          break;
+        case "3":
+          movedContent = formElements.summaryBeforeLast;
+          formElements.summaryBeforeLast = "";
+          break;
+        case "4":
+          movedContent = formElements.summaryThreeWeeksAgo;
+          formElements.summaryThreeWeeksAgo = "";
+          break;
+      }
+      switch (move) {
+        case "1":
+          formElements.summary = movedContent;
+          break;
+        case "2":
+          formElements.summaryLastWeek = movedContent;
+          break;
+        case "3":
+          formElements.summaryBeforeLast = movedContent;
+          break;
+        case "4":
+          formElements.summaryThreeWeeksAgo = movedContent;
+          break;
+      }
+    }
+    this.toggleTab(move);
+    this.setState({formElements, moveSelect: move });
   };
 
   // Minimum word count of 50 (handle words that also use non-ASCII characters by counting whitespace rather than word character sequences).
@@ -224,32 +323,43 @@ export class WeeklySummary extends Component {
   handleInputChange = event => {
     event.persist();
     const { name, value } = event.target;
+    const formElements = { ...this.state.formElements };
+    if (this.state.mediaChangeConfirm){
+      const errors = { ...this.state.errors };
+      const errorMessage = this.validateProperty(event.target);
+      if (errorMessage) errors[name] = errorMessage;
+      else delete errors[name];
+      formElements[name] = value;
+      this.setState({formElements, errors });
+    }else{
+      this.toggleShowPopup(this.state.editPopup);
+    }
+  };
+   
+  handleMediaChange = event => {
+    const mediaChangeConfirm = this.state.mediaChangeConfirm;
+    this.setState({ mediaChangeConfirm: true });
+    this.toggleShowPopup(this.state.editPopup);
+  };
 
+  handleEditorChange = (content, editor) => {
+    // Filter out blank pagagraphs inserted by tinymce replacing new line characters. Need those removed so Joi could do word count checks properly.
+    const filteredContent = content.replace(/<p>&nbsp;<\/p>/g, '');
     const errors = { ...this.state.errors };
-    const errorMessage = this.validateProperty(event.target);
-    if (errorMessage) errors[name] = errorMessage;
-    else delete errors[name];
+    const errorMessage = this.validateEditorProperty(filteredContent, editor.id);
+    if (errorMessage) errors[editor.id] = errorMessage;
+    else delete errors[editor.id];
 
     const formElements = { ...this.state.formElements };
-    formElements[name] = value;
+    formElements[editor.id] = content;
     this.setState({ formElements, errors });
   };
 
-  handleEditorChange = (content) => {
-    // Filter out blank pagagraphs inserted by tinymce replacing new line characters. Need those removed so Joi could do word count checks properly.
-    if (content.htmlValue !== null) {
-      const filteredContent = content.htmlValue.replace(/<p>&nbsp;<\/p>/g, '');
-      const errors = { ...this.state.errors };
-      const selectedSummaryLabel = this.state.summaryLabel
-      const errorMessage = this.validateEditorProperty(filteredContent, selectedSummaryLabel);
-      if (errorMessage) errors[selectedSummaryLabel] = errorMessage;
-      else delete errors[selectedSummaryLabel];
-      this.setState({ wordCount: content.textValue === " " ? 0 : content.textValue.split(" ").length });
-      const formElements = { ...this.state.formElements };
-      formElements[selectedSummaryLabel] = content.htmlValue;
-      this.setState({ formElements, errors });
-    }
-  };
+  handleMoveCheckboxChange = event => {
+    const moveConfirm = { ...this.state.moveConfirm };
+    this.setState({ moveConfirm:event.target.checked });
+
+  }
 
   handleCheckboxChange = event => {
     event.persist();
@@ -294,18 +404,67 @@ export class WeeklySummary extends Component {
       this.setState({ summariesCountShowing: this.state.formElements.weeklySummariesCount + 1 });
     }
 
+    let newUploadDate = this.state.uploadDate;
+    let newUploadDateLastWeek = this.state.uploadDateLastWeek;
+    let newUploadDateBeforeLast = this.state.uploadDateBeforeLast;
+    let newUploadDateThreeWeeksAgo = this.state.uploadDateThreeWeeksAgo;
+    const originSummaries = { ...this.state.originSummaries };
+    if (this.state.formElements.summary !== this.state.originSummaries.summary) {
+      newUploadDate = moment()
+        .tz('America/Los_Angeles')
+        .toISOString();
+      originSummaries.summary = this.state.formElements.summary;
+      this.setState({ originSummaries, uploadDate: newUploadDate });
+    }
+    if (this.state.formElements.summaryLastWeek !== this.state.originSummaries.summaryLastWeek) {
+      newUploadDateLastWeek = moment()
+        .tz('America/Los_Angeles')
+        .toISOString();
+      originSummaries.summaryLastWeek = this.state.formElements.summaryLastWeek;
+      this.setState({ originSummaries, uploadDateLastWeek: newUploadDateLastWeek });
+    }
+    if (
+      this.state.formElements.summaryBeforeLast !== this.state.originSummaries.summaryBeforeLast
+    ) {
+      newUploadDateBeforeLast = moment()
+        .tz('America/Los_Angeles')
+        .toISOString();
+      originSummaries.summaryBeforeLast = this.state.formElements.summaryBeforeLast;
+      this.setState({ originSummaries, uploadDateBeforeLast: newUploadDateBeforeLast });
+    }
+    if (
+      this.state.formElements.summaryThreeWeeksAgo !==
+      this.state.originSummaries.summaryThreeWeeksAgo
+    ) {
+      newUploadDateThreeWeeksAgo = moment()
+        .tz('America/Los_Angeles')
+        .toISOString();
+      originSummaries.summaryThreeWeeksAgo = this.state.formElements.summaryThreeWeeksAgo;
+      this.setState({ originSummaries, uploadDateThreeWeeksAgo: newUploadDateThreeWeeksAgo });
+    }
+
     const modifiedWeeklySummaries = {
       mediaUrl: this.state.formElements.mediaUrl.trim(),
       weeklySummaries: [
-        { summary: this.state.formElements.summary, dueDate: this.state.dueDate },
-        { summary: this.state.formElements.summaryLastWeek, dueDate: this.state.dueDateLastWeek },
+        {
+          summary: this.state.formElements.summary,
+          dueDate: this.state.dueDate,
+          uploadDate: newUploadDate,
+        },
+        {
+          summary: this.state.formElements.summaryLastWeek,
+          dueDate: this.state.dueDateLastWeek,
+          uploadDate: newUploadDateLastWeek,
+        },
         {
           summary: this.state.formElements.summaryBeforeLast,
           dueDate: this.state.dueDateBeforeLast,
+          uploadDate: newUploadDateBeforeLast,
         },
         {
           summary: this.state.formElements.summaryThreeWeeksAgo,
           dueDate: this.state.dueDateThreeWeeksAgo,
+          uploadDate: newUploadDateThreeWeeksAgo,
         },
       ],
       weeklySummariesCount: this.state.formElements.weeklySummariesCount + diffInSubmittedCount,
@@ -349,7 +508,6 @@ export class WeeklySummary extends Component {
       dueDateLastWeek,
       dueDateBeforeLast,
       dueDateThreeWeeksAgo,
-      wordCount
     } = this.state;
 
     // Create an object containing labels for each summary tab:
@@ -415,7 +573,7 @@ export class WeeklySummary extends Component {
                     className={classnames({ active: activeTab === tId })}
                     data-testid={`tab-${tId}`}
                     onClick={() => {
-                      this.toggleTab(tId, summariesLabels);
+                      this.toggleTab(tId);
                     }}
                   >
                     {weekName}
@@ -437,27 +595,36 @@ export class WeeklySummary extends Component {
                             Enter your weekly summary below. (required){' '}
                             <WeeklySummaryContentTooltip tabId={tId} />
                           </div>
-                          <CurrentPromptModal/>
+                          <CurrentPromptModal />
                         </Label>
                         <Editor
-                          style={{
-                            height: '180px'
+                          init={{
+                            menubar: false,
+                            placeholder:
+                              'Weekly summary content... Remember to be detailed (50-word minimum) and write it in 3rd person. E.g. “This week John…"',
+                            plugins:
+                              'advlist autolink autoresize lists link charmap table paste help wordcount',
+                            toolbar:
+                              'bold italic underline link removeformat | bullist numlist outdent indent | styleselect fontsizeselect | table| strikethrough forecolor backcolor | subscript superscript charmap | help',
+                            branding: false,
+                            min_height: 180,
+                            max_height: 500,
+                            autoresize_bottom_margin: 1,
                           }}
-                          placeholder='Weekly summary content... Remember to be detailed (50-word minimum) and write it in 3rd person. E.g. “This week John…"'
                           id={summaryName}
+                          name={summaryName}
                           value={formElements[summaryName]}
-                          onTextChange={this.handleEditorChange}
+                          onEditorChange={this.handleEditorChange}
                         />
-                        <p>{wordCount} words</p>
                       </FormGroup>
                       {(errors.summary ||
                         errors.summaryLastWeek ||
                         errors.summaryBeforeLast ||
                         errors.summaryThreeWeeksAgo) && (
-                          <Alert color="danger">
-                            The summary must contain a minimum of 50 words.
-                          </Alert>
-                        )}
+                        <Alert color="danger">
+                          The summary must contain a minimum of 50 words.
+                        </Alert>
+                      )}
                     </Col>
                   </Row>
                 </TabPane>
@@ -476,11 +643,30 @@ export class WeeklySummary extends Component {
                         type="url"
                         name="mediaUrl"
                         id="mediaUrl"
+                        data-testid="media-input"
                         placeholder="Enter a link"
                         value={formElements.mediaUrl}
                         onChange={this.handleInputChange}
                       />
                     </FormGroup>
+                    {<Modal isOpen={this.state.editPopup}>
+                    <ModalHeader> Warning!</ModalHeader>
+                    <ModalBody>
+                      Whoa Tiger! Are you sure you want to do that?
+                      This link was added by an Admin when you were set up as a member 
+                      of the team. Only change this if you are SURE your new link is more 
+                      than the one already here.
+
+                    </ModalBody>
+                    <ModalFooter>
+                      <Button checked={this.state.mediaChangeConfirm} onClick={this.handleMediaChange}>
+                          Confirm
+                      </Button>{' '}
+                      <Button onClick={() => this.toggleShowPopup(this.state.editPopup)}>
+                          Close
+                      </Button>{' '}
+                    </ModalFooter>
+                  </Modal>} 
                     {errors.mediaUrl && <Alert color="danger">{errors.mediaUrl}</Alert>}
                   </Col>
                   {formElements.mediaUrl && !errors.mediaUrl && (
@@ -507,6 +693,15 @@ export class WeeklySummary extends Component {
                         valid={formElements.mediaConfirm}
                         onChange={this.handleCheckboxChange}
                       />
+                      <CustomInput
+                        id="moveConfirm"
+                        name="moveConfirm"
+                        type="checkbox"
+                        label="Opps, I need to move summaries to the correct week"
+                        checked={this.state.moveConfirm}
+                        valid={this.state.moveConfirm}
+                        onChange={this.handleMoveCheckboxChange}
+                      />
                     </FormGroup>
                     {errors.mediaConfirm && (
                       <Alert color="danger">
@@ -527,6 +722,27 @@ export class WeeklySummary extends Component {
                       </Button>
                     </FormGroup>
                   </Col>
+                  {this.state.moveConfirm &&(
+                    <Col>
+                      <FormGroup className="mt-2">
+                      <UncontrolledDropdown>
+                        <DropdownToggle className="px-5 btn--dark-sea-green" caret>
+                          Move
+                        </DropdownToggle>
+                        <DropdownMenu>
+                            <DropdownItem disabled={activeTab ==='1'} value = "1"  
+                            onClick={this.toggleMove}>This Week</DropdownItem>
+                            <DropdownItem disabled={activeTab ==='2'} value = "2" 
+                            onClick={this.toggleMove}>Last Week</DropdownItem>
+                            <DropdownItem disabled={activeTab ==='3'} value = "3" 
+                            onClick={this.toggleMove}>Week Before Last</DropdownItem>
+                            <DropdownItem disabled={activeTab ==='4'} value = "4" 
+                            onClick={this.toggleMove}>Three Week Ago</DropdownItem>
+                        </DropdownMenu>
+                      </UncontrolledDropdown>
+                      </FormGroup>
+                    </Col>
+                  )}
                 </Row>
               </Col>
             </Row>
