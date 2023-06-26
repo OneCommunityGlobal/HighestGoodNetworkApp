@@ -50,26 +50,38 @@ export const Header = props => {
   const location = useLocation();
   const dispatch = useDispatch();
 
-  const { isAuthenticated, user, firstName, profilePic, isViewingAnotherUser } =
-    location.pathname.includes(props.userProfile._id) && location.pathname.includes('dashboard')
-      ? {
-          isAuthenticated: true,
-          user: {
-            userid: props.userProfile._id,
-            role: props.userProfile.props,
-            permissions: props.userProfile.permissions,
-            expiryTimestamp: '',
-            iat: '',
-          },
-          firstName: props.userProfile.firstName,
-          profilePic: '',
-          isViewingAnotherUser: true,
-        }
-      : { ...props.auth, isViewingAnotherUser: false };
+  const [isViewingAnotherUser, setIsViewingAnotherUser] = useState(false)
+
+  const {
+    isAuthenticated,
+    user,
+    firstName,
+    profilePic
+  } = location.pathname.includes(props.userProfile._id)
+    ? {
+        isAuthenticated: true,
+        user: {
+          userid: props.userProfile._id,
+          role: props.userProfile.props,
+          permissions: props.userProfile.permissions,
+          expiryTimestamp: '',
+          iat: '',
+        },
+        firstName: props.userProfile.firstName,
+        profilePic: ''
+      }
+    : { ...props.auth};
 
   const userPermissions = location.pathname.includes(props.userProfile._id)
     ? props.userProfile?.permissions?.frontPermissions
     : props.auth.user?.permissions?.frontPermissions;
+
+  useEffect(() => {
+    if(location.pathname.includes(props.userProfile._id)){
+      setIsViewingAnotherUser(true)
+    }
+  }, [location, props.userProfile])
+  
   useEffect(() => {
     if (props.auth.isAuthenticated) {
       props.getHeaderData(props.auth.user.userid);
@@ -100,7 +112,13 @@ export const Header = props => {
           className="timer-message-section"
           style={user.role == 'Owner' ? { marginRight: '6rem' } : { marginRight: '10rem' }}
         >
-          {isAuthenticated && <Timer />}
+          {isViewingAnotherUser ? (
+            props.auth.user.role == 'Owner' || props.auth.user.role == 'Administrator' ? (
+              <Timer />
+            ) : null
+          ) : (
+            isAuthenticated && <Timer />
+          )}
           {isAuthenticated && (
             <div className="owner-message">
               <OwnerMessage />
@@ -247,13 +265,23 @@ export const Header = props => {
                   <DropdownItem tag={Link} to={`/userprofile/${user.userid}`}>
                     {VIEW_PROFILE}
                   </DropdownItem>
-                  <DropdownItem tag={Link} to={`/updatepassword/${user.userid}`}>
-                    {UPDATE_PASSWORD}
-                  </DropdownItem>
+                  {isViewingAnotherUser ? (
+                    props.auth.user.role == 'Owner' || props.auth.user.role == 'Administrator' ? (
+                      <DropdownItem tag={Link} to={`/updatepassword/${user.userid}`}>
+                        {UPDATE_PASSWORD}
+                      </DropdownItem>
+                    ) : null
+                  ) : (
+                    <DropdownItem tag={Link} to={`/updatepassword/${user.userid}`}>
+                      {UPDATE_PASSWORD}
+                    </DropdownItem>
+                  )}
                   <DropdownItem divider />
-                  <DropdownItem tag={Link} to="/#" onClick={openModal}>
-                    {LOGOUT}
-                  </DropdownItem>
+                  {isViewingAnotherUser ? null : (
+                    <DropdownItem tag={Link} to="/#" onClick={openModal}>
+                      {LOGOUT}
+                    </DropdownItem>
+                  )}
                 </DropdownMenu>
               </UncontrolledDropdown>
             </Nav>
