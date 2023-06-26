@@ -221,12 +221,11 @@ export class WeeklySummary extends Component {
     }
   };
 
-  toggleMove = options =>{
-    const move = options.target.value;
+  toggleMove = event =>{
     const moveSelect = this.state.moveSelect;
     let formElements = {...this.state.formElements};
     const activeTab = this.state.activeTab;
-    if (activeTab != move){
+    if (activeTab != moveSelect){
       let movedContent = "";
       switch (activeTab) {
         case "1":
@@ -246,7 +245,7 @@ export class WeeklySummary extends Component {
           formElements.summaryThreeWeeksAgo = "";
           break;
       }
-      switch (move) {
+      switch (moveSelect) {
         case "1":
           formElements.summary = movedContent;
           break;
@@ -261,8 +260,8 @@ export class WeeklySummary extends Component {
           break;
       }
     }
-    this.toggleTab(move);
-    this.setState({formElements, moveSelect: move });
+    this.toggleTab(moveSelect);
+    this.setState({formElements});
   };
 
   // Minimum word count of 50 (handle words that also use non-ASCII characters by counting whitespace rather than word character sequences).
@@ -591,17 +590,28 @@ export class WeeklySummary extends Component {
                           <div>
                             <UncontrolledDropdown>
                               <DropdownToggle className="px-5 btn--dark-sea-green" caret>
-                                Move
+                                Move This Summary
                               </DropdownToggle>
                               <DropdownMenu>
-                              <DropdownItem disabled={activeTab ==='1'} value = "1"  
-                                onClick={this.toggleMove}>This Week</DropdownItem>
-                              <DropdownItem disabled={activeTab ==='2'} value = "2" 
-                                onClick={this.toggleMove}>Last Week</DropdownItem>
-                              <DropdownItem disabled={activeTab ==='3'} value = "3" 
-                                onClick={this.toggleMove}>Week Before Last</DropdownItem>
-                              <DropdownItem disabled={activeTab ==='4'} value = "4" 
-                                onClick={this.toggleMove}>Three Week Ago</DropdownItem>
+                              <DropdownItem disabled={activeTab ==='1'} 
+                              onClick={() => this.setState({ moveSelect: "1" })}>
+                                This Week
+                              </DropdownItem>
+                              <DropdownItem disabled={activeTab ==='2'}
+                              onClick={() => this.setState({ moveSelect: "2" })}>
+                                Last Week
+                              </DropdownItem>
+                              <DropdownItem disabled={activeTab ==='3'}
+                              onClick={() => this.setState({ moveSelect: "3" })}>
+                                Week Before Last
+                              </DropdownItem>
+                              <DropdownItem disabled={activeTab ==='4'}
+                              onClick={() => this.setState({ moveSelect: "4" })}>
+                                Three Weeks Ago
+                              </DropdownItem>
+                              <DropdownItem onClick={this.toggleMove}>
+                                Save
+                              </DropdownItem>
                               </DropdownMenu>
                             </UncontrolledDropdown>
                           </div>
