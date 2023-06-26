@@ -50,35 +50,22 @@ export const Header = props => {
   const location = useLocation();
   const dispatch = useDispatch();
 
-  const { isAuthenticated, user, firstName, profilePic, isViewingAnotherUser } = (location.pathname.includes(
-    props.userProfile._id,
-  ) && location.pathname.includes('dashboard'))
-    ? {
-        isAuthenticated: true,
-        user: {
-          userid: props.userProfile._id,
-          role: props.userProfile.props,
-          permissions: props.userProfile.permissions,
-          expiryTimestamp: '',
-          iat: '',
-        },
-        firstName: props.userProfile.firstName,
-        profilePic: '',
-        isViewingAnotherUser: true
-      }
-    : {...props.auth, isViewingAnotherUser: false};
-
-  useEffect(() => {
-    console.log(location);
-    if (
-      location.pathname.includes(props.userProfile._id) &&
-      location.pathname.includes('dashboard')
-    ) {
-      console.log('has ID');
-    } else {
-      console.log('dont have ID');
-    }
-  }, [location, props.userProfile]);
+  const { isAuthenticated, user, firstName, profilePic, isViewingAnotherUser } =
+    location.pathname.includes(props.userProfile._id) && location.pathname.includes('dashboard')
+      ? {
+          isAuthenticated: true,
+          user: {
+            userid: props.userProfile._id,
+            role: props.userProfile.props,
+            permissions: props.userProfile.permissions,
+            expiryTimestamp: '',
+            iat: '',
+          },
+          firstName: props.userProfile.firstName,
+          profilePic: '',
+          isViewingAnotherUser: true,
+        }
+      : { ...props.auth, isViewingAnotherUser: false };
 
   const userPermissions = location.pathname.includes(props.userProfile._id)
     ? props.userProfile?.permissions?.frontPermissions
@@ -134,11 +121,15 @@ export const Header = props => {
                 </NavItem>
               )}
               <NavItem>
-                {isViewingAnotherUser ? (<NavLink tag={Link} to={`/dashboard/${user.userid}`}>
-                  <span className="dashboard-text-link">{DASHBOARD}</span>
-                </NavLink>) : (<NavLink tag={Link} to="/dashboard">
-                  <span className="dashboard-text-link">{DASHBOARD}</span>
-                </NavLink>)}
+                {isViewingAnotherUser ? (
+                  <NavLink tag={Link} to={`/dashboard/${user.userid}`}>
+                    <span className="dashboard-text-link">{DASHBOARD}</span>
+                  </NavLink>
+                ) : (
+                  <NavLink tag={Link} to="/dashboard">
+                    <span className="dashboard-text-link">{DASHBOARD}</span>
+                  </NavLink>
+                )}
               </NavItem>
               <NavItem>
                 <NavLink tag={Link} to={`/timelog/${user.userid}`}>
