@@ -587,34 +587,32 @@ export class WeeklySummary extends Component {
                             Enter your weekly summary below. (required){' '}
                             <WeeklySummaryContentTooltip tabId={tId} />
                           </div>
-                          <div>
-                            <UncontrolledDropdown>
-                              <DropdownToggle className="px-5 btn--dark-sea-green" caret>
-                                Move This Summary
-                              </DropdownToggle>
-                              <DropdownMenu>
-                              <DropdownItem disabled={activeTab ==='1'} 
+                          <UncontrolledDropdown>
+                            <DropdownToggle className="px-5 btn--dark-sea-green" caret>
+                              Move This Summary
+                            </DropdownToggle>
+                            <DropdownMenu>
+                            <DropdownItem disabled={activeTab ==='1'} 
                               onClick={() => this.setState({ moveSelect: "1" })}>
                                 This Week
-                              </DropdownItem>
-                              <DropdownItem disabled={activeTab ==='2'}
+                            </DropdownItem>
+                            <DropdownItem disabled={activeTab ==='2'}
                               onClick={() => this.setState({ moveSelect: "2" })}>
                                 Last Week
-                              </DropdownItem>
-                              <DropdownItem disabled={activeTab ==='3'}
+                            </DropdownItem>
+                            <DropdownItem disabled={activeTab ==='3'}
                               onClick={() => this.setState({ moveSelect: "3" })}>
                                 Week Before Last
-                              </DropdownItem>
-                              <DropdownItem disabled={activeTab ==='4'}
+                            </DropdownItem>
+                            <DropdownItem disabled={activeTab ==='4'}
                               onClick={() => this.setState({ moveSelect: "4" })}>
                                 Three Weeks Ago
-                              </DropdownItem>
-                              <DropdownItem onClick={this.toggleMove}>
+                            </DropdownItem>
+                            <DropdownItem onClick={this.toggleMove}>
                                 Save
-                              </DropdownItem>
-                              </DropdownMenu>
-                            </UncontrolledDropdown>
-                          </div>
+                            </DropdownItem>
+                            </DropdownMenu>
+                          </UncontrolledDropdown>
                           <CurrentPromptModal />
                         </Label>
                         <Editor
