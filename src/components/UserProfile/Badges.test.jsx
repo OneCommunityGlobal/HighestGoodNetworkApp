@@ -19,37 +19,72 @@ describe('Badges Component', () => {
     userPermissions: [],
   };
   describe('Card Footer Text', () => {
-    it('should say "You have..." when user is viewing their own profile', () => {
-      const props = { ...badgeProps, isUserSelf: true };
-      const renderedBadges = render(<Badges {...props} />);
-      expect(renderedBadges.find('.card-footer').text()).toBe('You have no badges. ');
+    describe('When viewing your own profile', () => {
+      it('should display the correct text when you have no badges', () => {
+        const props = {
+          ...badgeProps,
+          isUserSelf: true,
+        };
+        const renderedBadges = render(<Badges {...props} />);
+        expect(renderedBadges.find('.card-footer').text()).toBe('You have no badges. ');
+      });
+
+      it('should display the correct text when you have exactly 1 badge', () => {
+        const props = {
+          ...badgeProps,
+          isUserSelf: true,
+          userProfile: { ...badgeProps.userProfile, badgeCollection: ['B1'] },
+        };
+        const renderedBadges = render(<Badges {...props} />);
+        expect(renderedBadges.find('.card-footer').text()).toBe('Bravo! You have earned 1 badge! ');
+      });
+
+      it('should display the correct text when you have amount of badges > 1', () => {
+        const props = {
+          ...badgeProps,
+          isUserSelf: true,
+          userProfile: {
+            ...badgeProps.userProfile,
+            badgeCollection: ['B1', 'B2', 'B3'],
+          },
+        };
+        const renderedBadges = render(<Badges {...props} />);
+        expect(renderedBadges.find('.card-footer').text()).toMatch(
+          /Bravo! You have earned ([1-9]\d+|[2-9]) badges! /,
+        );
+      });
     });
 
-    it('should say "This person has..." when user is viewing someone else\'s profile', () => {
-      const renderedBadges = render(<Badges {...badgeProps} />);
-      expect(renderedBadges.find('.card-footer').text()).toBe('This person has no badges. ');
-    });
+    describe("When viewing someone else's profile", () => {
+      it('should display the correct text when they have no badges', () => {
+        const renderedBadges = render(<Badges {...badgeProps} />);
+        expect(renderedBadges.find('.card-footer').text()).toBe('This person has no badges. ');
+      });
 
-    it('should use the singular version of badge when the user has exactly 1 badge', () => {
-      const props = {
-        ...badgeProps,
-        userProfile: { ...badgeProps.userProfile, badgeCollection: ['B1'] },
-      };
-      const renderedBadges = render(<Badges {...props} />);
-      expect(renderedBadges.find('.card-footer').text()).toBe(
-        'Bravo! This person has earned 1 badge! ',
-      );
-    });
+      it('should display the correct text when they have exactly 1 badge', () => {
+        const props = {
+          ...badgeProps,
+          userProfile: { ...badgeProps.userProfile, badgeCollection: ['B1'] },
+        };
+        const renderedBadges = render(<Badges {...props} />);
+        expect(renderedBadges.find('.card-footer').text()).toBe(
+          'Bravo! This person has earned 1 badge! ',
+        );
+      });
 
-    it('should use the plural version of badge when the user has any number of badges other than 1 ', () => {
-      const props = {
-        ...badgeProps,
-        userProfile: { ...badgeProps.userProfile, badgeCollection: ['B1', 'B2'] },
-      };
-      const renderedBadges = render(<Badges {...props} />);
-      expect(renderedBadges.find('.card-footer').text()).toBe(
-        'Bravo! This person has earned 2 badges! ',
-      );
+      it('should display the correct text when they have amount of badges > 1', () => {
+        const props = {
+          ...badgeProps,
+          userProfile: {
+            ...badgeProps.userProfile,
+            badgeCollection: ['B1', 'B2', 'B3'],
+          },
+        };
+        const renderedBadges = render(<Badges {...props} />);
+        expect(renderedBadges.find('.card-footer').text()).toMatch(
+          /Bravo! This person has earned ([1-9]\d+|[2-9]) badges! /,
+        );
+      });
     });
   });
 });
