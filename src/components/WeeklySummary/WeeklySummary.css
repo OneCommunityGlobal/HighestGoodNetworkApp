@@ -3,7 +3,7 @@
  * "Codebase Rules & Conventions" document recommendations
  */
 
- .btn--dark-sea-green {
+.btn--dark-sea-green {
   background-color: #c9d6c6 !important;
   border-color: #225163 !important;
   color: #225163 !important;
@@ -108,6 +108,12 @@
   background-color: #fff;
   border: 1px solid transparent;
   border-color: #fff #dee2e6 #dee2e6;
+}
+
+.summary-instructions-row {
+  display: flex;
+  justify-content: space-between;
+  margin-right: 0;
 }
 
 @media screen and (min-width: 992px) {
