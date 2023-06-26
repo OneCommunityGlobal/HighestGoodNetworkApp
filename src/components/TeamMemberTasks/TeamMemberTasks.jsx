@@ -36,6 +36,7 @@ const TeamMemberTasks = props => {
   const [fortyEightHoursTimeEntries, setFortyEightHoursTimeEntries] = useState([]);
   const [seventyTwoHoursTimeEntries, setSeventyTwoHoursTimeEntries] = useState([]);
   const [finishLoading, setFinishLoading] = useState(false);
+  const [taskModalOption, setTaskModalOption] = useState('');
 
   //added it to keep track if the renderTeamsList should run
   const [shouldRun, setShouldRun] = useState(false);
@@ -108,6 +109,7 @@ const TeamMemberTasks = props => {
     };
     submitTasks(newTask);
     dispatch(fetchTeamMembersTask(userId, props.auth.user.userid, false));
+    props.handleUpdateTask();
   };
 
   const submitTasks = async updatedTasks => {
@@ -115,7 +117,7 @@ const TeamMemberTasks = props => {
     try {
       await axios.put(url, updatedTasks.updatedTask);
     } catch (error) {
-      console.log(error);
+      toast.error('Failed to update task');
     }
   };
 
@@ -130,6 +132,16 @@ const TeamMemberTasks = props => {
     setCurrentUserId(userId);
     setCurrentTask(task);
     setClickedToShowModal(true);
+  };
+
+  const handleRemoveFromTaskModal = (userId, task) => {
+    setCurrentUserId(userId);
+    setCurrentTask(task);
+    setClickedToShowModal(true);
+  };
+
+  const handleTaskModalOption = option => {
+    setTaskModalOption(option);
   };
 
   const handleTaskNotificationRead = (userId, taskId, taskNotificationId) => {
@@ -374,6 +386,7 @@ const TeamMemberTasks = props => {
           task={currentTask}
           setCurrentUserId={setCurrentUserId}
           setClickedToShowModal={setClickedToShowModal}
+          taskModalOption={taskModalOption}
         />
       )}
       <div className="table-container">
@@ -433,29 +446,37 @@ const TeamMemberTasks = props => {
               teamList.map((user, userIndex) => {
                 if (!isTimeLogActive) {
                   return (
-                    <>
-                      <TeamMemberTask
-                        user={user}
-                        userIndex={userIndex}
-                        key={user.personId}
-                        handleOpenTaskNotificationModal={handleOpenTaskNotificationModal}
-                        handleMarkAsDoneModal={handleMarkAsDoneModal}
-                        handleFollowUp={handleFollowUp}
-                        userRole={userRole}
-                      />
-                    </>
+                    <TeamMemberTask
+                      user={user}
+                      key={user.personId}
+                      userIndex={userIndex}
+                      handleOpenTaskNotificationModal={handleOpenTaskNotificationModal}
+                      handleMarkAsDoneModal={handleMarkAsDoneModal}
+                      handleFollowUp={handleFollowUp}
+                      handleRemoveFromTaskModal={handleRemoveFromTaskModal}
+                      handleTaskModalOption={handleTaskModalOption}
+                      userRole={userRole}
+                      updateTask={onUpdateTask}
+                      roles={props.roles}
+                      userPermissions={props.userPermissions}
+                    />
                   );
                 } else {
                   return (
                     <>
                       <TeamMemberTask
                         user={user}
-                        userIndex={userIndex}
                         key={user.personId}
+                        userIndex={userIndex}
                         handleOpenTaskNotificationModal={handleOpenTaskNotificationModal}
                         handleMarkAsDoneModal={handleMarkAsDoneModal}
                         handleFollowUp={handleFollowUp}
+                        handleRemoveFromTaskModal={handleRemoveFromTaskModal}
+                        handleTaskModalOption={handleTaskModalOption}
                         userRole={userRole}
+                        updateTask={onUpdateTask}
+                        roles={props.roles}
+                        userPermissions={props.userPermissions}
                       />
                       {timeEntriesList.length > 0 &&
                         timeEntriesList
