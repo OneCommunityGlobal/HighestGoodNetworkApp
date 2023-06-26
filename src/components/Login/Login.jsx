@@ -52,7 +52,6 @@ export class Login extends Form {
     const email = this.state.data.email;
     const password = this.state.data.password;
     this.props.loginUser({ email, password });
-    this.setState({ errors: this.props.errors });
   };
 
   render() {
