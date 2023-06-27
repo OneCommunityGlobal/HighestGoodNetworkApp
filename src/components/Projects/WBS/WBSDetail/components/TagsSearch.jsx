@@ -13,6 +13,8 @@ function TagsSearch({ placeholder, members, addResources, removeResource, resour
     event.target.closest('.container-fluid').querySelector('input').value = '';
   };
 
+  // sorting using the input letter, giving highest priority to first name starting with that letter, 
+  // and then the last name starting with that letter, followed by other names that include that letter
   const sortByStartingWith = (keyword) => {
 
     const newFilterList = members
@@ -23,12 +25,21 @@ function TagsSearch({ placeholder, members, addResources, removeResource, resour
       );
 
     const finalList = newFilterList.sort((a, b) => {
-      const aStarts = `${a.firstName} ${a.lastName}`.toLowerCase().startsWith(keyword.toLowerCase());
-      const bStarts = `${b.firstName} ${b.lastName}`.toLowerCase().startsWith(keyword.toLowerCase());
-      if (aStarts && bStarts) return `${a.firstName} ${a.lastName}`.localeCompare(`${b.firstName} ${b.lastName}`);
+      // check if the first name starts with the input letter
+      const aStarts = `${a.firstName}`.toLowerCase().startsWith(keyword.toLowerCase());
+      const bStarts = `${b.firstName}`.toLowerCase().startsWith(keyword.toLowerCase());
+      if (aStarts && bStarts) return `${a.firstName}`.toLowerCase().localeCompare(`${b.firstName}`.toLowerCase())
       if (aStarts && !bStarts) return -1;
-      if (!aStarts && bStarts) return 1; cb
-      return `${a.firstName} ${a.lastName}`.localeCompare(`${b.firstName} ${b.lastName}`);
+      if (!aStarts && bStarts) return 1;
+      if (!aStarts && !bStarts) {
+        // if the first name does not start with input letter, check if the last name starts with the input letter
+        const aLastName = `${a.lastName}`.toLowerCase().startsWith(keyword.toLowerCase());
+        const bLastName = `${b.lastName}`.toLowerCase().startsWith(keyword.toLowerCase());
+        if (aLastName && bLastName) return `${a.lastName}`.toLowerCase().localeCompare(`${b.lastName}`.toLowerCase())
+        if (aLastName && !bLastName) return -1
+        if (!aLastName && bLastName) return 1;
+      }
+      return `${a.firstName} ${a.lastName}`.toLowerCase().localeCompare(`${b.firstName} ${b.lastName}`.toLowerCase());
     })
 
     return finalList
