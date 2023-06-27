@@ -25,11 +25,13 @@ const EditTaskModal = props => {
 
   // get this task by id
   const [thisTask, setThisTask] = useState();
+  const [oldTask, setOldTask] = useState();
   useEffect(() => {
     const fetchTaskData = async () => {
       try {
         const res = await axios.get(ENDPOINTS.GET_TASK(props.taskId));
         setThisTask(res?.data || {});
+        setOldTask(res?.data || {});
         setCategory(res.data.category);
         setAssigned(res.data.isAssigned);
       } catch (error) {
@@ -221,6 +223,7 @@ const EditTaskModal = props => {
       props.taskId,
       updatedTask,
       hasPermission(role, 'editTask', roles, userPermissions),
+      oldTask
     );
     setTimeout(() => {
       props.fetchAllTasks(props.wbsId);
