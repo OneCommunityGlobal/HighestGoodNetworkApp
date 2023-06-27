@@ -13,46 +13,47 @@ function TagsSearch({ placeholder, members, addResources, removeResource, resour
     event.target.closest('.container-fluid').querySelector('input').value = '';
   };
 
-  // sorting using the input letter, giving highest priority to first name starting with that letter, 
+  // sorting using the input letter, giving highest priority to first name starting with that letter,
   // and then the last name starting with that letter, followed by other names that include that letter
-  const sortByStartingWith = (keyword) => {
-
-    const newFilterList = members
-      .filter(member =>
-        !resourceItems.some(resourceItem =>
-          resourceItem.name === `${member.firstName} ${member.lastName}`
-        ) && `${member.firstName} ${member.lastName}`.toLowerCase().includes(keyword.toLowerCase())
-      );
+  const sortByStartingWith = keyword => {
+    const newFilterList = members.filter(
+      member =>
+        !resourceItems.some(
+          resourceItem => resourceItem.name === `${member.firstName} ${member.lastName}`,
+        ) && `${member.firstName} ${member.lastName}`.toLowerCase().includes(keyword.toLowerCase()),
+    );
 
     const finalList = newFilterList.sort((a, b) => {
       // check if the first name starts with the input letter
       const aStarts = `${a.firstName}`.toLowerCase().startsWith(keyword.toLowerCase());
       const bStarts = `${b.firstName}`.toLowerCase().startsWith(keyword.toLowerCase());
-      if (aStarts && bStarts) return `${a.firstName}`.toLowerCase().localeCompare(`${b.firstName}`.toLowerCase())
+      if (aStarts && bStarts)
+        return `${a.firstName}`.toLowerCase().localeCompare(`${b.firstName}`.toLowerCase());
       if (aStarts && !bStarts) return -1;
       if (!aStarts && bStarts) return 1;
       if (!aStarts && !bStarts) {
         // if the first name does not start with input letter, check if the last name starts with the input letter
         const aLastName = `${a.lastName}`.toLowerCase().startsWith(keyword.toLowerCase());
         const bLastName = `${b.lastName}`.toLowerCase().startsWith(keyword.toLowerCase());
-        if (aLastName && bLastName) return `${a.lastName}`.toLowerCase().localeCompare(`${b.lastName}`.toLowerCase())
-        if (aLastName && !bLastName) return -1
+        if (aLastName && bLastName)
+          return `${a.lastName}`.toLowerCase().localeCompare(`${b.lastName}`.toLowerCase());
+        if (aLastName && !bLastName) return -1;
         if (!aLastName && bLastName) return 1;
       }
-      return `${a.firstName} ${a.lastName}`.toLowerCase().localeCompare(`${b.firstName} ${b.lastName}`.toLowerCase());
-    })
+      return `${a.firstName} ${a.lastName}`
+        .toLowerCase()
+        .localeCompare(`${b.firstName} ${b.lastName}`.toLowerCase());
+    });
 
-    return finalList
-
-  }
-
+    return finalList;
+  };
 
   const handleFilter = event => {
     const searchWord = event.target.value;
     if (searchWord === '') {
       setFilteredData([]);
     } else {
-      const newFilter = sortByStartingWith(searchWord)
+      const newFilter = sortByStartingWith(searchWord);
       setIsHidden(false);
       setFilteredData(newFilter);
     }
@@ -67,14 +68,14 @@ function TagsSearch({ placeholder, members, addResources, removeResource, resour
             placeholder={placeholder}
             className="border border-dark rounded form-control px-2"
             onChange={handleFilter}
-
           />
           {filteredData.length !== 0 ? (
             <ul
-              className={`my-element ${isHidden
-                ? 'd-none'
-                : 'dropdown-menu d-flex flex-column align-items-start justify-content-start w-auto scrollbar shadow-lg rounded-3 position-absolute top-8 start-0 z-3 bg-light'
-                }`}
+              className={`my-element ${
+                isHidden
+                  ? 'd-none'
+                  : 'dropdown-menu d-flex flex-column align-items-start justify-content-start w-auto scrollbar shadow-lg rounded-3 position-absolute top-8 start-0 z-3 bg-light'
+              }`}
             >
               {filteredData.slice(0, 10).map((member, index) => (
                 <a key={member._id} className="text-decoration-none w-100">
@@ -84,7 +85,7 @@ function TagsSearch({ placeholder, members, addResources, removeResource, resour
                         ? 'dropdown-item border-bottom fs-6 w-100 p-1'
                         : 'dropdown-item border-bottom fs-6 w-100 p-1'
                     }
-                    onClick={(event) => handleClick(event, member)}
+                    onClick={event => handleClick(event, member)}
                   >
                     {member.firstName + ' ' + member.lastName}
                   </li>
@@ -98,7 +99,10 @@ function TagsSearch({ placeholder, members, addResources, removeResource, resour
       </div>
       <div className="d-flex flex-wrap align-items-start justify-content-start">
         {resourceItems?.map((elm, index) => (
-          <ul key={`${elm._id}-${index}`} className="d-flex align-items-start justify-content-start m-0 p-1">
+          <ul
+            key={`${elm._id}-${index}`}
+            className="d-flex align-items-start justify-content-start m-0 p-1"
+          >
             <TagSent elm={elm} removeResource={removeResource} />
           </ul>
         ))}
