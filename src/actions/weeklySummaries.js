@@ -44,7 +44,7 @@ export const getWeeklySummaries = userId => {
       const { weeklySummariesCount, weeklySummaries, mediaUrl, adminLinks } = response.data;
       let summaryDocLink;
       for (let link in adminLinks) {
-        if (adminLinks[link].Name === "Weekly Summaries") {
+        if (adminLinks[link].Name === 'Dropbox Link') {
           summaryDocLink = adminLinks[link].Link;
           break; 
         }
@@ -77,7 +77,7 @@ export const updateWeeklySummaries = (userId, weeklySummariesData) => {
       const { mediaUrl, weeklySummaries, weeklySummariesCount } = weeklySummariesData;
       // update the changes on weekly summaries link into admin links
       for (let link of adminLinks) {
-        if (link.Name === "Weekly Summaries") {
+        if (link.Name === 'Dropbox Link') {
           link.Link = mediaUrl;
           break; 
         }
