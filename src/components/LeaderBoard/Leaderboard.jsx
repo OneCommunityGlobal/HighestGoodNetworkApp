@@ -4,7 +4,7 @@ import { isEqual } from 'lodash';
 import { Link } from 'react-router-dom';
 import { Table, Progress, Modal, ModalBody, ModalFooter, ModalHeader, Button } from 'reactstrap';
 import Alert from 'reactstrap/lib/Alert';
-import { hasLeaderboardPermissions, assignStarDotColors, showStar, showBlueTime } from 'utils/leaderboardPermissions';
+import { hasLeaderboardPermissions, assignStarDotColors, showStar } from 'utils/leaderboardPermissions';
 
 function useDeepEffect(effectFunc, deps) {
   const isFirst = useRef(true);
@@ -311,14 +311,8 @@ const LeaderBoard = ({
                 <td className="align-middle">
                   <span 
                   title="Total time"
-                  style={{
-                    color: item.totalintangibletime_hrs > 0 
-                    ? '#007bff'
-                    : 'black',
-                    fontWeight: item.totalintangibletime_hrs > 0
-                    ? 'bold'
-                    : null
-                  }}>{item.totaltime}</span>
+                  className={ item.totalintangibletime_hrs > 0 ? 'boldClass' : null }
+                  >{item.totaltime}</span>
                 </td>
               </tr>
             ))}
