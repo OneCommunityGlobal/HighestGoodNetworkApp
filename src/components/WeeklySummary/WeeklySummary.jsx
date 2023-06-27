@@ -216,7 +216,6 @@ export class WeeklySummary extends Component {
     this.setState({movePopup: !showPopup});
   }
 
-  //modal show 
   toggleShowPopup = showPopup => {
     const mediaChangeConfirm = this.state.mediaChangeConfirm;
     if (!mediaChangeConfirm){
@@ -226,13 +225,9 @@ export class WeeklySummary extends Component {
     }
   };
 
-  handleMoveSelect = event => {
+  handleMoveSelect = moveWeek => {
     const moveSelect= this.state.moveSelect;
-    const value = event.target.value;
-    console.log("value", value);
-    this.setState({moveSelect: value});
-    console.log("value2", this.state.moveSelect);
-    // this.toggleMovePopup;
+    this.setState({ moveSelect: moveWeek, movePopup:true });
   };
 
   handleMove = () =>{
@@ -274,7 +269,8 @@ export class WeeklySummary extends Component {
           break;
       }
     }
-    // this.toggleMovePopup;
+    const movePop = this.state.movePopup
+    this.toggleMovePopup(movePop);
     this.toggleTab(moveSelect);
     this.setState({formElements});
   };
@@ -608,23 +604,19 @@ export class WeeklySummary extends Component {
                             </DropdownToggle>
                             <DropdownMenu>
                             <DropdownItem disabled={activeTab ==='1'} 
-                              value = '1' 
-                              onClick={this.handleMoveSelect}>
+                              onClick={()=>this.handleMoveSelect('1')}>
                                 This Week
                             </DropdownItem>
                             <DropdownItem disabled={activeTab ==='2'}
-                            value = '2' 
-                            onClick={this.handleMoveSelect}>
+                            onClick={()=>this.handleMoveSelect('2')}>
                                 Last Week
                             </DropdownItem>
                             <DropdownItem disabled={activeTab ==='3'}
-                              value = '3' 
-                              onClick={this.handleMoveSelect}>
+                              onClick={()=>this.handleMoveSelect('3')}>
                                 Week Before Last
                             </DropdownItem>
                             <DropdownItem disabled={activeTab ==='4'}
-                              value = '4' 
-                              onClick={this.handleMoveSelect}>
+                              onClick={()=>this.handleMoveSelect('4')}>
                                 Three Weeks Ago
                             </DropdownItem>
                             </DropdownMenu>
@@ -721,7 +713,7 @@ export class WeeklySummary extends Component {
                     </ModalBody>
                     <ModalFooter>
                     <Button 
-                      onClick={this.handleMove}>Confirm</Button>
+                      onClick={()=>this.handleMove(this.state.moveSelect)}>Confirm</Button>
                       <Button 
                       onClick={this.toggleMovePopup}>Close</Button>
                     </ModalFooter>
