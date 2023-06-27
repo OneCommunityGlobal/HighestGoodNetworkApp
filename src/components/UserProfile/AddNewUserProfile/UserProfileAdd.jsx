@@ -64,6 +64,7 @@ class AddUserProfile extends Component {
         privacySettings: { blueSquares: true, email: true, phoneNumber: true },
         jobTitle: '',
         googleDoc: '',
+        summaryDoc: '',
         timeZone: '',
         location: '',
         showphone: true,
@@ -300,15 +301,32 @@ class AddUserProfile extends Component {
                 </Row>
                 <Row>
                   <Col md={{ size: 3, offset: 1 }} className="text-md-right my-2">
-                    <Label>Weekly Summaries Link</Label>
+                    <Label>Google Doc</Label>
                   </Col>
                   <Col md="6">
                     <FormGroup>
                       <Input
                         type="text"
-                        name="Weekly Summaries Link"
+                        name="googleDoc"
                         id="googleDoc"
                         value={this.state.userProfile.googleDoc}
+                        onChange={this.handleUserProfile}
+                        placeholder="Admin Document"
+                      />
+                    </FormGroup>
+                  </Col>
+                </Row>
+                <Row>
+                  <Col md={{ size: 3, offset: 1 }} className="text-md-right my-2">
+                    <Label>Weekly Summaries Links</Label>
+                  </Col>
+                  <Col md="6">
+                    <FormGroup>
+                      <Input
+                        type="text"
+                        name="summaryDoc"
+                        id="summaryDoc"
+                        value={this.state.userProfile.summaryDoc}
                         onChange={this.handleUserProfile}
                         placeholder="DropBox Folder's Link"
                       />
@@ -524,6 +542,7 @@ class AddUserProfile extends Component {
       privacySettings,
       collaborationPreference,
       googleDoc,
+      summaryDoc,
       jobTitle,
       timeZone,
       location,
@@ -555,7 +574,10 @@ class AddUserProfile extends Component {
     this.setState({ formSubmitted: true });
 
     if (googleDoc) {
-      userData.adminLinks.push({ Name: 'Weekly Summaries Link', Link: googleDoc });
+      userData.adminLinks.push({ Name: 'Google Doc', Link: googleDoc });
+    }
+    if (summaryDoc) {
+      userData.adminLinks.push({ Name: 'Weekly Summaries', Link: summaryDoc });
     }
     if (this.fieldsAreValid()) {
       this.setState({ showphone: false });
@@ -851,6 +873,14 @@ class AddUserProfile extends Component {
           },
         });
         break;
+      case 'summaryDoc':
+          this.setState({
+            userProfile: {
+              ...userProfile,
+              [event.target.id]: event.target.value,
+            },
+          });
+          break;
       case 'emailPubliclyAccessible':
         this.setState({
           userProfile: {
