@@ -64,7 +64,7 @@ class AddUserProfile extends Component {
         privacySettings: { blueSquares: true, email: true, phoneNumber: true },
         jobTitle: '',
         googleDoc: '',
-        summaryDoc: '',
+        dropboxDoc: '',
         timeZone: '',
         location: '',
         showphone: true,
@@ -300,8 +300,8 @@ class AddUserProfile extends Component {
                   </Col>
                 </Row>
                 <Row>
-                  <Col md={{ size: 3, offset: 1 }} className="text-md-right my-2">
-                    <Label>Google Doc</Label>
+                  <Col md={{ size: 4}} className="text-md-right my-2">
+                    <Label>Admin Document</Label>
                   </Col>
                   <Col md="6">
                     <FormGroup>
@@ -311,24 +311,24 @@ class AddUserProfile extends Component {
                         id="googleDoc"
                         value={this.state.userProfile.googleDoc}
                         onChange={this.handleUserProfile}
-                        placeholder="Admin Document"
+                        placeholder="Google Doc"
                       />
                     </FormGroup>
                   </Col>
                 </Row>
                 <Row>
-                  <Col md={{ size: 3, offset: 1 }} className="text-md-right my-2">
-                    <Label>Weekly Summaries Links</Label>
+                  <Col md={{ size: 4 }} className="text-md-right my-2">
+                    <Label>Link to Media Files</Label>
                   </Col>
                   <Col md="6">
                     <FormGroup>
                       <Input
                         type="text"
-                        name="summaryDoc"
-                        id="summaryDoc"
-                        value={this.state.userProfile.summaryDoc}
+                        name="dropboxDoc"
+                        id="dropboxDoc"
+                        value={this.state.userProfile.dropboxDoc}
                         onChange={this.handleUserProfile}
-                        placeholder="DropBox Folder's Link"
+                        placeholder="DropBox Folder"
                       />
                     </FormGroup>
                   </Col>
@@ -542,7 +542,7 @@ class AddUserProfile extends Component {
       privacySettings,
       collaborationPreference,
       googleDoc,
-      summaryDoc,
+      dropboxDoc,
       jobTitle,
       timeZone,
       location,
@@ -576,8 +576,8 @@ class AddUserProfile extends Component {
     if (googleDoc) {
       userData.adminLinks.push({ Name: 'Google Doc', Link: googleDoc });
     }
-    if (summaryDoc) {
-      userData.adminLinks.push({ Name: 'Weekly Summaries', Link: summaryDoc });
+    if(dropboxDoc) {
+      userData.adminLinks.push({ Name: 'Dropbox Link', Link: dropboxDoc });
     }
     if (this.fieldsAreValid()) {
       this.setState({ showphone: false });
@@ -873,7 +873,7 @@ class AddUserProfile extends Component {
           },
         });
         break;
-      case 'summaryDoc':
+      case 'dropboxDoc':
           this.setState({
             userProfile: {
               ...userProfile,
