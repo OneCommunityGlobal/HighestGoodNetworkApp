@@ -13,6 +13,7 @@ import {
   getAllSummaryGroup,
   deleteSummaryGroup,
   updateSummaryGroup,
+  extractMembers,
 } from 'actions/allSummaryAction';
 //import { getAllUserProfile } from 'actions/userManagement';
 import { TEAM_MEMBER, SUMMARY_RECEIVER, SUMMARY_GROUP, ACTIONS, ACTIVE } from 'languages/en/ui';
@@ -163,10 +164,17 @@ class SummaryManagement extends Component {
       selectedSummaryGroup: name,
       selectedSummaryGroupId: summaryGroupId,
     });
+
     try {
-      const response = await axios.get(ENDPOINTS.SUMMARY_GROUP_TEAM_MEMBERS(summaryGroupId));
-      const members = response.data;
-      this.setState({ members: response.data });
+      //Calling the members from Redux
+      const result = await this.props.extractMembers(summaryGroupId);
+      const members = { teamMembers: result.teamMembers };
+      //Calling the members from MongoDB
+      // const response = await axios.get(ENDPOINTS.SUMMARY_GROUP_TEAM_MEMBERS(summaryGroupId));
+      // const members = response.data;
+
+      // this.setState({ members: response.data });
+      this.setState({ members: members });
     } catch (error) {
       console.log(error);
     }
@@ -213,7 +221,13 @@ class SummaryManagement extends Component {
         ENDPOINTS.SUMMARY_GROUP_TEAM_MEMBERS(selectedSummaryGroupId),
         requestData,
       );
-      this.getTeamMembers(selectedSummaryGroupId);
+      //updating the member state variable directly with entired value
+      const { members } = this.state;
+      const newTeamList = [...members.teamMembers, requestData];
+      this.setState({ members: { ...members, teamMembers: newTeamList } });
+      //Updating Redux from MongoDB lazily
+      this.props.getAllSummaryGroup();
+      // this.getTeamMembers(selectedSummaryGroupId);
     } catch (error) {
       console.log(error);
     }
@@ -485,4 +499,5 @@ export default connect(mapStateToProps, {
   getAllSummaryGroup,
   deleteSummaryGroup,
   updateSummaryGroup,
+  extractMembers,
 })(SummaryManagement);

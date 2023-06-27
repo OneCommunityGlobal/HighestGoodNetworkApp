@@ -76,11 +76,20 @@ export const updateSummaryGroup = (summaryGroupName, summaryGroupId, isActive) =
   };
 };
 
+export const extractMembers = id => {
+  return async (dispatch, getState) => {
+    try {
+      const summarydata = getState().allSummaryGroups;
+      const groupObject = summarydata.allSummaryGroups.filter(group => group._id === id)[0]
+        .teamMembers;
 
-
-
-
-
-
-
-
+      const result = await Promise.resolve({ teamMembers: groupObject });
+      const teamMembers = { teamMembers: result.teamMembers };
+      return teamMembers;
+      // console.log('Data from redux Store:', groupObject[0].teamMembers);
+    } catch (err) {
+      console.error('extractMembers:', err);
+      return null;
+    }
+  };
+};
