@@ -697,7 +697,7 @@ export class WeeklySummary extends Component {
                         id="moveConfirm"
                         name="moveConfirm"
                         type="checkbox"
-                        label="Opps, I need to move summaries to the correct week"
+                        label="Oops, I need to move summaries to the correct week"
                         checked={this.state.moveConfirm}
                         valid={this.state.moveConfirm}
                         onChange={this.handleMoveCheckboxChange}
