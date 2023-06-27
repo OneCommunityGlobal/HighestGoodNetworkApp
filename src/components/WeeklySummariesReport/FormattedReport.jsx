@@ -68,9 +68,18 @@ const FormattedReport = ({ summaries, weekIndex, bioCanEdit }) => {
     }
 
     const summaryText = summary?.weeklySummaries[weekIndex]?.summary;
-
+    let summaryDate = moment()
+                        .tz('America/Los_Angeles')
+                        .endOf('week')
+                        .subtract(weekIndex, 'week')
+                        .format('YYYY-MMM-DD')
+    let summaryDateText = `Weekly Summary (${summaryDate}):`;
     const summaryContent = (() => {
       if (summaryText) {
+        summaryDate = moment(summary.weeklySummaries[weekIndex]?.uploadDate)
+                      .tz('America/Los_Angeles')
+                      .format('YYYY-MMM-DD')
+        summaryDateText =`Summary Submitted On (${summaryDate}):`
         const style = {};
         switch (summary?.weeklySummaryOption) {
           case 'Team':
@@ -103,18 +112,7 @@ const FormattedReport = ({ summaries, weekIndex, bioCanEdit }) => {
     return (
       <>
         <p>
-          <b>Weekly Summary</b> (
-          {summary.weeklySummaries[weekIndex]?.summary &&
-          summary.weeklySummaries[weekIndex]?.uploadDate
-            ? moment(summary.weeklySummaries[weekIndex]?.uploadDate)
-                .tz('America/Los_Angeles')
-                .format('YYYY-MMM-DD')
-            : moment()
-                .tz('America/Los_Angeles')
-                .endOf('week')
-                .subtract(weekIndex, 'week')
-                .format('YYYY-MMM-DD')}
-          ):
+          <b>{summaryDateText}</b>
         </p>
         {summaryContent}
       </>
