@@ -12,24 +12,20 @@
   background: linear-gradient(90deg, #a0a0a0 0%, #c0c0c0 50%, #a0a0a0 100%);
   background-size: 200% 100%;
   animation: skeleton-loading-animation 1.5s ease-in-out infinite;
-  height: 20px; /* Adjust the height */
-  margin-bottom: 5px; /* Adjust the margin between items */
+  height: 20px; 
+  margin-bottom: 5px;
   border-radius: 5px;
-  margin-top: 10px;
-  margin-left: 40px;
-  margin-right: 300px;
+  margin: 0.625rem 18.75rem 0 2.5rem;
 }
 
 .skeleton-loading-item-add-intangible {
   background: linear-gradient(90deg, #a0a0a0 0%, #c0c0c0 50%, #a0a0a0 100%);
   background-size: 200% 100%;
   animation: skeleton-loading-animation 3s ease-in-out infinite;
-  height: 30px; /* Adjust the height */
-  margin-bottom: 10px; /* Adjust the margin between items */
+  height: 2rem;
   border-radius: 5px;
-  margin-top: 5px;
-  margin-left: 480px;
-  margin-right: 80px;
+  margin: 1rem 5rem 0.625rem 32rem;
+  width: 15rem;
 }
 
 /* Skeleton Loading for Timelog Filter */
@@ -44,10 +40,10 @@
   background: linear-gradient(90deg, #a0a0a0 0%, #c0c0c0 50%, #a0a0a0 100%);
   background-size: 200% 100%;
   animation: skeleton-loading-animation 1.5s ease-in-out infinite;
-  width: 40px; /* Adjust the width of each button */
-  height: 40px; /* Adjust the height of each button */
+  width: 40px; 
+  height: 40px; 
   border-radius: 5px;
-  margin-left: 15px; /* Adjust the gap between buttons */
+  margin-left: 15px; 
   padding-left: 15px;
 }
 
@@ -56,9 +52,48 @@
 .skeleton-loading-team-member-tasks-row {
   background: linear-gradient(90deg, #a0a0a0 0%, #c0c0c0 50%, #a0a0a0 100%);
   background-size: 200% 100%;  
-  height: 60px; /* Adjust the height */
+  height: 60px;
   animation: skeleton-loading-animation 1.5s ease-in-out infinite;
   
+}
+
+/* Skeleton Loading for Weekly Summary Due Date (click to add) */
+
+.skeleton-loading-weekly-summary {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid rgba(0, 0, 0, 0.125);  
+  background-color: #f3f4f6;
+  width: 16rem;
+  height: 8rem;
+  margin-top: 1.5rem;
+  background: linear-gradient(90deg, #a0a0a0 0%, #c0c0c0 50%, #a0a0a0 100%);
+  background-size: 200% 100%;
+  animation: skeleton-loading-animation 1.5s ease-in-out infinite;
+  border-radius: 5px;
+}
+
+/* Skeleton Loading for Weekly Summaries Report Page */
+
+.skeleton-loading-weekly-summaries-report{
+  display: flex;
+  flex-direction: column;
+  border: 1px solid rgba(0, 0, 0, 0.125);  
+  background-color: white;      
+  margin-top: 3rem;
+  padding-top: 1rem;
+}
+
+.skeleton-loading-weekly-summaries-report-item{  
+  border: 1px solid rgba(0, 0, 0, 0.125);  
+  background-color: #f3f4f6;
+  width: 35rem;
+  height: 1.5rem;
+  margin: 0.125rem 0 0.125rem 2rem;
+  background: linear-gradient(90deg, #a0a0a0 0%, #c0c0c0 50%, #a0a0a0 100%);
+  background-size: 200% 100%;
+  animation: skeleton-loading-animation 1.5s ease-in-out infinite;
+  border-radius: 5px;
 }
 
 @keyframes skeleton-loading-animation {

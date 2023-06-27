@@ -8,6 +8,7 @@ import classnames from 'classnames';
 import moment from 'moment';
 import 'moment-timezone';
 import Loading from '../common/Loading';
+import SkeletonLoading from '../common/SkeletonLoading';
 import { getWeeklySummariesReport } from '../../actions/weeklySummariesReport';
 import FormattedReport from './FormattedReport';
 import GeneratePdfReport from './GeneratePdfReport';
@@ -80,9 +81,9 @@ export class WeeklySummariesReport extends Component {
 
     if (loading) {
       return (
-        <Container fluid>
+        <Container fluid style={{ backgroundColor: '#f3f4f6' }}>
           <Row className="text-center" data-testid="loading">
-            <Loading />
+            <SkeletonLoading template="WeeklySummariesReport" />
           </Row>
         </Container>
       );
