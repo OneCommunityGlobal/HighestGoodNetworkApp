@@ -44,6 +44,7 @@ import WeeklySummary from '../WeeklySummary/WeeklySummary';
 import Loading from '../common/Loading';
 import hasPermission from '../../utils/permissions';
 import WeeklySummaries from './WeeklySummaries';
+import { useLocation } from 'react-router-dom';
 
 const doesUserHaveTaskWithWBS = (tasks, userId) => {
   
@@ -85,6 +86,7 @@ const Timelog = props => {
   const userTask = useSelector(state => state.userTask);
   const userIdByState = useSelector(state => state.auth.user.userid)
   const [isTaskUpdated, setIsTaskUpdated] = useState(false);
+  const location = useLocation()
 
   const defaultTab = () => {
     //change default to time log tab(1) in the following cases:
@@ -347,7 +349,7 @@ const Timelog = props => {
 
   useEffect(() => {
     // Does not run again (except once in development): load data
-    const userId = props?.match?.params?.userId || props.asUser; //Including fix for "undefined"
+    const userId = location.pathname.includes(userProfile._id) ? userProfile._id : props.asUser; //Including fix for "undefined"
     setUserId(userId);
     if (userProfile._id !== userId) {
       props.getUserProfile(userId);
@@ -384,7 +386,7 @@ const Timelog = props => {
     if (!userId && !state.isTimeEntriesLoading) {
       // skip the first render.
       setState(initialState);
-      const newId = props.match?.params?.userId || props.asUser;
+      const newId = location.pathname.includes(userProfile._id) ? userProfile._id : props.asUser
       if (userProfile._id !== newId) {
         props.getUserProfile(newId);
       }

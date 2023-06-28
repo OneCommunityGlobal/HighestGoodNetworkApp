@@ -32,6 +32,7 @@ import { ENDPOINTS } from '../../../utils/URL';
 import hasPermission from 'utils/permissions';
 import { getTimeEntryFormData } from './selectors';
 import checkNegativeNumber from 'utils/checkNegativeHours';
+import { useLocation } from 'react-router-dom';
 
 /**
  * Modal used to submit and edit tangible and intangible time entries.
@@ -49,6 +50,8 @@ import checkNegativeNumber from 'utils/checkNegativeHours';
  */
 const TimeEntryForm = props => {
   const { userId, edit, data, isOpen, toggle, timer, resetTimer } = props;
+
+  console.log(userId)
 
   const initialFormValues = {
     dateOfWork: moment()
@@ -84,6 +87,7 @@ const TimeEntryForm = props => {
   const { userProfile, currentUserRole } = useSelector(getTimeEntryFormData);
   const roles = useSelector(state => state.role.roles);
   const userPermissions = useSelector(state => state.auth.user?.permissions?.frontPermissions);
+  const location = useLocation()
 
   const dispatch = useDispatch();
 
@@ -137,7 +141,7 @@ const TimeEntryForm = props => {
         setTasks(activeTasks || []);
       })
       .catch(err => console.log(err));
-  }, [props.isTaskUpdated]);
+  }, [props.isTaskUpdated, location]);
 
   //grab form data before editing
   useEffect(() => {
