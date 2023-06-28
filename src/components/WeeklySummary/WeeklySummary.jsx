@@ -66,24 +66,29 @@ export class WeeklySummary extends Component {
       .endOf('week')
       .toISOString(),
     dueDateLastWeek: moment()
-      .tz('America/Los_Angeles')
-      .endOf('week')
-      .subtract(1, 'week')
-      .toISOString(),
+        .tz('America/Los_Angeles')
+        .endOf('week')
+        .subtract(1, 'week')
+        .toISOString(),
     dueDateBeforeLast: moment()
-      .tz('America/Los_Angeles')
-      .endOf('week')
-      .subtract(2, 'week')
-      .toISOString(),
+        .tz('America/Los_Angeles')
+        .endOf('week')
+        .subtract(2, 'week')
+        .toISOString(),
     dueDateThreeWeeksAgo: moment()
+        .tz('America/Los_Angeles')
+        .endOf('week')
+        .subtract(3, 'week')
+        .toISOString(),
+    uploadDatesElements: {
+      uploadDate: this.dueDate,
+      uploadDateLastWeek: this.dueDateLastWeek,
+      uploadDateBeforeLast: this.dueDateBeforeLast,
+      uploadDateThreeWeeksAgo: this.dueDateThreeWeeksAgo,
+    },
+    submittedDate: moment()
       .tz('America/Los_Angeles')
-      .endOf('week')
-      .subtract(3, 'week')
       .toISOString(),
-    uploadDate: this.dueDate,
-    uploadDateLastWeek: this.dueDateLastWeek,
-    uploadDateBeforeLast: this.dueDateBeforeLast,
-    uploadDateThreeWeeksAgo: this.dueDateThreeWeeksAgo,
     submittedCountInFourWeeks: 0,
     activeTab: '1',
     errors: {},
@@ -173,10 +178,12 @@ export class WeeklySummary extends Component {
         weeklySummariesCount: weeklySummariesCount || 0,
         mediaConfirm: false,
       },
-      uploadDate,
-      uploadDateLastWeek,
-      uploadDateBeforeLast,
-      uploadDateThreeWeeksAgo,
+      uploadDatesElements: {
+        uploadDate,
+        uploadDateLastWeek,
+        uploadDateBeforeLast,
+        uploadDateThreeWeeksAgo,
+      },
       dueDate,
       dueDateLastWeek,
       dueDateBeforeLast,
@@ -232,47 +239,52 @@ export class WeeklySummary extends Component {
 
   handleMove = () =>{
     const moveSelect = this.state.moveSelect;
-    let formElements = {...this.state.formElements};
+    let newformElements = {...this.state.formElements};
     const activeTab = this.state.activeTab;
     if (activeTab != moveSelect){
       let movedContent = "";
       switch (activeTab) {
         case "1":
-          movedContent = formElements.summary;
-          formElements.summary = "";
+          movedContent = newformElements.summary;
+          newformElements.summary = "";
           break;
         case "2":
-          movedContent = formElements.summaryLastWeek;
-          formElements.summaryLastWeek = "";
+          movedContent = newformElements.summaryLastWeek;
+          newformElements.summaryLastWeek = "";
           break;
         case "3":
-          movedContent = formElements.summaryBeforeLast;
-          formElements.summaryBeforeLast = "";
+          movedContent = newformElements.summaryBeforeLast;
+          newformElements.summaryBeforeLast = "";
           break;
         case "4":
-          movedContent = formElements.summaryThreeWeeksAgo;
-          formElements.summaryThreeWeeksAgo = "";
+          movedContent = newformElements.summaryThreeWeeksAgo;
+          newformElements.summaryThreeWeeksAgo = "";
           break;
       }
       switch (moveSelect) {
         case "1":
-          formElements.summary = movedContent;
+          newformElements.summary = movedContent;
           break;
         case "2":
-          formElements.summaryLastWeek = movedContent;
+          newformElements.summaryLastWeek = movedContent;
           break;
         case "3":
-          formElements.summaryBeforeLast = movedContent;
+          newformElements.summaryBeforeLast = movedContent;
           break;
         case "4":
-          formElements.summaryThreeWeeksAgo = movedContent;
+          newformElements.summaryThreeWeeksAgo = movedContent;
           break;
       }
     }
+    
     const movePop = this.state.movePopup
     this.toggleMovePopup(movePop);
-    this.toggleTab(moveSelect);
-    this.setState({formElements});
+    // this.toggleTab(moveSelect);
+    // this.setState({ formElements: newformElements});
+    return newformElements;
+    // console.log('moveafter',this.state.formElements)
+    // // this.setState({formElements:newformElements});
+    // // console.log('move', this.state.formElements)
   };
 
   // Minimum word count of 50 (handle words that also use non-ASCII characters by counting whitespace rather than word character sequences).
@@ -378,105 +390,73 @@ export class WeeklySummary extends Component {
     this.setState({ formElements, errors });
   };
 
-  handleSave = async event => {
-    event.preventDefault();
-    // Providing a custom toast id to prevent duplicate.
-    const toastIdOnSave = 'toast-on-save';
-
-    const errors = this.validate();
-    this.setState({ errors: errors || {} });
-    if (errors) return;
-
-    // After submitting summaries, count current submits in four week
-    let currentSubmittedCount = 0;
-    if (this.state.formElements.summary !== '') {
-      currentSubmittedCount += 1;
+  handleChangeInSummary = () => {
+      // Extract state variables for ease of access
+    let { submittedDate, formElements,uploadDatesElements, originSummaries, 
+      dueDate, dueDateLastWeek,dueDateBeforeLast,dueDateThreeWeeksAgo} = this.state;
+    let newformElements = { ...formElements };
+    //Move or not
+    const moveSelect = this.state.moveSelect;
+    const activeTab = this.state.activeTab;
+    if (moveSelect !== activeTab){
+      newformElements = this.handleMove();
     }
-    if (this.state.formElements.summaryLastWeek !== '') {
-      currentSubmittedCount += 1;
-    }
-    if (this.state.formElements.summaryBeforeLast !== '') {
-      currentSubmittedCount += 1;
-    }
-    if (this.state.formElements.summaryThreeWeeksAgo !== '') {
-      currentSubmittedCount += 1;
-    }
-    // Check whether has newly filled summary
+    // Define summaries, updateDates for easier reference
+    const summaries = ['summary', 'summaryLastWeek', 'summaryBeforeLast', 'summaryThreeWeeksAgo'];
+    const uploadDates = ['uploadDate', 'uploadDateLastWeek', 'uploadDateBeforeLast', 'uploadDateThreeWeeksAgo'];
+    // Calculate currentSubmittedCount using reduce
+    let currentSubmittedCount = summaries.reduce((count, summary) => {
+      return newformElements[summary] !== '' ? count + 1 : count;
+    }, 0);
     const diffInSubmittedCount = currentSubmittedCount - this.state.submittedCountInFourWeeks;
     if (diffInSubmittedCount !== 0) {
-      this.setState({ summariesCountShowing: this.state.formElements.weeklySummariesCount + 1 });
+      this.setState({ summariesCountShowing: newformElements.weeklySummariesCount + 1 });
     }
-
-    let newUploadDate = this.state.uploadDate;
-    let newUploadDateLastWeek = this.state.uploadDateLastWeek;
-    let newUploadDateBeforeLast = this.state.uploadDateBeforeLast;
-    let newUploadDateThreeWeeksAgo = this.state.uploadDateThreeWeeksAgo;
-    const originSummaries = { ...this.state.originSummaries };
-    if (this.state.formElements.summary !== this.state.originSummaries.summary) {
-      newUploadDate = moment()
-        .tz('America/Los_Angeles')
-        .toISOString();
-      originSummaries.summary = this.state.formElements.summary;
-      this.setState({ originSummaries, uploadDate: newUploadDate });
+    let newOriginSummaries = { ...originSummaries };
+    let newUploadDatesElements = { ...uploadDatesElements};
+    const updateSummary = (summary, uploadDate) => {
+      if (newformElements[summary] !== newOriginSummaries[summary]) {
+        newOriginSummaries[summary] = newformElements[summary];
+        newUploadDatesElements[uploadDate] = submittedDate;
+        this.setState({ formElements: newformElements, uploadDatesElements: newUploadDatesElements, originSummaries: newOriginSummaries });
+      }
+    };
+    // Loop through summaries and update state variables
+    for (let i = 0; i < summaries.length; i++) {
+      updateSummary(summaries[i], uploadDates[i]);
     }
-    if (this.state.formElements.summaryLastWeek !== this.state.originSummaries.summaryLastWeek) {
-      newUploadDateLastWeek = moment()
-        .tz('America/Los_Angeles')
-        .toISOString();
-      originSummaries.summaryLastWeek = this.state.formElements.summaryLastWeek;
-      this.setState({ originSummaries, uploadDateLastWeek: newUploadDateLastWeek });
-    }
-    if (
-      this.state.formElements.summaryBeforeLast !== this.state.originSummaries.summaryBeforeLast
-    ) {
-      newUploadDateBeforeLast = moment()
-        .tz('America/Los_Angeles')
-        .toISOString();
-      originSummaries.summaryBeforeLast = this.state.formElements.summaryBeforeLast;
-      this.setState({ originSummaries, uploadDateBeforeLast: newUploadDateBeforeLast });
-    }
-    if (
-      this.state.formElements.summaryThreeWeeksAgo !==
-      this.state.originSummaries.summaryThreeWeeksAgo
-    ) {
-      newUploadDateThreeWeeksAgo = moment()
-        .tz('America/Los_Angeles')
-        .toISOString();
-      originSummaries.summaryThreeWeeksAgo = this.state.formElements.summaryThreeWeeksAgo;
-      this.setState({ originSummaries, uploadDateThreeWeeksAgo: newUploadDateThreeWeeksAgo });
-    }
-
+    let dueDates = [dueDate, dueDateLastWeek,dueDateBeforeLast, dueDateThreeWeeksAgo];
+    // Construct the modified weekly summaries
     const modifiedWeeklySummaries = {
-      mediaUrl: this.state.formElements.mediaUrl.trim(),
-      weeklySummaries: [
-        {
-          summary: this.state.formElements.summary,
-          dueDate: this.state.dueDate,
-          uploadDate: newUploadDate,
-        },
-        {
-          summary: this.state.formElements.summaryLastWeek,
-          dueDate: this.state.dueDateLastWeek,
-          uploadDate: newUploadDateLastWeek,
-        },
-        {
-          summary: this.state.formElements.summaryBeforeLast,
-          dueDate: this.state.dueDateBeforeLast,
-          uploadDate: newUploadDateBeforeLast,
-        },
-        {
-          summary: this.state.formElements.summaryThreeWeeksAgo,
-          dueDate: this.state.dueDateThreeWeeksAgo,
-          uploadDate: newUploadDateThreeWeeksAgo,
-        },
-      ],
-      weeklySummariesCount: this.state.formElements.weeklySummariesCount + diffInSubmittedCount,
+      mediaUrl: newformElements.mediaUrl.trim(),
+      weeklySummaries: summaries.map((summary, i) => ({
+        summary: newformElements[summary],
+        dueDate: dueDates[i],
+        uploadDate: newUploadDatesElements[uploadDates[i]],
+      })),
+      weeklySummariesCount: newformElements.weeklySummariesCount + diffInSubmittedCount,
     };
 
-    const updateWeeklySummaries = this.props.updateWeeklySummaries(
+    // Update weekly summaries
+    return this.props.updateWeeklySummaries(
       this.props.asUser || this.props.currentUser.userid,
       modifiedWeeklySummaries,
     );
+  }
+
+  handleSave = async event => {
+    if (event) {
+      event.preventDefault();
+    }
+    // Providing a custom toast id to prevent duplicate.
+    const toastIdOnSave = 'toast-on-save';
+    //error detect
+    const errors = this.validate();
+    this.setState({ errors: errors || {} });
+    if (errors) return;
+    //get updated summary
+    const updateWeeklySummaries = this.handleChangeInSummary();
+
     let saveResult;
     if (updateWeeklySummaries) {
       saveResult = await updateWeeklySummaries();
@@ -499,7 +479,7 @@ export class WeeklySummary extends Component {
       });
     }
   };
-
+  
   render() {
     const {
       formElements,
@@ -685,7 +665,7 @@ export class WeeklySummary extends Component {
 
                     </ModalBody>
                     <ModalFooter>
-                      <Button checked={this.state.mediaChangeConfirm} onClick={this.handleMediaChange}>
+                      <Button onClick={this.handleMediaChange}>
                           Confirm
                       </Button>{' '}
                       <Button onClick={() => this.toggleShowPopup(this.state.editPopup)}>
@@ -713,7 +693,7 @@ export class WeeklySummary extends Component {
                     </ModalBody>
                     <ModalFooter>
                     <Button 
-                      onClick={()=>this.handleMove(this.state.moveSelect)}>Confirm</Button>
+                      onClick={this.handleSave}>Confirm and Save</Button>
                       <Button 
                       onClick={this.toggleMovePopup}>Close</Button>
                     </ModalFooter>
