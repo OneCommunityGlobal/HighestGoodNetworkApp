@@ -29,7 +29,7 @@ import './WeeklySummary.css';
 import { connect } from 'react-redux';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faExternalLinkAlt } from '@fortawesome/free-solid-svg-icons';
-import { Editor } from 'primereact/editor';
+import { Editor } from '@tinymce/tinymce-react';
 import { getWeeklySummaries, updateWeeklySummaries } from '../../actions/weeklySummaries';
 import DueDateTime from './DueDateTime';
 import moment from 'moment';
@@ -93,8 +93,11 @@ export class WeeklySummary extends Component {
     mediaChangeConfirm: false,
     moveSelect: '1',
     movePopup: false,
+<<<<<<< HEAD
     summaryLabel: '',
     wordCount: 0,
+=======
+>>>>>>> origin
   };
 
   async componentDidMount() {
@@ -190,8 +193,11 @@ export class WeeklySummary extends Component {
       editPopup: false,
       mediaChangeConfirm: false,
       moveSelect: '1',
+<<<<<<< HEAD
       summaryLabel: 'summary',
       wordCount: 0,
+=======
+>>>>>>> origin
     });
   }
 
@@ -336,15 +342,23 @@ export class WeeklySummary extends Component {
   handleInputChange = event => {
     event.persist();
     const { name, value } = event.target;
-
-    const errors = { ...this.state.errors };
-    const errorMessage = this.validateProperty(event.target);
-    if (errorMessage) errors[name] = errorMessage;
-    else delete errors[name];
-
     const formElements = { ...this.state.formElements };
-    formElements[name] = value;
-    this.setState({ formElements, errors });
+    if (this.state.mediaChangeConfirm){
+      const errors = { ...this.state.errors };
+      const errorMessage = this.validateProperty(event.target);
+      if (errorMessage) errors[name] = errorMessage;
+      else delete errors[name];
+      formElements[name] = value;
+      this.setState({formElements, errors });
+    }else{
+      this.toggleShowPopup(this.state.editPopup);
+    }
+  };
+   
+  handleMediaChange = event => {
+    const mediaChangeConfirm = this.state.mediaChangeConfirm;
+    this.setState({ mediaChangeConfirm: true });
+    this.toggleShowPopup(this.state.editPopup);
   };
    
   handleMediaChange = event => {
@@ -353,20 +367,17 @@ export class WeeklySummary extends Component {
     this.toggleShowPopup(this.state.editPopup);
   };
 
-  handleEditorChange = (content) => {
+  handleEditorChange = (content, editor) => {
     // Filter out blank pagagraphs inserted by tinymce replacing new line characters. Need those removed so Joi could do word count checks properly.
-    if (content.htmlValue !== null) {
-      const filteredContent = content.htmlValue.replace(/<p>&nbsp;<\/p>/g, '');
-      const errors = { ...this.state.errors };
-      const selectedSummaryLabel = this.state.summaryLabel
-      const errorMessage = this.validateEditorProperty(filteredContent, selectedSummaryLabel);
-      if (errorMessage) errors[selectedSummaryLabel] = errorMessage;
-      else delete errors[selectedSummaryLabel];
-      this.setState({ wordCount: content.textValue === " " ? 0 : content.textValue.split(" ").length });
-      const formElements = { ...this.state.formElements };
-      formElements[selectedSummaryLabel] = content.htmlValue;
-      this.setState({ formElements, errors });
-    }
+    const filteredContent = content.replace(/<p>&nbsp;<\/p>/g, '');
+    const errors = { ...this.state.errors };
+    const errorMessage = this.validateEditorProperty(filteredContent, editor.id);
+    if (errorMessage) errors[editor.id] = errorMessage;
+    else delete errors[editor.id];
+
+    const formElements = { ...this.state.formElements };
+    formElements[editor.id] = content;
+    this.setState({ formElements, errors });
   };
 
   handleCheckboxChange = event => {
@@ -631,15 +642,24 @@ export class WeeklySummary extends Component {
                           <CurrentPromptModal />
                         </Label>
                         <Editor
-                          style={{
-                            height: '180px'
+                          init={{
+                            menubar: false,
+                            placeholder:
+                              'Weekly summary content... Remember to be detailed (50-word minimum) and write it in 3rd person. E.g. “This week John…"',
+                            plugins:
+                              'advlist autolink autoresize lists link charmap table paste help wordcount',
+                            toolbar:
+                              'bold italic underline link removeformat | bullist numlist outdent indent | styleselect fontsizeselect | table| strikethrough forecolor backcolor | subscript superscript charmap | help',
+                            branding: false,
+                            min_height: 180,
+                            max_height: 500,
+                            autoresize_bottom_margin: 1,
                           }}
-                          placeholder='Weekly summary content... Remember to be detailed (50-word minimum) and write it in 3rd person. E.g. “This week John…"'
                           id={summaryName}
+                          name={summaryName}
                           value={formElements[summaryName]}
-                          onTextChange={this.handleEditorChange}
+                          onEditorChange={this.handleEditorChange}
                         />
-                        <p>{wordCount} words</p>
                       </FormGroup>
                       {(errors.summary ||
                         errors.summaryLastWeek ||

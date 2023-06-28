@@ -208,23 +208,7 @@ const LeaderBoard = ({
           </thead>
           <tbody className="my-custome-scrollbar">
             <tr>
-              <td className="align-middle">
-                <Link to={`/dashboard/`}>
-                  <div
-                    title={`Weekly Committed: ${organizationData.weeklycommittedHours} hours`}
-                    style={{
-                      backgroundColor:
-                        organizationData.tangibletime >= organizationData.weeklycommittedHours
-                          ? 'green'
-                          : 'red',
-                      width: 15,
-                      height: 15,
-                      borderRadius: 7.5,
-                      margin: 'auto',
-                    }}
-                  />  
-                </Link>
-              </td>
+              <td/>
               <th scope="row">{organizationData.name}</th>
               <td className="align-middle">
                 <span title="Tangible time">{organizationData.tangibletime}</span>
@@ -244,7 +228,7 @@ const LeaderBoard = ({
             </tr>
             {leaderBoardData.map((item, key) => (
               <tr key={key}>
-                <td className="align-middle" onClick={() => dashboardToggle(item)}>
+                <td className="align-middle">
                   <div>
                     <Modal isOpen={isDashboardOpen === item.personId} toggle={dashboardToggle}>
                       <ModalHeader toggle={dashboardToggle}>Jump to personal Dashboard</ModalHeader>
@@ -261,10 +245,12 @@ const LeaderBoard = ({
                       </ModalFooter>
                     </Modal>
                   </div>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: isAdmin ? 'space-between' : 'center' }}>
 
                   {/* <Link to={`/dashboard/${item.personId}`}> */}
-                  {
-                    hasLeaderboardPermissions(loggedInUser.role) && 
+                  <div onClick={() => dashboardToggle(item)}>
+                    {
+                      hasLeaderboardPermissions(loggedInUser.role) && 
                     showStar(item.tangibletime, item.weeklycommittedHours) ? (
                         <i
                         className="fa fa-star"
@@ -290,7 +276,21 @@ const LeaderBoard = ({
                           }}
                         />
                       )
+                    }
+                  </div>
+                  {
+                    isAdmin && item.hasSummary && 
+                    <div
+                      title={`Weekly Summary Submitted`}
+                      style={{
+                        color: '#32a518',
+                        cursor: 'default',
+                      }}
+                    >
+                      <strong>✓</strong>
+                    </div>
                   }
+                  </div>
                   {/* </Link> */}
                 </td>
                 <th scope="row">
