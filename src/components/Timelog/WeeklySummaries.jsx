@@ -11,7 +11,7 @@ const WeeklySummaries = ({ userProfile }) => {
       return (
         <div>
           <h3>{title}</h3>
-          <p>{parse(summary)}</p>
+          {parse(summary)}
         </div>
       );
     } else {
