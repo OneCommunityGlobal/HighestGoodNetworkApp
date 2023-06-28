@@ -70,7 +70,60 @@ const SkeletonLoading = ({ template }) => {
             </div>
           </Container>
         );
-
+      case 'UserProfile':
+        return (
+          <Container fluid style={{ display: 'flex', justifyContent: 'center' }}>
+            <div style={{ margin: '3rem 3rem 0 16rem' }}>
+              <div
+                className="skeleton-loading-user-profile-picture"
+                style={{ marginBottom: '16rem' }}
+              ></div>
+              <div className="skeleton-loading-user-profile-picture"></div>
+            </div>
+            <div className="mx-5" style={{ marginTop: '6rem' }}>
+              <div className="skeleton-loading-user-profile-item"></div>
+              <div className="skeleton-loading-user-profile-item mt-5"></div>
+              <div className="skeleton-loading-user-profile-item" style={{ height: '7rem' }}></div>
+              <div
+                className="skeleton-loading-user-profile-item"
+                style={{ marginTop: '6rem' }}
+              ></div>
+              <div className="skeleton-loading-user-profile-item mt-3"></div>
+              <div className="skeleton-loading-user-profile-item mt-3"></div>
+              <div className="skeleton-loading-user-profile-item mt-3"></div>
+              <div className="skeleton-loading-user-profile-item mt-3"></div>
+              <div className="skeleton-loading-user-profile-item mt-3"></div>
+              <div className="skeleton-loading-user-profile-item mt-3"></div>
+              <div className="skeleton-loading-user-profile-item mt-3"></div>
+              <div className="skeleton-loading-user-profile-item mt-3"></div>
+              <div className="skeleton-loading-user-profile-item mt-3"></div>
+              <div className="skeleton-loading-user-profile-item mt-3"></div>
+              <div className="skeleton-loading-user-profile-item mt-3"></div>
+            </div>
+          </Container>
+        );
+      case 'UserManagement':
+        return (
+          <div>
+            <div className="skeleton-loading-user-management-item mt-3"></div>
+            <div className="skeleton-loading-user-management-item"></div>
+            <div className="skeleton-loading-user-management-item"></div>
+            <div className="skeleton-loading-user-management-item"></div>
+            <div className="skeleton-loading-user-management-item"></div>
+            <div className="skeleton-loading-user-management-item"></div>
+            <div className="skeleton-loading-user-management-item"></div>
+            <div className="skeleton-loading-user-management-item"></div>
+            <div className="skeleton-loading-user-management-item"></div>
+            <div className="skeleton-loading-user-management-item"></div>
+            <div className="skeleton-loading-user-management-item"></div>
+            <div className="skeleton-loading-user-management-item"></div>
+            <div className="skeleton-loading-user-management-item"></div>
+            <div className="skeleton-loading-user-management-item"></div>
+            <div className="skeleton-loading-user-management-item"></div>
+            <div className="skeleton-loading-user-management-item"></div>
+            <div className="skeleton-loading-user-management-item"></div>
+          </div>
+        );
       default:
         return null;
     }

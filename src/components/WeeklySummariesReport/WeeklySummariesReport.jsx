@@ -7,7 +7,6 @@ import './WeeklySummariesReport.css';
 import classnames from 'classnames';
 import moment from 'moment';
 import 'moment-timezone';
-import Loading from '../common/Loading';
 import SkeletonLoading from '../common/SkeletonLoading';
 import { getWeeklySummariesReport } from '../../actions/weeklySummariesReport';
 import FormattedReport from './FormattedReport';

@@ -34,7 +34,6 @@ import { getWeeklySummaries, updateWeeklySummaries } from '../../actions/weeklyS
 import DueDateTime from './DueDateTime';
 import moment from 'moment';
 import 'moment-timezone';
-import Loading from '../common/Loading';
 import SkeletonLoading from '../common/SkeletonLoading';
 import Joi from 'joi';
 import { toast } from 'react-toastify';
