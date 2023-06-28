@@ -93,11 +93,10 @@ export class WeeklySummary extends Component {
     mediaChangeConfirm: false,
     moveSelect: '1',
     movePopup: false,
-<<<<<<< HEAD
     summaryLabel: '',
     wordCount: 0,
-=======
->>>>>>> origin
+    summaryLabel: '',
+    wordCount: 0,
   };
 
   async componentDidMount() {
@@ -193,11 +192,8 @@ export class WeeklySummary extends Component {
       editPopup: false,
       mediaChangeConfirm: false,
       moveSelect: '1',
-<<<<<<< HEAD
       summaryLabel: 'summary',
       wordCount: 0,
-=======
->>>>>>> origin
     });
   }
 
@@ -360,12 +356,6 @@ export class WeeklySummary extends Component {
     this.setState({ mediaChangeConfirm: true });
     this.toggleShowPopup(this.state.editPopup);
   };
-   
-  handleMediaChange = event => {
-    const mediaChangeConfirm = this.state.mediaChangeConfirm;
-    this.setState({ mediaChangeConfirm: true });
-    this.toggleShowPopup(this.state.editPopup);
-  };
 
   handleEditorChange = (content, editor) => {
     // Filter out blank pagagraphs inserted by tinymce replacing new line characters. Need those removed so Joi could do word count checks properly.
@@ -378,6 +368,12 @@ export class WeeklySummary extends Component {
     const formElements = { ...this.state.formElements };
     formElements[editor.id] = content;
     this.setState({ formElements, errors });
+  };
+   
+  handleMediaChange = event => {
+    const mediaChangeConfirm = this.state.mediaChangeConfirm;
+    this.setState({ mediaChangeConfirm: true });
+    this.toggleShowPopup(this.state.editPopup);
   };
 
   handleCheckboxChange = event => {
