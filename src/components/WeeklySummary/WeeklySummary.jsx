@@ -91,9 +91,8 @@ export class WeeklySummary extends Component {
     loading: true,
     editPopup: false,
     mediaChangeConfirm: false,
-    moveConfirm: false,
     moveSelect: '1',
-    moveToggle: false,
+    movePopup: false,
   };
 
   async componentDidMount() {
@@ -212,7 +211,11 @@ export class WeeklySummary extends Component {
       this.setState({ activeTab: tab });
     }
   };
-  //modal show 
+
+  toggleMovePopup = showPopup => {
+    this.setState({movePopup: !showPopup});
+  }
+
   toggleShowPopup = showPopup => {
     const mediaChangeConfirm = this.state.mediaChangeConfirm;
     if (!mediaChangeConfirm){
@@ -222,12 +225,16 @@ export class WeeklySummary extends Component {
     }
   };
 
-  toggleMove = options =>{
-    const move = options.target.value;
+  handleMoveSelect = moveWeek => {
+    const moveSelect= this.state.moveSelect;
+    this.setState({ moveSelect: moveWeek, movePopup:true });
+  };
+
+  handleMove = () =>{
     const moveSelect = this.state.moveSelect;
     let formElements = {...this.state.formElements};
     const activeTab = this.state.activeTab;
-    if (activeTab != move){
+    if (activeTab != moveSelect){
       let movedContent = "";
       switch (activeTab) {
         case "1":
@@ -247,7 +254,7 @@ export class WeeklySummary extends Component {
           formElements.summaryThreeWeeksAgo = "";
           break;
       }
-      switch (move) {
+      switch (moveSelect) {
         case "1":
           formElements.summary = movedContent;
           break;
@@ -262,8 +269,10 @@ export class WeeklySummary extends Component {
           break;
       }
     }
-    this.toggleTab(move);
-    this.setState({formElements, moveSelect: move });
+    const movePop = this.state.movePopup
+    this.toggleMovePopup(movePop);
+    this.toggleTab(moveSelect);
+    this.setState({formElements});
   };
 
   // Minimum word count of 50 (handle words that also use non-ASCII characters by counting whitespace rather than word character sequences).
@@ -354,12 +363,6 @@ export class WeeklySummary extends Component {
     formElements[editor.id] = content;
     this.setState({ formElements, errors });
   };
-
-  handleMoveCheckboxChange = event => {
-    const moveConfirm = { ...this.state.moveConfirm };
-    this.setState({ moveConfirm:event.target.checked });
-
-  }
 
   handleCheckboxChange = event => {
     event.persist();
@@ -595,6 +598,29 @@ export class WeeklySummary extends Component {
                             Enter your weekly summary below. (required){' '}
                             <WeeklySummaryContentTooltip tabId={tId} />
                           </div>
+                          <UncontrolledDropdown>
+                            <DropdownToggle className="px-5 btn--dark-sea-green" caret>
+                              Move This Summary
+                            </DropdownToggle>
+                            <DropdownMenu>
+                            <DropdownItem disabled={activeTab ==='1'} 
+                              onClick={()=>this.handleMoveSelect('1')}>
+                                This Week
+                            </DropdownItem>
+                            <DropdownItem disabled={activeTab ==='2'}
+                            onClick={()=>this.handleMoveSelect('2')}>
+                                Last Week
+                            </DropdownItem>
+                            <DropdownItem disabled={activeTab ==='3'}
+                              onClick={()=>this.handleMoveSelect('3')}>
+                                Week Before Last
+                            </DropdownItem>
+                            <DropdownItem disabled={activeTab ==='4'}
+                              onClick={()=>this.handleMoveSelect('4')}>
+                                Three Weeks Ago
+                            </DropdownItem>
+                            </DropdownMenu>
+                          </UncontrolledDropdown>
                           <CurrentPromptModal />
                         </Label>
                         <Editor
@@ -679,6 +705,20 @@ export class WeeklySummary extends Component {
                       </FormGroup>
                     </Col>
                   )}
+                  {<Modal isOpen={this.state.movePopup}
+                  toggle={this.toggleMovePopup}>
+                    <ModalHeader> Warning!</ModalHeader>
+                    <ModalBody>
+                      Are you SURE you want to move the summary?
+                    </ModalBody>
+                    <ModalFooter>
+                    <Button 
+                      onClick={()=>this.handleMove(this.state.moveSelect)}>Confirm</Button>
+                      <Button 
+                      onClick={this.toggleMovePopup}>Close</Button>
+                    </ModalFooter>
+                    </Modal>
+                  }
                 </Row>
                 <Row>
                   <Col>
@@ -692,15 +732,6 @@ export class WeeklySummary extends Component {
                         checked={formElements.mediaConfirm}
                         valid={formElements.mediaConfirm}
                         onChange={this.handleCheckboxChange}
-                      />
-                      <CustomInput
-                        id="moveConfirm"
-                        name="moveConfirm"
-                        type="checkbox"
-                        label="Opps, I need to move summaries to the correct week"
-                        checked={this.state.moveConfirm}
-                        valid={this.state.moveConfirm}
-                        onChange={this.handleMoveCheckboxChange}
                       />
                     </FormGroup>
                     {errors.mediaConfirm && (
@@ -722,27 +753,6 @@ export class WeeklySummary extends Component {
                       </Button>
                     </FormGroup>
                   </Col>
-                  {this.state.moveConfirm &&(
-                    <Col>
-                      <FormGroup className="mt-2">
-                      <UncontrolledDropdown>
-                        <DropdownToggle className="px-5 btn--dark-sea-green" caret>
-                          Move
-                        </DropdownToggle>
-                        <DropdownMenu>
-                            <DropdownItem disabled={activeTab ==='1'} value = "1"  
-                            onClick={this.toggleMove}>This Week</DropdownItem>
-                            <DropdownItem disabled={activeTab ==='2'} value = "2" 
-                            onClick={this.toggleMove}>Last Week</DropdownItem>
-                            <DropdownItem disabled={activeTab ==='3'} value = "3" 
-                            onClick={this.toggleMove}>Week Before Last</DropdownItem>
-                            <DropdownItem disabled={activeTab ==='4'} value = "4" 
-                            onClick={this.toggleMove}>Three Week Ago</DropdownItem>
-                        </DropdownMenu>
-                      </UncontrolledDropdown>
-                      </FormGroup>
-                    </Col>
-                  )}
                 </Row>
               </Col>
             </Row>
