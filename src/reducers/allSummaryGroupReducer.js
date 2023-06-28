@@ -33,9 +33,8 @@ export const summaryGroupReducer = (allSummaryGroups = summaryInitial, action) =
       });
 
     case types.SUMMARYGROUP_DELETE:
-     
       const NoDeletedSummaryGroups = allSummaryGroups.allSummaryGroups.filter(
-        (item) => item._id !== action.summaryGroupId,
+        item => item._id !== action.summaryGroupId,
       );
       return updateObject(allSummaryGroups, {
         allSummaryGroups: NoDeletedSummaryGroups,
@@ -46,7 +45,7 @@ export const summaryGroupReducer = (allSummaryGroups = summaryInitial, action) =
     case types.UPDATE_SUMMARYGROUP:
       const summaryGroups = Object.assign([...allSummaryGroups.allSummaryGroups]);
       const updatedSummaryGroups = summaryGroups.find(
-        (summaryGroup) => summaryGroup._id === action.summaryGroupId,
+        summaryGroup => summaryGroup._id === action.summaryGroupId,
       );
       updatedSummaryGroups.isActive = action.isActive;
       updatedSummaryGroups.summaryGroupName = action.summaryGroupName;

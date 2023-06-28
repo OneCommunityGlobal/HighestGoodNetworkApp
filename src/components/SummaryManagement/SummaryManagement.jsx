@@ -14,6 +14,7 @@ import {
   deleteSummaryGroup,
   updateSummaryGroup,
   extractMembers,
+  extractSummaryReceivers,
 } from 'actions/allSummaryAction';
 //import { getAllUserProfile } from 'actions/userManagement';
 import { TEAM_MEMBER, SUMMARY_RECEIVER, SUMMARY_GROUP, ACTIONS, ACTIVE } from 'languages/en/ui';
@@ -262,6 +263,19 @@ class SummaryManagement extends Component {
       const response = await axios.get(ENDPOINTS.SUMMARY_GROUP_SUMMARY_RECEVIER(summaryGroupId));
       const summaryReceiver = response.data;
       this.setState({ summaryReceiver: response.data });
+      this.props.getAllSummaryGroup();
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  getSummaryReceiverRedux = async summaryGroupId => {
+    try {
+      const result = await this.props.extractSummaryReceivers(summaryGroupId);
+      const receivers = { summaryReceivers: result };
+      this.setState({ summaryReceiver: receivers }, () =>
+        console.log('These are the receivers: ', receivers),
+      );
     } catch (error) {
       console.log(error);
     }
@@ -273,7 +287,7 @@ class SummaryManagement extends Component {
       selectedSummaryGroup: name,
       selectedSummaryGroupId: summaryGroupId,
     });
-    this.getSummaryReceiver(summaryGroupId);
+    this.getSummaryReceiverRedux(summaryGroupId);
   };
   onSummaryReciverClose = () => {
     this.setState({
@@ -283,6 +297,7 @@ class SummaryManagement extends Component {
     });
   };
   onAddSummaryReceiver = async (user, selectedSummaryGroupId) => {
+    this.setState({ ApiCallDone: false });
     const requestData = {
       _id: user._id,
       fullName: `${user.firstName} ${user.lastName}`,
@@ -297,6 +312,9 @@ class SummaryManagement extends Component {
     } catch (error) {
       console.log(error);
     }
+    setTimeout(() => {
+      this.setState({ ApiCallDone: true });
+    }, 500);
 
     this.getSummaryReceiver(selectedSummaryGroupId);
   };
@@ -430,6 +448,7 @@ class SummaryManagement extends Component {
             selectedSummaryGroupId={this.state.selectedSummaryGroupId}
             onAddUser={this.onAddSummaryReceiver}
             onDeleteClick={this.onDeleteSummaryReceiver}
+            apiCallDone={this.state.ApiCallDone}
           ></SummaryReceiverPopup>
 
           <table className="table table-bordered table-responsive-sm">
@@ -500,4 +519,5 @@ export default connect(mapStateToProps, {
   deleteSummaryGroup,
   updateSummaryGroup,
   extractMembers,
+  extractSummaryReceivers,
 })(SummaryManagement);

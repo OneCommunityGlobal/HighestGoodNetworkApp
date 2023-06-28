@@ -32,7 +32,7 @@ export const SummaryGroupFectchACtion = payload => ({
 
 export const getAllSummaryGroup = () => {
   const SummaryGroupPromise = axios.get(ENDPOINTS.SUMMARY_GROUPS);
-  return async dispatch => {
+  return async (dispatch, getState) => {
     try {
       const res = await SummaryGroupPromise;
       dispatch(SummaryGroupFectchACtion(res.data));
@@ -89,6 +89,24 @@ export const extractMembers = id => {
       // console.log('Data from redux Store:', groupObject[0].teamMembers);
     } catch (err) {
       console.error('extractMembers:', err);
+      return null;
+    }
+  };
+};
+
+export const extractSummaryReceivers = id => {
+  return async (dispatch, getState) => {
+    try {
+      const summarydata = getState().allSummaryGroups;
+      const groupObject = summarydata.allSummaryGroups.filter(group => group._id === id)[0]
+        .summaryReceivers;
+
+      const result = await Promise.resolve({ summaryReceivers: groupObject });
+      const receivers = result.summaryReceivers;
+      // console.log('Receiver data is getting here', receivers);
+      return receivers;
+    } catch (err) {
+      console.error('extractSummaryReceivers:', err);
       return null;
     }
   };

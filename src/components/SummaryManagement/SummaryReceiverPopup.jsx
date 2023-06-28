@@ -20,7 +20,8 @@ const TeamMembersPopup = React.memo(props => {
       selectedUser &&
       (!props.members ||
         !props.members.summaryReceivers ||
-        !props.members.summaryReceivers.some(x => x._id === selectedUser._id))
+        !props.members.summaryReceivers.some(x => x._id === selectedUser._id)) &&
+      props.apiCallDone
     ) {
       props.onAddUser(selectedUser, props.selectedSummaryGroupId);
       setSearchText('');
