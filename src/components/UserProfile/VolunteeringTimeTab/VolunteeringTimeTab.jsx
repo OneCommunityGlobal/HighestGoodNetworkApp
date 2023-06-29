@@ -77,6 +77,17 @@ const WeeklySummaryOptions = props => {
     {value: "Team Azure", text: "Team Azure (Indigo)", color: "#4B0082"},
     {value: "Team Amethyst", text: "Team Amethyst (Purple)", color: "#9400D3"},
   ]
+
+  const handleOnChange = (e) => {
+    let temp = {...props.userProfile}
+    temp.weeklySummaryOption = e.target.value
+    if(e.target.value === "Not Required") {
+      temp.weeklySummaryNotReq = true
+    } else {
+      temp.weeklySummaryNotReq = false
+    }
+    props.setUserProfile(temp);
+  }
   
   return (
     <FormGroup>
@@ -89,9 +100,7 @@ const WeeklySummaryOptions = props => {
           props.userProfile.weeklySummaryOption ??
           (props.userProfile.weeklySummaryNotReq ? 'Not Required' : 'Required')
         }
-        onChange={e => {
-          props.setUserProfile({ ...props.userProfile, weeklySummaryOption: e.target.value });
-        }}
+        onChange={handleOnChange}
       >
         {summaryOptions.map(({value, text}) => (
           <option key={value} value={value}>{text}</option>
