@@ -30,7 +30,9 @@ const TeamMemberTask = ({
   let totalHoursRemaining = 0;
   const thisWeekHours = user.totaltangibletime_hrs;
   const rolesAllowedToResolveTasks = ['Administrator', 'Owner'];
+  const rolesAllowedToSeeDeadlineCount = ['Manager', 'Mentor', 'Administrator', 'Owner'];
   const isAllowedToResolveTasks = rolesAllowedToResolveTasks.includes(userRole);
+  const isAllowedToSeeDeadlineCount = rolesAllowedToSeeDeadlineCount.includes(userRole);
 
   if (user.tasks) {
     user.tasks = user.tasks.map(task => {
@@ -107,7 +109,7 @@ const TeamMemberTask = ({
                     return (
                       <tr key={`${task._id}${index}`} className="task-break">
                         <td data-label="Task(s)" className="task-align">
-                          <p>
+                          <p style={{position: 'relative'}}>
                             <Link to={task.projectId ? `/wbs/tasks/${task._id}` : '/'}>
                               <span>{`${task.num} ${task.taskName}`} </span>
                             </Link>
@@ -192,6 +194,13 @@ const TeamMemberTask = ({
                         </td>
                         {task.hoursLogged != null && task.estimatedHours != null && (
                           <td data-label="Progress" className="team-task-progress">
+                            {isAllowedToSeeDeadlineCount && 
+                              <span 
+                                className="deadlineCount" 
+                                title="Deadline Follow-up Count">
+                                  {task.deadlineCount === undefined ? 0 : task.deadlineCount}
+                              </span>
+                            }
                             <div>
                               <span>
                                 {`${parseFloat(task.hoursLogged.toFixed(2))}
