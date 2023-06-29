@@ -92,16 +92,17 @@ function UserProfile(props) {
   const isProfileEqual = JSON.stringify(userProfile) === JSON.stringify(originalUserProfile);
 
   /* useEffect functions */
+
+  useEffect(() => {
+    loadUserProfile();
+  }, []);
+
   useEffect(() => {
     checkIsTeamsEqual();
     checkIsProjectsEqual();
     setUserProfile({ ...userProfile, teams, projects });
     setOriginalUserProfile({ ...originalUserProfile, teams, projects });
   }, [teams, projects]);
-
-  useEffect(() => {
-    loadUserProfile();
-  }, []);
 
   useEffect(() => {
     setShowLoading(true);
@@ -116,6 +117,7 @@ function UserProfile(props) {
   }, [blueSquareChanged]);
 
   const checkIsTeamsEqual = () => {
+    setOriginalTeams(teams)
     const originalTeamProperties = [];
     originalTeams?.forEach(team => {
       for (const [key, value] of Object.entries(team)) {
@@ -147,6 +149,7 @@ function UserProfile(props) {
   };
 
   const checkIsProjectsEqual = () => {
+    setOriginalProjects(projects)
     const originalProjectProperties = [];
     originalProjects?.forEach(project => {
       for (const [key, value] of Object.entries(project)) {
