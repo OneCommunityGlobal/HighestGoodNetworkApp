@@ -65,6 +65,19 @@ const WeeklySummaryOptions = props => {
       </p>
     );
   }
+
+  const summaryOptions = [
+    {value: "Not Required", text: "Not Required (Slate Gray)", color: "#708090"},
+    {value: "Team", text: "Team (Red)", color: "#FF0000"},
+    {value: "Team Fabulous", text: "Team Fabulous (Fuschia)", color: "#FF00FF"},
+    {value: "Team Marigold", text: "Team Marigold (Orange)", color: "#FF7F00"},
+    {value: "Team Luminious", text: "Team Luminious (Yellow)", color: "#FFFF00"},
+    {value: "Team Lush", text: "Team Lush (Green)", color: "#00FF00"},
+    {value: "Team Sky", text: "Team Sky (Blue)", color: "#0000FF"},
+    {value: "Team Azure", text: "Team Azure (Indigo)", color: "#4B0082"},
+    {value: "Team Amethyst", text: "Team Amethyst (Purple)", color: "#9400D3"},
+  ]
+  
   return (
     <FormGroup>
       <select
@@ -80,9 +93,9 @@ const WeeklySummaryOptions = props => {
           props.setUserProfile({ ...props.userProfile, weeklySummaryOption: e.target.value });
         }}
       >
-        <option value="Required">Required</option>
-        <option value="Not Required">Not Required</option>
-        <option value="Team">Team</option>
+        {summaryOptions.map(({value, text}) => (
+          <option key={value} value={value}>{text}</option>
+        ))}
       </select>
     </FormGroup>
   );
