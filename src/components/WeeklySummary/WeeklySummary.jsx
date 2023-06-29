@@ -21,9 +21,9 @@ import {
   ModalHeader,
   ModalFooter,
   UncontrolledDropdown,
-  DropdownMenu, 
+  DropdownMenu,
   DropdownItem,
-  DropdownToggle
+  DropdownToggle,
 } from 'reactstrap';
 import './WeeklySummary.css';
 import { connect } from 'react-redux';
@@ -40,6 +40,7 @@ import { toast } from 'react-toastify';
 import { WeeklySummaryContentTooltip, MediaURLTooltip } from './WeeklySummaryTooltips';
 import classnames from 'classnames';
 import { getUserProfile } from 'actions/userProfile';
+import { boxStyle } from 'styles';
 import CurrentPromptModal from './CurrentPromptModal.jsx';
 
 // Need this export here in order for automated testing to work.
@@ -66,24 +67,29 @@ export class WeeklySummary extends Component {
       .endOf('week')
       .toISOString(),
     dueDateLastWeek: moment()
-      .tz('America/Los_Angeles')
-      .endOf('week')
-      .subtract(1, 'week')
-      .toISOString(),
+        .tz('America/Los_Angeles')
+        .endOf('week')
+        .subtract(1, 'week')
+        .toISOString(),
     dueDateBeforeLast: moment()
-      .tz('America/Los_Angeles')
-      .endOf('week')
-      .subtract(2, 'week')
-      .toISOString(),
+        .tz('America/Los_Angeles')
+        .endOf('week')
+        .subtract(2, 'week')
+        .toISOString(),
     dueDateThreeWeeksAgo: moment()
+        .tz('America/Los_Angeles')
+        .endOf('week')
+        .subtract(3, 'week')
+        .toISOString(),
+    uploadDatesElements: {
+      uploadDate: this.dueDate,
+      uploadDateLastWeek: this.dueDateLastWeek,
+      uploadDateBeforeLast: this.dueDateBeforeLast,
+      uploadDateThreeWeeksAgo: this.dueDateThreeWeeksAgo,
+    },
+    submittedDate: moment()
       .tz('America/Los_Angeles')
-      .endOf('week')
-      .subtract(3, 'week')
       .toISOString(),
-    uploadDate: this.dueDate,
-    uploadDateLastWeek: this.dueDateLastWeek,
-    uploadDateBeforeLast: this.dueDateBeforeLast,
-    uploadDateThreeWeeksAgo: this.dueDateThreeWeeksAgo,
     submittedCountInFourWeeks: 0,
     activeTab: '1',
     errors: {},
@@ -93,6 +99,10 @@ export class WeeklySummary extends Component {
     mediaChangeConfirm: false,
     moveSelect: '1',
     movePopup: false,
+    summaryLabel: '',
+    wordCount: 0,
+    summaryLabel: '',
+    wordCount: 0,
   };
 
   async componentDidMount() {
@@ -173,10 +183,12 @@ export class WeeklySummary extends Component {
         weeklySummariesCount: weeklySummariesCount || 0,
         mediaConfirm: false,
       },
-      uploadDate,
-      uploadDateLastWeek,
-      uploadDateBeforeLast,
-      uploadDateThreeWeeksAgo,
+      uploadDatesElements: {
+        uploadDate,
+        uploadDateLastWeek,
+        uploadDateBeforeLast,
+        uploadDateThreeWeeksAgo,
+      },
       dueDate,
       dueDateLastWeek,
       dueDateBeforeLast,
@@ -188,6 +200,8 @@ export class WeeklySummary extends Component {
       editPopup: false,
       mediaChangeConfirm: false,
       moveSelect: '1',
+      summaryLabel: 'summary',
+      wordCount: 0,
     });
   }
 
@@ -211,17 +225,17 @@ export class WeeklySummary extends Component {
       this.setState({ activeTab: tab });
     }
   };
-
+  
   toggleMovePopup = showPopup => {
     this.setState({movePopup: !showPopup});
   }
-
+  
   toggleShowPopup = showPopup => {
     const mediaChangeConfirm = this.state.mediaChangeConfirm;
-    if (!mediaChangeConfirm){
-      this.setState({ editPopup: !showPopup});
-    }else{
-      this.setState({ editPopup: false});
+    if (!mediaChangeConfirm) {
+      this.setState({ editPopup: !showPopup });
+    } else {
+      this.setState({ editPopup: false });
     }
   };
 
@@ -232,47 +246,47 @@ export class WeeklySummary extends Component {
 
   handleMove = () =>{
     const moveSelect = this.state.moveSelect;
-    let formElements = {...this.state.formElements};
+    const newformElements = {...this.state.formElements};
     const activeTab = this.state.activeTab;
     if (activeTab != moveSelect){
       let movedContent = "";
       switch (activeTab) {
         case "1":
-          movedContent = formElements.summary;
-          formElements.summary = "";
+          movedContent = newformElements.summary;
+          newformElements.summary = "";
           break;
         case "2":
-          movedContent = formElements.summaryLastWeek;
-          formElements.summaryLastWeek = "";
+          movedContent = newformElements.summaryLastWeek;
+          newformElements.summaryLastWeek = "";
           break;
         case "3":
-          movedContent = formElements.summaryBeforeLast;
-          formElements.summaryBeforeLast = "";
+          movedContent = newformElements.summaryBeforeLast;
+          newformElements.summaryBeforeLast = "";
           break;
         case "4":
-          movedContent = formElements.summaryThreeWeeksAgo;
-          formElements.summaryThreeWeeksAgo = "";
+          movedContent = newformElements.summaryThreeWeeksAgo;
+          newformElements.summaryThreeWeeksAgo = "";
           break;
       }
       switch (moveSelect) {
         case "1":
-          formElements.summary = movedContent;
+          newformElements.summary = movedContent;
           break;
         case "2":
-          formElements.summaryLastWeek = movedContent;
+          newformElements.summaryLastWeek = movedContent;
           break;
         case "3":
-          formElements.summaryBeforeLast = movedContent;
+          newformElements.summaryBeforeLast = movedContent;
           break;
         case "4":
-          formElements.summaryThreeWeeksAgo = movedContent;
+          newformElements.summaryThreeWeeksAgo = movedContent;
           break;
       }
     }
+    //confitm move or not
     const movePop = this.state.movePopup
     this.toggleMovePopup(movePop);
-    this.toggleTab(moveSelect);
-    this.setState({formElements});
+    return newformElements;
   };
 
   // Minimum word count of 50 (handle words that also use non-ASCII characters by counting whitespace rather than word character sequences).
@@ -333,23 +347,25 @@ export class WeeklySummary extends Component {
     event.persist();
     const { name, value } = event.target;
     const formElements = { ...this.state.formElements };
-    if (this.state.mediaChangeConfirm){
+    if (this.state.mediaChangeConfirm) {
       const errors = { ...this.state.errors };
       const errorMessage = this.validateProperty(event.target);
       if (errorMessage) errors[name] = errorMessage;
       else delete errors[name];
       formElements[name] = value;
-      this.setState({formElements, errors });
-    }else{
+      this.setState({ formElements, errors });
+    } else {
       this.toggleShowPopup(this.state.editPopup);
     }
   };
-   
+
   handleMediaChange = event => {
-    const mediaChangeConfirm = this.state.mediaChangeConfirm;
-    this.setState({ mediaChangeConfirm: true });
-    this.toggleShowPopup(this.state.editPopup);
-  };
+  this.setState({
+    mediaChangeConfirm: true,
+  });
+  
+  this.toggleShowPopup(this.state.editPopup);
+};
 
   handleEditorChange = (content, editor) => {
     // Filter out blank pagagraphs inserted by tinymce replacing new line characters. Need those removed so Joi could do word count checks properly.
@@ -362,6 +378,12 @@ export class WeeklySummary extends Component {
     const formElements = { ...this.state.formElements };
     formElements[editor.id] = content;
     this.setState({ formElements, errors });
+  };
+   
+  handleMediaChange = event => {
+    const mediaChangeConfirm = this.state.mediaChangeConfirm;
+    this.setState({ mediaChangeConfirm: true });
+    this.toggleShowPopup(this.state.editPopup);
   };
 
   handleCheckboxChange = event => {
@@ -378,105 +400,74 @@ export class WeeklySummary extends Component {
     this.setState({ formElements, errors });
   };
 
-  handleSave = async event => {
-    event.preventDefault();
-    // Providing a custom toast id to prevent duplicate.
-    const toastIdOnSave = 'toast-on-save';
-
-    const errors = this.validate();
-    this.setState({ errors: errors || {} });
-    if (errors) return;
-
-    // After submitting summaries, count current submits in four week
-    let currentSubmittedCount = 0;
-    if (this.state.formElements.summary !== '') {
-      currentSubmittedCount += 1;
+  handleChangeInSummary = () => {
+      // Extract state variables for ease of access
+    let { submittedDate, formElements,uploadDatesElements, originSummaries, 
+      dueDate, dueDateLastWeek,dueDateBeforeLast,dueDateThreeWeeksAgo} = this.state;
+    let newformElements = { ...formElements };
+    let newOriginSummaries = { ...originSummaries };
+    let newUploadDatesElements = { ...uploadDatesElements};
+    let dueDates = [dueDate, dueDateLastWeek,dueDateBeforeLast, dueDateThreeWeeksAgo];
+    //Move or not, if did move, update the newformElements
+    const moveSelect = this.state.moveSelect;
+    const activeTab = this.state.activeTab;
+    if (moveSelect !== activeTab){
+      newformElements = this.handleMove();
     }
-    if (this.state.formElements.summaryLastWeek !== '') {
-      currentSubmittedCount += 1;
-    }
-    if (this.state.formElements.summaryBeforeLast !== '') {
-      currentSubmittedCount += 1;
-    }
-    if (this.state.formElements.summaryThreeWeeksAgo !== '') {
-      currentSubmittedCount += 1;
-    }
-    // Check whether has newly filled summary
+    // Define summaries, updateDates for easier reference
+    const summaries = ['summary', 'summaryLastWeek', 'summaryBeforeLast', 'summaryThreeWeeksAgo'];
+    const uploadDates = ['uploadDate', 'uploadDateLastWeek', 'uploadDateBeforeLast', 'uploadDateThreeWeeksAgo'];
+    // Calculate currentSubmittedCount using reduce
+    let currentSubmittedCount = summaries.reduce((count, summary) => {
+      return newformElements[summary] !== '' ? count + 1 : count;
+    }, 0);
     const diffInSubmittedCount = currentSubmittedCount - this.state.submittedCountInFourWeeks;
     if (diffInSubmittedCount !== 0) {
-      this.setState({ summariesCountShowing: this.state.formElements.weeklySummariesCount + 1 });
+      this.setState({ summariesCountShowing: newformElements.weeklySummariesCount + 1 });
     }
-
-    let newUploadDate = this.state.uploadDate;
-    let newUploadDateLastWeek = this.state.uploadDateLastWeek;
-    let newUploadDateBeforeLast = this.state.uploadDateBeforeLast;
-    let newUploadDateThreeWeeksAgo = this.state.uploadDateThreeWeeksAgo;
-    const originSummaries = { ...this.state.originSummaries };
-    if (this.state.formElements.summary !== this.state.originSummaries.summary) {
-      newUploadDate = moment()
-        .tz('America/Los_Angeles')
-        .toISOString();
-      originSummaries.summary = this.state.formElements.summary;
-      this.setState({ originSummaries, uploadDate: newUploadDate });
+    const updateSummary = (summary, uploadDate) => {
+      if (newformElements[summary] !== newOriginSummaries[summary]) {
+        newOriginSummaries[summary] = newformElements[summary];
+        newUploadDatesElements[uploadDate] = submittedDate;
+        this.setState({ formElements: newformElements, uploadDatesElements: newUploadDatesElements, originSummaries: newOriginSummaries });
+      }
+    };
+    // Loop through summaries and update state variables
+    for (let i = 0; i < summaries.length; i++) {
+      updateSummary(summaries[i], uploadDates[i]);
     }
-    if (this.state.formElements.summaryLastWeek !== this.state.originSummaries.summaryLastWeek) {
-      newUploadDateLastWeek = moment()
-        .tz('America/Los_Angeles')
-        .toISOString();
-      originSummaries.summaryLastWeek = this.state.formElements.summaryLastWeek;
-      this.setState({ originSummaries, uploadDateLastWeek: newUploadDateLastWeek });
-    }
-    if (
-      this.state.formElements.summaryBeforeLast !== this.state.originSummaries.summaryBeforeLast
-    ) {
-      newUploadDateBeforeLast = moment()
-        .tz('America/Los_Angeles')
-        .toISOString();
-      originSummaries.summaryBeforeLast = this.state.formElements.summaryBeforeLast;
-      this.setState({ originSummaries, uploadDateBeforeLast: newUploadDateBeforeLast });
-    }
-    if (
-      this.state.formElements.summaryThreeWeeksAgo !==
-      this.state.originSummaries.summaryThreeWeeksAgo
-    ) {
-      newUploadDateThreeWeeksAgo = moment()
-        .tz('America/Los_Angeles')
-        .toISOString();
-      originSummaries.summaryThreeWeeksAgo = this.state.formElements.summaryThreeWeeksAgo;
-      this.setState({ originSummaries, uploadDateThreeWeeksAgo: newUploadDateThreeWeeksAgo });
-    }
-
+    
+    // Construct the modified weekly summaries
     const modifiedWeeklySummaries = {
-      mediaUrl: this.state.formElements.mediaUrl.trim(),
-      weeklySummaries: [
-        {
-          summary: this.state.formElements.summary,
-          dueDate: this.state.dueDate,
-          uploadDate: newUploadDate,
-        },
-        {
-          summary: this.state.formElements.summaryLastWeek,
-          dueDate: this.state.dueDateLastWeek,
-          uploadDate: newUploadDateLastWeek,
-        },
-        {
-          summary: this.state.formElements.summaryBeforeLast,
-          dueDate: this.state.dueDateBeforeLast,
-          uploadDate: newUploadDateBeforeLast,
-        },
-        {
-          summary: this.state.formElements.summaryThreeWeeksAgo,
-          dueDate: this.state.dueDateThreeWeeksAgo,
-          uploadDate: newUploadDateThreeWeeksAgo,
-        },
-      ],
-      weeklySummariesCount: this.state.formElements.weeklySummariesCount + diffInSubmittedCount,
+      mediaUrl: newformElements.mediaUrl.trim(),
+      weeklySummaries: summaries.map((summary, i) => ({
+        summary: newformElements[summary],
+        dueDate: dueDates[i],
+        uploadDate: newUploadDatesElements[uploadDates[i]],
+      })),
+      weeklySummariesCount: newformElements.weeklySummariesCount + diffInSubmittedCount,
     };
 
-    const updateWeeklySummaries = this.props.updateWeeklySummaries(
+    // Update weekly summaries
+    return this.props.updateWeeklySummaries(
       this.props.asUser || this.props.currentUser.userid,
       modifiedWeeklySummaries,
     );
+  }
+
+  handleSave = async event => {
+    if (event) {
+      event.preventDefault();
+    }
+    // Providing a custom toast id to prevent duplicate.
+    const toastIdOnSave = 'toast-on-save';
+    //error detect
+    const errors = this.validate();
+    this.setState({ errors: errors || {} });
+    if (errors) return;
+    //get updated summary
+    const updateWeeklySummaries = this.handleChangeInSummary();
+
     let saveResult;
     if (updateWeeklySummaries) {
       saveResult = await updateWeeklySummaries();
@@ -499,7 +490,7 @@ export class WeeklySummary extends Component {
       });
     }
   };
-
+  
   render() {
     const {
       formElements,
@@ -530,6 +521,8 @@ export class WeeklySummary extends Component {
         ? 'Three Weeks Ago'
         : moment(dueDateThreeWeeksAgo).format('YYYY-MMM-DD'),
     };
+
+    const wordCount = this.state.wordCount;
 
     if (fetchError) {
       return (
@@ -593,7 +586,7 @@ export class WeeklySummary extends Component {
                   <Row>
                     <Col>
                       <FormGroup>
-                        <Label for={summaryName} className="summary-instructions-row">
+                        <Label for={summaryName} className="summary-instructions-row d-flex p-2 justify-content-between">
                           <div>
                             Enter your weekly summary below. (required){' '}
                             <WeeklySummaryContentTooltip tabId={tId} />
@@ -675,24 +668,30 @@ export class WeeklySummary extends Component {
                         onChange={this.handleInputChange}
                       />
                     </FormGroup>
-                    {<Modal isOpen={this.state.editPopup}>
-                    <ModalHeader> Warning!</ModalHeader>
-                    <ModalBody>
-                      Whoa Tiger! Are you sure you want to do that?
-                      This link was added by an Admin when you were set up as a member 
-                      of the team. Only change this if you are SURE your new link is more 
-                      than the one already here.
-
-                    </ModalBody>
-                    <ModalFooter>
-                      <Button checked={this.state.mediaChangeConfirm} onClick={this.handleMediaChange}>
-                          Confirm
-                      </Button>{' '}
-                      <Button onClick={() => this.toggleShowPopup(this.state.editPopup)}>
-                          Close
-                      </Button>{' '}
-                    </ModalFooter>
-                  </Modal>} 
+                    {
+                      <Modal isOpen={this.state.editPopup}>
+                        <ModalHeader> Warning!</ModalHeader>
+                        <ModalBody>
+                          Whoa Tiger! Are you sure you want to do that? This link was added by an
+                          Admin when you were set up as a member of the team. Only change this if
+                          you are SURE your new link is more than the one already here.
+                        </ModalBody>
+                        <ModalFooter>
+                          <Button
+                            onClick={this.handleMediaChange}
+                            style={boxStyle}
+                          >
+                            Confirm
+                          </Button>{' '}
+                          <Button
+                            onClick={() => this.toggleShowPopup(this.state.editPopup)}
+                            style={boxStyle}
+                          >
+                            Close
+                          </Button>{' '}
+                        </ModalFooter>
+                      </Modal>
+                    }
                     {errors.mediaUrl && <Alert color="danger">{errors.mediaUrl}</Alert>}
                   </Col>
                   {formElements.mediaUrl && !errors.mediaUrl && (
@@ -713,7 +712,7 @@ export class WeeklySummary extends Component {
                     </ModalBody>
                     <ModalFooter>
                     <Button 
-                      onClick={()=>this.handleMove(this.state.moveSelect)}>Confirm</Button>
+                      onClick={this.handleSave}>Confirm and Save</Button>
                       <Button 
                       onClick={this.toggleMovePopup}>Close</Button>
                     </ModalFooter>
@@ -748,6 +747,7 @@ export class WeeklySummary extends Component {
                         className="px-5 btn--dark-sea-green"
                         disabled={this.validate() || !formElements.mediaUrl ? true : false}
                         onClick={this.handleSave}
+                        style={boxStyle}
                       >
                         Save
                       </Button>

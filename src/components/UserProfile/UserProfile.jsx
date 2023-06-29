@@ -47,6 +47,7 @@ import { UserStatus } from '../../utils/enums';
 import { faSleigh, faCamera } from '@fortawesome/free-solid-svg-icons';
 import BlueSquareLayout from './BlueSquareLayout';
 import TeamWeeklySummaries from './TeamWeeklySummaries/TeamWeeklySummaries';
+import { boxStyle } from 'styles';
 
 function UserProfile(props) {
   /* Constant values */
@@ -678,6 +679,7 @@ function UserProfile(props) {
                 }}
                 color="primary"
                 size="sm"
+                style={boxStyle}
               >
                 {showSelect ? 'Hide Team Weekly Summaries' : 'Show Team Weekly Summaries'}
               </Button>
@@ -1232,7 +1234,7 @@ function UserProfile(props) {
                 (activeTab === '1' ||
                   hasPermission(requestorRole, 'editUserProfile', roles, userPermissions)) && (
                   <Link to={`/updatepassword/${userProfile._id}`}>
-                    <Button className="mr-1 btn-bottom" color="primary">
+                    <Button className="mr-1 btn-bottom" color="primary" style={boxStyle}>
                       {' '}
                       Update Password
                     </Button>
@@ -1262,6 +1264,7 @@ function UserProfile(props) {
                           setTeams(originalTeams);
                         }}
                         className="btn btn-outline-danger mr-1 btn-bottom"
+                        style={boxStyle}
                       >
                         Cancel
                       </span>

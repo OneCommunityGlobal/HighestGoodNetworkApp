@@ -9,6 +9,7 @@ import { fetchAllTasks, addNewTask } from '../../../../../actions/task';
 import { DUE_DATE_MUST_GREATER_THAN_START_DATE } from '../../../../../languages/en/messages';
 import 'react-day-picker/lib/style.css';
 import TagsSearch from '../components/TagsSearch';
+import { boxStyle } from 'styles';
 
 function AddTaskModal(props) {
   const tasks = props.tasks.taskItems;
@@ -337,6 +338,7 @@ function AddTaskModal(props) {
             className="btn btn-primary btn-sm margin-left"
             onClick={() => paste()}
             disabled={hoursWarning}
+            style={boxStyle}
           >
             Paste
           </button>
@@ -345,6 +347,7 @@ function AddTaskModal(props) {
             size="small"
             className="btn btn-danger btn-sm margin-left"
             onClick={() => clear()}
+            style={boxStyle}
           >
             Reset
           </button>
@@ -705,7 +708,7 @@ function AddTaskModal(props) {
           ) : null}
         </ModalFooter>
       </Modal>
-      <Button color="primary" size="sm" onClick={setToggle}>
+      <Button color="primary" size="sm" onClick={setToggle} style={boxStyle}>
         Add Task
       </Button>
     </div>
