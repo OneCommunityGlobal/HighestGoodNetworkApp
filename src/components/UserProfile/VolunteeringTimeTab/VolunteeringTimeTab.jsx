@@ -67,15 +67,15 @@ const WeeklySummaryOptions = props => {
   }
 
   const summaryOptions = [
-    {value: "Not Required", text: "Not Required (Slate Gray)", color: "#708090"},
-    {value: "Team", text: "Team (Red)", color: "#FF0000"},
-    {value: "Team Fabulous", text: "Team Fabulous (Fuschia)", color: "#FF00FF"},
-    {value: "Team Marigold", text: "Team Marigold (Orange)", color: "#FF7F00"},
-    {value: "Team Luminious", text: "Team Luminious (Yellow)", color: "#FFFF00"},
-    {value: "Team Lush", text: "Team Lush (Green)", color: "#00FF00"},
-    {value: "Team Sky", text: "Team Sky (Blue)", color: "#0000FF"},
-    {value: "Team Azure", text: "Team Azure (Indigo)", color: "#4B0082"},
-    {value: "Team Amethyst", text: "Team Amethyst (Purple)", color: "#9400D3"},
+    {value: "Required", text: "Required"},
+    {value: "Not Required", text: "Not Required (Slate Gray)"},
+    {value: "Team Fabulous", text: "Team Fabulous (Fuschia)"},
+    {value: "Team Marigold", text: "Team Marigold (Orange)"},
+    {value: "Team Luminious", text: "Team Luminious (Yellow)"},
+    {value: "Team Lush", text: "Team Lush (Green)"},
+    {value: "Team Sky", text: "Team Sky (Blue)"},
+    {value: "Team Azure", text: "Team Azure (Indigo)"},
+    {value: "Team Amethyst", text: "Team Amethyst (Purple)"},
   ]
 
   const handleOnChange = (e) => {
