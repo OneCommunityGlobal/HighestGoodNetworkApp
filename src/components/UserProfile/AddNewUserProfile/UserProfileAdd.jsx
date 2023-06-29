@@ -42,6 +42,7 @@ import TimeZoneDropDown from '../TimeZoneDropDown';
 import { getUserTimeZone } from 'services/timezoneApiService';
 import hasPermission from 'utils/permissions';
 import NewUserPopup from 'components/UserManagement/NewUserPopup';
+import { boxStyle } from 'styles';
 
 const patt = RegExp(/^([\w.%+-]+)@([\w-]+\.)+([\w]{2,})$/i);
 class AddUserProfile extends Component {
@@ -349,6 +350,7 @@ class AddUserProfile extends Component {
                             block
                             size="sm"
                             onClick={this.onClickGetTimeZone}
+                            style={boxStyle}
                           >
                             Get Time Zone
                           </Button>
@@ -412,6 +414,7 @@ class AddUserProfile extends Component {
                   block
                   size="lg"
                   onClick={() => this.createUserProfile(false)}
+                  style={boxStyle}
                 >
                   Create
                 </Button>
