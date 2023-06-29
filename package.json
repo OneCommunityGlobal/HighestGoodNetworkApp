@@ -80,7 +80,9 @@
     "build": "react-scripts build",
     "lint": "eslint src --fix",
     "eject": "react-scripts eject",
-    "start:local": "react-scripts start"
+    "start:local": "react-scripts start",
+    "format:check": "npx prettier src/** --check && npx eslint --ext js,jsx src",
+    "format": "npx eslint --fix --ext js,jsx src && npx prettier src/** --write"
   },
   "browserslist": [
     ">0.2%",

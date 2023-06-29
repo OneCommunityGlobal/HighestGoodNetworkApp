@@ -1,5 +1,6 @@
 import React from 'react';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
+import { boxStyle } from 'styles';
 
 const DeleteBadgePopup = props => {
   const closePopup = () => {
@@ -28,10 +29,10 @@ const DeleteBadgePopup = props => {
         </div>
       </ModalBody>
       <ModalFooter>
-        <Button color="danger" onClick={onDelete}>
+        <Button color="danger" onClick={onDelete} style={boxStyle}>
           Delete
         </Button>{' '}
-        <Button color="primary" onClick={closePopup}>
+        <Button color="primary" onClick={closePopup} style={boxStyle}>
           Cancel
         </Button>
       </ModalFooter>
