@@ -83,10 +83,10 @@ const SkeletonLoading = ({ template }) => {
             <div className="mx-5" style={{ marginTop: '6rem' }}>
               <div className="skeleton-loading-user-profile-item"></div>
               <div className="skeleton-loading-user-profile-item mt-5"></div>
-              <div className="skeleton-loading-user-profile-item" style={{ height: '7rem' }}></div>
+              <div className="skeleton-loading-user-profile-item" style={{ height: '16rem' }}></div>
               <div
                 className="skeleton-loading-user-profile-item"
-                style={{ marginTop: '6rem' }}
+                style={{ marginTop: '4rem' }}
               ></div>
               <div className="skeleton-loading-user-profile-item mt-3"></div>
               <div className="skeleton-loading-user-profile-item mt-3"></div>
@@ -103,32 +103,17 @@ const SkeletonLoading = ({ template }) => {
           </Container>
         );
       case 'UserManagement':
-        return (
-          <div>
-            <div className="skeleton-loading-user-management-item mt-3"></div>
-            <div className="skeleton-loading-user-management-item"></div>
-            <div className="skeleton-loading-user-management-item"></div>
-            <div className="skeleton-loading-user-management-item"></div>
-            <div className="skeleton-loading-user-management-item"></div>
-            <div className="skeleton-loading-user-management-item"></div>
-            <div className="skeleton-loading-user-management-item"></div>
-            <div className="skeleton-loading-user-management-item"></div>
-            <div className="skeleton-loading-user-management-item"></div>
-            <div className="skeleton-loading-user-management-item"></div>
-            <div className="skeleton-loading-user-management-item"></div>
-            <div className="skeleton-loading-user-management-item"></div>
-            <div className="skeleton-loading-user-management-item"></div>
-            <div className="skeleton-loading-user-management-item"></div>
-            <div className="skeleton-loading-user-management-item"></div>
-            <div className="skeleton-loading-user-management-item"></div>
-            <div className="skeleton-loading-user-management-item"></div>
-          </div>
-        );
+        const userManagementItems = [];
+        for (let i = 0; i < 17; i++) {
+          userManagementItems.push(
+            <div key={i} className="skeleton-loading-user-management-item"></div>,
+          );
+        }
+        return <div>{userManagementItems}</div>;
       default:
         return null;
     }
   };
-
   return renderSkeletonTemplate();
 };
 
