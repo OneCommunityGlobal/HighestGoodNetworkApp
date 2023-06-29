@@ -43,6 +43,7 @@ import { getUserTimeZone } from 'services/timezoneApiService';
 import hasPermission from 'utils/permissions';
 import NewUserPopup from 'components/UserManagement/NewUserPopup';
 import { boxStyle } from 'styles';
+import WeeklySummaryOptions from './WeeklySummaryOptions';
 
 const patt = RegExp(/^([\w.%+-]+)@([\w-]+\.)+([\w]{2,})$/i);
 class AddUserProfile extends Component {
@@ -95,6 +96,7 @@ class AddUserProfile extends Component {
     this.onCreateNewUser();
   }
 
+  
   render() {
     const { firstName, email, lastName, phoneNumber, role, jobTitle } = this.state.userProfile;
     const phoneNumberEntered =
@@ -268,7 +270,8 @@ class AddUserProfile extends Component {
                     <Label className="weeklySummaryOptionsLabel">Weekly Summary Options</Label>
                   </Col>
                   <Col md="6">
-                    <FormGroup>
+                    <WeeklySummaryOptions handleUserProfile={this.handleUserProfile}/>
+                    {/* <FormGroup>
                       <Input
                         type="select"
                         name="weeklySummaryOption"
@@ -280,7 +283,7 @@ class AddUserProfile extends Component {
                         <option value="Not Required">Not Required</option>
                         <option value="Team">Team</option>
                       </Input>
-                    </FormGroup>
+                    </FormGroup> */}
                   </Col>
                 </Row>
                 <Row>

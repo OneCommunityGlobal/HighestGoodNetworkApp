@@ -96,7 +96,7 @@ const FormattedReport = ({ summaries, weekIndex, bioCanEdit }) => {
           color: textColors[summary?.weeklySummaryOption] || textColors["Team"]
         };
         
-        return <div style={style}>{(summaryText)}</div>;
+        return <div style={style}>{ReactHtmlParser(summaryText)}</div>;
       } else {
         if (
           summary?.weeklySummaryOption === 'Not Required' ||
