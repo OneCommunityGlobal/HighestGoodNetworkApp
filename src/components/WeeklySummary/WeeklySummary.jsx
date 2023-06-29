@@ -21,9 +21,9 @@ import {
   ModalHeader,
   ModalFooter,
   UncontrolledDropdown,
-  DropdownMenu, 
+  DropdownMenu,
   DropdownItem,
-  DropdownToggle
+  DropdownToggle,
 } from 'reactstrap';
 import './WeeklySummary.css';
 import { connect } from 'react-redux';
@@ -40,6 +40,7 @@ import { toast } from 'react-toastify';
 import { WeeklySummaryContentTooltip, MediaURLTooltip } from './WeeklySummaryTooltips';
 import classnames from 'classnames';
 import { getUserProfile } from 'actions/userProfile';
+import { boxStyle } from 'styles';
 import CurrentPromptModal from './CurrentPromptModal.jsx';
 
 // Need this export here in order for automated testing to work.
@@ -211,17 +212,17 @@ export class WeeklySummary extends Component {
       this.setState({ activeTab: tab });
     }
   };
-
+  
   toggleMovePopup = showPopup => {
     this.setState({movePopup: !showPopup});
   }
-
+  
   toggleShowPopup = showPopup => {
     const mediaChangeConfirm = this.state.mediaChangeConfirm;
-    if (!mediaChangeConfirm){
-      this.setState({ editPopup: !showPopup});
-    }else{
-      this.setState({ editPopup: false});
+    if (!mediaChangeConfirm) {
+      this.setState({ editPopup: !showPopup });
+    } else {
+      this.setState({ editPopup: false });
     }
   };
 
@@ -232,39 +233,39 @@ export class WeeklySummary extends Component {
 
   handleMove = () =>{
     const moveSelect = this.state.moveSelect;
-    let formElements = {...this.state.formElements};
+    let formElements = { ...this.state.formElements };
     const activeTab = this.state.activeTab;
     if (activeTab != moveSelect){
       let movedContent = "";
       switch (activeTab) {
-        case "1":
+        case '1':
           movedContent = formElements.summary;
-          formElements.summary = "";
+          formElements.summary = '';
           break;
-        case "2":
+        case '2':
           movedContent = formElements.summaryLastWeek;
-          formElements.summaryLastWeek = "";
+          formElements.summaryLastWeek = '';
           break;
-        case "3":
+        case '3':
           movedContent = formElements.summaryBeforeLast;
-          formElements.summaryBeforeLast = "";
+          formElements.summaryBeforeLast = '';
           break;
-        case "4":
+        case '4':
           movedContent = formElements.summaryThreeWeeksAgo;
-          formElements.summaryThreeWeeksAgo = "";
+          formElements.summaryThreeWeeksAgo = '';
           break;
       }
       switch (moveSelect) {
         case "1":
           formElements.summary = movedContent;
           break;
-        case "2":
+        case '2':
           formElements.summaryLastWeek = movedContent;
           break;
-        case "3":
+        case '3':
           formElements.summaryBeforeLast = movedContent;
           break;
-        case "4":
+        case '4':
           formElements.summaryThreeWeeksAgo = movedContent;
           break;
       }
@@ -333,18 +334,18 @@ export class WeeklySummary extends Component {
     event.persist();
     const { name, value } = event.target;
     const formElements = { ...this.state.formElements };
-    if (this.state.mediaChangeConfirm){
+    if (this.state.mediaChangeConfirm) {
       const errors = { ...this.state.errors };
       const errorMessage = this.validateProperty(event.target);
       if (errorMessage) errors[name] = errorMessage;
       else delete errors[name];
       formElements[name] = value;
-      this.setState({formElements, errors });
-    }else{
+      this.setState({ formElements, errors });
+    } else {
       this.toggleShowPopup(this.state.editPopup);
     }
   };
-   
+
   handleMediaChange = event => {
     const mediaChangeConfirm = this.state.mediaChangeConfirm;
     this.setState({ mediaChangeConfirm: true });
@@ -675,24 +676,31 @@ export class WeeklySummary extends Component {
                         onChange={this.handleInputChange}
                       />
                     </FormGroup>
-                    {<Modal isOpen={this.state.editPopup}>
-                    <ModalHeader> Warning!</ModalHeader>
-                    <ModalBody>
-                      Whoa Tiger! Are you sure you want to do that?
-                      This link was added by an Admin when you were set up as a member 
-                      of the team. Only change this if you are SURE your new link is more 
-                      than the one already here.
-
-                    </ModalBody>
-                    <ModalFooter>
-                      <Button checked={this.state.mediaChangeConfirm} onClick={this.handleMediaChange}>
-                          Confirm
-                      </Button>{' '}
-                      <Button onClick={() => this.toggleShowPopup(this.state.editPopup)}>
-                          Close
-                      </Button>{' '}
-                    </ModalFooter>
-                  </Modal>} 
+                    {
+                      <Modal isOpen={this.state.editPopup}>
+                        <ModalHeader> Warning!</ModalHeader>
+                        <ModalBody>
+                          Whoa Tiger! Are you sure you want to do that? This link was added by an
+                          Admin when you were set up as a member of the team. Only change this if
+                          you are SURE your new link is more than the one already here.
+                        </ModalBody>
+                        <ModalFooter>
+                          <Button
+                            checked={this.state.mediaChangeConfirm}
+                            onClick={this.handleMediaChange}
+                            style={boxStyle}
+                          >
+                            Confirm
+                          </Button>{' '}
+                          <Button
+                            onClick={() => this.toggleShowPopup(this.state.editPopup)}
+                            style={boxStyle}
+                          >
+                            Close
+                          </Button>{' '}
+                        </ModalFooter>
+                      </Modal>
+                    }
                     {errors.mediaUrl && <Alert color="danger">{errors.mediaUrl}</Alert>}
                   </Col>
                   {formElements.mediaUrl && !errors.mediaUrl && (
@@ -748,6 +756,7 @@ export class WeeklySummary extends Component {
                         className="px-5 btn--dark-sea-green"
                         disabled={this.validate() || !formElements.mediaUrl ? true : false}
                         onClick={this.handleSave}
+                        style={boxStyle}
                       >
                         Save
                       </Button>

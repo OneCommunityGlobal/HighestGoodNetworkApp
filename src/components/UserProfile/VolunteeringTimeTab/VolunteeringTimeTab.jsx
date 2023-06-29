@@ -5,6 +5,7 @@ import { capitalize } from 'lodash';
 import { ENDPOINTS } from 'utils/URL';
 import axios from 'axios';
 import './timeTab.css';
+import { boxStyle } from 'styles';
 
 const MINIMUM_WEEK_HOURS = 0;
 const MAXIMUM_WEEK_HOURS = 168;
@@ -367,6 +368,7 @@ const ViewTab = props => {
             color="info"
             className="refresh-btn"
             onClick={() => props.loadUserProfile()}
+            style={boxStyle}
           >
             Refresh
           </Button>

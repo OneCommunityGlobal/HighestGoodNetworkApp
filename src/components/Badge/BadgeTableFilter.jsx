@@ -2,6 +2,7 @@ import React from 'react';
 import TextSearchBox from '../UserManagement/TextSearchBox';
 import DropDownSearchBox from '../UserManagement/DropDownSearchBox';
 import { Button } from 'reactstrap';
+import { boxStyle } from 'styles';
 
 const BadgeTableFilter = props => {
   const badgeTypes = [
@@ -66,7 +67,13 @@ const BadgeTableFilter = props => {
         />
       </td>
       <td id="badge_action">
-        <Button outline color="secondary" size="sm" onClick={() => props.resetFilters()}>
+        <Button
+          outline
+          color="secondary"
+          size="sm"
+          onClick={() => props.resetFilters()}
+          style={boxStyle}
+        >
           Reset Filters
         </Button>
       </td>

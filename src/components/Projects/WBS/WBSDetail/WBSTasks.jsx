@@ -8,12 +8,18 @@ import { Link } from 'react-router-dom';
 import { NavItem, Button } from 'reactstrap';
 import ReactTooltip from 'react-tooltip';
 import hasPermission from 'utils/permissions';
-import { fetchAllTasks, emptyAllTaskItems, updateNumList, deleteTask } from '../../../../actions/task';
+import {
+  fetchAllTasks,
+  emptyAllTaskItems,
+  updateNumList,
+  deleteTask,
+} from '../../../../actions/task';
 import { fetchAllMembers } from '../../../../actions/projectMembers.js';
 import Task from './Task';
 import AddTaskModal from './AddTask/AddTaskModal';
 import ImportTask from './ImportTask';
 import './wbs.css';
+import { boxStyle } from 'styles';
 
 function WBSTasks(props) {
   // modal
@@ -44,7 +50,7 @@ function WBSTasks(props) {
     return () => {
       props.emptyAllTaskItems();
     };
-  }, [])
+  }, []);
 
   useEffect(() => {
     load().then(setOpenAll(false));
@@ -226,14 +232,12 @@ function WBSTasks(props) {
           onClick={() => {
             refresh();
           }}
+          style={boxStyle}
         >
           Refresh{' '}
         </Button>
-
         {!loadAll ? (
-
-          <Button color="warning" size="sm" className="ml-3">
-
+          <Button color="warning" size="sm" className="ml-3" style={boxStyle}>
             {' '}
             Task Loading......{' '}
           </Button>
@@ -248,6 +252,7 @@ function WBSTasks(props) {
               setFilterState('all');
               setOpenAll(!openAll);
             }}
+            style={boxStyle}
           >
             All
           </Button>
@@ -256,6 +261,7 @@ function WBSTasks(props) {
             size="sm"
             onClick={() => setFilterState('assigned')}
             className="ml-2"
+            style={boxStyle}
           >
             Assigned
           </Button>
@@ -264,6 +270,7 @@ function WBSTasks(props) {
             size="sm"
             onClick={() => setFilterState('unassigned')}
             className="ml-2"
+            style={boxStyle}
           >
             Unassigned
           </Button>
@@ -272,6 +279,7 @@ function WBSTasks(props) {
             size="sm"
             onClick={() => setFilterState('active')}
             className="ml-2"
+            style={boxStyle}
           >
             Active
           </Button>
@@ -280,6 +288,7 @@ function WBSTasks(props) {
             size="sm"
             onClick={() => setFilterState('inactive')}
             className="ml-2"
+            style={boxStyle}
           >
             Inactive
           </Button>
@@ -288,6 +297,7 @@ function WBSTasks(props) {
             size="sm"
             onClick={() => setFilterState('complete')}
             className="ml-2"
+            style={boxStyle}
           >
             Complete
           </Button>
@@ -347,7 +357,6 @@ function WBSTasks(props) {
             <tr className="taskDrop">
               <td colSpan={14} />
             </tr>
-
             {props.state.tasks.fetched && filteredTasks.map((task, i) => (
               <Task
                 key={`${task._id}${i}`}
@@ -386,7 +395,6 @@ function WBSTasks(props) {
                 endstateInfo={task.endstateInfo}
                 childrenQty={task.childrenQty}
                 filteredTasks={filteredTasks}
-
               />
             ))}
           </tbody>
@@ -394,7 +402,7 @@ function WBSTasks(props) {
       </div>
     </>
   );
-};
+}
 
 const mapStateToProps = state => ({ state });
 
