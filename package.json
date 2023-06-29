@@ -70,6 +70,7 @@
     "redux-actions": "^2.6.5",
     "redux-persist": "^5.10.0",
     "redux-thunk": "^2.3.0",
+    "styles": "^0.2.1",
     "tinymce": "^5.10.7",
     "websocket-extensions": ">=0.1.4"
   },

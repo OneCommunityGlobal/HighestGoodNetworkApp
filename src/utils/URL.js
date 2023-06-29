@@ -73,7 +73,7 @@ export const ENDPOINTS = {
   TASK_EDIT_SUGGESTION: () => `${APIEndpoint}/taskeditsuggestion`,
   REJECT_TASK_EDIT_SUGGESTION: taskEditSuggestionId =>
     `${ENDPOINTS.TASK_EDIT_SUGGESTION()}/${taskEditSuggestionId}`,
-    
+
   TIMER_SERVICE: `${APIEndpoint.replace('http', 'ws').replace('api', 'timer-service')}`,
   TIMEZONE_KEY: `${APIEndpoint}/timezone`,
   GEOCODE_URI: (location, key) =>
