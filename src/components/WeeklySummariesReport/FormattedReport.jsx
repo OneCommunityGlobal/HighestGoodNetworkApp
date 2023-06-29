@@ -75,34 +75,34 @@ const FormattedReport = ({ summaries, weekIndex, bioCanEdit }) => {
                         .format('YYYY-MMM-DD')
     let summaryDateText = `Weekly Summary (${summaryDate}):`;
     const summaryContent = (() => {
+      const textColors = {
+        "Not Required": "#708090",
+        "Team": "#FF00FF",
+        "Team Fabulous": "#FF00FF",
+        "Team Marigold": "#FF7F00",
+        "Team Luminous": "#FFFF00",
+        "Team Lush": "#00FF00",
+        "Team Sky": "#0000FF",
+        "Team Azure": "#4B0082",
+        "Team Amethyst": "#9400D3"
+      }
+
       if (summaryText) {
         summaryDate = moment(summary.weeklySummaries[weekIndex]?.uploadDate)
                       .tz('America/Los_Angeles')
                       .format('YYYY-MMM-DD')
         summaryDateText =`Summary Submitted On (${summaryDate}):`
-        const style = {};
-        switch (summary?.weeklySummaryOption) {
-          case 'Team':
-            style.color = 'magenta';
-            break;
-          case 'Not Required':
-            style.color = 'green';
-            break;
-          case 'Required':
-            break;
-          default:
-            if (summary.weeklySummaryNotReq) {
-              style.color = 'green';
-            }
-            break;
-        }
-        return <div style={style}>{ReactHtmlParser(summaryText)}</div>;
+        const style = {
+          color: textColors[summary?.weeklySummaryOption] || textColors["Team"]
+        };
+        
+        return <div style={style}>{(summaryText)}</div>;
       } else {
         if (
           summary?.weeklySummaryOption === 'Not Required' ||
           (!summary?.weeklySummaryOption && summary.weeklySummaryNotReq)
         ) {
-          return <p style={{ color: 'green' }}>Not required for this user</p>;
+          return <p style={{ color: textColors["Not Required"] }}>Not required for this user</p>;
         } else {
           return <span style={{ color: 'red' }}>Not provided!</span>;
         }
