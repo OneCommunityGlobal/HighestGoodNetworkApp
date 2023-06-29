@@ -99,6 +99,10 @@ export class WeeklySummary extends Component {
     mediaChangeConfirm: false,
     moveSelect: '1',
     movePopup: false,
+    summaryLabel: '',
+    wordCount: 0,
+    summaryLabel: '',
+    wordCount: 0,
   };
 
   async componentDidMount() {
@@ -196,6 +200,8 @@ export class WeeklySummary extends Component {
       editPopup: false,
       mediaChangeConfirm: false,
       moveSelect: '1',
+      summaryLabel: 'summary',
+      wordCount: 0,
     });
   }
 
@@ -373,6 +379,12 @@ export class WeeklySummary extends Component {
     formElements[editor.id] = content;
     this.setState({ formElements, errors });
   };
+   
+  handleMediaChange = event => {
+    const mediaChangeConfirm = this.state.mediaChangeConfirm;
+    this.setState({ mediaChangeConfirm: true });
+    this.toggleShowPopup(this.state.editPopup);
+  };
 
   handleCheckboxChange = event => {
     event.persist();
@@ -510,6 +522,8 @@ export class WeeklySummary extends Component {
         : moment(dueDateThreeWeeksAgo).format('YYYY-MMM-DD'),
     };
 
+    const wordCount = this.state.wordCount;
+
     if (fetchError) {
       return (
         <Container>
@@ -572,7 +586,7 @@ export class WeeklySummary extends Component {
                   <Row>
                     <Col>
                       <FormGroup>
-                        <Label for={summaryName} className="summary-instructions-row">
+                        <Label for={summaryName} className="summary-instructions-row d-flex p-2 justify-content-between">
                           <div>
                             Enter your weekly summary below. (required){' '}
                             <WeeklySummaryContentTooltip tabId={tId} />
