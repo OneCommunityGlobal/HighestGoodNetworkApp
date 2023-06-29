@@ -276,15 +276,10 @@ export class WeeklySummary extends Component {
           break;
       }
     }
-    
+    //confitm move or not
     const movePop = this.state.movePopup
     this.toggleMovePopup(movePop);
-    // this.toggleTab(moveSelect);
-    // this.setState({ formElements: newformElements});
     return newformElements;
-    // console.log('moveafter',this.state.formElements)
-    // // this.setState({formElements:newformElements});
-    // // console.log('move', this.state.formElements)
   };
 
   // Minimum word count of 50 (handle words that also use non-ASCII characters by counting whitespace rather than word character sequences).
@@ -358,10 +353,12 @@ export class WeeklySummary extends Component {
   };
    
   handleMediaChange = event => {
-    const mediaChangeConfirm = this.state.mediaChangeConfirm;
-    this.setState({ mediaChangeConfirm: true });
-    this.toggleShowPopup(this.state.editPopup);
-  };
+  this.setState({
+    mediaChangeConfirm: true,
+  });
+  
+  this.toggleShowPopup(this.state.editPopup);
+};
 
   handleEditorChange = (content, editor) => {
     // Filter out blank pagagraphs inserted by tinymce replacing new line characters. Need those removed so Joi could do word count checks properly.
@@ -395,7 +392,10 @@ export class WeeklySummary extends Component {
     let { submittedDate, formElements,uploadDatesElements, originSummaries, 
       dueDate, dueDateLastWeek,dueDateBeforeLast,dueDateThreeWeeksAgo} = this.state;
     let newformElements = { ...formElements };
-    //Move or not
+    let newOriginSummaries = { ...originSummaries };
+    let newUploadDatesElements = { ...uploadDatesElements};
+    let dueDates = [dueDate, dueDateLastWeek,dueDateBeforeLast, dueDateThreeWeeksAgo];
+    //Move or not, if did move, update the newformElements
     const moveSelect = this.state.moveSelect;
     const activeTab = this.state.activeTab;
     if (moveSelect !== activeTab){
@@ -412,8 +412,6 @@ export class WeeklySummary extends Component {
     if (diffInSubmittedCount !== 0) {
       this.setState({ summariesCountShowing: newformElements.weeklySummariesCount + 1 });
     }
-    let newOriginSummaries = { ...originSummaries };
-    let newUploadDatesElements = { ...uploadDatesElements};
     const updateSummary = (summary, uploadDate) => {
       if (newformElements[summary] !== newOriginSummaries[summary]) {
         newOriginSummaries[summary] = newformElements[summary];
@@ -425,7 +423,7 @@ export class WeeklySummary extends Component {
     for (let i = 0; i < summaries.length; i++) {
       updateSummary(summaries[i], uploadDates[i]);
     }
-    let dueDates = [dueDate, dueDateLastWeek,dueDateBeforeLast, dueDateThreeWeeksAgo];
+    
     // Construct the modified weekly summaries
     const modifiedWeeklySummaries = {
       mediaUrl: newformElements.mediaUrl.trim(),
