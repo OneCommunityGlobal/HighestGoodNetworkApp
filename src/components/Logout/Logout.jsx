@@ -3,6 +3,7 @@ import { Redirect } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { logoutUser } from '../../actions/authActions';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
+import { boxStyle } from 'styles';
 
 export const Logout = props => {
   const dispatch = useDispatch();
@@ -26,10 +27,10 @@ export const Logout = props => {
         </div>
       </ModalBody>
       <ModalFooter>
-        <Button color="danger" onClick={onLogout}>
+        <Button color="danger" onClick={onLogout} style={boxStyle}>
           Logout
         </Button>{' '}
-        <Button color="primary" onClick={closePopup}>
+        <Button color="primary" onClick={closePopup} style={boxStyle}>
           Cancel
         </Button>
       </ModalFooter>

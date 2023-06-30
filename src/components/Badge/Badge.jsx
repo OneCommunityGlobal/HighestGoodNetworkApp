@@ -19,6 +19,7 @@ import NewBadges from './NewBadges';
 import OldBadges from './OldBadges';
 import BadgeReport from './BadgeReport';
 import { getUserProfile } from '../../actions/userProfile';
+import { boxStyle } from 'styles';
 
 const Badge = props => {
   const [isOpen, setOpen] = useState(false);
@@ -85,7 +86,11 @@ const Badge = props => {
                   Bravo! You Earned {totalBadge} Badges!{' '}
                   <i className="fa fa-info-circle" id="CountInfo" />
                 </CardText>
-                <Button className="btn--dark-sea-green float-right" onClick={toggle}>
+                <Button
+                  className="btn--dark-sea-green float-right"
+                  onClick={toggle}
+                  style={boxStyle}
+                >
                   Badge Report
                 </Button>
                 <Modal size={'lg'} isOpen={isOpen} toggle={toggle}>
