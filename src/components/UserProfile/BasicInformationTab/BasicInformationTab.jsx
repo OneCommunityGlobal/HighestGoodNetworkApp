@@ -275,33 +275,20 @@ const BasicInformationTab = props => {
     loadUserProfile,
   } = props;
   const [timeZoneFilter, setTimeZoneFilter] = useState('');
-
+  const [location, setLocation] = useState('');
   let topMargin = '6px';
   if (isUserSelf) {
     topMargin = '0px';
   }
   const key = useSelector(state => state.timeZoneAPI.userAPIKey);
   const canAddDeleteEditOwners = props.hasPermission('addDeleteEditOwners');
-
-  const handleLocation = e => {
-    setUserProfile({
-      ...userProfile,
-      location: { 
-        userProvided: e.target.value, 
-        coords: { lat: '', lng: '' }, 
-        country: '', 
-        city: ''
-    },
-    });
-  };
-  console.log(userProfile);
   const onClickGetTimeZone = () => {
-    if (!userProfile.location.userProvided) {
+    if (!location) {
       alert('Please enter valid location');
       return;
     }
     if (key) {
-      getUserTimeZone(userProfile.location.userProvided, key)
+      getUserTimeZone(location, key)
         .then(response => {
           if (
             response.data.status.code === 200 &&
@@ -309,17 +296,8 @@ const BasicInformationTab = props => {
             response.data.results.length
           ) {
             let timezone = response.data.results[0].annotations.timezone.name;
-            let currentLocation = {
-              userProvided: userProfile.location.userProvided,
-              coords: {
-                lat: response.data.results[0].geometry.lat,
-                lan: response.data.results[0].geometry.lng,
-              },
-              country: response.data.results[0].components.country,
-              city: response.data.results[0].components.city,
-            };
             setTimeZoneFilter(timezone);
-            setUserProfile({ ...userProfile, timeZone: timezone, location: currentLocation });
+            setUserProfile({ ...userProfile, timeZone: timezone });
           } else {
             alert('Invalid location or ' + response.data.status.message);
           }
@@ -481,54 +459,62 @@ const BasicInformationTab = props => {
                     );
                   })}
                   {canAddDeleteEditOwners && (
-                    <option value="Owner" style={{ marginLeft: '5px' }}>
-                      Owner
-                    </option>
+                    <option value="Owner" style={{marginLeft:"5px"}}>Owner</option>
                   )}
                 </select>
               </FormGroup>
             ) : (
               `${userProfile.role}`
             )}
-          </Col>
-          {
-            <Col md="1">
-              <div style={{ marginTop: topMargin }}>
-                <EditableInfoModal role={role} areaName={'roleInfo'} fontSize={30} />
-              </div>
-            </Col>
-          }
+            </Col>  
+            {(
+              
+              <Col md="1">
+                <div style={{marginTop:topMargin}}>
+                  <EditableInfoModal
+                  role={role}
+                  areaName={'roleInfo'}
+                  fontSize={30}
+                  />
+                </div>
+              </Col>
+             )}  
+             
         </Row>
         {canEdit && (
           <Row>
-            <Col md={{ size: 5, offset: 0 }}>
+            <Col md={{ size: 5, offset: 0}} >
               <Label>Location</Label>
             </Col>
             <Col>
-              <Row className="ml-0">
-                <Col className="p-0" style={{ marginRight: '10px' }}>
+              <Row className='ml-0'>
+                <Col className='p-0' style={{marginRight:"10px"}}>
                   <Input
-                    onChange={handleLocation}
-                    value={userProfile.location.userProvided || userProfile.location}
+                    onChange={e => {
+                      setLocation(e.target.value);
+                      setUserProfile({ ...userProfile, location: e.target.value });
+                    }}
+                    value={userProfile.location}
                   />
                 </Col>
-                <Col className="p-0">
+                <Col className='p-0'>
                   <Button
                     color="secondary"
                     block
                     onClick={onClickGetTimeZone}
                     style={boxStyle}
-                    className="px-0"
+                    className='px-0'
                   >
                     Get Time Zone
                   </Button>
                 </Col>
+                
               </Row>
             </Col>
             <Col md="1"></Col>
           </Row>
         )}
-        <Row style={{ marginTop: '15px', marginBottom: '10px' }}>
+        <Row style={{ marginTop:'15px', marginBottom: '10px'}}>
           <Col>
             <Label>Time Zone</Label>
           </Col>
@@ -737,11 +723,7 @@ const BasicInformationTab = props => {
                 >
                   {roles.map(({ roleName }) => {
                     if (roleName === 'Owner') return;
-                    return (
-                      <option key={roleName} value={roleName}>
-                        {roleName}
-                      </option>
-                    );
+                    return <option key={roleName} value={roleName}>{roleName}</option>;
                   })}
                   {canAddDeleteEditOwners && <option value="Owner">Owner</option>}
                 </select>
@@ -760,8 +742,11 @@ const BasicInformationTab = props => {
 
             <Col className="cols">
               <Input
-                onChange={handleLocation}
-                value={userProfile.location.userProvided || userProfile.location}
+                onChange={e => {
+                  setLocation(e.target.value);
+                  setUserProfile({ ...userProfile, location: e.target.value });
+                }}
+                value={userProfile.location}
               />
 
               <div>
