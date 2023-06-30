@@ -76,8 +76,8 @@ const FormattedReport = ({ summaries, weekIndex, bioCanEdit }) => {
     let summaryDateText = `Weekly Summary (${summaryDate}):`;
     const summaryContent = (() => {
       const textColors = {
+        "Default": "#000000",
         "Not Required": "#708090",
-        "Team": "#FF00FF",
         "Team Fabulous": "#FF00FF",
         "Team Marigold": "#FF7F00",
         "Team Luminous": "#FFFF00",
@@ -87,15 +87,17 @@ const FormattedReport = ({ summaries, weekIndex, bioCanEdit }) => {
         "Team Amethyst": "#9400D3"
       }
 
+    
       if (summaryText) {
+        const style = {
+          color: textColors[summary?.weeklySummaryOption] || textColors["Default"]
+        }
+
         summaryDate = moment(summary.weeklySummaries[weekIndex]?.uploadDate)
                       .tz('America/Los_Angeles')
                       .format('YYYY-MMM-DD')
         summaryDateText =`Summary Submitted On (${summaryDate}):`
-        const style = {
-          color: textColors[summary?.weeklySummaryOption] || textColors["Team"]
-        };
-        
+
         return <div style={style}>{ReactHtmlParser(summaryText)}</div>;
       } else {
         if (
