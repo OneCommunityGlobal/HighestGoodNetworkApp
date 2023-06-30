@@ -31,6 +31,7 @@ import Loading from '../common/Loading';
 import UserProfileModal from './UserProfileModal';
 import './UserProfile.scss';
 import TeamsTab from './TeamsAndProjects/TeamsTab';
+import SummaryTeamsTab from './SummaryTeam/TeamsTab';
 import ProjectsTab from './TeamsAndProjects/ProjectsTab';
 import InfoModal from './InfoModal';
 import BasicInformationTab from './BasicInformationTab/BasicInformationTab';
@@ -270,7 +271,7 @@ function UserProfile(props) {
           label: `View ${leaderBoardData[i].name}'s summary.`,
         });
       }
-      console.log('allSummaries:', allSummaries);
+      // console.log('allSummaries:', allSummaries);
       setSummaries(allSummaries);
       return;
     } catch (err) {
@@ -451,7 +452,7 @@ function UserProfile(props) {
     });
   };
 
-  const setActiveInactive = (isActive) => {
+  const setActiveInactive = isActive => {
     setActiveInactivePopupOpen(false);
     const newUserProfile = {
       ...userProfile,
@@ -829,6 +830,15 @@ function UserProfile(props) {
                     Edit History
                   </NavLink>
                 </NavItem>
+                <NavItem>
+                  <NavLink
+                    className={classnames({ active: activeTab === '6' }, 'nav-link')}
+                    onClick={() => toggleTab('6')}
+                    id="nabLink-teams"
+                  >
+                    Summary Teams
+                  </NavLink>
+                </NavItem>
               </Nav>
             </div>
             <TabContent
@@ -893,6 +903,19 @@ function UserProfile(props) {
                   role={requestorRole}
                   roles={roles}
                   userPermissions={userPermissions}
+                />
+              </TabPane>
+              <TabPane tabId="6">
+                <SummaryTeamsTab
+                  userTeams={teams || []}
+                  teamsData={props?.allTeams?.allTeamsData || []}
+                  onAssignTeam={onAssignTeam}
+                  onDeleteteam={onDeleteTeam}
+                  edit={hasPermission(requestorRole, 'editUserProfile', roles, userPermissions)}
+                  role={requestorRole}
+                  roles={roles}
+                  userId={props.match.params.userId}
+                  fullName={`${userProfile.firstName} ${userProfile.lastName}`}
                 />
               </TabPane>
             </TabContent>

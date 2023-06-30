@@ -86,7 +86,6 @@ export const extractMembers = id => {
       const result = await Promise.resolve({ teamMembers: groupObject });
       const teamMembers = { teamMembers: result.teamMembers };
       return teamMembers;
-      // console.log('Data from redux Store:', groupObject[0].teamMembers);
     } catch (err) {
       console.error('extractMembers:', err);
       return null;
