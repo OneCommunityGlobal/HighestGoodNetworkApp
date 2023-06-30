@@ -19,6 +19,7 @@ const AddTeamPopup = React.memo(props => {
     }
     if (props.handleSubmit !== undefined) {
       props.handleSubmit();
+      props.onClose();
     }
   };
   const selectTeam = team => {
