@@ -271,19 +271,6 @@ class AddUserProfile extends Component {
                   </Col>
                   <Col md="6">
                     <WeeklySummaryOptions handleUserProfile={this.handleUserProfile}/>
-                    {/* <FormGroup>
-                      <Input
-                        type="select"
-                        name="weeklySummaryOption"
-                        id="weeklySummaryOption"
-                        defaultValue="Required"
-                        onChange={this.handleUserProfile}
-                      >
-                        <option value="Required">Required</option>
-                        <option value="Not Required">Not Required</option>
-                        <option value="Team">Team</option>
-                      </Input>
-                    </FormGroup> */}
                   </Col>
                 </Row>
                 <Row>
