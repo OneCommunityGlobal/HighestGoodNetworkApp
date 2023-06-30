@@ -107,7 +107,7 @@ const TeamMemberTask = ({
                     return (
                       <tr key={`${task._id}${index}`} className="task-break">
                         <td data-label="Task(s)" className="task-align">
-                          <div>
+                          <p>
                             <Link to={task.projectId ? `/wbs/tasks/${task._id}` : '/'}>
                               <span>{`${task.num} ${task.taskName}`} </span>
                             </Link>
@@ -196,7 +196,7 @@ const TeamMemberTask = ({
                                 </Button>
                               </ModalFooter>
                             </Modal>
-                          </div>
+                          </p>
                         </td>
                         {task.hoursLogged != null && task.estimatedHours != null && (
                           <td data-label="Progress" className="team-task-progress">
