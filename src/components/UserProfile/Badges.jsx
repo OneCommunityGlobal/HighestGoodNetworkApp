@@ -34,6 +34,7 @@ export const Badges = props => {
     }
   }, [isOpen, isAssignOpen]);
 
+  // Determines what congratulatory text should displayed.
   const badgesEarned = props.userProfile.badgeCollection.length;
   const subject = props.isUserSelf ? 'You have' : 'This person has';
   const verb = badgesEarned ? `earned ${badgesEarned}` : 'no';

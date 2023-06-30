@@ -49,6 +49,7 @@ describe('Badges Component', () => {
           },
         };
         const renderedBadges = render(<Badges {...props} />);
+        // This uses a regular expression that matches all postive numbers > 1.
         expect(renderedBadges.find('.card-footer').text()).toMatch(
           /Bravo! You have earned ([1-9]\d+|[2-9]) badges! /,
         );
