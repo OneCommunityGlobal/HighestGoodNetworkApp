@@ -28,6 +28,7 @@ export const PROJECT_CATEGORY = 'Category';
 export const INVENTORY = 'Inventory';
 export const REPORTS = 'Reports';
 export const WEEKLY_SUMMARIES_REPORT = 'Weekly Summaries Report';
+export const TEAM_LOCATIONS = 'Team Locations';
 export const TEAMS = 'Teams';
 export const TEAM_LOCATIONS = 'Team locations';
 export const PERMISSIONS_MANAGEMENT = 'Permissions Management';
