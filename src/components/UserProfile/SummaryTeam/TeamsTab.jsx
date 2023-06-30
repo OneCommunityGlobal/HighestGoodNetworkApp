@@ -22,7 +22,8 @@ const TeamsTab = props => {
   const [renderedOn, setRenderedOn] = useState(0);
   const [summaryGroups, setSummaryGroups] = useState([]);
   const [filteredGroups, setFilteredGroups] = useState([]);
-  const [apiCallDone, setApiCallDone] = useState([]);
+  const [apiCallDone, setApiCallDone] = useState(true);
+  const [apiDeletionDone, setApiDeletion] = useState(true);
 
   const onAddTeamPopupShow = () => {
     setaddTeamPopupOpen(true);
@@ -49,8 +50,6 @@ const TeamsTab = props => {
   const fetchData = async () => {
     try {
       setSummaryGroups(teamsData2.allSummaryGroups);
-      const filteredGroupsInfo = filterGroups(userId, teamsData2.allSummaryGroups);
-      setFilteredGroups(filteredGroupsInfo);
     } catch (error) {
       console.log('Error occurred', error);
     }
@@ -67,6 +66,12 @@ const TeamsTab = props => {
       setFilteredGroups(filteredGroupsInfo);
     }
   }, [summaryGroups]);
+
+  useEffect(() => {
+    if (apiDeletionDone) {
+      dispatch(getAllSummaryGroup());
+    }
+  }, [apiDeletionDone]);
 
   const onAddTeamMember = async selectedSummaryGroupId => {
     setApiCallDone(true);
@@ -109,16 +114,20 @@ const TeamsTab = props => {
     const requestData = {
       _id: userId,
     };
-
+    setApiDeletion(false);
     try {
       const response = await axios.delete(
         ENDPOINTS.SUMMARY_GROUP_TEAM_MEMBERS_DELETE(selectedSummaryGroupId, userId),
       );
+      const updatedSummaryGroups = summaryGroups.filter(
+        group => group._id !== selectedSummaryGroupId,
+      );
+      setSummaryGroups(updatedSummaryGroups);
+      setApiDeletion(true);
+      alert('Summary Team successfully deleted!');
     } catch (error) {
       console.log(error);
     }
-    dispatch(getAllSummaryGroup());
-    fetchData();
   };
 
   return (
