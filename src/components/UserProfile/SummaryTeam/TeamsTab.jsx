@@ -36,8 +36,6 @@ const TeamsTab = props => {
   };
 
   const onSelectAssignTeam = team => {
-    // onAssignTeam(team);
-    // setRenderedOn(Date.now());
     onAddTeamMember(team._id);
   };
 
@@ -99,13 +97,28 @@ const TeamsTab = props => {
 
       // Updating Redux from MongoDB lazily
       dispatch(getAllSummaryGroup());
-      // this.getTeamMembers(selectedSummaryGroupId);
     } catch (error) {
       console.log(error);
     }
     setTimeout(() => {
       setApiCallDone(true);
     }, 500);
+  };
+
+  const onDeleteTeamMembers = async selectedSummaryGroupId => {
+    const requestData = {
+      _id: userId,
+    };
+
+    try {
+      const response = await axios.delete(
+        ENDPOINTS.SUMMARY_GROUP_TEAM_MEMBERS_DELETE(selectedSummaryGroupId, userId),
+      );
+    } catch (error) {
+      console.log(error);
+    }
+    dispatch(getAllSummaryGroup());
+    fetchData();
   };
 
   return (
@@ -116,11 +129,12 @@ const TeamsTab = props => {
         teamsData={summaryGroups}
         userTeamsById={filteredGroups}
         onSelectAssignTeam={onSelectAssignTeam}
+        apiCallDone={apiCallDone}
       />
       <UserTeamsTable
         userTeamsById={filteredGroups}
         onButtonClick={onAddTeamPopupShow}
-        onDeleteClick={onSelectDeleteTeam}
+        onDeleteClick={onDeleteTeamMembers}
         renderedOn={renderedOn}
         edit={edit}
         role={role}

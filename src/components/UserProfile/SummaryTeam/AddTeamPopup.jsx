@@ -11,7 +11,11 @@ const AddTeamPopup = React.memo(props => {
   const [isValidTeam, onValidation] = useState(true);
 
   const onAssignTeam = () => {
-    if (selectedTeam && !props.userTeamsById.some(x => x._id === selectedTeam._id)) {
+    if (
+      selectedTeam &&
+      !props.userTeamsById.some(x => x._id === selectedTeam._id) &&
+      props.apiCallDone
+    ) {
       props.onSelectAssignTeam(selectedTeam);
       onSelectTeam(undefined);
     } else {
