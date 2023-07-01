@@ -193,11 +193,7 @@ const TotalPeopleReport = props => {
     const sumData = groupedDate.map(range => {
       return {
         label: range.timeRange,
-        value: range.usersOfTime
-          .reduce((acc, obj) => {
-            return acc + Number(obj.tangibleTime);
-          }, 0)
-          .toFixed(2),
+        value: range.usersOfTime.length
       };
     });
     return sumData;
