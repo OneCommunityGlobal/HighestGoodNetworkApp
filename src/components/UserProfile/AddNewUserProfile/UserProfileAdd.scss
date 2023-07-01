@@ -2,6 +2,10 @@ form-control {
   width: 0;
 }
 
+.border-error-validation {
+  border-color: red !important;
+}
+
 .saveChangesWarning {
   display: block;
   position: fixed;
@@ -86,6 +90,7 @@ form-control {
   background-color: #6d757d;
   border: none;
 }
+
 .teamsView {
   display: flex;
 }
