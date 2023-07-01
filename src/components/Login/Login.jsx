@@ -5,6 +5,7 @@ import { Link, withRouter } from 'react-router-dom';
 import Form from '../common/Form/Form';
 import { loginUser } from '../../actions/authActions';
 import { clearErrors } from '../../actions/errorsActions';
+import { boxStyle } from 'styles';
 
 export class Login extends Form {
   state = {

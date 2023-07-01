@@ -13,6 +13,7 @@ import { connect } from 'react-redux';
 import './Badge.css';
 import { createNewBadge, closeAlert } from '../../actions/badgeManagement';
 import { badgeTypes } from './BadgeTypes';
+import { boxStyle } from 'styles';
 
 const CreateNewBadgePopup = props => {
   const [badgeName, setBadgeName] = useState('');
@@ -388,7 +389,7 @@ const CreateNewBadgePopup = props => {
           placeholder="Please Enter a Number"
         />
       </FormGroup>
-      <Button color="info" onClick={handleSubmit} disabled={enableButton}>
+      <Button color="info" onClick={handleSubmit} disabled={enableButton} style={boxStyle}>
         Create
       </Button>
     </Form>

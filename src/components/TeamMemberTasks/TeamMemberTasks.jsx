@@ -17,7 +17,8 @@ import moment from 'moment';
 import TeamMemberTask from './TeamMemberTask';
 import FilteredTimeEntries from './FilteredTimeEntries';
 import { hrsFilterBtnRed, hrsFilterBtnBlue, skyblue} from 'constants/colors';
-import { getTeamMembers} from '../../actions/allTeamsAction';
+import { getTeamMembers, getAllUserTeams} from '../../actions/allTeamsAction';
+import { getUserTeamMembers } from '../../actions/team';
 
 const TeamMemberTasks = props => {
   const [showTaskNotificationModal, setTaskNotificationModal] = useState(false);
@@ -89,7 +90,9 @@ const TeamMemberTasks = props => {
             setUserRole(user.data.role);
           });
       } else {
-        await dispatch(fetchTeamMembersTask(userId, null));
+        dispatch(fetchTeamMembersTask(userId, null));
+        await getAllUserTeams()(dispatch)
+         getUserTeamMembers(userId)()
         setUserRole(props.auth.user.role);
       }
       setShouldRun(true);
@@ -106,8 +109,7 @@ const TeamMemberTasks = props => {
 
   //if user role is core team instead of showing all members show only team members by default.
   useEffect(()=>{
-    console.log('PROFILE',props.userProfile)
-    if((props.userProfile.role=== 'Owner' || props.userProfile.role === 'Administrator' || props.userProfile.role === 'Core Team') && props.userProfile.teams.length > 0){
+    if((props.userProfile.role=== 'Owner' || props.userProfile.role === 'Administrator' || props.userProfile.role === 'Core Team' ) && props.userProfile.teams.length > 0){
       setisTeamTab(true)
       setisLoadingmember(true)
     }
@@ -116,24 +118,13 @@ const TeamMemberTasks = props => {
   //which data to show depending on user role
   useEffect(()=>{
     if(userRole){
-      if(userRole === 'Owner' || userRole === 'Administrator' || userRole === 'Core Team' && props.userProfile.teams.length > 0){ 
+      if((userRole === 'Owner' || userRole === 'Administrator' || userRole === 'Core Team' ) && props.userProfile.teams.length > 0){ 
         getMyTeam();
       }else{
         renderTeamsList();
       }
     }
   },[usersWithTasks])
-  //////////
-  // useEffect(() => {
-  //   if (isLoading === false && shouldRun) {
-     
-  //     closeMarkAsDone();
-  //   }
-  // }, [usersWithTasks, shouldRun]);
-
-
-
-  ////////
 
   useEffect(() => {  
     //submitTasks();
@@ -419,7 +410,7 @@ const renderTeamsList = async () => {
     <div className="container team-member-tasks">
       <header className="header-box">
         <h1>Team Member Tasks</h1>
-        {(props.userProfile?.role == 'Owner' || props.userProfile?.role === 'Administrator' || props.userProfile?.role === 'Core Team') &&  props.userProfile.teams.length > 0 &&<button className='circle-border my-team' style={{ 
+        {(props.userProfile?.role == 'Owner' || props.userProfile?.role === 'Administrator' || props.userProfile?.role === 'Core Team' ) &&  props.userProfile.teams.length > 0 &&<button className='circle-border my-team' style={{ 
                 backgroundColor: isTeamTab ? skyblue : 'slategray',
                 cursor: isLoadingmember ? 'not-allowed' : 'pointer'
                 }} onClick={toggleTeamView}
