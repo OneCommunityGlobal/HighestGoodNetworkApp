@@ -117,6 +117,8 @@ const SummaryBar = props => {
     information: '',
   };
 
+  const [extraFieldForSuggestionForm, setExtraFieldForSuggestionForm] = useState(false)
+  const [showSuggestionModal, setShowSuggestionModal] = useState(false);
   const [report, setBugReport] = useState(initialInfo);
 
   const openReport = () => {
@@ -144,6 +146,10 @@ const SummaryBar = props => {
     openReport();
   };
 
+  const sendUserSuggestion = event =>{
+    event.preventDefault();
+  }
+
   const onTaskClick = () => {
     window.location.hash = '#tasks';
   };
@@ -169,6 +175,10 @@ const SummaryBar = props => {
       return '';
     }
   };
+
+  const addField = () =>{
+    setExtraFieldForSuggestionForm(true)
+  }
 
   const authenticateUserRole = authenticateUser ? authenticateUser.role : '';
   if (userProfile !== undefined && summaryBarData !== undefined) {
@@ -369,12 +379,146 @@ const SummaryBar = props => {
                   <img className="sum_img" src={report_icon} alt="" />
                 )}
               </div>
+              &nbsp;&nbsp;
+              <div className="image_frame">
+                {matchUser ? (
+                  <img className="sum_img" src={report_icon} alt="" onClick={() => setShowSuggestionModal(prev => !prev)} />
+                ) : (
+                  <img className="sum_img" src={report_icon} alt="" />
+                )}
+              </div>
             </div>
           </Col>
           <Modal isOpen={report.in} toggle={openReport}>
             <ModalHeader>Bug Report</ModalHeader>
             <ModalBody>
               <Form onSubmit={sendBugReport} id="bugReportForm">
+                <FormGroup>
+                  <Label for="title"></Label>
+                  <Input
+                    type="textbox"
+                    name="title"
+                    id="title"
+                    required
+                    placeholder=""
+                  />
+                </FormGroup>
+                <FormGroup>
+                  <Label for="">
+                    {' '}
+                    {' '}
+                  </Label>
+                  <Input
+                    type="textarea"
+                    name="environment"
+                    id="environment"
+                    required
+                    placeholder=""
+                  />
+                </FormGroup>
+                <FormGroup>
+                  <Label for="">
+                    {' '}
+                  </Label>
+                  <Input
+                    type="textarea"
+                    name="reproduction"
+                    id="reproduction"
+                    required
+                    placeholder=""
+                  />
+                </FormGroup>
+                <FormGroup>
+                  <Label for=""></Label>
+                  <Input
+                    type="textarea"
+                    name="expected"
+                    id="expected"
+                    required
+                    placeholder=""
+                  />
+                </FormGroup>
+                <FormGroup>
+                  <Label for=""></Label>
+                  <Input
+                    type="textarea"
+                    name="actual"
+                    id="actual"
+                    required
+                    placeholder=""
+                  />
+                </FormGroup>
+                <FormGroup>
+                  <Label for=""></Label>
+                  <Input
+                    type="textarea"
+                    name="visual"
+                    id="visual"
+                    required
+                    placeholder=""
+                  />
+                </FormGroup>
+                <FormGroup>
+                  <Label for=""></Label>
+                  <Input type="select" name="severity" id="severity" required>
+                    <option hidden disabled defaultValue value>
+                      {' '}
+                      -- select an option --{' '}
+                    </option>
+                    <option></option>
+                    <option></option>
+                    <option></option>
+                  </Input>
+                </FormGroup>
+                <fieldset>
+                  <legend>Would you like a followup/reply regarding this feedback?</legend>
+
+                  <div>
+                    <input type="checkbox" id="yes" name="yes" checked/>
+                    <label for="yes">Yes</label>
+                  </div>
+
+                  <div>
+                    <input type="checkbox" id="no" name="no"/>
+                    <label for="no">No</label>
+                 </div>
+                </fieldset>
+                {userProfile.role === 'Owner' && 
+                  <button onClick={()=> setExtraFieldForSuggestionForm(prev => !prev)}>
+                    Add Field
+                  </button>
+                }
+                {extraFieldForSuggestionForm &&
+                 <Form onSubmit={addField}>
+                    <FormGroup>
+                      <Label for="newField">Add Field Name</Label>
+                        <Input
+                    type="textarea"
+                    name="newField"
+                    id="newField"
+                    required
+                    placeholder="New Field Name"
+                        /> 
+                    </FormGroup>
+                 </Form>
+                 }
+                <FormGroup>
+                  <Button type="submit" color="primary" size="lg">
+                    Submit
+                  </Button>{' '}
+                  &nbsp;&nbsp;&nbsp;
+                  <Button onClick={openReport} color="danger" size="lg">
+                    Close
+                  </Button>
+                </FormGroup>
+              </Form>
+            </ModalBody>
+          </Modal>
+
+          <Modal isOpen={showSuggestionModal} toggle={()=> setShowSuggestionModal(prev => !prev)}>
+            <ModalHeader>User Suggestion</ModalHeader>
+            <ModalBody>
+              <Form onSubmit={sendUserSuggestion} id="suggestionForm">
                 <FormGroup>
                   <Label for="title">[Feature Name] Bug Title </Label>
                   <Input
@@ -457,7 +601,7 @@ const SummaryBar = props => {
                     Submit
                   </Button>{' '}
                   &nbsp;&nbsp;&nbsp;
-                  <Button onClick={openReport} color="danger" size="lg">
+                  <Button onClick={showSuggestionModal} color="danger" size="lg">
                     Close
                   </Button>
                 </FormGroup>
