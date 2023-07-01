@@ -22,6 +22,7 @@ import {
   updateOwnerStandardMessage,
   deleteOwnerStandardMessage,
 } from '../../actions/ownerStandardMessageAction';
+import { boxStyle } from 'styles';
 
 function OwnerMessage({
   auth,
@@ -198,10 +199,10 @@ function OwnerMessage({
           />
         </ModalBody>
         <ModalFooter style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <Button color="info" onClick={handleStandardMessage} disabled={disableButtons}>
+          <Button color="info" onClick={handleStandardMessage} disabled={disableButtons} style={boxStyle}>
             {standardMessage ? <span style={{color: 'white'}}>Update as Standard Message</span> : <span style={{color: 'white'}}>Create as Standard Message</span>}
           </Button>
-          <Button color="primary" onClick={handleMessage} disabled={disableButtons}>
+          <Button color="primary" onClick={handleMessage} disabled={disableButtons} style={boxStyle}>
             {message ? 'Update' : 'Create'}
           </Button>
         </ModalFooter>
@@ -211,10 +212,10 @@ function OwnerMessage({
           <h4>Do you really want to delete the message?</h4>
         </ModalBody>
         <ModalFooter>
-          <Button color="secondary" onClick={toggleDeleteWarning}>
+          <Button color="secondary" onClick={toggleDeleteWarning} style={boxStyle}>
             Cancel
           </Button>
-          <Button color="danger" onClick={handleDeleteMessage}>
+          <Button color="danger" onClick={handleDeleteMessage} style={boxStyle}>
             Delete
           </Button>
         </ModalFooter>
@@ -225,7 +226,7 @@ function OwnerMessage({
           <span>Only .jpg, .jpeg and .png formats are accepted.</span>
         </ModalBody>
         <ModalFooter>
-          <Button color="danger" onClick={toggleWrongPictureFormatWarning}>
+          <Button color="danger" onClick={toggleWrongPictureFormatWarning} style={boxStyle}>
             Close
           </Button>
         </ModalFooter>

@@ -9,6 +9,7 @@ import { getProgressColor, getProgressValue } from '../../utils/effortColors';
 import hasPermission from 'utils/permissions';
 import './style.css';
 import ReactTooltip from 'react-tooltip';
+import { boxStyle } from 'styles';
 
 const TeamMemberTask = ({
   user,
@@ -187,6 +188,7 @@ const TeamMemberTask = ({
                                 onClick={toggleInfoTaskIconModal}
                                 color="secondary"
                                 className="float-left"
+                                style={boxStyle}
                               >
                                 {' '}
                                 Ok{' '}
