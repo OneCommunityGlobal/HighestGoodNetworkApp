@@ -1,0 +1,265 @@
+import { Link } from 'react-router-dom';
+import moment from 'moment';
+import React, { useEffect, useState } from 'react';
+import { ENDPOINTS } from 'utils/URL';
+import axios from 'axios';
+import Loading from '../../common/Loading';
+import './TotalPeopleReport.css';
+import { Button } from 'reactstrap';
+import ReactTooltip from 'react-tooltip';
+import TotalReportBarGraph from './TotalReportBarGraph';
+
+const TotalPeopleReport = props => {
+  const [dataLoading, setDataLoading] = useState(true);
+  const [showTotalPeopleTable, setShowTotalPeopleTable] = useState(false);
+  const [allTimeEntries, setAllTimeEntries] = useState([]);
+  const [allPeople, setAllPeople] = useState([]);
+  const [peopleInMonth, setPeopleInMonth] = useState([]);
+  const [peopleInYear, setPeopleInYear] = useState([]);
+  const [showMonthly, setShowMonthly] = useState(false);
+  const [showYearly, setShowYearly] = useState(false);
+
+  const fromDate = moment(props.startDate)
+    .tz('America/Los_Angeles')
+    .format('YYYY-MM-DD');
+  const toDate = moment(props.endDate)
+    .tz('America/Los_Angeles')
+    .format('YYYY-MM-DD');
+  const userList = props.userProfiles.map(user => user._id);
+
+  const loadTimeEntriesForPeriod = async () => {
+    const url = ENDPOINTS.TIME_ENTRIES_USER_LIST;
+    const timeEntries = await axios
+      .post(url, { users: userList, fromDate, toDate })
+      .then(res => {
+        return res.data.map(entry => {
+          return {
+            userId: entry.personId,
+            hours: entry.hours,
+            minutes: entry.minutes,
+            isTangible: entry.isTangible,
+            date: entry.dateOfWork,
+          };
+        });
+      })
+      .catch(err => {
+        console.log(err.message);
+      });
+    setAllTimeEntries(timeEntries);
+  };
+
+  const sumByUser = (objectArray, property) => {
+    return objectArray.reduce((acc, obj) => {
+      var key = obj[property];
+      if (!acc[key]) {
+        acc[key] = {
+          userId: key,
+          hours: 0,
+          minutes: 0,
+          tangibleHours: 0,
+          tangibleMinutes: 0,
+        };
+      }
+      if (obj['isTangible']) {
+        acc[key]['tangibleHours'] += Number(obj['hours']);
+        acc[key]['tangibleMinutes'] += Number(obj['minutes']);
+      }
+      acc[key]['hours'] += Number(obj['hours']);
+      acc[key]['minutes'] += Number(obj['minutes']);
+      return acc;
+    }, {});
+  };
+
+  const groupByTimeRange = (objectArray, timeRange) => {
+    let range = 0;
+    if (timeRange === 'month') {
+      range = 7;
+    } else if (timeRange === 'year') {
+      range = 4;
+    } else {
+      console.log('The time range should be month or year.');
+    }
+    return objectArray.reduce((acc, obj) => {
+      const key = obj['date'].substring(0, range);
+      const month = acc[key] || [];
+      month.push(obj);
+      acc[key] = month;
+      return acc;
+    }, {});
+  };
+
+  const summaryOfTimeRange = timeRange => {
+    const groupedEntries = Object.entries(groupByTimeRange(allTimeEntries, timeRange));
+    let summaryOfTime = [];
+    groupedEntries.forEach(element => {
+      const groupedUsersOfTime = Object.values(sumByUser(element[1], 'userId'));
+      const contributedUsersOfTime = filterTenHourUser(groupedUsersOfTime);
+      summaryOfTime.push({ timeRange: element[0], usersOfTime: contributedUsersOfTime });
+    });
+    return summaryOfTime;
+  };
+
+  const filterTenHourUser = userTimeList => {
+    let filteredUsers = [];
+    userTimeList.forEach(element => {
+      const allTimeLogged = element.hours + element.minutes / 60.0;
+      const allTangibleTimeLogged = element.tangibleHours + element.tangibleMinutes / 60.0;
+      if (allTimeLogged >= 10) {
+        const matchedUser = props.userProfiles.filter(user => user._id === element.userId)[0];
+        filteredUsers.push({
+          userId: element.userId,
+          firstName: matchedUser.firstName,
+          lastName: matchedUser.lastName,
+          totalTime: allTimeLogged.toFixed(2),
+          tangibleTime: allTangibleTimeLogged.toFixed(2),
+        });
+      }
+    });
+    return filteredUsers;
+  };
+
+  const checkPeriodForSummary = () => {
+    const oneMonth = 1000 * 60 * 60 * 24 * 31;
+    const diffDate = props.endDate - props.startDate;
+    if (diffDate > oneMonth) {
+      setPeopleInMonth(generateBarData(summaryOfTimeRange('month')));
+      setPeopleInYear(generateBarData(summaryOfTimeRange('year')));
+      if (diffDate <= oneMonth * 12) {
+        setShowMonthly(true);
+      }
+      if (props.startDate.getFullYear() !== props.endDate.getFullYear()) {
+        setShowYearly(true);
+      }
+    }
+  };
+
+  useEffect(() => {
+    loadTimeEntriesForPeriod().then(() => {
+      setDataLoading(false);
+    });
+  }, []);
+
+  useEffect(() => {
+    if (!dataLoading) {
+      const groupedUsers = Object.values(sumByUser(allTimeEntries, 'userId'));
+      const contributedUsers = filterTenHourUser(groupedUsers);
+      setAllPeople(contributedUsers);
+      checkPeriodForSummary();
+    }
+  }, [dataLoading]);
+
+  const onClickTotalPeopleDetail = () => {
+    const showDetail = showTotalPeopleTable;
+    setShowTotalPeopleTable(!showDetail);
+  };
+
+  const totalPeopleTable = totalPeople => {
+    let PeopleList = [];
+    if (totalPeople.length > 0) {
+      PeopleList = totalPeople
+        .sort((a, b) => a.firstName.localeCompare(b.firstName))
+        .map((person, index) => (
+          <tr className="teams__tr" id={`tr_${person.userId}`} key={person.userId}>
+            <th className="teams__order--input" scope="row">
+              <div>{index + 1}</div>
+            </th>
+            <td>
+              <Link to={`/userProfile/${person.userId}`}>
+                {person.firstName} {person.lastName}
+              </Link>
+            </td>
+            <td>{person.totalTime}</td>
+          </tr>
+        ));
+    }
+
+    return (
+      <table className="table table-bordered table-responsive-sm">
+        <thead>
+          <tr>
+            <th scope="col" id="projects__order">
+              #
+            </th>
+            <th scope="col">Person Name</th>
+            <th scope="col">Total Logged Time</th>
+          </tr>
+        </thead>
+        <tbody>{PeopleList}</tbody>
+      </table>
+    );
+  };
+
+  const generateBarData = groupedDate => {
+    const sumData = groupedDate.map(range => {
+      return {
+        label: range.timeRange,
+        value: range.usersOfTime
+          .reduce((acc, obj) => {
+            return acc + Number(obj.tangibleTime);
+          }, 0)
+          .toFixed(2),
+      };
+    });
+    return sumData;
+  };
+
+  const totalPeopleInfo = totalPeople => {
+    const totalTangibleTime = totalPeople.reduce((acc, obj) => {
+      return acc + Number(obj.tangibleTime);
+    }, 0);
+    return (
+      <div className="total-people-container">
+        <div className="total-people-period">
+          In the period from {fromDate} to {toDate}:
+        </div>
+        <div className="total-people-item">
+          <div className="total-people-number">{allPeople.length}</div>
+          <div className="total-people-text">members have contributed more than 10 hours.</div>
+        </div>
+        <div className="total-people-item">
+          <div className="total-people-number">{totalTangibleTime.toFixed(2)}</div>
+          <div className="total-people-text">hours of tangible time have been logged.</div>
+        </div>
+        <div>
+          {showMonthly && peopleInMonth.length > 0 ? (
+            <TotalReportBarGraph barData={peopleInMonth} range="month" />
+          ) : null}
+          {showYearly && peopleInYear.length > 0 ? (
+            <TotalReportBarGraph barData={peopleInYear} range="year" />
+          ) : null}
+        </div>
+        <div className="people-detail">
+          <Button onClick={e => onClickTotalPeopleDetail()}>
+            {showTotalPeopleTable ? 'Hide Details' : 'Show Details'}
+          </Button>
+          <i
+            className="fa fa-info-circle"
+            data-tip
+            data-for="totalPeopleDetailTip"
+            data-delay-hide="500"
+            aria-hidden="true"
+            style={{ paddingLeft: '.32rem' }}
+          />
+          <ReactTooltip id="totalPeopleDetailTip" place="bottom" effect="solid">
+            Click this button to show or hide the list of all the people and their total hours
+            logged.
+          </ReactTooltip>
+        </div>
+      </div>
+    );
+  };
+
+  return (
+    <div>
+      {dataLoading ? (
+        <Loading />
+      ) : (
+        <div>
+          <div>{totalPeopleInfo(allPeople)}</div>
+          <div>{showTotalPeopleTable ? totalPeopleTable(allPeople) : null}</div>
+        </div>
+      )}
+    </div>
+  );
+};
+export default TotalPeopleReport;

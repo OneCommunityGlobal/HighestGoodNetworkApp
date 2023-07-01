@@ -1,0 +1,36 @@
+.total-people-container{
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    background-color:#f1ebf7;
+    border-radius: 16px;
+    padding: 20px 40px;
+}
+
+.total-people-number{
+    font-size: 32px;
+    font-weight: 700;
+    margin-right: 30px;
+}
+
+.total-people-text{
+    padding-top: 15px;
+}
+
+.total-people-item{
+    display: flex;
+    flex-direction: row;
+}
+
+.total-people-period{
+    font-size: 24px;
+    font-weight: 400;
+}
+
+.people-detail{
+    margin-top: 20px;
+}
+
+.people-detail Button{
+    background-color:steelblue;
+}

@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import moment from 'moment';
-import { Container } from 'reactstrap';
+import { Container, Button } from 'reactstrap';
 import DatePicker from 'react-datepicker';
 import { fetchAllProjects } from '../../actions/projects';
 import { getAllUserTeams } from '../../actions/allTeamsAction';
@@ -16,6 +16,8 @@ import './reportsPage.css';
 import projectsImage from './images/Projects.svg';
 import peopleImage from './images/People.svg';
 import teamsImage from './images/Teams.svg';
+import ReactTooltip from 'react-tooltip';
+import TotalPeopleReport from './TotalReport/TotalPeopleReport';
 
 const DATE_PICKER_MIN_DATE = '01/01/2010';
 
@@ -26,6 +28,7 @@ class ReportsPage extends Component {
       showProjects: false,
       showPeople: false,
       showTeams: false,
+      showTotalPeople: false,
       teamNameSearchText: '',
       teamMembersPopupOpen: false,
       deleteTeamPopupOpen: false,
@@ -71,6 +74,7 @@ class ReportsPage extends Component {
     this.showProjectTable = this.showProjectTable.bind(this);
     this.showPeopleTable = this.showPeopleTable.bind(this);
     this.showTeamsTable = this.showTeamsTable.bind(this);
+    this.showTotalPeople = this.showTotalPeople.bind(this);
     this.setActive = this.setActive.bind(this);
     this.setInActive = this.setInActive.bind(this);
     this.setAll = this.setAll.bind(this);
@@ -207,6 +211,14 @@ class ReportsPage extends Component {
     }));
   }
 
+  showTotalPeople() {
+    this.setState(prevState => ({
+      //showTotalProjects: false,
+      showTotalPeople: !prevState.showTotalPeople,
+      //showTotalTeam: false,
+    }));
+  }
+
   showTasksTable() {
     this.setState(prevState => ({
       showProjects: false,
@@ -332,8 +344,8 @@ class ReportsPage extends Component {
               />
             </div>
             <div className="date-picker-container">
-              <td id="task_startDate" className="date-picker-item">
-                <label for="task_startDate" className="date-picker-label">
+              <div id="task_startDate" className="date-picker-item">
+                <label htmlFor="task_startDate" className="date-picker-label">
                   {' '}
                   Start Date
                 </label>
@@ -344,9 +356,9 @@ class ReportsPage extends Component {
                   onChange={date => this.setState({ startDate: date })}
                   className="form-control"
                 />
-              </td>
-              <td id="task_EndDate" className="date-picker-item">
-                <label for="task_EndDate" className="date-picker-label">
+              </div>
+              <div id="task_EndDate" className="date-picker-item">
+                <label htmlFor="task_EndDate" className="date-picker-label">
                   {' '}
                   End Date
                 </label>
@@ -357,7 +369,65 @@ class ReportsPage extends Component {
                   onChange={date => this.setState({ endDate: date })}
                   className="form-control"
                 />
-              </td>
+              </div>
+            </div>
+            <div className="total-container">
+              <div className="total-item">
+                <Button>Total Task Report</Button>
+                <i
+                  className="fa fa-info-circle"
+                  data-tip
+                  data-for="totalTaskTip"
+                  data-delay-hide="1000"
+                  aria-hidden="true"
+                  title=""
+                  style={{ paddingLeft: '.32rem' }}
+                />
+                <ReactTooltip id="totalTaskTip" place="bottom" effect="solid">
+                  <br />
+                  <br />
+                  <br />
+                </ReactTooltip>
+              </div>
+              <div className="total-item">
+                <Button onClick={this.showTotalPeople}>Total People Report</Button>
+                <i
+                  className="fa fa-info-circle"
+                  data-tip
+                  data-for="totalPeopleTip"
+                  data-delay-hide="1000"
+                  aria-hidden="true"
+                  style={{ paddingLeft: '.32rem' }}
+                />
+                <ReactTooltip id="totalPeopleTip" place="bottom" effect="solid">
+                  Click this button to see exactly how many total people have contributed time to
+                  the projects for a designated time period.
+                  <br />
+                  Peole must have had at least 10 hours logged for them to be included.
+                  <br />
+                  A 'Total Hours' section will show the total tangible time logged by all people
+                  during the selected period.
+                  <br />A detail report will list all the people and hours contributed by each
+                  during that time period.
+                </ReactTooltip>
+              </div>
+              <div className="total-item">
+                <Button>Total Team Report</Button>
+                <i
+                  className="fa fa-info-circle"
+                  data-tip
+                  data-for="totalTeamTip"
+                  data-delay-hide="1000"
+                  aria-hidden="true"
+                  title=""
+                  style={{ paddingLeft: '.32rem' }}
+                />
+                <ReactTooltip id="totalTeamTip" place="bottom" effect="solid">
+                  <br />
+                  <br />
+                  <br />
+                </ReactTooltip>
+              </div>
             </div>
           </div>
         </div>
@@ -365,6 +435,13 @@ class ReportsPage extends Component {
           {this.state.showPeople && <PeopleTable userProfiles={this.state.peopleSearchData} />}
           {this.state.showProjects && <ProjectTable projects={this.state.projectSearchData} />}
           {this.state.showTeams && <TeamTable allTeams={this.state.teamSearchData} />}
+          {this.state.showTotalPeople && (
+            <TotalPeopleReport
+              startDate={this.state.startDate}
+              endDate={this.state.endDate}
+              userProfiles={this.state.peopleSearchData}
+            />
+          )}
         </div>
       </Container>
     );

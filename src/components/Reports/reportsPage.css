@@ -104,6 +104,22 @@
   margin: 8px 0;
 }
 
+.total-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+}
+
+.total-item {
+  display: flex;
+  flex-direction: row;
+  margin: 0px 25px 0px 0px;
+}
+
+.total-item Button {
+  background-color:steelblue;
+}
+
 @media screen and (max-width: 1350px) {
   .container-component-wrapper {
     padding: 16px;
