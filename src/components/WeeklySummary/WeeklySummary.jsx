@@ -97,9 +97,8 @@ export class WeeklySummary extends Component {
     loading: true,
     editPopup: false,
     mediaChangeConfirm: false,
-    moveSelect: '1',
+    moveSelect: '-1',
     movePopup: false,
-    moveConfirm: false,
   };
 
   async componentDidMount() {
@@ -196,7 +195,6 @@ export class WeeklySummary extends Component {
       loading: this.props.loading,
       editPopup: false,
       mediaChangeConfirm: false,
-      moveSelect: '1',
     });
   }
 
@@ -237,12 +235,6 @@ export class WeeklySummary extends Component {
   handleMoveSelect = moveWeek => {
     const moveSelect= this.state.moveSelect;
     this.setState({ moveSelect: moveWeek, movePopup:true });
-  };
-
-  handleMoveConfirm = () => {
-    const moveConfirm = this.state.moveConfirm;
-    console.log('1',moveConfirm)
-    this.setState({ moveConfirm:true });
   };
 
   handleMove = () =>{
@@ -406,9 +398,8 @@ export class WeeklySummary extends Component {
     //Move or not, if did move, update the newformElements
     const moveSelect = this.state.moveSelect;
     const activeTab = this.state.activeTab;
-    const moveConfirm = this.state.moveConfirm;
 
-    if (moveConfirm && moveSelect !== activeTab){
+    if (moveSelect !== '-1' && moveSelect !== activeTab){
       newformElements = this.handleMove();
     }
     // Define summaries, updateDates for easier reference
@@ -450,6 +441,39 @@ export class WeeklySummary extends Component {
       this.props.asUser || this.props.currentUser.userid,
       modifiedWeeklySummaries,
     );
+  }
+
+  handleMoveSave = async event => {
+    if (event) {
+      event.preventDefault();
+    }
+    // Providing a custom toast id to prevent duplicate.
+    const toastIdOnSave = 'toast-on-save';
+    //error detect
+    const errors = this.validate();
+    this.setState({ errors: errors || {} });
+    if (errors) return;
+    //get updated summary
+    const updateWeeklySummaries = this.handleChangeInSummary();
+    let saveResult;
+    if (updateWeeklySummaries) {
+      saveResult = await updateWeeklySummaries();
+    }
+    if (saveResult === 200) {
+      toast.success('✔ The data was saved successfully!', {
+        toastId: toastIdOnSave,
+        pauseOnFocusLoss: false,
+        autoClose: 3000,
+      });
+      this.props.getUserProfile(this.props.asUser || this.props.currentUser.userid);
+      this.props.getWeeklySummaries(this.props.asUser || this.props.currentUser.userid);
+    } else {
+      toast.error('✘ The data could not be saved!', {
+        toastId: toastIdOnSave,
+        pauseOnFocusLoss: false,
+        autoClose: 3000,
+      });
+    }
   }
 
   handleSave = async event => {
@@ -707,10 +731,7 @@ export class WeeklySummary extends Component {
                     </ModalBody>
                     <ModalFooter>
                     <Button 
-                      onClick={()=>{
-                        this.handleMoveConfirm();
-                        this.handleSave();
-                        }}>Confirm and Save</Button>
+                      onClick={this.handleMoveSave}>Confirm and Save</Button>
                       <Button 
                       onClick={this.toggleMovePopup}>Close</Button>
                     </ModalFooter>
