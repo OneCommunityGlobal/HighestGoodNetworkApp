@@ -42,6 +42,7 @@ src/components/RenderInfringement/**
 src/components/Reports/**
 src/components/SummaryBar/**
 src/components/TaskEditSuggestions/**
+src/components/TeamLocations/**
 src/components/TeamMemberTasks/**
 src/components/Teams/**
 src/components/Timelog/**
