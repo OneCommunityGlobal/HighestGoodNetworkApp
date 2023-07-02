@@ -459,6 +459,7 @@ export class WeeklySummary extends Component {
     if (updateWeeklySummaries) {
       saveResult = await updateWeeklySummaries();
     }
+    this.toggleTab(this.state.moveSelect);
     if (saveResult === 200) {
       toast.success('✔ The data was saved successfully!', {
         toastId: toastIdOnSave,
