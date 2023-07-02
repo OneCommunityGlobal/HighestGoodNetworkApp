@@ -1,14 +1,14 @@
 import React from 'react';
 import axios from 'axios';
-import { ENDPOINTS } from '../../utils/URL';
-import mockAPIResponse from './mockData';
 import { useState, useEffect } from 'react';
 import { MapContainer, TileLayer, CircleMarker, Popup } from 'react-leaflet';
 import MarkerClusterGroup from 'react-leaflet-cluster';
+import mockAPIResponse from './mockData';
+import { ENDPOINTS } from '../../utils/URL';
 import 'leaflet/dist/leaflet.css';
 import './TeamLocations.css';
 
-const TeamLocations = () => {
+function TeamLocations() {
   const [userProfiles, setUserProfiles] = useState([]);
 
   useEffect(() => {
@@ -46,7 +46,7 @@ const TeamLocations = () => {
         ]}
         maxBoundsViscosity={1.0}
         zoom={3}
-        scrollWheelZoom={true}
+        scrollWheelZoom
       >
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
@@ -76,6 +76,6 @@ const TeamLocations = () => {
       </MapContainer>
     </>
   );
-};
+}
 
 export default TeamLocations;
