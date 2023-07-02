@@ -35,6 +35,7 @@ import WBS from './components/Projects/WBS';
 import WBSDetail from './components/Projects/WBS/WBSDetail';
 import SingleTask from './components/Projects/WBS/SingleTask';
 import WeeklySummariesReport from './components/WeeklySummariesReport';
+import TeamLocations from './components/TeamLocations';
 import Admin from './components/Admin';
 import 'react-toastify/dist/ReactToastify.css';
 import { UserRole } from './utils/enums';
@@ -100,6 +101,7 @@ export default (
           component={Reports}
           routePermissions={RoutePermissions.reports}
         />
+        <ProtectedRoute path="/teamlocations" exact component={TeamLocations} />
         <ProtectedRoute
           path="/projects"
           exact
