@@ -69,7 +69,7 @@ export const ENDPOINTS = {
     `${APIEndpoint}/tasknotification/${taskNotificationId}`,
 
   DELETE_TASK_NOTIFICATION_BY_USER_ID: (taskId, userId) =>
-  `${APIEndpoint}/tasknotification/${userId}/${taskId}`,
+    `${APIEndpoint}/tasknotification/${userId}/${taskId}`,
   TASK_EDIT_SUGGESTION: () => `${APIEndpoint}/taskeditsuggestion`,
   REJECT_TASK_EDIT_SUGGESTION: taskEditSuggestionId =>
     `${ENDPOINTS.TASK_EDIT_SUGGESTION()}/${taskEditSuggestionId}`,
@@ -87,6 +87,8 @@ export const ENDPOINTS = {
   OWNERSTANDARDMESSAGE: () => `${APIEndpoint}/ownerStandardMessage`,
   OWNERSTANDARDMESSAGE_BY_ID: ownerStandardMessageId =>
     `${APIEndpoint}/ownerStandardMessage/${ownerStandardMessageId}`,
+  SETUP_NEW_USER: () =>
+    `${APIEndpoint}/getInitialSetuptoken`
 };
 
 export const ApiEndpoint = APIEndpoint;

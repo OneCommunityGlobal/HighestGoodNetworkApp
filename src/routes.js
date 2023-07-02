@@ -35,6 +35,7 @@ import { TaskEditSuggestions } from 'components/TaskEditSuggestions/TaskEditSugg
 import { RoutePermissions } from 'utils/routePermissions';
 import PermissionsManagement from 'components/PermissionsManagement/PermissionsManagement';
 import UserRoleTab from 'components/PermissionsManagement/UserRoleTab';
+import TokenProtectedRoute from 'components/common/TokenProtectedRoute/TokenProtectedRoute';
 
 export default (
   <React.Fragment>
@@ -147,6 +148,7 @@ export default (
       <Route path="/Logout" component={Logout} />
       <Route path="/forcePasswordUpdate/:userId" component={ForcePasswordUpdate} />
       <ProtectedRoute path="/" exact component={Dashboard} />
+      <TokenProtectedRoute path="/initialSetup/:token" />
     </Switch>
   </React.Fragment>
 );
