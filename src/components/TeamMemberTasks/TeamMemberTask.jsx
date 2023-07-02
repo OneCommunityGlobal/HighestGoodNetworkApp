@@ -12,6 +12,7 @@ import './style.css';
 import ReactTooltip from 'react-tooltip';
 import classNames from 'classnames';
 import { da } from 'date-fns/locale';
+import { boxStyle } from 'styles';
 
 const TeamMemberTask = ({
   user,
@@ -247,6 +248,7 @@ const TeamMemberTask = ({
                                   onClick={toggleInfoTaskIconModal}
                                   color="secondary"
                                   className="float-left"
+                                  style={boxStyle}
                                 >
                                   {' '}
                                   Ok{' '}

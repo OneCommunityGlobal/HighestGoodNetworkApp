@@ -11,6 +11,7 @@ import { getUserTimeZone } from 'services/timezoneApiService';
 import hasPermission from 'utils/permissions';
 import SetUpFinalDayButton from 'components/UserManagement/SetUpFinalDayButton';
 import styles from './BasicInformationTab.css';
+import { boxStyle } from 'styles';
 
 const Name = props => {
   const { userProfile, setUserProfile, formValid, setFormValid, canEdit } = props;
@@ -424,7 +425,7 @@ const BasicInformationTab = props => {
             <Label>Role</Label>
           </Col>
           <Col>
-          { canEditRole ? (
+            {canEditRole ? (
               <FormGroup>
                 <select
                   value={userProfile.role}
@@ -467,7 +468,13 @@ const BasicInformationTab = props => {
                 </Col>
                 <Col md="6">
                   <div className="w-100 pt-1 mb-2 mx-auto">
-                    <Button color="secondary" block size="sm" onClick={onClickGetTimeZone}>
+                    <Button
+                      color="secondary"
+                      block
+                      size="sm"
+                      onClick={onClickGetTimeZone}
+                      style={boxStyle}
+                    >
                       Get Time Zone
                     </Button>
                   </div>

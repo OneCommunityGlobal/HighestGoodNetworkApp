@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import { toast } from 'react-toastify';
 import ReactTooltip from 'react-tooltip';
+import { boxStyle } from 'styles';
 
 function CurrentPromptModal() {
   const [modal, setModal] = useState(false);
@@ -9,9 +10,9 @@ function CurrentPromptModal() {
   const toggle = () => setModal(!modal);
 
   const handleCopyToClipboard = () => {
-    navigator.clipboard.writeText(currentPrompt)
-    toast.success("Prompt Copied!")
-  }
+    navigator.clipboard.writeText(currentPrompt);
+    toast.success('Prompt Copied!');
+  };
 
   const currentPrompt = `Please edit the following summary of my week's work. Make sure it is professionally written in 3rd person format. 
   Write it as only one paragraph. It must be only one paragraph. Keep it less than 500 words. Start the paragraph with 'This week'. 
@@ -20,7 +21,7 @@ function CurrentPromptModal() {
 
   return (
     <div>
-      <Button color="info" onClick={toggle}>
+      <Button color="info" onClick={toggle} style={boxStyle}>
         View and Copy Current AI Prompt
         <i
           className="fa fa-info-circle"
@@ -29,24 +30,22 @@ function CurrentPromptModal() {
           data-delay-hide="1000"
           aria-hidden="true"
           title=""
-          style= {{paddingLeft: '.32rem'}}
+          style={{ paddingLeft: '.32rem' }}
         />
       </Button>
       <ReactTooltip id="timeEntryTip" place="bottom" effect="solid">
-        Click this button to see and copy the most current AI prompt 
+        Click this button to see and copy the most current AI prompt
         <br />
-        you should be using when editing your weeklly summary with chatGPT 
+        you should be using when editing your weeklly summary with chatGPT
         <br />
-        or similar AI text completion tool 
+        or similar AI text completion tool
         <br />
       </ReactTooltip>
       <Modal isOpen={modal} toggle={toggle}>
         <ModalHeader toggle={toggle}>Current AI Prompt </ModalHeader>
-        <ModalBody>
-          {currentPrompt}
-        </ModalBody>
+        <ModalBody>{currentPrompt}</ModalBody>
         <ModalFooter>
-          <Button color="primary" onClick={handleCopyToClipboard}>
+          <Button color="primary" onClick={handleCopyToClipboard} style={boxStyle}>
             Copy Prompt
           </Button>{' '}
         </ModalFooter>

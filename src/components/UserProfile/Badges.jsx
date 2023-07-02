@@ -16,8 +16,9 @@ import FeaturedBadges from './FeaturedBadges';
 import BadgeReport from '../Badge/BadgeReport';
 import AssignBadgePopup from './AssignBadgePopup';
 import { clearSelected } from 'actions/badgeManagement';
+import { boxStyle } from 'styles';
 
-const Badges = props => {
+export const Badges = props => {
   const [isOpen, setOpen] = useState(false);
   const [isAssignOpen, setAssignOpen] = useState(false);
   const permissionsUser = props.userProfile?.permissions?.frontPermissions;
@@ -34,6 +35,16 @@ const Badges = props => {
     }
   }, [isOpen, isAssignOpen]);
 
+  // Determines what congratulatory text should displayed.
+  const badgesEarned = props.userProfile.badgeCollection.length;
+  const subject = props.isUserSelf ? 'You have' : 'This person has';
+  const verb = badgesEarned ? `earned ${badgesEarned}` : 'no';
+  const object = badgesEarned == 1 ? 'badge' : 'badges';
+  let congratulatoryText = `${subject} ${verb} ${object}`;
+  congratulatoryText = badgesEarned
+    ? 'Bravo! ' + congratulatoryText + '! '
+    : congratulatoryText + '. ';
+
   return (
     <>
       <Card id="badgeCard" style={{ backgroundColor: '#f6f6f3', marginTop: 20, marginBottom: 20 }}>
@@ -45,7 +56,7 @@ const Badges = props => {
             <div>
               {(props.canEdit || props.role == 'Owner' || props.role == 'Administrator') && (
                 <>
-                  <Button className="btn--dark-sea-green" onClick={toggle}>
+                  <Button className="btn--dark-sea-green" onClick={toggle} style={boxStyle}>
                     Select Featured
                   </Button>
                   <Modal size="lg" isOpen={isOpen} toggle={toggle}>
@@ -70,7 +81,11 @@ const Badges = props => {
               {((props.canEdit && (props.role == 'Owner' || props.role == 'Administrator')) ||
                 props.userPermissions.includes('assignBadgeOthers')) && (
                 <>
-                  <Button className="btn--dark-sea-green mr-2" onClick={assignToggle}>
+                  <Button
+                    className="btn--dark-sea-green mr-2"
+                    onClick={assignToggle}
+                    style={boxStyle}
+                  >
                     Assign Badges
                   </Button>
                   <Modal size="lg" isOpen={isAssignOpen} toggle={assignToggle}>
@@ -100,7 +115,7 @@ const Badges = props => {
             color: '#285739',
           }}
         >
-          Bravo! You've earned {props.userProfile.badgeCollection.length} badges!{' '}
+          {congratulatoryText}
           <i className="fa fa-info-circle" id="CountInfo" />
         </CardFooter>
       </Card>
