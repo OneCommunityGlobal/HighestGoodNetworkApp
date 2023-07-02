@@ -99,6 +99,7 @@ export class WeeklySummary extends Component {
     mediaChangeConfirm: false,
     moveSelect: '1',
     movePopup: false,
+    moveConfirm: false,
   };
 
   async componentDidMount() {
@@ -236,6 +237,12 @@ export class WeeklySummary extends Component {
   handleMoveSelect = moveWeek => {
     const moveSelect= this.state.moveSelect;
     this.setState({ moveSelect: moveWeek, movePopup:true });
+  };
+
+  handleMoveConfirm = () => {
+    const moveConfirm = this.state.moveConfirm;
+    console.log('1',moveConfirm)
+    this.setState({ moveConfirm:true });
   };
 
   handleMove = () =>{
@@ -399,7 +406,9 @@ export class WeeklySummary extends Component {
     //Move or not, if did move, update the newformElements
     const moveSelect = this.state.moveSelect;
     const activeTab = this.state.activeTab;
-    if (moveSelect !== activeTab){
+    const moveConfirm = this.state.moveConfirm;
+
+    if (moveConfirm && moveSelect !== activeTab){
       newformElements = this.handleMove();
     }
     // Define summaries, updateDates for easier reference
@@ -698,7 +707,10 @@ export class WeeklySummary extends Component {
                     </ModalBody>
                     <ModalFooter>
                     <Button 
-                      onClick={this.handleSave}>Confirm and Save</Button>
+                      onClick={()=>{
+                        this.handleMoveConfirm();
+                        this.handleSave();
+                        }}>Confirm and Save</Button>
                       <Button 
                       onClick={this.toggleMovePopup}>Close</Button>
                     </ModalFooter>
