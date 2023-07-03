@@ -146,6 +146,15 @@
   }
   .table-data-container::-webkit-scrollbar {
     display: none;
+  }  
+  .category-container {
+    display: flex;
+    flex-direction: column;    
+  }  
+  .card-category-item {
+    width: 100%;
+    padding: 16px;
+    margin: 4px;
   }
 }
 
@@ -159,11 +168,6 @@
     flex-direction: column;
     border-radius: 0 0 16px 16px;
     padding: 16px;
-  }
-  .card-category-item {
-    width: calc(100% / 3 - 8px);
-    padding: 16px;
-    margin: 4px;
   }
   .card-category-item img {
     width: 72px;
