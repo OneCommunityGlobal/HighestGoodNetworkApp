@@ -1,20 +1,19 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import * as d3 from 'd3/dist/d3.min';
 import './TotalReportBarGraph.css';
-import { updateUserFinalDayStatusIsSet } from 'actions/userManagement';
 
 const TotalReportBarGraph = props => {
   const svg_id = 'svg-container-' + props.range;
 
   const drawChart = data => {
-    d3.selectAll('#svg-container > *').remove();
-
-    const maxValue = Number(props.barData.reduce((p, c) => (p.value - c.value > 0 ? p : c)).value);
+    data.sort((a, b) => (a.label > b.label ? 1 : -1));
+    const maxValue = Number(data.reduce((p, c) => (p.value - c.value > 0 ? p : c)).value);
     const margin = { top: 10, right: 8, bottom: 15, left: 20 };
     const width = 500 - margin.left - margin.right;
     const height = 300 - margin.top - margin.bottom;
 
     const svg = d3.select('#' + svg_id);
+    svg.selectAll('*').remove();
     const chart = svg.append('g').attr('transform', `translate(${margin.left}, ${margin.top})`);
 
     const xScale = d3

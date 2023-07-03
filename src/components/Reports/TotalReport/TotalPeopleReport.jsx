@@ -11,6 +11,7 @@ import TotalReportBarGraph from './TotalReportBarGraph';
 
 const TotalPeopleReport = props => {
   const [dataLoading, setDataLoading] = useState(true);
+  const [dataRefresh, setDataRefresh] = useState(false);
   const [showTotalPeopleTable, setShowTotalPeopleTable] = useState(false);
   const [allTimeEntries, setAllTimeEntries] = useState([]);
   const [allPeople, setAllPeople] = useState([]);
@@ -19,12 +20,9 @@ const TotalPeopleReport = props => {
   const [showMonthly, setShowMonthly] = useState(false);
   const [showYearly, setShowYearly] = useState(false);
 
-  const fromDate = moment(props.startDate)
-    .tz('America/Los_Angeles')
-    .format('YYYY-MM-DD');
-  const toDate = moment(props.endDate)
-    .tz('America/Los_Angeles')
-    .format('YYYY-MM-DD');
+  const fromDate = props.startDate.toLocaleDateString('en-CA');
+  const toDate = props.endDate.toLocaleDateString('en-CA');
+
   const userList = props.userProfiles.map(user => user._id);
 
   const loadTimeEntriesForPeriod = async () => {
@@ -136,17 +134,21 @@ const TotalPeopleReport = props => {
   useEffect(() => {
     loadTimeEntriesForPeriod().then(() => {
       setDataLoading(false);
+      setDataRefresh(true);
     });
-  }, []);
+  }, [props.startDate, props.endDate]);
 
   useEffect(() => {
-    if (!dataLoading) {
+    if (!dataLoading && dataRefresh) {
+      setShowMonthly(false);
+      setShowYearly(false);
       const groupedUsers = Object.values(sumByUser(allTimeEntries, 'userId'));
       const contributedUsers = filterTenHourUser(groupedUsers);
       setAllPeople(contributedUsers);
       checkPeriodForSummary();
+      setDataRefresh(false);
     }
-  }, [dataLoading]);
+  }, [dataRefresh]);
 
   const onClickTotalPeopleDetail = () => {
     const showDetail = showTotalPeopleTable;
@@ -193,7 +195,7 @@ const TotalPeopleReport = props => {
     const sumData = groupedDate.map(range => {
       return {
         label: range.timeRange,
-        value: range.usersOfTime.length
+        value: range.usersOfTime.length,
       };
     });
     return sumData;

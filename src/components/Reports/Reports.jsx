@@ -439,7 +439,7 @@ class ReportsPage extends Component {
             <TotalPeopleReport
               startDate={this.state.startDate}
               endDate={this.state.endDate}
-              userProfiles={this.state.peopleSearchData}
+              userProfiles={userProfiles}
             />
           )}
         </div>
