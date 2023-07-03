@@ -116,7 +116,18 @@ const UserProjectsTable = React.memo(props => {
               {props.edit && props.role && (
                 <Col md="5">
                   {hasPermission(props.role, 'assignUserInProject', roles, userPermissions) ? (
-                    <Button
+                    props.disabled? (
+                      <div className="div-addproject" title="Please save changes before assign project">
+                        <Button
+                          className="btn-addproject"
+                          color="primary"
+                          disabled
+                        >
+                          Assign Project
+                      </Button>
+                    </div>
+                    ) : (
+                      <Button
                       className="btn-addproject"
                       color="primary"
                       onClick={() => {
@@ -125,6 +136,7 @@ const UserProjectsTable = React.memo(props => {
                     >
                       Assign Project
                     </Button>
+                    )
                   ) : (
                     <></>
                   )}
@@ -311,7 +323,18 @@ const UserProjectsTable = React.memo(props => {
                 style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}
               >
                 {hasPermission(props.role, 'assignUserInProject', roles, userPermissions) ? (
-                  <Button
+                  props.disabled? (
+                    <div className="div-addproject" title="Please save changes before assign project">
+                      <Button
+                        className="btn-addproject"
+                        color="primary"
+                        disabled
+                      >
+                        Assign Project
+                    </Button>
+                  </div>
+                  ) : (
+                    <Button
                     className="btn-addproject"
                     color="primary"
                     onClick={() => {
@@ -320,6 +343,7 @@ const UserProjectsTable = React.memo(props => {
                   >
                     Assign Project
                   </Button>
+                  )
                 ) : (
                   <></>
                 )}

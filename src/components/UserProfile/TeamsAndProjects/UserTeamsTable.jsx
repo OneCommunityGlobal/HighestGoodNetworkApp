@@ -41,15 +41,27 @@ const UserTeamsTable = props => {
             {props.edit && props.role && (
               <Col md="5">
                 {hasPermission(props.role, 'assignTeamToUser', roles, userPermissions) ? (
-                  <Button
-                    className="btn-addteam"
-                    color="primary"
-                    onClick={() => {
-                      props.onButtonClick();
-                    }}
-                  >
-                    Assign Team
-                  </Button>
+                  props.disabled? (
+                    <div className="div-addteam" title="Please save changes before assign team">
+                      <Button
+                        className="btn-addteam"
+                        color="primary"
+                        disabled
+                      >
+                        Assign Team
+                      </Button>
+                    </div>
+                  ) : (
+                    <Button
+                      className="btn-addteam"
+                      color="primary"
+                      onClick={() => {
+                        props.onButtonClick();
+                      }}
+                    >
+                      Assign Team
+                    </Button>
+                  )
                 ) : (
                   <></>
                 )}
@@ -139,15 +151,27 @@ const UserTeamsTable = props => {
           {props.edit && props.role && (
             <Col md="12" className="centered-col">
               {hasPermission(props.role, 'assignTeamToUser', roles, userPermissions) ? (
-                <Button
-                  className="btn-addteam"
-                  color="primary"
-                  onClick={() => {
-                    props.onButtonClick();
-                  }}
-                >
-                  Assign Team
-                </Button>
+                props.disabled? (
+                  <div className="div-addteam" title="Please save changes before assign team">
+                    <Button
+                      className="btn-addteam"
+                      color="primary"
+                      disabled
+                    >
+                      Assign Team
+                    </Button>
+                  </div>
+                ) : (
+                  <Button
+                    className="btn-addteam"
+                    color="primary"
+                    onClick={() => {
+                      props.onButtonClick();
+                    }}
+                  >
+                    Assign Team
+                  </Button>
+                )
               ) : (
                 <></>
               )}
