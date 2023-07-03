@@ -71,7 +71,7 @@ const WeeklySummaryOptions = props => {
     {value: "Not Required", text: "Not Required (Slate Gray)"},
     {value: "Team Fabulous", text: "Team Fabulous (Fuschia)"},
     {value: "Team Marigold", text: "Team Marigold (Orange)"},
-    {value: "Team Luminious", text: "Team Luminious (Yellow)"},
+    {value: "Team Luminous", text: "Team Luminous (Yellow)"},
     {value: "Team Lush", text: "Team Lush (Green)"},
     {value: "Team Sky", text: "Team Sky (Blue)"},
     {value: "Team Azure", text: "Team Azure (Indigo)"},

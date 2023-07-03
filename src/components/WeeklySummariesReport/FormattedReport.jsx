@@ -59,6 +59,19 @@ const FormattedReport = ({ summaries, weekIndex, bioCanEdit }) => {
   };
 
   const getWeeklySummaryMessage = summary => {
+    const textColors = {
+      "Default": "#000000",
+      "Not Required": "#708090",
+      "Team": "#FF00FF",
+      "Team Fabulous": "#FF00FF",
+      "Team Marigold": "#FF7F00",
+      "Team Luminous": "#FFFF00",
+      "Team Lush": "#00FF00",
+      "Team Sky": "#0000FF",
+      "Team Azure": "#4B0082",
+      "Team Amethyst": "#9400D3"
+    }
+
     if (!summary) {
       return (
         <p>
@@ -75,21 +88,9 @@ const FormattedReport = ({ summaries, weekIndex, bioCanEdit }) => {
                         .format('YYYY-MMM-DD')
     let summaryDateText = `Weekly Summary (${summaryDate}):`;
     const summaryContent = (() => {
-      const textColors = {
-        "Default": "#000000",
-        "Not Required": "#708090",
-        "Team": "#FF00FF",
-        "Team Fabulous": "#FF00FF",
-        "Team Marigold": "#FF7F00",
-        "Team Luminous": "#FFFF00",
-        "Team Lush": "#00FF00",
-        "Team Sky": "#0000FF",
-        "Team Azure": "#4B0082",
-        "Team Amethyst": "#9400D3"
-      }
-
-    
+   
       if (summaryText) {
+       
         const style = {
           color: textColors[summary?.weeklySummaryOption] || textColors["Default"]
         }
