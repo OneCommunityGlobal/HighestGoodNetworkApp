@@ -78,6 +78,7 @@ const FormattedReport = ({ summaries, weekIndex, bioCanEdit }) => {
       const textColors = {
         "Default": "#000000",
         "Not Required": "#708090",
+        "Team": "#FF00FF",
         "Team Fabulous": "#FF00FF",
         "Team Marigold": "#FF7F00",
         "Team Luminous": "#FFFF00",
