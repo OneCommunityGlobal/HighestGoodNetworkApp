@@ -44,7 +44,6 @@ import TimeEntryEditHistory from './TimeEntryEditHistory';
 import ActiveInactiveConfirmationPopup from '../UserManagement/ActiveInactiveConfirmationPopup';
 import { updateUserStatus } from '../../actions/userManagement';
 import { UserStatus } from '../../utils/enums';
-import { faSleigh, faCamera } from '@fortawesome/free-solid-svg-icons';
 import BlueSquareLayout from './BlueSquareLayout';
 import TeamWeeklySummaries from './TeamWeeklySummaries/TeamWeeklySummaries';
 import { boxStyle } from 'styles';
@@ -92,17 +91,21 @@ function UserProfile(props) {
   const isTasksEqual = JSON.stringify(originalTasks) === JSON.stringify(tasks);
   const isProfileEqual = JSON.stringify(userProfile) === JSON.stringify(originalUserProfile);
 
+  const [userStartDate, setUserStartDate] = useState('');
+  const [userEndDate, setUserEndDate] = useState('');
+
   /* useEffect functions */
+
+  useEffect(() => {
+    loadUserProfile();
+  }, []);
+
   useEffect(() => {
     checkIsTeamsEqual();
     checkIsProjectsEqual();
     setUserProfile({ ...userProfile, teams, projects });
     setOriginalUserProfile({ ...originalUserProfile, teams, projects });
   }, [teams, projects]);
-
-  useEffect(() => {
-    loadUserProfile();
-  }, []);
 
   useEffect(() => {
     setShowLoading(true);
@@ -117,6 +120,7 @@ function UserProfile(props) {
   }, [blueSquareChanged]);
 
   const checkIsTeamsEqual = () => {
+    setOriginalTeams(teams)
     const originalTeamProperties = [];
     originalTeams?.forEach(team => {
       for (const [key, value] of Object.entries(team)) {
@@ -148,6 +152,7 @@ function UserProfile(props) {
   };
 
   const checkIsProjectsEqual = () => {
+    setOriginalProjects(projects)
     const originalProjectProperties = [];
     originalProjects?.forEach(project => {
       for (const [key, value] of Object.entries(project)) {
@@ -215,6 +220,7 @@ function UserProfile(props) {
         phoneNumber: newUserProfile.phoneNumber[0],
         createdDate: newUserProfile?.createdDate.split('T')[0],
       });
+      setUserStartDate(newUserProfile?.createdDate.split('T')[0]);
       setShowLoading(false);
     } catch (err) {
       setShowLoading(false);
@@ -568,6 +574,14 @@ function UserProfile(props) {
     }),
   };
 
+  const handleStartDate = async startDate => {
+    setUserStartDate(startDate);
+  };
+
+  const handleEndDate = async endDate => {
+    setUserEndDate(endDate);
+  };
+
   return (
     <div>
       <ActiveInactiveConfirmationPopup
@@ -714,6 +728,7 @@ function UserProfile(props) {
                 );
               })}
             <Badges
+              isUserSelf={isUserSelf}
               userProfile={userProfile}
               setUserProfile={setUserProfile}
               setOriginalUserProfile={setOriginalUserProfile}
@@ -831,6 +846,7 @@ function UserProfile(props) {
                     setUserProfile={setUserProfile}
                     isUserSelf={isUserSelf}
                     role={requestorRole}
+                    onEndDate={handleEndDate}
                     loadUserProfile={loadUserProfile}
                     canEdit={hasPermission(
                       requestorRole,
@@ -838,6 +854,7 @@ function UserProfile(props) {
                       roles,
                       userPermissions,
                     )}
+                    onStartDate={handleStartDate}
                   />
                 }
               </TabPane>
@@ -1249,6 +1266,7 @@ function UserProfile(props) {
                         !formValid.firstName ||
                         !formValid.lastName ||
                         !formValid.email ||
+                        (userStartDate > userEndDate && userEndDate !== '') ||
                         (isProfileEqual && isTasksEqual && isTeamsEqual && isProjectsEqual)
                       }
                       userProfile={userProfile}
