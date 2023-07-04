@@ -31,11 +31,17 @@ iframe {
   display: none;
   position: absolute;
   left: 25%;
-  top: -50px;
+  top: 10px;
   background-color: white;
-  width: 100px;
+  width: 150px;
   border: solid 1px black;
   border-radius: 5px;
+  font-size: 10px;
+  font-weight: bold;
+}
+
+.scroll_x .wbs-table-row:first-child .wbs_id div {
+  top: 10px;
 }
 
 .wbs-table-row {

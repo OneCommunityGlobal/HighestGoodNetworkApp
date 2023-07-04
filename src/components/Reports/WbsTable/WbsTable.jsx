@@ -2,11 +2,16 @@ import { Stub } from 'components/common/Stub';
 import React from 'react';
 import './WbsTable.css';
 import {useState} from 'react';
+//import {  Link} from 'react-router-dom';
 
 
 
 export const WbsTable = ({ wbs, skip, take }) => {
-  const [copyMessage, setCopyMessage ] = useState("Copy id to clipboard")
+  const [copyMessage, setCopyMessage ] = useState("Copy id to clipboard");
+
+  // const {projectId} = useParams();
+
+  //console.log("check::", projectId, `/wbs/tasks/${item._id}/${projectId}/${item.wbsName}`);
 
   const copyContent = async (text) => {
     try {
@@ -24,7 +29,11 @@ export const WbsTable = ({ wbs, skip, take }) => {
       WbsList = wbs.WBSItems.slice(skip, skip + take).map((item, index) => (
         <div className="wbs-table-row" id={'tr_' + item._id} key={item._id}>
           <div>{skip + index + 1}</div>
-          <div>{item.wbsName}</div>
+          <div>   {item.wbsName}
+          {/* <a href={`/wbs/tasks/${item._id}/63aec7acf228944096961f0d/${item.wbsName}`}>  
+       
+          </a>  */}
+       </div>
           <div className="projects__active--input">
             {item.isActive ? (
               <tasks className="isActive">
