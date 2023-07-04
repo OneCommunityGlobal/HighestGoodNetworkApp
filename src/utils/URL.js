@@ -88,7 +88,9 @@ export const ENDPOINTS = {
   OWNERSTANDARDMESSAGE_BY_ID: ownerStandardMessageId =>
     `${APIEndpoint}/ownerStandardMessage/${ownerStandardMessageId}`,
   SETUP_NEW_USER: () =>
-    `${APIEndpoint}/getInitialSetuptoken`
+    `${APIEndpoint}/getInitialSetuptoken`,
+  VALIDATE_TOKEN: () =>
+    `${APIEndpoint}/validateToken`
 };
 
 export const ApiEndpoint = APIEndpoint;
