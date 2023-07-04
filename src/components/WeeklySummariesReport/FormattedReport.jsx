@@ -129,8 +129,10 @@ const FormattedReport = ({ summaries, weekIndex, bioCanEdit, canEditSummaryCount
     }
 
     const handleDecrement = () => {
+      if (isNaN(weeklySummariesCount) || weeklySummariesCount != 0) { 
       setWeeklySummariesCount(weeklySummariesCount - 1);
       handleOnChange(summary, weeklySummariesCount - 1)
+      }
     }
 
     const handleOnChange = async (userProfileSummary, count) => {
