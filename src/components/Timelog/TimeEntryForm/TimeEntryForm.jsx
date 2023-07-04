@@ -52,8 +52,6 @@ import { boxStyle } from 'styles';
 const TimeEntryForm = props => {
   const { userId, edit, data, isOpen, toggle, timer, resetTimer } = props;
 
-  console.log(userId)
-
   const initialFormValues = {
     dateOfWork: moment()
       .tz('America/Los_Angeles')
