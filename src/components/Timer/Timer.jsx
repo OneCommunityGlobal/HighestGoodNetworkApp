@@ -21,11 +21,14 @@ const Timer = () => {
 
   const userIdFromState = useSelector(state => state.auth.user.userid);
   const userProfileFromState = useSelector(state => state.userProfile)
-  const userId = location.pathname.includes(userProfileFromState._id) ? userProfileFromState._id : userIdFromState
   const authUserFromState = useSelector(state => state.auth.user);
+  
+  const userId = location.pathname.includes(userProfileFromState._id) ? userProfileFromState._id : userIdFromState
   const userProfile = location.pathname.includes(userProfileFromState._id) ? userProfileFromState : authUserFromState
+
   const pausedAt = useSelector(state => state.timer?.seconds);
   const isWorking = useSelector(state => state.timer?.isWorking);
+
   const dispatch = useDispatch();
   const alert = {
     va: true,
