@@ -12,8 +12,9 @@ import axios from 'axios';
 import { ENDPOINTS } from '../../utils/URL';
 import { useState } from 'react';
 import { assignStarDotColors, showStar } from 'utils/leaderboardPermissions';
+import ArrowCounter from './ArrowCounter';
 
-const FormattedReport = ({ summaries, weekIndex, bioCanEdit }) => {
+const FormattedReport = ({ summaries, weekIndex, bioCanEdit, canEditSummaryCount }) => {
   const emails = [];
   //const bioCanEdit = role === 'Owner' || role === 'Administrator';
 
@@ -120,11 +121,39 @@ const FormattedReport = ({ summaries, weekIndex, bioCanEdit }) => {
   };
 
   const getTotalValidWeeklySummaries = summary => {
+    const [weeklySummariesCount, setWeeklySummariesCount] = useState(parseInt(summary.weeklySummariesCount));
+    
+    const handleIncrement = () => {
+      setWeeklySummariesCount(weeklySummariesCount + 1);
+      handleOnChange(summary, weeklySummariesCount + 1)
+    }
+
+    const handleDecrement = () => {
+      setWeeklySummariesCount(weeklySummariesCount - 1);
+      handleOnChange(summary, weeklySummariesCount - 1)
+    }
+
+    const handleOnChange = async (userProfileSummary, count) => {
+      const url = ENDPOINTS.USER_PROFILE_PROPERTY(userProfileSummary._id)
+      try {
+        await axios.patch(url, {key: 'weeklySummariesCount', value: count});
+      } catch (err) {
+        alert('An error occurred while attempting to save the new weekly summaries count change to the profile.');
+      }
+    };
+  
     return (
-      <p style={summary.weeklySummariesCount === 8 ? { color: 'blue' } : {}}>
-        <b>Total Valid Weekly Summaries:</b>{' '}
-        {summary.weeklySummariesCount || 'No valid submissions yet!'}
-      </p>
+      <div className="total-valid-wrapper">
+        <div className="total-valid-text" style={summary.weeklySummariesCount === 8 ? { color: 'blue' } : {}}>
+          <b>Total Valid Weekly Summaries:</b>{' '}
+          {weeklySummariesCount || 'No valid submissions yet!'}
+        </div>
+        {canEditSummaryCount && 
+         <ArrowCounter 
+          handleIncrement={handleIncrement} 
+          handleDecrement={handleDecrement}
+        />}
+      </div>
     );
   };
 

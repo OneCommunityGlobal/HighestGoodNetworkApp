@@ -65,6 +65,8 @@ export class WeeklySummariesReport extends Component {
     const userPermissions = this.props.authUser?.permissions?.frontPermissions;
     const roles = this.props.roles;
     const bioEditPermission = hasPermission(role, 'changeBioAnnouncement', roles, userPermissions);
+    const rolesAllowedToEditSummaryCount = ['Administrator', 'Owner'];
+    const canEditSummaryCount = rolesAllowedToEditSummaryCount.includes(role)
 
     if (error) {
       return (
@@ -180,6 +182,7 @@ export class WeeklySummariesReport extends Component {
                       summaries={summaries}
                       weekIndex={1}
                       bioCanEdit={bioEditPermission}
+                      canEditSummaryCount={canEditSummaryCount}
                     />
                   </Col>
                 </Row>
