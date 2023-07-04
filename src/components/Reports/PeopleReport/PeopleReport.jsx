@@ -528,7 +528,7 @@ class PeopleReport extends Component {
 
 
     return (
-      <div className="container-component-wrapper">
+      <div className="container-people-wrapper">
       <ReportPage renderProfile={renderProfileInfo}>
         <div className="people-report-time-logs-wrapper">
           <ReportPage.ReportBlock

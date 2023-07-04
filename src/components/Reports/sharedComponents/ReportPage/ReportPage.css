@@ -25,7 +25,6 @@
   .report-page-wrapper {
     display: flex;
     flex-direction: column;
-    justify-content: start;
     padding: 40px;
     align-items: center;
   }
