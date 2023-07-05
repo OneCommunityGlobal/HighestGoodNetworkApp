@@ -517,7 +517,6 @@ class UserProfileEdit extends Component {
       ? this.props.match.params
       : { userId: undefined };
     const { userid: requestorId, role: requestorRole } = this.props.auth.user;
-    const userPermissions = this.props.auth.user?.permissions?.frontPermissions;
     const canPutUserProfile = hasPermission('putUserProfile');
     const canAddDeleteEditOwners = hasPermission('addDeleteEditOwners');
 
@@ -622,9 +621,6 @@ class UserProfileEdit extends Component {
             id={id}
             handleLinkModel={this.handleLinkModel}
             handleSubmit={this.handleSubmit}
-            role={requestorRole}
-            roles={this.props.role.roles}
-            userPermissions={userPermissions}
           />
         )}
 
@@ -699,8 +695,6 @@ class UserProfileEdit extends Component {
                   <BlueSquare
                     blueSquares={infringements}
                     handleBlueSquare={this.handleBlueSquare}
-                    role={requestorRole}
-                    roles={this.props.role.roles}
                   />
                 </div>
               </Col>

@@ -2,7 +2,7 @@ import React from 'react';
 import './BlueSquare.css';
 import hasPermission from 'utils/permissions';
 
-const BlueSquare = ({ blueSquares, handleBlueSquare, role, roles, userPermissions }) => {
+const BlueSquare = ({ blueSquares, handleBlueSquare }) => {
   const isInfringementAuthorizer = hasPermission('infringementAuthorizer');
   const canPutUserProfileImportantInfo = hasPermission('putUserProfileImportantInfo');
 

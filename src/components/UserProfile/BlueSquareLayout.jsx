@@ -5,16 +5,7 @@ import './UserProfile.scss';
 import './UserProfileEdit/UserProfileEdit.scss';
 
 const BlueSquareLayout = props => {
-  const {
-    userProfile,
-    handleUserProfile,
-    handleBlueSquare,
-    isUserSelf,
-    role,
-    roles,
-    userPermissions,
-    canEdit,
-  } = props;
+  const { userProfile, handleUserProfile, handleBlueSquare, canEdit } = props;
   const { privacySettings } = userProfile;
 
   if (canEdit) {
@@ -32,13 +23,7 @@ const BlueSquareLayout = props => {
           ) : null}
         </div>
 
-        <BlueSquare
-          blueSquares={userProfile?.infringements}
-          handleBlueSquare={handleBlueSquare}
-          role={role}
-          roles={roles}
-          userPermissions={userPermissions}
-        />
+        <BlueSquare blueSquares={userProfile?.infringements} handleBlueSquare={handleBlueSquare} />
       </div>
     );
   }
@@ -52,9 +37,6 @@ const BlueSquareLayout = props => {
           <BlueSquare
             blueSquares={userProfile?.infringements}
             handleBlueSquare={handleBlueSquare}
-            role={role}
-            userPermissions={userPermissions}
-            roles={roles}
           />
         </div>
       )}

@@ -24,12 +24,10 @@ function WBSTasks(props) {
   // modal
   const [modal, setModal] = useState(false);
   const toggle = () => setModal(!modal);
-  const { roles } = props.state.role;
 
   const { wbsId } = props.match.params;
   const { projectId } = props.match.params;
   const { wbsName } = props.match.params;
-  const userPermissions = props.state.auth.user?.permissions?.frontPermissions;
 
   const [isShowImport, setIsShowImport] = useState(false);
   const [selectedId, setSelectedId] = useState(null);

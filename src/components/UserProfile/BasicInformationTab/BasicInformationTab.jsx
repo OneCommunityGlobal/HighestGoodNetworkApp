@@ -265,11 +265,9 @@ const BasicInformationTab = props => {
     handleUserProfile,
     formValid,
     setFormValid,
-    role,
     canEdit,
     canEditRole,
     roles,
-    userPermissions,
     loadUserProfile,
   } = props;
   const [timeZoneFilter, setTimeZoneFilter] = useState('');

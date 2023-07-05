@@ -22,8 +22,6 @@ import { useHistory } from 'react-router-dom';
 const SingleTask = props => {
   const taskId = props.match.params.taskId;
   const { user } = props.auth;
-  const userPermissions = props.auth.user?.permissions?.frontPermissions;
-  const roles = useSelector(state => state.role.roles);
   const [task, setTask] = useState({});
   const [modal, setModal] = useState(false);
   const [modalDelete, setModalDelete] = useState(false);

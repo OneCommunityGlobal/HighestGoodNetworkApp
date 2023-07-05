@@ -533,7 +533,6 @@ function UserProfile(props) {
 
   const { userId: targetUserId } = props.match ? props.match.params : { userId: undefined };
   const { userid: requestorId, role: requestorRole } = props.auth.user;
-  const userPermissions = props.auth.user?.permissions?.frontPermissions;
 
   const isUserSelf = targetUserId === requestorId;
   const canEditProfile = userProfile.role === 'Owner' ? canAddDeleteEditOwners : canPutUserProfile;
@@ -585,7 +584,6 @@ function UserProfile(props) {
           id={id}
           handleLinkModel={props.handleLinkModel}
           role={requestorRole}
-          userPermissions={userPermissions}
         />
       )}
       <TabToolTips />
@@ -709,7 +707,6 @@ function UserProfile(props) {
               role={requestorRole}
               canEdit={canEdit}
               handleSubmit={handleSubmit}
-              userPermissions={userPermissions}
             />
           </Col>
         </Row>
@@ -722,7 +719,6 @@ function UserProfile(props) {
                 updateLink={updateLink}
                 handleLinkModel={props.handleLinkModel}
                 role={requestorRole}
-                userPermissions={userPermissions}
                 canEdit={canEdit}
               />
               <BlueSquareLayout
@@ -731,10 +727,7 @@ function UserProfile(props) {
                 handleSaveError={props.handleSaveError}
                 handleBlueSquare={handleBlueSquare}
                 isUserSelf={isUserSelf}
-                role={requestorRole}
                 canEdit={canEdit}
-                roles={roles}
-                userPermissions={userPermissions}
               />
             </div>
           </Col>
@@ -810,7 +803,6 @@ function UserProfile(props) {
                   canEdit={canEdit}
                   canEditRole={canEditProfile}
                   roles={roles}
-                  userPermissions={userPermissions}
                 />
               </TabPane>
               <TabPane tabId="2">
@@ -833,7 +825,6 @@ function UserProfile(props) {
                   onDeleteTeam={onDeleteTeam}
                   edit={canPutUserProfile}
                   role={requestorRole}
-                  roles={roles}
                   onUserVisibilitySwitch={onUserVisibilitySwitch}
                   isVisible={userProfile.isVisible}
                   canEditVisibility={canEdit && userProfile.role != 'Volunteer'}
@@ -848,7 +839,6 @@ function UserProfile(props) {
                   onDeleteProject={onDeleteProject}
                   edit={canPutUserProfile}
                   role={requestorRole}
-                  userPermissions={userPermissions}
                   userId={props.match.params.userId}
                   updateTask={onUpdateTask}
                 />
@@ -858,8 +848,6 @@ function UserProfile(props) {
                   userProfile={userProfile}
                   setUserProfile={setUserProfile}
                   role={requestorRole}
-                  roles={roles}
-                  userPermissions={userPermissions}
                 />
               </TabPane>
             </TabContent>
@@ -887,7 +875,6 @@ function UserProfile(props) {
                     canEdit={canEdit}
                     canEditRole={canEditProfile}
                     roles={roles}
-                    userPermissions={userPermissions}
                   />
                 </ModalBody>
                 <ModalFooter>
@@ -1000,7 +987,6 @@ function UserProfile(props) {
                     onDeleteTeam={onDeleteTeam}
                     edit={canPutUserProfile}
                     role={requestorRole}
-                    roles={roles}
                     onUserVisibilitySwitch={onUserVisibilitySwitch}
                     isVisible={userProfile.isVisible}
                     canEditVisibility={canEdit && userProfile.role != 'Volunteer'}
@@ -1054,7 +1040,6 @@ function UserProfile(props) {
                     onDeleteProject={onDeleteProject}
                     edit={canPutUserProfile}
                     role={requestorRole}
-                    userPermissions={userPermissions}
                     userId={props.match.params.userId}
                     updateTask={onUpdateTask}
                   />
@@ -1103,13 +1088,7 @@ function UserProfile(props) {
               <Modal isOpen={menuModalTabletScreen === 'Edit History'} toggle={toggle}>
                 <ModalHeader toggle={toggle}>Edit History</ModalHeader>
                 <ModalBody>
-                  <TimeEntryEditHistory
-                    userProfile={userProfile}
-                    setUserProfile={setUserProfile}
-                    role={requestorRole}
-                    roles={roles}
-                    userPermissions={userPermissions}
-                  />
+                  <TimeEntryEditHistory userProfile={userProfile} setUserProfile={setUserProfile} />
                 </ModalBody>
                 <ModalFooter>
                   <Row>

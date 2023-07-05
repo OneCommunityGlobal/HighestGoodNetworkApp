@@ -13,16 +13,7 @@ const hasPermission = (action) => {
       permissions = rolePermissions[roleIndex].permissions;
     }
 
-    let isAllowed;
-    if (userPermissions && userPermissions.includes(action)) {
-      isAllowed = true;
-    } else if (permissions?.includes(action)) {
-      isAllowed = true;
-    } else {
-      isAllowed = false;
-    }
-
-    return isAllowed;
+    return userPermissions?.includes(action) || permissions?.includes(action);
   }
   return false;
 };

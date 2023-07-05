@@ -9,11 +9,8 @@ import { addNewWBS } from './../../../../actions/wbs';
 import hasPermission from 'utils/permissions';
 
 const AddWBS = props => {
-  const [role] = useState(props.state ? props.state.auth.user.role : null);
-  const userPermissions = props.state.auth.user?.permissions?.frontPermissions;
   const [showAddButton, setShowAddButton] = useState(false);
   const [newName, setNewName] = useState('');
-  const { roles } = props.state.role;
   const canPostWBS = hasPermission('postWBS');
 
   const changeNewName = newName => {

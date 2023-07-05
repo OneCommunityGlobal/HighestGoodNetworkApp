@@ -9,9 +9,6 @@ import { assignProject } from './../../../../actions/projectMembers';
 import hasPermission from 'utils/permissions';
 
 const Member = props => {
-  const [role] = useState(props.state ? props.state.auth.user.role : null);
-  const userPermissions = props.state.auth.user?.permissions?.frontPermissions;
-  const { roles } = props.state.role;
   const canGetUserProfiles = hasPermission('getUserProfiles');
   const canAssignProjectToUsers = hasPermission('assignProjectToUsers');
   return (

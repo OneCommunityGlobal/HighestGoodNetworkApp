@@ -553,7 +553,6 @@ const Timelog = props => {
                         toggle={toggle}
                         isOpen={state.modal}
                         userProfile={userProfile}
-                        roles={role.roles}
                       />
                       <ReactTooltip id="registerTip" place="bottom" effect="solid">
                         Click this icon to learn about the timelog.
