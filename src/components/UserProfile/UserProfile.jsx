@@ -473,12 +473,6 @@ function UserProfile(props) {
     loadUserProfile();
   }, [props?.match?.params?.userId]);
 
-  useEffect(() => {
-    if (!blueSquareChanged) return;
-    setBlueSquareChanged(false);
-    handleSubmit();
-  }, [blueSquareChanged]);
-
   /**
    *
    * UserProfile.jsx and its subsomponents are being refactored to avoid the use of this monolithic function.
