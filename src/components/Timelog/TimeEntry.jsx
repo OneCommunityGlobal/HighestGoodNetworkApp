@@ -50,8 +50,8 @@ const TimeEntry = ({ data, displayYear, userProfile }) => {
     //default permission: edit own sameday timelog entry
     (isOwner && isSameDay);
 
-  const projectCategory = data.category?.toLowerCase() || '';
-  const taskClassification = data.classification?.toLowerCase() || '';
+    const projectCategory = (data.category || '').toLowerCase();
+    const taskClassification = (data.classification || '').toLowerCase();
   const dispatch = useDispatch();
 
   const toggleTangibility = () => {

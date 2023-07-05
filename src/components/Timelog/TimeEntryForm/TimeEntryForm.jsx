@@ -296,32 +296,29 @@ const TimeEntryForm = props => {
   const updateHoursByCategory = async (userProfile, timeEntry, hours, minutes) => {
     const { hoursByCategory } = userProfile;
     const { projectId, isTangible, personId } = timeEntry;
-    //Format hours && minutes
     const volunteerTime = parseFloat(hours) + parseFloat(minutes) / 60;
-
-    //log  hours to intangible time entry
+  
     if (isTangible !== 'true') {
       userProfile.totalIntangibleHrs += volunteerTime;
     } else {
-      //This is get to know which project or task is selected
       const foundProject = projects.find(project => project._id === projectId);
       const foundTask = tasks.find(task => task._id === projectId);
-
-      //Get category
-      const category = foundProject
-        ? foundProject.category.toLowerCase()
-        : foundTask.classification.toLowerCase();
-
-      //update hours
-      const isFindCategory = Object.keys(hoursByCategory).find(key => key === category);
+  
+      let category = '';
+      if (foundProject && foundProject.category) {
+        category = foundProject.category.toLowerCase();
+      } else if (foundTask && foundTask.classification) {
+        category = foundTask.classification.toLowerCase();
+      }
+  
+      const isFindCategory = Object.prototype.hasOwnProperty.call(hoursByCategory, category);
       if (isFindCategory) {
         hoursByCategory[category] += volunteerTime;
       } else {
         hoursByCategory['unassigned'] += volunteerTime;
       }
     }
-
-    //update database
+  
     try {
       const url = ENDPOINTS.USER_PROFILE(personId);
       await axios.put(url, userProfile);
