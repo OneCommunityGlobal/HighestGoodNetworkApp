@@ -350,11 +350,12 @@ const Timelog = props => {
 
   useEffect(() => {
     // Does not run again (except once in development): load data
-    const userId = location.pathname.includes(userProfile._id) ? userProfile._id : props.asUser; //Including fix for "undefined"
+    const userId = location.pathname.includes(userProfile._id) ? userProfile._id : props.asUser || auth.user.userid; //Including fix for "undefined"
     setUserId(userId);
     if (userProfile._id !== userId) {
       props.getUserProfile(userId);
     }
+    props.getUserProfile(userId);
     loadAsyncData(userId).then(() => {
       setState({ ...state, isTimeEntriesLoading: false });
       const defaultTabValue = defaultTab();
@@ -387,10 +388,11 @@ const Timelog = props => {
     if (!userId && !state.isTimeEntriesLoading) {
       // skip the first render.
       setState(initialState);
-      const newId = location.pathname.includes(userProfile._id) ? userProfile._id : props.asUser
+      const newId = location.pathname.includes(userProfile._id) ? userProfile._id : props.asUser || auth.user.userid
       if (userProfile._id !== newId) {
         props.getUserProfile(newId);
       }
+      props.getUserProfile(newId);
       loadAsyncData(newId).then(() => {
         const defaultTabValue = defaultTab();
         setInitialTab(defaultTabValue);
@@ -734,7 +736,7 @@ const Timelog = props => {
                     )}
                     <TabPane tabId={0}>
                       <TeamMemberTasks 
-                      asUser={props.asUser} 
+                      asUser={userId} 
                       handleUpdateTask={handleUpdateTask} 
                       roles={role.roles}
                       userPermissions={userPermissions}
