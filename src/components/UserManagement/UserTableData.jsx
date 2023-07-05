@@ -16,6 +16,7 @@ import { toast } from 'react-toastify';
 const UserTableData = React.memo(props => {
   const [isChanging, onReset] = useState(false);
   const history = useHistory();
+  const canAddDeleteEditOwners = hasPermission('addDeleteEditOwners');
 
   /**
    * reset the changing state upon rerender with new isActive status
@@ -25,13 +26,9 @@ const UserTableData = React.memo(props => {
   }, [props.isActive, props.resetLoading]);
 
   const checkPermissionsOnOwner = () => {
-    return (props.user.role === 'Owner' && !hasPermission(
-      props.role,
-      'addDeleteEditOwners',
-      props.roles,
-      props.userPermissions)
-    )}
-     
+    return props.user.role === 'Owner' && !canAddDeleteEditOwners;
+  };
+
   return (
     <tr className="usermanagement__tr" id={`tr_user_${props.index}`}>
       <td className="usermanagement__active--input">
@@ -56,7 +53,7 @@ const UserTableData = React.memo(props => {
           className="copy_icon"
           icon={faCopy}
           onClick={() => {
-            navigator.clipboard.writeText(props.user.email)
+            navigator.clipboard.writeText(props.user.email);
             toast.success('Email Copied!');
           }}
         />
@@ -98,8 +95,8 @@ const UserTableData = React.memo(props => {
       </td>
       <td>{props.user.endDate ? props.user.endDate.toLocaleString().split('T')[0] : 'N/A'}</td>
       {checkPermissionsOnOwner() ? null : (
-      <td>
-        <span className="usermanagement-actions-cell">
+        <td>
+          <span className="usermanagement-actions-cell">
             <button
               type="button"
               className="btn btn-outline-danger btn-sm"
@@ -109,11 +106,11 @@ const UserTableData = React.memo(props => {
             >
               {DELETE}
             </button>
-        </span>
-        <span className="usermanagement-actions-cell">
-          <ResetPasswordButton user={props.user} isSmallButton />
-        </span>
-      </td>
+          </span>
+          <span className="usermanagement-actions-cell">
+            <ResetPasswordButton user={props.user} isSmallButton />
+          </span>
+        </td>
       )}
     </tr>
   );

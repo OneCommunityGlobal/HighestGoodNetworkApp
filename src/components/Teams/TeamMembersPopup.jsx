@@ -14,6 +14,8 @@ const TeamMembersPopup = React.memo(props => {
   const [isValidUser, onValidation] = useState(true);
   const [searchText, setSearchText] = useState('');
 
+  const canAssignTeamToUsers = hasPermission('assignTeamToUsers');
+
   const onAddUser = () => {
     if (selectedUser && !props.members.teamMembers.some(x => x._id === selectedUser._id)) {
       props.onAddUser(selectedUser);
@@ -36,12 +38,7 @@ const TeamMembersPopup = React.memo(props => {
       <Modal isOpen={props.open} toggle={closePopup}>
         <ModalHeader toggle={closePopup}>{`Members of ${props.selectedTeamName}`}</ModalHeader>
         <ModalBody style={{ textAlign: 'center' }}>
-          {hasPermission(
-            props.requestorRole,
-            'assignTeamToUsers',
-            props.roles,
-            props.userPermissions,
-          ) && (
+          {canAssignTeamToUsers && (
             <div className="input-group-prepend" style={{ marginBottom: '10px' }}>
               <MembersAutoComplete
                 userProfileData={props.usersdata}
@@ -65,12 +62,7 @@ const TeamMembersPopup = React.memo(props => {
                 <tr>
                   <th>#</th>
                   <th>User Name</th>
-                  {hasPermission(
-                    props.requestorRole,
-                    'assignTeamToUsers',
-                    props.roles,
-                    props.userPermissions,
-                  ) && <th> </th>}
+                  {canAssignTeamToUsers && <th> </th>}
                 </tr>
               </thead>
               <tbody>
@@ -79,12 +71,7 @@ const TeamMembersPopup = React.memo(props => {
                     <tr key={`team_member_${index}`}>
                       <td>{index + 1}</td>
                       <td>{`${user.firstName} ${user.lastName}`}</td>
-                      {hasPermission(
-                        props.requestorRole,
-                        'assignTeamToUsers',
-                        props.roles,
-                        props.userPermissions,
-                      ) && (
+                      {canAssignTeamToUsers && (
                         <td>
                           <Button
                             color="danger"

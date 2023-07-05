@@ -518,6 +518,8 @@ class UserProfileEdit extends Component {
       : { userId: undefined };
     const { userid: requestorId, role: requestorRole } = this.props.auth.user;
     const userPermissions = this.props.auth.user?.permissions?.frontPermissions;
+    const canPutUserProfile = hasPermission('putUserProfile');
+    const canAddDeleteEditOwners = hasPermission('addDeleteEditOwners');
 
     const {
       userProfile,
@@ -574,17 +576,9 @@ class UserProfileEdit extends Component {
     const isUserSelf = targetUserId === requestorId;
     let canEditFields;
     if (userProfile.role !== 'Owner') {
-      canEditFields =
-        hasPermission(requestorRole, 'putUserProfile', this.props.role.roles, userPermissions) ||
-        isUserSelf;
+      canEditFields = canPutUserProfile || isUserSelf;
     } else {
-      canEditFields =
-        hasPermission(
-          requestorRole,
-          'addDeleteEditOwners',
-          this.props.role.roles,
-          userPermissions,
-        ) || isUserSelf;
+      canEditFields = canAddDeleteEditOwners || isUserSelf;
     }
 
     const weeklyHoursReducer = (acc, val) =>
@@ -915,7 +909,7 @@ class UserProfileEdit extends Component {
                           value={userProfile.weeklyCommittedHours}
                           onChange={this.handleUserProfile}
                           placeholder="weeklyCommittedHours"
-                          invalid={/*!hasPermission(requestorRole, 'putUserProfile')*/ true}
+                          invalid={/*!canPutUserProfile*/ true}
                         />
                       </Col>
                     </Row>
@@ -932,14 +926,7 @@ class UserProfileEdit extends Component {
                           value={userProfile.totalCommittedHours}
                           onChange={this.handleUserProfile}
                           placeholder="totalCommittedHours"
-                          invalid={
-                            !hasPermission(
-                              requestorRole,
-                              'putUserProfile',
-                              this.props.role.roles,
-                              userPermissions,
-                            )
-                          }
+                          invalid={!canPutUserProfile}
                         />
                       </Col>
                     </Row>

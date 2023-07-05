@@ -6,9 +6,10 @@ import hasPermission from 'utils/permissions';
  * The search panel stateless component for  Teams grid
  */
 const TeamTablesearchPanel = props => {
+  const canPostTeam = hasPermission('postTeam');
   return (
     <div className="input-group" id="new_team">
-      {hasPermission(props.requestorRole, 'postTeam', props.roles, props.userPermissions) && (
+      {canPostTeam && (
         <button
           type="button"
           className="btn btn-info"

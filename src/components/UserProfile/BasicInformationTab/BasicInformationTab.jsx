@@ -276,6 +276,8 @@ const BasicInformationTab = props => {
   const [location, setLocation] = useState('');
   const key = useSelector(state => state.timeZoneAPI.userAPIKey);
 
+  const canAddDeleteEditOwners = hasPermission('addDeleteEditOwners');
+
   const onClickGetTimeZone = () => {
     if (!location) {
       alert('Please enter valid location');
@@ -424,7 +426,7 @@ const BasicInformationTab = props => {
             <Label>Role</Label>
           </Col>
           <Col>
-          { canEditRole ? (
+            {canEditRole ? (
               <FormGroup>
                 <select
                   value={userProfile.role}
@@ -439,9 +441,7 @@ const BasicInformationTab = props => {
                     if (roleName === 'Owner') return;
                     return <option value={roleName}>{roleName}</option>;
                   })}
-                  {hasPermission(role, 'addDeleteEditOwners', roles, userPermissions) && (
-                    <option value="Owner">Owner</option>
-                  )}
+                  {canAddDeleteEditOwners && <option value="Owner">Owner</option>}
                 </select>
               </FormGroup>
             ) : (
@@ -686,9 +686,7 @@ const BasicInformationTab = props => {
                     if (roleName === 'Owner') return;
                     return <option value={roleName}>{roleName}</option>;
                   })}
-                  {hasPermission(role, 'addDeleteEditOwners', roles, userPermissions) && (
-                    <option value="Owner">Owner</option>
-                  )}
+                  {canAddDeleteEditOwners && <option value="Owner">Owner</option>}
                 </select>
               </FormGroup>
             ) : (

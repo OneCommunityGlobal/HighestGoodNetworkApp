@@ -6,6 +6,8 @@ import hasPermission from 'utils/permissions';
  * The header row of the team table.
  */
 const TeamTableHeader = React.memo(props => {
+  const canDeleteTeam = hasPermission('deleteTeam');
+  const canPutTeam = hasPermission('putTeam');
   return (
     <tr>
       <th scope="col" id="teams__order">
@@ -18,10 +20,7 @@ const TeamTableHeader = React.memo(props => {
       <th scope="col" id="teams__members">
         {MEMBERS}
       </th>
-      {(hasPermission(props.requestorRole, 'deleteTeam', props.roles, props.userPermissions) ||
-        hasPermission(props.requestorRole, 'putTeam', props.roles, props.userPermissions)) && (
-        <th scope="col" id="teams__delete"></th>
-      )}
+      {(canDeleteTeam || canPutTeam) && <th scope="col" id="teams__delete"></th>}
     </tr>
   );
 });

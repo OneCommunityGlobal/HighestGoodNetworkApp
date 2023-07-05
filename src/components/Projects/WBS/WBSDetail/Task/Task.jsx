@@ -32,9 +32,9 @@ import hasPermission from 'utils/permissions';
 import ReactTooltip from 'react-tooltip';
 
 function Task(props) {
-  const [role] = useState(props.state ? props.state.auth.user.role : null);
-  const { roles } = props.state.role;
-  const userPermissions = props.state.auth.user?.permissions?.frontPermissions;
+  const canPostTask = hasPermission('postTask');
+  const canDeleteTask = hasPermission('deleteTask');
+
   useEffect(() => {
     setIsCopied(false);
   }, [1]);
@@ -426,7 +426,7 @@ function Task(props) {
           {controllerRow ? (
             <tr className="wbsTaskController desktop-view" id={`controller_${props.id}`}>
               <td colSpan={tableColNum} className="controlTd">
-                {hasPermission(role, 'postTask', roles, userPermissions) ? (
+                {canPostTask ? (
                   <AddTaskModal
                     key={`postTask_${props.id}`}
                     parentNum={props.num}
@@ -456,7 +456,7 @@ function Task(props) {
                   level={props.level}
                 />
 
-                {hasPermission(role, 'deleteTask', roles, userPermissions) ? (
+                {canDeleteTask ? (
                   <>
                     <Button
                       color="danger"

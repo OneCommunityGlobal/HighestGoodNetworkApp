@@ -12,6 +12,8 @@ const Member = props => {
   const [role] = useState(props.state ? props.state.auth.user.role : null);
   const userPermissions = props.state.auth.user?.permissions?.frontPermissions;
   const { roles } = props.state.role;
+  const canGetUserProfiles = hasPermission('getUserProfiles');
+  const canAssignProjectToUsers = hasPermission('assignProjectToUsers');
   return (
     <React.Fragment>
       <tr className="members__tr">
@@ -19,13 +21,13 @@ const Member = props => {
           <div>{props.index + 1}</div>
         </th>
         <td className="members__name">
-          {hasPermission(role, 'getUserProfiles', roles, userPermissions) ? (
+          {canGetUserProfiles ? (
             <a href={`/userprofile/${props.uid}`}>{props.fullName}</a>
           ) : (
             props.fullName
           )}
         </td>
-        {hasPermission(role, 'assignProjectToUsers', roles, userPermissions) ? (
+        {canAssignProjectToUsers ? (
           <td className="members__assign">
             <button
               className="btn btn-outline-danger btn-sm"

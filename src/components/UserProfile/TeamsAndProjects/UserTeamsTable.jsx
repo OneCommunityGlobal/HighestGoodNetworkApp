@@ -3,12 +3,11 @@ import { Button, Col } from 'reactstrap';
 import './TeamsAndProjects.css';
 import ToggleSwitch from '../UserProfileEdit/ToggleSwitch';
 import hasPermission from '../../../utils/permissions';
-import { useSelector } from 'react-redux';
 import './UserTeamsTable.css';
 
 const UserTeamsTable = props => {
-  const { roles } = useSelector(state => state.role);
-  const userPermissions = useSelector(state => state.auth.user?.permissions?.frontPermissions);
+  const canAssignTeamToUsers = hasPermission('assignTeamToUsers');
+
   return (
     <div>
       <div className="teamtable-container desktop">
@@ -40,7 +39,7 @@ const UserTeamsTable = props => {
             </Col>
             {props.edit && props.role && (
               <Col md="5">
-                {hasPermission(props.role, 'assignTeamToUsers', roles, userPermissions) ? (
+                {canAssignTeamToUsers ? (
                   <Button
                     className="btn-addteam"
                     color="primary"
@@ -64,9 +63,7 @@ const UserTeamsTable = props => {
                 <tr>
                   <th style={{ width: '70px' }}>#</th>
                   <th>Team Name</th>
-                  {hasPermission(props.role, 'assignTeamToUsers', roles, userPermissions) ? (
-                    <th style={{ width: '100px' }}>{}</th>
-                  ) : null}
+                  {canAssignTeamToUsers ? <th style={{ width: '100px' }}>{}</th> : null}
                 </tr>
               )}
             </thead>
@@ -79,9 +76,7 @@ const UserTeamsTable = props => {
                     {props.edit && props.role && (
                       <td>
                         <Button
-                          disabled={
-                            !hasPermission(props.role, 'assignTeamToUsers', roles, userPermissions)
-                          }
+                          disabled={!canAssignTeamToUsers}
                           color="danger"
                           onClick={e => {
                             props.onDeleteClick(team._id);
@@ -138,7 +133,7 @@ const UserTeamsTable = props => {
           </Col>
           {props.edit && props.role && (
             <Col md="12" className="centered-col">
-              {hasPermission(props.role, 'assignTeamToUsers', roles, userPermissions) ? (
+              {canAssignTeamToUsers ? (
                 <Button
                   className="btn-addteam"
                   color="primary"
@@ -161,9 +156,7 @@ const UserTeamsTable = props => {
                 <tr>
                   <th>#</th>
                   <th>Team Name</th>
-                  {hasPermission(props.role, 'assignTeamToUsers', roles, userPermissions) ? (
-                    <th style={{ flex: 2 }}>{}</th>
-                  ) : null}
+                  {canAssignTeamToUsers ? <th style={{ flex: 2 }}>{}</th> : null}
                 </tr>
               )}
             </thead>
@@ -177,9 +170,7 @@ const UserTeamsTable = props => {
                       <td>
                         <div className="centered-col">
                           <Button
-                            disabled={
-                              !hasPermission(props.role, 'assignTeamToUsers', roles, userPermissions)
-                            }
+                            disabled={!canAssignTeamToUsers}
                             color="danger"
                             onClick={e => {
                               props.onDeleteClick(team._id);

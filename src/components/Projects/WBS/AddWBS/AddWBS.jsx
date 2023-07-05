@@ -14,6 +14,7 @@ const AddWBS = props => {
   const [showAddButton, setShowAddButton] = useState(false);
   const [newName, setNewName] = useState('');
   const { roles } = props.state.role;
+  const canPostWBS = hasPermission('postWBS');
 
   const changeNewName = newName => {
     if (newName.length !== 0) {
@@ -26,7 +27,7 @@ const AddWBS = props => {
 
   return (
     <>
-      {hasPermission(role, 'postWbs', roles, userPermissions) ? (
+      {canPostWBS ? (
         <div className="input-group" id="new_project">
           <div className="input-group-prepend">
             <span className="input-group-text">Add new WBS</span>

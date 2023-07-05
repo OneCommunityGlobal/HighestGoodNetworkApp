@@ -13,8 +13,9 @@ import hasPermission from 'utils/permissions';
 
 const WBSItem = props => {
   const [showModalDelete, setShowModalDelete] = useState(false);
-  const { roles } = props.role;
-  const userPermissions = props.auth.user?.permissions?.frontPermissions;
+
+  const canDeleteWBS = hasPermission('deleteWbs');
+
   const confirmDelete = () => {
     props.deleteWbs(props.wbsId);
     setShowModalDelete(false);
@@ -29,7 +30,7 @@ const WBSItem = props => {
         <td className="members__name">
           <a href={`/wbs/tasks/${props.wbsId}/${props.projectId}/${props.name}`}>{props.name}</a>
         </td>
-        {hasPermission(props.auth.user.role, 'deleteWbs', roles, userPermissions) ? (
+        {canDeleteWBS ? (
           <td className="members__assign">
             <button
               className="btn btn-outline-danger btn-sm"

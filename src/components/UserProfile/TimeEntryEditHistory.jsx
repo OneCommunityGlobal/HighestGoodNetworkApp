@@ -12,6 +12,8 @@ import hasPermission from '../../utils/permissions';
 const TimeEntryEditHistory = props => {
   const editHistory = [...props.userProfile.timeEntryEditHistory].reverse();
 
+  const canDeleteTimeEntry = hasPermission('deleteTimeEntry');
+
   const secondsToHms = seconds => {
     let h = new String(Math.floor(seconds / 3600));
     let m = new String(Math.floor((seconds % 3600) / 60));
@@ -53,12 +55,7 @@ const TimeEntryEditHistory = props => {
               <br />
               (HH:MM:SS)
             </th>
-            {hasPermission(
-              props.role,
-              'deleteTimeEntry',
-              props.roles,
-              props.userPermissions,
-            ) && <th></th>}
+            {canDeleteTimeEntry && <th></th>}
           </tr>
         </thead>
         <tbody>
@@ -72,12 +69,7 @@ const TimeEntryEditHistory = props => {
                 </td>
                 <td>{secondsToHms(item.initialSeconds)}</td>
                 <td>{secondsToHms(item.newSeconds)}</td>
-                {hasPermission(
-                  props.role,
-                  'deleteTimeEntry',
-                  props.roles,
-                  props.userPermissions,
-                ) && (
+                {canDeleteTimeEntry && (
                   <td>
                     <Button variant="danger" onClick={() => deleteEdit(item._id)}>
                       Delete&nbsp;Edit

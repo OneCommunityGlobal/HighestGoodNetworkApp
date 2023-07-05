@@ -18,21 +18,21 @@ import { useEffect } from 'react';
 import checkNegativeNumber from 'utils/checkNegativeHours';
 
 const TimeEntry = ({ data, displayYear, userProfile }) => {
+  const canEditTimeHistory = hasPermission('editTimeEntry');
+  const canDeleteTimeHistory = hasPermission('deleteTimeEntry');
+
   const [modal, setModal] = useState(false);
 
   const toggle = () => setModal(modal => !modal);
 
   const dateOfWork = moment(data.dateOfWork);
   const { user } = useSelector(state => state.auth);
-  const userPermissions = user?.permissions?.frontPermissions;
-  const { roles } = useSelector(state => state.role);
 
   const isOwner = data.personId === user.userid;
   const isSameDay =
     moment()
       .tz('America/Los_Angeles')
       .format('YYYY-MM-DD') === data.dateOfWork;
-  const role = user.role;
   const projectCategory = data.category?.toLowerCase() || '';
   const taskClassification = data.classification?.toLowerCase() || '';
   const dispatch = useDispatch();
@@ -106,7 +106,7 @@ const TimeEntry = ({ data, displayYear, userProfile }) => {
             type="checkbox"
             name="isTangible"
             checked={data.isTangible}
-            disabled={!hasPermission(role, 'editTimeEntry', roles, userPermissions)}
+            disabled={!canEditTimeHistory}
             onChange={() => toggleTangibility(data)}
           />
         </Col>
@@ -114,8 +114,7 @@ const TimeEntry = ({ data, displayYear, userProfile }) => {
           <div className="text-muted">Notes:</div>
           {ReactHtmlParser(data.notes)}
           <div className="buttons">
-            {(hasPermission(role, 'editTimeEntry', roles, userPermissions) ||
-              (isOwner && isSameDay)) && (
+            {(canEditTimeHistory || (isOwner && isSameDay)) && (
               <span>
                 <FontAwesomeIcon
                   icon={faEdit}
@@ -133,8 +132,7 @@ const TimeEntry = ({ data, displayYear, userProfile }) => {
                 />
               </span>
             )}
-            {(hasPermission(role, 'deleteTimeEntry', roles, userPermissions) ||
-              (!data.isTangible && isOwner && isSameDay)) && (
+            {(canDeleteTimeHistory || (!data.isTangible && isOwner && isSameDay)) && (
               <DeleteModal
                 timeEntry={data}
                 userProfile={userProfile}

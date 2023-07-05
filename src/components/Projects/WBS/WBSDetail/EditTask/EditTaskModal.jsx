@@ -16,9 +16,8 @@ import { ENDPOINTS } from 'utils/URL';
 import TagsSearch from '../components/TagsSearch';
 
 const EditTaskModal = props => {
-  const [role] = useState(props.auth ? props.auth.user.role : null);
-  const userPermissions = props.auth.user?.permissions?.frontPermissions;
-  const { roles } = props.role;
+  const canUpdateTask = hasPermission('updateTask');
+  const canSuggestTask = hasPermission('suggestTask');
 
   const [members] = useState(props.projectMembers || props.projectMembers.members);
   let foundedMembers = [];
@@ -253,11 +252,7 @@ const EditTaskModal = props => {
       category,
     };
 
-    props.updateTask(
-      props.taskId,
-      updatedTask,
-      hasPermission(role, 'updateTask', roles, userPermissions),
-    );
+    props.updateTask(props.taskId, updatedTask, canUpdateTask);
     setTimeout(() => {
       props.fetchAllTasks(props.wbsId);
     }, 4000);
@@ -279,22 +274,13 @@ const EditTaskModal = props => {
     <div className="controlBtn">
       <Modal isOpen={modal} toggle={toggle}>
         <ModalHeader toggle={toggle}>
-          {hasPermission(role, 'updateTask', roles, userPermissions)
-            ? 'Edit'
-            : hasPermission(role, 'suggestTask', roles, userPermissions)
-            ? 'Suggest'
-            : 'View'}
+          {canUpdateTask ? 'Edit' : canSuggestTask ? 'Suggest' : 'View'}
         </ModalHeader>
         <ModalBody>
           <ReactTooltip />
           <table
             className={`table table-bordered responsive
-            ${
-              hasPermission(role, 'updateTask', roles, userPermissions) ||
-              hasPermission(role, 'suggestTask', roles, userPermissions)
-                ? null
-                : 'disable-div'
-            }`}
+            ${canUpdateTask || canSuggestTask ? null : 'disable-div'}`}
           >
             <tbody>
               <tr>
@@ -653,8 +639,7 @@ const EditTaskModal = props => {
             </tbody>
           </table>
         </ModalBody>
-        {hasPermission(role, 'updateTask', roles, userPermissions) ||
-        hasPermission(role, 'suggestTask', roles, userPermissions) ? (
+        {canUpdateTask || canSuggestTask ? (
           <ModalFooter>
             {taskName !== '' && startedDate !== '' && dueDate !== '' ? (
               <Button color="primary" onClick={updateTask}>
@@ -668,11 +653,7 @@ const EditTaskModal = props => {
         ) : null}
       </Modal>
       <Button color="primary" size="sm" onClick={toggle}>
-        {hasPermission(role, 'updateTask', roles, userPermissions)
-          ? 'Edit'
-          : hasPermission(role, 'suggestTask', roles, userPermissions)
-          ? 'Suggest'
-          : 'View'}
+        {canUpdateTask ? 'Edit' : canSuggestTask ? 'Suggest' : 'View'}
       </Button>
     </div>
   );

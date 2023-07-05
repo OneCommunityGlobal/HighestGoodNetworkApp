@@ -46,11 +46,10 @@ import hasPermission from '../../utils/permissions';
 import WeeklySummaries from './WeeklySummaries';
 
 const doesUserHaveTaskWithWBS = (tasks, userId) => {
-  
   for (let task of tasks) {
-    for(let resource of task.resources){
+    for (let resource of task.resources) {
       if (resource.userID == userId && resource.completedTask == false) {
-        return true
+        return true;
       }
     }
   }
@@ -75,6 +74,8 @@ function useDeepEffect(effectFunc, deps) {
 
 const Timelog = props => {
   //Main Function component
+  const canPutUserProfileImportantInfo = hasPermission('putUserProfileImportantInfo');
+  const canEditTimeEntry = hasPermission('editTimeEntry');
 
   //access the store states
   const auth = useSelector(state => state.auth);
@@ -83,13 +84,13 @@ const Timelog = props => {
   const userProjects = useSelector(state => state.userProjects);
   const role = useSelector(state => state.role);
   const userTask = useSelector(state => state.userTask);
-  const userIdByState = useSelector(state => state.auth.user.userid)
+  const userIdByState = useSelector(state => state.auth.user.userid);
 
   const defaultTab = () => {
     //change default to time log tab(1) in the following cases:
     const role = auth.user.role;
     let tab = 0;
-    const UserHaveTask = doesUserHaveTaskWithWBS(userTask,userIdByState);
+    const UserHaveTask = doesUserHaveTaskWithWBS(userTask, userIdByState);
     /* To set the Task tab as defatult this.userTask is being watched.
     Accounts with no tasks assigned to it return an empty array.
     Accounts assigned with tasks with no wbs return and empty array.
@@ -98,7 +99,7 @@ const Timelog = props => {
     That breaks this feature. Necessary to check if this array should keep data or be reset when unassinging tasks.*/
 
     //if user role is volunteer or core team and they don't have tasks assigned, then default tab is timelog.
-    if ((role === 'Volunteer') && !UserHaveTask) {
+    if (role === 'Volunteer' && !UserHaveTask) {
       tab = 1;
     }
 
@@ -316,14 +317,7 @@ const Timelog = props => {
   const [userId, setUserId] = useState(null);
   const [summaryBarData, setSummaryBarData] = useState(null);
   const [data, setData] = useState({
-    disabled: !hasPermission(
-      auth.user.role,
-      'disabledDataTimelog',
-      role.roles,
-      auth.user?.permissions?.frontPermissions,
-    )
-      ? false
-      : true,
+    disabled: !hasPermission('disabledDataTimelog') ? false : true,
     isTangible: false,
   });
   const initialState = {
@@ -402,7 +396,6 @@ const Timelog = props => {
     });
   }, [state.projectsSelected]);
 
-  const userPermissions = auth.user?.permissions?.frontPermissions;
   const isOwner = auth.user.userid === userId;
   const fullName = `${userProfile.firstName} ${userProfile.lastName}`;
 
@@ -529,12 +522,7 @@ const Timelog = props => {
                           </div>
                         </div>
                       ) : (
-                        hasPermission(
-                          auth.user.role,
-                          'putUserProfileImportantInfo',
-                          role.roles,
-                          userPermissions,
-                        ) && (
+                        canPutUserProfileImportantInfo && (
                           <div className="float-right">
                             <div>
                               <Button color="warning" onClick={toggle}>
@@ -551,12 +539,7 @@ const Timelog = props => {
                           <Button onClick={openInfo} color="primary">
                             Close
                           </Button>
-                          {hasPermission(
-                            auth.user.role,
-                            'editTimeEntry',
-                            role.roles,
-                            userPermissions,
-                          ) ? (
+                          {canEditTimeEntry ? (
                             <Button onClick={openInfo} color="secondary">
                               Edit
                             </Button>

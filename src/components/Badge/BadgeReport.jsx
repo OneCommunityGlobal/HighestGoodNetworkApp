@@ -37,7 +37,9 @@ const BadgeReport = props => {
   let [numFeatured, setNumFeatured] = useState(0);
   let [showModal, setShowModal] = useState(false);
   let [badgesToDelete, setBadgesToDelete] = useState([]);
-  const { roles } = props.state.role;
+
+  const canDeleteBadges = hasPermission('deleteBadges');
+  const canUpdateBadges = hasPermission('updateBadges');
 
   async function imageToUri(url, callback) {
     const canvas = document.createElement('canvas');
@@ -303,11 +305,7 @@ const BadgeReport = props => {
                 <th style={{ width: '110px' }}>Modified</th>
                 <th style={{ width: '110px' }}>Earned Dates</th>
                 <th style={{ width: '90px' }}>Count</th>
-                {hasPermission(props.role, 'deleteBadges', roles, props.permissionsUser) ? (
-                  <th>Delete</th>
-                ) : (
-                  []
-                )}
+                {canDeleteBadges ? <th>Delete</th> : []}
                 <th style={{ width: '70px', zIndex: '1' }}>Featured</th>
               </tr>
             </thead>
@@ -357,7 +355,7 @@ const BadgeReport = props => {
                       </UncontrolledDropdown>
                     </td>
                     <td>
-                      {hasPermission(props.role, 'updateBadges', roles, props.permissionsUser) ? (
+                      {canUpdateBadges ? (
                         <Input
                           type="number"
                           value={Math.round(value.count)}
@@ -371,7 +369,7 @@ const BadgeReport = props => {
                         Math.round(value.count)
                       )}
                     </td>
-                    {hasPermission(props.role, 'deleteBadges', roles, props.permissionsUser) ? (
+                    {canDeleteBadges ? (
                       <td>
                         <button
                           type="button"
@@ -515,12 +513,7 @@ const BadgeReport = props => {
                               toggle={false}
                             >
                               <span style={{ fontWeight: 'bold' }}>Count:</span>
-                              {hasPermission(
-                                props.role,
-                                'updateBadges',
-                                roles,
-                                props.permissionsUser,
-                              ) ? (
+                              {canUpdateBadges ? (
                                 <Input
                                   type="number"
                                   value={Math.round(value.count)}
@@ -570,12 +563,7 @@ const BadgeReport = props => {
                                 height: '60px',
                               }}
                             >
-                              {hasPermission(
-                                props.role,
-                                'deleteBadges',
-                                roles,
-                                props.permissionsUser,
-                              ) ? (
+                              {canDeleteBadges ? (
                                 <button
                                   type="button"
                                   className="btn btn-danger"

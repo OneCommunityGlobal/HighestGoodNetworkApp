@@ -17,6 +17,8 @@ import {
 import hasPermission from 'utils/permissions';
 
 const ProjectTableHeader = props => {
+  const canDeleteProject = hasPermission('deleteProject');
+
   return (
     <tr>
       <th scope="col" id="projects__order">
@@ -38,7 +40,7 @@ const ProjectTableHeader = props => {
       <th scope="col" id="projects__wbs">
         {WBS}
       </th>
-      {hasPermission(props.role, 'deleteProject', props.roles, props.userPermissions) ? (
+      {canDeleteProject ? (
         <th scope="col" id="projects__delete">
           {DELETE}
         </th>

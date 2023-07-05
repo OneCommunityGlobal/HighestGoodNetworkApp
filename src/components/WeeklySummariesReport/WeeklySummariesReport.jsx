@@ -61,15 +61,7 @@ export class WeeklySummariesReport extends Component {
 
   render() {
     const { error, loading, summaries, activeTab } = this.state;
-    const role = this.props.authUser?.role;
-    const userPermissions = this.props.authUser?.permissions?.frontPermissions;
-    const roles = this.props.roles;
-    const bioEditPermission = hasPermission(
-      role,
-      'putuserprofileImportantinfo',
-      roles,
-      userPermissions,
-    );
+    const bioEditPermission = hasPermission('putuserprofileImportantinfo');
 
     if (error) {
       return (
@@ -254,7 +246,6 @@ WeeklySummariesReport.propTypes = {
 
 const mapStateToProps = state => ({
   authUser: state.auth.user,
-  roles: state.role.roles,
   error: state.weeklySummariesReport.error,
   loading: state.weeklySummariesReport.loading,
   summaries: state.weeklySummariesReport.summaries,

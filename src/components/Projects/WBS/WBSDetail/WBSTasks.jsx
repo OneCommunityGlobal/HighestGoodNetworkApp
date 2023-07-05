@@ -38,6 +38,8 @@ function WBSTasks(props) {
   const [loadAll, setLoadAll] = useState(false);
   const [isDeleted, setIsDeleted] = useState(false);
 
+  const canPostTask = hasPermission('postTask');
+
   const load = async () => {
     const levelList = [0, 1, 2, 3, 4];
     await Promise.all(levelList.map(level => props.fetchAllTasks(wbsId, level)));
@@ -218,7 +220,7 @@ function WBSTasks(props) {
           </ol>
         </nav>
 
-        {hasPermission(props.state.auth.user.role, 'postTask', roles, userPermissions) ? (
+        {canPostTask ? (
           <AddTaskModal
             key="task_modal_null"
             parentNum={null}

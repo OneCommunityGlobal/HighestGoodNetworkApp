@@ -12,13 +12,13 @@ import {
 } from 'reactstrap';
 import PropTypes from 'prop-types';
 import hasPermission from '../../../utils/permissions';
-import { useSelector } from 'react-redux';
 import styles from './EditLinkModal.css';
 
 const EditLinkModal = props => {
   const { isOpen, closeModal, updateLink, userProfile, setChanged, role } = props;
-  const { roles } = useSelector(state => state.role);
-  const userPermissions = useSelector(state => state.auth.user?.permissions?.frontPermissions);
+
+  const canPutUserProfileImportantInfo = hasPermission('putUserProfileImportantInfo');
+
   const [linkName, setLinkName] = useState('');
   const [linkURL, setLinkURL] = useState('');
 
@@ -93,7 +93,7 @@ const EditLinkModal = props => {
         <ModalHeader toggle={closeModal}>Edit Links</ModalHeader>
         <ModalBody>
           <div>
-            {hasPermission(role, 'putUserProfileImportantInfo', roles, userPermissions) && (
+            {canPutUserProfileImportantInfo && (
               <CardBody>
                 <Card style={{ padding: '16px' }}>
                   <Label style={{ display: 'flex', margin: '5px' }}>Admin Links:</Label>

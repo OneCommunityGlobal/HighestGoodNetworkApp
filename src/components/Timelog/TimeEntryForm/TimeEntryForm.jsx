@@ -49,6 +49,8 @@ import checkNegativeNumber from 'utils/checkNegativeHours';
  */
 const TimeEntryForm = props => {
   const { userId, edit, data, isOpen, toggle, timer, resetTimer } = props;
+  const canEditTimeEntry = hasPermission('editTimeEntry');
+  const canPutUserProfileImportantInfo = hasPermission('putUserProfileImportantInfo');
 
   const initialFormValues = {
     dateOfWork: moment()
@@ -274,7 +276,7 @@ const TimeEntryForm = props => {
     }
 
     if (
-      !hasPermission(currentUserRole, 'putUserProfileImportantInfo', roles, userPermissions) &&
+      !canPutUserProfileImportantInfo &&
       data.isTangible &&
       isTimeModified &&
       reminder.editNotice
@@ -613,8 +615,7 @@ const TimeEntryForm = props => {
           <Form>
             <FormGroup>
               <Label for="dateOfWork">Date</Label>
-              {hasPermission(currentUserRole, 'editTimeEntry', roles, userPermissions) &&
-              !fromTimer ? (
+              {canEditTimeEntry && !fromTimer ? (
                 <Input
                   type="date"
                   name="dateOfWork"
@@ -728,10 +729,7 @@ const TimeEntryForm = props => {
                   name="isTangible"
                   checked={inputs.isTangible}
                   onChange={handleCheckboxChange}
-                  disabled={
-                    !hasPermission(currentUserRole, 'editTimeEntry', roles, userPermissions) &&
-                    !data.isTangible
-                  }
+                  disabled={!canEditTimeEntry && !data.isTangible}
                 />
                 Tangible&nbsp;
                 <i

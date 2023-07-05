@@ -96,7 +96,6 @@ const Badge = props => {
                       userId={props.userId}
                       firstName={props.userProfile.firstName}
                       lastName={props.userProfile.lastName}
-                      role={props.role}
                       close={toggle}
                       permissionsUser={permissionsUser}
                     />

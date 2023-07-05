@@ -98,6 +98,8 @@ class AddUserProfile extends Component {
     const phoneNumberEntered =
       this.state.userProfile.phoneNumber === null ||
       this.state.userProfile.phoneNumber.length === 0;
+    const canAddDeleteEditOwners = hasPermission('addDeleteEditOwners');
+
     return (
       <StickyContainer>
         <DuplicateNamePopup
@@ -251,12 +253,7 @@ class AddUserProfile extends Component {
                           if (roleName === 'Owner') return;
                           return <option value={roleName}>{roleName}</option>;
                         })}
-                        {hasPermission(
-                          this.props.auth.user.role,
-                          'addDeleteEditOwners',
-                          this.props.role.roles,
-                          this.props.auth.user?.permissions?.frontPermissions,
-                        ) && <option value="Owner">Owner</option>}
+                        {canAddDeleteEditOwners && <option value="Owner">Owner</option>}
                       </Input>
                     </FormGroup>
                   </Col>

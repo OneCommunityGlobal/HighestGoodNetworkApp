@@ -28,6 +28,7 @@ const SingleTask = props => {
   const [modal, setModal] = useState(false);
   const [modalDelete, setModalDelete] = useState(false);
   const toggleModel = () => setModal(!modal);
+  const canPostProject = hasPermission('postProject');
 
   const history = useHistory();
   useEffect(() => {
@@ -58,7 +59,7 @@ const SingleTask = props => {
     <React.Fragment>
       <ReactTooltip />
       <div className="container-single-task">
-        {hasPermission(user.role, 'postProject', roles, userPermissions) && (
+        {canPostProject && (
           <nav aria-label="breadcrumb">
             <ol className="breadcrumb">
               <NavItem tag={Link} to={`/wbs/samefoldertasks/${taskId}`}>

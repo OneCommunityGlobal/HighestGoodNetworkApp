@@ -115,14 +115,11 @@ export class Projects extends Component {
 
     let showModalMsg = false;
 
+    const canPostProject = hasPermission('postProject');
+
     if (status === 400 && trackModelMsg) {
       showModalMsg = true;
     }
-
-    const role = this.props.state.auth.user.role;
-    const userPermissions = this.props.state.auth.user?.permissions?.frontPermissions;
-
-    const { roles } = this.props.state.role;
 
     // Display project lists
     let ProjectsList = [];
@@ -159,13 +156,11 @@ export class Projects extends Component {
             onClick={this.toggleProjectInfoModal}
           />
           <Overview numberOfProjects={numberOfProjects} numberOfActive={numberOfActive} />
-          {hasPermission(role, 'postProject', roles, userPermissions) ? (
-            <AddProject addNewProject={this.postProject} />
-          ) : null}
+          {canPostProject ? <AddProject addNewProject={this.postProject} /> : null}
 
           <table className="table table-bordered table-responsive-sm">
             <thead>
-              <ProjectTableHeader role={role} roles={roles} userPermissions={userPermissions} />
+              <ProjectTableHeader />
             </thead>
             <tbody>{ProjectsList}</tbody>
           </table>

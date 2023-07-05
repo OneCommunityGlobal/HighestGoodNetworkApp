@@ -3,6 +3,9 @@ import './BlueSquare.css';
 import hasPermission from 'utils/permissions';
 
 const BlueSquare = ({ blueSquares, handleBlueSquare, role, roles, userPermissions }) => {
+  const isInfringementAuthorizer = hasPermission('infringementAuthorizer');
+  const canPutUserProfileImportantInfo = hasPermission('putUserProfileImportantInfo');
+
   return (
     <div className="blueSquareContainer">
       <div className="blueSquares">
@@ -18,22 +21,16 @@ const BlueSquare = ({ blueSquares, handleBlueSquare, role, roles, userPermission
                   className="blueSquareButton"
                   onClick={() => {
                     if (!blueSquare._id) {
+                      handleBlueSquare(isInfringementAuthorizer, 'message', 'none');
+                    } else if (canPutUserProfileImportantInfo) {
                       handleBlueSquare(
-                        hasPermission(role, 'infringementAuthorizer', roles, userPermissions),
-                        'message',
-                        'none',
-                      );
-                    } else if (
-                      hasPermission(role, 'putUserProfileImportantInfo', roles, userPermissions)
-                    ) {
-                      handleBlueSquare(
-                        hasPermission(role, 'putUserProfileImportantInfo', roles, userPermissions),
+                        canPutUserProfileImportantInfo,
                         'modBlueSquare',
                         blueSquare._id,
                       );
                     } else {
                       handleBlueSquare(
-                        !hasPermission(role, 'putUserProfileImportantInfo', roles, userPermissions),
+                        !canPutUserProfileImportantInfo,
                         'viewBlueSquare',
                         blueSquare._id,
                       );
@@ -49,8 +46,7 @@ const BlueSquare = ({ blueSquares, handleBlueSquare, role, roles, userPermission
           : null}
       </div>
 
-      {(hasPermission(role, 'putUserProfile', roles, userPermissions) ||
-        hasPermission(role, 'infringementAuthorizer', roles, userPermissions)) && (
+      {isInfringementAuthorizer && (
         <div
           onClick={() => {
             handleBlueSquare(true, 'addBlueSquare', '');

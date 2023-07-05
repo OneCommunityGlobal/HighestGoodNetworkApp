@@ -25,9 +25,6 @@ const UserProfileModal = props => {
     type,
     userProfile,
     id,
-    role,
-    roles,
-    userPermissions,
   } = props;
   let blueSquare = [
     {
@@ -42,6 +39,8 @@ const UserProfileModal = props => {
       blueSquare = userProfile.infringements?.filter(blueSquare => blueSquare._id === id);
     }
   }
+
+  const canPutUserProfile = hasPermission('putUserProfile');
 
   const [linkName, setLinkName] = useState('');
   const [linkURL, setLinkURL] = useState('');
@@ -144,7 +143,7 @@ const UserProfileModal = props => {
       <ModalBody>
         {type === 'updateLink' && (
           <div>
-            {hasPermission(role, 'putUserProfile', roles, userPermissions) && (
+            {canPutUserProfile && (
               <CardBody>
                 <Card>
                   <Label style={{ display: 'flex', margin: '5px' }}>Admin Links:</Label>
