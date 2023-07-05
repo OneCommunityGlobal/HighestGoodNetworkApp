@@ -4,14 +4,7 @@ import axios from 'axios';
 import AddTeamPopup from './AddTeamPopup';
 import UserTeamsTable from './UserTeamsTable';
 import { useDispatch, useSelector } from 'react-redux';
-import {
-  postNewSummaryGroup,
-  getAllSummaryGroup,
-  deleteSummaryGroup,
-  updateSummaryGroup,
-  extractMembers,
-  extractSummaryReceivers,
-} from '../../../actions/allSummaryAction';
+import { getAllSummaryGroup } from '../../../actions/allSummaryAction';
 import { ENDPOINTS } from 'utils/URL';
 
 const TeamsTab = props => {
@@ -132,14 +125,14 @@ const TeamsTab = props => {
 
   return (
     <React.Fragment>
-      <AddTeamPopup
+      {/* <AddTeamPopup
         open={addTeamPopupOpen}
         onClose={onAddTeamPopupClose}
         teamsData={summaryGroups}
         userTeamsById={filteredGroups}
         onSelectAssignTeam={onSelectAssignTeam}
         apiCallDone={apiCallDone}
-      />
+      /> */}
       <UserTeamsTable
         userTeamsById={filteredGroups}
         onButtonClick={onAddTeamPopupShow}

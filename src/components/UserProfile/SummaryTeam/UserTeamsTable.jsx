@@ -12,35 +12,25 @@ const UserTeamsTable = props => {
   return (
     <div>
       <div className="teamtable-container desktop">
-        <div className="container">
-          <div className="row">
-            <Col
-              md={props.edit ? '7' : '12'}
-              style={{
-                backgroundColor: ' #e9ecef',
-                border: '1px solid #ced4da',
-                marginBottom: '10px',
-              }}
-            >
-              <span className="teams-span">Summary Teams</span>
-            </Col>
-            {props.edit && props.role && (
-              <Col md="5">
-                {hasPermission(props.role, 'assignTeamToUser', roles, userPermissions) ? (
-                  <Button
-                    className="btn-addteam"
-                    color="primary"
-                    onClick={() => {
-                      props.onButtonClick();
-                    }}
-                  >
-                    Join a Summary Team
-                  </Button>
-                ) : (
-                  <></>
-                )}
-              </Col>
-            )}
+        <div
+          className="container"
+          style={{
+            width: '100%',
+            display: 'flex',
+          }}
+        >
+          <div
+            className="row"
+            md={props.edit ? '7' : '12'}
+            style={{
+              backgroundColor: ' #e9ecef',
+              border: '1px solid #ced4da',
+              marginBottom: '10px',
+              width: '100%',
+              flexGrow: 1,
+            }}
+          >
+            <span className="teams-span">Summary Teams</span>
           </div>
         </div>
         <div style={{ maxHeight: '300px', overflow: 'auto' }}>
@@ -50,9 +40,6 @@ const UserTeamsTable = props => {
                 <tr>
                   <th>#</th>
                   <th>Summary Team Name</th>
-                  {hasPermission(props.role, 'assignTeamToUser', roles, userPermissions) ? (
-                    <th>{}</th>
-                  ) : null}
                 </tr>
               )}
             </thead>
@@ -62,21 +49,6 @@ const UserTeamsTable = props => {
                   <tr key={index} className="tr">
                     <td>{index + 1}</td>
                     <td>{`${team.summaryGroupName}`}</td>
-                    {props.edit && props.role && (
-                      <td>
-                        <Button
-                          disabled={
-                            !hasPermission(props.role, 'assignTeamToUser', roles, userPermissions)
-                          }
-                          color="danger"
-                          onClick={e => {
-                            props.onDeleteClick(team._id);
-                          }}
-                        >
-                          Delete
-                        </Button>
-                      </td>
-                    )}
                   </tr>
                 ))
               ) : (
