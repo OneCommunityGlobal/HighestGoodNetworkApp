@@ -460,6 +460,7 @@ class PeopleReport extends Component {
         avatar={this.state.userProfile.profilePic ? undefined : <FiUser />}
         isActive={isActive}
       >
+        <div className="report-stats">
         <p>
           <Link to={`/userProfile/${userProfile._id}`} title="View Profile">
             {userProfile.firstName} {userProfile.lastName}
@@ -506,6 +507,7 @@ class PeopleReport extends Component {
               ) : null}
             </div>
           ) : null}
+        </div>
         </div>
       </ReportPage.ReportHeader>
     );
@@ -572,13 +574,14 @@ class PeopleReport extends Component {
         </div>
 
         <PeopleTasksPieChart />
-
+        <div className="mobile-people-table">
         <ReportPage.ReportBlock>
           <div className="intro_date">
             <h4>Tasks contributed</h4>
           </div>
-
+            
           <PeopleDataTable />
+          
 
           <div className="container">
             <table>
@@ -602,6 +605,7 @@ class PeopleReport extends Component {
             </table>
           </div>
         </ReportPage.ReportBlock>
+        </div>
       </ReportPage>
       </div>
     );
