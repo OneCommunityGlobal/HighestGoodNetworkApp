@@ -137,16 +137,13 @@ export class WeeklySummary extends Component {
     // and then setting the due date to the end of the ISO week (Saturday) for each respective week
     const dueDateLastWeek = moment(dueDate)
       .subtract(1, 'weeks')
-      .startOf('isoWeek')
-      .add(5, 'days');
+      .toISOString();
     const dueDateBeforeLast = moment(dueDate)
       .subtract(2, 'weeks')
-      .startOf('isoWeek')
-      .add(5, 'days');
+      .toISOString();
     const dueDateThreeWeeksAgo = moment(dueDate)
       .subtract(3, 'weeks')
-      .startOf('isoWeek')
-      .add(5, 'days');
+      .toISOString();
 
     const uploadDateXWeeksAgo = x => {
       const summaryList = [summary, summaryLastWeek, summaryBeforeLast, summaryThreeWeeksAgo];
@@ -413,18 +410,18 @@ export class WeeklySummary extends Component {
     if (diffInSubmittedCount !== 0) {
       this.setState({ summariesCountShowing: newformElements.weeklySummariesCount + 1 });
     }
-    const updateSummary = (summary, uploadDate) => {
+    const updateSummary = (summary, uploadDate, dueDate) => {
       if (newformElements[summary] !== newOriginSummaries[summary]) {
         newOriginSummaries[summary] = newformElements[summary];
-        newUploadDatesElements[uploadDate] = submittedDate;
+        newUploadDatesElements[uploadDate] = newformElements[summary] == '' ? dueDate : submittedDate;
         this.setState({ formElements: newformElements, uploadDatesElements: newUploadDatesElements, originSummaries: newOriginSummaries });
       }
     };
     // Loop through summaries and update state variables
     for (let i = 0; i < summaries.length; i++) {
-      updateSummary(summaries[i], uploadDates[i]);
+      updateSummary(summaries[i], uploadDates[i], dueDates[i]);
     }
-    
+
     // Construct the modified weekly summaries
     const modifiedWeeklySummaries = {
       mediaUrl: newformElements.mediaUrl.trim(),
