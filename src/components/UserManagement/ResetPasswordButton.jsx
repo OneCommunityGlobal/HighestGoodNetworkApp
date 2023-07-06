@@ -1,5 +1,6 @@
 import React from 'react';
 import ResetPasswordPopup from './ResetPasswordPopup';
+import { denyPermissionToResetPassword } from 'utils/permissions';
 import { resetPassword } from '../../services/userProfileService';
 import { Button } from 'reactstrap';
 import { toast } from 'react-toastify';
@@ -35,9 +36,18 @@ class ResetPasswordButton extends React.PureComponent {
   }
 
   onResetClick = () => {
-    this.setState({
-      resetPopupOpen: true,
-    });
+    if (denyPermissionToResetPassword(this.props.user.email, this.props.authEmail)) {
+      alert("STOP! YOU SHOULDN’T BE TRYING TO CHANGE THIS PASSWORD.")
+      this.setState({
+        resetPopupOpen: false,
+      });
+    }
+    else {
+      this.setState({
+        resetPopupOpen: true,
+      });
+    }
+
   };
 
   resetPopupClose = () => {

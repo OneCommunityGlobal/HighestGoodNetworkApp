@@ -23,7 +23,7 @@ import classnames from 'classnames';
 import moment from 'moment';
 import Alert from 'reactstrap/lib/Alert';
 import axios from 'axios';
-import hasPermission, { deactivateOwnerPermission } from '../../utils/permissions';
+import hasPermission, { deactivateOwnerPermission, denyPermissionToUpdatePassword } from '../../utils/permissions';
 import ActiveCell from '../UserManagement/ActiveCell';
 import { ENDPOINTS } from '../../utils/URL';
 import Loading from '../common/Loading';
@@ -536,6 +536,7 @@ function UserProfile(props) {
   const { userid: requestorId, role: requestorRole } = props.auth.user;
   const userPermissions = props.auth.user?.permissions?.frontPermissions;
 
+  const devAdminEmail = props.userProfile?.email;
   const isUserSelf = targetUserId === requestorId;
   const canEditProfile =
     userProfile.role === 'Owner'
@@ -937,7 +938,8 @@ function UserProfile(props) {
                             'editUserProfile',
                             roles,
                             userPermissions,
-                          )) && (
+                          ))
+                        && (
                           <Link to={`/updatepassword/${userProfile._id}`}>
                             <Button className="mr-1 btn-bottom" color="primary">
                               {' '}
@@ -1241,7 +1243,17 @@ function UserProfile(props) {
               {isUserSelf &&
                 (activeTab === '1' ||
                   hasPermission(requestorRole, 'editUserProfile', roles, userPermissions)) && (
-                  <Link to={`/updatepassword/${userProfile._id}`}>
+                  <Link to={denyPermissionToUpdatePassword(devAdminEmail, requestorRole) ? `#` : `/updatepassword/${userProfile._id}`}
+                    onClick={() => {
+                      if (denyPermissionToUpdatePassword(devAdminEmail, requestorRole)) {
+                        alert("STOP! YOU SHOULDN’T BE TRYING TO CHANGE THIS PASSWORD." +
+                          "You shouldn’t even be using this account except to create your own accounts to use." +
+                          "Please re-read the Local Setup Doc to understand why and what you should be doing instead of what you are trying to do now."
+                        )
+                        return `#`;
+                      }
+                    }}
+                  >
                     <Button className="mr-1 btn-bottom" color="primary" style={boxStyle}>
                       {' '}
                       Update Password
@@ -1284,7 +1296,7 @@ function UserProfile(props) {
           </Col>
         </Row>
       </Container>
-    </div>
+    </div >
   );
 }
 
