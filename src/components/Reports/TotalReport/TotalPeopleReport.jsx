@@ -207,6 +207,7 @@ const TotalPeopleReport = props => {
     }, 0);
     return (
       <div className="total-people-container">
+        <div className='total-people-title'>Total People Report</div>
         <div className="total-people-period">
           In the period from {fromDate} to {toDate}:
         </div>

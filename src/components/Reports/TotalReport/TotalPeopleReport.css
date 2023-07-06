@@ -7,6 +7,13 @@
     padding: 20px 40px;
 }
 
+.total-people-title{
+    font-size: 32px;
+    font-weight: 600;
+    text-align: center;
+    color:steelblue;
+}
+
 .total-people-number{
     font-size: 32px;
     font-weight: 700;
