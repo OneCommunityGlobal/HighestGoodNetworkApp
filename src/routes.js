@@ -35,8 +35,6 @@ import { TaskEditSuggestions } from 'components/TaskEditSuggestions/TaskEditSugg
 import { RoutePermissions } from 'utils/routePermissions';
 import PermissionsManagement from 'components/PermissionsManagement/PermissionsManagement';
 import UserRoleTab from 'components/PermissionsManagement/UserRoleTab';
-import { withRouter } from 'react-router-dom';
-import { useState } from 'react';
 
 const RoutesWrapper = props => {
 
