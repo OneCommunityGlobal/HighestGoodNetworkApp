@@ -343,6 +343,7 @@ class ReportsPage extends Component {
                   maxDate={new Date()}
                   onChange={date => this.setState({ startDate: date })}
                   className="form-control"
+                  popperPlacement="top-start"
                 />
               </td>
               <td id="task_EndDate" className="date-picker-item">
@@ -356,6 +357,7 @@ class ReportsPage extends Component {
                   minDate={new Date(DATE_PICKER_MIN_DATE)}
                   onChange={date => this.setState({ endDate: date })}
                   className="form-control"
+                  popperPlacement="top"
                 />
               </td>
             </div>
