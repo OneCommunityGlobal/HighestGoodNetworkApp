@@ -1,6 +1,8 @@
 import axios from 'axios';
 import * as actions from '../constants/weeklySummaries';
 import { ENDPOINTS } from '../utils/URL';
+import { filter } from 'lodash';
+import { strip } from 'joi/lib/types/lazy';
 
 /**
  * Action to set the 'loading' flag to true.
@@ -83,15 +85,22 @@ export const updateWeeklySummaries = (userId, weeklySummariesData) => {
   };
 };
 
-export const extractWeeklySummaries = userId => {
+export const extractWeeklySummaries = userIds => {
   return async (dispatch, getState) => {
     try {
       const summarydata = getState().weeklySummariesReport;
       const summaryreports = summarydata.summaries;
-      const summaryreport = summaryreports.filter(report => report._id === userId)[0]
-        .weeklySummaries[0].summary;
-      // console.log('This is a weekly summary: ', summaryreport);
-      return summaryreport;
+      const filteredmembers = summaryreports.filter(member => userIds.includes(member._id));
+      const filteredSummaries = filteredmembers.map(member => ({
+        _id: member._id,
+        report: member.weeklySummaries[0].summary,
+      }));
+      const strippedSummaries = filteredSummaries.map(member => ({
+        _id: member._id,
+        report: member.report.replace(/<\/?p>/g, ''),
+      }));
+
+      return { finallist: strippedSummaries };
     } catch (err) {
       console.error('extractWeeklySummaries:', err);
       return null;

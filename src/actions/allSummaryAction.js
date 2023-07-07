@@ -96,7 +96,7 @@ export const extractMembers = id => {
 export const extractSummaryReceivers = id => {
   return async (dispatch, getState) => {
     try {
-      const summarydata = getState().allSummaryGroups;
+      const summarydata = await getState().allSummaryGroups;
       const groupObject = summarydata.allSummaryGroups.filter(group => group._id === id)[0]
         .summaryReceivers;
 

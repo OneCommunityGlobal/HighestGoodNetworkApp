@@ -1,6 +1,6 @@
 import React from 'react';
 import './summarygroup.css';
-import { DELETE, EDIT } from '../../languages/en/ui';
+import { DELETE, EDIT, VIEW_SUMMARY } from '../../languages/en/ui';
 
 const summaryGroupTableBody = props => {
   return (
@@ -32,6 +32,7 @@ const summaryGroupTableBody = props => {
           className="btn btn-outline-info"
           onClick={e => {
             props.onMembersClick(props.summaryGroupId, props.name);
+            props.onDisplaySummaryTable('false');
           }}
         >
           <i className="fa fa-users" aria-hidden="true" />
@@ -43,6 +44,7 @@ const summaryGroupTableBody = props => {
           className="btn btn-outline-info"
           onClick={e => {
             props.onSummaryReciverClick(props.summaryGroupId, props.name);
+            props.onDisplaySummaryTable('false');
           }}
         >
           <i className="fa fa-users" aria-hidden="true" />
@@ -55,6 +57,7 @@ const summaryGroupTableBody = props => {
             className="btn btn-outline-success"
             onClick={() => {
               props.onEditTeam(props.name, props.summaryGroupId, props.active);
+              props.onDisplaySummaryTable('false');
             }}
           >
             {EDIT}
@@ -66,9 +69,22 @@ const summaryGroupTableBody = props => {
             className="btn btn-outline-danger"
             onClick={() => {
               props.onDeleteClick(props.name, props.summaryGroupId, props.active);
+              props.onDisplaySummaryTable('false');
             }}
           >
             {DELETE}
+          </button>
+        </span>
+        <span className="usermanagement-actions-cell">
+          <button
+            type="button"
+            className="btn btn-outline-success"
+            onClick={() => {
+              props.onClickViewReports(props.summaryGroupId);
+              props.onDisplaySummaryTable('true');
+            }}
+          >
+            {VIEW_SUMMARY}
           </button>
         </span>
       </td>

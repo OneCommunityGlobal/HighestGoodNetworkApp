@@ -1,48 +1,54 @@
 import React, { useState, useEffect } from 'react';
 import SummaryComponent from './SummaryReportDisplayComponent';
 
-const TableExample = props => {
-  const [data, setData] = useState([
-    { serialNumber: 1, name: 'Object 1', textField: 'This is summary report number 1' },
-    { serialNumber: 2, name: 'Object 2', textField: 'This is summary report number 2' },
-    { serialNumber: 3, name: 'Object 3', textField: 'This is summary report number 3' },
-  ]);
+const SummaryTable = props => {
+  const [data, setData] = useState([]);
+  const [summaryReceiver, setSummaryReceiver] = useState(undefined);
 
   const updateData = async () => {
-    const report = await props.teamMembersIds();
+    const report = await props.teamMembersReports();
     return report;
   };
+
   useEffect(() => {
-    // const updatedData = data.map(item => {
-    //   return {
-    //     ...item,
-    //     textField: props.teamMembersIds(),
-    //   };
-    // });
-    // setData(updatedData);
-    console.log('reports: ', updateData());
-  }, []);
+    if (props.summaryGroupId) {
+      const fetchData = async () => {
+        const result = await updateData();
+        setData(result);
+        // const summaryReceiverResult = await props.getSummaryReceiver(props.SummaryGroupId);
+        // setSummaryReceiver(summaryReceiverResult);
+      };
+      fetchData();
+    }
+  }, [props.summaryGroupId]);
 
   return (
     <div>
-      <table className="table table-bordered table-responsive-sm">
-        <thead>
-          <tr>
-            <th>Summaries from Group</th>
-          </tr>
-        </thead>
-        <tbody>
-          {data.map((item, index) => (
-            <tr key={index}>
-              <td>
-                <SummaryComponent name={item.name} message={item.textField} />
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      {props.summaryGroupId && props.onDisplaySummaryTable ? (
+        <div>
+          <table className="table table-bordered table-responsive-sm">
+            <thead>
+              <tr>
+                <th>Summaries from Group</th>
+              </tr>
+            </thead>
+            <tbody>
+              {data.length !== 0 &&
+                data.map((item, index) => (
+                  <tr key={index}>
+                    <td>
+                      <SummaryComponent name={item.fullName} message={item.report} />
+                    </td>
+                  </tr>
+                ))}
+            </tbody>
+          </table>
+        </div>
+      ) : (
+        <></>
+      )}
     </div>
   );
 };
 
-export default TableExample;
+export default SummaryTable;

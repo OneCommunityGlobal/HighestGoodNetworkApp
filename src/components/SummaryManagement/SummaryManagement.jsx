@@ -49,6 +49,7 @@ class SummaryManagement extends Component {
       summaryReceiver: [],
       SummaryReceiverPopupOpen: false,
       ApiCallDone: true,
+      displaySummaryReportTable: false,
     };
   }
   async componentDidMount() {
@@ -162,26 +163,42 @@ class SummaryManagement extends Component {
     });
   };
 
-  getTeamMembersIds = async () => {
+  getTeamMembersReports = async () => {
     try {
       //Getting the ids of every member in the summary group
-      const result = await this.props.extractMembers('6495ef46d4adee369297e5ac');
+      const result = await this.props.extractMembers(this.state.selectedSummaryGroupId);
+      // const result = await this.props.extractMembers('6495ef46d4adee369297e5ac');
       const members = { teamMembers: result.teamMembers };
-      const memberIds = { membersIds: members.teamMembers.map(member => member._id) };
-      // console.log('members: ', memberIds);
+
+      const reportsList = members.teamMembers.map(member => ({
+        _id: member._id,
+        fullName: member.fullName,
+        report: '',
+      }));
+
+      const extractedIds = reportsList.map(member => member._id);
 
       //Getting the 1st week summary reports of each member
       //remember to run the first and second line of code when the page loads up and not all times.
       // await this.props.getWeeklySummariesReport();
       // const summary = await this.props.getWeeklySummaries('6466b15fd349ee380e5707cb');
-      const summarydata = await this.props.extractWeeklySummaries('6466b15fd349ee380e5707cb');
-      // console.log('members summary: ', summarydata);
-      return summarydata;
+
+      const summaries = await this.props.extractWeeklySummaries(extractedIds);
+      const finalReportsList = reportsList.map(member => ({
+        ...member,
+        report: summaries.finallist.find(summary => summary._id === member._id)?.report || '',
+      }));
+      return finalReportsList;
     } catch (error) {
       console.log(error);
     }
   };
 
+  onClickViewReports = groupId => {
+    this.setState({
+      selectedSummaryGroupId: groupId,
+    });
+  };
   onTeamMembersPopupShow = async (summaryGroupId, name) => {
     this.setState({
       teamMembersPopupOpen: true,
@@ -296,11 +313,18 @@ class SummaryManagement extends Component {
     try {
       const result = await this.props.extractSummaryReceivers(summaryGroupId);
       const receivers = { summaryReceivers: result };
-      this.setState({ summaryReceiver: receivers }, () =>
-        console.log('These are the receivers: ', receivers),
-      );
+      this.setState({ summaryReceiver: receivers });
     } catch (error) {
       console.log(error);
+    }
+  };
+
+  onDisplaySummaryTable = value => {
+    if (value === 'true') {
+      this.setState({ displaySummaryReportTable: true });
+    }
+    if (value === 'false') {
+      this.setState({ displaySummaryReportTable: false });
     }
   };
 
@@ -502,8 +526,10 @@ class SummaryManagement extends Component {
           </table>
           <div>
             <SummaryReportsDisplay
-              teamMembersIds={this.getTeamMembersIds}
+              teamMembersReports={this.getTeamMembersReports}
               summaryGroupId={this.state.selectedSummaryGroupId}
+              getSummaryReceiver={this.getSummaryReceiverRedux}
+              onDisplaySummaryTable={this.state.displaySummaryReportTable}
             />
           </div>
         </div>
@@ -535,6 +561,8 @@ class SummaryManagement extends Component {
           onSummaryReciverClick={this.onSummaryReciverShow}
           onEditTeam={this.onUpdateTeamPopupShow}
           onDeleteClick={this.onDeleteTeamPopupShow}
+          onClickViewReports={this.onClickViewReports}
+          onDisplaySummaryTable={this.onDisplaySummaryTable}
         />
       ));
     }
