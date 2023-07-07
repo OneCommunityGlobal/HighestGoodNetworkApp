@@ -18,7 +18,7 @@ import AssignBadgePopup from './AssignBadgePopup';
 import { clearSelected } from 'actions/badgeManagement';
 import { boxStyle } from 'styles';
 
-const Badges = props => {
+export const Badges = props => {
   const [isOpen, setOpen] = useState(false);
   const [isAssignOpen, setAssignOpen] = useState(false);
   const permissionsUser = props.userProfile?.permissions?.frontPermissions;
@@ -34,6 +34,16 @@ const Badges = props => {
       props.clearSelected();
     }
   }, [isOpen, isAssignOpen]);
+
+  // Determines what congratulatory text should displayed.
+  const badgesEarned = props.userProfile.badgeCollection.length;
+  const subject = props.isUserSelf ? 'You have' : 'This person has';
+  const verb = badgesEarned ? `earned ${badgesEarned}` : 'no';
+  const object = badgesEarned == 1 ? 'badge' : 'badges';
+  let congratulatoryText = `${subject} ${verb} ${object}`;
+  congratulatoryText = badgesEarned
+    ? 'Bravo! ' + congratulatoryText + '! '
+    : congratulatoryText + '. ';
 
   return (
     <>
@@ -105,7 +115,7 @@ const Badges = props => {
             color: '#285739',
           }}
         >
-          Bravo! You've earned {props.userProfile.badgeCollection.length} badges!{' '}
+          {congratulatoryText}
           <i className="fa fa-info-circle" id="CountInfo" />
         </CardFooter>
       </Card>
