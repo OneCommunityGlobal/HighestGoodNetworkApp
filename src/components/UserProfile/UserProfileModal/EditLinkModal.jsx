@@ -103,11 +103,12 @@ const EditLinkModal = props => {
                       <div className="customTitle">Name</div>
                       <div className="customTitle">Link URL</div>
                     </div>
-                    {adminLinks?.map((link, index) => (
-                      <div
+                    {adminLinks?.map((link, index) => 
+                      { link.Name.indexOf('Google')==-1 && link.Name.indexOf('Dropbox')==-1 ?(
+                        <div
                         key={index}
                         style={{ display: 'flex', margin: '5px' }}
-                        className="link-fields"
+                        className="link-fields" 
                       >
                         <input
                           className="customInput"
@@ -140,8 +141,44 @@ const EditLinkModal = props => {
                           X
                         </button>
                       </div>
-                    ))}
+                      ):""}
+                     
+                    )}
 
+<div style={{ display: 'flex', margin: '5px' }} className="link-fields">
+                    <input 
+                    className='customEdit'
+                    id="linkName1"
+                    placeholder='Google Doc'
+                    value="Google Doc"
+                    disabled
+                    />
+
+                     <input 
+                    className='customEdit'
+                    id='linkURL1'
+                    value={adminLinks.find(x=>x.Link.indexOf('google')>-1)?adminLinks.find(x=>x.Link.indexOf('google')>-1).Link:""}
+                    placeholder='enter Google Doc link'
+                    onChange={e=> setAdminLinkURL(e.target.value.trim())}
+                    />
+                  </div>
+                  <div style={{ display: 'flex', margin: '5px' }} className="link-fields">
+                    <input 
+                    className='customEdit'
+                    id="linkName2"
+                    placeholder='Dropbox Folder'
+                    value="Dropbox Folder"
+                    disabled
+                    />
+
+                     <input 
+                    className='customEdit'
+                    id="linkURL2"
+                    value={adminLinks.find(x=>x.Link.indexOf('dropbox')>-1)?adminLinks.find(x=>x.Link.indexOf('dropbox')>-1).Link:""}
+                    placeholder='enter Dropbox link'
+                    onChange={e=> setAdminLinkURL(e.target.value.trim())}
+                    />
+                  </div>
                     <div style={{ display: 'flex', margin: '5px' }}>
                       <div className="customTitle">+ ADD LINK:</div>
                     </div>
