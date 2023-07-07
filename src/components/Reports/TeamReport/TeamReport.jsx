@@ -268,8 +268,10 @@ useEffect(() => {
         )
       }
     >
+      
       <ReportPage.ReportBlock className="team-report-main-info-wrapper">
         <div className="team-report-main-info-id">
+        <div style={{ wordBreak: 'break-all'}} className="update-date">
           <div>
             <span className="team-report-star">&#9733;</span>
             {' '}
@@ -282,14 +284,12 @@ useEffect(() => {
           It is just to simulate the toggle between the login privileges. The logic is
           inside the userLoginPrivileges.jsx file.
           */}
-          {/* <LoginPrivileges selectedInput={selectedInput} handleInputChange={handleInputChange} />  */}
-
-          <div className="update-date">
+          {/* <LoginPrivileges selectedInput={selectedInput} handleInputChange={handleInputChange} />  */}          
             Last updated:
             {moment(team.modifiedDatetime).format('YYYY-MM-DD')}
           </div>
         </div>
-      </ReportPage.ReportBlock>
+      </ReportPage.ReportBlock>      
       <UserLoginPrivileges 
         role={user.role}
         handleInputChange={handleInputChange} 

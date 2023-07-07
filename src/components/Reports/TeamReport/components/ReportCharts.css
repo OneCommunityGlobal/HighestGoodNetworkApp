@@ -39,7 +39,7 @@
     display: flex;
     flex-direction: column;
     width: 100%;
-    margin-left: -24px;
+    justify-content: space-between;
 }
 
 .pie-chart-info-detail-title {
@@ -92,5 +92,18 @@
         flex-direction: column;
         align-items: center;
         justify-items: center;
+    }
+    .team-report-chart-wrapper {
+        max-width: 100vw;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-items: center;
+        margin:auto;
+    }
+    .test {
+        display: flex;        
+        align-items: space-between;
+        justify-items: space-between;
     }
 }
