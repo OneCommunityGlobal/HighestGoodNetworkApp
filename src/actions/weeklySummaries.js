@@ -82,3 +82,19 @@ export const updateWeeklySummaries = (userId, weeklySummariesData) => {
     }
   };
 };
+
+export const extractWeeklySummaries = userId => {
+  return async (dispatch, getState) => {
+    try {
+      const summarydata = getState().weeklySummariesReport;
+      const summaryreports = summarydata.summaries;
+      const summaryreport = summaryreports.filter(report => report._id === userId)[0]
+        .weeklySummaries[0].summary;
+      // console.log('This is a weekly summary: ', summaryreport);
+      return summaryreport;
+    } catch (err) {
+      console.error('extractWeeklySummaries:', err);
+      return null;
+    }
+  };
+};

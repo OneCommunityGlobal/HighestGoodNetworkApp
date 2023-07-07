@@ -16,6 +16,8 @@ import {
   extractMembers,
   extractSummaryReceivers,
 } from 'actions/allSummaryAction';
+import { getWeeklySummaries, extractWeeklySummaries } from 'actions/weeklySummaries';
+import { getWeeklySummariesReport } from 'actions/weeklySummariesReport';
 //import { getAllUserProfile } from 'actions/userManagement';
 import { TEAM_MEMBER, SUMMARY_RECEIVER, SUMMARY_GROUP, ACTIONS, ACTIVE } from 'languages/en/ui';
 import CreateNewSummaryGroupPopup from './CreateNewSummaryGroupPopup';
@@ -26,6 +28,7 @@ import SummaryGroupStatusPopup from './SummaryGroupStatusPopup';
 import SummarysOverview from './SummarysOverview';
 import TeamMembersPopup from './TeamMembersPopup';
 import SummaryReceiverPopup from './SummaryReceiverPopup';
+import SummaryReportsDisplay from './SummaryReportsDisplay';
 
 class SummaryManagement extends Component {
   constructor(props) {
@@ -157,6 +160,26 @@ class SummaryManagement extends Component {
       selectedSummaryGroupName: '',
       summaryGroupStatusPopupOpen: false,
     });
+  };
+
+  getTeamMembersIds = async () => {
+    try {
+      //Getting the ids of every member in the summary group
+      const result = await this.props.extractMembers('6495ef46d4adee369297e5ac');
+      const members = { teamMembers: result.teamMembers };
+      const memberIds = { membersIds: members.teamMembers.map(member => member._id) };
+      // console.log('members: ', memberIds);
+
+      //Getting the 1st week summary reports of each member
+      //remember to run the first and second line of code when the page loads up and not all times.
+      // await this.props.getWeeklySummariesReport();
+      // const summary = await this.props.getWeeklySummaries('6466b15fd349ee380e5707cb');
+      const summarydata = await this.props.extractWeeklySummaries('6466b15fd349ee380e5707cb');
+      // console.log('members summary: ', summarydata);
+      return summarydata;
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   onTeamMembersPopupShow = async (summaryGroupId, name) => {
@@ -477,6 +500,12 @@ class SummaryManagement extends Component {
             </thead>
             <tbody>{summaryGroupTable}</tbody>
           </table>
+          <div>
+            <SummaryReportsDisplay
+              teamMembersIds={this.getTeamMembersIds}
+              summaryGroupId={this.state.selectedSummaryGroupId}
+            />
+          </div>
         </div>
       </React.Fragment>
     );
@@ -520,4 +549,7 @@ export default connect(mapStateToProps, {
   updateSummaryGroup,
   extractMembers,
   extractSummaryReceivers,
+  getWeeklySummaries,
+  extractWeeklySummaries,
+  getWeeklySummariesReport,
 })(SummaryManagement);
