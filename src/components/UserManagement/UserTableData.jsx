@@ -9,6 +9,7 @@ import Table from 'react-bootstrap/Table';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCopy } from '@fortawesome/free-solid-svg-icons';
 import { toast } from 'react-toastify';
+import { boxStyle } from 'styles';
 
 /**
  * The body row of the user table
@@ -70,6 +71,7 @@ const UserTableData = React.memo(props => {
               props.isActive ? UserStatus.InActive : UserStatus.Active,
             );
           }}
+          style={boxStyle}
         >
           {isChanging ? '...' : props.isActive ? PAUSE : RESUME}
         </button>
@@ -84,6 +86,7 @@ const UserTableData = React.memo(props => {
               props.isSet ? FinalDay.NotSetFinalDay : FinalDay.FinalDay,
             );
           }}
+          style={boxStyle}
         >
           {props.isSet ? CANCEL : SET_FINAL_DAY}
         </button>
@@ -103,6 +106,7 @@ const UserTableData = React.memo(props => {
               onClick={e => {
                 props.onDeleteClick(props.user, 'archive');
               }}
+              style={boxStyle}
             >
               {DELETE}
             </button>

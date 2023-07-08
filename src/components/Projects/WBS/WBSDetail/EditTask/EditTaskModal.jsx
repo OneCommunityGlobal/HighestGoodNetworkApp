@@ -14,6 +14,7 @@ import hasPermission from 'utils/permissions';
 import axios from 'axios';
 import { ENDPOINTS } from 'utils/URL';
 import TagsSearch from '../components/TagsSearch';
+import { boxStyle } from 'styles';
 
 const EditTaskModal = props => {
   const canUpdateTask = hasPermission('updateTask');
@@ -67,6 +68,8 @@ const EditTaskModal = props => {
   const [hoursMost, setHoursMost] = useState(thisTask?.hoursMost);
   // hour estimate
   const [hoursEstimate, setHoursEstimate] = useState(thisTask?.estimatedHours);
+  //deadline count 
+  const [deadlineCount, setDeadlineCount] = useState(thisTask?.deadlineCount)
   // hours warning
   const [hoursWarning, setHoursWarning] = useState(false);
 
@@ -101,6 +104,7 @@ const EditTaskModal = props => {
     setHoursWorst(thisTask?.hoursWorst);
     setHoursMost(thisTask?.hoursMost);
     setHoursEstimate(thisTask?.estimatedHours);
+    setDeadlineCount(thisTask?.deadlineCount);
     setLinks(thisTask?.links);
     setCategory(thisTask?.category);
     setWhyInfo(thisTask?.whyInfo);
@@ -109,43 +113,6 @@ const EditTaskModal = props => {
     setStartedDate(thisTask?.startedDatetime);
     setDueDate(thisTask?.dueDatetime);
   }, [thisTask]);
-
-  // helpers for editing the resources of task
-  const [foundMembersHTML, setfoundMembersHTML] = useState('');
-  const findMembers = () => {
-    const memberList = members.members ? props.projectMembers.members : members;
-    for (let i = 0; i < memberList.length; i++) {
-      if (
-        `${memberList[i].firstName} ${memberList[i].lastName}`
-          .toLowerCase()
-          .includes(memberName.toLowerCase())
-      ) {
-        foundedMembers.push(memberList[i]);
-      }
-    }
-
-    const html = foundedMembers.map((elm, i) => (
-      <div key={`found-member-${i}`}>
-        <a href={`/userprofile/${elm._id}`} target="_blank" rel="noreferrer">
-          <input
-            type="text"
-            className="task-resouces-input"
-            value={`${elm.firstName} ${elm.lastName}`}
-            disabled
-          />
-        </a>
-        <button
-          data-tip="Add this member"
-          className="task-resouces-btn"
-          type="button"
-          onClick={() => addResources(elm._id, elm.firstName, elm.lastName, elm.profilePic)}
-        >
-          <i className="fa fa-plus" aria-hidden="true" />
-        </button>
-      </div>
-    ));
-    setfoundMembersHTML(html);
-  };
 
   const removeResource = userID => {
     const removeIndex = resourceItems.map(item => item.userID).indexOf(userID);
@@ -233,6 +200,13 @@ const EditTaskModal = props => {
 
   // helper for updating task
   const updateTask = () => {
+
+    let newDeadlineCount = deadlineCount
+    if (thisTask?.estimatedHours !== hoursEstimate) {
+      newDeadlineCount = deadlineCount + 1
+      setDeadlineCount(newDeadlineCount);
+    }
+
     const updatedTask = {
       taskName,
       priority,
@@ -243,6 +217,7 @@ const EditTaskModal = props => {
       hoursWorst: parseFloat(hoursWorst),
       hoursMost: parseFloat(hoursMost),
       estimatedHours: parseFloat(hoursEstimate),
+      deadlineCount: parseFloat(newDeadlineCount),
       startedDatetime: startedDate,
       dueDatetime: dueDate,
       links,
@@ -260,6 +235,7 @@ const EditTaskModal = props => {
     if (props.tasks.error === 'none') {
       toggle();
     }
+    window.location.reload();
   };
 
   const handleAssign = value => {
@@ -642,17 +618,17 @@ const EditTaskModal = props => {
         {canUpdateTask || canSuggestTask ? (
           <ModalFooter>
             {taskName !== '' && startedDate !== '' && dueDate !== '' ? (
-              <Button color="primary" onClick={updateTask}>
+              <Button color="primary" onClick={updateTask} style={boxStyle}>
                 Update
               </Button>
             ) : null}
-            <Button color="secondary" onClick={toggle}>
+            <Button color="secondary" onClick={toggle} style={boxStyle}>
               Cancel
             </Button>
           </ModalFooter>
         ) : null}
       </Modal>
-      <Button color="primary" size="sm" onClick={toggle}>
+      <Button color="primary" size="sm" onClick={toggle} style={boxStyle}>
         {canUpdateTask ? 'Edit' : canSuggestTask ? 'Suggest' : 'View'}
       </Button>
     </div>

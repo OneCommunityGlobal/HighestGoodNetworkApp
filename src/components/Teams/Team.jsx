@@ -3,6 +3,7 @@ import './Team.css';
 import { DELETE } from '../../languages/en/ui';
 import TeamTable from '../Reports/TeamTable';
 import hasPermission from 'utils/permissions';
+import { boxStyle } from 'styles';
 
 const Team = props => {
   const canDeleteTeam = hasPermission('deleteTeam');
@@ -21,6 +22,7 @@ const Team = props => {
             ? props.onStatusClick(props.name, props.teamId, props.active)
             : null;
         }}
+        style={boxStyle}
       >
         {props.active ? (
           <div className="isActive">
@@ -52,6 +54,7 @@ const Team = props => {
               onClick={() => {
                 props.onEditTeam(props.name, props.teamId, props.active);
               }}
+              style={boxStyle}
             >
               Edit
             </button>
@@ -63,6 +66,7 @@ const Team = props => {
               onClick={() => {
                 props.onDeleteClick(props.name, props.teamId, props.active);
               }}
+              style={boxStyle}
             >
               {DELETE}
             </button>

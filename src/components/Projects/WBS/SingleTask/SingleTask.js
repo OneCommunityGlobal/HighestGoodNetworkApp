@@ -18,6 +18,7 @@ import * as Message from '../../../../languages/en/messages';
 import { getPopupById } from '../../../../actions/popupEditorAction';
 import { TASK_DELETE_POPUP_ID } from '../../../../constants/popupId';
 import { useHistory } from 'react-router-dom';
+import { boxStyle } from 'styles';
 
 const SingleTask = props => {
   const taskId = props.match.params.taskId;
@@ -61,7 +62,7 @@ const SingleTask = props => {
           <nav aria-label="breadcrumb">
             <ol className="breadcrumb">
               <NavItem tag={Link} to={`/wbs/samefoldertasks/${taskId}`}>
-                <Button type="button" className="btn btn-secondary">
+                <Button type="button" className="btn btn-secondary" style={boxStyle}>
                   <i className="fa fa-chevron-circle-left" aria-hidden="true"></i>
                 </Button>
               </NavItem>
@@ -138,13 +139,16 @@ const SingleTask = props => {
                     mother={task.mother}
                     level={task.level}
                   />
-                  {user.role === "Volunteer" ? ("") : (
+                  {user.role === 'Volunteer' ? (
+                    ''
+                  ) : (
                     <>
                       <Button
                         type="button"
                         size="sm"
                         className="btn btn-danger"
                         onClick={() => showUpDeleteModal()}
+                        style={boxStyle}
                       >
                         Delete <i className="fa fa-trash" aria-hidden="true"></i>
                       </Button>
@@ -152,7 +156,9 @@ const SingleTask = props => {
                         isOpen={modalDelete}
                         closeModal={() => setModalDelete(false)}
                         confirmModal={() => deleteTask(task._id, task.mother)}
-                        modalMessage={props.popupEditor.currPopup.popupContent || 'DELETE THIS TASK ?'}
+                        modalMessage={
+                          props.popupEditor.currPopup.popupContent || 'DELETE THIS TASK ?'
+                        }
                         modalTitle={Message.CONFIRM_DELETION}
                       />
                     </>
@@ -190,7 +196,7 @@ const SingleTask = props => {
                             </a>
                           );
                         }
-                      } catch (err) { }
+                      } catch (err) {}
                     })}
                 </td>
                 <td>

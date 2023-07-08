@@ -22,6 +22,7 @@ import UserSearchPanel from './UserSearchPanel';
 import NewUserPopup from './NewUserPopup';
 import ActivationDatePopup from './ActivationDatePopup';
 import { UserStatus, UserDeleteType, FinalDay } from '../../utils/enums';
+import hasPermission, { deactivateOwnerPermission } from '../../utils/permissions';
 import DeleteUserPopup from './DeleteUserPopup';
 import ActiveInactiveConfirmationPopup from './ActiveInactiveConfirmationPopup';
 import { Container } from 'reactstrap';
@@ -324,6 +325,21 @@ class UserManagement extends React.PureComponent {
    * Callback to trigger on the status (active/inactive) column click to show the confirmaton change the status
    */
   onActiveInactiveClick = user => {
+    const authRole = this.props.state.auth.user.role;
+    const userPermissions = this.props.state.auth.user?.permissions?.frontPermisssion;
+    const { roles } = this.props.state.role;
+    const canChangeUserStatus = hasPermission(authRole, 'changeUserStatus', roles, userPermissions);
+    if (!canChangeUserStatus) {
+      //permission to change the status of any user on the user profile page or User Management Page.
+      //By default only Admin and Owner can access the user management page and they have this permission.
+      alert('You are not authorized to change the active status.');
+      return;
+    }
+    if (deactivateOwnerPermission(user, authRole)) {
+      //Owner user cannot be deactivated by another user that is not an Owner.
+      alert('You are not authorized to deactivate an owner.');
+      return;
+    }
     this.setState({
       activeInactivePopupOpen: true,
       selectedUser: user,

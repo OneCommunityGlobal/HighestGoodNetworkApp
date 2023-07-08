@@ -18,4 +18,8 @@ const hasPermission = (action) => {
   return false;
 };
 
+export const deactivateOwnerPermission = (user, authRole) => {
+  return user.role === 'Owner' && user.isActive && authRole !== 'Owner';
+};
+
 export default hasPermission;

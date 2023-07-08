@@ -10,7 +10,7 @@ import {
   USER_DELETE_OPTION_HEADING,
 } from '../../languages/en/messages';
 import { CLOSE } from '../../languages/en/ui';
-
+import { boxStyle } from 'styles';
 /**
  * Modal popup to delete the user profile
  */
@@ -31,6 +31,7 @@ const DeleteUserPopup = React.memo(props => {
             onClick={() => {
               props.onDelete(UserDeleteType.HardDelete);
             }}
+            style={boxStyle}
           >
             {USER_DELETE_DATA_FOREVER}
           </Button>
@@ -40,6 +41,7 @@ const DeleteUserPopup = React.memo(props => {
             onClick={() => {
               props.onDelete(UserDeleteType.Inactive);
             }}
+            style={boxStyle}
           >
             {USER_DELETE_DATA_INACTIVE}
           </Button>
@@ -49,13 +51,14 @@ const DeleteUserPopup = React.memo(props => {
             onClick={() => {
               props.onDelete(UserDeleteType.SoftDelete);
             }}
+            style={boxStyle}
           >
             {USER_DELETE_DATA_ARCHIVE}
           </Button>
         </div>
       </ModalBody>
       <ModalFooter>
-        <Button color="secondary" onClick={closePopup}>
+        <Button color="secondary" onClick={closePopup} style={boxStyle}>
           {CLOSE}
         </Button>
       </ModalFooter>

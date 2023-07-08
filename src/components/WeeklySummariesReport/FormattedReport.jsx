@@ -67,9 +67,18 @@ const FormattedReport = ({ summaries, weekIndex, bioCanEdit }) => {
     }
 
     const summaryText = summary?.weeklySummaries[weekIndex]?.summary;
-
+    let summaryDate = moment()
+      .tz('America/Los_Angeles')
+      .endOf('week')
+      .subtract(weekIndex, 'week')
+      .format('YYYY-MMM-DD');
+    let summaryDateText = `Weekly Summary (${summaryDate}):`;
     const summaryContent = (() => {
       if (summaryText) {
+        summaryDate = moment(summary.weeklySummaries[weekIndex]?.uploadDate)
+          .tz('America/Los_Angeles')
+          .format('YYYY-MMM-DD');
+        summaryDateText = `Summary Submitted On (${summaryDate}):`;
         const style = {};
         switch (summary?.weeklySummaryOption) {
           case 'Team':
@@ -102,11 +111,7 @@ const FormattedReport = ({ summaries, weekIndex, bioCanEdit }) => {
     return (
       <>
         <p>
-          <b>Weekly Summary</b> (
-          {moment(summary.weeklySummaries[weekIndex]?.dueDate)
-            .tz('America/Los_Angeles')
-            .format('YYYY-MMM-DD')}
-          ):
+          <b>{summaryDateText}</b>
         </p>
         {summaryContent}
       </>
@@ -114,12 +119,23 @@ const FormattedReport = ({ summaries, weekIndex, bioCanEdit }) => {
   };
 
   const getTotalValidWeeklySummaries = summary => {
-    return (
-      <p style={summary.weeklySummariesCount === 8 ? { color: 'blue' } : {}}>
-        <b>Total Valid Weekly Summaries:</b>{' '}
-        {summary.weeklySummariesCount || 'No valid submissions yet!'}
-      </p>
-    );
+    if (summary.weeklySummariesCount === 8) {
+      return (
+        <p style={{ color: 'blue' }}>
+          <b>Total Valid Weekly Summaries:</b>{' '}
+          {summary.weeklySummariesCount || 'No valid submissions yet!'}
+        </p>
+      );
+    } else {
+      return (
+        <p>
+          <b style={summary.weeklySummaryOption === 'Team' ? { color: 'magenta' } : {}}>
+            Total Valid Weekly Summaries:
+          </b>{' '}
+          {summary.weeklySummariesCount || 'No valid submissions yet!'}
+        </p>
+      );
+    }
   };
 
   const handleGoogleDocClick = googleDocLink => {
@@ -155,12 +171,14 @@ const FormattedReport = ({ summaries, weekIndex, bioCanEdit }) => {
     }
   };
 
-  const bioSwitch = (userId, bioPosted) => {
+  const bioSwitch = (userId, bioPosted, weeklySummaryOption) => {
     const [bioStatus, setBioStatus] = useState(bioPosted);
     return (
       <div>
         <div className="bio-toggle">
-          <b>Bio announcement:</b>
+          <b style={weeklySummaryOption === 'Team' ? { color: 'magenta' } : {}}>
+            Bio announcement:
+          </b>
         </div>
         <div className="bio-toggle">
           <ToggleSwitch
@@ -176,10 +194,10 @@ const FormattedReport = ({ summaries, weekIndex, bioCanEdit }) => {
     );
   };
 
-  const bioLabel = (userId, bioPosted) => {
+  const bioLabel = (userId, bioPosted, weeklySummaryOption) => {
     return (
       <div>
-        <b>Bio announcement:</b>
+        <b style={weeklySummaryOption === 'Team' ? { color: 'magenta' } : {}}>Bio announcement:</b>
         {bioPosted === 'default'
           ? ' Not requested/posted'
           : bioPosted === 'posted'
@@ -243,11 +261,14 @@ const FormattedReport = ({ summaries, weekIndex, bioCanEdit }) => {
               {' '}
               <b>Media URL:</b> {getMediaUrlLink(summary)}
             </div>
-            {bioFunction(summary._id, summary.bioPosted)}
+            {bioFunction(summary._id, summary.bioPosted, summary.weeklySummaryOption)}
             {getTotalValidWeeklySummaries(summary)}
             {hoursLogged >= summary.weeklycommittedHours && (
               <p>
-                <b>Hours logged:</b> {hoursLogged.toFixed(2)} / {summary.weeklycommittedHours}
+                <b style={summary.weeklySummaryOption === 'Team' ? { color: 'magenta' } : {}}>
+                  Hours logged:
+                </b>
+                {hoursLogged.toFixed(2)} / {summary.weeklycommittedHours}
               </p>
             )}
             {hoursLogged < summary.weeklycommittedHours && (

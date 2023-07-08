@@ -13,6 +13,7 @@ import {
 import PropTypes from 'prop-types';
 import hasPermission from '../../../utils/permissions';
 import styles from './EditLinkModal.css';
+import { boxStyle } from 'styles';
 
 const EditLinkModal = props => {
   const { isOpen, closeModal, updateLink, userProfile, setChanged, role } = props;
@@ -266,10 +267,11 @@ const EditLinkModal = props => {
               updateLink(personalLinks, adminLinks);
               closeModal();
             }}
+            style={boxStyle}
           >
             Update
           </Button>
-          <Button color="primary" onClick={closeModal}>
+          <Button color="primary" onClick={closeModal} style={boxStyle}>
             Cancel
           </Button>
         </ModalFooter>
