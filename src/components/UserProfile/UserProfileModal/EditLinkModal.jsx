@@ -88,6 +88,8 @@ const EditLinkModal = props => {
     userProfile.adminLinks,
   );
 
+  const [googleLinkURL, setGoogleLinkURL] = useState(adminLinks.find(x => x.Link.includes('google'))?.Link || '');
+  const [dropLinkURL, setDropLinkURL] = useState(adminLinks.find(x => x.Link.includes('dropbox'))?.Link || '');
   return (
     <React.Fragment>
       <Modal isOpen={isOpen} toggle={closeModal}>
@@ -157,9 +159,9 @@ const EditLinkModal = props => {
                      <input 
                     className='customEdit'
                     id='linkURL1'
-                    value={adminLinks.find(x=>x.Link.indexOf('google')>-1)?adminLinks.find(x=>x.Link.indexOf('google')>-1).Link:""}
+                    value={googleLinkURL}
                     placeholder='enter Google Doc link'
-                    onChange={e=> setAdminLinkURL(e.target.value.trim())}
+                    onChange={e=> {setGoogleLinkURL(e.target.value.trim());}}
                     />
                   </div>
                   <div style={{ display: 'flex', margin: '5px' }} className="link-fields">
@@ -174,9 +176,9 @@ const EditLinkModal = props => {
                      <input 
                     className='customEdit'
                     id="linkURL2"
-                    value={adminLinks.find(x=>x.Link.indexOf('dropbox')>-1)?adminLinks.find(x=>x.Link.indexOf('dropbox')>-1).Link:""}
+                    value={dropLinkURL}
                     placeholder='enter Dropbox link'
-                    onChange={e=> setAdminLinkURL(e.target.value.trim())}
+                    onChange={e=> setDropLinkURL(e.target.value.trim())}
                     />
                   </div>
                     <div style={{ display: 'flex', margin: '5px' }}>
