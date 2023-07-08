@@ -454,5 +454,3 @@ const handleRemoveGoal = useCallback((time) => {
     </div>
   );
 };
-
-export default NewTimer;
