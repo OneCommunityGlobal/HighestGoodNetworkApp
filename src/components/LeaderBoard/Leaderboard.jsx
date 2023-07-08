@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom';
 import { Table, Progress, Modal, ModalBody, ModalFooter, ModalHeader, Button } from 'reactstrap';
 import Alert from 'reactstrap/lib/Alert';
 import { hasLeaderboardPermissions, assignStarDotColors, showStar } from 'utils/leaderboardPermissions';
+import hasPermission from 'utils/permissions';
 
 function useDeepEffect(effectFunc, deps) {
   const isFirst = useRef(true);
@@ -31,11 +32,13 @@ const LeaderBoard = ({
   organizationData,
   timeEntries,
   isVisible,
+  roles,
   asUser,
 }) => {
   const userId = asUser ? asUser : loggedInUser.userId;
-  const isAdmin = ['Owner', 'Administrator', 'Core Team'].includes(loggedInUser.role);
-
+  const userPermissions = loggedInUser.permissions?.frontPermissions;
+  const hasSummaryIndicatorPermission = hasPermission(loggedInUser.role, 'seeSummaryIndicator', roles, userPermissions);
+  const hasVisibilityIconPermission = hasPermission(loggedInUser.role, 'seeVisibilityIcon', roles, userPermissions);
   useDeepEffect(() => {
     getLeaderboardData(userId);
     getOrgData();
@@ -245,7 +248,7 @@ const LeaderBoard = ({
                       </ModalFooter>
                     </Modal>
                   </div>
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: isAdmin ? 'space-between' : 'center' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: hasSummaryIndicatorPermission ? 'space-between' : 'center' }}>
 
                   {/* <Link to={`/dashboard/${item.personId}`}> */}
                   <div onClick={() => dashboardToggle(item)}>
@@ -279,7 +282,7 @@ const LeaderBoard = ({
                     }
                   </div>
                   {
-                    isAdmin && item.hasSummary && 
+                    hasSummaryIndicatorPermission && item.hasSummary && 
                     <div
                       title={`Weekly Summary Submitted`}
                       style={{
@@ -298,7 +301,7 @@ const LeaderBoard = ({
                     {item.name}
                   </Link>
                   &nbsp;&nbsp;&nbsp;
-                  {isAdmin && !item.isVisible && <i className="fa fa-eye-slash" title="User is invisible"></i>}
+                  {hasVisibilityIconPermission && !item.isVisible && <i className="fa fa-eye-slash" title="User is invisible"></i>}
                 </th>
                 <td className="align-middle" id={`id${item.personId}`}>
                   <span title="Tangible time">{item.tangibletime}</span>

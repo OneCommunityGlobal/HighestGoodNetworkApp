@@ -73,7 +73,9 @@ function RolePermissions(props) {
     'Only Assign Blue Squares' : 'Gives the user permission to add blue squares to any user.',
     'See Permissions Management Tab' : 'Gives the user permission to access the Permissions Management tab.',
     'Submit Weekly Summary For Others' : 'Gives the user permission to submit weekly summary for another user',
-    'Change the Bio Announcement Status' : 'GIves the user permission to change the annoucement status'
+    'Change the Bio Announcement Status' : 'GIves the user permission to change the annoucement status',
+    'See Summary Indicator' : 'Gives the user permission to see summary indicator on leaderboard.',
+    'See Visibility Icon' : 'Gives the user permission to see visibility icon on leaderboard.',
   }
 
   const [permissions, setPermissions] = useState(mapPermissionToLabel(props.permissions));
