@@ -122,7 +122,7 @@ const TimeEntry = ({ data, displayYear, userProfile }) => {
             type="checkbox"
             name="isTangible"
             checked={data.isTangible}
-            disabled={!canEditTimeHistory}
+            disabled={!canEdit}
             onChange={() => toggleTangibility(data)}
           />
         </Col>

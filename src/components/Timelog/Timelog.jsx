@@ -77,6 +77,7 @@ const Timelog = props => {
   //Main Function component
   const canPutUserProfileImportantInfo = hasPermission('putUserProfileImportantInfo');
   const canEditTimeEntry = hasPermission('editTimeEntry');
+  const userPermissions = props.auth.user?.permissions?.frontPermissions;
 
   //access the store states
   const auth = useSelector(state => state.auth);
