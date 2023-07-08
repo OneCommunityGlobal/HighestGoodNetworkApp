@@ -312,10 +312,10 @@ const TimeEntryForm = props => {
       //Get category
       const category = foundProject
         ? foundProject.category.toLowerCase()
-        : foundTask.classification.toLowerCase();
+        : foundTask.category.toLowerCase();
 
       //update hours
-      const isFindCategory = Object.keys(hoursByCategory).find(key => key === category);
+      const isFindCategory = Object.keys(hoursByCategory).find(key => key === category && key !== 'unassigned');
       if (isFindCategory) {
         hoursByCategory[category] += volunteerTime;
       } else {
@@ -370,8 +370,8 @@ const TimeEntryForm = props => {
 
     category = foundProject
       ? foundProject.category.toLowerCase()
-      : foundTask?.classification.toLowerCase();
-    const isFindCategory = Object.keys(hoursByCategory).find(key => key === category);
+      : foundTask?.category.toLowerCase();
+    const isFindCategory = Object.keys(hoursByCategory).find(key => key === category && key !== 'unassigned');
 
     //if change timeEntry from intangible to tangible, we need add hours on categories
     if (oldIsTangible === 'false' && currIsTangible === 'true') {
