@@ -34,6 +34,7 @@ export const NewTimer = () => {
   const [previewTimer, setPreviewTimer] = useState(0);
   const [remainingTime, setRemainingTime] = useState(0);
   const [elapsedTime, setElapsedTime] = useState(0);
+  const [prevLogModal, setPrevLogModal] = useState(false);
   const [initialRender, setInitialRender] = useState(true);
 
   const data = {
@@ -138,7 +139,8 @@ export const NewTimer = () => {
     sendMessage(action.CLEAR_TIMER); 
     setRemainingTime(0); // Reset the remaining time to 0
   }, [sendMessage]);
- 
+  const handleSwitch = useCallback(() => sendMessage(action.SWITCH_MODE), [sendMessage]);
+  const handleGetTimer = useCallback(() => sendMessage(action.GET_TIMER), [sendMessage]);
   const handleSetGoal = useCallback(time => sendMessage(action.SET_GOAL.concat(time)), [sendMessage]);
   const handleAddGoal = useCallback(time => {
   sendMessage(action.ADD_GOAL.concat(time));
@@ -226,10 +228,14 @@ const handleRemoveGoal = useCallback((time) => {
   }, []);
 
   useEffect(() => {
-    if (!initialRender  && logModal) {
+    if (!initialRender && prevLogModal && !logModal) {
+      handleStart();
+    }
+    if (!initialRender && !prevLogModal && logModal) {
       handlePause();
     }
-  }, [logModal,  initialRender]);
+    setPrevLogModal(logModal);
+  }, [logModal, prevLogModal, initialRender]);
 
   useEffect(() => {
     setInitialRender(false);
