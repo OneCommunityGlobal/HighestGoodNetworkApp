@@ -35,6 +35,7 @@ const LeaderBoard = ({
 }) => {
   const userId = asUser ? asUser : loggedInUser.userId;
   const isAdmin = ['Owner', 'Administrator', 'Core Team'].includes(loggedInUser.role);
+  const isOwner = ['Owner'].includes(loggedInUser.role);
 
   useDeepEffect(() => {
     getLeaderboardData(userId);
@@ -131,6 +132,17 @@ const LeaderBoard = ({
       'Popup',
       'toolbar=no, location=no, statusbar=no, menubar=no, scrollbars=1, resizable=0, width=580, height=600, top=30',
     );
+  };
+
+  //add mouseover text for the time numbers and I want to the mouseover text can be editable by owner class
+  const totalTimeMouseoverText = item => {
+    if (item.totaltime === 0) {
+      return 'No time logged yet';
+    } else if (item.totalintangibletime_hrs !== 0) {
+      return `${item.totaltime} hours logged (${item.totalintangibletime_hrs} intangible)`;
+    } else {
+      return `${item.totaltime} hours logged`;
+    }
   };
 
   return (
@@ -312,7 +324,10 @@ const LeaderBoard = ({
                   </Link>
                 </td>
                 <td className="align-middle">
-                  <span title="Total time">{item.totaltime}</span>
+                  <span 
+                  title={totalTimeMouseoverText(item)}
+                  className={ item.totalintangibletime_hrs > 0 ? 'boldClass' : null }
+                  >{item.totaltime}</span> 
                 </td>
               </tr>
             ))}
