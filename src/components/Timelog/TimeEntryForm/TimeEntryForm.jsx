@@ -308,12 +308,15 @@ const TimeEntryForm = props => {
       const foundTask = tasks.find(task => task._id === projectId);
 
       //Get category
-      const category = foundProject
-        ? foundProject.category.toLowerCase()
-        : foundTask.classification.toLowerCase();
+      
+      let category = '';
+      if (foundProject && foundProject.category) {
+        category = foundProject.category.toLowerCase();
+      } else if (foundTask && foundTask.classification) {
+        category = foundTask.classification.toLowerCase();
+      }
 
-      //update hours
-      const isFindCategory = Object.keys(hoursByCategory).find(key => key === category);
+      const isFindCategory = Object.prototype.hasOwnProperty.call(hoursByCategory, category);
       if (isFindCategory) {
         hoursByCategory[category] += volunteerTime;
       } else {
