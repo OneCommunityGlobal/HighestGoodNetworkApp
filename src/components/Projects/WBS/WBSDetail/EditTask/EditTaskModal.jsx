@@ -69,8 +69,8 @@ const EditTaskModal = props => {
   const [hoursMost, setHoursMost] = useState(thisTask?.hoursMost);
   // hour estimate
   const [hoursEstimate, setHoursEstimate] = useState(thisTask?.estimatedHours);
-  //deadline count 
-  const [deadlineCount, setDeadlineCount] = useState(thisTask?.deadlineCount)
+  //deadline count
+  const [deadlineCount, setDeadlineCount] = useState(thisTask?.deadlineCount);
   // hours warning
   const [hoursWarning, setHoursWarning] = useState(false);
 
@@ -201,10 +201,9 @@ const EditTaskModal = props => {
 
   // helper for updating task
   const updateTask = () => {
-
-    let newDeadlineCount = deadlineCount
+    let newDeadlineCount = deadlineCount;
     if (thisTask?.estimatedHours !== hoursEstimate) {
-      newDeadlineCount = deadlineCount + 1
+      newDeadlineCount = deadlineCount + 1;
       setDeadlineCount(newDeadlineCount);
     }
 

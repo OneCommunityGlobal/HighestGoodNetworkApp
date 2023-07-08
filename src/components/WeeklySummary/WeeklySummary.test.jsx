@@ -17,7 +17,7 @@ describe('WeeklySummary page', () => {
         updateWeeklySummaries: jest.fn(),
         loading: true,
         summaries: weeklySummaryMockData1,
-        authUser: {role:''},
+        authUser: { role: '' },
         roles: [],
       };
 
@@ -33,7 +33,7 @@ describe('WeeklySummary page', () => {
         fetchError: { message: 'SOME ERROR CONNECTING!!!' },
         loading: false,
         summaries: weeklySummaryMockData1,
-        authUser: {role:''},
+        authUser: { role: '' },
         roles: [],
       };
       render(<WeeklySummary {...props} />);
@@ -51,7 +51,7 @@ describe('WeeklySummary page', () => {
       updateWeeklySummaries: jest.fn(),
       loading: false,
       summaries: weeklySummaryMockData1,
-      authUser: {role:''},
+      authUser: { role: '' },
       roles: [],
     };
 
@@ -66,7 +66,7 @@ describe('WeeklySummary page', () => {
         updateWeeklySummaries: jest.fn(),
         loading: false,
         summaries: {},
-        authUser: {role:''},
+        authUser: { role: '' },
         roles: [],
       };
 
@@ -130,7 +130,7 @@ describe('WeeklySummary page', () => {
       updateWeeklySummaries: jest.fn(),
       loading: false,
       summaries: weeklySummaryMockData1,
-      authUser: {role:''},
+      authUser: { role: '' },
       roles: [],
     };
 
@@ -138,7 +138,7 @@ describe('WeeklySummary page', () => {
       render(<WeeklySummary {...props} />);
     });
 
-    const testTooltip = async (testId) => {
+    const testTooltip = async testId => {
       const tooltipIcon = await waitFor(() => screen.getByTestId(testId));
       expect(screen.queryByRole('tooltip')).not.toBeInTheDocument();
       userEvent.hover(tooltipIcon);
@@ -166,7 +166,7 @@ describe('WeeklySummary page', () => {
       updateWeeklySummaries: jest.fn(),
       loading: false,
       summaries: {},
-      authUser: {role:''},
+      authUser: { role: '' },
       roles: [],
     };
 
@@ -179,31 +179,31 @@ describe('WeeklySummary page', () => {
         // const labelText = screen.getByLabelText(/Link to your media files/i);
         // await userEvent.type(labelText, 'h');
         // expect(labelText).toHaveAttribute('value', 'h');
-        const input = screen.getByTestId('media-input')
-        fireEvent.change(input, {target: {value: 'u'}})
+        const input = screen.getByTestId('media-input');
+        fireEvent.change(input, { target: { value: 'u' } });
         //will pop up one modal ->click confirm
         fireEvent.click(screen.getByText('Confirm'));
         //then type the content
-        fireEvent.change(input, {target: {value: 'u'}})
-        expect(input.value).toBe('u')
+        fireEvent.change(input, { target: { value: 'u' } });
+        expect(input.value).toBe('u');
       });
       it('should display an error message on invalid URL and remove the error message when the user types in a valid URL', async () => {
         // const labelText = screen.getByLabelText(/Link to your media files/i);
         // await userEvent.type(labelText, 'h');
         // expect(labelText).toHaveAttribute('value', 'h');
         // Display and error message.
-        const input = screen.getByTestId('media-input')
+        const input = screen.getByTestId('media-input');
         // const { queryByText } = render(<Modal/>);
-        fireEvent.change(input, {target: {value: 'h'}})
+        fireEvent.change(input, { target: { value: 'h' } });
         //will pop up one modal ->click confirm
         fireEvent.click(screen.getByText('Confirm'));
         //then type the content
-        fireEvent.change(input, {target: {value: 'h'}})
-        expect(input.value).toBe('h')
+        fireEvent.change(input, { target: { value: 'h' } });
+        expect(input.value).toBe('h');
         const mediaUrlError = screen.getByText(/"Media URL" must be a valid uri/i);
         expect(mediaUrlError).toBeInTheDocument();
         // Remove the error message when the URL is valid.
-        fireEvent.change(input, {target: {value: 'https://www.example.com/'}})
+        fireEvent.change(input, { target: { value: 'https://www.example.com/' } });
         // await userEvent.type(labelText, 'https://www.example.com/');
         expect(mediaUrlError).not.toBeInTheDocument();
       });
@@ -245,12 +245,12 @@ describe('WeeklySummary page', () => {
         expect(saveButton).toBeDisabled();
         // Enable the button
         // provide media URL
-        const input = screen.getByTestId('media-input')
+        const input = screen.getByTestId('media-input');
         // const { queryByText } = render(<Modal/>);
-        fireEvent.change(input, {target: {value: 'u'}})
+        fireEvent.change(input, { target: { value: 'u' } });
         //will pop up one modal ->click confirm
         fireEvent.click(screen.getByText('Confirm'));
-        fireEvent.change(input, {target: {value:'https://www.example.com/'}})
+        fireEvent.change(input, { target: { value: 'https://www.example.com/' } });
         // const labelText = screen.getByLabelText(/Link to your media files/i);
         // await userEvent.type(labelText, 'https://www.example.com/');
         // check off the media URL concent checkbox
