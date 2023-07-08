@@ -10,7 +10,7 @@ const url = ENDPOINTS.USER_PROFILE(':userId');
 
 const weeklySummariesMockData = {
   weeklySummariesCount: 1,
-  weeklySummaries: [{ _id: '1', dueDate: '1', summary: 'a' }],
+  weeklySummaries: [{ _id: '1', dueDate: '1', summary: 'a', uploadDate: '1' }],
   mediaUrl: 'u',
 };
 
@@ -37,7 +37,7 @@ describe('WeeklySummary Redux related actions', () => {
 
       expect(wSummariesSlice().summaries).toHaveProperty('mediaUrl', 'u');
       expect(wSummariesSlice().summaries).toHaveProperty('weeklySummaries', [
-        { _id: '1', dueDate: '1', summary: 'a' },
+        { _id: '1', dueDate: '1', summary: 'a', uploadDate: '1' },
       ]);
       expect(wSummariesSlice().summaries).toHaveProperty('weeklySummariesCount', 1);
     });
