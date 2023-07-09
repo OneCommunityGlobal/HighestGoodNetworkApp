@@ -2,7 +2,6 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 
 const UserLinks = ({
-  // eslint-disable-next-line react/prop-types
   links = [],
 }) => (
   <>
