@@ -99,7 +99,6 @@ export class WeeklySummary extends Component {
     mediaChangeConfirm: false,
     moveSelect: '-1',
     movePopup: false,
-    moveConfirm: false,
   };
 
   async componentDidMount() {
@@ -138,13 +137,16 @@ export class WeeklySummary extends Component {
     // and then setting the due date to the end of the ISO week (Saturday) for each respective week
     const dueDateLastWeek = moment(dueDate)
       .subtract(1, 'weeks')
-      .toISOString();
+      .startOf('isoWeek')
+      .add(5, 'days');
     const dueDateBeforeLast = moment(dueDate)
       .subtract(2, 'weeks')
-      .toISOString();
+      .startOf('isoWeek')
+      .add(5, 'days');
     const dueDateThreeWeeksAgo = moment(dueDate)
       .subtract(3, 'weeks')
-      .toISOString();
+      .startOf('isoWeek')
+      .add(5, 'days');
 
     const uploadDateXWeeksAgo = x => {
       const summaryList = [summary, summaryLastWeek, summaryBeforeLast, summaryThreeWeeksAgo];
@@ -396,8 +398,8 @@ export class WeeklySummary extends Component {
     //Move or not, if did move, update the newformElements
     const moveSelect = this.state.moveSelect;
     const activeTab = this.state.activeTab;
-    const moveConfirm = this.state.moveConfirm;
-    if (moveConfirm){
+
+    if (moveSelect !== '-1' && moveSelect !== activeTab){
       newformElements = this.handleMove();
     }
     // Define summaries, updateDates for easier reference
@@ -411,18 +413,18 @@ export class WeeklySummary extends Component {
     if (diffInSubmittedCount !== 0) {
       this.setState({ summariesCountShowing: newformElements.weeklySummariesCount + 1 });
     }
-    const updateSummary = (summary, uploadDate, dueDate) => {
+    const updateSummary = (summary, uploadDate) => {
       if (newformElements[summary] !== newOriginSummaries[summary]) {
         newOriginSummaries[summary] = newformElements[summary];
-        newUploadDatesElements[uploadDate] = newformElements[summary] == '' ? dueDate : submittedDate;
+        newUploadDatesElements[uploadDate] = submittedDate;
         this.setState({ formElements: newformElements, uploadDatesElements: newUploadDatesElements, originSummaries: newOriginSummaries });
       }
     };
     // Loop through summaries and update state variables
     for (let i = 0; i < summaries.length; i++) {
-      updateSummary(summaries[i], uploadDates[i], dueDates[i]);
+      updateSummary(summaries[i], uploadDates[i]);
     }
-
+    
     // Construct the modified weekly summaries
     const modifiedWeeklySummaries = {
       mediaUrl: newformElements.mediaUrl.trim(),
@@ -440,62 +442,38 @@ export class WeeklySummary extends Component {
       modifiedWeeklySummaries,
     );
   }
-  // Updates user profile and weekly summaries 
-  updateUserData = async userId => {
-    await this.props.getUserProfile(userId);
-    await this.props.getWeeklySummaries(userId);
-  }
-  // Handler for success scenario after save
-  handleSaveSuccess = async (toastIdOnSave) => {
-    toast.success('✔ The data was saved successfully!', {
-      toastId: toastIdOnSave,
-      pauseOnFocusLoss: false,
-      autoClose: 3000,
-    });
-    await this.updateUserData(this.props.asUser || this.props.currentUser.userid);
-  }
-  // Handler for error scenario after save
-  handleSaveError = (toastIdOnSave) => {
-    toast.error('✘ The data could not be saved!', {
-      toastId: toastIdOnSave,
-      pauseOnFocusLoss: false,
-      autoClose: 3000,
-    });
-  }
-
-  // Main save handler, used by both handleMoveSave and handleSave
-  mainSaveHandler = async (closeAfterSave) => {
-    const toastIdOnSave = 'toast-on-save';
-    const errors = this.validate();
-
-    this.setState({ errors: errors || {} });
-    if (errors) this.state.moveConfirm = false;
-    if (errors) return;
-
-    const updateWeeklySummaries = this.handleChangeInSummary();
-    let saveResult;
-    if (updateWeeklySummaries) {
-      saveResult = await updateWeeklySummaries();
-    }
-
-    if (saveResult === 200) {
-      await this.handleSaveSuccess(toastIdOnSave);
-      if (closeAfterSave) {
-        this.handleClose();
-      }
-    } else {
-      this.handleSaveError(toastIdOnSave);
-    }
-  }
 
   handleMoveSave = async event => {
     if (event) {
       event.preventDefault();
     }
-    this.state.moveConfirm = true;
-    this.mainSaveHandler(false);
-    if(this.state.moveConfirm){
-      this.toggleTab(this.state.moveSelect);
+    // Providing a custom toast id to prevent duplicate.
+    const toastIdOnSave = 'toast-on-save';
+    //error detect
+    const errors = this.validate();
+    this.setState({ errors: errors || {} });
+    if (errors) return;
+    //get updated summary
+    const updateWeeklySummaries = this.handleChangeInSummary();
+    let saveResult;
+    if (updateWeeklySummaries) {
+      saveResult = await updateWeeklySummaries();
+    }
+    this.toggleTab(this.state.moveSelect);
+    if (saveResult === 200) {
+      toast.success('✔ The data was saved successfully!', {
+        toastId: toastIdOnSave,
+        pauseOnFocusLoss: false,
+        autoClose: 3000,
+      });
+      this.props.getUserProfile(this.props.asUser || this.props.currentUser.userid);
+      this.props.getWeeklySummaries(this.props.asUser || this.props.currentUser.userid);
+    } else {
+      toast.error('✘ The data could not be saved!', {
+        toastId: toastIdOnSave,
+        pauseOnFocusLoss: false,
+        autoClose: 3000,
+      });
     }
   }
 
@@ -503,13 +481,38 @@ export class WeeklySummary extends Component {
     if (event) {
       event.preventDefault();
     }
-    this.mainSaveHandler(true);
+    // Providing a custom toast id to prevent duplicate.
+    const toastIdOnSave = 'toast-on-save';
+    //error detect
+    const errors = this.validate();
+    this.setState({ errors: errors || {} });
+    if (errors) return;
+    //get updated summary
+    const updateWeeklySummaries = this.handleChangeInSummary();
+
+    let saveResult;
+    if (updateWeeklySummaries) {
+      saveResult = await updateWeeklySummaries();
+    }
+
+    if (saveResult === 200) {
+      toast.success('✔ The data was saved successfully!', {
+        toastId: toastIdOnSave,
+        pauseOnFocusLoss: false,
+        autoClose: 3000,
+      });
+      this.props.getUserProfile(this.props.asUser || this.props.currentUser.userid);
+      this.props.getWeeklySummaries(this.props.asUser || this.props.currentUser.userid);
+      this.props.setPopup(false);
+    } else {
+      toast.error('✘ The data could not be saved!', {
+        toastId: toastIdOnSave,
+        pauseOnFocusLoss: false,
+        autoClose: 3000,
+      });
+    }
   };
-
-  handleClose = () => {
-    this.props.setPopup(false);
-  }
-
+  
   render() {
     const {
       formElements,
@@ -571,18 +574,11 @@ export class WeeklySummary extends Component {
       <Container fluid={this.props.isModal ? true : false} className="bg--white-smoke py-3 mb-5">
         <h3>Weekly Summaries</h3>
         {/* Before clicking Save button, summariesCountShowing is 0 */}
-        <Row>
-          <Col md="9">
-              Total submitted:{' '}
-              {this.state.summariesCountShowing || this.state.formElements.weeklySummariesCount}
-          </Col>
-          <Col md="3">
-            <Button className="btn--dark-sea-green"
-            onClick={this.handleClose}> 
-            Close this window 
-            </Button>
-          </Col>
-        </Row>
+        <div>
+          Total submitted:{' '}
+          {this.state.summariesCountShowing || this.state.formElements.weeklySummariesCount}
+        </div>
+
         <Form className="mt-4">
           <Nav tabs>
             {Object.values(summariesLabels).map((weekName, i) => {
