@@ -44,7 +44,6 @@
 }
 
 .team-task-progress {
-  position: relative;
   width: 35%;
 }
 
@@ -62,20 +61,6 @@
 
 .team-member-tasks-user-name {
   width: 70%;
-}
-
-.deadlineCount {
-  position: absolute;
-  text-align: center;
-  vertical-align: middle;
-  background: #ff4d4f;
-  border-radius: 40px;
-  color: #fff;
-  height: 25px;
-  font-size: 15px;
-  width: 25px;
-  top: 3px;
-  right: 0;
 }
 
 .team-clocks {
