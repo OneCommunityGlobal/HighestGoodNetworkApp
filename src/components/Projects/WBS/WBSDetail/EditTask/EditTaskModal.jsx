@@ -69,6 +69,8 @@ const EditTaskModal = props => {
   const [hoursMost, setHoursMost] = useState(thisTask?.hoursMost);
   // hour estimate
   const [hoursEstimate, setHoursEstimate] = useState(thisTask?.estimatedHours);
+  //deadline count 
+  const [deadlineCount, setDeadlineCount] = useState(thisTask?.deadlineCount)
   // hours warning
   const [hoursWarning, setHoursWarning] = useState(false);
 
@@ -103,6 +105,7 @@ const EditTaskModal = props => {
     setHoursWorst(thisTask?.hoursWorst);
     setHoursMost(thisTask?.hoursMost);
     setHoursEstimate(thisTask?.estimatedHours);
+    setDeadlineCount(thisTask?.deadlineCount);
     setLinks(thisTask?.links);
     setCategory(thisTask?.category);
     setWhyInfo(thisTask?.whyInfo);
@@ -198,6 +201,13 @@ const EditTaskModal = props => {
 
   // helper for updating task
   const updateTask = () => {
+
+    let newDeadlineCount = deadlineCount
+    if (thisTask?.estimatedHours !== hoursEstimate) {
+      newDeadlineCount = deadlineCount + 1
+      setDeadlineCount(newDeadlineCount);
+    }
+
     const updatedTask = {
       taskName,
       priority,
@@ -208,6 +218,7 @@ const EditTaskModal = props => {
       hoursWorst: parseFloat(hoursWorst),
       hoursMost: parseFloat(hoursMost),
       estimatedHours: parseFloat(hoursEstimate),
+      deadlineCount: parseFloat(newDeadlineCount),
       startedDatetime: startedDate,
       dueDatetime: dueDate,
       links,
@@ -229,6 +240,7 @@ const EditTaskModal = props => {
     if (props.tasks.error === 'none') {
       toggle();
     }
+    window.location.reload();
   };
 
   const handleAssign = value => {
