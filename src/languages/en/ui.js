@@ -50,4 +50,4 @@ export const POPUP_MANAGEMENT = 'Popup Management';
 export const CANCEL = 'Delete Final Day';
 export const SET_FINAL_DAY = 'Set Final Day';
 export const MANAGE_FINAL_DAY = 'Manage Final Day';
-export const SET_UP_NEW_USER = 'Setup New User';
+export const SEND_SETUP_LINK = 'Send Setup Link';
