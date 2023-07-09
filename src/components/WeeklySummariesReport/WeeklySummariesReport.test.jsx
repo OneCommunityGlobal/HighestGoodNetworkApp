@@ -50,8 +50,8 @@ describe('WeeklySummariesReport page', () => {
       jest.clearAllMocks();
     });
 
-    it('should have first tab set to "active" by default', () => {
-      expect(screen.getByTestId('tab-1').classList.contains('active')).toBe(true);
+    it('should have second tab set to "active" by default', () => {
+      expect(screen.getByTestId('tab-2').classList.contains('active')).toBe(true);
     });
 
     it('should make 1st tab active when clicked', () => {

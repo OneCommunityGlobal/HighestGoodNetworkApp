@@ -19,10 +19,6 @@ import checkNegativeNumber from 'utils/checkNegativeHours';
 
 const TimeEntry = ({ data, displayYear, userProfile }) => {
   const [modal, setModal] = useState(false);
-  const [projectName, setProjectName] = useState('');
-  const [projectCategory, setProjectCategory] = useState('');
-  const [taskName, setTaskName] = useState('');
-  const [taskClassification, setTaskClassification] = useState('');
 
   const toggle = () => setModal(modal => !modal);
 
@@ -38,28 +34,25 @@ const TimeEntry = ({ data, displayYear, userProfile }) => {
       .format('YYYY-MM-DD') === data.dateOfWork;
   const role = user.role;
 
+  const canDelete =
+    //permission to Delete time entry from other user's Dashboard
+    hasPermission(role, 'deleteTimeEntryOthers', roles, userPermissions) ||
+    //permission to delete any time entry on their own time logs tab
+    hasPermission(role, 'deleteTimeEntry', roles, userPermissions) ||
+    //default permission: delete own sameday tangible entry
+    (!data.isTangible && isOwner && isSameDay);
+
+  const canEdit =
+    //permission to edit any time log entry (from other user's Dashboard
+    hasPermission(role, 'editTimelogInfo', roles, userPermissions) ||
+    //permission to edit any time entry on their own time logs tab
+    hasPermission(role, 'editTimeEntry', roles, userPermissions) ||
+    //default permission: edit own sameday timelog entry
+    (isOwner && isSameDay);
+
+  const projectCategory = data.category?.toLowerCase() || '';
+  const taskClassification = data.classification?.toLowerCase() || '';
   const dispatch = useDispatch();
-
-  useEffect(() => {
-    axios
-      .get(ENDPOINTS.PROJECT_BY_ID(data.projectId))
-      .then(res => {
-        setProjectCategory(res?.data.category.toLowerCase() || '');
-        setProjectName(res?.data?.projectName || '');
-      })
-      .catch(err => console.log(err));
-  }, []);
-
-  useEffect(() => {
-    axios
-      // Note: Here taskId is stored in projectId since no taskId field in timeEntry schema
-      .get(ENDPOINTS.GET_TASK(data.projectId))
-      .then(res => {
-        setTaskClassification(res?.data?.classification.toLowerCase() || '');
-        setTaskName(res?.data?.taskName || '');
-      })
-      .catch(err => console.log(err));
-  }, []);
 
   const toggleTangibility = () => {
     const newData = {
@@ -72,7 +65,7 @@ const TimeEntry = ({ data, displayYear, userProfile }) => {
     //Update intangible hours property in userprofile
     const formattedHours = parseFloat(data.hours) + parseFloat(data.minutes) / 60;
     const { hoursByCategory } = userProfile;
-    if (projectName) {
+    if (data.projectName) {
       const isFindCategory = Object.keys(hoursByCategory).find(key => key === projectCategory);
       //change tangible to intangible
       if (data.isTangible) {
@@ -124,7 +117,7 @@ const TimeEntry = ({ data, displayYear, userProfile }) => {
             {data.hours}h {data.minutes}m
           </h4>
           <div className="text-muted">Project/Task:</div>
-          <h6> {projectName || taskName} </h6>
+          <h6> {data.projectName || data.taskName} </h6>
           <span className="text-muted">Tangible:&nbsp;</span>
           <input
             type="checkbox"
@@ -138,8 +131,7 @@ const TimeEntry = ({ data, displayYear, userProfile }) => {
           <div className="text-muted">Notes:</div>
           {ReactHtmlParser(data.notes)}
           <div className="buttons">
-            {(hasPermission(role, 'editTimeEntry', roles, userPermissions) ||
-              (isOwner && isSameDay)) && (
+            {canEdit && (
               <span>
                 <FontAwesomeIcon
                   icon={faEdit}
@@ -148,7 +140,7 @@ const TimeEntry = ({ data, displayYear, userProfile }) => {
                   onClick={toggle}
                 />
                 <TimeEntryForm
-                  edit
+                  edit={true}
                   userId={data.personId}
                   data={data}
                   toggle={toggle}
@@ -157,8 +149,7 @@ const TimeEntry = ({ data, displayYear, userProfile }) => {
                 />
               </span>
             )}
-            {(hasPermission(role, 'deleteTimeEntry', roles, userPermissions) ||
-              (!data.isTangible && isOwner && isSameDay)) && (
+            {canDelete && (
               <DeleteModal
                 timeEntry={data}
                 userProfile={userProfile}

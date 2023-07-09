@@ -13,18 +13,47 @@ function TagsSearch({ placeholder, members, addResources, removeResource, resour
     event.target.closest('.container-fluid').querySelector('input').value = '';
   };
 
-  const handleFilter = event => {
-    const searchWord = event.target.value;
-    const newFilter = members.filter(
+  // sorting using the input letter, giving highest priority to first name starting with that letter,
+  // and then the last name starting with that letter, followed by other names that include that letter
+  const sortByStartingWith = keyword => {
+    const newFilterList = members.filter(
       member =>
         !resourceItems.some(
           resourceItem => resourceItem.name === `${member.firstName} ${member.lastName}`,
-        ) &&
-        `${member.firstName} ${member.lastName}`.toLowerCase().includes(searchWord.toLowerCase()),
+        ) && `${member.firstName} ${member.lastName}`.toLowerCase().includes(keyword.toLowerCase()),
     );
+
+    const finalList = newFilterList.sort((a, b) => {
+      // check if the first name starts with the input letter
+      const aStarts = `${a.firstName}`.toLowerCase().startsWith(keyword.toLowerCase());
+      const bStarts = `${b.firstName}`.toLowerCase().startsWith(keyword.toLowerCase());
+      if (aStarts && bStarts)
+        return `${a.firstName}`.toLowerCase().localeCompare(`${b.firstName}`.toLowerCase());
+      if (aStarts && !bStarts) return -1;
+      if (!aStarts && bStarts) return 1;
+      if (!aStarts && !bStarts) {
+        // if the first name does not start with input letter, check if the last name starts with the input letter
+        const aLastName = `${a.lastName}`.toLowerCase().startsWith(keyword.toLowerCase());
+        const bLastName = `${b.lastName}`.toLowerCase().startsWith(keyword.toLowerCase());
+        if (aLastName && bLastName)
+          return `${a.lastName}`.toLowerCase().localeCompare(`${b.lastName}`.toLowerCase());
+        if (aLastName && !bLastName) return -1;
+        if (!aLastName && bLastName) return 1;
+      }
+      return `${a.firstName} ${a.lastName}`
+        .toLowerCase()
+        .localeCompare(`${b.firstName} ${b.lastName}`.toLowerCase());
+    });
+
+    return finalList;
+  };
+
+  const handleFilter = event => {
+    const searchWord = event.target.value;
     if (searchWord === '') {
       setFilteredData([]);
     } else {
+      const newFilter = sortByStartingWith(searchWord);
       setIsHidden(false);
       setFilteredData(newFilter);
     }
@@ -51,7 +80,6 @@ function TagsSearch({ placeholder, members, addResources, removeResource, resour
     <div className="container-fluid d-flex flex-column px-0">
       <div className="d-flex flex-column container-fluid mb-1 px-0">
         <div className="align-items-start justify-content-start w-100 px-0 position-relative">
-          {inputElement()}
           {filteredData.length !== 0 ? (
             <ul
               className={`my-element ${

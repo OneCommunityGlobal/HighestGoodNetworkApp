@@ -2,13 +2,19 @@ import React, { useState, useEffect } from 'react';
 import { Row, Label, Input, Col, Button, FormGroup } from 'reactstrap';
 import moment from 'moment-timezone';
 import { capitalize } from 'lodash';
-import style from '../UserProfileEdit/ToggleSwitch/ToggleSwitch.module.scss';
 import { ENDPOINTS } from 'utils/URL';
 import axios from 'axios';
 import './timeTab.css';
+import { boxStyle } from 'styles';
 
 const MINIMUM_WEEK_HOURS = 0;
 const MAXIMUM_WEEK_HOURS = 168;
+
+const startEndDateValidation = props => {
+  return (
+    props.userProfile.createdDate > props.userProfile.endDate && props.userProfile.endDate !== ''
+  );
+};
 
 const StartDate = props => {
   if (!props.canEdit) {
@@ -19,12 +25,15 @@ const StartDate = props => {
       type="date"
       name="StartDate"
       id="startDate"
+      className={startEndDateValidation(props) ? 'border-error-validation' : null}
       value={moment(props.userProfile.createdDate).format('YYYY-MM-DD')}
       onChange={e => {
         props.setUserProfile({ ...props.userProfile, createdDate: e.target.value });
+        props.onStartDateComponent(e.target.value);
       }}
       placeholder="Start Date"
       invalid={!props.canEdit}
+      max={props.userProfile.endDate ? moment(props.userProfile.endDate).format('YYYY-MM-DD') : ''}
     />
   );
 };
@@ -39,8 +48,10 @@ const EndDate = props => {
       </p>
     );
   }
+
   return (
     <Input
+      className={startEndDateValidation(props) ? 'border-error-validation' : null}
       type="date"
       name="EndDate"
       id="endDate"
@@ -49,9 +60,11 @@ const EndDate = props => {
       }
       onChange={e => {
         props.setUserProfile({ ...props.userProfile, endDate: e.target.value });
+        props.onEndDateComponent(e.target.value);
       }}
       placeholder="End Date"
       invalid={!props.canEdit}
+      min={props.userProfile.createdDate ? moment(props.userProfile.createdDate).format('YYYY-MM-DD') : ''}
     />
   );
 };
@@ -89,30 +102,26 @@ const WeeklySummaryOptions = props => {
 };
 
 const WeeklyCommittedHours = props => {
+  //Do Not change the property name "weeklycommittedHours"
+  //Otherwise it will not update in the backend.
   if (!props.canEdit) {
     return <p>{props.userProfile.weeklycommittedHours}</p>;
   }
   const handleChange = e => {
-    // Maximum and minimum constants on lines 9 & 10
-    // Convert value from string into easy number variable
+    // Max: 168 hrs  Min: 0 hr
+    // Convert value from string into easy number
     const value = parseInt(e.target.value);
     if (value > MAXIMUM_WEEK_HOURS) {
-      // Check if Value is greater than total hours in one week
+      // Check if Value is greater than maximum hours and set it to maximum hours if needed
       alert(`You can't commit more than ${MAXIMUM_WEEK_HOURS} hours per week.`);
-      if (value === MAXIMUM_WEEK_HOURS + 1) {
-        props.setUserProfile({ ...props.userProfile, weeklyComittedHours: MAXIMUM_WEEK_HOURS });
-        props.setChanged(true);
-      } else {
-        props.setChanged(true);
-      }
+      props.setUserProfile({ ...props.userProfile, weeklycommittedHours: MAXIMUM_WEEK_HOURS });
     } else if (value < MINIMUM_WEEK_HOURS) {
       //Check if value is less than minimum hours and set it to minimum hours if needed
       alert(`You can't commit less than ${MINIMUM_WEEK_HOURS} hours per week.`);
-      props.setUserProfile({ ...props.userProfile, weeklyComittedHours: MINIMUM_WEEK_HOURS });
-      props.setChanged(true);
+      props.setUserProfile({ ...props.userProfile, weeklycommittedHours: MINIMUM_WEEK_HOURS });
     } else {
-      props.setUserProfile({ ...props.userProfile, weeklyComittedHours: value });
-      props.setChanged(true);
+      //update weekly hours whatever numbers in the input
+      props.setUserProfile({ ...props.userProfile, weeklycommittedHours: value });
     }
   };
 
@@ -121,10 +130,10 @@ const WeeklyCommittedHours = props => {
       type="number"
       min={MINIMUM_WEEK_HOURS - 1}
       max={MAXIMUM_WEEK_HOURS + 1}
-      name="weeklyComittedHours"
-      id="weeklyComittedHours"
-      data-testid="weeklyCommittedHours"
-      value={props.userProfile.weeklyComittedHours}
+      name="weeklycommittedHours"
+      id="weeklycommittedHours"
+      data-testid="weeklycommittedHours"
+      value={props.userProfile.weeklycommittedHours}
       onChange={e => handleChange(e)}
       placeholder="Weekly Committed Hours"
     />
@@ -189,6 +198,14 @@ const ViewTab = props => {
   const [totalTangibleHoursThisWeek, setTotalTangibleHoursThisWeek] = useState(0);
   const [totalTangibleHours, setTotalTangibleHours] = useState(0);
   const { hoursByCategory, totalIntangibleHrs } = userProfile;
+
+  const handleStartDates = async startDate => {
+    props.onStartDate(startDate);
+  };
+
+  const handleEndDates = async endDate => {
+    props.onEndDate(endDate);
+  };
 
   useEffect(() => {
     sumOfCategoryHours();
@@ -281,6 +298,7 @@ const ViewTab = props => {
             userProfile={userProfile}
             setUserProfile={setUserProfile}
             canEdit={canEdit}
+            onStartDateComponent={handleStartDates}
           />
         </Col>
       </Row>
@@ -295,6 +313,7 @@ const ViewTab = props => {
             userProfile={userProfile}
             setUserProfile={setUserProfile}
             canEdit={canEdit}
+            onEndDateComponent={handleEndDates}
           />
         </Col>
       </Row>
@@ -372,6 +391,7 @@ const ViewTab = props => {
             color="info"
             className="refresh-btn"
             onClick={() => props.loadUserProfile()}
+            style={boxStyle}
           >
             Refresh
           </Button>

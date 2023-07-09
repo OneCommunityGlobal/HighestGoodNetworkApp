@@ -49,7 +49,6 @@ export default (
       <ProtectedRoute path="/admin" component={Admin} />
       <ProtectedRoute path="/timelog/" exact component={Timelog} />
       <ProtectedRoute path="/timelog/:userId" exact component={Timelog} />
-      <ProtectedRoute path="/reports" exact component={Reports} />
       <ProtectedRoute path="/peoplereport/:userId" component={PeopleReport} />
       <ProtectedRoute path="/projectreport/:projectId" component={ProjectReport} />
       <ProtectedRoute path="/teamreport/:teamId" component={TeamReport} />
@@ -77,6 +76,13 @@ export default (
           UserRole.Owner,
           UserRole.Mentor,
         ]}
+        routePermissions={[RoutePermissions.weeklySummariesReport, RoutePermissions.reports]}
+      />
+      <ProtectedRoute
+        path="/reports"
+        exact
+        component={Reports}
+        routePermissions={RoutePermissions.reports}
       />
       <ProtectedRoute
         path="/projects"

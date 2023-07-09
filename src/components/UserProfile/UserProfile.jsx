@@ -23,7 +23,7 @@ import classnames from 'classnames';
 import moment from 'moment';
 import Alert from 'reactstrap/lib/Alert';
 import axios from 'axios';
-import hasPermission from '../../utils/permissions';
+import hasPermission, { deactivateOwnerPermission } from '../../utils/permissions';
 import ActiveCell from '../UserManagement/ActiveCell';
 import { ENDPOINTS } from '../../utils/URL';
 import Loading from '../common/Loading';
@@ -44,9 +44,9 @@ import TimeEntryEditHistory from './TimeEntryEditHistory';
 import ActiveInactiveConfirmationPopup from '../UserManagement/ActiveInactiveConfirmationPopup';
 import { updateUserStatus } from '../../actions/userManagement';
 import { UserStatus } from '../../utils/enums';
-import { faSleigh, faCamera } from '@fortawesome/free-solid-svg-icons';
 import BlueSquareLayout from './BlueSquareLayout';
 import TeamWeeklySummaries from './TeamWeeklySummaries/TeamWeeklySummaries';
+import { boxStyle } from 'styles';
 
 function UserProfile(props) {
   /* Constant values */
@@ -91,17 +91,21 @@ function UserProfile(props) {
   const isTasksEqual = JSON.stringify(originalTasks) === JSON.stringify(tasks);
   const isProfileEqual = JSON.stringify(userProfile) === JSON.stringify(originalUserProfile);
 
+  const [userStartDate, setUserStartDate] = useState('');
+  const [userEndDate, setUserEndDate] = useState('');
+
   /* useEffect functions */
+
+  useEffect(() => {
+    loadUserProfile();
+  }, []);
+
   useEffect(() => {
     checkIsTeamsEqual();
     checkIsProjectsEqual();
     setUserProfile({ ...userProfile, teams, projects });
     setOriginalUserProfile({ ...originalUserProfile, teams, projects });
   }, [teams, projects]);
-
-  useEffect(() => {
-    loadUserProfile();
-  }, []);
 
   useEffect(() => {
     setShowLoading(true);
@@ -116,6 +120,7 @@ function UserProfile(props) {
   }, [blueSquareChanged]);
 
   const checkIsTeamsEqual = () => {
+    setOriginalTeams(teams)
     const originalTeamProperties = [];
     originalTeams?.forEach(team => {
       for (const [key, value] of Object.entries(team)) {
@@ -147,6 +152,7 @@ function UserProfile(props) {
   };
 
   const checkIsProjectsEqual = () => {
+    setOriginalProjects(projects)
     const originalProjectProperties = [];
     originalProjects?.forEach(project => {
       for (const [key, value] of Object.entries(project)) {
@@ -214,6 +220,7 @@ function UserProfile(props) {
         phoneNumber: newUserProfile.phoneNumber[0],
         createdDate: newUserProfile?.createdDate.split('T')[0],
       });
+      setUserStartDate(newUserProfile?.createdDate.split('T')[0]);
       setShowLoading(false);
     } catch (err) {
       setShowLoading(false);
@@ -461,17 +468,6 @@ function UserProfile(props) {
     loadUserProfile();
   }, [shouldRefresh]);
 
-  useEffect(() => {
-    setShowLoading(true);
-    loadUserProfile();
-  }, [props?.match?.params?.userId]);
-
-  useEffect(() => {
-    if (!blueSquareChanged) return;
-    setBlueSquareChanged(false);
-    handleSubmit();
-  }, [blueSquareChanged]);
-
   /**
    *
    * UserProfile.jsx and its subsomponents are being refactored to avoid the use of this monolithic function.
@@ -541,6 +537,12 @@ function UserProfile(props) {
       ? hasPermission(requestorRole, 'addDeleteEditOwners', roles, userPermissions)
       : hasPermission(requestorRole, 'editUserProfile', roles, userPermissions);
   const canEdit = canEditProfile || isUserSelf;
+  const canChangeUserStatus = hasPermission(
+    requestorRole,
+    'changeUserStatus',
+    roles,
+    userPermissions,
+  );
 
   const customStyles = {
     control: (base, state) => ({
@@ -559,6 +561,14 @@ function UserProfile(props) {
       ...base,
       zIndex: 9999,
     }),
+  };
+
+  const handleStartDate = async startDate => {
+    setUserStartDate(startDate);
+  };
+
+  const handleEndDate = async endDate => {
+    setUserEndDate(endDate);
   };
 
   return (
@@ -631,17 +641,19 @@ function UserProfile(props) {
                 className="fa fa-info-circle"
                 onClick={toggleInfoModal}
               />{' '}
-              {canEdit && (
-                <>
-                  <ActiveCell
-                    isActive={userProfile.isActive}
-                    user={userProfile}
-                    onClick={() => {
-                      setActiveInactivePopupOpen(true);
-                    }}
-                  />
-                </>
-              )}
+              <ActiveCell
+                isActive={userProfile.isActive}
+                user={userProfile}
+                canChange={canChangeUserStatus}
+                onClick={() => {
+                  if (deactivateOwnerPermission(userProfile, requestorRole)) {
+                    //Owner user cannot be deactivated by another user that is not an Owner.
+                    alert('You are not authorized to deactivate an owner.');
+                    return;
+                  }
+                  setActiveInactivePopupOpen(true);
+                }}
+              />
               {canEdit && (
                 <i
                   data-toggle="tooltip"
@@ -667,6 +679,7 @@ function UserProfile(props) {
                 }}
                 color="primary"
                 size="sm"
+                style={boxStyle}
               >
                 {showSelect ? 'Hide Team Weekly Summaries' : 'Show Team Weekly Summaries'}
               </Button>
@@ -704,6 +717,7 @@ function UserProfile(props) {
                 );
               })}
             <Badges
+              isUserSelf={isUserSelf}
               userProfile={userProfile}
               setUserProfile={setUserProfile}
               setOriginalUserProfile={setOriginalUserProfile}
@@ -821,6 +835,7 @@ function UserProfile(props) {
                     setUserProfile={setUserProfile}
                     isUserSelf={isUserSelf}
                     role={requestorRole}
+                    onEndDate={handleEndDate}
                     loadUserProfile={loadUserProfile}
                     canEdit={hasPermission(
                       requestorRole,
@@ -828,6 +843,7 @@ function UserProfile(props) {
                       roles,
                       userPermissions,
                     )}
+                    onStartDate={handleStartDate}
                   />
                 }
               </TabPane>
@@ -1221,7 +1237,7 @@ function UserProfile(props) {
                 (activeTab === '1' ||
                   hasPermission(requestorRole, 'editUserProfile', roles, userPermissions)) && (
                   <Link to={`/updatepassword/${userProfile._id}`}>
-                    <Button className="mr-1 btn-bottom" color="primary">
+                    <Button className="mr-1 btn-bottom" color="primary" style={boxStyle}>
                       {' '}
                       Update Password
                     </Button>
@@ -1239,6 +1255,7 @@ function UserProfile(props) {
                         !formValid.firstName ||
                         !formValid.lastName ||
                         !formValid.email ||
+                        (userStartDate > userEndDate && userEndDate !== '') ||
                         (isProfileEqual && isTasksEqual && isTeamsEqual && isProjectsEqual)
                       }
                       userProfile={userProfile}
@@ -1251,6 +1268,7 @@ function UserProfile(props) {
                           setTeams(originalTeams);
                         }}
                         className="btn btn-outline-danger mr-1 btn-bottom"
+                        style={boxStyle}
                       >
                         Cancel
                       </span>
