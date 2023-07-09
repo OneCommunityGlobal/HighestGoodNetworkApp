@@ -1,10 +1,9 @@
-/* eslint-disable no-undef */
 import React from 'react';
 import moment from 'moment';
 import { render, screen, waitFor, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';
 import userEvent from '@testing-library/user-event';
-import { weeklySummaryMockData1 } from 'weeklySummaryMockData'; // Located in the tested component's __mocks__ folder
+import { weeklySummaryMockData1 } from './__mocks__/weeklySummaryMockData'; // Located in the tested component's __mocks__ folder
 import { WeeklySummary } from './WeeklySummary';
 import { CountdownTimer } from './CountdownTimer';
 

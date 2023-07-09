@@ -491,7 +491,7 @@ const EditTaskModal = props => {
                     {links?.map((link, i) =>
                       link.length > 1 ? (
                         <div key={i} className="task-link">
-                          <a href={link} target="_blank">
+                          <a href={link} target="_blank" rel="noreferrer">
                             {link.slice(-10)}
                           </a>
                           <span className="remove-link" onClick={() => removeLink(i)}>

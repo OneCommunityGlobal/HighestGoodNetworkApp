@@ -104,7 +104,7 @@ const LeaderBoard = ({
     </>,
     <>
       <p>
-        An Admin has made it so you can see your team but they can't see you. We recommend you keep
+        An Admin has made it so you can see your team but they can&apos;t see you. We recommend you keep
         this setting as it is.
       </p>
       <p>

@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBell, faCircle, faCheck, faTimes } from '@fortawesome/free-solid-svg-icons';
 import CopyToClipboard from 'components/common/Clipboard/CopyToClipboard';
-import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
-import { Table, Progress } from 'reactstrap';
+import { Button, Modal, ModalHeader, ModalBody, ModalFooter , Table, Progress } from 'reactstrap';
+
 import { Link } from 'react-router-dom';
 import { getProgressColor, getProgressValue } from '../../utils/effortColors';
 import hasPermission from 'utils/permissions';

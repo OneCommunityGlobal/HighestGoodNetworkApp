@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState , useEffect } from 'react';
 import { Card, Row, Col } from 'reactstrap';
 import ReactHtmlParser from 'react-html-parser';
 import './filteredTimeEntries.css';
 import { ENDPOINTS } from 'utils/URL';
 import axios from 'axios';
-import { useEffect } from 'react';
+
 import moment from 'moment';
 import { hrsFilterBtnRed, hrsFilterBtnBlue } from 'constants/colors';
 
