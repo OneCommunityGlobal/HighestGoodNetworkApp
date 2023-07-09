@@ -240,7 +240,6 @@ const EditTaskModal = props => {
     if (props.tasks.error === 'none') {
       toggle();
     }
-    window.location.reload();
   };
 
   const handleAssign = value => {
