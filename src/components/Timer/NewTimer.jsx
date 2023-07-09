@@ -34,7 +34,6 @@ export const NewTimer = () => {
   const [previewTimer, setPreviewTimer] = useState(0);
   const [remainingTime, setRemainingTime] = useState(0);
   const [elapsedTime, setElapsedTime] = useState(0);
-  const [prevLogModal, setPrevLogModal] = useState(false);
   const [initialRender, setInitialRender] = useState(true);
 
   const data = {
@@ -227,14 +226,10 @@ const handleRemoveGoal = useCallback((time) => {
   }, []);
 
   useEffect(() => {
-    if (!initialRender && prevLogModal && !logModal) {
-      handleStart();
-    }
-    if (!initialRender && !prevLogModal && logModal) {
+    if (!initialRender  && logModal) {
       handlePause();
     }
-    setPrevLogModal(logModal);
-  }, [logModal, prevLogModal, initialRender]);
+  }, [logModal, initialRender]);
 
   useEffect(() => {
     setInitialRender(false);
