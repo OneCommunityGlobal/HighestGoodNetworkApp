@@ -33,9 +33,9 @@ export const TaskEditSuggestions = () => {
 
   const SortArrow = ({ sortDirection }) => {
     if (sortDirection === 'asc') {
-      return <i class="fa fa-arrow-up"></i>;
+      return <i className="fa fa-arrow-up"></i>;
     } else if (sortDirection === 'desc') {
-      return <i class="fa fa-arrow-down"></i>;
+      return <i className="fa fa-arrow-down"></i>;
     } else {
       return <></>;
     }
@@ -43,7 +43,7 @@ export const TaskEditSuggestions = () => {
 
   return (
     <Container>
-      <h1 className='mt-3'>Task Edit Suggestions</h1>
+      <h1 className="mt-3">Task Edit Suggestions</h1>
       {/* {isUserPermitted ? <h1>Task Edit Suggestions</h1> : <h1>{userRole} is not permitted to view this</h1>} */}
       {isLoading && <Loading />}
       {!isLoading && taskEditSuggestions && (

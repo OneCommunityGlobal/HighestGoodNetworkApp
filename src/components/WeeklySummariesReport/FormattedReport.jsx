@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import moment from 'moment';
 import 'moment-timezone';
@@ -10,7 +10,7 @@ import { toast } from 'react-toastify';
 import ToggleSwitch from '../UserProfile/UserProfileEdit/ToggleSwitch';
 import axios from 'axios';
 import { ENDPOINTS } from '../../utils/URL';
-import { useState } from 'react';
+
 import { assignStarDotColors, showStar } from 'utils/leaderboardPermissions';
 
 const FormattedReport = ({ summaries, weekIndex, bioCanEdit }) => {
@@ -172,7 +172,7 @@ const FormattedReport = ({ summaries, weekIndex, bioCanEdit }) => {
     }
   };
 
-  const bioSwitch = (userId, bioPosted, weeklySummaryOption) => {
+  const BioSwitch = (userId, bioPosted, weeklySummaryOption) => {
     const [bioStatus, setBioStatus] = useState(bioPosted);
     return (
       <div>
@@ -195,7 +195,7 @@ const FormattedReport = ({ summaries, weekIndex, bioCanEdit }) => {
     );
   };
 
-  const bioLabel = (userId, bioPosted, weeklySummaryOption) => {
+  const BioLabel = (userId, bioPosted, weeklySummaryOption) => {
     return (
       <div>
         <b style={weeklySummaryOption === 'Team' ? { color: 'magenta' } : {}}>Bio announcement:</b>
@@ -208,7 +208,7 @@ const FormattedReport = ({ summaries, weekIndex, bioCanEdit }) => {
     );
   };
 
-  const bioFunction = bioCanEdit ? bioSwitch : bioLabel;
+  const bioFunction = bioCanEdit ? BioSwitch : BioLabel;
 
   return (
     <>

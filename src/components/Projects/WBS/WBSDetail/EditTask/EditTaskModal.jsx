@@ -69,8 +69,8 @@ const EditTaskModal = props => {
   const [hoursMost, setHoursMost] = useState(thisTask?.hoursMost);
   // hour estimate
   const [hoursEstimate, setHoursEstimate] = useState(thisTask?.estimatedHours);
-  //deadline count 
-  const [deadlineCount, setDeadlineCount] = useState(thisTask?.deadlineCount)
+  //deadline count
+  const [deadlineCount, setDeadlineCount] = useState(thisTask?.deadlineCount);
   // hours warning
   const [hoursWarning, setHoursWarning] = useState(false);
 
@@ -201,10 +201,9 @@ const EditTaskModal = props => {
 
   // helper for updating task
   const updateTask = () => {
-
-    let newDeadlineCount = deadlineCount
+    let newDeadlineCount = deadlineCount;
     if (thisTask?.estimatedHours !== hoursEstimate) {
-      newDeadlineCount = deadlineCount + 1
+      newDeadlineCount = deadlineCount + 1;
       setDeadlineCount(newDeadlineCount);
     }
 
@@ -491,7 +490,7 @@ const EditTaskModal = props => {
                     {links?.map((link, i) =>
                       link.length > 1 ? (
                         <div key={i} className="task-link">
-                          <a href={link} target="_blank">
+                          <a href={link} target="_blank" rel="noreferrer">
                             {link.slice(-10)}
                           </a>
                           <span className="remove-link" onClick={() => removeLink(i)}>

@@ -6,7 +6,7 @@ import hasPermission from '../../../utils/permissions';
 import { useSelector } from 'react-redux';
 import styles from './UserTeamsTable.css';
 import { boxStyle } from 'styles';
-import './UserTeamsTable.css';
+
 
 const UserTeamsTable = props => {
   const { roles } = useSelector(state => state.role);
