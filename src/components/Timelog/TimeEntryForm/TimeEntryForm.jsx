@@ -86,7 +86,6 @@ const TimeEntryForm = props => {
   const { userProfile, currentUserRole } = useSelector(getTimeEntryFormData);
   const roles = useSelector(state => state.role.roles);
   const userPermissions = useSelector(state => state.auth.user?.permissions?.frontPermissions);
-  const location = useLocation()
 
   const dispatch = useDispatch();
 
@@ -140,7 +139,7 @@ const TimeEntryForm = props => {
         setTasks(activeTasks || []);
       })
       .catch(err => console.log(err));
-  }, [props.isTaskUpdated, location]);
+  }, [props.isTaskUpdated]);
 
   //grab form data before editing
   useEffect(() => {
