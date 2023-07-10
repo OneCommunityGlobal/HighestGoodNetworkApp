@@ -1,5 +1,3 @@
-/* eslint-disable no-underscore-dangle */
-/* eslint-disable no-case-declarations */
 import * as types from '../constants/allTeamsConstants';
 
 const userTeamsInitial = {

@@ -67,20 +67,20 @@ export class WeeklySummary extends Component {
       .endOf('week')
       .toISOString(),
     dueDateLastWeek: moment()
-        .tz('America/Los_Angeles')
-        .endOf('week')
-        .subtract(1, 'week')
-        .toISOString(),
+      .tz('America/Los_Angeles')
+      .endOf('week')
+      .subtract(1, 'week')
+      .toISOString(),
     dueDateBeforeLast: moment()
-        .tz('America/Los_Angeles')
-        .endOf('week')
-        .subtract(2, 'week')
-        .toISOString(),
+      .tz('America/Los_Angeles')
+      .endOf('week')
+      .subtract(2, 'week')
+      .toISOString(),
     dueDateThreeWeeksAgo: moment()
-        .tz('America/Los_Angeles')
-        .endOf('week')
-        .subtract(3, 'week')
-        .toISOString(),
+      .tz('America/Los_Angeles')
+      .endOf('week')
+      .subtract(3, 'week')
+      .toISOString(),
     uploadDatesElements: {
       uploadDate: this.dueDate,
       uploadDateLastWeek: this.dueDateLastWeek,
@@ -216,11 +216,11 @@ export class WeeklySummary extends Component {
       this.setState({ activeTab: tab });
     }
   };
-  
+
   toggleMovePopup = showPopup => {
-    this.setState({movePopup: !showPopup});
-  }
-  
+    this.setState({ movePopup: !showPopup });
+  };
+
   toggleShowPopup = showPopup => {
     const mediaChangeConfirm = this.state.mediaChangeConfirm;
     if (!mediaChangeConfirm) {
@@ -231,51 +231,51 @@ export class WeeklySummary extends Component {
   };
 
   handleMoveSelect = moveWeek => {
-    const moveSelect= this.state.moveSelect;
-    this.setState({ moveSelect: moveWeek, movePopup:true });
+    const moveSelect = this.state.moveSelect;
+    this.setState({ moveSelect: moveWeek, movePopup: true });
   };
 
-  handleMove = () =>{
+  handleMove = () => {
     const moveSelect = this.state.moveSelect;
-    const newformElements = {...this.state.formElements};
+    const newformElements = { ...this.state.formElements };
     const activeTab = this.state.activeTab;
-    if (activeTab != moveSelect){
-      let movedContent = "";
+    if (activeTab != moveSelect) {
+      let movedContent = '';
       switch (activeTab) {
-        case "1":
+        case '1':
           movedContent = newformElements.summary;
-          newformElements.summary = "";
+          newformElements.summary = '';
           break;
-        case "2":
+        case '2':
           movedContent = newformElements.summaryLastWeek;
-          newformElements.summaryLastWeek = "";
+          newformElements.summaryLastWeek = '';
           break;
-        case "3":
+        case '3':
           movedContent = newformElements.summaryBeforeLast;
-          newformElements.summaryBeforeLast = "";
+          newformElements.summaryBeforeLast = '';
           break;
-        case "4":
+        case '4':
           movedContent = newformElements.summaryThreeWeeksAgo;
-          newformElements.summaryThreeWeeksAgo = "";
+          newformElements.summaryThreeWeeksAgo = '';
           break;
       }
       switch (moveSelect) {
-        case "1":
+        case '1':
           newformElements.summary = movedContent;
           break;
-        case "2":
+        case '2':
           newformElements.summaryLastWeek = movedContent;
           break;
-        case "3":
+        case '3':
           newformElements.summaryBeforeLast = movedContent;
           break;
-        case "4":
+        case '4':
           newformElements.summaryThreeWeeksAgo = movedContent;
           break;
       }
     }
     //confitm move or not
-    const movePop = this.state.movePopup
+    const movePop = this.state.movePopup;
     this.toggleMovePopup(movePop);
     return newformElements;
   };
@@ -351,12 +351,12 @@ export class WeeklySummary extends Component {
   };
 
   handleMediaChange = event => {
-  this.setState({
-    mediaChangeConfirm: true,
-  });
-  
-  this.toggleShowPopup(this.state.editPopup);
-};
+    this.setState({
+      mediaChangeConfirm: true,
+    });
+
+    this.toggleShowPopup(this.state.editPopup);
+  };
 
   handleEditorChange = (content, editor) => {
     // Filter out blank pagagraphs inserted by tinymce replacing new line characters. Need those removed so Joi could do word count checks properly.
@@ -386,23 +386,36 @@ export class WeeklySummary extends Component {
   };
 
   handleChangeInSummary = () => {
-      // Extract state variables for ease of access
-    let { submittedDate, formElements,uploadDatesElements, originSummaries, 
-      dueDate, dueDateLastWeek,dueDateBeforeLast,dueDateThreeWeeksAgo} = this.state;
+    // Extract state variables for ease of access
+    let {
+      submittedDate,
+      formElements,
+      uploadDatesElements,
+      originSummaries,
+      dueDate,
+      dueDateLastWeek,
+      dueDateBeforeLast,
+      dueDateThreeWeeksAgo,
+    } = this.state;
     let newformElements = { ...formElements };
     let newOriginSummaries = { ...originSummaries };
-    let newUploadDatesElements = { ...uploadDatesElements};
-    let dueDates = [dueDate, dueDateLastWeek,dueDateBeforeLast, dueDateThreeWeeksAgo];
+    let newUploadDatesElements = { ...uploadDatesElements };
+    let dueDates = [dueDate, dueDateLastWeek, dueDateBeforeLast, dueDateThreeWeeksAgo];
     //Move or not, if did move, update the newformElements
     const moveSelect = this.state.moveSelect;
     const activeTab = this.state.activeTab;
     const moveConfirm = this.state.moveConfirm;
-    if (moveConfirm){
+    if (moveConfirm) {
       newformElements = this.handleMove();
     }
     // Define summaries, updateDates for easier reference
     const summaries = ['summary', 'summaryLastWeek', 'summaryBeforeLast', 'summaryThreeWeeksAgo'];
-    const uploadDates = ['uploadDate', 'uploadDateLastWeek', 'uploadDateBeforeLast', 'uploadDateThreeWeeksAgo'];
+    const uploadDates = [
+      'uploadDate',
+      'uploadDateLastWeek',
+      'uploadDateBeforeLast',
+      'uploadDateThreeWeeksAgo',
+    ];
     // Calculate currentSubmittedCount using reduce
     let currentSubmittedCount = summaries.reduce((count, summary) => {
       return newformElements[summary] !== '' ? count + 1 : count;
@@ -414,8 +427,13 @@ export class WeeklySummary extends Component {
     const updateSummary = (summary, uploadDate, dueDate) => {
       if (newformElements[summary] !== newOriginSummaries[summary]) {
         newOriginSummaries[summary] = newformElements[summary];
-        newUploadDatesElements[uploadDate] = newformElements[summary] == '' ? dueDate : submittedDate;
-        this.setState({ formElements: newformElements, uploadDatesElements: newUploadDatesElements, originSummaries: newOriginSummaries });
+        newUploadDatesElements[uploadDate] =
+          newformElements[summary] == '' ? dueDate : submittedDate;
+        this.setState({
+          formElements: newformElements,
+          uploadDatesElements: newUploadDatesElements,
+          originSummaries: newOriginSummaries,
+        });
       }
     };
     // Loop through summaries and update state variables
@@ -439,32 +457,32 @@ export class WeeklySummary extends Component {
       this.props.asUser || this.props.currentUser.userid,
       modifiedWeeklySummaries,
     );
-  }
-  // Updates user profile and weekly summaries 
+  };
+  // Updates user profile and weekly summaries
   updateUserData = async userId => {
     await this.props.getUserProfile(userId);
     await this.props.getWeeklySummaries(userId);
-  }
+  };
   // Handler for success scenario after save
-  handleSaveSuccess = async (toastIdOnSave) => {
+  handleSaveSuccess = async toastIdOnSave => {
     toast.success('✔ The data was saved successfully!', {
       toastId: toastIdOnSave,
       pauseOnFocusLoss: false,
       autoClose: 3000,
     });
     await this.updateUserData(this.props.asUser || this.props.currentUser.userid);
-  }
+  };
   // Handler for error scenario after save
-  handleSaveError = (toastIdOnSave) => {
+  handleSaveError = toastIdOnSave => {
     toast.error('✘ The data could not be saved!', {
       toastId: toastIdOnSave,
       pauseOnFocusLoss: false,
       autoClose: 3000,
     });
-  }
+  };
 
   // Main save handler, used by both handleMoveSave and handleSave
-  mainSaveHandler = async (closeAfterSave) => {
+  mainSaveHandler = async closeAfterSave => {
     const toastIdOnSave = 'toast-on-save';
     const errors = this.validate();
 
@@ -486,7 +504,7 @@ export class WeeklySummary extends Component {
     } else {
       this.handleSaveError(toastIdOnSave);
     }
-  }
+  };
 
   handleMoveSave = async event => {
     if (event) {
@@ -494,10 +512,10 @@ export class WeeklySummary extends Component {
     }
     this.state.moveConfirm = true;
     this.mainSaveHandler(false);
-    if(this.state.moveConfirm){
+    if (this.state.moveConfirm) {
       this.toggleTab(this.state.moveSelect);
     }
-  }
+  };
 
   handleSave = async event => {
     if (event) {
@@ -508,7 +526,7 @@ export class WeeklySummary extends Component {
 
   handleClose = () => {
     this.props.setPopup(false);
-  }
+  };
 
   render() {
     const {
@@ -573,13 +591,12 @@ export class WeeklySummary extends Component {
         {/* Before clicking Save button, summariesCountShowing is 0 */}
         <Row>
           <Col md="9">
-              Total submitted:{' '}
-              {this.state.summariesCountShowing || this.state.formElements.weeklySummariesCount}
+            Total submitted:{' '}
+            {this.state.summariesCountShowing || this.state.formElements.weeklySummariesCount}
           </Col>
           <Col md="3">
-            <Button className="btn--dark-sea-green"
-            onClick={this.handleClose}> 
-            Close this window 
+            <Button className="btn--dark-sea-green" onClick={this.handleClose}>
+              Close this window
             </Button>
           </Col>
         </Row>
@@ -620,22 +637,30 @@ export class WeeklySummary extends Component {
                               Move This Summary
                             </DropdownToggle>
                             <DropdownMenu>
-                            <DropdownItem disabled={activeTab ==='1'} 
-                              onClick={()=>this.handleMoveSelect('1')}>
+                              <DropdownItem
+                                disabled={activeTab === '1'}
+                                onClick={() => this.handleMoveSelect('1')}
+                              >
                                 This Week
-                            </DropdownItem>
-                            <DropdownItem disabled={activeTab ==='2'}
-                            onClick={()=>this.handleMoveSelect('2')}>
+                              </DropdownItem>
+                              <DropdownItem
+                                disabled={activeTab === '2'}
+                                onClick={() => this.handleMoveSelect('2')}
+                              >
                                 Last Week
-                            </DropdownItem>
-                            <DropdownItem disabled={activeTab ==='3'}
-                              onClick={()=>this.handleMoveSelect('3')}>
+                              </DropdownItem>
+                              <DropdownItem
+                                disabled={activeTab === '3'}
+                                onClick={() => this.handleMoveSelect('3')}
+                              >
                                 Week Before Last
-                            </DropdownItem>
-                            <DropdownItem disabled={activeTab ==='4'}
-                              onClick={()=>this.handleMoveSelect('4')}>
+                              </DropdownItem>
+                              <DropdownItem
+                                disabled={activeTab === '4'}
+                                onClick={() => this.handleMoveSelect('4')}
+                              >
                                 Three Weeks Ago
-                            </DropdownItem>
+                              </DropdownItem>
                             </DropdownMenu>
                           </UncontrolledDropdown>
                           <CurrentPromptModal />
@@ -701,10 +726,7 @@ export class WeeklySummary extends Component {
                           you are SURE your new link is more than the one already here.
                         </ModalBody>
                         <ModalFooter>
-                          <Button
-                            onClick={this.handleMediaChange}
-                            style={boxStyle}
-                          >
+                          <Button onClick={this.handleMediaChange} style={boxStyle}>
                             Confirm
                           </Button>{' '}
                           <Button
@@ -728,18 +750,14 @@ export class WeeklySummary extends Component {
                       </FormGroup>
                     </Col>
                   )}
-                  {<Modal isOpen={this.state.movePopup}
-                  toggle={this.toggleMovePopup}>
-                    <ModalHeader> Warning!</ModalHeader>
-                    <ModalBody>
-                      Are you SURE you want to move the summary?
-                    </ModalBody>
-                    <ModalFooter>
-                    <Button 
-                      onClick={this.handleMoveSave}>Confirm and Save</Button>
-                      <Button 
-                      onClick={this.toggleMovePopup}>Close</Button>
-                    </ModalFooter>
+                  {
+                    <Modal isOpen={this.state.movePopup} toggle={this.toggleMovePopup}>
+                      <ModalHeader> Warning!</ModalHeader>
+                      <ModalBody>Are you SURE you want to move the summary?</ModalBody>
+                      <ModalFooter>
+                        <Button onClick={this.handleMoveSave}>Confirm and Save</Button>
+                        <Button onClick={this.toggleMovePopup}>Close</Button>
+                      </ModalFooter>
                     </Modal>
                   }
                 </Row>
