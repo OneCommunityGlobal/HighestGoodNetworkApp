@@ -1,4 +1,5 @@
 const hasPermission = (role, action, roles, userPermissions) => {
+
   if (role && roles && roles.length != 0) {
     const roleIndex = roles?.findIndex(({ roleName }) => roleName === role);
     let permissions = [];
@@ -20,17 +21,16 @@ const hasPermission = (role, action, roles, userPermissions) => {
   return false;
 };
 
-// cannot update the password for devadmin@hgn.net in UserProfile
-export const denyPermissionToUpdatePassword = (email, authRole) => {
-  if (email === "devadmin@hgn.net") {
-    return true;
-  }
+// cannot self update the details for devadmin@hgn.net in UserProfile
+export const denyPermissionToSelfUpdateDevAdminDetails = (userEmail, isUserSelf) => {
+  return userEmail === "devadmin@hgn.net" && isUserSelf;
+
 };
 
-// cannot reset the password for devadmin@hgn.net in User Management 
-export const denyPermissionToResetPassword = (devAdminEmail, authEmail) => {
-  return (devAdminEmail === "devadmin@hgn.net" && (authEmail !== "jae@onecommunityglobal.org" || authEmail !== "one.community@me.com"
-    || authEmail !== "jsabol@me.com"));
+// others cannot change the details for devadmin@hgn.net
+export const denyPermissionForOthersToUpdateDevAdminDetails = (devAdminEmail, authEmail) => {
+  return (devAdminEmail === "devadmin@hgn.net" && (authEmail !== "jae@onecommunityglobal.org" ||
+    authEmail !== "one.community@me.com" || authEmail !== "jsabol@me.com "));
 };
 
 export const deactivateOwnerPermission = (user, authRole) => {

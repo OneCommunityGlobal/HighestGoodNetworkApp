@@ -4,7 +4,7 @@ import { DELETE, PAUSE, RESUME, SET_FINAL_DAY, CANCEL } from '../../languages/en
 import { UserStatus, FinalDay } from '../../utils/enums';
 import { useHistory } from 'react-router-dom';
 import ActiveCell from './ActiveCell';
-import hasPermission, { denyPermissionToUpdatePassword } from 'utils/permissions';
+import hasPermission, { denyPermissionToSelfUpdateDevAdminDetails } from 'utils/permissions';
 import Table from 'react-bootstrap/Table';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCopy } from '@fortawesome/free-solid-svg-icons';

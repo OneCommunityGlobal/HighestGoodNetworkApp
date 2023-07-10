@@ -23,7 +23,7 @@ import classnames from 'classnames';
 import moment from 'moment';
 import Alert from 'reactstrap/lib/Alert';
 import axios from 'axios';
-import hasPermission, { deactivateOwnerPermission, denyPermissionToUpdatePassword } from '../../utils/permissions';
+import hasPermission, { deactivateOwnerPermission, denyPermissionForOthersToUpdateDevAdminDetails, denyPermissionToSelfUpdateDevAdminDetails } from '../../utils/permissions';
 import ActiveCell from '../UserManagement/ActiveCell';
 import { ENDPOINTS } from '../../utils/URL';
 import Loading from '../common/Loading';
@@ -536,13 +536,23 @@ function UserProfile(props) {
   const { userid: requestorId, role: requestorRole } = props.auth.user;
   const userPermissions = props.auth.user?.permissions?.frontPermissions;
 
-  const devAdminEmail = props.userProfile?.email;
+  const authEmail = props.userProfile?.email;
+  const editPermissionForAdmin = (denyPermissionToSelfUpdateDevAdminDetails(
+    userProfile.email,
+    isUserSelf))
+    || denyPermissionForOthersToUpdateDevAdminDetails(userProfile.email, authEmail)
+    ? false : hasPermission(
+      requestorRole,
+      'editUserProfile',
+      roles,
+      userPermissions,
+    );
   const isUserSelf = targetUserId === requestorId;
   const canEditProfile =
     userProfile.role === 'Owner'
       ? hasPermission(requestorRole, 'addDeleteEditOwners', roles, userPermissions)
-      : hasPermission(requestorRole, 'editUserProfile', roles, userPermissions);
-  const canEdit = canEditProfile || isUserSelf;
+      : editPermissionForAdmin;
+  const canEdit = canEditProfile;
   const canChangeUserStatus = hasPermission(
     requestorRole,
     'changeUserStatus',
@@ -836,6 +846,7 @@ function UserProfile(props) {
               </TabPane>
               <TabPane tabId="2">
                 {
+
                   <VolunteeringTimeTab
                     userProfile={userProfile}
                     setUserProfile={setUserProfile}
@@ -843,12 +854,7 @@ function UserProfile(props) {
                     role={requestorRole}
                     onEndDate={handleEndDate}
                     loadUserProfile={loadUserProfile}
-                    canEdit={hasPermission(
-                      requestorRole,
-                      'editUserProfile',
-                      roles,
-                      userPermissions,
-                    )}
+                    canEdit={editPermissionForAdmin}
                     onStartDate={handleStartDate}
                   />
                 }
@@ -859,7 +865,7 @@ function UserProfile(props) {
                   teamsData={props?.allTeams?.allTeamsData || []}
                   onAssignTeam={onAssignTeam}
                   onDeleteTeam={onDeleteTeam}
-                  edit={hasPermission(requestorRole, 'editUserProfile', roles, userPermissions)}
+                  edit={editPermissionForAdmin}
                   role={requestorRole}
                   roles={roles}
                   onUserVisibilitySwitch={onUserVisibilitySwitch}
@@ -874,7 +880,7 @@ function UserProfile(props) {
                   projectsData={props?.allProjects?.projects || []}
                   onAssignProject={onAssignProject}
                   onDeleteProject={onDeleteProject}
-                  edit={hasPermission(requestorRole, 'editUserProfile', roles, userPermissions)}
+                  edit={editPermissionForAdmin}
                   role={requestorRole}
                   userPermissions={userPermissions}
                   userId={props.match.params.userId}
@@ -929,7 +935,7 @@ function UserProfile(props) {
                       ) &&
                         canEdit &&
                         !isUserSelf && (
-                          <ResetPasswordButton className="mr-1 btn-bottom" user={userProfile} />
+                          <ResetPasswordButton className="mr-1 btn-bottom" user={userProfile} authEmail={authEmail} />
                         )}
                       {isUserSelf &&
                         (activeTab == '1' ||
@@ -940,7 +946,17 @@ function UserProfile(props) {
                             userPermissions,
                           ))
                         && (
-                          <Link to={`/updatepassword/${userProfile._id}`}>
+                          <Link to={denyPermissionToSelfUpdateDevAdminDetails(authEmail, isUserSelf) ? `#` : `/updatepassword/${userProfile._id}`}
+                            onClick={() => {
+                              if (denyPermissionToSelfUpdateDevAdminDetails(authEmail, isUserSelf)) {
+                                alert("STOP! YOU SHOULDN’T BE TRYING TO CHANGE THIS PASSWORD." +
+                                  "You shouldn’t even be using this account except to create your own accounts to use." +
+                                  "Please re-read the Local Setup Doc to understand why and what you should be doing instead of what you are trying to do now."
+                                )
+                                return `#`;
+                              }
+                            }}
+                          >
                             <Button className="mr-1 btn-bottom" color="primary">
                               {' '}
                               Update Password
@@ -1000,12 +1016,9 @@ function UserProfile(props) {
                     setUserProfile={setUserProfile}
                     isUserSelf={isUserSelf}
                     role={requestorRole}
-                    canEdit={hasPermission(
-                      requestorRole,
-                      'editUserProfile',
-                      roles,
-                      userPermissions,
-                    )}
+                    onEndDate={handleEndDate}
+                    canEdit={editPermissionForAdmin}
+                    onStartDate={handleStartDate}
                   />
                 </ModalBody>
                 <ModalFooter>
@@ -1060,7 +1073,7 @@ function UserProfile(props) {
                     teamsData={props?.allTeams?.allTeamsData || []}
                     onAssignTeam={onAssignTeam}
                     onDeleteTeam={onDeleteTeam}
-                    edit={hasPermission(requestorRole, 'editUserProfile', roles, userPermissions)}
+                    edit={editPermissionForAdmin}
                     role={requestorRole}
                     roles={roles}
                     onUserVisibilitySwitch={onUserVisibilitySwitch}
@@ -1121,7 +1134,7 @@ function UserProfile(props) {
                     projectsData={props?.allProjects?.projects || []}
                     onAssignProject={onAssignProject}
                     onDeleteProject={onDeleteProject}
-                    edit={hasPermission(requestorRole, 'editUserProfile', roles, userPermissions)}
+                    edit={editPermissionForAdmin}
                     role={requestorRole}
                     userPermissions={userPermissions}
                     userId={props.match.params.userId}
@@ -1238,14 +1251,14 @@ function UserProfile(props) {
               {hasPermission(requestorRole, 'resetPasswordOthers', roles, userPermissions) &&
                 canEdit &&
                 !isUserSelf && (
-                  <ResetPasswordButton className="mr-1 btn-bottom" user={userProfile} />
+                  <ResetPasswordButton className="mr-1 btn-bottom" user={userProfile} authEmail={authEmail} />
                 )}
               {isUserSelf &&
                 (activeTab === '1' ||
                   hasPermission(requestorRole, 'editUserProfile', roles, userPermissions)) && (
-                  <Link to={denyPermissionToUpdatePassword(devAdminEmail, requestorRole) ? `#` : `/updatepassword/${userProfile._id}`}
+                  <Link to={denyPermissionToSelfUpdateDevAdminDetails(authEmail, isUserSelf) ? `#` : `/updatepassword/${userProfile._id}`}
                     onClick={() => {
-                      if (denyPermissionToUpdatePassword(devAdminEmail, requestorRole)) {
+                      if (denyPermissionToSelfUpdateDevAdminDetails(authEmail, isUserSelf)) {
                         alert("STOP! YOU SHOULDN’T BE TRYING TO CHANGE THIS PASSWORD." +
                           "You shouldn’t even be using this account except to create your own accounts to use." +
                           "Please re-read the Local Setup Doc to understand why and what you should be doing instead of what you are trying to do now."
