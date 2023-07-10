@@ -200,7 +200,7 @@ const EditTaskModal = props => {
   };
 
   // helper for updating task
-  const updateTask = () => {
+  const updateTask = async () => {
 
     let newDeadlineCount = deadlineCount
     if (thisTask?.estimatedHours !== hoursEstimate) {
@@ -228,7 +228,7 @@ const EditTaskModal = props => {
       category,
     };
 
-    props.updateTask(
+    await props.updateTask(
       props.taskId,
       updatedTask,
       hasPermission(role, 'editTask', roles, userPermissions),
@@ -239,6 +239,7 @@ const EditTaskModal = props => {
 
     if (props.tasks.error === 'none') {
       toggle();
+      window.location.reload();
     }
   };
 
