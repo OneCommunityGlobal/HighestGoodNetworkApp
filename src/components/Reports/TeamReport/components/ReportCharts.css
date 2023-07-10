@@ -101,9 +101,21 @@
         justify-items: center;
         margin:auto;
     }
-    .test {
-        display: flex;        
-        align-items: space-between;
-        justify-items: space-between;
+    .mobile-chart {
+        display: flex;
+        flex-direction: column;    
+        margin: auto;
+    }
+}
+@media screen and (max-width: 768px) {    
+    .table-mobile {        
+        max-width: 100%;
+        margin-left: 26rem;
+    }
+}
+@media screen and (max-width: 375px) {    
+    .table-mobile {        
+        max-width: 100%;
+        margin-left: 32rem;
     }
 }

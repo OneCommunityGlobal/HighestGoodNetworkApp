@@ -300,6 +300,7 @@ useEffect(() => {
         selectedTeamsWeeklyEffort={selectedTeamsWeeklyEffort}
         allTeamsMembers={allTeamsMembers}
       />
+      <div className="table-mobile">
       <ReportPage.ReportBlock>
         <div className="input-group input-group-sm d-flex flex-nowrap justify-content-between">
           <div className="d-flex align-items-center">
@@ -444,6 +445,7 @@ useEffect(() => {
           }
         </table>
       </ReportPage.ReportBlock>
+      </div>
     </ReportPage>
   );
 }
