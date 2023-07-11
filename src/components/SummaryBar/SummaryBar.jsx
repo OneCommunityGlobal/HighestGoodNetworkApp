@@ -23,6 +23,7 @@ import task_icon from './task_icon.png';
 import badges_icon from './badges_icon.png';
 import bluesquare_icon from './bluesquare_icon.png';
 import report_icon from './report_icon.png';
+import suggestions_icon from './suggestions_icon.png';
 import httpService from '../../services/httpService';
 import { ENDPOINTS } from 'utils/URL';
 import axios from 'axios';
@@ -117,12 +118,25 @@ const SummaryBar = props => {
     information: '',
   };
 
-  const [extraFieldForSuggestionForm, setExtraFieldForSuggestionForm] = useState(false)
+  const [suggestionCategory, setSuggestionCategory] = useState([]);
+  const [inputFiled, setInputField] = useState([]);
+  const [takeInput, setTakeInput] = useState(false);
+  const [extraFieldForSuggestionForm, setExtraFieldForSuggestionForm] = useState('')
   const [showSuggestionModal, setShowSuggestionModal] = useState(false);
   const [report, setBugReport] = useState(initialInfo);
 
+  const readFormData = (formid) =>{
+    let form = document.getElementById(formid);
+    let formData = new FormData(form);
+    var data = {};
+    formData.forEach(function(value, key) {
+      data[key] = value;
+    });
+    return data;
+  }
+
   const openReport = () => {
-    const htmlStr = ''; //str.split('\n').map((item, i) => <p key={i}>{item}</p>)
+    const htmlStr = ''; 
     setBugReport(info => ({
       ...info,
       in: !info.in,
@@ -132,12 +146,7 @@ const SummaryBar = props => {
 
   const sendBugReport = event => {
     event.preventDefault();
-    let bugReportForm = document.getElementById('bugReportForm');
-    let formData = new FormData(bugReportForm);
-    var data = {};
-    formData.forEach(function(value, key) {
-      data[key] = value;
-    });
+    const data = readFormData('bugReportForm')
     data['firstName'] = userProfile.firstName;
     data['lastName'] = userProfile.lastName;
     data['email'] = userProfile.email;
@@ -146,8 +155,48 @@ const SummaryBar = props => {
     openReport();
   };
 
-  const sendUserSuggestion = event =>{
+  const setnewfields = (fielddata, setfield) =>{
+    setfield(prev =>{
+      let newarr = prev;
+      newarr.unshift(fielddata.newField);
+      return newarr;
+    });
+  }
+
+  const addField = async (event) =>{
     event.preventDefault();
+    const data = readFormData('newFieldForm')
+    if(extraFieldForSuggestionForm === 'suggestion'){
+      data.suggestion = true;
+      data.field = false;
+      setnewfields(data, setSuggestionCategory)
+    }else if(extraFieldForSuggestionForm === 'field'){
+      data.suggestion = false;
+      data.field = true
+      setnewfields(data, setInputField)
+    }
+    setExtraFieldForSuggestionForm('')
+    httpService.post(`${ApiEndpoint}//dashboard/suggestionoption/${userProfile._id}`, data).catch(e => {});
+  }
+
+  const sendUserSuggestion = async event =>{
+    event.preventDefault();
+    const data = readFormData('suggestionForm')
+    data['email'] = userProfile.email;
+    setShowSuggestionModal(prev => !prev)
+    const res = await httpService.post(`${ApiEndpoint}//dashboard/makesuggestion/${userProfile._id}`, data).catch(e => {});
+  }
+
+  const openSuggestionModal = async () => {
+    if(!showSuggestionModal){
+      let res = await httpService.get(`${ApiEndpoint}//dashboard/suggestionoption/${userProfile._id}`).catch(e => {});
+      if(res.status == 200){
+          setSuggestionCategory(res.data.suggestion);
+          setInputField(res.data.field);
+        console.log('ressugges', res)
+      }
+    }
+    setShowSuggestionModal(prev => !prev)
   }
 
   const onTaskClick = () => {
@@ -175,10 +224,6 @@ const SummaryBar = props => {
       return '';
     }
   };
-
-  const addField = () =>{
-    setExtraFieldForSuggestionForm(true)
-  }
 
   const authenticateUserRole = authenticateUser ? authenticateUser.role : '';
   if (userProfile !== undefined && summaryBarData !== undefined) {
@@ -382,132 +427,107 @@ const SummaryBar = props => {
               &nbsp;&nbsp;
               <div className="image_frame">
                 {matchUser ? (
-                  <img className="sum_img" src={report_icon} alt="" onClick={() => setShowSuggestionModal(prev => !prev)} />
+                  <img className="sum_img" src={suggestions_icon} alt="" onClick={openSuggestionModal} />
                 ) : (
-                  <img className="sum_img" src={report_icon} alt="" />
+                  <img className="sum_img" src={suggestions_icon} alt="" />
                 )}
               </div>
             </div>
           </Col>
-          <Modal isOpen={report.in} toggle={openReport}>
-            <ModalHeader>Bug Report</ModalHeader>
+
+          <Modal isOpen={showSuggestionModal} toggle={openSuggestionModal}>
+            <ModalHeader>User Suggestion</ModalHeader>
             <ModalBody>
-              <Form onSubmit={sendBugReport} id="bugReportForm">
+              {userProfile.role === 'Manager' && !extraFieldForSuggestionForm &&
                 <FormGroup>
-                  <Label for="title"></Label>
-                  <Input
-                    type="textbox"
-                    name="title"
-                    id="title"
-                    required
-                    placeholder=""
-                  />
+                  <Button onClick={()=> setExtraFieldForSuggestionForm('suggestion')} type="button" color="success" size="md">
+                    Add new category
+                  </Button>{' '}
+                  &nbsp;&nbsp;&nbsp;
+                  <Button  onClick={()=> setExtraFieldForSuggestionForm('field')} type="button" color="success" size="md">
+                    Add new field
+                  </Button>
                 </FormGroup>
+              }
+               
+              {extraFieldForSuggestionForm &&
+                 <Form onSubmit={addField} id="newFieldForm" style={{border:'1px solid gray', padding:'5px 10px', margin: '5px 10px'}}>
+                    <FormGroup>
+                      <Label for="newField">{extraFieldForSuggestionForm === 'field' ? 'Add Field Name' : 'Add suggestion category'}</Label>
+                        <Input
+                          type="textarea"
+                          name="newField"
+                          id="newField"
+                          required
+                        /> 
+                    </FormGroup>
+                    <Button type="submit" color="success" size="md">
+                       Add
+                    </Button>{' '}
+                    &nbsp;&nbsp;&nbsp;
+                    <Button onClick={()=>  setExtraFieldForSuggestionForm('')} type="button" color="danger" size="md">
+                       cancel
+                    </Button>
+                 </Form>
+              }
+              <Form onSubmit={sendUserSuggestion} id="suggestionForm">
                 <FormGroup>
-                  <Label for="">
-                    {' '}
-                    {' '}
-                  </Label>
-                  <Input
-                    type="textarea"
-                    name="environment"
-                    id="environment"
-                    required
-                    placeholder=""
-                  />
-                </FormGroup>
-                <FormGroup>
-                  <Label for="">
-                    {' '}
-                  </Label>
-                  <Input
-                    type="textarea"
-                    name="reproduction"
-                    id="reproduction"
-                    required
-                    placeholder=""
-                  />
-                </FormGroup>
-                <FormGroup>
-                  <Label for=""></Label>
-                  <Input
-                    type="textarea"
-                    name="expected"
-                    id="expected"
-                    required
-                    placeholder=""
-                  />
-                </FormGroup>
-                <FormGroup>
-                  <Label for=""></Label>
-                  <Input
-                    type="textarea"
-                    name="actual"
-                    id="actual"
-                    required
-                    placeholder=""
-                  />
-                </FormGroup>
-                <FormGroup>
-                  <Label for=""></Label>
-                  <Input
-                    type="textarea"
-                    name="visual"
-                    id="visual"
-                    required
-                    placeholder=""
-                  />
-                </FormGroup>
-                <FormGroup>
-                  <Label for=""></Label>
-                  <Input type="select" name="severity" id="severity" required>
-                    <option hidden disabled defaultValue value>
+                  <Label for="suggestioncate">Please select a category of your suggestion:</Label>
+                  <Input onChange={()=> setTakeInput(true)} type="select" name="suggestioncate" id="suggestioncate" required>
+                    <option disabled value selected>
                       {' '}
                       -- select an option --{' '}
                     </option>
-                    <option></option>
-                    <option></option>
-                    <option></option>
+                    {suggestionCategory.map((item,index) => {
+                        return <option value={item}>{`${index+1}. ${item}`}</option>
+                    })}
                   </Input>
                 </FormGroup>
-                <fieldset>
-                  <legend>Would you like a followup/reply regarding this feedback?</legend>
-
-                  <div>
-                    <input type="checkbox" id="yes" name="yes" checked/>
-                    <label for="yes">Yes</label>
-                  </div>
-
-                  <div>
-                    <input type="checkbox" id="no" name="no"/>
-                    <label for="no">No</label>
-                 </div>
-                </fieldset>
-                {userProfile.role === 'Owner' && 
-                  <button onClick={()=> setExtraFieldForSuggestionForm(prev => !prev)}>
-                    Add Field
-                  </button>
-                }
-                {extraFieldForSuggestionForm &&
-                 <Form onSubmit={addField}>
-                    <FormGroup>
-                      <Label for="newField">Add Field Name</Label>
-                        <Input
+                  {takeInput &&
+                  <FormGroup>
+                  <Label for="suggestion">
+                    {' '}
+                    Write your suggestion.{' '}
+                  </Label>
+                  <Input
                     type="textarea"
-                    name="newField"
-                    id="newField"
+                    name="suggestion"
+                    id="suggestion"
                     required
-                    placeholder="New Field Name"
-                        /> 
-                    </FormGroup>
-                 </Form>
-                 }
+                    placeholder="I suggest ..."
+                  />
+                 </FormGroup>}
+                {inputFiled.length > 0 && inputFiled.map(item =>
+                  <FormGroup>
+                  <Label for="title">{item} </Label>
+                  <Input
+                    type="textbox"
+                    name={item}
+                    id={item}
+                    required
+                    placeholder=""
+                  />
+                 </FormGroup>
+                )}
+                <FormGroup tag="fieldset" id='fieldset'>
+                  <legend style={{fontSize:'16px'}}>Would you like a followup/reply regarding this feedback?</legend>
+                  <FormGroup check>
+                    <Label check>
+                      <Input type="radio" name="confirm" value={'yes'}/> Yes
+                    </Label>
+                  </FormGroup>
+                  <FormGroup check>
+                    <Label check>
+                      <Input type="radio" name="confirm" value={'no'}/> No
+                    </Label>
+                  </FormGroup>
+                </FormGroup>
                 <FormGroup>
                   <Button type="submit" color="primary" size="lg">
                     Submit
                   </Button>{' '}
                   &nbsp;&nbsp;&nbsp;
-                  <Button onClick={openReport} color="danger" size="lg">
+                  <Button onClick={()=> setShowSuggestionModal(prev => !prev)} color="danger" size="lg">
                     Close
                   </Button>
                 </FormGroup>
@@ -515,10 +535,10 @@ const SummaryBar = props => {
             </ModalBody>
           </Modal>
 
-          <Modal isOpen={showSuggestionModal} toggle={()=> setShowSuggestionModal(prev => !prev)}>
-            <ModalHeader>User Suggestion</ModalHeader>
+          <Modal  isOpen={report.in} toggle={openReport} >
+            <ModalHeader>Bug Report</ModalHeader>
             <ModalBody>
-              <Form onSubmit={sendUserSuggestion} id="suggestionForm">
+              <Form onSubmit={sendBugReport} id="bugReportForm">
                 <FormGroup>
                   <Label for="title">[Feature Name] Bug Title </Label>
                   <Input
