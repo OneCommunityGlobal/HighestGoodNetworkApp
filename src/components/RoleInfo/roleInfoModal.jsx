@@ -1,51 +1,7 @@
-// // RoleInfoModal.js
-// import React, { useState, useEffect } from 'react';
-// import { useSelector, useDispatch } from 'react-redux';
-// import { Modal, ModalHeader, ModalBody } from 'reactstrap';
-
-// const RoleInfoModal = ({ role, isOpen, toggle }) => {
-//   const dispatch = useDispatch();
-//   // Get the text from the store
-//   const storedText = useSelector(state => state.roleInfo.roleInfo);
-
-//   // Local state for the input
-//   const [inputText, setInputText] = useState(storedText);
-
-//   // Update the input field when the stored text changes
-//   useEffect(() => {
-//     setInputText(storedText);
-//   }, [storedText]);
-
-//   // Handle input change
-//   const handleInputChange = (event) => {
-//     setInputText(event.target.value);
-//   };
-
-//   // Update the stored text when save button is clicked
-//   const handleSave = () => {
-//     dispatch({ type: 'SET_TEXT', payload: inputText });
-//     toggle(false);
-//   };
-
-//   if (!isOpen) {
-//     return null;
-//   }
-
-//   return (
-//     <div>
-//       <Modal toggle={toggle} isOpen={isOpen}>
-//         <span className="close" onClick={() => toggle(false)}>&times;</span>
-//         <input type="text" value={inputText} onChange={handleInputChange} />
-//         <button onClick={handleSave}>Save</button>
-//       </Modal>
-//     </div>
-//   );
-// };
-
-// export default RoleInfoModal;// TextModal.js
+// export default RoleInfoModal;
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Modal, ModalBody, Input, ModalHeader, Button, ModalFooter } from 'reactstrap';
+import { Modal, ModalBody, Input, ModalHeader, Button, ModalFooter, CustomInput } from 'reactstrap';
 
 class RoleInfoModal extends Component {
   constructor(props) {
@@ -74,10 +30,12 @@ class RoleInfoModal extends Component {
     const { roleInfo } = this.state;
 
     return (
-      <Modal isOpen={isOpen} toggle={toggle}>
+      <Modal isOpen={isOpen} toggle={toggle} size="lg">
         <ModalHeader>Welcome to Role Class Information Page!</ModalHeader>
         <ModalBody>
-          <Input 
+          <Input
+            rows={10}
+            type='textarea'
             disabled={!this.state.editing}
             value={roleInfo}
             onChange={this.handleInputChange}
