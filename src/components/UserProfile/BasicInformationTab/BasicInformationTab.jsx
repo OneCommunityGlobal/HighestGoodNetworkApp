@@ -12,7 +12,7 @@ import hasPermission from 'utils/permissions';
 import SetUpFinalDayButton from 'components/UserManagement/SetUpFinalDayButton';
 import styles from './BasicInformationTab.css';
 import { boxStyle } from 'styles';
-import RoleInfoModal from 'components/RoleInfo/roleInfo';
+import RoleInfoModal from '../../RoleInfo/roleInfoModal';
 
 const Name = props => {
   const { userProfile, setUserProfile, formValid, setFormValid, canEdit } = props;
@@ -277,6 +277,10 @@ const BasicInformationTab = props => {
   const [timeZoneFilter, setTimeZoneFilter] = useState('');
   const [location, setLocation] = useState('');
   const key = useSelector(state => state.timeZoneAPI.userAPIKey);
+  const [roleInfoModalOpen, setroleInfoModalOpen] = useState(false);
+  const toggleRoleInfoModal = () => {
+    setroleInfoModalOpen(!roleInfoModalOpen);
+  }
 
   const onClickGetTimeZone = () => {
     if (!location) {
@@ -449,6 +453,26 @@ const BasicInformationTab = props => {
             ) : (
               `${userProfile.role}`
             )}
+            {(userProfile.role !== 'Volunteer') &&(
+            <div>
+              <i
+              data-toggle="tooltip"
+                    data-placement="right"
+                    title="Click for user class information"
+                    style={{ fontSize: 24, cursor: 'pointer', color: '#00CCFF'}}
+                    aria-hidden="true"
+                    className="fa fa-info-circle"
+                    onClick={() => { // populate roleInfo state with role
+                          toggleRoleInfoModal(true); // open modal
+                        }}
+                  /> 
+                  <RoleInfoModal 
+                      role={role} 
+                      isOpen={roleInfoModalOpen} 
+                      toggle={toggleRoleInfoModal} 
+                    />
+            </div>
+          )}
           </Col>
         </Row>
         {canEdit && (
