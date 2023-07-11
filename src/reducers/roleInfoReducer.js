@@ -3,7 +3,7 @@ const initialState = {
   roleInfo: "",
 };
 
-export default function roleInfoReducer(state = initialState, action) {
+export const roleInfoReducer = (state = initialState, action) => {
   switch (action.type) {
     case 'SET_ROLEINFO':
       return {

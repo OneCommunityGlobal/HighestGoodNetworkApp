@@ -17,6 +17,7 @@ describe('permissions management page structure', () => {
   beforeEach(() => {
     store = mockStore({
       role: rolesMock.role,
+      roleInfo: { roleInfo: {} },
     });
     store.dispatch = jest.fn();
 
