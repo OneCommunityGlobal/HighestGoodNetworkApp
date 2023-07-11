@@ -6,7 +6,6 @@ const initialState = {
   error: null,
 };
 
-// eslint-disable-next-line import/prefer-default-export
 export const weeklySummariesReportReducer = (state = initialState, action) => {
   switch (action.type) {
     case actions.FETCH_SUMMARIES_REPORT_BEGIN:
