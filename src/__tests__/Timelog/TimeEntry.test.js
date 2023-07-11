@@ -6,9 +6,16 @@ import configureStore from 'redux-mock-store';
 import moment from 'moment-timezone';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
-import { authMock, userProfileMock, timeEntryMock, userProjectMock, rolesMock } from '../mockStates';
+import {
+  authMock,
+  userProfileMock,
+  timeEntryMock,
+  userProjectMock,
+  rolesMock,
+} from '../mockStates';
 import { renderWithProvider } from '../utils';
 import TimeEntry from '../../components/Timelog/TimeEntry';
+import { MemoryRouter } from 'react-router-dom';
 
 const mockStore = configureStore([thunk]);
 const weekDayRegex = /monday|tuesday|wednesday|thursday|friyday|saturday|sunday/i;
@@ -28,11 +35,16 @@ describe('<TimeEntry />', () => {
       auth: authMock,
       userProjects: userProjectMock,
       userProfile: userProfileMock,
-      role: rolesMock.role
+      role: rolesMock.role,
     });
-    renderWithProvider(<TimeEntry data={data} displayYear />, {
-      store,
-    });
+    renderWithProvider(
+      <MemoryRouter initialEntries={['/']}>
+        <TimeEntry data={data} displayYear />
+      </MemoryRouter>,
+      {
+        store,
+      },
+    );
   });
   it('should render <TimeEntry /> without crashing', () => {});
   it('should render the correct date, year, and the day of the week', () => {
