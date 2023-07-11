@@ -69,6 +69,8 @@ const EditTaskModal = props => {
   const [hoursMost, setHoursMost] = useState(thisTask?.hoursMost);
   // hour estimate
   const [hoursEstimate, setHoursEstimate] = useState(thisTask?.estimatedHours);
+  //deadline count
+  const [deadlineCount, setDeadlineCount] = useState(thisTask?.deadlineCount);
   // hours warning
   const [hoursWarning, setHoursWarning] = useState(false);
 
@@ -103,6 +105,7 @@ const EditTaskModal = props => {
     setHoursWorst(thisTask?.hoursWorst);
     setHoursMost(thisTask?.hoursMost);
     setHoursEstimate(thisTask?.estimatedHours);
+    setDeadlineCount(thisTask?.deadlineCount);
     setLinks(thisTask?.links);
     setCategory(thisTask?.category);
     setWhyInfo(thisTask?.whyInfo);
@@ -197,7 +200,13 @@ const EditTaskModal = props => {
   };
 
   // helper for updating task
-  const updateTask = () => {
+  const updateTask = async () => {
+    let newDeadlineCount = deadlineCount;
+    if (thisTask?.estimatedHours !== hoursEstimate) {
+      newDeadlineCount = deadlineCount + 1;
+      setDeadlineCount(newDeadlineCount);
+    }
+
     const updatedTask = {
       taskName,
       priority,
@@ -208,6 +217,7 @@ const EditTaskModal = props => {
       hoursWorst: parseFloat(hoursWorst),
       hoursMost: parseFloat(hoursMost),
       estimatedHours: parseFloat(hoursEstimate),
+      deadlineCount: parseFloat(newDeadlineCount),
       startedDatetime: startedDate,
       dueDatetime: dueDate,
       links,
@@ -217,7 +227,7 @@ const EditTaskModal = props => {
       category,
     };
 
-    props.updateTask(
+    await props.updateTask(
       props.taskId,
       updatedTask,
       hasPermission(role, 'editTask', roles, userPermissions),
@@ -228,8 +238,8 @@ const EditTaskModal = props => {
 
     if (props.tasks.error === 'none') {
       toggle();
+      window.location.reload();
     }
-    window.location.reload();
   };
 
   const handleAssign = value => {
@@ -481,7 +491,7 @@ const EditTaskModal = props => {
                     {links?.map((link, i) =>
                       link.length > 1 ? (
                         <div key={i} className="task-link">
-                          <a href={link} target="_blank">
+                          <a href={link} target="_blank" rel="noreferrer">
                             {link.slice(-10)}
                           </a>
                           <span className="remove-link" onClick={() => removeLink(i)}>

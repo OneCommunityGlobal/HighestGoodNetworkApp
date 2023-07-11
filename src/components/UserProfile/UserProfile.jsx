@@ -120,7 +120,7 @@ function UserProfile(props) {
   }, [blueSquareChanged]);
 
   const checkIsTeamsEqual = () => {
-    setOriginalTeams(teams)
+    setOriginalTeams(teams);
     const originalTeamProperties = [];
     originalTeams?.forEach(team => {
       for (const [key, value] of Object.entries(team)) {
@@ -152,7 +152,7 @@ function UserProfile(props) {
   };
 
   const checkIsProjectsEqual = () => {
-    setOriginalProjects(projects)
+    setOriginalProjects(projects);
     const originalProjectProperties = [];
     originalProjects?.forEach(project => {
       for (const [key, value] of Object.entries(project)) {
@@ -468,11 +468,6 @@ function UserProfile(props) {
     loadUserProfile();
   }, [shouldRefresh]);
 
-  useEffect(() => {
-    setShowLoading(true);
-    loadUserProfile();
-  }, [props?.match?.params?.userId]);
-
   /**
    *
    * UserProfile.jsx and its subsomponents are being refactored to avoid the use of this monolithic function.
@@ -632,7 +627,7 @@ function UserProfile(props) {
           <Col md="8">
             {!isProfileEqual || !isTasksEqual || !isTeamsEqual || !isProjectsEqual ? (
               <Alert color="warning">
-                Please click on "Save changes" to save the changes you have made.{' '}
+                Please click on &quot;Save changes&quot; to save the changes you have made.{' '}
               </Alert>
             ) : null}
             <div className="profile-head">
