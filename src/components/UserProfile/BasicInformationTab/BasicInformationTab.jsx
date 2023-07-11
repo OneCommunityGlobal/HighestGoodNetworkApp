@@ -12,6 +12,7 @@ import hasPermission from 'utils/permissions';
 import SetUpFinalDayButton from 'components/UserManagement/SetUpFinalDayButton';
 import styles from './BasicInformationTab.css';
 import { boxStyle } from 'styles';
+import RoleInfoModal from 'components/RoleInfo/roleInfo';
 
 const Name = props => {
   const { userProfile, setUserProfile, formValid, setFormValid, canEdit } = props;
