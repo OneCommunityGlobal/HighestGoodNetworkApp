@@ -440,7 +440,6 @@ const BasicInformationTab = props => {
                   id="role"
                   name="role"
                   className="form-control"
-                  style={{width:"100px"}}
                 >
                   {roles.map(({ roleName }) => {
                     if (roleName === 'Owner') return;
@@ -454,16 +453,17 @@ const BasicInformationTab = props => {
             ) : (
               `${userProfile.role}`
             )}
+            </Col>
             {(userProfile.role !== 'Volunteer') &&(
               <>
               <i
               data-toggle="tooltip"
                     data-placement="right"
                     title="Click for user class information"
-                    style={{ fontSize: 20, cursor: 'pointer', color: '#00CCFF'}}
+                    style={{ fontSize: 25, cursor: 'pointer', color: '#00CCFF'}}
                     aria-hidden="true"
                     className="fa fa-info-circle"
-                    onClick={() => {toggleRoleInfoModal(true); // open modal
+                    onMouseOver={() => {toggleRoleInfoModal(true); // open modal
                         }}
                   /> 
                   <RoleInfoModal 
@@ -473,7 +473,7 @@ const BasicInformationTab = props => {
                     />
 
               </>)}
-          </Col>
+          
         </Row>
         {canEdit && (
           <Row>

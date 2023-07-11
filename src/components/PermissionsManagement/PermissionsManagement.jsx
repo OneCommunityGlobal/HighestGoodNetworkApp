@@ -10,10 +10,16 @@ import { getAllUserProfile } from 'actions/userManagement';
 import UserPermissionsPopUp from './UserPermissionsPopUp';
 import { useHistory } from 'react-router-dom';
 import { boxStyle } from 'styles';
+import RoleInfoModal from '../RoleInfo/roleInfoModal'
 
 const PermissionsManagement = ({ getAllRoles, roles, auth, getUserRole, userProfile }) => {
   const [isNewRolePopUpOpen, setIsNewRolePopUpOpen] = useState(false);
   const [isUserPermissionsOpen, setIsUserPermissionsOpen] = useState(false);
+  //add roleInfo
+  const [roleInfoModalOpen, setroleInfoModalOpen] = useState(false);
+  const toggleRoleInfoModal = () => {
+    setroleInfoModalOpen(!roleInfoModalOpen);
+  }
   let history = useHistory();
 
   const togglePopUpNewRole = () => {
@@ -49,9 +55,23 @@ const PermissionsManagement = ({ getAllRoles, roles, auth, getUserRole, userProf
                 className="role-name"
               >
                 {roleName}
-              </button>
-            );
-          })}
+                <i
+                data-toggle="tooltip"
+                      data-placement="right"
+                      title="Click for user class information"
+                      style={{ fontSize: 25, cursor: 'pointer', color: '#00CCFF'}}
+                      aria-hidden="true"
+                      className="fa fa-info-circle"
+                      onMouseOver={() => {toggleRoleInfoModal(true); // open modal
+                          }}
+                    /> 
+                    <RoleInfoModal 
+                        role={userProfile?.role} 
+                        isOpen={roleInfoModalOpen} 
+                        toggle={toggleRoleInfoModal} 
+                      />
+              </button>                
+            )})};
         </div>
         {userProfile?.role === 'Owner' && (
           <div className="buttons-container">
