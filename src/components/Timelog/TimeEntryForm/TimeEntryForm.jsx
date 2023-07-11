@@ -50,6 +50,7 @@ import { boxStyle } from 'styles';
  * @returns
  */
 const TimeEntryForm = props => {
+  const location = useLocation()
   const { userId, edit, data, isOpen, toggle, timer, resetTimer } = props;
 
   const initialFormValues = {
@@ -139,7 +140,7 @@ const TimeEntryForm = props => {
         setTasks(activeTasks || []);
       })
       .catch(err => console.log(err));
-  }, [props.isTaskUpdated]);
+  }, [props.isTaskUpdated, location]);
 
   //grab form data before editing
   useEffect(() => {
