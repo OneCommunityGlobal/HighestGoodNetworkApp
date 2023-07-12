@@ -324,7 +324,10 @@ const LeaderBoard = ({
                   </Link>
                 </td>
                 <td className="align-middle">
-                  <span title="Total time">{item.totaltime}</span>
+                  <span 
+                  title="Total time"
+                  className={ item.totalintangibletime_hrs > 0 ? 'boldClass' : null }
+                  >{item.totaltime}</span>
                 </td>
               </tr>
             ))}
