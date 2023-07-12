@@ -39,6 +39,12 @@ const server = setupServer(
   rest.get('*/api/ownerMessage', (req, res, ctx) => {
     return res(ctx.status(200), ctx.json({}))
   }),
+  rest.get('https://*/api/ownerStandardMessage', (req, res, ctx) => {
+    return res(ctx.status(200), ctx.json({}))
+  }),
+  rest.get('https://*/api/ownerMessage', (req, res, ctx) => {
+    return res(ctx.status(200), ctx.json({}))
+  }),
   //prevents errors when loading header
   rest.get('http*/api/userprofile/*', (req, res, ctx) => {
     return res(ctx.status(200), ctx.json({}));
