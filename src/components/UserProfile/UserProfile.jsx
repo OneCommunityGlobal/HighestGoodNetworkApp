@@ -537,17 +537,20 @@ function UserProfile(props) {
   const userPermissions = props.auth.user?.permissions?.frontPermissions;
 
   const authEmail = props.userProfile?.email;
+  const checkHasPermissions = hasPermission(
+    requestorRole,
+    'editUserProfile',
+    roles,
+    userPermissions,
+  )
+  const isUserSelf = targetUserId === requestorId;
+
+  const checkCanEditProfile = checkHasPermissions || isUserSelf
   const editPermissionForAdmin = (denyPermissionToSelfUpdateDevAdminDetails(
     userProfile.email,
     isUserSelf))
     || denyPermissionForOthersToUpdateDevAdminDetails(userProfile.email, authEmail)
-    ? false : hasPermission(
-      requestorRole,
-      'editUserProfile',
-      roles,
-      userPermissions,
-    );
-  const isUserSelf = targetUserId === requestorId;
+    ? false : checkCanEditProfile;
   const canEditProfile =
     userProfile.role === 'Owner'
       ? hasPermission(requestorRole, 'addDeleteEditOwners', roles, userPermissions)
