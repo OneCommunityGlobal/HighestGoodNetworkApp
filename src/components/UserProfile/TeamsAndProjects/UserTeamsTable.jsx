@@ -4,7 +4,9 @@ import './TeamsAndProjects.css';
 import ToggleSwitch from '../UserProfileEdit/ToggleSwitch';
 import hasPermission from '../../../utils/permissions';
 import { useSelector } from 'react-redux';
-import './UserTeamsTable.css';
+import styles from './UserTeamsTable.css';
+import { boxStyle } from 'styles';
+
 
 const UserTeamsTable = props => {
   const { roles } = useSelector(state => state.role);
@@ -47,6 +49,7 @@ const UserTeamsTable = props => {
                     onClick={() => {
                       props.onButtonClick();
                     }}
+                    style={boxStyle}
                   >
                     Assign Team
                   </Button>
@@ -86,6 +89,7 @@ const UserTeamsTable = props => {
                           onClick={e => {
                             props.onDeleteClick(team._id);
                           }}
+                          style={boxStyle}
                         >
                           Delete
                         </Button>
@@ -137,7 +141,10 @@ const UserTeamsTable = props => {
             <span className="teams-span">Teams</span>
           </Col>
           {props.edit && props.role && (
-            <Col md="12" className="centered-col">
+            <Col
+              md="12"
+              style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+            >
               {hasPermission(props.role, 'assignTeamToUser', roles, userPermissions) ? (
                 <Button
                   className="btn-addteam"
@@ -175,7 +182,13 @@ const UserTeamsTable = props => {
                     <td>{`${team.teamName}`}</td>
                     {props.edit && props.role && (
                       <td>
-                        <div className="centered-col">
+                        <div
+                          style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                          }}
+                        >
                           <Button
                             disabled={
                               !hasPermission(props.role, 'assignTeamToUser', roles, userPermissions)

@@ -22,6 +22,7 @@ import {
   updateOwnerStandardMessage,
   deleteOwnerStandardMessage,
 } from '../../actions/ownerStandardMessageAction';
+import { boxStyle } from 'styles';
 
 function OwnerMessage({
   auth,
@@ -75,9 +76,7 @@ function OwnerMessage({
     if (ownerStandardMessage) {
       setStandardMessage(ownerStandardMessage);
     }
-    newMessage 
-    ? setDisableButtons(false)
-    : setDisableButtons(true)
+    newMessage ? setDisableButtons(false) : setDisableButtons(true);
   }, [newMessage]);
 
   async function handleImageUpload(event) {
@@ -148,29 +147,29 @@ function OwnerMessage({
 
   return (
     <div className="message-container">
-      {message !== ''
-        ? (isImage.test(message) 
-            ? <img src={message} alt="" />
-            : <span className="message">{message}</span>
-          )
-        : (isImage.test(standardMessage) 
-            ? <img src={standardMessage} alt="" />
-            : <span className="message">{standardMessage}</span>
-          )
-      }
+      {message !== '' ? (
+        isImage.test(message) ? (
+          <img src={message} alt="" />
+        ) : (
+          <span className="message">{message}</span>
+        )
+      ) : isImage.test(standardMessage) ? (
+        <img src={standardMessage} alt="" />
+      ) : (
+        <span className="message">{standardMessage}</span>
+      )}
 
       {user.role == 'Owner' && (
         <div className="icon-wrapper">
           <button onClick={toggle}>
             <img src={editIcon} alt="edit icon" />
           </button>
-          
-          {
-            message 
-            && <button onClick={toggleDeleteWarning} style={{ marginLeft: '0.5rem'}} >
-                <img src={deleteIcon} alt="edit icon" />
-               </button>
-          }
+
+          {message && (
+            <button onClick={toggleDeleteWarning} style={{ marginLeft: '0.5rem' }}>
+              <img src={deleteIcon} alt="edit icon" />
+            </button>
+          )}
         </div>
       )}
 
@@ -186,8 +185,12 @@ function OwnerMessage({
             disabled={disableTextInput}
             className="inputs"
           />
-          <p className="paragraph" style={{marginTop: '1rem'}}>Or upload a picture:</p>
-          <span style={{marginTop: '-1.25rem', marginBottom: '1rem', fontSize: '.8rem'}}>(max size 1000 x 400 pixels and 100 KB)</span>
+          <p className="paragraph" style={{ marginTop: '1rem' }}>
+            Or upload a picture:
+          </p>
+          <span style={{ marginTop: '-1.25rem', marginBottom: '1rem', fontSize: '.8rem' }}>
+            (max size 1000 x 400 pixels and 100 KB)
+          </span>
           <Input
             id="image"
             name="file"
@@ -198,10 +201,24 @@ function OwnerMessage({
           />
         </ModalBody>
         <ModalFooter style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <Button color="info" onClick={handleStandardMessage} disabled={disableButtons}>
-            {standardMessage ? <span style={{color: 'white'}}>Update as Standard Message</span> : <span style={{color: 'white'}}>Create as Standard Message</span>}
+          <Button
+            color="info"
+            onClick={handleStandardMessage}
+            disabled={disableButtons}
+            style={boxStyle}
+          >
+            {standardMessage ? (
+              <span style={{ color: 'white' }}>Update as Standard Message</span>
+            ) : (
+              <span style={{ color: 'white' }}>Create as Standard Message</span>
+            )}
           </Button>
-          <Button color="primary" onClick={handleMessage} disabled={disableButtons}>
+          <Button
+            color="primary"
+            onClick={handleMessage}
+            disabled={disableButtons}
+            style={boxStyle}
+          >
             {message ? 'Update' : 'Create'}
           </Button>
         </ModalFooter>
@@ -211,10 +228,10 @@ function OwnerMessage({
           <h4>Do you really want to delete the message?</h4>
         </ModalBody>
         <ModalFooter>
-          <Button color="secondary" onClick={toggleDeleteWarning}>
+          <Button color="secondary" onClick={toggleDeleteWarning} style={boxStyle}>
             Cancel
           </Button>
-          <Button color="danger" onClick={handleDeleteMessage}>
+          <Button color="danger" onClick={handleDeleteMessage} style={boxStyle}>
             Delete
           </Button>
         </ModalFooter>
@@ -225,7 +242,7 @@ function OwnerMessage({
           <span>Only .jpg, .jpeg and .png formats are accepted.</span>
         </ModalBody>
         <ModalFooter>
-          <Button color="danger" onClick={toggleWrongPictureFormatWarning}>
+          <Button color="danger" onClick={toggleWrongPictureFormatWarning} style={boxStyle}>
             Close
           </Button>
         </ModalFooter>
@@ -250,7 +267,8 @@ const mapDispatchToProps = dispatch => ({
   deleteOwnerMessage: () => dispatch(deleteOwnerMessage()),
 
   getOwnerStandardMessage: () => dispatch(getOwnerStandardMessage()),
-  createOwnerStandardMessage: ownerStandardMessage => dispatch(createOwnerStandardMessage(ownerStandardMessage)),
+  createOwnerStandardMessage: ownerStandardMessage =>
+    dispatch(createOwnerStandardMessage(ownerStandardMessage)),
   updateOwnerStandardMessage: (ownerStandardMessageId, ownerStandardMessage) =>
     dispatch(updateOwnerStandardMessage(ownerStandardMessageId, ownerStandardMessage)),
   deleteOwnerStandardMessage: () => dispatch(deleteOwnerStandardMessage()),

@@ -9,11 +9,17 @@ import { fetchAllTasks, addNewTask } from '../../../../../actions/task';
 import { DUE_DATE_MUST_GREATER_THAN_START_DATE } from '../../../../../languages/en/messages';
 import 'react-day-picker/lib/style.css';
 import TagsSearch from '../components/TagsSearch';
+import { boxStyle } from 'styles';
 
 function AddTaskModal(props) {
   const tasks = props.tasks.taskItems;
-  const [members] = useState(props.projectMembers || props.projectMembers.members);
-  const foundedMembers = [];
+
+  // members
+  const [members, setMembers] = useState([]);
+  useEffect(() => {
+    const activeUsers = props.projectMembers.members.filter(member => member.isActive);
+    setMembers(activeUsers);
+  }, [props.projectMembers.members]);
 
   // modal
   const [modal, setModal] = useState(false);
@@ -24,7 +30,7 @@ function AddTaskModal(props) {
   const setToggle = () => {
     try {
       props.openChild();
-    } catch {}
+    } catch { }
     toggle();
   };
 
@@ -47,7 +53,7 @@ function AddTaskModal(props) {
   const [assigned, setAssigned] = useState(true);
 
   // status
-  const [status, setStatus] = useState('Started');
+  const [status, setStatus] = useState(true);
 
   // hour best
   const [hoursBest, setHoursBest] = useState(0);
@@ -106,45 +112,6 @@ function AddTaskModal(props) {
         newNum = `${tasks.filter(task => task.level === 1).length + 1}`;
       }
     }
-  };
-
-  const [foundMembersHTML, setfoundMembersHTML] = useState('');
-  const findMembers = () => {
-    const memberList = members.members ? props.projectMembers.members : members;
-    console.log('findMembers', memberList);
-    for (let i = 0; i < memberList.length; i++) {
-      console.log('project members', memberList[i]);
-
-      if (
-        `${memberList[i].firstName} ${memberList[i].lastName}`
-          .toLowerCase()
-          .includes(memberName.toLowerCase())
-      ) {
-        foundedMembers.push(memberList[i]);
-      }
-    }
-
-    const html = foundedMembers.map((elm, i) => (
-      <div key={`found-member-${i}`}>
-        <a href={`/userprofile/${elm._id}`} target="_blank" rel="noreferrer">
-          <input
-            type="text"
-            className="task-resouces-input"
-            value={`${elm.firstName} ${elm.lastName}`}
-            disabled
-          />
-        </a>
-        <button
-          data-tip="Add this member"
-          className="task-resouces-btn"
-          type="button"
-          onClick={() => addResources(elm._id, elm.firstName, elm.lastName, elm.profilePic)}
-        >
-          <i className="fa fa-plus" aria-hidden="true" />
-        </button>
-      </div>
-    ));
-    setfoundMembersHTML(html);
   };
 
   const removeResource = userID => {
@@ -342,14 +309,14 @@ function AddTaskModal(props) {
       if (props.tasks.error === 'none') {
         toggle();
         getNewNum();
+        setTaskName('');
       }
     }, 1000);
   };
 
   useEffect(() => {
     if (props.level >= 1) {
-      const categoryMother = props.tasks.taskItems.find(({ _id }) => _id === props.taskId)
-        .category;
+      const categoryMother = props.tasks.taskItems.find(({ _id }) => _id === props.taskId).category;
       if (categoryMother) {
         setCategory(categoryMother);
       }
@@ -372,6 +339,7 @@ function AddTaskModal(props) {
             className="btn btn-primary btn-sm margin-left"
             onClick={() => paste()}
             disabled={hoursWarning}
+            style={boxStyle}
           >
             Paste
           </button>
@@ -380,6 +348,7 @@ function AddTaskModal(props) {
             size="small"
             className="btn btn-danger btn-sm margin-left"
             onClick={() => clear()}
+            style={boxStyle}
           >
             Reset
           </button>
@@ -387,7 +356,7 @@ function AddTaskModal(props) {
         <ModalBody>
           <ReactTooltip />
 
-          <table className="table table-bordered">
+          <table className="table table-bordered responsive">
             <tbody>
               <tr>
                 <td scope="col" data-tip="WBS ID">
@@ -423,7 +392,7 @@ function AddTaskModal(props) {
                   <div>
                     <TagsSearch
                       placeholder="Add resources"
-                      members={members.members}
+                      members={members}
                       addResources={addResources}
                       removeResource={removeResource}
                       resourceItems={resourceItems}
@@ -442,7 +411,8 @@ function AddTaskModal(props) {
                         id="true"
                         name="Assigned"
                         value={true}
-                        onChange={() => setAssigned(true)}
+                        checked={assigned}
+                        onClick={() => setAssigned(true)}
                       />
                       <label className="form-check-label" htmlFor="true">
                         Yes
@@ -455,7 +425,8 @@ function AddTaskModal(props) {
                         id="false"
                         name="Assigned"
                         value={false}
-                        onChange={() => setAssigned(false)}
+                        checked={!assigned}
+                        onClick={() => setAssigned(false)}
                       />
                       <label className="form-check-label" htmlFor="false">
                         No
@@ -475,7 +446,8 @@ function AddTaskModal(props) {
                         id="started"
                         name="started"
                         value={true}
-                        onChange={() => setStatus(true)}
+                        checked={status}
+                        onClick={() => setStatus(true)}
                       />
                       <label className="form-check-label" htmlFor="started">
                         Started
@@ -488,7 +460,8 @@ function AddTaskModal(props) {
                         id="notStarted"
                         name="started"
                         value={false}
-                        onChange={() => setStatus(false)}
+                        checked={!status}
+                        onClick={() => setStatus(false)}
                       />
                       <label className="form-check-label" htmlFor="notStarted">
                         Not Started
@@ -502,7 +475,7 @@ function AddTaskModal(props) {
                   Hours
                 </td>
                 <td scope="col" data-tip="Hours - Best-case" className="w-100">
-                  <div className="d-inline py-2">
+                  <div className="py-2 flex-responsive">
                     <label htmlFor="bestCase" className="text-nowrap mr-2 w-25 mr-4">
                       Best-case
                     </label>
@@ -517,13 +490,12 @@ function AddTaskModal(props) {
                       className="w-25"
                     />
                     <div className="warning">
-                      {
-                        hoursWarning ? 
-                        'Hours - Best-case < Hours - Most-case < Hours - Most-case' : ''
-                      }
+                      {hoursWarning
+                        ? 'Hours - Best-case < Hours - Most-case < Hours - Most-case'
+                        : ''}
                     </div>
                   </div>
-                  <div className="d-inline py-2">
+                  <div className="py-2 flex-responsive">
                     <label htmlFor="worstCase" className="text-nowrap mr-2  w-25 mr-4">
                       Worst-case
                     </label>
@@ -542,7 +514,7 @@ function AddTaskModal(props) {
                         : ''}
                     </div>
                   </div>
-                  <div className="d-inline py-2">
+                  <div className="py-2 flex-responsive">
                     <label htmlFor="mostCase" className="text-nowrap mr-2 w-25 mr-4">
                       Most-case
                     </label>
@@ -561,7 +533,7 @@ function AddTaskModal(props) {
                         : ''}
                     </div>
                   </div>
-                  <div className="d-inline py-2">
+                  <div className="py-2 flex-responsive">
                     <label htmlFor="Estimated" className="text-nowrap mr-2  w-25 mr-4">
                       Estimated
                     </label>
@@ -741,7 +713,7 @@ function AddTaskModal(props) {
           ) : null}
         </ModalFooter>
       </Modal>
-      <Button color="primary" size="sm" onClick={setToggle}>
+      <Button color="primary" size="sm" onClick={setToggle} style={boxStyle}>
         Add Task
       </Button>
     </div>

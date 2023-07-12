@@ -5,7 +5,11 @@ import { Button, Dropdown, DropdownButton } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { FiUser } from 'react-icons/fi';
-import { updateUserProfile, getUserProfile, getUserTask } from '../../../actions/userProfile';
+import {
+  updateUserProfileProperty,
+  getUserProfile,
+  getUserTask,
+} from '../../../actions/userProfile';
 import { getUserProjects } from '../../../actions/userProjects';
 import { getWeeklySummaries, updateWeeklySummaries } from '../../../actions/weeklySummaries';
 import moment from 'moment';
@@ -20,7 +24,7 @@ import { getPeopleReportData } from './selectors';
 import { PeopleTasksPieChart } from './components';
 import { toast } from 'react-toastify';
 import ToggleSwitch from '../../UserProfile/UserProfileEdit/ToggleSwitch';
-import { Checkbox } from 'components/common/Checkbox';
+import { Checkbox } from '../../common/Checkbox';
 
 class PeopleReport extends Component {
   constructor(props) {
@@ -140,14 +144,23 @@ class PeopleReport extends Component {
     });
   }
 
-  setRehireable(rehireValue) {
+  async setRehireable(rehireValue) {
     this.setState(state => {
       return {
         isRehireable: rehireValue,
       };
     });
-    this.props.userProfile.isRehireable = rehireValue;
-    this.props.updateUserProfile(this.props.userProfile._id, this.props.userProfile);
+
+    try {
+      await this.props.updateUserProfileProperty(
+        this.props.userProfile,
+        'isRehireable',
+        rehireValue,
+      );
+      toast.success(`You have changed the rehireable status of this user to ${rehireValue}`);
+    } catch (err) {
+      alert('An error occurred while attempting to save the rehireable status of this user.');
+    }
   }
 
   setPriority(priorityValue) {
@@ -488,14 +501,15 @@ class PeopleReport extends Component {
           </div>
           {this.state.bioStatus ? (
             <div>
-              <h5>Bio {this.state.bioStatus === "default" ? "not requested" : this.state.bioStatus}</h5>{' '}
+              <h5>
+                Bio {this.state.bioStatus === 'default' ? 'not requested' : this.state.bioStatus}
+              </h5>{' '}
               {this.state.authRole === 'Administrator' || this.state.authRole === 'Owner' ? (
                 <ToggleSwitch
-                  fontSize={"13px"}
+                  fontSize={'13px'}
                   switchType="bio"
                   state={this.state.bioStatus}
-                  handleUserProfile={
-                    (bio) => onChangeBioPosted(bio)}
+                  handleUserProfile={bio => onChangeBioPosted(bio)}
                 />
               ) : null}
             </div>
@@ -504,20 +518,16 @@ class PeopleReport extends Component {
       </ReportPage.ReportHeader>
     );
 
-    const onChangeBioPosted = async (bio) => {
-      const userId = this.state.userId || this.props.match?.params?.userId;
+    const onChangeBioPosted = async bio => {
       const bioStatus = bio;
       this.setState(state => {
         return {
           bioStatus: bioStatus,
         };
       });
-      console.log(bioStatus)
+
       try {
-        await this.props.updateUserProfile(userId, {
-          ...this.state.userProfile,
-          bioPosted: bioStatus,
-        });
+        await this.props.updateUserProfileProperty(this.props.userProfile, 'bioPosted', bioStatus);
         toast.success('You have changed the bio announcement status of this user.');
       } catch (err) {
         alert('An error occurred while attempting to save the bioPosted change to the profile.');
@@ -604,7 +614,7 @@ class PeopleReport extends Component {
 }
 export default connect(getPeopleReportData, {
   getUserProfile,
-  updateUserProfile,
+  updateUserProfileProperty,
   getWeeklySummaries,
   updateWeeklySummaries,
   getUserTask,
