@@ -7,7 +7,8 @@ import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import { ENDPOINTS } from '../utils/URL';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import routes from './../routes';
+//import routes from './../routes';
+import RoutesWrapper from './../routes';
 import { ForcePasswordUpdate } from '../components/ForcePasswordUpdate/ForcePasswordUpdate';
 import { forcePasswordUpdate as fPU } from './../actions/updatePassword';
 import { clearErrors } from './../actions/errorsActions';
@@ -97,7 +98,7 @@ describe('Force Password Update behaviour', () => {
   beforeEach(() => {
     rt = '/forcePasswordUpdate/5edf141c78f1380017b829a6';
     hist = createMemoryHistory({ initialEntries: [rt] });
-    fPUMountedPage = renderWithRouterMatch(routes, {
+    fPUMountedPage = renderWithRouterMatch(<RoutesWrapper/>, {
       initialState: mockState,
       route: rt,
       history: hist,
