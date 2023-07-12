@@ -111,29 +111,29 @@ export const Header = props => {
                   <span className="dashboard-text-link">{TIMELOG}</span>
                 </NavLink>
               </NavItem>
-              {hasPermission(user.role, "seeAllReports", roles, userPermissions) ||
-               hasPermission(user.role, "seeWeeklySummaryReports", roles, userPermissions) ? (
-              <UncontrolledDropdown nav inNavbar>
-                <DropdownToggle nav caret>
-                  <span className="dashboard-text-link">{REPORTS}</span>
-                </DropdownToggle>
-                <DropdownMenu>
-                  {hasPermission(user.role, "seeAllReports", roles, userPermissions) ? (
-                    <>
-                      <DropdownItem tag={Link} to="/reports">
-                        {REPORTS}
-                      </DropdownItem>
+              {hasPermission(user.role, 'seeAllReports', roles, userPermissions) ||
+              hasPermission(user.role, 'seeWeeklySummaryReports', roles, userPermissions) ? (
+                <UncontrolledDropdown nav inNavbar>
+                  <DropdownToggle nav caret>
+                    <span className="dashboard-text-link">{REPORTS}</span>
+                  </DropdownToggle>
+                  <DropdownMenu>
+                    {hasPermission(user.role, 'seeAllReports', roles, userPermissions) ? (
+                      <>
+                        <DropdownItem tag={Link} to="/reports">
+                          {REPORTS}
+                        </DropdownItem>
+                        <DropdownItem tag={Link} to="/weeklysummariesreport">
+                          {WEEKLY_SUMMARIES_REPORT}
+                        </DropdownItem>
+                      </>
+                    ) : (
                       <DropdownItem tag={Link} to="/weeklysummariesreport">
                         {WEEKLY_SUMMARIES_REPORT}
                       </DropdownItem>
-                    </>
-                  ) : (
-                    <DropdownItem tag={Link} to="/weeklysummariesreport">
-                      {WEEKLY_SUMMARIES_REPORT}
-                    </DropdownItem>
-                  )}
-                </DropdownMenu>
-              </UncontrolledDropdown>
+                    )}
+                  </DropdownMenu>
+                </UncontrolledDropdown>
               ) : null}
               <NavItem>
                 <NavLink tag={Link} to={`/timelog/${user.userid}`}>
@@ -205,7 +205,7 @@ export const Header = props => {
                   <img
                     src={`${profilePic || '/pfp-default-header.png'}`}
                     alt=""
-                    style={{ maxWidth: '60px', maxHeight: '60px'}}
+                    style={{ maxWidth: '60px', maxHeight: '60px' }}
                     className="dashboardimg"
                   />
                 </NavLink>

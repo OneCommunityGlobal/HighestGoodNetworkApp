@@ -17,6 +17,7 @@ import moment from 'moment';
 import TeamMemberTask from './TeamMemberTask';
 import FilteredTimeEntries from './FilteredTimeEntries';
 import { hrsFilterBtnRed, hrsFilterBtnBlue } from 'constants/colors';
+import { toast } from 'react-toastify';
 
 const TeamMemberTasks = props => {
   const [showTaskNotificationModal, setTaskNotificationModal] = useState(false);
