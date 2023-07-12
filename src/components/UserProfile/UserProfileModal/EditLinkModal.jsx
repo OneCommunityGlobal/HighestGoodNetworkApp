@@ -160,7 +160,7 @@ const EditLinkModal = props => {
                     className='customEdit'
                     id='linkURL1'
                     value={googleLinkURL}
-                    placeholder='enter Google Doc link'
+                    placeholder='Enter Google Doc link'
                     onChange={e=> {setGoogleLinkURL(e.target.value.trim());}}
                     />
                   </div>
@@ -168,8 +168,8 @@ const EditLinkModal = props => {
                     <input 
                     className='customEdit'
                     id="linkName2"
-                    placeholder='Dropbox Folder'
-                    value="Dropbox Folder"
+                    placeholder='Media Folder'
+                    value="Media Folder"
                     disabled
                     />
 
@@ -177,7 +177,7 @@ const EditLinkModal = props => {
                     className='customEdit'
                     id="linkURL2"
                     value={dropLinkURL}
-                    placeholder='enter Dropbox link'
+                    placeholder='Enter Dropbox link'
                     onChange={e=> setDropLinkURL(e.target.value.trim())}
                     />
                   </div>
