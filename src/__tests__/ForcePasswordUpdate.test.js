@@ -33,10 +33,10 @@ const server = setupServer(
       return res(ctx.status(200));
     }
   }),
-  rest.get('http://localhost:4500/api/ownerStandardMessage', (req, res, ctx) => {
+  rest.get('*/api/ownerStandardMessage', (req, res, ctx) => {
     return res(ctx.status(200), ctx.json({}))
   }),
-  rest.get('http://localhost:4500/api/ownerMessage', (req, res, ctx) => {
+  rest.get('*/api/ownerMessage', (req, res, ctx) => {
     return res(ctx.status(200), ctx.json({}))
   }),
   //prevents errors when loading header
