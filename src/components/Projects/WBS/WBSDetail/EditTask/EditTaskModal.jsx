@@ -232,12 +232,9 @@ const EditTaskModal = props => {
       updatedTask,
       hasPermission(role, 'editTask', roles, userPermissions),
     );
-    setTimeout(() => {
-      props.fetchAllTasks(props.wbsId);
-    }, 4000);
+    await props.fetchAllTasks(props.wbsId);
 
     if (props.tasks.error === 'none') {
-      toggle();
       window.location.reload();
     }
   };
