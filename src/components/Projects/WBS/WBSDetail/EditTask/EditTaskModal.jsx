@@ -14,6 +14,7 @@ import hasPermission from 'utils/permissions';
 import axios from 'axios';
 import { ENDPOINTS } from 'utils/URL';
 import TagsSearch from '../components/TagsSearch';
+import { boxStyle } from 'styles';
 
 const EditTaskModal = props => {
   const [role] = useState(props.auth ? props.auth.user.role : null);
@@ -57,7 +58,6 @@ const EditTaskModal = props => {
   // assigned
   const [assigned, setAssigned] = useState(false);
 
-
   // status
   const [status, setStatus] = useState('false');
 
@@ -69,6 +69,8 @@ const EditTaskModal = props => {
   const [hoursMost, setHoursMost] = useState(thisTask?.hoursMost);
   // hour estimate
   const [hoursEstimate, setHoursEstimate] = useState(thisTask?.estimatedHours);
+  //deadline count
+  const [deadlineCount, setDeadlineCount] = useState(thisTask?.deadlineCount);
   // hours warning
   const [hoursWarning, setHoursWarning] = useState(false);
 
@@ -103,6 +105,7 @@ const EditTaskModal = props => {
     setHoursWorst(thisTask?.hoursWorst);
     setHoursMost(thisTask?.hoursMost);
     setHoursEstimate(thisTask?.estimatedHours);
+    setDeadlineCount(thisTask?.deadlineCount);
     setLinks(thisTask?.links);
     setCategory(thisTask?.category);
     setWhyInfo(thisTask?.whyInfo);
@@ -111,44 +114,6 @@ const EditTaskModal = props => {
     setStartedDate(thisTask?.startedDatetime);
     setDueDate(thisTask?.dueDatetime);
   }, [thisTask]);
-
-  // helpers for editing the resources of task
-  const [foundMembersHTML, setfoundMembersHTML] = useState('');
-  const findMembers = () => {
-    const memberList = members.members ? props.projectMembers.members : members;
-    for (let i = 0; i < memberList.length; i++) {
-
-      if (
-        `${memberList[i].firstName} ${memberList[i].lastName}`
-          .toLowerCase()
-          .includes(memberName.toLowerCase())
-      ) {
-        foundedMembers.push(memberList[i]);
-      }
-    }
-
-    const html = foundedMembers.map((elm, i) => (
-      <div key={`found-member-${i}`}>
-        <a href={`/userprofile/${elm._id}`} target="_blank" rel="noreferrer">
-          <input
-            type="text"
-            className="task-resouces-input"
-            value={`${elm.firstName} ${elm.lastName}`}
-            disabled
-          />
-        </a>
-        <button
-          data-tip="Add this member"
-          className="task-resouces-btn"
-          type="button"
-          onClick={() => addResources(elm._id, elm.firstName, elm.lastName, elm.profilePic)}
-        >
-          <i className="fa fa-plus" aria-hidden="true" />
-        </button>
-      </div>
-    ));
-    setfoundMembersHTML(html);
-  };
 
   const removeResource = userID => {
     const removeIndex = resourceItems.map(item => item.userID).indexOf(userID);
@@ -235,7 +200,13 @@ const EditTaskModal = props => {
   };
 
   // helper for updating task
-  const updateTask = () => {
+  const updateTask = async () => {
+    let newDeadlineCount = deadlineCount;
+    if (thisTask?.estimatedHours !== hoursEstimate) {
+      newDeadlineCount = deadlineCount + 1;
+      setDeadlineCount(newDeadlineCount);
+    }
+
     const updatedTask = {
       taskName,
       priority,
@@ -246,6 +217,7 @@ const EditTaskModal = props => {
       hoursWorst: parseFloat(hoursWorst),
       hoursMost: parseFloat(hoursMost),
       estimatedHours: parseFloat(hoursEstimate),
+      deadlineCount: parseFloat(newDeadlineCount),
       startedDatetime: startedDate,
       dueDatetime: dueDate,
       links,
@@ -255,25 +227,23 @@ const EditTaskModal = props => {
       category,
     };
 
-    props.updateTask(
+    await props.updateTask(
       props.taskId,
       updatedTask,
       hasPermission(role, 'editTask', roles, userPermissions),
     );
-    setTimeout(() => {
-      props.fetchAllTasks(props.wbsId);
-    }, 4000);
+    await props.fetchAllTasks(props.wbsId);
 
     if (props.tasks.error === 'none') {
-      toggle();
+      window.location.reload();
     }
   };
 
-  const handleAssign = (value) => {
+  const handleAssign = value => {
     setAssigned(value);
   };
 
-  const handleStatus = (value) => {
+  const handleStatus = value => {
     setStatus(value);
   };
 
@@ -290,7 +260,7 @@ const EditTaskModal = props => {
         <ModalBody>
           <ReactTooltip />
           <table
-            className={`table table-bordered 
+            className={`table table-bordered responsive
             ${
               hasPermission(role, 'editTask', roles, userPermissions) ||
               hasPermission(role, 'suggestTask', roles, userPermissions)
@@ -356,7 +326,7 @@ const EditTaskModal = props => {
                         id="true"
                         name="Assigned"
                         value="true"
-                        onChange={(e) => handleAssign(true)}
+                        onChange={e => handleAssign(true)}
                         checked={assigned}
                       />
                       <label className="form-check-label" htmlFor="true">
@@ -370,7 +340,7 @@ const EditTaskModal = props => {
                         id="false"
                         name="Assigned"
                         value="false"
-                        onChange={(e) => handleAssign(false)}
+                        onChange={e => handleAssign(false)}
                         checked={!assigned}
                       />
                       <label className="form-check-label" htmlFor="false">
@@ -385,29 +355,29 @@ const EditTaskModal = props => {
                 <td scope="col">
                   <div className="flex-row  d-inline align-items-center">
                     <div className="form-check form-check-inline">
-                    <input
-                      className="form-check-input"
-                      type="radio"
-                      id="started"
-                      name="started"
-                      value="true"
-                      onChange={(e) => handleStatus('true')}
-                      checked={status === 'true' ? true : false}
-                    />
+                      <input
+                        className="form-check-input"
+                        type="radio"
+                        id="started"
+                        name="started"
+                        value="true"
+                        onChange={e => handleStatus('true')}
+                        checked={status === 'true' ? true : false}
+                      />
                       <label className="form-check-label" htmlFor="started">
                         Started
                       </label>
                     </div>
                     <div className="form-check form-check-inline">
-                    <input
-                      className="form-check-input"
-                      type="radio"
-                      id="notStarted"
-                      name="started"
-                      value="false"
-                      onChange={(e) => handleStatus('false')}
-                      checked={status === 'false' ? true : false}
-                    />
+                      <input
+                        className="form-check-input"
+                        type="radio"
+                        id="notStarted"
+                        name="started"
+                        value="false"
+                        onChange={e => handleStatus('false')}
+                        checked={status === 'false' ? true : false}
+                      />
                       <label className="form-check-label" htmlFor="notStarted">
                         Not Started
                       </label>
@@ -420,7 +390,7 @@ const EditTaskModal = props => {
                   Hours
                 </td>
                 <td scope="col" data-tip="Hours - Best-case" className="w-100">
-                  <div className="d-inline py-2">
+                  <div className="py-2 flex-responsive">
                     <label htmlFor="bestCase" className="text-nowrap mr-2 w-25 mr-4">
                       Best-case
                     </label>
@@ -440,7 +410,7 @@ const EditTaskModal = props => {
                         : ''}
                     </div>
                   </div>
-                  <div className="d-inline py-2">
+                  <div className="py-2 flex-responsive">
                     <label htmlFor="worstCase" className="text-nowrap mr-2  w-25 mr-4">
                       Worst-case
                     </label>
@@ -459,7 +429,7 @@ const EditTaskModal = props => {
                         : ''}
                     </div>
                   </div>
-                  <div className="d-inline py-2">
+                  <div className="py-2 flex-responsive">
                     <label htmlFor="mostCase" className="text-nowrap mr-2 w-25 mr-4">
                       Most-case
                     </label>
@@ -478,7 +448,7 @@ const EditTaskModal = props => {
                         : ''}
                     </div>
                   </div>
-                  <div className="d-inline py-2">
+                  <div className="py-2 flex-responsive">
                     <label htmlFor="Estimated" className="text-nowrap mr-2  w-25 mr-4">
                       Estimated
                     </label>
@@ -518,7 +488,7 @@ const EditTaskModal = props => {
                     {links?.map((link, i) =>
                       link.length > 1 ? (
                         <div key={i} className="task-link">
-                          <a href={link} target="_blank">
+                          <a href={link} target="_blank" rel="noreferrer">
                             {link.slice(-10)}
                           </a>
                           <span className="remove-link" onClick={() => removeLink(i)}>
@@ -546,7 +516,6 @@ const EditTaskModal = props => {
                     <option value="Soceity">Society</option>
                     <option value="Economics">Economics</option>
                     <option value="Stewardship">Stewardship</option>
-                    <option value="Other">Other</option>
                     <option value="Not Assigned">Not Assigned</option>
                   </select>
                 </td>
@@ -660,17 +629,17 @@ const EditTaskModal = props => {
         hasPermission(role, 'suggestTask', roles, userPermissions) ? (
           <ModalFooter>
             {taskName !== '' && startedDate !== '' && dueDate !== '' ? (
-              <Button color="primary" onClick={updateTask}>
+              <Button color="primary" onClick={updateTask} style={boxStyle}>
                 Update
               </Button>
             ) : null}
-            <Button color="secondary" onClick={toggle}>
+            <Button color="secondary" onClick={toggle} style={boxStyle}>
               Cancel
             </Button>
           </ModalFooter>
         ) : null}
       </Modal>
-      <Button color="primary" size="sm" onClick={toggle}>
+      <Button color="primary" size="sm" onClick={toggle} style={boxStyle}>
         {hasPermission(role, 'editTask', roles, userPermissions)
           ? 'Edit'
           : hasPermission(role, 'suggestTask', roles, userPermissions)

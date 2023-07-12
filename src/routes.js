@@ -11,7 +11,7 @@ import Login from './components/Login';
 import ForcePasswordUpdate from './components/ForcePasswordUpdate';
 import ProtectedRoute from './components/common/ProtectedRoute';
 import UpdatePassword from './components/UpdatePassword';
-import NewHeader from './components/NewHeader';
+import Header from './components/Header';
 import Projects from './components/Projects';
 import Teams from './components/Teams/Teams';
 import UserManagement from './components/UserManagement';
@@ -35,12 +35,10 @@ import { TaskEditSuggestions } from 'components/TaskEditSuggestions/TaskEditSugg
 import { RoutePermissions } from 'utils/routePermissions';
 import PermissionsManagement from 'components/PermissionsManagement/PermissionsManagement';
 import UserRoleTab from 'components/PermissionsManagement/UserRoleTab';
-// import OldHeader from './components/OldHeader/OldHeader';
 
 export default (
   <React.Fragment>
-    <NewHeader />
-    {/* <OldHeader /> */}
+    <Header />
     <AutoUpdate />
     <ToastContainer />
     <Switch>
@@ -51,7 +49,6 @@ export default (
       <ProtectedRoute path="/admin" component={Admin} />
       <ProtectedRoute path="/timelog/" exact component={Timelog} />
       <ProtectedRoute path="/timelog/:userId" exact component={Timelog} />
-      <ProtectedRoute path="/reports" exact component={Reports} />
       <ProtectedRoute path="/peoplereport/:userId" component={PeopleReport} />
       <ProtectedRoute path="/projectreport/:projectId" component={ProjectReport} />
       <ProtectedRoute path="/teamreport/:teamId" component={TeamReport} />
@@ -79,6 +76,13 @@ export default (
           UserRole.Owner,
           UserRole.Mentor,
         ]}
+        routePermissions={[RoutePermissions.weeklySummariesReport, RoutePermissions.reports]}
+      />
+      <ProtectedRoute
+        path="/reports"
+        exact
+        component={Reports}
+        routePermissions={RoutePermissions.reports}
       />
       <ProtectedRoute
         path="/projects"

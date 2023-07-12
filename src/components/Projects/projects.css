@@ -90,6 +90,10 @@ thead {
   display: none;
 }
 
+.project_info_modal_ol {
+  padding-left: 20px;
+}
+
 tr:hover {
   background: #e9f6ff;
 }

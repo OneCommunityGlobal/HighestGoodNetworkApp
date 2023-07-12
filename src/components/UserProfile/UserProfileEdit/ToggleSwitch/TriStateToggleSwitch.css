@@ -1,0 +1,81 @@
+:root {
+  --blue: #0084ff;
+  --darkgray: #c0baba;
+  --green: green;
+
+  --switch-width: 60px;
+  --switch-height: calc(var(--switch-width) * 0.3);
+  --knob-width: calc(var(--switch-height) * 0.8);
+}
+
+.toggle-switch {
+  width: var(--switch-width);
+  height: var(--switch-height);
+  border-radius: calc(var(--switch-height) / 2);
+  position: relative;
+  cursor: pointer;
+  transition: all 0.3s ease-in-out;
+  -webkit-transition: all 0.3s ease-in-out;
+  margin: 5px;
+}
+
+.knob {
+  width: var(--knob-width);
+  height: var(--knob-width);
+  background-color: #fff;
+  border-radius: 50%;
+  position: absolute;
+  top: calc(0.1 * var(--switch-height));
+  transition: all 0.3s ease-in-out;
+  -webkit-transition: all 0.3s ease-in-out;
+}
+
+.posted {
+  transform: translateX(calc(0.1 * var(--switch-height)));
+  -webkit-transform: translateX(calc(0.1 * var(--switch-height)));
+}
+
+.default {
+  transform: translateX(calc(var(--switch-width) / 2 - (var(--knob-width) / 2)));
+  -webkit-transform: translateX(calc(var(--switch-width) / 2 - (var(--knob-width) / 2)));
+}
+
+.requested {
+  transform: translateX(
+    calc(var(--switch-width) - (var(--knob-width)) - (0.1 * var(--switch-height)))
+  );
+  -webkit-transform: translateX(
+    calc(var(--switch-width) - (var(--knob-width)) - (0.1 * var(--switch-height)))
+  );
+}
+
+.bg-blue {
+  background-color: var(--blue);
+}
+
+.bg-green {
+  background-color: var(--green);
+}
+
+.bg-darkgray {
+  background-color: var(--darkgray);
+}
+
+.knob-area {
+  position: absolute;
+  display: flex;
+  justify-content: space-between;
+  flex-direction: row;
+  width: var(--switch-width);
+  height: var(--switch-height);
+  border-radius: calc(var(--switch-height) / 2);
+  overflow: hidden;
+}
+
+.knob-area div {
+  width: 33.33%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}

@@ -79,7 +79,6 @@ class UserProfileEdit extends Component {
         }
       }
     }
-
   }
 
   toggleTab = tab => {
@@ -326,7 +325,6 @@ class UserProfileEdit extends Component {
     const reader = new FileReader();
     reader.readAsDataURL(file);
     reader.onloadend = () => {
-
       this.setState({
         imageUploadError: '',
         userProfile: {
@@ -361,7 +359,6 @@ class UserProfileEdit extends Component {
   };
 
   handleNullState = kind => {
-
     switch (kind) {
       case 'settings':
         this.setState(() => ({
@@ -516,7 +513,6 @@ class UserProfileEdit extends Component {
   };
 
   render() {
-
     const { userId: targetUserId } = this.props.match
       ? this.props.match.params
       : { userId: undefined };
@@ -554,7 +550,7 @@ class UserProfileEdit extends Component {
                   zIndex: '9',
                 }}
               >
-                Reminder: You must click "Save Changes" at the bottom of this page. If you don't,
+                Reminder: You must click &quot;Save Changes&quot; at the bottom of this page. If you don&apos;t,
                 changes to your profile will not be saved.
               </h6>
             )}
@@ -794,7 +790,7 @@ class UserProfileEdit extends Component {
                               placeholder="First Name"
                               invalid={!this.state.formValid.firstName}
                             />
-                            <FormFeedback>First Name Can't be null</FormFeedback>
+                            <FormFeedback>First Name Can&apos;t be null</FormFeedback>
                           </FormGroup>
                         </Col>
                         <Col md="3">
@@ -809,7 +805,7 @@ class UserProfileEdit extends Component {
                               placeholder="Last Name"
                               invalid={!this.state.formValid.lastName}
                             />
-                            <FormFeedback>Last Name Can't be Null</FormFeedback>
+                            <FormFeedback>Last Name Can&apos;t be Null</FormFeedback>
                           </FormGroup>
                         </Col>
                       </Row>
@@ -953,7 +949,7 @@ class UserProfileEdit extends Component {
                       userTeams={this.state ? this.state.userProfile.teams : []}
                       teamsData={this.props ? this.props.allTeams.allTeamsData : []}
                       onAssignTeam={this.onAssignTeam}
-                      onDeleteteam={this.onDeleteTeam}
+                      onDeleteTeam={this.onDeleteTeam}
                       role={requestorRole}
                       edit
                     />

@@ -13,12 +13,13 @@ function ReportTableSearchPanel(props) {
       </div>
 
       <input
+        autoFocus
         type="text"
         className="form-control search-field-container"
         aria-label="Search"
         placeholder="Search Text"
         id="team-profiles-wild-card-search"
-        onChange={(e) => {
+        onChange={e => {
           props.onSearch(e.target.value);
         }}
       />
