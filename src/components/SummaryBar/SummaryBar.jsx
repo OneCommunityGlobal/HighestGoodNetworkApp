@@ -125,6 +125,7 @@ const SummaryBar = props => {
   const [showSuggestionModal, setShowSuggestionModal] = useState(false);
   const [report, setBugReport] = useState(initialInfo);
 
+//refactored for rading form values
   const readFormData = (formid) =>{
     let form = document.getElementById(formid);
     let formData = new FormData(form);
@@ -154,7 +155,7 @@ const SummaryBar = props => {
     httpService.post(`${ApiEndpoint}/dashboard/bugreport/${userProfile._id}`, data).catch(e => {});
     openReport();
   };
-
+//
   const setnewfields = (fielddata, setfield) =>{
     setfield(prev =>{
       let newarr = prev;
@@ -162,7 +163,7 @@ const SummaryBar = props => {
       return newarr;
     });
   }
-
+ //add new text field or suggestion category by owner class and update the backend
   const addField = async (event) =>{
     event.preventDefault();
     const data = readFormData('newFieldForm')
@@ -186,7 +187,7 @@ const SummaryBar = props => {
     setShowSuggestionModal(prev => !prev)
     const res = await httpService.post(`${ApiEndpoint}//dashboard/makesuggestion/${userProfile._id}`, data).catch(e => {});
   }
-
+ 
   const openSuggestionModal = async () => {
     if(!showSuggestionModal){
       let res = await httpService.get(`${ApiEndpoint}//dashboard/suggestionoption/${userProfile._id}`).catch(e => {});
@@ -438,7 +439,7 @@ const SummaryBar = props => {
           <Modal isOpen={showSuggestionModal} toggle={openSuggestionModal}>
             <ModalHeader>User Suggestion</ModalHeader>
             <ModalBody>
-              {userProfile.role === 'Manager' && !extraFieldForSuggestionForm &&
+              {userProfile.role === 'Owner' && !extraFieldForSuggestionForm &&
                 <FormGroup>
                   <Button onClick={()=> setExtraFieldForSuggestionForm('suggestion')} type="button" color="success" size="md">
                     Add new category
