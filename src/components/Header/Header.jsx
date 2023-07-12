@@ -41,7 +41,7 @@ import {
 import { Logout } from '../Logout/Logout';
 import './Header.css';
 import hasPermission from '../../utils/permissions';
-import { fetchTaskEditSuggestionCount } from 'components/TaskEditSuggestions/thunks';
+import { fetchTaskEditSuggestions } from 'components/TaskEditSuggestions/thunks';
 import { useLocation } from 'react-router-dom';
 
 export const Header = props => {
@@ -86,8 +86,11 @@ export const Header = props => {
     if (props.auth.isAuthenticated) {
       props.getHeaderData(props.auth.user.userid);
       props.getTimerData(props.auth.user.userid);
+      if(props.auth.user.role === "Administrator"){
+        dispatch(fetchTaskEditSuggestions());
+      }
     }
-  }, []);
+  }, [props.auth.isAuthenticated]);
 
   useEffect(() => {
     if (roles.length === 0) {
