@@ -41,22 +41,24 @@ import {
 import { Logout } from '../Logout/Logout';
 import './Header.css';
 import hasPermission from '../../utils/permissions';
-import { fetchTaskEditSuggestionCount } from 'components/TaskEditSuggestions/thunks';
+import { fetchTaskEditSuggestions } from 'components/TaskEditSuggestions/thunks';
 
 export const Header = props => {
   const [isOpen, setIsOpen] = useState(false);
   const [logoutPopup, setLogoutPopup] = useState(false);
   const { isAuthenticated, user, firstName, profilePic } = props.auth;
-
   const dispatch = useDispatch();
-
   const userPermissions = props.auth.user?.permissions?.frontPermissions;
+
   useEffect(() => {
     if (props.auth.isAuthenticated) {
       props.getHeaderData(props.auth.user.userid);
       props.getTimerData(props.auth.user.userid);
+      if(props.auth.user.role === "Administrator"){
+        dispatch(fetchTaskEditSuggestions());
+      }
     }
-  }, []);
+  }, [props.auth.isAuthenticated]);
 
   useEffect(() => {
     if (roles.length === 0) {

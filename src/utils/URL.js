@@ -71,7 +71,7 @@ export const ENDPOINTS = {
   `${APIEndpoint}/tasknotification/${userId}/${taskId}`,
   TASK_EDIT_SUGGESTION: () => `${APIEndpoint}/taskeditsuggestion`,
   REJECT_TASK_EDIT_SUGGESTION: taskEditSuggestionId =>
-    `${ENDPOINTS.TASK_EDIT_SUGGESTION()}/${taskEditSuggestionId}`,
+  `${APIEndpoint}/taskeditsuggestion/${taskEditSuggestionId}`,
 
   TIMEZONE_KEY: `${APIEndpoint}/timezone`,
   GEOCODE_URI: (location, key) =>
