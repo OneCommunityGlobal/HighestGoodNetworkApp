@@ -546,16 +546,26 @@ function UserProfile(props) {
   const isUserSelf = targetUserId === requestorId;
 
   const checkCanEditProfile = checkHasPermissions || isUserSelf
-  const editPermissionForAdmin = (denyPermissionToSelfUpdateDevAdminDetails(
+
+  const canEditPermissions = (denyPermissionToSelfUpdateDevAdminDetails(
     userProfile.email,
     isUserSelf))
     || denyPermissionForOthersToUpdateDevAdminDetails(userProfile.email, authEmail)
     ? false : checkCanEditProfile;
+
+  const checkVolunteeringTimeTabPermission = (denyPermissionToSelfUpdateDevAdminDetails(
+    userProfile.email,
+    isUserSelf))
+    || denyPermissionForOthersToUpdateDevAdminDetails(userProfile.email, authEmail)
+    ? false : checkHasPermissions;
+
   const canEditProfile =
     userProfile.role === 'Owner'
       ? hasPermission(requestorRole, 'addDeleteEditOwners', roles, userPermissions)
-      : editPermissionForAdmin;
+      : canEditPermissions;
+
   const canEdit = canEditProfile;
+
   const canChangeUserStatus = hasPermission(
     requestorRole,
     'changeUserStatus',
@@ -857,7 +867,7 @@ function UserProfile(props) {
                     role={requestorRole}
                     onEndDate={handleEndDate}
                     loadUserProfile={loadUserProfile}
-                    canEdit={editPermissionForAdmin}
+                    canEdit={checkVolunteeringTimeTabPermission}
                     onStartDate={handleStartDate}
                   />
                 }
@@ -868,7 +878,7 @@ function UserProfile(props) {
                   teamsData={props?.allTeams?.allTeamsData || []}
                   onAssignTeam={onAssignTeam}
                   onDeleteTeam={onDeleteTeam}
-                  edit={editPermissionForAdmin}
+                  edit={canEditPermissions}
                   role={requestorRole}
                   roles={roles}
                   onUserVisibilitySwitch={onUserVisibilitySwitch}
@@ -883,7 +893,7 @@ function UserProfile(props) {
                   projectsData={props?.allProjects?.projects || []}
                   onAssignProject={onAssignProject}
                   onDeleteProject={onDeleteProject}
-                  edit={editPermissionForAdmin}
+                  edit={canEditPermissions}
                   role={requestorRole}
                   userPermissions={userPermissions}
                   userId={props.match.params.userId}
@@ -1020,7 +1030,7 @@ function UserProfile(props) {
                     isUserSelf={isUserSelf}
                     role={requestorRole}
                     onEndDate={handleEndDate}
-                    canEdit={editPermissionForAdmin}
+                    canEdit={canEditPermissions}
                     onStartDate={handleStartDate}
                   />
                 </ModalBody>
@@ -1076,7 +1086,7 @@ function UserProfile(props) {
                     teamsData={props?.allTeams?.allTeamsData || []}
                     onAssignTeam={onAssignTeam}
                     onDeleteTeam={onDeleteTeam}
-                    edit={editPermissionForAdmin}
+                    edit={canEditPermissions}
                     role={requestorRole}
                     roles={roles}
                     onUserVisibilitySwitch={onUserVisibilitySwitch}
@@ -1137,7 +1147,7 @@ function UserProfile(props) {
                     projectsData={props?.allProjects?.projects || []}
                     onAssignProject={onAssignProject}
                     onDeleteProject={onDeleteProject}
-                    edit={editPermissionForAdmin}
+                    edit={canEditPermissions}
                     role={requestorRole}
                     userPermissions={userPermissions}
                     userId={props.match.params.userId}
