@@ -65,7 +65,12 @@ export const Dashboard = props => {
               onKeyDown={toggle}
               tabIndex="0"
             >
-              <WeeklySummary isDashboard={true} isPopup={popup} asUser={userId} userRole={userRole} />
+              <WeeklySummary
+                isDashboard={true}
+                isPopup={popup}
+                asUser={userId}
+                userRole={userRole}
+              />
             </div>
           </div>
         </Col>
