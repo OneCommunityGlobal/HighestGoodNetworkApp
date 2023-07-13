@@ -444,7 +444,7 @@ const SummaryBar = props => {
           <Modal isOpen={showSuggestionModal} toggle={openSuggestionModal}>
             <ModalHeader>User Suggestion</ModalHeader>
             <ModalBody>
-              {userProfile.role === 'Administrator' && !extraFieldForSuggestionForm &&
+              {userProfile.role === 'Owner'  && !extraFieldForSuggestionForm &&
                 <FormGroup>
                   <Button onClick={()=> setExtraFieldForSuggestionForm('suggestion')} type="button" color="success" size="md">
                     Add new category
