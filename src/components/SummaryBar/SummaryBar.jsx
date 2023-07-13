@@ -30,6 +30,8 @@ import axios from 'axios';
 import { ApiEndpoint } from 'utils/URL';
 import { getProgressColor, getProgressValue } from '../../utils/effortColors';
 import hasPermission from 'utils/permissions';
+import CopyToClipboard from 'components/common/Clipboard/CopyToClipboard';
+import { toast } from 'react-toastify';
 
 const SummaryBar = props => {
   const { asUser, role, summaryBarData } = props;
@@ -183,9 +185,13 @@ const SummaryBar = props => {
   const sendUserSuggestion = async event =>{
     event.preventDefault();
     const data = readFormData('suggestionForm')
-    data['email'] = userProfile.email;
     setShowSuggestionModal(prev => !prev)
     const res = await httpService.post(`${ApiEndpoint}//dashboard/makesuggestion/${userProfile._id}`, data).catch(e => {});
+    if(res.status === 200){
+      toast.success('Email sent successfully!')
+    }else{
+       toast.error('Failed to send email!')
+    }
   }
  
   const openSuggestionModal = async () => {
@@ -439,7 +445,7 @@ const SummaryBar = props => {
           <Modal isOpen={showSuggestionModal} toggle={openSuggestionModal}>
             <ModalHeader>User Suggestion</ModalHeader>
             <ModalBody>
-              {userProfile.role === 'Owner' && !extraFieldForSuggestionForm &&
+              {userProfile.role === 'Administrator' && !extraFieldForSuggestionForm &&
                 <FormGroup>
                   <Button onClick={()=> setExtraFieldForSuggestionForm('suggestion')} type="button" color="success" size="md">
                     Add new category
@@ -622,7 +628,7 @@ const SummaryBar = props => {
                     Submit
                   </Button>{' '}
                   &nbsp;&nbsp;&nbsp;
-                  <Button onClick={showSuggestionModal} color="danger" size="lg">
+                  <Button onClick={openReport} color="danger" size="lg">
                     Close
                   </Button>
                 </FormGroup>
