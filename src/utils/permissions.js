@@ -1,7 +1,8 @@
 import { store } from '../components/App';
 
 const hasPermission = (action) => {
-  const state = store.getState();
+  return (dispatch, getState) => {
+  const state = getState();
   const rolePermissions = state.role.roles;
   const userRole = state.auth.user.role;
   const userPermissions = state.auth.user.permissions?.frontPermissions;
@@ -16,6 +17,7 @@ const hasPermission = (action) => {
     return userPermissions?.includes(action) || permissions?.includes(action);
   }
   return false;
+}
 };
 
 export const deactivateOwnerPermission = (user, authRole) => {

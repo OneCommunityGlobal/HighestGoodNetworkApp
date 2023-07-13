@@ -18,8 +18,6 @@ const TeamMemberTask = ({
   handleOpenTaskNotificationModal,
   handleTaskModalOption,
   userRole,
-  roles,
-  userPermissions,
 }) => {
   const [infoTaskIconModal, setInfoTaskIconModal] = useState(false);
 
@@ -59,7 +57,7 @@ const TeamMemberTask = ({
     setInfoTaskIconModal(true);
   };
 
-  const hasRemovePermission = hasPermission(userRole, 'removeUserFromTask', roles, userPermissions);
+  const canUpdateTask = hasPermission('updateTask');
 
   return (
     <>
@@ -152,7 +150,7 @@ const TeamMemberTask = ({
                               }}
                             />
                           )}
-                          {hasRemovePermission && (
+                          {canUpdateTask && (
                             <FontAwesomeIcon
                               className="team-member-task-remove"
                               icon={faTimes}
