@@ -962,8 +962,8 @@ function UserProfile(props) {
                           <Link to={denyPermissionToSelfUpdateDevAdminDetails(authEmail, isUserSelf) ? `#` : `/updatepassword/${userProfile._id}`}
                             onClick={() => {
                               if (denyPermissionToSelfUpdateDevAdminDetails(authEmail, isUserSelf)) {
-                                alert("STOP! YOU SHOULDN’T BE TRYING TO CHANGE THIS PASSWORD." +
-                                  "You shouldn’t even be using this account except to create your own accounts to use." +
+                                alert("STOP! YOU SHOULDN’T BE TRYING TO CHANGE THIS PASSWORD. " +
+                                  "You shouldn’t even be using this account except to create your own accounts to use. " +
                                   "Please re-read the Local Setup Doc to understand why and what you should be doing instead of what you are trying to do now."
                                 )
                                 return `#`;
@@ -1272,8 +1272,8 @@ function UserProfile(props) {
                   <Link to={denyPermissionToSelfUpdateDevAdminDetails(authEmail, isUserSelf) ? `#` : `/updatepassword/${userProfile._id}`}
                     onClick={() => {
                       if (denyPermissionToSelfUpdateDevAdminDetails(authEmail, isUserSelf)) {
-                        alert("STOP! YOU SHOULDN’T BE TRYING TO CHANGE THIS PASSWORD." +
-                          "You shouldn’t even be using this account except to create your own accounts to use." +
+                        alert("STOP! YOU SHOULDN’T BE TRYING TO CHANGE THIS PASSWORD. " +
+                          "You shouldn’t even be using this account except to create your own accounts to use. " +
                           "Please re-read the Local Setup Doc to understand why and what you should be doing instead of what you are trying to do now."
                         )
                         return `#`;
