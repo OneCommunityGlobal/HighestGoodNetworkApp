@@ -23,7 +23,6 @@ const UserTableData = React.memo(props => {
    * reset the changing state upon rerender with new isActive status
    */
 
-
   useEffect(() => {
     onReset(false);
   }, [props.isActive, props.resetLoading]);
@@ -103,7 +102,6 @@ const UserTableData = React.memo(props => {
       </td>
       <td>{props.user.endDate ? props.user.endDate.toLocaleString().split('T')[0] : 'N/A'}</td>
       {checkPermissionsOnOwner() ? null : (
-       
         <td>
         {
           props.auth.user.userid === props.user._id ? '': <span className="usermanagement-actions-cell">
@@ -119,7 +117,6 @@ const UserTableData = React.memo(props => {
             </button>
           </span>
         }
-          
           <span className="usermanagement-actions-cell">
             <ResetPasswordButton user={props.user} isSmallButton />
           </span>
@@ -129,13 +126,13 @@ const UserTableData = React.memo(props => {
   );
 });
 
-
 const mapStateToProps = state => ({
   auth: state.auth,
   userProfile: state.userProfile,
   taskEditSuggestionCount: state.taskEditSuggestions.count,
   role: state.role,
 });
+
 export default connect(mapStateToProps, {
 })(UserTableData);
 
