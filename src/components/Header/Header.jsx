@@ -42,20 +42,23 @@ import { Logout } from '../Logout/Logout';
 import './Header.css';
 import hasPermission, { denyPermissionToSelfUpdateDevAdminDetails } from '../../utils/permissions';
 
+
 export const Header = props => {
   const [isOpen, setIsOpen] = useState(false);
   const [logoutPopup, setLogoutPopup] = useState(false);
   const { isAuthenticated, user, firstName, profilePic } = props.auth;
-
   const dispatch = useDispatch();
-
   const userPermissions = props.auth.user?.permissions?.frontPermissions;
+
   useEffect(() => {
     if (props.auth.isAuthenticated) {
       props.getHeaderData(props.auth.user.userid);
       props.getTimerData(props.auth.user.userid);
+      if(props.auth.user.role === "Administrator"){
+        dispatch(fetchTaskEditSuggestions());
+      }
     }
-  }, []);
+  }, [props.auth.isAuthenticated]);
 
   useEffect(() => {
     if (roles.length === 0) {
@@ -110,29 +113,29 @@ export const Header = props => {
                   <span className="dashboard-text-link">{TIMELOG}</span>
                 </NavLink>
               </NavItem>
-              {hasPermission(user.role, "seeAllReports", roles, userPermissions) ||
-               hasPermission(user.role, "seeWeeklySummaryReports", roles, userPermissions) ? (
-              <UncontrolledDropdown nav inNavbar>
-                <DropdownToggle nav caret>
-                  <span className="dashboard-text-link">{REPORTS}</span>
-                </DropdownToggle>
-                <DropdownMenu>
-                  {hasPermission(user.role, "seeAllReports", roles, userPermissions) ? (
-                    <>
-                      <DropdownItem tag={Link} to="/reports">
-                        {REPORTS}
-                      </DropdownItem>
+              {hasPermission(user.role, 'seeAllReports', roles, userPermissions) ||
+              hasPermission(user.role, 'seeWeeklySummaryReports', roles, userPermissions) ? (
+                <UncontrolledDropdown nav inNavbar>
+                  <DropdownToggle nav caret>
+                    <span className="dashboard-text-link">{REPORTS}</span>
+                  </DropdownToggle>
+                  <DropdownMenu>
+                    {hasPermission(user.role, 'seeAllReports', roles, userPermissions) ? (
+                      <>
+                        <DropdownItem tag={Link} to="/reports">
+                          {REPORTS}
+                        </DropdownItem>
+                        <DropdownItem tag={Link} to="/weeklysummariesreport">
+                          {WEEKLY_SUMMARIES_REPORT}
+                        </DropdownItem>
+                      </>
+                    ) : (
                       <DropdownItem tag={Link} to="/weeklysummariesreport">
                         {WEEKLY_SUMMARIES_REPORT}
                       </DropdownItem>
-                    </>
-                  ) : (
-                    <DropdownItem tag={Link} to="/weeklysummariesreport">
-                      {WEEKLY_SUMMARIES_REPORT}
-                    </DropdownItem>
-                  )}
-                </DropdownMenu>
-              </UncontrolledDropdown>
+                    )}
+                  </DropdownMenu>
+                </UncontrolledDropdown>
               ) : null}
               <NavItem>
                 <NavLink tag={Link} to={`/timelog/${user.userid}`}>
