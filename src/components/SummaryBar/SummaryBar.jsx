@@ -199,8 +199,7 @@ const SummaryBar = props => {
       let res = await httpService.get(`${ApiEndpoint}//dashboard/suggestionoption/${userProfile._id}`).catch(e => {});
       if(res.status == 200){
           setSuggestionCategory(res.data.suggestion);
-          setInputField(res.data.field);
-        console.log('ressugges', res)
+          setInputField(res.data.field);  
       }
     }
     setShowSuggestionModal(prev => !prev)
