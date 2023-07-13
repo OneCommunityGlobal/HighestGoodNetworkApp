@@ -7,6 +7,7 @@ import 'leaflet/dist/leaflet.css';
 import './TeamLocations.css';
 const TeamLocations = () => {
   const [userProfiles, setUserProfiles] = useState([]);
+
   useEffect(() => {
     async function getUserProfiles() {
       const users = await axios.get(ENDPOINTS.USER_PROFILES);
@@ -14,6 +15,16 @@ const TeamLocations = () => {
     }
     getUserProfiles();
   }, []);
+
+  // We don't need the back to top button on this page
+  useEffect(() => {
+    const backToTopButton = document.querySelector('.top');
+    backToTopButton.style.display = 'none';
+    return () => {
+      backToTopButton.style.display = 'block';
+    };
+  }, []);
+
   return (
     <MapContainer center={[51.505, -0.09]} zoom={13} scrollWheelZoom={false}>
       <TileLayer
