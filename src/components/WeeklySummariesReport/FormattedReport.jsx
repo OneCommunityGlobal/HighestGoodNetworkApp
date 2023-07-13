@@ -65,7 +65,7 @@ const FormattedReport = ({ summaries, weekIndex, bioCanEdit }) => {
       "Team": "#FF00FF",
       "Team Fabulous": "#FF00FF",
       "Team Marigold": "#FF7F00",
-      "Team Luminous": "#FFFF00",
+      "Team Luminous": "#C4AF18",
       "Team Lush": "#00FF00",
       "Team Sky": "#0000FF",
       "Team Azure": "#4B0082",
