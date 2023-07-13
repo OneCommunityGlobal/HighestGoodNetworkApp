@@ -12,7 +12,7 @@ import hasPermission from 'utils/permissions';
 import SetUpFinalDayButton from 'components/UserManagement/SetUpFinalDayButton';
 import styles from './BasicInformationTab.css';
 import { boxStyle } from 'styles';
-import RoleInfoModal from '../../RoleInfo/roleInfoModal';
+import Infos from 'components/EditableModal/Infos';
 
 const Name = props => {
   const { userProfile, setUserProfile, formValid, setFormValid, canEdit } = props;
@@ -273,15 +273,11 @@ const BasicInformationTab = props => {
     roles,
     userPermissions,
     loadUserProfile,
+    updateInfo,
   } = props;
   const [timeZoneFilter, setTimeZoneFilter] = useState('');
   const [location, setLocation] = useState('');
   const key = useSelector(state => state.timeZoneAPI.userAPIKey);
-  const [roleInfoModalOpen, setroleInfoModalOpen] = useState(false);
-  const toggleRoleInfoModal = () => {
-    setroleInfoModalOpen(!roleInfoModalOpen);
-  }
-
   const onClickGetTimeZone = () => {
     if (!location) {
       alert('Please enter valid location');
@@ -454,25 +450,13 @@ const BasicInformationTab = props => {
               `${userProfile.role}`
             )}
             </Col>
-            {(userProfile.role !== 'Volunteer') &&(
-              <>
-              <i
-              data-toggle="tooltip"
-                    data-placement="right"
-                    title="Click for user class information"
-                    style={{ fontSize: 25, cursor: 'pointer', color: '#00CCFF'}}
-                    aria-hidden="true"
-                    className="fa fa-info-circle"
-                    onMouseOver={() => {toggleRoleInfoModal(true); // open modal
-                        }}
-                  /> 
-                  <RoleInfoModal 
-                      role={role} 
-                      isOpen={roleInfoModalOpen} 
-                      toggle={toggleRoleInfoModal} 
-                    />
-
-              </>)}
+            {(userProfile.role !== 'Volunteer') &&( 
+            <Infos
+              userProfile={userProfile}
+              updateInfo={updateInfo}
+              newArea={'roleInfo'}
+             />
+            )}
           
         </Row>
         {canEdit && (

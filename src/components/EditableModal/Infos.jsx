@@ -1,45 +1,67 @@
-import React, { useEffect, useState } from 'react';
-import { connect } from 'react-redux';
-import { addNewInfo, updateInfo, getAllInfos } from '../../actions/info'
-import { updateUserProfile, getUserProfile } from '../../actions/userProfile';
-import { getAllUserProfile } from '../../actions/userManagement';
+import React, { useEffect, useReducer, useState } from 'react';
 import EditableModal from './editableModal';
+// import PropTypes from 'prop-types';
+
+// const infoCollectionsReducer = (state, action) => {
+//   switch (action.type) {
+//     case 'remove':
+//       return state.filter(info => info.areaName !== action.payload.areaName);
+//     case 'addOrUpdate':
+//       const updatedState = state.filter(info => info.areaName !== action.payload.areaName);
+//       updatedState.push({
+//         areaName: action.payload.areaName,
+//         content: action.payload.content
+//       });
+//       return updatedState;
+//     default:
+//       return state;
+//   }
+// };
 
 const Infos = (props) => {
-  useEffect(() => {
-    getAllInfos();
-    props.getUserRole(props.auth?.user.userid);
-  }, [props.getUserRole, props.auth, getAllInfos]);
-
-  const{role, newArea, infos, getAllInfos, addNewInfo, updateInfo} = props;
-
+  const { userProfile, updateInfo, newArea } = props;
   const [editableModalOpen, setEditableModalOpen] = useState(false);
+  // const infoCollections = [...userProfile.infoCollections];
+  // const [areaName, setAreaName] = useState('')
+  // const [content, setContent] = useState('')
+  // const [info, setInfo] = useState({});
+  // const [infoCollectionsReducer, dispatchInfo] = useReducer(
+  //   (infoCollections, { type, value, passedIndex}) => {
+  //     setChanged(true);
+  //     switch (type) {
+  //       case 'add':
+  //         setAreaName(areaName);
+  //         setContent('Please input content');
+  //         return [...personalLinks, value];
+  //       case 'remove':
+  //         return personalLinks.filter((_, index) => index !== passedIndex);
+  //       case 'updateName':
+  //         return personalLinks.filter((_, index) => {
+  //           if (index === passedIndex) {
+  //             _.Name = value;
+  //           }
+  //           return _;
+  //         });
+  //       case 'updateLink':
+  //         return personalLinks.filter((_, index) => {
+  //           if (index === passedIndex) {
+  //             _.Link = value;
+  //           }
+  //           return _;
+  //         });
+  //       default:
+  //         return personalLinks;
+  //     }
+  //   },
+  //   userProfile.personalLinks,
+  // );
+  // // const [infoCollections, dispatchInfo] = useReducer(infoCollectionsReducer, userProfile.infoCollections);
   const toggleEditableModal = () => {
     setEditableModalOpen(!editableModalOpen);
   }
-  const newInfoObject = {
-    area: newArea,
-    content: 'welcome to role Info',
-  }
-  const handleAddNewInfo = () => {
-    addNewInfo(newInfoObject);
-  };
-
-
-  const infoId = props.infoId;
-  // for(const info of infos){
-  //   if(info.area === newArea){
-  //     infoId = info._id;
-  //   }
-  // }
-
-  const getSelectedInfo = (infoId) => {
-    const selectedInfo = infos.find(info => info._id === infoId);
-    return selectedInfo ? selectedInfo.content : '';
-  }
-
-  const selectedInfoContent = getSelectedInfo(infoId);
-
+  // useEffect(() => {
+  //   updateInfo(infoCollections);
+  // }, [infoCollections]);
 
   return (
     <div>
@@ -56,31 +78,18 @@ const Infos = (props) => {
       />
       {editableModalOpen && (
         <EditableModal 
-        role={role}
-        infoId={infoId}
+        userProfile={userProfile}
+        areaName={newArea}
         isOpen={editableModalOpen}
-        info={getSelectedInfo(infoId)}
-        updateInfo={updateInfo}
-        /> // replace this line with your modal component
+        toggle={toggleEditableModal}
+        updateInfo={updateInfo} />
       )}
     </div>
   );
 }
 
-
-const mapStateToProps = state => ({
-  infos: state.info.infos, 
-  auth: state.auth,
-  userProfile: state.userProfile,
-});
-
-const mapDispatchToProps = dispatch => ({
-  getAllInfos: () => dispatch(getAllInfos()),
-  updateUserProfile: data => dispatch(updateUserProfile(data)),
-  getAllUsers: () => dispatch(getAllUserProfile()),
-  getUserRole: id => dispatch(getUserProfile(id)),
-  addNewInfo: newInfo => dispatch(addNewInfo(newInfo)),
-  updateInfo: (infoId, updatedInfo) => dispatch(updateInfo(infoId, updatedInfo)),
-});
-
-export default connect(mapStateToProps, mapDispatchToProps)(Infos);
+// Infos.propTypes = {
+//   updateInfo: PropTypes.func.isRequired,
+//   userProfile: PropTypes.object.isRequired,
+// };
+export default Infos;

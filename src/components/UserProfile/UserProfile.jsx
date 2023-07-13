@@ -440,6 +440,13 @@ function UserProfile(props) {
     });
   };
 
+  const updateInfo = (infoCollectionsUpdate) => {
+    setUserProfile({
+      ...userProfile,
+      infoCollections: infoCollectionsUpdate,
+    });
+  };
+
   const setActiveInactive = isActive => {
     setActiveInactivePopupOpen(false);
     const newUserProfile = {
@@ -826,6 +833,7 @@ function UserProfile(props) {
                   canEditRole={canEditProfile}
                   roles={roles}
                   userPermissions={userPermissions}
+                  updateInfo={updateInfo}
                 />
               </TabPane>
               <TabPane tabId="2">
