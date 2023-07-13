@@ -338,6 +338,7 @@ input:checked + .slider:before {
 
 .dark #react-select-2-listbox, .dark #react-select-3-listbox{
   color: #007bff
+}
 
 .top {
   text-decoration: none;
