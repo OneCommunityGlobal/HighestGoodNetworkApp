@@ -42,22 +42,26 @@ const TeamLocations = () => {
         minZoom={2}
         maxZoom={15}
       />
-      <Marker position={[51.505, -0.09]}>
-        <Popup>
-          A pretty CSS3 popup. <br /> Easily customizable.
-        </Popup>
-      </Marker>
+      {userProfiles.map(profile => {
+        return (
+          <Marker
+            position={[
+              Math.floor(Math.random() * (90 + 90)) - 90,
+              Math.floor(Math.random() * (180 + 180)) - 180,
+            ]}
+          >
+            <Popup>
+              <div>
+                <div>{`Name: ${profile.firstName} ${profile.lastName}`}</div>
+                <div>{`Title: ${profile.jobTitle}`}</div>
+                <div>{`Location: ${profile.location}`}</div>
+              </div>
+            </Popup>
+          </Marker>
+        );
+      })}
     </MapContainer>
   );
-  // return userProfiles.map(profile => {
-  //   return (
-  //     <div>
-  //       <div>{`Name: ${profile.firstName} ${profile.lastName}`}</div>
-  //       <div>{`Title: ${profile.jobTitle}`}</div>
-  //       <div>{`Location: ${profile.location}`}</div>
-  //     </div>
-  //   );
-  // });
 };
 
 export default TeamLocations;
