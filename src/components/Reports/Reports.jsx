@@ -18,6 +18,7 @@ import peopleImage from './images/People.svg';
 import teamsImage from './images/Teams.svg';
 import ReactTooltip from 'react-tooltip';
 import TotalPeopleReport from './TotalReport/TotalPeopleReport';
+import TotalTeamReport from './TotalReport/TotalTeamReport';
 
 const DATE_PICKER_MIN_DATE = '01/01/2010';
 
@@ -29,6 +30,7 @@ class ReportsPage extends Component {
       showPeople: false,
       showTeams: false,
       showTotalPeople: false,
+      showTotalTeam: false,
       teamNameSearchText: '',
       teamMembersPopupOpen: false,
       deleteTeamPopupOpen: false,
@@ -70,14 +72,17 @@ class ReportsPage extends Component {
       users: {},
       startDate: new Date(DATE_PICKER_MIN_DATE),
       endDate: new Date(),
+      teamMemberList:{},
     };
     this.showProjectTable = this.showProjectTable.bind(this);
     this.showPeopleTable = this.showPeopleTable.bind(this);
     this.showTeamsTable = this.showTeamsTable.bind(this);
     this.showTotalPeople = this.showTotalPeople.bind(this);
+    this.showTotalTeam = this.showTotalTeam.bind(this);
     this.setActive = this.setActive.bind(this);
     this.setInActive = this.setInActive.bind(this);
     this.setAll = this.setAll.bind(this);
+    this.setTeamMemberList = this.setTeamMemberList.bind(this);
   }
 
   async componentDidMount() {
@@ -187,6 +192,12 @@ class ReportsPage extends Component {
     }));
   }
 
+  setTeamMemberList(list) {
+    this.setState(() => ({
+      teamMemberList: list,
+    }));
+  }
+
   showProjectTable() {
     this.setState(prevState => ({
       showProjects: !prevState.showProjects,
@@ -215,7 +226,15 @@ class ReportsPage extends Component {
     this.setState(prevState => ({
       //showTotalProjects: false,
       showTotalPeople: !prevState.showTotalPeople,
-      //showTotalTeam: false,
+      showTotalTeam: false,
+    }));
+  }
+
+  showTotalTeam() {
+    this.setState(prevState => ({
+      //showTotalProjects: false,
+      showTotalTeam: !prevState.showTotalTeam,
+      showTotalPeople: false,
     }));
   }
 
@@ -412,7 +431,7 @@ class ReportsPage extends Component {
                 </ReactTooltip>
               </div>
               <div className="total-item">
-                <Button>Total Team Report</Button>
+                <Button onClick={this.showTotalTeam}>Total Team Report</Button>
                 <i
                   className="fa fa-info-circle"
                   data-tip
@@ -423,9 +442,15 @@ class ReportsPage extends Component {
                   style={{ paddingLeft: '.32rem' }}
                 />
                 <ReactTooltip id="totalTeamTip" place="bottom" effect="solid">
+                  Click this button to see exactly how many total teams have contributed time to
+                  the projects for a designated time period.
                   <br />
+                  The team must have had at least 10 hours logged for them to be included.
                   <br />
-                  <br />
+                  A 'Total Hours' section will show the total tangible time logged by all the teams
+                  during the selected period.
+                  <br />A detail report will list all the teams and hours contributed by each
+                  during that time period.
                 </ReactTooltip>
               </div>
             </div>
@@ -440,6 +465,16 @@ class ReportsPage extends Component {
               startDate={this.state.startDate}
               endDate={this.state.endDate}
               userProfiles={userProfiles}
+            />
+          )}
+          {this.state.showTotalTeam && (
+            <TotalTeamReport
+              startDate={this.state.startDate}
+              endDate={this.state.endDate}
+              userProfiles={userProfiles}
+              allTeams={allTeams}
+              passTeamMemberList={this.setTeamMemberList}
+              savedTeamMemberList={this.state.teamMemberList}
             />
           )}
         </div>

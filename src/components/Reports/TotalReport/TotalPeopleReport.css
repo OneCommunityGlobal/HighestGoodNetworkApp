@@ -41,3 +41,12 @@
 .people-detail Button{
     background-color:steelblue;
 }
+
+.teams_child{
+    background-color:antiquewhite;
+    display: none;
+}
+
+.team_table{
+    border-collapse: collapse;
+}
