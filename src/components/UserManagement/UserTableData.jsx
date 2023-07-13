@@ -10,6 +10,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCopy } from '@fortawesome/free-solid-svg-icons';
 import { toast } from 'react-toastify';
 import { boxStyle } from 'styles';
+import { connect, useDispatch } from 'react-redux';
 
 /**
  * The body row of the user table
@@ -21,6 +22,8 @@ const UserTableData = React.memo(props => {
   /**
    * reset the changing state upon rerender with new isActive status
    */
+
+
   useEffect(() => {
     onReset(false);
   }, [props.isActive, props.resetLoading]);
@@ -100,8 +103,10 @@ const UserTableData = React.memo(props => {
       </td>
       <td>{props.user.endDate ? props.user.endDate.toLocaleString().split('T')[0] : 'N/A'}</td>
       {checkPermissionsOnOwner() ? null : (
+       
         <td>
-          <span className="usermanagement-actions-cell">
+        {
+          props.auth.user.userid === props.user._id ? '': <span className="usermanagement-actions-cell">
             <button
               type="button"
               className="btn btn-outline-danger btn-sm"
@@ -113,6 +118,8 @@ const UserTableData = React.memo(props => {
               {DELETE}
             </button>
           </span>
+        }
+          
           <span className="usermanagement-actions-cell">
             <ResetPasswordButton user={props.user} isSmallButton />
           </span>
@@ -122,4 +129,15 @@ const UserTableData = React.memo(props => {
   );
 });
 
-export default UserTableData;
+
+const mapStateToProps = state => ({
+  auth: state.auth,
+  userProfile: state.userProfile,
+  taskEditSuggestionCount: state.taskEditSuggestions.count,
+  role: state.role,
+});
+export default connect(mapStateToProps, {
+})(UserTableData);
+
+
+
