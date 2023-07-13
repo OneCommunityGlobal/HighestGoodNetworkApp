@@ -100,6 +100,7 @@ export class WeeklySummary extends Component {
     moveSelect: '-1',
     movePopup: false,
     moveConfirm: false,
+    userRole: '',
   };
 
   async componentDidMount() {
@@ -193,6 +194,7 @@ export class WeeklySummary extends Component {
       loading: this.props.loading,
       editPopup: false,
       mediaChangeConfirm: false,
+      userRole: this.props.userRole,
     });
   }
 
@@ -539,6 +541,7 @@ export class WeeklySummary extends Component {
       dueDateLastWeek,
       dueDateBeforeLast,
       dueDateThreeWeeksAgo,
+      userRole,
     } = this.state;
 
     // Create an object containing labels for each summary tab:
@@ -663,7 +666,7 @@ export class WeeklySummary extends Component {
                               </DropdownItem>
                             </DropdownMenu>
                           </UncontrolledDropdown>
-                          <CurrentPromptModal />
+                          <CurrentPromptModal userRole={this.props.userRole} />
                         </Label>
                         <Editor
                           init={{
@@ -689,10 +692,10 @@ export class WeeklySummary extends Component {
                         errors.summaryLastWeek ||
                         errors.summaryBeforeLast ||
                         errors.summaryThreeWeeksAgo) && (
-                        <Alert color="danger">
-                          The summary must contain a minimum of 50 words.
-                        </Alert>
-                      )}
+                          <Alert color="danger">
+                            The summary must contain a minimum of 50 words.
+                          </Alert>
+                        )}
                     </Col>
                   </Row>
                 </TabPane>

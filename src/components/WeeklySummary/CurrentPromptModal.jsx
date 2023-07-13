@@ -3,9 +3,12 @@ import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import { toast } from 'react-toastify';
 import ReactTooltip from 'react-tooltip';
 import { boxStyle } from 'styles';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faEdit } from '@fortawesome/free-regular-svg-icons';
 
-function CurrentPromptModal() {
+function CurrentPromptModal(props) {
   const [modal, setModal] = useState(false);
+  const [canEdit, setCanEdit] = useState(false);
 
   const toggle = () => setModal(!modal);
 
@@ -14,10 +17,22 @@ function CurrentPromptModal() {
     toast.success('Prompt Copied!');
   };
 
-  const currentPrompt = `Please edit the following summary of my week's work. Make sure it is professionally written in 3rd person format. 
-  Write it as only one paragraph. It must be only one paragraph. Keep it less than 500 words. Start the paragraph with 'This week'. 
-  Make sure the paragraph contains no links or URLs and write it in a tone that is matter-of-fact and without embellishment. 
-  Do not add flowery language, keep it simple and factual. Do not add a final summary sentence. Apply all this to the following:`;
+  const editCurentPrompt = () => {
+    setCanEdit(true)
+  };
+
+  const saveCurrentPrompt = () => {
+    setCanEdit(false)
+    setModal(false)
+  }
+
+  const current = `Please edit the following summary of my week's work. Make sure it is professionally written in 3rd person format. Write it as only one paragraph. It must be only one paragraph. Keep it less than 500 words. Start the paragraph with 'This week'. Make sure the paragraph contains no links or URLs and write it in a tone that is matter-of-fact and without embellishment. Do not add flowery language, keep it simple and factual. Do not add a final summary sentence. Apply all this to the following:`
+
+  const currentPrompt = canEdit ? <textarea defaultValue={current}></textarea> : current;
+
+  const modalOnClose = () => {
+    setCanEdit(false)
+  }
 
   return (
     <div>
@@ -41,13 +56,22 @@ function CurrentPromptModal() {
         or similar AI text completion tool
         <br />
       </ReactTooltip>
-      <Modal isOpen={modal} toggle={toggle}>
+      <Modal isOpen={modal} toggle={toggle} onClosed={modalOnClose}>
         <ModalHeader toggle={toggle}>Current AI Prompt </ModalHeader>
         <ModalBody>{currentPrompt}</ModalBody>
         <ModalFooter>
-          <Button color="primary" onClick={handleCopyToClipboard} style={boxStyle}>
+          {!canEdit && <Button color="primary" onClick={handleCopyToClipboard} style={boxStyle}>
             Copy Prompt
-          </Button>{' '}
+          </Button>}
+          {!canEdit && props.userRole === "Owner" &&
+            <FontAwesomeIcon
+              icon={faEdit}
+              size="lg"
+              className="mr-3 text-primary"
+              onClick={editCurentPrompt}
+            />}
+
+          {canEdit && <Button onClick={saveCurrentPrompt}>Save Changes</Button>}
         </ModalFooter>
       </Modal>
     </div>

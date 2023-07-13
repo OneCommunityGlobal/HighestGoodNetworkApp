@@ -24,6 +24,7 @@
 .btn--white-smoke:hover:not([disabled]) {
   background-color: #ffffff !important;
 }
+
 .btn:disabled {
   cursor: not-allowed;
 }
@@ -93,6 +94,7 @@
   margin-left: 5px;
   padding-top: 5px;
 }
+
 .summaryContentTooltip,
 .summaryTabsTooltip,
 .mediaURLTooltip {
@@ -114,6 +116,11 @@
   display: flex;
   justify-content: space-between;
   margin-right: 0;
+}
+
+textarea {
+  width: 200px;
+  height: 250px;
 }
 
 @media screen and (min-width: 992px) {
