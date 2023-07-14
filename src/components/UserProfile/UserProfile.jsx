@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useId } from 'react';
 import {
   Row,
   Input,
@@ -85,8 +85,11 @@ function UserProfile(props) {
   const [tasks, setTasks] = useState([]);
   const [updatedTasks, setUpdatedTasks] = useState([]);
   const [summarySelected, setSummarySelected] = useState(null);
+  const [infoSelected, setInfoSelected] = useState(null);
   const [summaryName, setSummaryName] = useState('');
+  const [infoName, setInfoName] = useState('');
   const [showSummary, setShowSummary] = useState(false);
+  const [showInfo, setShowInfo] = useState(false);
 
   const isTasksEqual = JSON.stringify(originalTasks) === JSON.stringify(tasks);
   const isProfileEqual = JSON.stringify(userProfile) === JSON.stringify(originalUserProfile);
@@ -237,6 +240,20 @@ function UserProfile(props) {
 
       setSummarySelected(userSummaries);
       setShowSummary(true);
+    } catch (err) {
+      setShowLoading(false);
+    }
+  };
+  const getInfos = async userId => {
+    try {
+      setInfoSelected('');
+      setShowInfo(false);
+      const response = await axios.get(ENDPOINTS.USER_PROFILE(userId));
+      const user = response.data;
+      const userInfos = user.infoCollections;
+
+      setInfoSelected(userInfos);
+      setShowInfo(true);
     } catch (err) {
       setShowLoading(false);
     }
@@ -833,7 +850,8 @@ function UserProfile(props) {
                   canEditRole={canEditProfile}
                   roles={roles}
                   userPermissions={userPermissions}
-                  updateInfo={updateInfo}
+                  asUser={requestorId}
+                  getInfos={getInfos}
                 />
               </TabPane>
               <TabPane tabId="2">

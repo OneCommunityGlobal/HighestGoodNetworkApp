@@ -273,7 +273,7 @@ const BasicInformationTab = props => {
     roles,
     userPermissions,
     loadUserProfile,
-    updateInfo,
+    asUser,
   } = props;
   const [timeZoneFilter, setTimeZoneFilter] = useState('');
   const [location, setLocation] = useState('');
@@ -452,8 +452,8 @@ const BasicInformationTab = props => {
             </Col>
             {(userProfile.role !== 'Volunteer') &&( 
             <Infos
-              userProfile={userProfile}
-              updateInfo={updateInfo}
+
+              asUser={asUser}
               newArea={'roleInfo'}
              />
             )}

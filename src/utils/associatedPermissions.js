@@ -34,6 +34,7 @@ const associatedPermissions =
       assignUserInProject: ['assignProjectToUsers'],
       unassignUserInProject: ['assignProjectToUsers', 'putProject'],
       adminLinks:[''],
+      infoCollections:[''],
       editUserProfile:['putUserProfile'],
       assignTeamToUser: ['assignTeamToUsers'],
       createTeam: [''],
