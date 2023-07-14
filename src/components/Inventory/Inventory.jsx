@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Modal, ModalHeader, ModalBody } from 'reactstrap';
 
-const Inventory = (props) => {
+const Inventory = props => {
   return <React.Fragment></React.Fragment>;
 };
 
