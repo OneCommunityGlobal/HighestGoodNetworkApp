@@ -41,6 +41,7 @@ import {
 import { Logout } from '../Logout/Logout';
 import './Header.css';
 import hasPermission, { denyPermissionToSelfUpdateDevAdminDetails } from '../../utils/permissions';
+import { fetchTaskEditSuggestions } from 'components/TaskEditSuggestions/thunks';
 
 
 export const Header = props => {
