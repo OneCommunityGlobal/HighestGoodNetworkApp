@@ -114,7 +114,7 @@ class AddUserProfile extends Component {
           <Row>
             <Col md="12">
               <Form>
-                <Row>
+                <Row className="user-add-row">
                   <Col md={{ size: 2, offset: 2 }} className="text-md-right my-2">
                     <Label>Name</Label>
                   </Col>
@@ -147,7 +147,7 @@ class AddUserProfile extends Component {
                     </FormGroup>
                   </Col>
                 </Row>
-                <Row>
+                <Row className="user-add-row">
                   <Col md={{ size: 3, offset: 1 }} className="text-md-right my-2">
                     <Label>Job Title</Label>
                   </Col>
@@ -164,7 +164,7 @@ class AddUserProfile extends Component {
                     </FormGroup>
                   </Col>
                 </Row>
-                <Row>
+                <Row className="user-add-row">
                   <Col md={{ size: 2, offset: 2 }} className="text-md-right my-2">
                     <Label>Email</Label>
                   </Col>
@@ -188,7 +188,7 @@ class AddUserProfile extends Component {
                     </FormGroup>
                   </Col>
                 </Row>
-                <Row>
+                <Row className="user-add-row">
                   <Col md={{ size: 2, offset: 2 }} className="text-md-right my-2">
                     <Label>Phone</Label>
                   </Col>
@@ -214,7 +214,7 @@ class AddUserProfile extends Component {
                     </FormGroup>
                   </Col>
                 </Row>
-                <Row>
+                <Row className="user-add-row">
                   <Col md={{ size: 4 }} className="text-md-right my-2">
                     <Label>Weekly Committed Hours</Label>
                   </Col>
@@ -238,7 +238,7 @@ class AddUserProfile extends Component {
                     </FormGroup>
                   </Col>
                 </Row>
-                <Row>
+                <Row className="user-add-row">
                   <Col md={{ size: 2, offset: 2 }} className="text-md-right my-2">
                     <Label>Role</Label>
                   </Col>
@@ -265,7 +265,7 @@ class AddUserProfile extends Component {
                     </FormGroup>
                   </Col>
                 </Row>
-                <Row>
+                <Row className="user-add-row">
                   <Col md={{ size: 4 }} className="text-md-right my-2">
                     <Label className="weeklySummaryOptionsLabel">Weekly Summary Options</Label>
                   </Col>
@@ -273,7 +273,7 @@ class AddUserProfile extends Component {
                     <WeeklySummaryOptions handleUserProfile={this.handleUserProfile}/>
                   </Col>
                 </Row>
-                <Row>
+                <Row className="user-add-row">
                   <Col md={{ size: 4 }} className="text-md-right my-2">
                     <Label>Video Call Preference</Label>
                   </Col>
@@ -290,8 +290,8 @@ class AddUserProfile extends Component {
                     </FormGroup>
                   </Col>
                 </Row>
-                <Row>
-                  <Col md={{ size: 4}} className="text-md-right my-2">
+                <Row className="user-add-row">
+                  <Col md={{ size: 4 }} className="text-md-right my-2">
                     <Label>Admin Document</Label>
                   </Col>
                   <Col md="6">
@@ -307,7 +307,7 @@ class AddUserProfile extends Component {
                     </FormGroup>
                   </Col>
                 </Row>
-                <Row>
+                <Row className="user-add-row">
                   <Col md={{ size: 4 }} className="text-md-right my-2">
                     <Label>Link to Media Files</Label>
                   </Col>
@@ -324,7 +324,7 @@ class AddUserProfile extends Component {
                     </FormGroup>
                   </Col>
                 </Row>
-                <Row>
+                <Row className="user-add-row">
                   <Col md={{ size: 4, offset: 0 }} className="text-md-right my-2">
                     <Label>Location</Label>
                   </Col>
@@ -349,7 +349,7 @@ class AddUserProfile extends Component {
                     </Row>
                   </Col>
                 </Row>
-                <Row>
+                <Row className="user-add-row">
                   <Col md={{ size: 3, offset: 1 }} className="text-md-right my-2">
                     <Label>Time Zone</Label>
                   </Col>
@@ -569,7 +569,7 @@ class AddUserProfile extends Component {
     if (googleDoc) {
       userData.adminLinks.push({ Name: 'Google Doc', Link: googleDoc });
     }
-    if(dropboxDoc) {
+    if (dropboxDoc) {
       userData.adminLinks.push({ Name: 'Dropbox Link', Link: dropboxDoc });
     }
     if (this.fieldsAreValid()) {
@@ -867,13 +867,13 @@ class AddUserProfile extends Component {
         });
         break;
       case 'dropboxDoc':
-          this.setState({
-            userProfile: {
-              ...userProfile,
-              [event.target.id]: event.target.value,
-            },
-          });
-          break;
+        this.setState({
+          userProfile: {
+            ...userProfile,
+            [event.target.id]: event.target.value,
+          },
+        });
+        break;
       case 'emailPubliclyAccessible':
         this.setState({
           userProfile: {
