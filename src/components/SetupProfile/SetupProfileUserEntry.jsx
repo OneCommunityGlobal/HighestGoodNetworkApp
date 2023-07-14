@@ -12,6 +12,7 @@ import {
 } from 'reactstrap';
 import PhoneInput from 'react-phone-input-2';
 import TimeZoneDropDown from '../UserProfile/TimeZoneDropDown';
+import ToggleSwitch from '../UserProfile/UserProfileEdit/ToggleSwitch';
 import logo from '../../assets/images/logo.png';
 const SetupProfileUserEntry = () => {
   return (
@@ -20,7 +21,8 @@ const SetupProfileUserEntry = () => {
         <img src={logo} alt="logo" className="profile-setup-user-entry-logo" />
       </div>
       <div className="alert alert-info text-center">
-        Welcome to our platform! Please provide the following information to create your account.
+        Welcome to the One Community Highest Good Network! To create your account, please provide
+        all the requested information below.
       </div>
       <Container fluid className="profile-setup-user-entry-form-container">
         <Row>
@@ -61,6 +63,7 @@ const SetupProfileUserEntry = () => {
                   <FormGroup>
                     <Input type="email" name="email" id="email" placeholder="Email" />
                     <FormFeedback></FormFeedback>
+                    <ToggleSwitch switchType="email" />
                   </FormGroup>
                 </Col>
               </Row>
@@ -76,6 +79,7 @@ const SetupProfileUserEntry = () => {
                       limitMaxLength="true"
                     />
                   </FormGroup>
+                  <ToggleSwitch switchType="phone" />
                 </Col>
               </Row>
               <Row>
