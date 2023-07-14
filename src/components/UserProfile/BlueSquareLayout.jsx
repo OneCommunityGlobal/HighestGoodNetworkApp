@@ -3,6 +3,7 @@ import BlueSquare from './BlueSquares';
 import ToggleSwitch from './UserProfileEdit/ToggleSwitch';
 import './UserProfile.scss';
 import './UserProfileEdit/UserProfileEdit.scss';
+import { Button } from 'react-bootstrap';
 
 const BlueSquareLayout = props => {
   const {
@@ -39,6 +40,18 @@ const BlueSquareLayout = props => {
           roles={roles}
           userPermissions={userPermissions}
         />
+        <div className="mt-4 w-100">
+          <Button
+            variant="primary"
+            onClick={() => {
+              console.log('button clicked');
+            }}
+            className='w-100'
+            size='md'
+          >
+            Schedule Reason
+          </Button>
+        </div>
       </div>
     );
   }
