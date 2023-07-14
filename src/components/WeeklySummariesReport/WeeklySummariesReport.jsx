@@ -158,6 +158,7 @@ export class WeeklySummariesReport extends Component {
                       summaries={summaries}
                       weekIndex={0}
                       bioCanEdit={bioEditPermission}
+                      canEditSummaryCount={canEditSummaryCount}
                     />
                   </Col>
                 </Row>
@@ -207,6 +208,7 @@ export class WeeklySummariesReport extends Component {
                       summaries={summaries}
                       weekIndex={2}
                       bioCanEdit={bioEditPermission}
+                      canEditSummaryCount={canEditSummaryCount}
                     />
                   </Col>
                 </Row>
@@ -231,6 +233,7 @@ export class WeeklySummariesReport extends Component {
                       summaries={summaries}
                       weekIndex={3}
                       bioCanEdit={bioEditPermission}
+                      canEditSummaryCount={canEditSummaryCount}
                     />
                   </Col>
                 </Row>

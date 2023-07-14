@@ -12,7 +12,7 @@ import axios from 'axios';
 import { ENDPOINTS } from '../../utils/URL';
 import { useState } from 'react';
 import { assignStarDotColors, showStar } from 'utils/leaderboardPermissions';
-import ArrowCounter from './ArrowCounter';
+import { Input } from 'reactstrap';
 
 const FormattedReport = ({ summaries, weekIndex, bioCanEdit, canEditSummaryCount }) => {
   const emails = [];
@@ -123,18 +123,6 @@ const FormattedReport = ({ summaries, weekIndex, bioCanEdit, canEditSummaryCount
   const getTotalValidWeeklySummaries = summary => {
     const [weeklySummariesCount, setWeeklySummariesCount] = useState(parseInt(summary.weeklySummariesCount));
     
-    const handleIncrement = () => {
-      setWeeklySummariesCount(weeklySummariesCount + 1);
-      handleOnChange(summary, weeklySummariesCount + 1)
-    }
-
-    const handleDecrement = () => {
-      if (isNaN(weeklySummariesCount) || weeklySummariesCount != 0) { 
-      setWeeklySummariesCount(weeklySummariesCount - 1);
-      handleOnChange(summary, weeklySummariesCount - 1)
-      }
-    }
-
     const handleOnChange = async (userProfileSummary, count) => {
       const url = ENDPOINTS.USER_PROFILE_PROPERTY(userProfileSummary._id)
       try {
@@ -143,25 +131,37 @@ const FormattedReport = ({ summaries, weekIndex, bioCanEdit, canEditSummaryCount
         alert('An error occurred while attempting to save the new weekly summaries count change to the profile.');
       }
     };
-  
+
+    const handleWeeklySummaryCountChange = e => {
+        setWeeklySummariesCount(e.target.value);
+        handleOnChange(summary, e.target.value);
+      }
+    
     return (
       <div className='total-valid-wrapper'>
         {weeklySummariesCount === 8 ? 
         <div className='total-valid-text' style={{ color: 'blue '}}>
           <b>Total Valid Weekly Summaries:</b>{' '}
-          {weeklySummariesCount || 'No valid submissions yet!'}
         </div> : 
         <div className='total-valid-text'>
           <b style={summary.weeklySummaryOption === 'Team' ? { color: 'magenta' } : {}}>
             Total Valid Weekly Summaries:
           </b>{' '}
-          {weeklySummariesCount || 'No valid submissions yet!'}
-        </div>}
-        {canEditSummaryCount && 
-        <ArrowCounter
-          handleIncrement={handleIncrement}
-          handleDecrement={handleDecrement}
-        />}
+        </div>
+        }
+        {canEditSummaryCount ? 
+        <div style={{width: '150px', paddingLeft: "5px"}}>
+          <Input 
+              type='number' 
+              name='weeklySummaryCount' 
+              step='1'
+              value={weeklySummariesCount} 
+              onChange={e => handleWeeklySummaryCountChange(e)}
+              min='0'
+          />
+        </div> : 
+        <div>&nbsp;{weeklySummariesCount || 'No valid submissions yet!'}</div>
+        } 
       </div>
     )
   };

@@ -30,9 +30,10 @@
 .total-valid-wrapper {
   display: flex;
   align-items: center;
-
+  flex-direction: row;
+  white-space: nowrap;
 }
 
-.total-valid-text {
-  white-space: nowrap
+.hi {
+  width: 250px;
 }
