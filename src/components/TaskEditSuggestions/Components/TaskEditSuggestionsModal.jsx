@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Modal, ModalHeader, ModalBody, ModalFooter, Row, Col, Button } from 'reactstrap';
 import {
   resourcesToString,
@@ -9,12 +9,12 @@ import {
   datetimeToDate,
 } from 'components/TeamMemberTasks/components/TaskDifferenceModal';
 import DiffedText from 'components/TeamMemberTasks/components/DiffedText';
-import { useDispatch } from 'react-redux';
+import { useDispatch , useSelector, useStore } from 'react-redux';
 import { rejectTaskEditSuggestion } from '../thunks';
 import { updateTask } from 'actions/task';
 import hasPermission from 'utils/permissions';
-import { useSelector, useStore} from 'react-redux';
-import { useState, } from 'react';
+
+
 
 export const TaskEditSuggestionsModal = ({
   isTaskEditSuggestionModalOpen,
@@ -23,15 +23,15 @@ export const TaskEditSuggestionsModal = ({
 }) => {
   const dispatch = useDispatch();
 
-  const { getState } = useStore()
-  const alldata = getState()
+  const { getState } = useStore();
+  const alldata = getState();
 
   const [role] = useState(alldata.auth ? alldata.auth.user.role : null);
   const userPermissions = alldata.auth.user?.permissions?.frontPermissions;
   const { roles } = alldata.role;
 
   const approveTask = () => {
-    console.log('mainproblem',taskEditSuggestion)
+    console.log('mainproblem', taskEditSuggestion);
     updateTask(
       taskEditSuggestion.taskId,
       taskEditSuggestion.newTask,
@@ -231,7 +231,7 @@ export const TaskEditSuggestionsModal = ({
       <ModalFooter>
         <Row>
           <Col>
-          <Button color="success" onClick={approveTask}>
+            <Button color="success" onClick={approveTask}>
               Approve
             </Button>
           </Col>

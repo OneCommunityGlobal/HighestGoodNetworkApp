@@ -82,7 +82,7 @@
     "eject": "react-scripts eject",
     "start:local": "react-scripts start",
     "format:check": "npx prettier src/** --check && npx eslint --ext js,jsx src",
-    "format": "npx eslint --fix --ext js,jsx src && npx prettier src/** --write"
+    "format": "npx prettier src/** --write && npx eslint --fix --ext js,jsx src"
   },
   "browserslist": [
     ">0.2%",
