@@ -53,7 +53,7 @@
 }
 
 .tableHeader {
-  background-color: #eee7f7;
+  background-color: #EEE7F7;
 }
 
 .table-row {
@@ -64,7 +64,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 0.5rem;
+  gap: .5rem;
 }
 
 .input-wrapper + .input-wrapper {

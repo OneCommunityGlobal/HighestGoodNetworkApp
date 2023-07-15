@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import { getWeeklySummaries, updateWeeklySummaries } from '../actions/weeklySummaries';

@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-
+import React from 'react';
+import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { connect } from 'react-redux';
 import { ENDPOINTS } from 'utils/URL';
@@ -60,7 +60,7 @@ const SameFolderTasks = props => {
   if (task.mother === null || task.mother === taskId) {
     return (
       <div className="App">
-        <p>There are no other tasks in this task&apos;s folder.</p>
+        <p>There are no other tasks in this task's folder.</p>
         <a href={`/wbs/tasks/${wbsId}/${projectId}/${wbsName}`}>
           Click here to visit the source WBS ({wbsName}) that contains this task
         </a>
@@ -161,7 +161,7 @@ const SameFolderTasks = props => {
                                     data-tip={element.name}
                                     className="name"
                                     href={`/userprofile/${element.userID}`}
-                                    target="_blank" rel="noreferrer"
+                                    target="_blank"
                                   >
                                     <img className="img-circle" src={element.profilePic} />
                                   </a>
@@ -173,7 +173,7 @@ const SameFolderTasks = props => {
                                     data-tip={element.name}
                                     className="name"
                                     href={`/userprofile/${element.userID}`}
-                                    target="_blank" rel="noreferrer"
+                                    target="_blank"
                                   >
                                     <span className="dot">{element.name.substring(0, 2)}</span>
                                   </a>

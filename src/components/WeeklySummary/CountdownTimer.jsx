@@ -4,6 +4,7 @@ import { isEmpty } from 'lodash';
 import { toast } from 'react-toastify';
 
 // Use named export in order for automated tests to work properly.
+// eslint-disable-next-line import/prefer-default-export
 export function CountdownTimer({ date }) {
   const calcTimeLeft = () => {
     const difference = +date - +new Date();

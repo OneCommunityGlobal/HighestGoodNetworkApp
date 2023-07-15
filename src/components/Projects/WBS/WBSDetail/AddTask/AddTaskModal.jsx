@@ -17,8 +17,7 @@ function AddTaskModal(props) {
   // members
   const [members, setMembers] = useState([]);
   useEffect(() => {
-    const activeUsers = props.projectMembers.members.filter(member => member.isActive);
-    setMembers(activeUsers);
+    setMembers(props.projectMembers.members);
   }, [props.projectMembers.members]);
 
   // modal
@@ -30,7 +29,7 @@ function AddTaskModal(props) {
   const setToggle = () => {
     try {
       props.openChild();
-    } catch { }
+    } catch {}
     toggle();
   };
 
@@ -53,7 +52,7 @@ function AddTaskModal(props) {
   const [assigned, setAssigned] = useState(true);
 
   // status
-  const [status, setStatus] = useState(true);
+  const [status, setStatus] = useState('Started');
 
   // hour best
   const [hoursBest, setHoursBest] = useState(0);
@@ -113,6 +112,7 @@ function AddTaskModal(props) {
       }
     }
   };
+
 
   const removeResource = userID => {
     const removeIndex = resourceItems.map(item => item.userID).indexOf(userID);
@@ -309,7 +309,6 @@ function AddTaskModal(props) {
       if (props.tasks.error === 'none') {
         toggle();
         getNewNum();
-        setTaskName('');
       }
     }, 1000);
   };
@@ -411,8 +410,7 @@ function AddTaskModal(props) {
                         id="true"
                         name="Assigned"
                         value={true}
-                        checked={assigned}
-                        onClick={() => setAssigned(true)}
+                        onChange={() => setAssigned(true)}
                       />
                       <label className="form-check-label" htmlFor="true">
                         Yes
@@ -425,8 +423,7 @@ function AddTaskModal(props) {
                         id="false"
                         name="Assigned"
                         value={false}
-                        checked={!assigned}
-                        onClick={() => setAssigned(false)}
+                        onChange={() => setAssigned(false)}
                       />
                       <label className="form-check-label" htmlFor="false">
                         No
@@ -446,8 +443,7 @@ function AddTaskModal(props) {
                         id="started"
                         name="started"
                         value={true}
-                        checked={status}
-                        onClick={() => setStatus(true)}
+                        onChange={() => setStatus(true)}
                       />
                       <label className="form-check-label" htmlFor="started">
                         Started
@@ -460,8 +456,7 @@ function AddTaskModal(props) {
                         id="notStarted"
                         name="started"
                         value={false}
-                        checked={!status}
-                        onClick={() => setStatus(false)}
+                        onChange={() => setStatus(false)}
                       />
                       <label className="form-check-label" htmlFor="notStarted">
                         Not Started

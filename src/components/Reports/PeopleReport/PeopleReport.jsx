@@ -5,11 +5,7 @@ import { Button, Dropdown, DropdownButton } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { FiUser } from 'react-icons/fi';
-import {
-  updateUserProfileProperty,
-  getUserProfile,
-  getUserTask,
-} from '../../../actions/userProfile';
+import { updateUserProfileProperty, getUserProfile, getUserTask } from '../../../actions/userProfile';
 import { getUserProjects } from '../../../actions/userProjects';
 import { getWeeklySummaries, updateWeeklySummaries } from '../../../actions/weeklySummaries';
 import moment from 'moment';
@@ -24,7 +20,7 @@ import { getPeopleReportData } from './selectors';
 import { PeopleTasksPieChart } from './components';
 import { toast } from 'react-toastify';
 import ToggleSwitch from '../../UserProfile/UserProfileEdit/ToggleSwitch';
-import { Checkbox } from '../../common/Checkbox';
+import { Checkbox } from 'components/common/Checkbox';
 
 class PeopleReport extends Component {
   constructor(props) {
@@ -152,11 +148,7 @@ class PeopleReport extends Component {
     });
 
     try {
-      await this.props.updateUserProfileProperty(
-        this.props.userProfile,
-        'isRehireable',
-        rehireValue,
-      );
+      await this.props.updateUserProfileProperty(this.props.userProfile, 'isRehireable',rehireValue);
       toast.success(`You have changed the rehireable status of this user to ${rehireValue}`);
     } catch (err) {
       alert('An error occurred while attempting to save the rehireable status of this user.');
@@ -518,7 +510,7 @@ class PeopleReport extends Component {
       </ReportPage.ReportHeader>
     );
 
-    const onChangeBioPosted = async bio => {
+    const onChangeBioPosted = async (bio) => {
       const bioStatus = bio;
       this.setState(state => {
         return {
@@ -527,12 +519,13 @@ class PeopleReport extends Component {
       });
 
       try {
-        await this.props.updateUserProfileProperty(this.props.userProfile, 'bioPosted', bioStatus);
+        await  this.props.updateUserProfileProperty(this.props.userProfile, 'bioPosted',bioStatus);
         toast.success('You have changed the bio announcement status of this user.');
       } catch (err) {
         alert('An error occurred while attempting to save the bioPosted change to the profile.');
       }
     };
+
 
     return (
       <ReportPage renderProfile={renderProfileInfo}>

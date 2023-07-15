@@ -4,11 +4,7 @@ import { isEqual } from 'lodash';
 import { Link } from 'react-router-dom';
 import { Table, Progress, Modal, ModalBody, ModalFooter, ModalHeader, Button } from 'reactstrap';
 import Alert from 'reactstrap/lib/Alert';
-import {
-  hasLeaderboardPermissions,
-  assignStarDotColors,
-  showStar,
-} from 'utils/leaderboardPermissions';
+import { hasLeaderboardPermissions, assignStarDotColors, showStar } from 'utils/leaderboardPermissions';
 
 function useDeepEffect(effectFunc, deps) {
   const isFirst = useRef(true);
@@ -104,7 +100,7 @@ const LeaderBoard = ({
     </>,
     <>
       <p>
-        An Admin has made it so you can see your team but they can&apos;t see you. We recommend you keep
+        An Admin has made it so you can see your team but they can't see you. We recommend you keep
         this setting as it is.
       </p>
       <p>
@@ -212,7 +208,7 @@ const LeaderBoard = ({
           </thead>
           <tbody className="my-custome-scrollbar">
             <tr>
-              <td />
+              <td/>
               <th scope="row">{organizationData.name}</th>
               <td className="align-middle">
                 <span title="Tangible time">{organizationData.tangibletime}</span>
@@ -249,32 +245,24 @@ const LeaderBoard = ({
                       </ModalFooter>
                     </Modal>
                   </div>
-                  <div
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: isAdmin ? 'space-between' : 'center',
-                    }}
-                  >
-                    {/* <Link to={`/dashboard/${item.personId}`}> */}
-                    <div onClick={() => dashboardToggle(item)}>
-                      {hasLeaderboardPermissions(loggedInUser.role) &&
-                      showStar(item.tangibletime, item.weeklycommittedHours) ? (
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: isAdmin ? 'space-between' : 'center' }}>
+
+                  {/* <Link to={`/dashboard/${item.personId}`}> */}
+                  <div onClick={() => dashboardToggle(item)}>
+                    {
+                      hasLeaderboardPermissions(loggedInUser.role) && 
+                    showStar(item.tangibletime, item.weeklycommittedHours) ? (
                         <i
-                          className="fa fa-star"
-                          title={`Weekly Committed: ${item.weeklycommittedHours} hours`}
-                          style={{
-                            color: assignStarDotColors(
-                              item.tangibletime,
-                              item.weeklycommittedHours,
-                            ),
-                            fontSize: '20px',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                          }}
-                        />
-                      ) : (
+                        className="fa fa-star"
+                        title={`Weekly Committed: ${item.weeklycommittedHours} hours`}
+                        style={{
+                          color: assignStarDotColors(item.tangibletime, item.weeklycommittedHours),
+                          fontSize: '20px',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                        }}
+                      />) : (
                         <div
                           title={`Weekly Committed: ${item.weeklycommittedHours} hours`}
                           style={{
@@ -287,19 +275,21 @@ const LeaderBoard = ({
                             verticalAlign: 'middle',
                           }}
                         />
-                      )}
+                      )
+                    }
+                  </div>
+                  {
+                    isAdmin && item.hasSummary && 
+                    <div
+                      title={`Weekly Summary Submitted`}
+                      style={{
+                        color: '#32a518',
+                        cursor: 'default',
+                      }}
+                    >
+                      <strong>✓</strong>
                     </div>
-                    {isAdmin && item.hasSummary && (
-                      <div
-                        title={`Weekly Summary Submitted`}
-                        style={{
-                          color: '#32a518',
-                          cursor: 'default',
-                        }}
-                      >
-                        <strong>✓</strong>
-                      </div>
-                    )}
+                  }
                   </div>
                   {/* </Link> */}
                 </td>
@@ -308,9 +298,7 @@ const LeaderBoard = ({
                     {item.name}
                   </Link>
                   &nbsp;&nbsp;&nbsp;
-                  {isAdmin && !item.isVisible && (
-                    <i className="fa fa-eye-slash" title="User is invisible"></i>
-                  )}
+                  {isAdmin && !item.isVisible && <i className="fa fa-eye-slash" title="User is invisible"></i>}
                 </th>
                 <td className="align-middle" id={`id${item.personId}`}>
                   <span title="Tangible time">{item.tangibletime}</span>
@@ -324,10 +312,7 @@ const LeaderBoard = ({
                   </Link>
                 </td>
                 <td className="align-middle">
-                  <span 
-                  title="Total time"
-                  className={ item.totalintangibletime_hrs > 0 ? 'boldClass' : null }
-                  >{item.totaltime}</span>
+                  <span title="Total time">{item.totaltime}</span>
                 </td>
               </tr>
             ))}

@@ -105,22 +105,16 @@ export const addNewTask = (newTask, wbsId) => async (dispatch, getState) => {
   await dispatch(postNewTask(task, status));
 };
 
-export const updateTask = (taskId, updatedTask, hasPermission, prevTask) => async (dispatch, getState) => {
+export const updateTask = (taskId, updatedTask, hasPermission) => async (dispatch, getState) => {
   let status = 200;
   try {
     const state = getState();
-    
-    let oldTask 
-    if(prevTask){
-      oldTask = prevTask
-    }else{
-      oldTask = selectUpdateTaskData(state, taskId);
-    }
-    
+    const oldTask = selectUpdateTaskData(state, taskId);
+    //dispatch(fetchTeamMembersTaskBegin());
     if (hasPermission) {
       await axios.put(ENDPOINTS.TASK_UPDATE(taskId), updatedTask);
       const userIds = updatedTask.resources.map(resource => resource.userID);
-      await createOrUpdateTaskNotificationHTTP(taskId, oldTask, userIds);   
+      await createOrUpdateTaskNotificationHTTP(taskId, oldTask, userIds);
     } else {
       await createTaskEditSuggestionHTTP(taskId, selectUserId(state), oldTask, updatedTask);
     }

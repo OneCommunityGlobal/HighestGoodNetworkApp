@@ -55,7 +55,7 @@ const UserTableSearchHeader = React.memo(props => {
       <td id="user_end_date"></td>
       {userTableDataPermissions(props.authRole, props.roleSearchText) && (
         <td id="user__delete"></td>
-      )}
+      )}  
     </tr>
   );
 });

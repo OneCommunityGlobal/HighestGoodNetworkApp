@@ -2,6 +2,7 @@ thead {
   background: aliceblue;
 }
 
+
 #new_usermanagement {
   margin-bottom: 10px;
 }
@@ -49,14 +50,14 @@ thead {
 .email_cell {
   position: relative;
 }
-
+ 
 .copy_icon {
-  cursor: pointer;
-  position: absolute;
-  top: 0;
-  right: 0;
-  margin: 2px 2px;
-}
+   cursor: pointer;
+   position: absolute; 
+   top: 0; 
+   right: 0; 
+   margin: 2px 2px;
+  }
 
 .usermanagement__order--input div {
   margin-top: 7px;
