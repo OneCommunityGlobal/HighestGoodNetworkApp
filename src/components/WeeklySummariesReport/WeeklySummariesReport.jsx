@@ -12,6 +12,8 @@ import { getWeeklySummariesReport } from '../../actions/weeklySummariesReport';
 import FormattedReport from './FormattedReport';
 import GeneratePdfReport from './GeneratePdfReport';
 import hasPermission from '../../utils/permissions';
+import axios from 'axios';
+import { ENDPOINTS } from '../../utils/URL';
 
 export class WeeklySummariesReport extends Component {
   state = {
@@ -23,6 +25,20 @@ export class WeeklySummariesReport extends Component {
 
   async componentDidMount() {
     await this.props.getWeeklySummariesReport();
+    
+    const now = moment().tz('America/Los_Angeles')
+
+    const summaryPromise = this.props.summaries.map(async summary => {
+      const url = ENDPOINTS.USER_PROFILE(summary._id);
+      const response = await axios.get(url);
+      const startDate = moment(response.data.createdDate).tz('America/Los_Angeles')
+      const diff = now.diff(startDate, "days")
+      summary.daysInTeam = diff
+      summary.totalTangibleHrs = response.data.totalTangibleHrs
+    })
+
+    await Promise.all(summaryPromise)
+
     this.setState({
       error: this.props.error,
       loading: this.props.loading,

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import PropTypes from 'prop-types';
 import moment from 'moment';
 import 'moment-timezone';
@@ -172,10 +172,10 @@ const FormattedReport = ({ summaries, weekIndex, bioCanEdit }) => {
     }
   };
 
-  const bioSwitch = (userId, bioPosted, weeklySummaryOption) => {
+  const bioSwitch = (userId, bioPosted, weeklySummaryOption, totalTangibleHrs, daysInTeam) => {
     const [bioStatus, setBioStatus] = useState(bioPosted);
     return (
-      <div>
+      <div style={totalTangibleHrs > 80 && daysInTeam > 60 && bioPosted !== "posted" ? {backgroundColor: "yellow"}: {}}> 
         <div className="bio-toggle">
           <b style={weeklySummaryOption === 'Team' ? { color: 'magenta' } : {}}>
             Bio announcement:
@@ -262,7 +262,7 @@ const FormattedReport = ({ summaries, weekIndex, bioCanEdit }) => {
               {' '}
               <b>Media URL:</b> {getMediaUrlLink(summary)}
             </div>
-            {bioFunction(summary._id, summary.bioPosted, summary.weeklySummaryOption)}
+            {bioFunction(summary._id, summary.bioPosted, summary.weeklySummaryOption, summary.totalTangibleHrs, summary.daysInTeam)}
             {getTotalValidWeeklySummaries(summary)}
             {hoursLogged >= summary.weeklycommittedHours && (
               <p>
