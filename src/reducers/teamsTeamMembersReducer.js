@@ -1,4 +1,3 @@
-/* eslint-disable no-underscore-dangle */
 import * as types from '../constants/allTeamsConstants';
 
 const teamUsersInitial = {

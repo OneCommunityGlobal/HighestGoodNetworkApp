@@ -10,6 +10,12 @@ import { boxStyle } from 'styles';
 const MINIMUM_WEEK_HOURS = 0;
 const MAXIMUM_WEEK_HOURS = 168;
 
+const startEndDateValidation = props => {
+  return (
+    props.userProfile.createdDate > props.userProfile.endDate && props.userProfile.endDate !== ''
+  );
+};
+
 const StartDate = props => {
   if (!props.canEdit) {
     return <p>{moment(props.userProfile.createdDate).format('YYYY-MM-DD')}</p>;
@@ -19,12 +25,15 @@ const StartDate = props => {
       type="date"
       name="StartDate"
       id="startDate"
+      className={startEndDateValidation(props) ? 'border-error-validation' : null}
       value={moment(props.userProfile.createdDate).format('YYYY-MM-DD')}
       onChange={e => {
         props.setUserProfile({ ...props.userProfile, createdDate: e.target.value });
+        props.onStartDateComponent(e.target.value);
       }}
       placeholder="Start Date"
       invalid={!props.canEdit}
+      max={props.userProfile.endDate ? moment(props.userProfile.endDate).format('YYYY-MM-DD') : ''}
     />
   );
 };
@@ -39,8 +48,10 @@ const EndDate = props => {
       </p>
     );
   }
+
   return (
     <Input
+      className={startEndDateValidation(props) ? 'border-error-validation' : null}
       type="date"
       name="EndDate"
       id="endDate"
@@ -49,9 +60,15 @@ const EndDate = props => {
       }
       onChange={e => {
         props.setUserProfile({ ...props.userProfile, endDate: e.target.value });
+        props.onEndDateComponent(e.target.value);
       }}
       placeholder="End Date"
       invalid={!props.canEdit}
+      min={
+        props.userProfile.createdDate
+          ? moment(props.userProfile.createdDate).format('YYYY-MM-DD')
+          : ''
+      }
     />
   );
 };
@@ -65,6 +82,30 @@ const WeeklySummaryOptions = props => {
       </p>
     );
   }
+
+  const summaryOptions = [
+    {value: "Required", text: "Required"},
+    {value: "Not Required", text: "Not Required (Slate Gray)"},
+    {value: "Team Fabulous", text: "Team Fabulous (Fuschia)"},
+    {value: "Team Marigold", text: "Team Marigold (Orange)"},
+    {value: "Team Luminous", text: "Team Luminous (Yellow)"},
+    {value: "Team Lush", text: "Team Lush (Green)"},
+    {value: "Team Sky", text: "Team Sky (Blue)"},
+    {value: "Team Azure", text: "Team Azure (Indigo)"},
+    {value: "Team Amethyst", text: "Team Amethyst (Purple)"},
+  ]
+
+  const handleOnChange = (e) => {
+    let temp = {...props.userProfile}
+    temp.weeklySummaryOption = e.target.value
+    if(e.target.value === "Not Required") {
+      temp.weeklySummaryNotReq = true
+    } else {
+      temp.weeklySummaryNotReq = false
+    }
+    props.setUserProfile(temp);
+  }
+  
   return (
     <FormGroup>
       <select
@@ -76,13 +117,11 @@ const WeeklySummaryOptions = props => {
           props.userProfile.weeklySummaryOption ??
           (props.userProfile.weeklySummaryNotReq ? 'Not Required' : 'Required')
         }
-        onChange={e => {
-          props.setUserProfile({ ...props.userProfile, weeklySummaryOption: e.target.value });
-        }}
+        onChange={handleOnChange}
       >
-        <option value="Required">Required</option>
-        <option value="Not Required">Not Required</option>
-        <option value="Team">Team</option>
+        {summaryOptions.map(({value, text}) => (
+          <option key={value} value={value}>{text}</option>
+        ))}
       </select>
     </FormGroup>
   );
@@ -186,6 +225,14 @@ const ViewTab = props => {
   const [totalTangibleHours, setTotalTangibleHours] = useState(0);
   const { hoursByCategory, totalIntangibleHrs } = userProfile;
 
+  const handleStartDates = async startDate => {
+    props.onStartDate(startDate);
+  };
+
+  const handleEndDates = async endDate => {
+    props.onEndDate(endDate);
+  };
+
   useEffect(() => {
     sumOfCategoryHours();
   }, [hoursByCategory]);
@@ -277,6 +324,7 @@ const ViewTab = props => {
             userProfile={userProfile}
             setUserProfile={setUserProfile}
             canEdit={canEdit}
+            onStartDateComponent={handleStartDates}
           />
         </Col>
       </Row>
@@ -291,6 +339,7 @@ const ViewTab = props => {
             userProfile={userProfile}
             setUserProfile={setUserProfile}
             canEdit={canEdit}
+            onEndDateComponent={handleEndDates}
           />
         </Col>
       </Row>
