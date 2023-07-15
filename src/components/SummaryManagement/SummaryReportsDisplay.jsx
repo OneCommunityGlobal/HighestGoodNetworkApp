@@ -11,33 +11,78 @@ const SummaryTable = props => {
   };
 
   useEffect(() => {
+    const fetchData = async () => {
+      const result = await updateData();
+      setData(result);
+      getSummaryReceiver();
+    };
     if (props.summaryGroupId) {
-      const fetchData = async () => {
-        const result = await updateData();
-        setData(result);
-        // const summaryReceiverResult = await props.getSummaryReceiver(props.SummaryGroupId);
-        // setSummaryReceiver(summaryReceiverResult);
-      };
       fetchData();
     }
   }, [props.summaryGroupId]);
 
+  useEffect(() => {
+    getSummaryReceiverdata();
+  }, [props.summaryReceiver, props.currentUserId]);
+
+  useEffect(() => {
+    // console.log('in display receiver value: ', summaryReceiver);
+    // console.log('users data: ', props.usersdata);
+  }, [summaryReceiver]);
+
+  useEffect(() => {
+    // console.log('currentUserRole: ', props.currentUserRole);
+  }, [props.currentUserRole]);
+
+  const closeDisplay = () => {
+    props.onDisplaySummaryTableFunc('false');
+  };
+
+  const getSummaryReceiver = async () => {
+    const id = props.summaryGroupId;
+    if (id) {
+      // await props.getSummaryReceiver(id);
+    } else {
+      console.log('props.summaryGroupId is null');
+    }
+  };
+
+  const getSummaryReceiverdata = async () => {
+    if (props.currentUserId && props.summaryReceiver) {
+      const userId = props.currentUserId;
+      const summarylist = await props.summaryReceiver.summaryReceivers;
+      const summaryIds = summarylist.filter(item => item._id === userId)[0]._id;
+      setSummaryReceiver(summaryIds);
+      // console.log('summary list 2 : ', summaryIds);
+    }
+  };
+
   return (
     <div>
-      {props.summaryGroupId && props.onDisplaySummaryTable ? (
+      {props.summaryGroupId &&
+      props.onDisplaySummaryTableVar &&
+      (props.currentUserRole === 'Administrator' ||
+        props.currentUserRole === 'Manager' ||
+        props.currentUserRole === 'Mentor') ? (
         <div>
           <table className="table table-bordered table-responsive-sm">
             <thead>
-              <tr>
-                <th>Summaries from Group</th>
+              <tr className="d-flex justify-content-between">
+                <th className="border-0">Summaries from Group</th>
+                <button className="btn btn-sm btn-secondary mt-2 mb-2 mr-2" onClick={closeDisplay}>
+                  Close
+                </button>
               </tr>
             </thead>
+
             <tbody>
               {data.length !== 0 &&
                 data.map((item, index) => (
                   <tr key={index}>
                     <td>
-                      <SummaryComponent name={item.fullName} message={item.report} />
+                      {(summaryReceiver || props.currentUserRole === 'Administrator') && (
+                        <SummaryComponent name={item.fullName} message={item.report} />
+                      )}
                     </td>
                   </tr>
                 ))}

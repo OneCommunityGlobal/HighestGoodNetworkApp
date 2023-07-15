@@ -1,8 +1,36 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import './summarygroup.css';
 import { DELETE, EDIT, VIEW_SUMMARY } from '../../languages/en/ui';
+import { updateBadge } from 'actions/badgeManagement';
 
 const summaryGroupTableBody = props => {
+  const [role, setRole] = useState(false);
+
+  useEffect(() => {
+    const roles = props.currentUserRole;
+    // console.log('gets here to change role');
+    updateinfo();
+    if (roles) {
+      // if (role != 'Manager' || role !== 'Mentor') setRole(false);
+      if (roles === 'Administrator') {
+        setRole(true);
+      }
+      // console.log('this works:', props.currentUserRole);
+    }
+  }, [props.currentUserRole]);
+
+  // useEffect(() => {
+  //   updateinfo();
+  // }, [props.summaryReceiver, props.currentUserId]);
+
+  const updateinfo = async () => {
+    const id = props.summaryGroupId;
+    if (id) {
+      await props.updateUserInfo(id);
+      // console.log('Timeout complete');
+    }
+  };
+
   return (
     <tr className="summarygroup__tr" id={`tr_${props.summaryGroupId}`}>
       <th className="summarygroup__order--input" scope="row">
@@ -76,16 +104,18 @@ const summaryGroupTableBody = props => {
           </button>
         </span>
         <span className="usermanagement-actions-cell">
-          <button
-            type="button"
-            className="btn btn-outline-success"
-            onClick={() => {
-              props.onClickViewReports(props.summaryGroupId);
-              props.onDisplaySummaryTable('true');
-            }}
-          >
-            {VIEW_SUMMARY}
-          </button>
+          {role && (
+            <button
+              type="button"
+              className="btn btn-outline-success"
+              onClick={() => {
+                props.onClickViewReports(props.summaryGroupId);
+                props.onDisplaySummaryTable('true');
+              }}
+            >
+              {VIEW_SUMMARY}
+            </button>
+          )}
         </span>
       </td>
     </tr>

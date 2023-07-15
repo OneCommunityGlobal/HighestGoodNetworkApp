@@ -15,7 +15,9 @@ import {
   updateSummaryGroup,
   extractMembers,
   extractSummaryReceivers,
+  getUser,
 } from 'actions/allSummaryAction';
+// import { getUser } from 'actions/authActions';
 import { getWeeklySummaries, extractWeeklySummaries } from 'actions/weeklySummaries';
 import { getWeeklySummariesReport } from 'actions/weeklySummariesReport';
 //import { getAllUserProfile } from 'actions/userManagement';
@@ -50,10 +52,15 @@ class SummaryManagement extends Component {
       SummaryReceiverPopupOpen: false,
       ApiCallDone: true,
       displaySummaryReportTable: false,
+      currentUserRole: '',
+      currentUserId: 0,
     };
   }
   async componentDidMount() {
     this.props.getAllSummaryGroup();
+    // const user = await this.props.getUser();
+    // this.setState({ currentUserRole: user.role });
+    // this.setState({ currentUserId: user.userid });
   }
 
   /*Create New SummaryGroup related function */
@@ -167,7 +174,6 @@ class SummaryManagement extends Component {
     try {
       //Getting the ids of every member in the summary group
       const result = await this.props.extractMembers(this.state.selectedSummaryGroupId);
-      // const result = await this.props.extractMembers('6495ef46d4adee369297e5ac');
       const members = { teamMembers: result.teamMembers };
 
       const reportsList = members.teamMembers.map(member => ({
@@ -181,7 +187,7 @@ class SummaryManagement extends Component {
       //Getting the 1st week summary reports of each member
       //remember to run the first and second line of code when the page loads up and not all times.
       // await this.props.getWeeklySummariesReport();
-      // const summary = await this.props.getWeeklySummaries('6466b15fd349ee380e5707cb');
+      // const summary = await this.props.getWeeklySummaries('this.state.selectedSummaryGroupId');
 
       const summaries = await this.props.extractWeeklySummaries(extractedIds);
       const finalReportsList = reportsList.map(member => ({
@@ -311,12 +317,25 @@ class SummaryManagement extends Component {
 
   getSummaryReceiverRedux = async summaryGroupId => {
     try {
-      const result = await this.props.extractSummaryReceivers(summaryGroupId);
-      const receivers = { summaryReceivers: result };
-      this.setState({ summaryReceiver: receivers });
+      if (summaryGroupId) {
+        // console.log('Summary group works');
+        const result = await this.props.extractSummaryReceivers(summaryGroupId);
+        const receivers = { summaryReceivers: result };
+        this.setState({ summaryReceiver: receivers });
+        // console.log('result in destination: ', this.summaryReceiver);
+        const user = await this.props.getUser();
+        this.setState({ currentUserRole: user.role });
+        this.setState({ currentUserId: user.userid });
+      }
     } catch (error) {
       console.log(error);
     }
+  };
+
+  updateUserInfo = async () => {
+    const user = await this.props.getUser();
+    this.setState({ currentUserRole: user.role });
+    this.setState({ currentUserId: user.userid });
   };
 
   onDisplaySummaryTable = value => {
@@ -529,7 +548,13 @@ class SummaryManagement extends Component {
               teamMembersReports={this.getTeamMembersReports}
               summaryGroupId={this.state.selectedSummaryGroupId}
               getSummaryReceiver={this.getSummaryReceiverRedux}
-              onDisplaySummaryTable={this.state.displaySummaryReportTable}
+              onDisplaySummaryTableVar={this.state.displaySummaryReportTable}
+              onDisplaySummaryTableFunc={this.onDisplaySummaryTable}
+              usersdata={usersdata}
+              summaryReceiver={this.state.summaryReceiver}
+              currentUserRole={this.state.currentUserRole}
+              currentUserId={this.state.currentUserId}
+              updateUserInfo={this.updateUserInfo}
             />
           </div>
         </div>
@@ -563,6 +588,10 @@ class SummaryManagement extends Component {
           onDeleteClick={this.onDeleteTeamPopupShow}
           onClickViewReports={this.onClickViewReports}
           onDisplaySummaryTable={this.onDisplaySummaryTable}
+          currentUserRole={this.state.currentUserRole}
+          currentUserId={this.state.currentUserId}
+          updateUserInfo={this.getSummaryReceiverRedux}
+          summaryReceiver={this.state.summaryReceiver}
         />
       ));
     }
@@ -580,4 +609,5 @@ export default connect(mapStateToProps, {
   getWeeklySummaries,
   extractWeeklySummaries,
   getWeeklySummariesReport,
+  getUser,
 })(SummaryManagement);

@@ -96,16 +96,35 @@ export const extractMembers = id => {
 export const extractSummaryReceivers = id => {
   return async (dispatch, getState) => {
     try {
-      const summarydata = await getState().allSummaryGroups;
-      const groupObject = summarydata.allSummaryGroups.filter(group => group._id === id)[0]
-        .summaryReceivers;
+      if (id) {
+        const summarydata = await getState().allSummaryGroups;
+        // console.log('Receiver data is getting here', summarydata);
+        const groupObject = summarydata.allSummaryGroups.filter(group => group._id === id)[0]
+          .summaryReceivers;
 
-      const result = await Promise.resolve({ summaryReceivers: groupObject });
-      const receivers = result.summaryReceivers;
-      // console.log('Receiver data is getting here', receivers);
-      return receivers;
+        // const groupObject = summarydata.allSummaryGroups.filter(group => group._id === id);
+        // console.log('Group Object: ', groupObject);
+        const result = await Promise.resolve({ summaryReceivers: groupObject });
+        const receivers = result.summaryReceivers;
+        // console.log('result: ', receivers);
+        return receivers;
+      }
     } catch (err) {
       console.error('extractSummaryReceivers:', err);
+      return null;
+    }
+  };
+};
+
+export const getUser = () => {
+  return async (dispatch, getState) => {
+    try {
+      const userAll = await getState().auth;
+      const user = userAll.user;
+      // console.log('user: ', user);
+      return user;
+    } catch (err) {
+      console.error('user not found:', err);
       return null;
     }
   };

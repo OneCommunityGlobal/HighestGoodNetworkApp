@@ -53,6 +53,7 @@ export const Header = props => {
   const dispatch = useDispatch();
 
   const userPermissions = props.auth.user?.permissions?.frontPermissions;
+
   useEffect(() => {
     if (props.auth.isAuthenticated) {
       props.getHeaderData(props.auth.user.userid);
@@ -74,6 +75,8 @@ export const Header = props => {
   const openModal = () => {
     setLogoutPopup(true);
   };
+
+  // console.log('User roles: ', roles);
 
   return (
     <div className="header-wrapper">
@@ -113,6 +116,14 @@ export const Header = props => {
                   <span className="dashboard-text-link">{TIMELOG}</span>
                 </NavLink>
               </NavItem>
+              {user.role === 'Mentor' ||
+                (user.role === 'Manager' && (
+                  <NavItem>
+                    <NavLink tag={Link} to="/summarymanagement">
+                      <span className="dashboard-text-link">{SUMMARY_MANAGEMENT}</span>
+                    </NavLink>
+                  </NavItem>
+                ))}
               <UncontrolledDropdown nav inNavbar>
                 <DropdownToggle nav caret>
                   <span className="dashboard-text-link">{REPORTS}</span>
@@ -140,6 +151,7 @@ export const Header = props => {
                   </i>
                 </NavLink>
               </NavItem>
+
               {(hasPermission(user.role, 'seeUserManagement', roles, userPermissions) ||
                 hasPermission(user.role, 'seeBadgeManagement', roles, userPermissions) ||
                 hasPermission(user.role, 'seeProjectManagement', roles, userPermissions) ||
@@ -205,7 +217,7 @@ export const Header = props => {
                   <img
                     src={`${profilePic || '/pfp-default-header.png'}`}
                     alt=""
-                    style={{ maxWidth: '60px', maxHeight: '60px'}}
+                    style={{ maxWidth: '60px', maxHeight: '60px' }}
                     className="dashboardimg"
                   />
                 </NavLink>
