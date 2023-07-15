@@ -13,6 +13,9 @@ function TeamLocations() {
   const geocodeAPIKey = useSelector(state => state.timeZoneAPI.userAPIKey);
 
   useEffect(() => {
+    if (!localStorage.getItem('teamLocations')) {
+      localStorage.setItem('teamLocations', '{}');
+    }
     async function getUserProfiles() {
       const users = mockAPIResponse; // await axios.get(ENDPOINTS.USER_PROFILES);
       setUserProfiles(users.data);
