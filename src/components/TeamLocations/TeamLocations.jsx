@@ -10,6 +10,7 @@ import './TeamLocations.css';
 
 function TeamLocations() {
   const [userProfiles, setUserProfiles] = useState([]);
+  const geocodeAPIKey = useSelector(state => state.timeZoneAPI.userAPIKey);
 
   useEffect(() => {
     async function getUserProfiles() {
