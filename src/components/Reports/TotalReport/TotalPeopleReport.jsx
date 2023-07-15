@@ -202,8 +202,10 @@ const TotalPeopleReport = props => {
           months: 12,
         };
       });
-      sumData[0].months = 12 - startMonth;
-      sumData[sumData.length - 1].months = endMonth + 1;
+      if (sumData.length > 1) {
+        sumData[0].months = 12 - startMonth;
+        sumData[sumData.length - 1].months = endMonth + 1;
+      }
       return sumData;
     } else {
       const sumData = groupedDate.map(range => {

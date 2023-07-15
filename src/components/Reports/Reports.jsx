@@ -224,6 +224,9 @@ class ReportsPage extends Component {
 
   showTotalPeople() {
     this.setState(prevState => ({
+      showProjects: false,
+      showPeople: false,
+      showTeams: false,
       //showTotalProjects: false,
       showTotalPeople: !prevState.showTotalPeople,
       showTotalTeam: false,
@@ -232,6 +235,9 @@ class ReportsPage extends Component {
 
   showTotalTeam() {
     this.setState(prevState => ({
+      showProjects: false,
+      showPeople: false,
+      showTeams: false,
       //showTotalProjects: false,
       showTotalTeam: !prevState.showTotalTeam,
       showTotalPeople: false,
