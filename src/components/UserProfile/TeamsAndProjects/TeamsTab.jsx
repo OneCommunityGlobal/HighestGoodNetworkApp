@@ -13,6 +13,8 @@ const TeamsTab = props => {
     onUserVisibilitySwitch,
     isVisible,
     canEditVisibility,
+    handleSubmit,
+    disabled,
   } = props;
   const [addTeamPopupOpen, setaddTeamPopupOpen] = useState(false);
   const [renderedOn, setRenderedOn] = useState(0);
@@ -41,6 +43,7 @@ const TeamsTab = props => {
         teamsData={teamsData}
         userTeamsById={userTeams}
         onSelectAssignTeam={onSelectAssignTeam}
+        handleSubmit={handleSubmit}
       />
       <UserTeamsTable
         userTeamsById={userTeams}
@@ -52,6 +55,7 @@ const TeamsTab = props => {
         renderedOn={renderedOn}
         edit={edit}
         role={role}
+        disabled={disabled}
       />
     </React.Fragment>
   );
