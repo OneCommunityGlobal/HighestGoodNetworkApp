@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { ENDPOINTS } from 'utils/URL';
 import axios from 'axios';
 import Loading from '../../common/Loading';
-import './TotalPeopleReport.css';
+import './TotalReport.css';
 import { Button } from 'reactstrap';
 import ReactTooltip from 'react-tooltip';
 import TotalReportBarGraph from './TotalReportBarGraph';
@@ -121,7 +121,7 @@ const TotalPeopleReport = props => {
     const diffDate = props.endDate - props.startDate;
     if (diffDate > oneMonth) {
       setPeopleInMonth(generateBarData(summaryOfTimeRange('month')));
-      setPeopleInYear(generateBarData(summaryOfTimeRange('year')));
+      setPeopleInYear(generateBarData(summaryOfTimeRange('year'), true));
       if (diffDate <= oneMonth * 12) {
         setShowMonthly(true);
       }
@@ -191,14 +191,29 @@ const TotalPeopleReport = props => {
     );
   };
 
-  const generateBarData = groupedDate => {
-    const sumData = groupedDate.map(range => {
-      return {
-        label: range.timeRange,
-        value: range.usersOfTime.length,
-      };
-    });
-    return sumData;
+  const generateBarData = (groupedDate, isYear = false) => {
+    if (isYear) {
+      const startMonth = props.startDate.getMonth();
+      const endMonth = props.endDate.getMonth();
+      const sumData = groupedDate.map(range => {
+        return {
+          label: range.timeRange,
+          value: range.usersOfTime.length,
+          months: 12,
+        };
+      });
+      sumData[0].months = 12 - startMonth;
+      sumData[sumData.length - 1].months = endMonth + 1;
+      return sumData;
+    } else {
+      const sumData = groupedDate.map(range => {
+        return {
+          label: range.timeRange,
+          value: range.usersOfTime.length,
+        };
+      });
+      return sumData;
+    }
   };
 
   const totalPeopleInfo = totalPeople => {
@@ -207,7 +222,7 @@ const TotalPeopleReport = props => {
     }, 0);
     return (
       <div className="total-people-container">
-        <div className='total-people-title'>Total People Report</div>
+        <div className="total-people-title">Total People Report</div>
         <div className="total-people-period">
           In the period from {fromDate} to {toDate}:
         </div>
