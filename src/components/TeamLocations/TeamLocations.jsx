@@ -1,16 +1,28 @@
 import React from 'react';
 import axios from 'axios';
 import { ENDPOINTS } from '../../utils/URL';
+import { getUserTimeZone } from 'services/timezoneApiService';
+import { useSelector } from 'react-redux';
 import { useState, useEffect } from 'react';
-import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
+import { MapContainer, TileLayer, CircleMarker, Popup } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import './TeamLocations.css';
 const TeamLocations = () => {
   const [userProfiles, setUserProfiles] = useState([]);
+  const geocodeAPIKey = useSelector(state => state.timeZoneAPI.userAPIKey);
 
   useEffect(() => {
     async function getUserProfiles() {
       const users = await axios.get(ENDPOINTS.USER_PROFILES);
+      for (let i = 0; i < 100; i++) {
+        if (users.data[i].location === '' || !users.data[i].location) {
+          continue;
+        }
+        const response = await getUserTimeZone(users.data[i].location, geocodeAPIKey);
+        if (response.data.total_results) {
+          users.data[i].locationLatLng = response.data.results[0].geometry;
+        }
+      }
       setUserProfiles(users.data);
     }
     getUserProfiles();
@@ -43,22 +55,22 @@ const TeamLocations = () => {
         maxZoom={15}
       />
       {userProfiles.map(profile => {
-        return (
-          <Marker
-            position={[
-              Math.floor(Math.random() * (90 + 90)) - 90,
-              Math.floor(Math.random() * (180 + 180)) - 180,
-            ]}
-          >
-            <Popup>
-              <div>
-                <div>{`Name: ${profile.firstName} ${profile.lastName}`}</div>
-                <div>{`Title: ${profile.jobTitle}`}</div>
-                <div>{`Location: ${profile.location}`}</div>
-              </div>
-            </Popup>
-          </Marker>
-        );
+        if (profile.locationLatLng) {
+          return (
+            <CircleMarker
+              center={[profile.locationLatLng.lat, profile.locationLatLng.lng]}
+              key={profile._id}
+            >
+              <Popup>
+                <div>
+                  <div>{`Name: ${profile.firstName} ${profile.lastName}`}</div>
+                  <div>{`Title: ${profile.jobTitle}`}</div>
+                  <div>{`Location: ${profile.location}`}</div>
+                </div>
+              </Popup>
+            </CircleMarker>
+          );
+        }
       })}
     </MapContainer>
   );
