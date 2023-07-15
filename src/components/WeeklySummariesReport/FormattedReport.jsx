@@ -10,7 +10,6 @@ import { toast } from 'react-toastify';
 import ToggleSwitch from '../UserProfile/UserProfileEdit/ToggleSwitch';
 import axios from 'axios';
 import { ENDPOINTS } from '../../utils/URL';
-
 import { assignStarDotColors, showStar } from 'utils/leaderboardPermissions';
 import { Input } from 'reactstrap';
 
