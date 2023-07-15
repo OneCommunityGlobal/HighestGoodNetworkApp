@@ -13,17 +13,30 @@ const TeamLocations = () => {
   const geocodeAPIKey = useSelector(state => state.timeZoneAPI.userAPIKey);
 
   useEffect(() => {
+    if (!localStorage.getItem('teamLocations')) {
+      localStorage.setItem('teamLocations', '{}');
+    }
     async function getUserProfiles() {
       const users = await axios.get(ENDPOINTS.USER_PROFILES);
+      const cachedLocations = JSON.parse(localStorage.getItem('teamLocations', '{}'));
       for (let i = 0; i < users.data.length; i++) {
         if (users.data[i].location === '' || !users.data[i].location) {
           continue;
         }
-        const response = await getUserTimeZone(users.data[i].location, geocodeAPIKey);
-        if (response.data.total_results) {
-          users.data[i].locationLatLng = response.data.results[0].geometry;
+        if (users.data[i].location in cachedLocations) {
+          users.data[i].locationLatLng = cachedLocations[users.data[i].location];
+        } else {
+          const response = await getUserTimeZone(users.data[i].location, geocodeAPIKey);
+          if (response.data.total_results) {
+            users.data[i].locationLatLng = response.data.results[0].geometry;
+            cachedLocations[users.data[i].location] = response.data.results[0].geometry;
+          } else {
+            users.data[i].locationLatLng = null;
+            cachedLocations[users.data[i].location] = null;
+          }
         }
       }
+      localStorage.setItem('teamLocations', JSON.stringify(cachedLocations));
       setUserProfiles(users.data);
     }
     getUserProfiles();
