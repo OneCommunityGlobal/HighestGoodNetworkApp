@@ -4,7 +4,7 @@ import { useDispatch } from 'react-redux';
 import { ENDPOINTS } from 'utils/URL';
 import axios from 'axios';
 import Loading from '../../common/Loading';
-import './TotalPeopleReport.css';
+import './TotalReport.css';
 import { Button } from 'reactstrap';
 import ReactTooltip from 'react-tooltip';
 import TotalReportBarGraph from './TotalReportBarGraph';
@@ -185,7 +185,7 @@ const TotalTeamReport = props => {
     const valid = filterTeamByEndDate(allTeamsMembers, props.endDate);
     if (diffDate > oneMonth) {
       setTeamInMonth(generateBarData(summaryOfTimeRange('month', valid)));
-      setTeamInYear(generateBarData(summaryOfTimeRange('year', valid)));
+      setTeamInYear(generateBarData(summaryOfTimeRange('year', valid), true));
       if (diffDate <= oneMonth * 12) {
         setShowMonthly(true);
       }
@@ -319,7 +319,7 @@ const TotalTeamReport = props => {
               #
             </th>
             <th scope="col">Team Name</th>
-            <th scope="col">Total Logged Time</th>
+            <th scope="col">Total Logged Time (Hrs)</th>
           </tr>
         </thead>
         {teamList}
@@ -327,14 +327,29 @@ const TotalTeamReport = props => {
     );
   };
 
-  const generateBarData = groupedDate => {
-    const sumData = groupedDate.map(range => {
-      return {
-        label: range.timeRange,
-        value: range.teamsOfTime.length,
-      };
-    });
-    return sumData;
+  const generateBarData = (groupedDate, isYear = false) => {
+    if (isYear) {
+      const startMonth = props.startDate.getMonth();
+      const endMonth = props.endDate.getMonth();
+      const sumData = groupedDate.map(range => {
+        return {
+          label: range.timeRange,
+          value: range.teamsOfTime.length,
+          months: 12,
+        };
+      });
+      sumData[0].months = 12 - startMonth;
+      sumData[sumData.length - 1].months = endMonth + 1;
+      return sumData;
+    } else {
+      const sumData = groupedDate.map(range => {
+        return {
+          label: range.timeRange,
+          value: range.teamsOfTime.length,
+        };
+      });
+      return sumData;
+    }
   };
 
   const totalTeamInfo = totalTeam => {
@@ -342,18 +357,18 @@ const TotalTeamReport = props => {
       return acc + Number(obj.tangibleTime);
     }, 0);
     return (
-      <div className="total-people-container">
-        <div className="total-people-title">Total Team Report</div>
-        <div className="total-people-period">
+      <div className="total-container">
+        <div className="total-title">Total Team Report</div>
+        <div className="total-period">
           In the period from {fromDate} to {toDate}:
         </div>
-        <div className="total-people-item">
-          <div className="total-people-number">{totalTeam.length}</div>
-          <div className="total-people-text">teams have contributed more than 10 hours.</div>
+        <div className="total-item">
+          <div className="total-number">{totalTeam.length}</div>
+          <div className="total-text">teams have contributed more than 10 hours.</div>
         </div>
-        <div className="total-people-item">
-          <div className="total-people-number">{totalTangibleTime.toFixed(2)}</div>
-          <div className="total-people-text">hours of tangible time have been logged.</div>
+        <div className="total-item">
+          <div className="total-number">{totalTangibleTime.toFixed(2)}</div>
+          <div className="total-text">hours of tangible time have been logged.</div>
         </div>
         <div>
           {showMonthly && teamInMonth.length > 0 ? (
@@ -363,7 +378,7 @@ const TotalTeamReport = props => {
             <TotalReportBarGraph barData={teamInYear} range="year" />
           ) : null}
         </div>
-        <div className="people-detail">
+        <div className="total-detail">
           <Button onClick={e => onClickTotalTeamDetail()}>
             {showTotalTeamTable ? 'Hide Details' : 'Show Details'}
           </Button>

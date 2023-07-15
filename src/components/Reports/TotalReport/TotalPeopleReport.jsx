@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { ENDPOINTS } from 'utils/URL';
 import axios from 'axios';
 import Loading from '../../common/Loading';
-import './TotalPeopleReport.css';
+import './TotalReport.css';
 import { Button } from 'reactstrap';
 import ReactTooltip from 'react-tooltip';
 import TotalReportBarGraph from './TotalReportBarGraph';
@@ -121,7 +121,7 @@ const TotalPeopleReport = props => {
     const diffDate = props.endDate - props.startDate;
     if (diffDate > oneMonth) {
       setPeopleInMonth(generateBarData(summaryOfTimeRange('month')));
-      setPeopleInYear(generateBarData(summaryOfTimeRange('year')));
+      setPeopleInYear(generateBarData(summaryOfTimeRange('year'), true));
       if (diffDate <= oneMonth * 12) {
         setShowMonthly(true);
       }
@@ -183,7 +183,7 @@ const TotalPeopleReport = props => {
               #
             </th>
             <th scope="col">Person Name</th>
-            <th scope="col">Total Logged Time</th>
+            <th scope="col">Total Logged Time (Hrs) </th>
           </tr>
         </thead>
         <tbody>{PeopleList}</tbody>
@@ -191,14 +191,29 @@ const TotalPeopleReport = props => {
     );
   };
 
-  const generateBarData = groupedDate => {
-    const sumData = groupedDate.map(range => {
-      return {
-        label: range.timeRange,
-        value: range.usersOfTime.length,
-      };
-    });
-    return sumData;
+  const generateBarData = (groupedDate, isYear = false) => {
+    if (isYear) {
+      const startMonth = props.startDate.getMonth();
+      const endMonth = props.endDate.getMonth();
+      const sumData = groupedDate.map(range => {
+        return {
+          label: range.timeRange,
+          value: range.usersOfTime.length,
+          months: 12,
+        };
+      });
+      sumData[0].months = 12 - startMonth;
+      sumData[sumData.length - 1].months = endMonth + 1;
+      return sumData;
+    } else {
+      const sumData = groupedDate.map(range => {
+        return {
+          label: range.timeRange,
+          value: range.usersOfTime.length,
+        };
+      });
+      return sumData;
+    }
   };
 
   const totalPeopleInfo = totalPeople => {
@@ -206,18 +221,18 @@ const TotalPeopleReport = props => {
       return acc + Number(obj.tangibleTime);
     }, 0);
     return (
-      <div className="total-people-container">
-        <div className='total-people-title'>Total People Report</div>
-        <div className="total-people-period">
+      <div className="total-container">
+        <div className="total-title">Total People Report</div>
+        <div className="total-period">
           In the period from {fromDate} to {toDate}:
         </div>
-        <div className="total-people-item">
-          <div className="total-people-number">{allPeople.length}</div>
-          <div className="total-people-text">members have contributed more than 10 hours.</div>
+        <div className="total-item">
+          <div className="total-number">{allPeople.length}</div>
+          <div className="total-text">members have contributed more than 10 hours.</div>
         </div>
-        <div className="total-people-item">
-          <div className="total-people-number">{totalTangibleTime.toFixed(2)}</div>
-          <div className="total-people-text">hours of tangible time have been logged.</div>
+        <div className="total-item">
+          <div className="total-number">{totalTangibleTime.toFixed(2)}</div>
+          <div className="total-text">hours of tangible time have been logged.</div>
         </div>
         <div>
           {showMonthly && peopleInMonth.length > 0 ? (
@@ -227,7 +242,7 @@ const TotalPeopleReport = props => {
             <TotalReportBarGraph barData={peopleInYear} range="year" />
           ) : null}
         </div>
-        <div className="people-detail">
+        <div className="total-detail">
           <Button onClick={e => onClickTotalPeopleDetail()}>
             {showTotalPeopleTable ? 'Hide Details' : 'Show Details'}
           </Button>

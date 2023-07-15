@@ -72,7 +72,7 @@ class ReportsPage extends Component {
       users: {},
       startDate: new Date(DATE_PICKER_MIN_DATE),
       endDate: new Date(),
-      teamMemberList:{},
+      teamMemberList: {},
     };
     this.showProjectTable = this.showProjectTable.bind(this);
     this.showPeopleTable = this.showPeopleTable.bind(this);
@@ -390,9 +390,9 @@ class ReportsPage extends Component {
                 />
               </div>
             </div>
-            <div className="total-container">
-              <div className="total-item">
-                <Button>Total Task Report</Button>
+            <div className="total-report-container">
+              <div className="total-report-item">
+                <Button color="info">Total Task Report</Button>
                 <i
                   className="fa fa-info-circle"
                   data-tip
@@ -408,8 +408,10 @@ class ReportsPage extends Component {
                   <br />
                 </ReactTooltip>
               </div>
-              <div className="total-item">
-                <Button onClick={this.showTotalPeople}>Total People Report</Button>
+              <div className="total-report-item">
+                <Button color="info" onClick={this.showTotalPeople}>
+                  Total People Report
+                </Button>
                 <i
                   className="fa fa-info-circle"
                   data-tip
@@ -430,8 +432,10 @@ class ReportsPage extends Component {
                   during that time period.
                 </ReactTooltip>
               </div>
-              <div className="total-item">
-                <Button onClick={this.showTotalTeam}>Total Team Report</Button>
+              <div className="total-report-item">
+                <Button color="info" onClick={this.showTotalTeam}>
+                  Total Team Report
+                </Button>
                 <i
                   className="fa fa-info-circle"
                   data-tip
@@ -442,15 +446,15 @@ class ReportsPage extends Component {
                   style={{ paddingLeft: '.32rem' }}
                 />
                 <ReactTooltip id="totalTeamTip" place="bottom" effect="solid">
-                  Click this button to see exactly how many total teams have contributed time to
-                  the projects for a designated time period.
+                  Click this button to see exactly how many total teams have contributed time to the
+                  projects for a designated time period.
                   <br />
                   The team must have had at least 10 hours logged for them to be included.
                   <br />
                   A 'Total Hours' section will show the total tangible time logged by all the teams
                   during the selected period.
-                  <br />A detail report will list all the teams and hours contributed by each
-                  during that time period.
+                  <br />A detail report will list all the teams and hours contributed by each during
+                  that time period.
                 </ReactTooltip>
               </div>
             </div>

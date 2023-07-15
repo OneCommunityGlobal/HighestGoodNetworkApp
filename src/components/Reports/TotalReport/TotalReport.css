@@ -1,4 +1,4 @@
-.total-people-container{
+.total-container{
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -7,38 +7,38 @@
     padding: 20px 40px;
 }
 
-.total-people-title{
+.total-title{
     font-size: 32px;
     font-weight: 600;
     text-align: center;
     color:steelblue;
 }
 
-.total-people-number{
+.total-number{
     font-size: 32px;
     font-weight: 700;
     margin-right: 30px;
 }
 
-.total-people-text{
+.total-text{
     padding-top: 15px;
 }
 
-.total-people-item{
+.total-item{
     display: flex;
     flex-direction: row;
 }
 
-.total-people-period{
+.total-period{
     font-size: 24px;
     font-weight: 400;
 }
 
-.people-detail{
+.total-detail{
     margin-top: 20px;
 }
 
-.people-detail Button{
+.total-detail Button{
     background-color:steelblue;
 }
 

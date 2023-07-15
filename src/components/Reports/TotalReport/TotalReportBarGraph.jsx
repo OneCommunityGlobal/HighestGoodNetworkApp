@@ -24,7 +24,7 @@ const TotalReportBarGraph = props => {
 
     const yScale = d3
       .scaleLinear()
-      .range([height, 0])
+      .range([height, 10])
       .domain([0, maxValue]);
 
     var colorScale = d3
@@ -61,10 +61,20 @@ const TotalReportBarGraph = props => {
           .append('text')
           .attr('class', 'value')
           .attr('x', a => xScale(a.label) + xScale.bandwidth() / 2)
-          .attr('y', a => yScale(a.value) + 30)
+          .attr('y', a => yScale(a.value))
           .attr('text-anchor', 'middle')
           .text(a => `${a.value}`)
           .style('fill', 'black');
+        if (data[0].months) {
+          barGroups
+            .append('text')
+            .attr('class', 'value')
+            .attr('x', a => xScale(a.label) + xScale.bandwidth() / 2)
+            .attr('y', a => yScale(a.value) + 30)
+            .attr('text-anchor', 'middle')
+            .text(a => `${a.months} months`)
+            .style('fill', 'black');
+        }
       })
       .on('mouseleave', function() {
         d3.selectAll('.value').attr('opacity', 1);
