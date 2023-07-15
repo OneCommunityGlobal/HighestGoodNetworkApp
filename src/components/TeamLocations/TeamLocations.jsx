@@ -5,6 +5,7 @@ import { getUserTimeZone } from 'services/timezoneApiService';
 import { useSelector } from 'react-redux';
 import { useState, useEffect } from 'react';
 import { MapContainer, TileLayer, CircleMarker, Popup } from 'react-leaflet';
+import MarkerClusterGroup from 'react-leaflet-cluster';
 import 'leaflet/dist/leaflet.css';
 import './TeamLocations.css';
 const TeamLocations = () => {
@@ -14,7 +15,7 @@ const TeamLocations = () => {
   useEffect(() => {
     async function getUserProfiles() {
       const users = await axios.get(ENDPOINTS.USER_PROFILES);
-      for (let i = 0; i < 100; i++) {
+      for (let i = 0; i < users.data.length; i++) {
         if (users.data[i].location === '' || !users.data[i].location) {
           continue;
         }
@@ -54,24 +55,26 @@ const TeamLocations = () => {
         minZoom={2}
         maxZoom={15}
       />
-      {userProfiles.map(profile => {
-        if (profile.locationLatLng) {
-          return (
-            <CircleMarker
-              center={[profile.locationLatLng.lat, profile.locationLatLng.lng]}
-              key={profile._id}
-            >
-              <Popup>
-                <div>
-                  <div>{`Name: ${profile.firstName} ${profile.lastName}`}</div>
-                  <div>{`Title: ${profile.jobTitle}`}</div>
-                  <div>{`Location: ${profile.location}`}</div>
-                </div>
-              </Popup>
-            </CircleMarker>
-          );
-        }
-      })}
+      <MarkerClusterGroup chunkedLoading>
+        {userProfiles.map(profile => {
+          if (profile.locationLatLng) {
+            return (
+              <CircleMarker
+                center={[profile.locationLatLng.lat, profile.locationLatLng.lng]}
+                key={profile._id}
+              >
+                <Popup>
+                  <div>
+                    <div>{`Name: ${profile.firstName} ${profile.lastName}`}</div>
+                    <div>{`Title: ${profile.jobTitle}`}</div>
+                    <div>{`Location: ${profile.location}`}</div>
+                  </div>
+                </Popup>
+              </CircleMarker>
+            );
+          }
+        })}
+      </MarkerClusterGroup>
     </MapContainer>
   );
 };
