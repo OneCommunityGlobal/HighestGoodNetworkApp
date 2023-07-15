@@ -8,8 +8,10 @@ import './SetupProfile.css';
 const SetupProfile = ({ match }) => {
   const [loading, setLoading] = useState(true);
   const [isValidToken, setIsValidToken] = useState(false);
+  const [linktoken, setLinkToken] = useState('');
   useEffect(() => {
     const { token } = match.params;
+    setLinkToken(token);
     httpService
       .post(ENDPOINTS.VALIDATE_TOKEN(), { token })
       .then(res => {
@@ -26,7 +28,15 @@ const SetupProfile = ({ match }) => {
 
   return (
     <>
-      {!loading ? isValidToken ? <SetupProfileUserEntry /> : <SetupProfileInvalidToken /> : <></>}
+      {!loading ? (
+        isValidToken ? (
+          <SetupProfileUserEntry token={linktoken} />
+        ) : (
+          <SetupProfileInvalidToken />
+        )
+      ) : (
+        <></>
+      )}
     </>
   );
 };

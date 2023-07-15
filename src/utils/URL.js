@@ -90,7 +90,9 @@ export const ENDPOINTS = {
   SETUP_NEW_USER: () =>
     `${APIEndpoint}/getInitialSetuptoken`,
   VALIDATE_TOKEN: () =>
-    `${APIEndpoint}/validateToken`
+    `${APIEndpoint}/validateToken`,
+  SETUP_NEW_USER_PROFILE: () =>
+    `${APIEndpoint}/ProfileInitialSetup`
 };
 
 export const ApiEndpoint = APIEndpoint;
