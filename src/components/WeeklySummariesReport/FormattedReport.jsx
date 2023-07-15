@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import moment from 'moment';
 import 'moment-timezone';
@@ -10,7 +10,7 @@ import { toast } from 'react-toastify';
 import ToggleSwitch from '../UserProfile/UserProfileEdit/ToggleSwitch';
 import axios from 'axios';
 import { ENDPOINTS } from '../../utils/URL';
-import { useState } from 'react';
+
 import { assignStarDotColors, showStar } from 'utils/leaderboardPermissions';
 
 const FormattedReport = ({ summaries, weekIndex, bioCanEdit }) => {
@@ -58,7 +58,20 @@ const FormattedReport = ({ summaries, weekIndex, bioCanEdit }) => {
     return googleDocLink;
   };
 
-  const getWeeklySummaryMessage = summary => {
+const getWeeklySummaryMessage = summary => {
+    const textColors = {
+      "Default": "#000000",
+      "Not Required": "#708090",
+      "Team": "#FF00FF",
+      "Team Fabulous": "#FF00FF",
+      "Team Marigold": "#FF7F00",
+      "Team Luminous": "#C4AF18",
+      "Team Lush": "#00FF00",
+      "Team Sky": "#0000FF",
+      "Team Azure": "#4B0082",
+      "Team Amethyst": "#9400D3"
+    }
+
     if (!summary) {
       return (
         <p>
@@ -75,34 +88,25 @@ const FormattedReport = ({ summaries, weekIndex, bioCanEdit }) => {
                         .format('YYYY-MMM-DD')
     let summaryDateText = `Weekly Summary (${summaryDate}):`;
     const summaryContent = (() => {
+   
       if (summaryText) {
+       
+        const style = {
+          color: textColors[summary?.weeklySummaryOption] || textColors["Default"]
+        }
+
         summaryDate = moment(summary.weeklySummaries[weekIndex]?.uploadDate)
                       .tz('America/Los_Angeles')
                       .format('YYYY-MMM-DD')
         summaryDateText =`Summary Submitted On (${summaryDate}):`
-        const style = {};
-        switch (summary?.weeklySummaryOption) {
-          case 'Team':
-            style.color = 'magenta';
-            break;
-          case 'Not Required':
-            style.color = 'green';
-            break;
-          case 'Required':
-            break;
-          default:
-            if (summary.weeklySummaryNotReq) {
-              style.color = 'green';
-            }
-            break;
-        }
+
         return <div style={style}>{ReactHtmlParser(summaryText)}</div>;
       } else {
         if (
           summary?.weeklySummaryOption === 'Not Required' ||
           (!summary?.weeklySummaryOption && summary.weeklySummaryNotReq)
         ) {
-          return <p style={{ color: 'green' }}>Not required for this user</p>;
+          return <p style={{ color: textColors["Not Required"] }}>Not required for this user</p>;
         } else {
           return <span style={{ color: 'red' }}>Not provided!</span>;
         }
@@ -120,12 +124,23 @@ const FormattedReport = ({ summaries, weekIndex, bioCanEdit }) => {
   };
 
   const getTotalValidWeeklySummaries = summary => {
-    return (
-      <p style={summary.weeklySummariesCount === 8 ? { color: 'blue' } : {}}>
-        <b>Total Valid Weekly Summaries:</b>{' '}
-        {summary.weeklySummariesCount || 'No valid submissions yet!'}
-      </p>
-    );
+    if (summary.weeklySummariesCount === 8) {
+      return (
+        <p style={{ color: 'blue' }}>
+          <b>Total Valid Weekly Summaries:</b>{' '}
+          {summary.weeklySummariesCount || 'No valid submissions yet!'}
+        </p>
+      );
+    } else {
+      return (
+        <p>
+          <b style={summary.weeklySummaryOption === 'Team' ? { color: 'magenta' } : {}}>
+            Total Valid Weekly Summaries:
+          </b>{' '}
+          {summary.weeklySummariesCount || 'No valid submissions yet!'}
+        </p>
+      );
+    }
   };
 
   const handleGoogleDocClick = googleDocLink => {
@@ -161,12 +176,14 @@ const FormattedReport = ({ summaries, weekIndex, bioCanEdit }) => {
     }
   };
 
-  const bioSwitch = (userId, bioPosted) => {
+  const BioSwitch = (userId, bioPosted, weeklySummaryOption) => {
     const [bioStatus, setBioStatus] = useState(bioPosted);
     return (
       <div>
         <div className="bio-toggle">
-          <b>Bio announcement:</b>
+          <b style={weeklySummaryOption === 'Team' ? { color: 'magenta' } : {}}>
+            Bio announcement:
+          </b>
         </div>
         <div className="bio-toggle">
           <ToggleSwitch
@@ -182,10 +199,10 @@ const FormattedReport = ({ summaries, weekIndex, bioCanEdit }) => {
     );
   };
 
-  const bioLabel = (userId, bioPosted) => {
+  const BioLabel = (userId, bioPosted, weeklySummaryOption) => {
     return (
       <div>
-        <b>Bio announcement:</b>
+        <b style={weeklySummaryOption === 'Team' ? { color: 'magenta' } : {}}>Bio announcement:</b>
         {bioPosted === 'default'
           ? ' Not requested/posted'
           : bioPosted === 'posted'
@@ -195,7 +212,7 @@ const FormattedReport = ({ summaries, weekIndex, bioCanEdit }) => {
     );
   };
 
-  const bioFunction = bioCanEdit ? bioSwitch : bioLabel;
+  const bioFunction = bioCanEdit ? BioSwitch : BioLabel;
 
   return (
     <>
@@ -249,11 +266,14 @@ const FormattedReport = ({ summaries, weekIndex, bioCanEdit }) => {
               {' '}
               <b>Media URL:</b> {getMediaUrlLink(summary)}
             </div>
-            {bioFunction(summary._id, summary.bioPosted)}
+            {bioFunction(summary._id, summary.bioPosted, summary.weeklySummaryOption)}
             {getTotalValidWeeklySummaries(summary)}
             {hoursLogged >= summary.weeklycommittedHours && (
               <p>
-                <b>Hours logged:</b> {hoursLogged.toFixed(2)} / {summary.weeklycommittedHours}
+                <b style={summary.weeklySummaryOption === 'Team' ? { color: 'magenta' } : {}}>
+                  Hours logged:
+                </b>
+                {hoursLogged.toFixed(2)} / {summary.weeklycommittedHours}
               </p>
             )}
             {hoursLogged < summary.weeklycommittedHours && (
