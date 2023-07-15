@@ -2,6 +2,10 @@ form-control {
   width: 0;
 }
 
+.border-error-validation {
+  border-color: red !important;
+}
+
 .saveChangesWarning {
   display: block;
   position: fixed;
@@ -86,6 +90,7 @@ form-control {
   background-color: #6d757d;
   border: none;
 }
+
 .teamsView {
   display: flex;
 }
@@ -114,4 +119,33 @@ form-control {
 
 .weeklySummaryOptionsLabel {
   margin-left: 7px;
+}
+
+.user-add-row {
+  width: auto;
+}
+
+.text-md-right {
+  white-space: nowrap;
+}
+
+@media only screen and (max-width: 1024px) {
+  .text-md-right {
+    padding: 0px !important;
+  }
+
+  label {
+    font-weight: normal;
+  }
+}
+
+@media only screen and (max-width: 992px) and (min-width: 768px) {
+  .user-add-row {
+    margin-right: -50px !important;
+    margin-left: -50px !important;
+    font-size: 14px;
+  }
+  .form-control {
+    max-width: 210px !important;
+  }
 }

@@ -344,7 +344,7 @@ class ReportsPage extends Component {
               />
             </div>
             <div className="date-picker-container">
-              <div id="task_startDate" className="date-picker-item">
+              <td id="task_startDate" className="date-picker-item">
                 <label htmlFor="task_startDate" className="date-picker-label">
                   {' '}
                   Start Date
@@ -356,8 +356,8 @@ class ReportsPage extends Component {
                   onChange={date => this.setState({ startDate: date })}
                   className="form-control"
                 />
-              </div>
-              <div id="task_EndDate" className="date-picker-item">
+              </td>
+              <td id="task_EndDate" className="date-picker-item">
                 <label htmlFor="task_EndDate" className="date-picker-label">
                   {' '}
                   End Date
