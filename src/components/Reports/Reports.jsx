@@ -369,7 +369,7 @@ class ReportsPage extends Component {
                   onChange={date => this.setState({ endDate: date })}
                   className="form-control"
                 />
-              </div>
+              </td>
             </div>
             <div className="total-container">
               <div className="total-item">
