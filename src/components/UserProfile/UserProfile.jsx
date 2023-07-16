@@ -26,7 +26,7 @@ import axios from 'axios';
 import hasPermission, { deactivateOwnerPermission } from '../../utils/permissions';
 import ActiveCell from '../UserManagement/ActiveCell';
 import { ENDPOINTS } from '../../utils/URL';
-import Loading from '../common/Loading';
+import SkeletonLoading from '../common/SkeletonLoading';
 import UserProfileModal from './UserProfileModal';
 import './UserProfile.scss';
 import TeamsTab from './TeamsAndProjects/TeamsTab';
@@ -525,7 +525,7 @@ function UserProfile(props) {
     return (
       <Container fluid>
         <Row className="text-center" data-test="loading">
-          <Loading />
+          <SkeletonLoading template="UserProfile" />
         </Row>
       </Container>
     );
