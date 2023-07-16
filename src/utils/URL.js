@@ -1,3 +1,4 @@
+/* eslint-disable import/prefer-default-export */
 let APIEndpoint =
   process.env.REACT_APP_APIENDPOINT || 'https://hgn-rest-beta.azurewebsites.net/api';
 let GeocodeAPIEndpoint = 'https://api.opencagedata.com/geocode/v1/json';
@@ -71,7 +72,7 @@ export const ENDPOINTS = {
   `${APIEndpoint}/tasknotification/${userId}/${taskId}`,
   TASK_EDIT_SUGGESTION: () => `${APIEndpoint}/taskeditsuggestion`,
   REJECT_TASK_EDIT_SUGGESTION: taskEditSuggestionId =>
-  `${APIEndpoint}/taskeditsuggestion/${taskEditSuggestionId}`,
+    `${ENDPOINTS.TASK_EDIT_SUGGESTION()}/${taskEditSuggestionId}`,
 
   TIMEZONE_KEY: `${APIEndpoint}/timezone`,
   GEOCODE_URI: (location, key) =>

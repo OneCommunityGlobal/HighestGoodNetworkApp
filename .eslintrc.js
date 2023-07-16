@@ -10,7 +10,6 @@ module.exports = {
     },
     'import/resolver': {
       node: {
-        paths: ["src"],
         extensions: ['.js', '.jsx'],
       },
     },
@@ -40,8 +39,6 @@ module.exports = {
     'no-underscore-dangle': 'off',
     'react/prop-types': 'off',
     'react-hooks/exhaustive-deps': 'off',
-    'react/jsx-key': 'off',
-    'react/display-name': 'off',
   },
   overrides: [
     {

@@ -1,5 +1,6 @@
 .team-member-tasks {
   background-color: white;
+  
 }
 
 .team-member-tasks h1 {
@@ -7,7 +8,7 @@
   font-size: 20px;
 }
 
-.table-container {
+.table-container{
   overflow-x: auto;
 }
 
@@ -23,7 +24,7 @@
   cursor: pointer;
 }
 
-.team-member-task-remove {
+.team-member-task-remove{
   margin-left: 10px;
   color: red;
   cursor: pointer;

@@ -1,4 +1,4 @@
-export const getTeamMemberTasksData = state => ({
+export const getTeamMemberTasksData = (state) => ({
   isLoading: state.teamMemberTasks.isLoading,
-  usersWithTasks: state.teamMemberTasks.usersWithTasks,
+  usersWithTasks: state.teamMemberTasks.usersWithTasks
 });

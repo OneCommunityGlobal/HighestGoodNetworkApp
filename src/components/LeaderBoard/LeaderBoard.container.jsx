@@ -33,7 +33,7 @@ const mapStateToProps = state => {
       element.barprogress = getProgressValue(element.totaltangibletime_hrs, 40);
       element.totaltime = round(element.totaltime_hrs, 2);
       element.isVisible = element.role === 'Volunteer' || element.isVisible;
-
+      
       return element;
     });
   }

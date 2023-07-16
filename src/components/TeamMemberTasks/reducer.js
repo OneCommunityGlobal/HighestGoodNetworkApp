@@ -44,13 +44,12 @@ export const teamMemberTasksReducer = (state = initialState, action) => {
               }
             : user,
         ),
-        isLoading: false,
+        isLoading: false
       };
     case 'DELETE_TASK_NOTIFICATION_BEGIN':
       return {
-        ...state,
-        isLoading: true,
-      };
+        ...state, isLoading:true
+      }
     default:
       return state;
   }
