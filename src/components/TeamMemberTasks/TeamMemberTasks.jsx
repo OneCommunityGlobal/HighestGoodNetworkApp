@@ -427,6 +427,7 @@ const TeamMemberTasks = props => {
                         updateTask={onUpdateTask}
                         roles={props.roles}
                         userPermissions={props.userPermissions}
+                        userId={userId}
                       />
                   );
                 } else {
@@ -443,6 +444,7 @@ const TeamMemberTasks = props => {
                         updateTask={onUpdateTask}
                         roles={props.roles}
                         userPermissions={props.userPermissions}
+                        userId={userId}
                       />
                       {timeEntriesList.length > 0 &&
                         timeEntriesList
