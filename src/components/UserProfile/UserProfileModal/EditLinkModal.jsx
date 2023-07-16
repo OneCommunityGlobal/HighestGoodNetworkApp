@@ -111,11 +111,13 @@ const EditLinkModal = props => {
   };
 
   const handleUpdate = () => {
-    // * here the 'adminLinks' should be the total of 'googleLink' and 'adminLink'
     const updatable =
-      (isValidUrl(googleLink.Link) && isValidUrl(dropboxLink.Link)) ||
-      (googleLink.Link === '' && dropboxLink.Link === '');
+    (isValidUrl(googleLink.Link) && isValidUrl(dropboxLink.Link)) ||
+    (googleLink.Link === '' && dropboxLink.Link === '') ||
+    (isValidUrl(googleLink.Link) && dropboxLink.Link === '') ||
+    (isValidUrl(dropboxLink.Link) && googleLink.Link === '');
     if (updatable) {
+      // * here the 'adminLinks' should be the total of 'googleLink' and 'adminLink'
       updateLink(personalLinks, [googleLink, dropboxLink, ...adminLinks]);
       setIsValidLink(true);
       setIsChanged(true);
