@@ -32,6 +32,7 @@ import { ENDPOINTS } from '../../../utils/URL';
 import hasPermission from 'utils/permissions';
 import { getTimeEntryFormData } from './selectors';
 import checkNegativeNumber from 'utils/checkNegativeHours';
+import { boxStyle } from 'styles';
 
 /**
  * Modal used to submit and edit tangible and intangible time entries.
@@ -137,7 +138,7 @@ const TimeEntryForm = props => {
         setTasks(activeTasks || []);
       })
       .catch(err => console.log(err));
-  }, []);
+  }, [props.isTaskUpdated]);
 
   //grab form data before editing
   useEffect(() => {
@@ -710,6 +711,7 @@ const TimeEntryForm = props => {
                   min_height: 180,
                   max_height: 300,
                   autoresize_bottom_margin: 1,
+                  content_style: 'body { cursor: text !important; }',
                 }}
                 id="notes"
                 name="notes"
@@ -754,11 +756,11 @@ const TimeEntryForm = props => {
         </ModalBody>
         <ModalFooter>
           <small className="mr-auto">* All the fields are required</small>
-          <Button onClick={clearForm} color="danger">
+          <Button onClick={clearForm} color="danger" style={boxStyle}>
             Clear Form
           </Button>
           {/* <Button color="primary" disabled={isSubmitting || (data.hours === inputs.hours && data.minutes === inputs.minutes && data.notes === inputs.notes)} onClick={handleSubmit}> */}
-          <Button color="primary" onClick={handleSubmit}>
+          <Button color="primary" onClick={handleSubmit} style={boxStyle}>
             {edit ? 'Save' : 'Submit'}
           </Button>
         </ModalFooter>

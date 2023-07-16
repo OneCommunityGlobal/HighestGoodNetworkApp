@@ -14,6 +14,7 @@ import PropTypes from 'prop-types';
 import hasPermission from '../../../utils/permissions';
 import { useSelector } from 'react-redux';
 import styles from './EditLinkModal.css';
+import { boxStyle } from 'styles';
 
 const EditLinkModal = props => {
   const { isOpen, closeModal, updateLink, userProfile, setChanged, role, } = props;
@@ -29,7 +30,7 @@ const EditLinkModal = props => {
   
   const [googleLink, setGoogleLink] = useState(userProfile.adminLinks.find(link => link.Name === 'Google Doc')? userProfile.adminLinks.find(link => link.Name === 'Google Doc'): initialAdminLinkState[0])
   const [dropboxLink, setDropboxLink] = useState(userProfile.adminLinks.find(link => link.Name === 'Dropbox Folder')? userProfile.adminLinks.find(link => link.Name === 'Dropbox Folder'): initialAdminLinkState[1])
-  const [adminLinks, setAdminLinks] = useState(userProfile.adminLinks?  (userProfile.adminLinks.filter(link => link.Name !== 'Google Doc')) : []);
+  const [adminLinks, setAdminLinks] = useState(userProfile.adminLinks?  (userProfile.adminLinks.filter(link => {link.Name !== 'Google Doc' && link.Name !== 'Dropbox Folder'})) : []);
   const [personalLinks, setPersonalLinks] = useState(userProfile.personalLinks? userProfile.personalLinks : []);
   
   const [isChanged, setIsChanged] = useState(false);
@@ -55,8 +56,8 @@ const EditLinkModal = props => {
     } else{
       setLinks(newLinks);
       setIsChanged(true);
-      clearInput();
       setIsValidLink(true);
+      clearInput();
     }
   }
 
@@ -103,43 +104,61 @@ const EditLinkModal = props => {
                 <Card style={{ padding: '16px' }}>
                   <Label style={{ display: 'flex', margin: '5px' }}>Admin Links:</Label>
                   <div>
-                    {/* // TODO: remove  */}
-   
-                    {googleLink && 
-                        <div style={{ display: 'flex', margin: '5px' }} className="link-fields">
-                          <p>Google Doc</p>
-                          <input 
-                            className='customEdit'
-                            placeholder='Google Doc Link'
-                            value={googleLink.Link}
-                            onChange={e => {
-                              setGoogleLink({...googleLink,Link:e.target.value})
-                              setIsChanged(true);
-                            }}
-                          />
-                        </div>
                     
-                    }
-                    {dropboxLink && 
-                        <div style={{ display: 'flex', margin: '5px' }} className="link-fields">
-                          <p>Dropbox Folder</p>
-                          <input 
-                            className='customEdit'
-                            placeholder='Dropbox folder Link'
-                            value={dropboxLink.Link}
-                            onChange={e => {
-                              setDropboxLink({...dropboxLink,Link:e.target.value})
-                              setIsChanged(true);
-                            }}
-                          />
-                        </div>
-                    
-                    }
 
-                    {/* Other admin links are below */}
-                    {adminLinks?.map((link, index) => (
+<div style={{ display: 'flex', margin: '5px' }} className="link-fields">
+                    <input 
+                    className='customEdit'
+                    id="linkName1"
+                    placeholder='Google Doc'
+                    value="Google Doc"
+                    disabled
+                    />
+
+                     <input 
+                    className='customEdit'
+                    id='linkURL1'
+                    placeholder='Enter Google Doc link'
+                    // value={googleLinkURL}
+                    // onChange={e=> {setGoogleLinkURL(e.target.value.trim());}}
+                    value={googleLink.Link}
+                    onChange={e => {
+                      setGoogleLink({...googleLink,Link:e.target.value.trim()})
+                      setIsChanged(true);
+                    }}
+                    />
+                  </div>
+                  <div style={{ display: 'flex', margin: '5px' }} className="link-fields">
+                    <input 
+                    className='customEdit'
+                    id="linkName2"
+                    placeholder='Media Folder'
+                    value="Media Folder"
+                    disabled
+                    />
+
+                     <input 
+                    className='customEdit'
+                    id="linkURL2"
+                    placeholder='Enter Dropbox link'
+                    // value={dropLinkURL}
+                    // onChange={e=> setDropLinkURL(e.target.value.trim())}
+                    value={dropboxLink.Link}
+                            onChange={e => {
+                              setDropboxLink({...dropboxLink,Link:e.target.value.trim()})
+                              setIsChanged(true);
+                            }}
+                    />
+                  </div>
+                  {adminLinks?.map((link, index) => 
+                      // { link.Name.indexOf('Google')==-1 && link.Name.indexOf('Dropbox')==-1 ?(
+                        {return (
                       
-                      <div key={index} style={{ display: 'flex', margin: '5px' }} className="link-fields">
+                        <div
+                        key={index}
+                        style={{ display: 'flex', margin: '5px' }}
+                        className="link-fields" 
+                      >
                         <input
                           className="customInput"
                           value={link.Name}
@@ -162,12 +181,14 @@ const EditLinkModal = props => {
                           X
                         </button>
                       </div>
-                    ))}
-                      {/* Adding New link below */}
+                        )
+                      }
+                    )}
                     <div style={{ display: 'flex', margin: '5px' }}>
                       <div className="customTitle">+ ADD LINK:</div>
                     </div>
-                    <div style={{ display: 'flex', margin: '5px'}} className="link-fields">
+
+                    <div style={{ display: 'flex', margin: '5px' }} className="link-fields">
                       <input
                         className="customEdit"
                         id="linkName"
@@ -207,7 +228,11 @@ const EditLinkModal = props => {
                 <Label style={{ display: 'flex', margin: '5px' }}>Personal Links:</Label>
                 <div>
                   {personalLinks.map((link, index) => (
-                    <div key={index} style={{ display: 'flex', margin: '5px' }} className="link-fields">
+                    <div
+                      key={index}
+                      style={{ display: 'flex', margin: '5px' }}
+                      className="link-fields"
+                    >
                       <input
                         className="customInput"
                         value={link.Name}
@@ -276,13 +301,14 @@ const EditLinkModal = props => {
             disabled={!isChanged}
             onClick={() => {
               // * here the 'adminLinks' should be the total of 'googleLink' and 'adminLink'
-              updateLink(personalLinks, [googleLink,...adminLinks]);
+              updateLink(personalLinks, [googleLink,dropboxLink,...adminLinks]);
               closeModal();
             }}
+            style={boxStyle}
           >
             Update
           </Button>
-          <Button color="primary" onClick={closeModal}>
+          <Button color="primary" onClick={closeModal} style={boxStyle}>
             Cancel
           </Button>
         </ModalFooter>

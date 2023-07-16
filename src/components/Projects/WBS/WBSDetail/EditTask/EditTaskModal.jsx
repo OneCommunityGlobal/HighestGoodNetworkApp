@@ -14,6 +14,7 @@ import hasPermission from 'utils/permissions';
 import axios from 'axios';
 import { ENDPOINTS } from 'utils/URL';
 import TagsSearch from '../components/TagsSearch';
+import { boxStyle } from 'styles';
 
 const EditTaskModal = props => {
   const [role] = useState(props.auth ? props.auth.user.role : null);
@@ -110,43 +111,6 @@ const EditTaskModal = props => {
     setStartedDate(thisTask?.startedDatetime);
     setDueDate(thisTask?.dueDatetime);
   }, [thisTask]);
-
-  // helpers for editing the resources of task
-  const [foundMembersHTML, setfoundMembersHTML] = useState('');
-  const findMembers = () => {
-    const memberList = members.members ? props.projectMembers.members : members;
-    for (let i = 0; i < memberList.length; i++) {
-      if (
-        `${memberList[i].firstName} ${memberList[i].lastName}`
-          .toLowerCase()
-          .includes(memberName.toLowerCase())
-      ) {
-        foundedMembers.push(memberList[i]);
-      }
-    }
-
-    const html = foundedMembers.map((elm, i) => (
-      <div key={`found-member-${i}`}>
-        <a href={`/userprofile/${elm._id}`} target="_blank" rel="noreferrer">
-          <input
-            type="text"
-            className="task-resouces-input"
-            value={`${elm.firstName} ${elm.lastName}`}
-            disabled
-          />
-        </a>
-        <button
-          data-tip="Add this member"
-          className="task-resouces-btn"
-          type="button"
-          onClick={() => addResources(elm._id, elm.firstName, elm.lastName, elm.profilePic)}
-        >
-          <i className="fa fa-plus" aria-hidden="true" />
-        </button>
-      </div>
-    ));
-    setfoundMembersHTML(html);
-  };
 
   const removeResource = userID => {
     const removeIndex = resourceItems.map(item => item.userID).indexOf(userID);
@@ -657,17 +621,17 @@ const EditTaskModal = props => {
         hasPermission(role, 'suggestTask', roles, userPermissions) ? (
           <ModalFooter>
             {taskName !== '' && startedDate !== '' && dueDate !== '' ? (
-              <Button color="primary" onClick={updateTask}>
+              <Button color="primary" onClick={updateTask} style={boxStyle}>
                 Update
               </Button>
             ) : null}
-            <Button color="secondary" onClick={toggle}>
+            <Button color="secondary" onClick={toggle} style={boxStyle}>
               Cancel
             </Button>
           </ModalFooter>
         ) : null}
       </Modal>
-      <Button color="primary" size="sm" onClick={toggle}>
+      <Button color="primary" size="sm" onClick={toggle} style={boxStyle}>
         {hasPermission(role, 'editTask', roles, userPermissions)
           ? 'Edit'
           : hasPermission(role, 'suggestTask', roles, userPermissions)

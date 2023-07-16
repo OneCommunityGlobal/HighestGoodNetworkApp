@@ -30,7 +30,7 @@ const FormattedReport = ({ summaries, weekIndex, bioCanEdit }) => {
   while (emailString.includes('\n')) emailString = emailString.replace('\n', ', ');
 
   const alphabetize = summaries => {
-    const temp = [...summaries]
+    const temp = [...summaries];
     return temp.sort((a, b) =>
       `${a.firstName} ${a.lastName}`.localeCompare(`${b.firstName} ${b.lastname}`),
     );
@@ -68,9 +68,18 @@ const FormattedReport = ({ summaries, weekIndex, bioCanEdit }) => {
     }
 
     const summaryText = summary?.weeklySummaries[weekIndex]?.summary;
-
+    let summaryDate = moment()
+                        .tz('America/Los_Angeles')
+                        .endOf('week')
+                        .subtract(weekIndex, 'week')
+                        .format('YYYY-MMM-DD')
+    let summaryDateText = `Weekly Summary (${summaryDate}):`;
     const summaryContent = (() => {
       if (summaryText) {
+        summaryDate = moment(summary.weeklySummaries[weekIndex]?.uploadDate)
+                      .tz('America/Los_Angeles')
+                      .format('YYYY-MMM-DD')
+        summaryDateText =`Summary Submitted On (${summaryDate}):`
         const style = {};
         switch (summary?.weeklySummaryOption) {
           case 'Team':
@@ -103,11 +112,7 @@ const FormattedReport = ({ summaries, weekIndex, bioCanEdit }) => {
     return (
       <>
         <p>
-          <b>Weekly Summary</b> (
-          {moment(summary.weeklySummaries[weekIndex]?.dueDate)
-            .tz('America/Los_Angeles')
-            .format('YYYY-MMM-DD')}
-          ):
+          <b>{summaryDateText}</b>
         </p>
         {summaryContent}
       </>
@@ -167,7 +172,7 @@ const FormattedReport = ({ summaries, weekIndex, bioCanEdit }) => {
           <ToggleSwitch
             switchType="bio"
             state={bioStatus}
-            handleUserProfile={(bio) => {
+            handleUserProfile={bio => {
               setBioStatus(bio);
               handleChangeBioPosted(userId, bio);
             }}
@@ -181,9 +186,11 @@ const FormattedReport = ({ summaries, weekIndex, bioCanEdit }) => {
     return (
       <div>
         <b>Bio announcement:</b>
-        {bioPosted === 'default' ? ' Not requested/posted' :
-         bioPosted === 'posted' ? ' Posted' : 
-         ' Requested'}
+        {bioPosted === 'default'
+          ? ' Not requested/posted'
+          : bioPosted === 'posted'
+          ? ' Posted'
+          : ' Requested'}
       </div>
     );
   };
