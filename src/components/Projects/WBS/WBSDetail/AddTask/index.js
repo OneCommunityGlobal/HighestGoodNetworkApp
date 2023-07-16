@@ -1,1 +1,1 @@
-export { default } from './AddTask';
+export { default } from './AddTaskModal';
