@@ -234,7 +234,7 @@ const EditTaskModal = props => {
     );
     await props.fetchAllTasks(props.wbsId);
 
-    if (props.tasks.error === 'none') {
+    if (props.tasks.error === 'none' || Object.keys(props.tasks.error).length === 0) {
       window.location.reload();
     }
   };
