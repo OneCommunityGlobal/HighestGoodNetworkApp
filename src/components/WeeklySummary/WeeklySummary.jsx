@@ -34,7 +34,7 @@ import { getWeeklySummaries, updateWeeklySummaries } from '../../actions/weeklyS
 import DueDateTime from './DueDateTime';
 import moment from 'moment';
 import 'moment-timezone';
-import Loading from '../common/Loading';
+import SkeletonLoading from '../common/SkeletonLoading';
 import Joi from 'joi';
 import { toast } from 'react-toastify';
 import { WeeklySummaryContentTooltip, MediaURLTooltip } from './WeeklySummaryTooltips';
@@ -370,7 +370,6 @@ export class WeeklySummary extends Component {
     formElements[editor.id] = content;
     this.setState({ formElements, errors });
   };
-
   handleCheckboxChange = event => {
     event.persist();
     const { name, checked } = event.target;
@@ -575,7 +574,7 @@ export class WeeklySummary extends Component {
       return (
         <Container fluid>
           <Row className="text-center" data-testid="loading">
-            <Loading />
+            <SkeletonLoading template="WeeklySummary" />
           </Row>
         </Container>
       );
