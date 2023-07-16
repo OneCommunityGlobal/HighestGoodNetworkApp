@@ -666,7 +666,7 @@ export class WeeklySummary extends Component {
                               </DropdownItem>
                             </DropdownMenu>
                           </UncontrolledDropdown>
-                          <CurrentPromptModal userRole={this.props.userRole} />
+                          <CurrentPromptModal userRole={this.props.userRole} userId={this.props.asUser} />
                         </Label>
                         <Editor
                           init={{
@@ -692,10 +692,10 @@ export class WeeklySummary extends Component {
                         errors.summaryLastWeek ||
                         errors.summaryBeforeLast ||
                         errors.summaryThreeWeeksAgo) && (
-                        <Alert color="danger">
-                          The summary must contain a minimum of 50 words.
-                        </Alert>
-                      )}
+                          <Alert color="danger">
+                            The summary must contain a minimum of 50 words.
+                          </Alert>
+                        )}
                     </Col>
                   </Row>
                 </TabPane>
