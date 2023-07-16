@@ -332,7 +332,7 @@ const EditLinkModal = props => {
               </Card>
               {!isValidLink && (
                 <p className="invalid-help-context">
-                  You can't either Empty or Duplicate link name, or invalid URL
+                  Please ensure each link has a unique and not empty, and enter valid URLs.
                 </p>
               )}
             </CardBody>
