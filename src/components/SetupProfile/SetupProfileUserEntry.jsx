@@ -156,6 +156,11 @@ const SetupProfileUserEntry = ({ token }) => {
         ...prevErrors,
         jobTitle: 'Job Title is required',
       }));
+    } else {
+      setFormErrors(prevErrors => ({
+        ...prevErrors,
+        jobTitle: '',
+      }));
     }
 
     // Validate Weekly Committed Hours
@@ -185,6 +190,11 @@ const SetupProfileUserEntry = ({ token }) => {
         ...prevErrors,
         location: 'Location is required',
       }));
+    } else {
+      setFormErrors(prevErrors => ({
+        ...prevErrors,
+        location: '',
+      }));
     }
 
     // Submit the form if there are no errors
@@ -193,10 +203,8 @@ const SetupProfileUserEntry = ({ token }) => {
         .post(ENDPOINTS.SETUP_NEW_USER_PROFILE(), userProfile)
         .then(response => {
           if (response.status === 200) {
+            history.push('/login');
             toast.success(`Congratulations! Your account has been successfully created.`);
-            setTimeout(() => {
-              history.push('/login');
-            }, 2000);
           }
         })
         .catch(error => {
