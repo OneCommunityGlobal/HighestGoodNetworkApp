@@ -88,6 +88,8 @@ function UserProfile(props) {
   const [summaryName, setSummaryName] = useState('');
   const [showSummary, setShowSummary] = useState(false);
 
+  const userProfileRef = useRef();
+
   const isTasksEqual = JSON.stringify(originalTasks) === JSON.stringify(tasks);
   const isProfileEqual = JSON.stringify(userProfile) === JSON.stringify(originalUserProfile);
 
@@ -99,6 +101,10 @@ function UserProfile(props) {
   useEffect(() => {
     loadUserProfile();
   }, []);
+
+  useEffect(() => {
+    userProfileRef.current = userProfile;
+  });
 
   useEffect(() => {
     checkIsTeamsEqual();
@@ -120,7 +126,7 @@ function UserProfile(props) {
   }, [blueSquareChanged]);
 
   const checkIsTeamsEqual = () => {
-    setOriginalTeams(teams)
+    setOriginalTeams(teams);
     const originalTeamProperties = [];
     originalTeams?.forEach(team => {
       for (const [key, value] of Object.entries(team)) {
@@ -152,7 +158,7 @@ function UserProfile(props) {
   };
 
   const checkIsProjectsEqual = () => {
-    setOriginalProjects(projects)
+    setOriginalProjects(projects);
     const originalProjectProperties = [];
     originalProjects?.forEach(project => {
       for (const [key, value] of Object.entries(project)) {
@@ -409,7 +415,7 @@ function UserProfile(props) {
       axios.put(url, updatedTask.updatedTask).catch(err => console.log(err));
     }
     try {
-      await props.updateUserProfile(props.match.params.userId, userProfile);
+      await props.updateUserProfile(props.match.params.userId, userProfileRef.current);
 
       if (userProfile._id === props.auth.user.userid && props.auth.user.role !== userProfile.role) {
         await props.refreshToken(userProfile._id);
@@ -627,7 +633,7 @@ function UserProfile(props) {
           <Col md="8">
             {!isProfileEqual || !isTasksEqual || !isTeamsEqual || !isProjectsEqual ? (
               <Alert color="warning">
-                Please click on "Save changes" to save the changes you have made.{' '}
+                Please click on &quot;Save changes&quot; to save the changes you have made.{' '}
               </Alert>
             ) : null}
             <div className="profile-head">
@@ -859,6 +865,11 @@ function UserProfile(props) {
                   onUserVisibilitySwitch={onUserVisibilitySwitch}
                   isVisible={userProfile.isVisible}
                   canEditVisibility={canEdit && userProfile.role != 'Volunteer'}
+                  handleSubmit={handleSubmit}
+                  disabled={!formValid.firstName ||
+                    !formValid.lastName ||
+                    !formValid.email ||
+                    !(isProfileEqual && isTasksEqual && isTeamsEqual && isProjectsEqual)}
                 />
               </TabPane>
               <TabPane tabId="4">
@@ -873,6 +884,11 @@ function UserProfile(props) {
                   userPermissions={userPermissions}
                   userId={props.match.params.userId}
                   updateTask={onUpdateTask}
+                  handleSubmit={handleSubmit}
+                  disabled={!formValid.firstName ||
+                    !formValid.lastName ||
+                    !formValid.email ||
+                    !(isProfileEqual && isTasksEqual && isTeamsEqual && isProjectsEqual)}
                 />
               </TabPane>
               <TabPane tabId="5">
@@ -1059,6 +1075,11 @@ function UserProfile(props) {
                     onUserVisibilitySwitch={onUserVisibilitySwitch}
                     isVisible={userProfile.isVisible}
                     canEditVisibility={canEdit && userProfile.role != 'Volunteer'}
+                    handleSubmit={handleSubmit}
+                    disabled={!formValid.firstName ||
+                      !formValid.lastName ||
+                      !formValid.email ||
+                      !(isProfileEqual && isTasksEqual && isTeamsEqual && isProjectsEqual)}
                   />
                 </ModalBody>
                 <ModalFooter>
@@ -1119,6 +1140,11 @@ function UserProfile(props) {
                     userPermissions={userPermissions}
                     userId={props.match.params.userId}
                     updateTask={onUpdateTask}
+                    handleSubmit={handleSubmit}
+                    disabled={!formValid.firstName ||
+                      !formValid.lastName ||
+                      !formValid.email ||
+                      !(isProfileEqual && isTasksEqual && isTeamsEqual && isProjectsEqual)}
                   />
                 </ModalBody>
                 <ModalFooter>
