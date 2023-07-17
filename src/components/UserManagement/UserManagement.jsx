@@ -13,6 +13,7 @@ import {
 } from '../../actions/userManagement';
 import { connect } from 'react-redux';
 import Loading from '../common/Loading';
+import SkeletonLoading from '../common/SkeletonLoading';
 import UserTableHeader from './UserTableHeader';
 import UserTableData from './UserTableData';
 import UserTableSearchHeader from './UserTableSearchHeader';
@@ -65,7 +66,7 @@ class UserManagement extends React.PureComponent {
     return (
       <Container fluid>
         {fetching ? (
-          <Loading />
+          <SkeletonLoading template="UserManagement" />
         ) : (
           <React.Fragment>
             {this.popupElements()}
