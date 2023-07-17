@@ -4,6 +4,8 @@ import ToggleSwitch from './UserProfileEdit/ToggleSwitch';
 import './UserProfile.scss';
 import './UserProfileEdit/UserProfileEdit.scss';
 import { Button } from 'react-bootstrap';
+import ScheduleReasonModal from './ScheduleReasonModal/ScheduleReasonModal';
+import { useState } from 'react';
 
 const BlueSquareLayout = props => {
   const {
@@ -17,6 +19,16 @@ const BlueSquareLayout = props => {
     canEdit,
   } = props;
   const { privacySettings } = userProfile;
+  const [show, setShow] = useState(false);
+  const [reason, setReason] = useState('');
+
+  const handleToggle = () => {
+    setShow(prev => !prev);
+  };
+
+  const handleSubmit = event => {
+    event.preventDefault()
+  };
 
   if (canEdit) {
     return (
@@ -41,17 +53,18 @@ const BlueSquareLayout = props => {
           userPermissions={userPermissions}
         />
         <div className="mt-4 w-100">
-          <Button
-            variant="primary"
-            onClick={() => {
-              console.log('button clicked');
-            }}
-            className='w-100'
-            size='md'
-          >
+          <Button variant="primary" onClick={handleToggle} className="w-100" size="md">
             Schedule Reason
           </Button>
         </div>
+        <ScheduleReasonModal
+          show={show}
+          handleToggle={handleToggle}
+          user={userProfile}
+          reason={reason}
+          setReason={setReason}
+          handleSubmit={handleSubmit}
+        />
       </div>
     );
   }
