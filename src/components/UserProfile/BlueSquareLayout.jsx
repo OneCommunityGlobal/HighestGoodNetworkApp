@@ -6,8 +6,21 @@ import './UserProfileEdit/UserProfileEdit.scss';
 import { Button } from 'react-bootstrap';
 import ScheduleReasonModal from './ScheduleReasonModal/ScheduleReasonModal';
 import { useState } from 'react';
+import { useReducer } from 'react';
+import Spinner from 'react-bootstrap/Spinner';
 
 const BlueSquareLayout = props => {
+  const fetchingReducer = (state, action) => {
+    switch (action.type) {
+      case 'FETCHING_STARTED':
+        return { ...state, isFetching: true };
+      case 'ERROR':
+        return { isFetching: false, error: true, success: false };
+      case 'SUCCESS':
+        return { isFetching: false, error: false, success: true };
+    }
+  };
+
   const {
     userProfile,
     handleUserProfile,
@@ -21,13 +34,24 @@ const BlueSquareLayout = props => {
   const { privacySettings } = userProfile;
   const [show, setShow] = useState(false);
   const [reason, setReason] = useState('');
+  const [fetchState, fetchDispatch] = useReducer(fetchingReducer, {
+    isFetching: false,
+    error: false,
+    success: false,
+  });
 
   const handleToggle = () => {
     setShow(prev => !prev);
   };
 
   const handleSubmit = event => {
-    event.preventDefault()
+    event.preventDefault();
+    setShow(false)
+    fetchDispatch({ type: 'FETCHING_STARTED' });
+    setTimeout(() => {
+      fetchDispatch({type: 'ERROR'})
+      setShow(true)
+    }, 4000)
   };
 
   if (canEdit) {
@@ -54,17 +78,20 @@ const BlueSquareLayout = props => {
         />
         <div className="mt-4 w-100">
           <Button variant="primary" onClick={handleToggle} className="w-100" size="md">
-            Schedule Reason
+            {fetchState.isFetching ? <Spinner size='sm' animation='border' />:'Schedule Blue Square Reason'}
           </Button>
         </div>
-        <ScheduleReasonModal
-          show={show}
-          handleToggle={handleToggle}
-          user={userProfile}
-          reason={reason}
-          setReason={setReason}
-          handleSubmit={handleSubmit}
-        />
+        {show && (
+          <ScheduleReasonModal
+            show={show}
+            handleToggle={handleToggle}
+            user={userProfile}
+            reason={reason}
+            setReason={setReason}
+            handleSubmit={handleSubmit}
+            fetchState={fetchState}
+          />
+        )}
       </div>
     );
   }
