@@ -123,7 +123,8 @@ const SummaryBar = props => {
   const [suggestionCategory, setSuggestionCategory] = useState([]);
   const [inputFiled, setInputField] = useState([]);
   const [takeInput, setTakeInput] = useState(false);
-  const [extraFieldForSuggestionForm, setExtraFieldForSuggestionForm] = useState('')
+  const [extraFieldForSuggestionForm, setExtraFieldForSuggestionForm] = useState('');
+  const [editType, seteditType] = useState('');
   const [showSuggestionModal, setShowSuggestionModal] = useState(false);
   const [report, setBugReport] = useState(initialInfo);
 
@@ -161,42 +162,48 @@ const SummaryBar = props => {
   const setnewfields = (fielddata, setfield) =>{
     setfield(prev =>{
       let newarr = prev;
-      newarr.unshift(fielddata.newField);
+      if(fielddata.action === 'add') newarr.unshift(fielddata.newField); 
+      if(fielddata.action === 'delete'){
+        newarr = newarr.filter((item, index) => {
+          return fielddata.field ?  fielddata.newField !== item : +fielddata.newField !== index + 1
+        });
+      };
       return newarr;
     });
   }
  //add new text field or suggestion category by owner class and update the backend
-  const addField = async (event) =>{
+  const editField = async (event) =>{
     event.preventDefault();
-    const data = readFormData('newFieldForm')
+    const data = readFormData('newFieldForm');
     if(extraFieldForSuggestionForm === 'suggestion'){
       data.suggestion = true;
       data.field = false;
-      setnewfields(data, setSuggestionCategory)
+      setnewfields(data, setSuggestionCategory);
     }else if(extraFieldForSuggestionForm === 'field'){
       data.suggestion = false;
       data.field = true
-      setnewfields(data, setInputField)
+      setnewfields(data, setInputField);
     }
-    setExtraFieldForSuggestionForm('')
-    httpService.post(`${ApiEndpoint}//dashboard/suggestionoption/${userProfile._id}`, data).catch(e => {});
+    setExtraFieldForSuggestionForm('');
+    seteditType('');
+    httpService.post(`${ApiEndpoint}/dashboard/suggestionoption/${userProfile._id}`, data).catch(e => {});
   }
 
   const sendUserSuggestion = async event =>{
     event.preventDefault();
     const data = readFormData('suggestionForm')
-    setShowSuggestionModal(prev => !prev)
-    const res = await httpService.post(`${ApiEndpoint}//dashboard/makesuggestion/${userProfile._id}`, data).catch(e => {});
+    setShowSuggestionModal(prev => !prev);
+    const res = await httpService.post(`${ApiEndpoint}/dashboard/makesuggestion/${userProfile._id}`, data).catch(e => {});
     if(res.status === 200){
-      toast.success('Email sent successfully!')
+      toast.success('Email sent successfully!');
     }else{
-       toast.error('Failed to send email!')
+       toast.error('Failed to send email!');
     }
   }
  
   const openSuggestionModal = async () => {
     if(!showSuggestionModal){
-      let res = await httpService.get(`${ApiEndpoint}//dashboard/suggestionoption/${userProfile._id}`).catch(e => {});
+      let res = await httpService.get(`${ApiEndpoint}/dashboard/suggestionoption/${userProfile._id}`).catch(e => {});
       if(res.status == 200){
           setSuggestionCategory(res.data.suggestion);
           setInputField(res.data.field);  
@@ -447,45 +454,66 @@ const SummaryBar = props => {
               {userProfile.role === 'Administrator' && !extraFieldForSuggestionForm &&
                 <FormGroup>
                   <Button onClick={()=> setExtraFieldForSuggestionForm('suggestion')} type="button" color="success" size="md">
-                    Add new category
+                    Edit Category
                   </Button>{' '}
                   &nbsp;&nbsp;&nbsp;
                   <Button  onClick={()=> setExtraFieldForSuggestionForm('field')} type="button" color="success" size="md">
-                    Add new field
+                    Edit Field
                   </Button>
                 </FormGroup>
               }
                
               {extraFieldForSuggestionForm &&
-                 <Form onSubmit={addField} id="newFieldForm" style={{border:'1px solid gray', padding:'5px 10px', margin: '5px 10px'}}>
-                    <FormGroup>
-                      <Label for="newField">{extraFieldForSuggestionForm === 'field' ? 'Add Field Name' : 'Add suggestion category'}</Label>
-                        <Input
+                 <Form onSubmit={editField} id="newFieldForm" style={{border:'1px solid gray', padding:'5px 10px', margin: '5px 10px'}}>
+                    <FormGroup tag="fieldset" id='fieldsetinner'>
+                      <legend style={{fontSize:'16px'}}>Select Action type:</legend>
+                      <FormGroup check>
+                        <Label check>
+                          <Input onChange={()=> seteditType('add')} type="radio" name="action" value={'add'} required/> Add
+                        </Label>
+                      </FormGroup>
+                      <FormGroup check>
+                        <Label check>
+                           <Input onChange={()=> seteditType('delete')} type="radio" name="action" value={'delete'} required/> Delete 
+                        </Label>
+                      </FormGroup>
+                    </FormGroup>
+                    {editType !== '' && <FormGroup>
+                      <Label for="newField">{extraFieldForSuggestionForm === 'suggestion' ?
+                                             editType === 'delete' ? 'Delete category (Write the suggestion category number from the dropdown to delete it)' : 'Add category' : 
+                                             editType === 'add' ? 'Add Field' : 'Delete field'}
+                      </Label>
+                      <Input
                           type="textarea"
                           name="newField"
                           id="newField"
+                          placeholder={extraFieldForSuggestionForm === 'suggestion' ? editType === 'delete'  ? 'write the category number, like 1 or 2 etc': 'write the category name': 'write the filed name'}
                           required
                         /> 
-                    </FormGroup>
-                    <Button type="submit" color="success" size="md">
-                       Add
+                    </FormGroup>}
+                    <Button id='add' type="submit" color="success" size="md">
+                       Submit
                     </Button>{' '}
                     &nbsp;&nbsp;&nbsp;
-                    <Button onClick={()=>  setExtraFieldForSuggestionForm('')} type="button" color="danger" size="md">
-                       cancel
+                    <Button onClick={()=>{
+                      seteditType('');
+                      setExtraFieldForSuggestionForm('');
+                      }} type="button" color="danger" size="md">
+                       Cancel
                     </Button>
                  </Form>
               }
               <Form onSubmit={sendUserSuggestion} id="suggestionForm">
                 <FormGroup>
                   <Label for="suggestioncate">Please select a category of your suggestion:</Label>
+                  
                   <Input onChange={()=> setTakeInput(true)} type="select" name="suggestioncate" id="suggestioncate" required>
-                    <option disabled value selected>
+                    <option disabled  value="none" selected hidden>
                       {' '}
                       -- select an option --{' '}
                     </option>
                     {suggestionCategory.map((item,index) => {
-                        return <option value={item}>{`${index+1}. ${item}`}</option>
+                        return <option key={index} value={item}>{`${index+1}. ${item}`}</option>             
                     })}
                   </Input>
                 </FormGroup>
@@ -503,8 +531,8 @@ const SummaryBar = props => {
                     placeholder="I suggest ..."
                   />
                  </FormGroup>}
-                {inputFiled.length > 0 && inputFiled.map(item =>
-                  <FormGroup>
+                {inputFiled.length > 0 && inputFiled.map((item, index) =>
+                  <FormGroup key={index}>
                   <Label for="title">{item} </Label>
                   <Input
                     type="textbox"
@@ -519,12 +547,12 @@ const SummaryBar = props => {
                   <legend style={{fontSize:'16px'}}>Would you like a followup/reply regarding this feedback?</legend>
                   <FormGroup check>
                     <Label check>
-                      <Input type="radio" name="confirm" value={'yes'}/> Yes
+                      <Input type="radio" name="confirm" value={'yes'} required/> Yes
                     </Label>
                   </FormGroup>
                   <FormGroup check>
                     <Label check>
-                      <Input type="radio" name="confirm" value={'no'}/> No
+                      <Input type="radio" name="confirm" value={'no'} required/> No
                     </Label>
                   </FormGroup>
                 </FormGroup>
