@@ -53,10 +53,6 @@ const ReviewButton = ({
     setModal(false);
   };
 
-  const toggle = () => {
-    setModal(true);
-  }
-
   return (
     <>
       <Modal isOpen={modal} toggle={toggleModal}>
@@ -92,7 +88,7 @@ const ReviewButton = ({
         </ModalFooter>
       </Modal>
       {(user.personId == myUserId && reviewStatus == "Unsubmitted") ? (
-          <Button className='reviewBtn' color='primary' onClick={() => {toggle("Submitted");}}>
+          <Button className='reviewBtn' color='primary' onClick={toggleModal}>
               Submit for Review
             </Button>
         ) : ((myRole == "Owner" ||myRole == "Administrator" || myRole == "Mentor" || myRole == "Manager") && reviewStatus == "Submitted") ? (
@@ -101,7 +97,7 @@ const ReviewButton = ({
               Ready for Review
             </DropdownToggle>
             <DropdownMenu>
-            <DropdownItem onClick={() => {toggle("Reviewed");}}>
+            <DropdownItem onClick={toggleModal}>
               <FontAwesomeIcon
                 className="team-member-tasks-done"
                 icon={faCheck}
