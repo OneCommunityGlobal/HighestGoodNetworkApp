@@ -29,8 +29,8 @@ export const WbsTable = ({ wbs, skip, take }) => {
 
   return (
     <div className="wbs-table">
-      <h5 className="wbs-table-title">WBS</h5>
-      <div className="reports-table-head wbs-table-row">
+      <h5 style={{marginBottom: '2.125rem'}} className="wbs-table-title">WBS</h5>
+      <div style={{marginBottom: '0px'}} className="reports-table-head wbs-table-row">
         <div className="wbs-table-cell">#</div>
         <div className="wbs-table-cell">Name</div>
         <div className="wbs-table-cell">Active</div>
