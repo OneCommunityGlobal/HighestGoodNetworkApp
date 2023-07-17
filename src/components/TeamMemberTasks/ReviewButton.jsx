@@ -3,6 +3,8 @@ import { Button, Modal, ModalHeader, ModalBody, ModalFooter, DropdownToggle, Dro
 import './style.css';
 import './reviewButton.css';
 import { boxStyle } from 'styles';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCheck } from '@fortawesome/free-solid-svg-icons';
 
 const ReviewButton = ({
   user,
@@ -13,23 +15,46 @@ const ReviewButton = ({
 }) => {
 
   const [modal, setModal] = useState(false);
-  const [newStatus, setNewStatus] = useState('');
 
   const toggleModal = () => {
     setModal(!modal);
   };
+  
+  const reviewStatus = function() {
+    let status = "Unsubmitted";
+    for(let resource of task.resources){
+      if (resource.userID === user.personId) {
+        status = resource.reviewStatus ? resource.reviewStatus : "Unsubmitted"
+        break;
+      }
+    }
+    return status;
+  }();
 
-  const reviewStatus = task.reviewStatus ? task.reviewStatus : "Unsubmitted";
-
-  const updReviewStat = () => {
-    const updatedTask = { ...task, reviewStatus: newStatus };
+  const updReviewStat = (newStatus) => {
+    const resources = [...task.resources];
+    const newResources = resources?.map(resource => {
+      let newResource = { ...resource };
+      if (resource.userID === user.personId) {
+        newResource = newStatus === "Reviewed"
+        ? {
+          ...resource,
+          completedTask: true,
+          reviewStatus: newStatus,
+        } : {
+          ...resource,
+          reviewStatus: newStatus,
+        };
+      }
+      return newResource;
+    });
+    const updatedTask = { ...task, resources: newResources };
     updateTask(task._id, updatedTask);
     setModal(false);
   };
 
-  const toggle = (status) => {
+  const toggle = () => {
     setModal(true);
-    setNewStatus(status);
   }
 
   return (
@@ -45,7 +70,11 @@ const ReviewButton = ({
         </ModalBody>
         <ModalFooter>
           <Button
-            onClick={() => updReviewStat()}
+            onClick={() => {
+              reviewStatus == "Unsubmitted"
+              ? updReviewStat("Submitted")
+              : updReviewStat("Reviewed");
+            }}
             color="primary"
             className="float-left"
             style={boxStyle}
@@ -66,26 +95,31 @@ const ReviewButton = ({
           <Button className='reviewBtn' color='primary' onClick={() => {toggle("Submitted");}}>
               Submit for Review
             </Button>
-        ) : ((myRole == "Administrator" || myRole == "Mentor" || myRole == "Manager") && reviewStatus == "Submitted") ? (
+        ) : ((myRole == "Owner" ||myRole == "Administrator" || myRole == "Mentor" || myRole == "Manager") && reviewStatus == "Submitted") ? (
           <UncontrolledDropdown>
             <DropdownToggle className="btn--dark-sea-green reviewBtn" caret>
               Ready for Review
             </DropdownToggle>
             <DropdownMenu>
-            <DropdownItem onClick={() => {setNewStatus("Unsubmitted"); updReviewStat();}}>
-                Dismiss submission
-            </DropdownItem>
             <DropdownItem onClick={() => {toggle("Reviewed");}}>
-                Complete review
+              <FontAwesomeIcon
+                className="team-member-tasks-done"
+                icon={faCheck}
+              /> as complete and remove task
+            </DropdownItem>
+            <DropdownItem onClick={() => {updReviewStat("Unsubmitted");}}>
+              More work needed, reset this button
             </DropdownItem>
             </DropdownMenu>
           </UncontrolledDropdown>
+        ) : (user.personId == myUserId && reviewStatus == "Submitted")?(
+          <Button className='reviewBtn' color='success' onClick={() => {updReviewStat("Unsubmitted");}}>
+            More work needed, reset this button
+          </Button>
         ) : (reviewStatus == "Submitted") ? (
           <Button className='reviewBtn' color='success' disabled>
             Ready for Review
           </Button>
-        ) : (reviewStatus == "Reviewed")? (
-          <Button className='reviewBtn' color='secondary' disabled>Reviewed</Button>
         ) : (<></>
         )}
     </>
