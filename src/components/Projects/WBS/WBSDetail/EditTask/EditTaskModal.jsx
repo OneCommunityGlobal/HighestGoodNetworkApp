@@ -15,6 +15,7 @@ import axios from 'axios';
 import { ENDPOINTS } from 'utils/URL';
 import TagsSearch from '../components/TagsSearch';
 import { boxStyle } from 'styles';
+import { toast } from 'react-toastify';
 
 const EditTaskModal = props => {
   const [role] = useState(props.auth ? props.auth.user.role : null);
@@ -237,8 +238,10 @@ const EditTaskModal = props => {
     );
     await props.fetchAllTasks(props.wbsId);
 
-    if (props.tasks.error === 'none') {
+    if (props.tasks.error === 'none' || Object.keys(props.tasks.error).length === 0) {
       window.location.reload();
+    } else {
+      toast.error('Update failed! Error is ' + props.tasks.error);
     }
   };
 

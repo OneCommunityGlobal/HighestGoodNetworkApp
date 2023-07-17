@@ -34,7 +34,7 @@ import { getWeeklySummaries, updateWeeklySummaries } from '../../actions/weeklyS
 import DueDateTime from './DueDateTime';
 import moment from 'moment';
 import 'moment-timezone';
-import Loading from '../common/Loading';
+import SkeletonLoading from '../common/SkeletonLoading';
 import Joi from 'joi';
 import { toast } from 'react-toastify';
 import { WeeklySummaryContentTooltip, MediaURLTooltip } from './WeeklySummaryTooltips';
@@ -61,8 +61,6 @@ export class WeeklySummary extends Component {
       mediaUrl: '',
       weeklySummariesCount: 0,
       mediaConfirm: false,
-      editorConfirm: false,
-      proofreadConfirm: false,
     },
     dueDate: moment()
       .tz('America/Los_Angeles')
@@ -178,8 +176,6 @@ export class WeeklySummary extends Component {
         mediaUrl: mediaUrl || '',
         weeklySummariesCount: weeklySummariesCount || 0,
         mediaConfirm: false,
-        editorConfirm: false,
-        proofreadConfirm: false,
       },
       uploadDatesElements: {
         uploadDate,
@@ -312,12 +308,6 @@ export class WeeklySummary extends Component {
     mediaConfirm: Joi.boolean()
       .invalid(false)
       .label('Media Confirm'),
-    editorConfirm: Joi.boolean()
-    .invalid(false)
-    .label('Editor Confirm'),
-    proofreadConfirm: Joi.boolean()
-    .invalid(false)
-    .label('Proofread Confirm'),
   };
 
   validate = () => {
@@ -380,10 +370,10 @@ export class WeeklySummary extends Component {
     formElements[editor.id] = content;
     this.setState({ formElements, errors });
   };
-
   handleCheckboxChange = event => {
     event.persist();
     const { name, checked } = event.target;
+
     const errors = { ...this.state.errors };
     const errorMessage = this.validateProperty(event.target);
     if (errorMessage) errors[name] = errorMessage;
@@ -584,7 +574,7 @@ export class WeeklySummary extends Component {
       return (
         <Container fluid>
           <Row className="text-center" data-testid="loading">
-            <Loading />
+            <SkeletonLoading template="WeeklySummary" />
           </Row>
         </Container>
       );
@@ -677,7 +667,8 @@ export class WeeklySummary extends Component {
                         <Editor
                           init={{
                             menubar: false,
-                            placeholder: `Did you: Write it in 3rd person with a minimum of 50-words? Remember to run it through ChatGPT or other AI editor using the “Current AI Editing Prompt” from above? Remember to read and do a final edit before hitting Save?`,
+                            placeholder:
+                              'Weekly summary content... Remember to be detailed (50-word minimum) and write it in 3rd person. E.g. “This week John…"',
                             plugins:
                               'advlist autolink autoresize lists link charmap table paste help wordcount',
                             toolbar:
@@ -709,7 +700,7 @@ export class WeeklySummary extends Component {
             <Row>
               <Col>
                 <Label for="mediaUrl" className="mt-1">
-                  Dropbox link to your weekly media files. (required){' '}
+                  Link to your media files (eg. DropBox or Google Doc). (required){' '}
                   <MediaURLTooltip />
                 </Label>
                 <Row form>
@@ -774,7 +765,6 @@ export class WeeklySummary extends Component {
                     <FormGroup>
                       <CustomInput
                         id="mediaConfirm"
-                        data-testid="mediaConfirm"
                         name="mediaConfirm"
                         type="checkbox"
                         label="I have provided a minimum of 4 screenshots (6-10 preferred) of this week's work. (required)"
@@ -791,56 +781,12 @@ export class WeeklySummary extends Component {
                     )}
                   </Col>
                 </Row>
-                <Row>
-                  <Col>
-                    <FormGroup>
-                      <CustomInput
-                        id="editorConfirm"
-                        data-testid="editorConfirm"
-                        name="editorConfirm"
-                        type="checkbox"
-                        label="I used GPT (or other AI editor) with the most current prompt."
-                        htmlFor="editorConfirm"
-                        checked={formElements.editorConfirm}
-                        valid={formElements.editorConfirm}
-                        onChange={this.handleCheckboxChange}
-                      />
-                    </FormGroup>
-                    {errors.editorConfirm && (
-                      <Alert color="danger">
-                        Please confirm that you used an AI editor to write your summary.
-                      </Alert>
-                    )}
-                  </Col>
-                </Row>
-                <Row>
-                  <Col>
-                    <FormGroup>
-                      <CustomInput
-                        id="proofreadConfirm"
-                        name="proofreadConfirm"
-                        data-testid="proofreadConfirm"
-                        type="checkbox"
-                        label="I proofread my weekly summary."
-                        htmlFor="proofreadConfirm"
-                        checked={formElements.proofreadConfirm}
-                        valid={formElements.proofreadConfirm}
-                        onChange={this.handleCheckboxChange}
-                      />
-                    </FormGroup>
-                    {errors.proofreadConfirm && (
-                      <Alert color="danger">
-                        Please confirm that you have proofread your summary.
-                      </Alert>
-                    )}
-                  </Col>
-                </Row>
                 <Row className="mt-4">
                   <Col>
                     <FormGroup className="mt-2">
                       <Button
                         className="px-5 btn--dark-sea-green"
-                        disabled={this.validate()}
+                        disabled={this.validate() || !formElements.mediaUrl ? true : false}
                         onClick={this.handleSave}
                         style={boxStyle}
                       >
