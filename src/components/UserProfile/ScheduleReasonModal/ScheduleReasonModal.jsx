@@ -1,9 +1,18 @@
 import { Modal, Button } from 'react-bootstrap';
 import Form from 'react-bootstrap/Form';
 import moment from 'moment';
+import Spinner from 'react-bootstrap/Spinner';
+import Alert from 'react-bootstrap/Alert';
 
-const ScheduleReasonModal = ({ handleToggle, show, user, reason, setReason, handleSubmit }) => {
-  console.log(user);
+const ScheduleReasonModal = ({
+  handleToggle,
+  show,
+  user,
+  reason,
+  setReason,
+  handleSubmit,
+  fetchState,
+}) => {
   return (
     <>
       <Modal show={show} onHide={handleToggle}>
@@ -25,22 +34,26 @@ const ScheduleReasonModal = ({ handleToggle, show, user, reason, setReason, hand
                 as="textarea"
                 rows={3}
                 name="BlueSquareReason"
+                className='w-100'
                 value={reason}
                 onChange={e => {
                   setReason(e.target.value);
                 }}
+                disabled={fetchState.isFetching}
               />
             </Form.Group>
+            {!fetchState.isFetching && fetchState.error ? (
+              <Alert variant={'danger'}>Something went wrong while saving the Reason.</Alert>
+            ) : !fetchState.isFetching && fetchState.success ? (
+              <Alert variant={'success'}>Reason Scheduling Saved!</Alert>
+            ) : null}
           </Modal.Body>
           <Modal.Footer>
             <Button variant="secondary" onClick={handleToggle}>
               Close
             </Button>
-            <Button
-              variant="primary"
-              type="submit"
-            >
-              Save Changes
+            <Button variant="primary" type="submit" disabled={fetchState.isFetching}>
+              {fetchState.isFetching ? <Spinner animation="border" size="sm" /> : 'Save'}
             </Button>
           </Modal.Footer>
         </Form>
