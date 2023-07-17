@@ -18,6 +18,8 @@ const BlueSquareLayout = props => {
         return { isFetching: false, error: true, success: false };
       case 'SUCCESS':
         return { isFetching: false, error: false, success: true };
+      default:
+        return state
     }
   };
 
