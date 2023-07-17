@@ -278,9 +278,9 @@ const SummaryBar = props => {
           <Col className="d-flex col-lg-3 col-12 no-gutters">
             <Row className="no-gutters">
               {totalEffort < weeklyCommittedHours && (
-                <div className="border-red col-4 bg--white-smoke" align="center">
+                <div className="border-red col-4 bg--white-smoke" >
                   <div className="py-1"> </div>
-                  <p className="large_text_summary text--black text-danger" align="center">
+                  <p className="large_text_summary text--black text-danger" >
                     !
                   </p>
                   <font className="text--black" size="3">
@@ -290,9 +290,9 @@ const SummaryBar = props => {
                 </div>
               )}
               {totalEffort >= weeklyCommittedHours && (
-                <div className="border-green col-4 bg--dark-green" align="center">
+                <div className="border-green col-4 bg--dark-green" >
                   <div className="py-1"> </div>
-                  <p className="large_text_summary text--black" align="center">
+                  <p className="large_text_summary text--black" >
                     ✓
                   </p>
                   <font size="3">HOURS</font>
@@ -302,7 +302,7 @@ const SummaryBar = props => {
 
               <div
                 className="col-8 border-black bg--white-smoke d-flex justify-content-center align-items-center"
-                align="center"
+                
               >
                 <div className="align-items-center" id="timelogweeklychart">
                   <div className="text--black align-items-center med_text_summary">
@@ -321,7 +321,7 @@ const SummaryBar = props => {
           <Col className="d-flex col-lg-3 col-12 no-gutters">
             <Row className="no-gutters">
               {!weeklySummary ? (
-                <div className="border-red col-4 bg--white-smoke no-gutters" align="center">
+                <div className="border-red col-4 bg--white-smoke no-gutters" >
                   <div className="py-1"> </div>
                   {matchUser ||
                   hasPermission(
@@ -332,7 +332,7 @@ const SummaryBar = props => {
                   ) ? (
                     <p
                       className={'summary-toggle large_text_summary text--black text-danger'}
-                      align="center"
+                      
                       onClick={props.toggleSubmitForm}
                     >
                       !
@@ -340,7 +340,7 @@ const SummaryBar = props => {
                   ) : (
                     <p
                       className={'summary-toggle large_text_summary text--black text-danger'}
-                      align="center"
+                      
                     >
                       !
                     </p>
@@ -352,9 +352,9 @@ const SummaryBar = props => {
                   <div className="py-2"> </div>
                 </div>
               ) : (
-                <div className="border-green col-4 bg--dark-green" align="center">
+                <div className="border-green col-4 bg--dark-green" >
                   <div className="py-1"> </div>
-                  <p className="large_text_summary text--black" align="center">
+                  <p className="large_text_summary text--black" >
                     ✓
                   </p>
                   <font className="text--black" size="3">
@@ -366,7 +366,7 @@ const SummaryBar = props => {
 
               <div
                 className="col-8 border-black bg--white-smoke d-flex align-items-center"
-                align="center"
+                
               >
                 <div className="m-auto p-2">
                   <font className="text--black med_text_summary align-middle" size="3">
