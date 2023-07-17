@@ -25,9 +25,9 @@ import bluesquare_icon from './bluesquare_icon.png';
 import report_icon from './report_icon.png';
 import suggestions_icon from './suggestions_icon.png';
 import httpService from '../../services/httpService';
-import { ENDPOINTS } from 'utils/URL';
+import { ENDPOINTS , ApiEndpoint } from 'utils/URL';
 import axios from 'axios';
-import { ApiEndpoint } from 'utils/URL';
+
 import { getProgressColor, getProgressValue } from '../../utils/effortColors';
 import hasPermission from 'utils/permissions';
 import CopyToClipboard from 'components/common/Clipboard/CopyToClipboard';

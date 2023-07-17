@@ -26,7 +26,7 @@ import axios from 'axios';
 import hasPermission, { deactivateOwnerPermission } from '../../utils/permissions';
 import ActiveCell from '../UserManagement/ActiveCell';
 import { ENDPOINTS } from '../../utils/URL';
-import Loading from '../common/Loading';
+import SkeletonLoading from '../common/SkeletonLoading';
 import UserProfileModal from './UserProfileModal';
 import './UserProfile.scss';
 import TeamsTab from './TeamsAndProjects/TeamsTab';
@@ -44,7 +44,6 @@ import TimeEntryEditHistory from './TimeEntryEditHistory';
 import ActiveInactiveConfirmationPopup from '../UserManagement/ActiveInactiveConfirmationPopup';
 import { updateUserStatus } from '../../actions/userManagement';
 import { UserStatus } from '../../utils/enums';
-import { faSleigh, faCamera } from '@fortawesome/free-solid-svg-icons';
 import BlueSquareLayout from './BlueSquareLayout';
 import TeamWeeklySummaries from './TeamWeeklySummaries/TeamWeeklySummaries';
 import { boxStyle } from 'styles';
@@ -89,20 +88,30 @@ function UserProfile(props) {
   const [summaryName, setSummaryName] = useState('');
   const [showSummary, setShowSummary] = useState(false);
 
+  const userProfileRef = useRef();
+
   const isTasksEqual = JSON.stringify(originalTasks) === JSON.stringify(tasks);
   const isProfileEqual = JSON.stringify(userProfile) === JSON.stringify(originalUserProfile);
 
+  const [userStartDate, setUserStartDate] = useState('');
+  const [userEndDate, setUserEndDate] = useState('');
+
   /* useEffect functions */
+
+  useEffect(() => {
+    loadUserProfile();
+  }, []);
+
+  useEffect(() => {
+    userProfileRef.current = userProfile;
+  });
+
   useEffect(() => {
     checkIsTeamsEqual();
     checkIsProjectsEqual();
     setUserProfile({ ...userProfile, teams, projects });
     setOriginalUserProfile({ ...originalUserProfile, teams, projects });
   }, [teams, projects]);
-
-  useEffect(() => {
-    loadUserProfile();
-  }, []);
 
   useEffect(() => {
     setShowLoading(true);
@@ -117,6 +126,7 @@ function UserProfile(props) {
   }, [blueSquareChanged]);
 
   const checkIsTeamsEqual = () => {
+    setOriginalTeams(teams);
     const originalTeamProperties = [];
     originalTeams?.forEach(team => {
       for (const [key, value] of Object.entries(team)) {
@@ -148,6 +158,7 @@ function UserProfile(props) {
   };
 
   const checkIsProjectsEqual = () => {
+    setOriginalProjects(projects);
     const originalProjectProperties = [];
     originalProjects?.forEach(project => {
       for (const [key, value] of Object.entries(project)) {
@@ -215,6 +226,7 @@ function UserProfile(props) {
         phoneNumber: newUserProfile.phoneNumber[0],
         createdDate: newUserProfile?.createdDate.split('T')[0],
       });
+      setUserStartDate(newUserProfile?.createdDate.split('T')[0]);
       setShowLoading(false);
     } catch (err) {
       setShowLoading(false);
@@ -403,7 +415,7 @@ function UserProfile(props) {
       axios.put(url, updatedTask.updatedTask).catch(err => console.log(err));
     }
     try {
-      await props.updateUserProfile(props.match.params.userId, userProfile);
+      await props.updateUserProfile(props.match.params.userId, userProfileRef.current);
 
       if (userProfile._id === props.auth.user.userid && props.auth.user.role !== userProfile.role) {
         await props.refreshToken(userProfile._id);
@@ -462,17 +474,6 @@ function UserProfile(props) {
     loadUserProfile();
   }, [shouldRefresh]);
 
-  useEffect(() => {
-    setShowLoading(true);
-    loadUserProfile();
-  }, [props?.match?.params?.userId]);
-
-  useEffect(() => {
-    if (!blueSquareChanged) return;
-    setBlueSquareChanged(false);
-    handleSubmit();
-  }, [blueSquareChanged]);
-
   /**
    *
    * UserProfile.jsx and its subsomponents are being refactored to avoid the use of this monolithic function.
@@ -524,7 +525,7 @@ function UserProfile(props) {
     return (
       <Container fluid>
         <Row className="text-center" data-test="loading">
-          <Loading />
+          <SkeletonLoading template="UserProfile" />
         </Row>
       </Container>
     );
@@ -566,6 +567,14 @@ function UserProfile(props) {
       ...base,
       zIndex: 9999,
     }),
+  };
+
+  const handleStartDate = async startDate => {
+    setUserStartDate(startDate);
+  };
+
+  const handleEndDate = async endDate => {
+    setUserEndDate(endDate);
   };
 
   return (
@@ -624,7 +633,7 @@ function UserProfile(props) {
           <Col md="8">
             {!isProfileEqual || !isTasksEqual || !isTeamsEqual || !isProjectsEqual ? (
               <Alert color="warning">
-                Please click on "Save changes" to save the changes you have made.{' '}
+                Please click on &quot;Save changes&quot; to save the changes you have made.{' '}
               </Alert>
             ) : null}
             <div className="profile-head">
@@ -714,6 +723,7 @@ function UserProfile(props) {
                 );
               })}
             <Badges
+              isUserSelf={isUserSelf}
               userProfile={userProfile}
               setUserProfile={setUserProfile}
               setOriginalUserProfile={setOriginalUserProfile}
@@ -831,6 +841,7 @@ function UserProfile(props) {
                     setUserProfile={setUserProfile}
                     isUserSelf={isUserSelf}
                     role={requestorRole}
+                    onEndDate={handleEndDate}
                     loadUserProfile={loadUserProfile}
                     canEdit={hasPermission(
                       requestorRole,
@@ -838,6 +849,7 @@ function UserProfile(props) {
                       roles,
                       userPermissions,
                     )}
+                    onStartDate={handleStartDate}
                   />
                 }
               </TabPane>
@@ -853,6 +865,11 @@ function UserProfile(props) {
                   onUserVisibilitySwitch={onUserVisibilitySwitch}
                   isVisible={userProfile.isVisible}
                   canEditVisibility={canEdit && userProfile.role != 'Volunteer'}
+                  handleSubmit={handleSubmit}
+                  disabled={!formValid.firstName ||
+                    !formValid.lastName ||
+                    !formValid.email ||
+                    !(isProfileEqual && isTasksEqual && isTeamsEqual && isProjectsEqual)}
                 />
               </TabPane>
               <TabPane tabId="4">
@@ -867,6 +884,11 @@ function UserProfile(props) {
                   userPermissions={userPermissions}
                   userId={props.match.params.userId}
                   updateTask={onUpdateTask}
+                  handleSubmit={handleSubmit}
+                  disabled={!formValid.firstName ||
+                    !formValid.lastName ||
+                    !formValid.email ||
+                    !(isProfileEqual && isTasksEqual && isTeamsEqual && isProjectsEqual)}
                 />
               </TabPane>
               <TabPane tabId="5">
@@ -1053,6 +1075,11 @@ function UserProfile(props) {
                     onUserVisibilitySwitch={onUserVisibilitySwitch}
                     isVisible={userProfile.isVisible}
                     canEditVisibility={canEdit && userProfile.role != 'Volunteer'}
+                    handleSubmit={handleSubmit}
+                    disabled={!formValid.firstName ||
+                      !formValid.lastName ||
+                      !formValid.email ||
+                      !(isProfileEqual && isTasksEqual && isTeamsEqual && isProjectsEqual)}
                   />
                 </ModalBody>
                 <ModalFooter>
@@ -1113,6 +1140,11 @@ function UserProfile(props) {
                     userPermissions={userPermissions}
                     userId={props.match.params.userId}
                     updateTask={onUpdateTask}
+                    handleSubmit={handleSubmit}
+                    disabled={!formValid.firstName ||
+                      !formValid.lastName ||
+                      !formValid.email ||
+                      !(isProfileEqual && isTasksEqual && isTeamsEqual && isProjectsEqual)}
                   />
                 </ModalBody>
                 <ModalFooter>
@@ -1249,6 +1281,7 @@ function UserProfile(props) {
                         !formValid.firstName ||
                         !formValid.lastName ||
                         !formValid.email ||
+                        (userStartDate > userEndDate && userEndDate !== '') ||
                         (isProfileEqual && isTasksEqual && isTeamsEqual && isProjectsEqual)
                       }
                       userProfile={userProfile}
