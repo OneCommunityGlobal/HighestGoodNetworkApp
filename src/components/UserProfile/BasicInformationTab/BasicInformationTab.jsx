@@ -12,13 +12,11 @@ import hasPermission from 'utils/permissions';
 import SetUpFinalDayButton from 'components/UserManagement/SetUpFinalDayButton';
 import styles from './BasicInformationTab.css';
 import { boxStyle } from 'styles';
-import Infos from 'components/EditableModal/Infos';
+import Infos from 'components/UserProfile/EditableModal/Infos';
 
 const Name = props => {
-  const { userProfile, setUserProfile, formValid, setFormValid, canEdit } = props;
-
+  const { userProfile, setUserProfile, formValid, setFormValid, canEdit} = props;
   const { firstName, lastName } = userProfile;
-
   if (canEdit) {
     return (
       <>
@@ -274,6 +272,9 @@ const BasicInformationTab = props => {
     userPermissions,
     loadUserProfile,
     asUser,
+    infos,
+    getInfos,
+    updateInfos,
   } = props;
   const [timeZoneFilter, setTimeZoneFilter] = useState('');
   const [location, setLocation] = useState('');
@@ -452,9 +453,10 @@ const BasicInformationTab = props => {
             </Col>
             {(userProfile.role !== 'Volunteer') &&( 
             <Infos
-
               asUser={asUser}
-              newArea={'roleInfo'}
+              areaName={'roleInfo'}
+              infos={infos}
+              fontSize={24}
              />
             )}
           

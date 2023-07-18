@@ -3,24 +3,22 @@ import { useState } from 'react';
 import { Button, Modal, ModalBody, ModalHeader } from 'reactstrap';
 import CreateNewRolePopup from './NewRolePopUp';
 import './PermissionsManagement.css';
-import { connect } from 'react-redux';
+import { connect,useSelector } from 'react-redux';
 import { getAllRoles } from '../../actions/role';
 import { updateUserProfile, getUserProfile } from 'actions/userProfile';
 import { getAllUserProfile } from 'actions/userManagement';
 import UserPermissionsPopUp from './UserPermissionsPopUp';
 import { useHistory } from 'react-router-dom';
 import { boxStyle } from 'styles';
+import Infos from 'components/UserProfile/EditableModal/Infos';
 
 const PermissionsManagement = ({ getAllRoles, roles, auth, getUserRole, userProfile }) => {
   const [isNewRolePopUpOpen, setIsNewRolePopUpOpen] = useState(false);
   const [isUserPermissionsOpen, setIsUserPermissionsOpen] = useState(false);
-  //add roleInfo
-  const [roleInfoModalOpen, setroleInfoModalOpen] = useState(false);
-  const toggleRoleInfoModal = () => {
-    setroleInfoModalOpen(!roleInfoModalOpen);
-  }
+  const asUser = useSelector(state => state.auth.user.userid);
+  const infos = userProfile.infoCollections;
+  
   let history = useHistory();
-
   const togglePopUpNewRole = () => {
     setIsNewRolePopUpOpen(previousState => !previousState);
   };
@@ -48,13 +46,23 @@ const PermissionsManagement = ({ getAllRoles, roles, auth, getUserRole, userProf
           {roleNames?.map(roleName => {
             let roleNameLC = roleName.toLowerCase().replace(' ', '-');
             return (
+              <>
               <button
                 onClick={() => history.push(`/permissionsmanagement/${roleNameLC}`)}
                 key={roleName}
                 className="role-name"
               >
                 {roleName}
-              </button>                
+                <div className='infos'>
+                <Infos 
+                asUser={asUser}
+                areaName={`${roleName}`+'Info'}
+                infos={infos}
+                fontSize={15}
+                /> 
+                </div>
+              </button> 
+              </>           
             )})};
         </div>
         {userProfile?.role === 'Owner' && (

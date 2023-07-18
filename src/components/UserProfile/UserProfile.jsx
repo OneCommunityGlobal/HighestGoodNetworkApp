@@ -61,6 +61,7 @@ function UserProfile(props) {
   const [showLoading, setShowLoading] = useState(true);
   const [showSelect, setShowSelect] = useState(false);
   const [summaries, setSummaries] = useState(undefined);
+  const [infos, setInfos] = useState(undefined);
   const [userProfile, setUserProfile] = useState(undefined);
   const [originalUserProfile, setOriginalUserProfile] = useState(undefined);
   const [originalTasks, setOriginalTasks] = useState([]);
@@ -85,11 +86,8 @@ function UserProfile(props) {
   const [tasks, setTasks] = useState([]);
   const [updatedTasks, setUpdatedTasks] = useState([]);
   const [summarySelected, setSummarySelected] = useState(null);
-  const [infoSelected, setInfoSelected] = useState(null);
   const [summaryName, setSummaryName] = useState('');
-  const [infoName, setInfoName] = useState('');
   const [showSummary, setShowSummary] = useState(false);
-  const [showInfo, setShowInfo] = useState(false);
 
   const isTasksEqual = JSON.stringify(originalTasks) === JSON.stringify(tasks);
   const isProfileEqual = JSON.stringify(userProfile) === JSON.stringify(originalUserProfile);
@@ -206,7 +204,7 @@ function UserProfile(props) {
     try {
       const response = await axios.get(ENDPOINTS.USER_PROFILE(userId));
       const newUserProfile = response.data;
-
+      setInfos(newUserProfile.infoCollections)
       setTeams(newUserProfile.teams);
       setOriginalTeams(newUserProfile.teams);
       setProjects(newUserProfile.projects);
@@ -246,17 +244,18 @@ function UserProfile(props) {
   };
   const getInfos = async userId => {
     try {
-      setInfoSelected('');
-      setShowInfo(false);
+      // setShowInfo(false);
       const response = await axios.get(ENDPOINTS.USER_PROFILE(userId));
       const user = response.data;
       const userInfos = user.infoCollections;
-
-      setInfoSelected(userInfos);
-      setShowInfo(true);
+      setInfos(userInfos);
+      // setShowInfo(true);
     } catch (err) {
       setShowLoading(false);
     }
+  };
+  const updateInfos = (newInfos) => {
+    setInfos(newInfos);
   };
 
   const getTeamMembersWeeklySummary = async () => {
@@ -457,13 +456,6 @@ function UserProfile(props) {
     });
   };
 
-  const updateInfo = (infoCollectionsUpdate) => {
-    setUserProfile({
-      ...userProfile,
-      infoCollections: infoCollectionsUpdate,
-    });
-  };
-
   const setActiveInactive = isActive => {
     setActiveInactivePopupOpen(false);
     const newUserProfile = {
@@ -567,7 +559,6 @@ function UserProfile(props) {
     roles,
     userPermissions,
   );
-
   const customStyles = {
     control: (base, state) => ({
       ...base,
@@ -851,7 +842,9 @@ function UserProfile(props) {
                   roles={roles}
                   userPermissions={userPermissions}
                   asUser={requestorId}
+                  infos={infos}
                   getInfos={getInfos}
+                  updateInfos={updateInfos}
                 />
               </TabPane>
               <TabPane tabId="2">
@@ -935,6 +928,8 @@ function UserProfile(props) {
                     canEdit={canEdit}
                     canEditRole={canEditProfile}
                     roles={roles}
+                    infos={infos}
+                    getInfos={getInfos}
                     userPermissions={userPermissions}
                   />
                 </ModalBody>
