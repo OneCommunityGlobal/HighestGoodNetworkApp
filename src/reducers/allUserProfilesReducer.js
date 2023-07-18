@@ -54,7 +54,13 @@ export const allUserProfilesReducer = (userProfiles = userProfilesInitial, actio
         fetched: true,
         status: '200',
       });
-
+    case types.USER_PROFILE_UPDATE_ALL:
+        return updateObject(userProfiles, {
+          userProfiles: action.users,
+          fetching: false,
+          fetched: true,
+          status: '200',
+        });
     default:
       return userProfiles;
   }
