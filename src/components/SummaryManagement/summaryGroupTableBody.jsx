@@ -4,30 +4,20 @@ import { DELETE, EDIT, VIEW_SUMMARY } from '../../languages/en/ui';
 import { updateBadge } from 'actions/badgeManagement';
 
 const summaryGroupTableBody = props => {
-  const [role, setRole] = useState(false);
+  const [seeReports, setSeeReports] = useState(false);
 
   useEffect(() => {
     const roles = props.currentUserRole;
-    // console.log('gets here to change role');
-    updateinfo();
+    updateinfo(roles);
     if (roles) {
-      // if (role != 'Manager' || role !== 'Mentor') setRole(false);
-      if (roles === 'Administrator') {
-        setRole(true);
-      }
-      // console.log('this works:', props.currentUserRole);
+      if (roles === 'Manager' || roles === 'Mentor') setSeeReports(true);
     }
   }, [props.currentUserRole]);
 
-  // useEffect(() => {
-  //   updateinfo();
-  // }, [props.summaryReceiver, props.currentUserId]);
-
-  const updateinfo = async () => {
+  const updateinfo = async roles => {
     const id = props.summaryGroupId;
-    if (id) {
+    if (id && !roles) {
       await props.updateUserInfo(id);
-      // console.log('Timeout complete');
     }
   };
 
@@ -104,7 +94,7 @@ const summaryGroupTableBody = props => {
           </button>
         </span>
         <span className="usermanagement-actions-cell">
-          {role && (
+          {seeReports && (
             <button
               type="button"
               className="btn btn-outline-success"

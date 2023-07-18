@@ -3,7 +3,7 @@ import SummaryComponent from './SummaryReportDisplayComponent';
 
 const SummaryTable = props => {
   const [data, setData] = useState([]);
-  const [summaryReceiver, setSummaryReceiver] = useState(undefined);
+  // const [summaryReceiver, setSummaryReceiver] = useState(undefined);
 
   const updateData = async () => {
     const report = await props.teamMembersReports();
@@ -14,25 +14,28 @@ const SummaryTable = props => {
     const fetchData = async () => {
       const result = await updateData();
       setData(result);
-      getSummaryReceiver();
+      // getSummaryReceiver();
     };
     if (props.summaryGroupId) {
       fetchData();
     }
   }, [props.summaryGroupId]);
 
-  useEffect(() => {
-    getSummaryReceiverdata();
-  }, [props.summaryReceiver, props.currentUserId]);
+  // useEffect(() => {
+  //   getSummaryReceiverdata();
+  // }, [props.summaryReceiver, props.currentUserId]);
+
+  // useEffect(() => {
+  // console.log('in display receiver value: ', summaryReceiver);
+  // console.log('users data: ', props.usersdata);
+  // }, [summaryReceiver]);
 
   useEffect(() => {
-    // console.log('in display receiver value: ', summaryReceiver);
-    // console.log('users data: ', props.usersdata);
-  }, [summaryReceiver]);
-
-  useEffect(() => {
-    // console.log('currentUserRole: ', props.currentUserRole);
-  }, [props.currentUserRole]);
+    if (props.currentUserRole && props.currentUserId) {
+      // getSummaryReceiverdata();
+      console.log('use effect is working..');
+    }
+  }, [props.currentUserRole, props.currentUserId, props.summaryReceiver]);
 
   const closeDisplay = () => {
     props.onDisplaySummaryTableFunc('false');
@@ -41,7 +44,7 @@ const SummaryTable = props => {
   const getSummaryReceiver = async () => {
     const id = props.summaryGroupId;
     if (id) {
-      // await props.getSummaryReceiver(id);
+      await props.getSummaryReceiver(id);
     } else {
       console.log('props.summaryGroupId is null');
     }
@@ -51,9 +54,10 @@ const SummaryTable = props => {
     if (props.currentUserId && props.summaryReceiver) {
       const userId = props.currentUserId;
       const summarylist = await props.summaryReceiver.summaryReceivers;
-      const summaryIds = summarylist.filter(item => item._id === userId)[0]._id;
-      setSummaryReceiver(summaryIds);
-      // console.log('summary list 2 : ', summaryIds);
+      const summaryRec = await summarylist.filter(item => item._id === userId);
+      console.log('summary list 2 : ', summaryRec);
+      const summaryIds = summaryRec._id;
+      // setSummaryReceiver(summaryIds);
     }
   };
 
@@ -80,9 +84,10 @@ const SummaryTable = props => {
                 data.map((item, index) => (
                   <tr key={index}>
                     <td>
-                      {(summaryReceiver || props.currentUserRole === 'Administrator') && (
-                        <SummaryComponent name={item.fullName} message={item.report} />
-                      )}
+                      {(props.summaryReceiver ||
+                        props.currentUserRole === 'Manager' || [
+                          props.currentUserRole === 'Mentor',
+                        ]) && <SummaryComponent name={item.fullName} message={item.report} />}
                     </td>
                   </tr>
                 ))}

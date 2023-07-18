@@ -554,7 +554,7 @@ class SummaryManagement extends Component {
               summaryReceiver={this.state.summaryReceiver}
               currentUserRole={this.state.currentUserRole}
               currentUserId={this.state.currentUserId}
-              updateUserInfo={this.updateUserInfo}
+              updateUserInfo={this.getSummaryReceiverRedux}
             />
           </div>
         </div>
