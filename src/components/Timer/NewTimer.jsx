@@ -115,7 +115,10 @@ export const NewTimer = () => {
     const elapsed = moment.duration(now.diff(lastAccess)).asMilliseconds();
     let remaining = message?.time - elapsed;
 
-    const lastTimeAdded = moment.utc(remainingTime).format('HH:mm').replace('00:0', '');
+    const lastTimeAdded = moment
+      .utc(remainingTime)
+      .format('HH:mm')
+      .replace('00:0', '');
 
     if (remaining <= 0) {
       handleAddGoal(1000 * 60 * (Number(lastTimeAdded) > 0 ? Number(lastTimeAdded) : 5));
@@ -135,41 +138,49 @@ export const NewTimer = () => {
   }, [handleStopAlarm, sendMessage]);
 
   const handleClear = useCallback(() => {
-    sendMessage(action.CLEAR_TIMER); 
+    sendMessage(action.CLEAR_TIMER);
     setRemainingTime(0); // Reset the remaining time to 0
   }, [sendMessage]);
-  
-  const handleSetGoal = useCallback(time => sendMessage(action.SET_GOAL.concat(time)), [sendMessage]);
-  const handleAddGoal = useCallback(time => {
-  sendMessage(action.ADD_GOAL.concat(time));
-}, [sendMessage]);
 
-const handleRemoveGoal = useCallback((time) => {
-  const now = moment();
-  const lastAccess = moment(message?.lastAccess);
-  const elapsedTime = moment.duration(now.diff(lastAccess)).asMilliseconds();
-  let remaining = message?.time - elapsedTime;
+  const handleSetGoal = useCallback(time => sendMessage(action.SET_GOAL.concat(time)), [
+    sendMessage,
+  ]);
+  const handleAddGoal = useCallback(
+    time => {
+      sendMessage(action.ADD_GOAL.concat(time));
+    },
+    [sendMessage],
+  );
 
-  if (remaining <= 900000) {
-    alert('Timer cannot be set to less than fifteen minutes!');
-    return;
-  }
+  const handleRemoveGoal = useCallback(
+    time => {
+      const now = moment();
+      const lastAccess = moment(message?.lastAccess);
+      const elapsedTime = moment.duration(now.diff(lastAccess)).asMilliseconds();
+      let remaining = message?.time - elapsedTime;
 
-  if (message?.countdown) {
-    // Adjust the remaining time based on the removed goal
-    const adjustedRemaining = remaining + time;
+      if (remaining <= 900000) {
+        alert('Timer cannot be set to less than fifteen minutes!');
+        return;
+      }
 
-    if (adjustedRemaining <= message?.goal) {
-      // If the adjusted remaining time is less than or equal to the goal, set the goal as the new remaining time
-      setRemainingTime(message?.goal);
-    } else {
-      // If the adjusted remaining time is greater than the goal, subtract the removed goal from the remaining time
-      setRemainingTime(adjustedRemaining - time);
-    }
-  }
+      if (message?.countdown) {
+        // Adjust the remaining time based on the removed goal
+        const adjustedRemaining = remaining + time;
 
-  sendMessage(action.REMOVE_GOAL.concat(time));
-}, [message, sendMessage]);
+        if (adjustedRemaining <= message?.goal) {
+          // If the adjusted remaining time is less than or equal to the goal, set the goal as the new remaining time
+          setRemainingTime(message?.goal);
+        } else {
+          // If the adjusted remaining time is greater than the goal, subtract the removed goal from the remaining time
+          setRemainingTime(adjustedRemaining - time);
+        }
+      }
+
+      sendMessage(action.REMOVE_GOAL.concat(time));
+    },
+    [message, sendMessage],
+  );
 
   const handleAckForced = useCallback(() => sendMessage(action.ACK_FORCED), []);
   const toggleModal = () => {
@@ -206,7 +217,7 @@ const handleRemoveGoal = useCallback((time) => {
       message ? (message.countdown ? message.goal - previewTimer : previewTimer) : 0,
     );
     if (timePassed.minutes() >= 1) {
-      setLogModal(true)
+      setLogModal(true);
     } else {
       setOneMinuteMinimumModal(true);
     }
@@ -226,7 +237,7 @@ const handleRemoveGoal = useCallback((time) => {
   }, []);
 
   useEffect(() => {
-    if (!initialRender  && logModal) {
+    if (!initialRender && logModal) {
       handlePause();
     }
   }, [logModal, initialRender]);
@@ -244,10 +255,10 @@ const handleRemoveGoal = useCallback((time) => {
       handleClear();
     }
 
-    if((message?.goal - message?.time) >= 60000){
-      setUserCanStop(true)
+    if (message?.goal - message?.time >= 60000) {
+      setUserCanStop(true);
     } else {
-      setUserCanStop(false)
+      setUserCanStop(false);
     }
   }, [message, isFirstLoading]);
 
@@ -293,22 +304,25 @@ const handleRemoveGoal = useCallback((time) => {
       <button
         type="button"
         onClick={() => {
-          handleUserCanStop()
+          handleUserCanStop();
         }}
       >
-        <BsStopCircleFill
-          className={`${'btn-white transition-color'}`}
-          fontSize="1.5rem"
-        />
+        <BsStopCircleFill className={`${'btn-white transition-color'}`} fontSize="1.5rem" />
       </button>
 
-      <Modal size={'md'} isOpen={oneMinuteMinimumModal} toggle={() => setOneMinuteMinimumModal(!oneMinuteMinimumModal)} centered={true}>
-        <ModalHeader toggle={() => setOneMinuteMinimumModal(!oneMinuteMinimumModal)}>Alert</ModalHeader>
+      <Modal
+        size={'md'}
+        isOpen={oneMinuteMinimumModal}
+        toggle={() => setOneMinuteMinimumModal(!oneMinuteMinimumModal)}
+        centered={true}
+      >
+        <ModalHeader toggle={() => setOneMinuteMinimumModal(!oneMinuteMinimumModal)}>
+          Alert
+        </ModalHeader>
         <ModalBody>
-        <strong>You need at least 1 minute to log time!</strong>
+          <strong>You need at least 1 minute to log time!</strong>
         </ModalBody>
       </Modal>
-
 
       <Modal
         isOpen={timerIsOverModalOpen}
