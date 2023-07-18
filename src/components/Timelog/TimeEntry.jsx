@@ -19,6 +19,7 @@ import checkNegativeNumber from 'utils/checkNegativeHours';
 
 const TimeEntry = ({ data, displayYear, userProfile }) => {
   const [modal, setModal] = useState(false);
+  const [taskData, setTaskData] = useState('');
 
   const toggle = () => setModal(modal => !modal);
 
@@ -54,6 +55,26 @@ const TimeEntry = ({ data, displayYear, userProfile }) => {
   const taskClassification = data.classification?.toLowerCase() || '';
   const dispatch = useDispatch();
 
+  if (!data.projectName) {
+    const url = ENDPOINTS.GET_TASK(data.projectId)
+    axios.get(url)
+    .then(resp => setTaskData(resp.data))
+  }
+
+  const updateHoursLogged = async (taskData, newHoursLogged) => {
+    const newUpdatedTask = {
+      ...taskData, 
+      hoursLogged: newHoursLogged
+    }
+    const url = ENDPOINTS.TASK_UPDATE(taskData.projectId);
+    try {
+      await axios.put(url, newUpdatedTask);
+    }
+    catch (error) {
+      toast.error("Failed to update task");
+    }
+  }
+
   const toggleTangibility = () => {
     const newData = {
       ...data,
@@ -65,6 +86,7 @@ const TimeEntry = ({ data, displayYear, userProfile }) => {
     //Update intangible hours property in userprofile
     const formattedHours = parseFloat(data.hours) + parseFloat(data.minutes) / 60;
     const { hoursByCategory } = userProfile;
+  
     if (data.projectName) {
       const isFindCategory = Object.keys(hoursByCategory).find(key => key === projectCategory);
       //change tangible to intangible
@@ -82,19 +104,23 @@ const TimeEntry = ({ data, displayYear, userProfile }) => {
       }
     } else {
       const isFindCategory = Object.keys(hoursByCategory).find(key => key === taskClassification);
+      let hoursLogged = taskData.hoursLogged
       //change tangible to intangible
       if (data.isTangible) {
         userProfile.totalIntangibleHrs += formattedHours;
+        hoursLogged -= formattedHours;
         isFindCategory
           ? (hoursByCategory[taskClassification] -= formattedHours)
           : (hoursByCategory['unassigned'] -= formattedHours);
       } else {
         //change intangible to tangible
         userProfile.totalIntangibleHrs -= formattedHours;
+        hoursLogged += formattedHours;
         isFindCategory
           ? (hoursByCategory[taskClassification] += formattedHours)
           : (hoursByCategory['unassigned'] += formattedHours);
       }
+      updateHoursLogged(taskData, hoursLogged)
     }
     checkNegativeNumber(userProfile);
     dispatch(updateUserProfile(userProfile._id, userProfile));
