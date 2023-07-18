@@ -33,7 +33,7 @@ const SummaryTable = props => {
   useEffect(() => {
     if (props.currentUserRole && props.currentUserId) {
       // getSummaryReceiverdata();
-      console.log('use effect is working..');
+      // console.log('use effect is working..');
     }
   }, [props.currentUserRole, props.currentUserId, props.summaryReceiver]);
 
@@ -53,7 +53,7 @@ const SummaryTable = props => {
   const getSummaryReceiverdata = async () => {
     if (props.currentUserId && props.summaryReceiver) {
       const userId = props.currentUserId;
-      const summarylist = await props.summaryReceiver.summaryReceivers;
+      const summarylist = await props.summaryReceiver.summaryRecievers;
       const summaryRec = await summarylist.filter(item => item._id === userId);
       console.log('summary list 2 : ', summaryRec);
       const summaryIds = summaryRec._id;

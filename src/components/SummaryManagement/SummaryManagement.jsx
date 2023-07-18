@@ -332,10 +332,17 @@ class SummaryManagement extends Component {
     }
   };
 
-  updateUserInfo = async () => {
-    const user = await this.props.getUser();
-    this.setState({ currentUserRole: user.role });
-    this.setState({ currentUserId: user.userid });
+  fetchSummaryReceiver = async summaryGroupId => {
+    try {
+      if (summaryGroupId) {
+        const result = await this.props.extractSummaryReceivers(summaryGroupId);
+        const receivers = { summaryReceivers: result };
+        return receivers;
+      }
+    } catch (error) {
+      console.log(error);
+    }
+    return null;
   };
 
   onDisplaySummaryTable = value => {
@@ -592,6 +599,7 @@ class SummaryManagement extends Component {
           currentUserId={this.state.currentUserId}
           updateUserInfo={this.getSummaryReceiverRedux}
           summaryReceiver={this.state.summaryReceiver}
+          fetchSummaryReceiver={this.fetchSummaryReceiver}
         />
       ));
     }
