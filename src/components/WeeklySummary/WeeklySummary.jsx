@@ -313,11 +313,11 @@ export class WeeklySummary extends Component {
       .invalid(false)
       .label('Media Confirm'),
     editorConfirm: Joi.boolean()
-    .invalid(false)
-    .label('Editor Confirm'),
+      .invalid(false)
+      .label('Editor Confirm'),
     proofreadConfirm: Joi.boolean()
-    .invalid(false)
-    .label('Proofread Confirm'),
+      .invalid(false)
+      .label('Proofread Confirm'),
   };
 
   validate = () => {
@@ -708,8 +708,7 @@ export class WeeklySummary extends Component {
             <Row>
               <Col>
                 <Label for="mediaUrl" className="mt-1">
-                  Dropbox link to your weekly media files. (required){' '}
-                  <MediaURLTooltip />
+                  Dropbox link to your weekly media files. (required) <MediaURLTooltip />
                 </Label>
                 <Row form>
                   <Col md={8}>

@@ -54,7 +54,7 @@ export const Header = props => {
     if (props.auth.isAuthenticated) {
       props.getHeaderData(props.auth.user.userid);
       props.getTimerData(props.auth.user.userid);
-      if(props.auth.user.role === "Administrator"){
+      if (props.auth.user.role === 'Administrator') {
         dispatch(fetchTaskEditSuggestions());
       }
     }

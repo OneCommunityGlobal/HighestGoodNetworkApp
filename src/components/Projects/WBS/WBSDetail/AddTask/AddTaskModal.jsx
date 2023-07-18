@@ -30,7 +30,7 @@ function AddTaskModal(props) {
   const setToggle = () => {
     try {
       props.openChild();
-    } catch { }
+    } catch {}
     toggle();
   };
 

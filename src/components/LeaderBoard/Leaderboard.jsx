@@ -104,8 +104,8 @@ const LeaderBoard = ({
     </>,
     <>
       <p>
-        An Admin has made it so you can see your team but they can&apos;t see you. We recommend you keep
-        this setting as it is.
+        An Admin has made it so you can see your team but they can&apos;t see you. We recommend you
+        keep this setting as it is.
       </p>
       <p>
         If you want to change this setting so your team/everyone can see and access your time log
@@ -324,10 +324,12 @@ const LeaderBoard = ({
                   </Link>
                 </td>
                 <td className="align-middle">
-                  <span 
-                  title="Total time"
-                  className={ item.totalintangibletime_hrs > 0 ? 'boldClass' : null }
-                  >{item.totaltime}</span>
+                  <span
+                    title="Total time"
+                    className={item.totalintangibletime_hrs > 0 ? 'boldClass' : null}
+                  >
+                    {item.totaltime}
+                  </span>
                 </td>
               </tr>
             ))}
