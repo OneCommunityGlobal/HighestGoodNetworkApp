@@ -12,6 +12,8 @@ const ScheduleReasonModal = ({
   setReason,
   handleSubmit,
   fetchState,
+  date,
+  setDate,
 }) => {
   return (
     <>
@@ -30,11 +32,16 @@ const ScheduleReasonModal = ({
                   <em>(If a reason has already been submitted, you can edit it)</em>
                 </p>
               </Form.Label>
+              <Form.Label>Pick a date to schedule your reason!</Form.Label>
+              <Form.Control name="datePicker" type="date" className="w-100" value={date} onChange={(e) => {
+                setDate(e.target.value)
+              }}/>
+              <Form.Label className="mt-4">Write the blue square's reason</Form.Label>
               <Form.Control
                 as="textarea"
                 rows={3}
                 name="BlueSquareReason"
-                className='w-100'
+                className="w-100"
                 value={reason}
                 onChange={e => {
                   setReason(e.target.value);

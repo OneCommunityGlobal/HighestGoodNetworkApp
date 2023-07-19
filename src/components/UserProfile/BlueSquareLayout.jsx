@@ -36,6 +36,7 @@ const BlueSquareLayout = props => {
   const { privacySettings } = userProfile;
   const [show, setShow] = useState(false);
   const [reason, setReason] = useState('');
+  const [date, setDate] = useState('')
   const [fetchState, fetchDispatch] = useReducer(fetchingReducer, {
     isFetching: false,
     error: false,
@@ -51,7 +52,7 @@ const BlueSquareLayout = props => {
     setShow(false)
     fetchDispatch({ type: 'FETCHING_STARTED' });
     setTimeout(() => {
-      fetchDispatch({type: 'ERROR'})
+      fetchDispatch({type: 'SUCCESS'})
       setShow(true)
     }, 4000)
   };
@@ -92,6 +93,8 @@ const BlueSquareLayout = props => {
             setReason={setReason}
             handleSubmit={handleSubmit}
             fetchState={fetchState}
+            date={date}
+            setDate={setDate}
           />
         )}
       </div>
