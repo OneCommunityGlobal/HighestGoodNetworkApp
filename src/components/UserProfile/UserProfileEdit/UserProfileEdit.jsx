@@ -550,8 +550,8 @@ class UserProfileEdit extends Component {
                   zIndex: '9',
                 }}
               >
-                Reminder: You must click "Save Changes" at the bottom of this page. If you don't,
-                changes to your profile will not be saved.
+                Reminder: You must click &quot;Save Changes&quot; at the bottom of this page. If you
+                don&apos;t, changes to your profile will not be saved.
               </h6>
             )}
           </Sticky>
@@ -790,7 +790,7 @@ class UserProfileEdit extends Component {
                               placeholder="First Name"
                               invalid={!this.state.formValid.firstName}
                             />
-                            <FormFeedback>First Name Can't be null</FormFeedback>
+                            <FormFeedback>First Name Can&apos;t be null</FormFeedback>
                           </FormGroup>
                         </Col>
                         <Col md="3">
@@ -805,7 +805,7 @@ class UserProfileEdit extends Component {
                               placeholder="Last Name"
                               invalid={!this.state.formValid.lastName}
                             />
-                            <FormFeedback>Last Name Can't be Null</FormFeedback>
+                            <FormFeedback>Last Name Can&apos;t be Null</FormFeedback>
                           </FormGroup>
                         </Col>
                       </Row>
