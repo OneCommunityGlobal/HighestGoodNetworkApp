@@ -42,14 +42,9 @@ const UserTeamsTable = props => {
             {props.edit && props.role && (
               <Col md="5">
                 {hasPermission(props.role, 'assignTeamToUser', roles, userPermissions) ? (
-                  props.disabled? (
+                  props.disabled ? (
                     <div className="div-addteam" title="Please save changes before assign team">
-                      <Button
-                        className="btn-addteam"
-                        color="primary"
-                        style={boxStyle}
-                        disabled
-                      >
+                      <Button className="btn-addteam" color="primary" style={boxStyle} disabled>
                         Assign Team
                       </Button>
                     </div>
@@ -158,13 +153,9 @@ const UserTeamsTable = props => {
               style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}
             >
               {hasPermission(props.role, 'assignTeamToUser', roles, userPermissions) ? (
-                props.disabled? (
+                props.disabled ? (
                   <div className="div-addteam" title="Please save changes before assign team">
-                    <Button
-                      className="btn-addteam"
-                      color="primary"
-                      disabled
-                    >
+                    <Button className="btn-addteam" color="primary" disabled>
                       Assign Team
                     </Button>
                   </div>
