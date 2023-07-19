@@ -45,7 +45,7 @@ module.exports = {
     'react/no-direct-mutation-state': 'off',
     'react/no-unknown-property': 'off',
     'import/no-duplicates': 'off',
-    // 'import/no-named-as-default': 'off',
+    'import/no-named-as-default': 'off',
   },
   overrides: [
     {
