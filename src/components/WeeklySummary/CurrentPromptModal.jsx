@@ -1,26 +1,53 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import { toast } from 'react-toastify';
 import ReactTooltip from 'react-tooltip';
 import { boxStyle } from 'styles';
+import { connect } from 'react-redux';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEdit } from '@fortawesome/free-regular-svg-icons';
-import { updateDashboardData, getDashboardData } from 'actions/dashboard';
+import { updateDashboardData, getDashboardDataAI } from '../../actions/dashboard';
+
 
 function CurrentPromptModal(props) {
+  const current = `Please edit the following summary of my week's work. 
+  Make sure it is professionally written in 3rd person format. 
+  Write it as only one paragraph. It must be only one paragraph. 
+  Keep it less than 500 words. 
+  Start the paragraph with 'This week'.
+  Make sure the paragraph contains no links or URLs and write it in a tone that is matter-of-fact and without embellishment. 
+  Do not add flowery language, keep it simple and factual. 
+  Do not add a final summary sentence. 
+  Apply all this to the following:`;
+  const dashboardDataAIPrompt = (props.state.dashboardData === '' || props.state.dashboardData === null)
+    ? current : props.state.dashboardData;
+
   const [modal, setModal] = useState(false);
   const [canEdit, setCanEdit] = useState(false);
+  const [newPrompt, setNewPrompt] = useState(dashboardDataAIPrompt)
+
+
+  const changeNewName = (newName) => {
+    setNewPrompt(newName)
+  }
 
   const toggle = () => {
     setModal(!modal)
-    console.log('Modal opened')
-    getDashboardData();
+    getAIPromp();
   };
+
+  const getAIPromp = () => {
+    props.getDashboardDataAI();
+  }
 
   const handleCopyToClipboard = () => {
     navigator.clipboard.writeText(currentPrompt);
     toast.success('Prompt Copied!');
   };
+
+  const saveAIPrompt = () => {
+    props.updateDashboardData(newPrompt);
+  }
 
   const editCurentPrompt = () => {
     setCanEdit(true);
@@ -29,16 +56,10 @@ function CurrentPromptModal(props) {
   const saveCurrentPrompt = () => {
     setCanEdit(false);
     setModal(false);
-    updateDashboardData(props.userId);
+    saveAIPrompt()
   };
 
-  // const saveDashboardData = (userId) => {
-  //   updateDashboardData(userId);
-  // }
-
-  const current = `Please edit the following summary of my week's work. Make sure it is professionally written in 3rd person format. Write it as only one paragraph. It must be only one paragraph. Keep it less than 500 words. Start the paragraph with 'This week'. Make sure the paragraph contains no links or URLs and write it in a tone that is matter-of-fact and without embellishment. Do not add flowery language, keep it simple and factual. Do not add a final summary sentence. Apply all this to the following:`;
-
-  const currentPrompt = canEdit ? <textarea defaultValue={current}></textarea> : current;
+  const currentPrompt = canEdit ? <textarea defaultValue={newPrompt} onChange={e => changeNewName(e.target.value)}></textarea> : newPrompt;
 
   const modalOnClose = () => {
     setCanEdit(false);
@@ -91,4 +112,13 @@ function CurrentPromptModal(props) {
   );
 }
 
-export default CurrentPromptModal;
+const mapStateToProps = state => {
+  return { state };
+};
+
+export default connect(mapStateToProps, {
+  updateDashboardData,
+  getDashboardDataAI,
+})(CurrentPromptModal);
+
+

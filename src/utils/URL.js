@@ -22,7 +22,7 @@ export const ENDPOINTS = {
   PROJECT_MEMBER: projectId => `${APIEndpoint}/project/${projectId}/users`,
   UPDATE_PASSWORD: userId => `${APIEndpoint}/userprofile/${userId}/updatePassword`,
   FORCE_PASSWORD: `${APIEndpoint}/forcepassword`,
-  DASHBOARD: `${APIEndpoint}/dashboard`,
+
   LEADER_BOARD: userId => `${APIEndpoint}/dashboard/leaderboard/${userId}`,
   ORG_DATA: `${APIEndpoint}/dashboard/leaderboard/org/data`,
   TIME_ENTRIES_PERIOD: (userId, fromDate, toDate) =>
@@ -87,6 +87,8 @@ export const ENDPOINTS = {
   OWNERSTANDARDMESSAGE: () => `${APIEndpoint}/ownerStandardMessage`,
   OWNERSTANDARDMESSAGE_BY_ID: ownerStandardMessageId =>
     `${APIEndpoint}/ownerStandardMessage/${ownerStandardMessageId}`,
+
+  AI_PROMPT: () => `${APIEndpoint}/dashboard/aiPrompt`,
 };
 
 export const ApiEndpoint = APIEndpoint;
