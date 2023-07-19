@@ -228,14 +228,10 @@ const handleRemoveGoal = useCallback((time) => {
   }, []);
 
   useEffect(() => {
-    if (!initialRender && prevLogModal && !logModal) {
-      handleStart();
-    }
-    if (!initialRender && !prevLogModal && logModal) {
+    if (!initialRender  && logModal) {
       handlePause();
     }
-    setPrevLogModal(logModal);
-  }, [logModal, prevLogModal, initialRender]);
+  }, [logModal,  initialRender]);
 
   useEffect(() => {
     setInitialRender(false);

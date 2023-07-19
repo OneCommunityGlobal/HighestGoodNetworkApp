@@ -1,0 +1,25 @@
+.add-timer-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    width: 100%;
+  }
+  
+  .add-timer-container button {
+    display: flex;
+    align-items: center;
+    border: none;
+    border-radius: 0.5rem;
+    background-color: rgba(82, 92, 102, 1);
+    padding: 0.25rem 0.5rem;
+    color: white;
+  }
+  
+  .add-timer-container button:enabled:hover {
+    background-color: rgba(82, 92, 102, 0.8);
+  }
+  
+  .add-timer-container button:disabled {
+    background-color: rgba(82, 92, 102, 0.5);
+  }
