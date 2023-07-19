@@ -43,6 +43,7 @@ import { getUserTimeZone } from 'services/timezoneApiService';
 import hasPermission from 'utils/permissions';
 import NewUserPopup from 'components/UserManagement/NewUserPopup';
 import { boxStyle } from 'styles';
+import WeeklySummaryOptions from './WeeklySummaryOptions';
 
 const patt = RegExp(/^([\w.%+-]+)@([\w-]+\.)+([\w]{2,})$/i);
 class AddUserProfile extends Component {
@@ -95,6 +96,7 @@ class AddUserProfile extends Component {
     this.onCreateNewUser();
   }
 
+  
   render() {
     const { firstName, email, lastName, phoneNumber, role, jobTitle } = this.state.userProfile;
     const phoneNumberEntered =
@@ -112,7 +114,7 @@ class AddUserProfile extends Component {
           <Row>
             <Col md="12">
               <Form>
-                <Row className='user-add-row'>
+                <Row className="user-add-row">
                   <Col md={{ size: 2, offset: 2 }} className="text-md-right my-2">
                     <Label>Name</Label>
                   </Col>
@@ -145,7 +147,7 @@ class AddUserProfile extends Component {
                     </FormGroup>
                   </Col>
                 </Row>
-                <Row className='user-add-row'>
+                <Row className="user-add-row">
                   <Col md={{ size: 3, offset: 1 }} className="text-md-right my-2">
                     <Label>Job Title</Label>
                   </Col>
@@ -162,7 +164,7 @@ class AddUserProfile extends Component {
                     </FormGroup>
                   </Col>
                 </Row>
-                <Row className='user-add-row'>
+                <Row className="user-add-row">
                   <Col md={{ size: 2, offset: 2 }} className="text-md-right my-2">
                     <Label>Email</Label>
                   </Col>
@@ -186,7 +188,7 @@ class AddUserProfile extends Component {
                     </FormGroup>
                   </Col>
                 </Row>
-                <Row className='user-add-row'>
+                <Row className="user-add-row">
                   <Col md={{ size: 2, offset: 2 }} className="text-md-right my-2">
                     <Label>Phone</Label>
                   </Col>
@@ -212,7 +214,7 @@ class AddUserProfile extends Component {
                     </FormGroup>
                   </Col>
                 </Row>
-                <Row className='user-add-row'>
+                <Row className="user-add-row">
                   <Col md={{ size: 4 }} className="text-md-right my-2">
                     <Label>Weekly Committed Hours</Label>
                   </Col>
@@ -236,7 +238,7 @@ class AddUserProfile extends Component {
                     </FormGroup>
                   </Col>
                 </Row>
-                <Row className='user-add-row'>
+                <Row className="user-add-row">
                   <Col md={{ size: 2, offset: 2 }} className="text-md-right my-2">
                     <Label>Role</Label>
                   </Col>
@@ -263,27 +265,15 @@ class AddUserProfile extends Component {
                     </FormGroup>
                   </Col>
                 </Row>
-                <Row className='user-add-row'> 
+                <Row className="user-add-row">
                   <Col md={{ size: 4 }} className="text-md-right my-2">
                     <Label className="weeklySummaryOptionsLabel">Weekly Summary Options</Label>
                   </Col>
                   <Col md="6">
-                    <FormGroup>
-                      <Input
-                        type="select"
-                        name="weeklySummaryOption"
-                        id="weeklySummaryOption"
-                        defaultValue="Required"
-                        onChange={this.handleUserProfile}
-                      >
-                        <option value="Required">Required</option>
-                        <option value="Not Required">Not Required</option>
-                        <option value="Team">Team</option>
-                      </Input>
-                    </FormGroup>
+                    <WeeklySummaryOptions handleUserProfile={this.handleUserProfile}/>
                   </Col>
                 </Row>
-                <Row className='user-add-row'>
+                <Row className="user-add-row">
                   <Col md={{ size: 4 }} className="text-md-right my-2">
                     <Label>Video Call Preference</Label>
                   </Col>
@@ -300,8 +290,8 @@ class AddUserProfile extends Component {
                     </FormGroup>
                   </Col>
                 </Row>
-                <Row className='user-add-row'>
-                  <Col md={{ size: 4}} className="text-md-right my-2">
+                <Row className="user-add-row">
+                  <Col md={{ size: 4 }} className="text-md-right my-2">
                     <Label>Admin Document</Label>
                   </Col>
                   <Col md="6">
@@ -317,7 +307,7 @@ class AddUserProfile extends Component {
                     </FormGroup>
                   </Col>
                 </Row>
-                <Row className='user-add-row'>
+                <Row className="user-add-row">
                   <Col md={{ size: 4 }} className="text-md-right my-2">
                     <Label>Link to Media Files</Label>
                   </Col>
@@ -334,7 +324,7 @@ class AddUserProfile extends Component {
                     </FormGroup>
                   </Col>
                 </Row>
-                <Row className='user-add-row'>
+                <Row className="user-add-row">
                   <Col md={{ size: 4, offset: 0 }} className="text-md-right my-2">
                     <Label>Location</Label>
                   </Col>
@@ -359,7 +349,7 @@ class AddUserProfile extends Component {
                     </Row>
                   </Col>
                 </Row>
-                <Row className='user-add-row'>
+                <Row className="user-add-row">
                   <Col md={{ size: 3, offset: 1 }} className="text-md-right my-2">
                     <Label>Time Zone</Label>
                   </Col>
@@ -579,7 +569,7 @@ class AddUserProfile extends Component {
     if (googleDoc) {
       userData.adminLinks.push({ Name: 'Google Doc', Link: googleDoc });
     }
-    if(dropboxDoc) {
+    if (dropboxDoc) {
       userData.adminLinks.push({ Name: 'Dropbox Link', Link: dropboxDoc });
     }
     if (this.fieldsAreValid()) {
@@ -877,13 +867,13 @@ class AddUserProfile extends Component {
         });
         break;
       case 'dropboxDoc':
-          this.setState({
-            userProfile: {
-              ...userProfile,
-              [event.target.id]: event.target.value,
-            },
-          });
-          break;
+        this.setState({
+          userProfile: {
+            ...userProfile,
+            [event.target.id]: event.target.value,
+          },
+        });
+        break;
       case 'emailPubliclyAccessible':
         this.setState({
           userProfile: {
